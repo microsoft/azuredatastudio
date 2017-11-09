@@ -40,7 +40,6 @@ const extensions = [
 	'extension-editing',
 	'markdown',
 	'merge-conflict',
-	'account-provider-azure',
 	'insights-default'
 ];
 
