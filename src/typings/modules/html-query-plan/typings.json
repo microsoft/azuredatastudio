@@ -1,0 +1,6 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "npm:html-query-plan"
+  }
+}

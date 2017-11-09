@@ -1,0 +1,32 @@
+{
+	"version": "0.1.0",
+	// List of configurations. Add new configurations or edit existing ones.
+	// ONLY "node" and "mono" are supported, change "type" to switch.
+	"configurations": [
+		{
+			"request": "launch",
+			// Name of configuration; appears in the launch configuration drop down menu.
+			"name": "Mocha",
+			// Type of configuration. Possible values: "node", "mono".
+			"type": "node",
+			// Workspace relative or absolute path to the program.
+			"program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+			// Automatically stop program after launch.
+			"stopOnEntry": false,
+			// Command line arguments passed to the program.
+			"args": ["--timeout", "999999"],
+			// Workspace relative or absolute path to the working directory of the program being debugged. Default is the current workspace.
+			"cwd": "${workspaceRoot}",
+			// Workspace relative or absolute path to the runtime executable to be used. Default is the runtime executable on the PATH.
+			"runtimeExecutable": null,
+			// Optional arguments passed to the runtime executable.
+			"runtimeArgs": [],
+			// Environment variables passed to the program.
+			"env": { },
+			// Use JavaScript source maps (if they exist).
+			"sourceMaps": true,
+			// If JavaScript source maps are enabled, the generated code is expected in this directory.
+			"outDir": "${workspaceRoot}/lib"
+		}
+	]
+}

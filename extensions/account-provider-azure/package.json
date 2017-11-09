@@ -1,0 +1,34 @@
+{
+  "name": "account-provider-azure",
+  "version": "0.0.1",
+  "publisher": "Microsoft",
+  "engines": { "vscode": "*" },
+  "main": "./out/main",
+  "activationEvents": [ "*" ],
+  "scripts": {
+    "compile": "gulp compile-extension:account-provider-azure"
+  },
+  "dependencies": {
+    "adal-node": "^0.1.16",
+    "decompress": "^4.0.0",
+    "extensions-modules": "file:../../extensions-modules",
+    "fs-extra-promise": "^0.3.1",
+    "opener": "1.4.2",
+    "request": "2.63.0",
+    "urijs": "^1.18.12",
+    "vscode-extension-telemetry": "^0.0.5",
+    "vscode-nls": "2.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^8.0.24"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.clearTokenCache",
+        "title": "%extension.clearTokenCache%",
+        "category": "Azure Accounts"
+      }
+    ]
+  }
+}

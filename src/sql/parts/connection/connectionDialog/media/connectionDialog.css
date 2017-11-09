@@ -1,0 +1,49 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.connection-label {
+	width: 80px;
+	padding-bottom: 5px;
+}
+
+.connection-input {
+	padding-right:8px;
+	width: 200px;
+	padding-bottom: 5px;
+}
+
+.connection-recent {
+	margin: 15px;
+	height: calc(100% - 400px);
+	overflow-y: auto;
+}
+
+.connection-history-label {
+	font-size: 15px;
+}
+
+.server-name-label {
+	font-size: 15px;
+	margin-bottom: 15px;
+}
+
+.connection-provider-info {
+	overflow-y: hidden;
+	margin: 15px;
+}
+
+.connection-recent-content {
+	height: calc(100% - 20px);
+}
+
+.connection-table-content {
+	width:100%;
+	table-layout: fixed;
+}
+
+.connection-type {
+	margin: 15px;
+	overflow-y: hidden;
+}

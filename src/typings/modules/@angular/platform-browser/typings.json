@@ -1,0 +1,6 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "npm:@angular/platform-browser/platform-browser.d.ts"
+  }
+}

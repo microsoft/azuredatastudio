@@ -1,0 +1,6 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "npm:zone.js\\dist\\zone.js.d.ts"
+  }
+}

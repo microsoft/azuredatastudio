@@ -1,0 +1,6 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "npm:rxjs/Rx.d.ts"
+  }
+}

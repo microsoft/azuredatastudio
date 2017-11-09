@@ -1,0 +1,182 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<form class="angular-form" #myForm="ngForm" (ngSubmit)="onSubmit(f)">
+	<div class="angular-modal-body" style="display: flex; flex-direction: column;">
+		<div class="angular-modal-body-content">
+			<div class="dialog-label">
+				{{backupNameLabel}}
+			</div>
+			<div class="input-divider" #backupsetName>
+			</div>
+			<div class="dialog-label">
+				{{recoveryModelLabel}}
+			</div>
+			<div class="input-divider" #recoveryModelContainer>
+			</div>
+			<div class="dialog-label">
+				{{backupTypeLabel}}
+			</div>
+			<div class="input-divider" #backupTypeContainer>
+			</div>
+			<div class="input-divider" #copyOnlyContainer>{{copyOnlyLabel}}
+			</div>
+			<div class="dialog-label">
+				{{backupDeviceLabel}}
+			</div>
+			<div class="backup-path-list">
+				<div #pathContainer>
+				</div>
+			</div>
+			<table class="backup-path-table">
+				<tr>
+					<td>
+						<div class="backup-path-button" #addPathContainer></div>
+					</td>
+					<td style="padding-right:0px">
+						<div class="backup-path-button" #removePathContainer></div>
+					</td>
+				</tr>
+			</table>
+
+			<!-- Advanced Configuration -->
+			<div class="monaco-split-view vertical advanced-main-header">
+				<div class="split-view-view" >
+					<!-- TODO: should this be shown in a new page instead of collapsible view? -->
+					<div class="header collapsible collapsed" name="advanced-title" aria-expanded="false" style="height: 22px; background-color: rgba(128, 128, 128, 0.2);" (click)="onAdvancedClick()" #advancedHeader>
+						<div class="title">{{advancedConfigurationLabel}}
+						</div>
+					</div>
+					<div class="body collapsible" name="advanced-body" style="height: calc(100% - 22px); display: none" #advancedBody>
+						<!-- Compression -->
+						<div class="dialog-label advanced-header" style="padding-top: 15px;">
+							{{compressionLabel}}
+						</div>
+						<div class="indent">
+							<div class="dialog-label">
+								{{setBackupCompressionLabel}}
+							</div>
+							<div class="dialog-label" #compressionContainer>
+							</div>
+						</div>
+						<!-- Encryption -->
+						<div class="dialog-label advanced-header">
+							{{encryptionLabel}}
+						</div>
+						<div class="indent">
+							<div class="option" #encryptCheckContainer>Encrypt backup
+							</div>
+							<div class="option" #encryptWarningContainer>
+								<div class="icon warning">
+								</div>
+								<div class="warning-message">
+									{{noEncryptorWarning}}
+								</div>
+							</div>
+							<div #encryptContainer>
+								<div class="dialog-label">
+									{{algorithmLabel}}
+								</div>
+								<div class="dialog-label" #algorithmContainer>
+								</div>
+								<div class="dialog-label">
+									{{certificateOrAsymmetricKeyLabel}}
+								</div>
+								<div class="dialog-label" #encryptorContainer>
+								</div>
+							</div>
+						</div>
+
+						<!-- Overwrite media -->
+						<div class="dialog-label advanced-header">
+							{{mediaLabel}}
+						</div>
+						<div class="radio-indent">
+							<div class="option">
+								<input type="radio" name=media-option value="no_format" [checked]="!isFormatChecked" (change)="onChangeMediaFormat()" [disabled]="isEncryptChecked">{{mediaOptionLabel}}
+							</div>
+							<div style="margin-left:15px">
+								<div class="option">
+									<input type="radio" name=existing-media value="append" [(ngModel)]="selectedInitOption" [disabled]="isFormatChecked">{{existingMediaAppendLabel}}
+								</div>
+								<div class="option">
+									<input type="radio" name=existing-media value="overwrite" [(ngModel)]="selectedInitOption" [disabled]="isFormatChecked">{{existingMediaOverwriteLabel}}
+								</div>
+							</div>
+
+							<div class="option">
+								<input type="radio" name=media-option value="format" [checked]="isFormatChecked" (change)="onChangeMediaFormat()">{{mediaOptionFormatLabel}}
+							</div>
+							<div style="margin-left: 22px">
+								<div class="dialog-label">
+									{{newMediaSetNameLabel}}
+								</div>
+								<div class="dialog-label" #mediaName>
+								</div>
+								<div class="dialog-label">
+									{{newMediaSetDescriptionLabel}}
+								</div>
+								<div class="dialog-label" #mediaDescription>
+								</div>
+							</div>
+						</div>
+
+						<!-- Transaction log -->
+						<div class="dialog-label advanced-header">
+							{{transactionLogLabel}}
+						</div>
+						<div class="radio-indent">
+							<div class="option">
+								<input type="radio" name=t-log value="truncate" [checked]="isTruncateChecked" (change)="onChangeTlog()" [disabled]="disableTlog">Truncate the transaction log
+							</div>
+							<div class="option">
+								<input type="radio" name=t-log value="taillog" [checked]="isTaillogChecked" (change)="onChangeTlog()" [disabled]="disableTlog">Backup the tail of the log
+							</div>
+						</div>
+
+						<!-- Reliability -->
+						<div class="dialog-label advanced-header">
+							{{reliabilityLabel}}
+						</div>
+						<div class="indent">
+							<div class="option" #checksumContainer>{{checksumContainerLabel}}
+							</div>
+							<div class="option" #verifyContainer>{{verifyContainerLabel}}
+							</div>
+							<div class="option" #continueOnErrorContainer>{{continueOnErrorContainerLabel}}
+							</div>
+						</div>
+
+						<!-- Backup expiration -->
+						<div class="dialog-label advanced-header">
+							{{expirationLabel}}
+						</div>
+						<div class="indent">
+							<div class="dialog-label">
+								{{setBackupRetainDaysLabel}}
+							</div>
+							<div class="dialog-label">
+								<div #backupDaysContainer></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal-footer" #modalFooterContainer>
+		<div class="icon in-progress" #inProgressContainer></div>
+		<div class="right-footer">
+			<div class="footer-button" #scriptButtonContainer>
+			</div>
+			<div class="footer-button" #backupButtonContainer>
+			</div>
+			<div class="footer-button" #cancelButtonContainer>
+			</div>
+		</div>
+	</div>
+</form>

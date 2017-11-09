@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+'use strict';
+
+import {
+	IConnectionDialogService, IConnectionManagementService, INewConnectionParams
+} from 'sql/parts/connection/common/connectionManagement';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+
+export class ConnectionDialogTestService implements IConnectionDialogService {
+	_serviceBrand: any;
+
+	public showDialog(connectionManagementService: IConnectionManagementService,
+		params: INewConnectionParams, model: IConnectionProfile, error?: string): TPromise<void> {
+		let none: void;
+		return TPromise.as(none);
+	}
+
+}

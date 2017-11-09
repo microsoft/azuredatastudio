@@ -1,0 +1,128 @@
+{
+	"version": "0.1.0",
+	"configurations": [
+
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Gulp Build",
+			"program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+			"stopOnEntry": true,
+			"args": [
+				"watch-extension:json-client"
+			],
+			"cwd": "${workspaceRoot}"
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Extension Host",
+			"protocol": "inspector",
+			"port": 5870,
+			"restart": true,
+			"outFiles": [
+				"${workspaceRoot}/out/**/*.js"
+			]
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Shared Process",
+			"protocol": "inspector",
+			"port": 5871,
+			"outFiles": [
+				"${workspaceRoot}/out/**/*.js"
+			]
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"protocol": "inspector",
+			"name": "Attach to Search process",
+			"port": 7890,
+			"outFiles": [
+				"${workspaceRoot}/out/**/*.js"
+			]
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to CLI Process",
+			"protocol": "inspector",
+			"port": 5874,
+			"outFiles": [
+				"${workspaceRoot}/out/**/*.js"
+			]
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Main Process",
+			"protocol": "inspector",
+			"port": 5875,
+			"outFiles": [
+				"${workspaceRoot}/out/**/*.js"
+			]
+		},
+		{
+			"type": "chrome",
+			"request": "attach",
+			"name": "Attach to sqlops",
+			"port": 9222
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch sqlops",
+			"windows": {
+				"runtimeExecutable": "${workspaceRoot}/scripts/sql.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceRoot}/scripts/sql.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceRoot}/scripts/sql.sh"
+			},
+			"urlFilter": "*index.html*",
+			"runtimeArgs": [
+				"--inspect=5875"
+			],
+			"webRoot": "${workspaceRoot}"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Unit Tests",
+			"protocol": "inspector",
+			"program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+			"runtimeExecutable": "${workspaceRoot}/.build/electron/sqlops.app/Contents/MacOS/Electron",
+			"windows": {
+				"runtimeExecutable": "${workspaceRoot}/.build/electron/sqlops.exe"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceRoot}/.build/electron/sqlops"
+			},
+			"stopOnEntry": false,
+			"args": [
+				"--timeout",
+				"2000"
+			],
+			"cwd": "${workspaceRoot}",
+			"env": {
+				"ELECTRON_RUN_AS_NODE": "true"
+			},
+			"outFiles": [
+				"${workspaceRoot}/out/**/*.js"
+			]
+		}
+	],
+	"compounds": [
+		{
+			"name": "Debug sqlops Main and Renderer",
+			"configurations": [
+				"Launch sqlops",
+				"Attach to Main Process"
+			]
+		}
+	]
+}

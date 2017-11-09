@@ -1,0 +1,23 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vs .dropdown-arrow.icon {
+	background-image: url("dropdownarrow.svg");
+}
+
+.vs-dark .dropdown-arrow.icon,
+.hc-black .dropdown-arrow.icon {
+	background-image: url("dropdownarrow_inverse.svg");
+}
+
+.dropdown .monaco-action-bar .action-label.icon.dropdown-arrow {
+	padding: 0;
+	background-size: 10px;
+	background-position: 50%;
+}
+
+.dropdown .monaco-action-bar .action-item {
+	margin: 0;
+}

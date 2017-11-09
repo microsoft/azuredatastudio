@@ -1,0 +1,16 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div #propertyContainer>
+	<dashboard-widget-wrapper #properties *ngIf="propertiesWidget" [_config]="propertiesWidget" style="margin-left: 10px; margin-right: 10px; height: 90px; display: block">
+	</dashboard-widget-wrapper>
+</div>
+<div>
+	<div [ngGrid]="gridConfig">
+		<dashboard-widget-wrapper *ngFor="let widget of widgets" [(ngGridItem)]="widget.gridItemConfig" [_config]="widget">
+		</dashboard-widget-wrapper>
+	</div>
+</div>
