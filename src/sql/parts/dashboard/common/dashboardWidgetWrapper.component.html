@@ -1,0 +1,18 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div style="display: flex; flex-flow: column; overflow: hidden; height: 100%; width: 100%">
+
+	<div #header>
+		<div *ngIf="_config.name || _config.loadedIcon || _actions" style="display: flex;flex: 0 0; padding: 3px 0 3px 0">
+			<span *ngIf="_config.icon" [ngClass]="['icon', _config.icon]" style="display: inline-block; padding: 10px; margin-left: 5px"></span>
+			<span *ngIf="_config.name" style="margin-left: 5px">{{_config.name}}</span>
+			<div *ngIf="_actions" (click)="onActionsClick($event)" style="float: right; margin-right: 5px; margin-left: auto; padding: 10px" class="icon toggle-more"></div>
+		</div>
+	</div>
+	<ng-template component-host>
+	</ng-template>
+</div>

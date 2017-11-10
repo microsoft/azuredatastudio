@@ -1,0 +1,57 @@
+
+<div #taskbarContainer></div>
+<div style="display: flex; flex-flow: row; overflow: scroll; height: 100%; width: 100%">
+	<div style="flex:3 3 auto; margin: 5px">
+		<div style="position: relative; width: calc(100% - 20px); height: calc(100% - 20px)">
+			<ng-template component-host></ng-template>
+		</div>
+	</div>
+	<div class="angular-modal-body-content chart-viewer" style="flex:1 1 auto; border-left: 1px solid; margin: 5px;">
+		<div style="position: relative; width: 100%">
+			<div class="dialog-label">{{chartTypeLabel}}</div>
+			<div class="input-divider" #chartTypesContainer></div>
+			<div [hidden]="chartTypesSelectBox.value === 'count' || chartTypesSelectBox.value === 'image'">
+				<div [hidden]="!showDataType">
+					<div class="dialog-label">{{dataTypeLabel}}</div>
+					<div class="radio-indent">
+						<div class="option">
+							<input type="radio" name=data-type value="number" [(ngModel)]="dataType">{{numberLabel}}
+						</div>
+						<div class="option">
+							<input type="radio" name=data-type value="point" [(ngModel)]="dataType">{{pointLabel}}
+						</div>
+					</div>
+				</div>
+				<div [hidden]="!showDataDirection">
+					<div class="dialog-label">{{dataDirectionLabel}}</div>
+					<div class="radio-indent">
+						<div class="option">
+							<input type="radio" name=data-direction value="vertical" [(ngModel)]="dataDirection">{{verticalLabel}}
+						</div>
+						<div class="option">
+							<input type="radio" name=data-direction value="horizontal" [(ngModel)]="dataDirection">{{horizontalLabel}}
+						</div>
+					</div>
+				</div>
+				<div [hidden]="!showLabelFirstColumn">
+					<div class="input-divider" #labelFirstColumnContainer></div>
+				</div>
+
+				<div [hidden]="!showColumnsAsLabels">
+					<div class="input-divider" #columnsAsLabelsContainer></div>
+				</div>
+
+				<div class="dialog-label">{{legendLabel}}</div>
+				<div class="input-divider" #legendContainer></div>
+
+				<div class="footer">
+					<div class="right-footer">
+						<div class="footer-button" #createInsightButtonContainer></div>
+						<div class="footer-button" #saveChartButtonContainer></div>
+						<div class="footer-button" #copyChartButtonContainer></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

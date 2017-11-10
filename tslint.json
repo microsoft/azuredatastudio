@@ -1,0 +1,77 @@
+{
+	"rulesDirectory": [
+		"build/lib/tslint"
+	],
+	"rules": {
+		"no-string-throw": true,
+		"no-unused-expression": true,
+		"no-duplicate-variable": true,
+		"no-unused-variable": true,
+		"curly": true,
+		"class-name": true,
+		"semicolon": [
+			"always"
+		],
+		"triple-equals": true,
+		"no-unexternalized-strings": [
+			true,
+			{
+				"signatures": [
+					"localize",
+					"nls.localize"
+				],
+				"keyIndex": 0,
+				"messageIndex": 1
+			}
+		],
+		"layering": [
+			true,
+			{
+				"common": [],
+				"node": [
+					"common"
+				],
+				"browser": [
+					"common"
+				],
+				"electron-main": [
+					"common",
+					"node"
+				],
+				"electron-browser": [
+					"common",
+					"browser",
+					"node"
+				]
+			}
+		],
+		"import-patterns": [
+			true,
+			// {{SQL CARBON EDIT}}
+			{
+				"target": "**/{node,electron-browser,electron-main,extensions}/**",
+				"restrictions": "**/*"
+			},		
+			{
+				"target": "{**/**.test.ts,**/test/**}",
+				"restrictions": "{**/vs/**,**/sql/**,**/sqltest/**,assert,sinon,typemoq,data,@angular/**,rxjs/**}"
+			},
+			{
+				"target": "**/{common,browser,workbench}/**",
+				"restrictions": "**/*"
+			}
+		],
+		"duplicate-imports": true,
+		"allow-async": [
+			true,
+			[
+				"node",
+				"electron-main",
+				"electron-browser",
+				"extensions",
+				"smoke"
+			]
+		],
+		"translation-remind": true
+	}
+}

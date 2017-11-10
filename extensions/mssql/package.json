@@ -1,0 +1,113 @@
+{
+  "name": "mssql",
+  "version": "0.1.0",
+  "publisher": "Microsoft",
+  "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+  "engines": {
+    "vscode": "0.10.x"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./client/out/mssqlMain",
+  "extensionDependencies": [
+    "vscode.sql"
+  ],
+  "scripts": {
+    "compile": "gulp compile-extension:mssql-client",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "sql",
+        "extensions": [
+          ".sql"
+        ],
+        "aliases": [
+          "SQL"
+        ],
+        "configuration": "./syntaxes/sql.configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "sql",
+        "scopeName": "source.sql",
+        "path": "./syntaxes/SQL.plist"
+      }
+    ],
+    "outputChannels": [
+      "MSSQL"
+    ],
+    "snippets": [
+      {
+        "language": "sql",
+        "path": "./snippets/mssql.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "MSSQL configuration",
+      "properties": {
+        "mssql.query.displayBitAsNumber": {
+          "type": "boolean",
+          "default": true,
+          "description": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'"
+        },
+        "mssql.format.alignColumnDefinitionsInColumns": {
+          "type": "boolean",
+          "description": "Should column definitions be aligned?",
+          "default": false
+        },
+        "mssql.format.datatypeCasing": {
+          "type": "string",
+          "description": "Should data types be formatted as UPPERCASE, lowercase, or none (not formatted)",
+          "default": "none",
+          "enum": [
+            "none",
+            "uppercase",
+            "lowercase"
+          ]
+        },
+        "mssql.format.keywordCasing": {
+          "type": "string",
+          "description": "Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)",
+          "default": "none",
+          "enum": [
+            "none",
+            "uppercase",
+            "lowercase"
+          ]
+        },
+        "mssql.format.placeCommasBeforeNextStatement": {
+          "type": "boolean",
+          "description": "should commas be placed at the beginning of each statement in a list e.g. ', mycolumn2' instead of at the end e.g. 'mycolumn1,'",
+          "default": false
+        },
+        "mssql.format.placeSelectStatementReferencesOnNewLine": {
+          "type": "boolean",
+          "description": "Should references to objects in a select statements be split into separate lines? E.g. for 'SELECT C1, C2 FROM T1' both C1 and C2 will be on separate lines",
+          "default": false
+        },
+        "mssql.logDebugInfo": {
+          "type": "boolean",
+          "default": false,
+          "description": "[Optional] Log debug output to the VS Code console (Help -> Toggle Developer Tools)"
+        },
+        "ignorePlatformWarning": {
+          "type": "boolean",
+          "description": "[Optional] Do not show unsupported platform warnings",
+          "default": false
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "dataprotocol-client": "file:../../dataprotocol-node/client",
+    "extensions-modules": "file:../../extensions-modules"
+  },
+  "devDependencies": {
+    "vscode": "1.0.1"
+  }
+}

@@ -1,0 +1,93 @@
+{
+	"name": "xml",
+	"version": "0.1.0",
+	"publisher": "vscode",
+	"engines": { "vscode": "*" },
+	"contributes": {
+		"languages": [{
+			"id": "xml",
+			"extensions": [
+				".xml",
+				".xsd",
+				".ascx",
+				".atom",
+				".axml",
+				".bpmn",
+				".config",
+				".cpt",
+				".csl",
+				".csproj",
+				".csproj.user",
+				".dita",
+				".ditamap",
+				".dtd",
+				".dtml",
+				".fsproj",
+				".fxml",
+				".iml",
+				".isml",
+				".jmx",
+				".launch",
+				".menu",
+				".mxml",
+				".nuspec",
+				".opml",
+				".owl",
+				".proj",
+        ".props",
+				".pt",
+				".publishsettings",
+				".pubxml",
+				".pubxml.user",
+				".rdf",
+				".rng",
+				".rss",
+				".shproj",
+				".storyboard",
+				".svg",
+				".targets",
+				".tld",
+				".tmx",
+				".vbproj",
+				".vbproj.user",
+				".vcxproj",
+				".vcxproj.filters",
+				".wsdl",
+				".wxi",
+				".wxl",
+				".wxs",
+				".xaml",
+				".xbl",
+				".xib",
+				".xlf",
+				".xliff",
+				".xpdl",
+				".xul",
+				".xoml"
+			],
+			"firstLine" : "(\\<\\?xml.*)|(\\<svg)|(\\<\\!doctype\\s+svg)",
+			"aliases": [ "XML", "xml" ],
+			"configuration": "./xml.language-configuration.json"
+		}, {
+			"id": "xsl",
+			"extensions": [
+				".xsl",
+				".xslt"
+			],
+			"aliases": [ "XSL", "xsl" ],
+			"configuration": "./xsl.language-configuration.json"
+		}],
+		"grammars": [{
+			"language": "xml",
+			"scopeName": "text.xml",
+			"path": "./syntaxes/xml.json"
+		}, {
+			"language": "xsl",
+			"scopeName": "text.xml.xsl",
+			"path": "./syntaxes/xsl.json"
+		}]
+	},
+	"scripts": {
+		"update-grammar": "node ../../build/npm/update-grammar.js atom/language-xml grammars/xml.cson ./syntaxes/xml.json grammars/xsl.cson ./syntaxes/xsl.json"
+	}
+}

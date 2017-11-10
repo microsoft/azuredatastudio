@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"target": "ES5",
+		"module": "umd",
+		"sourceMap": false,
+		"declaration": true,
+		"stripInternal": true,
+		"outDir": "../lib"
+	}
+}

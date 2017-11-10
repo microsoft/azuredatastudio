@@ -1,0 +1,33 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+
+<panel class="fullsize" [options]="panelOpt">
+	<tab [title]="queryComponentTitle" class="fullsize" [identifier]="resultsTabIdentifier">
+		<div id="queryDiv" class="fullsize">
+			<query-component id="queryComp" #queryComponent class="fullsize" [queryParameters]="queryParameters"></query-component>
+		</div>
+	</tab>
+
+	<tab *ngIf="hasQueryPlan" [title]="queryPlanTitle" [identifier]="queryPlanTabIdentifier">
+		<div id="queryPlanDiv" class="headersVisible fullsize" style=" overflow: auto; margin-left: 2px">
+			<queryplan-component #queryPlanComponent class="fullsize" style="display: block"></queryplan-component>
+		</div>
+	</tab>
+
+	<tab *ngIf="hasQueryPlan" class="fullsize" [title]="topOperationsTitle">
+		<div id="topOperationsDiv" class="fullsize">
+			<top-operations-component #topOperationsComponent class="fullsize" style="display: block" [queryParameters]="queryParameters"></top-operations-component>
+		</div>
+	</tab>
+
+	<tab *ngIf="showChartView" [title]="chartViewerTitle" [identifier]="chartViewerTabIdentifier">
+		<div id="chartViewerDiv" class="headersVisible fullsize" >
+			<chart-viewer  #chartViewerComponent class="fullsize" style="display: block">
+			</chart-viewer>
+		</div>
+	</tab>
+</panel>

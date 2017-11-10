@@ -1,0 +1,58 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.tabbedPanel {
+	border-top-color: rgba(128, 128, 128, 0.35);
+	border-top-width: 1;
+	border-top-style: solid;
+	box-sizing: border-box;
+}
+
+.tabbedPanel .composite.title {
+	display: flex;
+}
+
+.tabbedPanel .tabList {
+	display: flex;
+	margin: 0 auto;
+	padding: 0;
+	justify-content: flex-start;
+	flex-flow: row;
+	line-height: 35px;
+}
+
+.tabbedPanel .tabList > .tab {
+	cursor: pointer;
+}
+
+.tabbedPanel .tabList > .tab > .tabLabel {
+	text-transform: uppercase;
+	margin-left: 16px;
+	margin-right: 16px;
+	font-size: 11px;
+	padding-bottom: 4px;
+}
+
+.tabbedPanel .composite.title .title-actions .action-label {
+	display: block;
+	height: 35px;
+	line-height: 35px;
+	min-width: 28px;
+	background-size: 16px;
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
+.composite.title .title-actions {
+	flex: 1;
+}
+
+.tab > .tabLabel.active {
+	border-bottom: 1px solid;
+}
+
+.composite.title ~ tab.fullsize > :first-child {
+	height: calc(100% - 38px);
+}

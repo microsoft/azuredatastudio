@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.monaco-text-button {
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	display: inline-block;
+	width: 100%;
+	padding: 4px;
+	text-align: center;
+	cursor: pointer;
+}
+
+.monaco-text-button:hover {
+	text-decoration: none !important;
+}
+
+.monaco-button.disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+
+/* Theming support */
+
+.vs .monaco-text-button:focus,
+.vs-dark .monaco-text-button:focus {
+	outline-color: rgba(255, 255, 255, .5); /* buttons have a blue color, so focus indication needs to be different */
+}
