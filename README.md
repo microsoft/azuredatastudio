@@ -28,7 +28,7 @@ Linux | https://go.microsoft.com/fwlink/?linkid=862646
 
 Here's some of these features in action.
 
-<img src='https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/docs/overview_screen.jpg' width='800px'>
+<img src='https://github.com/Microsoft/sqlopsstudio/blob/master/docs/overview_screen.jpg' width='800px'>
 
 ## Contributing
 If you are interested in fixing issues and contributing directly to the code base,
