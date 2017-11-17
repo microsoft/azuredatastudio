@@ -10,4 +10,4 @@ select top 10
     (select sum(size) from fs where type = 1 and fs.database_id = db.database_id) LogFileSizeMB
 from sys.databases db
 where database_id > 4
-order by DataFileSizeMB
+order by DataFileSizeMB desc
