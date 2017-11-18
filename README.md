@@ -10,6 +10,7 @@ Windows | https://go.microsoft.com/fwlink/?linkid=862648
 macOS | https://go.microsoft.com/fwlink/?linkid=862647
 Linux | https://go.microsoft.com/fwlink/?linkid=862646
 
+Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instructions.
 
 **Feature Highlights**
 
