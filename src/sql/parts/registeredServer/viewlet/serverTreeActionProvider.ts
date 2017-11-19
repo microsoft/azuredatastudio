@@ -25,6 +25,7 @@ import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionPr
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { NewProfilerAction } from 'sql/parts/profiler/contrib/profilerActions';
 import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
+import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 
 /**
  *  Provides actions for the server tree elements
@@ -32,7 +33,8 @@ import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUt
 export class ServerTreeActionProvider extends ContributableActionProvider {
 
 	constructor(
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super();
 	}
@@ -74,10 +76,16 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		let actions: IAction[] = [
 			this._instantiationService.createInstance(ManageConnectionAction, ManageConnectionAction.ID, ManageConnectionAction.LABEL),
 			this._instantiationService.createInstance(NewQueryAction, NewQueryAction.ID, NewQueryAction.LABEL),
-			this._instantiationService.createInstance(DisconnectConnectionAction, DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL),
+		];
+
+		if (this._connectionManagementService.isProfileConnected(element)) {
+			actions.push(this._instantiationService.createInstance(DisconnectConnectionAction, DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL));
+		}
+
+		actions.push(
 			this._instantiationService.createInstance(DeleteConnectionAction, DeleteConnectionAction.ID, DeleteConnectionAction.DELETE_CONNECTION_LABEL, element),
 			this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, tree, element)
-		];
+		);
 
 		if (process.env['VSCODE_DEV']) {
 			actions.push(this._instantiationService.createInstance(NewProfilerAction, NewProfilerAction.ID, NewProfilerAction.LABEL, NewProfilerAction.ICON));
