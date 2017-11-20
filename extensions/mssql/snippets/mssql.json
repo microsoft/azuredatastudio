@@ -226,10 +226,10 @@
 		"body": [
 			"-- Get a list of tables and views in the current database",
 			"SELECT table_catalog [database], table_schema [schema], table_name name, table_type type",
-			"FROM information_schema.tables",
+			"FROM INFORMATION_SCHEMA.TABLES",
 			"GO"
 		],
-		"description": "List tables and vies in the current database"
+		"description": "List tables and views in the current database"
 	},
 
 	"List databases": {
@@ -247,15 +247,15 @@
 		"body": [
 			"-- List columns in all tables whose name is like '${1:TableName}'",
 			"SELECT ",
-			"\tTableName = tbl.table_schema + '.' + tbl.table_name, ",
-			"\tColumnName = col.column_name, ",
-			"\tColumnDataType = col.data_type",
-			"FROM information_schema.tables tbl",
-			"INNER JOIN information_schema.columns col ",
-			"\tON col.table_name = tbl.table_name",
-			"\tAND col.table_schema = tbl.table_schema",
+			"\tTableName = tbl.TABLE_SCHEMA + '.' + tbl.TABLE_NAME, ",
+			"\tColumnName = col.COLUMN_NAME, ",
+			"\tColumnDataType = col.DATA_TYPE",
+			"FROM INFORMATION_SCHEMA.TABLES tbl",
+			"INNER JOIN INFORMATION_SCHEMA.COLUMNS col ",
+			"\tON col.TABLE_NAME = tbl.TABLE_NAME",
+			"\tAND col.TABLE_SCHEMA = tbl.TABLE_SCHEMA",
 			"",
-			"WHERE tbl.table_type = 'base table' and tbl.table_name like '%${1:TableName}%'",
+			"WHERE tbl.TABLE_TYPE = 'BASE TABLE' and tbl.TABLE_NAME like '%${1:TableName}%'",
 			"GO"
 		],
 		"description": "Lists all the columns and their types for tables matching a LIKE statement"
@@ -274,13 +274,13 @@
 			"(SUM(ALOC.total_pages)*8/1024) AS total_space_MB,",
 			"(SUM(ALOC.used_pages)*8/1024) AS used_space_MB,",
 			"(SUM(ALOC.data_pages)*8/1024) AS data_space_MB",
-			"FROM sys.Tables AS TABL",
-			"INNER JOIN sys.Indexes AS INDX",
+			"FROM sys.tables AS TABL",
+			"INNER JOIN sys.indexes AS INDX",
 			"ON TABL.object_id = INDX.object_id",
-			"INNER JOIN sys.Partitions AS PART",
+			"INNER JOIN sys.partitions AS PART",
 			"ON INDX.object_id = PART.object_id",
 			"AND INDX.index_id = PART.index_id",
-			"INNER JOIN sys.Allocation_Units AS ALOC",
+			"INNER JOIN sys.allocation_units AS ALOC",
 			"ON PART.partition_id = ALOC.container_id",
 			"WHERE TABL.name LIKE '%${1:TableName}%'",
 			"AND INDX.object_id > 255",
