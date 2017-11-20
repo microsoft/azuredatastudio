@@ -322,10 +322,16 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			this.callExpandOrRefreshFromService(parentTree.getConnectionProfile().providerName, session, parentTree.nodePath, refresh).then(expandResult => {
 				let children: TreeNode[] = [];
 				if (expandResult && expandResult.nodes) {
-					children = expandResult.nodes.map(node => {
-						return this.toTreeNode(node, parentTree);
-					});
-					parentTree.children = children.filter(c => c !== undefined);
+					children = expandResult.nodes
+						.map(node => this.toTreeNode(node, parentTree))
+						.filter(node => node !== undefined);
+
+					if (parentTree.nodeTypeId === 'Folder') {
+						children = children.sort((current, next) => current.label.localeCompare(next.label));
+					}
+
+					parentTree.children = children;
+
 					resolve(children);
 				} else {
 					reject(expandResult && expandResult.errorMessage ? expandResult.errorMessage : 'Failed to expand node');
