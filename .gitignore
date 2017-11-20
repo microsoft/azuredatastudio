@@ -16,6 +16,7 @@ test-reports
 .vscode-test
 node_modules/
 .build/
+.vs/
 out/
 out-build/
 out-editor/
