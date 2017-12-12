@@ -1,5 +1,4 @@
 #!/bin/bash
-
 SUPPORTEDNPMVERSION="4.2.0"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -10,27 +9,28 @@ else
 	ROOT=$(dirname "$(dirname "$(readlink -f $0)")")
 
 	# if [ -z $npm_config_arch ]; then
-	# 	npm_config_arch=$(NPM -p process.arch)
+	# 	npm_config_arch=$(npm -p process.arch)
 	# 	echo "Warning: remember to set \$npm_config_arch to either x64 or ia32 to build the binaries for the right architecture. Picking '$npm_config_arch'."
 	# fi
 fi
 
+ELECTRON_VERSION=$(
+	cat "$ROOT"/package.json |
+	grep electronVersion |
+	sed -e 's/[[:space:]]*"electronVersion":[[:space:]]*"\([0-9.]*\)"\(,\)*/\1/'
+)
+
+ELECTRON_GYP_HOME=~/.electron-gyp
+mkdir -p $ELECTRON_GYP_HOME
+
+npm_config_disturl=https://atom.io/download/electron \
+npm_config_target=$ELECTRON_VERSION \
+npm_config_runtime=electron \
+HOME=$ELECTRON_GYP_HOME \
+npm $*
+
 CURRENTNPMVERSION=`npm --version`
-if [[ "$CURRENTNPMVERSION" == "$SUPPORTEDNPMVERSION" ]]; then
-	ELECTRON_VERSION=$(
-		cat "$ROOT"/package.json |
-		grep electronVersion |
-		sed -e 's/[[:space:]]*"electronVersion":[[:space:]]*"\([0-9.]*\)"\(,\)*/\1/'
-	)
-
-	ELECTRON_GYP_HOME=~/.electron-gyp
-	mkdir -p $ELECTRON_GYP_HOME
-
-	npm_config_disturl=https://atom.io/download/electron \
-	npm_config_target=$ELECTRON_VERSION \
-	npm_config_runtime=electron \
-	HOME=$ELECTRON_GYP_HOME \
-	npm $*
-else
-	echo NPM version $CURRENTNPMVERSION is not compatible with this project. Please, install version $SUPPORTEDNPMVERSION
+if [[ "$CURRENTNPMVERSION" != "$SUPPORTEDNPMVERSION" ]]; then
+	YELLOW='\033[1;33m'
+	echo -e "${YELLOW}NPM version ${CURRENTNPMVERSION} is not supported with this project. We strongly recommend to use version ${SUPPORTEDNPMVERSION}"
 fi
