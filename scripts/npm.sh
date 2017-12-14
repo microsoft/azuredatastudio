@@ -9,7 +9,7 @@ else
 	ROOT=$(dirname "$(dirname "$(readlink -f $0)")")
 
 	# if [ -z $npm_config_arch ]; then
-	# 	npm_config_arch=$(npm -p process.arch)
+	# 	npm_config_arch=$(node -p process.arch)
 	# 	echo "Warning: remember to set \$npm_config_arch to either x64 or ia32 to build the binaries for the right architecture. Picking '$npm_config_arch'."
 	# fi
 fi
@@ -31,6 +31,5 @@ npm $*
 
 CURRENTNPMVERSION=`npm --version`
 if [[ "$CURRENTNPMVERSION" != "$SUPPORTEDNPMVERSION" ]]; then
-	YELLOW='\033[1;33m'
-	echo -e "${YELLOW}NPM version ${CURRENTNPMVERSION} is not supported with this project. We strongly recommend to use version ${SUPPORTEDNPMVERSION}"
+	echo "NPM version ${CURRENTNPMVERSION} is not supported with this project. We strongly recommend to use version ${SUPPORTEDNPMVERSION}"
 fi

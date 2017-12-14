@@ -13,6 +13,5 @@ for /F "tokens=* USEBACKQ" %%V IN (`npm --version`) do (
 	set CURRENTNPMVERSION=%%V
 )
 if not %CURRENTNPMVERSION%==%SUPPORTEDNPMVERSION% (
-	color 0e
 	echo NPM version %CURRENTNPMVERSION% is not supported with this project. We strongly recommend to use version %SUPPORTEDNPMVERSION%
 )
