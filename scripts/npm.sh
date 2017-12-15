@@ -1,4 +1,5 @@
 #!/bin/bash
+SUPPORTEDNPMVERSION="4.2.0"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	realpath() { [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"; }
@@ -27,3 +28,8 @@ npm_config_target=$ELECTRON_VERSION \
 npm_config_runtime=electron \
 HOME=$ELECTRON_GYP_HOME \
 npm $*
+
+CURRENTNPMVERSION=`npm --version`
+if [[ "$CURRENTNPMVERSION" != "$SUPPORTEDNPMVERSION" ]]; then
+	echo "NPM version ${CURRENTNPMVERSION} is not supported with this project. We strongly recommend to use version ${SUPPORTEDNPMVERSION}"
+fi
