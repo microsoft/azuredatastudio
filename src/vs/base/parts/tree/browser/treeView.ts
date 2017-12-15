@@ -1550,7 +1550,6 @@ export class TreeView extends HeightMap {
 			// {{SQL CARBON EDIT}}
 			this.context.dnd.dropAbort(this.context.tree, this.currentDragAndDropData);
 		}
-
 		this.cancelDragAndDropScrollInterval();
 	}
 

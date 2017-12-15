@@ -4,18 +4,5 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div class="task-widget">
-	<ng-template ngFor let-task [ngForOf]="_actions" let-i="index">
-		<div (click)="runTask(task)"
-			style="position: absolute; cursor: pointer; display: flex; flex-flow: row; align-items: center; text-align: center"
-			class="task-tile"
-			[style.height.px]="_size"
-			[style.width.px]="_size"
-			[style.transform]="calculateTransform(i)">
-			<div style="flex: 1 1 auto; display: flex; flex-flow: column; align-items: center">
-					<span [ngClass]="['icon', task.icon]" style="padding: 15px"></span>
-				<div>{{task.label}}</div>
-			</div>
-		</div>
-	</ng-template>
+<div #container style="position: absolute; height: 100%; width: 100%">
 </div>

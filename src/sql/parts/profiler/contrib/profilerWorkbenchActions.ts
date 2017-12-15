@@ -12,6 +12,8 @@ import * as nls from 'vs/nls';
 
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 export class GlobalNewProfilerAction extends Action {
 	public static ID = 'explorer.newProfiler';
@@ -20,13 +22,31 @@ export class GlobalNewProfilerAction extends Action {
 	constructor(
 		id: string, label: string,
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IConnectionManagementService private _connectionService: IConnectionManagementService
 	) {
 		super(id, label);
 	}
 
 	run(context?: any): TPromise<boolean> {
-		let profilerInput = this._instantiationService.createInstance(ProfilerInput, context ? context.connectionProfile : undefined);
+		// TODO: for test-only, grab the first MSSQL active connection for the profiler session
+		// TODO: when finishing the feature the connection should come from the launch context
+		let connectionProfile: IConnectionProfile;
+		if (context && context.connectionProfile) {
+			connectionProfile = context.connectionProfile;
+		} else {
+			let activeConnections = this._connectionService.getActiveConnections();
+			if (activeConnections) {
+				for (let i = 0; i < activeConnections.length; ++i) {
+					if (activeConnections[i].providerName === 'MSSQL') {
+						connectionProfile = activeConnections[i];
+						break;
+					}
+				}
+			}
+		}
+
+		let profilerInput = this._instantiationService.createInstance(ProfilerInput, connectionProfile);
 		return this._editorService.openEditor(profilerInput, { pinned: true }, false).then(() => TPromise.as(true));
 	}
 }

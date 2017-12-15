@@ -10,6 +10,7 @@
 		"curly": true,
 		"class-name": true,
 		"semicolon": [
+			true,
 			"always"
 		],
 		"triple-equals": true,
@@ -51,7 +52,7 @@
 			{
 				"target": "**/{node,electron-browser,electron-main,extensions}/**",
 				"restrictions": "**/*"
-			},		
+			},
 			{
 				"target": "{**/**.test.ts,**/test/**}",
 				"restrictions": "{**/vs/**,**/sql/**,**/sqltest/**,assert,sinon,typemoq,data,@angular/**,rxjs/**}"
@@ -62,16 +63,6 @@
 			}
 		],
 		"duplicate-imports": true,
-		"allow-async": [
-			true,
-			[
-				"node",
-				"electron-main",
-				"electron-browser",
-				"extensions",
-				"smoke"
-			]
-		],
 		"translation-remind": true
 	}
 }

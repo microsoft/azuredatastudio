@@ -6,16 +6,15 @@
 'use strict';
 
 import 'vs/css!./media/optionsDialog';
-
+import { Button } from 'sql/base/browser/ui/button/button';
 import { FixedCollapsibleView } from 'sql/platform/views/fixedCollapsibleView';
 import * as DialogHelper from './dialogHelper';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IModalOptions, Modal } from './modal';
 import * as OptionsDialogHelper from './optionsDialogHelper';
-import { attachModalDialogStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/styler';
 
 import * as data from 'data';
-
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import Event, { Emitter } from 'vs/base/common/event';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
@@ -27,13 +26,14 @@ import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/theme
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import * as styler from 'vs/platform/theme/common/styler';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import { SplitView, CollapsibleState } from 'vs/base/browser/ui/splitview/splitview';
+import { SplitView, CollapsibleState } from 'sql/base/browser/ui/splitview/splitview';
 import { Builder, $ } from 'vs/base/browser/builder';
-import { Button } from 'vs/base/browser/ui/button/button';
 import { Widget } from 'vs/base/browser/ui/widget';
 
-class CategoryView extends FixedCollapsibleView {
+export class CategoryView extends FixedCollapsibleView {
 	private _treecontainer: HTMLElement;
+	private _collapsed: CollapsibleState;
+
 	constructor(private viewTitle: string, private _bodyContainer: HTMLElement, collapsed: boolean, initialBodySize: number, headerSize: number) {
 		super(
 			initialBodySize,
@@ -43,6 +43,7 @@ class CategoryView extends FixedCollapsibleView {
 				initialState: collapsed ? CollapsibleState.COLLAPSED : CollapsibleState.EXPANDED,
 				ariaHeaderLabel: viewTitle
 			});
+		this._collapsed = collapsed ? CollapsibleState.COLLAPSED : CollapsibleState.EXPANDED;
 	}
 
 	public renderHeader(container: HTMLElement): void {
@@ -54,6 +55,7 @@ class CategoryView extends FixedCollapsibleView {
 		this._treecontainer = document.createElement('div');
 		container.appendChild(this._treecontainer);
 		this._treecontainer.appendChild(this._bodyContainer);
+		this.changeState(this._collapsed);
 	}
 
 	public layoutBody(size: number): void {
@@ -102,13 +104,13 @@ export class OptionsDialog extends Modal {
 		attachModalDialogStyler(this, this._themeService);
 		if (this.backButton) {
 			this.backButton.addListener('click', () => this.cancel());
-			styler.attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
+			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 		this._okButton = this.addFooterButton(this.okLabel, () => this.ok());
 		this._closeButton = this.addFooterButton(this.cancelLabel, () => this.cancel());
 		// Theme styler
-		styler.attachButtonStyler(this._okButton, this._themeService);
-		styler.attachButtonStyler(this._closeButton, this._themeService);
+		attachButtonStyler(this._okButton, this._themeService);
+		attachButtonStyler(this._closeButton, this._themeService);
 		let self = this;
 		this._register(self._themeService.onDidColorThemeChange(e => self.updateTheme(e)));
 		self.updateTheme(self._themeService.getColorTheme());

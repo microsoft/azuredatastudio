@@ -1,4 +1,5 @@
 {
+	"$schema": "vscode://schemas/color-theme",
 	"name": "SQL Operations Studio-light-theme",
 	"type": "light",
 	"colors": {
@@ -34,7 +35,7 @@
 		"badge.foreground": "#ffffff",
 
 		//Input Control
-		"input.background": "#EAEAEA00",
+		"input.background": "#fffffe",
 		"input.border": "#c8c8c8",
 		"input.disabled.background": "#dcdcdc",
 		"input.disabled.foreground": "#888888",
@@ -56,7 +57,7 @@
 		"editorGroupHeader.tabsBackground": "#f4f4f4",
 		"editor.background": "#fffffe",
 		"editor.foreground": "#212121",
-		"editorWidget.background": "#C8C8C8",
+		"editorWidget.background": "#dcdcdc",
 		"editorLink.activeForeground": "#3062D6",
 		"editorGroup.border": "#f4f4f4",
 		"editorGroup.background": "#fffffe",
@@ -77,8 +78,7 @@
 	"tokenColors": [
 		{
 			"settings": {
-				"foreground": "#212121ff",
-				"background": "#fffffeff"
+				"foreground": "#212121ff"
 			}
 		},
 		{

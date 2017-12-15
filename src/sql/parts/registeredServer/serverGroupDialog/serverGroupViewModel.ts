@@ -5,9 +5,10 @@
 
 'use strict';
 import { IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
+
 import * as TypeChecker from 'vs/base/common/types';
 import { localize } from 'vs/nls';
+import * as strings from 'vs/base/common/strings';
 
 export class ServerGroupViewModel {
 	public groupName: string;
@@ -50,13 +51,13 @@ export class ServerGroupViewModel {
 	// check to see if the current state of the view model is different than the data in the domain model
 	public hasPendingChanges(): boolean {
 		if (!TypeChecker.isUndefinedOrNull(this._domainModel)) {
-			return ((DialogHelper.isNullOrWhiteSpace(this.groupName) === false) &&
+			return ((strings.isFalsyOrWhitespace(this.groupName) === false) &&
 				((this.groupName !== this._domainModel.name) ||
 					(this.groupDescription !== this._domainModel.description) ||
 					(this.groupColor !== this._domainModel.color)));
 		}
 		else {
-			return (DialogHelper.isNullOrWhiteSpace(this.groupName) === false);
+			return (strings.isFalsyOrWhitespace(this.groupName) === false);
 		}
 	}
 

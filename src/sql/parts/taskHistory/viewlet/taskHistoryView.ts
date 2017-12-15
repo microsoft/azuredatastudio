@@ -143,7 +143,7 @@ export class TaskHistoryView {
 			if (isDoubleClick) {
 				if (task.status === TaskStatus.failed) {
 					var err = task.taskName + ': ' + task.message;
-					this._errorMessageService.showDialog(Severity.Error, nls.localize('taskError','Task Error'), err);
+					this._errorMessageService.showDialog(Severity.Error, nls.localize('taskError','Task error'), err);
 				}
 			}
 		}

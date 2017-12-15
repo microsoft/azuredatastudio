@@ -17,7 +17,6 @@ gulp.task('clean-client', util.rimraf('dataprotocol-node/client/node_modules'));
 gulp.task('clean-jsonrpc', util.rimraf('dataprotocol-node/jsonrpc/node_modules'));
 gulp.task('clean-server', util.rimraf('dataprotocol-node/server/node_modules'));
 gulp.task('clean-types', util.rimraf('dataprotocol-node/types/node_modules'));
-// {{SQL CARBON EDIT}}
 gulp.task('clean-extensions-modules', util.rimraf('extensions-modules/node_modules'));
 gulp.task('clean-protocol', ['clean-extensions-modules', 'clean-mssql-extension', 'clean-credentials-extension', 'clean-client', 'clean-jsonrpc', 'clean-server', 'clean-types']);
 

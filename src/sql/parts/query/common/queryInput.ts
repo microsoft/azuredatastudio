@@ -141,7 +141,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public getEncoding(): string { return this._sql.getEncoding(); }
 	public suggestFileName(): string { return this._sql.suggestFileName(); }
 	public getName(): string { return this._sql.getName(); }
-	public hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }
+	public get hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }
 
 	public setEncoding(encoding: string, mode: EncodingMode /* ignored, we only have Encode */): void {
 		this._sql.setEncoding(encoding, mode);
@@ -155,6 +155,11 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	public runQueryStatement(selection: ISelectionData): void {
 		this._queryModelService.runQueryStatement(this.uri, selection, this.uri, this);
+		this.showQueryResultsEditor();
+	}
+
+	public runQueryString(text: string): void {
+		this._queryModelService.runQueryString(this.uri, text, this.uri, this);
 		this.showQueryResultsEditor();
 	}
 
@@ -189,6 +194,8 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 				this.runQuery(selection);
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.estimatedQueryPlan) {
 				this.runQuery(selection, { displayEstimatedQueryPlan: true });
+			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.actualQueryPlan) {
+				this.runQuery(selection, { displayActualQueryPlan: true });
 			}
 		}
 		this._updateTaskbar.fire();
@@ -232,7 +239,6 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 		this._sql.close();
 		this._results.close();
-		super.close();
 	}
 
 	/**

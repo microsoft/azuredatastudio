@@ -11,6 +11,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { ErrorMessageDialog } from 'sql/workbench/errorMessageDialog/errorMessageDialog';
+import { IAction } from 'vs/base/common/actions';
 
 export class ErrorMessageService implements IErrorMessageService {
 
@@ -25,11 +26,11 @@ export class ErrorMessageService implements IErrorMessageService {
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) { }
 
-	public showDialog(severity: Severity, headerTitle: string, message: string): void {
-		this.doShowDialog(severity, headerTitle, message);
+	public showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]): void {
+		this.doShowDialog(severity, headerTitle, message, messageDetails, actions);
 	}
 
-	private doShowDialog(severity: Severity, headerTitle: string, message: string): void {
+	private doShowDialog(severity: Severity, headerTitle: string, message: string, messageDetails: string, actions?: IAction[]): void {
 		if (!this._errorDialog) {
 			this._errorDialog = this._instantiationService.createInstance(ErrorMessageDialog);
 			this._errorDialog.onOk(() => this.handleOnOk());
@@ -37,7 +38,7 @@ export class ErrorMessageService implements IErrorMessageService {
 		}
 
 		let title = headerTitle ? headerTitle : this.getDefaultTitle(severity);
-		return this._errorDialog.open(severity, title, message);
+		return this._errorDialog.open(severity, title, message, messageDetails, actions);
 	}
 
 	private getDefaultTitle(severity: Severity) {

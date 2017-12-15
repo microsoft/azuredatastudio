@@ -54,10 +54,6 @@ export class QueryResultsInput extends EditorInput {
 		return false;
 	}
 
-	public setVisibleTrue(): void {
-		this._visible = true;
-	}
-
 	public setBootstrappedTrue(): void {
 		this._hasBootstrapped = true;
 	}
@@ -100,6 +96,10 @@ export class QueryResultsInput extends EditorInput {
 
 	get visible(): boolean {
 		return this._visible;
+	}
+
+	set visible(visible: boolean) {
+		this._visible = visible;
 	}
 
 	get uri(): string {

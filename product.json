@@ -4,10 +4,10 @@
 	"applicationName": "sqlops",
 	"dataFolderName": ".sqlops",
 	"win32MutexName": "sqlopsstudio",
-    "licenseName": "Microsoft EULA",
+	"licenseName": "Microsoft EULA",
 	"licenseUrl": "https://github.com/Microsoft/sqlopsstudio/blob/master/LICENSE.txt",
 	"win32DirName": "SQL Operations Studio",
-	"win32NameVersion": "sqlops",
+	"win32NameVersion": "SQL Operations Studio",
 	"win32RegValueName": "sqlops",
 	"win32AppId": "{{E34003BB-9E10-4501-8C11-1234AA83F23F}",
 	"win32x64AppId": "{{EA457B21-9E10-494C-ACAB-1234DE069978}",
@@ -27,6 +27,6 @@
 	},
 	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
 	"documentationUrl": "https://go.microsoft.com/fwlink/?linkid=862277",
-	"commit": "85fd52b50a4bf6dec0f5314d22535317fd5167b2",
-	"date": "2017-11-02T12:00:00.000Z"
+	"commit": "9ca6200018fc206d67a47229f991901a8a453781",
+	"date": "2017-12-15T12:00:00.000Z"
 }

@@ -76,7 +76,7 @@ export class DashboardInput extends EditorInput {
 	public getResource(): URI {
 		return URI.from({
 			scheme: 'dashboard',
-			path: '.dashboard'
+			path: 'dashboard'
 		});
 	}
 

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -54,7 +54,7 @@ function log() {
 function createReporter() {
     var errors = [];
     allErrors.push(errors);
-    var ReportFunc = (function () {
+    var ReportFunc = /** @class */ (function () {
         function ReportFunc(err) {
             errors.push(err);
         }

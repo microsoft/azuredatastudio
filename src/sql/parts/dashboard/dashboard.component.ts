@@ -3,16 +3,21 @@
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./dashboard';
+
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { DashboardServiceInterface } from './services/dashboardServiceInterface.service';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import * as Utils from 'sql/parts/connection/common/utils';
+import { RefreshWidgetAction, EditDashboardAction } from 'sql/parts/dashboard/common/actions';
 
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as themeColors from 'vs/workbench/common/theme';
+import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
+import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 
 export const DASHBOARD_SELECTOR: string = 'dashboard-component';
 
@@ -22,7 +27,11 @@ export const DASHBOARD_SELECTOR: string = 'dashboard-component';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 	private _subs: Array<IDisposable> = new Array();
+	private _currentPage: DashboardPage;
+
 	@ViewChild('header', { read: ElementRef }) private header: ElementRef;
+	@ViewChild('actionBar', { read: ElementRef }) private actionbarContainer: ElementRef;
+	private actionbar: ActionBar;
 
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrapService: DashboardServiceInterface,
@@ -31,13 +40,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
 	) { }
 
 	ngOnInit() {
-		let self = this;
-		self._subs.push(self._bootstrapService.themeService.onDidColorThemeChange(e => self.updateTheme(e)));
-		self.updateTheme(self._bootstrapService.themeService.getColorTheme());
-		let profile: IConnectionProfile = self._bootstrapService.getOriginalConnectionProfile();
+		this._subs.push(this._bootstrapService.themeService.onDidColorThemeChange(this.updateTheme, this));
+		this.updateTheme(this._bootstrapService.themeService.getColorTheme());
+		let profile: IConnectionProfile = this._bootstrapService.getOriginalConnectionProfile();
+		this.actionbar = new ActionBar(this.actionbarContainer.nativeElement);
+		this.actionbar.push(new RefreshWidgetAction(this.refresh, this), {
+			icon: true,
+			label: false,
+		});
+		this.actionbar.push(new EditDashboardAction(this.edit, this), {
+			icon: true,
+			label: false,
+		});
 		if (profile && (!profile.databaseName || Utils.isMaster(profile))) {
 			// Route to the server page as this is the default database
-			self._router.navigate(['server-dashboard']);
+			this._router.navigate(['server-dashboard']);
 		}
 	}
 
@@ -48,11 +65,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		let headerEl = <HTMLElement> this.header.nativeElement;
+		let headerEl = <HTMLElement>this.header.nativeElement;
 		headerEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 		headerEl.style.borderBottomWidth = '1px';
 		headerEl.style.borderBottomStyle = 'solid';
-
 	}
 
+	onActivate(page: DashboardPage) {
+		this._currentPage = page;
+	}
+
+	refresh(): void {
+		if (this._currentPage) {
+			this._currentPage.refresh();
+		}
+	}
+
+	edit(): void {
+		this._currentPage.enableEdit();
+	}
 }

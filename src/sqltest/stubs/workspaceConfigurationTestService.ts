@@ -5,76 +5,60 @@
 'use strict';
 
 import { IWorkspaceConfigurationService  } from 'vs/workbench/services/configuration/common/configuration';
-import {
-	IConfigurationValue, IConfigurationData, IConfigurationKeys,
-	IConfigurationServiceEvent, IConfigurationValues } from 'vs/platform/configuration/common/configuration';
+import { IConfigurationData, IConfigurationOverrides, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
+import { IConfigurationValue } from 'vs/workbench/services/configuration/node/configurationEditingService';
+import { IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
+
 import { TPromise } from 'vs/base/common/winjs.base';
 import Event from 'vs/base/common/event';
+import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 
 export class WorkspaceConfigurationTestService implements IWorkspaceConfigurationService {
 	_serviceBrand: any;
 
+	onDidChangeConfiguration: Event<IConfigurationChangeEvent>;
 
-	getConfigurationData<T>(): IConfigurationData<T> {
-		return undefined;
+	getConfigurationData(): IConfigurationData  { return undefined; }
+
+	getConfiguration<T>(): T
+	getConfiguration<T>(section: string): T
+	getConfiguration<T>(overrides: IConfigurationOverrides): T
+	getConfiguration<T>(section: string, overrides: IConfigurationOverrides): T
+	getConfiguration(arg1?: any, arg2?: any): any {
+		return TPromise.as(null);
 	}
 
-    /**
-	 * Returns untrusted configuration keys for the current workspace.
-	 */
-	getUnsupportedWorkspaceKeys(): string[] {
-		return [];
+	getValue<T>(key: string, overrides?: IConfigurationOverrides): T { return undefined; }
+
+	updateValue(key: string, value: any): TPromise<void>
+	updateValue(key: string, value: any, overrides: IConfigurationOverrides): TPromise<void>
+	updateValue(key: string, value: any, target: ConfigurationTarget): TPromise<void>
+	updateValue(key: string, value: any, overrides: IConfigurationOverrides, target: ConfigurationTarget): TPromise<void>
+	updateValue(key: string, value: any, overrides: IConfigurationOverrides, target: ConfigurationTarget, donotNotifyError: boolean): TPromise<void>
+	updateValue(key: string, value: any, arg3?: any, arg4?: any, donotNotifyError?: any): TPromise<void> {
+		return TPromise.as(null);
 	}
 
-	/**
-	 * Returns iff the workspace has configuration or not.
-	 */
-	hasWorkspaceConfiguration(): boolean {
-		return true;
+	reloadConfiguration(folder?: IWorkspaceFolder, key?: string): TPromise<void> {
+		return TPromise.as(null);
 	}
 
-	/**
-	 * Returns untrusted configuration keys for the current workspace.
-	 */
-	getUntrustedConfigurations(): string[] {
-		return [];
-	}
+	inspect<T>(key: string): {
+		default: T,
+		user: T,
+		workspace: T,
+		workspaceFolder: T,
+		memory?: T,
+		value: T,
+	}  { return undefined; }
 
-	/**
-	 * Returns if the user explicitly configured to not trust the current workspace.
-	 */
-	isExplicitlyUntrusted(): boolean {
-		return true;
-	}
+	keys(): {
+		default: string[];
+		user: string[];
+		workspace: string[];
+		workspaceFolder: string[];
+		memory?: string[];
+	}  { return undefined; }
 
-	/**
-	 * Override for the IConfigurationService#lookup() method that adds information about workspace settings.
-	 */
-	lookup<T>(key: string): IConfigurationValue<T> {
-		return undefined;
-	}
-
-	getConfiguration<T>(section?: string): T {
-		return undefined;
-	}
-
-	reloadConfiguration<T>(section?: string): TPromise<T> {
-		return undefined;
-	}
-
-	/**
-	 * Override for the IConfigurationService#keys() method that adds information about workspace settings.
-	 */
-	keys(): IConfigurationKeys {
-		return undefined;
-	}
-
-	/**
-	 * Returns the defined values of configurations in the different scopes.
-	 */
-	values(): IConfigurationValues {
-		return undefined;
-	}
-
-	onDidUpdateConfiguration: Event<IConfigurationServiceEvent>;
+	getUnsupportedWorkspaceKeys(): string[] { return undefined; }
 }

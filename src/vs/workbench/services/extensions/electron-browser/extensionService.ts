@@ -32,6 +32,7 @@ import { ExtHostCustomersRegistry } from 'vs/workbench/api/electron-browser/extH
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { Action } from 'vs/base/common/actions';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { startTimer } from 'vs/base/node/startupTimers';
 
 const SystemExtensionsRoot = path.normalize(path.join(URI.parse(require.toUrl('')).fsPath, '..', 'extensions'));
 
@@ -103,6 +104,14 @@ export class ExtensionService implements IExtensionService {
 	public restartExtensionHost(): void {
 		this._stopExtensionHostProcess();
 		this._startExtensionHostProcess(Object.keys(this._allRequestedActivateEvents));
+	}
+
+	public startExtensionHost(): void {
+		this._startExtensionHostProcess(Object.keys(this._allRequestedActivateEvents));
+	}
+
+	public stopExtensionHost(): void {
+		this._stopExtensionHostProcess();
 	}
 
 	private _stopExtensionHostProcess(): void {
@@ -230,7 +239,7 @@ export class ExtensionService implements IExtensionService {
 	}
 
 	protected _activateByEvent(activationEvent: string): TPromise<void> {
-		if (this._extensionHostProcessFinishedActivateEvents[activationEvent]) {
+		if (this._extensionHostProcessFinishedActivateEvents[activationEvent] || !this._extensionHostProcessProxy) {
 			return NO_OP_VOID_PROMISE;
 		}
 		return this._extensionHostProcessProxy.then((proxy) => {
@@ -286,11 +295,21 @@ export class ExtensionService implements IExtensionService {
 		});
 
 		ExtensionService._scanInstalledExtensions(this._environmentService, log).then((installedExtensions) => {
+
+			// Migrate enablement service to use identifiers
+			this._extensionEnablementService.migrateToIdentifiers(installedExtensions);
+
 			const disabledExtensions = [
 				...getGloballyDisabledExtensions(this._extensionEnablementService, this._storageService, installedExtensions),
 				...this._extensionEnablementService.getWorkspaceDisabledExtensions()
 			];
 
+			/* __GDPR__
+				"extensionsScanned" : {
+					"totalCount" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
+					"disabledCount": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+				}
+			*/
 			this._telemetryService.publicLog('extensionsScanned', {
 				totalCount: installedExtensions.length,
 				disabledCount: disabledExtensions.length
@@ -299,7 +318,7 @@ export class ExtensionService implements IExtensionService {
 			if (disabledExtensions.length === 0) {
 				return installedExtensions;
 			}
-			return installedExtensions.filter(e => disabledExtensions.every(id => !areSameExtensions({ id }, e)));
+			return installedExtensions.filter(e => disabledExtensions.every(disabled => !areSameExtensions(disabled, e)));
 
 		}).then((extensionDescriptions) => {
 			this._registry = new ExtensionDescriptionRegistry(extensionDescriptions);
@@ -310,7 +329,12 @@ export class ExtensionService implements IExtensionService {
 			let messageHandler = (msg: IMessage) => this._handleExtensionPointMessage(msg);
 
 			for (let i = 0, len = extensionPoints.length; i < len; i++) {
-				ExtensionService._handleExtensionPoint(extensionPoints[i], availableExtensions, messageHandler);
+				const clock = startTimer(`handleExtensionPoint:${extensionPoints[i].name}`);
+				try {
+					ExtensionService._handleExtensionPoint(extensionPoints[i], availableExtensions, messageHandler);
+				} finally {
+					clock.stop();
+				}
 			}
 
 			this._barrier.open();
@@ -333,6 +357,14 @@ export class ExtensionService implements IExtensionService {
 
 		if (!this._isDev && msg.extensionId) {
 			const { type, extensionId, extensionPointId, message } = msg;
+			/* __GDPR__
+				"extensionsMessage" : {
+					"type" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
+					"extensionId": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
+					"extensionPointId": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
+					"message": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+				}
+			*/
 			this._telemetryService.publicLog('extensionsMessage', {
 				type, extensionId, extensionPointId, message
 			});

@@ -21,9 +21,7 @@ export class MainThreadCommands implements MainThreadCommandsShape {
 		extHostContext: IExtHostContext,
 		@ICommandService private readonly _commandService: ICommandService,
 	) {
-		if (extHostContext) {
-			this._proxy = extHostContext.get(ExtHostContext.ExtHostCommands);
-		}
+		this._proxy = extHostContext.get(ExtHostContext.ExtHostCommands);
 
 		this._generateCommandsDocumentationRegistration = CommandsRegistry.registerCommand('_generateCommandsDocumentation', () => this._generateCommandsDocumentation());
 	}

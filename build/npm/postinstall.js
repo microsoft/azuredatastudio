@@ -19,6 +19,7 @@ function npmInstall(location, opts) {
 	}
 }
 
+// {{SQL CARBON EDIT}}
 const protocol = [
 	'jsonrpc',
 	'types',

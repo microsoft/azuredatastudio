@@ -52,12 +52,12 @@ export class TreeContext implements _.ITreeContext {
 
 const defaultStyles: _.ITreeStyles = {
 	listFocusBackground: Color.fromHex('#073655'),
-	listActiveSelectionBackground: Color.fromHex('#3062D6'),
+	listActiveSelectionBackground: Color.fromHex('#0E639C'),
 	listActiveSelectionForeground: Color.fromHex('#FFFFFF'),
 	listFocusAndSelectionBackground: Color.fromHex('#094771'),
 	listFocusAndSelectionForeground: Color.fromHex('#FFFFFF'),
-	listInactiveSelectionBackground: Color.fromHex('#C8C8C8'),
-	listHoverBackground: Color.fromHex('#DCDCDC'),
+	listInactiveSelectionBackground: Color.fromHex('#3F3F46'),
+	listHoverBackground: Color.fromHex('#2A2D2E'),
 	listDropBackground: Color.fromHex('#383B3D')
 };
 

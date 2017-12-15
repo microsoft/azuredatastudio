@@ -3,15 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, Extensions, IEditorRegistry, IEditorDescriptor } from 'vs/workbench/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor';
+import { IEditorDescriptor, IEditorRegistry, Extensions } from 'vs/workbench/browser/editor';
+
 import { Registry } from 'vs/platform/registry/common/platform';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 export interface IEditorDescriptorService {
+	_serviceBrand: any;
+
 	getEditor(input: EditorInput): IEditorDescriptor;
 }
 
 export class EditorDescriptorService implements IEditorDescriptorService {
+	public _serviceBrand: any;
 
 	constructor() {
 	}

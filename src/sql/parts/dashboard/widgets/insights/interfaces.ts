@@ -38,7 +38,7 @@ export interface IInsightData {
 
 export interface IInsightsView {
 	data: IInsightData;
-	config?: { [key: string]: any };
+	setConfig?: (config: { [key: string]: any }) => void;
 	init?: () => void;
 }
 

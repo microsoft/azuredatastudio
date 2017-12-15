@@ -201,20 +201,8 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 		});
 
 		this._scriptingService.registerProvider(providerId, <data.ScriptingProvider>{
-			scriptAsSelect(connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
-				return self._proxy.$scriptAsSelect(handle, connectionUri, metadata, paramDetails);
-			},
-			scriptAsCreate(connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
-				return self._proxy.$scriptAsCreate(handle, connectionUri, metadata, paramDetails);
-			},
-			scriptAsInsert(connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
-				return self._proxy.$scriptAsInsert(handle, connectionUri, metadata, paramDetails);
-			},
-			scriptAsUpdate(connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
-				return self._proxy.$scriptAsUpdate(handle, connectionUri, metadata, paramDetails);
-			},
-			scriptAsDelete(connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
-				return self._proxy.$scriptAsDelete(handle, connectionUri, metadata, paramDetails);
+			scriptAsOperation(connectionUri: string, operation: data.ScriptOperation, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
+				return self._proxy.$scriptAsOperation(handle, connectionUri, operation, metadata, paramDetails);
 			}
 		});
 
@@ -266,6 +254,24 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			},
 			closeFileBrowser(ownerUri: string): Thenable<data.FileBrowserCloseResponse> {
 				return self._proxy.$closeFileBrowser(handle, ownerUri);
+			}
+		});
+
+		this._profilerService.registerProvider(providerId, <data.ProfilerProvider>{
+			startSession(sessionId: string): Thenable<boolean> {
+				return self._proxy.$startSession(handle, sessionId);
+			},
+			stopSession(sessionId: string): Thenable<boolean> {
+				return self._proxy.$stopSession(handle, sessionId);
+			},
+			pauseSession(sessionId: string): Thenable<boolean> {
+				return TPromise.as(true);
+			},
+			connectSession(sessionId: string): Thenable<boolean> {
+				return TPromise.as(true);
+			},
+			disconnectSession(sessionId: string): Thenable<boolean> {
+				return TPromise.as(true);
 			}
 		});
 
@@ -341,6 +347,14 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 		this._fileBrowserService.onFilePathsValidated(handle, response);
 	}
 
+	// Profiler handlers
+	public $onSessionEventsAvailable(handle: number, response: data.ProfilerSessionEvents): void {
+
+		this._profilerService.onMoreRows(response);
+		//this._profilerService.onMoreRows
+		//this._taskService.onNewTaskCreated(handle, taskInfo);
+	}
+
 	public $unregisterProvider(handle: number): TPromise<any> {
 		let capabilitiesRegistration = this._capabilitiesRegistrations[handle];
 		if (capabilitiesRegistration) {
@@ -350,4 +364,6 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 
 		return undefined;
 	}
+
+
 }

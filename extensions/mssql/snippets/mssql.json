@@ -1,22 +1,4 @@
 {
-	"Get extension help": {
-		"prefix": "sqlExtensionHelp",
-		"body": [
-			"/*",
-			"mssql getting started:",
-			"-----------------------------",
-			"1. Change language mode to SQL: Open a .sql file or press Ctrl+K M (Cmd+K M on Mac) and choose 'SQL'.",
-			"2. Connect to a database: Press F1 to show the command palette, type 'sqlcon' or 'sql' then click 'Connect'.",
-			"3. Use the T-SQL editor: Type T-SQL statements in the editor using T-SQL IntelliSense or type 'sql' to see a list of code snippets you can tweak & reuse.",
-			"4. Run T-SQL statements: Press F1 and type 'sqlex' or press Ctrl+Shift+e (Cmd+Shift+e on Mac) to execute all the T-SQL code in the editor.",
-			"",
-			"Tip #1: Put GO on a line by itself to separate T-SQL batches.",
-			"Tip #2: Select some T-SQL text in the editor and press `Ctrl+Shift+e` (`Cmd+Shift+e` on Mac) to execute the selection",
-			"*/"
-		],
-		"description": "Get extension help"
-	},
-
 	"Create a new Database": {
 		"prefix": "sqlCreateDatabase",
 		"body": [
@@ -274,13 +256,13 @@
 			"(SUM(ALOC.total_pages)*8/1024) AS total_space_MB,",
 			"(SUM(ALOC.used_pages)*8/1024) AS used_space_MB,",
 			"(SUM(ALOC.data_pages)*8/1024) AS data_space_MB",
-			"FROM sys.Tables AS TABL",
-			"INNER JOIN sys.Indexes AS INDX",
+			"FROM sys.tables AS TABL",
+			"INNER JOIN sys.indexes AS INDX",
 			"ON TABL.object_id = INDX.object_id",
-			"INNER JOIN sys.Partitions AS PART",
+			"INNER JOIN sys.partitions AS PART",
 			"ON INDX.object_id = PART.object_id",
 			"AND INDX.index_id = PART.index_id",
-			"INNER JOIN sys.Allocation_Units AS ALOC",
+			"INNER JOIN sys.allocation_units AS ALOC",
 			"ON PART.partition_id = ALOC.container_id",
 			"WHERE TABL.name LIKE '%${1:TableName}%'",
 			"AND INDX.object_id > 255",

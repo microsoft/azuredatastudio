@@ -8,7 +8,7 @@ import * as os from 'os';
 
 import URI from 'vs/base/common/uri';
 import { UNTITLED_SCHEMA } from 'vs/workbench/services/untitled/common/untitledEditorService';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 
 export const FILE_SCHEMA: string = 'file';
 
@@ -40,6 +40,10 @@ export function resolveFilePath(uri: string, filePath: string, rootPath: string)
 }
 
 export function getRootPath(contextService: IWorkspaceContextService): string {
-	return contextService.hasWorkspace() && contextService.getWorkspace().roots[0]
-		? contextService.getWorkspace().roots[0].fsPath : undefined;
+	let isWorkspace = contextService.getWorkbenchState() === WorkbenchState.WORKSPACE;
+	if (isWorkspace) {
+		return contextService.getWorkspace().folders[0].uri.fsPath;
+	}
+
+	return undefined;
 }

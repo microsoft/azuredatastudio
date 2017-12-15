@@ -82,6 +82,7 @@
             {
                 "id": "backup-history-server-insight",
                 "contrib": {
+                    "cacheId": "backup-history-server-insight",
                     "name": "Backup Status",
                     "provider": "MSSQL",
                     "edition": [0,1,2,3,4],

@@ -82,6 +82,10 @@ export class Table<T extends Slick.SlickData> implements IThemable {
 		this._grid.setColumns(columns);
 	}
 
+	public get grid(): Slick.Grid<T> {
+		return this._grid;
+	}
+
 	setData(data: Array<T>);
 	setData(data: TableDataView<T>);
 	setData(data: Array<T> | TableDataView<T>) {
@@ -204,11 +208,11 @@ export class Table<T extends Slick.SlickData> implements IThemable {
 		}
 
 		if (styles.listFocusBackground) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-row .focused { background-color: ${styles.listFocusBackground}; }`);
+			content.push(`.monaco-table .${this._idPrefix} .slick-row .active { background-color: ${styles.listFocusBackground}; }`);
 		}
 
 		if (styles.listFocusForeground) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-row .focused { color: ${styles.listFocusForeground}; }`);
+			content.push(`.monaco-table .${this._idPrefix} .slick-row .active { color: ${styles.listFocusForeground}; }`);
 		}
 
 		if (styles.listActiveSelectionBackground) {

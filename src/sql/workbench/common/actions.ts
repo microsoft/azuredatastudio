@@ -7,7 +7,6 @@ import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/co
 import * as TaskUtilities from './taskUtilities';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IDisasterRecoveryUiService, IRestoreDialogController } from 'sql/parts/disasterRecovery/common/interfaces';
@@ -17,6 +16,7 @@ import { IAdminService } from 'sql/parts/admin/common/adminService';
 import * as Constants from 'sql/common/constants';
 import { ObjectMetadata } from 'data';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
+import { TaskAction } from 'sql/platform/tasks/taskRegistry';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
@@ -24,28 +24,17 @@ import { IWindowsService } from 'vs/platform/windows/common/windows';
 
 import * as nls from 'vs/nls';
 
-export class TaskAction extends Action {
-	constructor(id: string, label: string, private _icon: string) {
-		super(id, label);
-	}
-
-	get icon(): string {
-		return this._icon;
-	}
-}
-
-export interface BaseActionContext extends ITaskActionContext {
-	uri?: string;
+export interface BaseActionContext {
 	object?: ObjectMetadata;
-	connInfo?: ConnectionManagementInfo;
-}
-
-export interface ITaskActionContext {
-	profile: IConnectionProfile;
+	profile?: IConnectionProfile;
 }
 
 export interface InsightActionContext extends BaseActionContext {
 	insight: IInsightsConfig;
+}
+
+export interface ManageActionContext extends BaseActionContext {
+	uri: string;
 }
 
 // --- actions
@@ -62,7 +51,7 @@ export class NewQueryAction extends TaskAction {
 		super(id, label, icon);
 	}
 
-	public run(actionContext: ITaskActionContext): TPromise<boolean> {
+	public run(actionContext: BaseActionContext): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			TaskUtilities.newQuery(
 				actionContext.profile,
@@ -98,7 +87,6 @@ export class ScriptSelectAction extends Action {
 			TaskUtilities.scriptSelect(
 				actionContext.profile,
 				actionContext.object,
-				actionContext.uri,
 				this._connectionManagementService,
 				this._queryEditorService,
 				this._scriptingService
@@ -109,6 +97,78 @@ export class ScriptSelectAction extends Action {
 				error => {
 					resolve(false);
 				});
+		});
+	}
+}
+
+export class ScriptExecuteAction extends Action {
+	public static ID = 'scriptExecute';
+	public static LABEL = nls.localize('scriptExecute', 'Script As Execute');
+
+	constructor(
+		id: string, label: string,
+		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
+		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
+		@IScriptingService protected _scriptingService: IScriptingService,
+		@IErrorMessageService protected _errorMessageService: IErrorMessageService
+	) {
+		super(id, label);
+	}
+
+	public run(actionContext: BaseActionContext): TPromise<boolean> {
+		return new TPromise<boolean>((resolve, reject) => {
+			TaskUtilities.script(
+				actionContext.profile,
+				actionContext.object,
+				this._connectionManagementService,
+				this._queryEditorService,
+				this._scriptingService,
+				ScriptOperation.Execute,
+				this._errorMessageService
+			).then(
+				result => {
+					resolve(true);
+				},
+				error => {
+					resolve(false);
+				}
+				);
+		});
+	}
+}
+
+export class ScriptAlterAction extends Action {
+	public static ID = 'scriptAlter';
+	public static LABEL = nls.localize('scriptAlter', 'Script As Alter');
+
+	constructor(
+		id: string, label: string,
+		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
+		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
+		@IScriptingService protected _scriptingService: IScriptingService,
+		@IErrorMessageService protected _errorMessageService: IErrorMessageService
+	) {
+		super(id, label);
+	}
+
+	public run(actionContext: BaseActionContext): TPromise<boolean> {
+		return new TPromise<boolean>((resolve, reject) => {
+			TaskUtilities.script(
+				actionContext.profile,
+				actionContext.object,
+				this._connectionManagementService,
+				this._queryEditorService,
+				this._scriptingService,
+				ScriptOperation.Alter,
+				this._errorMessageService
+			).then(
+				result => {
+					resolve(true);
+				},
+				error => {
+					resolve(false);
+				}
+				);
 		});
 	}
 }
@@ -164,7 +224,6 @@ export class ScriptCreateAction extends Action {
 			TaskUtilities.script(
 				actionContext.profile,
 				actionContext.object,
-				actionContext.uri,
 				this._connectionManagementService,
 				this._queryEditorService,
 				this._scriptingService,
@@ -201,7 +260,6 @@ export class ScriptDeleteAction extends Action {
 			TaskUtilities.script(
 				actionContext.profile,
 				actionContext.object,
-				actionContext.uri,
 				this._connectionManagementService,
 				this._queryEditorService,
 				this._scriptingService,
@@ -231,7 +289,7 @@ export class BackupAction extends TaskAction {
 		super(id, label, icon);
 	}
 
-	run(actionContext: ITaskActionContext): TPromise<boolean> {
+	run(actionContext: BaseActionContext): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			TaskUtilities.showBackup(
 				actionContext.profile,
@@ -260,7 +318,7 @@ export class RestoreAction extends TaskAction {
 		super(id, label, icon);
 	}
 
-	run(actionContext: ITaskActionContext): TPromise<boolean> {
+	run(actionContext: BaseActionContext): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			TaskUtilities.showRestore(
 				actionContext.profile,
@@ -289,7 +347,7 @@ export class ManageAction extends Action {
 		super(id, label);
 	}
 
-	run(actionContext: BaseActionContext): TPromise<boolean> {
+	run(actionContext: ManageActionContext): TPromise<boolean> {
 		let self = this;
 		return new TPromise<boolean>((resolve, reject) => {
 			self._connectionManagementService.connect(actionContext.profile, actionContext.uri, { showDashboard: true, saveTheConnection: false, params: undefined, showConnectionDialogOnError: false, showFirewallRuleOnError: true }).then(
@@ -338,7 +396,7 @@ export class NewDatabaseAction extends TaskAction {
 		super(id, label, icon);
 	}
 
-	run(actionContext: ITaskActionContext): TPromise<boolean> {
+	run(actionContext: BaseActionContext): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			TaskUtilities.showCreateDatabase(actionContext.profile, this._adminService, this._errorMessageService);
 		});
@@ -357,7 +415,7 @@ export class ConfigureDashboardAction extends TaskAction {
 		super(id, label, icon);
 	}
 
-	run(actionContext: ITaskActionContext): TPromise<boolean> {
+	run(actionContext: BaseActionContext): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			this._windowsService.openExternal(ConfigureDashboardAction.configHelpUri).then((result) => {
 				resolve(result);

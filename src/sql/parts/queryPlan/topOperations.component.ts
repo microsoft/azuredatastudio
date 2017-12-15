@@ -100,7 +100,11 @@ export class TopOperationsComponent extends TabChild implements OnDestroy, OnIni
 			};
 		});
 		if (!this._table) {
-			this._table = new Table(this._el.nativeElement, data, this._columns);
+			let columns = this._columns.map((column) => {
+				column.rerenderOnResize = true;
+				return column;
+			});
+			this._table = new Table(this._el.nativeElement, data, columns);
 			this._disposables.push(attachTableStyler(this._table, this._bootstrapService.themeService));
 		}
 	}

@@ -7,7 +7,7 @@
 
 import {
 	IConnectionDialogService, IConnectionManagementService, IErrorMessageService,
-	ConnectionType, INewConnectionParams, IConnectionCompletionOptions
+	ConnectionType, INewConnectionParams, IConnectionCompletionOptions, IConnectionResult
 } from 'sql/parts/connection/common/connectionManagement';
 import { ConnectionDialogWidget, OnShowUIResponse } from 'sql/parts/connection/connectionDialog/connectionDialogWidget';
 import { ConnectionController } from 'sql/parts/connection/connectionDialog/connectionController';
@@ -24,10 +24,16 @@ import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { withElementById } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import * as platform from 'vs/base/common/platform';
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
+import { Action, IAction } from 'vs/base/common/actions';
+import { IWindowsService } from 'vs/platform/windows/common/windows';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import * as types from 'vs/base/common/types';
 
-export interface IConnectionResult {
+export interface IConnectionValidateResult {
 	isValid: boolean;
 	connection: IConnectionProfile;
 }
@@ -42,7 +48,7 @@ export interface IConnectionComponentCallbacks {
 export interface IConnectionComponentController {
 	showUiComponent(container: HTMLElement): void;
 	initDialog(model: IConnectionProfile): void;
-	validateConnection(): IConnectionResult;
+	validateConnection(): IConnectionValidateResult;
 	fillInConnectionInputs(connectionInfo: IConnectionProfile): void;
 	handleOnConnecting(): void;
 	handleResetConnection(): void;
@@ -65,14 +71,17 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _providerTypes: string[];
 	private _currentProviderType: string = 'Microsoft SQL Server';
 	private _connecting: boolean = false;
-	private _connectionErrorTitle = localize('connectionError', 'Connection Error');
+	private _connectionErrorTitle = localize('connectionError', 'Connection error');
 
 	constructor(
 		@IPartService private _partService: IPartService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService
+		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
+		@IWindowsService private _windowsService: IWindowsService,
+		@IClipboardService private _clipboardService: IClipboardService,
+		@ICommandService private _commandService: ICommandService
 	) {
 		this._capabilitiesMaps = {};
 		this._providerNameToDisplayNameMap = {};
@@ -172,13 +181,13 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			} else if (connectionResult && connectionResult.errorHandled) {
 				this._connectionDialog.resetConnection();
 			} else {
-				this._errorMessageService.showDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage);
 				this._connectionDialog.resetConnection();
+				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
 			}
 		}).catch(err => {
 			this._connecting = false;
-			this._errorMessageService.showDialog(Severity.Error, this._connectionErrorTitle, err);
 			this._connectionDialog.resetConnection();
+			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, err);
 		});
 	}
 
@@ -277,7 +286,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		connectionManagementService: IConnectionManagementService,
 		params: INewConnectionParams,
 		model?: IConnectionProfile,
-		error?: string): Thenable<void> {
+		connectionResult?: IConnectionResult): Thenable<void> {
 
 		this._connectionManagementService = connectionManagementService;
 		this._params = params;
@@ -303,8 +312,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				}
 
 				resolve(this.showDialogWithModel().then(() => {
-					if (error && error !== '') {
-						this._errorMessageService.showDialog(Severity.Error, this._connectionErrorTitle, error);
+					if (connectionResult && connectionResult.errorMessage) {
+						this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
 					}
 				}));
 			}, err => reject(err));
@@ -333,6 +342,33 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private getCurrentProviderName(): string {
-		return 'MSSQL';
+		return Object.keys(this._providerNameToDisplayNameMap).find(providerName => {
+			return this._currentProviderType === this._providerNameToDisplayNameMap[providerName];
+		});
+	}
+
+	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string): void {
+		// Kerberos errors are currently very hard to understand, so adding handling of these to solve the common scenario
+		// note that ideally we would have an extensible service to handle errors by error code and provider, but for now
+		// this solves the most common "hard error" that we've noticed
+		const helpLink = 'https://aka.ms/sqlopskerberos';
+		let actions: IAction[] = [];
+		if (!platform.isWindows && types.isString(message) && message.toLowerCase().includes('kerberos') && message.toLowerCase().includes('kinit')) {
+			message = [
+				localize('kerberosErrorStart', "Connection failed due to Kerberos error."),
+				localize('kerberosHelpLink', "&nbsp;Help configuring Kerberos is available at ") + helpLink,
+				localize('kerberosKinit', "&nbsp;If you have previously connected you may need to re-run kinit.")
+			].join('<br/>');
+			actions.push(new Action('Kinit', 'Run kinit', null, true, () => {
+				this._connectionDialog.close();
+				this._clipboardService.writeText('kinit\r');
+				this._commandService.executeCommand('workbench.action.terminal.focus').then(resolve => {
+					return this._commandService.executeCommand('workbench.action.terminal.paste');
+				}).then(resolve => null, reject => null);
+				return null;
+			}));
+
+		}
+		this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, actions);
 	}
 }

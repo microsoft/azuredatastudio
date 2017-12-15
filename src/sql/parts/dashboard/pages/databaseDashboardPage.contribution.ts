@@ -120,6 +120,12 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 					},
 					sizey: {
 						type: 'number'
+					},
+					col: {
+						type: 'number'
+					},
+					row: {
+						type: 'number'
 					}
 				}
 			},

@@ -89,7 +89,13 @@ suite('SQL ConnectionStore tests', () => {
 
 		storageServiceMock = TypeMoq.Mock.ofType(StorageTestService);
 
-		capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesService);
+		let extensionManagementServiceMock = {
+			getInstalled: () => {
+				return Promise.resolve([]);
+			}
+		}
+
+		capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesService, TypeMoq.MockBehavior.Loose, extensionManagementServiceMock, {});
 		let capabilities: data.DataProtocolServerCapabilities[] = [];
 		let connectionProvider: data.ConnectionProviderOptions = {
 			options: [

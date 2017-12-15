@@ -339,37 +339,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	// Scripting handlers
-	public $scriptAsSelect(handle: number, connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
-		return this._runWithProvider(handle, provider => {
-			return provider.scriptingProvider ? provider.scriptingProvider.scriptAsSelect(connectionUri, metadata, paramDetails)
-				: Promise.resolve(undefined);
-		});
-	}
 
-	public $scriptAsCreate(handle: number, connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
+	public $scriptAsOperation(handle: number, connectionUri: string, operation: data.ScriptOperation, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
 		return this._runWithProvider(handle, provider => {
-			return provider.scriptingProvider ? provider.scriptingProvider.scriptAsCreate(connectionUri, metadata, paramDetails)
-				: Promise.resolve(undefined);
-		});
-	}
-
-	public $scriptAsUpdate(handle: number, connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
-		return this._runWithProvider(handle, provider => {
-			return provider.scriptingProvider ? provider.scriptingProvider.scriptAsUpdate(connectionUri, metadata, paramDetails)
-				: Promise.resolve(undefined);
-		});
-	}
-
-	public $scriptAsInsert(handle: number, connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
-		return this._runWithProvider(handle, provider => {
-			return provider.scriptingProvider ? provider.scriptingProvider.scriptAsInsert(connectionUri, metadata, paramDetails)
-				: Promise.resolve(undefined);
-		});
-	}
-
-	public $scriptAsDelete(handle: number, connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
-		return this._runWithProvider(handle, provider => {
-			return provider.scriptingProvider ? provider.scriptingProvider.scriptAsDelete(connectionUri, metadata, paramDetails)
+			return provider.scriptingProvider ? provider.scriptingProvider.scriptAsOperation(connectionUri, operation, metadata, paramDetails)
 				: Promise.resolve(undefined);
 		});
 	}
@@ -537,5 +510,36 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 			return provider.fileBrowserProvider ? provider.fileBrowserProvider.closeFileBrowser(ownerUri)
 				: Promise.resolve(undefined);
 		});
+	}
+
+	/**
+	 * Profiler Provider methods
+	 */
+
+	/**
+	 * Start a profiler session
+	 */
+	public $startSession(handle: number, sessionId: string): Thenable<boolean>  {
+		return this._runWithProvider(handle, provider => {
+			return provider.profilerProvider ? provider.profilerProvider.startSession(sessionId)
+				: Promise.resolve(undefined);
+		});
+	}
+
+	/**
+	 * Stop a profiler session
+	 */
+	public $stopSession(handle: number, sessionId: string): Thenable<boolean>  {
+		return this._runWithProvider(handle, provider => {
+			return provider.profilerProvider ? provider.profilerProvider.stopSession(sessionId)
+				: Promise.resolve(undefined);
+		});
+	}
+
+	/**
+	 * Profiler session events available notification
+	 */
+	public $onSessionEventsAvailable(handle: number, response: data.ProfilerSessionEvents): void {
+		this._proxy.$onSessionEventsAvailable(handle, response);
 	}
 }

@@ -5,13 +5,14 @@
 
 'use strict';
 
-import { IGridInfo, IRange, SaveFormat } from 'sql/parts/grid/common/interfaces';
+import { IGridInfo, SaveFormat } from 'sql/parts/grid/common/interfaces';
 import { DataService } from 'sql/parts/grid/services/dataService';
-import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction, Action } from 'vs/base/common/actions';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const GRID_SAVECSV_ID = 'grid.saveAsCsv';
 export const GRID_SAVEJSON_ID = 'grid.saveAsJson';
@@ -26,7 +27,11 @@ export const TOGGLEMESSAGES_ID = 'grid.toggleMessagePane';
 
 export class GridActionProvider {
 
-	constructor(protected _dataService: DataService, protected _selectAllCallback: (index: number) => void) {
+	constructor(
+		protected _dataService: DataService,
+		protected _selectAllCallback: (index: number) => void,
+		@IInstantiationService private _instantiationService: IInstantiationService
+	) {
 
 	}
 
@@ -50,7 +55,7 @@ export class GridActionProvider {
 	 */
 	public getMessagesActions(dataService: DataService, selectAllCallback: () => void): TPromise<IAction[]> {
 		let actions: IAction[] = [];
-		actions.push(new CopyMessagesAction(CopyMessagesAction.ID, CopyMessagesAction.LABEL));
+		actions.push(this._instantiationService.createInstance(CopyMessagesAction, CopyMessagesAction.ID, CopyMessagesAction.LABEL));
 		actions.push(new SelectAllMessagesAction(SelectAllMessagesAction.ID, SelectAllMessagesAction.LABEL, selectAllCallback));
 		return TPromise.as(actions);
 	}
@@ -150,14 +155,14 @@ export class CopyMessagesAction extends Action {
 
 	constructor(
 		id: string,
-		label: string
+		label: string,
+		@IClipboardService private clipboardService: IClipboardService
 	) {
 		super(id, label);
 	}
 
-	public run(selectedRange: IRange): TPromise<boolean> {
-		let selectedText = selectedRange.text();
-		WorkbenchUtils.executeCopy(selectedText);
+	public run(selectedRange: Selection): TPromise<boolean> {
+		this.clipboardService.writeText(selectedRange.toString());
 		return TPromise.as(true);
 	}
 }

@@ -1,7 +1,7 @@
 "use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 var ts = require("typescript");
 var lazy = require("lazy.js");
@@ -94,7 +94,7 @@ function isImportNode(node) {
         return { line: position.line - 1, character: position.column };
     }
     nls_1.lcFrom = lcFrom;
-    var SingleFileServiceHost = (function () {
+    var SingleFileServiceHost = /** @class */ (function () {
         function SingleFileServiceHost(options, filename, contents) {
             var _this = this;
             this.options = options;
@@ -161,7 +161,7 @@ function isImportNode(node) {
         // `localize` named imports
         var allLocalizeImportDeclarations = importDeclarations
             .filter(function (d) { return d.importClause.namedBindings.kind === ts.SyntaxKind.NamedImports; })
-            .map(function (d) { return d.importClause.namedBindings.elements; })
+            .map(function (d) { return [].concat(d.importClause.namedBindings.elements); })
             .flatten();
         // `localize` read-only references
         var localizeReferences = allLocalizeImportDeclarations
@@ -200,7 +200,7 @@ function isImportNode(node) {
         };
     }
     nls_1.analyze = analyze;
-    var TextModel = (function () {
+    var TextModel = /** @class */ (function () {
         function TextModel(contents) {
             var regex = /\r\n|\r|\n/g;
             var index = 0;

@@ -81,9 +81,9 @@
 	content: url("status_success.svg");
 }
 
-.vs .icon.cancelled,
-.vs-dark .icon.cancelled,
-.hc-black .icon.cancelled {
+.vs .icon.canceled,
+.vs-dark .icon.canceled,
+.hc-black .icon.canceled {
 	content: url("status_cancelled.svg");
 }
 
@@ -99,9 +99,9 @@
 .vs .icon.scriptToClipboard,
 .vs-dark .icon.scriptToClipboard,
 .hc-black .icon.scriptToClipboard {
-	content: url('script_to_clipboard.svg');
-	width: auto !important;
-	height: 25px;
+	background-image: url('script_to_clipboard.svg');
+	background-repeat: no-repeat;
+	background-position: 2px center;
 }
 
 .vs .icon.close {
@@ -171,4 +171,13 @@
 
 .vs .icon.configure-dashboard {
 	background: url('configdashboard.svg') center center no-repeat;
+}
+
+.hc-black .icon.edit,
+.vs-dark .icon.edit {
+	background: url('edit_inverse.svg') center center no-repeat;
+}
+
+.vs .icon.edit {
+	background: url('edit.svg') center center no-repeat;
 }

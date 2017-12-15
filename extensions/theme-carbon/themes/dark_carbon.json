@@ -1,12 +1,13 @@
 {
-    "name": "SQL Operations Studio-dark-theme",
-    "type": "dark",
+	"$schema": "vscode://schemas/color-theme",
+	"name": "SQL Operations Studio-dark-theme",
+	"type": "dark",
 	"colors": {
 
         // base
         "foreground": "#fffffe",
         "focusBorder": "#0E639C",
-        "selection.background": "#3062d6",
+		"selection.background": "#3062d6",
 
         //text colors
         "textLinkForeground": "#30B4FF",
@@ -42,8 +43,8 @@
         //List and trees
         "list.activeSelectionBackground": "#3062d6",
         "list.hoverBackground": "#444444",
-        "pickerGroup.border": "#00BCF2",
-        "activityBar.background": "#444444",
+		"pickerGroup.border": "#00BCF2",
+		"activityBar.background": "#444444",
         "sideBar.background": "#333333",
         "editorGroupHeader.tabsBackground": "#444444",
         "editor.background": "#212121",
@@ -52,11 +53,11 @@
         "editorLink.activeForeground": "#30B4FF",
         "editorGroup.border": "#333333",
         "editorGroup.background": "#212121",
-        "tab.activeBackground": "#212121",
+		"tab.activeBackground": "#212121",
         "tab.activeForeground": "#ffffff",
         "tab.inactiveBackground": "#444444",
         "tab.inactiveForeground": "#888888",
-        "tab.border": "#3c3c3c",
+		"tab.border": "#3c3c3c",
         "panel.background": "#212121",
         "panel.border": "#515151",
         "panelTitle.activeForeground": "#ffffff",
@@ -65,8 +66,7 @@
 	"tokenColors": [
 		{
 			"settings": {
-				"foreground": "#ffffffff",
-				"background": "#212121ff"
+				"foreground": "#ffffffff"
 			}
 		},
 		{

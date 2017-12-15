@@ -3,27 +3,33 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
+import { IConnectableInput } from 'sql/parts/connection/common/connectionManagement';
+import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IQueryEditorService, IQueryEditorOptions } from 'sql/parts/query/common/queryEditorService';
+import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
+import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/parts/common/customInputConverter';
+import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+
+import { IMode } from 'vs/editor/common/modes';
+import { IModel } from 'vs/editor/common/editorCommon';
+import { IEditor, IEditorInput, Position } from 'vs/platform/editor/common/editor';
+import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IEditorGroup } from 'vs/workbench/common/editor';
 import { IUntitledEditorService, UNTITLED_SCHEMA } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileEditorInput } from 'vs/workbench/parts/files/common/editors/fileEditorInput';
-import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
-import URI from 'vs/base/common/uri';
-import { IConnectableInput } from 'sql/parts/connection/common/connectionManagement';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
-import { IMode } from 'vs/editor/common/modes';
-import { IModel } from 'vs/editor/common/editorCommon';
-import { IEditor, IEditorInput, Position } from 'vs/platform/editor/common/editor';
-import { CodeEditor } from 'vs/editor/browser/codeEditor';
-import { IQueryEditorService, IQueryEditorOptions } from 'sql/parts/query/common/queryEditorService';
+import { indexOf } from 'vs/platform/files/common/files';
 import { IMessageService } from 'vs/platform/message/common/message';
 import Severity from 'vs/base/common/severity';
 import nls = require('vs/nls');
-import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
-import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/parts/common/customInputConverter';
+import URI from 'vs/base/common/uri';
+import paths = require('vs/base/common/paths');
+import { isLinux } from 'vs/base/common/platform';
 
 const fs = require('fs');
 
@@ -56,6 +62,7 @@ export class QueryEditorService implements IQueryEditorService {
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
 		@IEditorGroupService private _editorGroupService: IEditorGroupService,
 		@IMessageService private _messageService: IMessageService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 	) {
 		QueryEditorService.editorService = _editorService;
 		QueryEditorService.instantiationService = _instantiationService;
@@ -143,6 +150,31 @@ export class QueryEditorService implements IQueryEditorService {
 	 * Clears any QueryEditor data for the given URI held by this service
 	 */
 	public onQueryInputClosed(uri: string): void {
+	}
+
+	onSaveAsCompleted(oldResource: URI, newResource: URI): void {
+		let oldResourceString: string = oldResource.toString();
+		const stacks = this._editorGroupService.getStacksModel();
+		stacks.groups.forEach(group => {
+			group.getEditors().forEach(input => {
+				if (input instanceof QueryInput) {
+					const resource = input.getResource();
+
+					// Update Editor if file (or any parent of the input) got renamed or moved
+					// Note: must check the new file name for this since this method is called after the rename is completed
+					if (paths.isEqualOrParent(resource.fsPath, newResource.fsPath, !isLinux /* ignorecase */)) {
+						// In this case, we know that this is a straight rename so support this as a rename / replace operation
+						TaskUtilities.replaceConnection(oldResourceString, newResource.toString(), this._connectionManagementService).then(result => {
+							if (result && result.connected) {
+								input.onConnectSuccess();
+							} else {
+								input.onConnectReject();
+							}
+						});
+					}
+				}
+			});
+		});
 	}
 
 	////// Public static functions

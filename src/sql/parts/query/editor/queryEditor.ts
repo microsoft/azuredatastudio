@@ -10,7 +10,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Builder, Dimension, withElementById } from 'vs/base/browser/builder';
 
 import { EditorInput, EditorOptions } from 'vs/workbench/common/editor';
-import { BaseEditor, EditorDescriptor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IEditorControl, Position, IEditor } from 'vs/platform/editor/common/editor';
 import { VerticalFlexibleSash, HorizontalFlexibleSash, IFlexibleSash } from 'sql/parts/query/views/flexibleSash';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
@@ -38,14 +38,13 @@ import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { QueryResultsEditor } from 'sql/parts/query/editor/queryResultsEditor';
 import * as queryContext from 'sql/parts/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
-import { ITextFileService, TextFileModelChangeEvent } from 'vs/workbench/services/textfile/common/textfiles';
 import {
 	RunQueryAction, CancelQueryAction, ListDatabasesAction, ListDatabasesActionItem,
-	ConnectDatabaseAction, ToggleConnectDatabaseAction, EstimatedQueryPlanAction
+	ConnectDatabaseAction, ToggleConnectDatabaseAction, EstimatedQueryPlanAction,
+	ActualQueryPlanAction
 } from 'sql/parts/query/execution/queryActions';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
 
@@ -59,9 +58,6 @@ export class QueryEditor extends BaseEditor {
 
 	// The height of the tabs above the editor
 	private readonly _tabHeight: number = 35;
-
-	// The height of the taskbar above the editor
-	private readonly _taskbarHeight: number = 28;
 
 	// The minimum width/height of the editors hosted in the QueryEditor
 	private readonly _minEditorSize: number = 220;
@@ -90,6 +86,7 @@ export class QueryEditor extends BaseEditor {
 	private _changeConnectionAction: ConnectDatabaseAction;
 	private _listDatabasesAction: ListDatabasesAction;
 	private _estimatedQueryPlanAction: EstimatedQueryPlanAction;
+	private _actualQueryPlanAction: ActualQueryPlanAction;
 
 	constructor(
 		@ITelemetryService _telemetryService: ITelemetryService,
@@ -101,24 +98,14 @@ export class QueryEditor extends BaseEditor {
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IEditorGroupService private _editorGroupService: IEditorGroupService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@ITextFileService private _textFileService: ITextFileService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		editorOrientation?: Orientation
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super(QueryEditor.ID, _telemetryService, themeService);
 
-		if (editorOrientation) {
-			this._orientation = editorOrientation;
-		} else {
-			this._orientation = Orientation.HORIZONTAL;
-		}
+		this._orientation = Orientation.HORIZONTAL;
 
 		if (contextKeyService) {
 			this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
-		}
-
-		if (this._textFileService && this._textFileService.models) {
-			this._textFileService.models.onModelSaved(event => this._onModelSaved(event));
 		}
 	}
 
@@ -142,18 +129,6 @@ export class QueryEditor extends BaseEditor {
 		return input
 			? input.getQueryResultsInputResource()
 			: undefined;
-	}
-
-	private _onModelSaved(event: TextFileModelChangeEvent): void {
-		if (event.resource.toString() !== this.uri) {
-			TaskUtilities.replaceConnection(this.uri, event.resource.toString(), this._connectionManagementService).then(result => {
-				if (result && result.connected) {
-					this.currentQueryInput.onConnectSuccess();
-				} else {
-					this.currentQueryInput.onConnectReject();
-				}
-			});
-		}
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
@@ -327,9 +302,26 @@ export class QueryEditor extends BaseEditor {
 		this._createEditor(<QueryResultsInput>input.results, this._resultsEditorContainer)
 			.then(result => {
 				this._onResultsEditorCreated(<QueryResultsEditor>result, input.results, this.options);
-				this._setResultsEditorVisible();
-				this._doLayout();
+				this.resultsEditorVisibility = true;
+				this.hideQueryResultsView = false;
+				this._doLayout(true);
 			});
+	}
+
+	private hideQueryResultsView = false;
+
+	/**
+	 * Toggle the visibility of the view state of results
+	 */
+	public toggleResultsEditorVisibility(): void {
+		let input = <QueryInput>this.input;
+		let hideResults = this.hideQueryResultsView;
+		this.hideQueryResultsView = !this.hideQueryResultsView;
+		if (!input.results) {
+			return;
+		}
+		this.resultsEditorVisibility = hideResults;
+		this._doLayout();
 	}
 
 	/**
@@ -374,6 +366,23 @@ export class QueryEditor extends BaseEditor {
 		return true;
 	}
 
+	public getSelectionText(): string {
+		if (this._sqlEditor && this._sqlEditor.getControl()) {
+			let control = this._sqlEditor.getControl();
+			let codeEditor: CodeEditor = <CodeEditor>control;
+			let vscodeSelection = control.getSelection();
+
+			if (codeEditor && vscodeSelection) {
+				let model = codeEditor.getModel();
+				let value = model.getValueInRange(vscodeSelection);
+				if (value !== undefined && value.length > 0) {
+					return value;
+				}
+			}
+		}
+		return '';
+	}
+
 	/**
 	 * Calls the run method of this editor's RunQueryAction
 	 */
@@ -386,6 +395,13 @@ export class QueryEditor extends BaseEditor {
 	 */
 	public runCurrentQuery(): void {
 		this._runQueryAction.runCurrent();
+	}
+
+	/**
+	 * Calls the runCurrentQueryWithActualPlan method of this editor's ActualQueryPlanAction
+	 */
+	public runCurrentQueryWithActualPlan(): void {
+		this._actualQueryPlanAction.run();
 	}
 
 	/**
@@ -418,6 +434,7 @@ export class QueryEditor extends BaseEditor {
 		this._changeConnectionAction = this._instantiationService.createInstance(ConnectDatabaseAction, this, true);
 		this._listDatabasesAction = this._instantiationService.createInstance(ListDatabasesAction, this);
 		this._estimatedQueryPlanAction = this._instantiationService.createInstance(EstimatedQueryPlanAction, this);
+		this._actualQueryPlanAction = this._instantiationService.createInstance(ActualQueryPlanAction, this);
 
 		// Create HTML Elements for the taskbar
 		let separator = Taskbar.createTaskbarSeparator();
@@ -463,6 +480,10 @@ export class QueryEditor extends BaseEditor {
 	 * Handles setting input for this editor.
 	 */
 	private _updateInput(oldInput: QueryInput, newInput: QueryInput, options?: EditorOptions): TPromise<void> {
+
+		if (this._sqlEditor) {
+			this._sqlEditor.clearInput();
+		}
 
 		if (oldInput) {
 			this._disposeEditors();
@@ -548,12 +569,11 @@ export class QueryEditor extends BaseEditor {
 		if (!descriptor) {
 			return TPromise.wrapError(new Error(strings.format('Can not find a registered editor for the input {0}', editorInput)));
 		}
-		return this._instantiationService.createInstance(<EditorDescriptor>descriptor)
-			.then((editor: BaseEditor) => {
-				editor.create(new Builder(container));
-				editor.setVisible(this.isVisible(), this.position);
-				return editor;
-			});
+
+		let editor = descriptor.instantiate(this._instantiationService);
+		editor.create(new Builder(container));
+		editor.setVisible(this.isVisible(), this.position);
+		return TPromise.as(editor);
 	}
 
 	/**
@@ -618,7 +638,7 @@ export class QueryEditor extends BaseEditor {
 				this._sash = this._register(new HorizontalFlexibleSash(parentElement, this._minEditorSize));
 			} else {
 				this._sash = this._register(new VerticalFlexibleSash(parentElement, this._minEditorSize));
-				this._sash.setEdge(this._taskbarHeight + this._tabHeight);
+				this._sash.setEdge(this.getTaskBarHeight() + this._tabHeight);
 			}
 			this._setSashDimension();
 
@@ -635,7 +655,7 @@ export class QueryEditor extends BaseEditor {
 		if (this._orientation === Orientation.HORIZONTAL) {
 			this._sash.setDimenesion(this._dimension);
 		} else {
-			this._sash.setDimenesion(new Dimension(this._dimension.width, this._dimension.height - this._taskbarHeight));
+			this._sash.setDimenesion(new Dimension(this._dimension.width, this._dimension.height - this.getTaskBarHeight()));
 		}
 
 	}
@@ -645,7 +665,7 @@ export class QueryEditor extends BaseEditor {
 	 * the IFlexibleSash could be horizontal or vertical. The same logic is used for horizontal
 	 * and vertical sashes.
 	 */
-	private _doLayout(): void {
+	private _doLayout(skipResizeGridContent: boolean = false): void {
 		if (!this._isResultsEditorVisible() && this._sqlEditor) {
 			this._doLayoutSql();
 			return;
@@ -660,14 +680,21 @@ export class QueryEditor extends BaseEditor {
 			this._doLayoutVertical();
 		}
 
-		this._resizeGridContents();
+		if (!skipResizeGridContent) {
+			this._resizeGridContents();
+		}
+	}
+
+	private getTaskBarHeight(): number {
+		let taskBarElement = this.taskbar.getContainer().getHTMLElement();
+		return DOM.getContentHeight(taskBarElement);
 	}
 
 	private _doLayoutHorizontal(): void {
 		let splitPointTop: number = this._sash.getSplitPoint();
 		let parent: ClientRect = this.getContainer().getHTMLElement().getBoundingClientRect();
 
-		let sqlEditorHeight = splitPointTop - (parent.top + this._taskbarHeight);
+		let sqlEditorHeight = splitPointTop - (parent.top + this.getTaskBarHeight());
 
 		let titleBar = withElementById('workbench.parts.titlebar');
 		if (titleBar) {
@@ -675,7 +702,7 @@ export class QueryEditor extends BaseEditor {
 		}
 
 		let queryResultsEditorHeight = parent.bottom - splitPointTop;
-
+		this._resultsEditorContainer.hidden = false;
 		this._sqlEditorContainer.style.height = `${sqlEditorHeight}px`;
 		this._sqlEditorContainer.style.width = `${this._dimension.width}px`;
 		this._sqlEditorContainer.style.top = `${this._editorTopOffset}px`;
@@ -695,21 +722,30 @@ export class QueryEditor extends BaseEditor {
 		let sqlEditorWidth = splitPointLeft;
 		let queryResultsEditorWidth = parent.width - splitPointLeft;
 
+		let taskbarHeight = this.getTaskBarHeight();
 		this._sqlEditorContainer.style.width = `${sqlEditorWidth}px`;
-		this._sqlEditorContainer.style.height = `${this._dimension.height - this._taskbarHeight}px`;
+		this._sqlEditorContainer.style.height = `${this._dimension.height - taskbarHeight}px`;
 		this._sqlEditorContainer.style.left = `0px`;
 
+		this._resultsEditorContainer.hidden = false;
 		this._resultsEditorContainer.style.width = `${queryResultsEditorWidth}px`;
-		this._resultsEditorContainer.style.height = `${this._dimension.height - this._taskbarHeight}px`;
+		this._resultsEditorContainer.style.height = `${this._dimension.height - taskbarHeight}px`;
 		this._resultsEditorContainer.style.left = `${splitPointLeft}px`;
 
-		this._sqlEditor.layout(new Dimension(sqlEditorWidth, this._dimension.height - this._taskbarHeight));
-		this._resultsEditor.layout(new Dimension(queryResultsEditorWidth, this._dimension.height - this._taskbarHeight));
+		this._sqlEditor.layout(new Dimension(sqlEditorWidth, this._dimension.height - taskbarHeight));
+		this._resultsEditor.layout(new Dimension(queryResultsEditorWidth, this._dimension.height - taskbarHeight));
 	}
 
 	private _doLayoutSql() {
+		if ( this._resultsEditorContainer) {
+			this._resultsEditorContainer.style.width = '0px';
+			this._resultsEditorContainer.style.height = '0px';
+			this._resultsEditorContainer.style.left = '0px';
+			this._resultsEditorContainer.hidden = true;
+		}
+
 		if (this._dimension) {
-			this._sqlEditor.layout(new Dimension(this._dimension.width, this._dimension.height - this._taskbarHeight));
+			this._sqlEditor.layout(new Dimension(this._dimension.width, this._dimension.height - this.getTaskBarHeight()));
 		}
 	}
 
@@ -749,6 +785,7 @@ export class QueryEditor extends BaseEditor {
 				this._resultsEditorContainer.parentElement.removeChild(this._resultsEditorContainer);
 			}
 			this._resultsEditorContainer = null;
+			this.hideQueryResultsView = false;
 		}
 	}
 
@@ -766,9 +803,9 @@ export class QueryEditor extends BaseEditor {
 		return input.results.visible;
 	}
 
-	private _setResultsEditorVisible(): void {
+	set resultsEditorVisibility(isVisible: boolean) {
 		let input: QueryInput = <QueryInput>this.input;
-		input.results.setVisibleTrue();
+		input.results.visible = isVisible;
 	}
 
 	/**

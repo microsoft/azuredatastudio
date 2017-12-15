@@ -8,7 +8,7 @@
 import * as assert from 'assert';
 import * as data from 'data';
 import AccountStore from 'sql/services/accountManagement/accountStore';
-import {EventVerifierSingle} from 'sqltest/utils/eventVerifier';
+import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 
 suite('Account Store Tests', () => {
 	test('AddOrUpdate - Uninitialized memento', done => {
@@ -31,8 +31,8 @@ suite('Account Store Tests', () => {
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][0], account1);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -57,8 +57,8 @@ suite('Account Store Tests', () => {
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][0], account1);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -88,8 +88,8 @@ suite('Account Store Tests', () => {
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][1], param);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -110,8 +110,8 @@ suite('Account Store Tests', () => {
 				assert.equal(Object.keys(memento).length, 0);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -129,8 +129,8 @@ suite('Account Store Tests', () => {
 				assert.equal(result.length, 0);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -147,8 +147,8 @@ suite('Account Store Tests', () => {
 				assert.equal(result.length, 0);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -167,8 +167,8 @@ suite('Account Store Tests', () => {
 				assertAccountEqual(result[1], memento[AccountStore.MEMENTO_KEY][1]);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -189,8 +189,8 @@ suite('Account Store Tests', () => {
 				assert.equal(Object.keys(memento).length, 0);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -208,8 +208,8 @@ suite('Account Store Tests', () => {
 				assert.equal(result.length, 0);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -228,8 +228,8 @@ suite('Account Store Tests', () => {
 				assertAccountEqual(result[1], memento[AccountStore.MEMENTO_KEY][1]);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -250,8 +250,8 @@ suite('Account Store Tests', () => {
 				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 0);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -262,7 +262,7 @@ suite('Account Store Tests', () => {
 		let as = new AccountStore(memento);
 
 		// If: I remove an account that doesn't exist
-		as.remove({providerId: 'cloudyCloud', accountId: 'testyTest'})
+		as.remove({ providerId: 'cloudyCloud', accountId: 'testyTest' })
 			.then(result => {
 				// Then:
 				// ... I should get back false (no account removed)
@@ -273,8 +273,8 @@ suite('Account Store Tests', () => {
 				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 0);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -296,8 +296,8 @@ suite('Account Store Tests', () => {
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][0], account2);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -325,8 +325,8 @@ suite('Account Store Tests', () => {
 				updateCallback.assertNotFired();
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -340,7 +340,7 @@ suite('Account Store Tests', () => {
 		let updateCallback = new EventVerifierSingle<data.Account>();
 
 		// If: I update an account that doesn't exist
-		as.update({accountId: 'testyTest', providerId: 'cloudyCloud'}, updateCallback.eventHandler)
+		as.update({ accountId: 'testyTest', providerId: 'cloudyCloud' }, updateCallback.eventHandler)
 			.then(result => {
 				// Then:
 				// ... I should get back false (account did not change)
@@ -354,8 +354,8 @@ suite('Account Store Tests', () => {
 				updateCallback.assertNotFired();
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -388,8 +388,8 @@ suite('Account Store Tests', () => {
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][1], account2);
 			})
 			.then(
-				() => done(),
-				e => done(e)
+			() => done(),
+			e => done(e)
 			);
 	});
 
@@ -404,7 +404,7 @@ const account1 = <data.Account>{
 	},
 	displayInfo: {
 		displayName: 'Test Account 1',
-		//contextualLogo: {light: '', dark: ''},
+		accountType: 'test',
 		contextualDisplayName: 'Azure Account'
 	},
 	isStale: false
@@ -417,7 +417,7 @@ const account2 = <data.Account>{
 	},
 	displayInfo: {
 		displayName: 'Test Account 2',
-		//contextualLogo: {light: '', dark: ''},
+		accountType: 'test',
 		contextualDisplayName: 'Azure Account'
 	},
 	isStale: false
@@ -435,7 +435,7 @@ function assertAccountEqual(a: data.Account, b: data.Account) {
 	assert.equal(a.key.accountId, b.key.accountId);
 
 	assert.equal(a.displayInfo.contextualDisplayName, b.displayInfo.contextualDisplayName);
-	//assert.equal(a.displayInfo.contextualLogo, b.displayInfo.contextualLogo);
+	assert.equal(a.displayInfo.accountType, b.displayInfo.accountType);
 	assert.equal(a.displayInfo.displayName, b.displayInfo.displayName);
 
 	assert.equal(a.isStale, b.isStale);

@@ -2,53 +2,85 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!sql/base/browser/ui/checkbox/media/checkbox';
-import { Checkbox as vsCheckbox, ICheckboxOpts, ICheckboxStyles } from 'vs/base/browser/ui/checkbox/checkbox';
-import { Color } from 'vs/base/common/color';
 
-const defaultOpts = {
-	inputActiveOptionBorder: Color.fromHex('#007ACC'),
-	actionClassName: ' sql-checkbox'
-};
+import Event, { Emitter } from 'vs/base/common/event';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { Widget } from 'vs/base/browser/ui/widget';
 
-/**
- * Extends Checkbox to include Carbon checkbox icon and styling.
- */
-export class Checkbox extends vsCheckbox {
-	private _inputActiveOptionBorder: Color;
+export interface ICheckboxOptions {
+	label: string;
+	enabled?: boolean;
+	checked?: boolean;
+	onChange?: (val: boolean) => void;
+}
 
-	constructor(opts: ICheckboxOpts) {
-		super({
-			actionClassName: opts.actionClassName + defaultOpts.actionClassName,
-			title: opts.title,
-			isChecked: opts.isChecked,
-			onChange: opts.onChange,
-			onKeyDown: opts.onKeyDown,
-			inputActiveOptionBorder: opts.inputActiveOptionBorder
+export class Checkbox extends Widget {
+	private _el: HTMLInputElement;
+	private _label: HTMLSpanElement;
+
+	private _onChange = new Emitter<boolean>();
+	public readonly onChange: Event<boolean> = this._onChange.event;
+
+	constructor(container: HTMLElement, opts: ICheckboxOptions) {
+		super();
+
+		this._el = document.createElement('input');
+		this._el.type = 'checkbox';
+
+		this.onchange(this._el, e => {
+			this._onChange.fire(this.checked);
 		});
-		this._inputActiveOptionBorder = opts.inputActiveOptionBorder ? opts.inputActiveOptionBorder : defaultOpts.inputActiveOptionBorder;
+
+		this.onkeydown(this._el, e => {
+			if (e.equals(KeyCode.Enter)) {
+				this.checked = !this.checked;
+				e.stopPropagation();
+			}
+		});
+
+		this._label = document.createElement('span');
+
+		this.label = opts.label;
+		this.enabled = opts.enabled || true;
+		this.checked = opts.checked || false;
+
+		if (opts.onChange) {
+			this.onChange(opts.onChange);
+		}
+
+		container.appendChild(this._el);
+		container.appendChild(this._label);
 	}
 
-	public enable(): void {
-		super.enable();
-		this.domNode.classList.remove('disabled');
+	public set label(val: string) {
+		this._label.innerText = val;
+	}
+
+	public set enabled(val: boolean) {
+		this._el.disabled = !val;
+	}
+
+	public get enabled(): boolean {
+		return !this._el.disabled;
+	}
+
+	public set checked(val: boolean) {
+		this._el.checked = val;
+	}
+
+	public get checked(): boolean {
+		return this._el.checked;
+	}
+
+	public focus(): void {
+		this._el.focus();
 	}
 
 	public disable(): void {
-		super.disable();
-		this.domNode.classList.add('disabled');
+		this.enabled = false;
 	}
 
-	public style(styles: ICheckboxStyles): void {
-		if (styles.inputActiveOptionBorder) {
-			this._inputActiveOptionBorder = styles.inputActiveOptionBorder;
-		}
-		this.applyStyles();
-	}
-
-	protected applyStyles(): void {
-		if (this.domNode) {
-			this.domNode.style.borderColor = this._inputActiveOptionBorder ? this._inputActiveOptionBorder.toString(): defaultOpts.inputActiveOptionBorder.toString();
-		}
+	public enable(): void {
+		this.enabled = true;
 	}
 }

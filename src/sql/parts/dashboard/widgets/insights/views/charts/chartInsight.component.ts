@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, ViewChild } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 
 /* SQL Imports */
@@ -18,7 +18,7 @@ import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { mixin } from 'sql/base/common/objects';
 import { Color } from 'vs/base/common/color';
 import * as types from 'vs/base/common/types';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 export enum ChartType {
@@ -99,14 +99,13 @@ export const defaultChartConfig: IChartConfig = {
 							[options]="_options"></canvas>
 				</div>`
 })
-export abstract class ChartInsight implements IInsightsView, OnDestroy {
+export abstract class ChartInsight extends Disposable implements IInsightsView {
 	private _isDataAvailable: boolean = false;
 	private _options: any = {};
 
 	@ViewChild(BaseChartDirective) private _chart: BaseChartDirective;
 
 	protected _defaultConfig = defaultChartConfig;
-	protected _disposables: Array<IDisposable> = [];
 	protected _config: IChartConfig;
 	protected _data: IInsightData;
 
@@ -116,14 +115,13 @@ export abstract class ChartInsight implements IInsightsView, OnDestroy {
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(BOOTSTRAP_SERVICE_ID) protected _bootstrapService: IBootstrapService) { }
-
-	ngOnDestroy() {
-		this._disposables.forEach(item => item.dispose());
+		@Inject(BOOTSTRAP_SERVICE_ID) protected _bootstrapService: IBootstrapService
+	) {
+		super();
 	}
 
 	init() {
-		this._disposables.push(this._bootstrapService.themeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this._register(this._bootstrapService.themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		this.updateTheme(this._bootstrapService.themeService.getColorTheme());
 		// Note: must use a boolean to not render the canvas until all properties such as the labels and chart type are set.
 		// This is because chart.js doesn't auto-update anything other than dataset when re-rendering so defaults are used
@@ -150,10 +148,12 @@ export abstract class ChartInsight implements IInsightsView, OnDestroy {
 	}
 
 	protected updateTheme(e: IColorTheme): void {
+		let foregroundColor = e.getColor(colors.editorForeground);
+		let foreground = foregroundColor ? foregroundColor.toString() : null;
 		let options = {
 			legend: {
 				labels: {
-					fontColor: e.getColor(colors.editorForeground)
+					fontColor: foreground
 				}
 			}
 		};
@@ -189,7 +189,7 @@ export abstract class ChartInsight implements IInsightsView, OnDestroy {
 		unmemoize(this, 'colors');
 	}
 
-	@Input() set config(config: IChartConfig) {
+	public setConfig(config: IChartConfig) {
 		this.clearMemoize();
 		this._config = mixin(config, this._defaultConfig, false);
 		this.legendPosition = this._config.legendPosition;

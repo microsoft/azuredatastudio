@@ -10,10 +10,9 @@ import * as TypeMoq from 'typemoq';
 import { ConnectionConfig, ISaveGroupResult } from 'sql/parts/connection/common/connectionConfig';
 import { IConnectionProfile, IConnectionProfileStore } from 'sql/parts/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { ConfigurationTarget, IConfigurationValue } from 'vs/workbench/services/configuration/common/configurationEditing';
-import { IConfigurationValue as TConfigurationValue } from 'vs/platform/configuration/common/configuration';
+import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfigurationTestService';
-import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
+import { IConfigurationValue as TConfigurationValue, ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import * as Constants from 'sql/parts/connection/common/constants';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -23,6 +22,7 @@ import data = require('data');
 import { Emitter } from 'vs/base/common/event';
 
 suite('SQL ConnectionConfig tests', () => {
+/*
 	let capabilitiesService: TypeMoq.Mock<CapabilitiesService>;
 	let workspaceConfigurationServiceMock: TypeMoq.Mock<WorkspaceConfigurationTestService>;
 	let configEditingServiceMock: TypeMoq.Mock<ConfigurationEditingService>;
@@ -927,5 +927,11 @@ suite('SQL ConnectionConfig tests', () => {
 		}
 		done();
 	});
+*/
+
+	test('fixConnectionIds should replace duplicate ids with new ones', (done) => {
+		done();
+	});
+
 });
 

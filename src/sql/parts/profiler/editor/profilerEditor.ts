@@ -26,7 +26,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ProfilerResourceEditor } from './profilerResourceEditor';
-import { SplitView, View, Orientation, IViewOptions } from 'vs/base/browser/ui/splitview/splitview';
+import { SplitView, View, Orientation, IViewOptions } from 'sql/base/browser/ui/splitview/splitview';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IModel, ICommonCodeEditor } from 'vs/editor/common/editorCommon';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
@@ -141,7 +141,7 @@ export class ProfilerEditor extends BaseEditor {
 
 	protected createEditor(parent: Builder): void {
 		// test backend
-		this._profilerService.registerProvider('default', this._instantiationService.createInstance(ProfilerTestBackend));
+		//this._profilerService.registerProvider('default', this._instantiationService.createInstance(ProfilerTestBackend));
 
 		this._container = document.createElement('div');
 		this._container.className = 'carbon-profiler';

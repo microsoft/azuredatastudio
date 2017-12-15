@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=@@NAME_LONG@@
-Comment=Code Editing. Redefined.
+Comment=SQL Operations Studio
 GenericName=Text Editor
 Exec=/usr/share/@@NAME@@/@@NAME@@ --unity-launch %F
 Icon=@@NAME@@
@@ -10,7 +10,7 @@ StartupWMClass=@@NAME_SHORT@@
 Categories=Utility;TextEditor;Development;IDE;
 MimeType=text/plain;inode/directory;
 Actions=new-window;
-Keywords=vscode;
+Keywords=sqlops;
 
 [Desktop Action new-window]
 Name=New Window

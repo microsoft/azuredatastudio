@@ -11,8 +11,10 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import data = require('data');
 import Event, { Emitter } from 'vs/base/common/event';
-import { Action } from 'vs/base/common/actions';
+import { IAction } from 'vs/base/common/actions';
 import { Deferred } from 'sql/base/common/promise';
+import { getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
+import { IExtensionManagementService, ILocalExtension, IExtensionEnablementService,	LocalExtensionType } from 'vs/platform/extensionManagement/common/extensionManagement';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'sqlops';
@@ -39,7 +41,7 @@ export interface ICapabilitiesService {
 	/**
 	 * Returns true if the feature is available for given connection
 	 */
-	isFeatureAvailable(action: Action, connectionManagementInfo: ConnectionManagementInfo): boolean;
+	isFeatureAvailable(action: IAction, connectionManagementInfo: ConnectionManagementInfo): boolean;
 
 	/**
 	 * Event raised when a provider is registered
@@ -61,6 +63,8 @@ export class CapabilitiesService implements ICapabilitiesService {
 
 	public _serviceBrand: any;
 
+	private static DATA_PROVIDER_CATEGORY: string = 'Data Provider'
+
 	private _providers: data.CapabilitiesProvider[] = [];
 
 	private _capabilities: data.DataProtocolServerCapabilities[] = [];
@@ -77,16 +81,36 @@ export class CapabilitiesService implements ICapabilitiesService {
 
 	private _onCapabilitiesReady: Deferred<void>;
 
-	// Due to absence of a way to infer the number of expected data tools extensions from the package.json, this is being hard-coded
-	// TODO: a better mechanism to populate the expected number of capabilities
+	// Setting this to 1 by default as we have MS SQL provider by default and then we increament
+	// this number based on extensions installed.
+	// TODO once we have a complete extension story this might change and will have to be looked into
+
 	private _expectedCapabilitiesCount: number = 1;
 
 	private _registeredCapabilities: number = 0;
 
-	constructor() {
+	constructor(@IExtensionManagementService private extensionManagementService: IExtensionManagementService,
+				@IExtensionEnablementService private extensionEnablementService: IExtensionEnablementService) {
+
 		this._onProviderRegistered = new Emitter<data.DataProtocolServerCapabilities>();
 		this.disposables.push(this._onProviderRegistered);
 		this._onCapabilitiesReady = new Deferred();
+
+		// Get extensions and filter where the category has 'Data Provider' in it
+		this.extensionManagementService.getInstalled(LocalExtensionType.User).then((extensions: ILocalExtension[]) => {
+			let dataProviderExtensions = extensions.filter(extension  =>
+				extension.manifest.categories.indexOf(CapabilitiesService.DATA_PROVIDER_CATEGORY) > -1)
+
+			if(dataProviderExtensions.length > 0) {
+				// Scrape out disabled extensions
+				const disabledExtensions = this.extensionEnablementService.getGloballyDisabledExtensions()
+																			.map(disabledExtension => disabledExtension.id);
+				dataProviderExtensions = dataProviderExtensions.filter(extension =>
+					disabledExtensions.indexOf(getGalleryExtensionId(extension.manifest.publisher, extension.manifest.name)) < 0)
+			}
+
+			this._expectedCapabilitiesCount += dataProviderExtensions.length;
+		});
 	}
 
 	public onCapabilitiesReady(): Promise<void> {
@@ -127,7 +151,7 @@ export class CapabilitiesService implements ICapabilitiesService {
 	 * @param featureComponent a component which should have the feature name
 	 * @param connectionManagementInfo connectionManagementInfo
 	 */
-	public isFeatureAvailable(action: Action, connectionManagementInfo: ConnectionManagementInfo): boolean {
+	public isFeatureAvailable(action: IAction, connectionManagementInfo: ConnectionManagementInfo): boolean {
 		let isCloud = connectionManagementInfo && connectionManagementInfo.serverInfo && connectionManagementInfo.serverInfo.isCloud;
 		let isMssql = connectionManagementInfo.connectionProfile.providerName === 'MSSQL';
 		// TODO: The logic should from capabilities service.

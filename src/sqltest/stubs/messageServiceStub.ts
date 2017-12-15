@@ -6,7 +6,8 @@
 'use strict';
 
 import Severity from 'vs/base/common/severity';
-import { IConfirmation, IMessageService, IMessageWithAction } from 'vs/platform/message/common/message';
+import { IConfirmation, IMessageService, IMessageWithAction, IConfirmationResult } from 'vs/platform/message/common/message';
+import { TPromise } from 'vs/base/common/winjs.base';
 
 export class MessageServiceStub implements IMessageService{
 	_serviceBrand: any;
@@ -24,7 +25,14 @@ export class MessageServiceStub implements IMessageService{
 		return undefined;
 	}
 
-	confirm(confirmation: IConfirmation): boolean {
+	confirm(confirmation: IConfirmation):  TPromise<IConfirmationResult> {
+		return undefined;
+	}
+
+	/**
+	 * Ask the user for confirmation.
+	 */
+	confirmSync(confirmation: IConfirmation): boolean {
 		return undefined;
 	}
 }

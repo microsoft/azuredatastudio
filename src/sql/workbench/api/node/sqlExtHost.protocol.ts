@@ -15,6 +15,7 @@ import * as data from 'data';
 import { TPromise } from 'vs/base/common/winjs.base';
 
 export abstract class ExtHostAccountManagementShape {
+	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
 	$clear(handle: number, accountKey: data.AccountKey): Thenable<void> { throw ni(); }
 	$getSecurityToken(handle: number, account: data.Account): Thenable<{}> { throw ni(); }
 	$initialize(handle: number, restoredAccounts: data.Account[]): Thenable<data.Account[]> { throw ni(); }
@@ -103,11 +104,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Scripting methods
 	 */
-	$scriptAsSelect(handle: number, connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> { throw ni(); }
-	$scriptAsCreate(handle: number, connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> { throw ni(); }
-	$scriptAsUpdate(handle: number, connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> { throw ni(); }
-	$scriptAsInsert(handle: number, connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> { throw ni(); }
-	$scriptAsDelete(handle: number, connectionUri: string, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> { throw ni(); }
+	$scriptAsOperation(handle: number, connectionUri: string, operation: data.ScriptOperation, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> { throw ni(); }
 
 	/**
 	 * Cancels the currently running query for a URI
@@ -288,6 +285,20 @@ export abstract class ExtHostDataProtocolShape {
 	 * Close file browser
 	 */
 	$closeFileBrowser(handle: number, ownerUri: string): Thenable<data.FileBrowserCloseResponse> { throw ni(); }
+
+	/**
+	 * Profiler Provider methods
+	 */
+
+	/**
+	 * Start a profiler session
+	 */
+	$startSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
+
+	/**
+	 * Stop a profiler session
+	 */
+	$stopSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
 }
 
 
@@ -329,7 +340,10 @@ export abstract class MainThreadAccountManagementShape {
 	$registerAccountProvider(providerMetadata: data.AccountProviderMetadata, handle: number): Thenable<any> { throw ni(); }
 	$unregisterAccountProvider(handle: number): Thenable<any> { throw ni(); }
 
-	$performOAuthAuthorization(url: string, silent: boolean): Thenable<string> { throw ni(); }
+	$beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> { throw ni(); }
+	$endAutoOAuthDeviceCode(): void { throw ni(); }
+
+	$accountUpdated(updatedAccount: data.Account): void { throw ni(); }
 }
 
 export abstract class MainThreadResourceProviderShape {
@@ -356,6 +370,7 @@ export abstract class MainThreadDataProtocolShape {
 	$onFolderNodeExpanded(handle: number, response: data.FileBrowserExpandedParams): void { throw ni(); }
 	$onFilePathsValidated(handle: number, response: data.FileBrowserValidatedParams): void { throw ni(); }
 	$onScriptingComplete(handle: number, message: data.ScriptingCompleteResult): void { throw ni(); }
+	$onSessionEventsAvailable(handle: number, response: data.ProfilerSessionEvents): void { throw ni(); }
 
 	/**
 	 * Callback when a session has completed initialization

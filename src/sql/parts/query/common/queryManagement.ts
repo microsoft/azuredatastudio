@@ -20,7 +20,7 @@ export const IQueryManagementService = createDecorator<IQueryManagementService>(
 export interface IQueryManagementService {
 	_serviceBrand: any;
 
-	addQueryRequestHandler(queryType: string, runner: QueryRequestHandler): IDisposable;
+	addQueryRequestHandler(queryType: string, runner: IQueryRequestHandler): IDisposable;
 	registerRunner(runner: QueryRunner, uri: string): void;
 
 	cancelQuery(ownerUri: string): Thenable<data.QueryCancelResult>;
@@ -57,7 +57,7 @@ export interface IQueryManagementService {
 /*
  * An object that can handle basic request-response actions related to queries
  */
-export interface QueryRequestHandler {
+export interface IQueryRequestHandler {
 	cancelQuery(ownerUri: string): Thenable<data.QueryCancelResult>;
 	runQuery(ownerUri: string, selection: data.ISelectionData, runOptions?: data.ExecutionPlanOptions): Thenable<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
@@ -83,7 +83,7 @@ export class QueryManagementService implements IQueryManagementService {
 	public static readonly DefaultQueryType = 'MSSQL';
 	public _serviceBrand: any;
 
-	private _requestHandlers = new Map<string, QueryRequestHandler>();
+	private _requestHandlers = new Map<string, IQueryRequestHandler>();
 	// public for testing only
 	public _queryRunners = new Map<string, QueryRunner>();
 
@@ -132,7 +132,7 @@ export class QueryManagementService implements IQueryManagementService {
 		this.enqueueOrRun(sendNotification, runner);
 	}
 
-	public addQueryRequestHandler(queryType: string, handler: QueryRequestHandler): IDisposable {
+	public addQueryRequestHandler(queryType: string, handler: IQueryRequestHandler): IDisposable {
 		this._requestHandlers.set(queryType, handler);
 
 		return {
@@ -155,7 +155,7 @@ export class QueryManagementService implements IQueryManagementService {
 		TelemetryUtils.addTelemetry(this._telemetryService, eventName, data);
 	}
 
-	private _runAction<T>(uri: string, action: (handler: QueryRequestHandler) => Thenable<T>): Thenable<T> {
+	private _runAction<T>(uri: string, action: (handler: IQueryRequestHandler) => Thenable<T>): Thenable<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ObjectMetadataWrapper } from 'sql/parts/dashboard/widgets/explorer/explorerWidget.component';
+import { ObjectMetadataWrapper } from 'sql/parts/dashboard/widgets/explorer/explorerTree';
 import { MetadataType } from 'sql/parts/connection/common/connectionManagement';
 
 import * as assert from 'assert';

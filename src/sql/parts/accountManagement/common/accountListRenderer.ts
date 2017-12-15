@@ -13,7 +13,7 @@ import { ActionBar, IActionOptions } from 'vs/base/browser/ui/actionbar/actionba
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { RemoveAccountAction, ApplyFilterAction, RefreshAccountAction } from 'sql/parts/accountManagement/common/accountActions';
+import { RemoveAccountAction, RefreshAccountAction } from 'sql/parts/accountManagement/common/accountActions';
 
 import * as data from 'data';
 
@@ -66,9 +66,7 @@ export class AccountPickerListRenderer implements IRenderer<data.Account, Accoun
 
 	public renderElement(account: data.Account, index: number, templateData: AccountListTemplate): void {
 		// Set the account icon
-		templateData.icon.classList.add('account-logo');
-		templateData.icon.style.background = `url('data:${account.displayInfo.contextualLogo.light}')`;
-		// TODO: Pick between the light and dark logo
+		templateData.icon.classList.add('account-logo', account.displayInfo.accountType);
 
 		templateData.contextualDisplayName.innerText = account.displayInfo.contextualDisplayName;
 		templateData.displayName.innerText = account.displayInfo.displayName;
@@ -114,9 +112,12 @@ export class AccountListRenderer extends AccountPickerListRenderer {
 
 		let actionOptions: IActionOptions = { icon: true, label: false };
 		if (account.isStale) {
-			templateData.actions.push(new RefreshAccountAction(RefreshAccountAction.ID, RefreshAccountAction.LABEL), actionOptions);
+			let refreshAction = this._instantiationService.createInstance(RefreshAccountAction);
+			refreshAction.account = account;
+			templateData.actions.push(refreshAction, actionOptions);
 		} else {
-			templateData.actions.push(new ApplyFilterAction(ApplyFilterAction.ID, ApplyFilterAction.LABEL), actionOptions);
+			// Todo: Will show filter action when API/GUI for filtering is implemented (#3022, #3024)
+			// templateData.actions.push(new ApplyFilterAction(ApplyFilterAction.ID, ApplyFilterAction.LABEL), actionOptions);
 		}
 
 		let removeAction = this._instantiationService.createInstance(RemoveAccountAction, account);

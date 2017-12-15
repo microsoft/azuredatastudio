@@ -255,7 +255,7 @@ suite('Restore Dialog view model tests', () => {
 		viewModel.readHeaderFromMedia = false;
 		viewModel.onRestoreFromChanged(true);
 		assert.equal(true, viewModel.readHeaderFromMedia);
-		assert.equal('', viewModel.sourceDatabaseName);
+		assert.equal(undefined, viewModel.sourceDatabaseName);
 		assert.equal('', viewModel.filePath);
 
 		viewModel.sourceDatabaseName = 'sourceDatabase2';

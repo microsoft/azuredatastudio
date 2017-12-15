@@ -4,14 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 import { mixin, clone } from 'vs/base/common/objects';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
+
 import { registerInsight } from 'sql/platform/dashboard/common/insightRegistry';
-import { chartInsightSchema } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.contribution';
+import { properties as BarChartSchema } from 'sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
 
 import TimeSeriesChart from './timeSeriesChart.component';
 
 const properties: IJSONSchema = {
 };
 
-const timeSeriesSchema = mixin(clone(chartInsightSchema), properties) as IJSONSchema;
+const timeSeriesSchema = mixin(clone(BarChartSchema), properties) as IJSONSchema;
 
 registerInsight('timeSeries', '', timeSeriesSchema, TimeSeriesChart);

@@ -526,7 +526,7 @@ suite('SQL QueryAction Tests', () => {
 		listItem.onConnected();
 
 		// If: I raise a connection changed event for the 'wrong' URI
-		let eventParams = <IConnectionParams> {
+		let eventParams = <IConnectionParams>{
 			connectionProfile: {
 				databaseName: 'foobarbaz'
 			},
@@ -552,7 +552,7 @@ suite('SQL QueryAction Tests', () => {
 		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, null, null, null);
 
 		// If: I raise a connection changed event
-		let eventParams = <IConnectionParams> {
+		let eventParams = <IConnectionParams>{
 			connectionProfile: {
 				databaseName: 'foobarbaz'
 			},

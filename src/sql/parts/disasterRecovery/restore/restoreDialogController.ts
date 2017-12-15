@@ -111,13 +111,10 @@ export class RestoreDialogController implements IRestoreDialogController {
 
 			let restoreDialog = this._restoreDialogs[providerId] as RestoreDialog;
 			restoreInfo.backupFilePaths = restoreDialog.viewModel.filePath;
-			// todo: Need to change restoreInfo.readHeaderFromMedia when implement restore from database
+
 			restoreInfo.readHeaderFromMedia = restoreDialog.viewModel.readHeaderFromMedia;
 			restoreInfo.selectedBackupSets = restoreDialog.viewModel.selectedBackupSets;
-
-			if (restoreDialog.viewModel.sourceDatabaseName) {
-				restoreInfo.sourceDatabaseName = restoreDialog.viewModel.sourceDatabaseName;
-			}
+			restoreInfo.sourceDatabaseName = restoreDialog.viewModel.sourceDatabaseName;
 			if (restoreDialog.viewModel.targetDatabaseName) {
 				restoreInfo.targetDatabaseName = restoreDialog.viewModel.targetDatabaseName;
 			}
@@ -221,7 +218,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 	private fetchDatabases(provider: string): void {
 		this._connectionService.listDatabases(this._ownerUri).then(result => {
 			if (result && result.databaseNames) {
-				(<RestoreDialog> this._restoreDialogs[provider]).databaseListOptions = result.databaseNames;
+				(<RestoreDialog>this._restoreDialogs[provider]).databaseListOptions = result.databaseNames;
 			}
 		});
 	}

@@ -4,27 +4,27 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!sql/parts/insights/browser/media/insightsDialog';
 
+import { Button } from 'sql/base/browser/ui/button/button';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { attachModalDialogStyler, attachTableStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachModalDialogStyler, attachTableStyler } from 'sql/common/theme/styler';
 import { ITaskRegistry, Extensions as TaskExtensions } from 'sql/platform/tasks/taskRegistry';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import { IInsightsDialogModel, ListResource, IInsightDialogActionContext } from 'sql/parts/insights/common/interfaces';
+import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/parts/insights/common/interfaces';
 import { TableCollapsibleView } from 'sql/base/browser/ui/table/tableView';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { error } from 'sql/base/common/log';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { CopyInsightDialogSelectionAction } from 'sql/parts/insights/common/insightDialogActions';
+import { SplitView, ViewSizing } from 'sql/base/browser/ui/splitview/splitview';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import * as DOM from 'vs/base/browser/dom';
-import { SplitView, ViewSizing } from 'vs/base/browser/ui/splitview/splitview';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IListService } from 'vs/platform/list/browser/listService';
 import * as nls from 'vs/nls';
@@ -35,10 +35,8 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as types from 'vs/base/common/types';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { Button } from 'vs/base/browser/ui/button/button';
-
-/* Regex that matches the form `${value}` */
-export const insertValueRegex: RegExp = /\${(.*?)\}/;
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 
 const labelDisplay = nls.localize("item", "Item");
 const valueDisplay = nls.localize("value", "Value");
@@ -81,6 +79,7 @@ export class InsightsDialogView extends Modal {
 	private _insight: IInsightsConfigDetails;
 	private _splitView: SplitView;
 	private _container: HTMLElement;
+	private _closeButton: Button;
 	private _topTable: Table<ListResource>;
 	private _topTableData: TableDataView<ListResource>;
 	private _bottomTable: Table<ListResource>;
@@ -213,12 +212,45 @@ export class InsightsDialogView extends Modal {
 
 		this._register(attachTableStyler(this._topTable, this._themeService));
 		this._register(attachTableStyler(this._bottomTable, this._themeService));
+
+		this._topTable.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
+				topTableView.focus();
+				e.stopImmediatePropagation();
+			} else if (event.equals(KeyCode.Tab)) {
+				bottomTableView.focus();
+				e.stopImmediatePropagation();
+			}
+		});
+
+		this._bottomTable.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
+				bottomTableView.focus();
+				e.stopImmediatePropagation();
+			} else if (event.equals(KeyCode.Tab)) {
+				let buttonFound = false;
+				for (let index = 0; index < this._taskButtonDisposables.length; index++) {
+					let element = this._taskButtonDisposables[index];
+					if (element instanceof Button && element.enabled) {
+						buttonFound = true;
+						element.focus();
+						break;
+					}
+				}
+				if (!buttonFound) {
+					this._closeButton.focus();
+				}
+				e.stopImmediatePropagation();
+			}
+		});
 	}
 
 	public render() {
 		super.render();
-		let button = this.addFooterButton('Close', () => this.close());
-		this._register(attachButtonStyler(button, this._themeService));
+		this._closeButton = this.addFooterButton('Close', () => this.close());
+		this._register(attachButtonStyler(this._closeButton, this._themeService));
 		this._register(attachModalDialogStyler(this, this._themeService));
 	}
 
@@ -274,6 +306,9 @@ export class InsightsDialogView extends Modal {
 			}
 		}
 		this.layout();
+
+		// Select and focus the top row
+		this._topTable.grid.gotoCell(0, 1);
 	}
 
 	public reset(): void {

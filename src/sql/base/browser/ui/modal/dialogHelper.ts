@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
+import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { Button } from 'sql/base/browser/ui/button/button';
 
 import { Builder } from 'vs/base/browser/builder';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { Button } from 'vs/base/browser/ui/button/button';
-import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
-import * as data from 'data';
 import * as types from 'vs/base/common/types';
+
+import * as data from 'data';
 
 export function appendRow(container: Builder, label: string, labelClass: string, cellContainerClass: string): Builder {
 	let cellContainer: Builder;
@@ -47,33 +47,9 @@ export function appendRowLink(container: Builder, label: string, labelClass: str
 	return new Builder(rowButton.getElement());
 }
 
-export function createCheckBox(container: Builder, label: string, checkboxClass: string, isChecked: boolean, onCheck?: (viaKeyboard: boolean) => void): Checkbox {
-	let checkbox = new Checkbox({
-		actionClassName: checkboxClass,
-		title: label,
-		isChecked: isChecked,
-		onChange: (viaKeyboard) => {
-			if (onCheck) {
-				onCheck(viaKeyboard);
-			}
-		}
-	});
-	container.getHTMLElement().appendChild(checkbox.domNode);
-	container.div({}, (labelContainer) => {
-		labelContainer.innerHtml(label);
-	});
-
-	return checkbox;
-}
-
 export function appendInputSelectBox(container: Builder, selectBox: SelectBox): SelectBox {
 	selectBox.render(container.getHTMLElement());
 	return selectBox;
-}
-
-export function isNullOrWhiteSpace(value: string): boolean {
-	// returns true if the string is null or contains white space/tab chars only
-	return !value || value.trim().length === 0;
 }
 
 export function getBooleanValueFromStringOrBoolean(value: any): boolean {

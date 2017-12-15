@@ -60,6 +60,7 @@ export interface ITitleAreaControl {
 	getContainer(): HTMLElement;
 	refresh(instant?: boolean): void;
 	update(instant?: boolean): void;
+	updateEditorActionsToolbar(): void;
 	layout(): void;
 	dispose(): void;
 }
@@ -259,6 +260,12 @@ export abstract class TitleControl extends Themable implements ITitleAreaControl
 
 			// Log in telemetry
 			if (this.telemetryService) {
+				/* __GDPR__
+					"workbenchActionExecuted" : {
+						"id" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+						"from": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+					}
+				*/
 				this.telemetryService.publicLog('workbenchActionExecuted', { id: e.action.id, from: 'editorPart' });
 			}
 		}));
@@ -334,7 +341,7 @@ export abstract class TitleControl extends Themable implements ITitleAreaControl
 		return { primary, secondary };
 	}
 
-	protected updateEditorActionsToolbar(): void {
+	public updateEditorActionsToolbar(): void {
 		const group = this.context;
 		if (!group) {
 			return;
@@ -543,7 +550,7 @@ export function handleWorkspaceExternalDrop(
 
 		// Multiple folders: Create new workspace with folders and open
 		else if (folders.length > 1) {
-			workspacesToOpen = workspacesService.createWorkspace([...folders].map(folder => folder.fsPath)).then(workspace => [workspace.configPath]);
+			workspacesToOpen = workspacesService.createWorkspace(folders.map(folder => ({ uri: folder }))).then(workspace => [workspace.configPath]);
 		}
 
 		// Open

@@ -14,3 +14,13 @@
 	float: left;
 	margin-right: 10px;
 }
+
+/* Make the test selectable*/
+.error-dialog .error-message {
+	-webkit-user-select: text;
+	user-select: text;
+}
+
+.modal .footer-button a.monaco-button.monaco-text-button.icon.scriptToClipboard {
+	width: 120px;
+}

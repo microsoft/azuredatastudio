@@ -6,15 +6,15 @@
 import 'vs/css!./media/dropdownList';
 
 import { ToggleDropdownAction } from './actions';
+import { DropdownDataSource, DropdownFilter, DropdownModel, DropdownRenderer, DropdownController } from './dropdownTree';
 
 import { IContextViewProvider, ContextView } from 'vs/base/browser/ui/contextview/contextview';
 import { mixin } from 'vs/base/common/objects';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { InputBox, IInputBoxStyles } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { List, IListStyles } from 'vs/base/browser/ui/list/listWidget';
+import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 import * as DOM from 'vs/base/browser/dom';
-import { IDelegate, IRenderer } from 'vs/base/browser/ui/list/list';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
@@ -22,6 +22,7 @@ import * as nls from 'vs/nls';
 import Event, { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 
 export interface IDropdownOptions extends IDropdownStyles {
 	/**
@@ -72,47 +73,20 @@ interface TableTemplate {
 	label: HTMLElement;
 }
 
-class Delegate implements IDelegate<ListResource> {
-	getHeight = (): number => 22;
-
-	getTemplateId(element: ListResource): string {
-		return 'string';
-	}
-}
-
-class Renderer implements IRenderer<ListResource, TableTemplate> {
-	static TEMPLATE_ID = 'string';
-	get templateId(): string { return Renderer.TEMPLATE_ID; }
-
-	renderTemplate(container: HTMLElement): TableTemplate {
-		const row = $('div.list-row').style('height', '22px').style('padding-left', '5px').getHTMLElement();
-		DOM.append(container, row);
-		const label = $('span.label').style('margin', 'auto').getHTMLElement();
-		DOM.append(row, label);
-
-		return { label };
-	}
-
-	renderElement(resource: ListResource, index: number, template: TableTemplate): void {
-		template.label.innerText = resource.label;
-	}
-
-	disposeTemplate(template: TableTemplate): void {
-		// noop
-	}
-}
-
 export class Dropdown extends Disposable {
 	private $el: Builder;
 	private $input: Builder;
-	private $list: Builder;
+	private $treeContainer: Builder;
 	private _input: InputBox;
-	private _list: List<ListResource>;
-	private _values: string[];
+	private _tree: Tree;
 	private _options: IDropdownOptions;
 	private _toggleAction: ToggleDropdownAction;
 	// we have to create our own contextview since otherwise inputbox will override ours
 	private _contextView: ContextView;
+	private _dataSource = new DropdownDataSource();
+	private _filter = new DropdownFilter();
+	private _renderer = new DropdownRenderer();
+	private _controller = new DropdownController();
 
 	private _onBlur = this._register(new Emitter<void>());
 	public onBlur: Event<void> = this._onBlur.event;
@@ -132,13 +106,16 @@ export class Dropdown extends Disposable {
 		super();
 		this._contextView = new ContextView(document.body);
 		this._options = mixin(opt, defaults, false) as IDropdownOptions;
-		this._values = this._options.values;
 		this.$el = $('.dropdown').style('width', '100%').appendTo(container);
 
 		this.$input = $('.dropdown-input').style('width', '100%').appendTo(this.$el);
-		this.$list = $('.dropdown-list');
+		this.$treeContainer = $('.dropdown-tree');
 
-		this._toggleAction = new ToggleDropdownAction(() => this._showList());
+		this._toggleAction = new ToggleDropdownAction(() => {
+			this._showList();
+			this._tree.DOMFocus();
+			this._tree.focusFirst();
+		});
 
 		this._input = new InputBox(this.$input.getHTMLElement(), contextViewService, {
 			validationOptions: {
@@ -154,12 +131,12 @@ export class Dropdown extends Disposable {
 		}));
 
 		this._register(DOM.addDisposableListener(this._input.inputElement, DOM.EventType.BLUR, () => {
-			if (!this._list.isDOMFocused) {
+			if (!this._tree.isDOMFocused()) {
 				this._onBlur.fire();
 			}
 		}));
 
-		this._register(DOM.addStandardDisposableListener(this._input.inputElement, DOM.EventType.KEY_UP, (e: StandardKeyboardEvent) => {
+		this._register(DOM.addStandardDisposableListener(this._input.inputElement, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
 			switch (e.keyCode) {
 				case KeyCode.Enter:
 					if (this._input.validate()) {
@@ -168,7 +145,7 @@ export class Dropdown extends Disposable {
 					e.stopPropagation();
 					break;
 				case KeyCode.Escape:
-					if (this.$list.getHTMLElement().parentElement) {
+					if (this.$treeContainer.getHTMLElement().parentElement) {
 						this._input.validate();
 						this._onBlur.fire();
 						this._contextView.hide();
@@ -182,44 +159,55 @@ export class Dropdown extends Disposable {
 					e.stopPropagation();
 					break;
 				case KeyCode.DownArrow:
-					if (!this.$list.getHTMLElement().parentElement) {
+					if (!this.$treeContainer.getHTMLElement().parentElement) {
 						this._showList();
 					}
-					this._list.getHTMLElement().focus();
+					this._tree.DOMFocus();
+					this._tree.focusFirst();
 					e.stopPropagation();
+					e.preventDefault();
 					break;
 			}
 		}));
 
-		this._list = new List(this.$list.getHTMLElement(), new Delegate(), [new Renderer()]);
-		if (this._values) {
-			this._list.splice(0, this._list.length, this._values.map(i => { return { label: i }; }));
-			let height = this._list.length * 22 > this._options.maxHeight ? this._options.maxHeight : this._list.length * 22;
-			this.$list.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) + 'px');
-		}
+		this._tree = new Tree(this.$treeContainer.getHTMLElement(), {
+			dataSource: this._dataSource,
+			filter: this._filter,
+			renderer: this._renderer,
+			controller: this._controller
+		});
 
-		this._list.onSelectionChange(e => {
-			if (e.elements.length === 1) {
-				this.value = e.elements[0].label;
-				this._onValueChange.fire(e.elements[0].label);
-				this._contextView.hide();
-			}
+		this.values = this._options.values;
+
+		this._controller.onSelectionChange(e => {
+			this.value = e.value;
+			this._onValueChange.fire(e.value);
+			this._input.focus();
+			this._contextView.hide();
 		});
 
 		this._input.onDidChange(e => {
-			if (this._values) {
-				this._list.splice(0, this._list.length, this._values.filter(i => i.includes(e)).map(i => { return { label: i }; }));
-				let height = this._list.length * 22 > this._options.maxHeight ? this._options.maxHeight : this._list.length * 22;
-				this.$list.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) + 'px');
-				this._list.layout(parseInt(this.$list.style('height')));
+			if (this._dataSource.options) {
+				this._filter.filterString = e;
+				let filteredLength = this._dataSource.options.reduce((p, i) => {
+					if (this._filter.isVisible(undefined, i)) {
+						return p + 1;
+					} else {
+						return p;
+					}
+				}, 0);
+				let height = filteredLength * this._renderer.getHeight(undefined, undefined) > this._options.maxHeight ? this._options.maxHeight : filteredLength * this._renderer.getHeight(undefined, undefined);
+				this.$treeContainer.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) + 'px');
+				this._tree.layout(parseInt(this.$treeContainer.style('height')));
+				this._tree.refresh();
 			}
 		});
 
 		this._register(this._contextView);
 		this._register(this.$el);
 		this._register(this.$input);
-		this._register(this.$list);
-		this._register(this._list);
+		this._register(this.$treeContainer);
+		this._register(this._tree);
 		this._register(this._input);
 		this._register(this._contextView);
 	}
@@ -230,12 +218,12 @@ export class Dropdown extends Disposable {
 			this._contextView.show({
 				getAnchor: () => this.$input.getHTMLElement(),
 				render: container => {
-					this.$list.appendTo(container);
-					this._list.layout(parseInt(this.$list.style('height')));
+					this.$treeContainer.appendTo(container);
+					this._tree.layout(parseInt(this.$treeContainer.style('height')));
 					return { dispose: () => { } };
 				},
 				onDOMEvent: (e, activeElement) => {
-					if (!DOM.isAncestor(activeElement, this.$el.getHTMLElement())) {
+					if (!DOM.isAncestor(activeElement, this.$el.getHTMLElement()) && !DOM.isAncestor(activeElement, this.$treeContainer.getHTMLElement())) {
 						this._input.validate();
 						this._onBlur.fire();
 						this._contextView.hide();
@@ -246,12 +234,15 @@ export class Dropdown extends Disposable {
 	}
 
 	public set values(vals: string[]) {
-		this._values = vals;
-		this._list.splice(0, this._list.length, this._values.map(i => { return { label: i }; }));
-		let height = this._list.length * 22 > this._options.maxHeight ? this._options.maxHeight : this._list.length * 22;
-		this.$list.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) + 'px');
-		this._list.layout(parseInt(this.$list.style('height')));
-		this._input.validate();
+		if (vals) {
+			this._filter.filterString = '';
+			this._dataSource.options = vals.map(i => { return { value: i }; });
+			let height = this._dataSource.options.length * 22 > this._options.maxHeight ? this._options.maxHeight : this._dataSource.options.length * 22;
+			this.$treeContainer.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) + 'px');
+			this._tree.layout(parseInt(this.$treeContainer.style('height')));
+			this._tree.setInput(new DropdownModel());
+			this._input.validate();
+		}
 	}
 
 	public get value(): string {
@@ -272,14 +263,14 @@ export class Dropdown extends Disposable {
 	}
 
 	style(style: IListStyles & IInputBoxStyles & IDropdownStyles) {
-		this._list.style(style);
+		this._tree.style(style);
 		this._input.style(style);
-		this.$list.style('background-color', style.contextBackground.toString());
-		this.$list.style('outline', `1px solid ${style.contextBorder || this._options.contextBorder}`);
+		this.$treeContainer.style('background-color', style.contextBackground.toString());
+		this.$treeContainer.style('outline', `1px solid ${style.contextBorder || this._options.contextBorder}`);
 	}
 
 	private _inputValidator(value: string): IMessage {
-		if (this._values && !this._values.includes(value)) {
+		if (this._dataSource.options && !this._dataSource.options.find(i => i.value === value)) {
 			if (this._options.strictSelection) {
 				return {
 					content: this._options.errorMessage,

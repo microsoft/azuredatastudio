@@ -18,8 +18,6 @@ import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 
 export class AccountListStatusbarItem implements IStatusbarItem {
-	private _rootElement: HTMLElement;
-	private _iconElement: HTMLElement;
 	private _toDispose: IDisposable[];
 	private _manageLinkedAccountAction: IAction;
 
@@ -32,11 +30,11 @@ export class AccountListStatusbarItem implements IStatusbarItem {
 
 	public render(container: HTMLElement): IDisposable {
 		// Create root element for account list
-		this._rootElement = append(container, $('.linked-account-staus'));
-		this._rootElement.title = ManageLinkedAccountAction.LABEL;
-		this._rootElement.onclick = () => this._onClick();
-
-		this._iconElement = append(this._rootElement, $('a.linked-account-status-selection'));
+		const rootElement = append(container, $('.linked-account-staus'));
+		const accountElement = append(rootElement, $('a.linked-account-status-selection'));
+		accountElement.title = ManageLinkedAccountAction.LABEL;
+		accountElement.onclick = () => this._onClick();
+		append(accountElement, $('.linked-account-icon'));
 
 		return combinedDisposable(this._toDispose);
 	}

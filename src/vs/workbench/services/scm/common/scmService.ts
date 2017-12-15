@@ -50,7 +50,7 @@ class SCMRepository implements ISCMRepository {
 
 export class SCMService implements ISCMService {
 
-	_serviceBrand;
+	_serviceBrand: any;
 
 	private _providerIds = new Set<string>();
 	private _repositories: ISCMRepository[] = [];
@@ -61,9 +61,6 @@ export class SCMService implements ISCMService {
 
 	private _onDidRemoveProvider = new Emitter<ISCMRepository>();
 	get onDidRemoveRepository(): Event<ISCMRepository> { return this._onDidRemoveProvider.event; }
-
-	private _onDidChangeProvider = new Emitter<ISCMRepository>();
-	get onDidChangeRepository(): Event<ISCMRepository> { return this._onDidChangeProvider.event; }
 
 	constructor() { }
 
