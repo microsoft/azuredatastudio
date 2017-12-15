@@ -3,22 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, ViewChild } from '@angular/core';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
 import { error } from 'sql/base/common/log';
-
-import { properties } from './propertiesJson';
+import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
 
 import { DatabaseInfo, ServerInfo } from 'data';
 
-import { IDisposable } from 'vs/base/common/lifecycle';
 import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 import * as nls from 'vs/nls';
+import { Registry } from 'vs/platform/registry/common/platform';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -47,6 +46,8 @@ export interface Property {
 	default?: string;
 }
 
+const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
+
 export interface DisplayProperty {
 	displayName: string;
 	value: string;
@@ -56,11 +57,10 @@ export interface DisplayProperty {
 	selector: 'properties-widget',
 	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/widgets/properties/propertiesWidget.component.html'))
 })
-export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit, OnDestroy {
+export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit {
 	private _connection: ConnectionManagementInfo;
 	private _databaseInfo: DatabaseInfo;
 	private _clipped: boolean;
-	private _disposables: Array<IDisposable> = [];
 	private properties: Array<DisplayProperty>;
 	private _hasInit = false;
 
@@ -83,12 +83,8 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	ngOnInit() {
 		this._hasInit = true;
-		this._disposables.push(addDisposableListener(window, EventType.RESIZE, () => this.handleClipping()));
+		this._register(addDisposableListener(window, EventType.RESIZE, () => this.handleClipping()));
 		this._changeRef.detectChanges();
-	}
-
-	ngOnDestroy() {
-		this._disposables.forEach(i => i.dispose());
 	}
 
 	public refresh(): void {
@@ -97,7 +93,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 	private init(): void {
 		this._connection = this._bootstrap.connectionManagementService.connectionInfo;
-		this._disposables.push(toDisposableSubscription(this._bootstrap.adminService.databaseInfo.subscribe(data => {
+		this._register(toDisposableSubscription(this._bootstrap.adminService.databaseInfo.subscribe(data => {
 			this._databaseInfo = data;
 			this._changeRef.detectChanges();
 			this.parseProperties();
@@ -128,28 +124,12 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			let config = <PropertiesConfig>this._config.widget['properties-widget'];
 			propertyArray = config.properties;
 		} else {
-			let propertiesConfig: Array<ProviderProperties> = properties;
-			// ensure we have a properties file
-			if (!Array.isArray(propertiesConfig)) {
-				this.consoleError('Could not load properties JSON');
+			let providerProperties = dashboardRegistry.getProperties(provider as string);
+
+			if (!providerProperties) {
+				this.consoleError('No property definitions found for provider', provider);
 				return;
 			}
-
-			// filter the properties provided based on provider name
-			let providerPropertiesArray = propertiesConfig.filter((item) => {
-				return item.provider === provider;
-			});
-
-			// Error handling on provider
-			if (providerPropertiesArray.length === 0) {
-				this.consoleError('Could not locate properties for provider: ', provider);
-				return;
-			} else if (providerPropertiesArray.length > 1) {
-				this.consoleError('Found multiple property definitions for provider ', provider);
-				return;
-			}
-
-			let providerProperties = providerPropertiesArray[0];
 
 			let flavor: FlavorProperties;
 

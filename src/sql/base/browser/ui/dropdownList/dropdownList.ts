@@ -11,12 +11,13 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
 import { IAction } from 'vs/base/common/actions';
-import { Button } from 'vs/base/browser/ui/button/button';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { EventType as GestureEventType } from 'vs/base/browser/touch';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+
+import { Button } from 'sql/base/browser/ui/button/button';
+import { attachButtonStyler } from 'sql/common/theme/styler';
 
 export interface IDropdownStyles {
 	backgroundColor?: Color;
@@ -45,6 +46,14 @@ export class DropdownList extends Dropdown {
 			this.toDispose.push(DOM.addDisposableListener(button.getElement(), DOM.EventType.CLICK, () => {
 				this._action.run();
 				this.hide();
+			}));
+			this.toDispose.push(DOM.addDisposableListener(button.getElement(), DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+				let event = new StandardKeyboardEvent(e);
+				if (event.equals(KeyCode.Enter)) {
+					e.stopPropagation();
+					this._action.run();
+					this.hide();
+				}
 			}));
 			attachButtonStyler(button, this._themeService);
 		}

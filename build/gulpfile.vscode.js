@@ -7,6 +7,8 @@
 
 const gulp = require('gulp');
 const fs = require('fs');
+const os = require('os');
+const cp = require('child_process');
 const path = require('path');
 const es = require('event-stream');
 const azure = require('gulp-azure-storage');
@@ -47,17 +49,15 @@ const nodeModules = [
 	'rxjs/Observable',
 	'rxjs/Subject',
 	'rxjs/Observer',
-	'ng2-charts/ng2-charts',
-	'rangy/lib/rangy-textrange']
+	'ng2-charts/ng2-charts']
 	.concat(dependencies)
 	.concat(baseModules);
-
 
 // Build
 
 const builtInExtensions = [
-	{ name: 'ms-vscode.node-debug', version: '1.16.10' },
-	{ name: 'ms-vscode.node-debug2', version: '1.16.9' }
+	{ name: 'ms-vscode.node-debug', version: '1.18.3' },
+	{ name: 'ms-vscode.node-debug2', version: '1.18.5' }
 ];
 
 const excludedExtensions = [
@@ -168,7 +168,7 @@ const config = {
 		role: 'Editor',
 		ostypes: ["TEXT", "utxt", "TUTX", "****"],
 		  // {{SQL CARBON EDIT}}
-		extensions: ["csv", "json", "showplan", "sql", "xml"],
+		extensions: ["csv", "json", "sqlplan", "sql", "xml"],
 		iconFile: 'resources/darwin/code_file.icns'
 	}],
 	darwinBundleURLTypes: [{
@@ -304,9 +304,10 @@ function packageTask(platform, arch, opts) {
 		const packageJsonStream = gulp.src(['package.json'], { base: '.' })
 			.pipe(json({ name, version }));
 
+		const settingsSearchBuildId = getBuildNumber();
 		const date = new Date().toISOString();
 		const productJsonStream = gulp.src(['product.json'], { base: '.' })
-			.pipe(json({ commit, date, checksums }));
+			.pipe(json({ commit, date, checksums, settingsSearchBuildId }));
 
 		const license = gulp.src(['LICENSES.chromium.html', 'LICENSE.txt', 'ThirdPartyNotices.txt', 'licenses/**'], { base: '.' });
 
@@ -315,13 +316,10 @@ function packageTask(platform, arch, opts) {
 		// TODO the API should be copied to `out` during compile, not here
 		const api = gulp.src('src/vs/vscode.d.ts').pipe(rename('out/vs/vscode.d.ts'));
 		// {{SQL CARBON EDIT}}
-    const dataApi = gulp.src('src/vs/data.d.ts').pipe(rename('out/sql/data.d.ts'));
+    	const dataApi = gulp.src('src/vs/data.d.ts').pipe(rename('out/sql/data.d.ts'));
 
 		const depsSrc = _.flatten(dependencies
-			.map(function (d) { return ['node_modules/' + d + '/**',
-										'!node_modules/' + d + '/**/{test,tests}/**',
-										'!node_modules/' + d + '/**/test.*',
-										'!node_modules/' + d + '/**/*.test.*']; }));
+			.map(function (d) { return ['node_modules/' + d + '/**', '!node_modules/' + d + '/**/{test,tests}/**']; }));
 
 		const deps = gulp.src(depsSrc, { base: '.', dot: true })
 			.pipe(filter(['**', '!**/package-lock.json']))
@@ -335,6 +333,7 @@ function packageTask(platform, arch, opts) {
 			.pipe(util.cleanNodeModule('windows-process-tree', ['binding.gyp', 'build/**', 'src/**'], ['**/*.node']))
 			.pipe(util.cleanNodeModule('gc-signals', ['binding.gyp', 'build/**', 'src/**', 'deps/**'], ['**/*.node', 'src/index.js']))
 			.pipe(util.cleanNodeModule('v8-profiler', ['binding.gyp', 'build/**', 'src/**', 'deps/**'], ['**/*.node', 'src/index.js']))
+			.pipe(util.cleanNodeModule('keytar', ['binding.gyp', 'build/**', 'src/**', 'script/**', 'node_modules/**'], ['**/*.node']))
 			.pipe(util.cleanNodeModule('node-pty', ['binding.gyp', 'build/**', 'src/**', 'tools/**'], ['build/Release/**']))
 			.pipe(util.cleanNodeModule('nsfw', ['binding.gyp', 'build/**', 'src/**', 'openpa/**', 'includes/**'], ['**/*.node', '**/*.a']))
 			.pipe(util.cleanNodeModule('vsda', ['binding.gyp', 'README.md', 'build/**', '*.bat', '*.sh', '*.cpp', '*.h'], ['build/Release/vsda.node']));
@@ -352,7 +351,7 @@ function packageTask(platform, arch, opts) {
 		);
 
 		if (platform === 'win32') {
-			all = es.merge(all, gulp.src('resources/win32/code_file.ico', { base: '.' }));
+			all = es.merge(all, gulp.src(['resources/win32/code_file.ico', 'resources/win32/code_70x70.png', 'resources/win32/code_150x150.png'], { base: '.' }));
 		} else if (platform === 'linux') {
 			all = es.merge(all, gulp.src('resources/linux/code.png', { base: '.' }));
 		} else if (platform === 'darwin') {
@@ -378,6 +377,9 @@ function packageTask(platform, arch, opts) {
 			result = es.merge(result, gulp.src('resources/win32/bin/code.sh', { base: 'resources/win32' })
 				.pipe(replace('@@NAME@@', product.nameShort))
 				.pipe(rename(function (f) { f.basename = product.applicationName; f.extname = ''; })));
+
+			result = es.merge(result, gulp.src('resources/win32/VisualElementsManifest.xml', { base: 'resources/win32' })
+				.pipe(rename(product.nameShort + '.VisualElementsManifest.xml')));
 		} else if (platform === 'linux') {
 			result = es.merge(result, gulp.src('resources/linux/bin/code.sh', { base: '.' })
 				.pipe(replace('@@NAME@@', product.applicationName))
@@ -482,6 +484,139 @@ gulp.task('upload-vscode-sourcemaps', ['minify-vscode'], () => {
 		}));
 });
 
+const allConfigDetailsPath = path.join(os.tmpdir(), 'configuration.json');
+gulp.task('upload-vscode-configuration', ['generate-vscode-configuration'], () => {
+	const branch = process.env.BUILD_SOURCEBRANCH;
+	if (!branch.endsWith('/master') && !branch.indexOf('/release/') >= 0) {
+		console.log(`Only runs on master and release branches, not ${branch}`);
+		return;
+	}
+
+	if (!fs.existsSync(allConfigDetailsPath)) {
+		console.error(`configuration file at ${allConfigDetailsPath} does not exist`);
+		return;
+	}
+
+	const settingsSearchBuildId = getBuildNumber();
+	if (!settingsSearchBuildId) {
+		console.error('Failed to compute build number');
+		return;
+	}
+
+	return gulp.src(allConfigDetailsPath)
+		.pipe(azure.upload({
+			account: process.env.AZURE_STORAGE_ACCOUNT,
+			key: process.env.AZURE_STORAGE_ACCESS_KEY,
+			container: 'configuration',
+			prefix: `${settingsSearchBuildId}/${commit}/`
+		}));
+});
+
+function getBuildNumber() {
+	const previous = getPreviousVersion(packageJson.version);
+	if (!previous) {
+		return 0;
+	}
+
+	try {
+		const out = cp.execSync(`git rev-list ${previous}..HEAD --count`);
+		const count = parseInt(out.toString());
+		return versionStringToNumber(packageJson.version) * 1e4 + count;
+	} catch (e) {
+		console.error('Could not determine build number: ' + e.toString());
+		return 0;
+	}
+}
+
+/**
+ * Given 1.17.2, return 1.17.1
+ * 1.18.0 => 1.17.2.
+ * 2.0.0 => 1.18.0 (or the highest 1.x)
+ */
+function getPreviousVersion(versionStr) {
+	function tagExists(tagName) {
+		try {
+			cp.execSync(`git rev-parse ${tagName}`, { stdio: 'ignore' });
+			return true;
+		} catch (e) {
+			return false;
+		}
+	}
+
+	function getLastTagFromBase(semverArr, componentToTest) {
+		const baseVersion = semverArr.join('.');
+		if (!tagExists(baseVersion)) {
+			console.error('Failed to find tag for base version, ' + baseVersion);
+			return null;
+		}
+
+		let goodTag;
+		do {
+			goodTag = semverArr.join('.');
+			semverArr[componentToTest]++;
+		} while (tagExists(semverArr.join('.')));
+
+		return goodTag;
+	}
+
+	const semverArr = versionStr.split('.');
+	if (semverArr[2] > 0) {
+		semverArr[2]--;
+		return semverArr.join('.');
+	} else if (semverArr[1] > 0) {
+		semverArr[1]--;
+		return getLastTagFromBase(semverArr, 2);
+	} else {
+		semverArr[0]--;
+		return getLastTagFromBase(semverArr, 1);
+	}
+}
+
+function versionStringToNumber(versionStr) {
+	const semverRegex = /(\d+)\.(\d+)\.(\d+)/;
+	const match = versionStr.match(semverRegex);
+	if (!match) {
+		return 0;
+	}
+
+	return parseInt(match[1], 10) * 1e4 + parseInt(match[2], 10) * 1e2 + parseInt(match[3], 10);
+}
+
+gulp.task('generate-vscode-configuration', () => {
+	return new Promise((resolve, reject) => {
+		const buildDir = process.env['AGENT_BUILDDIRECTORY'];
+		if (!buildDir) {
+			return reject(new Error('$AGENT_BUILDDIRECTORY not set'));
+		}
+
+		const userDataDir = path.join(os.tmpdir(), 'tmpuserdata');
+		const extensionsDir = path.join(os.tmpdir(), 'tmpextdir');
+		const appPath = path.join(buildDir, 'VSCode-darwin/Visual\\ Studio\\ Code\\ -\\ Insiders.app/Contents/Resources/app/bin/code');
+		const codeProc = cp.exec(`${appPath} --export-default-configuration='${allConfigDetailsPath}' --wait --user-data-dir='${userDataDir}' --extensions-dir='${extensionsDir}'`);
+
+		const timer = setTimeout(() => {
+			codeProc.kill();
+			reject(new Error('export-default-configuration process timed out'));
+		}, 10 * 1000);
+
+		codeProc.stdout.on('data', d => console.log(d.toString()));
+		codeProc.stderr.on('data', d => console.log(d.toString()));
+
+		codeProc.on('exit', () => {
+			clearTimeout(timer);
+			resolve();
+		});
+
+		codeProc.on('error', err => {
+			clearTimeout(timer);
+			reject(err);
+		});
+	}).catch(e => {
+		// Don't fail the build
+		console.error(e.toString());
+	});
+});
+
 // {{SQL CARBON EDIT}}
 // Install service locally before building carbon
 
@@ -506,3 +641,5 @@ gulp.task('install-sqltoolsservice', () => {
 	var extObj = new mssqlExt.Constants();
     return installService(extObj);
 });
+
+

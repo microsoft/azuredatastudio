@@ -247,10 +247,16 @@ export function isVersionValid(currentVersion: string, requestedVersion: string,
 		}
 	}
 
-	if (!isValidVersion(currentVersion, desiredVersion)) {
-		notices.push(nls.localize('versionMismatch', "Extension is not compatible with Code {0}. Extension requires: {1}.", currentVersion, requestedVersion));
-		return false;
-	}
+	// {{SQL CARBON EDIT}}
+
+	//TODO: Currently the validation happens with the vscode engine version.
+	// We will have to have sqlops engine version in package.json instead and compare
+	// with that
+
+	//if (!isValidVersion(currentVersion, desiredVersion)) {
+	//	notices.push(nls.localize('versionMismatch', "Extension is not compatible with Code {0}. Extension requires: {1}.", currentVersion, requestedVersion));
+	//	return false;
+	//}
 
 	return true;
 }

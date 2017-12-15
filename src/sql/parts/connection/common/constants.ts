@@ -25,3 +25,10 @@ export const mssqlProviderName = 'MSSQL';
 export const applicationName = 'sqlops';
 
 export const defaultEngine = 'defaultEngine';
+
+export const passwordChars = '***************';
+
+/* authentication types */
+export const sqlLogin = 'SqlLogin';
+export const integrated = 'Integrated';
+

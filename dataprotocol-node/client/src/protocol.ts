@@ -34,7 +34,9 @@ import {
 	TaskInfo, ListTasksParams, ListTasksResponse, CancelTaskParams, TaskProgressInfo,
 	DefaultDatabaseInfoParams, DefaultDatabaseInfoResponse, BackupConfigInfoResponse, FileBrowserOpenParams, FileBrowserOpenedParams,
 	FileBrowserCloseParams, FileBrowserExpandParams, FileBrowserValidateParams,
-	FileBrowserCloseResponse, FileBrowserExpandedParams, FileBrowserValidatedParams
+	FileBrowserCloseResponse, FileBrowserExpandedParams, FileBrowserValidatedParams,
+	StartProfilingParams, StartProfilingResponse, StopProfilingParams, StopProfilingResponse,
+	ProfilerEventsAvailableParams
 } from 'dataprotocol-languageserver-types';
 
 
@@ -1582,4 +1584,18 @@ export namespace FileBrowserValidatedNotification {
 
 export namespace FileBrowserCloseRequest {
 	export const type: RequestType<FileBrowserCloseParams, FileBrowserCloseResponse, void> = { get method(): string { return 'filebrowser/close'; } };
+}
+
+
+// ------------------------------- < Profiler Events > ------------------------------------
+
+export namespace StartProfilingRequest {
+	export const type: RequestType<StartProfilingParams, StartProfilingResponse, void> = { get method(): string { return 'profiler/start'; } };
+}
+
+export namespace StopProfilingRequest {
+	export const type: RequestType<StopProfilingParams, StopProfilingResponse, void> = { get method(): string { return 'profiler/stop'; } };
+}
+export namespace ProfilerEventsAvailableNotification {
+	export const type: NotificationType<ProfilerEventsAvailableParams> = { get method(): string { return 'profiler/eventsavailable'; } };
 }

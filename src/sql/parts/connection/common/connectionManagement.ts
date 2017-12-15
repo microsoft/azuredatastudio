@@ -9,12 +9,12 @@ import { IViewlet } from 'vs/workbench/common/viewlet';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
 import Event from 'vs/base/common/event';
+import { IAction } from 'vs/base/common/actions';
+import Severity from 'vs/base/common/severity';
 import data = require('data');
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import Severity from 'vs/base/common/severity';
-import { ISelectionData } from 'data';
 import { ConnectionManagementInfo } from './connectionManagementInfo';
 
 export const VIEWLET_ID = 'workbench.view.connections';
@@ -57,6 +57,7 @@ export interface IConnectionResult {
 	connected: boolean;
 	errorMessage: string;
 	errorCode: number;
+	callStack: string;
 	errorHandled?: boolean;
 }
 
@@ -85,7 +86,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Opens the connection dialog to create new connection
 	 */
-	showConnectionDialog(params?: INewConnectionParams, model?: IConnectionProfile, error?: string): Promise<void>;
+	showConnectionDialog(params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void>;
 
 	/**
 	 * Opens the add server group dialog
@@ -134,6 +135,8 @@ export interface IConnectionManagementService {
 	getRecentConnections(): ConnectionProfile[];
 
 	clearRecentConnectionsList(): void;
+
+	clearRecentConnection(connectionProfile: IConnectionProfile) : void;
 
 	getActiveConnections(): ConnectionProfile[];
 
@@ -253,7 +256,7 @@ export interface IConnectionManagementService {
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');
 export interface IConnectionDialogService {
 	_serviceBrand: any;
-	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, error?: string): Thenable<void>;
+	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<void>;
 }
 
 export interface IServerGroupDialogCallbacks {
@@ -270,7 +273,7 @@ export interface IServerGroupController {
 export const IErrorMessageService = createDecorator<IErrorMessageService>('errorMessageService');
 export interface IErrorMessageService {
 	_serviceBrand: any;
-	showDialog(severity: Severity, headerTitle: string, message: string): void;
+	showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]): void;
 }
 
 export enum ServiceOptionType {
@@ -295,14 +298,15 @@ export enum RunQueryOnConnectionMode {
 	none = 0,
 	executeQuery = 1,
 	executeCurrentQuery = 2,
-	estimatedQueryPlan = 3
+	estimatedQueryPlan = 3,
+	actualQueryPlan = 4
 }
 
 export interface INewConnectionParams {
 	connectionType: ConnectionType;
 	input?: IConnectableInput;
 	runQueryOnCompletion?: RunQueryOnConnectionMode;
-	querySelection?: ISelectionData;
+	querySelection?: data.ISelectionData;
 	showDashboard?: boolean;
 }
 

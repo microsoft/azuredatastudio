@@ -6,18 +6,19 @@
 'use strict';
 import 'vs/css!./media/restoreDialog';
 import { Builder, $ } from 'vs/base/browser/builder';
-import { Button } from 'vs/base/browser/ui/button/button';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import Event, { Emitter } from 'vs/base/common/event';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { MessageType, IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { attachButtonStyler, attachCheckboxStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
+import { Button } from 'sql/base/browser/ui/button/button';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox, OnLoseFocusParams } from 'sql/base/browser/ui/inputBox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -27,7 +28,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
-import { attachModalDialogStyler, attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler } from 'sql/common/theme/styler';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { ServiceOptionType } from 'sql/parts/connection/common/connectionManagement';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
@@ -38,6 +39,7 @@ import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
 import * as data from 'data';
+import * as strings from 'vs/base/common/strings';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -59,6 +61,7 @@ export class RestoreDialog extends Modal {
 	private _backupFileTitle: string;
 	private _ownerUri: string;
 	private _databaseDropdown: Dropdown;
+	private _isBackupFileCheckboxChanged: boolean;
 
 	// General options
 	private _filePathInputBox: InputBox;
@@ -390,6 +393,44 @@ export class RestoreDialog extends Modal {
 				this._restoreFromSelectBox.hideMessage();
 			}
 		});
+
+		this._restorePlanTable.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
+				this._destinationRestoreToInputBox.isEnabled() ? this._destinationRestoreToInputBox.focus() : this._databaseDropdown.focus();
+				e.stopImmediatePropagation();
+			} else if (event.equals(KeyCode.Tab)) {
+				this.focusOnFirstEnabledFooterButton();
+				e.stopImmediatePropagation();
+			}
+		});
+
+		this._fileListTable.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
+				if ((<InputBox>this._optionsMap[this._relocatedLogFileFolderOption]).isEnabled()) {
+					(<InputBox>this._optionsMap[this._relocatedLogFileFolderOption]).focus();
+				} else if ((<InputBox>this._optionsMap[this._relocatedDataFileFolderOption]).isEnabled()) {
+					(<InputBox>this._optionsMap[this._relocatedDataFileFolderOption]).focus();
+				} else {
+					(<Checkbox>this._optionsMap[this._relocateDatabaseFilesOption]).focus();
+				}
+				e.stopImmediatePropagation();
+			} else if (event.equals(KeyCode.Tab)) {
+				this.focusOnFirstEnabledFooterButton();
+				e.stopImmediatePropagation();
+			}
+		});
+	}
+
+	private focusOnFirstEnabledFooterButton() {
+		if (this._scriptButton.enabled) {
+			this._scriptButton.focus();
+		} else if (this._restoreButton.enabled) {
+			this._restoreButton.focus();
+		} else {
+			this._closeButton.focus();
+		}
 	}
 
 	private databaseSelected(dbName: string): void {
@@ -420,7 +461,6 @@ export class RestoreDialog extends Modal {
 			case ServiceOptionType.boolean:
 				propertyWidget = this.createCheckBoxHelper(container, option.description,
 					DialogHelper.getBooleanValueFromStringOrBoolean(option.defaultValue), () => this.onBooleanOptionChecked(optionName));
-				this._register(attachCheckboxStyler(propertyWidget, this._themeService));
 				break;
 			case ServiceOptionType.category:
 				propertyWidget = this.createSelectBoxHelper(container, option.description, option.categoryValues.map(c => c.displayName), DialogHelper.getCategoryDisplayName(option.categoryValues, option.defaultValue));
@@ -460,7 +500,11 @@ export class RestoreDialog extends Modal {
 	private createCheckBoxHelper(container: Builder, label: string, isChecked: boolean, onCheck: (viaKeyboard: boolean) => void): Checkbox {
 		let checkbox: Checkbox;
 		container.div({ class: 'dialog-input-section' }, (inputCellContainer) => {
-			checkbox = DialogHelper.createCheckBox(inputCellContainer, label, 'restore-checkbox', isChecked, onCheck);
+			checkbox = new Checkbox(inputCellContainer.getHTMLElement(), {
+				label: label,
+				checked: isChecked,
+				onChange: onCheck
+			});
 		});
 		return checkbox;
 	}
@@ -540,7 +584,7 @@ export class RestoreDialog extends Modal {
 
 		if (!isSame) {
 			this.viewModel.selectedBackupSets = selectedFiles;
-			this.validateRestore(false);
+			this.validateRestore(false, true);
 		}
 	}
 
@@ -561,11 +605,18 @@ export class RestoreDialog extends Modal {
 			this.onFilePathLoseFocus(params);
 		}));
 
-		this._register(DOM.addDisposableListener(this._browseFileButton.getElement(), DOM.EventType.CLICK, () => {
-			if (this._browseFileButton.enabled) {
+		this._browseFileButton.addListener(DOM.EventType.CLICK, () => {
+			this.onFileBrowserRequested();
+		});
+
+		this._browseFileButton.addListener(DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			var event = new StandardKeyboardEvent(e);
+			if (event.keyCode === KeyCode.Enter) {
 				this.onFileBrowserRequested();
+				event.preventDefault();
+				event.stopPropagation();
 			}
-		}));
+		});
 
 		this._register(this._sourceDatabaseSelectBox.onDidSelect(selectedDatabase => {
 			this.onSourceDatabaseChanged(selectedDatabase.selected);
@@ -587,7 +638,7 @@ export class RestoreDialog extends Modal {
 
 	private onFileBrowsed(filepath: string) {
 		var oldFilePath = this._filePathInputBox.value;
-		if (DialogHelper.isNullOrWhiteSpace(this._filePathInputBox.value)) {
+		if (strings.isFalsyOrWhitespace(this._filePathInputBox.value)) {
 			this._filePathInputBox.value = filepath;
 		} else {
 			this._filePathInputBox.value = this._filePathInputBox.value + ', ' + filepath;
@@ -615,7 +666,6 @@ export class RestoreDialog extends Modal {
 	private onSourceDatabaseChanged(selectedDatabase: string) {
 		this.viewModel.sourceDatabaseName = selectedDatabase;
 		this.viewModel.selectedBackupSets = null;
-		this.viewModel.resetTailLogBackupFile();
 		this.validateRestore(true);
 	}
 
@@ -635,7 +685,8 @@ export class RestoreDialog extends Modal {
 		return this._restoreFromSelectBox.value === this._databaseTitle;
 	}
 
-	public validateRestore(overwriteTargetDatabase: boolean = false): void {
+	public validateRestore(overwriteTargetDatabase: boolean = false, isBackupFileCheckboxChanged: boolean = false): void {
+		this._isBackupFileCheckboxChanged = isBackupFileCheckboxChanged;
 		this.showSpinner();
 		this._restoreButton.enabled = false;
 		this._scriptButton.enabled = false;
@@ -679,6 +730,7 @@ export class RestoreDialog extends Modal {
 		this.onRestoreFromChanged(this._databaseTitle);
 		this._sourceDatabaseSelectBox.select(0);
 		this._panel.showTab(this._generalTabId);
+		this._isBackupFileCheckboxChanged = false;
 		this.removeErrorMessage();
 		this.resetRestoreContent();
 	}
@@ -688,7 +740,7 @@ export class RestoreDialog extends Modal {
 		this._ownerUri = ownerUri;
 
 		this.show();
-		this._filePathInputBox.focus();
+		this._restoreFromSelectBox.focus();
 	}
 
 	protected layout(height?: number): void {
@@ -771,45 +823,59 @@ export class RestoreDialog extends Modal {
 			}
 
 			this._fileListData.push(data);
+
+			// Select the first row for the table by default
+			this._fileListTable.setSelectedRows([0]);
+			this._fileListTable.setActiveCell(0, 0);
 		}
 	}
 
 	private updateBackupSetsToRestore(backupSetsToRestore: data.DatabaseFileInfo[]) {
-		this._restorePlanData.clear();
-		if (backupSetsToRestore && backupSetsToRestore.length > 0) {
-			if (!this._restorePlanColumn) {
-				let firstRow = backupSetsToRestore[0];
-				this._restorePlanColumn = firstRow.properties.map(item => {
-					return {
-						id: item.propertyName,
-						name: item.propertyDisplayName,
-						field: item.propertyName
-					};
-				});
-
-				let checkboxSelectColumn = new CheckboxSelectColumn({ title: this._restoreLabel });
-				this._register(attachCheckboxStyler(checkboxSelectColumn, this._themeService));
-				this._restorePlanColumn.unshift(checkboxSelectColumn.getColumnDefinition());
-				this._restorePlanTable.columns = this._restorePlanColumn;
-				this._restorePlanTable.registerPlugin(checkboxSelectColumn);
-				this._restorePlanTable.autosizeColumns();
-			}
-
-			let data = [];
+		if (this._isBackupFileCheckboxChanged) {
 			let selectedRow = [];
 			for (let i = 0; i < backupSetsToRestore.length; i++) {
-				let backupFile = backupSetsToRestore[i];
-				let newData = {};
-				for (let j = 0; j < backupFile.properties.length; j++) {
-					newData[backupFile.properties[j].propertyName] = backupFile.properties[j].propertyValueDisplayName;
-				}
-				data.push(newData);
-				if (backupFile.isSelected) {
+				if (backupSetsToRestore[i].isSelected) {
 					selectedRow.push(i);
 				}
 			}
-			this._restorePlanData.push(data);
 			this._restorePlanTable.setSelectedRows(selectedRow);
+		} else {
+			this._restorePlanData.clear();
+			if (backupSetsToRestore && backupSetsToRestore.length > 0) {
+				if (!this._restorePlanColumn) {
+					let firstRow = backupSetsToRestore[0];
+					this._restorePlanColumn = firstRow.properties.map(item => {
+						return {
+							id: item.propertyName,
+							name: item.propertyDisplayName,
+							field: item.propertyName
+						};
+					});
+
+					let checkboxSelectColumn = new CheckboxSelectColumn({ title: this._restoreLabel, toolTip: this._restoreLabel, width: 15 });
+					this._restorePlanColumn.unshift(checkboxSelectColumn.getColumnDefinition());
+					this._restorePlanTable.columns = this._restorePlanColumn;
+					this._restorePlanTable.registerPlugin(checkboxSelectColumn);
+					this._restorePlanTable.autosizeColumns();
+				}
+
+				let data = [];
+				let selectedRow = [];
+				for (let i = 0; i < backupSetsToRestore.length; i++) {
+					let backupFile = backupSetsToRestore[i];
+					let newData = {};
+					for (let j = 0; j < backupFile.properties.length; j++) {
+						newData[backupFile.properties[j].propertyName] = backupFile.properties[j].propertyValueDisplayName;
+					}
+					data.push(newData);
+					if (backupFile.isSelected) {
+						selectedRow.push(i);
+					}
+				}
+				this._restorePlanData.push(data);
+				this._restorePlanTable.setSelectedRows(selectedRow);
+				this._restorePlanTable.setActiveCell(selectedRow[0], 0);
+			}
 		}
 	}
 }

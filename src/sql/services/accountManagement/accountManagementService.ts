@@ -9,17 +9,19 @@ import * as data from 'data';
 import * as nls from 'vs/nls';
 import * as platform from 'vs/platform/registry/common/platform';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
-import AccountStore from 'sql/services/accountManagement/accountStore';
+
 import Event, { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { Memento, Scope as MementoScope } from 'vs/workbench/common/memento';
-import { ISqlOAuthService } from 'sql/common/sqlOAuthService';
+
+import AccountStore from 'sql/services/accountManagement/accountStore';
 import { AccountDialogController } from 'sql/parts/accountManagement/accountDialog/accountDialogController';
+import { AutoOAuthDialogController } from 'sql/parts/accountManagement/autoOAuthDialog/autoOAuthDialogController';
 import { AccountListStatusbarItem } from 'sql/parts/accountManagement/accountListStatusbar/accountListStatusbarItem';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
-import { warn } from 'sql/base/common/log';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -30,9 +32,8 @@ export class AccountManagementService implements IAccountManagementService {
 	public _serviceBrand: any;
 	private _accountStore: AccountStore;
 	private _accountDialogController: AccountDialogController;
+	private _autoOAuthDialogController: AutoOAuthDialogController;
 	private _mementoContext: Memento;
-	private _oAuthCallbacks: { [eventId: string]: { resolve, reject } } = {};
-	private _oAuthEventId: number = 0;
 
 	// EVENT EMITTERS //////////////////////////////////////////////////////
 	private _addAccountProviderEmitter: Emitter<AccountProviderAddedEventParams>;
@@ -49,10 +50,8 @@ export class AccountManagementService implements IAccountManagementService {
 		private _mementoObj: object,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService private _storageService: IStorageService,
-		@ISqlOAuthService private _oAuthService: ISqlOAuthService
+		@IClipboardService private _clipboardService: IClipboardService,
 	) {
-		let self = this;
-
 		// Create the account store
 		if (!this._mementoObj) {
 			this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO);
@@ -66,33 +65,101 @@ export class AccountManagementService implements IAccountManagementService {
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
 
 		// Register status bar item
-		// FEATURE FLAG TOGGLE
-		if (process.env['VSCODE_DEV']) {
-			let statusbarDescriptor = new statusbar.StatusbarItemDescriptor(
-				AccountListStatusbarItem,
-				statusbar.StatusbarAlignment.LEFT,
-				15000 /* Highest Priority */
-			);
-			(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(statusbarDescriptor);
-		}
+		let statusbarDescriptor = new statusbar.StatusbarItemDescriptor(
+			AccountListStatusbarItem,
+			statusbar.StatusbarAlignment.LEFT,
+			15000 /* Highest Priority */
+		);
+		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(statusbarDescriptor);
+	}
 
-		// Register event handler for OAuth completion
-		this._oAuthService.registerOAuthCallback((event, args) => {
-			self.onOAuthResponse(args);
-		});
+	private get autoOAuthDialogController(): AutoOAuthDialogController {
+		// If the add account dialog hasn't been defined, create a new one
+		if (!this._autoOAuthDialogController) {
+			this._autoOAuthDialogController = this._instantiationService.createInstance(AutoOAuthDialogController);
+		}
+		return this._autoOAuthDialogController;
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
+	/**
+	 * Called from an account provider (via extension host -> main thread interop) when an
+	 * account's properties have been updated (usually when the account goes stale).
+	 * @param {Account} updatedAccount Account with the updated properties
+	 */
+	public accountUpdated(updatedAccount: data.Account): Thenable<void> {
+		let self = this;
+
+		// 1) Update the account in the store
+		// 2a) If the account was added, then the account provider incorrectly called this method.
+		//     Remove the account
+		// 2b) If the account was modified, then update it in the local cache and notify any
+		//     listeners that the account provider's list changed
+		// 3) Handle any errors
+		return this.doWithProvider(updatedAccount.key.providerId, provider => {
+			return self._accountStore.addOrUpdate(updatedAccount)
+				.then(result => {
+					if (result.accountAdded) {
+						self._accountStore.remove(updatedAccount.key);
+						return Promise.reject('Called with a new account!');
+					}
+					if (result.accountModified) {
+						self.spliceModifiedAccount(provider, result.changedAccount);
+						self.fireAccountListUpdate(provider, false);
+					}
+					return Promise.resolve();
+				});
+		}).then(
+			() => { },
+			reason => {
+				console.warn(`Account update handler encountered error: ${reason}`);
+			}
+			);
+
+	}
+
 	/**
 	 * Asks the requested provider to prompt for an account
 	 * @param {string} providerId ID of the provider to ask to prompt for an account
 	 * @return {Thenable<Account>} Promise to return an account
 	 */
-	public addAccount(providerId: string): Thenable<data.Account> {
+	public addAccount(providerId: string): Thenable<void> {
 		let self = this;
 
 		return this.doWithProvider(providerId, (provider) => {
 			return provider.provider.prompt()
+				.then(account => self._accountStore.addOrUpdate(account))
+				.then(result => {
+					if (result.accountAdded) {
+						// Add the account to the list
+						provider.accounts.push(result.changedAccount);
+					}
+					if (result.accountModified) {
+						self.spliceModifiedAccount(provider, result.changedAccount);
+					}
+
+					self.fireAccountListUpdate(provider, result.accountAdded);
+				})
+				.then(null, err => {
+					// On error, check to see if the error is because the user cancelled. If so, just ignore
+					if ('userCancelledSignIn' in err) {
+						return Promise.resolve();
+					}
+					return Promise.reject(err);
+				});
+		});
+	}
+
+	/**
+	 * Asks the requested provider to refresh an account
+	 * @param {Account} account account to refresh
+	 * @return {Thenable<Account>} Promise to return an account
+	 */
+	public refreshAccount(account: data.Account): Thenable<data.Account> {
+		let self = this;
+
+		return this.doWithProvider(account.key.providerId, (provider) => {
+			return provider.provider.refresh(account)
 				.then(account => self._accountStore.addOrUpdate(account))
 				.then(result => {
 					if (result.accountAdded) {
@@ -211,30 +278,49 @@ export class AccountManagementService implements IAccountManagementService {
 
 				self._accountDialogController.openAccountDialog();
 				resolve();
-			} catch(e) {
+			} catch (e) {
 				reject(e);
 			}
 		});
 	}
 
 	/**
-	 * Opens a browser window to perform the OAuth authentication
-	 * @param {string} url URL to visit that will perform the OAuth authentication
-	 * @param {boolean} silent Whether or not to perform authentication silently using browser's cookies
-	 * @return {Thenable<string>} Promise to return a authentication token on successful authentication
+	 * Begin auto OAuth device code open add account dialog
+	 * @return {TPromise<any>}	Promise that finishes when the account list dialog opens
 	 */
-	public performOAuthAuthorization(url: string, silent: boolean): Thenable<string> {
+	public beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
 		let self = this;
-		return new Promise<string>((resolve, reject) => {
-			// TODO: replace with uniqid
-			let eventId: string = `oauthEvent${self._oAuthEventId++}`;
-			self._oAuthCallbacks[eventId] = {
-				resolve: resolve,
-				reject: reject
-			};
 
-			self._oAuthService.performOAuthAuthorization(eventId, url, silent);
+		return this.doWithProvider(providerId, provider => {
+			return self.autoOAuthDialogController.openAutoOAuthDialog(providerId, title, message, userCode, uri);
 		});
+	}
+
+	/**
+	 * End auto OAuth Devide code closes add account dialog
+	 */
+	public endAutoOAuthDeviceCode(): void {
+		this.autoOAuthDialogController.closeAutoOAuthDialog();
+	}
+
+	/**
+	 * Called from the UI when a user cancels the auto OAuth dialog
+	 */
+	public cancelAutoOAuthDeviceCode(providerId: string): void {
+		this.doWithProvider(providerId, provider => provider.provider.autoOAuthCancelled())
+			.then(	// Swallow errors
+				null,
+				err => { console.warn(`Error when cancelling auto OAuth: ${err}`); }
+			)
+			.then(() => this.autoOAuthDialogController.closeAutoOAuthDialog());
+	}
+
+	/**
+	 * Copy the user code to the clipboard and open a browser to the verification URI
+	 */
+	public copyUserCodeAndOpenBrowser(userCode: string, uri: string): void {
+		this._clipboardService.writeText(userCode);
+		window.open(uri);
 	}
 
 	// SERVICE MANAGEMENT METHODS //////////////////////////////////////////
@@ -333,28 +419,13 @@ export class AccountManagementService implements IAccountManagementService {
 		this._updateAccountListEmitter.fire(eventArg);
 	}
 
-	private onOAuthResponse(args: object): void {
-		// Verify the arguments are correct
-		if (!args || args['eventId'] === undefined) {
-			warn('Received invalid OAuth event response args');
-			return;
-		}
-
-		// Find the event
-		let eventId: string = args['eventId'];
-		let eventCallbacks = this._oAuthCallbacks[eventId];
-		if (!eventCallbacks) {
-			warn('Received OAuth event response for non-existent eventId');
-			return;
-		}
-
-		// Parse the args
-		let error: string = args['error'];
-		let code: string = args['code'];
-		if (error) {
-			eventCallbacks.reject(error);
-		} else {
-			eventCallbacks.resolve(code);
+	private spliceModifiedAccount(provider: AccountProviderWithMetadata, modifiedAccount: data.Account) {
+		// Find the updated account and splice the updated one in
+		let indexToRemove: number = provider.accounts.findIndex(account => {
+			return account.key.accountId === modifiedAccount.key.accountId;
+		});
+		if (indexToRemove >= 0) {
+			provider.accounts.splice(indexToRemove, 1, modifiedAccount);
 		}
 	}
 }

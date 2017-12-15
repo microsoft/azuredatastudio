@@ -245,8 +245,10 @@ function toExtension(galleryExtension: IRawGalleryExtension, extensionsGalleryUr
 	};
 
 	return {
-		uuid: galleryExtension.extensionId,
-		id: getGalleryExtensionId(galleryExtension.publisher.publisherName, galleryExtension.extensionName),
+		identifier: {
+			id: getGalleryExtensionId(galleryExtension.publisher.publisherName, galleryExtension.extensionName),
+			uuid: galleryExtension.extensionId
+		},
 		name: galleryExtension.extensionName,
 		version: version.version,
 		date: version.lastUpdated,
@@ -263,6 +265,13 @@ function toExtension(galleryExtension: IRawGalleryExtension, extensionsGalleryUr
 			dependencies: getDependencies(version),
 			engine: getEngine(version)
 		},
+		/* __GDPR__FRAGMENT__
+			"GalleryExtensionTelemetryData2" : {
+				"index" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+				"searchText": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+				"querySource": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+			}
+		*/
 		telemetryData: {
 			index: ((query.pageNumber - 1) * query.pageSize) + index,
 			searchText: query.searchText,
@@ -311,6 +320,12 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		let text = options.text || '';
 		const pageSize = getOrDefault(options, o => o.pageSize, 50);
 
+		/* __GDPR__
+			"galleryService:query" : {
+				"type" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+				"text": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+			}
+		*/
 		this.telemetryService.publicLog('galleryService:query', { type, text });
 
 		let query = new Query()
@@ -336,6 +351,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			text = text.trim();
 
 			if (text) {
+				text = text.length < 200 ? text : text.substring(0, 200);
 				query = query.withFilter(FilterType.SearchText, text);
 			}
 
@@ -359,7 +375,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return this.queryGallery(query).then(({ galleryExtensions, total }) => {
 			const extensions = galleryExtensions.map((e, index) => toExtension(e, this.extensionsGalleryUrl, index, query, options.source));
 			const pageSize = query.pageSize;
-			const getPage = pageIndex => {
+			const getPage = (pageIndex: number) => {
 				const nextPageQuery = query.withPage(pageIndex + 1);
 				return this.queryGallery(nextPageQuery)
 					.then(({ galleryExtensions }) => galleryExtensions.map((e, index) => toExtension(e, this.extensionsGalleryUrl, index, nextPageQuery, options.source)));
@@ -369,8 +385,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		});
 	}
 
-	private async queryGallery(query: Query): TPromise<{ galleryExtensions: IRawGalleryExtension[], total: number; }> {
-		const commonHeaders = await this.commonHTTPHeaders;
+	private queryGallery(query: Query): TPromise<{ galleryExtensions: IRawGalleryExtension[], total: number; }> {
+		const commonHeaders = this.commonHTTPHeaders;
 		const data = JSON.stringify(query.raw);
 		const headers = assign({}, commonHeaders, {
 			'Content-Type': 'application/json',
@@ -379,45 +395,40 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			'Content-Length': data.length
 		});
 
-		const context = await this.requestService.request({
+		return this.requestService.request({
 			type: 'POST',
 			url: this.api('/extensionquery'),
 			data,
 			headers
+		}).then(context => {
+
+			if (context.res.statusCode >= 400 && context.res.statusCode < 500) {
+				return { galleryExtensions: [], total: 0 };
+			}
+
+			return asJson<IRawGalleryQueryResult>(context).then(result => {
+				const r = result.results[0];
+				const galleryExtensions = r.extensions;
+				const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0];
+				const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0;
+
+				return { galleryExtensions, total };
+			});
 		});
-
-		if (context.res.statusCode >= 400 && context.res.statusCode < 500) {
-			return { galleryExtensions: [], total: 0 };
-		}
-
-		const result = await asJson<IRawGalleryQueryResult>(context);
-		const r = result.results[0];
-		const galleryExtensions = r.extensions;
-		const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0];
-		const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0;
-
-		return { galleryExtensions, total };
 	}
 
-	async reportStatistic(publisher: string, name: string, version: string, type: StatisticType): TPromise<void> {
+	reportStatistic(publisher: string, name: string, version: string, type: StatisticType): TPromise<void> {
 		if (!this.isEnabled()) {
-			return;
+			return TPromise.as(null);
 		}
 
-		try {
-			const headers = {
-				...await this.commonHTTPHeaders,
-				Accept: '*/*;api-version=4.0-preview.1'
-			};
+		const headers = { ...this.commonHTTPHeaders, Accept: '*/*;api-version=4.0-preview.1' };
 
-			await this.requestService.request({
-				type: 'POST',
-				url: this.api(`/publishers/${publisher}/extensions/${name}/${version}/stats?statType=${type}`),
-				headers
-			});
-		} catch (err) {
-			// noop
-		}
+		return this.requestService.request({
+			type: 'POST',
+			url: this.api(`/publishers/${publisher}/extensions/${name}/${version}/stats?statType=${type}`),
+			headers
+		}).then(null, () => null);
 	}
 
 	download(extension: IGalleryExtension): TPromise<string> {
@@ -425,7 +436,15 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			const zipPath = path.join(tmpdir(), uuid.generateUuid());
 			const data = getGalleryExtensionTelemetryData(extension);
 			const startTime = new Date().getTime();
-			const log = duration => this.telemetryService.publicLog('galleryService:downloadVSIX', assign(data, { duration }));
+			/* __GDPR__
+				"galleryService:downloadVSIX" : {
+					"duration": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
+					"${include}": [
+						"${GalleryExtensionTelemetryData}"
+					]
+				}
+			*/
+			const log = (duration: number) => this.telemetryService.publicLog('galleryService:downloadVSIX', assign(data, { duration }));
 
 			return this.getAsset(extension.assets.download)
 				.then(context => download(zipPath, context))
@@ -466,7 +485,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			.withFilter(FilterType.Target, 'Microsoft.VisualStudio.Code')
 			.withFilter(FilterType.ExcludeWithFlags, flagsToString(Flags.Unpublished))
 			.withAssetTypes(AssetType.Manifest, AssetType.VSIX)
-			.withFilter(FilterType.ExtensionId, extension.uuid);
+			.withFilter(FilterType.ExtensionId, extension.identifier.uuid);
 
 		return this.queryGallery(query).then(({ galleryExtensions }) => {
 			const [rawExtension] = galleryExtensions;
@@ -506,7 +525,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			for (let index = 0; index < result.galleryExtensions.length; index++) {
 				const rawExtension = result.galleryExtensions[index];
 				if (ids.indexOf(rawExtension.extensionId) === -1) {
-					dependencies.push(toExtension(rawExtension, this.extensionsGalleryUrl, index, query));
+					dependencies.push(toExtension(rawExtension, this.extensionsGalleryUrl, index, query, 'dependencies'));
 					ids.push(rawExtension.extensionId);
 				}
 			}
@@ -534,7 +553,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 						dep.properties.dependencies.forEach(d => dependenciesSet.add(d));
 					}
 				}
-				result = distinct(result.concat(loadedDependencies), d => d.uuid);
+				result = distinct(result.concat(loadedDependencies), d => d.identifier.uuid);
 				const dependencies: string[] = [];
 				dependenciesSet.forEach(d => !ExtensionGalleryService.hasExtensionByName(result, d) && dependencies.push(d));
 				return this.getDependenciesReccursively(dependencies, result, root);
@@ -565,7 +584,20 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				}
 
 				const message = getErrorMessage(err);
+				/* __GDPR__
+					"galleryService:requestError" : {
+						"url" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+						"cdn": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+						"message": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+					}
+				*/
 				this.telemetryService.publicLog('galleryService:requestError', { url, cdn: true, message });
+				/* __GDPR__
+					"galleryService:cdnFallback" : {
+						"url" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+						"message": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+					}
+				*/
 				this.telemetryService.publicLog('galleryService:cdnFallback', { url, message });
 
 				const fallbackOptions = assign({}, options, { url: fallbackUrl });
@@ -575,6 +607,13 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					}
 
 					const message = getErrorMessage(err);
+					/* __GDPR__
+						"galleryService:requestError" : {
+							"url" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+							"cdn": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+							"message": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+						}
+					*/
 					this.telemetryService.publicLog('galleryService:requestError', { url: fallbackUrl, cdn: false, message });
 					return TPromise.wrapError<IRequestContext>(err);
 				});

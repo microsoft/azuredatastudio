@@ -51,6 +51,11 @@
 	padding-bottom: 1em;
 }
 
+#messageTable {
+	-webkit-user-select: text;
+	user-select: text;
+}
+
 .resultsMessageValue {
 	white-space: pre-line;
 }

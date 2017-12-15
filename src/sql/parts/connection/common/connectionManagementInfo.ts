@@ -29,7 +29,7 @@ export class ConnectionManagementInfo {
 	/**
 	 * Callback for when a connection notification is received.
 	 */
-	public connectHandler: (result: boolean, errorMessage?: string, errorCode?: number) => void;
+	public connectHandler: (result: boolean, errorMessage?: string, errorCode?: number, callStack?: string) => void;
 
 	/**
 	 * Information about the SQL Server instance.

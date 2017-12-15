@@ -17,12 +17,10 @@ import { ConnectionManagementInfo } from 'sql/parts/connection/common/connection
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
-import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
-import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { AngularEventType } from 'sql/services/angularEventing/angularEventingService';
+import { AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
 
 import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'data';
 
@@ -31,7 +29,8 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
+import { ConfigurationEditingService, IConfigurationValue } from 'vs/workbench/services/configuration/node/configurationEditingService'
 import { IMessageService } from 'vs/platform/message/common/message';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -127,9 +126,13 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _workspaceContextService: IWorkspaceContextService;
 	private _storageService: IStorageService;
 	private _capabilitiesService: ICapabilitiesService;
+	private _configurationEditingService: ConfigurationEditingService;
 
 	private _updatePage = new Emitter<void>();
 	public readonly onUpdatePage: Event<void> = this._updatePage.event;
+
+	private _onDeleteWidget = new Emitter<string>();
+	public readonly onDeleteWidget: Event<string> = this._onDeleteWidget.event;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
@@ -145,6 +148,7 @@ export class DashboardServiceInterface implements OnDestroy {
 		this._workspaceContextService = this._bootstrapService.workspaceContextService;
 		this._storageService = this._bootstrapService.storageService;
 		this._capabilitiesService = this._bootstrapService.capabilitiesService;
+		this._configurationEditingService = this._bootstrapService.configurationEditorService;
 	}
 
 	ngOnDestroy() {
@@ -153,6 +157,10 @@ export class DashboardServiceInterface implements OnDestroy {
 
 	public get messageService(): IMessageService {
 		return this._messageService;
+	}
+
+	public get configurationEditingService(): ConfigurationEditingService {
+		return this._configurationEditingService;
 	}
 
 	public get metadataService(): SingleConnectionMetadataService {
@@ -195,7 +203,7 @@ export class DashboardServiceInterface implements OnDestroy {
 		return this._storageService;
 	}
 
-	public get CapabilitiesService(): ICapabilitiesService {
+	public get capabilitiesService(): ICapabilitiesService {
 		return this._capabilitiesService;
 	}
 
@@ -241,13 +249,17 @@ export class DashboardServiceInterface implements OnDestroy {
 	 * Get settings for given string
 	 * @param type string of setting to get from dashboard settings; i.e dashboard.{type}
 	 */
-	public getSettings(type: string): { widgets: Array<WidgetConfig>, properties: boolean | IPropertiesConfig[] } {
-		let config = this._configService.getConfiguration(DASHBOARD_SETTINGS);
-		return config[type];
+	public getSettings<T>(type: string): T {
+		let config = this._configService.getValue<T>([DASHBOARD_SETTINGS, type].join('.'));
+		return config;
 	}
 
-	private handleDashboardEvent(event: AngularEventType): void {
-		switch (event) {
+	public writeSettings(key: string, value: any, target: ConfigurationTarget) {
+		this._configurationEditingService.writeConfiguration(target, { key: DASHBOARD_SETTINGS + '.' + key + '.widgets', value });
+	}
+
+	private handleDashboardEvent(event: IAngularEvent): void {
+		switch (event.event) {
 			case AngularEventType.NAV_DATABASE:
 				this.connectionManagementService.changeDatabase(this.connectionManagementService.connectionInfo.connectionProfile.databaseName).then(
 					result => {
@@ -269,6 +281,8 @@ export class DashboardServiceInterface implements OnDestroy {
 			case AngularEventType.NAV_SERVER:
 				this._router.navigate(['server-dashboard']);
 				break;
+			case AngularEventType.DELETE_WIDGET:
+				this._onDeleteWidget.fire(event.payload.id);
 		}
 	}
 }

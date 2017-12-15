@@ -2,12 +2,12 @@
 
 import 'vs/css!vs/base/browser/ui/checkbox/checkbox';
 
-
 import { mixin } from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
 import { ICheckboxStyles } from 'vs/base/browser/ui/checkbox/checkbox';
-import { Color } from 'vs/base/common/color';
 import * as strings from 'vs/base/common/strings';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, ICheckboxStyles {
 	columnId?: string;
@@ -21,24 +21,23 @@ const defaultOptions: ICheckboxSelectColumnOptions = {
 	columnId: '_checkbox_selector',
 	cssClass: null,
 	toolTip: nls.localize('selectDeselectAll', 'Select/Deselect All'),
-	width: 30,
-	inputActiveOptionBorder: Color.fromHex('#007ACC')
+	width: 30
 };
 
-const checkBoxTemplate = `<div style="display: flex; align-items: center; flex-direction: column">
-							<div style="border-color: {0}" role="checkbox" aria-checked="{1}" aria-label="" class="custom-checkbox sql-checkbox {2}"></div>
-						</div>`;
+const checkboxTemplate = `
+							<div style="display: flex; align-items: center; flex-direction: column">
+								<input type="checkbox" {0}>
+							</div>
+`;
 
 export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	private _options: ICheckboxSelectColumnOptions;
 	private _grid: Slick.Grid<T>;
 	private _handler = new Slick.EventHandler();
 	private _selectedRowsLookup = {};
-	private _checkboxTemplate: string;
 
-	constructor(options?: Slick.PluginOptions) {
+	constructor(options?: ICheckboxSelectColumnOptions) {
 		this._options = mixin(options, defaultOptions, false);
-		this.applyStyles();
 	}
 
 	public init(grid: Slick.Grid<T>): void {
@@ -74,11 +73,11 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 		if (!this._options.title) {
 			if (selectedRows.length && selectedRows.length === this._grid.getDataLength()) {
 				this._grid.updateColumnHeader(this._options.columnId,
-					strings.format(this._checkboxTemplate, 'true', 'checked'),
+					strings.format(checkboxTemplate, 'checked'),
 					this._options.toolTip);
 			} else {
 				this._grid.updateColumnHeader(this._options.columnId,
-					strings.format(this._checkboxTemplate, 'true', 'unchecked'),
+					strings.format(checkboxTemplate, ''),
 					this._options.toolTip);
 			}
 		}
@@ -94,12 +93,22 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 				e.preventDefault();
 				e.stopImmediatePropagation();
 			}
+		} else {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Enter)) {
+				// clicking on a row select checkbox
+				if (this._grid.getColumns()[args.cell].id === this._options.columnId) {
+					this.toggleRowSelection(args.row);
+					e.stopPropagation();
+					e.stopImmediatePropagation();
+				}
+			}
 		}
 	}
 
 	private handleClick(e: Event, args: Slick.OnClickEventArgs<T>): void {
 		// clicking on a row select checkbox
-		if (this._grid.getColumns()[args.cell].id === this._options.columnId && $(e.target).is('.custom-checkbox')) {
+		if (this._grid.getColumns()[args.cell].id === this._options.columnId && $(e.target).is('input[type="checkbox"]')) {
 			// if editing, try to commit
 			if (this._grid.getEditorLock().isActive() && !this._grid.getEditorLock().commitCurrentEdit()) {
 				e.preventDefault();
@@ -122,7 +131,7 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private handleHeaderClick(e: Event, args: Slick.OnHeaderClickEventArgs<T>): void {
-		if (!this._options.title && args.column.id === this._options.columnId && $(e.target).is('.custom-checkbox')) {
+		if (!this._options.title && args.column.id === this._options.columnId && $(e.target).is('input[type="checkbox"]')) {
 			// if editing, try to commit
 			if (this._grid.getEditorLock().isActive() && !this._grid.getEditorLock().commitCurrentEdit()) {
 				e.preventDefault();
@@ -130,19 +139,19 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 				return;
 			}
 
-			if ($(e.target).is('.unchecked')) {
+			if ($(e.target).is('input[checked]')) {
 				let rows = [];
 				for (let i = 0; i < this._grid.getDataLength(); i++) {
 					rows.push(i);
 				}
 				this._grid.setSelectedRows(rows);
 				this._grid.updateColumnHeader(this._options.columnId,
-					strings.format(this._checkboxTemplate, 'true', 'checked'),
+					strings.format(checkboxTemplate, 'checked'),
 					this._options.toolTip);
 			} else {
 				this._grid.setSelectedRows([]);
 				this._grid.updateColumnHeader(this._options.columnId,
-					strings.format(this._checkboxTemplate, 'true', 'unchecked'), this._options.toolTip);
+					strings.format(checkboxTemplate, ''), this._options.toolTip);
 				e.stopPropagation();
 				e.stopImmediatePropagation();
 			}
@@ -152,7 +161,7 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	public getColumnDefinition(): Slick.Column<T> {
 		return {
 			id: this._options.columnId,
-			name: this._options.title || strings.format(this._checkboxTemplate, 'true', 'unchecked'),
+			name: this._options.title || strings.format(checkboxTemplate, ''),
 			toolTip: this._options.toolTip,
 			field: 'sel',
 			width: this._options.width,
@@ -166,24 +175,9 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	private checkboxSelectionFormatter(row, cell, value, columnDef: Slick.Column<T>, dataContext): string {
 		if (dataContext) {
 			return this._selectedRowsLookup[row]
-				? strings.format(this._checkboxTemplate, 'true', 'checked')
-				: strings.format(this._checkboxTemplate, 'true', 'unchecked');
+				? strings.format(checkboxTemplate, 'checked')
+				: strings.format(checkboxTemplate, '');
 		}
 		return null;
-	}
-
-	public style(styles: ICheckboxStyles): void {
-		if (styles.inputActiveOptionBorder) {
-			this._options.inputActiveOptionBorder = styles.inputActiveOptionBorder;
-		}
-		this.applyStyles();
-	}
-
-	protected applyStyles(): void {
-		this._checkboxTemplate = strings.format(checkBoxTemplate, this._options.inputActiveOptionBorder.toString(), '{0}', '{1}');
-		if (this._grid) {
-			this._grid.invalidateAllRows();
-			this._grid.render();
-		}
 	}
 }

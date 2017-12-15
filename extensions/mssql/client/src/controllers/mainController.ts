@@ -8,10 +8,15 @@ import vscode = require('vscode');
 import data = require('data');
 import { Constants } from '../models/constants';
 import { Serialization } from '../serialize/serialization';
-import { AzureResourceProvider } from '../resourceProvider/resourceProvider';
+import { AzureResourceProvider } from '../resourceprovider/resourceprovider';
 import { CredentialStore } from '../credentialstore/credentialstore';
 import {IExtensionConstants, Telemetry, SharedConstants, SqlToolsServiceClient, VscodeWrapper, Utils, PlatformInformation} from 'extensions-modules';
 import { LanguageClient } from 'dataprotocol-client';
+import * as fs from 'fs';
+import * as path from 'path';
+
+
+import { AzureAccountProviderService } from '../account-provider/azureAccountProviderService';
 
 /**
  * The main controller class that initializes the extension
@@ -92,77 +97,94 @@ export default class MainController implements vscode.Disposable {
 
         // initialize language service client
         return new Promise<boolean>( (resolve, reject) => {
-                const self = this;
-                SqlToolsServiceClient.instance.initialize(self._context).then(serverResult => {
 
-                    // Initialize telemetry
-                    Telemetry.initialize(self._context, new Constants());
+            let constants = new Constants();
 
-                    // telemetry for activation
-                    Telemetry.sendTelemetryEvent('ExtensionActivated', {},
-                        { serviceInstalled: serverResult.installedBeforeInitializing ? 1 : 0 }
-                    );
+            // Create the folder for storing the token caches
+            let storagePath = path.join(Utils.getDefaultLogLocation(), constants.extensionName);
+            try {
+                if (!fs.existsSync(storagePath)) {
+                    fs.mkdirSync(storagePath);
+                    console.log('Initialized Azure account extension storage.');
+                }
+            } catch(e) {
+                console.error(`Initialization of Azure account extension storage failed: ${e}`);
+                console.error('Azure accounts will not be available');
+                return;
+            }
 
-                    /*
-                    self.createSerializationClient().then(serializationClient => {
-                        let serialization = new Serialization(self._client, serializationClient);
-                        // Serialization
-                        let serializationProvider: data.SerializationProvider = {
-                            handle: 0,
-                            saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<data.SaveResultRequestResult> {
-                                return self._serialization.saveAs(saveFormat, savePath, results, appendToFile);
-                            }
-                        };
-                        data.serialization.registerProvider(serializationProvider);
-                    }, error => {
-                        Utils.logDebug('Cannot find Serialization executables. error: ' + error , MainController._extensionConstants.extensionConfigSectionName);
-                    });
+            // Create the provider service and activate
+            const accountProviderService = new AzureAccountProviderService(this._context, storagePath);
+            this._context.subscriptions.push(accountProviderService);
+            accountProviderService.activate();
 
-                    self.createResourceProviderClient().then(rpClient => {
-                        let resourceProvider = new AzureResourceProvider(self._client, rpClient);
-                        data.resources.registerResourceProvider({
-                            displayName: 'Azure SQL Resource Provider', // TODO Localize
-                            id: 'Microsoft.Azure.SQL.ResourceProvider',
-                            settings: {
+            const self = this;
+            SqlToolsServiceClient.instance.initialize(self._context).then(serverResult => {
 
-                            }
-                        }, resourceProvider);
-                        Utils.logDebug('resourceProvider registered', MainController._extensionConstants.extensionConfigSectionName);
-                    }, error => {
-                        Utils.logDebug('Cannot find ResourceProvider executables. error: ' + error , MainController._extensionConstants.extensionConfigSectionName);
-                    });
-                    */
+                // Initialize telemetry
+                Telemetry.initialize(self._context, new Constants());
 
-                    self.createCredentialClient().then(credentialClient => {
+                // telemetry for activation
+                Telemetry.sendTelemetryEvent('ExtensionActivated', {},
+                    { serviceInstalled: serverResult.installedBeforeInitializing ? 1 : 0 }
+                );
 
-                        self._credentialStore.languageClient = credentialClient;
-                        let credentialProvider: data.CredentialProvider = {
-                            handle: 0,
-                            saveCredential(credentialId: string, password: string): Thenable<boolean> {
-                                return self._credentialStore.saveCredential(credentialId, password);
-                            },
-                            readCredential(credentialId: string): Thenable<data.Credential> {
-                                return self._credentialStore.readCredential(credentialId);
-                            },
-                            deleteCredential(credentialId: string): Thenable<boolean> {
-                                return self._credentialStore.deleteCredential(credentialId);
-                            }
-                        };
-                        data.credentials.registerProvider(credentialProvider);
-                        Utils.logDebug('credentialProvider registered', MainController._extensionConstants.extensionConfigSectionName);
-                     }, error => {
-                         Utils.logDebug('Cannot find credentials executables. error: ' + error , MainController._extensionConstants.extensionConfigSectionName);
-                     });
-
-
-
-                    Utils.logDebug(SharedConstants.extensionActivated, MainController._extensionConstants.extensionConfigSectionName);
-                    self._initialized = true;
-                    resolve(true);
-                }).catch(err => {
-                    Telemetry.sendTelemetryEventForException(err, 'initialize', MainController._extensionConstants.extensionConfigSectionName);
-                    reject(err);
+                self.createSerializationClient().then(serializationClient => {
+                    let serialization = new Serialization(self._client, serializationClient);
+                    // Serialization
+                    let serializationProvider: data.SerializationProvider = {
+                        handle: 0,
+                        saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<data.SaveResultRequestResult> {
+                            return self._serialization.saveAs(saveFormat, savePath, results, appendToFile);
+                        }
+                    };
+                    data.serialization.registerProvider(serializationProvider);
+                }, error => {
+                    Utils.logDebug('Cannot find Serialization executables. error: ' + error , MainController._extensionConstants.extensionConfigSectionName);
                 });
+
+                self.createResourceProviderClient().then(rpClient => {
+                    let resourceProvider = new AzureResourceProvider(self._client, rpClient);
+                    data.resources.registerResourceProvider({
+                        displayName: 'Azure SQL Resource Provider', // TODO Localize
+                        id: 'Microsoft.Azure.SQL.ResourceProvider',
+                        settings: {
+
+                        }
+                    }, resourceProvider);
+                    Utils.logDebug('resourceProvider registered', MainController._extensionConstants.extensionConfigSectionName);
+                }, error => {
+                    Utils.logDebug('Cannot find ResourceProvider executables. error: ' + error , MainController._extensionConstants.extensionConfigSectionName);
+                });
+
+                self.createCredentialClient().then(credentialClient => {
+
+                    self._credentialStore.languageClient = credentialClient;
+                    let credentialProvider: data.CredentialProvider = {
+                        handle: 0,
+                        saveCredential(credentialId: string, password: string): Thenable<boolean> {
+                            return self._credentialStore.saveCredential(credentialId, password);
+                        },
+                        readCredential(credentialId: string): Thenable<data.Credential> {
+                            return self._credentialStore.readCredential(credentialId);
+                        },
+                        deleteCredential(credentialId: string): Thenable<boolean> {
+                            return self._credentialStore.deleteCredential(credentialId);
+                        }
+                    };
+                    data.credentials.registerProvider(credentialProvider);
+                    Utils.logDebug('credentialProvider registered', MainController._extensionConstants.extensionConfigSectionName);
+                    }, error => {
+                        Utils.logDebug('Cannot find credentials executables. error: ' + error , MainController._extensionConstants.extensionConfigSectionName);
+                    });
+
+                Utils.logDebug(SharedConstants.extensionActivated, MainController._extensionConstants.extensionConfigSectionName);
+                self._initialized = true;
+                resolve(true);
+            }).catch(err => {
+                Telemetry.sendTelemetryEventForException(err, 'initialize', MainController._extensionConstants.extensionConfigSectionName);
+                reject(err);
+            });
         });
     }
 }

@@ -73,19 +73,14 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	 * Return actions for connection elements
 	 */
 	public getConnectionActions(tree: ITree, element: ConnectionProfile): IAction[] {
-		let actions: IAction[] = [
-			this._instantiationService.createInstance(ManageConnectionAction, ManageConnectionAction.ID, ManageConnectionAction.LABEL),
-			this._instantiationService.createInstance(NewQueryAction, NewQueryAction.ID, NewQueryAction.LABEL),
-		];
-
+		let actions: IAction[] = [];
+		actions.push(this._instantiationService.createInstance(ManageConnectionAction, ManageConnectionAction.ID, ManageConnectionAction.LABEL));
+		actions.push(this._instantiationService.createInstance(NewQueryAction, NewQueryAction.ID, NewQueryAction.LABEL));
 		if (this._connectionManagementService.isProfileConnected(element)) {
 			actions.push(this._instantiationService.createInstance(DisconnectConnectionAction, DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL));
 		}
-
-		actions.push(
-			this._instantiationService.createInstance(DeleteConnectionAction, DeleteConnectionAction.ID, DeleteConnectionAction.DELETE_CONNECTION_LABEL, element),
-			this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, tree, element)
-		);
+		actions.push(this._instantiationService.createInstance(DeleteConnectionAction, DeleteConnectionAction.ID, DeleteConnectionAction.DELETE_CONNECTION_LABEL, element));
+		actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, tree, element));
 
 		if (process.env['VSCODE_DEV']) {
 			actions.push(this._instantiationService.createInstance(NewProfilerAction, NewProfilerAction.ID, NewProfilerAction.LABEL, NewProfilerAction.ICON));
@@ -118,7 +113,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 			}
 		}
 		actions.push(this._instantiationService.createInstance(OENewQueryAction, OENewQueryAction.ID, OENewQueryAction.LABEL, OENewQueryAction.ICON));
-		let scriptMap: Map<NodeType, any[]> = ObjectExplorerActionUtilities.getScriptMap();
+		let scriptMap: Map<NodeType, any[]> = ObjectExplorerActionUtilities.getScriptMap(treeNode);
 		let supportedActions = scriptMap.get(treeNode.nodeTypeId);
 		let self = this;
 

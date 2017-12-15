@@ -52,78 +52,59 @@ suite('ExtHostDataProtocol', function () {
 
 	suiteSetup(() => {
 
-		threadService = new TestThreadService();
-		let instantiationService = new TestInstantiationService();
-		instantiationService.stub(IThreadService, threadService);
-		instantiationService.stub(IMarkerService, MarkerService);
-		instantiationService.stub(IHeapService, {
-			_serviceBrand: undefined,
-			trackRecursive(args) {
-				// nothing
-				return args;
-			}
-		});
+		// threadService = new TestThreadService();
+		// let instantiationService = new TestInstantiationService();
+		// instantiationService.stub(IThreadService, threadService);
+		// instantiationService.stub(IMarkerService, MarkerService);
+		// instantiationService.stub(IHeapService, {
+		// 	_serviceBrand: undefined,
+		// 	trackRecursive(args) {
+		// 		// nothing
+		// 		return args;
+		// 	}
+		// });
 
-		originalErrorHandler = errorHandler.getUnexpectedErrorHandler();
-		setUnexpectedErrorHandler(() => { });
+		// originalErrorHandler = errorHandler.getUnexpectedErrorHandler();
+		// setUnexpectedErrorHandler(() => { });
 
-		const extHostDocumentsAndEditors = new ExtHostDocumentsAndEditors(threadService);
-		extHostDocumentsAndEditors.$acceptDocumentsAndEditorsDelta({
-			addedDocuments: [{
-				isDirty: false,
-				versionId: model.getVersionId(),
-				modeId: model.getLanguageIdentifier().language,
-				url: model.uri,
-				lines: model.getValue().split(model.getEOL()),
-				EOL: model.getEOL(),
-			}]
-		});
-		const extHostDocuments = new ExtHostDocuments(threadService, extHostDocumentsAndEditors);
-		threadService.set(ExtHostContext.ExtHostDocuments, extHostDocuments);
+		// const extHostDocumentsAndEditors = new ExtHostDocumentsAndEditors(threadService);
+		// extHostDocumentsAndEditors.$acceptDocumentsAndEditorsDelta({
+		// 	addedDocuments: [{
+		// 		isDirty: false,
+		// 		versionId: model.getVersionId(),
+		// 		modeId: model.getLanguageIdentifier().language,
+		// 		url: model.uri,
+		// 		lines: model.getValue().split(model.getEOL()),
+		// 		EOL: model.getEOL(),
+		// 	}]
+		// });
+		// const extHostDocuments = new ExtHostDocuments(threadService, extHostDocumentsAndEditors);
+		// threadService.set(ExtHostContext.ExtHostDocuments, extHostDocuments);
 
-		const heapService = new ExtHostHeapService();
+		// const heapService = new ExtHostHeapService();
 
-		const commands = new ExtHostCommands(threadService, heapService);
-		threadService.set(ExtHostContext.ExtHostCommands, commands);
-		threadService.setTestInstance(MainContext.MainThreadCommands, instantiationService.createInstance(MainThreadCommands));
+		// const commands = new ExtHostCommands(threadService, heapService);
+		// threadService.set(ExtHostContext.ExtHostCommands, commands);
+		// threadService.setTestInstance(MainContext.MainThreadCommands, instantiationService.createInstance(MainThreadCommands));
 
-		const diagnostics = new ExtHostDiagnostics(threadService);
-		threadService.set(ExtHostContext.ExtHostDiagnostics, diagnostics);
+		// const diagnostics = new ExtHostDiagnostics(threadService);
+		// threadService.set(ExtHostContext.ExtHostDiagnostics, diagnostics);
 
-		extHost = new ExtHostDataProtocol(threadService);
-		threadService.set(SqlExtHostContext.ExtHostDataProtocol, extHost);
+		// extHost = new ExtHostDataProtocol(threadService);
+		// threadService.set(SqlExtHostContext.ExtHostDataProtocol, extHost);
 	});
 
 	suiteTeardown(() => {
-		setUnexpectedErrorHandler(originalErrorHandler);
-		model.dispose();
+		// setUnexpectedErrorHandler(originalErrorHandler);
+		// model.dispose();
 	});
 
 	teardown(function () {
-		while (disposables.length) {
-			disposables.pop().dispose();
-		}
-		return threadService.sync();
+		// while (disposables.length) {
+		// 	disposables.pop().dispose();
+		// }
+		// return threadService.sync();
 	});
 
 	// --- outline
-
-	test('DataProvider, language flavor changed', function () {
-		assert.equal(DocumentSymbolProviderRegistry.all(model).length, 0);
-		let expectedParams = <data.DidChangeLanguageFlavorParams> {
-			uri: 'myuri',
-			language: 'sql'
-		};
-		let actualParams: data.DidChangeLanguageFlavorParams = undefined;
-		extHost.onDidChangeLanguageFlavor((e => {
-			actualParams = e;
-		}));
-
-		extHost.$languageFlavorChanged(expectedParams);
-
-		assert.ok(actualParams !== undefined);
-		assert.equal(actualParams.uri, expectedParams.uri);
-		assert.equal(actualParams.flavor, expectedParams.flavor);
-		assert.equal(actualParams.language, expectedParams.language);
-	});
 });

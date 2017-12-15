@@ -1,0 +1,17 @@
+{
+	"accounts.azure.enableUsGovCloud": {
+		"type": "boolean",
+		"default": false,
+		"description": "%config.enableUsGovCloudDescription%"
+	},
+	"accounts.azure.enableChinaCloud": {
+		"type": "boolean",
+		"default": false,
+		"description": "%config.enableChinaCloudDescription%"
+	},
+	"accounts.azure.enableGermanyCloud": {
+		"type": "boolean",
+		"default": false,
+		"description": "%config.enableGermanyCloudDescription%"
+	}
+}

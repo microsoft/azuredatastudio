@@ -8,15 +8,14 @@
 import 'vs/css!./media/accountDialog';
 import 'vs/css!sql/parts/accountManagement/common/media/accountActions';
 import * as DOM from 'vs/base/browser/dom';
-import { SplitView } from 'vs/base/browser/ui/splitview/splitview';
+import { SplitView } from 'sql/base/browser/ui/splitview/splitview';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IListService } from 'vs/platform/list/browser/listService';
-import { Button } from 'vs/base/browser/ui/button/button';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import Event, { Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachListStyler, attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ActionRunner } from 'vs/base/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -25,8 +24,9 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
 import * as data from 'data';
+import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
-import { attachModalDialogStyler } from 'sql/common/theme/styler';
+import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/styler';
 import { AccountViewModel } from 'sql/parts/accountManagement/accountDialog/accountViewModel';
 import { AddAccountAction } from 'sql/parts/accountManagement/common/accountActions';
 import { AccountListRenderer, AccountListDelegate } from 'sql/parts/accountManagement/common/accountListRenderer';
@@ -67,7 +67,7 @@ export class AccountDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super(
-			localize('linkedAccounts', 'Linked Accounts'),
+			localize('linkedAccounts', 'Linked accounts'),
 			TelemetryKeys.Accounts,
 			partService,
 			telemetryService,
@@ -81,7 +81,7 @@ export class AccountDialog extends Modal {
 		this._actionRunner = new ActionRunner();
 
 		// Setup the event emitters
-		this._onAddAccountErrorEmitter = new  Emitter<string>();
+		this._onAddAccountErrorEmitter = new Emitter<string>();
 		this._onCloseEmitter = new Emitter<void>();
 
 		// Create the view model and wire up the events

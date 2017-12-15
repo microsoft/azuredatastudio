@@ -5,7 +5,7 @@
 'use strict';
 
 import * as extHostApi from 'vs/workbench/api/node/extHost.api.impl';
-import { TrieMap } from 'vs/base/common/map';
+import { TrieMap } from 'sql/base/common/map';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IInitData } from 'vs/workbench/api/node/extHost.protocol';
 import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
@@ -23,6 +23,8 @@ import { ExtHostSerializationProvider } from 'sql/workbench/api/node/extHostSeri
 import { ExtHostResourceProvider } from 'sql/workbench/api/node/extHostResourceProvider';
 import { ExtHostThreadService } from 'vs/workbench/services/thread/node/extHostThreadService';
 import * as sqlExtHostTypes from 'sql/workbench/api/node/sqlExtHostTypes';
+import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
+import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -35,9 +37,13 @@ export interface ISqlExtensionApiFactory {
 export function createApiFactory(
 	initData: IInitData,
 	threadService: ExtHostThreadService,
+	extHostWorkspace: ExtHostWorkspace,
+	extHostConfiguration: ExtHostConfiguration,
 	extensionService: ExtHostExtensionService
+
+
 ): ISqlExtensionApiFactory {
-	let vsCodeFactory = extHostApi.createApiFactory(initData, threadService, extensionService);
+	let vsCodeFactory = extHostApi.createApiFactory(initData, threadService, extHostWorkspace, extHostConfiguration, extensionService);
 
 	// Addressable instances
 	const extHostAccountManagement = threadService.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(threadService));
@@ -51,12 +57,18 @@ export function createApiFactory(
 		dataFactory: function (extension: IExtensionDescription): typeof data {
 			// namespace: accounts
 			const accounts: typeof data.accounts = {
-				performOAuthAuthorization(url: string, silent: boolean): Thenable<string> {
-					return extHostAccountManagement.$performOAuthAuthorization(url, silent);
-				},
 				registerAccountProvider(providerMetadata: data.AccountProviderMetadata, provider: data.AccountProvider): vscode.Disposable {
 					return extHostAccountManagement.$registerAccountProvider(providerMetadata, provider);
 				},
+				beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
+					return extHostAccountManagement.$beginAutoOAuthDeviceCode(providerId, title, message, userCode, uri);
+				},
+				endAutoOAuthDeviceCode(): void {
+					return extHostAccountManagement.$endAutoOAuthDeviceCode();
+				},
+				accountUpdated(updatedAccount: data.Account): void {
+					return extHostAccountManagement.$accountUpdated(updatedAccount);
+				}
 			};
 
 			// namespace: credentials
@@ -161,6 +173,11 @@ export function createApiFactory(
 						extHostDataProvider.$onScriptingComplete(provider.handle, response);
 					});
 
+					// Profiler callbacks
+					provider.profilerProvider.registerOnSessionEventsAvailable((response: data.ProfilerSessionEvents) => {
+						extHostDataProvider.$onSessionEventsAvailable(provider.handle, response);
+					});
+
 					// Complete registration
 					return extHostDataProvider.$registerProvider(provider);
 				},
@@ -180,7 +197,8 @@ export function createApiFactory(
 				EditRowState: sqlExtHostTypes.EditRowState,
 				MetadataType: sqlExtHostTypes.MetadataType,
 				TaskStatus: sqlExtHostTypes.TaskStatus,
-				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode
+				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode,
+				ScriptOperation: sqlExtHostTypes.ScriptOperation
 			};
 		}
 	};

@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { CollapsibleView, ICollapsibleViewOptions } from 'vs/workbench/parts/views/browser/views';
+import { CollapsibleView, ICollapsibleViewOptions } from 'sql/base/browser/ui/views/browser/views';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IAction, ActionRunner } from 'vs/base/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -15,7 +15,7 @@ import { CountBadge } from 'vs/base/browser/ui/countBadge/countBadge';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachBadgeStyler } from 'vs/platform/theme/common/styler';
-import { CollapsibleState } from 'vs/base/browser/ui/splitview/splitview';
+import { CollapsibleState } from 'sql/base/browser/ui/splitview/splitview';
 
 export class FixedListView<T> extends CollapsibleView {
 	private _badge: CountBadge;

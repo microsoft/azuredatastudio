@@ -1,0 +1,29 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.auto-oauth-dialog {
+	padding: 15px
+}
+
+.modal .auto-oauth-dialog .new-section {
+	padding-bottom: 30px;
+}
+
+.modal .auto-oauth-dialog .dialog-input-section {
+	display: flex;
+	padding-left: 15px;
+	padding-right: 15px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.modal .auto-oauth-dialog .dialog-input-section .dialog-label {
+	flex: 0 0 100px;
+	align-self: center;
+}
+
+.modal .auto-oauth-dialog .dialog-input-section .dialog-input {
+	flex: 1 1 auto;
+}

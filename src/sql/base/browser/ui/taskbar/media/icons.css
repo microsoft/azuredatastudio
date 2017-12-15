@@ -63,6 +63,15 @@
 	background-image: url('query-plan-inverse.svg');
 }
 
+.vs .icon.actualQueryPlan {
+	background-image: url('query-plan.svg');
+}
+
+.vs-dark .icon.actualQueryPlan,
+.hc-black .icon.actualQueryPlan {
+	background-image: url('query-plan-inverse.svg');
+}
+
 .vs .icon.createInsight {
 	background-image: url('create_insight.svg');
 }

@@ -15,7 +15,8 @@ declare module 'data' {
 
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
-		 * connections has changed. And example is for a SQL connection, the flavor changes.
+		 * connections has changed. And example is for a SQL connection, the flavor changes
+		 * to MSSQL
 		 */
 		export const onDidChangeLanguageFlavor: vscode.Event<DidChangeLanguageFlavorParams>;
 	}
@@ -396,6 +397,16 @@ declare module 'data' {
 		getViewInfo(connectionUri: string, metadata: ObjectMetadata): Thenable<ColumnMetadata[]>;
 	}
 
+	export enum ScriptOperation {
+		Select = 0,
+		Create = 1,
+		Insert = 2,
+		Update = 3,
+		Delete = 4,
+		Execute = 5,
+		Alter = 6
+	}
+
 	export interface ScriptingResult {
 		operationId: string;
 		script: string;
@@ -409,15 +420,8 @@ declare module 'data' {
 	}
 
 	export interface ScriptingProvider {
-		scriptAsSelect(connectionUri: string, metadata: ObjectMetadata, paramDetails: ScriptingParamDetails): Thenable<ScriptingResult>;
 
-		scriptAsCreate(connectionUri: string, metadata: ObjectMetadata, paramDetails: ScriptingParamDetails): Thenable<ScriptingResult>;
-
-		scriptAsInsert(connectionUri: string, metadata: ObjectMetadata, paramDetails: ScriptingParamDetails): Thenable<ScriptingResult>;
-
-		scriptAsUpdate(connectionUri: string, metadata: ObjectMetadata, paramDetails: ScriptingParamDetails): Thenable<ScriptingResult>;
-
-		scriptAsDelete(connectionUri: string, metadata: ObjectMetadata, paramDetails: ScriptingParamDetails): Thenable<ScriptingResult>;
+		scriptAsOperation(connectionUri: string, operation: ScriptOperation, metadata: ObjectMetadata, paramDetails: ScriptingParamDetails): Thenable<ScriptingResult>;
 
 		registerOnScriptingComplete(handler: (scriptingCompleteResult: ScriptingCompleteResult) => any);
 	}
@@ -464,6 +468,8 @@ declare module 'data' {
 		taskServicesProvider: TaskServicesProvider;
 
 		fileBrowserProvider: FileBrowserProvider;
+
+		profilerProvider: ProfilerProvider;
 	}
 
 	/**
@@ -505,7 +511,7 @@ declare module 'data' {
 
 	export interface QueryProvider {
 		handle: number;
-		// TODO replace this temporary queryType field to detect "MSSQL" vs "Other" with a standard definition for supported platform
+		// TODO replace this temporary queryType field with a standard definition for supported platform
 		queryType: string;
 		cancelQuery(ownerUri: string): Thenable<QueryCancelResult>;
 		runQuery(ownerUri: string, selection: ISelectionData, runOptions?: ExecutionPlanOptions): Thenable<void>;
@@ -1023,12 +1029,14 @@ declare module 'data' {
 		errorMessage: string;
 	}
 
-	export interface IProfilerProvider {
+	export interface ProfilerProvider {
 		startSession(sessionId: string): Thenable<boolean>;
 		stopSession(sessionId: string): Thenable<boolean>;
 		pauseSession(sessionId: string): Thenable<boolean>;
 		connectSession(sessionId: string): Thenable<boolean>;
 		disconnectSession(sessionId: string): Thenable<boolean>;
+
+		registerOnSessionEventsAvailable(handler: (response: ProfilerSessionEvents) => any);
 	}
 
 	export interface IProfilerTableRow {
@@ -1043,6 +1051,32 @@ declare module 'data' {
 		uri: string;
 		rowCount: number;
 		data: IProfilerTableRow;
+	}
+
+	/**
+	 * Profiler Event
+	 */
+	export interface ProfilerEvent {
+		/**
+		 * Event class name
+		 */
+		name: string;
+
+		/**
+		 * Event timestamp
+		 */
+		timestamp: string;
+
+		/**
+		 * Event values
+		 */
+		values: {};
+	}
+
+	export interface ProfilerSessionEvents {
+		sessionId: string;
+
+		events: ProfilerEvent[];
 	}
 
 	// File browser interfaces  -----------------------------------------------------------------------
@@ -1100,29 +1134,28 @@ declare module 'data' {
 		export function registerAccountProvider(providerMetadata: AccountProviderMetadata, provider: AccountProvider): vscode.Disposable;
 
 		/**
-		 * Performs OAuth via the account management service and returns the resulting authorization code
-		 * @param {string} url URL to load to begin OAuth
-		 * @param {boolean} silent Whether or not to show the browser, use false when doing initial
-		 *                  login, true when doing subsequent auth requests
-		 * @return {Thenable<string>} Promise to return the authorization code, rejects on failure
+		 * Launches a flyout dialog that will display the information on how to complete device
+		 * code OAuth login to the user. Only one flyout can be opened at once and each must be closed
+		 * by calling {@link endAutoOAuthDeviceCode}.
+		 * @param {string} providerId	ID of the provider that's requesting the flyout be opened
+		 * @param {string} title
+		 * @param {string} message
+		 * @param {string} userCode
+		 * @param {string} uri
 		 */
-		export function performOAuthAuthorization(url: string, silent: boolean): Thenable<string>;
-	}
-
-	// - ACCOUNT DATATYPES /////////////////////////////////////////////////
-	/**
-	 * Image to display for an account
-	 */
-	export interface AccountContextualLogo {
-		/**
-		 * Image to display on light theme
-		 */
-		light: string;
+		export function beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void>;
 
 		/**
-		 * Image to display on dark theme
+		 * Closes the flyout dialog opened by {@link beginAutoOAuthDeviceCode}
 		 */
-		dark: string;
+		export function endAutoOAuthDeviceCode(): void;
+
+		/**
+		 * Notifies the account management service that an account has updated (usually due to the
+		 * account going stale).
+		 * @param {Account} updatedAccount Account object with updated properties
+		 */
+		export function accountUpdated(updatedAccount: Account): void;
 	}
 
 	/**
@@ -1135,10 +1168,9 @@ declare module 'data' {
 		contextualDisplayName: string;
 
 		/**
-		 * Contents of the logo to display alongside the account. Indicates the context of the
 		 * account provider (eg, Work/School vs Microsoft Account)
 		 */
-		contextualLogo: AccountContextualLogo;
+		accountType: string;
 
 		/**
 		 * A display name that identifies the account, such as "user@contoso.com".
@@ -1192,6 +1224,18 @@ declare module 'data' {
 	}
 
 	// - ACCOUNT PROVIDER //////////////////////////////////////////////////
+	/**
+	 * Error to be used when the user has cancelled the prompt or refresh methods. When
+	 * AccountProvider.refresh or AccountProvider.prompt are rejected with this error, the error
+	 * will not be reported to the user.
+	 */
+	export interface UserCancelledSignInError extends Error {
+		/**
+		 * Type guard for differentiating user cancelled sign in errors from other errors
+		 */
+		userCancelledSignIn: boolean;
+	}
+
 	/**
 	 * Represents a provider of accounts.
 	 */
@@ -1254,6 +1298,13 @@ declare module 'data' {
 		 * @param accountKey - Key that uniquely identifies the account to clear
 		 */
 		clear(accountKey: AccountKey): Thenable<void>;
+
+		/**
+		 * Called from the account management service when the user has cancelled an auto OAuth
+		 * authorization process. Implementations should use this to cancel any polling process
+		 * and call the end OAuth method.
+		 */
+		autoOAuthCancelled(): Thenable<void>;
 	}
 
 	// Resource provider interfaces  -----------------------------------------------------------------------

@@ -12,6 +12,7 @@ const gulptslint = require('gulp-tslint');
 const gulpeslint = require('gulp-eslint');
 const tsfmt = require('typescript-formatter');
 const tslint = require('tslint');
+const vfs = require('vinyl-fs');
 
 /**
  * Hygiene works by creating cascading subsets of all our files and
@@ -53,6 +54,7 @@ const indentationFilter = [
 	'!**/*.md',
 	'!**/*.ps1',
 	'!**/*.template',
+	'!**/*.yaml',
 	'!**/*.yml',
 	'!**/lib/**',
 	'!extensions/**/*.d.ts',
@@ -92,6 +94,7 @@ const copyrightFilter = [
 	'!**/*.opts',
 	'!**/*.disabled',
 	'!build/**/*.init',
+	'!resources/linux/snap/snapcraft.yaml',
 	'!resources/win32/bin/code.js',
 	'!extensions/markdown/media/tomorrow.css',
 	'!extensions/html/server/src/modes/typescript/*'
@@ -141,7 +144,7 @@ function reportFailures(failures) {
 }
 
 gulp.task('eslint', () => {
-	return gulp.src(all, { base: '.' })
+	return vfs.src(all, { base: '.', follow: true, allowEmpty: true })
 		.pipe(filter(eslintFilter))
 		.pipe(gulpeslint('src/.eslintrc'))
 		.pipe(gulpeslint.formatEach('compact'))
@@ -151,7 +154,7 @@ gulp.task('eslint', () => {
 gulp.task('tslint', () => {
 	const options = { summarizeFailureOutput: true };
 
-	return gulp.src(all, { base: '.' })
+	return vfs.src(all, { base: '.', follow: true, allowEmpty: true })
 		.pipe(filter(tslintFilter))
 		.pipe(gulptslint({ rulesDirectory: 'build/lib/tslint' }))
 		.pipe(gulptslint.report(reportFailures, options));
@@ -232,7 +235,7 @@ const hygiene = exports.hygiene = (some, options) => {
 		this.emit('data', file);
 	});
 
-	const result = gulp.src(some || all, { base: '.' })
+	const result = vfs.src(some || all, { base: '.', follow: true, allowEmpty: true })
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(filter(eolFilter))
     // {{SQL CARBON EDIT}}
@@ -267,7 +270,7 @@ const hygiene = exports.hygiene = (some, options) => {
 		}));
 };
 
-gulp.task('hygiene', () => hygiene());
+gulp.task('hygiene', () => hygiene(''));
 
 // this allows us to run hygiene as a git pre-commit hook
 if (require.main === module) {

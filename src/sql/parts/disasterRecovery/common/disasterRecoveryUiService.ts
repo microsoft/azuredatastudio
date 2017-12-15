@@ -103,6 +103,13 @@ export class DisasterRecoveryUiService implements IDisasterRecoveryUiService {
 		});
 	}
 
+	public onShowBackupDialog() {
+		let backupDialog = this._backupDialogs[this._currentProvider];
+		if (backupDialog) {
+			backupDialog.setFocusableElements();
+		}
+	}
+
 	public closeBackup() {
 		let self = this;
 		let backupDialog = self._backupDialogs[self._currentProvider];

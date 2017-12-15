@@ -2,16 +2,16 @@ MICROSOFT SOFTWARE LICENSE TERMS
 
 MICROSOFT SQL OPERATIONS STUDIO
 
-Microsoft Corporation (‚ÄúMicrosoft‚Äù) grants you a nonexclusive, perpetual,
-royalty-free right to use,¬†copy, and modify¬†the software code provided by us
+Microsoft Corporation (ìMicrosoftî) grants you a nonexclusive, perpetual,
+royalty-free right to use,†copy, and modify†the software code provided by us
 ("Software Code"). You may not sublicense the Software Code or any use of it
 (except to your affiliates and to vendors to perform work on your behalf)
 through distribution, network access, service agreement, lease, rental, or
 otherwise. Unless applicable law gives you more rights, Microsoft reserves all
 other rights not expressly granted herein, whether by implication, estoppel or
-otherwise.¬†
-¬†
-THE SOFTWARE CODE IS PROVIDED ‚ÄúAS IS‚Äù, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+otherwise.†
+†
+THE SOFTWARE CODE IS PROVIDED ìAS ISî, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
 FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL MICROSOFT OR ITS
 LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR

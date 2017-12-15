@@ -4,10 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { EditorDescriptor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorDescriptor, Extensions as EditorExtensions, IEditorRegistry } from 'vs/workbench/browser/editor';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/common/editor';
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions, IConfigurationNode } from 'vs/platform/configuration/common/configurationRegistry';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import * as nls from 'vs/nls';
@@ -17,9 +16,8 @@ import { ProfilerEditor } from 'sql/parts/profiler/editor/profilerEditor';
 import { PROFILER_SESSION_TEMPLATE_SETTINGS, IProfilerSessionTemplate } from 'sql/parts/profiler/service/interfaces';
 
 const profilerDescriptor = new EditorDescriptor(
+	ProfilerEditor,
 	ProfilerEditor.ID,
-	'Profiler',
-	'sql/parts/profiler/editor/profilerEditor',
 	'ProfilerEditor'
 );
 

@@ -4,16 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
-import * as lifecycle from 'vs/base/common/lifecycle';
+import { SelectBox, ISelectBoxStyles } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
-import { ISelectBoxStyles } from 'vs/base/browser/ui/selectBox/selectBox';
 import { IMessage, MessageType, defaultOpts } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as dom from 'vs/base/browser/dom';
+import { KeyCode } from 'vs/base/common/keyCodes';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { RenderOptions, renderFormattedText, renderText } from 'vs/base/browser/htmlContentRenderer';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 const $ = dom.$;
 
@@ -33,14 +32,12 @@ export interface IListBoxStyles {
 *  Extends SelectBox to allow multiple selection and adding/remove items dynamically
 */
 export class ListBox extends SelectBox {
-	private _toDispose2: lifecycle.IDisposable[];
 	private enabledSelectBackground: Color;
 	private enabledSelectForeground: Color;
 	private enabledSelectBorder: Color;
 	private disabledSelectBackground: Color;
 	private disabledSelectForeground: Color;
 	private disabledSelectBorder: Color;
-	private keyC = 33;
 
 	private inputValidationInfoBorder: Color;
 	private inputValidationInfoBackground: Color;
@@ -53,7 +50,7 @@ export class ListBox extends SelectBox {
 	private contextViewProvider: IContextViewProvider;
 	private isValid: boolean;
 
-	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider) {
+	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, private _clipboardService: IClipboardService) {
 		super(options, 0);
 		this.contextViewProvider = contextViewProvider;
 		this.isValid = true;
@@ -64,10 +61,7 @@ export class ListBox extends SelectBox {
 		this.selectElement.style['width'] = 'inherit';
 		this.selectElement.style['min-width'] = '100%';
 
-		this._toDispose2 = [];
-		this._toDispose2.push(dom.addStandardDisposableListener(this.selectElement, 'keydown', (e) => {
-			this.onKeyDown(e)
-		}));
+		this._register(dom.addStandardDisposableListener(this.selectElement, dom.EventType.KEY_DOWN, e => this.onKeyDown(e)));
 
 		this.enabledSelectBackground = this.selectBackground;
 		this.enabledSelectForeground = this.selectForeground;
@@ -88,11 +82,11 @@ export class ListBox extends SelectBox {
 	}
 
 	public style(styles: IListBoxStyles): void {
-		var superStyle: ISelectBoxStyles = {
+		let superStyle: ISelectBoxStyles = {
 			selectBackground: styles.selectBackground,
 			selectForeground: styles.selectForeground,
 			selectBorder: styles.selectBorder
-		}
+		};
 		super.style(superStyle);
 		this.enabledSelectBackground = this.selectBackground;
 		this.enabledSelectForeground = this.selectForeground;
@@ -123,8 +117,8 @@ export class ListBox extends SelectBox {
 	}
 
 	public get selectedOptions(): string[] {
-		var selected = [];
-		for (var i = 0; i < this.selectElement.selectedOptions.length; i++ ) {
+		let selected = [];
+		for (let i = 0; i < this.selectElement.selectedOptions.length; i++) {
 			selected.push(this.selectElement.selectedOptions[i].innerHTML);
 		}
 		return selected;
@@ -136,13 +130,13 @@ export class ListBox extends SelectBox {
 
 	// Remove selected options
 	public remove(): void {
-		var indexes = [];
-		for (var i = 0; i < this.selectElement.selectedOptions.length; i++ ) {
+		let indexes = [];
+		for (let i = 0; i < this.selectElement.selectedOptions.length; i++) {
 			indexes.push(this.selectElement.selectedOptions[i].index);
 		}
-		indexes.sort((a, b) => b-a);
+		indexes.sort((a, b) => b - a);
 
-		for (var i = 0; i < indexes.length; i++) {
+		for (let i = 0; i < indexes.length; i++) {
 			this.selectElement.remove(indexes[i]);
 			this.options.splice(indexes[i], 1);
 		}
@@ -155,27 +149,22 @@ export class ListBox extends SelectBox {
 
 	// Allow copy to clipboard
 	public onKeyDown(event: IKeyboardEvent): void {
-		if (this.selectedOptions.length > 0)
-        {
-            var key = event.keyCode;
-            var ctrlOrCmd = event.ctrlKey || event.metaKey;
+		if (this.selectedOptions.length > 0) {
+			let key = event.keyCode;
+			let ctrlOrCmd = event.ctrlKey || event.metaKey;
 
-            if (ctrlOrCmd && key === this.keyC) {
-                var textToCopy =  this.selectedOptions[0];
-                for (var i = 1; i < this.selectedOptions.length; i++) {
-                    textToCopy = textToCopy + ', ' + this.selectedOptions[i];
-                }
+			if (ctrlOrCmd && key === KeyCode.KEY_C) {
+				let textToCopy = this.selectedOptions[0];
+				for (let i = 1; i < this.selectedOptions.length; i++) {
+					textToCopy = textToCopy + ', ' + this.selectedOptions[i];
+				}
 
-                // Copy to clipboard
-                WorkbenchUtils.executeCopy(textToCopy);
-		        event.stopPropagation();
-            }
-        }
-	}
+				// Copy to clipboard
+				this._clipboardService.writeText(textToCopy);
 
-	public dispose(): void {
-		this._toDispose2 = lifecycle.dispose(this._toDispose2);
-		super.dispose();
+				event.stopPropagation();
+			}
+		}
 	}
 
 	public enable(): void {

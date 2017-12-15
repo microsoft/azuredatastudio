@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { OnInit, Inject, forwardRef, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { OnInit, Inject, forwardRef, ChangeDetectorRef, ElementRef } from '@angular/core';
 
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { BreadcrumbClass } from 'sql/parts/dashboard/services/breadcrumb.service';
@@ -14,7 +14,7 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as nls from 'vs/nls';
 
-export class ServerDashboardPage extends DashboardPage implements OnInit, OnDestroy {
+export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
 		name: nls.localize('serverPageName', 'SERVER DASHBOARD'),
 		widget: {
@@ -35,9 +35,10 @@ export class ServerDashboardPage extends DashboardPage implements OnInit, OnDest
 	constructor(
 		@Inject(forwardRef(() => IBreadcrumbService)) private breadcrumbService: IBreadcrumbService,
 		@Inject(forwardRef(() => DashboardServiceInterface)) dashboardService: DashboardServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
-		super(dashboardService);
+		super(dashboardService, el, cd);
 		// revert back to default database
 		this.dashboardService.connectionManagementService.changeDatabase('master').then(() => {
 			this.dashboardService.connectionManagementService.connectionInfo.connectionProfile.databaseName = undefined;
@@ -49,10 +50,5 @@ export class ServerDashboardPage extends DashboardPage implements OnInit, OnDest
 	ngOnInit() {
 		this.breadcrumbService.setBreadcrumbs(BreadcrumbClass.ServerPage);
 		this.dashboardService.connectionManagementService.connectionInfo.connectionProfile.databaseName = null;
-		this.baseInit();
-	}
-
-	ngOnDestroy() {
-		this.baseDestroy();
 	}
 }

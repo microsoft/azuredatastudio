@@ -225,3 +225,18 @@ export function attachEditableDropdownStyler(widget: IThemable, themeService: IT
 		contextBorder: (style && style.contextBorder) || cr.inputBorder
 	}, widget);
 }
+
+export function attachButtonStyler(widget: IThemable, themeService: IThemeService, style?: {
+	buttonForeground?: cr.ColorIdentifier,
+	buttonBackground?: cr.ColorIdentifier,
+	buttonHoverBackground?: cr.ColorIdentifier,
+	buttonFocusOutline?: cr.ColorIdentifier
+}): IDisposable {
+	return attachStyler(themeService, {
+		buttonForeground: (style && style.buttonForeground) || cr.buttonForeground,
+		buttonBackground: (style && style.buttonBackground) || cr.buttonBackground,
+		buttonHoverBackground: (style && style.buttonHoverBackground) || cr.buttonHoverBackground,
+		buttonBorder: cr.contrastBorder,
+		buttonFocusOutline: (style && style.buttonFocusOutline) || sqlcolors.buttonFocusOutline
+	}, widget);
+}

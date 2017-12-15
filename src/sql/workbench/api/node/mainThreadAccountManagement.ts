@@ -5,9 +5,9 @@
 'use strict';
 
 import * as data from 'data';
-import {TPromise} from 'vs/base/common/winjs.base';
-import {IAccountManagementService} from 'sql/services/accountManagement/interfaces';
-import {dispose, IDisposable} from 'vs/base/common/lifecycle';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
+import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostAccountManagementShape,
 	MainThreadAccountManagementShape,
@@ -20,7 +20,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostC
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)
 export class MainThreadAccountManagement extends MainThreadAccountManagementShape {
-	private _providerMetadata: {[handle: number]: data.AccountProviderMetadata};
+	private _providerMetadata: { [handle: number]: data.AccountProviderMetadata };
 	private _proxy: ExtHostAccountManagementShape;
 	private _toDispose: IDisposable[];
 
@@ -36,8 +36,16 @@ export class MainThreadAccountManagement extends MainThreadAccountManagementShap
 		this._toDispose = [];
 	}
 
-	public $performOAuthAuthorization(url, silent: boolean): Thenable<string> {
-		return this._accountManagementService.performOAuthAuthorization(url, silent);
+	public $beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
+		return this._accountManagementService.beginAutoOAuthDeviceCode(providerId, title, message, userCode, uri);
+	}
+
+	public $endAutoOAuthDeviceCode(): void {
+		return this._accountManagementService.endAutoOAuthDeviceCode();
+	}
+
+	$accountUpdated(updatedAccount: data.Account): void {
+		this._accountManagementService.accountUpdated(updatedAccount);
 	}
 
 	public $registerAccountProvider(providerMetadata: data.AccountProviderMetadata, handle: number): Thenable<any> {
@@ -45,6 +53,9 @@ export class MainThreadAccountManagement extends MainThreadAccountManagementShap
 
 		// Create the account provider that interfaces with the extension via the proxy and register it
 		let accountProvider: data.AccountProvider = {
+			autoOAuthCancelled(): Thenable<void> {
+				return self._proxy.$autoOAuthCancelled(handle);
+			},
 			clear(accountKey: data.AccountKey): Thenable<void> {
 				return self._proxy.$clear(handle, accountKey);
 			},

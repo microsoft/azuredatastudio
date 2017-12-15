@@ -42,6 +42,9 @@ export class ExtHostDebugService implements ExtHostDebugServiceShape {
 	private _onDidReceiveDebugSessionCustomEvent: Emitter<vscode.DebugSessionCustomEvent>;
 	get onDidReceiveDebugSessionCustomEvent(): Event<vscode.DebugSessionCustomEvent> { return this._onDidReceiveDebugSessionCustomEvent.event; }
 
+	private _debugConsole: ExtHostDebugConsole;
+	get debugConsole(): ExtHostDebugConsole { return this._debugConsole; }
+
 
 	constructor(mainContext: IMainContext, workspace: ExtHostWorkspace) {
 
@@ -56,6 +59,8 @@ export class ExtHostDebugService implements ExtHostDebugServiceShape {
 		this._onDidReceiveDebugSessionCustomEvent = new Emitter<vscode.DebugSessionCustomEvent>();
 
 		this._debugServiceProxy = mainContext.get(MainContext.MainThreadDebugService);
+
+		this._debugConsole = new ExtHostDebugConsole(this._debugServiceProxy);
 	}
 
 	public registerDebugConfigurationProvider(type: string, provider: vscode.DebugConfigurationProvider): vscode.Disposable {
@@ -97,17 +102,7 @@ export class ExtHostDebugService implements ExtHostDebugServiceShape {
 	}
 
 	public startDebugging(folder: vscode.WorkspaceFolder | undefined, nameOrConfig: string | vscode.DebugConfiguration): TPromise<boolean> {
-
-		return this._debugServiceProxy.$startDebugging(folder ? <URI>folder.uri : undefined, nameOrConfig);
-	}
-
-	public startDebugSession(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration): TPromise<vscode.DebugSession> {
-
-		return this._debugServiceProxy.$startDebugSession(folder ? <URI>folder.uri : undefined, config).then((id: DebugSessionUUID) => {
-			const debugSession = new ExtHostDebugSession(this._debugServiceProxy, id, config.type, config.name);
-			this._debugSessions.set(id, debugSession);
-			return debugSession;
-		});
+		return this._debugServiceProxy.$startDebugging(folder ? folder.uri : undefined, nameOrConfig);
 	}
 
 	public $acceptDebugSessionStarted(id: DebugSessionUUID, type: string, name: string): void {
@@ -190,7 +185,7 @@ export class ExtHostDebugSession implements vscode.DebugSession {
 		this._id = id;
 		this._type = type;
 		this._name = name;
-	};
+	}
 
 	public get id(): string {
 		return this._id;
@@ -206,6 +201,23 @@ export class ExtHostDebugSession implements vscode.DebugSession {
 
 	public customRequest(command: string, args: any): Thenable<any> {
 		return this._debugServiceProxy.$customDebugAdapterRequest(this._id, command, args);
+	}
+}
+
+export class ExtHostDebugConsole implements vscode.DebugConsole {
+
+	private _debugServiceProxy: MainThreadDebugServiceShape;
+
+	constructor(proxy: MainThreadDebugServiceShape) {
+		this._debugServiceProxy = proxy;
+	}
+
+	append(value: string): void {
+		this._debugServiceProxy.$appendDebugConsole(value);
+	}
+
+	appendLine(value: string): void {
+		this.append(value + '\n');
 	}
 }
 

@@ -30,31 +30,10 @@ export function getSqlConfigValue<T>(workspaceConfigService: IWorkspaceConfigura
 	return config[configName];
 }
 
-/**
- * Executes a copy operation for an arbitrary string, by creating a temp div, copying
- * the text to it, and calling copy on the document. This will clear any existing selection
- * so if being called where selection state needs to be preserved, it's recommended to
- * cache the existing selection first and re-set it after this method is called
- *
- * @export
- * @param {string} text
- */
-export function executeCopy(text: string): void {
-	let input = document.createElement('textarea');
-	document.body.appendChild(input);
-	input.value = text;
-	input.style.position = 'absolute';
-	input.style.bottom = '100%';
-	input.focus();
-	input.select();
-	document.execCommand('copy');
-	input.remove();
-}
-
-export function getEditorUri(input: IEditorInput): string{
+export function getEditorUri(input: IEditorInput): string {
 	let uri: URI;
 	if (input instanceof QueryInput) {
-		let queryCast: QueryInput = <QueryInput> input;
+		let queryCast: QueryInput = <QueryInput>input;
 		if (queryCast) {
 			uri = queryCast.getResource();
 		}

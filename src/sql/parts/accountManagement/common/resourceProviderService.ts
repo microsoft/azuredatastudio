@@ -6,7 +6,6 @@
 'use strict';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IResourceProviderService, IHandleFirewallRuleResult } from 'sql/parts/accountManagement/common/interfaces';
@@ -26,7 +25,6 @@ export class ResourceProviderService implements IResourceProviderService {
 	constructor(
 		@ITelemetryService private _telemetryService: ITelemetryService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IEnvironmentService private _environmentService: IEnvironmentService
 	) {
 	}
 
@@ -66,39 +64,33 @@ export class ResourceProviderService implements IResourceProviderService {
 	 * Handle a firewall rule
 	 */
 	public handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Promise<IHandleFirewallRuleResult> {
-		if (!this._environmentService.isBuilt) {
-			let self = this;
-			return new Promise<IHandleFirewallRuleResult>((resolve, reject) => {
-				let handleFirewallRuleResult: IHandleFirewallRuleResult;
-				let promises = [];
-				if (self._providers) {
-					for (let key in self._providers) {
-						let provider = self._providers[key];
-						promises.push(provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId)
-							.then(response => {
-								if (response.result) {
-									handleFirewallRuleResult = { canHandleFirewallRule: response.result, ipAddress: response.ipAddress, resourceProviderId: key };
-								}
-							},
-							() => { /* Swallow failures at getting accounts, we'll just hide that provider */
-							}));
-					}
+		let self = this;
+		return new Promise<IHandleFirewallRuleResult>((resolve, reject) => {
+			let handleFirewallRuleResult: IHandleFirewallRuleResult;
+			let promises = [];
+			if (self._providers) {
+				for (let key in self._providers) {
+					let provider = self._providers[key];
+					promises.push(provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId)
+						.then(response => {
+							if (response.result) {
+								handleFirewallRuleResult = { canHandleFirewallRule: response.result, ipAddress: response.ipAddress, resourceProviderId: key };
+							}
+						},
+						() => { /* Swallow failures at getting accounts, we'll just hide that provider */
+						}));
 				}
+			}
 
-				Promise.all(promises).then(() => {
-					if (handleFirewallRuleResult) {
-						resolve(handleFirewallRuleResult);
-					} else {
-						handleFirewallRuleResult = { canHandleFirewallRule: false, ipAddress: undefined, resourceProviderId: undefined };
-						resolve(handleFirewallRuleResult);
-					}
-				});
+			Promise.all(promises).then(() => {
+				if (handleFirewallRuleResult) {
+					resolve(handleFirewallRuleResult);
+				} else {
+					handleFirewallRuleResult = { canHandleFirewallRule: false, ipAddress: undefined, resourceProviderId: undefined };
+					resolve(handleFirewallRuleResult);
+				}
 			});
-		} else {
-			return new Promise<IHandleFirewallRuleResult>((resolve, reject) => {
-				resolve({ canHandleFirewallRule: false, ipAddress: undefined, resourceProviderId: undefined });
-			});
-		}
+		});
 	}
 
 	/**

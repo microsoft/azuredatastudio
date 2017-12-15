@@ -34,6 +34,7 @@ export class AccountPicker extends Disposable {
 	private _refreshContainer: HTMLElement;
 	private _listContainer: HTMLElement;
 	private _dropdown: DropdownList;
+	private _refreshAccountAction: RefreshAccountAction;
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	private _addAccountCompleteEmitter: Emitter<void>;
@@ -62,13 +63,6 @@ export class AccountPicker extends Disposable {
 		this._addAccountStartEmitter = new Emitter<void>();
 		this._onAccountSelectionChangeEvent = new Emitter<data.Account>();
 
-		// Create an account list
-		let delegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
-		let accountRenderer = new AccountPickerListRenderer();
-		this._listContainer = DOM.$('div.account-list-container');
-		this._accountList = new List<data.Account>(this._listContainer, delegate, [accountRenderer]);
-		this._register(attachListStyler(this._accountList, this._themeService));
-
 		// Create the view model, wire up the events, and initialize with baseline data
 		this.viewModel = this._instantiationService.createInstance(AccountPickerViewModel, this._providerId);
 		this.viewModel.updateAccountListEvent(arg => {
@@ -76,8 +70,6 @@ export class AccountPicker extends Disposable {
 				this.updateAccountList(arg.accountList);
 			}
 		});
-
-		this.createAccountPickerComponent();
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -88,7 +80,18 @@ export class AccountPicker extends Disposable {
 		DOM.append(container, this._rootElement);
 	}
 
-	private createAccountPickerComponent() {
+	// PUBLIC METHODS //////////////////////////////////////////////////////
+	/**
+	 * Create account picker component
+	 */
+	public createAccountPickerComponent() {
+		// Create an account list
+		let delegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
+		let accountRenderer = new AccountPickerListRenderer();
+		this._listContainer = DOM.$('div.account-list-container');
+		this._accountList = new List<data.Account>(this._listContainer, delegate, [accountRenderer]);
+		this._register(attachListStyler(this._accountList, this._themeService));
+
 		this._rootElement = DOM.$('div.account-picker-container');
 
 		// Create a dropdown for account picker
@@ -116,7 +119,8 @@ export class AccountPicker extends Disposable {
 		this._refreshContainer = DOM.append(this._rootElement, DOM.$('div.refresh-container'));
 		DOM.append(this._refreshContainer, DOM.$('div.icon warning'));
 		let actionBar = new ActionBar(this._refreshContainer, { animated: false });
-		actionBar.push(new RefreshAccountAction(RefreshAccountAction.ID, RefreshAccountAction.LABEL), { icon: false, label: true });
+		this._refreshAccountAction = this._instantiationService.createInstance(RefreshAccountAction);
+		actionBar.push(this._refreshAccountAction, { icon: false, label: true });
 
 		if (this._accountList.length > 0) {
 			this._accountList.setSelection([0]);
@@ -146,10 +150,12 @@ export class AccountPicker extends Disposable {
 	private onAccountSelectionChange(account: data.Account) {
 		this.viewModel.selectedAccount = account;
 		if (account && account.isStale) {
+			this._refreshAccountAction.account = account;
 			new Builder(this._refreshContainer).show();
 		} else {
 			new Builder(this._refreshContainer).hide();
 		}
+
 		this._onAccountSelectionChangeEvent.fire(account);
 	}
 
@@ -170,9 +176,9 @@ export class AccountPicker extends Disposable {
 			const badgeContent = DOM.append(badge, DOM.$('div.badge-content'));
 			const label = DOM.append(row, DOM.$('div.label'));
 
-			icon.className = 'icon';
 			// Set the account icon
-			icon.style.background = `url('data:${account.displayInfo.contextualLogo.light}')`;
+			icon.classList.add('icon', account.displayInfo.accountType);
+
 			// TODO: Pick between the light and dark logo
 			label.innerText = account.displayInfo.displayName + ' (' + account.displayInfo.contextualDisplayName + ')';
 

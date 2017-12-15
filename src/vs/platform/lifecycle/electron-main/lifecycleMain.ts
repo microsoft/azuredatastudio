@@ -63,12 +63,12 @@ export interface ILifecycleService {
 
 	unload(window: ICodeWindow, reason: UnloadReason, payload?: object): TPromise<boolean /* veto */>;
 
-	relaunch(options?: { addArgs?: string[], removeArgs?: string[] });
+	relaunch(options?: { addArgs?: string[], removeArgs?: string[] }): void;
 
 	quit(fromUpdate?: boolean): TPromise<boolean /* veto */>;
 	isQuitRequested(): boolean;
 
-	kill(code?: number);
+	kill(code?: number): void;
 }
 
 export class LifecycleService implements ILifecycleService {
@@ -141,8 +141,7 @@ export class LifecycleService implements ILifecycleService {
 
 			// Windows/Linux: we quit when all windows have closed
 			// Mac: we only quit when quit was requested
-			// --wait: we quit when all windows are closed
-			if (this.quitRequested || process.platform !== 'darwin' || this.environmentService.wait) {
+			if (this.quitRequested || process.platform !== 'darwin') {
 				app.quit();
 			}
 		});

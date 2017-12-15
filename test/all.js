@@ -48,7 +48,6 @@ function main() {
 		console.error(e.stack || e);
 	});
 
-  // {{SQL CARBON EDIT}}
 	var loaderConfig = {
 		nodeRequire: require,
 		nodeMain: __filename,
@@ -75,7 +74,6 @@ function main() {
 			'rxjs/Observer'
 		]
 	};
-
 
 	if (argv.coverage) {
 		var instrumenter = new istanbul.Instrumenter();
@@ -107,9 +105,7 @@ function main() {
 					if (seenSources[source]) {
 						return false;
 					}
-
-          // {{SQL CARBON EDIT}}
-					if (minimatch(source, SQL_TEST_GLOB)) {
+					if (minimatch(source, TEST_GLOB)) {
 						return false;
 					}
 					if (/fixtures/.test(source)) {
@@ -276,9 +272,38 @@ function main() {
 
 		process.stderr.write = write;
 
+		if (!argv.run && !argv.runGlob) {
+			// set up last test
+			suite('Loader', function () {
+				test('should not explode while loading', function () {
+					assert.ok(!didErr, 'should not explode while loading');
+				});
+			});
+		}
+
+		// {{SQL CARBON EDIT}}
+		/*
+		// report failing test for every unexpected error during any of the tests
+		var unexpectedErrors = [];
+		suite('Errors', function () {
+			test('should not have unexpected errors in tests', function () {
+				if (unexpectedErrors.length) {
+					unexpectedErrors.forEach(function (stack) {
+						console.error('');
+						console.error(stack);
+					});
+
+					assert.ok(false);
+				}
+			});
+		});
+		*/
+
 		// replace the default unexpected error handler to be useful during tests
 		loader(['vs/base/common/errors'], function(errors) {
 			errors.setUnexpectedErrorHandler(function (err) {
+				let stack = (err && err.stack) || (new Error().stack);
+				unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
 			});
 
 			// fire up mocha

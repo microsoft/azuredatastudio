@@ -6,17 +6,17 @@
 'use strict';
 
 import * as data from 'data';
-import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
 import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { FileBrowserTree } from 'sql/parts/fileBrowser/common/fileBrowserTree';
 import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
-import { FileBrowserDialog } from 'sql/parts/fileBrowser/fileBrowserDialog';
 import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
 import * as Constants from 'sql/common/constants';
+
 import Event, { Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import { localize } from 'vs/nls';
-import { createDecorator, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import * as strings from 'vs/base/common/strings';
 
 export class FileBrowserService implements IFileBrowserService {
 	public _serviceBrand: any;
@@ -25,10 +25,10 @@ export class FileBrowserService implements IFileBrowserService {
 	private _onExpandFolder = new Emitter<FileNode>();
 	private _onPathValidate = new Emitter<data.FileBrowserValidatedParams>();
 	private _pathToFileNodeMap: { [path: string]: FileNode } = {};
-	private _expandResolveMap: { [key: string]: any }  = {};
+	private _expandResolveMap: { [key: string]: any } = {};
 	static fileNodeId: number = 0;
 
-	constructor(@IConnectionManagementService private _connectionService: IConnectionManagementService,
+	constructor( @IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService) {
 	}
@@ -52,7 +52,7 @@ export class FileBrowserService implements IFileBrowserService {
 	public openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
 			let provider = this.getProvider(ownerUri);
-		    if (provider) {
+			if (provider) {
 				provider.openFileBrowser(ownerUri, expandPath, fileFilters, changeFilter).then(result => {
 					resolve(result);
 				}, error => {
@@ -71,11 +71,11 @@ export class FileBrowserService implements IFileBrowserService {
 			&& fileBrowserOpenedParams.fileTree.selectedNode
 		) {
 			var fileTree = this.convertFileTree(null, fileBrowserOpenedParams.fileTree.rootNode, fileBrowserOpenedParams.fileTree.selectedNode.fullPath, fileBrowserOpenedParams.ownerUri);
-			this._onAddFileTree.fire({rootNode: fileTree.rootNode, selectedNode: fileTree.selectedNode, expandedNodes: fileTree.expandedNodes});
+			this._onAddFileTree.fire({ rootNode: fileTree.rootNode, selectedNode: fileTree.selectedNode, expandedNodes: fileTree.expandedNodes });
 		} else {
 			let genericErrorMessage = localize('fileBrowserErrorMessage', 'An error occured while loading the file browser.');
-			let errorDialogTitle = localize('fileBrowserErrorDialogTitle', 'File Browser Error');
-			let errorMessage = DialogHelper.isNullOrWhiteSpace(fileBrowserOpenedParams.message) ? genericErrorMessage : fileBrowserOpenedParams.message;
+			let errorDialogTitle = localize('fileBrowserErrorDialogTitle', 'File browser error');
+			let errorMessage = strings.isFalsyOrWhitespace(fileBrowserOpenedParams.message) ? genericErrorMessage : fileBrowserOpenedParams.message;
 			this._errorMessageService.showDialog(Severity.Error, errorDialogTitle, errorMessage);
 		}
 	}
@@ -85,7 +85,7 @@ export class FileBrowserService implements IFileBrowserService {
 		let self = this;
 		return new Promise<FileNode[]>((resolve, reject) => {
 			let provider = this.getProvider(fileNode.ownerUri);
-		    if (provider) {
+			if (provider) {
 				provider.expandFolderNode(fileNode.ownerUri, fileNode.fullPath).then(result => {
 					var mapKey = self.generateResolveMapKey(fileNode.ownerUri, fileNode.fullPath);
 					self._expandResolveMap[mapKey] = resolve;
@@ -102,12 +102,11 @@ export class FileBrowserService implements IFileBrowserService {
 		var mapKey = this.generateResolveMapKey(fileBrowserExpandedParams.ownerUri, fileBrowserExpandedParams.expandPath);
 		var expandResolve = this._expandResolveMap[mapKey];
 		if (expandResolve) {
-			if (fileBrowserExpandedParams.succeeded === true)
-			{
+			if (fileBrowserExpandedParams.succeeded === true) {
 				// get the expanded folder node
 				var expandedNode = this._pathToFileNodeMap[fileBrowserExpandedParams.expandPath];
 				if (expandedNode) {
-					if (fileBrowserExpandedParams.children	&& fileBrowserExpandedParams.children.length > 0) {
+					if (fileBrowserExpandedParams.children && fileBrowserExpandedParams.children.length > 0) {
 						expandedNode.children = this.convertChildren(expandedNode, fileBrowserExpandedParams.children, fileBrowserExpandedParams.ownerUri);
 					}
 					expandResolve(expandedNode.children ? expandedNode.children : []);
@@ -124,7 +123,7 @@ export class FileBrowserService implements IFileBrowserService {
 	public validateFilePaths(ownerUri: string, serviceType: string, selectedFiles: string[]): Thenable<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
 			let provider = this.getProvider(ownerUri);
-		    if (provider) {
+			if (provider) {
 				provider.validateFilePaths(ownerUri, serviceType, selectedFiles).then(result => {
 					resolve(result);
 				}, error => {

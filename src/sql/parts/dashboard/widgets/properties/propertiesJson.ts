@@ -104,5 +104,5 @@ export const properties: Array<ProviderProperties> = [
 				]
 			}
 		]
-	},
+	}
 ];

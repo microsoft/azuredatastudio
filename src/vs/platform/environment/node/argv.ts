@@ -9,7 +9,6 @@ import * as assert from 'assert';
 import { firstIndex } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
 import { ParsedArgs } from '../common/environment';
-import product from 'vs/platform/node/product';
 
 const options: minimist.Opts = {
 	string: [
@@ -23,8 +22,12 @@ const options: minimist.Opts = {
 		'debugId',
 		'debugPluginHost',
 		'debugBrkPluginHost',
+		'debugSearch',
+		'debugBrkSearch',
 		'open-url',
-		'enable-proposed-api'
+		'enable-proposed-api',
+		'export-default-configuration',
+		'install-source'
 	],
 	boolean: [
 		'help',
@@ -44,7 +47,11 @@ const options: minimist.Opts = {
 		'list-extensions',
 		'show-versions',
 		'nolazy',
-		'skip-getting-started'
+		'skip-getting-started',
+		'sticky-quickopen',
+		'disable-telemetry',
+		'disable-updates',
+		'disable-crash-reporter'
 	],
 	alias: {
 		add: 'a',
@@ -60,6 +67,8 @@ const options: minimist.Opts = {
 		'extensions-dir': 'extensionHomePath',
 		'debugPluginHost': 'inspect-extensions',
 		'debugBrkPluginHost': 'inspect-brk-extensions',
+		'debugSearch': 'inspect-search',
+		'debugBrkSearch': 'inspect-brk-search',
 	}
 };
 
@@ -125,7 +134,7 @@ export const optionsHelp: { [name: string]: string; } = {
 	'-r, --reuse-window': localize('reuseWindow', "Force opening a file or folder in the last active window."),
 	'--user-data-dir <dir>': localize('userDataDir', "Specifies the directory that user data is kept in, useful when running as root."),
 	'--verbose': localize('verbose', "Print verbose output (implies --wait)."),
-	'-w, --wait': localize('wait', "Wait for the window to be closed before returning."),
+	'-w, --wait': localize('wait', "Wait for the files to be closed before returning."),
 	'--extensions-dir <dir>': localize('extensionHomePath', "Set the root path for extensions."),
 	'--list-extensions': localize('listExtensions', "List the installed extensions."),
 	'--show-versions': localize('showVersions', "Show versions of installed extensions, when using --list-extension."),
@@ -137,11 +146,6 @@ export const optionsHelp: { [name: string]: string; } = {
 	'-v, --version': localize('version', "Print version."),
 	'-h, --help': localize('help', "Print usage.")
 };
-
-// TODO@Ben multi root
-if (product.quality === 'stable') {
-	delete optionsHelp['-a, --add'];
-}
 
 export function formatOptions(options: { [name: string]: string; }, columns: number): string {
 	let keys = Object.keys(options);

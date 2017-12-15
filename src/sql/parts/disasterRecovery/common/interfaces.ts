@@ -42,6 +42,11 @@ export interface IDisasterRecoveryUiService {
 	 * Close backup wizard
 	 */
 	closeBackup();
+
+	/**
+	 * After the backup dialog is rendered, run Modal methods to set focusable elements, etc.
+	 */
+	onShowBackupDialog();
 }
 
 export const IDisasterRecoveryService = createDecorator<IDisasterRecoveryService>(SERVICE_ID);

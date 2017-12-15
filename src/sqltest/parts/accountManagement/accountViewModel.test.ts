@@ -35,7 +35,7 @@ suite('Account Management Dialog ViewModel Tests', () => {
 			name: 'Account 1',
 			displayInfo: {
 				contextualDisplayName: 'Microsoft Account',
-				contextualLogo: null,
+				accountType: 'microsoft',
 				displayName: 'Account 1'
 			},
 			properties: [],
@@ -46,7 +46,7 @@ suite('Account Management Dialog ViewModel Tests', () => {
 			name: 'Account 2',
 			displayInfo: {
 				contextualDisplayName: 'Work/School Account',
-				contextualLogo: null,
+				accountType: 'work_school',
 				displayName: 'Account 2'
 			},
 			properties: [],
@@ -116,8 +116,8 @@ suite('Account Management Dialog ViewModel Tests', () => {
 				assert.equal(results[0].addedProvider, providers[0]);
 				assert.equal(results[0].initialAccounts, accounts);
 			}).then(
-				() => done(),
-				err => done(err)
+			() => done(),
+			err => done(err)
 			);
 	});
 
@@ -145,8 +145,8 @@ suite('Account Management Dialog ViewModel Tests', () => {
 				assert.equal(results.length, 0);
 			})
 			.then(
-				() => done(),
-				err => done(err)
+			() => done(),
+			err => done(err)
 			);
 	});
 
@@ -175,8 +175,8 @@ suite('Account Management Dialog ViewModel Tests', () => {
 				assert.equal(result[0].addedProvider, providers[0]);
 				assert.equal(result[0].initialAccounts, accounts);
 			}).then(
-				() => done(),
-				err => done()
+			() => done(),
+			err => done()
 			);
 	});
 });

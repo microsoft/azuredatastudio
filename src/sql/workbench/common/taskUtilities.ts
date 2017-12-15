@@ -25,61 +25,66 @@ import os = require('os');
 import path = require('path');
 
 // map for the version of SQL Server (default is 140)
-let scriptCompatibilityOptionMap = new Map<number, string>();
-scriptCompatibilityOptionMap.set(90, "Script90Compat");
-scriptCompatibilityOptionMap.set(100, "Script100Compat");
-scriptCompatibilityOptionMap.set(105, "Script105Compat");
-scriptCompatibilityOptionMap.set(110, "Script110Compat");
-scriptCompatibilityOptionMap.set(120, "Script120Compat");
-scriptCompatibilityOptionMap.set(130, "Script130Compat");
-scriptCompatibilityOptionMap.set(140, "Script140Compat");
+const scriptCompatibilityOptionMap = {
+	90: 'Script90Compat',
+	100: 'Script100Compat',
+	105: 'Script105Compat',
+	110: 'Script110Compat',
+	120: 'Script120Compat',
+	130: 'Script130Compat',
+	140: 'Script140Compat'
+};
 
 // map for the target database engine edition (default is Enterprise)
-let targetDatabaseEngineEditionMap = new Map<number, string>();
-targetDatabaseEngineEditionMap.set(0, "SqlServerEnterpriseEdition");
-targetDatabaseEngineEditionMap.set(1, "SqlServerPersonalEdition");
-targetDatabaseEngineEditionMap.set(2, "SqlServerStandardEdition");
-targetDatabaseEngineEditionMap.set(3, "SqlServerEnterpriseEdition");
-targetDatabaseEngineEditionMap.set(4, "SqlServerExpressEdition");
-targetDatabaseEngineEditionMap.set(5, "SqlAzureDatabaseEdition");
-targetDatabaseEngineEditionMap.set(6, "SqlDatawarehouseEdition");
-targetDatabaseEngineEditionMap.set(7, "SqlServerStretchEdition");
+const targetDatabaseEngineEditionMap = {
+	0: 'SqlServerEnterpriseEdition',
+	1: 'SqlServerPersonalEdition',
+	2: 'SqlServerStandardEdition',
+	3: 'SqlServerEnterpriseEdition',
+	4: 'SqlServerExpressEdition',
+	5: 'SqlAzureDatabaseEdition',
+	6: 'SqlDatawarehouseEdition',
+	7: 'SqlServerStretchEdition'
+};
 
 // map for object types for scripting
-let objectScriptMap = new Map<string, string>();
-objectScriptMap.set("Table", "Table");
-objectScriptMap.set("View", "View");
-objectScriptMap.set("StoredProcedure", "Procedure");
-objectScriptMap.set("UserDefinedFunction", "Function");
-objectScriptMap.set("UserDefinedDataType", "Type");
-objectScriptMap.set("User", "User");
-objectScriptMap.set("Default", "Default");
-objectScriptMap.set("Rule", "Rule");
-objectScriptMap.set("DatabaseRole", "Role");
-objectScriptMap.set("ApplicationRole", "Application Role");
-objectScriptMap.set("SqlAssembly", "Assembly");
-objectScriptMap.set("DdlTrigger", "Trigger");
-objectScriptMap.set("Synonym", "Synonym");
-objectScriptMap.set("XmlSchemaCollection", "Xml Schema Collection");
-objectScriptMap.set("Schema", "Schema");
-objectScriptMap.set("PlanGuide", "sp_create_plan_guide");
-objectScriptMap.set("UserDefinedType", "Type");
-objectScriptMap.set("UserDefinedAggregate", "Aggregate");
-objectScriptMap.set("FullTextCatalog", "Fulltext Catalog");
-objectScriptMap.set("UserDefinedTableType", "Type");
-objectScriptMap.set("MaterializedView", "Materialized View");
+const objectScriptMap = {
+	Table: 'Table',
+	View: 'View',
+	StoredProcedure: 'Procedure',
+	UserDefinedFunction: 'Function',
+	UserDefinedDataType: 'Type',
+	User: 'User',
+	Default: 'Default',
+	Rule: 'Rule',
+	DatabaseRole: 'Role',
+	ApplicationRole: 'Application Role',
+	SqlAssembly: 'Assembly',
+	DdlTrigger: 'Trigger',
+	Synonym: 'Synonym',
+	XmlSchemaCollection: 'Xml Schema Collection',
+	Schema: 'Schema',
+	PlanGuide: 'sp_create_plan_guide',
+	UserDefinedType: 'Type',
+	UserDefinedAggregate: 'Aggregate',
+	FullTextCatalog: 'Fulltext Catalog',
+	UserDefinedTableType: 'Type',
+	MaterializedView: 'Materialized View'
+};
 
 export enum ScriptOperation {
 	Select = 0,
 	Create = 1,
 	Insert = 2,
 	Update = 3,
-	Delete = 4
+	Delete = 4,
+	Execute = 5,
+	Alter = 6
 }
 
 export function GetScriptOperationName(operation: ScriptOperation) {
 	let defaultName: string = ScriptOperation[operation];
-	switch(operation) {
+	switch (operation) {
 		case ScriptOperation.Select:
 			return nls.localize('selectOperationName', 'Select');
 		case ScriptOperation.Create:
@@ -124,11 +129,11 @@ export function connectIfNotAlreadyConnected(connectionProfile: IConnectionProfi
 /**
  * Select the top rows from an object
  */
-export function scriptSelect(connectionProfile: IConnectionProfile, metadata: data.ObjectMetadata, ownerUri: string, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<void> {
+export function scriptSelect(connectionProfile: IConnectionProfile, metadata: data.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
-		connectIfNotAlreadyConnected(connectionProfile, connectionService).then(connectionResult => {
-			let paramDetails: data.ScriptingParamDetails = getScriptingParamDetails(connectionService, ownerUri, metadata);
-			scriptingService.script(ownerUri, metadata, ScriptOperation.Select, paramDetails).then(result => {
+		connectionService.connectIfNotConnected(connectionProfile).then(connectionResult => {
+			let paramDetails: data.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
+			scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails).then(result => {
 				if (result.script) {
 					queryEditorService.newSqlEditor(result.script).then((owner: IConnectableInput) => {
 						// Connect our editor to the input connection
@@ -151,7 +156,7 @@ export function scriptSelect(connectionProfile: IConnectionProfile, metadata: da
 				}
 			}, scriptError => {
 				reject(scriptError);
-			})
+			});
 		});
 	});
 }
@@ -180,24 +185,20 @@ export function editData(connectionProfile: IConnectionProfile, tableName: strin
 /**
  * Script the object as a statement based on the provided action (except Select)
  */
-export function script(connectionProfile: IConnectionProfile, metadata: data.ObjectMetadata, ownerUri: string,
+export function script(connectionProfile: IConnectionProfile, metadata: data.ObjectMetadata,
 	connectionService: IConnectionManagementService,
 	queryEditorService: IQueryEditorService,
 	scriptingService: IScriptingService,
 	operation: ScriptOperation,
 	errorMessageService: IErrorMessageService): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
-		connectIfNotAlreadyConnected(connectionProfile, connectionService).then(connectionResult => {
-			let paramDetails = getScriptingParamDetails(connectionService, ownerUri, metadata);
-			scriptingService.script(ownerUri, metadata, operation, paramDetails).then(result => {
+		connectionService.connectIfNotConnected(connectionProfile).then(connectionResult => {
+			let paramDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
+			scriptingService.script(connectionResult, metadata, operation, paramDetails).then(result => {
 				if (result) {
 					let script: string = result.script;
-					let startPos: number = 0;
-					if (connectionProfile.providerName === "MSSQL") {
-						startPos = getStartPos(script, operation, metadata.metadataTypeName);
-					}
-					if (startPos >= 0) {
-						script = script.substring(startPos);
+
+					if (script) {
 						queryEditorService.newSqlEditor(script, connectionProfile.providerName).then(() => {
 							resolve();
 						}).catch(editorError => {
@@ -206,14 +207,16 @@ export function script(connectionProfile: IConnectionProfile, metadata: data.Obj
 					}
 					else {
 						let scriptNotFoundMsg = nls.localize('scriptNotFoundForObject', 'No script was returned when scripting as {0} on object {1}',
-													GetScriptOperationName(operation), metadata.metadataTypeName);
+							GetScriptOperationName(operation), metadata.metadataTypeName);
+						let messageDetail = '';
 						let operationResult = scriptingService.getOperationFailedResult(result.operationId);
 						if (operationResult && operationResult.hasError && operationResult.errorMessage) {
 							scriptNotFoundMsg = operationResult.errorMessage;
+							messageDetail = operationResult.errorDetails;
 						}
 						if (errorMessageService) {
 							let title = nls.localize('scriptingFailed', 'Scripting Failed');
-							errorMessageService.showDialog(Severity.Error, title, scriptNotFoundMsg);
+							errorMessageService.showDialog(Severity.Error, title, scriptNotFoundMsg, messageDetail);
 						}
 						reject(scriptNotFoundMsg);
 					}
@@ -258,7 +261,8 @@ export function replaceConnection(oldUri: string, newUri: string, connectionServ
 		let defaultResult: IConnectionResult = {
 			connected: false,
 			errorMessage: undefined,
-			errorCode: undefined
+			errorCode: undefined,
+			callStack: undefined
 		};
 		if (connectionService) {
 			let connectionProfile = connectionService.getConnectionProfile(oldUri);
@@ -328,7 +332,7 @@ export function openInsight(query: IInsightsConfig, profile: IConnectionProfile,
 
 /* Helper Methods */
 function getStartPos(script: string, operation: ScriptOperation, typeName: string): number {
-	let objectTypeName = objectScriptMap.get(typeName);
+	let objectTypeName = objectScriptMap[typeName];
 	if (objectTypeName && script) {
 		let scriptTypeName = objectTypeName.toLowerCase();
 		switch (operation) {
@@ -353,7 +357,7 @@ function getScriptingParamDetails(connectionService: IConnectionManagementServic
 		scriptCompatibilityOption: scriptCompatibilityOptionMap[serverInfo.serverMajorVersion],
 		targetDatabaseEngineEdition: targetDatabaseEngineEditionMap[serverInfo.engineEditionId],
 		targetDatabaseEngineType: serverInfo.isCloud ? 'SqlAzure' : 'SingleInstance'
-	}
+	};
 	return paramDetails;
 }
 

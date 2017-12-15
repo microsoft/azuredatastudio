@@ -5,8 +5,6 @@
 'use strict';
 
 import nls = require('vs/nls');
-import strings = require('vs/base/common/strings');
-import scorer = require('vs/base/common/scorer');
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Mode, IEntryRunContext, IAutoFocus, IQuickNavigateConfiguration, IModel } from 'vs/base/parts/quickopen/common/quickOpen';
 import { QuickOpenModel, QuickOpenEntry } from 'vs/base/parts/quickopen/browser/quickOpenModel';
@@ -14,6 +12,9 @@ import { QuickOpenHandler } from 'vs/workbench/browser/quickopen';
 import { ITerminalService } from 'vs/workbench/parts/terminal/common/terminal';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
+import { stripWildcards } from 'vs/base/common/strings';
+import { matchesFuzzy } from 'vs/base/common/filters';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 export class TerminalEntry extends QuickOpenEntry {
 
@@ -49,7 +50,8 @@ export class CreateTerminal extends QuickOpenEntry {
 
 	constructor(
 		private label: string,
-		private terminalService: ITerminalService
+		private terminalService: ITerminalService,
+		private commandService: ICommandService
 	) {
 		super();
 	}
@@ -64,11 +66,7 @@ export class CreateTerminal extends QuickOpenEntry {
 
 	public run(mode: Mode, context: IEntryRunContext): boolean {
 		if (mode === Mode.OPEN) {
-			setTimeout(() => {
-				const newTerminal = this.terminalService.createInstance();
-				this.terminalService.setActiveInstance(newTerminal);
-				this.terminalService.showPanel(true);
-			}, 0);
+			setTimeout(() => this.commandService.executeCommand('workbench.action.terminal.new'), 0);
 			return true;
 		}
 
@@ -78,8 +76,11 @@ export class CreateTerminal extends QuickOpenEntry {
 
 export class TerminalPickerHandler extends QuickOpenHandler {
 
+	public static readonly ID = 'workbench.picker.terminals';
+
 	constructor(
 		@ITerminalService private terminalService: ITerminalService,
+		@ICommandService private commandService: ICommandService,
 		@IPanelService private panelService: IPanelService
 	) {
 		super();
@@ -87,22 +88,22 @@ export class TerminalPickerHandler extends QuickOpenHandler {
 
 	public getResults(searchValue: string): TPromise<QuickOpenModel> {
 		searchValue = searchValue.trim();
-		const normalizedSearchValueLowercase = strings.stripWildcards(searchValue).toLowerCase();
+		const normalizedSearchValueLowercase = stripWildcards(searchValue).toLowerCase();
 
 		const terminalEntries: QuickOpenEntry[] = this.getTerminals();
-		terminalEntries.push(new CreateTerminal(nls.localize("'workbench.action.terminal.newplus", "$(plus) Create New Integrated Terminal"), this.terminalService));
+		terminalEntries.push(new CreateTerminal(nls.localize("'workbench.action.terminal.newplus", "$(plus) Create New Integrated Terminal"), this.terminalService, this.commandService));
 
 		const entries = terminalEntries.filter(e => {
 			if (!searchValue) {
 				return true;
 			}
 
-			if (!scorer.matches(e.getLabel(), normalizedSearchValueLowercase)) {
+			const highlights = matchesFuzzy(normalizedSearchValueLowercase, e.getLabel(), true);
+			if (!highlights) {
 				return false;
 			}
 
-			const { labelHighlights, descriptionHighlights } = QuickOpenEntry.highlight(e, searchValue);
-			e.setHighlights(labelHighlights, descriptionHighlights);
+			e.setHighlights(highlights);
 
 			return true;
 		});

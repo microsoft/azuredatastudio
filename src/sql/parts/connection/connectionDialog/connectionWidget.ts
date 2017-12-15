@@ -7,10 +7,10 @@
 
 import 'vs/css!./media/sqlConnection';
 import { Builder, $ } from 'vs/base/browser/builder';
-import { Button } from 'vs/base/browser/ui/button/button';
+import { Button } from 'sql/base/browser/ui/button/button';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { Checkbox } from 'sql/base/browser/ui/checkbox/defaultCheckbox';
+import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
 import { IConnectionComponentCallbacks } from 'sql/parts/connection/connectionDialog/connectionDialogService';
@@ -21,11 +21,12 @@ import * as Constants from 'sql/parts/connection/common/constants';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as styler from 'vs/platform/theme/common/styler';
-import { attachInputBoxStyler } from 'sql/common/theme/styler';
+import { attachInputBoxStyler, attachButtonStyler } from 'sql/common/theme/styler';
 import * as DOM from 'vs/base/browser/dom';
 import data = require('data');
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
+import { OS, OperatingSystem } from 'vs/base/common/platform';
 
 export class ConnectionWidget {
 	private _builder: Builder;
@@ -36,6 +37,7 @@ export class ConnectionWidget {
 	private _databaseNameInputBox: InputBox;
 	private _userNameInputBox: InputBox;
 	private _passwordInputBox: InputBox;
+	private _password: string;
 	private _rememberPasswordCheckBox: Checkbox;
 	private _advancedButton: Button;
 	private _callbacks: IConnectionComponentCallbacks;
@@ -43,9 +45,10 @@ export class ConnectionWidget {
 	private _toDispose: lifecycle.IDisposable[];
 	private _optionsMaps: { [optionType: number]: data.ConnectionOption };
 	private _tableContainer: Builder;
+	private _focusedBeforeHandleOnConnection: HTMLElement;
 	private _providerName: string;
 	private _authTypeMap: { [providerName: string]: AuthenticationType[] } = {
-		[Constants.mssqlProviderName]: [new AuthenticationType('Integrated', false), new AuthenticationType('SqlLogin', true)]
+		[Constants.mssqlProviderName]: [new AuthenticationType(Constants.integrated, false), new AuthenticationType(Constants.sqlLogin, true)]
 	};
 	private _saveProfile: boolean;
 	public DefaultServerGroup: IConnectionProfileGroup = {
@@ -84,7 +87,14 @@ export class ConnectionWidget {
 		}
 
 		var authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
-		this._authTypeSelectBox = authTypeOption ? new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeOption.defaultValue) : undefined;
+		if(authTypeOption) {
+			if (OS === OperatingSystem.Windows) {
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(Constants.integrated);
+			} else {
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(Constants.sqlLogin);
+			}
+			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeOption.defaultValue);
+		}
 		this._providerName = providerName;
 	}
 
@@ -134,6 +144,7 @@ export class ConnectionWidget {
 		let passwordBuilder = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input');
 		this._passwordInputBox = new InputBox(passwordBuilder.getHTMLElement(), this._contextViewService);
 		this._passwordInputBox.inputElement.type = 'password';
+		this._password = '';
 
 		let rememberPasswordLabel = localize('rememberPassword', 'Remember password');
 		this._rememberPasswordCheckBox = this.appendCheckbox(this._tableContainer, rememberPasswordLabel, 'connection-checkbox', 'connection-input', false);
@@ -201,13 +212,14 @@ export class ConnectionWidget {
 		this._toDispose.push(attachInputBoxStyler(this._userNameInputBox, this._themeService));
 		this._toDispose.push(attachInputBoxStyler(this._passwordInputBox, this._themeService));
 		this._toDispose.push(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
-		this._toDispose.push(styler.attachButtonStyler(this._advancedButton, this._themeService));
+		this._toDispose.push(attachButtonStyler(this._advancedButton, this._themeService));
 
 		if (this._authTypeSelectBox) {
 			// Theme styler
 			this._toDispose.push(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
 			this._toDispose.push(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
 				this.onAuthTypeSelected(selectedAuthType.selected);
+				this.setConnectButton();
 			}));
 		}
 
@@ -217,6 +229,14 @@ export class ConnectionWidget {
 
 		this._toDispose.push(this._serverNameInputBox.onDidChange(serverName => {
 			this.serverNameChanged(serverName);
+		}));
+
+		this._toDispose.push(this._userNameInputBox.onDidChange(userName => {
+			this.setConnectButton();
+		}));
+
+		this._toDispose.push(this._passwordInputBox.onDidChange(passwordInput => {
+			this._password = passwordInput;
 		}));
 	}
 
@@ -230,6 +250,17 @@ export class ConnectionWidget {
 		}
 	}
 
+	private setConnectButton() : void {
+		let authDisplayName: string = this.getAuthTypeDisplayName(this.authenticationType);
+		let authType: AuthenticationType = this.getMatchingAuthType(authDisplayName);
+		let showUsernameAndPassword: boolean = true;
+		if(authType) {
+			showUsernameAndPassword = authType.showUsernameAndPassword;
+		}
+		showUsernameAndPassword ? this._callbacks.onSetConnectButton(!!this.serverName && !!this.userName) :
+			this._callbacks.onSetConnectButton(!!this.serverName);
+	}
+
 	private onAuthTypeSelected(selectedAuthType: string) {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
 		if (!currentAuthType.showUsernameAndPassword) {
@@ -239,6 +270,7 @@ export class ConnectionWidget {
 			this._passwordInputBox.hideMessage();
 			this._userNameInputBox.value = '';
 			this._passwordInputBox.value = '';
+			this._password = '';
 
 			this._rememberPasswordCheckBox.checked = false;
 			this._rememberPasswordCheckBox.enabled = false;
@@ -250,7 +282,7 @@ export class ConnectionWidget {
 	}
 
 	private serverNameChanged(serverName: string) {
-		this._callbacks.onSetConnectButton(!!serverName);
+		this.setConnectButton();
 		if (serverName.toLocaleLowerCase().includes('database.windows.net')) {
 			this._callbacks.onSetAzureTimeOut();
 		}
@@ -289,10 +321,10 @@ export class ConnectionWidget {
 	public fillInConnectionInputs(connectionInfo: IConnectionProfile) {
 		if (connectionInfo) {
 			this._serverNameInputBox.value = this.getModelValue(connectionInfo.serverName);
-			this._callbacks.onSetConnectButton(!!connectionInfo.serverName);
 			this._databaseNameInputBox.value = this.getModelValue(connectionInfo.databaseName);
 			this._userNameInputBox.value = this.getModelValue(connectionInfo.userName);
-			this._passwordInputBox.value = this.getModelValue(connectionInfo.password);
+			this._passwordInputBox.value = connectionInfo.password ? Constants.passwordChars : '';
+			this._password = this.getModelValue(connectionInfo.password);
 			this._saveProfile = connectionInfo.saveProfile;
 			let groupName: string;
 			if (this._saveProfile) {
@@ -321,18 +353,26 @@ export class ConnectionWidget {
 
 			if (this._authTypeSelectBox) {
 				this.onAuthTypeSelected(this._authTypeSelectBox.value);
+
 			}
+			// Disable connect button if -
+			// 1. Authentication type is SQL Login and no username is provided
+			// 2. No server name is provided
+			this.setConnectButton();
 		}
 	}
 
 	private getAuthTypeDisplayName(authTypeName: string) {
 		var displayName: string;
 		var authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
-		authTypeOption.categoryValues.forEach(c => {
-			if (c.name === authTypeName) {
-				displayName = c.displayName;
-			}
-		});
+
+		if(authTypeOption) {
+			authTypeOption.categoryValues.forEach(c => {
+				if (c.name === authTypeName) {
+					displayName = c.displayName;
+				}
+			});
+		}
 		return displayName;
 	}
 
@@ -348,6 +388,7 @@ export class ConnectionWidget {
 	}
 
 	public handleOnConnecting(): void {
+		this._focusedBeforeHandleOnConnection = <HTMLElement>document.activeElement;
 		this._advancedButton.enabled = false;
 
 		this._serverGroupSelectBox.disable();
@@ -378,6 +419,10 @@ export class ConnectionWidget {
 			this._passwordInputBox.enable();
 			this._rememberPasswordCheckBox.enabled = true;
 		}
+
+		if (this._focusedBeforeHandleOnConnection) {
+			this._focusedBeforeHandleOnConnection.focus();
+		}
 	}
 
 	public get serverName(): string {
@@ -393,7 +438,7 @@ export class ConnectionWidget {
 	}
 
 	public get password(): string {
-		return this._passwordInputBox.value;
+		return this._password;
 	}
 
 	public get authenticationType(): string {
@@ -467,7 +512,8 @@ export class ConnectionWidget {
 	}
 
 	private getMatchingAuthType(displayName: string): AuthenticationType {
-		return this._authTypeMap[this._providerName].find(authType => this.getAuthTypeDisplayName(authType.name) === displayName);
+		const authType = this._authTypeMap[this._providerName];
+		return authType ? authType.find(authType => this.getAuthTypeDisplayName(authType.name) === displayName) : undefined;
 	}
 }
 

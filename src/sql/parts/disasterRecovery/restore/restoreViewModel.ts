@@ -82,8 +82,8 @@ export class RestoreViewModel {
 	}
 
 	/**
-	 * Get option display value
-	 */
+	* Get option display value
+	*/
 	public getDisplayValue(optionMetadata: data.ServiceOption, optionValue: any): any {
 		let displayValue: any;
 		switch (optionMetadata.valueType) {
@@ -104,28 +104,28 @@ export class RestoreViewModel {
 	}
 
 	/**
-	 * On restore from changed set readHeaderFromMedia and reset the source database names and selected database name based on isFromBackupFile value.
-	 */
+	* On restore from changed set readHeaderFromMedia and reset the source database names and selected database name based on isFromBackupFile value.
+	*/
 	public onRestoreFromChanged(isFromBackupFile: boolean) {
 		this.readHeaderFromMedia = isFromBackupFile;
 		if (isFromBackupFile) {
 			this.updateFilePath('');
-			this.updateSourceDatabaseNames([], '');
+			this.updateSourceDatabaseNames([], undefined);
 		} else {
 			this.updateSourceDatabaseNames(this.databaseList, this.databaseList[0]);
 		}
 	}
 
 	/**
-	 * Get option metadata from the option map
-	 */
+	* Get option metadata from the option map
+	*/
 	public getOptionMetadata(optionName: string): data.ServiceOption {
 		return this._optionsMap[optionName] ? this._optionsMap[optionName].optionMetadata : undefined;
 	}
 
 	/**
-	 * Set current value for restore option
-	 */
+	* Set current value for restore option
+	*/
 	public setOptionValue(optionName: string, value: any): void {
 		if (this._optionsMap[optionName]) {
 			this._optionsMap[optionName].currentValue = value;
@@ -133,19 +133,8 @@ export class RestoreViewModel {
 	}
 
 	/**
-	 * Reset tail log backup file (temporary fix for bug#2838)
-	 */
-	public resetTailLogBackupFile(): void {
-		const tailLogBackupFileOption = 'tailLogBackupFile';
-		if (this._optionsMap[tailLogBackupFileOption]) {
-			this._optionsMap[tailLogBackupFileOption].currentValue = null;
-			this._optionsMap[tailLogBackupFileOption].defaultValue = null;
-		}
-	}
-
-	/**
-	 * Get current value for restore option
-	 */
+	* Get current value for restore option
+	*/
 	public getOptionValue(optionName: string): any {
 		if (this._optionsMap[optionName]) {
 			return this._optionsMap[optionName].currentValue;
@@ -154,8 +143,8 @@ export class RestoreViewModel {
 	}
 
 	/**
-	 * Get restore advanced options. Only return the options that are different from the default options
-	 */
+	* Get restore advanced options. Only return the options that are different from the default options
+	*/
 	public getRestoreAdvancedOptions(options: { [name: string]: any }) {
 		for (let key in this._optionsMap) {
 			let optionElement = this._optionsMap[key];
@@ -179,8 +168,8 @@ export class RestoreViewModel {
 	}
 
 	/**
-	 * On restore plan response will update all the information from restore plan response
-	 */
+	* On restore plan response will update all the information from restore plan response
+	*/
 	public onRestorePlanResponse(restorePlanResponse: data.RestorePlanResponse): void {
 		if (restorePlanResponse.planDetails && restorePlanResponse.planDetails['lastBackupTaken']) {
 			this.updateLastBackupTaken(restorePlanResponse.planDetails['lastBackupTaken'].currentValue);
@@ -196,8 +185,8 @@ export class RestoreViewModel {
 	}
 
 	/**
-	 * Update options with plan details
-	 */
+	* Update options with plan details
+	*/
 	public updateOptionWithPlanDetail(planDetails: { [key: string]: data.RestorePlanDetailInfo }): void {
 		if (planDetails) {
 			for (var key in planDetails) {
@@ -213,8 +202,8 @@ export class RestoreViewModel {
 	}
 
 	/**
-	 * Update options with restore config info. The option values will be both default and current values.
-	 */
+	* Update options with restore config info. The option values will be both default and current values.
+	*/
 	public updateOptionWithConfigInfo(configInfo: { [key: string]: any }): void {
 		if (configInfo) {
 			if (configInfo['sourceDatabaseNamesWithBackupSets']) {
@@ -243,8 +232,8 @@ export class RestoreViewModel {
 	}
 
 	/**
-	 * Update backup sets to restore
-	 */
+	* Update backup sets to restore
+	*/
 	public updateBackupSetsToRestore(backupSetsToRestore: data.DatabaseFileInfo[]): void {
 		this.selectedBackupSets = null;
 		if (backupSetsToRestore) {
@@ -259,11 +248,12 @@ export class RestoreViewModel {
 	}
 
 	/**
-	 * Reset restore options to the default value
-	 */
+	* Reset restore options to the default value
+	*/
 	public resetRestoreOptions(databaseName: string): void {
+		this.sourceDatabaseName = databaseName ? databaseName : '';
 		this.updateTargetDatabaseName(databaseName);
-		this.updateSourceDatabaseNames([], databaseName);
+		this.updateSourceDatabaseNames([], this.sourceDatabaseName);
 		this.updateFilePath('');
 		this.updateLastBackupTaken('');
 		this.databaseList = [];
@@ -276,32 +266,32 @@ export class RestoreViewModel {
 	}
 
 	/**
-	 * Update last backup taken
-	 */
+	* Update last backup taken
+	*/
 	public updateLastBackupTaken(value: string) {
 		this.lastBackupTaken = value;
 		this._onSetLastBackupTaken.fire(value);
 	}
 
 	/**
-	 * Update file path
-	 */
+	* Update file path
+	*/
 	public updateFilePath(value: string) {
 		this.filePath = value;
 		this._onSetfilePath.fire(value);
 	}
 
 	/**
-	 * Update source database names and selected database
-	 */
+	* Update source database names and selected database
+	*/
 	public updateSourceDatabaseNames(options: string[], selectedDatabase: string) {
 		this.sourceDatabaseName = selectedDatabase;
 		this._onSetSourceDatabaseNames.fire({ databaseNames: options, selectedDatabase: selectedDatabase });
 	}
 
 	/**
-	 * Update target database name
-	 */
+	* Update target database name
+	*/
 	public updateTargetDatabaseName(value: string) {
 		this.targetDatabaseName = value;
 		this._onSetTargetDatabaseName.fire(value);

@@ -21,3 +21,7 @@
 .dropdown .monaco-action-bar .action-item {
 	margin: 0;
 }
+
+.dropdown-tree .list-row {
+	margin-left: -33px;
+}

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
 import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
@@ -337,13 +338,18 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private toTreeNode(nodeInfo: data.NodeInfo, parent: TreeNode): TreeNode {
-		// make Database nodes with a status field non-expandable
+		// Show the status for database nodes with a status field
 		let isLeaf: boolean = nodeInfo.isLeaf;
-		if (nodeInfo.nodeType === 'Database' && nodeInfo.nodeStatus) {
-			nodeInfo.label = nodeInfo.label + ' (' + nodeInfo.nodeStatus + ')';
-			isLeaf = true;
-			// set to common status so we can have a single 'Unavailable' db icon
-			nodeInfo.nodeStatus = 'Unavailable';
+		if (nodeInfo.nodeType === NodeType.Database) {
+			if (nodeInfo.nodeStatus) {
+				nodeInfo.label = nodeInfo.label + ' (' + nodeInfo.nodeStatus + ')';
+			}
+			if (isLeaf) {
+				// set to common status so we can have a single 'Unavailable' db icon
+				nodeInfo.nodeStatus = 'Unavailable';
+			} else {
+				nodeInfo.nodeStatus = undefined;
+			}
 		}
 
 		return new TreeNode(nodeInfo.nodeType, nodeInfo.label, isLeaf, nodeInfo.nodePath,

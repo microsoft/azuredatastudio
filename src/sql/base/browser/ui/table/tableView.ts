@@ -5,9 +5,12 @@
 
 import { Table } from './table';
 import { TableDataView } from './tableDataView';
-
-import { View, Orientation, AbstractCollapsibleView, HeaderView, IViewOptions, ICollapsibleViewOptions } from 'vs/base/browser/ui/splitview/splitview';
+import { View, Orientation, AbstractCollapsibleView, HeaderView, ICollapsibleViewOptions, IViewOptions, CollapsibleState } from 'sql/base/browser/ui/splitview/splitview';
 import { $ } from 'vs/base/browser/builder';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import * as DOM from 'vs/base/browser/dom';
+import * as lifecycle from 'vs/base/common/lifecycle';
 
 export class TableBasicView<T> extends View {
 	private _table: Table<T>;
@@ -84,6 +87,7 @@ export class TableHeaderView<T> extends HeaderView {
 export class TableCollapsibleView<T> extends AbstractCollapsibleView {
 	private _table: Table<T>;
 	private _container: HTMLElement;
+	private _headerTabListener: lifecycle.IDisposable;
 
 	constructor(
 		private _viewTitle: string,
@@ -96,6 +100,29 @@ export class TableCollapsibleView<T> extends AbstractCollapsibleView {
 		this._container = document.createElement('div');
 		this._container.className = 'table-view';
 		this._table = new Table<T>(this._container, data, columns, tableOpts);
+	}
+
+	public render(container: HTMLElement, orientation: Orientation): void {
+		super.render(container, orientation);
+		this._headerTabListener = DOM.addDisposableListener(this.header, DOM.EventType.KEY_DOWN, (e) => {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Tab) && this.state === CollapsibleState.EXPANDED) {
+				let element = this._table.getSelectedRows();
+				if (!element || element.length === 0) {
+					this._table.setSelectedRows([0]);
+					this._table.setActiveCell(0, 1);
+					e.stopImmediatePropagation();
+				}
+			}
+		});
+	}
+
+	public dispose(): void {
+		if (this._headerTabListener) {
+			this._headerTabListener.dispose();
+			this._headerTabListener = null;
+		}
+		super.dispose();
 	}
 
 	public addContainerClass(className: string) {

@@ -6,11 +6,12 @@
 import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import QueryRunner, { EventType as QREvents } from 'sql/parts/query/execution/queryRunner';
 import * as Utils from 'sql/parts/connection/common/utils';
-import { IInsightsDialogModel } from 'sql/parts/insights/common/interfaces';
+import { IInsightsDialogModel, insertValueRegex } from 'sql/parts/insights/common/interfaces';
+import { error } from 'sql/base/common/log';
 
-import { DbCellValue, IDbColumn, IResultMessage, QueryExecuteSubsetResult } from 'data';
+import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'data';
 
 import Severity from 'vs/base/common/severity';
 import * as types from 'vs/base/common/types';
@@ -18,7 +19,7 @@ import * as pfs from 'vs/base/node/pfs';
 import * as nls from 'vs/nls';
 import { IMessageService } from 'vs/platform/message/common/message';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { error } from 'sql/base/common/log';
+import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 
 export class InsightsDialogController {
 	private _queryRunner: QueryRunner;
@@ -33,6 +34,7 @@ export class InsightsDialogController {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IWorkspaceContextService private _workspaceContextService: IWorkspaceContextService
 	) { }
 
 	public update(input: IInsightsConfigDetails, connectionProfile: IConnectionProfile): Thenable<void> {
@@ -44,18 +46,45 @@ export class InsightsDialogController {
 			}
 			if (types.isStringArray(input.query)) {
 				return this.createQuery(input.query.join(' '), connectionProfile).catch(e => {
-					this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights Error"), e);
+					this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), e);
 				}).then(() => undefined);
 			} else if (types.isString(input.query)) {
 				return this.createQuery(input.query, connectionProfile).catch(e => {
-					this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights Error"), e);
+					this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), e);
 				}).then(() => undefined);
 			} else if (types.isString(input.queryFile)) {
+				let filePath = input.queryFile;
+				// check for workspace relative path
+				let match = filePath.match(insertValueRegex);
+				if (match && match.length > 0 && match[1] === 'workspaceRoot') {
+					filePath = filePath.replace(match[0], '');
+
+					switch (this._workspaceContextService.getWorkbenchState()) {
+						case WorkbenchState.FOLDER:
+							filePath = this._workspaceContextService.getWorkspace().folders[0].toResource(filePath).fsPath;
+							break;
+						case WorkbenchState.WORKSPACE:
+							let filePathArray = filePath.split('/');
+							// filter out empty sections
+							filePathArray = filePathArray.filter(i => !!i);
+							let folder = this._workspaceContextService.getWorkspace().folders.find(i => i.name === filePathArray[0]);
+							if (!folder) {
+								return Promise.reject<void>(new Error(`Could not find workspace folder ${filePathArray[0]}`));
+							}
+							// remove the folder name from the filepath
+							filePathArray.shift();
+							// rejoin the filepath after doing the work to find the right folder
+							filePath = '/' + filePathArray.join('/');
+							filePath = folder.toResource(filePath).fsPath;
+							break;
+					}
+
+				}
 				return new Promise((resolve, reject) => {
-					pfs.readFile(input.queryFile).then(
+					pfs.readFile(filePath).then(
 						buffer => {
 							this.createQuery(buffer.toString(), connectionProfile).catch(e => {
-								this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights Error"), e);
+								this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), e);
 							}).then(() => resolve());
 						},
 						error => {
@@ -115,14 +144,14 @@ export class InsightsDialogController {
 	}
 
 	private addQueryEventListeners(queryRunner: QueryRunner): void {
-		queryRunner.eventEmitter.on('complete', () => {
+		queryRunner.addListener(QREvents.COMPLETE, () => {
 			this.queryComplete().catch(error => {
-				this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights Error"), error);
+				this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), error);
 			});
 		});
-		queryRunner.eventEmitter.on('message', (message: IResultMessage) => {
+		queryRunner.addListener(QREvents.MESSAGE, message => {
 			if (message.isError) {
-				this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights Error"), message.message);
+				this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), message.message);
 			}
 		});
 	}

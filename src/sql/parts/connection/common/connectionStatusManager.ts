@@ -155,9 +155,9 @@ export class ConnectionStatusManager {
 	}
 
 	/**
-	 * Tries to find an existing connection that's mapped with given the ownerUri
+	 * Tries to find an existing connection that's mapped with the given ownerUri
 	 * The purpose for this method is to find the connection given the ownerUri and find the original uri assigned to it. most of the times should be the same.
-	 * Only if the db name in the original uri is different than when connection is complete, we need to use the original uri
+	 * Only if the db name in the original uri is different when connection is complete, we need to use the original uri
 	 * Returns the generated ownerUri for the connection profile if not existing connection found
 	 * @param ownerUri connection owner uri to find an existing connection
 	 * @param purpose purpose for the connection

@@ -10,7 +10,7 @@ import { localize } from 'vs/nls';
 import * as data from 'data';
 
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { FirewallRuleDialog } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialog';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 import { IResourceProviderService } from 'sql/parts/accountManagement/common/interfaces';
@@ -29,7 +29,6 @@ export class FirewallRuleDialogController {
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
-		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService
 	) {

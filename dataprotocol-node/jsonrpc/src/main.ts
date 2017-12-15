@@ -467,7 +467,7 @@ function createMessageConnection<T extends MessageConnection>(messageReader: Mes
 
 			eventHandlers[type.method] = handler;
 		},
-		sendRequest: <P, R, E>(type: RequestType<P, R, E>, params: P, token?: CancellationToken): any => {
+		sendRequest: <P, R, E>(type: RequestType<P, R, E>, params: P, token?: CancellationToken) => {
 			throwIfClosedOrDisposed();
 
 			let id = sequenceNumber++;

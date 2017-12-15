@@ -6,11 +6,14 @@
 import { IThemable } from 'vs/platform/theme/common/styler';
 import * as objects from 'vs/base/common/objects';
 import Event, { Emitter } from 'vs/base/common/event';
-import { Dimension, Builder } from 'vs/base/browser/builder';
-import { addDisposableListener, EventType } from 'vs/base/browser/dom';
-import { IAction, IActionRunner, Action, IActionChangeEvent, ActionRunner } from 'vs/base/common/actions';
+import { Dimension, $, Builder } from 'vs/base/browser/builder';
+import { EventType } from 'vs/base/browser/dom';
+import { IAction } from 'vs/base/common/actions';
 import { IActionOptions, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 import './panelStyles';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IPanelStyles {
 
@@ -28,45 +31,41 @@ export interface IPanelTab {
 }
 
 interface IInternalPanelTab extends IPanelTab {
-	header: HTMLElement;
-	label: HTMLElement;
+	header: Builder;
+	label: Builder;
 }
 
 export type PanelTabIdentifier = string;
 
-export class TabbedPanel implements IThemable {
+export class TabbedPanel extends Disposable implements IThemable {
 	private _tabMap = new Map<PanelTabIdentifier, IInternalPanelTab>();
 	private _shownTab: PanelTabIdentifier;
 	public readonly headersize = 35;
-	private _header: HTMLElement;
-	private _tabList: HTMLElement;
+	private $header: Builder;
+	private $tabList: Builder;
+	private $body: Builder;
+	private $parent: Builder;
 	private _actionbar: ActionBar;
-	private _body: HTMLElement;
 	private _currentDimensions: Dimension;
 	private _collapsed = false;
-	private _parent: HTMLElement;
 
 	private _onTabChange = new Emitter<PanelTabIdentifier>();
 	public onTabChange: Event<PanelTabIdentifier> = this._onTabChange.event;
 
 	constructor(private container: HTMLElement) {
-		this._parent = document.createElement('div');
-		this._parent.className = 'tabbedPanel';
-		container.appendChild(this._parent);
-		this._header = document.createElement('div');
-		this._header.className = 'composite title';
-		this._tabList = document.createElement('div');
-		this._tabList.className = 'tabList';
-		this._tabList.style.height = this.headersize + 'px';
-		this._header.appendChild(this._tabList);
-		let actionbarcontainer = document.createElement('div');
-		actionbarcontainer.className = 'title-actions';
+		super();
+		this.$parent = this._register($('.tabbedPanel'));
+		this.$parent.appendTo(container);
+		this.$header = $('.composite.title');
+		this.$tabList = $('.tabList');
+		this.$tabList.style('height', this.headersize + 'px');
+		this.$header.append(this.$tabList);
+		let actionbarcontainer = $('.title-actions');
 		this._actionbar = new ActionBar(actionbarcontainer);
-		this._header.appendChild(actionbarcontainer);
-		this._parent.appendChild(this._header);
-		this._body = document.createElement('div');
-		this._body.className = 'tabBody';
-		this._parent.appendChild(this._body);
+		this.$header.append(actionbarcontainer);
+		this.$parent.append(this.$header);
+		this.$body = $('tabBody');
+		this.$parent.append(this.$body);
 	}
 
 	public pushTab(tab: IPanelTab): PanelTabIdentifier {
@@ -88,14 +87,20 @@ export class TabbedPanel implements IThemable {
 	}
 
 	private _createTab(tab: IInternalPanelTab): void {
-		let tabElement = document.createElement('div');
-		tabElement.className = 'tab';
-		let tabLabel = document.createElement('a');
-		tabLabel.className = 'tabLabel';
-		tabLabel.innerText = tab.title;
-		tabElement.appendChild(tabLabel);
-		addDisposableListener(tabElement, EventType.CLICK, (e) => this.showTab(tab.identifier));
-		this._tabList.appendChild(tabElement);
+		let tabElement = $('.tab');
+		tabElement.attr('tabindex', '0');
+		let tabLabel = $('a.tabLabel');
+		tabLabel.safeInnerHtml(tab.title);
+		tabElement.append(tabLabel);
+		tabElement.on(EventType.CLICK, e => this.showTab(tab.identifier));
+		tabElement.on(EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Enter)) {
+				this.showTab(tab.identifier);
+				e.stopImmediatePropagation();
+			}
+		});
+		this.$tabList.append(tabElement);
 		tab.header = tabElement;
 		tab.label = tabLabel;
 	}
@@ -106,14 +111,14 @@ export class TabbedPanel implements IThemable {
 		}
 
 		if (this._shownTab) {
-			this._tabMap.get(this._shownTab).label.classList.remove('active');
+			this._tabMap.get(this._shownTab).label.removeClass('active');
 		}
 
 		this._shownTab = id;
-		new Builder(this._body).empty();
+		this.$body.clearChildren();
 		let tab = this._tabMap.get(this._shownTab);
-		tab.label.classList.add('active');
-		tab.view.render(this._body);
+		tab.label.addClass('active');
+		tab.view.render(this.$body.getHTMLElement());
 		this._onTabChange.fire(id);
 		if (this._currentDimensions) {
 			this._layoutCurrentTab(new Dimension(this._currentDimensions.width, this._currentDimensions.height - this.headersize));
@@ -121,7 +126,7 @@ export class TabbedPanel implements IThemable {
 	}
 
 	public removeTab(tab: PanelTabIdentifier) {
-		this._tabMap.get(tab).header.remove();
+		this._tabMap.get(tab).header.destroy();
 		this._tabMap.delete(tab);
 	}
 
@@ -131,9 +136,9 @@ export class TabbedPanel implements IThemable {
 
 	public layout(dimension: Dimension): void {
 		this._currentDimensions = dimension;
-		this._header.style.width = dimension.width + 'px';
-		this._body.style.width = dimension.width + 'px';
-		this._body.style.height = (dimension.height - this.headersize) + 'px';
+		this.$header.style('width', dimension.width + 'px');
+		this.$body.style('width', dimension.width + 'px');
+		this.$body.style('height', (dimension.height - this.headersize) + 'px');
 		this._layoutCurrentTab(new Dimension(dimension.width, dimension.height - this.headersize));
 	}
 
@@ -154,9 +159,9 @@ export class TabbedPanel implements IThemable {
 
 		this._collapsed = val === false ? false : true;
 		if (this.collapsed) {
-			this._body.remove();
+			this.$body.offDOM();
 		} else {
-			this._parent.appendChild(this._body);
+			this.$parent.append(this.$body);
 		}
 	}
 

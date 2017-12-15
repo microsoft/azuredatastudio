@@ -14,7 +14,6 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
-import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IInsightData, IInsightsView, IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
@@ -30,8 +29,7 @@ import {
 } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { Builder } from 'vs/base/browser/builder';
-import { attachSelectBoxStyler, attachCheckboxStyler } from 'vs/platform/theme/common/styler';
+import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import Severity from 'vs/base/common/severity';
 import URI from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
@@ -116,15 +114,17 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 
 		// Init label first column checkbox
 		// Note: must use 'self' for callback
-		this.labelFirstColumnCheckBox = DialogHelper.createCheckBox(new Builder(this.labelFirstColumnElement.nativeElement),
-			this.labelFirstColumnLabel, 'chartView-checkbox', false, () => this.onLabelFirstColumnChanged());
-		this._disposables.push(attachCheckboxStyler(this.labelFirstColumnCheckBox, this._bootstrapService.themeService));
+		this.labelFirstColumnCheckBox = new Checkbox(this.labelFirstColumnElement.nativeElement, {
+			label: this.labelFirstColumnLabel,
+			onChange: () => this.onLabelFirstColumnChanged()
+		});
 
 		// Init label first column checkbox
 		// Note: must use 'self' for callback
-		this.columnsAsLabelsCheckBox = DialogHelper.createCheckBox(new Builder(this.columnsAsLabelsElement.nativeElement),
-			this.columnsAsLabelsLabel, 'chartView-checkbox', false, () => this.columnsAsLabelsChanged());
-		this._disposables.push(attachCheckboxStyler(this.columnsAsLabelsCheckBox, this._bootstrapService.themeService));
+		this.columnsAsLabelsCheckBox = new Checkbox(this.columnsAsLabelsElement.nativeElement, {
+			label: this.columnsAsLabelsLabel,
+			onChange: () => this.columnsAsLabelsChanged()
+		});
 
 		// Init legend dropdown
 		this.legendSelectBox = new SelectBox(this.legendOptions, this._chartConfig.legendPosition);
@@ -332,7 +332,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 			this.componentHost.viewContainerRef.clear();
 			let componentRef = this.componentHost.viewContainerRef.createComponent(componentFactory);
 			this._chartComponent = <ChartInsight>componentRef.instance;
-			this._chartComponent.config = this._chartConfig;
+			this._chartComponent.setConfig(this._chartConfig);
 			this._chartComponent.data = this._executeResult;
 			this._chartComponent.options = mixin(this._chartComponent.options, { animation: { duration: 0 } });
 			if (this._chartComponent.init) {

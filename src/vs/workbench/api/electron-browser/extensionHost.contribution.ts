@@ -23,6 +23,7 @@ import './mainThreadCredentials';
 // disable the debug service
 // import './mainThreadDebugService';
 
+import './mainThreadDecorations';
 import './mainThreadDiagnostics';
 import './mainThreadDialogs';
 import './mainThreadDocumentContentProviders';
@@ -32,6 +33,7 @@ import './mainThreadEditor';
 import './mainThreadEditors';
 import './mainThreadErrors';
 import './mainThreadExtensionService';
+import './mainThreadFileSystem';
 import './mainThreadFileSystemEventService';
 import './mainThreadHeapService';
 import './mainThreadLanguageFeatures';

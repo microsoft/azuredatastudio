@@ -4,10 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as Utils from 'sql/parts/connection/common/utils';
 import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
-import { $ } from 'vs/base/browser/dom';
-import dom = require('vs/base/browser/dom');
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
 import { FileKind } from 'vs/platform/files/common/files';
 import URI from 'vs/base/common/uri';
@@ -55,7 +52,7 @@ export class FileBrowserRenderer implements IRenderer {
 	 */
 	public renderElement(tree: ITree, element: FileNode, templateId: string, templateData: IFileTemplateData): void {
 		if (element) {
-			templateData.label.element.style.display = 'block';
+			templateData.label.element.style.display = 'flex';
 			const extraClasses = ['explorer-item'];
 
 			var fileuri = URI.file(element.fullPath);

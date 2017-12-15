@@ -11,13 +11,18 @@ import { GridActionProvider } from 'sql/parts/grid/views/gridActions';
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction, Action } from 'vs/base/common/actions';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class EditDataGridActionProvider extends GridActionProvider {
 
-	constructor(dataService: DataService, selectAllCallback: (index: number) => void,
+	constructor(
+		dataService: DataService,
+		selectAllCallback: (index: number) => void,
 		private _deleteRowCallback: (index: number) => void,
-		private _revertRowCallback: (index: number) => void) {
-		super(dataService, selectAllCallback);
+		private _revertRowCallback: (index: number) => void,
+		@IInstantiationService instantiationService: IInstantiationService
+	) {
+		super(dataService, selectAllCallback, instantiationService);
 	}
 	/**
 	 * Return actions given a click on an edit data grid

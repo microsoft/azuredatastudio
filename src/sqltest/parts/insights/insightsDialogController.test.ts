@@ -5,7 +5,7 @@
 
 import { InsightsDialogController } from 'sql/parts/insights/node/insightsDialogController';
 import { InsightsDialogModel } from 'sql/parts/insights/common/insightsDialogModel';
-import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import QueryRunner, { EventType } from 'sql/parts/query/execution/queryRunner';
 import { ConnectionManagementService } from 'sql/parts/connection/common/connectionManagementService';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -13,7 +13,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
 import { IDbColumn, BatchSummary, QueryExecuteSubsetResult, ResultSetSubset } from 'data';
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'vs/base/common/eventEmitter';
 import { equal } from 'assert';
 import { Mock, MockBehavior, It } from 'typemoq';
 
@@ -47,7 +47,8 @@ suite('Insights Dialog Controller Tests', () => {
 			undefined,
 			undefined,
 			instMoq.object,
-			connMoq.object
+			connMoq.object,
+			undefined
 		);
 
 		let profile: IConnectionProfile = {
@@ -93,9 +94,9 @@ interface IPrimedQueryRunner {
 * Returns a mock of query runner than will recreate what a query runner does to return data
 */
 function getPrimedQueryRunner(data: string[][], columns: string[]): IPrimedQueryRunner {
-	let eventEmitter = new EventEmitter();
+	let emitter = new EventEmitter();
 	let querymock = Mock.ofType(QueryRunner, MockBehavior.Strict);
-	querymock.setup(x => x.eventEmitter).returns(x => eventEmitter);
+	querymock.setup(x => x.addListener(It.isAny(), It.isAny())).returns((event, func) => emitter.addListener(event, func));
 	querymock.setup(x => x.batchSets).returns(x => {
 		return <Array<BatchSummary>>[
 			{
@@ -122,7 +123,7 @@ function getPrimedQueryRunner(data: string[][], columns: string[]): IPrimedQuery
 	querymock.setup(x => x.runQuery(It.isAnyString())).returns(x => Promise.resolve());
 
 	let complete = () => {
-		eventEmitter.emit('complete');
+		emitter.emit(EventType.COMPLETE);
 	};
 
 	return {

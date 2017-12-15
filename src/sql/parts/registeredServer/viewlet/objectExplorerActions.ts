@@ -11,7 +11,8 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IConnectionManagementService, IConnectionCompletionOptions, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction, ScriptDeleteAction } from 'sql/workbench/common/actions';
+import { NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction,
+	ScriptExecuteAction, ScriptDeleteAction, ScriptAlterAction } from 'sql/workbench/common/actions';
 import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
 import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/parts/registeredServer/viewlet/treeSelectionHandler';
@@ -19,6 +20,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import * as Constants from 'sql/parts/connection/common/constants';
 
 export class ObjectExplorerActionsContext {
 	public treeNode: TreeNode;
@@ -166,7 +168,7 @@ export class OEScriptSelectAction extends ScriptSelectAction {
 		ownerUri = this._connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
 		var metadata = (<TreeNode>this._objectExplorerTreeNode).metadata;
 
-		return super.run({ profile: connectionProfile, object: metadata, uri: ownerUri }).then((result) => {
+		return super.run({ profile: connectionProfile, object: metadata }).then((result) => {
 			this._treeSelectionHandler.onTreeActionStateChange(false);
 			return result;
 		});
@@ -236,7 +238,81 @@ export class OEScriptCreateAction extends ScriptCreateAction {
 		var ownerUri = this._connectionManagementService.getConnectionId(connectionProfile);
 		ownerUri = this._connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
 
-		return super.run({ profile: connectionProfile, object: metadata, uri: ownerUri }).then((result) => {
+		return super.run({ profile: connectionProfile, object: metadata }).then((result) => {
+			this._treeSelectionHandler.onTreeActionStateChange(false);
+			return result;
+		});
+	}
+}
+
+export class OEScriptExecuteAction extends ScriptExecuteAction {
+	public static ID = 'objectExplorer.' + ScriptExecuteAction.ID;
+	private _objectExplorerTreeNode: TreeNode;
+	private _container: HTMLElement;
+	private _treeSelectionHandler: TreeSelectionHandler;
+
+	constructor(
+		id: string, label: string,
+		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
+		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
+		@IScriptingService protected _scriptingService: IScriptingService,
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IErrorMessageService protected _errorMessageService: IErrorMessageService
+	) {
+		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
+	}
+
+	public run(actionContext: any): TPromise<boolean> {
+		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
+		if (actionContext instanceof ObjectExplorerActionsContext) {
+			//set objectExplorerTreeNode for context menu clicks
+			this._objectExplorerTreeNode = actionContext.treeNode;
+			this._container = actionContext.container;
+		}
+		this._treeSelectionHandler.onTreeActionStateChange(true);
+		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
+		var metadata = (<TreeNode>this._objectExplorerTreeNode).metadata;
+		var ownerUri = this._connectionManagementService.getConnectionId(connectionProfile);
+		ownerUri = this._connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
+
+		return super.run({ profile: connectionProfile, object: metadata }).then((result) => {
+			this._treeSelectionHandler.onTreeActionStateChange(false);
+			return result;
+		});
+	}
+}
+
+export class OEScriptAlterAction extends ScriptAlterAction {
+	public static ID = 'objectExplorer.' + ScriptAlterAction.ID;
+	private _objectExplorerTreeNode: TreeNode;
+	private _container: HTMLElement;
+	private _treeSelectionHandler: TreeSelectionHandler;
+
+	constructor(
+		id: string, label: string,
+		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
+		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
+		@IScriptingService protected _scriptingService: IScriptingService,
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IErrorMessageService protected _errorMessageService: IErrorMessageService
+	) {
+		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
+	}
+
+	public run(actionContext: any): TPromise<boolean> {
+		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
+		if (actionContext instanceof ObjectExplorerActionsContext) {
+			//set objectExplorerTreeNode for context menu clicks
+			this._objectExplorerTreeNode = actionContext.treeNode;
+			this._container = actionContext.container;
+		}
+		this._treeSelectionHandler.onTreeActionStateChange(true);
+		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
+		var metadata = (<TreeNode>this._objectExplorerTreeNode).metadata;
+		var ownerUri = this._connectionManagementService.getConnectionId(connectionProfile);
+		ownerUri = this._connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
+
+		return super.run({ profile: connectionProfile, object: metadata }).then((result) => {
 			this._treeSelectionHandler.onTreeActionStateChange(false);
 			return result;
 		});
@@ -273,7 +349,7 @@ export class OEScriptDeleteAction extends ScriptDeleteAction {
 		var ownerUri = this._connectionManagementService.getConnectionId(connectionProfile);
 		ownerUri = this._connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
 
-		return super.run({ profile: connectionProfile, object: metadata, uri: ownerUri }).then((result) => {
+		return super.run({ profile: connectionProfile, object: metadata }).then((result) => {
 			this._treeSelectionHandler.onTreeActionStateChange(false);
 			return result;
 		});
@@ -351,19 +427,36 @@ export class ObjectExplorerActionUtilities {
 		}
 	}
 
-	public static getScriptMap(): Map<NodeType, any[]> {
-		var scriptMap = new Map<NodeType, any[]>();
-		var basicScripting = [OEScriptCreateAction, OEScriptDeleteAction];
-		scriptMap.set(NodeType.AggregateFunction, basicScripting);
-		scriptMap.set(NodeType.PartitionFunction, basicScripting);
-		scriptMap.set(NodeType.ScalarValuedFunction, basicScripting);
+	public static getScriptMap(treeNode: TreeNode): Map<NodeType, any[]> {
+		let scriptMap = new Map<NodeType, any[]>();
+
+		let isMssqlProvider: boolean = true;
+		if (treeNode) {
+			let connectionProfile = treeNode.getConnectionProfile();
+			if (connectionProfile) {
+				isMssqlProvider = connectionProfile.providerName === Constants.mssqlProviderName;
+			}
+		}
+
+		let basicScripting = [OEScriptCreateAction, OEScriptDeleteAction];
+		let storedProcedureScripting = isMssqlProvider ? [OEScriptCreateAction, OEScriptAlterAction, OEScriptDeleteAction, OEScriptExecuteAction] :
+		basicScripting;
+
+		let viewScripting = isMssqlProvider ? [OEScriptSelectAction, OEScriptCreateAction, OEScriptAlterAction, OEScriptDeleteAction] :
+		[OEScriptSelectAction, OEScriptCreateAction, OEScriptDeleteAction];
+
+		let functionScripting = isMssqlProvider ? [OEScriptCreateAction, OEScriptAlterAction, OEScriptDeleteAction] :
+		basicScripting;
+		scriptMap.set(NodeType.AggregateFunction, functionScripting);
+		scriptMap.set(NodeType.PartitionFunction, functionScripting);
+		scriptMap.set(NodeType.ScalarValuedFunction, functionScripting);
 		scriptMap.set(NodeType.Schema, basicScripting);
-		scriptMap.set(NodeType.StoredProcedure, basicScripting);
+		scriptMap.set(NodeType.StoredProcedure, storedProcedureScripting);
 		scriptMap.set(NodeType.Table, [OEScriptSelectAction, OEEditDataAction, OEScriptCreateAction, OEScriptDeleteAction]);
-		scriptMap.set(NodeType.TableValuedFunction, basicScripting);
+		scriptMap.set(NodeType.TableValuedFunction, functionScripting);
 		scriptMap.set(NodeType.User, basicScripting);
 		scriptMap.set(NodeType.UserDefinedTableType, basicScripting);
-		scriptMap.set(NodeType.View, [OEScriptSelectAction, OEScriptCreateAction, OEScriptDeleteAction]);
+		scriptMap.set(NodeType.View, viewScripting);
 		return scriptMap;
 	}
 }

@@ -10,7 +10,7 @@ import * as nls from 'vs/nls';
 
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actionRegistry';
+import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { ShowCurrentReleaseNotesAction, ProductContribution } from 'sql/workbench/update/releaseNotes';
 
@@ -41,6 +41,7 @@ const configureDashboardSchema: IJSONSchema = {
 registerTask('backup', '', backupSchema, Actions.BackupAction);
 registerTask('restore', '', restoreSchema, Actions.RestoreAction);
 registerTask('new-query', '', newQuerySchema, Actions.NewQueryAction);
+
 registerTask('configure-dashboard', '', configureDashboardSchema, Actions.ConfigureDashboardAction);
 
 // add product update and release notes contributions

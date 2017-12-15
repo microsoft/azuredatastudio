@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!sql/media/icons/common-icons';
+import 'vs/css!./dashboardWidgetWrapper';
 
 import {
 	Component, Input, Inject, forwardRef, ComponentFactoryResolver, AfterContentInit, ViewChild,
@@ -13,7 +14,7 @@ import { ComponentHostDirective } from './componentHost.directive';
 import { WidgetConfig, WIDGET_CONFIG, IDashboardWidget } from './dashboardWidget';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { error } from 'sql/base/common/log';
-import * as ACTIONS from './actions';
+import { RefreshWidgetAction, ToggleMoreWidgetAction, DeleteWidgetAction } from './actions';
 
 /* Widgets */
 import { PropertiesWidgetComponent } from 'sql/parts/dashboard/widgets/properties/propertiesWidget.component';
@@ -28,8 +29,8 @@ import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeS
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
 import { Action } from 'vs/base/common/actions';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
@@ -47,8 +48,10 @@ export class DashboardWidgetWrapper implements AfterContentInit, OnInit, OnDestr
 	private _themeDispose: IDisposable;
 	private _actions: Array<Action>;
 	private _component: IDashboardWidget;
+	private _actionbar: ActionBar;
 
 	@ViewChild('header', { read: ElementRef }) private header: ElementRef;
+	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 	@ViewChild(ComponentHostDirective) componentHost: ComponentHostDirective;
 
 	constructor(
@@ -69,6 +72,11 @@ export class DashboardWidgetWrapper implements AfterContentInit, OnInit, OnDestr
 	ngAfterContentInit() {
 		this.updateTheme(this._bootstrap.themeService.getColorTheme());
 		this.loadWidget();
+		this._changeref.detectChanges();
+		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
+		if (this._actions) {
+			this._actionbar.push(this._bootstrap.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this._component.actionsContext), { icon: true, label: false });
+		}
 	}
 
 	ngOnDestroy() {
@@ -79,6 +87,24 @@ export class DashboardWidgetWrapper implements AfterContentInit, OnInit, OnDestr
 		if (this._component && this._component.refresh) {
 			this._component.refresh();
 		}
+	}
+
+	public layout(): void {
+		if (this._component && this._component.layout) {
+			this._component.layout();
+		}
+	}
+
+	public get id(): string {
+		return this._config.id;
+	}
+
+	public enableEdit(): void {
+		this._actionbar.push(this._bootstrap.instantiationService.createInstance(DeleteWidgetAction, this._config.id, this._bootstrap.getUnderlyingUri()), { icon: true, label: false });
+	}
+
+	public disableEdit(): void {
+		this._actionbar.pull(this._actionbar.length() - 1);
 	}
 
 	private loadWidget(): void {
@@ -105,7 +131,7 @@ export class DashboardWidgetWrapper implements AfterContentInit, OnInit, OnDestr
 			this._component = componentRef.instance;
 			let actions = componentRef.instance.actions;
 			if (componentRef.instance.refresh) {
-				actions.push(this._bootstrap.instantiationService.createInstance(ACTIONS.RefreshWidgetAction, ACTIONS.RefreshWidgetAction.ID, ACTIONS.RefreshWidgetAction.LABEL, componentRef.instance.refresh));
+				actions.push(new RefreshWidgetAction(componentRef.instance.refresh, componentRef.instance));
 			}
 			if (actions !== undefined && actions.length > 0) {
 				this._actions = actions;
@@ -148,23 +174,12 @@ export class DashboardWidgetWrapper implements AfterContentInit, OnInit, OnDestr
 		return selector;
 	}
 
-	//tslint:disable-next-line
-	private onActionsClick(e: any) {
-		let anchor = { x: e.pageX + 1, y: e.pageY };
-		this._bootstrap.contextMenuService.showContextMenu({
-			getAnchor: () => anchor,
-			getActions: () => TPromise.as(this._actions),
-			getActionsContext: () => this._component.actionsContext
-		});
-	}
-
 	private updateTheme(theme: IColorTheme): void {
 		let el = <HTMLElement>this._ref.nativeElement;
 		let headerEl: HTMLElement = this.header.nativeElement;
 		let borderColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true);
 		let backgroundColor = theme.getColor(colors.editorBackground, true);
 		let foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
-		// TODO: highContrastBorder does not exist, how to handle?
 		let border = theme.getColor(colors.contrastBorder, true);
 
 		if (this._config.background_color) {

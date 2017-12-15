@@ -7,7 +7,7 @@
 
 import * as data from 'data';
 import Event from 'vs/base/common/event';
-import { AccountAdditionResult, AccountProviderAddedEventParams, UpdateAccountListEventParams } from  'sql/services/accountManagement/eventTypes';
+import { AccountAdditionResult, AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 export const SERVICE_ID = 'accountManagementService';
@@ -18,15 +18,20 @@ export interface IAccountManagementService {
 	_serviceBrand: any;
 
 	// ACCOUNT MANAGEMENT METHODS //////////////////////////////////////////
-	addAccount(providerId: string): Thenable<data.Account>;
+	accountUpdated(account: data.Account): Thenable<void>;
+	addAccount(providerId: string): Thenable<void>;
 	getAccountProviderMetadata(): Thenable<data.AccountProviderMetadata[]>;
 	getAccountsForProvider(providerId: string): Thenable<data.Account[]>;
 	getSecurityToken(account: data.Account): Thenable<{}>;
 	removeAccount(accountKey: data.AccountKey): Thenable<boolean>;
+	refreshAccount(account: data.Account): Thenable<data.Account>;
 
 	// UI METHODS //////////////////////////////////////////////////////////
 	openAccountListDialog(): Thenable<void>;
-	performOAuthAuthorization(url: string, silent: boolean): Thenable<string>;
+	beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void>;
+	endAutoOAuthDeviceCode(): void;
+	cancelAutoOAuthDeviceCode(providerId: string): void;
+	copyUserCodeAndOpenBrowser(userCode: string, uri: string): void;
 
 	// SERVICE MANAGEMENT METHODS /////////////////////////////////////////
 	registerProvider(providerMetadata: data.AccountProviderMetadata, provider: data.AccountProvider): void;

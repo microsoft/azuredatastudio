@@ -12,6 +12,7 @@ import { findGit, Git, IGit } from './git';
 import { Model } from './model';
 import { CommandCenter } from './commands';
 import { GitContentProvider } from './contentProvider';
+import { GitDecorations } from './decorationProvider';
 import { Askpass } from './askpass';
 import { toDisposable } from './util';
 import TelemetryReporter from 'vscode-extension-telemetry';
@@ -54,6 +55,7 @@ async function init(context: ExtensionContext, disposables: Disposable[]): Promi
 	disposables.push(
 		new CommandCenter(git, model, outputChannel, telemetryReporter),
 		new GitContentProvider(model),
+		new GitDecorations(model)
 	);
 
 	await checkGitVersion(info);
@@ -70,7 +72,7 @@ export function activate(context: ExtensionContext): any {
 async function checkGitVersion(info: IGit): Promise<void> {
 
 	// {{SQL CARBON EDIT}}
-	// remove Git version check on since for Carbon
+	// remove Git version check for sqlops
 
 	return;
 

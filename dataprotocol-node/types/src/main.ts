@@ -480,8 +480,8 @@ export interface RestoreDatabaseFileInfo {
 }
 
 export interface FileBrowserOpenParams {
-    ownerUri: string;
-    expandPath: string;
+	ownerUri: string;
+	expandPath: string;
 	fileFilters: string[];
 	changeFilter: boolean;
 }
@@ -507,8 +507,8 @@ export interface FileBrowserOpenedParams {
 }
 
 export interface FileBrowserExpandParams {
-    ownerUri: string;
-    expandPath: string;
+	ownerUri: string;
+	expandPath: string;
 }
 
 export interface FileBrowserExpandedParams {
@@ -520,9 +520,9 @@ export interface FileBrowserExpandedParams {
 }
 
 export interface FileBrowserValidateParams {
-    ownerUri: string;
-    serviceType: string;
-    selectedFiles: string[];
+	ownerUri: string;
+	serviceType: string;
+	selectedFiles: string[];
 }
 
 export interface FileBrowserValidatedParams {
@@ -531,7 +531,7 @@ export interface FileBrowserValidatedParams {
 }
 
 export interface FileBrowserCloseParams {
-    ownerUri: string;
+	ownerUri: string;
 }
 
 export interface FileBrowserCloseResponse {
@@ -721,7 +721,9 @@ export enum ScriptOperation {
 	Create = 1,
 	Insert = 2,
 	Update = 3,
-	Delete = 4
+	Delete = 4,
+	Execute = 5,
+	Alter = 6
 }
 
 export interface ScriptOptions {
@@ -1077,6 +1079,77 @@ export class TableMetadata {
 
 	columns: ColumnMetadata[];
 
+}
+
+/**
+ * Parameters to start a profiler session
+ */
+export interface StartProfilingParams {
+	/**
+	 * Session Owner URI
+	 */
+	ownerUri: string;
+
+	/**
+	 * Session options
+	 */
+	options: {};
+}
+
+export interface StartProfilingResponse {
+	succeeded: string;
+	errorMessage: string;
+}
+
+/**
+ * Parameters to start a profiler session
+ */
+export interface StopProfilingParams {
+	/**
+	 * Session Owner URI
+	 */
+	ownerUri: string;
+}
+
+export interface StopProfilingResponse {
+	succeeded: string;
+	errorMessage: string;
+}
+
+/**
+ * Profiler Event
+ */
+export interface ProfilerEvent {
+	/**
+	 * Event class name
+	 */
+	name: string;
+
+	/**
+	 * Event timestamp
+	 */
+	timestamp: string;
+
+	/**
+	 * Event values
+	 */
+	values: {};
+}
+
+/**
+ * Profiler events available notification parameters
+ */
+export interface ProfilerEventsAvailableParams
+{
+	/**
+	 * Session owner URI
+	 */
+	ownerUri: string;
+
+	/**
+	 * New profiler events available
+	 */
+	events: ProfilerEvent[];
 }
 
 /**

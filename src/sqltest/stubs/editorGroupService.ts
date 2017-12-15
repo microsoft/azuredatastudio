@@ -5,13 +5,12 @@
 
 'use strict';
 
-import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
+import { ServiceIdentifier, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { Position, IEditorInput } from 'vs/platform/editor/common/editor';
-import { IEditorStacksModel, IEditorGroup, EditorInput } from 'vs/workbench/common/editor';
+import { IEditorStacksModel, IEditorGroup, EditorInput, IEditorOpeningEvent } from 'vs/workbench/common/editor';
 import Event from 'vs/base/common/event';
-import { ITabOptions, GroupArrangement, GroupOrientation } from 'vs/workbench/services/group/common/groupService';
-import { IEditorGroupService, IMoveOptions } from 'vs/workbench/services/group/common/groupService';
-import { EditorGroup } from "vs/workbench/common/editor/editorStacksModel";
+import { IEditorTabOptions, GroupArrangement, GroupOrientation, IEditorGroupService, IMoveOptions } from 'vs/workbench/services/group/common/groupService';
+import { EditorGroup } from 'vs/workbench/common/editor/editorStacksModel';
 
 export class EditorGroupTestService implements IEditorGroupService {
 	_serviceBrand: ServiceIdentifier<any>;
@@ -20,6 +19,14 @@ export class EditorGroupTestService implements IEditorGroupService {
 	 * Emitted when editors or inputs change. Examples: opening, closing of editors. Active editor change.
 	 */
 	onEditorsChanged: Event<void>;
+
+	onEditorOpening: Event<IEditorOpeningEvent>;
+
+	onEditorGroupMoved: Event<void>;
+
+	invokeWithinEditorContext<T>(fn: (accessor: ServicesAccessor) => T): T {
+		return undefined;
+	}
 
 	/**
 	 * Emitted when opening an editor fails.
@@ -39,7 +46,7 @@ export class EditorGroupTestService implements IEditorGroupService {
 	/**
 	 * Emitted when tab options changed.
 	 */
-	onTabOptionsChanged: Event<ITabOptions>;
+	onTabOptionsChanged: Event<IEditorTabOptions>;
 
 	/**
 	 * Keyboard focus the editor group at the provided position.
@@ -108,7 +115,7 @@ export class EditorGroupTestService implements IEditorGroupService {
 	/**
 	 * Returns true if tabs are shown, false otherwise.
 	 */
-	getTabOptions(): ITabOptions {
+	getTabOptions(): IEditorTabOptions {
 		return undefined;
 	}
 

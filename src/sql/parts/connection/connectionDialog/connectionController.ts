@@ -6,7 +6,7 @@
 'use strict';
 
 import { IConnectionManagementService, ConnectionOptionSpecialType } from 'sql/parts/connection/common/connectionManagement';
-import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionResult } from 'sql/parts/connection/connectionDialog/connectionDialogService';
+import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionValidateResult } from 'sql/parts/connection/connectionDialog/connectionDialogService';
 import { ConnectionWidget } from 'sql/parts/connection/connectionDialog/connectionWidget';
 import { AdvancedPropertiesController } from 'sql/parts/connection/connectionDialog/advancedPropertiesController';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -119,7 +119,7 @@ export class ConnectionController implements IConnectionComponentController {
 		this._connectionWidget.focusOnOpen();
 	}
 
-	public validateConnection(): IConnectionResult {
+	public validateConnection(): IConnectionValidateResult {
 		return { isValid: this._connectionWidget.connect(this._model), connection: this._model };
 	}
 

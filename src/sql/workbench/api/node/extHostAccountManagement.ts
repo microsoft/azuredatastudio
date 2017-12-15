@@ -6,9 +6,9 @@
 'use strict';
 
 import * as data from 'data';
-import {TPromise} from 'vs/base/common/winjs.base';
-import {IThreadService} from 'vs/workbench/services/thread/common/threadService';
-import {Disposable} from 'vs/workbench/api/node/extHostTypes';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
+import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import {
 	ExtHostAccountManagementShape,
 	MainThreadAccountManagementShape,
@@ -18,7 +18,7 @@ import {
 export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	private _handlePool: number = 0;
 	private _proxy: MainThreadAccountManagementShape;
-	private _providers: {[handle: number]: AccountProviderWithMetadata} = {};
+	private _providers: { [handle: number]: AccountProviderWithMetadata } = {};
 
 	constructor(threadService: IThreadService) {
 		super();
@@ -47,9 +47,21 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return this._withProvider(handle, (provider: data.AccountProvider) => provider.refresh(account));
 	}
 
+	public $autoOAuthCancelled(handle: number): Thenable<void> {
+		return this._withProvider(handle, (provider: data.AccountProvider) => provider.autoOAuthCancelled());
+	}
+
 	// - EXTENSION HOST AVAILABLE METHODS //////////////////////////////////
-	public $performOAuthAuthorization(url: string, silent: boolean): Thenable<string> {
-		return this._proxy.$performOAuthAuthorization(url, silent);
+	public $beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
+		return this._proxy.$beginAutoOAuthDeviceCode(providerId, title, message, userCode, uri);
+	}
+
+	public $endAutoOAuthDeviceCode(): void {
+		this._proxy.$endAutoOAuthDeviceCode();
+	}
+
+	public $accountUpdated(updatedAccount: data.Account): void {
+		this._proxy.$accountUpdated(updatedAccount);
 	}
 
 	public $registerAccountProvider(providerMetadata: data.AccountProviderMetadata, provider: data.AccountProvider): Disposable {

@@ -41,13 +41,14 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this._state = new ProfilerState();
 		// set inital state
 		this.state.change({
-			isConnected: false,
+			isConnected: true,
 			isStopped: false,
 			isPaused: false,
 			isRunning: false,
 			autoscroll: true
 		});
-		this._id = this._profilerService.registerSession(generateUuid(), this);
+
+		this._id = this._profilerService.registerSession(generateUuid(), _connection, this);
 		let searchFn = (val: { [x: string]: string }, exp: string): Array<number> => {
 			let ret = new Array<number>();
 			for (let i = 0; i < this._columns.length; i++) {
@@ -124,13 +125,16 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._state;
 	}
 
-	public onMoreRows(rowCount: number, data: data.IProfilerTableRow) {
-		let validColumns = this.sessionTemplate.view.events.find(i => i.name === data.EventClass).columns;
-		Object.keys(rowCount).forEach(k => {
-			if (!validColumns.includes(k)) {
-				delete rowCount[k];
-			}
-		});
-		this._data.push(data);
+	public onMoreRows(events: data.ProfilerSessionEvents) {
+
+		events = undefined;
+
+		// let validColumns = this.sessionTemplate.view.events.find(i => i.name === data.EventClass).columns;
+		// Object.keys(rowCount).forEach(k => {
+		// 	if (!validColumns.includes(k)) {
+		// 		delete rowCount[k];
+		// 	}
+		// });
+		// this._data.push(data);
 	}
 }

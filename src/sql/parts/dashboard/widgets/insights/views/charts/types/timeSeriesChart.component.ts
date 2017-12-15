@@ -15,8 +15,8 @@ export default class TimeSeriesChart extends LineChart {
 	protected _defaultConfig = defaultTimeSeriesConfig;
 
 	protected addAxisLabels(): void {
-		let xLabel = this.getLabels()[1] || 'x';
-		let yLabel = this.getLabels()[2] || 'y';
+		let xLabel = this._config.xAxisLabel || this.getLabels()[1] || 'x';
+		let yLabel = this._config.yAxisLabel || this.getLabels()[2] || 'y';
 
 		let options = {
 			scales: {

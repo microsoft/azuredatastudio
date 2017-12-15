@@ -5,32 +5,48 @@
 
 'use strict';
 
-import {
-	BatchSummary,
-	QueryCancelResult,
-	QueryExecuteBatchNotificationParams,
-	QueryExecuteCompleteNotificationResult,
-	QueryExecuteResultSetCompleteNotificationParams,
-	QueryExecuteMessageParams,
-	QueryExecuteSubsetParams, QueryExecuteSubsetResult,
-	EditSubsetParams, EditSubsetResult, EditUpdateCellResult, EditCreateRowResult,
-	EditRevertCellResult, ISelectionData, IResultMessage, ExecutionPlanOptions
-} from 'data';
+import * as data from 'data';
 
-import { EventEmitter } from 'events';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { ISlickRange } from 'angular2-slickgrid';
 import * as Utils from 'sql/parts/connection/common/utils';
-import { error as consoleError } from 'sql/base/common/log';
 
 import { IMessageService } from 'vs/platform/message/common/message';
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import * as nls from 'vs/nls';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import * as types from 'vs/base/common/types';
+import { EventEmitter } from 'vs/base/common/eventEmitter';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
-import * as os from 'os';
+export interface IEditSessionReadyEvent {
+	ownerUri: string;
+	success: boolean;
+	message: string;
+}
+
+export const enum EventType {
+	START = 'start',
+	COMPLETE = 'complete',
+	MESSAGE = 'message',
+	BATCH_START = 'batchStart',
+	BATCH_COMPLETE = 'batchComplete',
+	RESULT_SET = 'resultSet',
+	EDIT_SESSION_READY = 'editSessionReady'
+}
+
+export interface IEventType {
+	start: void;
+	complete: string;
+	message: data.IResultMessage;
+	batchStart: data.BatchSummary;
+	batchComplete: data.BatchSummary;
+	resultSet: data.ResultSetSummary;
+	editSessionReady: IEditSessionReadyEvent;
+}
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -38,57 +54,22 @@ import * as os from 'os';
 */
 export default class QueryRunner {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
-	private _batchSets: BatchSummary[] = [];
-	private _isExecuting: boolean;
-	private _uri: string;
-	private _title: string;
 	private _resultLineOffset: number;
-	private _totalElapsedMilliseconds: number;
-	private _hasCompleted: boolean;
-	public eventEmitter: EventEmitter = new EventEmitter();
+	private _totalElapsedMilliseconds: number = 0;
+	private _isExecuting: boolean = false;
+	private _hasCompleted: boolean = false;
+	private _batchSets: data.BatchSummary[] = [];
+	private _eventEmitter = new EventEmitter();
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
-
-	constructor(private _ownerUri: string,
-		private _editorTitle: string,
+	constructor(
+		public uri: string,
+		public title: string,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IMessageService private _messageService: IMessageService,
-		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService
-	) {
-
-		// Store the state
-		this._uri = _ownerUri;
-		this._title = _editorTitle;
-		this._isExecuting = false;
-		this._totalElapsedMilliseconds = 0;
-		this._hasCompleted = false;
-	}
-
-	// PROPERTIES //////////////////////////////////////////////////////////
-
-	get uri(): string {
-		return this._uri;
-	}
-
-	set uri(uri: string) {
-		this._uri = uri;
-	}
-
-	get title(): string {
-		return this._title;
-	}
-
-	set title(title: string) {
-		this._title = title;
-	}
-
-	get batchSets(): BatchSummary[] {
-		return this._batchSets;
-	}
-
-	set batchSets(batchSets: BatchSummary[]) {
-		this._batchSets = batchSets;
-	}
+		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
+		@IClipboardService private _clipboardService: IClipboardService
+	) { }
 
 	get isExecuting(): boolean {
 		return this._isExecuting;
@@ -98,26 +79,34 @@ export default class QueryRunner {
 		return this._hasCompleted;
 	}
 
+	get batchSets(): data.BatchSummary[] {
+		return this._batchSets;
+	}
+
 	// PUBLIC METHODS ======================================================
+
+	public addListener<K extends keyof IEventType>(event: K, f: (e: IEventType[K]) => void): IDisposable {
+		return this._eventEmitter.addListener(event, f);
+	}
 
 	/**
 	 * Cancels the running query, if there is one
 	 */
-	public cancelQuery(): Thenable<QueryCancelResult> {
-		return this._queryManagementService.cancelQuery(this._uri);
+	public cancelQuery(): Thenable<data.QueryCancelResult> {
+		return this._queryManagementService.cancelQuery(this.uri);
 	}
 
 	/**
 	 * Runs the query with the provided query
 	 * @param input Query string to execute
 	 */
-	public runQuery(input: string, runOptions?: ExecutionPlanOptions): Thenable<void>;
+	public runQuery(input: string, runOptions?: data.ExecutionPlanOptions): Thenable<void>;
 	/**
 	 * Runs the query by pulling the query from the document using the provided selection data
 	 * @param input selection data
 	 */
-	public runQuery(input: ISelectionData, runOptions?: ExecutionPlanOptions): Thenable<void>;
-	public runQuery(input, runOptions?: ExecutionPlanOptions): Thenable<void> {
+	public runQuery(input: data.ISelectionData, runOptions?: data.ExecutionPlanOptions): Thenable<void>;
+	public runQuery(input, runOptions?: data.ExecutionPlanOptions): Thenable<void> {
 		return this.doRunQuery(input, false, runOptions);
 	}
 
@@ -125,7 +114,7 @@ export default class QueryRunner {
 	 * Runs the current SQL statement by pulling the query from the document using the provided selection data
 	 * @param input selection data
 	 */
-	public runQueryStatement(input: ISelectionData): Thenable<void> {
+	public runQueryStatement(input: data.ISelectionData): Thenable<void> {
 		return this.doRunQuery(input, true);
 	}
 
@@ -133,13 +122,13 @@ export default class QueryRunner {
 	 * Implementation that runs the query with the provided query
 	 * @param input Query string to execute
 	 */
-	private doRunQuery(input: string, runCurrentStatement: boolean, runOptions?: ExecutionPlanOptions): Thenable<void>;
-	private doRunQuery(input: ISelectionData, runCurrentStatement: boolean, runOptions?: ExecutionPlanOptions): Thenable<void>;
-	private doRunQuery(input, runCurrentStatement: boolean, runOptions?: ExecutionPlanOptions): Thenable<void> {
-		let ownerUri = this._uri;
-		this.batchSets = [];
+	private doRunQuery(input: string, runCurrentStatement: boolean, runOptions?: data.ExecutionPlanOptions): Thenable<void>;
+	private doRunQuery(input: data.ISelectionData, runCurrentStatement: boolean, runOptions?: data.ExecutionPlanOptions): Thenable<void>;
+	private doRunQuery(input, runCurrentStatement: boolean, runOptions?: data.ExecutionPlanOptions): Thenable<void> {
+		let ownerUri = this.uri;
+		this._batchSets = [];
 		this._hasCompleted = false;
-		if (typeof input === 'object' || input === undefined) {
+		if (types.isObject(input) || types.isUndefinedOrNull(input)) {
 			// Update internal state to show that we're executing the query
 			this._resultLineOffset = input ? input.startLine : 0;
 			this._isExecuting = true;
@@ -148,51 +137,50 @@ export default class QueryRunner {
 
 			// Send the request to execute the query
 			return runCurrentStatement
-				? this._queryManagementService.runQueryStatement(ownerUri, input.startLine, input.startColumn).then(this.handleSuccessRunQueryResult(), this.handleFailureRunQueryResult())
-				: this._queryManagementService.runQuery(ownerUri, input, runOptions).then(this.handleSuccessRunQueryResult(), this.handleFailureRunQueryResult());
-		} else if (typeof input === 'string') {
+				? this._queryManagementService.runQueryStatement(ownerUri, input.startLine, input.startColumn).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e))
+				: this._queryManagementService.runQuery(ownerUri, input, runOptions).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
+		} else if (types.isString(input)) {
 			// Update internal state to show that we're executing the query
 			this._isExecuting = true;
 			this._totalElapsedMilliseconds = 0;
 
-			return this._queryManagementService.runQueryString(ownerUri, input).then(this.handleSuccessRunQueryResult(), this.handleFailureRunQueryResult());
+			return this._queryManagementService.runQueryString(ownerUri, input).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
 		} else {
 			return Promise.reject('Unknown input');
 		}
 	}
 
 	private handleSuccessRunQueryResult() {
-		let self = this;
-		return () => {
-			// The query has started, so lets fire up the result pane
-			self.eventEmitter.emit('start');
-			self._queryManagementService.registerRunner(self, self._uri);
-		};
+		// The query has started, so lets fire up the result pane
+		this._eventEmitter.emit(EventType.START);
+		this._queryManagementService.registerRunner(this, this.uri);
 	}
 
-	private handleFailureRunQueryResult() {
-		let self = this;
-		return (error: any) => {
-			// Attempting to launch the query failed, show the error message
-
-			// TODO issue #228 add statusview callbacks here
-			self._isExecuting = false;
-
-			self._messageService.show(Severity.Error, nls.localize('query.ExecutionFailedError', 'Execution failed: {0}', error));
-		};
+	private handleFailureRunQueryResult(error: any) {
+		// Attempting to launch the query failed, show the error message
+		const eol = this.getEolString();
+		let message = nls.localize('query.ExecutionFailedError', 'Execution failed due to an unexpected error: {0}\t{1}', eol, error);
+		this.handleMessage(<data.QueryExecuteMessageParams> {
+			ownerUri: this.uri,
+			message: {
+				isError: true,
+				message: message
+			}
+		});
+		this.handleQueryComplete(<data.QueryExecuteCompleteNotificationResult> { ownerUri: this.uri });
 	}
 
 	/**
 	 * Handle a QueryComplete from the service layer
 	 */
-	public handleQueryComplete(result: QueryExecuteCompleteNotificationResult): void {
+	public handleQueryComplete(result: data.QueryExecuteCompleteNotificationResult): void {
 
 		// Store the batch sets we got back as a source of "truth"
 		this._isExecuting = false;
 		this._hasCompleted = true;
 		this._batchSets = result.batchSummaries ? result.batchSummaries : [];
 
-		this._batchSets.map((batch) => {
+		this.batchSets.map(batch => {
 			if (batch.selection) {
 				batch.selection.startLine = batch.selection.startLine + this._resultLineOffset;
 				batch.selection.endLine = batch.selection.endLine + this._resultLineOffset;
@@ -200,13 +188,13 @@ export default class QueryRunner {
 		});
 
 		// We're done with this query so shut down any waiting mechanisms
-		this.eventEmitter.emit('complete', Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
+		this._eventEmitter.emit(EventType.COMPLETE, Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
 	}
 
 	/**
 	 * Handle a BatchStart from the service layer
 	 */
-	public handleBatchStart(result: QueryExecuteBatchNotificationParams): void {
+	public handleBatchStart(result: data.QueryExecuteBatchNotificationParams): void {
 		let batch = result.batchSummary;
 
 		// Recalculate the start and end lines, relative to the result line offset
@@ -219,55 +207,55 @@ export default class QueryRunner {
 		batch.resultSetSummaries = [];
 
 		// Store the batch
-		this._batchSets[batch.id] = batch;
-		this.eventEmitter.emit('batchStart', batch);
+		this.batchSets[batch.id] = batch;
+		this._eventEmitter.emit(EventType.BATCH_START, batch);
 	}
 
 	/**
 	 * Handle a BatchComplete from the service layer
 	 */
-	public handleBatchComplete(result: QueryExecuteBatchNotificationParams): void {
-		let batch: BatchSummary = result.batchSummary;
+	public handleBatchComplete(result: data.QueryExecuteBatchNotificationParams): void {
+		let batch: data.BatchSummary = result.batchSummary;
 
 		// Store the batch again to get the rest of the data
-		this._batchSets[batch.id] = batch;
+		this.batchSets[batch.id] = batch;
 		let executionTime = <number>(Utils.parseTimeString(batch.executionElapsed) || 0);
 		this._totalElapsedMilliseconds += executionTime;
 		if (executionTime > 0) {
 			// send a time message in the format used for query complete
 			this.sendBatchTimeMessage(batch.id, Utils.parseNumAsTimeString(executionTime));
 		}
-		this.eventEmitter.emit('batchComplete', batch);
+		this._eventEmitter.emit(EventType.BATCH_COMPLETE, batch);
 	}
 
 	/**
 	 * Handle a ResultSetComplete from the service layer
 	 */
-	public handleResultSetComplete(result: QueryExecuteResultSetCompleteNotificationParams): void {
+	public handleResultSetComplete(result: data.QueryExecuteResultSetCompleteNotificationParams): void {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
-			let batchSet: BatchSummary;
+			let batchSet: data.BatchSummary;
 			if (!resultSet.batchId) {
 				// Missing the batchId. In this case, default to always using the first batch in the list
 				// or create one in the case the DMP extension didn't obey the contract perfectly
-				if (this._batchSets.length > 0) {
-					batchSet = this._batchSets[0];
+				if (this.batchSets.length > 0) {
+					batchSet = this.batchSets[0];
 				} else {
-					batchSet = <BatchSummary>{
+					batchSet = <data.BatchSummary>{
 						id: 0,
 						selection: undefined,
 						hasError: false,
 						resultSetSummaries: []
 					};
-					this._batchSets[0] = batchSet;
+					this.batchSets[0] = batchSet;
 				}
 			} else {
-				batchSet = this._batchSets[resultSet.batchId];
+				batchSet = this.batchSets[resultSet.batchId];
 			}
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed
 				batchSet.resultSetSummaries[resultSet.id] = resultSet;
-				this.eventEmitter.emit('resultSet', resultSet);
+				this._eventEmitter.emit(EventType.RESULT_SET, resultSet);
 			}
 		}
 	}
@@ -275,20 +263,20 @@ export default class QueryRunner {
 	/**
 	 * Handle a Mssage from the service layer
 	 */
-	public handleMessage(obj: QueryExecuteMessageParams): void {
+	public handleMessage(obj: data.QueryExecuteMessageParams): void {
 		let message = obj.message;
 		message.time = new Date(message.time).toLocaleTimeString();
 
 		// Send the message to the results pane
-		this.eventEmitter.emit('message', message);
+		this._eventEmitter.emit(EventType.MESSAGE, message);
 	}
 
 	/**
 	 * Get more data rows from the current resultSets from the service layer
 	 */
-	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Thenable<QueryExecuteSubsetResult> {
+	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Thenable<data.QueryExecuteSubsetResult> {
 		const self = this;
-		let rowData: QueryExecuteSubsetParams = <QueryExecuteSubsetParams>{
+		let rowData: data.QueryExecuteSubsetParams = <data.QueryExecuteSubsetParams>{
 			ownerUri: this.uri,
 			resultSetIndex: resultSetIndex,
 			rowsCount: numberOfRows,
@@ -296,7 +284,7 @@ export default class QueryRunner {
 			batchIndex: batchIndex
 		};
 
-		return new Promise<QueryExecuteSubsetResult>((resolve, reject) => {
+		return new Promise<data.QueryExecuteSubsetResult>((resolve, reject) => {
 			self._queryManagementService.getQueryRows(rowData).then(result => {
 				resolve(result);
 			}, error => {
@@ -310,8 +298,6 @@ export default class QueryRunner {
 	 * Handle a session ready event for Edit Data
 	 */
 	public initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void> {
-		const self = this;
-
 		// Update internal state to show that we're executing the query
 		this._isExecuting = true;
 		this._totalElapsedMilliseconds = 0;
@@ -319,15 +305,15 @@ export default class QueryRunner {
 
 		return this._queryManagementService.initializeEdit(ownerUri, schemaName, objectName, objectType, rowLimit).then(result => {
 			// The query has started, so lets fire up the result pane
-			self.eventEmitter.emit('start');
-			self._queryManagementService.registerRunner(self, ownerUri);
+			this._eventEmitter.emit(EventType.START);
+			this._queryManagementService.registerRunner(this, ownerUri);
 		}, error => {
 			// Attempting to launch the query failed, show the error message
 
 			// TODO issue #228 add statusview callbacks here
-			self._isExecuting = false;
+			this._isExecuting = false;
 
-			self._messageService.show(Severity.Error, nls.localize('query.initEditExecutionFailed', 'Init Edit Execution failed: ') + error);
+			this._messageService.show(Severity.Error, nls.localize('query.initEditExecutionFailed', 'Init Edit Execution failed: ') + error);
 		});
 	}
 
@@ -336,15 +322,15 @@ export default class QueryRunner {
 	 * @param rowStart     The index of the row to start returning (inclusive)
 	 * @param numberOfRows The number of rows to return
 	 */
-	public getEditRows(rowStart: number, numberOfRows: number): Thenable<EditSubsetResult> {
+	public getEditRows(rowStart: number, numberOfRows: number): Thenable<data.EditSubsetResult> {
 		const self = this;
-		let rowData: EditSubsetParams = {
+		let rowData: data.EditSubsetParams = {
 			ownerUri: this.uri,
 			rowCount: numberOfRows,
 			rowStartIndex: rowStart
 		};
 
-		return new Promise<EditSubsetResult>((resolve, reject) => {
+		return new Promise<data.EditSubsetResult>((resolve, reject) => {
 			self._queryManagementService.getEditRows(rowData).then(result => {
 				if (!result.hasOwnProperty('rowCount')) {
 					let error = `Nothing returned from subset query`;
@@ -361,10 +347,10 @@ export default class QueryRunner {
 	}
 
 	public handleEditSessionReady(ownerUri: string, success: boolean, message: string): void {
-		this.eventEmitter.emit('editSessionReady', ownerUri, success, message);
+		this._eventEmitter.emit(EventType.EDIT_SESSION_READY, { ownerUri, success, message });
 	}
 
-	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<EditUpdateCellResult> {
+	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<data.EditUpdateCellResult> {
 		return this._queryManagementService.updateCell(ownerUri, rowId, columnId, newValue);
 	}
 
@@ -372,7 +358,7 @@ export default class QueryRunner {
 		return this._queryManagementService.commitEdit(ownerUri);
 	}
 
-	public createRow(ownerUri: string): Thenable<EditCreateRowResult> {
+	public createRow(ownerUri: string): Thenable<data.EditCreateRowResult> {
 		return this._queryManagementService.createRow(ownerUri).then(result => {
 			return result;
 		});
@@ -382,7 +368,7 @@ export default class QueryRunner {
 		return this._queryManagementService.deleteRow(ownerUri, rowId);
 	}
 
-	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<EditRevertCellResult> {
+	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<data.EditRevertCellResult> {
 		return this._queryManagementService.revertCell(ownerUri, rowId, columnId).then(result => {
 			return result;
 		});
@@ -400,16 +386,8 @@ export default class QueryRunner {
 	 * Disposes the Query from the service client
 	 * @returns A promise that will be rejected if a problem occured
 	 */
-	public dispose(): Promise<void> {
-		const self = this;
-		return new Promise<void>((resolve, reject) => {
-			self._queryManagementService.disposeQuery(self.uri).then(result => {
-				resolve();
-			}, error => {
-				consoleError('Failed disposing query: ' + error);
-				reject(error);
-			});
-		});
+	public disposeQuery(): void {
+		this._queryManagementService.disposeQuery(this.uri);
 	}
 
 	get totalElapsedMilliseconds(): number {
@@ -426,6 +404,7 @@ export default class QueryRunner {
 	copyResults(selection: ISlickRange[], batchId: number, resultId: number, includeHeaders?: boolean): void {
 		const self = this;
 		let copyString = '';
+		const eol = this.getEolString();
 
 		// create a mapping of the ranges to get promises
 		let tasks = selection.map((range, i) => {
@@ -434,7 +413,7 @@ export default class QueryRunner {
 					if (self.shouldIncludeHeaders(includeHeaders)) {
 						let columnHeaders = self.getColumnHeaders(batchId, resultId, range);
 						if (columnHeaders !== undefined) {
-							copyString += columnHeaders.join('\t') + os.EOL;
+							copyString += columnHeaders.join('\t') + eol;
 						}
 					}
 
@@ -448,7 +427,7 @@ export default class QueryRunner {
 							: cellObjects.map(x => x.displayValue);
 						copyString += cells.join('\t');
 						if (rowIndex < result.resultSubset.rows.length - 1) {
-							copyString += os.EOL;
+							copyString += eol;
 						}
 					}
 				});
@@ -461,9 +440,14 @@ export default class QueryRunner {
 				p = p.then(tasks[i]);
 			}
 			p.then(() => {
-				WorkbenchUtils.executeCopy(copyString);
+				this._clipboardService.writeText(copyString);
 			});
 		}
+	}
+
+	private getEolString(): string {
+		const { eol } = this._workspaceConfigurationService.getConfiguration<{ eol: string }>('files');
+		return eol;
 	}
 
 	private shouldIncludeHeaders(includeHeaders: boolean): boolean {
@@ -484,7 +468,7 @@ export default class QueryRunner {
 
 	private getColumnHeaders(batchId: number, resultId: number, range: ISlickRange): string[] {
 		let headers: string[] = undefined;
-		let batchSummary: BatchSummary = this.batchSets[batchId];
+		let batchSummary: data.BatchSummary = this.batchSets[batchId];
 		if (batchSummary !== undefined) {
 			let resultSetSummary = batchSummary.resultSetSummaries[resultId];
 			headers = resultSetSummary.columnInfo.slice(range.fromCell, range.toCell + 1).map((info, i) => {
@@ -511,15 +495,14 @@ export default class QueryRunner {
 		// get config copyRemoveNewLine option from vscode config
 		let showBatchTime: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(this._workspaceConfigurationService, Constants.configShowBatchTime);
 		if (showBatchTime) {
-			let message: IResultMessage = {
+			let message: data.IResultMessage = {
 				batchId: batchId,
 				message: nls.localize('elapsedBatchTime', 'Batch execution time: {0}', executionTime),
 				time: undefined,
 				isError: false
 			};
 			// Send the message to the results pane
-			this.eventEmitter.emit('message', message);
+			this._eventEmitter.emit(EventType.MESSAGE, message);
 		}
 	}
-
 }

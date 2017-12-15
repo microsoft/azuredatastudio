@@ -6,24 +6,27 @@
 import 'vs/css!./media/serverTreeActions';
 import * as errors from 'vs/base/common/errors';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import * as builder from 'vs/base/browser/builder';
+import Severity from 'vs/base/common/severity';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { localize } from 'vs/nls';
+
 import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import * as ConnectionUtils from 'sql/parts/connection/common/utils';
 import { ActiveConnectionsFilterAction } from 'sql/parts/registeredServer/viewlet/connectionTreeAction';
 import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
-import * as builder from 'vs/base/browser/builder';
-import Severity from 'vs/base/common/severity';
 import { TreeCreationUtils } from 'sql/parts/registeredServer/viewlet/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/parts/registeredServer/viewlet/treeSelectionHandler';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import * as Utils from 'sql/parts/connection/common/utils';
-import { Button } from 'vs/base/browser/ui/button/button';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { Button } from 'sql/base/browser/ui/button/button';
+import { attachButtonStyler } from 'sql/common/theme/styler';
 
 const $ = builder.$;
 
@@ -44,7 +47,8 @@ export class ServerTreeView {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IThemeService private _themeService: IThemeService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 	) {
 		this._activeConnectionsFilterAction = this._instantiationService.createInstance(
 			ActiveConnectionsFilterAction,
@@ -63,7 +67,7 @@ export class ServerTreeView {
 	/**
 	 * Render the view body
 	 */
-	public renderBody(container: HTMLElement): void {
+	public renderBody(container: HTMLElement): Thenable<void> {
 		// Add div to display no connections found message and hide it by default
 		this.messages = $('div.title').appendTo(container);
 		$('span').style('padding-left', '10px').text('No connections found.').appendTo(this.messages);
@@ -73,13 +77,15 @@ export class ServerTreeView {
 			this._activeConnectionsFilterAction.enabled = false;
 			this._buttonSection = $('div.button-section').appendTo(container);
 			var connectButton = new Button(this._buttonSection);
-			connectButton.label = 'Add Connection';
-			connectButton.addListener('click', () => {
+			connectButton.label = localize('addConnection', 'Add Connection');
+			this._toDispose.push(attachButtonStyler(connectButton, this._themeService));
+			this._toDispose.push(connectButton.addListener('click', () => {
 				this._connectionManagementService.showConnectionDialog();
-			});
+			}));
 		}
 
 		this._tree = TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService);
+		//this._tree.setInput(undefined);
 		this._toDispose.push(this._tree.addListener('selection', (event) => this.onSelected(event)));
 
 		// Theme styler
@@ -111,12 +117,35 @@ export class ServerTreeView {
 				}
 			}));
 		}
-		self.refreshTree();
+		return new Promise<void>((resolve, reject) => {
+			self.refreshTree();
+			let root = <ConnectionProfileGroup>this._tree.getInput();
+			if (root && !root.hasValidConnections) {
+
+				this._treeSelectionHandler.onTreeActionStateChange(true);
+				if (this._capabilitiesService) {
+					this._capabilitiesService.onCapabilitiesReady().then(() => {
+						self.refreshTree();
+						this._treeSelectionHandler.onTreeActionStateChange(false);
+						resolve();
+
+					}, error => {
+						reject(error);
+					});
+				} else {
+					self.refreshTree();
+					resolve();
+				}
+			} else {
+
+				resolve();
+			}
+		});
 	}
 
 	private isObjectExplorerConnectionUri(uri: string): boolean {
-		let isBackupRestoreUri: boolean = uri.indexOf(Utils.ConnectionUriBackupIdAttributeName) >= 0 ||
-		uri.indexOf(Utils.ConnectionUriRestoreIdAttributeName) >= 0;
+		let isBackupRestoreUri: boolean = uri.indexOf(ConnectionUtils.ConnectionUriBackupIdAttributeName) >= 0 ||
+			uri.indexOf(ConnectionUtils.ConnectionUriRestoreIdAttributeName) >= 0;
 		return uri && uri.startsWith(ConnectionUtils.uriPrefixes.default) && !isBackupRestoreUri;
 	}
 

@@ -8,13 +8,14 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { localize } from 'vs/nls';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor, ToggleViewletAction } from 'vs/workbench/browser/viewlet';
-import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actionRegistry';
+import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
 
 import { VIEWLET_ID } from 'sql/parts/connection/common/connectionManagement';
+import { ConnectionViewlet } from 'sql/parts/registeredServer/viewlet/connectionViewlet';
 
 // Viewlet Action
 export class OpenConnectionsViewletAction extends ToggleViewletAction {
@@ -33,8 +34,7 @@ export class OpenConnectionsViewletAction extends ToggleViewletAction {
 
 // Viewlet
 const viewletDescriptor = new ViewletDescriptor(
-	'sql/parts/registeredServer/viewlet/connectionViewlet',
-	'ConnectionViewlet',
+	ConnectionViewlet,
 	VIEWLET_ID,
 	'Servers',
 	'connectionViewlet',

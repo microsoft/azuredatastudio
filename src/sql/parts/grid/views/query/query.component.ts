@@ -16,19 +16,16 @@ import {
 	ViewChildren, forwardRef, EventEmitter, Input, ViewChild
 } from '@angular/core';
 import { IGridDataRow, SlickGrid, VirtualizedCollection } from 'angular2-slickgrid';
-import * as rangy from 'sql/base/node/rangy';
 
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import * as Services from 'sql/parts/grid/services/sharedServices';
-import { IGridIcon, IMessage, IRange, IGridDataSet } from 'sql/parts/grid/common/interfaces';
+import { IGridIcon, IMessage, IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { GridActionProvider } from 'sql/parts/grid/views/gridActions';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { error } from 'sql/base/common/log';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-
 
 import * as strings from 'vs/base/common/strings';
 import { clone } from 'vs/base/common/objects';
@@ -142,6 +139,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	private complete = false;
 	private sentPlans: Map<number, string> = new Map<number, string>();
 	private hasQueryPlan: boolean = false;
+	private queryPlanResultSetId: number = 0;
 	public queryExecutionStatus: EventEmitter<string> = new EventEmitter<string>();
 	public queryPlanAvailable: EventEmitter<string> = new EventEmitter<string>();
 	public showChartRequested: EventEmitter<IGridDataSet> = new EventEmitter<IGridDataSet>();
@@ -168,7 +166,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		const self = this;
 
 		this.dataService = this.queryParameters.dataService;
-		this.actionProvider = new GridActionProvider(this.dataService, this.onGridSelectAll());
+		this.actionProvider = this._bootstrapService.instantiationService.createInstance(GridActionProvider, this.dataService, this.onGridSelectAll());
 
 		this.baseInit();
 		this.setupResizeBind();
@@ -265,8 +263,8 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 					}
 
 					// if this is a query plan resultset we haven't processed yet then forward to subscribers
-					if (self.hasQueryPlan && !self.sentPlans[resultSet.batchId]) {
-						self.sentPlans[resultSet.batchId] = rows.rows[0][0].displayValue;
+					if (self.hasQueryPlan && resultSet.id === self.queryPlanResultSetId && !self.sentPlans[resultSet.id]) {
+						self.sentPlans[resultSet.id] = rows.rows[0][0].displayValue;
 						self.queryPlanAvailable.emit(rows.rows[0][0].displayValue);
 					}
 					resolve(gridData);
@@ -322,6 +320,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			let column = resultSet.columnInfo[i];
 			if (column.columnName === 'Microsoft SQL Server 2005 XML Showplan') {
 				this.hasQueryPlan = true;
+				this.queryPlanResultSetId = resultSet.id;
 				break;
 			}
 		}
@@ -335,27 +334,10 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		self.onScroll(0);
 	}
 
-	/**
-	 * Perform copy and do other actions for context menu on the messages component
-	 */
-	handleMessagesContextClick(event: { type: string, selectedRange: IRange }): void {
-		switch (event.type) {
-			case 'copySelection':
-				let selectedText = event.selectedRange.text();
-				WorkbenchUtils.executeCopy(selectedText);
-				break;
-			case 'selectall':
-				document.execCommand('selectAll');
-				break;
-			default:
-				break;
-		}
-	}
-
 	openMessagesContextMenu(event: any): void {
 		let self = this;
 		event.preventDefault();
-		let selectedRange: IRange = this.getSelectedRangeUnderMessages();
+		let selectedRange = this.getSelectedRangeUnderMessages();
 		let selectAllFunc = () => self.selectAllMessages();
 		let anchor = { x: event.x + 1, y: event.y };
 		this.contextMenuService.showContextMenu({
@@ -404,19 +386,6 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			}
 
 			self._cd.detectChanges();
-
-			if (self.firstRender) {
-				let setActive = () => {
-					if (self.firstRender && self.slickgrids.toArray().length > 0) {
-						self.slickgrids.toArray()[0].setActive();
-						self.firstRender = false;
-					}
-				};
-
-				setTimeout(() => {
-					setActive();
-				});
-			}
 		}, self.scrollTimeOutTime);
 	}
 
@@ -538,7 +507,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 
 		// Deselect any text since we are navigating to a new grid
 		// Do this even if not switching grids, since this covers clicking on the grid after message selection
-		rangy.getSelection().removeAllRanges();
+		window.getSelection().removeAllRanges();
 
 		// check if you are actually trying to change navigation
 		if (this.activeGrid === targetIndex) {

@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 /* Activity Bar - connection */
-.monaco-workbench > .activitybar > .content > .monaco-action-bar .action-label.connectionViewlet {
+.monaco-workbench > .activitybar .monaco-action-bar .action-label.connectionViewlet {
 	-webkit-mask: url('icons/server_page_inverse.svg') no-repeat 50% 50%;
 	-webkit-mask-size: 25px 25px;
 }
 
 /* Activity Bar - task history */
-.monaco-workbench > .activitybar > .content > .monaco-action-bar .action-label.taskHistoryViewlet {
+.monaco-workbench > .activitybar .monaco-action-bar .action-label.taskHistoryViewlet {
 	-webkit-mask: url('icons/run_history_inverse.svg') no-repeat 50% 50%;
 	-webkit-mask-size: 25px 25px;
 }

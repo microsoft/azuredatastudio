@@ -4,19 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IInsightRegistry, Extensions as InsightExtensions } from 'sql/platform/dashboard/common/insightRegistry';
-import { ITaskRegistry, Extensions as TaskExtensions } from 'sql/platform/tasks/taskRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as nls from 'vs/nls';
 
 const insightRegistry = Registry.as<IInsightRegistry>(InsightExtensions.InsightContribution);
-const taskRegistry = Registry.as<ITaskRegistry>(TaskExtensions.TaskContribution);
 
 export const insightsSchema: IJSONSchema = {
 	type: 'object',
 	description: nls.localize('insightWidgetDescription', 'Adds a widget that can query a server or database and display the results in multiple ways - as a chart, summarized count, and more'),
 	properties: {
-		id: {
+		cacheId: {
 			type: 'string',
 			description: nls.localize('insightIdDescription', 'Unique Identifier used for cacheing the results of the insight.')
 		},
@@ -87,8 +85,11 @@ export const insightsSchema: IJSONSchema = {
 					type: 'object',
 					properties: {
 						types: {
-							type: 'object',
-							properties: taskRegistry.taskSchemas
+							description: nls.localize('actionTypes', "Which actions to use"),
+							type: 'array',
+							items: {
+								type: 'string'
+							}
 						},
 						database: {
 							type: 'string',

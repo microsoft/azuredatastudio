@@ -9,9 +9,9 @@ import * as Utils from './utils';
 import { IConnectionProfile, IConnectionProfileStore } from './interfaces';
 import { IConnectionConfig } from './iconnectionConfig';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
-import { IConfigurationEditingService, ConfigurationTarget, IConfigurationValue } from 'vs/workbench/services/configuration/common/configurationEditing';
+import { ConfigurationEditingService, IConfigurationValue, IConfigurationValue as TConfigurationValue } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
-import { IConfigurationValue as TConfigurationValue } from 'vs/platform/configuration/common/configuration';
+import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { ConnectionProfile } from './connectionProfile';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import * as data from 'data';
@@ -30,22 +30,25 @@ export interface ISaveGroupResult {
 export class ConnectionConfig implements IConnectionConfig {
 
 	private _providerCapabilitiesMap: { [providerName: string]: data.DataProtocolServerCapabilities };
-	private _providerCachedCapabilitiesMap: { [providerName: string]: data.DataProtocolServerCapabilities };
 	/**
 	 * Constructor.
 	 */
 	public constructor(
-		private _configurationEditService: IConfigurationEditingService,
+		private _configurationEditService: ConfigurationEditingService,
 		private _workspaceConfigurationService: IWorkspaceConfigurationService,
 		private _capabilitiesService: ICapabilitiesService,
-		private _cachedMetadata?: data.DataProtocolServerCapabilities[]
+		cachedMetadata?: data.DataProtocolServerCapabilities[]
 	) {
 		this._providerCapabilitiesMap = {};
-		this._providerCachedCapabilitiesMap = {};
+		this.setCachedMetadata(cachedMetadata);
 	}
 
-	public setCachedMetadata(cachedMetaData: data.DataProtocolServerCapabilities[]): void {
-		this._cachedMetadata = cachedMetaData;
+	public setCachedMetadata(cachedMetadata: data.DataProtocolServerCapabilities[]): void {
+		if (cachedMetadata) {
+			cachedMetadata.forEach(item => {
+				this.updateCapabilitiesCache(item.providerName, item);
+			});
+		}
 	}
 
 	/**
@@ -58,7 +61,6 @@ export class ConnectionConfig implements IConnectionConfig {
 		let workspaceGroups = this.getConfiguration(Constants.connectionGroupsArrayName).workspace as IConnectionProfileGroup[];
 
 		if (userGroups) {
-
 			if (workspaceGroups) {
 				userGroups = userGroups.filter(x => workspaceGroups.find(f => this.isSameGroupName(f, x)) === undefined);
 				allGroups = allGroups.concat(workspaceGroups);
@@ -74,43 +76,44 @@ export class ConnectionConfig implements IConnectionConfig {
 		return allGroups;
 	}
 
+	private updateCapabilitiesCache(providerName: string, providerCapabilities: data.DataProtocolServerCapabilities): void {
+		if (providerName && providerCapabilities) {
+			this._providerCapabilitiesMap[providerName] = providerCapabilities;
+		}
+	}
+
+	private getCapabilitiesFromCache(providerName: string): data.DataProtocolServerCapabilities {
+		if (providerName in this._providerCapabilitiesMap) {
+			return this._providerCapabilitiesMap[providerName];
+		}
+		return undefined;
+	}
+
 	/**
 	* Returns the capabilities for given provider name. First tries to get it from capabilitiesService and if it's not registered yet,
 	* Gets the data from the metadata stored in the config
 	* @param providerName Provider Name
 	*/
 	public getCapabilities(providerName: string): data.DataProtocolServerCapabilities {
-		let result: data.DataProtocolServerCapabilities;
-
-		if (providerName in this._providerCapabilitiesMap) {
-			result = this._providerCapabilitiesMap[providerName];
+		let result: data.DataProtocolServerCapabilities = this.getCapabilitiesFromCache(providerName);
+		if (result) {
+			return result;
 		} else {
 			let capabilities = this._capabilitiesService.getCapabilities();
 			if (capabilities) {
 				let providerCapabilities = capabilities.find(c => c.providerName === providerName);
 				if (providerCapabilities) {
-					this._providerCapabilitiesMap[providerName] = providerCapabilities;
-					result = providerCapabilities;
+					this.updateCapabilitiesCache(providerName, providerCapabilities);
+					return providerCapabilities;
+				} else {
+					return undefined;
 				}
-			}
-		}
-
-		if (!result && this._cachedMetadata) {
-			if (providerName in this._providerCachedCapabilitiesMap) {
-				result = this._providerCachedCapabilitiesMap[providerName];
 			} else {
-				let metaDataFromConfig = this._cachedMetadata;
-				if (metaDataFromConfig) {
-					let providerCapabilities = metaDataFromConfig.find(m => m.providerName === providerName);
-					this._providerCachedCapabilitiesMap[providerName] = providerCapabilities;
-					result = providerCapabilities;
-				}
+				return undefined;
 			}
 		}
-
-		return result;
-
 	}
+
 	/**
 	 * Add a new connection to the connection config.
 	 */
@@ -118,13 +121,13 @@ export class ConnectionConfig implements IConnectionConfig {
 		return new Promise<IConnectionProfile>((resolve, reject) => {
 			if (profile.saveProfile) {
 				this.addGroupFromProfile(profile).then(groupId => {
-					let profiles = this._workspaceConfigurationService.lookup<IConnectionProfileStore[]>(Constants.connectionsArrayName).user;
+					let profiles = this._workspaceConfigurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user;
 					if (!profiles) {
 						profiles = [];
 					}
 
 					let providerCapabilities = this.getCapabilities(profile.providerName);
-					let connectionProfile = this.getConnectionProfileInstance(profile, groupId);
+					let connectionProfile = this.getConnectionProfileInstance(profile, groupId, providerCapabilities);
 					let newProfile = ConnectionProfile.convertToProfileStore(providerCapabilities, connectionProfile);
 
 					// Remove the profile if already set
@@ -151,9 +154,8 @@ export class ConnectionConfig implements IConnectionConfig {
 		});
 	}
 
-	private getConnectionProfileInstance(profile: IConnectionProfile, groupId: string): ConnectionProfile {
+	private getConnectionProfileInstance(profile: IConnectionProfile, groupId: string, providerCapabilities: data.DataProtocolServerCapabilities): ConnectionProfile {
 		let connectionProfile = profile as ConnectionProfile;
-		let providerCapabilities = this.getCapabilities(profile.providerName);
 		if (connectionProfile === undefined) {
 			connectionProfile = new ConnectionProfile(providerCapabilities, profile);
 		}
@@ -170,7 +172,7 @@ export class ConnectionConfig implements IConnectionConfig {
 			if (profile.groupId && profile.groupId !== Utils.defaultGroupId) {
 				resolve(profile.groupId);
 			} else {
-				let groups = this._workspaceConfigurationService.lookup<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user;
+				let groups = this._workspaceConfigurationService.inspect<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user;
 				let result = this.saveGroup(groups, profile.groupFullName, undefined, undefined);
 				groups = result.groups;
 
@@ -192,7 +194,7 @@ export class ConnectionConfig implements IConnectionConfig {
 			if (profileGroup.id) {
 				resolve(profileGroup.id);
 			} else {
-				let groups = this._workspaceConfigurationService.lookup<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user;
+				let groups = this._workspaceConfigurationService.inspect<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user;
 				let sameNameGroup = groups ? groups.find(group => group.name === profileGroup.name) : undefined;
 				if (sameNameGroup) {
 					let errMessage: string = nls.localize('invalidServerName', "A server group with the same name already exists.");
@@ -221,7 +223,7 @@ export class ConnectionConfig implements IConnectionConfig {
 				profiles = <IConnectionProfileStore[]>configs.workspace;
 			}
 			if (profiles) {
-				if(this.fixConnectionIds(profiles)) {
+				if (this.fixConnectionIds(profiles)) {
 					this.writeConfiguration(Constants.connectionsArrayName, profiles, configTarget);
 				}
 			} else {
@@ -245,9 +247,9 @@ export class ConnectionConfig implements IConnectionConfig {
 				profile.id = generateUuid();
 				changed = true;
 			}
-		 	if (profile.id in idsCache) {
-					profile.id = generateUuid();
-					changed = true;
+			if (profile.id in idsCache) {
+				profile.id = generateUuid();
+				changed = true;
 			}
 			idsCache[profile.id] = true;
 		}
@@ -298,7 +300,7 @@ export class ConnectionConfig implements IConnectionConfig {
 	 */
 	public deleteConnection(profile: ConnectionProfile): Promise<void> {
 		// Get all connections in the settings
-		let profiles = this._workspaceConfigurationService.lookup<IConnectionProfileStore[]>(Constants.connectionsArrayName).user;
+		let profiles = this._workspaceConfigurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user;
 		// Remove the profile from the connections
 		profiles = profiles.filter(value => {
 			let providerCapabilities = this.getCapabilities(value.providerName);
@@ -320,7 +322,7 @@ export class ConnectionConfig implements IConnectionConfig {
 		// Add selected group to subgroups list
 		subgroups.push(group);
 		// Get all connections in the settings
-		let profiles = this._workspaceConfigurationService.lookup<IConnectionProfileStore[]>(Constants.connectionsArrayName).user;
+		let profiles = this._workspaceConfigurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user;
 		// Remove the profiles from the connections
 		profiles = profiles.filter(value => {
 			let providerCapabilities = this.getCapabilities(value.providerName);
@@ -329,7 +331,7 @@ export class ConnectionConfig implements IConnectionConfig {
 		});
 
 		// Get all groups in the settings
-		let groups = this._workspaceConfigurationService.lookup<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user;
+		let groups = this._workspaceConfigurationService.inspect<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user;
 		// Remove subgroups in the settings
 		groups = groups.filter((grp) => {
 			return !subgroups.some((item) => item.id === grp.id);
@@ -347,7 +349,7 @@ export class ConnectionConfig implements IConnectionConfig {
 	 * Moves the source group under the target group.
 	 */
 	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
-		let groups = this._workspaceConfigurationService.lookup<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user;
+		let groups = this._workspaceConfigurationService.inspect<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user;
 		groups = groups.map(g => {
 			if (g.id === source.id) {
 				g.parentId = target.id;
@@ -372,8 +374,8 @@ export class ConnectionConfig implements IConnectionConfig {
 	 */
 	private changeGroupIdForConnectionInSettings(profile: ConnectionProfile, newGroupID: string, target: ConfigurationTarget = ConfigurationTarget.USER): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			let profiles = target === ConfigurationTarget.USER ? this._workspaceConfigurationService.lookup<IConnectionProfileStore[]>(Constants.connectionsArrayName).user :
-				this._workspaceConfigurationService.lookup<IConnectionProfileStore[]>(Constants.connectionsArrayName).workspace;
+			let profiles = target === ConfigurationTarget.USER ? this._workspaceConfigurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user :
+				this._workspaceConfigurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).workspace;
 			if (profiles) {
 				let providerCapabilities = this.getCapabilities(profile.providerName);
 				if (profile.parent && profile.parent.id === Constants.unsavedGroupId) {
@@ -429,7 +431,7 @@ export class ConnectionConfig implements IConnectionConfig {
 	}
 
 	public editGroup(source: ConnectionProfileGroup): Promise<void> {
-		let groups = this._workspaceConfigurationService.lookup<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user;
+		let groups = this._workspaceConfigurationService.inspect<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user;
 		let sameNameGroup = groups ? groups.find(group => group.name === source.name && group.id !== source.id) : undefined;
 		if (sameNameGroup) {
 			let errMessage: string = nls.localize('invalidServerName', "A server group with the same name already exists.");
@@ -510,10 +512,9 @@ export class ConnectionConfig implements IConnectionConfig {
 	 * @param parsedSettingsFile an object representing the parsed contents of the settings file.
 	 * @returns the set of connection profiles found in the parsed settings file.
 	 */
-	private getConfiguration(key: string): TConfigurationValue<IConnectionProfileStore[] | IConnectionProfileGroup[] | data.DataProtocolServerCapabilities[]> {
-		let configs: TConfigurationValue<IConnectionProfileStore[] | IConnectionProfileGroup[] | data.DataProtocolServerCapabilities[]>;
-
-		configs = this._workspaceConfigurationService.lookup<IConnectionProfileStore[] | IConnectionProfileGroup[] | data.DataProtocolServerCapabilities[]>(key);
+	private getConfiguration(key: string): any {
+		let configs: any;
+		configs = this._workspaceConfigurationService.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | data.DataProtocolServerCapabilities[]>(key);
 		return configs;
 	}
 
@@ -532,7 +533,7 @@ export class ConnectionConfig implements IConnectionConfig {
 				value: profiles
 			};
 			this._configurationEditService.writeConfiguration(target, configValue).then(result => {
-					this._workspaceConfigurationService.reloadConfiguration().then(() => {
+				this._workspaceConfigurationService.reloadConfiguration().then(() => {
 					resolve();
 				});
 			}, (error => {

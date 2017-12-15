@@ -186,8 +186,6 @@ function main() {
 		window.MonacoEnvironment = {};
 
 		const onNodeCachedData = window.MonacoEnvironment.onNodeCachedData = [];
-
-	  // {{SQL CARBON EDIT}}
 		require.config({
 			baseUrl: rootUrl,
 			'vs/nls': nlsConfig,
@@ -205,14 +203,11 @@ function main() {
 				'pretty-data',
 				'html-query-plan',
 				'ng2-charts/ng2-charts',
-				'rangy',
-				'rangy/lib/rangy-textrange',
 				'rxjs/Observable',
 				'rxjs/Subject',
 				'rxjs/Observer'
 			]
 		});
-
 
 		if (nlsConfig.pseudo) {
 			require(['vs/nls'], function (nlsPlugin) {

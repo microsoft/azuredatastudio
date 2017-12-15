@@ -6,27 +6,30 @@
 import 'vs/css!sql/parts/disasterRecovery/backup/media/backupDialog';
 
 import { ElementRef, Component, Inject, forwardRef, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
+import { Button } from 'sql/base/browser/ui/button/button';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
-import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { ModalFooterStyle } from 'sql/base/browser/ui/modal/modal';
-import { attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'sql/common/theme/styler';
+import { CategoryView } from 'sql/base/browser/ui/modal/optionsDialog';
+import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { SplitView } from 'sql/base/browser/ui/splitview/splitview';
+import { attachButtonStyler, attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'sql/common/theme/styler';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
 import { IDisasterRecoveryService, IDisasterRecoveryUiService, TaskExecutionMode } from 'sql/parts/disasterRecovery/common/interfaces';
 import FileValidationConstants = require('sql/parts/fileBrowser/common/fileValidationServiceConstants');
-import { FileBrowserDialog } from 'sql/parts/fileBrowser/fileBrowserDialog';
 import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { Button } from 'vs/base/browser/ui/button/button';
 import * as lifecycle from 'vs/base/common/lifecycle';
-import { attachButtonStyler, attachCheckboxStyler } from 'vs/platform/theme/common/styler';
 import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 import * as types from 'vs/base/common/types';
+import * as strings from 'vs/base/common/strings';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -87,8 +90,6 @@ export class BackupComponent {
 	@ViewChild('encryptorContainer', { read: ElementRef }) encryptorElement;
 	@ViewChild('mediaName', { read: ElementRef }) mediaNameElement;
 	@ViewChild('mediaDescription', { read: ElementRef }) mediaDescriptionElement;
-	@ViewChild('advancedBody', { read: ElementRef }) advancedBodyElement;
-	@ViewChild('advancedHeader', { read: ElementRef }) advancedHeaderElement;
 	@ViewChild('recoveryModelContainer', { read: ElementRef }) recoveryModelElement;
 	@ViewChild('backupDaysContainer', { read: ElementRef }) backupDaysElement;
 	@ViewChild('backupButtonContainer', { read: ElementRef }) backupButtonElement;
@@ -105,6 +106,8 @@ export class BackupComponent {
 	@ViewChild('inProgressContainer', { read: ElementRef }) inProgressElement;
 	@ViewChild('modalFooterContainer', { read: ElementRef }) modalFooterElement;
 	@ViewChild('scriptButtonContainer', { read: ElementRef }) scriptButtonElement;
+	@ViewChild('advancedOptionContainer', { read: ElementRef }) advancedOptionElement;
+	@ViewChild('advancedOptionBodyContainer', { read: ElementRef }) advancedOptionBodyElement;
 
 	// tslint:disable:no-unused-variable
 	private readonly backupNameLabel: string = localize('backup.backupName', 'Backup name');
@@ -141,6 +144,7 @@ export class BackupComponent {
 	private _disasterRecoveryUiService: IDisasterRecoveryUiService;
 	private _uri: string;
 	private _toDispose: lifecycle.IDisposable[] = [];
+	private _advancedHeaderSize = 32;
 
 	private connection: IConnectionProfile;
 	private databaseName: string;
@@ -148,8 +152,6 @@ export class BackupComponent {
 	private recoveryModel: string;
 	private backupEncryptors;
 	private containsBackupToUrl: boolean;
-	private fileBrowserDialog: FileBrowserDialog;
-	private errorMessage: string;
 
 	// UI element disable flag
 	private disableFileComponent: boolean;
@@ -203,7 +205,6 @@ export class BackupComponent {
 
 	ngOnInit() {
 		let self = this;
-
 		this.addFooterButtons();
 
 		this.recoveryBox = new InputBox(this.recoveryModelElement.nativeElement, this._bootstrapService.contextViewService, { placeholder: this.recoveryModel });
@@ -212,65 +213,55 @@ export class BackupComponent {
 		this.backupTypeSelectBox.render(this.backupTypeElement.nativeElement);
 
 		// Set copy-only check box
-		this.copyOnlyCheckBox = new Checkbox({
-			actionClassName: 'backup-checkbox',
-			title: this.copyOnlyLabel,
-			isChecked: false,
+		this.copyOnlyCheckBox = new Checkbox(this.copyOnlyElement.nativeElement, {
+			label: this.copyOnlyLabel,
+			checked: false,
 			onChange: (viaKeyboard) => { }
 		});
-
-		this.copyOnlyElement.nativeElement.appendChild(this.copyOnlyCheckBox.domNode);
 
 		// Encryption checkbox
-		this.encryptCheckBox = new Checkbox({
-			actionClassName: 'backup-checkbox',
-			title: 'Encryption',
-			isChecked: false,
+		this.encryptCheckBox = new Checkbox(this.encryptElement.nativeElement, {
+			label: this.encryptionLabel,
+			checked: false,
 			onChange: (viaKeyboard) => self.onChangeEncrypt()
 		});
-		this.encryptElement.nativeElement.appendChild(this.encryptCheckBox.domNode);
 
 		// Verify backup checkbox
-		this.verifyCheckBox = new Checkbox({
-			actionClassName: 'backup-checkbox',
-			title: 'Verify',
-			isChecked: false,
+		this.verifyCheckBox = new Checkbox(this.verifyElement.nativeElement, {
+			label: this.verifyContainerLabel,
+			checked: false,
 			onChange: (viaKeyboard) => { }
 		});
-		this.verifyElement.nativeElement.appendChild(this.verifyCheckBox.domNode);
 
 		// Perform checksum checkbox
-		this.checksumCheckBox = new Checkbox({
-			actionClassName: 'backup-checkbox',
-			title: 'Perform checksum',
-			isChecked: false,
+		this.checksumCheckBox = new Checkbox(this.checksumElement.nativeElement, {
+			label: this.checksumContainerLabel,
+			checked: false,
 			onChange: (viaKeyboard) => { }
 		});
-		this.checksumElement.nativeElement.appendChild(this.checksumCheckBox.domNode);
 
 		// Continue on error checkbox
-		this.continueOnErrorCheckBox = new Checkbox({
-			actionClassName: 'backup-checkbox',
-			title: 'Continue on error',
-			isChecked: false,
+		this.continueOnErrorCheckBox = new Checkbox(this.continueOnErrorElement.nativeElement, {
+			label: this.continueOnErrorContainerLabel,
+			checked: false,
 			onChange: (viaKeyboard) => { }
 		});
-		this.continueOnErrorElement.nativeElement.appendChild(this.continueOnErrorCheckBox.domNode);
 
 		// Set backup name
 		this.backupNameBox = new InputBox(this.backupNameElement.nativeElement, this._bootstrapService.contextViewService);
-		this.backupNameBox.focus();
 
 		// Set backup path list
-		this.pathListBox = new ListBox([], '', this._bootstrapService.contextViewService);
+		this.pathListBox = new ListBox([], '', this._bootstrapService.contextViewService, this._bootstrapService.clipboardService);
 		this.pathListBox.render(this.pathElement.nativeElement);
 
 		// Set backup path add/remove buttons
 		this.addPathButton = new Button(this.addPathElement.nativeElement);
 		this.addPathButton.label = '+';
+		this.addPathButton.title = localize('addFile', 'Add a file');
 
 		this.removePathButton = new Button(this.removePathElement.nativeElement);
 		this.removePathButton.label = '-';
+		this.removePathButton.title = localize('removeFile', 'Remove files');
 
 		// Set compression
 		this.compressionSelectBox = new SelectBox(this.compressionOptions, this.compressionOptions[0]);
@@ -312,13 +303,24 @@ export class BackupComponent {
 				}
 			});
 
-		// disable elements
+		// Disable elements
 		this.recoveryBox.disable();
 		this.mediaNameBox.disable();
 		this.mediaDescriptionBox.disable();
 
 		this.registerListeners();
 		this.updateTheme();
+	}
+
+	ngAfterViewInit() {
+		// Set category view for advanced options. This should be defined in ngAfterViewInit so that it correctly calculates the text height after data binding.
+		var splitview = new SplitView(this.advancedOptionElement.nativeElement);
+		var advancedBodySize =  DOM.getTotalHeight(this.advancedOptionBodyElement.nativeElement);
+		var categoryView = new CategoryView(this.advancedConfigurationLabel, this.advancedOptionBodyElement.nativeElement, true, advancedBodySize, this._advancedHeaderSize);
+		splitview.addView(categoryView);
+		splitview.layout(advancedBodySize + this._advancedHeaderSize);
+
+		this._disasterRecoveryUiService.onShowBackupDialog();
 	}
 
 	private onGetBackupConfigInfo(param: DashboardComponentParams) {
@@ -366,26 +368,26 @@ export class BackupComponent {
 		// Set script footer button
 		this.scriptButton = new Button(this.scriptButtonElement.nativeElement);
 		this.scriptButton.label = localize('script', 'Script');
-		this._toDispose.push(this.addButtonClickHandler(this.scriptButton, () => this.onScript()));
+		this.addButtonClickHandler(this.scriptButton, () => this.onScript());
 		this._toDispose.push(attachButtonStyler(this.scriptButton, this._bootstrapService.themeService));
 		this.scriptButton.enabled = false;
 
 		// Set backup footer button
 		this.backupButton = new Button(this.backupButtonElement.nativeElement);
 		this.backupButton.label = localize('backup', 'Backup');
-		this._toDispose.push(this.addButtonClickHandler(this.backupButton, () => this.onOk()));
-
+		this.addButtonClickHandler(this.backupButton, () => this.onOk());
 		this._toDispose.push(attachButtonStyler(this.backupButton, this._bootstrapService.themeService));
 		this.backupEnabled = false;
 
 		// Set cancel footer button
 		this.cancelButton = new Button(this.cancelButtonElement.nativeElement);
 		this.cancelButton.label = localize('cancel', 'Cancel');
-		this._toDispose.push(this.addButtonClickHandler(this.cancelButton, () => this.onCancel()));
+		this.addButtonClickHandler(this.cancelButton, () => this.onCancel());
 		this._toDispose.push(attachButtonStyler(this.cancelButton, this._bootstrapService.themeService));
 	}
 
 	private initialize(isMetadataPopulated: boolean): void {
+
 		this.databaseName = this.connection.databaseName;
 		this.selectedBackupComponent = BackupConstants.labelDatabase;
 		this.backupPathTypePairs = {};
@@ -475,7 +477,6 @@ export class BackupComponent {
 		this.backupRetainDaysBox.value = '0';
 		this.algorithmSelectBox.setOptions(this.encryptionAlgorithms, 0);
 		this.selectedInitOption = this.existingMediaOptions[0];
-		this.collapseAdvancedOptions();
 		this.containsBackupToUrl = false;
 		this.pathListBox.setValidation(true);
 
@@ -498,15 +499,10 @@ export class BackupComponent {
 		this._toDispose.push(attachInputBoxStyler(this.mediaNameBox, this._bootstrapService.themeService));
 		this._toDispose.push(attachInputBoxStyler(this.mediaDescriptionBox, this._bootstrapService.themeService));
 		this._toDispose.push(attachInputBoxStyler(this.backupRetainDaysBox, this._bootstrapService.themeService));
-		this._toDispose.push(attachCheckboxStyler(this.copyOnlyCheckBox, this._bootstrapService.themeService));
-		this._toDispose.push(attachCheckboxStyler(this.encryptCheckBox, this._bootstrapService.themeService));
-		this._toDispose.push(attachCheckboxStyler(this.verifyCheckBox, this._bootstrapService.themeService));
-		this._toDispose.push(attachCheckboxStyler(this.checksumCheckBox, this._bootstrapService.themeService));
-		this._toDispose.push(attachCheckboxStyler(this.continueOnErrorCheckBox, this._bootstrapService.themeService));
 
 		this._toDispose.push(this.backupTypeSelectBox.onDidSelect(selected => this.onBackupTypeChanged()));
-		this._toDispose.push(this.addButtonClickHandler(this.addPathButton, () => this.onAddClick()));
-		this._toDispose.push(this.addButtonClickHandler(this.removePathButton, () => this.onRemoveClick()));
+		this.addButtonClickHandler(this.addPathButton, () => this.onAddClick());
+		this.addButtonClickHandler(this.removePathButton, () => this.onRemoveClick());
 		this._toDispose.push(this.mediaNameBox.onDidChange(mediaName => {
 			this.mediaNameChanged(mediaName);
 		}));
@@ -527,15 +523,22 @@ export class BackupComponent {
 		footerHtmlElement.style.borderTopColor = ModalFooterStyle.borderTopColor;
 	}
 
-	private addButtonClickHandler(button: Button, handler: () => void): lifecycle.IDisposable {
+	private addButtonClickHandler(button: Button, handler: () => void) {
 		if (button && handler) {
-			return DOM.addDisposableListener(button.getElement(), DOM.EventType.CLICK, () => {
+			button.addListener(DOM.EventType.CLICK, () => {
 				if (button.enabled) {
 					handler();
 				}
 			});
-		} else {
-			return undefined;
+
+			button.addListener(DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+				var event = new StandardKeyboardEvent(e);
+				if (button.enabled && event.keyCode === KeyCode.Enter) {
+					handler();
+					event.preventDefault();
+					event.stopPropagation();
+				}
+			});
 		}
 	}
 
@@ -587,7 +590,7 @@ export class BackupComponent {
 		this.isFormatChecked = !this.isFormatChecked;
 		this.enableMediaInput(this.isFormatChecked);
 		if (this.isFormatChecked) {
-			if (DialogHelper.isNullOrWhiteSpace(this.mediaNameBox.value)) {
+			if (strings.isFalsyOrWhitespace(this.mediaNameBox.value)) {
 				this.backupEnabled = false;
 				this.backupButton.enabled = false;
 				this.mediaNameBox.showMessage({ type: MessageType.ERROR, content: this.mediaNameRequiredError });
@@ -601,31 +604,6 @@ export class BackupComponent {
 	private set backupEnabled(value: boolean) {
 		this.backupButton.enabled = value;
 		this.scriptButton.enabled = value;
-	}
-
-	private onAdvancedClick(): void {
-		if (this.advancedHeaderElement.nativeElement.style['aria-expanded']) {
-			// collapse
-			this.collapseAdvancedOptions();
-		} else {
-			// expand
-			this.expandAdvancedOptions();
-		}
-
-		this.detectChange();
-	}
-
-	private collapseAdvancedOptions() {
-		this.advancedHeaderElement.nativeElement.className = 'header collapsible collapsed';
-		this.advancedBodyElement.nativeElement.style = 'display: none';
-		this.advancedHeaderElement.nativeElement.style['aria-expanded'] = false;
-	}
-
-
-	private expandAdvancedOptions() {
-		this.advancedHeaderElement.nativeElement.className = 'header collapsible';
-		this.advancedBodyElement.nativeElement.style = 'display: inline';
-		this.advancedHeaderElement.nativeElement.style['aria-expanded'] = true;
 	}
 
 	private onBackupTypeChanged(): void {
@@ -740,8 +718,8 @@ export class BackupComponent {
 	}
 
 	private setDefaultBackupName(): void {
-		let utc = new Date().toJSON().slice(0, 19);
-		if (this.backupNameBox) {
+		if (this.backupNameBox && (!this.backupNameBox.value || this.backupNameBox.value.trim().length === 0)) {
+			let utc = new Date().toJSON().slice(0, 19);
 			this.backupNameBox.value = this.databaseName + '-' + this.getSelectedBackupType() + '-' + utc;
 		}
 	}
@@ -908,7 +886,7 @@ export class BackupComponent {
 			continueAfterError: this.continueOnErrorCheckBox.checked,
 			logTruncation: this.isTruncateChecked,
 			tailLogBackup: this.isTaillogChecked,
-			retainDays: DialogHelper.isNullOrWhiteSpace(this.backupRetainDaysBox.value) ? 0 : this.backupRetainDaysBox.value,
+			retainDays: strings.isFalsyOrWhitespace(this.backupRetainDaysBox.value) ? 0 : this.backupRetainDaysBox.value,
 			compressionOption: this.compressionOptions.indexOf(this.compressionSelectBox.value),
 			verifyBackupRequired: this.verifyCheckBox.checked,
 			encryptionAlgorithm: (this.encryptCheckBox.checked ? this.encryptionAlgorithms.indexOf(this.algorithmSelectBox.value) : 0),

@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
 import {
 	ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerSessionTemplate,
 	PROFILER_SETTINGS, IProfilerSettings
 } from './interfaces';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { ProfilerColumnEditorDialog } from 'sql/parts/profiler/dialog/profilerColumnEditorDialog';
 
@@ -43,7 +44,7 @@ class TwoWayMap<T, K> {
 
 export class ProfilerService implements IProfilerService {
 	public _serviceBrand: any;
-	private _providers = new Map<string, data.IProfilerProvider>();
+	private _providers = new Map<string, data.ProfilerProvider>();
 	private _idMap = new TwoWayMap<ProfilerSessionID, string>();
 	private _sessionMap = new Map<ProfilerSessionID, IProfilerSession>();
 	private _dialog: ProfilerColumnEditorDialog;
@@ -54,18 +55,31 @@ export class ProfilerService implements IProfilerService {
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) { }
 
-	public registerProvider(providerId: string, provider: data.IProfilerProvider): void {
+	public registerProvider(providerId: string, provider: data.ProfilerProvider): void {
 		this._providers.set(providerId, provider);
 	}
 
-	public registerSession(uri: string, session: IProfilerSession): ProfilerSessionID {
+	public registerSession(uri: string, connectionProfile: IConnectionProfile, session: IProfilerSession): ProfilerSessionID {
+		let options: IConnectionCompletionOptions = {
+			params: { connectionType: ConnectionType.default, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: undefined },
+			saveTheConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: false,
+			showFirewallRuleOnError: true
+		};
+		this._connectionService.connect(connectionProfile, uri, options).then(() => {
+
+		}).catch(connectionError => {
+
+		});
 		this._sessionMap.set(uri, session);
 		this._idMap.set(uri, uri);
 		return uri;
 	}
 
-	public onMoreRows(params: data.IProfilerMoreRowsNotificationParams): void {
-		this._sessionMap.get(this._idMap.reverseGet(params.uri)).onMoreRows(params.rowCount, params.data);
+	public onMoreRows(params: data.ProfilerSessionEvents): void {
+
+		this._sessionMap.get(this._idMap.reverseGet(params.sessionId)).onMoreRows(params);
 	}
 
 	public connectSession(id: ProfilerSessionID): Thenable<boolean> {
@@ -88,9 +102,9 @@ export class ProfilerService implements IProfilerService {
 		return this._runAction(id, provider => provider.stopSession(this._idMap.get(id)));
 	}
 
-	private _runAction<T>(id: ProfilerSessionID, action: (handler: data.IProfilerProvider) => Thenable<T>): Thenable<T> {
+	private _runAction<T>(id: ProfilerSessionID, action: (handler: data.ProfilerProvider) => Thenable<T>): Thenable<T> {
 		// let providerId = this._connectionService.getProviderIdFromUri(this._idMap.get(id));
-		let providerId = 'default';
+		let providerId = 'MSSQL';
 
 		if (!providerId) {
 			return TPromise.wrapError(new Error('Connection is required in order to interact with queries'));

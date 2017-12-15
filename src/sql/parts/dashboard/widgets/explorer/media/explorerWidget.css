@@ -11,4 +11,5 @@ explorer-widget .list-row {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	margin-left: -33px;
 }

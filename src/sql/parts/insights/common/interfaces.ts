@@ -7,7 +7,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 
 import { IInsightsConfigDetails, IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ITaskActionContext } from 'sql/workbench/common/actions';
+import { BaseActionContext } from 'sql/workbench/common/actions';
 
 export interface IInsightsDialogModel {
 	rows: string[][];
@@ -35,6 +35,9 @@ export interface IInsightsDialogService {
 	close();
 }
 
-export interface IInsightDialogActionContext extends ITaskActionContext {
+export interface IInsightDialogActionContext extends BaseActionContext {
 	cellData: string;
 }
+
+/* Regex that matches the form `${value}` */
+export const insertValueRegex: RegExp = /\${(.*?)\}/;

@@ -195,15 +195,6 @@ export class ExtHostApiCommands {
 				]
 			});
 
-		this._register('vscode.startDebug', (configuration?: any, folderUri?: URI) => {
-			return this._commands.executeCommand('_workbench.startDebug', configuration, folderUri);
-		}, {
-				description: 'Start a debugging session.',
-				args: [
-					{ name: 'configuration', description: '(optional) Name of the debug configuration from \'launch.json\' to use. Or a configuration json object to use.' }
-				]
-			});
-
 		this._register('vscode.diff', (left: URI, right: URI, label: string, options?: vscode.TextDocumentShowOptions) => {
 			let editorOptions: ITextEditorOptions;
 			if (options) {
@@ -376,7 +367,8 @@ export class ExtHostApiCommands {
 		return this._commands.executeCommand<modes.ISuggestResult>('_executeCompletionItemProvider', args).then(result => {
 			if (result) {
 				const items = result.suggestions.map(suggestion => typeConverters.Suggest.to(position, suggestion));
-				return new types.CompletionList(items, result.incomplete);
+				// {{SQL CARBON EDIT}}
+				return new types.CompletionList(<any>items, result.incomplete);
 			}
 			return undefined;
 		});

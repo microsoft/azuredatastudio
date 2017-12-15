@@ -16,12 +16,14 @@ import {
 } from 'sql/parts/connection/common/connectionManagement';
 import * as Constants from 'sql/parts/connection/common/constants';
 import * as Utils from 'sql/parts/connection/common/utils';
+import { IHandleFirewallRuleResult } from 'sql/parts/accountManagement/common/interfaces';
 
 import { WorkbenchEditorTestService } from 'sqltest/stubs/workbenchEditorTestService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { EditorGroupTestService } from 'sqltest/stubs/editorGroupService';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ConnectionProviderStub } from 'sqltest/stubs/connectionProviderStub';
+import { ResourceProviderStub } from 'sqltest/stubs/resourceProviderServiceStub';
 
 import * as data from 'data';
 
@@ -40,8 +42,8 @@ suite('SQL ConnectionManagementService tests', () => {
 	let editorGroupService: TypeMoq.Mock<EditorGroupTestService>;
 	let connectionStatusManager: ConnectionStatusManager;
 	let mssqlConnectionProvider: TypeMoq.Mock<ConnectionProviderStub>;
-	let otherConnectionProvider: TypeMoq.Mock<ConnectionProviderStub>;
 	let workspaceConfigurationServiceMock: TypeMoq.Mock<WorkspaceConfigurationTestService>;
+	let resourceProviderStubMock: TypeMoq.Mock<ResourceProviderStub>;
 
 	let none: void;
 
@@ -68,6 +70,9 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	let connectionManagementService: ConnectionManagementService;
 	let configResult: { [key: string]: any } = {};
+	let handleFirewallRuleResult: IHandleFirewallRuleResult;
+	let resolveHandleFirewallRuleDialog: boolean;
+	let isFirewallRuleAdded: boolean;
 
 	setup(() => {
 
@@ -78,7 +83,8 @@ suite('SQL ConnectionManagementService tests', () => {
 		editorGroupService = TypeMoq.Mock.ofType(EditorGroupTestService);
 		connectionStatusManager = new ConnectionStatusManager(capabilitiesService);
 		mssqlConnectionProvider = TypeMoq.Mock.ofType(ConnectionProviderStub);
-		otherConnectionProvider = TypeMoq.Mock.ofType(ConnectionProviderStub);
+		let resourceProviderStub = new ResourceProviderStub();
+		resourceProviderStubMock = TypeMoq.Mock.ofInstance(resourceProviderStub);
 
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined)).returns(() => TPromise.as(none));
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined)).returns(() => TPromise.as(none));
@@ -100,10 +106,28 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns(() => true);
 
 		mssqlConnectionProvider.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => undefined);
-		otherConnectionProvider.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => undefined);
 
-		// setup configuration to return a config that can be modified later.
+		// Setup resource provider
+		handleFirewallRuleResult = {
+			canHandleFirewallRule: false,
+			ipAddress: '123.123.123.123',
+			resourceProviderId: 'Azure'
+		};
+		resourceProviderStubMock.setup(x => x.handleFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+			.returns(() => Promise.resolve(handleFirewallRuleResult));
 
+		resolveHandleFirewallRuleDialog = true;
+		isFirewallRuleAdded = true;
+		resourceProviderStubMock.setup(x => x.showFirewallRuleDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+			.returns(() => {
+				if (resolveHandleFirewallRuleDialog) {
+					return isFirewallRuleAdded ? Promise.resolve(true) : Promise.resolve(false);
+				} else {
+					return Promise.reject(null).then();
+				}
+			});
+
+		// Setup configuration to return a config that can be modified later.
 		workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
 		workspaceConfigurationServiceMock.setup(x => x.getConfiguration(Constants.sqlConfigSectionName))
 			.returns(() => configResult);
@@ -125,36 +149,44 @@ suite('SQL ConnectionManagementService tests', () => {
 			undefined,
 			undefined,
 			undefined,
-			undefined,
 			workspaceConfigurationServiceMock.object,
 			undefined,
 			capabilitiesService,
 			undefined,
 			editorGroupService.object,
 			undefined,
-			undefined,
+			resourceProviderStubMock.object,
 			undefined,
 			undefined
 		);
 		return connectionManagementService;
 	}
 
-	function verifyShowDialog(connectionProfile: IConnectionProfile, connectionType: ConnectionType, uri: string, error?: string, didShow: boolean = true): void {
-
+	function verifyShowConnectionDialog(connectionProfile: IConnectionProfile, connectionType: ConnectionType, uri: string, connectionResult?: IConnectionResult, didShow: boolean = true): void {
 		if (connectionProfile) {
 			connectionDialogService.verify(x => x.showDialog(
 				TypeMoq.It.isAny(),
 				TypeMoq.It.is<INewConnectionParams>(p => p.connectionType === connectionType && (uri === undefined || p.input.uri === uri)),
-				TypeMoq.It.is<IConnectionProfile>(c => c.serverName === connectionProfile.serverName), error),
+				TypeMoq.It.is<IConnectionProfile>(c => c.serverName === connectionProfile.serverName),
+				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.callStack === connectionResult.callStack) : undefined),
 				didShow ? TypeMoq.Times.once() : TypeMoq.Times.never());
 
 		} else {
 			connectionDialogService.verify(x => x.showDialog(
 				TypeMoq.It.isAny(),
 				TypeMoq.It.is<INewConnectionParams>(p => p.connectionType === connectionType && ((uri === undefined && p.input === undefined) || p.input.uri === uri)),
-				undefined, error), didShow ? TypeMoq.Times.once() : TypeMoq.Times.never());
+				undefined,
+				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.callStack === connectionResult.callStack) : undefined),
+				didShow ? TypeMoq.Times.once() : TypeMoq.Times.never());
 		}
+	}
 
+	function verifyShowFirewallRuleDialog(connectionProfile: IConnectionProfile, didShow: boolean = true): void {
+		resourceProviderStubMock.verify(x => x.showFirewallRuleDialog(
+			TypeMoq.It.is<IConnectionProfile>(c => c.serverName === connectionProfile.serverName),
+			TypeMoq.It.isAny(),
+			TypeMoq.It.isAny()),
+			didShow ? TypeMoq.Times.once() : TypeMoq.Times.never());
 	}
 
 	function verifyOptions(options?: IConnectionCompletionOptions, fromDialog?: boolean): void {
@@ -174,7 +206,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	}
 
-	function connect(uri: string, options?: IConnectionCompletionOptions, fromDialog?: boolean, connection?: IConnectionProfile, error?: string): Promise<IConnectionResult> {
+	function connect(uri: string, options?: IConnectionCompletionOptions, fromDialog?: boolean, connection?: IConnectionProfile, error?: string, errorCode?: number, errorCallStack?: string): Promise<IConnectionResult> {
 		let connectionToUse = connection ? connection : connectionProfile;
 		return new Promise<IConnectionResult>((resolve, reject) => {
 			let id = connectionToUse.getOptionsKey();
@@ -188,8 +220,8 @@ suite('SQL ConnectionManagementService tests', () => {
 						userName: connectionToUse.userName
 					},
 					errorMessage: error,
-					errorNumber: undefined,
-					messages: error,
+					errorNumber: errorCode,
+					messages: errorCallStack,
 					ownerUri: uri ? uri : defaultUri,
 					serverInfo: undefined
 				};
@@ -207,7 +239,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('showConnectionDialog should open the dialog with default type given no parameters', done => {
 		connectionManagementService.showConnectionDialog().then(() => {
-			verifyShowDialog(undefined, ConnectionType.default, undefined);
+			verifyShowConnectionDialog(undefined, ConnectionType.default, undefined);
 			done();
 		}).catch(err => {
 			done(err);
@@ -227,7 +259,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery
 		};
 		connectionManagementService.showConnectionDialog(params).then(() => {
-			verifyShowDialog(undefined, params.connectionType, params.input.uri);
+			verifyShowConnectionDialog(undefined, params.connectionType, params.input.uri);
 			done();
 		}).catch(err => {
 			done(err);
@@ -253,7 +285,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			assert.notEqual(saveConnection, undefined, `profile was not added to the connections`);
 			assert.equal(saveConnection.serverName, connectionProfile.serverName, `Server names are different`);
 			connectionManagementService.showConnectionDialog(params).then(() => {
-				verifyShowDialog(connectionProfile, params.connectionType, params.input.uri);
+				verifyShowConnectionDialog(connectionProfile, params.connectionType, params.input.uri);
 				done();
 			}).catch(err => {
 				done(err);
@@ -268,7 +300,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			saveTheConnection: true,
 			showDashboard: false,
 			showConnectionDialogOnError: false,
-			showFirewallRuleOnError: false
+			showFirewallRuleOnError: true
 		};
 
 		connect(uri, options).then(() => {
@@ -319,7 +351,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			saveTheConnection: true,
 			showDashboard: false,
 			showConnectionDialogOnError: true,
-			showFirewallRuleOnError: false
+			showFirewallRuleOnError: true
 		};
 
 		connect(uri, options).then(() => {
@@ -359,20 +391,29 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('failed connection should open the dialog if connection fails', done => {
 		let uri = undefined;
 		let error: string = 'error';
+		let errorCode: number = 111;
+		let errorCallStack: string = 'error call stack';
 		let expectedConnection: boolean = false;
-		let expectedError: string = error;
 		let options: IConnectionCompletionOptions = {
 			params: undefined,
 			saveTheConnection: false,
 			showDashboard: false,
 			showConnectionDialogOnError: true,
-			showFirewallRuleOnError: false
+			showFirewallRuleOnError: true
 		};
 
-		connect(uri, options, false, connectionProfile, error).then(result => {
+		let connectionResult: IConnectionResult = {
+			connected: expectedConnection,
+			errorMessage: error,
+			errorCode: errorCode,
+			callStack: errorCallStack
+		};
+
+		connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack).then(result => {
 			assert.equal(result.connected, expectedConnection);
-			assert.equal(result.errorMessage, expectedError);
-			verifyShowDialog(connectionProfile, ConnectionType.default, uri, error);
+			assert.equal(result.errorMessage, connectionResult.errorMessage);
+			verifyShowFirewallRuleDialog(connectionProfile, false);
+			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, connectionResult);
 			done();
 		}).catch(err => {
 			done(err);
@@ -382,8 +423,73 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('failed connection should not open the dialog if the option is set to false even if connection fails', done => {
 		let uri = undefined;
 		let error: string = 'error when options set to false';
+		let errorCode: number = 111;
+		let errorCallStack: string = 'error call stack';
+		let expectedConnection: boolean = false;
+		let options: IConnectionCompletionOptions = {
+			params: undefined,
+			saveTheConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: false,
+			showFirewallRuleOnError: true
+		};
+
+		let connectionResult: IConnectionResult = {
+			connected: expectedConnection,
+			errorMessage: error,
+			errorCode: errorCode,
+			callStack: errorCallStack
+		};
+
+		connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack).then(result => {
+			assert.equal(result.connected, expectedConnection);
+			assert.equal(result.errorMessage, connectionResult.errorMessage);
+			verifyShowFirewallRuleDialog(connectionProfile, false);
+			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, connectionResult, false);
+			done();
+		}).catch(err => {
+			done(err);
+		});
+	});
+
+	test('failed firewall rule should open the firewall rule dialog', done => {
+		handleFirewallRuleResult.canHandleFirewallRule = true;
+		resolveHandleFirewallRuleDialog = true;
+		isFirewallRuleAdded = true;
+
+		let uri = undefined;
+		let error: string = 'error';
+		let errorCode: number = 111;
 		let expectedConnection: boolean = false;
 		let expectedError: string = error;
+		let options: IConnectionCompletionOptions = {
+			params: undefined,
+			saveTheConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		connect(uri, options, false, connectionProfile, error, errorCode).then(result => {
+			assert.equal(result.connected, expectedConnection);
+			assert.equal(result.errorMessage, expectedError);
+			verifyShowFirewallRuleDialog(connectionProfile, true);
+			done();
+		}).catch(err => {
+			done(err);
+		});
+	});
+
+	test('failed firewall rule connection should not open the firewall rule dialog if the option is set to false even if connection fails', done => {
+		handleFirewallRuleResult.canHandleFirewallRule = true;
+		resolveHandleFirewallRuleDialog = true;
+		isFirewallRuleAdded = true;
+
+		let uri = undefined;
+		let error: string = 'error when options set to false';
+		let errorCallStack: string = 'error call stack';
+		let errorCode: number = 111;
+		let expectedConnection: boolean = false;
 		let options: IConnectionCompletionOptions = {
 			params: undefined,
 			saveTheConnection: false,
@@ -392,33 +498,119 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: false
 		};
 
-		connect(uri, options, false, connectionProfile, error).then(result => {
+		let connectionResult: IConnectionResult = {
+			connected: expectedConnection,
+			errorMessage: error,
+			errorCode: errorCode,
+			callStack: errorCallStack
+		};
+
+		connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack).then(result => {
 			assert.equal(result.connected, expectedConnection);
-			assert.equal(result.errorMessage, expectedError);
-			// TODO: not sure how to verify not called
+			assert.equal(result.errorMessage, connectionResult.errorMessage);
+			verifyShowFirewallRuleDialog(connectionProfile, false);
+			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, connectionResult, false);
 			done();
 		}).catch(err => {
 			done(err);
 		});
 	});
 
+	test('failed firewall rule connection and failed during open firewall rule should open the firewall rule dialog and connection dialog with error', done => {
+		handleFirewallRuleResult.canHandleFirewallRule = true;
+		resolveHandleFirewallRuleDialog = false;
+		isFirewallRuleAdded = true;
 
-	test('connect when password is empty and unsaved should open the dialog', done => {
 		let uri = undefined;
+		let error: string = 'error when options set to false';
+		let errorCode: number = 111;
+		let errorCallStack: string = 'error call stack';
 		let expectedConnection: boolean = false;
-		let expectedError: string = undefined;
 		let options: IConnectionCompletionOptions = {
 			params: undefined,
 			saveTheConnection: false,
 			showDashboard: false,
 			showConnectionDialogOnError: true,
-			showFirewallRuleOnError: false
+			showFirewallRuleOnError: true
+		};
+
+		let connectionResult: IConnectionResult = {
+			connected: expectedConnection,
+			errorMessage: error,
+			errorCode: errorCode,
+			callStack: errorCallStack
+		};
+
+		connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack).then(result => {
+			assert.equal(result.connected, expectedConnection);
+			assert.equal(result.errorMessage, connectionResult.errorMessage);
+			verifyShowFirewallRuleDialog(connectionProfile, true);
+			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, connectionResult, true);
+			done();
+		}).catch(err => {
+			done(err);
+		});
+	});
+
+	test('failed firewall rule connection should open the firewall rule dialog. Then canceled firewall rule dialog should not open connection dialog', done => {
+		handleFirewallRuleResult.canHandleFirewallRule = true;
+		resolveHandleFirewallRuleDialog = true;
+		isFirewallRuleAdded = false;
+
+		let uri = undefined;
+		let error: string = 'error when options set to false';
+		let errorCallStack: string = 'error call stack';
+		let errorCode: number = 111;
+		let expectedConnection: boolean = false;
+		let options: IConnectionCompletionOptions = {
+			params: undefined,
+			saveTheConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		let connectionResult: IConnectionResult = {
+			connected: expectedConnection,
+			errorMessage: error,
+			errorCode: errorCode,
+			callStack: errorCallStack
+		};
+
+		connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack).then(result => {
+			assert.equal(result.connected, expectedConnection);
+			assert.equal(result.errorMessage, connectionResult.errorMessage);
+			verifyShowFirewallRuleDialog(connectionProfile, true);
+			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, connectionResult, false);
+			done();
+		}).catch(err => {
+			done(err);
+		});
+	});
+
+	test('connect when password is empty and unsaved should open the dialog', done => {
+		let uri = undefined;
+		let expectedConnection: boolean = false;
+		let options: IConnectionCompletionOptions = {
+			params: undefined,
+			saveTheConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		let connectionResult: IConnectionResult = {
+			connected: expectedConnection,
+			errorMessage: undefined,
+			errorCode: undefined,
+			callStack: undefined
 		};
 
 		connect(uri, options, false, connectionProfileWithEmptyUnsavedPassword).then(result => {
 			assert.equal(result.connected, expectedConnection);
-			assert.equal(result.errorMessage, expectedError);
-			verifyShowDialog(connectionProfileWithEmptyUnsavedPassword, ConnectionType.default, uri, expectedError);
+			assert.equal(result.errorMessage, connectionResult.errorMessage);
+			verifyShowConnectionDialog(connectionProfileWithEmptyUnsavedPassword, ConnectionType.default, uri, connectionResult);
+			verifyShowFirewallRuleDialog(connectionProfile, false);
 			done();
 		}).catch(err => {
 			done(err);
@@ -428,19 +620,25 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('connect when password is empty and saved should not open the dialog', done => {
 		let uri = undefined;
 		let expectedConnection: boolean = true;
-		let expectedError: string = undefined;
 		let options: IConnectionCompletionOptions = {
 			params: undefined,
 			saveTheConnection: false,
 			showDashboard: false,
 			showConnectionDialogOnError: true,
-			showFirewallRuleOnError: false
+			showFirewallRuleOnError: true
+		};
+
+		let connectionResult: IConnectionResult = {
+			connected: expectedConnection,
+			errorMessage: undefined,
+			errorCode: undefined,
+			callStack: undefined
 		};
 
 		connect(uri, options, false, connectionProfileWithEmptySavedPassword).then(result => {
 			assert.equal(result.connected, expectedConnection);
-			assert.equal(result.errorMessage, expectedError);
-			verifyShowDialog(connectionProfileWithEmptySavedPassword, ConnectionType.default, uri, expectedError, false);
+			assert.equal(result.errorMessage, connectionResult.errorMessage);
+			verifyShowConnectionDialog(connectionProfileWithEmptySavedPassword, ConnectionType.default, uri, connectionResult, false);
 			done();
 		}).catch(err => {
 			done(err);
@@ -450,7 +648,6 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('connect from editor when empty password when it is required and saved should not open the dialog', done => {
 		let uri = 'editor 3';
 		let expectedConnection: boolean = true;
-		let expectedError: string = undefined;
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -467,13 +664,20 @@ suite('SQL ConnectionManagementService tests', () => {
 			saveTheConnection: true,
 			showDashboard: false,
 			showConnectionDialogOnError: true,
-			showFirewallRuleOnError: false
+			showFirewallRuleOnError: true
+		};
+
+		let connectionResult: IConnectionResult = {
+			connected: expectedConnection,
+			errorMessage: undefined,
+			errorCode: undefined,
+			callStack: undefined
 		};
 
 		connect(uri, options, false, connectionProfileWithEmptySavedPassword).then(result => {
 			assert.equal(result.connected, expectedConnection);
-			assert.equal(result.errorMessage, expectedError);
-			verifyShowDialog(connectionProfileWithEmptySavedPassword, ConnectionType.editor, uri, expectedError, false);
+			assert.equal(result.errorMessage, connectionResult.errorMessage);
+			verifyShowConnectionDialog(connectionProfileWithEmptySavedPassword, ConnectionType.editor, uri, connectionResult, false);
 			done();
 		}).catch(err => {
 			done(err);
@@ -518,7 +722,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			saveTheConnection: false,
 			showDashboard: false,
 			showConnectionDialogOnError: false,
-			showFirewallRuleOnError: false
+			showFirewallRuleOnError: true
 		};
 		let connectionManagementService = createConnectionManagementService();
 		let called = false;

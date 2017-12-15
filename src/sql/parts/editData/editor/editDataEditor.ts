@@ -62,7 +62,6 @@ export class EditDataEditor extends BaseEditor {
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IBootstrapService private _bootstrapService: IBootstrapService
 	) {

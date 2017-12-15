@@ -11,10 +11,20 @@ import * as nls from 'vs/nls';
 
 export type TaskIdentifier = string;
 
-export interface ActionICtor extends IConstructorSignature3<string, string, string, Action> {
+export interface ActionICtor extends IConstructorSignature3<string, string, string, TaskAction> {
 	ID: string;
 	LABEL: string;
 	ICON: string;
+}
+
+export class TaskAction extends Action {
+	constructor(id: string, label: string, private _icon: string) {
+		super(id, label);
+	}
+
+	get icon(): string {
+		return this._icon;
+	}
 }
 
 export const Extensions = {

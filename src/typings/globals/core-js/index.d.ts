@@ -483,7 +483,7 @@ interface SymbolConstructor {
       * A method that returns the default iterator for an object. Called by the semantics of the
       * for-of statement.
       */
-    iterator: symbol;
+      iterator: symbol;
 
     /**
       * A regular expression method that matches the regular expression against a string. Called
@@ -809,7 +809,7 @@ interface PromiseConstructor {
     all<T1, T2, T3>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]): Promise<[T1, T2, T3]>;
     all<T1, T2>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]): Promise<[T1, T2]>;
     all<TAll>(values: Iterable<TAll | PromiseLike<TAll>>): Promise<TAll[]>;
-    
+
     /**
      * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
      * or rejected.

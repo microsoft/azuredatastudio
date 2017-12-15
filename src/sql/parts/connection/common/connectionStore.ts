@@ -15,11 +15,11 @@ import { ConnectionConfig } from './connectionConfig';
 import { Memento, Scope as MementoScope } from 'vs/workbench/common/memento';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
-import { IConfigurationEditingService } from 'vs/workbench/services/configuration/common/configurationEditing';
+import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { equalsIgnoreCase } from 'vs/base/common/strings';
 import * as data from 'data';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -37,24 +37,21 @@ export class ConnectionStore {
 	constructor(
 		private _storageService: IStorageService,
 		private _context: Memento,
-		private _configurationEditService: IConfigurationEditingService,
+		private _configurationEditService: ConfigurationEditingService,
 		private _workspaceConfigurationService: IWorkspaceConfigurationService,
 		private _credentialService: ICredentialsService,
 		private _capabilitiesService: ICapabilitiesService,
 		private _connectionConfig?: IConnectionConfig
 	) {
-
 		if (_context) {
 			this._memento = this._context.getMemento(this._storageService, MementoScope.GLOBAL);
 		}
 		this._groupIdToFullNameMap = {};
 		this._groupFullNameToIdMap = {};
-
 		if (!this._connectionConfig) {
 			let cachedServerCapabilities = this.getCachedServerCapabilities();
 			this._connectionConfig = new ConnectionConfig(this._configurationEditService,
 				this._workspaceConfigurationService, this._capabilitiesService, cachedServerCapabilities);
-			this._connectionConfig.setCachedMetadata(cachedServerCapabilities);
 		}
 	}
 
@@ -113,17 +110,6 @@ export class ConnectionStore {
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * Gets all connection profiles stored in the user settings
-	 * Profiles from workspace will be included if getWorkspaceProfiles is passed as true
-	 * Note: connections will not include password value
-	 *
-	 * @returns {IConnectionProfile[]}
-	 */
-	public getProfiles(getWorkspaceProfiles: boolean): IConnectionProfile[] {
-		return this.loadProfiles(getWorkspaceProfiles);
 	}
 
 	public addSavedPassword(credentialsItem: IConnectionProfile): Promise<{ profile: IConnectionProfile, savedCred: boolean }> {
@@ -314,12 +300,15 @@ export class ConnectionStore {
 	 * @param {IConnectionCredentials} conn the connection to add
 	 * @returns {Promise<void>} a Promise that returns when the connection was saved
 	 */
-	public addActiveConnection(conn: IConnectionProfile): Promise<void> {
-		if(this.getActiveConnections().some(existingConn => existingConn.id === conn.id)) {
+	public addActiveConnection(conn: IConnectionProfile, isConnectionToDefaultDb: boolean = false): Promise<void> {
+		if (this.getActiveConnections().some(existingConn => existingConn.id === conn.id)) {
 			return Promise.resolve(undefined);
 		} else {
 			return this.addConnectionToMemento(conn, Constants.activeConnections, undefined, conn.savePassword).then(() => {
 				let maxConnections = this.getMaxRecentConnectionsCount();
+				if (isConnectionToDefaultDb) {
+					conn.databaseName = '';
+				}
 				return this.addConnectionToMemento(conn, Constants.recentConnections, maxConnections);
 			});
 		}
@@ -330,8 +319,7 @@ export class ConnectionStore {
 		return new Promise<void>((resolve, reject) => {
 			// Get all profiles
 			let configValues = self.getConnectionsFromMemento(mementoKey);
-			let configToSave: IConnectionProfile[] = this.addToConnectionList(conn, configValues, mementoKey === Constants.recentConnections);
-
+			let configToSave = this.addToConnectionList(conn, configValues);
 			if (maxConnections) {
 				// Remove last element if needed
 				if (configToSave.length > maxConnections) {
@@ -347,24 +335,6 @@ export class ConnectionStore {
 				resolve(undefined);
 			}
 		});
-	}
-
-	private isSameConnectionProfileNoGroup(profile1: IConnectionProfile, profile2: IConnectionProfile): boolean {
-		// both are undefined
-		if (!profile1 && !profile2) {
-			return true;
-		}
-			// only one is undefined
-		if (!profile1 || !profile2) {
-			return false;
-		}
-
-		// compare all the connection's "identity" properties
-		return equalsIgnoreCase(profile1.serverName, profile2.serverName) &&
-			equalsIgnoreCase(profile1.databaseName, profile2.databaseName) &&
-			equalsIgnoreCase(profile1.userName, profile2.userName) &&
-			profile1.authenticationType === profile2.authenticationType &&
-			profile1.providerName === profile2.providerName;
 	}
 
 	public removeConnectionToMemento(conn: IConnectionProfile, mementoKey: string): Promise<void> {
@@ -388,25 +358,18 @@ export class ConnectionStore {
 		return this.convertConfigValuesToConnectionProfiles(configValues);
 	}
 
-	private addToConnectionList(conn: IConnectionProfile, list: ConnectionProfile[], isRecentConnections: boolean): IConnectionProfile[] {
+	private addToConnectionList(conn: IConnectionProfile, list: ConnectionProfile[]): IConnectionProfile[] {
 		let savedProfile: ConnectionProfile = this.getProfileWithoutPassword(conn);
 
 		// Remove the connection from the list if it already exists
-		if (isRecentConnections) {
-			// recent connections should use a different comparison the server viewlet for managing connection list
-			list = list.filter(value => {
-				return !(this.isSameConnectionProfileNoGroup(value, savedProfile));
-			});
-		} else {
-			list = list.filter(value => {
-				let equal = value && value.getConnectionInfoId() === savedProfile.getConnectionInfoId();
-				if (equal && savedProfile.saveProfile) {
-					equal = value.groupId === savedProfile.groupId ||
-						ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
-				}
-				return !equal;
-			});
-		}
+		list = list.filter(value => {
+			let equal = value && value.getConnectionInfoId() === savedProfile.getConnectionInfoId();
+			if (equal && savedProfile.saveProfile) {
+				equal = value.groupId === savedProfile.groupId ||
+					ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
+			}
+			return !equal;
+		});
 
 		list.unshift(savedProfile);
 
@@ -525,11 +488,6 @@ export class ConnectionStore {
 			}
 		}
 		return result;
-	}
-
-	private loadProfiles(loadWorkspaceProfiles: boolean): IConnectionProfile[] {
-		let connections: IConnectionProfile[] = this._connectionConfig.getConnections(loadWorkspaceProfiles);
-		return connections;
 	}
 
 	private getMaxRecentConnectionsCount(): number {

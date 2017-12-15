@@ -14,11 +14,31 @@ import { TPromise } from 'vs/base/common/winjs.base';
 export class AccountManagementTestService implements IAccountManagementService {
 	_serviceBrand: any;
 
-	public get addAccountProviderEvent(): Event<AccountProviderAddedEventParams> {return () => {return undefined;};}
-	public get removeAccountProviderEvent(): Event<data.AccountProviderMetadata> {return () => {return undefined;};}
-	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> {return () => {return undefined;};}
+	public get addAccountProviderEvent(): Event<AccountProviderAddedEventParams> { return () => { return undefined; }; }
+	public get removeAccountProviderEvent(): Event<data.AccountProviderMetadata> { return () => { return undefined; }; }
+	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return () => { return undefined; }; }
 
-	addAccount(providerId: string): Thenable<data.Account> {
+	accountUpdated(account: data.Account): Thenable<void> {
+		return undefined;
+	}
+
+	addAccount(providerId: string): Thenable<void> {
+		return undefined;
+	}
+
+	beginAutoOAuthDeviceCode(title: string, message: string, userCode: string, uri: string): Thenable<void> {
+		return undefined;
+	}
+
+	cancelAutoOAuthDeviceCode(providerId: string): void {
+		return undefined;
+	}
+
+	endAutoOAuthDeviceCode(): void {
+		return undefined;
+	}
+
+	copyUserCodeAndOpenBrowser(userCode: string, uri: string): void {
 		return undefined;
 	}
 
@@ -38,11 +58,11 @@ export class AccountManagementTestService implements IAccountManagementService {
 		return undefined;
 	}
 
-	openAccountListDialog(): TPromise<any> {
+	refreshAccount(account: data.Account): Thenable<data.Account> {
 		return undefined;
 	}
 
-	performOAuthAuthorization(url: string, silent: boolean): Thenable<string> {
+	openAccountListDialog(): TPromise<any> {
 		return undefined;
 	}
 
@@ -60,6 +80,10 @@ export class AccountManagementTestService implements IAccountManagementService {
 }
 
 export class AccountProviderStub implements data.AccountProvider {
+	autoOAuthCancelled(): Thenable<void> {
+		return Promise.resolve();
+	}
+
 	clear(account: data.AccountKey): Thenable<void> {
 		return Promise.resolve();
 	}

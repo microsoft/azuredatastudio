@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
-import { EditorDescriptor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/common/editor';
+import { EditorDescriptor } from 'vs/workbench/browser/editor';
+import { IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { TaskDialogEditor } from 'sql/parts/tasks/dialog/taskDialogEditor';
@@ -15,18 +15,16 @@ import { CreateLoginInput } from 'sql/parts/admin/security/createLoginInput';
 
 // Task Dialog registration
 const taskDialogEditorDescriptor = new EditorDescriptor(
+	TaskDialogEditor,
 	TaskDialogEditor.ID,
-	'Task Dialog',
-	'sql/parts/tasks/dialog/taskDialogEditor',
-	'TaskDialogEditor'
+	'Task Dialog'
 );
 
 // Create Login registration
 const createLoginEditorDescriptor = new EditorDescriptor(
+	CreateLoginEditor,
 	CreateLoginEditor.ID,
-	'CreateLogin',
-	'sql/parts/admin/security/createLoginEditor',
-	'CreateLoginEditor'
+	'CreateLogin'
 );
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)

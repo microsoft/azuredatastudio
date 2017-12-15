@@ -30,7 +30,7 @@ const columns = [
 	'BinaryData'
 ];
 
-export class ProfilerTestBackend implements data.IProfilerProvider {
+export class ProfilerTestBackend implements data.ProfilerProvider {
 	private index = 0;
 	private timeOutMap = new Map<string, number>();
 	private testData: Array<Array<string>> = new Array<Array<string>>();
@@ -41,6 +41,10 @@ export class ProfilerTestBackend implements data.IProfilerProvider {
 	startSession(guid: string): Thenable<boolean> {
 		this.timeOutMap.set(guid, this.intervalFn(guid));
 		return TPromise.as(true);
+	}
+
+	registerOnSessionEventsAvailable(handler: (response: data.ProfilerSessionEvents) => any) {
+		return;
 	}
 
 	private intervalFn(guid: string): number {
@@ -54,7 +58,9 @@ export class ProfilerTestBackend implements data.IProfilerProvider {
 				formattedData[columns[i]] = data[i];
 			}
 
-			this._profilerService.onMoreRows({ uri: guid, rowCount: 1, data: formattedData });
+			//this._profilerService.onMoreRows({ uri: guid, rowCount: 1, data: formattedData });
+
+
 			if (this.index >= this.testData.length) {
 				this.index = 0;
 			}

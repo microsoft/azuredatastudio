@@ -25,6 +25,7 @@ import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeVie
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ClearSearchAction, AddServerAction, AddServerGroupAction, ActiveConnectionsFilterAction } from 'sql/parts/registeredServer/viewlet/connectionTreeAction';
+import { warn } from 'sql/base/common/log';
 
 export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 
@@ -71,35 +72,41 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 	}
 
 	public create(parent: Builder): TPromise<void> {
-		super.create(parent);
-		this._root = parent.getHTMLElement();
-		parent.div({ class: 'server-explorer-viewlet' }, (viewletContainer) => {
-			this._viewletContainer = viewletContainer;
-			viewletContainer.div({ class: 'search-box' }, (searchBoxContainer) => {
-				this._searchBoxContainer = searchBoxContainer;
-				this._searchBox = new InputBox(
-					searchBoxContainer.getHTMLElement(),
-					null,
-					{
-						placeholder: 'Search server names',
-						actions: [this._clearSearchAction]
-					}
-				);
-				this._searchTerm = '';
+		return new TPromise<void>((resolve) => {
+			super.create(parent);
+			this._root = parent.getHTMLElement();
+			parent.div({ class: 'server-explorer-viewlet' }, (viewletContainer) => {
+				this._viewletContainer = viewletContainer;
+				viewletContainer.div({ class: 'search-box' }, (searchBoxContainer) => {
+					this._searchBoxContainer = searchBoxContainer;
+					this._searchBox = new InputBox(
+						searchBoxContainer.getHTMLElement(),
+						null,
+						{
+							placeholder: 'Search server names',
+							actions: [this._clearSearchAction]
+						}
+					);
+					this._searchTerm = '';
 
-				this._searchBox.onDidChange(() => {
-					this.search(this._searchBox.value);
+					this._searchBox.onDidChange(() => {
+						this.search(this._searchBox.value);
+					});
+
+					// Theme styler
+					this._toDisposeViewlet.push(attachInputBoxStyler(this._searchBox, this._themeService));
+
 				});
-
-				// Theme styler
-				this._toDisposeViewlet.push(attachInputBoxStyler(this._searchBox, this._themeService));
-
-			});
-			viewletContainer.div({ Class: 'object-explorer-view' }, (viewContainer) => {
-				this._serverTreeView.renderBody(viewContainer.getHTMLElement());
+				viewletContainer.div({ Class: 'object-explorer-view' }, (viewContainer) => {
+					this._serverTreeView.renderBody(viewContainer.getHTMLElement()).then(() => {
+						resolve(null);
+					}, error => {
+						warn('render registered servers: ' + error);
+						resolve(null);
+					});
+				});
 			});
 		});
-		return TPromise.as(null);
 	}
 
 	public search(value: string): void {

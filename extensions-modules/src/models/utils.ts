@@ -248,7 +248,7 @@ export function parseNumAsTimeString(value: number): string {
 }
 
 
-// The function is a duplicate of carbon\src\paths.js. IT would be better to import path.js but it doesn't
+// The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
 export function getAppDataPath() {
     var platform = process.platform;
@@ -260,11 +260,5 @@ export function getAppDataPath() {
 	}
 }
 export function getDefaultLogLocation() {
-    var platform = process.platform;
-    let rootFolderName: string = '.sqlops';
-    if (platform === 'win32') {
-        rootFolderName = 'sqlops';
-    }
-
-    return path.join(getAppDataPath(), rootFolderName);
+    return path.join(getAppDataPath(), 'sqlops');
 }

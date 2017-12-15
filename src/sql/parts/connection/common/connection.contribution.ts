@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IExtensionGalleryService, IExtensionTipsService } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/common/editor';
+import { IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { IExtensionsWorkbenchService } from 'vs/workbench/parts/extensions/common/extensions';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
@@ -12,16 +12,16 @@ import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { DashboardEditor } from 'sql/parts/dashboard/dashboardEditor';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
+import { AddServerGroupAction, AddServerAction } from 'sql/parts/registeredServer/viewlet/connectionTreeAction';
 import { ClearRecentConnectionsAction } from 'sql/parts/connection/common/connectionActions';
 
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/node/extensionGalleryService';
-import { EditorDescriptor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorDescriptor } from 'vs/workbench/browser/editor';
 import { ExtensionTipsService } from 'vs/workbench/parts/extensions/electron-browser/extensionTipsService';
 import { ExtensionsWorkbenchService } from 'vs/workbench/parts/extensions/node/extensionsWorkbenchService';
-import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actionRegistry';
+import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
-import { AddServerGroupAction, AddServerAction } from 'sql/parts/registeredServer/viewlet/connectionTreeAction';
 
 // Singletons
 registerSingleton(IExtensionGalleryService, ExtensionGalleryService);
@@ -30,10 +30,9 @@ registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
 
 // Connection Dashboard registration
 const dashboardEditorDescriptor = new EditorDescriptor(
+	DashboardEditor,
 	DashboardEditor.ID,
-	'Dashboard',
-	'sql/parts/dashboard/dashboardEditor',
-	'DashboardEditor'
+	'Dashboard'
 );
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
@@ -50,7 +49,6 @@ actionRegistry.registerWorkbenchAction(
 	),
 	ClearRecentConnectionsAction.LABEL
 );
-
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
 		AddServerGroupAction,
@@ -82,7 +80,7 @@ configurationRegistry.registerConfiguration({
 		},
 		'sql.defaultEngine': {
 			'type': 'string',
-			'description': localize('sql.defaultEngineDescription', 'Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection.'),
+			'description': localize('sql.defaultEngineDescription', 'Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection. Valid option is currently MSSQL'),
 			'default': 'MSSQL'
 		},
 	}

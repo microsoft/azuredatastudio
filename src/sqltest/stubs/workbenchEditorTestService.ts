@@ -9,7 +9,7 @@ import { IEditorService, IEditor, IEditorInput, IEditorOptions, ITextEditorOptio
 	from 'vs/platform/editor/common/editor';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { EditorInput, EditorOptions, IFileEditorInput, TextEditorOptions, IEditorRegistry, Extensions, SideBySideEditorInput } from 'vs/workbench/common/editor';
+import { EditorInput, EditorOptions, IFileEditorInput, TextEditorOptions, Extensions, SideBySideEditorInput } from 'vs/workbench/common/editor';
 
 export class WorkbenchEditorTestService implements IWorkbenchEditorService {
 	_serviceBrand: ServiceIdentifier<any>;

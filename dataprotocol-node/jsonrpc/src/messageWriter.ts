@@ -108,7 +108,7 @@ export class IPCMessageWriter extends AbstractMessageWriter implements MessageWr
 
 	public write(msg: Message): void {
 		try {
-			(<any>this.process).send(<any>msg);
+			(this.process.send as Function)(msg);
 			this.errorCount = 0;
 		} catch (error) {
 			this.errorCount++;

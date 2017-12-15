@@ -43,7 +43,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
-import { IConfigurationEditingService } from 'vs/workbench/services/configuration/common/configurationEditing';
+import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import Event, { Emitter } from 'vs/base/common/event';
@@ -78,6 +78,8 @@ export class ConnectionManagementService implements IConnectionManagementService
 
 	private _connectionGlobalStatus: ConnectionGlobalStatus;
 
+	private _configurationEditService: ConfigurationEditingService;
+
 	constructor(
 		private _connectionMemento: Memento,
 		private _connectionStore: ConnectionStore,
@@ -89,7 +91,6 @@ export class ConnectionManagementService implements IConnectionManagementService
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IStorageService private _storageService: IStorageService,
 		@ITelemetryService private _telemetryService: ITelemetryService,
-		@IConfigurationEditingService private _configurationEditService: IConfigurationEditingService,
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
 		@ICredentialsService private _credentialsService: ICredentialsService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
@@ -100,13 +101,17 @@ export class ConnectionManagementService implements IConnectionManagementService
 		@IViewletService private _viewletService: IViewletService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService
 	) {
+		if (this._instantiationService) {
+			this._configurationEditService = this._instantiationService.createInstance(ConfigurationEditingService);
+		}
+
 		// _connectionMemento and _connectionStore are in constructor to enable this class to be more testable
 		if (!this._connectionMemento) {
 			this._connectionMemento = new Memento('ConnectionManagement');
 		}
 		if (!this._connectionStore) {
 			this._connectionStore = new ConnectionStore(_storageService, this._connectionMemento,
-				_configurationEditService, this._workspaceConfigurationService, this._credentialsService, this._capabilitiesService);
+				this._configurationEditService, this._workspaceConfigurationService, this._credentialsService, this._capabilitiesService);
 		}
 
 		this._connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService);
@@ -196,7 +201,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 			// show the Registered Server viewlet
 			let startupConfig = this._workspaceConfigurationService.getConfiguration('startup');
 			if (startupConfig) {
- 				let showServerViewlet = <boolean>startupConfig['alwaysShowServersView'];
+				let showServerViewlet = <boolean>startupConfig['alwaysShowServersView'];
 				if (showServerViewlet) {
 					// only show the Servers viewlet if there isn't another active viewlet
 					if (!this._viewletService.getActiveViewlet()) {
@@ -212,7 +217,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 	 * @param params Include the uri, type of connection
 	 * @param model the existing connection profile to create a new one from
 	 */
-	public showConnectionDialog(params?: INewConnectionParams, model?: IConnectionProfile, error?: string): Promise<void> {
+	public showConnectionDialog(params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
 		let self = this;
 		return new Promise<void>((resolve, reject) => {
 			if (!params) {
@@ -221,7 +226,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 			if (!model && params.input && params.input.uri) {
 				model = this._connectionStatusManager.getConnectionProfile(params.input.uri);
 			}
-			self._connectionDialogService.showDialog(self, params, model, error).then(() => {
+			self._connectionDialogService.showDialog(self, params, model, connectionResult).then(() => {
 				resolve();
 			}, dialogError => {
 				warn('failed to open the connection dialog. error: ' + dialogError);
@@ -301,7 +306,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 				}
 				// If the password is required and still not loaded show the dialog
 				if (!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) {
-					resolve(this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, errorCode: undefined }, options));
+					resolve(this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options));
 				} else {
 					// Try to connect
 					this.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
@@ -340,7 +345,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 					runQueryOnCompletion: RunQueryOnConnectionMode.none,
 					showDashboard: options.showDashboard
 				};
-				this.showConnectionDialog(params, connection, connectionResult.errorMessage).then(() => {
+				this.showConnectionDialog(params, connection, connectionResult).then(() => {
 					resolve(connectionResult);
 				}).catch(err => {
 					reject(err);
@@ -643,6 +648,10 @@ export class ConnectionManagementService implements IConnectionManagementService
 		return this._connectionStore.clearRecentlyUsed();
 	}
 
+	public clearRecentConnection(connectionProfile: IConnectionProfile) : void {
+		this._connectionStore.removeConnectionToMemento(connectionProfile, Constants.recentConnections);
+	}
+
 	public getActiveConnections(): ConnectionProfile[] {
 		return this._connectionStore.getActiveConnections();
 	}
@@ -825,6 +834,9 @@ export class ConnectionManagementService implements IConnectionManagementService
 		return new Promise<data.ListDatabasesResult>((resolve, reject) => {
 			let provider = this._providers[providerId];
 			provider.listDatabases(uri).then(result => {
+				if (result && result.databaseNames) {
+					result.databaseNames.sort();
+				}
 				resolve(result);
 			}, error => {
 				reject(error);
@@ -845,9 +857,9 @@ export class ConnectionManagementService implements IConnectionManagementService
 	/**
 	 * Add a connection to the active connections list.
 	 */
-	private tryAddActiveConnection(connectionManagementInfo: ConnectionManagementInfo, newConnection: IConnectionProfile): void {
+	private tryAddActiveConnection(connectionManagementInfo: ConnectionManagementInfo, newConnection: IConnectionProfile, isConnectionToDefaultDb: boolean): void {
 		if (newConnection) {
-			this._connectionStore.addActiveConnection(newConnection)
+			this._connectionStore.addActiveConnection(newConnection, isConnectionToDefaultDb)
 				.then(() => {
 					connectionManagementInfo.connectHandler(true);
 				}, err => {
@@ -881,6 +893,10 @@ export class ConnectionManagementService implements IConnectionManagementService
 		let connection = this._connectionStatusManager.onConnectionComplete(info);
 
 		if (info.connectionId) {
+			let isConnectionToDefaultDb = false;
+			if (connection.connectionProfile && (!connection.connectionProfile.databaseName || connection.connectionProfile.databaseName.trim() === '')) {
+				isConnectionToDefaultDb = true;
+			}
 			if (info.connectionSummary && info.connectionSummary.databaseName) {
 				this._connectionStatusManager.updateDatabaseName(info);
 			}
@@ -889,14 +905,14 @@ export class ConnectionManagementService implements IConnectionManagementService
 
 			connection.connectHandler(true);
 			let activeConnection = connection.connectionProfile;
-			self.tryAddActiveConnection(connection, activeConnection);
+			self.tryAddActiveConnection(connection, activeConnection, isConnectionToDefaultDb);
 			self.addTelemetryForConnection(connection);
-		} else {
-			connection.connectHandler(false, info.messages, info.errorNumber);
-		}
 
-		if (this._connectionStatusManager.isDefaultTypeUri(info.ownerUri)) {
-			this._connectionGlobalStatus.setStatusToConnected(info.connectionSummary);
+			if (self._connectionStatusManager.isDefaultTypeUri(info.ownerUri)) {
+				self._connectionGlobalStatus.setStatusToConnected(info.connectionSummary);
+			}
+		} else {
+			connection.connectHandler(false, info.errorMessage, info.errorNumber, info.messages);
 		}
 	}
 
@@ -1004,18 +1020,18 @@ export class ConnectionManagementService implements IConnectionManagementService
 			this._capabilitiesService.onCapabilitiesReady().then(() => {
 				let connectionInfo = this._connectionStatusManager.addConnection(connection, uri);
 				// Setup the handler for the connection complete notification to call
-				connectionInfo.connectHandler = ((connectResult, errorMessage, errorCode) => {
+				connectionInfo.connectHandler = ((connectResult, errorMessage, errorCode, callStack) => {
 					let connectionMngInfo = this._connectionStatusManager.findConnection(uri);
 					if (connectionMngInfo && connectionMngInfo.deleted) {
 						this._connectionStatusManager.deleteConnection(uri);
-						resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, errorHandled: true });
+						resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true });
 					} else {
 						if (errorMessage) {
 							// Connection to the server failed
 							this._connectionStatusManager.deleteConnection(uri);
-							resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode });
+							resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack });
 						} else {
-							resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode });
+							resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack });
 						}
 					}
 				});

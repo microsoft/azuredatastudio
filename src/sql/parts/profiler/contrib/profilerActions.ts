@@ -8,7 +8,8 @@
 import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
 import { IProfilerController } from 'sql/parts/profiler/editor/controller/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
-import { ITaskActionContext, TaskAction } from 'sql/workbench/common/actions';
+import { BaseActionContext } from 'sql/workbench/common/actions';
+import { TaskAction } from 'sql/platform/tasks/taskRegistry';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
@@ -235,7 +236,7 @@ export class NewProfilerAction extends TaskAction {
 		super(id, label, icon);
 	}
 
-	run(actionContext: ITaskActionContext): TPromise<boolean> {
+	run(actionContext: BaseActionContext): TPromise<boolean> {
 		let profilerInput = this._instantiationService.createInstance(ProfilerInput, actionContext.profile);
 		return this._editorService.openEditor(profilerInput, { pinned: true }, false).then(() => {
 			return TPromise.as(true);

@@ -20,13 +20,22 @@
 	overflow-y: auto;
 }
 
-.connection-history-label {
-	font-size: 15px;
+.no-recent-connections {
+	font-size: 12px;
+	text-align: left;
+	display: block;
+	padding-top: 5px;
 }
 
-.server-name-label {
+.connection-history-label {
 	font-size: 15px;
-	margin-bottom: 15px;
+	display: inline;
+	text-align: left;
+}
+
+.recent-titles-container {
+	display: flex;
+	justify-content: space-between;
 }
 
 .connection-provider-info {
@@ -46,4 +55,17 @@
 .connection-type {
 	margin: 15px;
 	overflow-y: hidden;
+}
+
+.search-action.clear-search-results {
+	background: url('clear-search-results.svg') center right no-repeat;
+	width: 10%;
+	cursor: pointer;
+}
+
+.vs-dark .search-action.clear-search-results,
+.hc-black .search-action.clear-search-results {
+	background: url('clear-search-results-dark.svg') center right no-repeat;
+	width: 10%;
+	cursor: pointer;
 }

@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -23,7 +24,7 @@ export interface IProfilerSession {
 	/**
 	 * Called by the service when more rows are available to render
 	 */
-	onMoreRows(rowCount: number, data: data.IProfilerTableRow);
+	onMoreRows(events: data.ProfilerSessionEvents);
 }
 
 /**
@@ -34,12 +35,12 @@ export interface IProfilerService {
 	/**
 	 * Registers a backend provider for profiler session. ex: mssql
 	 */
-	registerProvider(providerId: string, provider: data.IProfilerProvider): void;
+	registerProvider(providerId: string, provider: data.ProfilerProvider): void;
 	/**
 	 * Registers a session with the service that acts as the UI for a profiler session
 	 * @returns An unique id that should be used to make subsequent calls to this service
 	 */
-	registerSession(uri: string, session: IProfilerSession): ProfilerSessionID;
+	registerSession(uri: string, connectionProfile: IConnectionProfile, session: IProfilerSession): ProfilerSessionID;
 	/**
 	 * Connects the session specified by the id
 	 */
@@ -63,7 +64,7 @@ export interface IProfilerService {
 	/**
 	 * The method called by the service provider for when more rows are available to render
 	 */
-	onMoreRows(params: data.IProfilerMoreRowsNotificationParams): void;
+	onMoreRows(params: data.ProfilerSessionEvents): void;
 	/**
 	 * Gets a list of the session templates that are specified in the settings
 	 * @param provider An optional string to limit the session template to a specific

@@ -79,6 +79,26 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		return false;
 	}
 
+	public get hasValidConnections(): boolean {
+		if (this.connections) {
+			let invalidConnections = this.connections.find(c => c.serverCapabilities === undefined);
+			if (invalidConnections !== undefined) {
+				return false;
+			} else {
+				let childrenAreValid: boolean = true;
+				this.children.forEach(element => {
+					let isChildValid = element.hasValidConnections;
+					if (!isChildValid) {
+						childrenAreValid = false;
+					}
+				});
+				return childrenAreValid;
+			}
+		} else {
+			return true;
+		}
+	}
+
 	public getChildren(): any {
 		let allChildren = [];
 

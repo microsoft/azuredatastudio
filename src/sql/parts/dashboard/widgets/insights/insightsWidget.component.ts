@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import {
 	Component, Inject, ViewContainerRef, forwardRef, AfterContentInit,
-	ComponentFactoryResolver, ViewChild, OnDestroy, ChangeDetectorRef
+	ComponentFactoryResolver, ViewChild, ChangeDetectorRef
 } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
@@ -15,39 +15,45 @@ import { InsightAction, InsightActionContext } from 'sql/workbench/common/action
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
 import { IInsightsConfig, IInsightsView } from './interfaces';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
-import { insertValueRegex } from 'sql/parts/insights/browser/insightsDialogView';
+import { insertValueRegex } from 'sql/parts/insights/common/interfaces';
 import { RunInsightQueryAction } from './actions';
 
 import { SimpleExecuteResult } from 'data';
 
-import { IDisposable } from 'vs/base/common/lifecycle';
 import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';
 import * as pfs from 'vs/base/node/pfs';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { WorkbenchState } from 'vs/platform/workspace/common/workspace';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
+
+interface IStorageResult {
+	date: string;
+	results: SimpleExecuteResult;
+}
 
 @Component({
 	selector: 'insights-widget',
 	template: `
 				<div *ngIf="error" style="text-align: center; padding-top: 20px">{{error}}</div>
+				<div *ngIf="lastUpdated" style="font-style: italic; font-size: 80%; margin-left: 5px">{{lastUpdated}}</div>
 				<div style="margin: 10px; width: calc(100% - 20px); height: calc(100% - 20px)">
 					<ng-template component-host></ng-template>
 				</div>`,
-	styles: [':host { width: 100%; height: 100%}']
+	styles: [':host { width: 100%; height: 100% }']
 })
-export class InsightsWidget extends DashboardWidget implements IDashboardWidget, AfterContentInit, OnDestroy {
+export class InsightsWidget extends DashboardWidget implements IDashboardWidget, AfterContentInit {
 	private insightConfig: IInsightsConfig;
 	private queryObv: Observable<SimpleExecuteResult>;
-	private _disposables: Array<IDisposable> = [];
 	@ViewChild(ComponentHostDirective) private componentHost: ComponentHostDirective;
 
 	private _typeKey: string;
 	private _init: boolean = false;
 
 	public error: string;
+	public lastUpdated: string;
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
@@ -90,7 +96,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	ngAfterContentInit() {
 		this._init = true;
 		if (this.queryObv) {
-			this._disposables.push(toDisposableSubscription(this.queryObv.subscribe(
+			this._register(toDisposableSubscription(this.queryObv.subscribe(
 				result => {
 					this._updateChild(result);
 				},
@@ -99,10 +105,6 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				}
 			)));
 		}
-	}
-
-	ngOnDestroy() {
-		this._disposables.forEach(i => i.dispose());
 	}
 
 	private showError(error: string): void {
@@ -128,7 +130,11 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	private _storeResult(result: SimpleExecuteResult): SimpleExecuteResult {
 		if (this.insightConfig.cacheId) {
-			this.dashboardService.storageService.store(this._getStorageKey(), JSON.stringify(result));
+			let store: IStorageResult = {
+				date: new Date().toString(),
+				results: result
+			};
+			this.dashboardService.storageService.store(this._getStorageKey(), JSON.stringify(store));
 		}
 		return result;
 	}
@@ -137,8 +143,12 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		if (this.insightConfig.cacheId) {
 			let storage = this.dashboardService.storageService.get(this._getStorageKey());
 			if (storage) {
+				let storedResult: IStorageResult = JSON.parse(storage);
+				let date = new Date(storedResult.date);
+				this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", date.toLocaleTimeString(), date.toLocaleDateString());
 				if (this._init) {
-					this._updateChild(JSON.parse(storage));
+					this._updateChild(storedResult.results);
+					this._cd.detectChanges();
 				} else {
 					this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(JSON.parse(storage)));
 				}
@@ -151,17 +161,11 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		return false;
 	}
 
-	public get refresh(): () => void {
-		return this._refresh();
-	}
-
-	public _refresh(): () => void {
-		return () => {
-			this._runQuery().then(
-				result => this._updateChild(result),
-				error => this.showError(error)
-			);
-		};
+	public refresh(): void {
+		this._runQuery().then(
+			result => this._updateChild(result),
+			error => this.showError(error)
+		);
 	}
 
 	private _getStorageKey(): string {
@@ -192,7 +196,10 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		let componentInstance = componentRef.instance;
 		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => item.displayValue)) };
 		// check if the setter is defined
-		componentInstance.config = this.insightConfig.type[this._typeKey];
+		if (componentInstance.setConfig) {
+			componentInstance.setConfig(this.insightConfig.type[this._typeKey]);
+		}
+
 		if (componentInstance.init) {
 			componentInstance.init();
 		}
@@ -239,7 +246,28 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			let match = filePath.match(insertValueRegex);
 			if (match && match.length > 0 && match[1] === 'workspaceRoot') {
 				filePath = filePath.replace(match[0], '');
-				filePath = this.dashboardService.workspaceContextService.toResource(filePath).fsPath;
+
+				//filePath = this.dashboardService.workspaceContextService.toResource(filePath).fsPath;
+				switch (this.dashboardService.workspaceContextService.getWorkbenchState()) {
+					case WorkbenchState.FOLDER:
+						filePath = this.dashboardService.workspaceContextService.getWorkspace().folders[0].toResource(filePath).fsPath;
+						break;
+					case WorkbenchState.WORKSPACE:
+						let filePathArray = filePath.split('/');
+						// filter out empty sections
+						filePathArray = filePathArray.filter(i => !!i);
+						let folder = this.dashboardService.workspaceContextService.getWorkspace().folders.find(i => i.name === filePathArray[0]);
+						if (!folder) {
+							return Promise.reject<void[]>(new Error(`Could not find workspace folder ${filePathArray[0]}`));
+						}
+						// remove the folder name from the filepath
+						filePathArray.shift();
+						// rejoin the filepath after doing the work to find the right folder
+						filePath = '/' + filePathArray.join('/');
+						filePath = folder.toResource(filePath).fsPath;
+						break;
+				}
+
 			}
 			promises.push(new Promise((resolve, reject) => {
 				pfs.readFile(filePath).then(

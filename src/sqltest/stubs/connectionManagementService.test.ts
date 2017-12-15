@@ -35,7 +35,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	}
 
-	showConnectionDialog(params?: INewConnectionParams, model?: IConnectionProfile, error?: string): Promise<void> {
+	showConnectionDialog(params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
 		return undefined;
 	}
 
@@ -80,6 +80,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	public clearRecentConnectionsList(): void {
+		return;
+	}
+
+	public clearRecentConnection(connectionProfile: ConnectionProfile): void {
 		return;
 	}
 
@@ -141,7 +145,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		return new Promise<IConnectionResult>((resolve, reject) => {
-			resolve({ connected: true, errorMessage: undefined, errorCode: undefined });
+			resolve({ connected: true, errorMessage: undefined, errorCode: undefined, callStack: undefined });
 		});
 	}
 

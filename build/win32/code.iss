@@ -20,6 +20,7 @@ OutputBaseFilename=SqlOpsStudioSetup
 Compression=lzma
 SolidCompression=yes
 AppMutex={#AppMutex}
+SetupMutex={#AppMutex}setup
 WizardImageFile={#RepoDir}\resources\win32\inno-big.bmp
 WizardSmallImageFile={#RepoDir}\resources\win32\inno-small.bmp
 SetupIconFile={#RepoDir}\resources\win32\code.ico

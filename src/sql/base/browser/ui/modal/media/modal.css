@@ -154,11 +154,7 @@
 	width: 100px;
 }
 
-.vs-dark.monaco-shell .modal.flyout-dialog .footer-button a.monaco-button.monaco-text-button {
-	outline-color: #8e8c8c;
-}
-
-.modal.flyout-dialog .footer-button a.monaco-button.monaco-text-button:focus {
+.vs .monaco-text-button:focus {
 	outline-width: 1px;
 }
 
