@@ -240,30 +240,30 @@ let registryProperties = {
 		'description': localize('sql.showBatchTime', '[Optional] Should execution time be shown for individual batches'),
 		'default': false
 	},
-	'sql.intelliSense.enableIntelliSense': {
+	'mssql.intelliSense.enableIntelliSense': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('sql.intelliSense.enableIntelliSense', 'Should IntelliSense be enabled')
+		'description': localize('mssql.intelliSense.enableIntelliSense', 'Should IntelliSense be enabled')
 	},
-	'sql.intelliSense.enableErrorChecking': {
+	'mssql.intelliSense.enableErrorChecking': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('sql.intelliSense.enableErrorChecking', 'Should IntelliSense error checking be enabled')
+		'description': localize('mssql.intelliSense.enableErrorChecking', 'Should IntelliSense error checking be enabled')
 	},
-	'sql.intelliSense.enableSuggestions': {
+	'mssql.intelliSense.enableSuggestions': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('sql.intelliSense.enableSuggestions', 'Should IntelliSense suggestions be enabled')
+		'description': localize('mssql.intelliSense.enableSuggestions', 'Should IntelliSense suggestions be enabled')
 	},
-	'sql.intelliSense.enableQuickInfo': {
+	'mssql.intelliSense.enableQuickInfo': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('sql.intelliSense.enableQuickInfo', 'Should IntelliSense quick info be enabled')
+		'description': localize('mssql.intelliSense.enableQuickInfo', 'Should IntelliSense quick info be enabled')
 	},
-	'sql.intelliSense.lowerCaseSuggestions': {
+	'mssql.intelliSense.lowerCaseSuggestions': {
 		'type': 'boolean',
 		'default': false,
-		'description': localize('sql.intelliSense.lowerCaseSuggestions', 'Should IntelliSense suggestions be lowercase')
+		'description': localize('mssql.intelliSense.lowerCaseSuggestions', 'Should IntelliSense suggestions be lowercase')
 	}
 };
 

@@ -261,7 +261,8 @@ export class WorkbenchShell {
 		workspaceStats.reportCloudStats();
 
 		if ((platform.isLinux || platform.isMacintosh) && process.getuid() === 0) {
-			this.messageService.show(Severity.Warning, nls.localize('runningAsRoot', "It is recommended not to run Code as 'root'."));
+			// {{SQL CARBON EDIT}}
+			this.messageService.show(Severity.Warning, nls.localize('runningAsRoot', "It is recommended not to run sqlops as 'root'."));
 		}
 	}
 
