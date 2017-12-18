@@ -103,7 +103,7 @@ export class ScriptSelectAction extends Action {
 
 export class ScriptExecuteAction extends Action {
 	public static ID = 'scriptExecute';
-	public static LABEL = nls.localize('scriptExecute', 'Script As Execute');
+	public static LABEL = nls.localize('scriptExecute', 'Script as Execute');
 
 	constructor(
 		id: string, label: string,
@@ -139,7 +139,7 @@ export class ScriptExecuteAction extends Action {
 
 export class ScriptAlterAction extends Action {
 	public static ID = 'scriptAlter';
-	public static LABEL = nls.localize('scriptAlter', 'Script As Alter');
+	public static LABEL = nls.localize('scriptAlter', 'Script as Alter');
 
 	constructor(
 		id: string, label: string,
