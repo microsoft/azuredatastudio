@@ -126,17 +126,19 @@ export class RecentConnectionTreeController extends DefaultController {
 		}
 
 		let anchor = { x: event.x + 1, y: event.y };
-		this._contextMenuService.showContextMenu({
-			getAnchor: () => anchor,
-			getActions: () => this.actionProvider.getActions(tree, element),
-			onHide: (wasCancelled?: boolean) => {
-				if (wasCancelled) {
-					tree.DOMFocus();
-				}
-			},
-			getActionsContext: () => (actionContext)
-		});
-
-		return true;
+		if (anchor.x && anchor.y) {
+			this._contextMenuService.showContextMenu({
+				getAnchor: () => anchor,
+				getActions: () => this.actionProvider.getActions(tree, element),
+				onHide: (wasCancelled?: boolean) => {
+					if (wasCancelled) {
+						tree.DOMFocus();
+					}
+				},
+				getActionsContext: () => (actionContext)
+			});
+			return true;
+		}
+		return false;
 	}
 }
