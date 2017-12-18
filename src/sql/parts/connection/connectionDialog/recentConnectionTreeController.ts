@@ -19,6 +19,7 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { IMessageService } from 'vs/platform/message/common/message';
 import mouse = require('vs/base/browser/mouseEvent');
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { acceptLocalChangesCommand } from 'vs/workbench/parts/files/browser/saveErrorHandler';
 
 export class RecentConnectionActionsProvider extends ContributableActionProvider {
 	private _onRecentConnectionRemoved = new Emitter<void>();
@@ -126,17 +127,19 @@ export class RecentConnectionTreeController extends DefaultController {
 		}
 
 		let anchor = { x: event.x + 1, y: event.y };
-		this._contextMenuService.showContextMenu({
-			getAnchor: () => anchor,
-			getActions: () => this.actionProvider.getActions(tree, element),
-			onHide: (wasCancelled?: boolean) => {
-				if (wasCancelled) {
-					tree.DOMFocus();
-				}
-			},
-			getActionsContext: () => (actionContext)
-		});
-
-		return true;
+		if (anchor.x && anchor.y) {
+			this._contextMenuService.showContextMenu({
+				getAnchor: () => anchor,
+				getActions: () => this.actionProvider.getActions(tree, element),
+				onHide: (wasCancelled?: boolean) => {
+					if (wasCancelled) {
+						tree.DOMFocus();
+					}
+				},
+				getActionsContext: () => (actionContext)
+			});
+			return true;
+		}
+		return false;
 	}
 }
