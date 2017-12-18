@@ -89,7 +89,7 @@ export class RecentConnectionTreeController extends DefaultController {
 
 	protected onRightClick(tree: ITree, element: any, eventish: ICancelableEvent, origin: string = 'mouse'): boolean {
 		this.clickcb(element, eventish, origin);
-		this.onContextMenu(tree, element, event);
+		this.showContextMenu(tree, element, event);
 		return true;
 	}
 
@@ -113,7 +113,7 @@ export class RecentConnectionTreeController extends DefaultController {
 		return super.onKeyDown(tree, event);
 	}
 
-	public onContextMenu(tree: ITree, element: any, event: any): boolean {
+	public showContextMenu(tree: ITree, element: any, event: any): boolean {
 		var actionContext: any;
 
 		if (element instanceof ConnectionProfile) {
@@ -126,19 +126,16 @@ export class RecentConnectionTreeController extends DefaultController {
 		}
 
 		let anchor = { x: event.x + 1, y: event.y };
-		if (anchor.x && anchor.y) {
-			this._contextMenuService.showContextMenu({
-				getAnchor: () => anchor,
-				getActions: () => this.actionProvider.getActions(tree, element),
-				onHide: (wasCancelled?: boolean) => {
-					if (wasCancelled) {
-						tree.DOMFocus();
-					}
-				},
-				getActionsContext: () => (actionContext)
-			});
-			return true;
-		}
-		return false;
+		this._contextMenuService.showContextMenu({
+			getAnchor: () => anchor,
+			getActions: () => this.actionProvider.getActions(tree, element),
+			onHide: (wasCancelled?: boolean) => {
+				if (wasCancelled) {
+					tree.DOMFocus();
+				}
+			},
+			getActionsContext: () => (actionContext)
+		});
+		return true;
 	}
 }
