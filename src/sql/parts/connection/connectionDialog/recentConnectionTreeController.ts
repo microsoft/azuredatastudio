@@ -19,7 +19,6 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { IMessageService } from 'vs/platform/message/common/message';
 import mouse = require('vs/base/browser/mouseEvent');
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { acceptLocalChangesCommand } from 'vs/workbench/parts/files/browser/saveErrorHandler';
 
 export class RecentConnectionActionsProvider extends ContributableActionProvider {
 	private _onRecentConnectionRemoved = new Emitter<void>();
