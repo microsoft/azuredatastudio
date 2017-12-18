@@ -52,6 +52,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private currentCell: { row: number, column: number, isEditable: boolean };
 	private currentEditCellValue: string;
 	private removingNewRow: boolean;
+	private rowIdMappings: {[gridRowId: number]: number} = {};
 
 	// Edit Data functions
 	public onCellEditEnd: (event: { row: number, column: number, newValue: any }) => void;
@@ -226,7 +227,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		if (this.currentCell.isEditable && this.currentEditCellValue !== null && !this.removingNewRow) {
 			// We're exiting a read/write cell after having changed the value, update the cell value in the service
 			cellSelectTasks = cellSelectTasks.then(() => {
-				return self.dataService.updateCell(self.currentCell.row, self.currentCell.column - 1, self.currentEditCellValue)
+				// Use the mapped row ID if we're on that row
+				let sessionRowId = self.rowIdMappings[self.currentCell.row] !== undefined
+					? self.rowIdMappings[self.currentCell.row]
+					: self.currentCell.row;
+
+				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, self.currentEditCellValue)
 					.then(
 						result => {
 							// Cell update was successful, update the flags
@@ -252,6 +258,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 						result => {
 							// Committing was successful, clean the grid
 							self.setGridClean();
+							self.rowIdMappings = {};
 							return Promise.resolve();
 						},
 						error => {
@@ -458,27 +465,34 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	// Adds an extra row to the end of slickgrid (just for rendering purposes)
 	// Then sets the focused call afterwards
 	private addRow(row: number, column: number): void {
+		let self = this;
+
 		// Add a new row to the edit session in the tools service
-		this.dataService.createRow();
+		this.dataService.createRow()
+			.then(result => {
+				// Map the new row ID to the row ID we have
+				self.rowIdMappings[row] = result.newRowId;
 
-		// Adding an extra row for 'new row' functionality
-		this.dataSet.totalRows++;
-		this.dataSet.maxHeight = this.getMaxHeight(this.dataSet.totalRows);
-		this.dataSet.minHeight = this.getMinHeight(this.dataSet.totalRows);
-		this.dataSet.dataRows = new VirtualizedCollection(
-			this.windowSize,
-			this.dataSet.totalRows,
-			this.loadDataFunction,
-			index => { return { values: [] }; }
-		);
+				// Add a new "new row" to the end of the results
+				// Adding an extra row for 'new row' functionality
+				self.dataSet.totalRows++;
+				self.dataSet.maxHeight = self.getMaxHeight(this.dataSet.totalRows);
+				self.dataSet.minHeight = self.getMinHeight(this.dataSet.totalRows);
+				self.dataSet.dataRows = new VirtualizedCollection(
+					self.windowSize,
+					self.dataSet.totalRows,
+					self.loadDataFunction,
+					index => { return { values: [] }; }
+				);
 
-		// Refresh grid
-		this.onScroll(0);
+				// Refresh grid
+				self.onScroll(0);
 
-		// Mark the row as dirty once the scroll has completed
-		setTimeout(() => {
-			this.setRowDirtyState(row, true);
-		}, this.scrollTimeOutTime);
+				// Mark the row as dirty once the scroll has completed
+				setTimeout(() => {
+					self.setRowDirtyState(row, true);
+				}, self.scrollTimeOutTime);
+			});
 	}
 
 	// removes a row from the end of slickgrid (just for rendering purposes)
