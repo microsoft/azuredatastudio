@@ -2,20 +2,23 @@
 
 SQL Operations Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download SQL Operations Studio Public Preview 1**
+**Download SQL Operations Studio December Public Preview**
 
 Platform | Link
 -- | --
-Windows | https://go.microsoft.com/fwlink/?linkid=862648
-macOS | https://go.microsoft.com/fwlink/?linkid=862647
-Linux | https://go.microsoft.com/fwlink/?linkid=862646
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=865304
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=865305
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=865306
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=865307
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=865308
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=865309
 
 Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instructions.
 
 **Feature Highlights**
 
 - Cross-Platform DB management for Windows, macOS and Linux with simple XCopy deployment
-- SQL Server Connection Management with Connection Dialog, Server Groups, and Registered Servers
+- SQL Server Connection Management with Connection Dialog, Server Groups, Azure Integration and Registered Servers
 - Object Explorer supporting schema browsing and contextual command execution
 - T-SQL Query Editor with advanced coding features such as autosuggestions, error diagnostics, tooltips, formatting and peek definition
 - Query Results Viewer with advanced data grid supporting large result sets, export to JSON\CSV\Excel, query plan and charting
@@ -23,7 +26,7 @@ Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instruc
 - Visual Data Editor that enables direct row insertion, update and deletion into tables
 - Backup and Restore dialogs that enables advanced customization and remote filesystem browsing, configured tasks can be executed or scripted
 - Task History window to view current task execution status, completion results with error messages and task T-SQL scripting
-- Scripting support to generate CREATE, SELECT and DROP statements for database objects
+- Scripting support to generate CREATE, SELECT, ALTER and DROP statements for database objects
 - Workspaces with full Git integration and Find In Files support to managing T-SQL script libraries
 - Modern light-weight shell with theming, user settings, full screen support, integrated terminal and numerous other features
 
