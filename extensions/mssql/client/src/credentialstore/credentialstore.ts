@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
 *  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
+*  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -8,6 +8,7 @@ import * as Contracts from '../models/contracts';
 import { ICredentialStore } from './icredentialstore';
 import { SqlToolsServiceClient, Utils } from 'extensions-modules';
 import { LanguageClient } from 'dataprotocol-client';
+import * as path from 'path';
 
 /**
  * Implements a credential storage for Windows, Mac (darwin), or Linux.
@@ -20,7 +21,7 @@ export class CredentialStore implements ICredentialStore {
 
     constructor(private _client?: SqlToolsServiceClient) {
         if (!this._client) {
-            this._client = SqlToolsServiceClient.instance;
+            this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
         }
     }
 

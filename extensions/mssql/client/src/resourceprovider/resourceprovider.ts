@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
 *  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
+*  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -8,6 +8,7 @@ import * as Contracts from '../models/contracts';
 import { SqlToolsServiceClient } from 'extensions-modules';
 import { LanguageClient } from 'dataprotocol-client';
 import * as data from 'data';
+import * as path from 'path';
 
 
 /**
@@ -21,7 +22,7 @@ export class AzureResourceProvider implements data.ResourceProvider {
 
     constructor(private _client?: SqlToolsServiceClient, langClient?: LanguageClient) {
         if (!this._client) {
-            this._client = SqlToolsServiceClient.instance;
+            this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
         }
         this.languageClient = langClient;
     }

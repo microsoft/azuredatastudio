@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 import vscode = require('vscode');
 import TelemetryReporter from 'vscode-extension-telemetry';
-import Utils = require('./utils');
+import { Utils } from './utils';
 import { PlatformInformation, Runtime, LinuxDistribution } from './platform';
 import { IExtensionConstants } from './contracts/contracts';
 
@@ -157,5 +157,3 @@ export class Telemetry {
 		});
 	}
 }
-
-export default Telemetry;

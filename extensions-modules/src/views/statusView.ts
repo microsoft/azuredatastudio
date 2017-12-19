@@ -1,5 +1,9 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 import vscode = require('vscode');
-import * as Utils from '../models/utils';
+import { Utils } from '../models/utils';
 
 // Status bar element for each file in the editor
 class FileStatusBar {

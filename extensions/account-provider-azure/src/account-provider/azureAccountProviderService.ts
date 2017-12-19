@@ -1,20 +1,22 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
+import * as constants from '../constants';
 import * as data from 'data';
 import * as events from 'events';
+import * as nls from 'vscode-nls';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import CredentialServiceTokenCache from './tokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider } from './azureAccountProvider';
 import { AzureAccountProviderMetadata, ProviderSettings } from './interfaces';
-import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
+
+let localize = nls.loadMessageBundle();
 
 export class AzureAccountProviderService implements vscode.Disposable {
 	// CONSTANTS ///////////////////////////////////////////////////////////////
@@ -77,11 +79,11 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			.then(
 				() => {
 					let message = localize('clearTokenCacheSuccess', 'Token cache successfully cleared');
-					vscode.window.showInformationMessage(`mssql: ${message}`);
+					vscode.window.showInformationMessage(`${constants.extensionName}: ${message}`);
 				},
 				err => {
 					let message = localize('clearTokenCacheFailure', 'Failed to clear token cache');
-					vscode.window.showErrorMessage(`mssql: ${message}: ${err}`);
+					vscode.window.showErrorMessage(`${constants.extensionName}: ${message}: ${err}`);
 				});
 	}
 

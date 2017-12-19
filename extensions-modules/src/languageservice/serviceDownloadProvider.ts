@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -9,11 +9,11 @@ import { Runtime, getRuntimeDisplayName } from '../models/platform';
 import * as path from 'path';
 import { IConfig, IStatusView, IPackage, PackageError, IHttpClient, IDecompressProvider } from './interfaces';
 import { ILogger } from '../models/interfaces';
-import Constants = require('../models/constants');
+import { Constants } from '../models/constants';
 import * as tmp from 'tmp';
-import {IExtensionConstants} from '../models/contracts/contracts';
+import { IExtensionConstants } from '../models/contracts/contracts';
 
-let fse = require('fs-extra');
+const fse = require('fs-extra');
 
 /*
 * Service Download Provider class which handles downloading the SQL Tools service.

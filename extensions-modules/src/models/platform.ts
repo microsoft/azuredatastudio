@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -134,7 +134,7 @@ export class PlatformInformation {
             case 'darwin':
                 let osVersion = os.release();
                 if (parseFloat(osVersion) < 16.0 && extensionName === 'mssql') {
-                    return Promise.reject('The current version of macOS is not supported. Only macOS Sierra and above (>= 10.12) are supported.')
+                    return Promise.reject('The current version of macOS is not supported. Only macOS Sierra and above (>= 10.12) are supported.');
                 }
                 architecturePromise = PlatformInformation.getUnixArchitecture();
                 distributionPromise = Promise.resolve(undefined);
@@ -234,61 +234,6 @@ export class PlatformInformation {
                 resolve(stdout);
             });
         });
-    }
-
-    private static getRuntimeIdHelper(distributionName: string, distributionVersion: string): Runtime {
-        switch (distributionName) {
-            case 'ubuntu':
-                if (distributionVersion.startsWith('14')) {
-                    // This also works for Linux Mint
-                    return Runtime.Ubuntu_14;
-                } else if (distributionVersion.startsWith('16')) {
-                    return Runtime.Ubuntu_16;
-                }
-
-                break;
-            case 'elementary':
-            case 'elementary OS':
-                if (distributionVersion.startsWith('0.3')) {
-                    // Elementary OS 0.3 Freya is binary compatible with Ubuntu 14.04
-                    return Runtime.Ubuntu_14;
-                } else if (distributionVersion.startsWith('0.4')) {
-                    // Elementary OS 0.4 Loki is binary compatible with Ubuntu 16.04
-                    return Runtime.Ubuntu_16;
-                }
-
-                break;
-            case 'linuxmint':
-                if (distributionVersion.startsWith('18')) {
-                    // Linux Mint 18 is binary compatible with Ubuntu 16.04
-                    return Runtime.Ubuntu_16;
-                }
-
-                break;
-            case 'centos':
-            case 'ol':
-                // Oracle Linux is binary compatible with CentOS
-                return Runtime.CentOS_7;
-            case 'fedora':
-                return Runtime.Fedora_23;
-            case 'opensuse':
-                return Runtime.OpenSUSE_13_2;
-            case 'sles':
-                return Runtime.SLES_12_2;
-            case 'rhel':
-                return Runtime.RHEL_7;
-            case 'debian':
-                return Runtime.Debian_8;
-            case 'galliumos':
-                if (distributionVersion.startsWith('2.0')) {
-                    return Runtime.Ubuntu_16;
-                }
-                break;
-            default:
-                return Runtime.Linux_64;
-        }
-
-        return Runtime.Linux_64;
     }
 }
 

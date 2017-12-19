@@ -620,8 +620,8 @@ gulp.task('generate-vscode-configuration', () => {
 // {{SQL CARBON EDIT}}
 // Install service locally before building carbon
 
-function installService(extObj) {
-	var installer = new serviceInstaller.ServiceInstaller(extObj, true);
+function installService(extObj, path) {
+	var installer = new serviceInstaller.ServiceInstaller(extObj, path);
 	installer.getServiceInstallDirectoryRoot().then(serviceInstallFolder => {
 			console.log('Cleaning up the install folder: ' + serviceInstallFolder);
 			del(serviceInstallFolder + '/*').then(() => {
@@ -639,7 +639,8 @@ function installService(extObj) {
 gulp.task('install-sqltoolsservice', () => {
 	var mssqlExt = require('../extensions/mssql/client/out/models/constants');
 	var extObj = new mssqlExt.Constants();
-    return installService(extObj);
+	var path = '../extensions/mssql/client/out/config.json';
+    return installService(extObj, path);
 });
 
 

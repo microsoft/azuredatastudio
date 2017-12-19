@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the Source EULA. See License.txt in the project root for license information.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 'use strict';
 
@@ -9,30 +9,26 @@ import { LanguageClient, LanguageClientOptions, ServerOptions,
     TransportKind, RequestType, NotificationType, NotificationHandler,
     ErrorAction, CloseAction } from 'dataprotocol-client';
 
-import VscodeWrapper from '../controllers/vscodeWrapper';
-import Telemetry from '../models/telemetry';
-import * as Utils from '../models/utils';
-import {VersionRequest, IExtensionConstants} from '../models/contracts/contracts';
-import {Logger} from '../models/logger';
-import Constants = require('../models/constants');
-import {ILanguageClientHelper} from '../models/contracts/languageService';
+import { VscodeWrapper } from '../controllers/vscodeWrapper';
+import { Telemetry } from '../models/telemetry';
+import { Utils } from '../models/utils';
+import { VersionRequest, IExtensionConstants } from '../models/contracts/contracts';
+import { Logger } from '../models/logger';
 import ServerProvider from './server';
 import ServiceDownloadProvider from './serviceDownloadProvider';
 import DecompressProvider from './decompressProvider';
 import HttpClient from './httpClient';
 import ExtConfig from  '../configurations/extConfig';
-import {PlatformInformation, Runtime} from '../models/platform';
-import {ServerInitializationResult, ServerStatusView} from './serverStatus';
+import { PlatformInformation, Runtime } from '../models/platform';
+import { ServerInitializationResult, ServerStatusView } from './serverStatus';
 import StatusView from '../views/statusView';
 import * as LanguageServiceContracts from '../models/contracts/languageService';
-import * as SharedConstants from '../models/constants';
-import * as utils from '../models/utils';
-var path = require('path');
+import { Constants } from '../models/constants';
 import ServiceStatus from './serviceStatus';
 
-let opener = require('opener');
+const opener = require('opener');
+const path = require('path');
 let _channel: OutputChannel = undefined;
-const fs = require('fs-extra');
 
 /**
  * @interface IMessage
@@ -69,8 +65,8 @@ class LanguageClientErrorHandler {
         Telemetry.sendTelemetryEvent(extensionConstants.serviceName + 'Crash');
         this.vscodeWrapper.showErrorMessage(
           extensionConstants.serviceCrashMessage,
-          SharedConstants.serviceCrashButton).then(action => {
-            if (action && action === SharedConstants.serviceCrashButton) {
+          Constants.serviceCrashButton).then(action => {
+            if (action && action === Constants.serviceCrashButton) {
                 opener(extensionConstants.serviceCrashLink);
             }
         });
@@ -111,7 +107,7 @@ class LanguageClientErrorHandler {
 }
 
 // The Service Client class handles communication with the VS Code LanguageClient
-export default class SqlToolsServiceClient {
+export class SqlToolsServiceClient {
     // singleton instance
     private static _instance: SqlToolsServiceClient = undefined;
 
@@ -126,13 +122,13 @@ export default class SqlToolsServiceClient {
         Telemetry.getRuntimeId = this._constants.getRuntimeId;
     }
 
-    private static _helper: ILanguageClientHelper = undefined;
+    private static _helper: LanguageServiceContracts.ILanguageClientHelper = undefined;
 
-    public static get helper(): ILanguageClientHelper {
+    public static get helper(): LanguageServiceContracts.ILanguageClientHelper {
         return this._helper;
     }
 
-    public static set helper(helperObject: ILanguageClientHelper) {
+    public static set helper(helperObject: LanguageServiceContracts.ILanguageClientHelper) {
         this._helper = helperObject;
     }
 
@@ -170,10 +166,10 @@ export default class SqlToolsServiceClient {
     }
 
     // gets or creates the singleton service client instance
-    public static get instance(): SqlToolsServiceClient {
+    public static getInstance(path: string): SqlToolsServiceClient {
         if (this._instance === undefined) {
             let constants = this._constants;
-            let config = new ExtConfig(constants.extensionConfigSectionName);
+            let config = new ExtConfig(constants.extensionConfigSectionName, undefined, path);
             _channel = window.createOutputChannel(constants.serviceInitializingOutputChannelName);
             let logger = new Logger(text => _channel.append(text), constants);
             let serverStatusView = new ServerStatusView(constants);
@@ -196,7 +192,7 @@ export default class SqlToolsServiceClient {
          return PlatformInformation.getCurrent(SqlToolsServiceClient._constants.getRuntimeId, SqlToolsServiceClient._constants.extensionName).then(platformInfo => {
             return this.initializeForPlatform(platformInfo, context);
          }).catch(err => {
-            this._vscodeWrapper.showErrorMessage(err)
+            this._vscodeWrapper.showErrorMessage(err);
          });
     }
 
@@ -321,7 +317,7 @@ export default class SqlToolsServiceClient {
          }
     }
 
-    public createClient(context: ExtensionContext, runtimeId: Runtime, languageClientHelper: ILanguageClientHelper, executableFiles: string[]): Promise<LanguageClient> {
+    public createClient(context: ExtensionContext, runtimeId: Runtime, languageClientHelper: LanguageServiceContracts.ILanguageClientHelper, executableFiles: string[]): Promise<LanguageClient> {
         return new Promise<LanguageClient>( (resolve, reject) => {
             let client: LanguageClient;
             this._server.findServerPath(this.installDirectory, executableFiles).then(serverPath => {
@@ -383,7 +379,7 @@ export default class SqlToolsServiceClient {
             }
         }
         serverArgs.push('--log-dir');
-        let logFileLocation = path.join(utils.getDefaultLogLocation(), SqlToolsServiceClient.constants.extensionName);
+        let logFileLocation = path.join(Utils.getDefaultLogLocation(), SqlToolsServiceClient.constants.extensionName);
         serverArgs.push(logFileLocation);
 
         // run the service host using dotnet.exe from the path

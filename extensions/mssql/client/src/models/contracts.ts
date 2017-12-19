@@ -1,10 +1,10 @@
 /*---------------------------------------------------------------------------------------------
 *  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
+*  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import {RequestType} from 'dataprotocol-client';
+import { RequestType } from 'dataprotocol-client';
 import * as data from 'data';
 
 // DEV-NOTE: Still finalizing what we'll need as part of this interface
@@ -16,8 +16,6 @@ import * as data from 'data';
  * @param {boolean} appendToFile Whether we should append or overwrite the file in savePath
 */
 export class SaveResultsInfo {
-
-
     constructor(public saveFormat: string, public savePath: string, public results: string,
                 public appendToFile: boolean) {
     }
@@ -101,4 +99,3 @@ export interface HandleFirewallRuleResponse {
 	result: boolean;
 	ipAddress: string;
 }
-

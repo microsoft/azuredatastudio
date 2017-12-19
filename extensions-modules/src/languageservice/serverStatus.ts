@@ -1,14 +1,14 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
-import {IStatusView} from './interfaces';
+import { IStatusView } from './interfaces';
 import vscode = require('vscode');
-import {IExtensionConstants} from '../models/contracts/contracts';
-import * as Constants from '../models/constants';
+import { IExtensionConstants } from '../models/contracts/contracts';
+import { Constants } from '../models/constants';
 
 /*
 * The status class which includes the service initialization result.

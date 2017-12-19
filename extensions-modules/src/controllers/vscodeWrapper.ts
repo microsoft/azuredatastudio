@@ -1,14 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import vscode = require('vscode');
-import {IExtensionConstants} from '../models/contracts/contracts';
+import { IExtensionConstants } from '../models/contracts/contracts';
 
-export import TextEditor = vscode.TextEditor;
-
-export default class VscodeWrapper {
+export class VscodeWrapper {
     private _extensionConstants: IExtensionConstants;
     /**
      * Output channel for logging. Shared among all instances.

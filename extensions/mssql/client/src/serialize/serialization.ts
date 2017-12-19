@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
 *  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
+*  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -9,6 +9,7 @@ import { ISerialization } from './iserialization';
 import { SqlToolsServiceClient } from 'extensions-modules';
 import * as data from 'data';
 import { LanguageClient } from 'dataprotocol-client';
+import * as path from 'path';
 
 /**
  * Implements serializer for query results
@@ -17,7 +18,7 @@ export class Serialization implements ISerialization {
 
     constructor(private _client?: SqlToolsServiceClient, private _languageClient?: LanguageClient) {
         if (!this._client) {
-            this._client = SqlToolsServiceClient.instance;
+            this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
         }
     }
 
