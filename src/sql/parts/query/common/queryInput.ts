@@ -252,4 +252,8 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		this._currentEventCallbacks = dispose(this._currentEventCallbacks);
 		this._currentEventCallbacks = callbacks;
 	}
+
+	public get tabColor(): string {
+		return this._connectionManagementService.getGroupColorForUri(this.uri);
+	}
 }

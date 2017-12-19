@@ -1324,4 +1324,16 @@ export class ConnectionManagementService implements IConnectionManagementService
 		}
 		return Promise.reject('The given URI is not currently connected');
 	}
+
+	public getGroupColorForUri(uri: string): string {
+		let connectionProfile = this.getConnectionProfile(uri);
+		if (!connectionProfile) {
+			return undefined;
+		}
+		let matchingGroup = this._connectionStore.getGroupFromId(connectionProfile.groupId);
+		if (!matchingGroup) {
+			return undefined;
+		}
+		return matchingGroup.color;
+	}
 }

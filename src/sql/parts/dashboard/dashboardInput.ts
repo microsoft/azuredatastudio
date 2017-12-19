@@ -167,4 +167,8 @@ export class DashboardInput extends EditorInput {
 			&& profile1.authenticationType === profile2.authenticationType
 			&& profile1.groupFullName === profile2.groupFullName;
 	}
+
+	public get tabColor(): string {
+		return this._connectionService.getGroupColorForUri(this.uri);
+	}
 }

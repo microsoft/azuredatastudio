@@ -462,6 +462,20 @@ export class ConnectionStore {
 		return connectionProfileGroups;
 	}
 
+	public getGroupFromId(groupId: string): ConnectionProfileGroup {
+		let groups = new Set<ConnectionProfileGroup>();
+		this.getConnectionProfileGroups().forEach(group => groups.add(group));
+		while (groups.size > 0) {
+			let currentGroup = groups.values().next().value;
+			if (currentGroup.id === groupId) {
+				return currentGroup;
+			}
+			currentGroup.children.forEach(group => groups.add(group));
+			groups.delete(currentGroup);
+		}
+		return undefined;
+	}
+
 	private convertToConnectionGroup(groups: IConnectionProfileGroup[], connections: ConnectionProfile[], parent: ConnectionProfileGroup = undefined): ConnectionProfileGroup[] {
 		let result: ConnectionProfileGroup[] = [];
 		let children = groups.filter(g => g.parentId === (parent ? parent.id : undefined));

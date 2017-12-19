@@ -330,6 +330,15 @@ export class TabsTitleControl extends TitleControl {
 				} else {
 					DOM.removeClass(tabContainer, 'dirty');
 				}
+
+				let anyEditor = editor as any;
+				if (anyEditor.tabColor) {
+					tabContainer.style.borderTopColor = anyEditor.tabColor;
+					tabContainer.style.borderTopWidth = isTabActive ? '2px' : '1px';
+				} else {
+					tabContainer.style.borderTopColor = '';
+					tabContainer.style.borderTopWidth = '';
+				}
 			}
 		});
 
