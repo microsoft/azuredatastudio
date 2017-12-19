@@ -6,8 +6,8 @@ SQL Operations Studio is a data management tool that enables you to work with SQ
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=865304
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=865305
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=865305
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=865304
 macOS ZIP | https://go.microsoft.com/fwlink/?linkid=865306
 Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=865307
 Linux DEB | https://go.microsoft.com/fwlink/?linkid=865308
