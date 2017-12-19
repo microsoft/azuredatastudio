@@ -169,12 +169,16 @@ export class CodeWindow implements ICodeWindow {
 		}
 
 		let useCustomTitleStyle = false;
-		if (isMacintosh && (!windowConfig || !windowConfig.titleBarStyle || windowConfig.titleBarStyle === 'custom')) {
-			const isDev = !this.environmentService.isBuilt || !!config.extensionDevelopmentPath;
-			if (!isDev) {
-				useCustomTitleStyle = true; // not enabled when developing due to https://github.com/electron/electron/issues/3647
-			}
-		}
+
+		// {{SQL CARBON EDIT}}
+		// turn-off custom menus to avoid bug calculating size of SQL editor
+		//
+		// if (isMacintosh && (!windowConfig || !windowConfig.titleBarStyle || windowConfig.titleBarStyle === 'custom')) {
+		// 	const isDev = !this.environmentService.isBuilt || !!config.extensionDevelopmentPath;
+		// 	if (!isDev) {
+		// 		useCustomTitleStyle = true; // not enabled when developing due to https://github.com/electron/electron/issues/3647
+		// 	}
+		// }
 
 		if (useNativeTabs) {
 			useCustomTitleStyle = false; // native tabs on sierra do not work with custom title style

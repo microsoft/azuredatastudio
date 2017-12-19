@@ -833,6 +833,8 @@ export class Workbench implements IPartService {
 	}
 
 	private getCustomTitleBarStyle(): 'custom' {
+		// {{SQL CARBON EDIT}}
+		/*
 		if (!isMacintosh) {
 			return null; // custom title bar is only supported on Mac currently
 		}
@@ -854,6 +856,7 @@ export class Workbench implements IPartService {
 				return style;
 			}
 		}
+		*/
 
 		return null;
 	}
