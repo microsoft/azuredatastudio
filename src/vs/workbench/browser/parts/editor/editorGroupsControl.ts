@@ -89,6 +89,8 @@ export interface IEditorGroupsControl {
 
 
 	dispose(): void;
+
+	refreshTitles(): void;
 }
 
 /**
@@ -2124,6 +2126,13 @@ export class EditorGroupsControl extends Themable implements IEditorGroupsContro
 				progressbar.stop().getContainer().hide();
 				break;
 		}
+	}
+
+	public refreshTitles(): void {
+		POSITIONS.forEach(position => {
+			let titleControl = this.getTitleAreaControl(position);
+			titleControl.refresh();
+		});
 	}
 
 	public dispose(): void {
