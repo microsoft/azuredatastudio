@@ -13,5 +13,5 @@ import * as data from 'data';
  * @interface ISerialization
  */
 export interface ISerialization {
-    saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Promise<data.SaveResultRequestResult>;
+	saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Promise<data.SaveResultRequestResult>;
 }

@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext): void {
 			fs.mkdirSync(storagePath);
 			console.log('Initialized Azure account extension storage.');
 		}
-	} catch(e) {
+	} catch (e) {
 		console.error(`Initialization of Azure account extension storage failed: ${e}`);
 		console.error('Azure accounts will not be available');
 		return;

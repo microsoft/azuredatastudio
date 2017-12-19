@@ -77,14 +77,14 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 		return Promise.all(promises)
 			.then(
-				() => {
-					let message = localize('clearTokenCacheSuccess', 'Token cache successfully cleared');
-					vscode.window.showInformationMessage(`${constants.extensionName}: ${message}`);
-				},
-				err => {
-					let message = localize('clearTokenCacheFailure', 'Failed to clear token cache');
-					vscode.window.showErrorMessage(`${constants.extensionName}: ${message}: ${err}`);
-				});
+			() => {
+				let message = localize('clearTokenCacheSuccess', 'Token cache successfully cleared');
+				vscode.window.showInformationMessage(`${constants.extensionName}: ${message}`);
+			},
+			err => {
+				let message = localize('clearTokenCacheFailure', 'Failed to clear token cache');
+				vscode.window.showErrorMessage(`${constants.extensionName}: ${message}: ${err}`);
+			});
 	}
 
 	private onDidChangeConfiguration(): void {
@@ -99,7 +99,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			// Determine what providers need to be changed
 			let providerChanges: Thenable<void>[] = [];
-			for(let provider of providerSettings) {
+			for (let provider of providerSettings) {
 				// If the old config doesn't exist, then assume everything was disabled
 				// There will always be a new config value
 				let oldConfigValue = oldConfig
@@ -140,7 +140,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				self._accountProviders[provider.metadata.id] = accountProvider;
 				self._accountDisposals[provider.metadata.id] = data.accounts.registerAccountProvider(provider.metadata, accountProvider);
 				resolve();
-			} catch(e) {
+			} catch (e) {
 				console.error(`Failed to register account provider: ${e}`);
 				reject(e);
 			}
@@ -156,7 +156,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				delete self._accountProviders[provider.metadata.id];
 				delete self._accountDisposals[provider.metadata.id];
 				resolve();
-			} catch(e) {
+			} catch (e) {
 				console.error(`Failed to unregister account provider: ${e}`);
 				reject(e);
 			}

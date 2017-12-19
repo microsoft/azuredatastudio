@@ -16,35 +16,35 @@ import * as data from 'data';
  * @param {boolean} appendToFile Whether we should append or overwrite the file in savePath
 */
 export class SaveResultsInfo {
-    constructor(public saveFormat: string, public savePath: string, public results: string,
-                public appendToFile: boolean) {
-    }
+	constructor(public saveFormat: string, public savePath: string, public results: string,
+		public appendToFile: boolean) {
+	}
 }
 
 export namespace SaveAsRequest {
-    export const type: RequestType<SaveResultsInfo, data.SaveResultRequestResult, void> = { get method(): string { return 'query/saveAs'; } };
+	export const type: RequestType<SaveResultsInfo, data.SaveResultRequestResult, void> = { get method(): string { return 'query/saveAs'; } };
 }
 
 // --------------------------------- < Read Credential Request > -------------------------------------------------
 
 // Read Credential request message callback declaration
 export namespace ReadCredentialRequest {
-    export const type: RequestType<Credential, Credential, void> = { get method(): string { return 'credential/read'; } };
+	export const type: RequestType<Credential, Credential, void> = { get method(): string { return 'credential/read'; } };
 }
 
 /**
  * Parameters to initialize a connection to a database
  */
 export class Credential {
-    /**
-     * Unique ID identifying the credential
-     */
-    public credentialId: string;
+	/**
+	 * Unique ID identifying the credential
+	 */
+	public credentialId: string;
 
-    /**
-     * password
-     */
-    public password: string;
+	/**
+	 * password
+	 */
+	public password: string;
 }
 
 // --------------------------------- </ Read Credential Request > -------------------------------------------------
@@ -53,7 +53,7 @@ export class Credential {
 
 // Save Credential request message callback declaration
 export namespace SaveCredentialRequest {
-    export const type: RequestType<Credential, boolean, void> = { get method(): string { return 'credential/save'; } };
+	export const type: RequestType<Credential, boolean, void> = { get method(): string { return 'credential/save'; } };
 }
 // --------------------------------- </ Save Credential Request > -------------------------------------------------
 
@@ -62,7 +62,7 @@ export namespace SaveCredentialRequest {
 
 // Delete Credential request message callback declaration
 export namespace DeleteCredentialRequest {
-    export const type: RequestType<Credential, boolean, void> = { get method(): string { return 'credential/delete'; } };
+	export const type: RequestType<Credential, boolean, void> = { get method(): string { return 'credential/delete'; } };
 }
 // --------------------------------- </ Delete Credential Request > -------------------------------------------------
 

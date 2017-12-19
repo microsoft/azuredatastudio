@@ -32,6 +32,7 @@ const publicAzureSettings: ProviderSettings = {
 	}
 };
 
+/* Leaving for reference
 const usGovAzureSettings: ProviderSettings = {
 	configKey: 'enableUsGovCloud',
 	metadata: {
@@ -97,6 +98,7 @@ const germanyAzureSettings: ProviderSettings = {
 		}
 	}
 };
+*/
 
 // TODO: Enable China, Germany, and US Gov clouds: (#3031)
 export default <ProviderSettings[]>[publicAzureSettings, /*chinaAzureSettings, germanyAzureSettings, usGovAzureSettings*/];

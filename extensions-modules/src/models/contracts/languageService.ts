@@ -12,18 +12,18 @@ import { Runtime } from '../platform';
  * Event sent when the language service send a telemetry event
  */
 export namespace TelemetryNotification {
-    export const type: NotificationType<TelemetryParams> = { get method(): string { return 'telemetry/sqlevent'; } };
+	export const type: NotificationType<TelemetryParams> = { get method(): string { return 'telemetry/sqlevent'; } };
 }
 
 /**
  * Update event parameters
  */
 export class TelemetryParams {
-    public params: {
-        eventName: string;
-        properties: ITelemetryEventProperties;
-        measures: ITelemetryEventMeasures;
-    };
+	public params: {
+		eventName: string;
+		properties: ITelemetryEventProperties;
+		measures: ITelemetryEventMeasures;
+	};
 }
 
 // ------------------------------- </ Telemetry Sent Event > ----------------------------------
@@ -34,26 +34,26 @@ export class TelemetryParams {
  * Event sent when the language service send a status change event
  */
 export namespace StatusChangedNotification {
-    export const type: NotificationType<StatusChangeParams> = { get method(): string { return 'textDocument/statusChanged'; } };
+	export const type: NotificationType<StatusChangeParams> = { get method(): string { return 'textDocument/statusChanged'; } };
 }
 
 /**
  * Update event parameters
  */
 export class StatusChangeParams {
-    /**
-     * URI identifying the text document
-     */
-    public ownerUri: string;
+	/**
+	 * URI identifying the text document
+	 */
+	public ownerUri: string;
 
-    /**
-     * The new status of the document
-     */
-    public status: string;
+	/**
+	 * The new status of the document
+	 */
+	public status: string;
 }
 
 // ------------------------------- </ Status Sent Event > ----------------------------------
 
 export interface ILanguageClientHelper {
-    createServerOptions(servicePath: string, runtimeId?: Runtime): ServerOptions;
+	createServerOptions(servicePath: string, runtimeId?: Runtime): ServerOptions;
 }

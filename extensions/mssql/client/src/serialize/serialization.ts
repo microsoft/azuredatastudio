@@ -16,27 +16,27 @@ import * as path from 'path';
  */
 export class Serialization implements ISerialization {
 
-    constructor(private _client?: SqlToolsServiceClient, private _languageClient?: LanguageClient) {
-        if (!this._client) {
-            this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
-        }
-    }
+	constructor(private _client?: SqlToolsServiceClient, private _languageClient?: LanguageClient) {
+		if (!this._client) {
+			this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
+		}
+	}
 
-    /**
-     * Saves results as a specified path
-     *
-     * @param {string} credentialId the ID uniquely identifying this credential
-     * @returns {Promise<ISaveResultsInfo>} Promise that resolved to the credential, or undefined if not found
-     */
-    public saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Promise<data.SaveResultRequestResult> {
-        let self = this;
-        let resultsInfo: Contracts.SaveResultsInfo  = new Contracts.SaveResultsInfo(saveFormat, savePath, results, appendToFile);
-        return new Promise<data.SaveResultRequestResult>( (resolve, reject) => {
-            self._client
-            .sendRequest(Contracts.SaveAsRequest.type, resultsInfo, this._languageClient)
-            .then(result => {
-                resolve(<data.SaveResultRequestResult>result);
-            }, err => reject(err));
-        });
-    }
+	/**
+	 * Saves results as a specified path
+	 *
+	 * @param {string} credentialId the ID uniquely identifying this credential
+	 * @returns {Promise<ISaveResultsInfo>} Promise that resolved to the credential, or undefined if not found
+	 */
+	public saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Promise<data.SaveResultRequestResult> {
+		let self = this;
+		let resultsInfo: Contracts.SaveResultsInfo = new Contracts.SaveResultsInfo(saveFormat, savePath, results, appendToFile);
+		return new Promise<data.SaveResultRequestResult>((resolve, reject) => {
+			self._client
+				.sendRequest(Contracts.SaveAsRequest.type, resultsInfo, this._languageClient)
+				.then(result => {
+					resolve(<data.SaveResultRequestResult>result);
+				}, err => reject(err));
+		});
+	}
 }

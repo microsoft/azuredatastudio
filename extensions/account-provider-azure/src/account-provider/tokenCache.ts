@@ -34,8 +34,8 @@ export default class TokenCache implements adal.TokenCache {
 				.then(cache => self.addToCache(cache, entries))
 				.then(updatedCache => self.writeCache(updatedCache))
 				.then(
-					() => callback(null, false),
-					(err) => callback(err, true)
+				() => callback(null, false),
+				(err) => callback(err, true)
 				);
 		});
 	}
@@ -55,8 +55,8 @@ export default class TokenCache implements adal.TokenCache {
 				}
 			});
 		})
-		.then(() => { return self._credentialProvider.deleteCredential(self._credentialServiceKey); })
-		.then(() => {});
+			.then(() => { return self._credentialProvider.deleteCredential(self._credentialServiceKey); })
+			.then(() => { });
 	}
 
 	public find(query: any, callback: (error: Error, results: any[]) => void): void {
@@ -70,8 +70,8 @@ export default class TokenCache implements adal.TokenCache {
 					);
 				})
 				.then(
-					results => callback(null, results),
-					(err) => callback(err, null)
+				results => callback(null, results),
+				(err) => callback(err, null)
 				);
 		});
 	}
@@ -104,8 +104,8 @@ export default class TokenCache implements adal.TokenCache {
 				.then(cache => self.removeFromCache(cache, entries))
 				.then(updatedCache => self.writeCache(updatedCache))
 				.then(
-					() => callback(null, null),
-					(err) => callback(err, null)
+				() => callback(null, null),
+				(err) => callback(err, null)
 				);
 		});
 	}
@@ -189,7 +189,7 @@ export default class TokenCache implements adal.TokenCache {
 								key: new Buffer(splitValues[0], 'hex'),
 								initializationVector: new Buffer(splitValues[1], 'hex')
 							};
-						} catch(e) {
+						} catch (e) {
 							// Swallow the error and fall through to generate new params
 							console.warn('Failed to deserialize encryption params, new ones will be generated.');
 						}
@@ -204,7 +204,7 @@ export default class TokenCache implements adal.TokenCache {
 				let serializedValues = `${encryptKey.toString('hex')}|${initializationVector.toString('hex')}`;
 				return self._credentialProvider.saveCredential(self._credentialServiceKey, serializedValues)
 					.then(() => {
-						return <EncryptionParams> {
+						return <EncryptionParams>{
 							key: encryptKey,
 							initializationVector: initializationVector
 						};
@@ -237,7 +237,7 @@ export default class TokenCache implements adal.TokenCache {
 					}
 
 					return cacheObj;
-				} catch(e) {
+				} catch (e) {
 					throw e;
 				}
 			})

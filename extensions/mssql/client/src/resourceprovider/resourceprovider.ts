@@ -18,47 +18,47 @@ import * as path from 'path';
  */
 export class AzureResourceProvider implements data.ResourceProvider {
 
-    public languageClient: LanguageClient;
+	public languageClient: LanguageClient;
 
-    constructor(private _client?: SqlToolsServiceClient, langClient?: LanguageClient) {
-        if (!this._client) {
-            this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
-        }
-        this.languageClient = langClient;
-    }
+	constructor(private _client?: SqlToolsServiceClient, langClient?: LanguageClient) {
+		if (!this._client) {
+			this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
+		}
+		this.languageClient = langClient;
+	}
 
-    public createFirewallRule(account: data.Account, firewallruleInfo: data.FirewallRuleInfo): Thenable<data.CreateFirewallRuleResponse> {
-        let self = this;
-        return new Promise<data.CreateFirewallRuleResponse>((resolve, reject) => {
-            self._client.
-            sendRequest(Contracts.CreateFirewallRuleRequest.type, self.asCreateFirewallRuleParams(account, firewallruleInfo), self.languageClient)
-            .then(response => {
-                resolve(response);
-            }, err => reject(err));
-        });
-    }
+	public createFirewallRule(account: data.Account, firewallruleInfo: data.FirewallRuleInfo): Thenable<data.CreateFirewallRuleResponse> {
+		let self = this;
+		return new Promise<data.CreateFirewallRuleResponse>((resolve, reject) => {
+			self._client.
+				sendRequest(Contracts.CreateFirewallRuleRequest.type, self.asCreateFirewallRuleParams(account, firewallruleInfo), self.languageClient)
+				.then(response => {
+					resolve(response);
+				}, err => reject(err));
+		});
+	}
 
-    public handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<data.HandleFirewallRuleResponse> {
-        let self = this;
-        return new Promise<data.HandleFirewallRuleResponse>((resolve, reject) => {
-            let params: Contracts.HandleFirewallRuleParams = { errorCode: errorCode, errorMessage: errorMessage, connectionTypeId: connectionTypeId };
+	public handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<data.HandleFirewallRuleResponse> {
+		let self = this;
+		return new Promise<data.HandleFirewallRuleResponse>((resolve, reject) => {
+			let params: Contracts.HandleFirewallRuleParams = { errorCode: errorCode, errorMessage: errorMessage, connectionTypeId: connectionTypeId };
 
-            self._client.
-            sendRequest(Contracts.HandleFirewallRuleRequest.type, params, self.languageClient)
-            .then(response => {
-                resolve(response);
-            }, err => reject(err));
-        });
-    }
+			self._client.
+				sendRequest(Contracts.HandleFirewallRuleRequest.type, params, self.languageClient)
+				.then(response => {
+					resolve(response);
+				}, err => reject(err));
+		});
+	}
 
-    private asCreateFirewallRuleParams(account: data.Account, params: data.FirewallRuleInfo): Contracts.CreateFirewallRuleParams {
-        return {
-            account: account,
-            serverName: params.serverName,
-            startIpAddress: params.startIpAddress,
-            endIpAddress: params.endIpAddress,
-            securityTokenMappings: params.securityTokenMappings
-        };
-    }
+	private asCreateFirewallRuleParams(account: data.Account, params: data.FirewallRuleInfo): Contracts.CreateFirewallRuleParams {
+		return {
+			account: account,
+			serverName: params.serverName,
+			startIpAddress: params.startIpAddress,
+			endIpAddress: params.endIpAddress,
+			securityTokenMappings: params.securityTokenMappings
+		};
+	}
 }
 
