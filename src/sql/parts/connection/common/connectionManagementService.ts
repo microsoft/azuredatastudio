@@ -953,7 +953,6 @@ export class ConnectionManagementService implements IConnectionManagementService
 		return this._connectionStore.changeGroupIdForConnection(source, targetGroupId).then(result => {
 			if (id && targetGroupId) {
 				source.groupId = targetGroupId;
-				this._connectionStatusManager.updateConnectionProfile(source, id);
 			}
 		});
 	}
