@@ -18,7 +18,7 @@ import { CapabilitiesService } from 'sql/services/capabilities/capabilitiesServi
 import * as data from 'data';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { Emitter } from 'vs/base/common/event';
-import { IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
+import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 
 suite('SQL ConnectionStore tests', () => {
 	let defaultNamedProfile: IConnectionProfile;
@@ -93,7 +93,7 @@ suite('SQL ConnectionStore tests', () => {
 			getInstalled: () => {
 				return Promise.resolve([]);
 			}
-		}
+		};
 
 		capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesService, TypeMoq.MockBehavior.Loose, extensionManagementServiceMock, {});
 		let capabilities: data.DataProtocolServerCapabilities[] = [];
@@ -461,5 +461,34 @@ suite('SQL ConnectionStore tests', () => {
 
 		currentList = connectionStore.getConnectionsFromMemento(mementoKey);
 		assert.equal(currentList.length, 3, 'Adding same connection with group /');
+	});
+
+	test('getGroupFromId returns undefined when there is no group with the given ID', () => {
+		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+			credentialStore.object, capabilitiesService.object, connectionConfig.object);
+		let group = connectionStore.getGroupFromId('invalidId');
+		assert.equal(group, undefined, 'Returned group was not undefined when there was no group with the given ID');
+	});
+
+	test('getGroupFromId returns the group that has the given ID', () => {
+		// Set up the server groups with an additional group that contains a child group
+		let groups: IConnectionProfileGroup[] = connectionConfig.object.getAllGroups();
+		let parentGroupId = 'parentGroup';
+		let childGroupId = 'childGroup';
+		let parentGroup = new ConnectionProfileGroup(parentGroupId, undefined, parentGroupId, '', '');
+		let childGroup = new ConnectionProfileGroup(childGroupId, parentGroup, childGroupId, '', '');
+		groups.push(parentGroup, childGroup);
+		let newConnectionConfig = TypeMoq.Mock.ofType(ConnectionConfig);
+		newConnectionConfig.setup(x => x.getAllGroups()).returns(() => groups);
+		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+			credentialStore.object, capabilitiesService.object, newConnectionConfig.object);
+
+		// If I look up the parent group using its ID, then I get back the correct group
+		let actualGroup = connectionStore.getGroupFromId(parentGroupId);
+		assert.equal(actualGroup.id, parentGroupId, 'Did not get the parent group when looking it up with its ID');
+
+		// If I look up the child group using its ID, then I get back the correct group
+		actualGroup = connectionStore.getGroupFromId(childGroupId);
+		assert.equal(actualGroup.id, childGroupId, 'Did not get the child group when looking it up with its ID');
 	});
 });

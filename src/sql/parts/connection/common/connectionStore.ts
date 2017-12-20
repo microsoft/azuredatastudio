@@ -19,7 +19,6 @@ import { ConfigurationEditingService } from 'vs/workbench/services/configuration
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import * as data from 'data';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -33,7 +32,6 @@ export class ConnectionStore {
 	private _memento: any;
 	private _groupIdToFullNameMap: { [groupId: string]: string };
 	private _groupFullNameToIdMap: { [groupId: string]: string };
-	private _groupIdToGroupObjectMap: { [groupId: string]: ConnectionProfileGroup };
 
 	constructor(
 		private _storageService: IStorageService,
@@ -49,7 +47,6 @@ export class ConnectionStore {
 		}
 		this._groupIdToFullNameMap = {};
 		this._groupFullNameToIdMap = {};
-		this._groupIdToGroupObjectMap = {};
 		if (!this._connectionConfig) {
 			let cachedServerCapabilities = this.getCachedServerCapabilities();
 			this._connectionConfig = new ConnectionConfig(this._configurationEditService,
@@ -464,31 +461,6 @@ export class ConnectionStore {
 		return connectionProfileGroups;
 	}
 
-	public getGroupFromId(groupId: string): ConnectionProfileGroup {
-		let groupObjectFromMap = this._groupIdToGroupObjectMap[groupId];
-		if (groupObjectFromMap) {
-			return groupObjectFromMap;
-		}
-		this.initializeGroupObjectMap();
-		return this._groupIdToGroupObjectMap[groupId];
-	}
-
-	private initializeGroupObjectMap(): void {
-		let groups = new Set<ConnectionProfileGroup>();
-		this.getConnectionProfileGroups().forEach(group => {
-			this._groupIdToGroupObjectMap[group.id] = group;
-			groups.add(group);
-		});
-		while (groups.size > 0) {
-			let currentGroup = groups.values().next().value;
-			currentGroup.children.forEach(group => {
-				this._groupIdToGroupObjectMap[group.id] = group;
-				groups.add(group);
-			});
-			groups.delete(currentGroup);
-		}
-	}
-
 	private convertToConnectionGroup(groups: IConnectionProfileGroup[], connections: ConnectionProfile[], parent: ConnectionProfileGroup = undefined): ConnectionProfileGroup[] {
 		let result: ConnectionProfileGroup[] = [];
 		let children = groups.filter(g => g.parentId === (parent ? parent.id : undefined));
@@ -515,6 +487,11 @@ export class ConnectionStore {
 			}
 		}
 		return result;
+	}
+
+	public getGroupFromId(groupId: string): IConnectionProfileGroup {
+		let groups = this._connectionConfig.getAllGroups();
+		return groups.find(group => group.id === groupId);
 	}
 
 	private getMaxRecentConnectionsCount(): number {

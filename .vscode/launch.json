@@ -63,7 +63,7 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			]
-		},	
+		},
 		{
 			"type": "chrome",
 			"request": "attach",
@@ -95,7 +95,7 @@
 			"name": "Unit Tests",
 			"protocol": "inspector",
 			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-			"runtimeExecutable": "${workspaceFolder}/.build/electron/sqlops.app/Contents/MacOS/Electron",
+			"runtimeExecutable": "${workspaceFolder}/.build/electron/SQL Operations Studio.app/Contents/MacOS/Electron",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/.build/electron/sqlops.exe"
 			},

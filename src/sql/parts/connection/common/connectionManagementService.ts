@@ -155,9 +155,9 @@ export class ConnectionManagementService implements IConnectionManagementService
 				this._editorGroupService.refreshEditorTitles();
 			}
 		};
-		this._onConnectionChanged.event(refreshEditorTitlesFunction);
-		this._onConnect.event(refreshEditorTitlesFunction);
-		this._onDisconnect.event(refreshEditorTitlesFunction);
+		this.onConnectionChanged(refreshEditorTitlesFunction);
+		this.onConnect(refreshEditorTitlesFunction);
+		this.onDisconnect(refreshEditorTitlesFunction);
 	}
 
 	// Event Emitters
