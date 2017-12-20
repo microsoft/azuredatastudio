@@ -147,11 +147,11 @@ export class ConnectionStatusbarItem implements IStatusbarItem {
 		}
 
 		let tooltip: string =
-			'Server name: ' + connectionProfile.serverName + '\r\n' +
-			'Database name: ' + (connectionProfile.databaseName ? connectionProfile.databaseName : '<default>') + '\r\n';
+			'Server: ' + connectionProfile.serverName + '\r\n' +
+			'Database: ' + (connectionProfile.databaseName ? connectionProfile.databaseName : '<default>') + '\r\n';
 
 		if (connectionProfile.userName && connectionProfile.userName !== '') {
-			tooltip = tooltip + 'Login name: ' + connectionProfile.userName + '\r\n';
+			tooltip = tooltip + 'Login: ' + connectionProfile.userName + '\r\n';
 		}
 
 		this._connectionElement.textContent = text;
