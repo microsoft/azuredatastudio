@@ -238,7 +238,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	getGroupColorForUri(uri: string): string {
+	getTabColorForUri(uri: string): string {
 		return undefined;
 	}
 }

@@ -169,6 +169,6 @@ export class DashboardInput extends EditorInput {
 	}
 
 	public get tabColor(): string {
-		return this._connectionService.getGroupColorForUri(this.uri);
+		return this._connectionService.getTabColorForUri(this.uri);
 	}
 }

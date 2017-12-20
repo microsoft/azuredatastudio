@@ -1359,6 +1359,11 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 		return sizes;
 	}
 
+	// {{SQL CARBON EDIT}} -- Allow editor titles to be refreshed to support tab coloring
+	public refreshEditorTitles(): void {
+		this.editorGroupsControl.refreshTitles();
+	}
+
 	public shutdown(): void {
 
 		// Persist UI State

@@ -240,6 +240,11 @@ let registryProperties = {
 		'description': localize('sql.showBatchTime', '[Optional] Should execution time be shown for individual batches'),
 		'default': false
 	},
+	'sql.enableTabColors': {
+		'type': 'boolean',
+		'description': localize('sql.enableTabColors', 'True to color tabs based on the server group of their active connection, false otherwise'),
+		'default': true
+	},
 	'mssql.intelliSense.enableIntelliSense': {
 		'type': 'boolean',
 		'default': true,

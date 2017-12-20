@@ -39,7 +39,7 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { extractResources } from 'vs/base/browser/dnd';
 import { getOrSet } from 'vs/base/common/map';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { IThemeService, registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { IThemeService, registerThemingParticipant, ITheme, ICssStyleCollector, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import { TAB_INACTIVE_BACKGROUND, TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_INACTIVE_FOREGROUND, TAB_BORDER, EDITOR_DRAG_AND_DROP_BACKGROUND, TAB_UNFOCUSED_ACTIVE_FOREGROUND, TAB_UNFOCUSED_INACTIVE_FOREGROUND, TAB_UNFOCUSED_ACTIVE_BORDER, TAB_ACTIVE_BORDER } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -331,9 +331,10 @@ export class TabsTitleControl extends TitleControl {
 					DOM.removeClass(tabContainer, 'dirty');
 				}
 
-				let anyEditor = editor as any;
-				if (anyEditor.tabColor) {
-					tabContainer.style.borderTopColor = anyEditor.tabColor;
+				// {{SQL CARBON EDIT}} -- Display the editor's tab color
+				let sqlEditor = editor as any;
+				if (sqlEditor.tabColor && this.themeService.getTheme().type !== HIGH_CONTRAST) {
+					tabContainer.style.borderTopColor = sqlEditor.tabColor;
 					tabContainer.style.borderTopWidth = isTabActive ? '2px' : '1px';
 				} else {
 					tabContainer.style.borderTopColor = '';

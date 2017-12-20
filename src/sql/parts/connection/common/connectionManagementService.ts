@@ -148,6 +148,16 @@ export class ConnectionManagementService implements IConnectionManagementService
 
 		this.disposables.push(this._onAddConnectionProfile);
 		this.disposables.push(this._onDeleteConnectionProfile);
+
+		// Refresh editor titles when connections start/end/change to ensure tabs are colored correctly
+		let refreshEditorTitlesFunction = () => {
+			if (this._editorGroupService instanceof EditorPart) {
+				this._editorGroupService.refreshEditorTitles();
+			}
+		};
+		this._onConnectionChanged.event(refreshEditorTitlesFunction);
+		this._onConnect.event(refreshEditorTitlesFunction);
+		this._onDisconnect.event(refreshEditorTitlesFunction);
 	}
 
 	// Event Emitters
@@ -1325,7 +1335,10 @@ export class ConnectionManagementService implements IConnectionManagementService
 		return Promise.reject('The given URI is not currently connected');
 	}
 
-	public getGroupColorForUri(uri: string): string {
+	public getTabColorForUri(uri: string): string {
+		if (!WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, 'enableTabColors')) {
+			return undefined;
+		}
 		let connectionProfile = this.getConnectionProfile(uri);
 		if (!connectionProfile) {
 			return undefined;

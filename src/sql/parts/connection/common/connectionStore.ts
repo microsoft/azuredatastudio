@@ -33,6 +33,7 @@ export class ConnectionStore {
 	private _memento: any;
 	private _groupIdToFullNameMap: { [groupId: string]: string };
 	private _groupFullNameToIdMap: { [groupId: string]: string };
+	private _groupIdToGroupObjectMap: { [groupId: string]: ConnectionProfileGroup };
 
 	constructor(
 		private _storageService: IStorageService,
@@ -48,6 +49,7 @@ export class ConnectionStore {
 		}
 		this._groupIdToFullNameMap = {};
 		this._groupFullNameToIdMap = {};
+		this._groupIdToGroupObjectMap = {};
 		if (!this._connectionConfig) {
 			let cachedServerCapabilities = this.getCachedServerCapabilities();
 			this._connectionConfig = new ConnectionConfig(this._configurationEditService,
@@ -463,17 +465,28 @@ export class ConnectionStore {
 	}
 
 	public getGroupFromId(groupId: string): ConnectionProfileGroup {
+		let groupObjectFromMap = this._groupIdToGroupObjectMap[groupId];
+		if (groupObjectFromMap) {
+			return groupObjectFromMap;
+		}
+		this.initializeGroupObjectMap();
+		return this._groupIdToGroupObjectMap[groupId];
+	}
+
+	private initializeGroupObjectMap(): void {
 		let groups = new Set<ConnectionProfileGroup>();
-		this.getConnectionProfileGroups().forEach(group => groups.add(group));
+		this.getConnectionProfileGroups().forEach(group => {
+			this._groupIdToGroupObjectMap[group.id] = group;
+			groups.add(group);
+		});
 		while (groups.size > 0) {
 			let currentGroup = groups.values().next().value;
-			if (currentGroup.id === groupId) {
-				return currentGroup;
-			}
-			currentGroup.children.forEach(group => groups.add(group));
+			currentGroup.children.forEach(group => {
+				this._groupIdToGroupObjectMap[group.id] = group;
+				groups.add(group);
+			});
 			groups.delete(currentGroup);
 		}
-		return undefined;
 	}
 
 	private convertToConnectionGroup(groups: IConnectionProfileGroup[], connections: ConnectionProfile[], parent: ConnectionProfileGroup = undefined): ConnectionProfileGroup[] {

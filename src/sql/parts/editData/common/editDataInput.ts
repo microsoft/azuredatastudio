@@ -182,6 +182,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	}
 
 	public get tabColor(): string {
-		return this._connectionManagementService.getGroupColorForUri(this.uri);
+		return this._connectionManagementService.getTabColorForUri(this.uri);
 	}
 }
