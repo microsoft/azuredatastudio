@@ -87,6 +87,8 @@ export interface IEditorGroupsControl {
 
 	getRatio(): number[];
 
+	// {{SQL CARBON EDIT}} -- Allow editor titles to be refreshed to support tab coloring
+	refreshTitles(): void;
 
 	dispose(): void;
 }
@@ -2124,6 +2126,14 @@ export class EditorGroupsControl extends Themable implements IEditorGroupsContro
 				progressbar.stop().getContainer().hide();
 				break;
 		}
+	}
+
+	// {{SQL CARBON EDIT}} -- Allow editor titles to be refreshed to support tab coloring
+	public refreshTitles(): void {
+		POSITIONS.forEach(position => {
+			let titleControl = this.getTitleAreaControl(position);
+			titleControl.refresh();
+		});
 	}
 
 	public dispose(): void {

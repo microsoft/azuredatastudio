@@ -220,6 +220,8 @@ export interface IConnectionManagementService {
 
 	canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean;
 
+	getTabColorForUri(uri: string): string;
+
 	/**
 	 * Sends a notification that the language flavor for a given URI has changed.
 	 * For SQL, this would be the specific SQL implementation being used.

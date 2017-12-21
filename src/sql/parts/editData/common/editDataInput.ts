@@ -180,4 +180,8 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 			super.close();
 		});
 	}
+
+	public get tabColor(): string {
+		return this._connectionManagementService.getTabColorForUri(this.uri);
+	}
 }

@@ -237,4 +237,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	rebuildIntelliSenseCache(uri: string): Thenable<void> {
 		return undefined;
 	}
+
+	getTabColorForUri(uri: string): string {
+		return undefined;
+	}
 }

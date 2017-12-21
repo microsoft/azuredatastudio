@@ -19,7 +19,6 @@ import { ConfigurationEditingService } from 'vs/workbench/services/configuration
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import * as data from 'data';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -488,6 +487,11 @@ export class ConnectionStore {
 			}
 		}
 		return result;
+	}
+
+	public getGroupFromId(groupId: string): IConnectionProfileGroup {
+		let groups = this._connectionConfig.getAllGroups();
+		return groups.find(group => group.id === groupId);
 	}
 
 	private getMaxRecentConnectionsCount(): number {

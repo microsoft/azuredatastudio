@@ -32,6 +32,7 @@ import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfig
 
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
+import { IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -210,7 +211,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let connectionToUse = connection ? connection : connectionProfile;
 		return new Promise<IConnectionResult>((resolve, reject) => {
 			let id = connectionToUse.getOptionsKey();
-			let defaultUri = 'connection://' + (id ? id : connection.serverName + ':' + connection.databaseName);
+			let defaultUri = 'connection://' + (id ? id : connectionToUse.serverName + ':' + connectionToUse.databaseName);
 			connectionManagementService.onConnectionRequestSent(() => {
 				let info: data.ConnectionInfoSummary = {
 					connectionId: error ? undefined : 'id',
@@ -290,7 +291,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			}).catch(err => {
 				done(err);
 			});
-		});
+		}, err => done(err));
 	});
 
 	test('connect should save profile given options with saveProfile set to true', done => {
@@ -761,6 +762,31 @@ suite('SQL ConnectionManagementService tests', () => {
 				done();
 			} catch (err) {
 				done(err);
+			}
+		}, err => done(err));
+	});
+
+	test('getTabColorForUri returns undefined when there is no connection for the given URI', () => {
+		let connectionManagementService = createConnectionManagementService();
+		let color = connectionManagementService.getTabColorForUri('invalidUri');
+		assert.equal(color, undefined);
+	});
+
+	test('getTabColorForUri returns the group color corresponding to the connection for a URI', done => {
+		// Set up the connection store to give back a group for the expected connection profile
+		configResult['enableTabColors'] = true;
+		let expectedColor = 'red';
+		connectionStore.setup(x => x.getGroupFromId(connectionProfile.groupId)).returns(() => <IConnectionProfileGroup> {
+			color: expectedColor
+		});
+		let uri = 'testUri';
+		connect(uri).then(() => {
+			try {
+				let tabColor = connectionManagementService.getTabColorForUri(uri);
+				assert.equal(tabColor, expectedColor);
+				done();
+			} catch (e) {
+				done(e);
 			}
 		}, err => done(err));
 	});

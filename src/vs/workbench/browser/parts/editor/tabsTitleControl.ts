@@ -39,11 +39,14 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { extractResources } from 'vs/base/browser/dnd';
 import { getOrSet } from 'vs/base/common/map';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { IThemeService, registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { IThemeService, registerThemingParticipant, ITheme, ICssStyleCollector, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import { TAB_INACTIVE_BACKGROUND, TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_INACTIVE_FOREGROUND, TAB_BORDER, EDITOR_DRAG_AND_DROP_BACKGROUND, TAB_UNFOCUSED_ACTIVE_FOREGROUND, TAB_UNFOCUSED_INACTIVE_FOREGROUND, TAB_UNFOCUSED_ACTIVE_BORDER, TAB_ACTIVE_BORDER } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
+
+// {{SQL CARBON EDIT}} -- Display the editor's tab color
+import { Color } from 'vs/base/common/color';
 
 interface IEditorInputLabel {
 	name: string;
@@ -329,6 +332,20 @@ export class TabsTitleControl extends TitleControl {
 					DOM.addClass(tabContainer, 'dirty');
 				} else {
 					DOM.removeClass(tabContainer, 'dirty');
+				}
+
+				// {{SQL CARBON EDIT}} -- Display the editor's tab color
+				let sqlEditor = editor as any;
+				if (sqlEditor.tabColor && this.themeService.getTheme().type !== HIGH_CONTRAST) {
+					tabContainer.style.borderTopColor = sqlEditor.tabColor;
+					tabContainer.style.borderTopWidth = isTabActive ? '2px' : '1px';
+					let backgroundColor = Color.Format.CSS.parseHex(sqlEditor.tabColor);
+					if (backgroundColor) {
+						tabContainer.style.backgroundColor = backgroundColor.transparent(isTabActive ? 0.3 : 0.2).toString();
+					}
+				} else {
+					tabContainer.style.borderTopColor = '';
+					tabContainer.style.borderTopWidth = '';
 				}
 			}
 		});

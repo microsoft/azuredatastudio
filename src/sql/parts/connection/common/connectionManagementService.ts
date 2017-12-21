@@ -148,6 +148,11 @@ export class ConnectionManagementService implements IConnectionManagementService
 
 		this.disposables.push(this._onAddConnectionProfile);
 		this.disposables.push(this._onDeleteConnectionProfile);
+
+		// Refresh editor titles when connections start/end/change to ensure tabs are colored correctly
+		this.onConnectionChanged(() => this.refreshEditorTitles());
+		this.onConnect(() => this.refreshEditorTitles());
+		this.onDisconnect(() => this.refreshEditorTitles());
 	}
 
 	// Event Emitters
@@ -1219,6 +1224,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 	public editGroup(group: ConnectionProfileGroup): Promise<any> {
 		return new Promise<string>((resolve, reject) => {
 			this._connectionStore.editGroup(group).then(groupId => {
+				this.refreshEditorTitles();
 				this._onAddConnectionProfile.fire();
 				resolve(null);
 			}).catch(err => {
@@ -1322,5 +1328,26 @@ export class ConnectionManagementService implements IConnectionManagementService
 			return provider.rebuildIntelliSenseCache(connectionUri);
 		}
 		return Promise.reject('The given URI is not currently connected');
+	}
+
+	public getTabColorForUri(uri: string): string {
+		if (!WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, 'enableTabColors')) {
+			return undefined;
+		}
+		let connectionProfile = this.getConnectionProfile(uri);
+		if (!connectionProfile) {
+			return undefined;
+		}
+		let matchingGroup = this._connectionStore.getGroupFromId(connectionProfile.groupId);
+		if (!matchingGroup) {
+			return undefined;
+		}
+		return matchingGroup.color;
+	}
+
+	private refreshEditorTitles(): void {
+		if (this._editorGroupService instanceof EditorPart) {
+			this._editorGroupService.refreshEditorTitles();
+		}
 	}
 }
