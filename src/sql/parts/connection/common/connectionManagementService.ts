@@ -150,14 +150,9 @@ export class ConnectionManagementService implements IConnectionManagementService
 		this.disposables.push(this._onDeleteConnectionProfile);
 
 		// Refresh editor titles when connections start/end/change to ensure tabs are colored correctly
-		let refreshEditorTitlesFunction = () => {
-			if (this._editorGroupService instanceof EditorPart) {
-				this._editorGroupService.refreshEditorTitles();
-			}
-		};
-		this.onConnectionChanged(refreshEditorTitlesFunction);
-		this.onConnect(refreshEditorTitlesFunction);
-		this.onDisconnect(refreshEditorTitlesFunction);
+		this.onConnectionChanged(() => this.refreshEditorTitles());
+		this.onConnect(() => this.refreshEditorTitles());
+		this.onDisconnect(() => this.refreshEditorTitles());
 	}
 
 	// Event Emitters
@@ -1230,6 +1225,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 	public editGroup(group: ConnectionProfileGroup): Promise<any> {
 		return new Promise<string>((resolve, reject) => {
 			this._connectionStore.editGroup(group).then(groupId => {
+				this.refreshEditorTitles();
 				this._onAddConnectionProfile.fire();
 				resolve(null);
 			}).catch(err => {
@@ -1348,5 +1344,11 @@ export class ConnectionManagementService implements IConnectionManagementService
 			return undefined;
 		}
 		return matchingGroup.color;
+	}
+
+	private refreshEditorTitles(): void {
+		if (this._editorGroupService instanceof EditorPart) {
+			this._editorGroupService.refreshEditorTitles();
+		}
 	}
 }

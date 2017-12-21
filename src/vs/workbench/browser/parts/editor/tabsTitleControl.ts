@@ -45,6 +45,9 @@ import { activeContrastBorder, contrastBorder } from 'vs/platform/theme/common/c
 import { IFileService } from 'vs/platform/files/common/files';
 import { IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 
+// {{SQL CARBON EDIT}} -- Display the editor's tab color
+import { Color } from 'vs/base/common/color';
+
 interface IEditorInputLabel {
 	name: string;
 	description?: string;
@@ -336,6 +339,10 @@ export class TabsTitleControl extends TitleControl {
 				if (sqlEditor.tabColor && this.themeService.getTheme().type !== HIGH_CONTRAST) {
 					tabContainer.style.borderTopColor = sqlEditor.tabColor;
 					tabContainer.style.borderTopWidth = isTabActive ? '2px' : '1px';
+					let backgroundColor = Color.Format.CSS.parseHex(sqlEditor.tabColor);
+					if (backgroundColor) {
+						tabContainer.style.backgroundColor = backgroundColor.transparent(isTabActive ? 0.3 : 0.2).toString();
+					}
 				} else {
 					tabContainer.style.borderTopColor = '';
 					tabContainer.style.borderTopWidth = '';

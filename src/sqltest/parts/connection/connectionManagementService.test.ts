@@ -291,7 +291,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			}).catch(err => {
 				done(err);
 			});
-		});
+		}, err => done(err));
 	});
 
 	test('connect should save profile given options with saveProfile set to true', done => {
