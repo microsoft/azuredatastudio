@@ -6,8 +6,8 @@
 'use strict';
 
 import { Url, parse as parseUrl } from 'url';
-let HttpProxyAgent = require('http-proxy-agent');
-let HttpsProxyAgent = require('https-proxy-agent');
+const HttpProxyAgent = require('http-proxy-agent');
+const HttpsProxyAgent = require('https-proxy-agent');
 
 function getSystemProxyURL(requestURL: Url): string {
     if (requestURL.protocol === 'http:') {

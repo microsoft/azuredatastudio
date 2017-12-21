@@ -9,13 +9,14 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./client/out/mssqlMain",
+  "main": "./client/out/main",
   "extensionDependencies": [
     "vscode.sql"
   ],
   "scripts": {
     "compile": "gulp compile-extension:mssql-client",
-    "postinstall": "node ./node_modules/vscode/bin/install"
+    "postinstall": "node ./node_modules/vscode/bin/install",
+		"update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
   "contributes": {
     "languages": [
@@ -26,15 +27,7 @@
         ],
         "aliases": [
           "SQL"
-        ],
-        "configuration": "./syntaxes/sql.configuration.json"
-      }
-    ],
-    "grammars": [
-      {
-        "language": "sql",
-        "scopeName": "source.sql",
-        "path": "./syntaxes/SQL.plist"
+        ]
       }
     ],
     "outputChannels": [
@@ -46,38 +39,10 @@
         "path": "./snippets/mssql.json"
       }
     ],
-    "commands": [
-      {
-        "command": "extension.clearTokenCache",
-        "title": "%extension.clearTokenCache%",
-        "category": "Azure Accounts"
-      }
-    ],
-    "account-type": [
-      {
-        "id": "microsoft",
-        "icon": {
-          "light": "./out/account-provider/media/microsoft_account_light.svg",
-          "dark": "./out/account-provider/media/microsoft_account_dark.svg"
-        }
-      },
-      {
-        "id": "work_school",
-        "icon": {
-          "light": "./out/account-provider/media/work_school_account_light.svg",
-          "dark": "./out/account-provider/media/work_school_account_dark.svg"
-        }
-      }
-    ],
     "configuration": {
       "type": "object",
       "title": "MSSQL configuration",
       "properties": {
-        "accounts.azure.enablePublicCloud": {
-          "type": "boolean",
-          "default": true,
-          "description": "%config.enablePublicCloudDescription%"
-        },
         "mssql.query.displayBitAsNumber": {
           "type": "boolean",
           "default": true,
@@ -227,18 +192,9 @@
     }
   },
   "dependencies": {
-    "dataprotocol-client": "file:../../dataprotocol-node/client",
-    "extensions-modules": "file:../../extensions-modules",
-    "adal-node": "0.1.25",
-    "decompress": "^4.0.0",
-    "fs-extra-promise": "^1.0.1",
-    "opener": "1.4.3",
-    "request": "2.63.0",
-    "vscode-extension-telemetry": "^0.0.8",
-    "vscode-nls": "2.0.2"
+    "dataprotocol-client": "file:../../dataprotocol-node/client"
   },
   "devDependencies": {
-    "vscode": "1.0.1",
-    "@types/node": "^8.0.24"
+    "vscode": "1.0.1"
   }
 }

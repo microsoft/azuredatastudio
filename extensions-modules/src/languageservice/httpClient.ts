@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import {IPackage, IStatusView, PackageError, IHttpClient} from './interfaces';
-import  {ILogger} from '../models/interfaces';
-import {parse as parseUrl, Url} from 'url';
+import { IPackage, IStatusView, PackageError, IHttpClient } from './interfaces';
+import  { ILogger } from '../models/interfaces';
+import { parse as parseUrl, Url } from 'url';
 import * as https from 'https';
 import * as http from 'http';
-import {getProxyAgent} from './proxy';
+import { getProxyAgent } from './proxy';
 
-let fs = require('fs');
+const fs = require('fs');
 
 /*
  * Http client class to handle downloading files using http or https urls

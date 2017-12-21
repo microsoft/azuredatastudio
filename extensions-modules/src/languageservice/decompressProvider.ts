@@ -5,8 +5,8 @@
 
 'use strict';
 
-import {IDecompressProvider, IPackage} from './interfaces';
-import  {ILogger} from '../models/interfaces';
+import { IDecompressProvider, IPackage } from './interfaces';
+import  { ILogger } from '../models/interfaces';
 const decompress = require('decompress');
 
 export default class DecompressProvider implements IDecompressProvider {

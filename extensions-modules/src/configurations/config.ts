@@ -6,8 +6,8 @@
 'use strict';
 const fs = require('fs');
 import * as path from 'path';
-import {IConfig} from '../languageservice/interfaces';
-import * as SharedConstants from '../models/constants';
+import { IConfig } from '../languageservice/interfaces';
+import { Constants } from '../models/constants';
 
 /*
 * Config class handles getting values from config.json.
@@ -18,7 +18,7 @@ export default class Config implements IConfig {
     private _extensionConfigSectionName: string = undefined;
     private _fromBuild: boolean = undefined;
 
-     constructor(extensionConfigSectionName: string, fromBuild?: boolean) {
+     constructor(extensionConfigSectionName: string, private path: string, fromBuild?: boolean) {
         this._extensionConfigSectionName = extensionConfigSectionName;
         this._fromBuild = fromBuild;
      }
@@ -31,24 +31,24 @@ export default class Config implements IConfig {
     }
 
     public getDownloadUrl(): string {
-        return this.getConfigValue(SharedConstants.downloadUrlConfigKey);
+        return this.getConfigValue(Constants.downloadUrlConfigKey);
     }
 
     public getInstallDirectory(): string {
-        return this.getConfigValue(SharedConstants.installDirConfigKey);
+        return this.getConfigValue(Constants.installDirConfigKey);
     }
 
     public getExecutableFiles(): string[] {
-        return this.getConfigValue(SharedConstants.executableFilesConfigKey);
+        return this.getConfigValue(Constants.executableFilesConfigKey);
     }
 
     public getPackageVersion(): string {
-        return this.getConfigValue(SharedConstants.versionConfigKey);
+        return this.getConfigValue(Constants.versionConfigKey);
     }
 
     public getConfigValue(configKey: string): any {
         let json = this.configJsonContent;
-        let toolsConfig = json[SharedConstants.serviceConfigKey];
+        let toolsConfig = json[Constants.serviceConfigKey];
         let configValue: string = undefined;
         if (toolsConfig !== undefined) {
             configValue = toolsConfig[configKey];
@@ -82,7 +82,7 @@ export default class Config implements IConfig {
             configContent = fs.readFileSync(path.join(__dirname, remainingPath));
         }
         else {
-            configContent = fs.readFileSync(path.join(__dirname, '../../../../client/out/config.json'));
+            configContent = fs.readFileSync(this.path);
         }
         return JSON.parse(configContent);
     }

@@ -6,10 +6,10 @@
 'use strict';
 
 import * as path from 'path';
-import {Runtime} from '../models/platform';
+import { Runtime } from '../models/platform';
 import ServiceDownloadProvider from './serviceDownloadProvider';
-import {IConfig, IStatusView} from './interfaces';
-let fs = require('fs-extra-promise');
+import { IConfig, IStatusView } from './interfaces';
+const fs = require('fs-extra-promise');
 
 
 /*

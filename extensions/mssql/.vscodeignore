@@ -1,0 +1,4 @@
+client/src/**
+client/tsconfig.json
+npm-shrinkwrap.json
+test/**

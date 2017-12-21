@@ -61,9 +61,9 @@ export class ServiceInstaller {
 	private _serverProvider = undefined;
 	private _extensionConstants = undefined;
 
-	constructor(extensionConstants: IExtensionConstants) {
+	constructor(extensionConstants: IExtensionConstants, path?: string) {
 		this._extensionConstants = extensionConstants;
-		this._config = new Config(extensionConstants.extensionConfigSectionName, true);
+		this._config = new Config(extensionConstants.extensionConfigSectionName, path, true);
 		this._downloadProvider = new ServiceDownloadProvider(this._config, this._logger, this._statusView, this._httpClient, this._decompressProvider, extensionConstants, true);
 		this._serverProvider = new ServerProvider(this._downloadProvider, this._config, this._statusView, extensionConstants.extensionConfigSectionName);
 	}

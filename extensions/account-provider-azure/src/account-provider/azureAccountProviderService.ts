@@ -5,16 +5,18 @@
 
 'use strict';
 
+import * as constants from '../constants';
 import * as data from 'data';
 import * as events from 'events';
+import * as nls from 'vscode-nls';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import CredentialServiceTokenCache from './tokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider } from './azureAccountProvider';
 import { AzureAccountProviderMetadata, ProviderSettings } from './interfaces';
-import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
+
+let localize = nls.loadMessageBundle();
 
 export class AzureAccountProviderService implements vscode.Disposable {
 	// CONSTANTS ///////////////////////////////////////////////////////////////
@@ -75,14 +77,14 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 		return Promise.all(promises)
 			.then(
-				() => {
-					let message = localize('clearTokenCacheSuccess', 'Token cache successfully cleared');
-					vscode.window.showInformationMessage(`mssql: ${message}`);
-				},
-				err => {
-					let message = localize('clearTokenCacheFailure', 'Failed to clear token cache');
-					vscode.window.showErrorMessage(`mssql: ${message}: ${err}`);
-				});
+			() => {
+				let message = localize('clearTokenCacheSuccess', 'Token cache successfully cleared');
+				vscode.window.showInformationMessage(`${constants.extensionName}: ${message}`);
+			},
+			err => {
+				let message = localize('clearTokenCacheFailure', 'Failed to clear token cache');
+				vscode.window.showErrorMessage(`${constants.extensionName}: ${message}: ${err}`);
+			});
 	}
 
 	private onDidChangeConfiguration(): void {
@@ -97,7 +99,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			// Determine what providers need to be changed
 			let providerChanges: Thenable<void>[] = [];
-			for(let provider of providerSettings) {
+			for (let provider of providerSettings) {
 				// If the old config doesn't exist, then assume everything was disabled
 				// There will always be a new config value
 				let oldConfigValue = oldConfig
@@ -138,7 +140,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				self._accountProviders[provider.metadata.id] = accountProvider;
 				self._accountDisposals[provider.metadata.id] = data.accounts.registerAccountProvider(provider.metadata, accountProvider);
 				resolve();
-			} catch(e) {
+			} catch (e) {
 				console.error(`Failed to register account provider: ${e}`);
 				reject(e);
 			}
@@ -154,7 +156,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				delete self._accountProviders[provider.metadata.id];
 				delete self._accountDisposals[provider.metadata.id];
 				resolve();
-			} catch(e) {
+			} catch (e) {
 				console.error(`Failed to unregister account provider: ${e}`);
 				reject(e);
 			}

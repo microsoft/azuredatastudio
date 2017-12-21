@@ -6,13 +6,13 @@
 'use strict';
 import vscode = require('vscode');
 import TelemetryReporter from 'vscode-extension-telemetry';
-import Utils = require('./utils');
+import { Utils } from './utils';
 import { PlatformInformation, Runtime, LinuxDistribution } from './platform';
 import { IExtensionConstants } from './contracts/contracts';
 
 export interface ITelemetryEventProperties {
-		[key: string]: string;
-	}
+	[key: string]: string;
+}
 
 export interface ITelemetryEventMeasures {
 	[key: string]: number;
@@ -79,16 +79,16 @@ export class Telemetry {
 
 
 
-    /**
-     * Disable telemetry reporting
-     */
+	/**
+	 * Disable telemetry reporting
+	 */
 	public static disable(): void {
 		this.disabled = true;
 	}
 
-    /**
-     * Initialize the telemetry reporter for use.
-     */
+	/**
+	 * Initialize the telemetry reporter for use.
+	 */
 	public static initialize(context: vscode.ExtensionContext, extensionConstants: IExtensionConstants): void {
 		if (typeof this.reporter === 'undefined') {
 			// Check if the user has opted out of telemetry
@@ -102,9 +102,9 @@ export class Telemetry {
 		}
 	}
 
-    /**
-     * Send a telemetry event for an exception
-     */
+	/**
+	 * Send a telemetry event for an exception
+	 */
 	public static sendTelemetryEventForException(
 		err: any, methodName: string, extensionConfigName: string): void {
 		try {
@@ -127,9 +127,9 @@ export class Telemetry {
 		}
 	}
 
-    /**
-     * Send a telemetry event using application insights
-     */
+	/**
+	 * Send a telemetry event using application insights
+	 */
 	public static sendTelemetryEvent(
 		eventName: string,
 		properties?: ITelemetryEventProperties,
@@ -157,5 +157,3 @@ export class Telemetry {
 		});
 	}
 }
-
-export default Telemetry;

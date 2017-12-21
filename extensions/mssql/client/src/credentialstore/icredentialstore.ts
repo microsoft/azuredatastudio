@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 'use strict';
 
 
@@ -17,7 +17,7 @@ import { Credential } from '../models/contracts';
  * @interface ICredentialStore
  */
 export interface ICredentialStore {
-    readCredential(credentialId: string): Promise<Credential>;
-    saveCredential(credentialId: string, password: any): Promise<boolean>;
-    deleteCredential(credentialId: string): Promise<boolean>;
+	readCredential(credentialId: string): Promise<Credential>;
+	saveCredential(credentialId: string, password: any): Promise<boolean>;
+	deleteCredential(credentialId: string): Promise<boolean>;
 }

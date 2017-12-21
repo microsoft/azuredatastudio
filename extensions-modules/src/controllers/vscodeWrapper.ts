@@ -4,11 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import vscode = require('vscode');
-import {IExtensionConstants} from '../models/contracts/contracts';
+import { IExtensionConstants } from '../models/contracts/contracts';
 
-export import TextEditor = vscode.TextEditor;
-
-export default class VscodeWrapper {
+export class VscodeWrapper {
     private _extensionConstants: IExtensionConstants;
     /**
      * Output channel for logging. Shared among all instances.

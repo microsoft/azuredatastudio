@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as tmp from 'tmp';
-import  {ILogger} from '../models/interfaces';
+import { ILogger } from '../models/interfaces';
 
 export interface IStatusView {
     installingService(): void;
