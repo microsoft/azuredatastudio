@@ -403,7 +403,6 @@ export interface LanguageClientOptions {
 		code2Protocol: c2p.URIConverter,
 		protocol2Code: p2c.URIConverter
 	};
-	serverConnectionMetadata?: string;
 }
 
 export enum State {
@@ -775,10 +774,6 @@ export class LanguageClient {
 		}
 
 		this.state = ClientState.Starting;
-		if (this._clientOptions.providerId && this._clientOptions.providerId !== '') {
-			// hook-up SQL data protocol provider
-			this.hookDataProtocolProvider(this._clientOptions.providerId);
-		}
 
 		this.resolveConnection().then((connection) => {
 			connection.onLogMessage((message) => {
@@ -1326,42 +1321,28 @@ export class LanguageClient {
 		this.hookDocumentOnTypeFormattingProvider(documentSelector, connection);
 		this.hookRenameProvider(documentSelector, connection);
 		this.hookDocumentLinkProvider(documentSelector, connection);
+
+		if (this._clientOptions.providerId && this._clientOptions.providerId !== '') {
+			// hook-up SQL data protocol provider
+			this.hookDataProtocolProvider(this._clientOptions.providerId, connection);
+		}
 	}
 
 	private logFailedRequest(type: RequestType<any, any, any>, error: any): void {
 		this.error(`Request ${type.method} failed.`, error);
 	}
 
-	/**
-	 * SQL-Carbon Edit
-	 * The helper method to add connection notifications after waiting for connections to be ready.
-	 * This is needed for early DMP registration, which can be done without waiting for connection setup to finish.
-	 *
-	 * @param type
-	 * @param handler
-	 */
-	private onConnectionReadyNotification<P>(type: NotificationType<P>, handler: NotificationHandler<P>): void {
-		this.onReady().then(() => {
-			this.resolveConnection().then((connection) => {
-				connection.onNotification(type, handler);
-			});
-		}
-		);
-	}
-
-	private hookDataProtocolProvider(providerId: string): void {
+	private hookDataProtocolProvider(providerId: string, connection: IConnection): void {
 		let self = this;
 
 		let capabilitiesProvider: CapabilitiesProvider = {
 			getServerCapabilities(client: DataProtocolClientCapabilities): Thenable<VDataProtocolServerCapabilities> {
-				let capabilitiesPromise = self._clientOptions.serverConnectionMetadata === undefined ?
-					self.sendRequest(CapabiltiesDiscoveryRequest.type, self._c2p.asCapabilitiesParams(client), undefined) :
-					new Promise((resolve, reject) => resolve(self._clientOptions.serverConnectionMetadata));
-
-				return capabilitiesPromise.then(self._p2c.asServerCapabilities, (error) => {
-					self.logFailedRequest(ConnectionRequest.type, error);
-					return Promise.resolve([]);
-				}
+				return self.doSendRequest(connection, CapabiltiesDiscoveryRequest.type, self._c2p.asCapabilitiesParams(client), undefined).then(
+					self._p2c.asServerCapabilities,
+					(error) => {
+						self.logFailedRequest(ConnectionRequest.type, error);
+						return Promise.resolve([]);
+					}
 				);
 			}
 		};
@@ -1370,7 +1351,7 @@ export class LanguageClient {
 			handle: -1,
 
 			connect(connUri: string, connInfo: ConnectionInfo): Thenable<boolean> {
-				return self.sendRequest(ConnectionRequest.type, self._c2p.asConnectionParams(connUri, connInfo), undefined).then(
+				return self.doSendRequest(connection, ConnectionRequest.type, self._c2p.asConnectionParams(connUri, connInfo), undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1386,7 +1367,7 @@ export class LanguageClient {
 					ownerUri: connUri
 				};
 
-				return self.sendRequest(DisconnectRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, DisconnectRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1402,7 +1383,7 @@ export class LanguageClient {
 					ownerUri: connUri
 				};
 
-				return self.sendRequest(CancelConnectRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, CancelConnectRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1419,7 +1400,7 @@ export class LanguageClient {
 					newDatabase: newDatabase
 				};
 
-				return self.sendRequest(ChangeDatabaseRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, ChangeDatabaseRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1435,7 +1416,7 @@ export class LanguageClient {
 					ownerUri: connectionUri
 				};
 
-				return self.sendRequest(ListDatabasesRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, ListDatabasesRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1456,7 +1437,7 @@ export class LanguageClient {
 			},
 
 			registerOnConnectionComplete(handler: (connSummary: ConnectionInfoSummary) => any) {
-				self.onConnectionReadyNotification(ConnectionCompleteNotification.type, (params: ConnectionCompleteParams) => {
+				connection.onNotification(ConnectionCompleteNotification.type, (params: ConnectionCompleteParams) => {
 					handler({
 						ownerUri: params.ownerUri,
 						connectionId: params.connectionId,
@@ -1470,13 +1451,13 @@ export class LanguageClient {
 			},
 
 			registerOnIntelliSenseCacheComplete(handler: (connectionUri: string) => any) {
-				self.onConnectionReadyNotification(IntelliSenseReadyNotification.type, (params: IntelliSenseReadyParams) => {
+				connection.onNotification(IntelliSenseReadyNotification.type, (params: IntelliSenseReadyParams) => {
 					handler(params.ownerUri);
 				});
 			},
 
 			registerOnConnectionChanged(handler: (changedConnInfo: ChangedConnectionInfo) => any) {
-				self.onConnectionReadyNotification(ConnectionChangedNotification.type, (params: ConnectionChangedParams) => {
+				connection.onNotification(ConnectionChangedNotification.type, (params: ConnectionChangedParams) => {
 					handler({
 						connectionUri: params.ownerUri,
 						connection: params.connection
@@ -1490,7 +1471,7 @@ export class LanguageClient {
 			queryType: 'MSSQL',
 			cancelQuery(ownerUri: string): Thenable<QueryCancelResult> {
 				let params: QueryCancelParams = { ownerUri: ownerUri };
-				return self.sendRequest(QueryCancelRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, QueryCancelRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1507,7 +1488,7 @@ export class LanguageClient {
 					querySelection: selection,
 					executionPlanOptions: self._c2p.asExecutionPlanOptions(executionPlanOptions)
 				};
-				return self.sendRequest(QueryExecuteRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, QueryExecuteRequest.type, params, undefined).then(
 					(result) => {
 						return undefined;
 					},
@@ -1524,7 +1505,7 @@ export class LanguageClient {
 					line: line,
 					column: column
 				};
-				return self.sendRequest(QueryExecuteStatementRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, QueryExecuteStatementRequest.type, params, undefined).then(
 					(result) => {
 						return undefined;
 					},
@@ -1537,7 +1518,7 @@ export class LanguageClient {
 
 			runQueryString(ownerUri: string, queryString: string): Thenable<void> {
 				let params: QueryExecuteStringParams = { ownerUri: ownerUri, query: queryString };
-				return self.sendRequest(QueryExecuteStringRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, QueryExecuteStringRequest.type, params, undefined).then(
 					(result) => {
 						return undefined;
 					},
@@ -1550,7 +1531,7 @@ export class LanguageClient {
 
 			runQueryAndReturn(ownerUri: string, queryString: string): Thenable<SimpleExecuteResult> {
 				let params: SimpleExecuteParams = { ownerUri: ownerUri, queryString: queryString };
-				return self.sendRequest(SimpleExecuteRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, SimpleExecuteRequest.type, params, undefined).then(
 					result => {
 						return result;
 					},
@@ -1562,7 +1543,7 @@ export class LanguageClient {
 			},
 
 			getQueryRows(rowData: QueryExecuteSubsetParams): Thenable<QueryExecuteSubsetResult> {
-				return self.sendRequest(QueryExecuteSubsetRequest.type, rowData, undefined).then(
+				return self.doSendRequest(connection, QueryExecuteSubsetRequest.type, rowData, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1575,7 +1556,7 @@ export class LanguageClient {
 
 			disposeQuery(ownerUri: string): Thenable<void> {
 				let params: QueryDisposeParams = { ownerUri: ownerUri };
-				return self.sendRequest(QueryDisposeRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, QueryDisposeRequest.type, params, undefined).then(
 					(result) => {
 						return undefined;
 					},
@@ -1587,7 +1568,7 @@ export class LanguageClient {
 			},
 
 			registerOnQueryComplete(handler: (result: QueryExecuteCompleteNotificationResult) => any) {
-				self.onConnectionReadyNotification(QueryExecuteCompleteNotification.type, (params: QueryExecuteCompleteNotificationResult) => {
+				connection.onNotification(QueryExecuteCompleteNotification.type, (params: QueryExecuteCompleteNotificationResult) => {
 					handler({
 						ownerUri: params.ownerUri,
 						batchSummaries: params.batchSummaries
@@ -1596,7 +1577,7 @@ export class LanguageClient {
 			},
 
 			registerOnBatchStart(handler: (batchInfo: QueryExecuteBatchNotificationParams) => any) {
-				self.onConnectionReadyNotification(QueryExecuteBatchStartNotification.type, (params: QueryExecuteBatchNotificationParams) => {
+				connection.onNotification(QueryExecuteBatchStartNotification.type, (params: QueryExecuteBatchNotificationParams) => {
 					handler({
 						batchSummary: params.batchSummary,
 						ownerUri: params.ownerUri
@@ -1605,7 +1586,7 @@ export class LanguageClient {
 			},
 
 			registerOnBatchComplete(handler: (batchInfo: QueryExecuteBatchNotificationParams) => any) {
-				self.onConnectionReadyNotification(QueryExecuteBatchCompleteNotification.type, (params: QueryExecuteBatchNotificationParams) => {
+				connection.onNotification(QueryExecuteBatchCompleteNotification.type, (params: QueryExecuteBatchNotificationParams) => {
 					handler({
 						batchSummary: params.batchSummary,
 						ownerUri: params.ownerUri
@@ -1613,7 +1594,7 @@ export class LanguageClient {
 				});
 			},
 			registerOnResultSetComplete(handler: (resultSetInfo: QueryExecuteResultSetCompleteNotificationParams) => any) {
-				self.onConnectionReadyNotification(QueryExecuteResultSetCompleteNotification.type, (params: QueryExecuteResultSetCompleteNotificationParams) => {
+				connection.onNotification(QueryExecuteResultSetCompleteNotification.type, (params: QueryExecuteResultSetCompleteNotificationParams) => {
 					handler({
 						ownerUri: params.ownerUri,
 						resultSetSummary: params.resultSetSummary
@@ -1621,7 +1602,7 @@ export class LanguageClient {
 				});
 			},
 			registerOnMessage(handler: (message: QueryExecuteMessageParams) => any) {
-				self.onConnectionReadyNotification(QueryExecuteMessageNotification.type, (params: QueryExecuteMessageParams) => {
+				connection.onNotification(QueryExecuteMessageNotification.type, (params: QueryExecuteMessageParams) => {
 					handler({
 						message: params.message,
 						ownerUri: params.ownerUri
@@ -1631,7 +1612,7 @@ export class LanguageClient {
 			saveResults(requestParams: VSaveResultsRequestParams): Thenable<VSaveResultRequestResult> {
 				switch (requestParams.resultFormat) {
 					case 'csv':
-						return self.sendRequest(SaveResultsAsCsvRequest.type, requestParams, undefined).then(
+						return self.doSendRequest(connection, SaveResultsAsCsvRequest.type, requestParams, undefined).then(
 							(result) => {
 								return result;
 							},
@@ -1641,7 +1622,7 @@ export class LanguageClient {
 							}
 						);
 					case 'json':
-						return self.sendRequest(SaveResultsAsJsonRequest.type, requestParams, undefined).then(
+						return self.doSendRequest(connection, SaveResultsAsJsonRequest.type, requestParams, undefined).then(
 							(result) => {
 								return result;
 							},
@@ -1651,7 +1632,7 @@ export class LanguageClient {
 							}
 						);
 					case 'excel':
-						return self.sendRequest(SaveResultsAsExcelRequest.type, requestParams, undefined).then(
+						return self.doSendRequest(connection, SaveResultsAsExcelRequest.type, requestParams, undefined).then(
 							(result) => {
 								return result;
 							},
@@ -1668,7 +1649,7 @@ export class LanguageClient {
 			// Edit Data Requests
 			commitEdit(ownerUri: string): Thenable<void> {
 				let params: EditCommitParams = { ownerUri: ownerUri };
-				return self.sendRequest(EditCommitRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, EditCommitRequest.type, params, undefined).then(
 					(result) => {
 						return undefined;
 					},
@@ -1681,7 +1662,7 @@ export class LanguageClient {
 
 			createRow(ownerUri: string): Thenable<EditCreateRowResult> {
 				let params: EditCreateRowParams = { ownerUri: ownerUri };
-				return self.sendRequest(EditCreateRowRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, EditCreateRowRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1694,7 +1675,7 @@ export class LanguageClient {
 
 			deleteRow(ownerUri: string, rowId: number): Thenable<void> {
 				let params: EditDeleteRowParams = { ownerUri: ownerUri, rowId: rowId };
-				return self.sendRequest(EditDeleteRowRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, EditDeleteRowRequest.type, params, undefined).then(
 					(result) => {
 						return undefined;
 					},
@@ -1707,7 +1688,7 @@ export class LanguageClient {
 
 			disposeEdit(ownerUri: string): Thenable<void> {
 				let params: EditDisposeParams = { ownerUri: ownerUri };
-				return self.sendRequest(EditDisposeRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, EditDisposeRequest.type, params, undefined).then(
 					(result) => {
 						return undefined;
 					},
@@ -1721,7 +1702,7 @@ export class LanguageClient {
 			initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void> {
 				let filters: EditInitializeFiltering = { LimitResults: rowLimit };
 				let params: EditInitializeParams = { ownerUri: ownerUri, schemaName: schemaName, objectName: objectName, objectType: objectType, filters: filters };
-				return self.sendRequest(EditInitializeRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, EditInitializeRequest.type, params, undefined).then(
 					(result) => {
 						return undefined;
 					},
@@ -1734,7 +1715,7 @@ export class LanguageClient {
 
 			revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<EditRevertCellResult> {
 				let params: EditRevertCellParams = { ownerUri: ownerUri, rowId: rowId, columnId: columnId };
-				return self.sendRequest(EditRevertCellRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, EditRevertCellRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1747,7 +1728,7 @@ export class LanguageClient {
 
 			revertRow(ownerUri: string, rowId: number): Thenable<void> {
 				let params: EditRevertRowParams = { ownerUri: ownerUri, rowId: rowId };
-				return self.sendRequest(EditRevertRowRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, EditRevertRowRequest.type, params, undefined).then(
 					(result) => {
 						return undefined;
 					},
@@ -1760,7 +1741,7 @@ export class LanguageClient {
 
 			updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<EditUpdateCellResult> {
 				let params: EditUpdateCellParams = { ownerUri: ownerUri, rowId: rowId, columnId: columnId, newValue: newValue };
-				return self.sendRequest(EditUpdateCellRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, EditUpdateCellRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1772,7 +1753,7 @@ export class LanguageClient {
 			},
 
 			getEditRows(rowData: EditSubsetParams): Thenable<EditSubsetResult> {
-				return self.sendRequest(EditSubsetRequest.type, rowData, undefined).then(
+				return self.doSendRequest(connection, EditSubsetRequest.type, rowData, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1785,7 +1766,7 @@ export class LanguageClient {
 
 			// Edit Data Event Handlers
 			registerOnEditSessionReady(handler: (ownerUri: string, success: boolean, message: string) => any): void {
-				self.onConnectionReadyNotification(EditSessionReadyNotification.type, (params: EditSessionReadyParams) => {
+				connection.onNotification(EditSessionReadyNotification.type, (params: EditSessionReadyParams) => {
 					handler(params.ownerUri, params.success, params.message);
 				});
 			},
@@ -1793,7 +1774,7 @@ export class LanguageClient {
 
 		let metadataProvider: MetadataProvider = {
 			getMetadata(connectionUri: string): Thenable<ProviderMetadata> {
-				return self.sendRequest(MetadataQueryRequest.type,
+				return self.doSendRequest(connection, MetadataQueryRequest.type,
 					self._c2p.asMetadataQueryParams(connectionUri), undefined).then(
 					self._p2c.asProviderMetadata,
 					(error) => {
@@ -1803,7 +1784,7 @@ export class LanguageClient {
 					);
 			},
 			getDatabases(connectionUri: string): Thenable<string[]> {
-				return self.sendRequest(ListDatabasesRequest.type,
+				return self.doSendRequest(connection, ListDatabasesRequest.type,
 					self._c2p.asListDatabasesParams(connectionUri), undefined).then(
 					(result) => {
 						return result.databaseNames;
@@ -1815,7 +1796,7 @@ export class LanguageClient {
 					);
 			},
 			getTableInfo(connectionUri: string, metadata: ObjectMetadata) {
-				return self.sendRequest(TableMetadataRequest.type,
+				return self.doSendRequest(connection, TableMetadataRequest.type,
 					self._c2p.asTableMetadataParams(connectionUri, metadata), undefined).then(
 					(result) => {
 						return result.columns;
@@ -1827,7 +1808,7 @@ export class LanguageClient {
 					);
 			},
 			getViewInfo(connectionUri: string, metadata: ObjectMetadata) {
-				return self.sendRequest(ViewMetadataRequest.type,
+				return self.doSendRequest(connection, ViewMetadataRequest.type,
 					self._c2p.asTableMetadataParams(connectionUri, metadata), undefined).then(
 					(result) => {
 						return result.columns;
@@ -1843,7 +1824,7 @@ export class LanguageClient {
 		let adminServicesProvider: AdminServicesProvider = {
 			createDatabase(connectionUri: string, database: DatabaseInfo): Thenable<CreateDatabaseResponse> {
 				let params: CreateDatabaseParams = { ownerUri: connectionUri, databaseInfo: database };
-				return self.sendRequest(CreateDatabaseRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, CreateDatabaseRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1855,7 +1836,7 @@ export class LanguageClient {
 			},
 			getDefaultDatabaseInfo(connectionUri: string): Thenable<DatabaseInfo> {
 				let params: DefaultDatabaseInfoParams = { ownerUri: connectionUri };
-				return self.sendRequest(DefaultDatabaseInfoRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, DefaultDatabaseInfoRequest.type, params, undefined).then(
 					(result) => {
 						return result.defaultDatabaseInfo;
 					},
@@ -1867,7 +1848,7 @@ export class LanguageClient {
 			},
 			getDatabaseInfo(connectionUri: string): Thenable<DatabaseInfo> {
 				let params: GetDatabaseInfoParams = { ownerUri: connectionUri };
-				return self.sendRequest(GetDatabaseInfoRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, GetDatabaseInfoRequest.type, params, undefined).then(
 					(result) => {
 						return result.databaseInfo;
 					},
@@ -1879,7 +1860,7 @@ export class LanguageClient {
 			},
 			createLogin(connectionUri: string, login: LoginInfo): Thenable<CreateLoginResponse> {
 				let params: CreateLoginParams = { ownerUri: connectionUri, loginInfo: login };
-				return self.sendRequest(CreateLoginRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, CreateLoginRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1894,7 +1875,7 @@ export class LanguageClient {
 		let disasterRecoveryProvider: DisasterRecoveryProvider = {
 			backup(connectionUri: string, backupInfo: BackupInfo, taskExecutionMode: TaskExecutionMode): Thenable<BackupResponse> {
 				let params: BackupParams = { ownerUri: connectionUri, backupInfo: backupInfo, taskExecutionMode: taskExecutionMode };
-				return self.sendRequest(BackupRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, BackupRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1906,7 +1887,7 @@ export class LanguageClient {
 			},
 			getBackupConfigInfo(connectionUri: string): Thenable<BackupConfigInfo> {
 				let params: DefaultDatabaseInfoParams = { ownerUri: connectionUri };
-				return self.sendRequest(BackupConfigInfoRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, BackupConfigInfoRequest.type, params, undefined).then(
 					(result) => {
 						return result.backupConfigInfo;
 					},
@@ -1917,7 +1898,7 @@ export class LanguageClient {
 				);
 			},
 			getRestorePlan(ownerUri: string, restoreInfo: RestoreInfo): Thenable<RestorePlanResponse> {
-				return self.sendRequest(RestorePlanRequest.type, self._c2p.asRestoreParams(ownerUri, restoreInfo), undefined).then(
+				return self.doSendRequest(connection, RestorePlanRequest.type, self._c2p.asRestoreParams(ownerUri, restoreInfo), undefined).then(
 					self._p2c.asRestorePlanResponse,
 					error => {
 						self.logFailedRequest(RestorePlanRequest.type, error);
@@ -1926,7 +1907,7 @@ export class LanguageClient {
 				);
 			},
 			restore(ownerUri: string, restoreInfo: RestoreInfo): Thenable<RestoreResponse> {
-				return self.sendRequest(RestoreRequest.type, self._c2p.asRestoreParams(ownerUri, restoreInfo), undefined).then(
+				return self.doSendRequest(connection, RestoreRequest.type, self._c2p.asRestoreParams(ownerUri, restoreInfo), undefined).then(
 					self._p2c.asRestoreResponse,
 					error => {
 						self.logFailedRequest(RestoreRequest.type, error);
@@ -1935,7 +1916,7 @@ export class LanguageClient {
 				);
 			},
 			getRestoreConfigInfo(ownerUri: string): Thenable<RestoreConfigInfo> {
-				return self.sendRequest(RestoreConfigInfoRequest.type, self._c2p.asRestoreConfigInfoParams(ownerUri), undefined).then(
+				return self.doSendRequest(connection, RestoreConfigInfoRequest.type, self._c2p.asRestoreConfigInfoParams(ownerUri), undefined).then(
 					self._p2c.asRestoreConfigInfo,
 					error => {
 						self.logFailedRequest(RestorePlanRequest.type, error);
@@ -1944,7 +1925,7 @@ export class LanguageClient {
 				);
 			},
 			cancelRestorePlan(ownerUri: string, restoreInfo: RestoreInfo): Thenable<boolean> {
-				return self.sendRequest(CancelRestorePlanRequest.type, self._c2p.asRestoreParams(ownerUri, restoreInfo), undefined).then(
+				return self.doSendRequest(connection, CancelRestorePlanRequest.type, self._c2p.asRestoreParams(ownerUri, restoreInfo), undefined).then(
 					(result) => {
 						return result;
 					},
@@ -1958,7 +1939,7 @@ export class LanguageClient {
 
 		let objectExplorer: ObjectExplorerProvider = {
 			createNewSession(connInfo: ConnectionInfo) {
-				return self.sendRequest(ObjectExplorerCreateSessionRequest.type,
+				return self.doSendRequest(connection, ObjectExplorerCreateSessionRequest.type,
 					self._c2p.asConnectionDetail(connInfo), undefined).then(
 					self._p2c.asObjectExplorerCreateSessionResponse,
 					(error) => {
@@ -1969,7 +1950,7 @@ export class LanguageClient {
 			},
 
 			expandNode(nodeInfo: ExpandNodeInfo) {
-				return self.sendRequest(ObjectExplorerExpandRequest.type,
+				return self.doSendRequest(connection, ObjectExplorerExpandRequest.type,
 					self._c2p.asExpandInfo(nodeInfo), undefined).then(
 					(result) => {
 						return result;
@@ -1982,7 +1963,7 @@ export class LanguageClient {
 			},
 
 			refreshNode(nodeInfo: ExpandNodeInfo) {
-				return self.sendRequest(ObjectExplorerRefreshRequest.type,
+				return self.doSendRequest(connection, ObjectExplorerRefreshRequest.type,
 					self._c2p.asExpandInfo(nodeInfo), undefined).then(
 					(result) => {
 						return result;
@@ -1995,7 +1976,7 @@ export class LanguageClient {
 			},
 
 			closeSession(closeSessionInfo: ObjectExplorerCloseSessionInfo) {
-				return self.sendRequest(ObjectExplorerCloseSessionRequest.type,
+				return self.doSendRequest(connection, ObjectExplorerCloseSessionRequest.type,
 					self._c2p.asCloseSessionInfo(closeSessionInfo), undefined).then(
 					self._p2c.asObjectExplorerCloseSessionResponse,
 					(error) => {
@@ -2006,7 +1987,7 @@ export class LanguageClient {
 			},
 
 			registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any) {
-				self.onConnectionReadyNotification(ObjectExplorerCreateSessionCompleteNotification.type, (params: ObjectExplorerSession) => {
+				connection.onNotification(ObjectExplorerCreateSessionCompleteNotification.type, (params: ObjectExplorerSession) => {
 					handler({
 						sessionId: params.sessionId,
 						success: params.success,
@@ -2017,7 +1998,7 @@ export class LanguageClient {
 			},
 
 			registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any) {
-				self.onConnectionReadyNotification(ObjectExplorerExpandCompleteNotification.type, (params: ObjectExplorerExpandInfo) => {
+				connection.onNotification(ObjectExplorerExpandCompleteNotification.type, (params: ObjectExplorerExpandInfo) => {
 					handler({
 						sessionId: params.sessionId,
 						nodes: params.nodes,
@@ -2033,7 +2014,7 @@ export class LanguageClient {
 		let scriptingProvider: ScriptingProvider = {
 
 			scriptAsOperation(connectionUri: string, operation: ScriptOperation, metadata: ObjectMetadata, paramDetails: ScriptingParamDetails): Thenable<ScriptingResult> {
-				return self.sendRequest(ScriptingRequest.type,
+				return self.doSendRequest(connection, ScriptingRequest.type,
 					self._c2p.asScriptingParams(connectionUri, operation, metadata, paramDetails), undefined).then(
 					self._p2c.asScriptingResult,
 					(error) => {
@@ -2044,7 +2025,7 @@ export class LanguageClient {
 			},
 
 			registerOnScriptingComplete(handler: (scriptingCompleteResult: ScriptingCompleteResult) => any) {
-				self.onConnectionReadyNotification(ScriptingCompleteNotification.type, (params: ScriptingCompleteResult) => {
+				connection.onNotification(ScriptingCompleteNotification.type, (params: ScriptingCompleteResult) => {
 					handler({
 						canceled: params.canceled,
 						errorDetails: params.errorDetails,
@@ -2059,7 +2040,7 @@ export class LanguageClient {
 
 		let taskServicesProvider: TaskServicesProvider = {
 			getAllTasks(listTasksParams: ListTasksParams): Thenable<ListTasksResponse> {
-				return self.sendRequest(ListTasksRequest.type,
+				return self.doSendRequest(connection, ListTasksRequest.type,
 					self._c2p.asListTasksParams(listTasksParams), undefined).then(
 					self._p2c.asListTasksResponse,
 					(error) => {
@@ -2070,7 +2051,7 @@ export class LanguageClient {
 
 			},
 			cancelTask(cancelTaskParams: CancelTaskParams): Thenable<boolean> {
-				return self.sendRequest(CancelTaskRequest.type,
+				return self.doSendRequest(connection, CancelTaskRequest.type,
 					self._c2p.asCancelTaskParams(cancelTaskParams), undefined).then(
 					(result) => {
 						return result;
@@ -2083,13 +2064,13 @@ export class LanguageClient {
 			},
 
 			registerOnTaskCreated(handler: (response: TaskInfo) => any) {
-				self.onConnectionReadyNotification(TaskCreatedNotification.type, (params: TaskInfo) => {
+				connection.onNotification(TaskCreatedNotification.type, (params: TaskInfo) => {
 					handler(self._p2c.asTaskInfo(params));
 				});
 			},
 
 			registerOnTaskStatusChanged(handler: (response: TaskProgressInfo) => any) {
-				self.onConnectionReadyNotification(TaskStatusChangedNotification.type, (params: TaskProgressInfo) => {
+				connection.onNotification(TaskStatusChangedNotification.type, (params: TaskProgressInfo) => {
 					handler({
 						taskId: params.taskId,
 						status: params.status,
@@ -2104,7 +2085,7 @@ export class LanguageClient {
 		let fileBrowserProvider: FileBrowserProvider = {
 			openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> {
 				let params: FileBrowserOpenParams = { ownerUri: ownerUri, expandPath: expandPath, fileFilters: fileFilters, changeFilter: changeFilter };
-				return self.sendRequest(FileBrowserOpenRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, FileBrowserOpenRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -2116,14 +2097,14 @@ export class LanguageClient {
 			},
 
 			registerOnFileBrowserOpened(handler: (response: FileBrowserOpenedParams) => any) {
-				self.onConnectionReadyNotification(FileBrowserOpenedNotification.type, (params: FileBrowserOpenedParams) => {
+				connection.onNotification(FileBrowserOpenedNotification.type, (params: FileBrowserOpenedParams) => {
 					handler(params);
 				});
 			},
 
 			expandFolderNode(ownerUri: string, expandPath: string): Thenable<boolean> {
 				let params: FileBrowserExpandParams = { ownerUri: ownerUri, expandPath: expandPath };
-				return self.sendRequest(FileBrowserExpandRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, FileBrowserExpandRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -2135,14 +2116,14 @@ export class LanguageClient {
 			},
 
 			registerOnFolderNodeExpanded(handler: (response: FileBrowserExpandedParams) => any) {
-				self.onConnectionReadyNotification(FileBrowserExpandedNotification.type, (params: FileBrowserExpandedParams) => {
+				connection.onNotification(FileBrowserExpandedNotification.type, (params: FileBrowserExpandedParams) => {
 					handler(params);
 				});
 			},
 
 			validateFilePaths(ownerUri: string, serviceType: string, selectedFiles: string[]): Thenable<boolean> {
 				let params: FileBrowserValidateParams = { ownerUri: ownerUri, serviceType: serviceType, selectedFiles: selectedFiles };
-				return self.sendRequest(FileBrowserValidateRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, FileBrowserValidateRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -2154,14 +2135,14 @@ export class LanguageClient {
 			},
 
 			registerOnFilePathsValidated(handler: (response: FileBrowserValidatedParams) => any) {
-				self.onConnectionReadyNotification(FileBrowserValidatedNotification.type, (params: FileBrowserValidatedParams) => {
+				connection.onNotification(FileBrowserValidatedNotification.type, (params: FileBrowserValidatedParams) => {
 					handler(params);
 				});
 			},
 
 			closeFileBrowser(ownerUri: string): Thenable<FileBrowserCloseResponse> {
 				let params: FileBrowserCloseParams = { ownerUri: ownerUri };
-				return self.sendRequest(FileBrowserCloseRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, FileBrowserCloseRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -2180,7 +2161,7 @@ export class LanguageClient {
 					options: { }
 				};
 
-				return self.sendRequest(StartProfilingRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, StartProfilingRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},
@@ -2196,7 +2177,7 @@ export class LanguageClient {
 					ownerUri: sessionId
 				};
 
-				return self.sendRequest(StopProfilingRequest.type, params, undefined).then(
+				return self.doSendRequest(connection, StopProfilingRequest.type, params, undefined).then(
 					(result) => {
 						return result;
 					},

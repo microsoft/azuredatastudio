@@ -19,7 +19,6 @@ export namespace Constants {
 	export const neverShowAgain = 'Do not show again';
 	export const ignorePlatformWarning = 'ignorePlatformWarning';
 	export const usingDefaultPlatformMessage = 'Unknown platform detected, defaulting to Linux_x64 platform';
-	export const serverConnectionMetadata = 'serverConnectionMetadata';
 	export const extensionDeactivated: string = 'de-activated.';
 	export const extensionActivated: string = 'activated.';
 }
