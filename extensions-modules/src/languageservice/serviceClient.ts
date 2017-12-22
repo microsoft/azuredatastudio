@@ -335,8 +335,7 @@ export class SqlToolsServiceClient {
 						synchronize: {
 							configurationSection: SqlToolsServiceClient._constants.extensionConfigSectionName
 						},
-						errorHandler: new LanguageClientErrorHandler(SqlToolsServiceClient._constants),
-						serverConnectionMetadata: this._config.getConfigValue(Constants.serverConnectionMetadata)
+						errorHandler: new LanguageClientErrorHandler(SqlToolsServiceClient._constants)
 					};
 
 					this._serviceStatus.showServiceLoading();
@@ -396,8 +395,7 @@ export class SqlToolsServiceClient {
 			synchronize: {
 				configurationSection: SqlToolsServiceClient._constants.extensionConfigSectionName
 			},
-			errorHandler: new LanguageClientErrorHandler(SqlToolsServiceClient._constants),
-			serverConnectionMetadata: this._config.getConfigValue(Constants.serverConnectionMetadata)
+			errorHandler: new LanguageClientErrorHandler(SqlToolsServiceClient._constants)
 		};
 
 		this._serviceStatus.showServiceLoading();
