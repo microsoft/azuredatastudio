@@ -38,28 +38,28 @@ export const Extensions = {
 export interface IBackupProviderRegistry {
 	registerBackupProvider(id: string, properties: BackupProviderProperties): void;
 	getProperties(id: string): BackupProviderProperties;
-	readonly onNewProvider: Event<{id: string, properties: BackupProviderProperties}>;
-	readonly providers: {id: string, properties: BackupProviderProperties}[];
+	readonly onNewProvider: Event<{ id: string, properties: BackupProviderProperties }>;
+	readonly providers: { id: string, properties: BackupProviderProperties }[];
 }
 
 class BackupProviderRegistryImpl implements IBackupProviderRegistry {
 	private _providers = new Map<string, BackupProviderProperties>();
-	private _onNewProvider = new Emitter<{id: string, properties: BackupProviderProperties}>();
-	public readonly onNewProvider: Event<{id: string, properties: BackupProviderProperties}> = this._onNewProvider.event;
+	private _onNewProvider = new Emitter<{ id: string, properties: BackupProviderProperties }>();
+	public readonly onNewProvider: Event<{ id: string, properties: BackupProviderProperties }> = this._onNewProvider.event;
 
 	public registerBackupProvider(id: string, properties: BackupProviderProperties): void {
 		this._providers.set(id, properties);
-		this._onNewProvider.fire({id, properties});
+		this._onNewProvider.fire({ id, properties });
 	}
 
 	public getProperties(id: string): BackupProviderProperties {
 		return this._providers.get(id);
 	}
 
-	public get providers(): {id: string, properties: BackupProviderProperties}[] {
+	public get providers(): { id: string, properties: BackupProviderProperties }[] {
 		const out = [];
 		this._providers.forEach((v, k) => {
-			out.push({id: k, propreties: v});
+			out.push({ id: k, propreties: v });
 		});
 		return out;
 	}

@@ -136,7 +136,7 @@ export interface IConnectionManagementService {
 
 	clearRecentConnectionsList(): void;
 
-	clearRecentConnection(connectionProfile: IConnectionProfile) : void;
+	clearRecentConnection(connectionProfile: IConnectionProfile): void;
 
 	getActiveConnections(): ConnectionProfile[];
 

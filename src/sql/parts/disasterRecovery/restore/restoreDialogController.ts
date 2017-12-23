@@ -39,7 +39,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		const registry = Registry.as<IRestoreProviderRegistry>(Extensions.RestoreProviderContributions);
-		let providerRegistration = (e: {id: string, properties: RestoreProviderProperties}) => {
+		let providerRegistration = (e: { id: string, properties: RestoreProviderProperties }) => {
 			this._providers.set(e.id, e.properties);
 		};
 

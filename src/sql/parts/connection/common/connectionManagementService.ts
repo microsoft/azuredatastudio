@@ -62,7 +62,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	_serviceBrand: any;
 
-	private _providers = new Map<string, { onReady: Thenable<data.ConnectionProvider>, properties: ConnectionProviderProperties}>();
+	private _providers = new Map<string, { onReady: Thenable<data.ConnectionProvider>, properties: ConnectionProviderProperties }>();
 
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 
@@ -128,7 +128,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
 
-		let providerRegistration = (p: {id: string, properties: ConnectionProviderProperties }) => {
+		let providerRegistration = (p: { id: string, properties: ConnectionProviderProperties }) => {
 			let provider = {
 				onReady: new Deferred<data.ConnectionProvider>(),
 				properties: p.properties
@@ -625,7 +625,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStore.clearRecentlyUsed();
 	}
 
-	public clearRecentConnection(connectionProfile: IConnectionProfile) : void {
+	public clearRecentConnection(connectionProfile: IConnectionProfile): void {
 		this._connectionStore.removeConnectionToMemento(connectionProfile, Constants.recentConnections);
 	}
 

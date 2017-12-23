@@ -12,9 +12,9 @@ import * as Utils from './utils';
 import * as data from 'data';
 import { StopWatch } from 'vs/base/common/stopwatch';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IConnectionProviderRegistry, Extensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension'
+import { IConnectionProviderRegistry, Extensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
-const registry = Registry.as<IConnectionProviderRegistry>(Extensions.ConnectionProviderContributions)
+const registry = Registry.as<IConnectionProviderRegistry>(Extensions.ConnectionProviderContributions);
 
 export class ConnectionStatusManager {
 
