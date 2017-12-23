@@ -29,12 +29,14 @@ import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { warn } from 'sql/base/common/log';
 import { IResourceProviderService } from 'sql/parts/accountManagement/common/interfaces';
 import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
+import { Extensions as ConnectionProviderExtensions, ConnectionProviderProperties, IConnectionProviderRegistry } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 import * as sqlops from 'sqlops';
 
 import * as nls from 'vs/nls';
+import * as map from 'vs/base/common/map';
 import * as errors from 'vs/base/common/errors';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
@@ -56,25 +58,23 @@ import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { Deferred } from 'sql/base/common/promise';
 
-export class ConnectionManagementService implements IConnectionManagementService {
+export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
 	_serviceBrand: any;
 
-	private disposables: IDisposable[] = [];
-
-	private _providers: { [handle: string]: sqlops.ConnectionProvider; } = Object.create(null);
+	private _providers = new Map<string, { onReady: Thenable<sqlops.ConnectionProvider>, properties: ConnectionProviderProperties}>();
 
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 
 	private _connectionStatusManager: ConnectionStatusManager;
 
-	private _onAddConnectionProfile: Emitter<IConnectionProfile>;
-	private _onDeleteConnectionProfile: Emitter<void>;
-	private _onConnect: Emitter<IConnectionParams>;
-	private _onDisconnect: Emitter<IConnectionParams>;
-	private _onConnectRequestSent: Emitter<void>;
-	private _onConnectionChanged: Emitter<IConnectionParams>;
-	private _onLanguageFlavorChanged: Emitter<sqlops.DidChangeLanguageFlavorParams>;
+	private _onAddConnectionProfile = new Emitter<IConnectionProfile>();
+	private _onDeleteConnectionProfile = new Emitter<void>();
+	private _onConnect = new Emitter<IConnectionParams>();
+	private _onDisconnect = new Emitter<IConnectionParams>();
+	private _onConnectRequestSent = new Emitter<void>();
+	private _onConnectionChanged = new Emitter<IConnectionParams>();
+	private _onLanguageFlavorChanged = new Emitter<sqlops.DidChangeLanguageFlavorParams>();
 
 	private _connectionGlobalStatus: ConnectionGlobalStatus;
 
@@ -101,6 +101,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		@IViewletService private _viewletService: IViewletService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService
 	) {
+		super();
 		if (this._instantiationService) {
 			this._configurationEditService = this._instantiationService.createInstance(ConfigurationEditingService);
 		}
@@ -109,6 +110,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		if (!this._connectionMemento) {
 			this._connectionMemento = new Memento('ConnectionManagement');
 		}
+
 		if (!this._connectionStore) {
 			this._connectionStore = new ConnectionStore(_storageService, this._connectionMemento,
 				this._configurationEditService, this._workspaceConfigurationService, this._credentialsService, this._capabilitiesService);
@@ -117,17 +119,6 @@ export class ConnectionManagementService implements IConnectionManagementService
 		this._connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService);
 		this._connectionGlobalStatus = new ConnectionGlobalStatus(this._statusBarService);
 
-		// Setting up our event emitters
-		this._onAddConnectionProfile = new Emitter<IConnectionProfile>();
-		this._onDeleteConnectionProfile = new Emitter<void>();
-		this._onConnect = new Emitter<IConnectionParams>();
-		this._onDisconnect = new Emitter<IConnectionParams>();
-		this._onConnectionChanged = new Emitter<IConnectionParams>();
-		this._onConnectRequestSent = new Emitter<void>();
-		this._onLanguageFlavorChanged = new Emitter<sqlops.DidChangeLanguageFlavorParams>();
-
-		this._onProvidersReady = new Deferred();
-
 		// Register Statusbar item
 		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
 			ConnectionStatusbarItem,
@@ -135,24 +126,28 @@ export class ConnectionManagementService implements IConnectionManagementService
 			100 /* High Priority */
 		));
 
-		if (_capabilitiesService && _capabilitiesService.onProviderRegisteredEvent) {
-			_capabilitiesService.onProviderRegisteredEvent((capabilities => {
-				if (capabilities.providerName === 'MSSQL') {
-					if (!this.hasRegisteredServers()) {
-						// prompt the user for a new connection on startup if no profiles are registered
-						this.showConnectionDialog();
-					}
-				}
-			}));
+		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
+
+		let providerRegistration = (p: {id: string, properties: ConnectionProviderProperties }) => {
+			let provider = {
+				onReady: new Deferred<sqlops.ConnectionProvider>(),
+				properties: p.properties
+			};
+			this._providers.set(p.id, provider);
+		};
+
+		registry.onNewProvider(providerRegistration, this);
+		registry.providers.map(providerRegistration);
+
+		if (!this.hasRegisteredServers()) {
+			// prompt the user for a new connection on startup if no profiles are registered
+			this.showConnectionDialog();
 		}
 
-		this.disposables.push(this._onAddConnectionProfile);
-		this.disposables.push(this._onDeleteConnectionProfile);
-
 		// Refresh editor titles when connections start/end/change to ensure tabs are colored correctly
-		this.onConnectionChanged(() => this.refreshEditorTitles());
-		this.onConnect(() => this.refreshEditorTitles());
-		this.onDisconnect(() => this.refreshEditorTitles());
+		this.onConnectionChanged(this.refreshEditorTitles, this);
+		this.onConnect(this.refreshEditorTitles, this);
+		this.onDisconnect(this.refreshEditorTitles, this);
 	}
 
 	// Event Emitters
@@ -184,37 +179,14 @@ export class ConnectionManagementService implements IConnectionManagementService
 		return this._onLanguageFlavorChanged.event;
 	}
 
-	private _onProvidersReady: Deferred<void>;
-
-	private onProvidersReady(): Promise<void> {
-		return this._onProvidersReady.promise;
-	}
-
-	private _providerCount: number = 0;
-
 	// Connection Provider Registration
 	public registerProvider(providerId: string, provider: sqlops.ConnectionProvider): void {
-		this._providers[providerId] = provider;
-
-		// temporarily close splash screen when a connection provider has been registered
-		// @todo remove this code once a proper initialization event is available (karlb 4/1/2017)
-		++this._providerCount;
-
-		this._onProvidersReady.resolve();
-
-		if (this._providerCount === 1) {
-			// show the Registered Server viewlet
-			let startupConfig = this._workspaceConfigurationService.getConfiguration('startup');
-			if (startupConfig) {
-				let showServerViewlet = <boolean>startupConfig['alwaysShowServersView'];
-				if (showServerViewlet) {
-					// only show the Servers viewlet if there isn't another active viewlet
-					if (!this._viewletService.getActiveViewlet()) {
-						this._commandService.executeCommand('workbench.view.connections', {});
-					}
-				}
-			}
+		if (!this._providers.has(providerId)) {
+			console.error('Provider', providerId, 'attempted to register but has no metadata');
 		}
+
+		// we know this is a deferred promise because we made it
+		(this._providers.get(providerId).onReady as Deferred<sqlops.ConnectionProvider>).resolve(provider);
 	}
 
 	/**
@@ -674,7 +646,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 	}
 
 	public getProviderNames(): string[] {
-		return Object.keys(this._providers);
+		return map.keys(this._providers);
 	}
 
 	public getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities {
@@ -758,7 +730,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 	 * @memberof ConnectionManagementService
 	 */
 	public doChangeLanguageFlavor(uri: string, language: string, provider: string): void {
-		if (provider in this._providers) {
+		if (this._providers.has(provider)) {
 			this._onLanguageFlavorChanged.fire({
 				uri: uri,
 				language: language,
@@ -778,7 +750,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		if (!this.getProviderIdFromUri(uri)) {
 			// Lookup the default settings and use this
 			let defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, Constants.defaultEngine);
-			if (defaultProvider && defaultProvider in this._providers) {
+			if (defaultProvider && this._providers.has(defaultProvider)) {
 				// Only set a default if it's in the list of registered providers
 				this.doChangeLanguageFlavor(uri, 'sql', defaultProvider);
 			}
@@ -794,15 +766,13 @@ export class ConnectionManagementService implements IConnectionManagementService
 		// setup URI to provider ID map for connection
 		this._uriToProvider[uri] = connection.providerName;
 
-		return new Promise<boolean>((resolve, reject) => {
-			this.onProvidersReady().then(() => {
-				this._providers[connection.providerName].connect(uri, connectionInfo);
-				this._onConnectRequestSent.fire();
+		return this._providers.get(connection.providerName).onReady.then(provider => {
+			provider.connect(uri, connectionInfo);
+			this._onConnectRequestSent.fire();
 
-				// TODO make this generic enough to handle non-SQL languages too
-				this.doChangeLanguageFlavor(uri, 'sql', connection.providerName);
-				resolve(true);
-			});
+			// TODO make this generic enough to handle non-SQL languages too
+			this.doChangeLanguageFlavor(uri, 'sql', connection.providerName);
+			return true;
 		});
 	}
 
@@ -812,9 +782,9 @@ export class ConnectionManagementService implements IConnectionManagementService
 			return Promise.resolve(false);
 		}
 
-		return new Promise<boolean>((resolve, reject) => {
-			this._providers[providerId].disconnect(uri);
-			resolve(true);
+		return this._providers.get(providerId).onReady.then(provider => {
+			provider.disconnect(uri);
+			return true;
 		});
 	}
 
@@ -824,9 +794,9 @@ export class ConnectionManagementService implements IConnectionManagementService
 			return Promise.resolve(false);
 		}
 
-		return new Promise<boolean>((resolve, reject) => {
-			this._providers[providerId].cancelConnect(uri);
-			resolve(true);
+		return this._providers.get(providerId).onReady.then(provider => {
+			provider.cancelConnect(uri);
+			return true;
 		});
 	}
 
@@ -836,15 +806,12 @@ export class ConnectionManagementService implements IConnectionManagementService
 			return Promise.resolve(undefined);
 		}
 
-		return new Promise<sqlops.ListDatabasesResult>((resolve, reject) => {
-			let provider = this._providers[providerId];
-			provider.listDatabases(uri).then(result => {
+		return this._providers.get(providerId).onReady.then(provider => {
+			return provider.listDatabases(uri).then(result => {
 				if (result && result.databaseNames) {
 					result.databaseNames.sort();
 				}
-				resolve(result);
-			}, error => {
-				reject(error);
+				return result;
 			});
 		});
 	}
@@ -936,10 +903,6 @@ export class ConnectionManagementService implements IConnectionManagementService
 	}
 
 	public onIntelliSenseCacheComplete(handle: number, connectionUri: string): void {
-	}
-
-	public dispose(): void {
-		this.disposables = dispose(this.disposables);
 	}
 
 	public shutdown(): void {
@@ -1208,12 +1171,13 @@ export class ConnectionManagementService implements IConnectionManagementService
 				return Promise.resolve(false);
 			}
 
-			let provider = this._providers[providerId];
-			return provider.changeDatabase(connectionUri, databaseName).then(result => {
-				if (result) {
-					this.getConnectionProfile(connectionUri).databaseName = databaseName;
-				}
-				return result;
+			return this._providers.get(providerId).onReady.then(provider => {
+				return provider.changeDatabase(connectionUri, databaseName).then(result => {
+					if (result) {
+						this.getConnectionProfile(connectionUri).databaseName = databaseName;
+					}
+					return result;
+				});
 			});
 		}
 		return Promise.resolve(false);
@@ -1322,8 +1286,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 				return Promise.reject('No provider corresponding to the given URI');
 			}
 
-			let provider = this._providers[providerId];
-			return provider.rebuildIntelliSenseCache(connectionUri);
+			return this._providers.get(providerId).onReady.then(provider => provider.rebuildIntelliSenseCache(connectionUri));
 		}
 		return Promise.reject('The given URI is not currently connected');
 	}

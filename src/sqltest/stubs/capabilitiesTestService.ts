@@ -7,16 +7,15 @@
 import * as sqlops from 'sqlops';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+
 import Event from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 
 export class CapabilitiesTestService implements ICapabilitiesService {
 
 	public _serviceBrand: any;
-
-	private _providers: sqlops.CapabilitiesProvider[] = [];
 
 	private _capabilities: sqlops.DataProtocolServerCapabilities[] = [];
 
@@ -35,7 +34,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.serverName,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'databaseName',
@@ -47,7 +46,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.databaseName,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'userName',
@@ -59,7 +58,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.userName,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'authenticationType',
@@ -71,7 +70,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.authType,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'password',
@@ -83,7 +82,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.password,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				}
 			]
 		};
@@ -120,10 +119,6 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 
 	public isFeatureAvailable(featureName: Action, connectionManagementInfo: ConnectionManagementInfo): boolean {
 		return true;
-	}
-
-	public onCapabilitiesReady(): Promise<void> {
-		return Promise.resolve(null);
 	}
 }
 

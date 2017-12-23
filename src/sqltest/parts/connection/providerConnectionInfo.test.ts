@@ -10,7 +10,7 @@ import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConn
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import * as sqlops from 'sqlops';
 import * as assert from 'assert';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('SQL ProviderConnectionInfo tests', () => {
 	let msSQLCapabilities: sqlops.DataProtocolServerCapabilities;
@@ -46,7 +46,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.serverName,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'databaseName',
@@ -58,7 +58,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.databaseName,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'userName',
@@ -70,7 +70,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.userName,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'authenticationType',
@@ -82,7 +82,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.authType,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'password',
@@ -94,7 +94,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.password,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'encrypt',
@@ -106,7 +106,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 					isIdentity: false,
 					isRequired: false,
 					specialValueType: undefined,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				}
 			]
 		};

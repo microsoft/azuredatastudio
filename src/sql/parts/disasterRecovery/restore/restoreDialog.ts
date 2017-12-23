@@ -17,6 +17,8 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import * as strings from 'vs/base/common/strings';
+import * as DOM from 'vs/base/browser/dom';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
@@ -36,9 +38,7 @@ import * as FileValidationConstants from 'sql/parts/fileBrowser/common/fileValid
 import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
-import * as DOM from 'vs/base/browser/dom';
 import * as sqlops from 'sqlops';
-import * as strings from 'vs/base/common/strings';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 interface FileListElement {

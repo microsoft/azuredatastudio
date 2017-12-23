@@ -292,31 +292,23 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._params = params;
 		this._inputModel = model;
 
-		return new Promise<void>((resolve, reject) => {
-			// only create the provider maps first time the dialog gets called
-			let capabilitiesPromise: Promise<void> = Promise.resolve();
-			if (this._providerTypes.length === 0) {
-				capabilitiesPromise = this._capabilitiesService.onCapabilitiesReady().then(() => {
-					let capabilities = this._capabilitiesService.getCapabilities();
-					capabilities.forEach(c => {
-						this.cacheCapabilities(c);
-					});
-				});
+		if (this._providerTypes.length === 0) {
+			let capabilities = this._capabilitiesService.getCapabilities();
+			capabilities.forEach(c => {
+				this.cacheCapabilities(c);
+			});
+		}
+
+		this.updateModelServerCapabilities(model);
+		// If connecting from a query editor set "save connection" to false
+		if (params && params.input && params.connectionType === ConnectionType.editor) {
+			this._model.saveProfile = false;
+		}
+
+		return this.showDialogWithModel().then(() => {
+			if (connectionResult && connectionResult.errorMessage) {
+				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
 			}
-
-			capabilitiesPromise.then(success => {
-				this.updateModelServerCapabilities(model);
-				// If connecting from a query editor set "save connection" to false
-				if (params && params.input && params.connectionType === ConnectionType.editor) {
-					this._model.saveProfile = false;
-				}
-
-				resolve(this.showDialogWithModel().then(() => {
-					if (connectionResult && connectionResult.errorMessage) {
-						this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
-					}
-				}));
-			}, err => reject(err));
 		});
 	}
 

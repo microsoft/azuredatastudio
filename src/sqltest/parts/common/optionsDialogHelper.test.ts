@@ -5,12 +5,14 @@
 
 'use strict';
 import * as OptionsDialogHelper from 'sql/base/browser/ui/modal/optionsDialogHelper';
-import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+
 import * as sqlops from 'sqlops';
+
+import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Builder, $ } from 'vs/base/browser/builder';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('Advanced options helper tests', () => {
 	var possibleInputs: string[];

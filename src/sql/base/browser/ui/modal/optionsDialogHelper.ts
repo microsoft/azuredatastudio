@@ -6,15 +6,16 @@
 'use strict';
 
 import * as DialogHelper from './dialogHelper';
-import { Builder } from 'vs/base/browser/builder';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import * as types from 'vs/base/common/types';
-import * as sqlops from 'sqlops';
-import { localize } from 'vs/nls';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import * as sqlops from 'sqlops';
+
+import { localize } from 'vs/nls';
+import * as types from 'vs/base/common/types';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
+import { Builder } from 'vs/base/browser/builder';
 
 export interface IOptionElement {
 	optionWidget: any;

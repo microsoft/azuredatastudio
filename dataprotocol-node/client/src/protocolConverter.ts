@@ -422,27 +422,6 @@ export function createConverter(uriConverter?: URIConverter): Converter {
 		return connSummary;
 	}
 
-	function asServiceOptionType(val: string): data.ServiceOptionType {
-		if (val === 'string') {
-			return data.ServiceOptionType.string;
-		} else if (val === 'multistring') {
-			return data.ServiceOptionType.multistring;
-		} else if (val === 'password') {
-			return data.ServiceOptionType.password;
-		} else if (val === 'number') {
-			return data.ServiceOptionType.number;
-		} else if (val === 'boolean') {
-			return data.ServiceOptionType.boolean;
-		} else if (val === 'category') {
-			return data.ServiceOptionType.category;
-		} else if (val === 'object') {
-			return data.ServiceOptionType.object;
-		}
-
-		// assume string for unknown value types
-		return data.ServiceOptionType.string;
-	}
-
 	function asServerCapabilities(result: ls.CapabiltiesDiscoveryResult): data.DataProtocolServerCapabilities {
 		let capabilities: data.DataProtocolServerCapabilities = {
 			protocolVersion: result.capabilities.protocolVersion,
@@ -505,7 +484,7 @@ export function createConverter(uriConverter?: URIConverter): Converter {
 					categoryValues: srcOption.categoryValues,
 					isIdentity: srcOption.isIdentity,
 					isRequired: srcOption.isRequired,
-					valueType: asServiceOptionType(srcOption.valueType),
+					valueType: srcOption.valueType,
 					specialValueType: undefined
 				};
 
@@ -558,7 +537,7 @@ export function createConverter(uriConverter?: URIConverter): Converter {
 			isRequired: srcOption.isRequired,
 			isArray: srcOption.isArray,
 			objectType: srcOption.objectType,
-			valueType: asServiceOptionType(srcOption.valueType),
+			valueType: srcOption.valueType,
 		};
 	}
 

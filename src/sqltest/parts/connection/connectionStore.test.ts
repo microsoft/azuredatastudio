@@ -19,7 +19,7 @@ import * as sqlops from 'sqlops';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { Emitter } from 'vs/base/common/event';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('SQL ConnectionStore tests', () => {
 	let defaultNamedProfile: IConnectionProfile;
@@ -110,7 +110,7 @@ suite('SQL ConnectionStore tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.serverName,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'databaseName',
@@ -122,7 +122,7 @@ suite('SQL ConnectionStore tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.databaseName,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'userName',
@@ -134,7 +134,7 @@ suite('SQL ConnectionStore tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.userName,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'authenticationType',
@@ -146,7 +146,7 @@ suite('SQL ConnectionStore tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.authType,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'password',
@@ -158,7 +158,7 @@ suite('SQL ConnectionStore tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.password,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				}
 			]
 		};

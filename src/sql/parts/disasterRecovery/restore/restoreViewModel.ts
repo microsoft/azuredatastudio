@@ -6,10 +6,10 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
-import * as types from 'vs/base/common/types';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import Event, { Emitter } from 'vs/base/common/event';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import * as types from 'vs/base/common/types';
 
 export interface RestoreOptionsElement {
 	optionMetadata: sqlops.ServiceOption;
