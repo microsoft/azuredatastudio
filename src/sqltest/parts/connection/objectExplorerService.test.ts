@@ -16,6 +16,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import * as data from 'data';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('SQL Object Explorer Service tests', () => {
 	var sqlOEProvider: TypeMoq.Mock<ObjectExplorerProviderTestService>;
@@ -136,7 +137,7 @@ suite('SQL Object Explorer Service tests', () => {
 						isIdentity: true,
 						isRequired: true,
 						specialValueType: 0,
-						valueType: 0
+						valueType: ServiceOptionType.string
 					},
 					{
 						name: 'databaseName',
@@ -148,7 +149,7 @@ suite('SQL Object Explorer Service tests', () => {
 						isIdentity: true,
 						isRequired: true,
 						specialValueType: 1,
-						valueType: 0
+						valueType: ServiceOptionType.string
 					},
 					{
 						name: 'userName',
@@ -160,7 +161,7 @@ suite('SQL Object Explorer Service tests', () => {
 						isIdentity: true,
 						isRequired: true,
 						specialValueType: 3,
-						valueType: 0
+						valueType: ServiceOptionType.string
 					},
 					{
 						name: 'authenticationType',
@@ -172,7 +173,7 @@ suite('SQL Object Explorer Service tests', () => {
 						isIdentity: true,
 						isRequired: true,
 						specialValueType: 2,
-						valueType: 0
+						valueType: ServiceOptionType.string
 					},
 					{
 						name: 'password',
@@ -184,7 +185,7 @@ suite('SQL Object Explorer Service tests', () => {
 						isIdentity: true,
 						isRequired: true,
 						specialValueType: 4,
-						valueType: 0
+						valueType: ServiceOptionType.string
 					},
 					{
 						name: 'encrypt',
@@ -196,7 +197,7 @@ suite('SQL Object Explorer Service tests', () => {
 						isIdentity: false,
 						isRequired: false,
 						specialValueType: undefined,
-						valueType: 0
+						valueType: ServiceOptionType.string
 					}]
 			},
 			adminServicesProvider: { databaseInfoOptions: [], databaseFileInfoOptions: [], fileGroupInfoOptions: [] },

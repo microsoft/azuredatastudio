@@ -6,28 +6,21 @@
 'use strict';
 
 import * as DialogHelper from './dialogHelper';
-import { Builder } from 'vs/base/browser/builder';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import * as types from 'vs/base/common/types';
-import data = require('data');
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import * as data from 'data';
+
 import { localize } from 'vs/nls';
+import * as types from 'vs/base/common/types';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
+import { Builder } from 'vs/base/browser/builder';
 
 export interface IOptionElement {
 	optionWidget: any;
 	option: data.ServiceOption;
 	optionValue: any;
-}
-
-export enum ServiceOptionType {
-	string = 0,
-	multistring = 1,
-	password = 2,
-	number = 3,
-	category = 4,
-	boolean = 5
 }
 
 export function createOptionElement(option: data.ServiceOption, rowContainer: Builder, options: { [name: string]: any },

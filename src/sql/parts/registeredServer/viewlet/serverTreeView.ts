@@ -121,23 +121,16 @@ export class ServerTreeView {
 			self.refreshTree();
 			let root = <ConnectionProfileGroup>this._tree.getInput();
 			if (root && !root.hasValidConnections) {
-
 				this._treeSelectionHandler.onTreeActionStateChange(true);
 				if (this._capabilitiesService) {
-					this._capabilitiesService.onCapabilitiesReady().then(() => {
-						self.refreshTree();
-						this._treeSelectionHandler.onTreeActionStateChange(false);
-						resolve();
-
-					}, error => {
-						reject(error);
-					});
+					self.refreshTree();
+					this._treeSelectionHandler.onTreeActionStateChange(false);
+					resolve();
 				} else {
 					self.refreshTree();
 					resolve();
 				}
 			} else {
-
 				resolve();
 			}
 		});

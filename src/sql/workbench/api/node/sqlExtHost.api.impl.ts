@@ -22,7 +22,7 @@ import { ExtHostDataProtocol } from 'sql/workbench/api/node/extHostDataProtocol'
 import { ExtHostSerializationProvider } from 'sql/workbench/api/node/extHostSerializationProvider';
 import { ExtHostResourceProvider } from 'sql/workbench/api/node/extHostResourceProvider';
 import { ExtHostThreadService } from 'vs/workbench/services/thread/node/extHostThreadService';
-import * as sqlExtHostTypes from 'sql/workbench/api/node/sqlExtHostTypes';
+import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
 

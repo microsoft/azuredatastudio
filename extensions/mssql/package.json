@@ -536,6 +536,181 @@
           "isArray": false
         }
       ]
+    },
+    "restoreProvider": {
+      "providerId": "MSSQL",
+      "displayName": "Microsoft SQL Server",
+      "restoreOptions": [
+        {
+          "name": "keepReplication",
+          "displayName": "Keep Replication",
+          "description": "Preserve the replication settings (WITH KEEP_REPLICATION)",
+          "groupName": "Restore options",
+          "valueType": "boolean",
+          "defaultValue": "false",
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "name": "replaceDatabase",
+          "displayName": "ReplaceDatabase",
+          "description": "Overwrite the existing database (WITH REPLACE)",
+          "groupName": "Restore options",
+          "valueType": "boolean",
+          "defaultValue": "false",
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "name": "setRestrictedUser",
+          "displayName": "SetRestrictedUser",
+          "description": "Restrict access to the restored database (WITH RESTRICTED_USER)",
+          "groupName": "Restore options",
+          "valueType": "boolean",
+          "defaultValue": "false",
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "name": "recoveryState",
+          "displayName": "Recovery State",
+          "description": "Recovery State",
+          "groupName": "Restore options",
+          "valueType": "category",
+          "defaultValue": "WithRecovery",
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "RESTORE WITH RECOVERY",
+              "name": "WithRecovery"
+            },
+            {
+              "displayName": "RESTORE WITH NORECOVERY",
+              "name": "WithNoRecovery"
+            },
+            {
+              "displayName": "RESTORE WITH STANDBY",
+              "name": "WithStandBy"
+            }
+          ],
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "name": "standbyFile",
+          "displayName": "Standby file",
+          "description": "Standby file",
+          "groupName": "Restore options",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "name": "backupTailLog",
+          "displayName": "Backup Tail Log",
+          "description": "Take tail-log backup before restore",
+          "groupName": "Tail-Log backup",
+          "valueType": "boolean",
+          "defaultValue": "true",
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "name": "backupTailLog",
+          "displayName": "Backup Tail Log",
+          "description": "Take tail-log backup before restore",
+          "groupName": "Tail-Log backup",
+          "valueType": "boolean",
+          "defaultValue": "true",
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "name": "tailLogBackupFile",
+          "displayName": "Tail Log Backup File",
+          "description": "Tail Log Backup File",
+          "groupName": "Tail-Log backup",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "name": "tailLogWithNoRecovery",
+          "displayName": "Tail Log With NoRecovery",
+          "description": "Leave source database in the restoring state(WITH NORECOVERY)",
+          "groupName": "Tail-Log backup",
+          "valueType": "boolean",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "name": "closeExistingConnections",
+          "displayName": "Close Existing Connections",
+          "description": "Close existing connections to destination database",
+          "groupName": "Server connections",
+          "valueType": "boolean",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "name": "relocateDbFiles",
+          "displayName": "Relocate all files",
+          "description": "Relocate all files",
+          "groupName": "Restore database files as",
+          "valueType": "boolean",
+          "defaultValue": "false",
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "name": "dataFileFolder",
+          "displayName": "Data file folder",
+          "description": "Data file folder",
+          "groupName": "Restore database files as",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "name": "logFileFolder",
+          "displayName": "Log file folder",
+          "description": "Log file folder",
+          "groupName": "Restore database files as",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        }
+      ]
     }
   },
   "dependencies": {

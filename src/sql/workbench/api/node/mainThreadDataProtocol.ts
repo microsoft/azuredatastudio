@@ -91,12 +91,6 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			}
 		});
 
-		this._capabilitiesService.registerProvider(<data.CapabilitiesProvider>{
-			getServerCapabilities(client: data.DataProtocolClientCapabilities): Thenable<data.DataProtocolServerCapabilities> {
-				return self._proxy.$getServerCapabilities(handle, client);
-			}
-		});
-
 		// register query provider
 		this._queryManagementService.addQueryRequestHandler(providerId, {
 			cancelQuery(ownerUri: string): Thenable<data.QueryCancelResult> {

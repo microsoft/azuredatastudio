@@ -10,6 +10,7 @@ import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConn
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import data = require('data');
 import * as assert from 'assert';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('SQL ProviderConnectionInfo tests', () => {
 	let msSQLCapabilities: data.DataProtocolServerCapabilities;
@@ -45,7 +46,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: 0,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'databaseName',
@@ -57,7 +58,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: 1,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'userName',
@@ -69,7 +70,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: 3,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'authenticationType',
@@ -81,7 +82,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: 2,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'password',
@@ -93,7 +94,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: 4,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'encrypt',
@@ -105,7 +106,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 					isIdentity: false,
 					isRequired: false,
 					specialValueType: undefined,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				}
 			]
 		};

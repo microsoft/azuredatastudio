@@ -7,8 +7,9 @@
 
 import data = require('data');
 import * as interfaces from 'sql/parts/connection/common/interfaces';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/parts/connection/common/connectionManagement';
+import { ConnectionOptionSpecialType } from 'sql/parts/connection/common/connectionManagement';
 import * as Constants from 'sql/parts/connection/common/constants';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ProviderConnectionInfo implements data.ConnectionInfo {
 

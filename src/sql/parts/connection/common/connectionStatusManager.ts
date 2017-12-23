@@ -11,6 +11,10 @@ import { IConnectionProfile } from './interfaces';
 import * as Utils from './utils';
 import * as data from 'data';
 import { StopWatch } from 'vs/base/common/stopwatch';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { IConnectionProviderRegistry, Extensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension'
+
+const registry = Registry.as<IConnectionProviderRegistry>(Extensions.ConnectionProviderContributions)
 
 export class ConnectionStatusManager {
 
@@ -28,13 +32,10 @@ export class ConnectionStatusManager {
 		if (providerName in this._providerCapabilitiesMap) {
 			result = this._providerCapabilitiesMap[providerName];
 		} else {
-			let capabilities = this._capabilitiesService.getCapabilities();
+			let capabilities = registry.getProperties(providerName);
 			if (capabilities) {
-				let providerCapabilities = capabilities.find(c => c.providerName === providerName);
-				if (providerCapabilities) {
-					this._providerCapabilitiesMap[providerName] = providerCapabilities;
-					result = providerCapabilities;
-				}
+				this._providerCapabilitiesMap[providerName] = capabilities;
+				result = capabilities;
 			}
 		}
 

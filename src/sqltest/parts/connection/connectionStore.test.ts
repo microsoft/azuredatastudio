@@ -19,6 +19,7 @@ import * as data from 'data';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { Emitter } from 'vs/base/common/event';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('SQL ConnectionStore tests', () => {
 	let defaultNamedProfile: IConnectionProfile;
@@ -109,7 +110,7 @@ suite('SQL ConnectionStore tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: 0,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'databaseName',
@@ -121,7 +122,7 @@ suite('SQL ConnectionStore tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: 1,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'userName',
@@ -133,7 +134,7 @@ suite('SQL ConnectionStore tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: 3,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'authenticationType',
@@ -145,7 +146,7 @@ suite('SQL ConnectionStore tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: 2,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'password',
@@ -157,7 +158,7 @@ suite('SQL ConnectionStore tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: 4,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				}
 			]
 		};

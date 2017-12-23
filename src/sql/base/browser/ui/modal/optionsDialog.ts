@@ -29,6 +29,7 @@ import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { SplitView, CollapsibleState } from 'sql/base/browser/ui/splitview/splitview';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { Widget } from 'vs/base/browser/ui/widget';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class CategoryView extends FixedCollapsibleView {
 	private _treecontainer: HTMLElement;
@@ -167,13 +168,13 @@ export class OptionsDialog extends Modal {
 			var widget: Widget = this._optionElements[optionName].optionWidget;
 			var option = this._optionElements[optionName].option;
 			switch (option.valueType) {
-				case OptionsDialogHelper.ServiceOptionType.category:
-				case OptionsDialogHelper.ServiceOptionType.boolean:
+				case ServiceOptionType.category:
+				case ServiceOptionType.boolean:
 					this._register(styler.attachSelectBoxStyler(<SelectBox>widget, this._themeService));
 					break;
-				case OptionsDialogHelper.ServiceOptionType.string:
-				case OptionsDialogHelper.ServiceOptionType.password:
-				case OptionsDialogHelper.ServiceOptionType.number:
+				case ServiceOptionType.string:
+				case ServiceOptionType.password:
+				case ServiceOptionType.number:
 					this._register(styler.attachInputBoxStyler(<InputBox>widget, this._themeService));
 			}
 		}
