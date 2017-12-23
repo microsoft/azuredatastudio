@@ -38,28 +38,28 @@ export const Extensions = {
 export interface IRestoreProviderRegistry {
 	registerRestoreProvider(id: string, properties: RestoreProviderProperties): void;
 	getProperties(id: string): RestoreProviderProperties;
-	readonly onNewProvider: Event<{id: string, properties: RestoreProviderProperties}>;
-	readonly providers: {id: string, properties: RestoreProviderProperties}[];
+	readonly onNewProvider: Event<{ id: string, properties: RestoreProviderProperties }>;
+	readonly providers: { id: string, properties: RestoreProviderProperties }[];
 }
 
 class RestoreProviderRegistryImpl implements IRestoreProviderRegistry {
 	private _providers = new Map<string, RestoreProviderProperties>();
-	private _onNewProvider = new Emitter<{id: string, properties: RestoreProviderProperties}>();
-	public readonly onNewProvider: Event<{id: string, properties: RestoreProviderProperties}> = this._onNewProvider.event;
+	private _onNewProvider = new Emitter<{ id: string, properties: RestoreProviderProperties }>();
+	public readonly onNewProvider: Event<{ id: string, properties: RestoreProviderProperties }> = this._onNewProvider.event;
 
 	public registerRestoreProvider(id: string, properties: RestoreProviderProperties): void {
 		this._providers.set(id, properties);
-		this._onNewProvider.fire({id, properties});
+		this._onNewProvider.fire({ id, properties });
 	}
 
 	public getProperties(id: string): RestoreProviderProperties {
 		return this._providers.get(id);
 	}
 
-	public get providers(): {id: string, properties: RestoreProviderProperties}[] {
+	public get providers(): { id: string, properties: RestoreProviderProperties }[] {
 		const out = [];
 		this._providers.forEach((v, k) => {
-			out.push({id: k, propreties: v});
+			out.push({ id: k, propreties: v });
 		});
 		return out;
 	}

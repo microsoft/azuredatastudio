@@ -62,7 +62,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	_serviceBrand: any;
 
-	private _providers = new Map<string, { onReady: Thenable<sqlops.ConnectionProvider>, properties: ConnectionProviderProperties}>();
+	private _providers = new Map<string, { onReady: Thenable<sqlops.ConnectionProvider>, properties: ConnectionProviderProperties }>();
 
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 
@@ -128,7 +128,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
 
-		let providerRegistration = (p: {id: string, properties: ConnectionProviderProperties }) => {
+		let providerRegistration = (p: { id: string, properties: ConnectionProviderProperties }) => {
 			let provider = {
 				onReady: new Deferred<sqlops.ConnectionProvider>(),
 				properties: p.properties
