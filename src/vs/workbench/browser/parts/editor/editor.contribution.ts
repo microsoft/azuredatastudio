@@ -136,6 +136,7 @@ class UntitledEditorInputFactory implements IEditorInputFactory {
 		return JSON.stringify(serialized);
 	}
 
+	// {{SQL CARBON EDIT}}
 	public deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): EditorInput {
 		return instantiationService.invokeFunction<EditorInput>(accessor => {
 			const deserialized: ISerializedUntitledEditorInput = JSON.parse(serializedEditorInput);
@@ -144,6 +145,7 @@ class UntitledEditorInputFactory implements IEditorInputFactory {
 			const language = deserialized.modeId;
 			const encoding = deserialized.encoding;
 
+			// {{SQL CARBON EDIT}}
 			let input = accessor.get(IWorkbenchEditorService).createInput({ resource, filePath, language, encoding }) as UntitledEditorInput;
 			if (deserialized.modeId === QueryInput.SCHEMA) {
 				const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, resource.toString());
