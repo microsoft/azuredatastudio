@@ -7,25 +7,35 @@
 
 import 'vs/css!./media/accountListStatusbarItem';
 import { Action, IAction } from 'vs/base/common/actions';
-import { combinedDisposable, IDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import { $, append } from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
+import { Themable, STATUS_BAR_FOREGROUND } from 'vs/workbench/common/theme';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 
-export class AccountListStatusbarItem implements IStatusbarItem {
-	private _toDispose: IDisposable[];
+export class AccountListStatusbarItem extends Themable implements IStatusbarItem {
 	private _manageLinkedAccountAction: IAction;
+	private _icon: HTMLElement;
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IAccountManagementService private _accountManagementService: IAccountManagementService
+		@IAccountManagementService private _accountManagementService: IAccountManagementService,
+		@IThemeService themeService: IThemeService
 	) {
-		this._toDispose = [];
+		super(themeService);
+	}
+
+	protected updateStyles(): void {
+		super.updateStyles();
+		if (this._icon) {
+			this._icon.style.backgroundColor = this.getColor(STATUS_BAR_FOREGROUND);
+		}
 	}
 
 	public render(container: HTMLElement): IDisposable {
@@ -34,9 +44,11 @@ export class AccountListStatusbarItem implements IStatusbarItem {
 		const accountElement = append(rootElement, $('a.linked-account-status-selection'));
 		accountElement.title = ManageLinkedAccountAction.LABEL;
 		accountElement.onclick = () => this._onClick();
-		append(accountElement, $('.linked-account-icon'));
+		this._icon = append(accountElement, $('.linked-account-icon'));
 
-		return combinedDisposable(this._toDispose);
+		this.updateStyles();
+
+		return this;
 	}
 
 	private _onClick() {
