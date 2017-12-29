@@ -111,7 +111,7 @@ export class ConnectionDialogWidget extends Modal {
 
 		// Saved connection tab
 		let savedConnectionTab = $('.connection-saved-tab');
-		savedConnectionTab.div({ class: 'connection-saved'}, (builder) => {
+		savedConnectionTab.div({ class: 'connection-saved' }, (builder) => {
 			this._savedConnectionBuilder = new Builder(builder.getHTMLElement());
 			this._noSavedConnectionBuilder = new Builder(builder.getHTMLElement());
 			this.createSavedConnections();
@@ -275,11 +275,11 @@ export class ConnectionDialogWidget extends Modal {
 	private createRecentConnectionList(): void {
 		this._recentConnectionBuilder.div({ class: 'connection-recent-content' }, (recentConnectionContainer) => {
 			let recentHistoryLabel = localize('recentHistory', 'Recent history');
-			recentConnectionContainer.div({ class: 'recent-titles-container'}, (container) => {
+			recentConnectionContainer.div({ class: 'recent-titles-container' }, (container) => {
 				container.div({ class: 'connection-history-label' }, (recentTitle) => {
 					recentTitle.innerHtml(recentHistoryLabel);
 				});
-				container.div({ class: 'search-action clear-search-results'}, (clearSearchIcon) => {
+				container.div({ class: 'search-action clear-search-results' }, (clearSearchIcon) => {
 					clearSearchIcon.on('click', () => this.clearRecentConnectionList());
 				});
 			});
