@@ -10,7 +10,8 @@ import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConn
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import * as sqlops from 'sqlops';
 import * as assert from 'assert';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 suite('SQL ProviderConnectionInfo tests', () => {
 	let msSQLCapabilities: sqlops.DataProtocolServerCapabilities;
@@ -33,7 +34,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	};
 
 	setup(() => {
-		let capabilities: sqlops.DataProtocolServerCapabilities[] = [];
+		let capabilities: ConnectionProviderProperties[] = [];
 		let connectionProvider: sqlops.ConnectionProviderOptions = {
 			options: [
 				{

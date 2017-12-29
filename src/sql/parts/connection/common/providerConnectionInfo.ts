@@ -9,25 +9,25 @@ import * as sqlops from 'sqlops';
 import * as interfaces from 'sql/parts/connection/common/interfaces';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/parts/connection/common/constants';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 
 	options: { [name: string]: any };
 
 	public providerName: string;
-	protected _serverCapabilities: sqlops.DataProtocolServerCapabilities;
 	private static readonly SqlAuthentication = 'SqlLogin';
 	public static readonly ProviderPropertyName = 'providerName';
 
-	public constructor(serverCapabilities?: sqlops.DataProtocolServerCapabilities, model?: interfaces.IConnectionProfile) {
+	public constructor(public serverCapabilities?: ConnectionProviderProperties, model?: interfaces.IConnectionProfile) {
 		this.options = {};
 		if (serverCapabilities) {
-			this._serverCapabilities = serverCapabilities;
-			this.providerName = serverCapabilities.providerName;
+			this.serverCapabilities = serverCapabilities;
+			this.providerName = serverCapabilities.providerId;
 		}
 		if (model) {
-			if (model.options && this._serverCapabilities) {
-				this._serverCapabilities.connectionProvider.options.forEach(option => {
+			if (model.options && this.serverCapabilities) {
+				this.serverCapabilities.connectionOptions.forEach(option => {
 					let value = model.options[option.name];
 					this.options[option.name] = value;
 				});
@@ -41,18 +41,10 @@ export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 	}
 
 	public clone(): ProviderConnectionInfo {
-		let instance = new ProviderConnectionInfo(this._serverCapabilities);
+		let instance = new ProviderConnectionInfo(this.serverCapabilities);
 		instance.options = Object.assign({}, this.options);
 		instance.providerName = this.providerName;
 		return instance;
-	}
-
-	public get serverCapabilities(): sqlops.DataProtocolServerCapabilities {
-		return this._serverCapabilities;
-	}
-
-	public setServerCapabilities(value: sqlops.DataProtocolServerCapabilities) {
-		this._serverCapabilities = value;
 	}
 
 	public get serverName(): string {
@@ -105,7 +97,7 @@ export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 	}
 
 	public isPasswordRequired(): boolean {
-		let optionMetadata = this._serverCapabilities.connectionProvider.options.find(
+		let optionMetadata = this.serverCapabilities.connectionOptions.find(
 			option => option.specialValueType === ConnectionOptionSpecialType.password);
 		let isPasswordRequired: boolean = optionMetadata.isRequired;
 		if (this.providerName === Constants.mssqlProviderName) {
@@ -129,8 +121,8 @@ export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 	 */
 	public getOptionsKey(): string {
 		let idNames = [];
-		if (this._serverCapabilities) {
-			idNames = this._serverCapabilities.connectionProvider.options.map(o => {
+		if (this.serverCapabilities) {
+			idNames = this.serverCapabilities.connectionOptions.map(o => {
 				if ((o.specialValueType || o.isIdentity) && o.specialValueType !== ConnectionOptionSpecialType.password) {
 					return o.name;
 				} else {
@@ -172,9 +164,9 @@ export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 		return providerId;
 	}
 
-	public getSpecialTypeOptionName(type: string): string {
-		if (this._serverCapabilities) {
-			let optionMetadata = this._serverCapabilities.connectionProvider.options.find(o => o.specialValueType === type);
+	public getSpecialTypeOptionName(type: number): string {
+		if (this.serverCapabilities) {
+			let optionMetadata = this.serverCapabilities.connectionOptions.find(o => o.specialValueType === type);
 			return !!optionMetadata ? optionMetadata.name : undefined;
 		} else {
 			return type.toString();
@@ -189,7 +181,7 @@ export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 	}
 
 	public get authenticationTypeDisplayName(): string {
-		let optionMetadata = this._serverCapabilities.connectionProvider.options.find(o => o.specialValueType === ConnectionOptionSpecialType.authType);
+		let optionMetadata = this.serverCapabilities.connectionOptions.find(o => o.specialValueType === ConnectionOptionSpecialType.authType);
 		let authType = this.authenticationType;
 		let displayName: string = authType;
 
@@ -204,7 +196,7 @@ export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 	}
 
 	public getProviderOptions(): sqlops.ConnectionOption[] {
-		return this._serverCapabilities.connectionProvider.options;
+		return this.serverCapabilities.connectionOptions;
 	}
 
 	public static get idSeparator(): string {
@@ -222,7 +214,7 @@ export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 		parts.push(this.databaseName);
 		parts.push(this.authenticationTypeDisplayName);
 
-		this._serverCapabilities.connectionProvider.options.forEach(element => {
+		this.serverCapabilities.connectionOptions.forEach(element => {
 			if (element.specialValueType !== ConnectionOptionSpecialType.serverName &&
 				element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
 				element.specialValueType !== ConnectionOptionSpecialType.authType &&

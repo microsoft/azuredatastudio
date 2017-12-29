@@ -33,8 +33,6 @@ declare module 'sqlops' {
 
 		export function registerAdminServicesProvider(provider: AdminServicesProvider): vscode.Disposable;
 
-		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
-
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
 		 * connections has changed. And example is for a SQL connection, the flavor changes
@@ -249,10 +247,6 @@ declare module 'sqlops' {
 		isRequired: boolean;
 	}
 
-	export interface ConnectionProviderOptions {
-		options: ConnectionOption[];
-	}
-
 	export interface ServiceOption {
 		name: string;
 
@@ -312,28 +306,24 @@ declare module 'sqlops' {
 		optionsMetadata: ServiceOption[];
 	}
 
-	export interface DataProtocolServerCapabilities {
-		protocolVersion: string;
+	// export interface DataProtocolServerCapabilities {
+	// 	protocolVersion: string;
 
-		providerName: string;
+	// 	providerName: string;
 
-		providerDisplayName: string;
+	// 	providerDisplayName: string;
 
-		connectionProvider: ConnectionProviderOptions;
+	// 	connectionProvider: ConnectionProviderOptions;
 
-		adminServicesProvider: AdminServicesOptions;
+	// 	adminServicesProvider: AdminServicesOptions;
 
-		features: FeatureMetadataProvider[];
-	}
+	// 	features: FeatureMetadataProvider[];
+	// }
 
 	export interface DataProtocolClientCapabilities {
 		hostName: string;
 
 		hostVersion: string;
-	}
-
-	export interface CapabilitiesProvider extends DataProvider {
-		getServerCapabilities(client: DataProtocolClientCapabilities): Thenable<DataProtocolServerCapabilities>;
 	}
 
 	export enum MetadataType {

@@ -32,6 +32,7 @@ import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as types from 'vs/base/common/types';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -66,7 +67,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _model: ConnectionProfile;
 	private _params: INewConnectionParams;
 	private _inputModel: IConnectionProfile;
-	private _capabilitiesMaps: { [providerDisplayName: string]: sqlops.DataProtocolServerCapabilities };
+	private _capabilitiesMaps: { [providerDisplayName: string]: ConnectionProviderProperties };
 	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
 	private _providerTypes: string[];
 	private _currentProviderType: string = 'Microsoft SQL Server';
@@ -90,7 +91,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (_capabilitiesService) {
 			_capabilitiesService.onProviderRegisteredEvent((capabilities => {
 				let defaultProvider = this.getDefaultProviderName();
-				if (capabilities.providerName === defaultProvider) {
+				if (capabilities.providerId === defaultProvider) {
 					this.showDialogWithModel();
 				}
 			}));
@@ -262,11 +263,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		return newProfile;
 	}
 
-	private cacheCapabilities(capabilities: sqlops.DataProtocolServerCapabilities) {
+	private cacheCapabilities(capabilities: ConnectionProviderProperties) {
 		if (capabilities) {
-			this._providerTypes.push(capabilities.providerDisplayName);
-			this._capabilitiesMaps[capabilities.providerName] = capabilities;
-			this._providerNameToDisplayNameMap[capabilities.providerName] = capabilities.providerDisplayName;
+			this._providerTypes.push(capabilities.providerId);
+			this._capabilitiesMaps[capabilities.providerId] = capabilities;
+			this._providerNameToDisplayNameMap[capabilities.providerId] = capabilities.displayName;
 		}
 	}
 
