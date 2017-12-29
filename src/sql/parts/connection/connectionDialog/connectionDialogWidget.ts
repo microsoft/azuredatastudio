@@ -100,7 +100,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._bodyBuilder = new Builder(connectionContainer.getHTMLElement());
 		this._providerTypeSelectBox = new SelectBox(this.providerTypeOptions, this.selectedProviderType);
 
-		//Recent connection tab
+		// Recent connection tab
 		let recentConnectionTab = $('.connection-recent-tab');
 		recentConnectionTab.div({ class: 'connection-recent', id: 'recentConnection' }, (builder) => {
 			this._recentConnectionBuilder = new Builder(builder.getHTMLElement());
@@ -109,6 +109,7 @@ export class ConnectionDialogWidget extends Modal {
 			this._recentConnectionBuilder.hide();
 		});
 
+		// Saved connection tab
 		let savedConnectionTab = $('.connection-saved-tab');
 		savedConnectionTab.div({ class: 'connection-saved'}, (builder) => {
 			this._savedConnectionBuilder = new Builder(builder.getHTMLElement());
@@ -142,6 +143,7 @@ export class ConnectionDialogWidget extends Modal {
 
 		this._panel.onTabChange(c => {
 			if (c === savedConnectionTabId && this._savedConnectionTree.getContentHeight() === 0) {
+				// Update saved connection tree
 				TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this._connectionManagementService);
 
 				if (this._savedConnectionTree.getContentHeight() > 0) {
