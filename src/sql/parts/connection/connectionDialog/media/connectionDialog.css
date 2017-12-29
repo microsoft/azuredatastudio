@@ -50,8 +50,8 @@
 	margin: 15px;
 }
 
-.connection-recent-content, connection-saved-content {
-	height: calc(100% - 60px);
+.connection-recent-content {
+	height: calc(100% - 20px);
 }
 
 .connection-table-content {
