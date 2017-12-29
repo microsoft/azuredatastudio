@@ -11,7 +11,21 @@ declare module 'data' {
 	 * Namespace for Data Management Protocol global methods
 	 */
 	export namespace dataprotocol {
-		export function registerProvider(provider: DataProtocolProvider): vscode.Disposable;
+		export function registerConnectionProvider(provider: DataProtocolProvider): vscode.Disposable;
+
+		export function registerBackupProvider(provider: DataProtocolProvider): vscode.Disposable;
+
+		export function registerRestoreProvider(provider: DataProtocolProvider): vscode.Disposable;
+
+		export function registerScriptingProvider(provider: DataProtocolProvider): vscode.Disposable;
+
+		export function registerObjectExplorerProvider(provider: DataProtocolProvider): vscode.Disposable;
+
+		export function registerTaskServicesProvier(provider: DataProtocolProvider): vscode.Disposable;
+
+		export function registerFileBrowserProvider(provider: DataProtocolProvider): vscode.Disposable;
+
+		export function registerProfileProvider(provider: DataProtocolProvider): vscode.Disposable;
 
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
