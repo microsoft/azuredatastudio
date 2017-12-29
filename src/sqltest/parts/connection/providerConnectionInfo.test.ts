@@ -11,6 +11,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import data = require('data');
 import * as assert from 'assert';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 suite('SQL ProviderConnectionInfo tests', () => {
 	let msSQLCapabilities: data.DataProtocolServerCapabilities;
@@ -33,7 +34,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	};
 
 	setup(() => {
-		let capabilities: data.DataProtocolServerCapabilities[] = [];
+		let capabilities: ConnectionProviderProperties[] = [];
 		let connectionProvider: data.ConnectionProviderOptions = {
 			options: [
 				{

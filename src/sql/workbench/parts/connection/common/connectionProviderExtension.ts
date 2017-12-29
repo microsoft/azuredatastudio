@@ -8,26 +8,14 @@ import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
 import Event, { Emitter } from 'vs/base/common/event';
+import { clone } from 'vs/base/common/objects';
 
-export interface IConnectionOption {
-	specialValueType: string;
-	isIdentity: boolean;
-	name: string;
-	displayName: string;
-	description: string;
-	groupName: string;
-	valueType: string;
-	defaultValue: any;
-	objectType: any;
-	categoryValues: any;
-	isRequired: boolean;
-	isArray: boolean;
-}
+import * as data from 'data';
 
 export interface ConnectionProviderProperties {
 	providerId: string;
 	displayName: string;
-	connectionOptions: IConnectionOption[];
+	connectionOptions: data.ConnectionOption[];
 }
 
 
@@ -39,7 +27,7 @@ export interface IConnectionProviderRegistry {
 	registerConnectionProvider(id: string, properties: ConnectionProviderProperties): void;
 	getProperties(id: string): ConnectionProviderProperties;
 	readonly onNewProvider: Event<{id: string, properties: ConnectionProviderProperties}>;
-	readonly providers: {id: string, properties: ConnectionProviderProperties}[];
+	readonly providers: { [id: string]: ConnectionProviderProperties};
 }
 
 class ConnectionProviderRegistryImpl implements IConnectionProviderRegistry {
@@ -56,12 +44,12 @@ class ConnectionProviderRegistryImpl implements IConnectionProviderRegistry {
 		return this._providers.get(id);
 	}
 
-	public get providers(): {id: string, properties: ConnectionProviderProperties}[] {
-		const out = [];
+	public get providers(): { [id: string]: ConnectionProviderProperties} {
+		let rt: { [id: string]: ConnectionProviderProperties} = {};
 		this._providers.forEach((v, k) => {
-			out.push({id: k, propreties: v});
+			rt[k] = clone(v);
 		});
-		return out;
+		return rt;
 	}
 }
 

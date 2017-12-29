@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
 import Event, { Emitter } from 'vs/base/common/event';
+import { clone } from 'vs/base/common/objects';
 
-export interface IConnectionOption {
+export interface IBackupOption {
 	specialValueType: string;
 	isIdentity: boolean;
 	name: string;
@@ -27,7 +27,8 @@ export interface IConnectionOption {
 export interface BackupProviderProperties {
 	providerId: string;
 	displayName: string;
-	connectionOptions: IConnectionOption[];
+	useConnection: string;
+	backupOptions: IBackupOption[];
 }
 
 
@@ -39,7 +40,7 @@ export interface IBackupProviderRegistry {
 	registerBackupProvider(id: string, properties: BackupProviderProperties): void;
 	getProperties(id: string): BackupProviderProperties;
 	readonly onNewProvider: Event<{ id: string, properties: BackupProviderProperties }>;
-	readonly providers: { id: string, properties: BackupProviderProperties }[];
+	readonly providers: { [id: string]: BackupProviderProperties};
 }
 
 class BackupProviderRegistryImpl implements IBackupProviderRegistry {
@@ -56,12 +57,12 @@ class BackupProviderRegistryImpl implements IBackupProviderRegistry {
 		return this._providers.get(id);
 	}
 
-	public get providers(): { id: string, properties: BackupProviderProperties }[] {
-		const out = [];
+	public get providers(): { [id: string]: BackupProviderProperties} {
+		let rt: { [id: string]: BackupProviderProperties} = {};
 		this._providers.forEach((v, k) => {
-			out.push({ id: k, propreties: v });
+			rt[k] = clone(v);
 		});
-		return out;
+		return rt;
 	}
 }
 

@@ -12,22 +12,22 @@ import * as Utils from './utils';
 import * as data from 'data';
 import { StopWatch } from 'vs/base/common/stopwatch';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IConnectionProviderRegistry, Extensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { IConnectionProviderRegistry, Extensions, ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 const registry = Registry.as<IConnectionProviderRegistry>(Extensions.ConnectionProviderContributions);
 
 export class ConnectionStatusManager {
 
 	private _connections: { [id: string]: ConnectionManagementInfo };
-	private _providerCapabilitiesMap: { [providerName: string]: data.DataProtocolServerCapabilities };
+	private _providerCapabilitiesMap: { [providerName: string]: ConnectionProviderProperties };
 
 	constructor( @ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
 		this._connections = {};
 		this._providerCapabilitiesMap = {};
 	}
 
-	public getCapabilities(providerName: string): data.DataProtocolServerCapabilities {
-		let result: data.DataProtocolServerCapabilities;
+	public getCapabilities(providerName: string): ConnectionProviderProperties {
+		let result: ConnectionProviderProperties;
 
 		if (providerName in this._providerCapabilitiesMap) {
 			result = this._providerCapabilitiesMap[providerName];

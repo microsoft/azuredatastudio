@@ -27,7 +27,7 @@ export interface Converter {
 
 	asHover(hover: ls.Hover): code.Hover;
 
-	asCompletionResult(result: ls.CompletionItem[] | ls.CompletionList): code.CompletionItem[] | code.CompletionList
+	asCompletionResult(result: ls.CompletionItem[] | ls.CompletionList): code.CompletionItem[] | code.CompletionList;
 
 	asCompletionItem(item: ls.CompletionItem): ProtocolCompletionItem;
 
@@ -76,8 +76,6 @@ export interface Converter {
 	asDocumentLinks(items: ls.DocumentLink[]): code.DocumentLink[];
 
 	asConnectionSummary(params: ls.ConnectionCompleteParams): data.ConnectionInfoSummary;
-
-	asServerCapabilities(params: ls.CapabiltiesDiscoveryResult): data.DataProtocolServerCapabilities;
 
 	asProviderMetadata(params: ls.MetadataQueryResult): data.ProviderMetadata;
 
@@ -422,125 +420,6 @@ export function createConverter(uriConverter?: URIConverter): Converter {
 		return connSummary;
 	}
 
-	function asServerCapabilities(result: ls.CapabiltiesDiscoveryResult): data.DataProtocolServerCapabilities {
-		let capabilities: data.DataProtocolServerCapabilities = {
-			protocolVersion: result.capabilities.protocolVersion,
-			providerName: result.capabilities.providerName,
-			providerDisplayName: result.capabilities.providerDisplayName,
-			connectionProvider: undefined,
-			adminServicesProvider: undefined,
-			features: []
-		};
-
-		if (result.capabilities.adminServicesProvider) {
-			capabilities.adminServicesProvider = <data.AdminServicesOptions>{
-				databaseInfoOptions: new Array<data.ServiceOption>(),
-				databaseFileInfoOptions: new Array<data.ServiceOption>(),
-				fileGroupInfoOptions: new Array<data.ServiceOption>()
-			};
-
-			if (result.capabilities.adminServicesProvider.databaseInfoOptions
-				&& result.capabilities.adminServicesProvider.databaseInfoOptions.length > 0) {
-				for (let i = 0; i < result.capabilities.adminServicesProvider.databaseInfoOptions.length; ++i) {
-					let srcOption: ls.ServiceOption = result.capabilities.adminServicesProvider.databaseInfoOptions[i];
-					let descOption: data.ServiceOption = buildServiceOption(srcOption);
-					capabilities.adminServicesProvider.databaseInfoOptions.push(descOption);
-				}
-			}
-
-			if (result.capabilities.adminServicesProvider.databaseFileInfoOptions
-				&& result.capabilities.adminServicesProvider.databaseFileInfoOptions.length > 0) {
-				for (let i = 0; i < result.capabilities.adminServicesProvider.databaseFileInfoOptions.length; ++i) {
-					let srcOption: ls.ServiceOption = result.capabilities.adminServicesProvider.databaseFileInfoOptions[i];
-					let descOption: data.ServiceOption = buildServiceOption(srcOption);
-					capabilities.adminServicesProvider.databaseFileInfoOptions.push(descOption);
-				}
-			}
-
-			if (result.capabilities.adminServicesProvider.fileGroupInfoOptions
-				&& result.capabilities.adminServicesProvider.fileGroupInfoOptions.length > 0) {
-				for (let i = 0; i < result.capabilities.adminServicesProvider.fileGroupInfoOptions.length; ++i) {
-					let srcOption: ls.ServiceOption = result.capabilities.adminServicesProvider.fileGroupInfoOptions[i];
-					let descOption: data.ServiceOption = buildServiceOption(srcOption);
-					capabilities.adminServicesProvider.fileGroupInfoOptions.push(descOption);
-				}
-			}
-		}
-
-		if (result.capabilities.connectionProvider
-			&& result.capabilities.connectionProvider.options
-			&& result.capabilities.connectionProvider.options.length > 0) {
-			capabilities.connectionProvider = <data.ConnectionProviderOptions>{
-				options: new Array<data.ConnectionOption>()
-			};
-			for (let i = 0; i < result.capabilities.connectionProvider.options.length; ++i) {
-				let srcOption: ls.ConnectionOption = result.capabilities.connectionProvider.options[i];
-				let descOption: data.ConnectionOption = {
-					name: srcOption.name,
-					displayName: srcOption.displayName ? srcOption.displayName : srcOption.name,
-					description: srcOption.description,
-					groupName: srcOption.groupName,
-					defaultValue: srcOption.defaultValue,
-					categoryValues: srcOption.categoryValues,
-					isIdentity: srcOption.isIdentity,
-					isRequired: srcOption.isRequired,
-					valueType: srcOption.valueType,
-					specialValueType: undefined
-				};
-
-				if (srcOption.specialValueType === 'serverName') {
-					descOption.specialValueType = data.ConnectionOptionSpecialType.serverName;
-				} else if (srcOption.specialValueType === 'databaseName') {
-					descOption.specialValueType = data.ConnectionOptionSpecialType.databaseName;
-				} else if (srcOption.specialValueType === 'authType') {
-					descOption.specialValueType = data.ConnectionOptionSpecialType.authType;
-				} else if (srcOption.specialValueType === 'userName') {
-					descOption.specialValueType = data.ConnectionOptionSpecialType.userName;
-				} else if (srcOption.specialValueType === 'password') {
-					descOption.specialValueType = data.ConnectionOptionSpecialType.password;
-				} else if (srcOption.specialValueType === 'appName') {
-					descOption.specialValueType = data.ConnectionOptionSpecialType.appName;
-				}
-
-				capabilities.connectionProvider.options.push(descOption);
-			}
-		}
-
-		if (result.capabilities.features
-			&& result.capabilities.features.length > 0) {
-			result.capabilities.features.forEach(feature => {
-				let descFeature: data.FeatureMetadataProvider = {
-					enabled: feature.enabled,
-					featureName: feature.featureName,
-					optionsMetadata: []
-				};
-				capabilities.features.push(descFeature);
-				if (feature.optionsMetadata) {
-					feature.optionsMetadata.forEach(srcOption => {
-						descFeature.optionsMetadata.push(buildServiceOption(srcOption));
-					});
-				}
-			});
-		}
-
-		return capabilities;
-	}
-
-	function buildServiceOption(srcOption: ls.ServiceOption): data.ServiceOption {
-		return {
-			name: srcOption.name,
-			displayName: srcOption.displayName ? srcOption.displayName : srcOption.name,
-			description: srcOption.description,
-			groupName: srcOption.groupName,
-			defaultValue: srcOption.defaultValue,
-			categoryValues: srcOption.categoryValues,
-			isRequired: srcOption.isRequired,
-			isArray: srcOption.isArray,
-			objectType: srcOption.objectType,
-			valueType: srcOption.valueType,
-		};
-	}
-
 	function asProviderMetadata(params: ls.MetadataQueryResult): data.ProviderMetadata {
 		let objectMetadata: data.ObjectMetadata[] = [];
 
@@ -698,7 +577,6 @@ export function createConverter(uriConverter?: URIConverter): Converter {
 		asDocumentLink,
 		asDocumentLinks,
 		asConnectionSummary,
-		asServerCapabilities,
 		asProviderMetadata,
 		asScriptingResult,
 		asObjectExplorerSession,

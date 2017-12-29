@@ -16,6 +16,7 @@ import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/conne
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ConnectionManagementInfo } from './connectionManagementInfo';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 export const VIEWLET_ID = 'workbench.view.connections';
 
@@ -216,7 +217,7 @@ export interface IConnectionManagementService {
 
 	hasRegisteredServers(): boolean;
 
-	getCapabilities(providerName: string): data.DataProtocolServerCapabilities;
+	getCapabilities(providerName: string): ConnectionProviderProperties;
 
 	canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean;
 
@@ -276,15 +277,6 @@ export const IErrorMessageService = createDecorator<IErrorMessageService>('error
 export interface IErrorMessageService {
 	_serviceBrand: any;
 	showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]): void;
-}
-
-export enum ConnectionOptionSpecialType {
-	serverName = 0,
-	databaseName = 1,
-	authType = 2,
-	userName = 3,
-	password = 4,
-	appName = 5
 }
 
 export enum RunQueryOnConnectionMode {

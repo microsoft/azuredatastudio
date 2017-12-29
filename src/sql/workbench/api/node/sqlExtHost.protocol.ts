@@ -70,8 +70,6 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void { throw ni(); }
 
-	$getServerCapabilities(handle: number, client: data.DataProtocolClientCapabilities): Thenable<data.DataProtocolServerCapabilities> { throw ni(); }
-
 	/**
 	 * Metadata service methods
 	 *

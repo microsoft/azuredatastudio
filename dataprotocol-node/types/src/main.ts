@@ -120,20 +120,6 @@ export interface FeatureMetadataProvider {
 	optionsMetadata: ServiceOption[];
 }
 
-export interface DataProtocolServerCapabilities {
-	protocolVersion: string;
-
-	providerName: string;
-
-	providerDisplayName: string;
-
-	connectionProvider: ConnectionProviderOptions;
-
-	adminServicesProvider: AdminServicesProviderOptions;
-
-	features: FeatureMetadataProvider[];
-}
-
 /**
  * Parameters to initialize a connection to a database
  */
@@ -268,10 +254,6 @@ export class ServerInfo {
 	 * The Operating System version string of the machine running the SQL Server instance.
 	 */
 	public osVersion: string;
-}
-
-export class CapabiltiesDiscoveryResult {
-	public capabilities: DataProtocolServerCapabilities;
 }
 
 // Task Services types
@@ -1786,7 +1768,7 @@ export interface CompletionItem {
 	 * a [CompletionRequest](#CompletionRequest) and a [CompletionResolveRequest]
 	 * (#CompletionResolveRequest)
 	 */
-	data?: any
+	data?: any;
 }
 
 /**
@@ -1850,7 +1832,7 @@ export namespace MarkedString {
 	 * @param plainText The plain text.
 	 */
 	export function fromPlainText(plainText: string): MarkedString {
-		return plainText.replace(/[\\`*_{}[\]()#+\-.!]/g, "\\$&"); // escape markdown syntax tokens: http://daringfireball.net/projects/markdown/syntax#backslash
+		return plainText.replace(/[\\`*_{}[\]()#+\-.!]/g, '\\$&'); // escape markdown syntax tokens: http://daringfireball.net/projects/markdown/syntax#backslash
 	}
 }
 
@@ -2107,7 +2089,7 @@ export namespace SymbolInformation {
 			name,
 			kind,
 			location: { uri, range }
-		}
+		};
 		if (containerName) {
 			result.containerName = containerName;
 		}
@@ -2189,7 +2171,7 @@ export interface CodeLens {
 	 * a [CodeLensRequest](#CodeLensRequest) and a [CodeLensResolveRequest]
 	 * (#CodeLensResolveRequest)
 	 */
-	data?: any
+	data?: any;
 }
 
 /**
@@ -2202,7 +2184,7 @@ export namespace CodeLens {
 	 */
 	export function create(range: Range, data?: any): CodeLens {
 		let result: CodeLens = { range };
-		if (Is.defined(data)) result.data = data;
+		if (Is.defined(data)) { result.data = data; };
 		return result;
 	}
 	/**

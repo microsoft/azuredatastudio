@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { IConnectionManagementService, ConnectionOptionSpecialType } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionValidateResult } from 'sql/parts/connection/connectionDialog/connectionDialogService';
 import { ConnectionWidget } from 'sql/parts/connection/connectionDialog/connectionWidget';
 import { AdvancedPropertiesController } from 'sql/parts/connection/connectionDialog/advancedPropertiesController';
@@ -15,6 +15,8 @@ import * as Constants from 'sql/parts/connection/common/constants';
 import data = require('data');
 import * as Utils from 'sql/parts/connection/common/utils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ConnectionController implements IConnectionComponentController {
 	private _container: HTMLElement;
@@ -28,15 +30,15 @@ export class ConnectionController implements IConnectionComponentController {
 
 	constructor(container: HTMLElement,
 		connectionManagementService: IConnectionManagementService,
-		sqlCapabilities: data.DataProtocolServerCapabilities,
+		sqlCapabilities: ConnectionProviderProperties,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
 		@IInstantiationService private _instantiationService: IInstantiationService, ) {
 		this._container = container;
 		this._connectionManagementService = connectionManagementService;
 		this._callback = callback;
-		this._providerOptions = sqlCapabilities.connectionProvider.options;
-		var specialOptions = this._providerOptions.filter(
+		this._providerOptions = sqlCapabilities.connectionOptions;
+		let specialOptions = this._providerOptions.filter(
 			(property) => (property.specialValueType !== null && property.specialValueType !== undefined));
 		this._connectionWidget = this._instantiationService.createInstance(ConnectionWidget, specialOptions, {
 			onSetConnectButton: (enable: boolean) => this._callback.onSetConnectButton(enable),
@@ -55,8 +57,8 @@ export class ConnectionController implements IConnectionComponentController {
 	}
 
 	private handleonSetAzureTimeOut(): void {
-		var timeoutPropertyName = 'connectTimeout';
-		var timeoutOption = this._model.options[timeoutPropertyName];
+		let timeoutPropertyName = 'connectTimeout';
+		let timeoutOption = this._model.options[timeoutPropertyName];
 		if (timeoutOption === undefined || timeoutOption === null) {
 			this._model.options[timeoutPropertyName] = 30;
 		}
@@ -66,7 +68,7 @@ export class ConnectionController implements IConnectionComponentController {
 		if (!this._advancedController) {
 			this._advancedController = this._instantiationService.createInstance(AdvancedPropertiesController, () => this._connectionWidget.focusOnAdvancedButton());
 		}
-		var advancedOption = this._providerOptions.filter(
+		let advancedOption = this._providerOptions.filter(
 			(property) => (property.specialValueType === undefined || property.specialValueType === null));
 		this._advancedController.showDialog(advancedOption, this._container, this._model.options);
 	}
@@ -87,8 +89,8 @@ export class ConnectionController implements IConnectionComponentController {
 	}
 
 	private getAllServerGroups(): IConnectionProfileGroup[] {
-		var connectionGroupRoot = this._connectionManagementService.getConnectionGroups();
-		var connectionGroupNames: IConnectionProfileGroup[] = [];
+		let connectionGroupRoot = this._connectionManagementService.getConnectionGroups();
+		let connectionGroupNames: IConnectionProfileGroup[] = [];
 		if (connectionGroupRoot && connectionGroupRoot.length > 0) {
 			this.getServerGroupHelper(connectionGroupRoot[0], connectionGroupNames);
 		}

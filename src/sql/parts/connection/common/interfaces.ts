@@ -31,4 +31,3 @@ export interface IConnectionProfileStore {
 	savePassword: boolean;
 	id: string;
 };
-

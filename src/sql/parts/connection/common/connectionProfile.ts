@@ -11,6 +11,7 @@ import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConn
 import * as interfaces from 'sql/parts/connection/common/interfaces';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { generateUuid } from 'vs/base/common/uuid';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 // Concrete implementation of the IConnectionProfile interface
 
@@ -27,7 +28,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	public saveProfile: boolean;
 
 	public isDisconnecting: boolean = false;
-	public constructor(serverCapabilities?: data.DataProtocolServerCapabilities, model?: interfaces.IConnectionProfile) {
+	public constructor(serverCapabilities?: ConnectionProviderProperties, model?: interfaces.IConnectionProfile) {
 		super(serverCapabilities, model);
 		if (model) {
 			this.groupId = model.groupId;
@@ -90,7 +91,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	}
 
 	public clone(): ConnectionProfile {
-		let instance = new ConnectionProfile(this._serverCapabilities, this);
+		let instance = new ConnectionProfile(this.serverCapabilities, this);
 		return instance;
 	}
 
@@ -136,9 +137,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		return super.getOptionsKey();
 	}
 
-	public onProviderRegistered(serverCapabilities: data.DataProtocolServerCapabilities): void {
-		if (serverCapabilities.providerName === this.providerName) {
-			this.setServerCapabilities(serverCapabilities);
+	public onProviderRegistered(serverCapabilities: ConnectionProviderProperties): void {
+		if (serverCapabilities.providerId === this.providerName) {
+			this.serverCapabilities = serverCapabilities;
 		}
 	}
 
@@ -169,7 +170,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		};
 	}
 
-	public static createFromStoredProfile(profile: interfaces.IConnectionProfileStore, serverCapabilities: data.DataProtocolServerCapabilities): ConnectionProfile {
+	public static createFromStoredProfile(profile: interfaces.IConnectionProfileStore, serverCapabilities: ConnectionProviderProperties): ConnectionProfile {
 		let connectionInfo = new ConnectionProfile(serverCapabilities, undefined);
 		connectionInfo.options = profile.options;
 
@@ -186,13 +187,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		return connectionInfo;
 	}
 
-	public static convertToConnectionProfile(serverCapabilities: data.DataProtocolServerCapabilities, conn: interfaces.IConnectionProfile): ConnectionProfile {
+	public static convertToConnectionProfile(serverCapabilities: ConnectionProviderProperties, conn: interfaces.IConnectionProfile): ConnectionProfile {
 		if (conn) {
 			let connectionProfile: ConnectionProfile = undefined;
 			let connectionProfileInstance = conn as ConnectionProfile;
 			if (connectionProfileInstance && conn instanceof ConnectionProfile) {
 				connectionProfile = connectionProfileInstance;
-				connectionProfile.setServerCapabilities(serverCapabilities);
+				connectionProfile.serverCapabilities = serverCapabilities;
 			} else {
 				connectionProfile = new ConnectionProfile(serverCapabilities, conn);
 			}
@@ -204,7 +205,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	}
 
 	public static convertToProfileStore(
-		serverCapabilities: data.DataProtocolServerCapabilities,
+		serverCapabilities: ConnectionProviderProperties,
 		connectionProfile: interfaces.IConnectionProfile): interfaces.IConnectionProfileStore {
 		if (connectionProfile) {
 			let connectionInfo = ConnectionProfile.convertToConnectionProfile(serverCapabilities, connectionProfile);
@@ -223,5 +224,4 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			return undefined;
 		}
 	}
-
 }

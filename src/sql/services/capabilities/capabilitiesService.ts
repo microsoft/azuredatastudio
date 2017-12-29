@@ -8,16 +8,29 @@
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import * as Constants from 'sql/common/constants';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import data = require('data');
+import { Disposable } from 'vs/base/common/lifecycle';
 import Event, { Emitter } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
+import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { clone } from 'vs/base/common/objects';
+import { BackupProviderProperties, IBackupProviderRegistry, Extensions as BackupExtensions } from 'sql/workbench/parts/backup/common/backupProviderExtension';
+import { RestoreProviderProperties } from 'sql/workbench/parts/restore/common/restoreProviderRegistry';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { entries } from 'sql/base/common/objects';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'sqlops';
-export const HOST_VERSION = '1.0';
 
 export const ICapabilitiesService = createDecorator<ICapabilitiesService>(SERVICE_ID);
+
+const connectionRegistry = Registry.as<IConnectionProviderRegistry>(ConnectionExtensions.ConnectionProviderContributions);
+const backupRegistry = Registry.as<IBackupProviderRegistry>(BackupExtensions.BackupProviderContributions);
+
+export interface ProviderFeatures {
+	connection: ConnectionProviderProperties;
+	backup: { [id: string]: BackupProviderProperties };
+	restore: { [id: string]: RestoreProviderProperties };
+}
 
 /**
  * Interface for managing provider capabilities
@@ -28,12 +41,12 @@ export interface ICapabilitiesService {
 	/**
 	 * Retrieve a list of registered capabilities providers
 	 */
-	getCapabilities(): data.DataProtocolServerCapabilities[];
+	readonly providers: { [id: string]: ProviderFeatures };
 
 	/**
-	 * Register a capabilities provider
+	 * Retrieve capability information for a connection provider
 	 */
-	registerProvider(provider: data.CapabilitiesProvider): void;
+	getCapabilities(providerId: string): ProviderFeatures;
 
 	/**
 	 * Returns true if the feature is available for given connection
@@ -43,55 +56,64 @@ export interface ICapabilitiesService {
 	/**
 	 * Event raised when a provider is registered
 	 */
-	onProviderRegisteredEvent: Event<data.DataProtocolServerCapabilities>;
+	onConnectionProviderRegistered: Event<ProviderFeatures>;
+
+	/**
+	 * Event raised when a feature is added for a particular connection provider
+	 */
+	onFeatureUpdateRegistered(providerId: string): Event<ProviderFeatures>;
 }
 
 /**
  * Capabilities service implementation class.  This class provides the ability
  * to discover the DMP capabilties that a DMP provider offers.
  */
-export class CapabilitiesService implements ICapabilitiesService {
+export class CapabilitiesService extends Disposable implements ICapabilitiesService {
 
 	public _serviceBrand: any;
 
-	private _providers: data.CapabilitiesProvider[] = [];
+	private _providers: { [id: string]: ProviderFeatures } = {};
+	private _onConnectionProviderRegistered = this._register(new Emitter<ProviderFeatures>());
+	private _featureUpdateEvents: { [id: string]: Emitter<ProviderFeatures> } = {};
 
-	private _capabilities: data.DataProtocolServerCapabilities[] = [];
-
-	private _onProviderRegistered: Emitter<data.DataProtocolServerCapabilities>;
-
-	private _clientCapabilties: data.DataProtocolClientCapabilities = {
-
-		hostName: HOST_NAME,
-		hostVersion: HOST_VERSION
-	};
-
-	private disposables: IDisposable[] = [];
+	public readonly onConnectionProviderRegistered: Event<ProviderFeatures> = this._onConnectionProviderRegistered.event;
 
 	constructor() {
-		this._onProviderRegistered = new Emitter<data.DataProtocolServerCapabilities>();
-		this.disposables.push(this._onProviderRegistered);
-	}
+		super();
+		let connectionProviderHandler = (e: {id: string, properties: ConnectionProviderProperties}) => {
+			let o: ProviderFeatures = {
+				connection: e.properties,
+				backup: {},
+				restore: {}
+			};
+			this._providers[e.id] = o;
+			this._onConnectionProviderRegistered.fire(o);
+		};
+		let backupProviderHandler = (e: { id: string, properties: BackupProviderProperties }) => {
+			let provider = this._providers[e.properties.useConnection];
+			if (provider) {
+				provider.backup[e.id] = e.properties;
+				this._featureUpdateEvents[e.properties.useConnection].fire(provider);
+			}
+		};
 
-	/**
-	 * Retrieve a list of registered server capabilities
-	 */
-	public getCapabilities(): data.DataProtocolServerCapabilities[] {
-		return this._capabilities;
-	}
-
-	/**
-	 * Register the capabilities provider and query the provider for its capabilities
-	 * @param provider
-	 */
-	public registerProvider(provider: data.CapabilitiesProvider): void {
-		this._providers.push(provider);
-
-		// request the capabilities from server
-		provider.getServerCapabilities(this._clientCapabilties).then(serverCapabilities => {
-			this._capabilities.push(serverCapabilities);
-			this._onProviderRegistered.fire(serverCapabilities);
+		entries(connectionRegistry.providers).map(v => {
+			connectionProviderHandler({ id: v[0], properties: v[1]});
 		});
+		connectionRegistry.onNewProvider(connectionProviderHandler);
+
+		entries(backupRegistry.providers).map(v => {
+			backupProviderHandler({ id: v[0], properties: v[1]});
+		});
+		backupRegistry.onNewProvider(backupProviderHandler);
+	}
+
+	public get providers(): { [id: string]: ProviderFeatures} {
+		return clone(this._providers);
+	}
+
+	public getCapabilities(providerId: string): ProviderFeatures {
+		return clone(this._providers[providerId]);
 	}
 
 	/**
@@ -124,15 +146,13 @@ export class CapabilitiesService implements ICapabilitiesService {
 		} else {
 			return true;
 		}
-
 	}
 
-	// Event Emitters
-	public get onProviderRegisteredEvent(): Event<data.DataProtocolServerCapabilities> {
-		return this._onProviderRegistered.event;
-	}
-
-	public dispose(): void {
-		this.disposables = dispose(this.disposables);
+	public onFeatureUpdateRegistered(providerId: string): Event<ProviderFeatures> {
+		let emitter = this._featureUpdateEvents[providerId];
+		if (emitter) {
+			return emitter.event;
+		}
+		return undefined;
 	}
 }

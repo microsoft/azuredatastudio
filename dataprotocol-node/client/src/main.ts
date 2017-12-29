@@ -20,8 +20,7 @@ import {
 
 import {
 	ConnectionInfo, ConnectionInfoSummary, dataprotocol, DataProtocolProvider, ConnectionProvider,
-	DataProtocolServerCapabilities as VDataProtocolServerCapabilities,
-	DataProtocolClientCapabilities, CapabilitiesProvider, MetadataProvider,
+	DataProtocolClientCapabilities, MetadataProvider,
 	ScriptingProvider, ProviderMetadata, ScriptingResult, ScriptingCompleteResult,
 	QueryProvider, QueryCancelResult as VQueryCancelResult, ObjectMetadata,
 	ListDatabasesResult as VListDatabasesResult, ChangedConnectionInfo,
@@ -1335,18 +1334,6 @@ export class LanguageClient {
 	private hookDataProtocolProvider(providerId: string, connection: IConnection): void {
 		let self = this;
 
-		let capabilitiesProvider: CapabilitiesProvider = {
-			getServerCapabilities(client: DataProtocolClientCapabilities): Thenable<VDataProtocolServerCapabilities> {
-				return self.doSendRequest(connection, CapabiltiesDiscoveryRequest.type, self._c2p.asCapabilitiesParams(client), undefined).then(
-					self._p2c.asServerCapabilities,
-					(error) => {
-						self.logFailedRequest(ConnectionRequest.type, error);
-						return Promise.resolve([]);
-					}
-				);
-			}
-		};
-
 		let connectionProvider: ConnectionProvider = {
 			handle: -1,
 
@@ -2214,8 +2201,6 @@ export class LanguageClient {
 			handle: -1,
 
 			providerId: providerId,
-
-			capabilitiesProvider: capabilitiesProvider,
 
 			connectionProvider: connectionProvider,
 

@@ -188,12 +188,12 @@ declare module 'data' {
 	}
 
 	export enum ConnectionOptionSpecialType {
-		serverName = 0,
-		databaseName = 1,
-		authType = 2,
-		userName = 3,
-		password = 4,
-		appName = 5
+		serverName = 'serverName',
+		databaseName = 'databaseName',
+		authType = 'authType',
+		userName = 'userName',
+		password = 'password',
+		appName = 'appName'
 	}
 
 	export interface CategoryValue {
@@ -221,10 +221,6 @@ declare module 'data' {
 		isIdentity: boolean;
 
 		isRequired: boolean;
-	}
-
-	export interface ConnectionProviderOptions {
-		options: ConnectionOption[];
 	}
 
 	export interface ServiceOption {
@@ -286,28 +282,24 @@ declare module 'data' {
 		optionsMetadata: ServiceOption[];
 	}
 
-	export interface DataProtocolServerCapabilities {
-		protocolVersion: string;
+	// export interface DataProtocolServerCapabilities {
+	// 	protocolVersion: string;
 
-		providerName: string;
+	// 	providerName: string;
 
-		providerDisplayName: string;
+	// 	providerDisplayName: string;
 
-		connectionProvider: ConnectionProviderOptions;
+	// 	connectionProvider: ConnectionProviderOptions;
 
-		adminServicesProvider: AdminServicesOptions;
+	// 	adminServicesProvider: AdminServicesOptions;
 
-		features: FeatureMetadataProvider[];
-	}
+	// 	features: FeatureMetadataProvider[];
+	// }
 
 	export interface DataProtocolClientCapabilities {
 		hostName: string;
 
 		hostVersion: string;
-	}
-
-	export interface CapabilitiesProvider {
-		getServerCapabilities(client: DataProtocolClientCapabilities): Thenable<DataProtocolServerCapabilities>;
 	}
 
 	export enum MetadataType {
@@ -448,8 +440,6 @@ declare module 'data' {
 		handle: number;
 
 		providerId: string;
-
-		capabilitiesProvider: CapabilitiesProvider;
 
 		connectionProvider: ConnectionProvider;
 
