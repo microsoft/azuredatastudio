@@ -101,8 +101,8 @@ export class BackupUiService implements IBackupUiService {
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IBackupService private _disasterRecoveryService: IBackupService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService) {
-			this._onShowBackupEvent = new Emitter<DashboardComponentParams>();
-		}
+		this._onShowBackupEvent = new Emitter<DashboardComponentParams>();
+	}
 
 	public showBackup(connection: IConnectionProfile): Promise<any> {
 		let self = this;
@@ -152,12 +152,12 @@ export class BackupUiService implements IBackupUiService {
 					+ ProviderConnectionInfo.nameValueSeparator
 					+ BackupUiService._connectionUniqueId;
 
-					BackupUiService._connectionUniqueId++;
+				BackupUiService._connectionUniqueId++;
 
 				// Create connection if needed
 				if (!this._connectionManagementService.isConnected(uri)) {
 					this._connectionManagementService.connect(connection, uri).then(() => {
-						this._onShowBackupEvent.fire({connection: connection, ownerUri: uri});
+						this._onShowBackupEvent.fire({ connection: connection, ownerUri: uri });
 					});
 				}
 				(backupDialog as BackupDialog).open(connection);

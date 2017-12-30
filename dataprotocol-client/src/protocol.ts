@@ -76,7 +76,7 @@ export interface ConnectionClientCapabilities {
 		 *
 		 */
 		dynamicRegistration?: boolean;
-	}
+	};
 }
 
 export interface ClientCapabilities extends VSClientCapabilities {
@@ -178,9 +178,9 @@ export namespace DisconnectRequest {
 
 // Cancel connect request message format
 export class CancelConnectParams {
-    /**
-     * URI identifying the owner of the connection
-     */
+	/**
+	 * URI identifying the owner of the connection
+	 */
 	public ownerUri: string;
 }
 

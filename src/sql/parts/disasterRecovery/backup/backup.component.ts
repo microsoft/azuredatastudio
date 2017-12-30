@@ -315,7 +315,7 @@ export class BackupComponent {
 	ngAfterViewInit() {
 		// Set category view for advanced options. This should be defined in ngAfterViewInit so that it correctly calculates the text height after data binding.
 		var splitview = new SplitView(this.advancedOptionElement.nativeElement);
-		var advancedBodySize =  DOM.getTotalHeight(this.advancedOptionBodyElement.nativeElement);
+		var advancedBodySize = DOM.getTotalHeight(this.advancedOptionBodyElement.nativeElement);
 		var categoryView = new CategoryView(this.advancedConfigurationLabel, this.advancedOptionBodyElement.nativeElement, true, advancedBodySize, this._advancedHeaderSize);
 		splitview.addView(categoryView);
 		splitview.layout(advancedBodySize + this._advancedHeaderSize);

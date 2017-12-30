@@ -214,11 +214,11 @@ export class ConnectionDialogWidget extends Modal {
 	private createRecentConnectionList(): void {
 		this._recentConnectionBuilder.div({ class: 'connection-recent-content' }, (recentConnectionContainer) => {
 			let recentHistoryLabel = localize('recentHistory', 'Recent history');
-			recentConnectionContainer.div({ class: 'recent-titles-container'}, (container) => {
+			recentConnectionContainer.div({ class: 'recent-titles-container' }, (container) => {
 				container.div({ class: 'connection-history-label' }, (recentTitle) => {
 					recentTitle.innerHtml(recentHistoryLabel);
 				});
-				container.div({ class: 'search-action clear-search-results'}, (clearSearchIcon) => {
+				container.div({ class: 'search-action clear-search-results' }, (clearSearchIcon) => {
 					clearSearchIcon.on('click', () => this.clearRecentConnectionList());
 				});
 			});
@@ -237,7 +237,7 @@ export class ConnectionDialogWidget extends Modal {
 					});
 					controller.onRecentConnectionRemoved(() => {
 						this.open(this._connectionManagementService.getRecentConnections().length > 0);
-					})
+					});
 					this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer.getHTMLElement(), this._instantiationService, controller);
 
 					// Theme styler

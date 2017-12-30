@@ -460,14 +460,14 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Start a profiler session
 	 */
-	public $startSession(handle: number, sessionId: string): Thenable<boolean>  {
+	public $startSession(handle: number, sessionId: string): Thenable<boolean> {
 		return this._resolveProvider<data.ProfilerProvider>(handle).startSession(sessionId);
 	}
 
 	/**
 	 * Stop a profiler session
 	 */
-	public $stopSession(handle: number, sessionId: string): Thenable<boolean>  {
+	public $stopSession(handle: number, sessionId: string): Thenable<boolean> {
 		return this._resolveProvider<data.ProfilerProvider>(handle).stopSession(sessionId);
 	}
 
