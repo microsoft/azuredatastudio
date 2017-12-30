@@ -11,21 +11,29 @@ declare module 'data' {
 	 * Namespace for Data Management Protocol global methods
 	 */
 	export namespace dataprotocol {
-		export function registerConnectionProvider(provider: DataProtocolProvider): vscode.Disposable;
+		export function registerConnectionProvider(provider: ConnectionProvider): vscode.Disposable;
 
-		export function registerBackupProvider(provider: DataProtocolProvider): vscode.Disposable;
+		export function registerBackupProvider(provider: BackupProvider): vscode.Disposable;
 
-		export function registerRestoreProvider(provider: DataProtocolProvider): vscode.Disposable;
+		export function registerRestoreProvider(provider: RestoreProvider): vscode.Disposable;
 
-		export function registerScriptingProvider(provider: DataProtocolProvider): vscode.Disposable;
+		export function registerScriptingProvider(provider: ScriptingProvider): vscode.Disposable;
 
-		export function registerObjectExplorerProvider(provider: DataProtocolProvider): vscode.Disposable;
+		export function registerObjectExplorerProvider(provider: ObjectExplorerProvider): vscode.Disposable;
 
-		export function registerTaskServicesProvier(provider: DataProtocolProvider): vscode.Disposable;
+		export function registerTaskServicesProvider(provider: TaskServicesProvider): vscode.Disposable;
 
-		export function registerFileBrowserProvider(provider: DataProtocolProvider): vscode.Disposable;
+		export function registerFileBrowserProvider(provider: FileBrowserProvider): vscode.Disposable;
 
-		export function registerProfileProvider(provider: DataProtocolProvider): vscode.Disposable;
+		export function registerProfilerProvider(provider: ProfilerProvider): vscode.Disposable;
+
+		export function registerMetadataProvider(provider: MetadataProvider): vscode.Disposable;
+
+		export function registerQueryProvider(provider: QueryProvider): vscode.Disposable;
+
+		export function registerAdminServicesProvider(provider: AdminServicesProvider): vscode.Disposable;
+
+		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
 
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
@@ -169,8 +177,12 @@ declare module 'data' {
 		osVersion: string;
 	}
 
-	export interface ConnectionProvider {
-		handle: number;
+	export interface DataProvider {
+		handle?: number;
+		readonly providerId: string;
+	}
+
+	export interface ConnectionProvider extends DataProvider {
 
 		connect(connectionUri: string, connectionInfo: ConnectionInfo): Thenable<boolean>;
 
@@ -184,11 +196,11 @@ declare module 'data' {
 
 		rebuildIntelliSenseCache(connectionUri: string): Thenable<void>;
 
-		registerOnConnectionComplete(handler: (connSummary: ConnectionInfoSummary) => any);
+		registerOnConnectionComplete(handler: (connSummary: ConnectionInfoSummary) => any): void;
 
-		registerOnIntelliSenseCacheComplete(handler: (connectionUri: string) => any);
+		registerOnIntelliSenseCacheComplete(handler: (connectionUri: string) => any): void;
 
-		registerOnConnectionChanged(handler: (changedConnInfo: ChangedConnectionInfo) => any);
+		registerOnConnectionChanged(handler: (changedConnInfo: ChangedConnectionInfo) => any): void;
 	}
 
 	export enum ServiceOptionType {
@@ -202,12 +214,12 @@ declare module 'data' {
 	}
 
 	export enum ConnectionOptionSpecialType {
-		serverName = 0,
-		databaseName = 1,
-		authType = 2,
-		userName = 3,
-		password = 4,
-		appName = 5
+		serverName = 'serverName',
+		databaseName = 'databaseName',
+		authType = 'authType',
+		userName = 'userName',
+		password = 'password',
+		appName = 'appName'
 	}
 
 	export interface CategoryValue {
@@ -320,7 +332,7 @@ declare module 'data' {
 		hostVersion: string;
 	}
 
-	export interface CapabilitiesProvider {
+	export interface CapabilitiesProvider extends DataProvider {
 		getServerCapabilities(client: DataProtocolClientCapabilities): Thenable<DataProtocolServerCapabilities>;
 	}
 
@@ -401,7 +413,7 @@ declare module 'data' {
 		objectMetadata: ObjectMetadata[];
 	}
 
-	export interface MetadataProvider {
+	export interface MetadataProvider extends DataProvider {
 		getMetadata(connectionUri: string): Thenable<ProviderMetadata>;
 
 		getDatabases(connectionUri: string): Thenable<string[]>;
@@ -433,7 +445,7 @@ declare module 'data' {
 		targetDatabaseEngineType: string;
 	}
 
-	export interface ScriptingProvider {
+	export interface ScriptingProvider extends DataProvider {
 
 		scriptAsOperation(connectionUri: string, operation: ScriptOperation, metadata: ObjectMetadata, paramDetails: ScriptingParamDetails): Thenable<ScriptingResult>;
 
@@ -452,38 +464,6 @@ declare module 'data' {
 		success: boolean;
 
 		operationId: string;
-	}
-	/**
-	 * Data Management Protocol main provider class that DMP extensions should implement.
-	 * This provider interface contains references to providers for the various capabilitiesProvider
-	 * that an extension can implement.
-	 */
-	export interface DataProtocolProvider {
-		handle: number;
-
-		providerId: string;
-
-		capabilitiesProvider: CapabilitiesProvider;
-
-		connectionProvider: ConnectionProvider;
-
-		queryProvider: QueryProvider;
-
-		metadataProvider: MetadataProvider;
-
-		scriptingProvider: ScriptingProvider;
-
-		objectExplorerProvider: ObjectExplorerProvider;
-
-		adminServicesProvider: AdminServicesProvider;
-
-		disasterRecoveryProvider: DisasterRecoveryProvider;
-
-		taskServicesProvider: TaskServicesProvider;
-
-		fileBrowserProvider: FileBrowserProvider;
-
-		profilerProvider: ProfilerProvider;
 	}
 
 	/**
@@ -523,7 +503,7 @@ declare module 'data' {
 		flavor: string;
 	}
 
-	export interface QueryProvider {
+	export interface QueryProvider extends DataProvider {
 		handle: number;
 		// TODO replace this temporary queryType field with a standard definition for supported platform
 		queryType: string;
@@ -863,7 +843,7 @@ declare module 'data' {
 		success: boolean;
 	}
 
-	export interface ObjectExplorerProvider {
+	export interface ObjectExplorerProvider extends DataProvider {
 		createNewSession(connInfo: ConnectionInfo): Thenable<ObjectExplorerSessionResponse>;
 
 		expandNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
@@ -897,7 +877,7 @@ declare module 'data' {
 		taskId: number;
 	}
 
-	export interface AdminServicesProvider {
+	export interface AdminServicesProvider extends DataProvider {
 		createDatabase(connectionUri: string, database: DatabaseInfo): Thenable<CreateDatabaseResponse>;
 
 		createLogin(connectionUri: string, login: LoginInfo): Thenable<CreateLoginResponse>;
@@ -955,7 +935,7 @@ declare module 'data' {
 		duration: number;
 	}
 
-	export interface TaskServicesProvider {
+	export interface TaskServicesProvider extends DataProvider {
 		getAllTasks(listTasksParams: ListTasksParams): Thenable<ListTasksResponse>;
 
 		cancelTask(cancelTaskParams: CancelTaskParams): Thenable<boolean>;
@@ -978,9 +958,12 @@ declare module 'data' {
 		taskId: number;
 	}
 
-	export interface DisasterRecoveryProvider {
+	export interface BackupProvider extends DataProvider {
 		backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<BackupResponse>;
 		getBackupConfigInfo(connectionUri: string): Thenable<BackupConfigInfo>;
+	}
+
+	export interface RestoreProvider extends DataProvider {
 		getRestorePlan(connectionUri: string, restoreInfo: RestoreInfo): Thenable<RestorePlanResponse>;
 		cancelRestorePlan(connectionUri: string, restoreInfo: RestoreInfo): Thenable<boolean>;
 		restore(connectionUri: string, restoreInfo: RestoreInfo): Thenable<RestoreResponse>;
@@ -1043,7 +1026,7 @@ declare module 'data' {
 		errorMessage: string;
 	}
 
-	export interface ProfilerProvider {
+	export interface ProfilerProvider extends DataProvider {
 		startSession(sessionId: string): Thenable<boolean>;
 		stopSession(sessionId: string): Thenable<boolean>;
 		pauseSession(sessionId: string): Thenable<boolean>;
@@ -1095,7 +1078,7 @@ declare module 'data' {
 
 	// File browser interfaces  -----------------------------------------------------------------------
 
-	export interface FileBrowserProvider {
+	export interface FileBrowserProvider extends DataProvider {
 		openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean>;
 		registerOnFileBrowserOpened(handler: (response: FileBrowserOpenedParams) => any);
 		expandFolderNode(ownerUri: string, expandPath: string): Thenable<boolean>;

@@ -5,7 +5,6 @@
 
 'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import Event from 'vs/base/common/event';
 import data = require('data');
@@ -20,12 +19,12 @@ export enum TaskExecutionMode {
 	executeAndScript = 2,
 }
 
-export const SERVICE_ID = 'disasterRecoveryService';
-export const UI_SERVICE_ID = 'disasterRecoveryUiService';
+export const SERVICE_ID = 'backupService';
+export const UI_SERVICE_ID = 'backupUiService';
 
-export const IDisasterRecoveryUiService = createDecorator<IDisasterRecoveryUiService>(UI_SERVICE_ID);
+export const IBackupUiService = createDecorator<IBackupUiService>(UI_SERVICE_ID);
 
-export interface IDisasterRecoveryUiService {
+export interface IBackupUiService {
 	_serviceBrand: any;
 
 	/**
@@ -49,9 +48,9 @@ export interface IDisasterRecoveryUiService {
 	onShowBackupDialog();
 }
 
-export const IDisasterRecoveryService = createDecorator<IDisasterRecoveryService>(SERVICE_ID);
+export const IBackupService = createDecorator<IBackupService>(SERVICE_ID);
 
-export interface IDisasterRecoveryService {
+export interface IBackupService {
 	_serviceBrand: any;
 
 	getBackupConfigInfo(connectionUri: string): Thenable<data.BackupConfigInfo>;
@@ -64,31 +63,5 @@ export interface IDisasterRecoveryService {
 	/**
 	 * Register a disaster recovery provider
 	 */
-	registerProvider(providerId: string, provider: data.DisasterRecoveryProvider): void;
-
-	/**
-	 * Restore a data source using a backup file or database
-	 */
-	restore(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestoreResponse>;
-
-	/**
-	 * Gets restore plan to do the restore operation on a database
-	 */
-	getRestorePlan(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestorePlanResponse>;
-
-	/**
-	 * Gets restore config Info
-	 */
-	getRestoreConfigInfo(connectionUri: string): Thenable<data.RestoreConfigInfo>;
-
-	/**
-	 * Cancel restore plan
-	 */
-	cancelRestorePlan(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<boolean>;
-}
-
-export const IRestoreDialogController = createDecorator<IRestoreDialogController>('restoreDialogService');
-export interface IRestoreDialogController {
-	_serviceBrand: any;
-	showDialog(connection: IConnectionProfile): TPromise<void>;
+	registerProvider(providerId: string, provider: data.BackupProvider): void;
 }

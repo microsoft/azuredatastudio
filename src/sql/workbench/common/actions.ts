@@ -9,7 +9,8 @@ import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
-import { IDisasterRecoveryUiService, IRestoreDialogController } from 'sql/parts/disasterRecovery/common/interfaces';
+import { IRestoreDialogController } from 'sql/parts/disasterRecovery/restore/common/restoreService';
+import { IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
 import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
 import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
@@ -284,7 +285,7 @@ export class BackupAction extends TaskAction {
 
 	constructor(
 		id: string, label: string, icon: string,
-		@IDisasterRecoveryUiService protected _disasterRecoveryService: IDisasterRecoveryUiService
+		@IBackupUiService protected _backupUiService: IBackupUiService
 	) {
 		super(id, label, icon);
 	}
@@ -293,7 +294,7 @@ export class BackupAction extends TaskAction {
 		return new TPromise<boolean>((resolve, reject) => {
 			TaskUtilities.showBackup(
 				actionContext.profile,
-				this._disasterRecoveryService,
+				this._backupUiService,
 			).then(
 				result => {
 					resolve(true);

@@ -71,11 +71,37 @@ export interface ConnectionClientCapabilities {
 		 */
 		dynamicRegistration?: boolean;
 	};
+	capabilities?: {
+		/**
+		 *
+		 */
+		dynamicRegistration?: boolean;
+	}
 }
 
 export interface ClientCapabilities extends VSClientCapabilities {
 	connection?: ConnectionClientCapabilities;
 }
+
+//---- Refresh IntelliSense ----------------------------------------
+
+/**
+ * Notification sent when the an IntelliSense cache invalidation is requested
+ */
+export namespace RebuildIntelliSenseNotification {
+	export const type = new NotificationType<RebuildIntelliSenseParams, void>('textDocument/rebuildIntelliSense');
+}
+
+/**
+ * Rebuild IntelliSense notification parameters
+ */
+export class RebuildIntelliSenseParams {
+	/**
+	 * URI identifying the text document
+	 */
+	public ownerUri: string;
+}
+
 
 // ------------------------------- < Connect Request > ----------------------------------------------
 
@@ -670,27 +696,27 @@ export namespace GetDatabaseInfoRequest {
 // ------------------------------- < Disaster Recovery Events > ------------------------------------
 
 export namespace BackupRequest {
-	export const type = new RequestType<BackupParams, BackupResponse, void, void>('disasterrecovery/backup');
+	export const type = new RequestType<BackupParams, BackupResponse, void, void>('backup/backup');
 }
 
 export namespace BackupConfigInfoRequest {
-	export const type = new RequestType<DefaultDatabaseInfoParams, BackupConfigInfoResponse, void, void>('disasterrecovery/backupconfiginfo');
+	export const type = new RequestType<DefaultDatabaseInfoParams, BackupConfigInfoResponse, void, void>('backup/backupconfiginfo');
 }
 
 export namespace RestoreRequest {
-	export const type = new RequestType<RestoreParams, RestoreResponse, void, void>('disasterrecovery/restore');
+	export const type = new RequestType<RestoreParams, RestoreResponse, void, void>('restore/restore');
 }
 
 export namespace RestorePlanRequest {
-	export const type = new RequestType<RestoreParams, RestorePlanResponse, void, void>('disasterrecovery/restoreplan');
+	export const type = new RequestType<RestoreParams, RestorePlanResponse, void, void>('restore/restoreplan');
 }
 
 export namespace CancelRestorePlanRequest {
-	export const type = new RequestType<RestoreParams, boolean, void, void>('disasterrecovery/cancelrestoreplan');
+	export const type = new RequestType<RestoreParams, boolean, void, void>('restore/cancelrestoreplan');
 }
 
 export namespace RestoreConfigInfoRequest {
-	export const type = new RequestType<RestoreConfigInfoRequestParams, RestoreConfigInfoResponse, void, void>('disasterrecovery/restoreconfiginfo');
+	export const type = new RequestType<RestoreConfigInfoRequestParams, RestoreConfigInfoResponse, void, void>('restore/restoreconfiginfo');
 }
 
 // ------------------------------- < File Browser Events > ------------------------------------

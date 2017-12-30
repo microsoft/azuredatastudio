@@ -4,25 +4,87 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
-import { TPromise } from 'vs/base/common/winjs.base';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import * as data from 'data';
+import * as Constants from 'sql/common/constants';
+import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryUtils from 'sql/common/telemetryUtilities';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { IBackupService, TaskExecutionMode, IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
+import { BackupDialog } from 'sql/parts/disasterRecovery/backup/backupDialog';
+import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
 import Event, { Emitter } from 'vs/base/common/event';
+import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import * as data from 'data';
-
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
-import { BackupDialog } from 'sql/parts/disasterRecovery/backup/backupDialog';
-import { IDisasterRecoveryService, IDisasterRecoveryUiService, TaskExecutionMode } from 'sql/parts/disasterRecovery/common/interfaces';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import ConnectionUtils = require('sql/parts/connection/common/utils');
+import { TPromise } from 'vs/base/common/winjs.base';
+import * as ConnectionUtils from 'sql/parts/connection/common/utils';
 import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
-import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import * as Utils from 'sql/parts/connection/common/utils';
 
-export class DisasterRecoveryUiService implements IDisasterRecoveryUiService {
+export class BackupService implements IBackupService {
+
+	public _serviceBrand: any;
+	private _providers: { [handle: string]: data.BackupProvider; } = Object.create(null);
+
+	constructor(
+		@IConnectionManagementService private _connectionService: IConnectionManagementService,
+		@ITelemetryService private _telemetryService: ITelemetryService
+	) {
+	}
+
+	/**
+	 * Get database metadata needed to populate backup UI
+	 */
+	public getBackupConfigInfo(connectionUri: string): Thenable<data.BackupConfigInfo> {
+		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
+		if (providerId) {
+			let provider = this._providers[providerId];
+			if (provider) {
+				return provider.getBackupConfigInfo(connectionUri);
+			}
+		}
+		return Promise.resolve(undefined);
+	}
+
+	/**
+	 * Backup a data source using the provided connection
+	 */
+	public backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<data.BackupResponse> {
+		return new Promise<data.BackupResponse>((resolve, reject) => {
+			let providerResult = this.getProvider(connectionUri);
+			if (providerResult) {
+				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.BackupCreated, { provider: providerResult.providerName });
+				providerResult.provider.backup(connectionUri, backupInfo, taskExecutionMode).then(result => {
+					resolve(result);
+				}, error => {
+					reject(error);
+				});
+			} else {
+				reject(Constants.InvalidProvider);
+			}
+		});
+	}
+
+	private getProvider(connectionUri: string): { provider: data.BackupProvider, providerName: string } {
+		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
+		if (providerId) {
+			return { provider: this._providers[providerId], providerName: providerId };
+		} else {
+			return undefined;
+		}
+	}
+
+	/**
+	 * Register a disaster recovery provider
+	 */
+	public registerProvider(providerId: string, provider: data.BackupProvider): void {
+		this._providers[providerId] = provider;
+	}
+}
+
+export class BackupUiService implements IBackupUiService {
 	public _serviceBrand: any;
 	private _backupDialogs: { [providerName: string]: BackupDialog | OptionsDialog } = {};
 	private _currentProvider: string;
@@ -37,7 +99,7 @@ export class DisasterRecoveryUiService implements IDisasterRecoveryUiService {
 	constructor( @IInstantiationService private _instantiationService: IInstantiationService,
 		@IPartService private _partService: IPartService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IDisasterRecoveryService private _disasterRecoveryService: IDisasterRecoveryService,
+		@IBackupService private _disasterRecoveryService: IBackupService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService) {
 			this._onShowBackupEvent = new Emitter<DashboardComponentParams>();
 		}
@@ -86,11 +148,11 @@ export class DisasterRecoveryUiService implements IDisasterRecoveryUiService {
 			} else {
 				let uri = this._connectionManagementService.getConnectionId(connection)
 					+ ProviderConnectionInfo.idSeparator
-					+ Utils.ConnectionUriBackupIdAttributeName
+					+ ConnectionUtils.ConnectionUriBackupIdAttributeName
 					+ ProviderConnectionInfo.nameValueSeparator
-					+ DisasterRecoveryUiService._connectionUniqueId;
+					+ BackupUiService._connectionUniqueId;
 
-				DisasterRecoveryUiService._connectionUniqueId++;
+					BackupUiService._connectionUniqueId++;
 
 				// Create connection if needed
 				if (!this._connectionManagementService.isConnected(uri)) {

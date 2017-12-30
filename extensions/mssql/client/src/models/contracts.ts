@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { RequestType } from 'dataprotocol-client';
+import { RequestType } from 'vscode-languageclient';
 import * as data from 'data';
 
 // DEV-NOTE: Still finalizing what we'll need as part of this interface
@@ -22,14 +22,14 @@ export class SaveResultsInfo {
 }
 
 export namespace SaveAsRequest {
-	export const type: RequestType<SaveResultsInfo, data.SaveResultRequestResult, void> = { get method(): string { return 'query/saveAs'; } };
+	export const type = new RequestType<SaveResultsInfo, data.SaveResultRequestResult, void, void>('query/saveAs');
 }
 
 // --------------------------------- < Read Credential Request > -------------------------------------------------
 
 // Read Credential request message callback declaration
 export namespace ReadCredentialRequest {
-	export const type: RequestType<Credential, Credential, void> = { get method(): string { return 'credential/read'; } };
+	export const type = new RequestType<Credential, Credential, void, void>('credential/read');
 }
 
 /**
@@ -53,7 +53,7 @@ export class Credential {
 
 // Save Credential request message callback declaration
 export namespace SaveCredentialRequest {
-	export const type: RequestType<Credential, boolean, void> = { get method(): string { return 'credential/save'; } };
+	export const type = new RequestType<Credential, boolean, void, void>('credential/save');
 }
 // --------------------------------- </ Save Credential Request > -------------------------------------------------
 
@@ -62,17 +62,17 @@ export namespace SaveCredentialRequest {
 
 // Delete Credential request message callback declaration
 export namespace DeleteCredentialRequest {
-	export const type: RequestType<Credential, boolean, void> = { get method(): string { return 'credential/delete'; } };
+	export const type = new RequestType<Credential, boolean, void, void>('credential/delete');
 }
 // --------------------------------- </ Delete Credential Request > -------------------------------------------------
 
 // ------------------------------- < Resource Events > ------------------------------------
 export namespace CreateFirewallRuleRequest {
-	export const type: RequestType<CreateFirewallRuleParams, CreateFirewallRuleResponse, void> = { get method(): string { return 'resource/createFirewallRule'; } };
+	export const type = new RequestType<CreateFirewallRuleParams, CreateFirewallRuleResponse, void, void>('resource/createFirewallRule');
 }
 
 export namespace HandleFirewallRuleRequest {
-	export const type: RequestType<HandleFirewallRuleParams, HandleFirewallRuleResponse, void> = { get method(): string { return 'resource/handleFirewallRule'; } };
+	export const type = new RequestType<HandleFirewallRuleParams, HandleFirewallRuleResponse, void, void>('resource/handleFirewallRule');
 }
 
 // Firewall rule interfaces

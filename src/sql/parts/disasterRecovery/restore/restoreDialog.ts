@@ -30,7 +30,6 @@ import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler } from 'sql/common/theme/styler';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import { ServiceOptionType } from 'sql/parts/connection/common/connectionManagement';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/parts/disasterRecovery/restore/restoreViewModel';
 import * as FileValidationConstants from 'sql/parts/fileBrowser/common/fileValidationServiceConstants';
@@ -40,6 +39,7 @@ import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel
 import * as DOM from 'vs/base/browser/dom';
 import * as data from 'data';
 import * as strings from 'vs/base/common/strings';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 interface FileListElement {
 	logicalFileName: string;

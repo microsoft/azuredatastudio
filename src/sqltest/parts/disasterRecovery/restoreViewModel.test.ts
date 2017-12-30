@@ -6,8 +6,8 @@
 'use strict';
 import data = require('data');
 import * as assert from 'assert';
-import { ServiceOptionType } from 'sql/parts/connection/common/connectionManagement';
 import { RestoreViewModel } from 'sql/parts/disasterRecovery/restore/restoreViewModel';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('Restore Dialog view model tests', () => {
 	let option1String = 'option1';

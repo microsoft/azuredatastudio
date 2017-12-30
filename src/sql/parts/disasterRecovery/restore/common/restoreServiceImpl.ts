@@ -4,21 +4,128 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import * as data from 'data';
 import { TPromise } from 'vs/base/common/winjs.base';
+import * as Constants from 'sql/common/constants';
+import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryUtils from 'sql/common/telemetryUtilities';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as types from 'vs/base/common/types';
-
-import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import * as ConnectionConstants from 'sql/parts/connection/common/constants';
-import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
-import { IDisasterRecoveryService, IRestoreDialogController, TaskExecutionMode } from 'sql/parts/disasterRecovery/common/interfaces';
-import { MssqlRestoreInfo } from 'sql/parts/disasterRecovery/restore/mssqlRestoreInfo';
-import { RestoreDialog } from 'sql/parts/disasterRecovery/restore/restoreDialog';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { IRestoreService, IRestoreDialogController, TaskExecutionMode } from 'sql/parts/disasterRecovery/restore/common/restoreService';
+import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
+import { RestoreDialog } from 'sql/parts/disasterRecovery/restore/restoreDialog';
+import * as ConnectionConstants from 'sql/parts/connection/common/constants';
+import { MssqlRestoreInfo } from 'sql/parts/disasterRecovery/restore/mssqlRestoreInfo';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
 import * as Utils from 'sql/parts/connection/common/utils';
-import * as data from 'data';
+
+export class RestoreService implements IRestoreService {
+
+	public _serviceBrand: any;
+	private _providers: { [handle: string]: data.RestoreProvider; } = Object.create(null);
+
+	constructor(
+		@IConnectionManagementService private _connectionService: IConnectionManagementService,
+		@ITelemetryService private _telemetryService: ITelemetryService
+	) {
+	}
+
+	/**
+	 * Gets restore config Info
+	 */
+	getRestoreConfigInfo(connectionUri: string): Thenable<data.RestoreConfigInfo> {
+		return new Promise<data.RestoreConfigInfo>((resolve, reject) => {
+			let providerResult = this.getProvider(connectionUri);
+			if (providerResult) {
+				providerResult.provider.getRestoreConfigInfo(connectionUri).then(result => {
+					resolve(result);
+				}, error => {
+					reject(error);
+				});
+			} else {
+				reject(Constants.InvalidProvider);
+			}
+		});
+	}
+
+	/**
+	 * Restore a data source using a backup file or database
+	 */
+	restore(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestoreResponse> {
+		return new Promise<data.RestoreResponse>((resolve, reject) => {
+			let providerResult = this.getProvider(connectionUri);
+			if (providerResult) {
+				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.RestoreRequested, { provider: providerResult.providerName });
+				providerResult.provider.restore(connectionUri, restoreInfo).then(result => {
+					resolve(result);
+				}, error => {
+					reject(error);
+				});
+			} else {
+				reject(Constants.InvalidProvider);
+			}
+		});
+	}
+
+	private getProvider(connectionUri: string): { provider: data.RestoreProvider, providerName: string } {
+		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
+		if (providerId) {
+			return { provider: this._providers[providerId], providerName: providerId };
+		} else {
+			return undefined;
+		}
+	}
+
+	/**
+	 * Gets restore plan to do the restore operation on a database
+	 */
+	getRestorePlan(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestorePlanResponse> {
+		return new Promise<data.RestorePlanResponse>((resolve, reject) => {
+			let providerResult = this.getProvider(connectionUri);
+			if (providerResult) {
+				providerResult.provider.getRestorePlan(connectionUri, restoreInfo).then(result => {
+					resolve(result);
+				}, error => {
+					reject(error);
+				});
+			} else {
+				reject(Constants.InvalidProvider);
+
+			}
+		});
+	}
+
+	/**
+	 * Cancels a restore plan
+	 */
+	cancelRestorePlan(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
+			let providerResult = this.getProvider(connectionUri);
+			if (providerResult) {
+				providerResult.provider.cancelRestorePlan(connectionUri, restoreInfo).then(result => {
+					resolve(result);
+				}, error => {
+					reject(error);
+				});
+			} else {
+				reject(Constants.InvalidProvider);
+
+			}
+		});
+	}
+
+	/**
+	 * Register a disaster recovery provider
+	 */
+	public registerProvider(providerId: string, provider: data.RestoreProvider): void {
+		this._providers[providerId] = provider;
+	}
+}
+
 
 export class RestoreDialogController implements IRestoreDialogController {
 	_serviceBrand: any;
@@ -32,7 +139,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IDisasterRecoveryService private _disasterRecoveryService: IDisasterRecoveryService,
+		@IRestoreService private _restoreService: IRestoreService,
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
@@ -46,14 +153,14 @@ export class RestoreDialogController implements IRestoreDialogController {
 			restoreOption.taskExecutionMode = TaskExecutionMode.executeAndScript;
 		}
 
-		this._disasterRecoveryService.restore(this._ownerUri, restoreOption);
+		this._restoreService.restore(this._ownerUri, restoreOption);
 		let restoreDialog = this._restoreDialogs[this._currentProvider];
 		restoreDialog.close();
 	}
 
 	private handleMssqlOnValidateFile(overwriteTargetDatabase: boolean = false): void {
 		let restoreDialog = this._restoreDialogs[this._currentProvider] as RestoreDialog;
-		this._disasterRecoveryService.getRestorePlan(this._ownerUri, this.setRestoreOption(overwriteTargetDatabase)).then(restorePlanResponse => {
+		this._restoreService.getRestorePlan(this._ownerUri, this.setRestoreOption(overwriteTargetDatabase)).then(restorePlanResponse => {
 			this._sessionId = restorePlanResponse.sessionId;
 
 			if (restorePlanResponse.errorMessage) {
@@ -88,7 +195,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 	private getMssqlRestoreConfigInfo(): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			let restoreDialog = this._restoreDialogs[this._currentProvider] as RestoreDialog;
-			this._disasterRecoveryService.getRestoreConfigInfo(this._ownerUri).then(restoreConfigInfo => {
+			this._restoreService.getRestoreConfigInfo(this._ownerUri).then(restoreConfigInfo => {
 				restoreDialog.viewModel.updateOptionWithConfigInfo(restoreConfigInfo.configInfo);
 				resolve();
 			}, error => {
@@ -150,7 +257,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 	private handleOnCancel(): void {
 		let restoreInfo = new MssqlRestoreInfo();
 		restoreInfo.sessionId = this._sessionId;
-		this._disasterRecoveryService.cancelRestorePlan(this._ownerUri, restoreInfo).then(() => {
+		this._restoreService.cancelRestorePlan(this._ownerUri, restoreInfo).then(() => {
 			this._connectionService.disconnect(this._ownerUri);
 		});
 	}
