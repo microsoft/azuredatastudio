@@ -504,9 +504,6 @@ declare module 'data' {
 	}
 
 	export interface QueryProvider extends DataProvider {
-		handle: number;
-		// TODO replace this temporary queryType field with a standard definition for supported platform
-		queryType: string;
 		cancelQuery(ownerUri: string): Thenable<QueryCancelResult>;
 		runQuery(ownerUri: string, selection: ISelectionData, runOptions?: ExecutionPlanOptions): Thenable<void>;
 		runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;

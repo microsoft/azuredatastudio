@@ -12,6 +12,7 @@ import { c2p, Ic2p } from './codeConverter';
 
 import  * as protocol from './protocol';
 import * as types from './types';
+import { Ip2c, p2c } from './protocolConverter';
 
 function ensure<T, K extends keyof T>(target: T, key: K): T[K] {
 	if (target[key] === void 0) {
@@ -103,14 +104,14 @@ class CapabilitiesFeature extends SqlOpsFeature<undefined> {
 	}
 
 	protected registerProvider(options: undefined): Disposable {
-		let client = this._client;
+		const client = this._client;
 
 		let getServerCapabilities = (cap: data.DataProtocolClientCapabilities): Thenable<data.DataProtocolServerCapabilities> => {
 			return client.sendRequest(protocol.CapabiltiesDiscoveryRequest.type, client.sqlc2p.asCapabilitiesParams(cap)).then(
-				r => r.capabilities as any,
+				r => r.capabilities,
 				e => {
 					client.logFailedRequest(protocol.CapabiltiesDiscoveryRequest.type, e);
-					return Promise.resolve([]);
+					return Promise.resolve(undefined);
 				}
 			);
 		};
@@ -151,10 +152,10 @@ class ConnectionFeature extends SqlOpsFeature<undefined> {
 	}
 
 	protected registerProvider(options: undefined): Disposable {
-		let client = this._client;
+		const client = this._client;
 		let connect = (connUri: string, connInfo: data.ConnectionInfo): Thenable<boolean> => {
 			return client.sendRequest(protocol.ConnectionRequest.type, client.sqlc2p.asConnectionParams(connUri, connInfo)).then(
-				undefined,
+				r => r,
 				e => {
 					client.logFailedRequest(protocol.ConnectionRequest.type, e);
 					return Promise.resolve(false);
@@ -162,13 +163,13 @@ class ConnectionFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let disconnect = (connUri: string): Thenable<boolean> => {
+		let disconnect = (ownerUri: string): Thenable<boolean> => {
 			let params: protocol.DisconnectParams = {
-				ownerUri: connUri
+				ownerUri
 			};
 
 			return client.sendRequest(protocol.DisconnectRequest.type, params).then(
-				undefined,
+				r => r,
 				e => {
 					client.logFailedRequest(protocol.DisconnectRequest.type, e);
 					return Promise.resolve(false);
@@ -176,13 +177,13 @@ class ConnectionFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let cancelConnect = (connUri: string): Thenable<boolean> => {
+		let cancelConnect = (ownerUri: string): Thenable<boolean> => {
 			let params: protocol.CancelConnectParams = {
-				ownerUri: connUri
+				ownerUri
 			};
 
 			return client.sendRequest(protocol.CancelConnectRequest.type, params).then(
-				undefined,
+				r => r,
 				e => {
 					client.logFailedRequest(protocol.CancelConnectRequest.type, e);
 					return Promise.resolve(false);
@@ -190,14 +191,14 @@ class ConnectionFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let changeDatabase = (connUri: string, newDatabase: string): Thenable<boolean> => {
+		let changeDatabase = (ownerUri: string, newDatabase: string): Thenable<boolean> => {
 			let params: protocol.ChangeDatabaseParams = {
-				ownerUri: connUri,
-				newDatabase: newDatabase
+				ownerUri,
+				newDatabase
 			};
 
 			return client.sendRequest(protocol.ChangeDatabaseRequest.type, params).then(
-				undefined,
+				r => r,
 				e => {
 					client.logFailedRequest(protocol.ChangeDatabaseRequest.type, e);
 					return Promise.resolve(false);
@@ -205,13 +206,13 @@ class ConnectionFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let listDatabases = (connectionUri: string): Thenable<data.ListDatabasesResult> => {
+		let listDatabases = (ownerUri: string): Thenable<data.ListDatabasesResult> => {
 			let params: protocol.ListDatabasesParams = {
-				ownerUri: connectionUri
+				ownerUri
 			};
 
 			return client.sendRequest(protocol.ListDatabasesRequest.type, params).then(
-				undefined,
+				r => r,
 				e => {
 					client.logFailedRequest(protocol.ListDatabasesRequest.type, e);
 					return Promise.resolve(undefined);
@@ -219,9 +220,9 @@ class ConnectionFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let rebuildIntelliSenseCache = (connectionUri: string): Thenable<void> => {
+		let rebuildIntelliSenseCache = (ownerUri: string): Thenable<void> => {
 			let params: protocol.RebuildIntelliSenseParams = {
-				ownerUri: connectionUri
+				ownerUri
 			};
 
 			client.sendNotification(protocol.RebuildIntelliSenseNotification.type, params);
@@ -229,17 +230,7 @@ class ConnectionFeature extends SqlOpsFeature<undefined> {
 		};
 
 		let registerOnConnectionComplete = (handler: (connSummary: data.ConnectionInfoSummary) => any): void => {
-			client.onNotification(protocol.ConnectionCompleteNotification.type, (params: types.ConnectionCompleteParams) => {
-				handler({
-					ownerUri: params.ownerUri,
-					connectionId: params.connectionId,
-					messages: params.messages,
-					errorMessage: params.errorMessage,
-					errorNumber: params.errorNumber,
-					serverInfo: params.serverInfo,
-					connectionSummary: params.connectionSummary
-				});
-			});
+			client.onNotification(protocol.ConnectionCompleteNotification.type, handler);
 		};
 
 		let registerOnIntelliSenseCacheComplete = (handler: (connectionUri: string) => any): void => {
@@ -272,16 +263,1020 @@ class ConnectionFeature extends SqlOpsFeature<undefined> {
 	}
 }
 
+class QueryFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		protocol.QueryExecuteRequest.type,
+		protocol.QueryCancelRequest.type,
+		protocol.QueryExecuteStatementRequest.type,
+		protocol.QueryExecuteStringRequest.type,
+		protocol.SimpleExecuteRequest.type,
+		protocol.QueryExecuteSubsetRequest.type,
+		protocol.QueryDisposeRequest.type,
+		protocol.QueryExecuteCompleteNotification.type,
+		protocol.QueryExecuteBatchStartNotification.type,
+		protocol.QueryExecuteBatchCompleteNotification.type,
+		protocol.QueryExecuteResultSetCompleteNotification.type,
+		protocol.QueryExecuteMessageNotification.type,
+		protocol.SaveResultsAsCsvRequest.type,
+		protocol.SaveResultsAsJsonRequest.type,
+		protocol.SaveResultsAsExcelRequest.type,
+		protocol.EditCommitRequest.type,
+		protocol.EditCreateRowRequest.type,
+		protocol.EditDeleteRowRequest.type,
+		protocol.EditDisposeRequest.type,
+		protocol.EditInitializeRequest.type,
+		protocol.EditRevertCellRequest.type,
+		protocol.EditRevertRowRequest.type,
+		protocol.EditUpdateCellRequest.type,
+		protocol.EditSubsetRequest.type,
+		protocol.EditSessionReadyNotification.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, QueryFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: protocol.ClientCapabilities): void {
+		ensure(ensure(capabilities, 'connection')!, 'query')!.dynamicRegistration = true;
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+		let runQuery = (ownerUri: string, querySelection: types.ISelectionData, executionPlanOptions?: data.ExecutionPlanOptions): Thenable<void> => {
+			let params: protocol.QueryExecuteParams = {
+				ownerUri,
+				querySelection,
+				executionPlanOptions: client.sqlc2p.asExecutionPlanOptions(executionPlanOptions)
+			};
+			return client.sendRequest(protocol.QueryExecuteRequest.type, params).then(
+				r => undefined,
+				e => {
+					client.logFailedRequest(protocol.QueryExecuteRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let cancelQuery = (ownerUri: string): Thenable<protocol.QueryCancelResult> => {
+			let params: protocol.QueryCancelParams = { ownerUri };
+			return client.sendRequest(protocol.QueryCancelRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.QueryCancelRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let runQueryStatement = (ownerUri: string, line: number, column: number): Thenable<void> => {
+			let params: protocol.QueryExecuteStatementParams = {
+				ownerUri,
+				line,
+				column
+			};
+			return client.sendRequest(protocol.QueryExecuteStatementRequest.type, params).then(
+				r => undefined,
+				e => {
+					client.logFailedRequest(protocol.QueryExecuteStatementRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let runQueryString = (ownerUri: string, query: string): Thenable<void> => {
+			let params: protocol.QueryExecuteStringParams = { ownerUri, query };
+			return client.sendRequest(protocol.QueryExecuteStringRequest.type, params).then(
+				r => undefined,
+				e => {
+					client.logFailedRequest(protocol.QueryExecuteStringRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let runQueryAndReturn = (ownerUri: string, queryString: string): Thenable<protocol.SimpleExecuteResult> => {
+			let params: protocol.SimpleExecuteParams = { ownerUri, queryString };
+			return client.sendRequest(protocol.SimpleExecuteRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.SimpleExecuteRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let getQueryRows = (rowData: protocol.QueryExecuteSubsetParams): Thenable<protocol.QueryExecuteSubsetResult> => {
+			return client.sendRequest(protocol.QueryExecuteSubsetRequest.type, rowData).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.QueryExecuteSubsetRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let disposeQuery = (ownerUri: string): Thenable<void> => {
+			let params: protocol.QueryDisposeParams = { ownerUri };
+			return client.sendRequest(protocol.QueryDisposeRequest.type, params).then(
+				r => undefined,
+				e => {
+					client.logFailedRequest(protocol.QueryDisposeRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let registerOnQueryComplete = (handler: (result: protocol.QueryExecuteCompleteNotificationResult) => any): void => {
+			client.onNotification(protocol.QueryExecuteCompleteNotification.type, handler);
+		};
+
+		let registerOnBatchStart = (handler: (batchInfo: types.QueryExecuteBatchNotificationParams) => any): void => {
+			client.onNotification(protocol.QueryExecuteBatchStartNotification.type, handler);
+		};
+
+		let registerOnBatchComplete = (handler: (batchInfo: types.QueryExecuteBatchNotificationParams) => any): void => {
+			client.onNotification(protocol.QueryExecuteBatchCompleteNotification.type, handler);
+		};
+
+		let registerOnResultSetComplete = (handler: (resultSetInfo: protocol.QueryExecuteResultSetCompleteNotificationParams) => any): void => {
+			client.onNotification(protocol.QueryExecuteResultSetCompleteNotification.type, handler);
+		};
+
+		let registerOnMessage = (handler: (message: protocol.QueryExecuteMessageParams) => any): void => {
+			client.onNotification(protocol.QueryExecuteMessageNotification.type, handler);
+		};
+
+		let saveResults = (requestParams: data.SaveResultsRequestParams): Thenable<protocol.SaveResultRequestResult> => {
+			switch (requestParams.resultFormat) {
+				case 'csv':
+					return client.sendRequest(protocol.SaveResultsAsCsvRequest.type, requestParams).then(
+						undefined,
+						e => {
+							client.logFailedRequest(protocol.SaveResultsAsCsvRequest.type, e);
+							return Promise.reject(e);
+						}
+					);
+				case 'json':
+					return client.sendRequest(protocol.SaveResultsAsJsonRequest.type, requestParams).then(
+						undefined,
+						e => {
+							client.logFailedRequest(protocol.SaveResultsAsJsonRequest.type, e);
+							return Promise.reject(e);
+						}
+					);
+				case 'excel':
+					return client.sendRequest(protocol.SaveResultsAsExcelRequest.type, requestParams).then(
+						undefined,
+						e => {
+							client.logFailedRequest(protocol.SaveResultsAsExcelRequest.type, e);
+							return Promise.reject(e);
+						}
+					);
+				default:
+					return Promise.reject('unsupported format');
+			}
+		};
+
+		// Edit Data Requests
+		let commitEdit = (ownerUri: string): Thenable<void> => {
+			let params: protocol.EditCommitParams = { ownerUri };
+			return client.sendRequest(protocol.EditCommitRequest.type, params).then(
+				r => undefined,
+				e => {
+					client.logFailedRequest(protocol.EditCommitRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let createRow = (ownerUri: string): Thenable<protocol.EditCreateRowResult> => {
+			let params: protocol.EditCreateRowParams = { ownerUri: ownerUri };
+			return client.sendRequest(protocol.EditCreateRowRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.EditCreateRowRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let deleteRow = (ownerUri: string, rowId: number): Thenable<void> => {
+			let params: protocol.EditDeleteRowParams = { ownerUri, rowId };
+			return client.sendRequest(protocol.EditDeleteRowRequest.type, params).then(
+				r => undefined,
+				e => {
+					client.logFailedRequest(protocol.EditDeleteRowRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let disposeEdit = (ownerUri: string): Thenable<void> => {
+			let params: protocol.EditDisposeParams = { ownerUri };
+			return client.sendRequest(protocol.EditDisposeRequest.type, params).then(
+				r => undefined,
+				e => {
+					client.logFailedRequest(protocol.EditDisposeRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let initializeEdit = (ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void> => {
+			let filters: protocol.EditInitializeFiltering = { LimitResults: rowLimit };
+			let params: protocol.EditInitializeParams = { ownerUri, schemaName, objectName, objectType, filters };
+			return client.sendRequest(protocol.EditInitializeRequest.type, params).then(
+				r => undefined,
+				e => {
+					client.logFailedRequest(protocol.EditInitializeRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let revertCell = (ownerUri: string, rowId: number, columnId: number): Thenable<protocol.EditRevertCellResult> => {
+			let params: protocol.EditRevertCellParams = { ownerUri: ownerUri, rowId: rowId, columnId: columnId };
+			return client.sendRequest(protocol.EditRevertCellRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.EditRevertCellRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let revertRow = (ownerUri: string, rowId: number): Thenable<void> => {
+			let params: protocol.EditRevertRowParams = { ownerUri: ownerUri, rowId: rowId };
+			return client.sendRequest(protocol.EditRevertRowRequest.type, params).then(
+				r => undefined,
+				e => {
+					client.logFailedRequest(protocol.EditRevertRowRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let updateCell = (ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<protocol.EditUpdateCellResult> => {
+			let params: protocol.EditUpdateCellParams = { ownerUri, rowId, columnId, newValue };
+			return client.sendRequest(protocol.EditUpdateCellRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.EditUpdateCellRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let getEditRows = (rowData: data.EditSubsetParams): Thenable<protocol.EditSubsetResult> => {
+			return client.sendRequest(protocol.EditSubsetRequest.type, rowData).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.EditSubsetRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		// Edit Data Event Handlers
+		let registerOnEditSessionReady = (handler: (ownerUri: string, success: boolean, message: string) => any): void => {
+			client.onNotification(protocol.EditSessionReadyNotification.type, (params: protocol.EditSessionReadyParams) => {
+				handler(params.ownerUri, params.success, params.message);
+			});
+		};
+
+		return data.dataprotocol.registerQueryProvider({
+			providerId: client.providerId,
+			cancelQuery,
+			commitEdit,
+			createRow,
+			deleteRow,
+			disposeEdit,
+			disposeQuery,
+			getEditRows,
+			getQueryRows,
+			initializeEdit,
+			registerOnBatchComplete,
+			registerOnBatchStart,
+			registerOnEditSessionReady,
+			registerOnMessage,
+			registerOnQueryComplete,
+			registerOnResultSetComplete,
+			revertCell,
+			revertRow,
+			runQuery,
+			runQueryAndReturn,
+			runQueryStatement,
+			runQueryString,
+			saveResults,
+			updateCell
+		});
+	}
+}
+
+class MetadataFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		protocol.MetadataQueryRequest.type,
+		protocol.ListDatabasesRequest.type,
+		protocol.TableMetadataRequest.type,
+		protocol.ViewMetadataRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, MetadataFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: protocol.ClientCapabilities): void {
+		ensure(ensure(capabilities, 'connection')!, 'metadata')!.dynamicRegistration = true;
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let getMetadata = (connectionUri: string): Thenable<data.ProviderMetadata> => {
+			return client.sendRequest(protocol.MetadataQueryRequest.type,
+				client.sqlc2p.asMetadataQueryParams(connectionUri)).then(
+				client.sqlp2c.asProviderMetadata,
+				e => {
+					client.logFailedRequest(protocol.MetadataQueryRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+				);
+		};
+
+		let getDatabases = (connectionUri: string): Thenable<string[]> => {
+			return client.sendRequest(protocol.ListDatabasesRequest.type,
+				client.sqlc2p.asListDatabasesParams(connectionUri)).then(
+				r => r.databaseNames,
+				e => {
+					client.logFailedRequest(protocol.ListDatabasesRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let getTableInfo = (connectionUri: string, metadata: types.ObjectMetadata): Thenable<types.ColumnMetadata[]> => {
+			return client.sendRequest(protocol.TableMetadataRequest.type,
+				client.sqlc2p.asTableMetadataParams(connectionUri, metadata)).then(
+				r => r.columns,
+				e => {
+					client.logFailedRequest(protocol.TableMetadataRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let getViewInfo = (connectionUri: string, metadata: types.ObjectMetadata): Thenable<types.ColumnMetadata[]> => {
+			return client.sendRequest(protocol.ViewMetadataRequest.type,
+				client.sqlc2p.asTableMetadataParams(connectionUri, metadata)).then(
+				r => r.columns,
+				e => {
+					client.logFailedRequest(protocol.ViewMetadataRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		return data.dataprotocol.registerMetadataProvider({
+			providerId: client.providerId,
+			getDatabases,
+			getMetadata,
+			getTableInfo,
+			getViewInfo
+		});
+	}
+}
+
+class AdminServicesFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		protocol.CreateDatabaseRequest.type,
+		protocol.DefaultDatabaseInfoRequest.type,
+		protocol.GetDatabaseInfoRequest.type,
+		protocol.CreateLoginRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, AdminServicesFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: protocol.ClientCapabilities): void {
+		ensure(ensure(capabilities, 'connection')!, 'adminServices')!.dynamicRegistration = true;
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let createDatabase = (ownerUri: string, databaseInfo: types.DatabaseInfo): Thenable<types.CreateDatabaseResponse> => {
+			let params: types.CreateDatabaseParams = { ownerUri, databaseInfo };
+			return client.sendRequest(protocol.CreateDatabaseRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.CreateDatabaseRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let getDefaultDatabaseInfo = (ownerUri: string): Thenable<types.DatabaseInfo> => {
+			let params: types.DefaultDatabaseInfoParams = { ownerUri };
+			return client.sendRequest(protocol.DefaultDatabaseInfoRequest.type, params).then(
+				r => r.defaultDatabaseInfo,
+				e => {
+					client.logFailedRequest(protocol.DefaultDatabaseInfoRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let getDatabaseInfo = (ownerUri: string): Thenable<types.DatabaseInfo> => {
+			let params: types.GetDatabaseInfoParams = { ownerUri };
+			return client.sendRequest(protocol.GetDatabaseInfoRequest.type, params).then(
+				r => r.databaseInfo,
+				e => {
+					client.logFailedRequest(protocol.GetDatabaseInfoRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let createLogin = (ownerUri: string, loginInfo: types.LoginInfo): Thenable<types.CreateLoginResponse> => {
+			let params: types.CreateLoginParams = { ownerUri, loginInfo };
+			return client.sendRequest(protocol.CreateLoginRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.CreateLoginRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		return data.dataprotocol.registerAdminServicesProvider({
+			providerId: client.providerId,
+			createDatabase,
+			createLogin,
+			getDatabaseInfo,
+			getDefaultDatabaseInfo
+		});
+	}
+}
+
+class BackupFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		protocol.BackupRequest.type,
+		protocol.BackupConfigInfoRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, BackupFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: protocol.ClientCapabilities): void {
+		ensure(ensure(capabilities, 'connection')!, 'backup')!.dynamicRegistration = true;
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let backup = (ownerUri: string, backupInfo: types.BackupInfo, taskExecutionMode: types.TaskExecutionMode): Thenable<types.BackupResponse> => {
+			let params: types.BackupParams = { ownerUri, backupInfo, taskExecutionMode };
+			return client.sendRequest(protocol.BackupRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.BackupRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let getBackupConfigInfo = (connectionUri: string): Thenable<types.BackupConfigInfo> => {
+			let params: types.DefaultDatabaseInfoParams = { ownerUri: connectionUri };
+			return client.sendRequest(protocol.BackupConfigInfoRequest.type, params).then(
+				r => r.backupConfigInfo,
+				e => {
+					client.logFailedRequest(protocol.BackupConfigInfoRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		return data.dataprotocol.registerBackupProvider({
+			providerId: client.providerId,
+			backup,
+			getBackupConfigInfo
+		});
+	}
+}
+
+class RestoreFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		protocol.RestorePlanRequest.type,
+		protocol.RestoreRequest.type,
+		protocol.RestoreConfigInfoRequest.type,
+		protocol.CancelRestorePlanRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, RestoreFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: protocol.ClientCapabilities): void {
+		ensure(ensure(capabilities, 'connection')!, 'restore')!.dynamicRegistration = true;
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let getRestorePlan = (ownerUri: string, restoreInfo: data.RestoreInfo): Thenable<types.RestorePlanResponse> => {
+			return client.sendRequest(protocol.RestorePlanRequest.type, client.sqlc2p.asRestoreParams(ownerUri, restoreInfo)).then(
+				client.sqlp2c.asRestorePlanResponse,
+				e => {
+					client.logFailedRequest(protocol.RestorePlanRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let restore = (ownerUri: string, restoreInfo: data.RestoreInfo): Thenable<types.RestoreResponse> => {
+			return client.sendRequest(protocol.RestoreRequest.type, client.sqlc2p.asRestoreParams(ownerUri, restoreInfo)).then(
+				client.sqlp2c.asRestoreResponse,
+				e => {
+					client.logFailedRequest(protocol.RestoreRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let getRestoreConfigInfo = (ownerUri: string): Thenable<data.RestoreConfigInfo> => {
+			return client.sendRequest(protocol.RestoreConfigInfoRequest.type, client.sqlc2p.asRestoreConfigInfoParams(ownerUri)).then(
+				client.sqlp2c.asRestoreConfigInfo,
+				e => {
+					client.logFailedRequest(protocol.RestoreConfigInfoRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let cancelRestorePlan = (ownerUri: string, restoreInfo: data.RestoreInfo): Thenable<boolean> => {
+			return client.sendRequest(protocol.CancelRestorePlanRequest.type, client.sqlc2p.asRestoreParams(ownerUri, restoreInfo)).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.CancelRestorePlanRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		return data.dataprotocol.registerRestoreProvider({
+			providerId: client.providerId,
+			cancelRestorePlan,
+			getRestoreConfigInfo,
+			getRestorePlan,
+			restore
+		});
+	}
+}
+
+class ObjectExplorerFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		protocol.ObjectExplorerCreateSessionRequest.type,
+		protocol.ObjectExplorerExpandRequest.type,
+		protocol.ObjectExplorerRefreshRequest.type,
+		protocol.ObjectExplorerCloseSessionRequest.type,
+		protocol.ObjectExplorerCreateSessionCompleteNotification.type,
+		protocol.ObjectExplorerExpandCompleteNotification.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, ObjectExplorerFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: protocol.ClientCapabilities): void {
+		ensure(ensure(capabilities, 'connection')!, 'objectExplorer')!.dynamicRegistration = true;
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+		let createNewSession = (connInfo: data.ConnectionInfo): Thenable<data.ObjectExplorerSessionResponse> => {
+			return client.sendRequest(protocol.ObjectExplorerCreateSessionRequest.type,
+				client.sqlc2p.asConnectionDetail(connInfo)).then(
+				client.sqlp2c.asObjectExplorerCreateSessionResponse,
+				e => {
+					client.logFailedRequest(protocol.ObjectExplorerCreateSessionRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let expandNode = (nodeInfo: data.ExpandNodeInfo): Thenable<boolean> => {
+			return client.sendRequest(protocol.ObjectExplorerExpandRequest.type,
+				client.sqlc2p.asExpandInfo(nodeInfo)).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.ObjectExplorerExpandRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let refreshNode = (nodeInfo: data.ExpandNodeInfo): Thenable<boolean> => {
+			return client.sendRequest(protocol.ObjectExplorerRefreshRequest.type,
+				client.sqlc2p.asExpandInfo(nodeInfo)).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.ObjectExplorerRefreshRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let closeSession = (closeSessionInfo: data.ObjectExplorerCloseSessionInfo): Thenable<any> => {
+			return client.sendRequest(protocol.ObjectExplorerCloseSessionRequest.type,
+				client.sqlc2p.asCloseSessionInfo(closeSessionInfo)).then(
+				client.sqlp2c.asObjectExplorerCloseSessionResponse,
+				e => {
+					client.logFailedRequest(protocol.ObjectExplorerCloseSessionRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let registerOnSessionCreated = (handler: (response: data.ObjectExplorerSession) => any): void => {
+			client.onNotification(protocol.ObjectExplorerCreateSessionCompleteNotification.type, handler);
+		};
+
+		let registerOnExpandCompleted = (handler: (response: data.ObjectExplorerExpandInfo) => any): void => {
+			client.onNotification(protocol.ObjectExplorerExpandCompleteNotification.type, handler);
+		};
+
+		return data.dataprotocol.registerObjectExplorerProvider({
+			providerId: client.providerId,
+			closeSession,
+			createNewSession,
+			expandNode,
+			refreshNode,
+			registerOnExpandCompleted,
+			registerOnSessionCreated
+		});
+	}
+}
+
+class ScriptingFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		protocol.ScriptingRequest.type,
+		protocol.ScriptingCompleteNotification.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, ScriptingFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: protocol.ClientCapabilities): void {
+		ensure(ensure(capabilities, 'connection')!, 'scripting')!.dynamicRegistration = true;
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let scriptAsOperation = (connectionUri: string, operation: types.ScriptOperation, metadata: types.ObjectMetadata, paramDetails: types.ScriptingParamDetails): Thenable<types.ScriptingResult> => {
+			return client.sendRequest(protocol.ScriptingRequest.type,
+				client.sqlc2p.asScriptingParams(connectionUri, operation, metadata, paramDetails)).then(
+				client.sqlp2c.asScriptingResult,
+				e => {
+					client.logFailedRequest(protocol.ScriptingRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let registerOnScriptingComplete = (handler: (scriptingCompleteResult: data.ScriptingCompleteResult) => any): void => {
+			client.onNotification(protocol.ScriptingCompleteNotification.type, handler);
+		};
+
+		return data.dataprotocol.registerScriptingProvider({
+			providerId: client.providerId,
+			registerOnScriptingComplete,
+			scriptAsOperation
+		});
+	}
+}
+
+class TaskServicesFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		protocol.ListTasksRequest.type,
+		protocol.CancelTaskRequest.type,
+		protocol.TaskCreatedNotification.type,
+		protocol.TaskStatusChangedNotification.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, TaskServicesFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: protocol.ClientCapabilities): void {
+		ensure(ensure(capabilities, 'connection')!, 'taskServices')!.dynamicRegistration = true;
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let getAllTasks = (listTasksParams: types.ListTasksParams): Thenable<types.ListTasksResponse> => {
+			return client.sendRequest(protocol.ListTasksRequest.type,
+				client.sqlc2p.asListTasksParams(listTasksParams)).then(
+				client.sqlp2c.asListTasksResponse,
+				e => {
+					client.logFailedRequest(protocol.ListTasksRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+
+		};
+
+		let cancelTask = (cancelTaskParams: types.CancelTaskParams): Thenable<boolean> => {
+			return client.sendRequest(protocol.CancelTaskRequest.type,
+				client.sqlc2p.asCancelTaskParams(cancelTaskParams)).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.CancelTaskRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let registerOnTaskCreated = (handler: (response: types.TaskInfo) => any): void => {
+			client.onNotification(protocol.TaskCreatedNotification.type, (params: types.TaskInfo) => {
+				handler(client.sqlp2c.asTaskInfo(params));
+			});
+		};
+
+		let registerOnTaskStatusChanged = (handler: (response: types.TaskProgressInfo) => any): void => {
+			client.onNotification(protocol.TaskStatusChangedNotification.type, handler);
+		};
+
+		return data.dataprotocol.registerTaskServicesProvider({
+			providerId: client.providerId,
+			cancelTask,
+			getAllTasks,
+			registerOnTaskCreated,
+			registerOnTaskStatusChanged
+		});
+	}
+}
+
+class FileBrowserFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		protocol.FileBrowserOpenRequest.type,
+		protocol.FileBrowserOpenedNotification.type,
+		protocol.FileBrowserExpandRequest.type,
+		protocol.FileBrowserExpandedNotification.type,
+		protocol.FileBrowserValidateRequest.type,
+		protocol.FileBrowserValidatedNotification.type,
+		protocol.FileBrowserCloseRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, FileBrowserFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: protocol.ClientCapabilities): void {
+		ensure(ensure(capabilities, 'connection')!, 'fileBrowser')!.dynamicRegistration = true;
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let openFileBrowser = (ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> => {
+			let params: types.FileBrowserOpenParams = { ownerUri, expandPath, fileFilters, changeFilter };
+			return client.sendRequest(protocol.FileBrowserOpenRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.FileBrowserOpenRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let registerOnFileBrowserOpened = (handler: (response: types.FileBrowserOpenedParams) => any): void => {
+			client.onNotification(protocol.FileBrowserOpenedNotification.type, handler);
+		};
+
+		let expandFolderNode = (ownerUri: string, expandPath: string): Thenable<boolean> => {
+			let params: types.FileBrowserExpandParams = { ownerUri, expandPath };
+			return client.sendRequest(protocol.FileBrowserExpandRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.FileBrowserExpandRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let registerOnFolderNodeExpanded = (handler: (response: types.FileBrowserExpandedParams) => any): void => {
+			client.onNotification(protocol.FileBrowserExpandedNotification.type, handler);
+		};
+
+		let validateFilePaths = (ownerUri: string, serviceType: string, selectedFiles: string[]): Thenable<boolean> => {
+			let params: types.FileBrowserValidateParams = { ownerUri, serviceType, selectedFiles };
+			return client.sendRequest(protocol.FileBrowserValidateRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.FileBrowserValidateRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let registerOnFilePathsValidated = (handler: (response: types.FileBrowserValidatedParams) => any): void => {
+			client.onNotification(protocol.FileBrowserValidatedNotification.type, handler);
+		};
+
+		let closeFileBrowser = (ownerUri: string): Thenable<types.FileBrowserCloseResponse> => {
+			let params: types.FileBrowserCloseParams = { ownerUri };
+			return client.sendRequest(protocol.FileBrowserCloseRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(protocol.FileBrowserCloseRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		return data.dataprotocol.registerFileBrowserProvider({
+			providerId: client.providerId,
+			closeFileBrowser,
+			expandFolderNode,
+			openFileBrowser,
+			registerOnFileBrowserOpened,
+			registerOnFilePathsValidated,
+			registerOnFolderNodeExpanded,
+			validateFilePaths
+		});
+	}
+}
+
+class ProfilerFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		protocol.StartProfilingRequest.type,
+		protocol.StopProfilingRequest.type,
+		protocol.ProfilerEventsAvailableNotification.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, ProfilerFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: protocol.ClientCapabilities): void {
+		ensure(ensure(capabilities, 'connection')!, 'profiler')!.dynamicRegistration = true;
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let startSession = (ownerUri: string): Thenable<boolean> => {
+			let params: types.StartProfilingParams = {
+				ownerUri,
+				options: { }
+			};
+
+			return client.sendRequest(protocol.StartProfilingRequest.type, params).then(
+				r => true,
+				e => {
+					client.logFailedRequest(protocol.StartProfilingRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let stopSession = (ownerUri: string): Thenable<boolean> => {
+			let params: types.StopProfilingParams = {
+				ownerUri
+			};
+
+			return client.sendRequest(protocol.StopProfilingRequest.type, params).then(
+				r => true,
+				e => {
+					client.logFailedRequest(protocol.StopProfilingRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let pauseSession = (sessionId: string): Thenable<boolean> => {
+			return undefined;
+		};
+
+		let connectSession = (sessionId: string): Thenable<boolean> => {
+			return undefined;
+		};
+
+		let disconnectSession = (sessionId: string): Thenable<boolean> => {
+			return undefined;
+		};
+
+		let registerOnSessionEventsAvailable = (handler: (response: data.ProfilerSessionEvents) => any): void => {
+			client.onNotification(protocol.ProfilerEventsAvailableNotification.type, (params: types.ProfilerEventsAvailableParams) => {
+				handler(<data.ProfilerSessionEvents>{
+					sessionId: params.ownerUri,
+					events: params.events
+				});
+			});
+		};
+
+		return data.dataprotocol.registerProfilerProvider({
+			providerId: client.providerId,
+			connectSession,
+			disconnectSession,
+			pauseSession,
+			registerOnSessionEventsAvailable,
+			startSession,
+			stopSession
+		});
+	}
+}
+
 /**
  *
  */
 export class SqlOpsDataClient extends LanguageClient {
 
 	private _sqlc2p: Ic2p;
+	private _sqlp2c: Ip2c;
 	private _providerId: string;
 
 	public get sqlc2p(): Ic2p {
 		return this._sqlc2p;
+	}
+
+	public get sqlp2c(): Ip2c {
+		return this._sqlp2c;
 	}
 
 	public get providerId(): string {
@@ -291,7 +1286,7 @@ export class SqlOpsDataClient extends LanguageClient {
 	public constructor(name: string, serverOptions: ServerOptions, clientOptions: LanguageClientOptions, forceDebug?: boolean);
 	public constructor(id: string, name: string, serverOptions: ServerOptions, clientOptions: LanguageClientOptions, forceDebug?: boolean);
 	public constructor(arg1: string, arg2: ServerOptions | string, arg3: LanguageClientOptions | ServerOptions, arg4?: boolean | LanguageClientOptions, arg5?: boolean) {
-		if (typeof arg2 === 'string') {
+		if (is.string(arg2)) {
 			super(arg1, arg2, arg3 as ServerOptions, arg4 as LanguageClientOptions, arg5);
 			this._providerId = (arg4 as LanguageClientOptions).providerId;
 		} else {
@@ -299,11 +1294,22 @@ export class SqlOpsDataClient extends LanguageClient {
 			this._providerId = (arg3 as LanguageClientOptions).providerId;
 		}
 		this._sqlc2p = c2p;
+		this._sqlp2c = p2c;
 		this.registerDataFeatures();
 	}
 
 	private registerDataFeatures() {
 		this.registerFeature(new ConnectionFeature(this));
 		this.registerFeature(new CapabilitiesFeature(this));
+		this.registerFeature(new QueryFeature(this));
+		this.registerFeature(new MetadataFeature(this));
+		this.registerFeature(new AdminServicesFeature(this));
+		this.registerFeature(new BackupFeature(this));
+		this.registerFeature(new RestoreFeature(this));
+		this.registerFeature(new ObjectExplorerFeature(this));
+		this.registerFeature(new ScriptingFeature(this));
+		this.registerFeature(new TaskServicesFeature(this));
+		this.registerFeature(new FileBrowserFeature(this));
+		this.registerFeature(new ProfilerFeature(this));
 	}
 }
