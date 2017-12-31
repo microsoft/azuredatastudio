@@ -664,6 +664,7 @@ declare module 'data' {
 	export interface QueryExecuteParams {
 		ownerUri: string;
 		querySelection: ISelectionData;
+		executionPlanOptions?: ExecutionPlanOptions;
 	}
 
 	export interface QueryExecuteSubsetParams {
@@ -685,6 +686,7 @@ declare module 'data' {
 	}
 
 	export interface QueryExecuteSubsetResult {
+		message: string;
 		resultSubset: ResultSetSubset;
 	}
 
@@ -751,11 +753,14 @@ declare module 'data' {
 	export interface EditInitializeFiltering {
 		LimitResults?: number;
 	}
+
 	export interface EditInitializeParams extends IEditSessionOperationParams {
 		filters: EditInitializeFiltering;
 		objectName: string;
+		schemaName: string;
 		objectType: string;
 	}
+
 
 	export interface EditInitializeResult { }
 

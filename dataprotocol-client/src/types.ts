@@ -1,3 +1,5 @@
+import * as data from 'data';
+
 export interface CreateSessionResponse {
 	sessionId: string;
 }
@@ -23,7 +25,7 @@ export interface NodeInfo {
 	nodeStatus: string;
 	label: string;
 	isLeaf: boolean;
-	metadata: ObjectMetadata;
+	metadata: data.ObjectMetadata;
 	errorMessage: string;
 }
 
@@ -111,20 +113,6 @@ export interface FeatureMetadataProvider {
 	enabled: boolean;
 	featureName: string;
 	optionsMetadata: ServiceOption[];
-}
-
-export interface DataProtocolServerCapabilities {
-	protocolVersion: string;
-
-	providerName: string;
-
-	providerDisplayName: string;
-
-	connectionProvider: ConnectionProviderOptions;
-
-	adminServicesProvider: AdminServicesProviderOptions;
-
-	features: FeatureMetadataProvider[];
 }
 
 /**
@@ -264,7 +252,7 @@ export class ServerInfo {
 }
 
 export class CapabiltiesDiscoveryResult {
-	public capabilities: DataProtocolServerCapabilities;
+	public capabilities: data.DataProtocolServerCapabilities;
 }
 
 // Task Services types
@@ -278,73 +266,12 @@ export enum TaskStatus {
 	canceled = 5
 }
 
-export enum TaskExecutionMode {
-	execute = 0,
-	script = 1,
-	executeAndScript = 2,
-}
-
-export interface TaskInfo {
-	taskId: string;
-	status: TaskStatus;
-	taskExecutionMode: TaskExecutionMode;
-	serverName: string;
-	databaseName: string;
-	name: string;
-	description: string;
-	providerName: string;
-	isCancelable: boolean;
-}
-
-export interface ListTasksParams {
-
-	listActiveTasksOnly: boolean;
-}
-
-export interface ListTasksResponse {
-	tasks: TaskInfo[];
-}
-
-export interface CancelTaskParams {
-	taskId: string;
-}
-
-export interface TaskProgressInfo {
-	taskId: string;
-	status: TaskStatus;
-	message: string;
-	script: string;
-	duration: number;
-}
-
 // Admin Services types
-
-export interface DatabaseInfo {
-	/**
-	 * database options
-	 */
-	options: {};
-}
-
-export interface BackupConfigInfo {
-	recoveryModel: string;
-	defaultBackupFolder: string;
-	backupEncryptors: {};
-}
-
-export interface LoginInfo {
-	name: string;
-}
 
 export interface CreateDatabaseParams {
 	ownerUri: string;
 
-	databaseInfo: DatabaseInfo;
-}
-
-export interface CreateDatabaseResponse {
-	result: boolean;
-	taskId: number;
+	databaseInfo: data.DatabaseInfo;
 }
 
 export interface DefaultDatabaseInfoParams {
@@ -352,11 +279,11 @@ export interface DefaultDatabaseInfoParams {
 }
 
 export interface DefaultDatabaseInfoResponse {
-	defaultDatabaseInfo: DatabaseInfo;
+	defaultDatabaseInfo: data.DatabaseInfo;
 }
 
 export interface GetDatabaseInfoResponse {
-	databaseInfo: DatabaseInfo;
+	databaseInfo: data.DatabaseInfo;
 }
 
 export interface GetDatabaseInfoParams {
@@ -364,18 +291,13 @@ export interface GetDatabaseInfoParams {
 }
 
 export interface BackupConfigInfoResponse {
-	backupConfigInfo: BackupConfigInfo;
+	backupConfigInfo: data.BackupConfigInfo;
 }
 
 export interface CreateLoginParams {
 	ownerUri: string;
 
-	loginInfo: LoginInfo;
-}
-
-export interface CreateLoginResponse {
-	result: boolean;
-	taskId: number;
+	loginInfo: data.LoginInfo;
 }
 
 // Disaster Recovery types
@@ -440,18 +362,13 @@ export interface BackupParams {
 
 	backupInfo: BackupInfo;
 
-	taskExecutionMode: TaskExecutionMode;
-}
-
-export interface BackupResponse {
-	result: boolean;
-	taskId: number;
+	taskExecutionMode: data.TaskExecutionMode;
 }
 
 export interface RestoreParams {
 	ownerUri: string;
 	options: {};
-	taskExecutionMode: TaskExecutionMode;
+	taskExecutionMode: data.TaskExecutionMode;
 }
 
 export interface RestoreConfigInfoRequestParams {
@@ -492,24 +409,9 @@ export interface FileTree {
 	selectedNode: FileTreeNode;
 }
 
-export interface FileBrowserOpenedParams {
-	ownerUri: string;
-	fileTree: FileTree;
-	succeeded: boolean;
-	message: string;
-}
-
 export interface FileBrowserExpandParams {
 	ownerUri: string;
 	expandPath: string;
-}
-
-export interface FileBrowserExpandedParams {
-	ownerUri: string;
-	expandPath: string;
-	children: FileTreeNode[];
-	succeeded: boolean;
-	message: string;
 }
 
 export interface FileBrowserValidateParams {
@@ -518,18 +420,8 @@ export interface FileBrowserValidateParams {
 	selectedFiles: string[];
 }
 
-export interface FileBrowserValidatedParams {
-	succeeded: boolean;
-	message: string;
-}
-
 export interface FileBrowserCloseParams {
 	ownerUri: string;
-}
-
-export interface FileBrowserCloseResponse {
-	succeeded: boolean;
-	message: string;
 }
 
 export interface DatabaseFileInfo {
@@ -554,22 +446,6 @@ export interface RestorePlanDetailInfo {
 
 }
 
-export interface RestorePlanResponse {
-	sessionId: string;
-	backupSetsToRestore: DatabaseFileInfo[];
-	canRestore: boolean;
-	errorMessage: string;
-	dbFiles: RestoreDatabaseFileInfo[];
-	databaseNamesFromBackupSets: string[];
-	planDetails: { [key: string]: RestorePlanDetailInfo };
-}
-
-export interface RestoreResponse {
-	result: boolean;
-	taskId: string;
-	errorMessage: string;
-}
-
 // Query Execution types
 export interface ResultSetSummary {
 	id: number;
@@ -581,7 +457,7 @@ export interface ResultSetSummary {
 export interface BatchSummary {
 	hasError: boolean;
 	id: number;
-	selection: ISelectionData;
+	selection: data.ISelectionData;
 	resultSetSummaries: ResultSetSummary[];
 	executionElapsed: string;
 	executionEnd: string;
@@ -633,23 +509,6 @@ export interface IResultMessage {
 	message: string;
 }
 
-export interface ISelectionData {
-	startLine: number;
-	startColumn: number;
-	endLine: number;
-	endColumn: number;
-}
-
-export interface QueryExecuteBatchNotificationParams {
-	batchSummary: BatchSummary;
-	ownerUri: string;
-}
-
-export interface DbCellValue {
-	displayValue: string;
-	isNull: boolean;
-}
-
 export enum EditRowState {
 	clean = 0,
 	dirtyInsert = 1,
@@ -658,18 +517,10 @@ export enum EditRowState {
 }
 
 export interface EditRow {
-	cells: DbCellValue[];
+	cells: data.DbCellValue[];
 	id: number;
 	isDirty: boolean;
 	state: EditRowState;
-}
-
-export interface EditCell extends DbCellValue {
-	isDirty: boolean;
-}
-
-export interface EditCell extends DbCellValue {
-
 }
 
 export class MetadataQueryParams {
@@ -679,6 +530,9 @@ export class MetadataQueryParams {
 	public ownerUri: string;
 }
 
+/**
+ * Used as value version of data.MetadataType THESE SHOULD MIRROR
+ */
 export enum MetadataType {
 	Table = 0,
 	View = 1,
@@ -686,37 +540,8 @@ export enum MetadataType {
 	Function = 3
 }
 
-export class ObjectMetadata {
-	metadataType: MetadataType;
-
-	metadataTypeName: string;
-
-	urn: string;
-
-	name: string;
-
-	schema: string;
-}
-
 export class MetadataQueryResult {
-	public metadata: ObjectMetadata[];
-}
-
-export interface ScriptingParamDetails {
-	filePath: string;
-	scriptCompatibilityOption: string;
-	targetDatabaseEngineEdition: string;
-	targetDatabaseEngineType: string;
-}
-
-export enum ScriptOperation {
-	Select = 0,
-	Create = 1,
-	Insert = 2,
-	Update = 3,
-	Delete = 4,
-	Execute = 5,
-	Alter = 6
+	public metadata: data.ObjectMetadata[];
 }
 
 export interface ScriptOptions {
@@ -983,13 +808,7 @@ export interface ScriptingParams {
 	/**
 	 * Operation associated with the script request
 	 */
-	operation: ScriptOperation;
-}
-
-export interface ScriptingResult {
-
-	operationId: string;
-	script: string;
+	operation: data.ScriptOperation;
 }
 
 export interface ScriptingCompleteParams {
@@ -1019,58 +838,9 @@ export interface ScriptingCompleteParams {
 	success: boolean;
 }
 
-export class ColumnMetadata {
-
-	hasExtendedProperties: boolean;
-
-	defaultValue: string;
-
-	/// <summary>
-	/// Escaped identifier for the name of the column
-	/// </summary>
-	escapedName: string;
-
-	/// <summary>
-	/// Whether or not the column is computed
-	/// </summary>
-	isComputed: boolean;
-
-	/// <summary>
-	/// Whether or not the column is deterministically computed
-	/// </summary>
-	isDeterministic: boolean;
-
-	/// <summary>
-	/// Whether or not the column is an identity column
-	/// </summary>
-	isIdentity: boolean;
-
-	/// <summary>
-	/// The ordinal ID of the column
-	/// </summary>
-	ordinal: number;
-
-	/// <summary>
-	/// Whether or not the column is calculated on the server side. This could be a computed
-	/// column or a identity column.
-	/// </summary>
-	isCalculated: boolean;
-
-	/// <summary>
-	/// Whether or not the column is used in a key to uniquely identify a row
-	/// </summary>
-	isKey: boolean;
-
-	/// <summary>
-	/// Whether or not the column can be trusted for uniqueness
-	/// </summary>
-	isTrustworthyForUniqueness: boolean;
-
-}
-
 export class TableMetadata {
 
-	columns: ColumnMetadata[];
+	columns: data.ColumnMetadata[];
 
 }
 
@@ -1132,8 +902,7 @@ export interface ProfilerEvent {
 /**
  * Profiler events available notification parameters
  */
-export interface ProfilerEventsAvailableParams
-{
+export interface ProfilerEventsAvailableParams {
 	/**
 	 * Session owner URI
 	 */
@@ -1143,4 +912,17 @@ export interface ProfilerEventsAvailableParams
 	 * New profiler events available
 	 */
 	events: ProfilerEvent[];
+}
+
+/**
+ * Used as value version of data.ScriptOperation THESE SHOULD BE THE SAME
+ */
+export enum ScriptOperation {
+	Select = 0,
+	Create = 1,
+	Insert = 2,
+	Update = 3,
+	Delete = 4,
+	Execute = 5,
+	Alter = 6
 }

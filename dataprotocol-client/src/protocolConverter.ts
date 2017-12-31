@@ -3,14 +3,6 @@ import * as types from './types';
 
 export interface Ip2c {
 	asProviderMetadata(params: types.MetadataQueryResult): data.ProviderMetadata;
-	asRestorePlanResponse(params: types.RestorePlanResponse): data.RestorePlanResponse;
-	asRestoreResponse(params: types.RestoreResponse): data.RestoreResponse;
-	asRestoreConfigInfo(params: types.RestoreConfigInfoResponse): data.RestoreConfigInfo;
-	asObjectExplorerCreateSessionResponse(params: types.CreateSessionResponse): data.ObjectExplorerSessionResponse;
-	asObjectExplorerCloseSessionResponse(params: types.CloseSessionResponse): data.ObjectExplorerCloseSessionResponse;
-	asScriptingResult(params: types.ScriptingResult): data.ScriptingResult;
-	asListTasksResponse(response: types.ListTasksResponse): data.ListTasksResponse;
-	asTaskInfo(params: types.TaskInfo): data.TaskInfo;
 }
 
 function asProviderMetadata(params: types.MetadataQueryResult): data.ProviderMetadata {
@@ -18,12 +10,12 @@ function asProviderMetadata(params: types.MetadataQueryResult): data.ProviderMet
 
 	if (!params.metadata || !params.metadata.length) {
 		return {
-			objectMetadata: objectMetadata
+			objectMetadata
 		};
 	}
 
 	for (let i = 0; i < params.metadata.length; ++i) {
-		let metadata: types.ObjectMetadata = params.metadata[i];
+		let metadata: data.ObjectMetadata = params.metadata[i];
 
 		let metadataTypeName: string;
 		if (metadata.metadataTypeName) {
@@ -40,7 +32,7 @@ function asProviderMetadata(params: types.MetadataQueryResult): data.ProviderMet
 		}
 
 		objectMetadata.push({
-			metadataTypeName: metadataTypeName,
+			metadataTypeName,
 			metadataType: metadata.metadataType,
 			name: metadata.name,
 			schema: metadata.schema,
@@ -49,84 +41,10 @@ function asProviderMetadata(params: types.MetadataQueryResult): data.ProviderMet
 	}
 
 	return <data.ProviderMetadata>{
-		objectMetadata: objectMetadata
-	};
-}
-
-function asRestorePlanResponse(params: types.RestorePlanResponse): data.RestorePlanResponse {
-	return <data.RestorePlanResponse>{
-		backupSetsToRestore: params.backupSetsToRestore,
-		canRestore: params.canRestore,
-		databaseNamesFromBackupSets: params.databaseNamesFromBackupSets,
-		dbFiles: params.dbFiles,
-		errorMessage: params.errorMessage,
-		planDetails: params.planDetails,
-		sessionId: params.sessionId
-	};
-}
-
-function asRestoreResponse(params: types.RestoreResponse): data.RestoreResponse {
-	return <data.RestoreResponse>{
-		result: params.result,
-		errorMessage: params.errorMessage,
-		taskId: params.taskId
-	};
-}
-
-function asRestoreConfigInfo(params: types.RestoreConfigInfoResponse): data.RestoreConfigInfo {
-	return <data.RestoreConfigInfo>{
-		configInfo: params.configInfo
-	};
-}
-
-function asObjectExplorerCreateSessionResponse(params: types.CreateSessionResponse): data.ObjectExplorerSessionResponse {
-	return <data.ObjectExplorerSessionResponse>{
-		sessionId: params.sessionId
-	};
-}
-
-function asObjectExplorerCloseSessionResponse(params: types.CloseSessionResponse): data.ObjectExplorerCloseSessionResponse {
-	return <data.ObjectExplorerCloseSessionResponse>{
-		sessionId: params.sessionId,
-		success: params.success
-	};
-}
-
-function asScriptingResult(params: types.ScriptingResult): data.ScriptingResult {
-	return <data.ScriptingResult>{
-		operationId: params.operationId,
-		script: params.script
-	};
-}
-
-function asListTasksResponse(response: types.ListTasksResponse): data.ListTasksResponse {
-	return <data.ListTasksResponse>{
-		tasks: response.tasks
-	};
-}
-
-function asTaskInfo(params: types.TaskInfo): data.TaskInfo {
-	return <data.TaskInfo>{
-		taskId: params.taskId,
-		status: params.status,
-		taskExecutionMode: params.taskExecutionMode,
-		serverName: params.serverName,
-		name: params.name,
-		databaseName: params.databaseName,
-		description: params.description,
-		providerName: params.providerName,
-		isCancelable: params.isCancelable,
+		objectMetadata
 	};
 }
 
 export const p2c: Ip2c = {
-	asProviderMetadata,
-	asRestorePlanResponse,
-	asRestoreResponse,
-	asRestoreConfigInfo,
-	asObjectExplorerCreateSessionResponse,
-	asObjectExplorerCloseSessionResponse,
-	asScriptingResult,
-	asListTasksResponse,
-	asTaskInfo
+	asProviderMetadata
 };

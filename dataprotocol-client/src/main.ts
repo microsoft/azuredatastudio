@@ -10,7 +10,7 @@ import * as data from 'data';
 
 import { c2p, Ic2p } from './codeConverter';
 
-import  * as protocol from './protocol';
+import * as protocol from './protocol';
 import * as types from './types';
 import { Ip2c, p2c } from './protocolConverter';
 
@@ -107,7 +107,7 @@ class CapabilitiesFeature extends SqlOpsFeature<undefined> {
 		const client = this._client;
 
 		let getServerCapabilities = (cap: data.DataProtocolClientCapabilities): Thenable<data.DataProtocolServerCapabilities> => {
-			return client.sendRequest(protocol.CapabiltiesDiscoveryRequest.type, client.sqlc2p.asCapabilitiesParams(cap)).then(
+			return client.sendRequest(protocol.CapabiltiesDiscoveryRequest.type, cap).then(
 				r => r.capabilities,
 				e => {
 					client.logFailedRequest(protocol.CapabiltiesDiscoveryRequest.type, e);
@@ -309,8 +309,8 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
-		let runQuery = (ownerUri: string, querySelection: types.ISelectionData, executionPlanOptions?: data.ExecutionPlanOptions): Thenable<void> => {
-			let params: protocol.QueryExecuteParams = {
+		let runQuery = (ownerUri: string, querySelection: data.ISelectionData, executionPlanOptions?: data.ExecutionPlanOptions): Thenable<void> => {
+			let params: data.QueryExecuteParams = {
 				ownerUri,
 				querySelection,
 				executionPlanOptions: client.sqlc2p.asExecutionPlanOptions(executionPlanOptions)
@@ -324,7 +324,7 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let cancelQuery = (ownerUri: string): Thenable<protocol.QueryCancelResult> => {
+		let cancelQuery = (ownerUri: string): Thenable<data.QueryCancelResult> => {
 			let params: protocol.QueryCancelParams = { ownerUri };
 			return client.sendRequest(protocol.QueryCancelRequest.type, params).then(
 				r => r,
@@ -361,8 +361,8 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let runQueryAndReturn = (ownerUri: string, queryString: string): Thenable<protocol.SimpleExecuteResult> => {
-			let params: protocol.SimpleExecuteParams = { ownerUri, queryString };
+		let runQueryAndReturn = (ownerUri: string, queryString: string): Thenable<data.SimpleExecuteResult> => {
+			let params: data.SimpleExecuteParams = { ownerUri, queryString };
 			return client.sendRequest(protocol.SimpleExecuteRequest.type, params).then(
 				r => r,
 				e => {
@@ -372,7 +372,7 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let getQueryRows = (rowData: protocol.QueryExecuteSubsetParams): Thenable<protocol.QueryExecuteSubsetResult> => {
+		let getQueryRows = (rowData: data.QueryExecuteSubsetParams): Thenable<data.QueryExecuteSubsetResult> => {
 			return client.sendRequest(protocol.QueryExecuteSubsetRequest.type, rowData).then(
 				r => r,
 				e => {
@@ -393,27 +393,27 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let registerOnQueryComplete = (handler: (result: protocol.QueryExecuteCompleteNotificationResult) => any): void => {
+		let registerOnQueryComplete = (handler: (result: data.QueryExecuteCompleteNotificationResult) => any): void => {
 			client.onNotification(protocol.QueryExecuteCompleteNotification.type, handler);
 		};
 
-		let registerOnBatchStart = (handler: (batchInfo: types.QueryExecuteBatchNotificationParams) => any): void => {
+		let registerOnBatchStart = (handler: (batchInfo: data.QueryExecuteBatchNotificationParams) => any): void => {
 			client.onNotification(protocol.QueryExecuteBatchStartNotification.type, handler);
 		};
 
-		let registerOnBatchComplete = (handler: (batchInfo: types.QueryExecuteBatchNotificationParams) => any): void => {
+		let registerOnBatchComplete = (handler: (batchInfo: data.QueryExecuteBatchNotificationParams) => any): void => {
 			client.onNotification(protocol.QueryExecuteBatchCompleteNotification.type, handler);
 		};
 
-		let registerOnResultSetComplete = (handler: (resultSetInfo: protocol.QueryExecuteResultSetCompleteNotificationParams) => any): void => {
+		let registerOnResultSetComplete = (handler: (resultSetInfo: data.QueryExecuteResultSetCompleteNotificationParams) => any): void => {
 			client.onNotification(protocol.QueryExecuteResultSetCompleteNotification.type, handler);
 		};
 
-		let registerOnMessage = (handler: (message: protocol.QueryExecuteMessageParams) => any): void => {
+		let registerOnMessage = (handler: (message: data.QueryExecuteMessageParams) => any): void => {
 			client.onNotification(protocol.QueryExecuteMessageNotification.type, handler);
 		};
 
-		let saveResults = (requestParams: data.SaveResultsRequestParams): Thenable<protocol.SaveResultRequestResult> => {
+		let saveResults = (requestParams: data.SaveResultsRequestParams): Thenable<data.SaveResultRequestResult> => {
 			switch (requestParams.resultFormat) {
 				case 'csv':
 					return client.sendRequest(protocol.SaveResultsAsCsvRequest.type, requestParams).then(
@@ -446,7 +446,7 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 
 		// Edit Data Requests
 		let commitEdit = (ownerUri: string): Thenable<void> => {
-			let params: protocol.EditCommitParams = { ownerUri };
+			let params: data.EditCommitParams = { ownerUri };
 			return client.sendRequest(protocol.EditCommitRequest.type, params).then(
 				r => undefined,
 				e => {
@@ -456,8 +456,8 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let createRow = (ownerUri: string): Thenable<protocol.EditCreateRowResult> => {
-			let params: protocol.EditCreateRowParams = { ownerUri: ownerUri };
+		let createRow = (ownerUri: string): Thenable<data.EditCreateRowResult> => {
+			let params: data.EditCreateRowParams = { ownerUri: ownerUri };
 			return client.sendRequest(protocol.EditCreateRowRequest.type, params).then(
 				r => r,
 				e => {
@@ -468,7 +468,7 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 		};
 
 		let deleteRow = (ownerUri: string, rowId: number): Thenable<void> => {
-			let params: protocol.EditDeleteRowParams = { ownerUri, rowId };
+			let params: data.EditDeleteRowParams = { ownerUri, rowId };
 			return client.sendRequest(protocol.EditDeleteRowRequest.type, params).then(
 				r => undefined,
 				e => {
@@ -479,7 +479,7 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 		};
 
 		let disposeEdit = (ownerUri: string): Thenable<void> => {
-			let params: protocol.EditDisposeParams = { ownerUri };
+			let params: data.EditDisposeParams = { ownerUri };
 			return client.sendRequest(protocol.EditDisposeRequest.type, params).then(
 				r => undefined,
 				e => {
@@ -489,9 +489,9 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let initializeEdit = (ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void> => {
-			let filters: protocol.EditInitializeFiltering = { LimitResults: rowLimit };
-			let params: protocol.EditInitializeParams = { ownerUri, schemaName, objectName, objectType, filters };
+		let initializeEdit = (ownerUri: string, schemaName: string, objectName: string, objectType: string, LimitResults: number): Thenable<void> => {
+			let filters: data.EditInitializeFiltering = { LimitResults };
+			let params: data.EditInitializeParams = { ownerUri, schemaName, objectName, objectType, filters };
 			return client.sendRequest(protocol.EditInitializeRequest.type, params).then(
 				r => undefined,
 				e => {
@@ -501,8 +501,8 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let revertCell = (ownerUri: string, rowId: number, columnId: number): Thenable<protocol.EditRevertCellResult> => {
-			let params: protocol.EditRevertCellParams = { ownerUri: ownerUri, rowId: rowId, columnId: columnId };
+		let revertCell = (ownerUri: string, rowId: number, columnId: number): Thenable<data.EditRevertCellResult> => {
+			let params: data.EditRevertCellParams = { ownerUri, rowId, columnId };
 			return client.sendRequest(protocol.EditRevertCellRequest.type, params).then(
 				r => r,
 				e => {
@@ -513,7 +513,7 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 		};
 
 		let revertRow = (ownerUri: string, rowId: number): Thenable<void> => {
-			let params: protocol.EditRevertRowParams = { ownerUri: ownerUri, rowId: rowId };
+			let params: data.EditRevertRowParams = { ownerUri, rowId };
 			return client.sendRequest(protocol.EditRevertRowRequest.type, params).then(
 				r => undefined,
 				e => {
@@ -523,8 +523,8 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let updateCell = (ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<protocol.EditUpdateCellResult> => {
-			let params: protocol.EditUpdateCellParams = { ownerUri, rowId, columnId, newValue };
+		let updateCell = (ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<data.EditUpdateCellResult> => {
+			let params: data.EditUpdateCellParams = { ownerUri, rowId, columnId, newValue };
 			return client.sendRequest(protocol.EditUpdateCellRequest.type, params).then(
 				r => r,
 				e => {
@@ -534,7 +534,7 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let getEditRows = (rowData: data.EditSubsetParams): Thenable<protocol.EditSubsetResult> => {
+		let getEditRows = (rowData: data.EditSubsetParams): Thenable<data.EditSubsetResult> => {
 			return client.sendRequest(protocol.EditSubsetRequest.type, rowData).then(
 				r => r,
 				e => {
@@ -546,7 +546,7 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 
 		// Edit Data Event Handlers
 		let registerOnEditSessionReady = (handler: (ownerUri: string, success: boolean, message: string) => any): void => {
-			client.onNotification(protocol.EditSessionReadyNotification.type, (params: protocol.EditSessionReadyParams) => {
+			client.onNotification(protocol.EditSessionReadyNotification.type, (params: data.EditSessionReadyParams) => {
 				handler(params.ownerUri, params.success, params.message);
 			});
 		};
@@ -606,20 +606,20 @@ class MetadataFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let getMetadata = (connectionUri: string): Thenable<data.ProviderMetadata> => {
-			return client.sendRequest(protocol.MetadataQueryRequest.type,
-				client.sqlc2p.asMetadataQueryParams(connectionUri)).then(
+		let getMetadata = (ownerUri: string): Thenable<data.ProviderMetadata> => {
+			let params: types.MetadataQueryParams = { ownerUri };
+			return client.sendRequest(protocol.MetadataQueryRequest.type, params).then(
 				client.sqlp2c.asProviderMetadata,
 				e => {
 					client.logFailedRequest(protocol.MetadataQueryRequest.type, e);
 					return Promise.resolve(undefined);
 				}
-				);
+			);
 		};
 
-		let getDatabases = (connectionUri: string): Thenable<string[]> => {
-			return client.sendRequest(protocol.ListDatabasesRequest.type,
-				client.sqlc2p.asListDatabasesParams(connectionUri)).then(
+		let getDatabases = (ownerUri: string): Thenable<string[]> => {
+			let params: protocol.ListDatabasesParams = { ownerUri };
+			return client.sendRequest(protocol.ListDatabasesRequest.type, params).then(
 				r => r.databaseNames,
 				e => {
 					client.logFailedRequest(protocol.ListDatabasesRequest.type, e);
@@ -628,9 +628,9 @@ class MetadataFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let getTableInfo = (connectionUri: string, metadata: types.ObjectMetadata): Thenable<types.ColumnMetadata[]> => {
-			return client.sendRequest(protocol.TableMetadataRequest.type,
-				client.sqlc2p.asTableMetadataParams(connectionUri, metadata)).then(
+		let getTableInfo = (ownerUri: string, metadata: data.ObjectMetadata): Thenable<data.ColumnMetadata[]> => {
+			let params: protocol.TableMetadataParams = { objectName: metadata.name, ownerUri, schema: metadata.schema };
+			return client.sendRequest(protocol.TableMetadataRequest.type, params).then(
 				r => r.columns,
 				e => {
 					client.logFailedRequest(protocol.TableMetadataRequest.type, e);
@@ -639,9 +639,9 @@ class MetadataFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let getViewInfo = (connectionUri: string, metadata: types.ObjectMetadata): Thenable<types.ColumnMetadata[]> => {
-			return client.sendRequest(protocol.ViewMetadataRequest.type,
-				client.sqlc2p.asTableMetadataParams(connectionUri, metadata)).then(
+		let getViewInfo = (ownerUri: string, metadata: data.ObjectMetadata): Thenable<data.ColumnMetadata[]> => {
+			let params: protocol.TableMetadataParams = { objectName: metadata.name, ownerUri, schema: metadata.schema };
+			return client.sendRequest(protocol.ViewMetadataRequest.type, params).then(
 				r => r.columns,
 				e => {
 					client.logFailedRequest(protocol.ViewMetadataRequest.type, e);
@@ -686,7 +686,7 @@ class AdminServicesFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let createDatabase = (ownerUri: string, databaseInfo: types.DatabaseInfo): Thenable<types.CreateDatabaseResponse> => {
+		let createDatabase = (ownerUri: string, databaseInfo: data.DatabaseInfo): Thenable<data.CreateDatabaseResponse> => {
 			let params: types.CreateDatabaseParams = { ownerUri, databaseInfo };
 			return client.sendRequest(protocol.CreateDatabaseRequest.type, params).then(
 				r => r,
@@ -697,7 +697,7 @@ class AdminServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let getDefaultDatabaseInfo = (ownerUri: string): Thenable<types.DatabaseInfo> => {
+		let getDefaultDatabaseInfo = (ownerUri: string): Thenable<data.DatabaseInfo> => {
 			let params: types.DefaultDatabaseInfoParams = { ownerUri };
 			return client.sendRequest(protocol.DefaultDatabaseInfoRequest.type, params).then(
 				r => r.defaultDatabaseInfo,
@@ -708,7 +708,7 @@ class AdminServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let getDatabaseInfo = (ownerUri: string): Thenable<types.DatabaseInfo> => {
+		let getDatabaseInfo = (ownerUri: string): Thenable<data.DatabaseInfo> => {
 			let params: types.GetDatabaseInfoParams = { ownerUri };
 			return client.sendRequest(protocol.GetDatabaseInfoRequest.type, params).then(
 				r => r.databaseInfo,
@@ -719,7 +719,7 @@ class AdminServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let createLogin = (ownerUri: string, loginInfo: types.LoginInfo): Thenable<types.CreateLoginResponse> => {
+		let createLogin = (ownerUri: string, loginInfo: data.LoginInfo): Thenable<data.CreateLoginResponse> => {
 			let params: types.CreateLoginParams = { ownerUri, loginInfo };
 			return client.sendRequest(protocol.CreateLoginRequest.type, params).then(
 				r => r,
@@ -764,7 +764,7 @@ class BackupFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let backup = (ownerUri: string, backupInfo: types.BackupInfo, taskExecutionMode: types.TaskExecutionMode): Thenable<types.BackupResponse> => {
+		let backup = (ownerUri: string, backupInfo: types.BackupInfo, taskExecutionMode: data.TaskExecutionMode): Thenable<data.BackupResponse> => {
 			let params: types.BackupParams = { ownerUri, backupInfo, taskExecutionMode };
 			return client.sendRequest(protocol.BackupRequest.type, params).then(
 				r => r,
@@ -775,7 +775,7 @@ class BackupFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let getBackupConfigInfo = (connectionUri: string): Thenable<types.BackupConfigInfo> => {
+		let getBackupConfigInfo = (connectionUri: string): Thenable<data.BackupConfigInfo> => {
 			let params: types.DefaultDatabaseInfoParams = { ownerUri: connectionUri };
 			return client.sendRequest(protocol.BackupConfigInfoRequest.type, params).then(
 				r => r.backupConfigInfo,
@@ -820,9 +820,10 @@ class RestoreFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let getRestorePlan = (ownerUri: string, restoreInfo: data.RestoreInfo): Thenable<types.RestorePlanResponse> => {
-			return client.sendRequest(protocol.RestorePlanRequest.type, client.sqlc2p.asRestoreParams(ownerUri, restoreInfo)).then(
-				client.sqlp2c.asRestorePlanResponse,
+		let getRestorePlan = (ownerUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestorePlanResponse> => {
+			let params: types.RestoreParams = { options: restoreInfo.options, ownerUri, taskExecutionMode: restoreInfo.taskExecutionMode };
+			return client.sendRequest(protocol.RestorePlanRequest.type, params).then(
+				r => r,
 				e => {
 					client.logFailedRequest(protocol.RestorePlanRequest.type, e);
 					return Promise.resolve(undefined);
@@ -830,9 +831,10 @@ class RestoreFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let restore = (ownerUri: string, restoreInfo: data.RestoreInfo): Thenable<types.RestoreResponse> => {
-			return client.sendRequest(protocol.RestoreRequest.type, client.sqlc2p.asRestoreParams(ownerUri, restoreInfo)).then(
-				client.sqlp2c.asRestoreResponse,
+		let restore = (ownerUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestoreResponse> => {
+			let params: types.RestoreParams = { options: restoreInfo.options, ownerUri, taskExecutionMode: restoreInfo.taskExecutionMode };
+			return client.sendRequest(protocol.RestoreRequest.type, params).then(
+				r => r,
 				e => {
 					client.logFailedRequest(protocol.RestoreRequest.type, e);
 					return Promise.resolve(undefined);
@@ -841,8 +843,9 @@ class RestoreFeature extends SqlOpsFeature<undefined> {
 		};
 
 		let getRestoreConfigInfo = (ownerUri: string): Thenable<data.RestoreConfigInfo> => {
-			return client.sendRequest(protocol.RestoreConfigInfoRequest.type, client.sqlc2p.asRestoreConfigInfoParams(ownerUri)).then(
-				client.sqlp2c.asRestoreConfigInfo,
+			let params: types.RestoreConfigInfoRequestParams = { ownerUri };
+			return client.sendRequest(protocol.RestoreConfigInfoRequest.type, params).then(
+				r => r,
 				e => {
 					client.logFailedRequest(protocol.RestoreConfigInfoRequest.type, e);
 					return Promise.resolve(undefined);
@@ -851,7 +854,8 @@ class RestoreFeature extends SqlOpsFeature<undefined> {
 		};
 
 		let cancelRestorePlan = (ownerUri: string, restoreInfo: data.RestoreInfo): Thenable<boolean> => {
-			return client.sendRequest(protocol.CancelRestorePlanRequest.type, client.sqlc2p.asRestoreParams(ownerUri, restoreInfo)).then(
+			let params: types.RestoreParams = { options: restoreInfo.options, ownerUri, taskExecutionMode: restoreInfo.taskExecutionMode };
+			return client.sendRequest(protocol.CancelRestorePlanRequest.type, params).then(
 				r => r,
 				e => {
 					client.logFailedRequest(protocol.CancelRestorePlanRequest.type, e);
@@ -898,9 +902,8 @@ class ObjectExplorerFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 		let createNewSession = (connInfo: data.ConnectionInfo): Thenable<data.ObjectExplorerSessionResponse> => {
-			return client.sendRequest(protocol.ObjectExplorerCreateSessionRequest.type,
-				client.sqlc2p.asConnectionDetail(connInfo)).then(
-				client.sqlp2c.asObjectExplorerCreateSessionResponse,
+			return client.sendRequest(protocol.ObjectExplorerCreateSessionRequest.type, connInfo).then(
+				r => r,
 				e => {
 					client.logFailedRequest(protocol.ObjectExplorerCreateSessionRequest.type, e);
 					return Promise.resolve(undefined);
@@ -909,8 +912,7 @@ class ObjectExplorerFeature extends SqlOpsFeature<undefined> {
 		};
 
 		let expandNode = (nodeInfo: data.ExpandNodeInfo): Thenable<boolean> => {
-			return client.sendRequest(protocol.ObjectExplorerExpandRequest.type,
-				client.sqlc2p.asExpandInfo(nodeInfo)).then(
+			return client.sendRequest(protocol.ObjectExplorerExpandRequest.type, nodeInfo).then(
 				r => r,
 				e => {
 					client.logFailedRequest(protocol.ObjectExplorerExpandRequest.type, e);
@@ -920,8 +922,7 @@ class ObjectExplorerFeature extends SqlOpsFeature<undefined> {
 		};
 
 		let refreshNode = (nodeInfo: data.ExpandNodeInfo): Thenable<boolean> => {
-			return client.sendRequest(protocol.ObjectExplorerRefreshRequest.type,
-				client.sqlc2p.asExpandInfo(nodeInfo)).then(
+			return client.sendRequest(protocol.ObjectExplorerRefreshRequest.type, nodeInfo).then(
 				r => r,
 				e => {
 					client.logFailedRequest(protocol.ObjectExplorerRefreshRequest.type, e);
@@ -931,9 +932,8 @@ class ObjectExplorerFeature extends SqlOpsFeature<undefined> {
 		};
 
 		let closeSession = (closeSessionInfo: data.ObjectExplorerCloseSessionInfo): Thenable<any> => {
-			return client.sendRequest(protocol.ObjectExplorerCloseSessionRequest.type,
-				client.sqlc2p.asCloseSessionInfo(closeSessionInfo)).then(
-				client.sqlp2c.asObjectExplorerCloseSessionResponse,
+			return client.sendRequest(protocol.ObjectExplorerCloseSessionRequest.type, closeSessionInfo).then(
+				r => r,
 				e => {
 					client.logFailedRequest(protocol.ObjectExplorerCloseSessionRequest.type, e);
 					return Promise.resolve(undefined);
@@ -985,15 +985,15 @@ class ScriptingFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let scriptAsOperation = (connectionUri: string, operation: types.ScriptOperation, metadata: types.ObjectMetadata, paramDetails: types.ScriptingParamDetails): Thenable<types.ScriptingResult> => {
+		let scriptAsOperation = (connectionUri: string, operation: data.ScriptOperation, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> => {
 			return client.sendRequest(protocol.ScriptingRequest.type,
 				client.sqlc2p.asScriptingParams(connectionUri, operation, metadata, paramDetails)).then(
-				client.sqlp2c.asScriptingResult,
+				r => r,
 				e => {
 					client.logFailedRequest(protocol.ScriptingRequest.type, e);
 					return Promise.resolve(undefined);
 				}
-			);
+				);
 		};
 
 		let registerOnScriptingComplete = (handler: (scriptingCompleteResult: data.ScriptingCompleteResult) => any): void => {
@@ -1034,10 +1034,9 @@ class TaskServicesFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let getAllTasks = (listTasksParams: types.ListTasksParams): Thenable<types.ListTasksResponse> => {
-			return client.sendRequest(protocol.ListTasksRequest.type,
-				client.sqlc2p.asListTasksParams(listTasksParams)).then(
-				client.sqlp2c.asListTasksResponse,
+		let getAllTasks = (listTasksParams: data.ListTasksParams): Thenable<data.ListTasksResponse> => {
+			return client.sendRequest(protocol.ListTasksRequest.type, listTasksParams).then(
+				r => r,
 				e => {
 					client.logFailedRequest(protocol.ListTasksRequest.type, e);
 					return Promise.resolve(undefined);
@@ -1046,9 +1045,8 @@ class TaskServicesFeature extends SqlOpsFeature<undefined> {
 
 		};
 
-		let cancelTask = (cancelTaskParams: types.CancelTaskParams): Thenable<boolean> => {
-			return client.sendRequest(protocol.CancelTaskRequest.type,
-				client.sqlc2p.asCancelTaskParams(cancelTaskParams)).then(
+		let cancelTask = (cancelTaskParams: data.CancelTaskParams): Thenable<boolean> => {
+			return client.sendRequest(protocol.CancelTaskRequest.type, cancelTaskParams).then(
 				r => r,
 				e => {
 					client.logFailedRequest(protocol.CancelTaskRequest.type, e);
@@ -1057,13 +1055,11 @@ class TaskServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let registerOnTaskCreated = (handler: (response: types.TaskInfo) => any): void => {
-			client.onNotification(protocol.TaskCreatedNotification.type, (params: types.TaskInfo) => {
-				handler(client.sqlp2c.asTaskInfo(params));
-			});
+		let registerOnTaskCreated = (handler: (response: data.TaskInfo) => any): void => {
+			client.onNotification(protocol.TaskCreatedNotification.type, handler);
 		};
 
-		let registerOnTaskStatusChanged = (handler: (response: types.TaskProgressInfo) => any): void => {
+		let registerOnTaskStatusChanged = (handler: (response: data.TaskProgressInfo) => any): void => {
 			client.onNotification(protocol.TaskStatusChangedNotification.type, handler);
 		};
 
@@ -1117,7 +1113,7 @@ class FileBrowserFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let registerOnFileBrowserOpened = (handler: (response: types.FileBrowserOpenedParams) => any): void => {
+		let registerOnFileBrowserOpened = (handler: (response: data.FileBrowserOpenedParams) => any): void => {
 			client.onNotification(protocol.FileBrowserOpenedNotification.type, handler);
 		};
 
@@ -1132,7 +1128,7 @@ class FileBrowserFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let registerOnFolderNodeExpanded = (handler: (response: types.FileBrowserExpandedParams) => any): void => {
+		let registerOnFolderNodeExpanded = (handler: (response: data.FileBrowserExpandedParams) => any): void => {
 			client.onNotification(protocol.FileBrowserExpandedNotification.type, handler);
 		};
 
@@ -1147,11 +1143,11 @@ class FileBrowserFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let registerOnFilePathsValidated = (handler: (response: types.FileBrowserValidatedParams) => any): void => {
+		let registerOnFilePathsValidated = (handler: (response: data.FileBrowserValidatedParams) => any): void => {
 			client.onNotification(protocol.FileBrowserValidatedNotification.type, handler);
 		};
 
-		let closeFileBrowser = (ownerUri: string): Thenable<types.FileBrowserCloseResponse> => {
+		let closeFileBrowser = (ownerUri: string): Thenable<data.FileBrowserCloseResponse> => {
 			let params: types.FileBrowserCloseParams = { ownerUri };
 			return client.sendRequest(protocol.FileBrowserCloseRequest.type, params).then(
 				r => r,
@@ -1203,7 +1199,7 @@ class ProfilerFeature extends SqlOpsFeature<undefined> {
 		let startSession = (ownerUri: string): Thenable<boolean> => {
 			let params: types.StartProfilingParams = {
 				ownerUri,
-				options: { }
+				options: {}
 			};
 
 			return client.sendRequest(protocol.StartProfilingRequest.type, params).then(
