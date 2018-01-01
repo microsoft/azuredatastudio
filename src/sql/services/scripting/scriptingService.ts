@@ -10,7 +10,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import * as sqlops from 'sqlops';
-import { warn, error } from 'sql/base/common/log';
+import { error } from 'sql/base/common/log';
 export const SERVICE_ID = 'scriptingService';
 
 export const IScriptingService = createDecorator<IScriptingService>(SERVICE_ID);
@@ -60,7 +60,7 @@ export class ScriptingService implements IScriptingService {
 		if (providerId) {
 			let provider = this._providers[providerId];
 			if (provider) {
-				return provider.scriptAsOperation(connectionUri, operation, metadata, paramDetails)
+				return provider.scriptAsOperation(connectionUri, operation, metadata, paramDetails);
 			}
 		}
 		return Promise.resolve(undefined);

@@ -737,7 +737,7 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	private _doLayoutSql() {
-		if ( this._resultsEditorContainer) {
+		if (this._resultsEditorContainer) {
 			this._resultsEditorContainer.style.width = '0px';
 			this._resultsEditorContainer.style.height = '0px';
 			this._resultsEditorContainer.style.left = '0px';

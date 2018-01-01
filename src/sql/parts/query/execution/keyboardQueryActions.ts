@@ -281,30 +281,30 @@ export class RunQueryShortcutAction extends Action {
 				let dbName = this.getDatabaseName(editor);
 				let query = `exec dbo.sp_sproc_columns @procedure_name = N'${escapeSqlString(shortcutText, singleQuote)}', @procedure_owner = null, @procedure_qualifier = N'${escapeSqlString(dbName, singleQuote)}'`;
 				return this._queryManagementService.runQueryAndReturn(editor.uri, query)
-				.then(result => {
-					switch(this.isProcWithSingleArgument(result)) {
-						case 1:
-							// sproc was found and it meets criteria of having 1 string param
-							// if selection is quoted, leave as-is. Else quote
-							let trimmedText = parameterText.trim();
-							if (trimmedText.length > 0) {
-								if (trimmedText.charAt(0) !== singleQuote || trimmedText.charAt(trimmedText.length - 1) !== singleQuote) {
-									// Note: SSMS uses the original text, but this causes issues if you have spaces. We intentionally use
-									// trimmed text since it's likely to be more accurate in this case. For non-quoted cases it shouldn't matter
-									return `'${trimmedText}'`;
+					.then(result => {
+						switch (this.isProcWithSingleArgument(result)) {
+							case 1:
+								// sproc was found and it meets criteria of having 1 string param
+								// if selection is quoted, leave as-is. Else quote
+								let trimmedText = parameterText.trim();
+								if (trimmedText.length > 0) {
+									if (trimmedText.charAt(0) !== singleQuote || trimmedText.charAt(trimmedText.length - 1) !== singleQuote) {
+										// Note: SSMS uses the original text, but this causes issues if you have spaces. We intentionally use
+										// trimmed text since it's likely to be more accurate in this case. For non-quoted cases it shouldn't matter
+										return `'${trimmedText}'`;
+									}
 								}
-							}
-							break;
-						case -1:
+								break;
+							case -1:
 							// sproc was found but didn't meet criteria, so append as-is
-						case 0:
-							// sproc wasn't found, just append as-is and hope it works
-							break;
-					}
-					return parameterText;
-				}, err => {
-					return parameterText;
-				});
+							case 0:
+								// sproc wasn't found, just append as-is and hope it works
+								break;
+						}
+						return parameterText;
+					}, err => {
+						return parameterText;
+					});
 			}
 			return TPromise.as(parameterText);
 		}

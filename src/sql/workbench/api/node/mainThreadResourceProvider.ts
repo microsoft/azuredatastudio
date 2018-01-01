@@ -5,9 +5,9 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import {TPromise} from 'vs/base/common/winjs.base';
+import { TPromise } from 'vs/base/common/winjs.base';
 import { IResourceProviderService } from 'sql/parts/accountManagement/common/interfaces';
-import {dispose, IDisposable} from 'vs/base/common/lifecycle';
+import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostResourceProviderShape,
 	MainThreadResourceProviderShape,
@@ -20,7 +20,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostC
 
 @extHostNamedCustomer(SqlMainContext.MainThreadResourceProvider)
 export class MainThreadResourceProvider extends MainThreadResourceProviderShape {
-	private _providerMetadata: {[handle: number]: sqlops.AccountProviderMetadata};
+	private _providerMetadata: { [handle: number]: sqlops.AccountProviderMetadata };
 	private _proxy: ExtHostResourceProviderShape;
 	private _toDispose: IDisposable[];
 

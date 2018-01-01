@@ -24,7 +24,7 @@ export class AccountViewModel {
 	private _updateAccountListEmitter: Emitter<UpdateAccountListEventParams>;
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return this._updateAccountListEmitter.event; }
 
-	constructor(@IAccountManagementService private _accountManagementService: IAccountManagementService) {
+	constructor( @IAccountManagementService private _accountManagementService: IAccountManagementService) {
 		let self = this;
 
 		// Create our event emitters
@@ -53,22 +53,22 @@ export class AccountViewModel {
 		// 3) Build parameters to add a provider and return it
 		return this._accountManagementService.getAccountProviderMetadata()
 			.then(
-				(providers: sqlops.AccountProviderMetadata[]) => {
-					let promises = providers.map(provider => {
-						return self._accountManagementService.getAccountsForProvider(provider.id)
-							.then(
-								accounts => <AccountProviderAddedEventParams> {
-									addedProvider: provider,
-									initialAccounts: accounts
-								},
-								() => { /* Swallow failures at getting accounts, we'll just hide that provider */ });
-					});
-					return Promise.all(promises);
-				},
-				() => {
-					/* Swallow failures and just pretend we don't have any providers */
-					return [];
-				}
+			(providers: sqlops.AccountProviderMetadata[]) => {
+				let promises = providers.map(provider => {
+					return self._accountManagementService.getAccountsForProvider(provider.id)
+						.then(
+						accounts => <AccountProviderAddedEventParams>{
+							addedProvider: provider,
+							initialAccounts: accounts
+						},
+						() => { /* Swallow failures at getting accounts, we'll just hide that provider */ });
+				});
+				return Promise.all(promises);
+			},
+			() => {
+				/* Swallow failures and just pretend we don't have any providers */
+				return [];
+			}
 			);
 	}
 }

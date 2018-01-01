@@ -85,8 +85,8 @@ suite('Account Management Service Tests:', () => {
 				state.mockAccountStore.verify(x => x.remove(TypeMoq.It.isAny()), TypeMoq.Times.once());
 			})
 			.then(
-				() => done(),
-				err => done(err)
+			() => done(),
+			err => done(err)
 			);
 	});
 
@@ -95,7 +95,7 @@ suite('Account Management Service Tests:', () => {
 		// ... Create account management service and to mock up the store
 		let state = getTestState();
 		state.mockAccountStore.setup(x => x.addOrUpdate(TypeMoq.It.isAny()))
-			.returns(account => Promise.resolve(<AccountAdditionResult> {
+			.returns(account => Promise.resolve(<AccountAdditionResult>{
 				accountModified: true,
 				accountAdded: false,
 				changedAccount: account
@@ -125,8 +125,8 @@ suite('Account Management Service Tests:', () => {
 				});
 			})
 			.then(
-				() => done(),
-				err => done(err)
+			() => done(),
+			err => done(err)
 			);
 	});
 
@@ -240,8 +240,8 @@ suite('Account Management Service Tests:', () => {
 		// Then: Nothing should have happened and the promise should be resolved
 		return state.accountManagementService.addAccount(noAccountProvider.id)
 			.then(
-				() => done('Add account promise resolved when it should have rejected'),
-				() => done()
+			() => done('Add account promise resolved when it should have rejected'),
+			() => done()
 			);
 	});
 
@@ -255,8 +255,8 @@ suite('Account Management Service Tests:', () => {
 		// Then: Nothing should have happened and the promise should be resolved
 		return state.accountManagementService.addAccount(noAccountProvider.id)
 			.then(
-				() => done(),
-				err => done(err)
+			() => done(),
+			err => done(err)
 			);
 	});
 
@@ -605,13 +605,13 @@ function getFailingMockAccountProvider(cancel: boolean): TypeMoq.Mock<sqlops.Acc
 	mockProvider.setup(x => x.prompt())
 		.returns(() => {
 			return cancel
-				? Promise.reject(<sqlops.UserCancelledSignInError>{userCancelledSignIn: true}).then()
+				? Promise.reject(<sqlops.UserCancelledSignInError>{ userCancelledSignIn: true }).then()
 				: Promise.reject(new Error()).then();
 		});
 	mockProvider.setup(x => x.refresh(TypeMoq.It.isAny()))
 		.returns(() => {
 			return cancel
-				? Promise.reject(<sqlops.UserCancelledSignInError>{userCancelledSignIn: true}).then()
+				? Promise.reject(<sqlops.UserCancelledSignInError>{ userCancelledSignIn: true }).then()
 				: Promise.reject(new Error()).then();
 		});
 	return mockProvider;

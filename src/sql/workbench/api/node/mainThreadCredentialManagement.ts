@@ -8,7 +8,8 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostCredentialManagementShape,
-	MainThreadCredentialManagementShape, SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
+	MainThreadCredentialManagementShape, SqlMainContext
+} from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ICredentialsService } from 'sql/services/credentials/credentialsService';
 import * as sqlops from 'sqlops';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';

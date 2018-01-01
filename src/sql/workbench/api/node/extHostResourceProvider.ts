@@ -6,9 +6,9 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import {TPromise} from 'vs/base/common/winjs.base';
-import {IThreadService} from 'vs/workbench/services/thread/common/threadService';
-import {Disposable} from 'vs/workbench/api/node/extHostTypes';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
+import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import {
 	ExtHostResourceProviderShape,
 	MainThreadResourceProviderShape,
@@ -18,7 +18,7 @@ import {
 export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 	private _handlePool: number = 0;
 	private _proxy: MainThreadResourceProviderShape;
-	private _providers: {[handle: number]: ResourceProviderWithMetadata} = {};
+	private _providers: { [handle: number]: ResourceProviderWithMetadata } = {};
 
 	constructor(threadService: IThreadService) {
 		super();
@@ -27,7 +27,7 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public 	$createFirewallRule(handle: number, account: sqlops.Account, firewallRuleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> {
+	public $createFirewallRule(handle: number, account: sqlops.Account, firewallRuleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> {
 		return this._withProvider(handle, (provider: sqlops.ResourceProvider) => provider.createFirewallRule(account, firewallRuleInfo));
 	}
 	public $handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> {

@@ -174,9 +174,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		connectionInfo.options = profile.options;
 
 		// append group ID and original display name to build unique OE session ID
- 		connectionInfo.options = profile.options;
- 		connectionInfo.options['groupId'] = connectionInfo.groupId;
- 		connectionInfo.options['databaseDisplayName'] = connectionInfo.databaseName;
+		connectionInfo.options = profile.options;
+		connectionInfo.options['groupId'] = connectionInfo.groupId;
+		connectionInfo.options['databaseDisplayName'] = connectionInfo.databaseName;
 
 		connectionInfo.groupId = profile.groupId;
 		connectionInfo.providerName = profile.providerName;

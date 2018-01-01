@@ -179,4 +179,4 @@ export interface AzureAccountSecurityToken {
  * Azure account security token maps a tenant ID to the information returned from a request to get
  * an access token. The list of tenants correspond to the tenants in the account properties.
  */
-export type AzureAccountSecurityTokenCollection = {[tenantId: string]: AzureAccountSecurityToken};
+export type AzureAccountSecurityTokenCollection = { [tenantId: string]: AzureAccountSecurityToken };

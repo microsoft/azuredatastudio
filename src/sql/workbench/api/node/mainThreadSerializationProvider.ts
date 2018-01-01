@@ -6,10 +6,10 @@
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
 import {
 	SqlExtHostContext, ExtHostSerializationProviderShape,
-	MainThreadSerializationProviderShape, SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
+	MainThreadSerializationProviderShape, SqlMainContext
+} from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ISerializationService } from 'sql/services/serialization/serializationService';
 import * as sqlops from 'sqlops';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';

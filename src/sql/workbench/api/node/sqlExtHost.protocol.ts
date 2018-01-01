@@ -6,8 +6,7 @@
 
 import {
 	createMainContextProxyIdentifier as createMainId,
-	createExtHostContextProxyIdentifier as createExtId,
-	ProxyIdentifier, IThreadService
+	createExtHostContextProxyIdentifier as createExtId
 } from 'vs/workbench/services/thread/common/threadService';
 
 import * as sqlops from 'sqlops';

@@ -331,26 +331,6 @@ export function openInsight(query: IInsightsConfig, profile: IConnectionProfile,
 	insightDialogService.show(query, profile);
 }
 
-/* Helper Methods */
-function getStartPos(script: string, operation: ScriptOperation, typeName: string): number {
-	let objectTypeName = objectScriptMap[typeName];
-	if (objectTypeName && script) {
-		let scriptTypeName = objectTypeName.toLowerCase();
-		switch (operation) {
-			case (ScriptOperation.Create):
-				return script.toLowerCase().indexOf(`create ${scriptTypeName}`);
-			case (ScriptOperation.Delete):
-				return script.toLowerCase().indexOf(`drop ${scriptTypeName}`);
-			default:
-				/* script wasn't found for that object */
-				return -1;
-		}
-	} else {
-		return -1;
-	}
-}
-
-
 function getScriptingParamDetails(connectionService: IConnectionManagementService, ownerUri: string, metadata: sqlops.ObjectMetadata): sqlops.ScriptingParamDetails {
 	let serverInfo: sqlops.ServerInfo = getServerInfo(connectionService, ownerUri);
 	let paramDetails: sqlops.ScriptingParamDetails = {

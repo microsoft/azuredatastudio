@@ -68,11 +68,11 @@ export class SerializationService implements ISerializationService {
 	}
 
 	public disabledSaveAs(): Thenable<sqlops.SaveResultRequestResult> {
-		return Promise.resolve({messages: Constants.SerializationDisabled});
+		return Promise.resolve({ messages: Constants.SerializationDisabled });
 
 	}
 
-	public getSerializationFeatureMetadataProvider(ownerUri: string) : sqlops.FeatureMetadataProvider {
+	public getSerializationFeatureMetadataProvider(ownerUri: string): sqlops.FeatureMetadataProvider {
 		let providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
 		let providerCapabilities = this._capabilitiesService.getCapabilities().find(c => c.providerName === providerId);
 

@@ -160,14 +160,14 @@ export default class QueryRunner {
 		// Attempting to launch the query failed, show the error message
 		const eol = this.getEolString();
 		let message = nls.localize('query.ExecutionFailedError', 'Execution failed due to an unexpected error: {0}\t{1}', eol, error);
-		this.handleMessage(<sqlops.QueryExecuteMessageParams> {
+		this.handleMessage(<sqlops.QueryExecuteMessageParams>{
 			ownerUri: this.uri,
 			message: {
 				isError: true,
 				message: message
 			}
 		});
-		this.handleQueryComplete(<sqlops.QueryExecuteCompleteNotificationResult> { ownerUri: this.uri });
+		this.handleQueryComplete(<sqlops.QueryExecuteCompleteNotificationResult>{ ownerUri: this.uri });
 	}
 
 	/**

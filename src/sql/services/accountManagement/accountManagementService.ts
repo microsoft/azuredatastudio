@@ -309,8 +309,8 @@ export class AccountManagementService implements IAccountManagementService {
 	public cancelAutoOAuthDeviceCode(providerId: string): void {
 		this.doWithProvider(providerId, provider => provider.provider.autoOAuthCancelled())
 			.then(	// Swallow errors
-				null,
-				err => { console.warn(`Error when cancelling auto OAuth: ${err}`); }
+			null,
+			err => { console.warn(`Error when cancelling auto OAuth: ${err}`); }
 			)
 			.then(() => this.autoOAuthDialogController.closeAutoOAuthDialog());
 	}

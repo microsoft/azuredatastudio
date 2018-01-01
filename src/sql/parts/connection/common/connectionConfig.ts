@@ -9,7 +9,7 @@ import * as Utils from './utils';
 import { IConnectionProfile, IConnectionProfileStore } from './interfaces';
 import { IConnectionConfig } from './iconnectionConfig';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
-import { ConfigurationEditingService, IConfigurationValue, IConfigurationValue as TConfigurationValue } from 'vs/workbench/services/configuration/node/configurationEditingService';
+import { ConfigurationEditingService, IConfigurationValue } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { ConnectionProfile } from './connectionProfile';

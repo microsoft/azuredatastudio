@@ -7,13 +7,13 @@
 
 import * as sqlops from 'sqlops';
 import { TPromise } from 'vs/base/common/winjs.base';
-import {CredentialManagementEvents, ICredentialsService} from "sql/services/credentials/credentialsService";
-import {IDisposable} from "vs/base/common/lifecycle";
+import { CredentialManagementEvents, ICredentialsService } from 'sql/services/credentials/credentialsService';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 export class CredentialsTestProvider implements sqlops.CredentialProvider {
 	handle: number;
 
-	public storedCredentials: {[K: string]: sqlops.Credential} = {};
+	public storedCredentials: { [K: string]: sqlops.Credential } = {};
 
 	saveCredential(credentialId: string, password: string): Thenable<boolean> {
 		this.storedCredentials[credentialId] = {

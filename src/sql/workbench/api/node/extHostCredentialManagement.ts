@@ -18,7 +18,7 @@ class CredentialAdapter {
 		this.provider = provider;
 	}
 
-	public saveCredential(credentialId: string, password: string): Thenable<boolean>  {
+	public saveCredential(credentialId: string, password: string): Thenable<boolean> {
 		return this.provider.saveCredential(credentialId, password);
 	}
 
@@ -26,14 +26,14 @@ class CredentialAdapter {
 		return this.provider.readCredential(credentialId);
 	}
 
-    public deleteCredential(credentialId: string): Thenable<boolean> {
+	public deleteCredential(credentialId: string): Thenable<boolean> {
 		return this.provider.deleteCredential(credentialId);
 	}
 }
 
 type Adapter = CredentialAdapter;
 
-export class ExtHostCredentialManagement extends ExtHostCredentialManagementShape  {
+export class ExtHostCredentialManagement extends ExtHostCredentialManagementShape {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _adapter: { [handle: number]: Adapter } = Object.create(null);
 	private _handlePool: number = 0;
@@ -88,7 +88,7 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 		return this._withAdapter(0, CredentialAdapter, adapter => adapter.readCredential(credentialId));
 	}
 
-    public $deleteCredential(credentialId: string): Thenable<boolean> {
+	public $deleteCredential(credentialId: string): Thenable<boolean> {
 		return this._withAdapter(0, CredentialAdapter, adapter => adapter.deleteCredential(credentialId));
 	}
 
@@ -136,7 +136,7 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 		return this._handlePool++;
 	}
 
-	private _withAdapter<A, R>(handle: number, ctor: { new (...args: any[]): A }, callback: (adapter: A) => Thenable<R>): Thenable<R> {
+	private _withAdapter<A, R>(handle: number, ctor: { new(...args: any[]): A }, callback: (adapter: A) => Thenable<R>): Thenable<R> {
 		let adapter = this._adapter[handle];
 		if (!(adapter instanceof ctor)) {
 			return TPromise.wrapError(new Error('no adapter found'));

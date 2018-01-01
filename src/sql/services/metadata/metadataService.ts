@@ -39,7 +39,7 @@ export class MetadataService implements IMetadataService {
 
 	private _providers: { [handle: string]: sqlops.MetadataProvider; } = Object.create(null);
 
-	constructor(@IConnectionManagementService private _connectionService: IConnectionManagementService) {
+	constructor( @IConnectionManagementService private _connectionService: IConnectionManagementService) {
 	}
 
 	public getMetadata(connectionUri: string): Thenable<sqlops.ProviderMetadata> {

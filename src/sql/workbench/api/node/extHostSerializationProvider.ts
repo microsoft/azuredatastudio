@@ -18,7 +18,7 @@ class SerializationAdapter {
 		this._provider = provider;
 	}
 
-	public saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult>  {
+	public saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> {
 		return this._provider.saveAs(saveFormat, savePath, results, appendToFile);
 	}
 
@@ -26,7 +26,7 @@ class SerializationAdapter {
 
 type Adapter = SerializationAdapter;
 
-export class ExtHostSerializationProvider extends ExtHostSerializationProviderShape  {
+export class ExtHostSerializationProvider extends ExtHostSerializationProviderShape {
 
 	private _proxy: MainThreadSerializationProviderShape;
 
@@ -44,7 +44,7 @@ export class ExtHostSerializationProvider extends ExtHostSerializationProviderSh
 		return ExtHostSerializationProvider._handlePool++;
 	}
 
-	private _withAdapter<A, R>(handle: number, ctor: { new (...args: any[]): A }, callback: (adapter: A) => Thenable<R>): Thenable<R> {
+	private _withAdapter<A, R>(handle: number, ctor: { new(...args: any[]): A }, callback: (adapter: A) => Thenable<R>): Thenable<R> {
 		let adapter = this._adapter[handle];
 		if (!(adapter instanceof ctor)) {
 			return TPromise.wrapError(new Error('no adapter found'));

@@ -55,16 +55,16 @@ export class AddAccountAction extends Action {
 		return new TPromise((resolve, reject) => {
 			self._accountManagementService.addAccount(self._providerId)
 				.then(
-					() => {
-						self._addAccountCompleteEmitter.fire();
-						resolve(true);
-					},
-					err => {
-						error(`Error while adding account: ${err}`);
-						self._addAccountErrorEmitter.fire(err);
-						self._addAccountCompleteEmitter.fire();
-						reject(err);
-					}
+				() => {
+					self._addAccountCompleteEmitter.fire();
+					resolve(true);
+				},
+				err => {
+					error(`Error while adding account: ${err}`);
+					self._addAccountErrorEmitter.fire(err);
+					self._addAccountCompleteEmitter.fire();
+					reject(err);
+				}
 				);
 		});
 	}
@@ -106,13 +106,13 @@ export class RemoveAccountAction extends Action {
 				return new TPromise((resolve, reject) => {
 					self._accountManagementService.removeAccount(self._account.key)
 						.then(
-							(result) => { resolve(result); },
-							(err) => {
-								// Must handle here as this is an independent action
-								self._errorMessageService.showDialog(Severity.Error,
-									localize('removeAccountFailed', 'Failed to remove account'), err);
-								resolve(false);
-							}
+						(result) => { resolve(result); },
+						(err) => {
+							// Must handle here as this is an independent action
+							self._errorMessageService.showDialog(Severity.Error,
+								localize('removeAccountFailed', 'Failed to remove account'), err);
+							resolve(false);
+						}
 						);
 				});
 			}
@@ -159,14 +159,14 @@ export class RefreshAccountAction extends Action {
 			if (self.account) {
 				self._accountManagementService.refreshAccount(self.account)
 					.then(
-						() => {
-							resolve(true);
-						},
-						err => {
-							error(`Error while refreshing account: ${err}`);
-							reject(err);
-						}
-				);
+					() => {
+						resolve(true);
+					},
+					err => {
+						error(`Error while refreshing account: ${err}`);
+						reject(err);
+					}
+					);
 			} else {
 				let errorMessage = localize('NoAccountToRefresh', 'There is no account to refresh');
 				reject(errorMessage);

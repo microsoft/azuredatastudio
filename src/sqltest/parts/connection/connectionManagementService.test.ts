@@ -776,7 +776,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		// Set up the connection store to give back a group for the expected connection profile
 		configResult['enableTabColors'] = true;
 		let expectedColor = 'red';
-		connectionStore.setup(x => x.getGroupFromId(connectionProfile.groupId)).returns(() => <IConnectionProfileGroup> {
+		connectionStore.setup(x => x.getGroupFromId(connectionProfile.groupId)).returns(() => <IConnectionProfileGroup>{
 			color: expectedColor
 		});
 		let uri = 'testUri';
