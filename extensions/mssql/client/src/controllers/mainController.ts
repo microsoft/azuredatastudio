@@ -11,8 +11,10 @@ import { Serialization } from '../serialize/serialization';
 import { AzureResourceProvider } from '../resourceProvider/resourceProvider';
 import { CredentialStore } from '../credentialstore/credentialstore';
 import { IExtensionConstants, Telemetry, Constants as SharedConstants, SqlToolsServiceClient, VscodeWrapper, Utils, PlatformInformation } from 'extensions-modules';
-import { SqlOpsDataClient, BackupFeature, CapabilitiesFeature, ConnectionFeature, FileBrowserFeature, MetadataFeature, ObjectExplorerFeature, ProfilerFeature,
-	QueryFeature, RestoreFeature, ScriptingFeature, TaskServicesFeature } from 'dataprotocol-client';
+import {
+	SqlOpsDataClient, BackupFeature, CapabilitiesFeature, ConnectionFeature, FileBrowserFeature, MetadataFeature, ObjectExplorerFeature, ProfilerFeature,
+	QueryFeature, RestoreFeature, ScriptingFeature, TaskServicesFeature
+} from 'dataprotocol-client';
 import * as path from 'path';
 
 /**
@@ -71,7 +73,7 @@ export default class MainController implements vscode.Disposable {
 
 	private createClient(executableFiles: string[]): Promise<SqlOpsDataClient> {
 		return PlatformInformation.getCurrent(SqlToolsServiceClient.constants.getRuntimeId, SqlToolsServiceClient.constants.extensionName).then(platformInfo => {
-			return SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json')).createClient(this._context, platformInfo.runtimeId, undefined, executableFiles)
+			return SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json')).createClient(this._context, platformInfo.runtimeId, undefined, executableFiles);
 		});
 	}
 
