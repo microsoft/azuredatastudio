@@ -7,7 +7,7 @@
 import * as Contracts from '../models/contracts';
 import { ICredentialStore } from './icredentialstore';
 import { SqlToolsServiceClient, Utils } from 'extensions-modules';
-import { LanguageClient } from 'dataprotocol-client';
+import { SqlOpsDataClient } from 'dataprotocol-client';
 import * as path from 'path';
 
 /**
@@ -17,7 +17,7 @@ import * as path from 'path';
  */
 export class CredentialStore implements ICredentialStore {
 
-	public languageClient: LanguageClient;
+	public languageClient: SqlOpsDataClient;
 
 	constructor(private _client?: SqlToolsServiceClient) {
 		if (!this._client) {

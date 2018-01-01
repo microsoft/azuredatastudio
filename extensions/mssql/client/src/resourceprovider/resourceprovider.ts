@@ -6,7 +6,7 @@
 
 import * as Contracts from '../models/contracts';
 import { SqlToolsServiceClient } from 'extensions-modules';
-import { LanguageClient } from 'dataprotocol-client';
+import { SqlOpsDataClient } from 'dataprotocol-client';
 import * as data from 'data';
 import * as path from 'path';
 
@@ -18,9 +18,9 @@ import * as path from 'path';
  */
 export class AzureResourceProvider implements data.ResourceProvider {
 
-	public languageClient: LanguageClient;
+	public languageClient: SqlOpsDataClient;
 
-	constructor(private _client?: SqlToolsServiceClient, langClient?: LanguageClient) {
+	constructor(private _client?: SqlToolsServiceClient, langClient?: SqlOpsDataClient) {
 		if (!this._client) {
 			this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
 		}

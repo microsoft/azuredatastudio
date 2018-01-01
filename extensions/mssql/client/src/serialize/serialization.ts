@@ -8,7 +8,7 @@ import * as Contracts from '../models/contracts';
 import { ISerialization } from './iserialization';
 import { SqlToolsServiceClient } from 'extensions-modules';
 import * as data from 'data';
-import { LanguageClient } from 'dataprotocol-client';
+import { SqlOpsDataClient } from 'dataprotocol-client';
 import * as path from 'path';
 
 /**
@@ -16,7 +16,7 @@ import * as path from 'path';
  */
 export class Serialization implements ISerialization {
 
-	constructor(private _client?: SqlToolsServiceClient, private _languageClient?: LanguageClient) {
+	constructor(private _client?: SqlToolsServiceClient, private _languageClient?: SqlOpsDataClient) {
 		if (!this._client) {
 			this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
 		}

@@ -186,7 +186,6 @@ export class SqlToolsServiceClient {
 	// initialize the Service Client instance by launching
 	// out-of-proc server through the LanguageClient
 	public initialize(context: ExtensionContext): Promise<any> {
-		this._logger.appendLine('instance');
 		this._logger.appendLine(SqlToolsServiceClient._constants.serviceInitializing);
 		this._languageClientStartTime = Date.now();
 		return PlatformInformation.getCurrent(SqlToolsServiceClient._constants.getRuntimeId, SqlToolsServiceClient._constants.extensionName).then(platformInfo => {
@@ -232,19 +231,14 @@ export class SqlToolsServiceClient {
 
 			this._logger.appendLine();
 
-			this._logger.appendLine('beforeserver');
 			this._server.getServerPath(platformInfo.runtimeId).then(serverPath => {
-
-			this._logger.appendLine('after server');
 				if (serverPath === undefined) {
 					// Check if the service already installed and if not open the output channel to show the logs
 					if (_channel !== undefined) {
 						_channel.show();
 					}
 					let installationStartTime = Date.now();
-					this._logger.appendLine('downloading')
 					this._server.downloadServerFiles(platformInfo.runtimeId).then(installedServerPath => {
-						this._logger.appendLine('downloaded')
 						this._installationTime = Date.now() - installationStartTime;
 						this.initializeLanguageClient(installedServerPath, context, platformInfo.runtimeId);
 						resolve(new ServerInitializationResult(true, true, installedServerPath));
@@ -256,8 +250,6 @@ export class SqlToolsServiceClient {
 					resolve(new ServerInitializationResult(false, true, serverPath));
 				}
 			}).catch(err => {
-
-				this._logger.appendLine('failed');
 				Utils.logDebug(SqlToolsServiceClient._constants.serviceLoadingFailed + ' ' + err, SqlToolsServiceClient._constants.extensionConfigSectionName);
 				Utils.showErrorMsg(SqlToolsServiceClient._constants.serviceLoadingFailed, SqlToolsServiceClient._constants.extensionName);
 				Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
@@ -339,7 +331,7 @@ export class SqlToolsServiceClient {
 					// Options to control the language client
 					let clientOptions: LanguageClientOptions = {
 						documentSelector: [SqlToolsServiceClient._constants.languageId],
-						providerId: '',
+						providerId: 'MSSQL',
 						synchronize: {
 							configurationSection: SqlToolsServiceClient._constants.extensionConfigSectionName
 						},
