@@ -22,7 +22,7 @@ import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesServ
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
 
-import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'data';
+import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'sqlops';
 
 /* VS imports */
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';

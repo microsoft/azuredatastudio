@@ -8,7 +8,7 @@ import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerSession
 import { ProfilerState } from './profilerState';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput } from 'vs/workbench/common/editor';
@@ -125,7 +125,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._state;
 	}
 
-	public onMoreRows(events: data.ProfilerSessionEvents) {
+	public onMoreRows(events: sqlops.ProfilerSessionEvents) {
 
 		events = undefined;
 

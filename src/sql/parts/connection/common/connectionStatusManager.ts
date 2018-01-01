@@ -9,21 +9,21 @@ import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesServ
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile } from './interfaces';
 import * as Utils from './utils';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { StopWatch } from 'vs/base/common/stopwatch';
 
 export class ConnectionStatusManager {
 
 	private _connections: { [id: string]: ConnectionManagementInfo };
-	private _providerCapabilitiesMap: { [providerName: string]: data.DataProtocolServerCapabilities };
+	private _providerCapabilitiesMap: { [providerName: string]: sqlops.DataProtocolServerCapabilities };
 
 	constructor( @ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
 		this._connections = {};
 		this._providerCapabilitiesMap = {};
 	}
 
-	public getCapabilities(providerName: string): data.DataProtocolServerCapabilities {
-		let result: data.DataProtocolServerCapabilities;
+	public getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities {
+		let result: sqlops.DataProtocolServerCapabilities;
 
 		if (providerName in this._providerCapabilitiesMap) {
 			result = this._providerCapabilitiesMap[providerName];
@@ -126,7 +126,7 @@ export class ConnectionStatusManager {
 		return newId;
 	}
 
-	public onConnectionComplete(summary: data.ConnectionInfoSummary): ConnectionManagementInfo {
+	public onConnectionComplete(summary: sqlops.ConnectionInfoSummary): ConnectionManagementInfo {
 		let connection = this._connections[summary.ownerUri];
 		connection.serviceTimer.stop();
 		connection.connecting = false;
@@ -139,7 +139,7 @@ export class ConnectionStatusManager {
 	 * Updates database name after connection is complete
 	 * @param summary connection summary
 	 */
-	public updateDatabaseName(summary: data.ConnectionInfoSummary): void {
+	public updateDatabaseName(summary: sqlops.ConnectionInfoSummary): void {
 		let connection = this._connections[summary.ownerUri];
 
 		//Check if the existing connection database name is different the one in the summary
@@ -174,7 +174,7 @@ export class ConnectionStatusManager {
 		return ownerUriToReturn;
 	}
 
-	public onConnectionChanged(changedConnInfo: data.ChangedConnectionInfo): IConnectionProfile {
+	public onConnectionChanged(changedConnInfo: sqlops.ChangedConnectionInfo): IConnectionProfile {
 		let connection = this._connections[changedConnInfo.connectionUri];
 		if (connection && connection.connectionProfile) {
 			connection.connectionProfile.serverName = changedConnInfo.connection.serverName;

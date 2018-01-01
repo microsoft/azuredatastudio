@@ -7,7 +7,7 @@
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import { Deferred } from 'sql/base/common/promise';
 
 export const SERVICE_ID = 'credentialsService';
@@ -15,7 +15,7 @@ export const SERVICE_ID = 'credentialsService';
 export interface CredentialManagementEvents {
 	onSaveCredential(credentialId: string, password: string): Thenable<boolean>;
 
-	onReadCredential(credentialId: string): Thenable<data.Credential>;
+	onReadCredential(credentialId: string): Thenable<sqlops.Credential>;
 
 	onDeleteCredential(credentialId: string): Thenable<boolean>;
 }
@@ -27,7 +27,7 @@ export interface ICredentialsService {
 
 	saveCredential(credentialId: string, password: string): Thenable<boolean>;
 
-	readCredential(credentialId: string): Thenable<data.Credential>;
+	readCredential(credentialId: string): Thenable<sqlops.Credential>;
 
 	deleteCredential(credentialId: string): Thenable<boolean>;
 
@@ -66,7 +66,7 @@ export class CredentialsService implements ICredentialsService {
 		return this._onServerEventsReady.promise.then(() => this._serverEvents[this._lastHandle].onSaveCredential(credentialId, password));
 	}
 
-	public readCredential(credentialId: string): Thenable<data.Credential> {
+	public readCredential(credentialId: string): Thenable<sqlops.Credential> {
 		return this._onServerEventsReady.promise.then(() => this._serverEvents[this._lastHandle].onReadCredential(credentialId));
 	}
 

@@ -14,7 +14,7 @@ import {IThreadService} from 'vs/workbench/services/thread/common/threadService'
 import {MainThreadCredentialManagement} from 'sql/workbench/api/node/mainThreadCredentialManagement';
 import {CredentialsTestProvider, CredentialsTestService} from 'sqltest/stubs/credentialsTestStubs';
 import {ICredentialsService} from 'sql/services/credentials/credentialsService';
-import {Credential, CredentialProvider} from 'data';
+import {Credential, CredentialProvider} from 'sqlops';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 const IThreadService = createDecorator<IThreadService>('threadService');

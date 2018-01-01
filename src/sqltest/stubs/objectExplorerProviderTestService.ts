@@ -2,35 +2,35 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import data = require('data');
+import * as sqlops from 'sqlops';
 
 // Test stubs for commonly used objects
 
-export class ObjectExplorerProviderTestService implements data.ObjectExplorerProvider {
+export class ObjectExplorerProviderTestService implements sqlops.ObjectExplorerProvider {
 
 	public readonly providerId = 'MSSQL';
 
-	public createNewSession(connInfo: data.ConnectionInfo): Thenable<data.ObjectExplorerCloseSessionResponse> {
+	public createNewSession(connInfo: sqlops.ConnectionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
 		return Promise.resolve(undefined);
 	}
 
-	public expandNode(nodeInfo: data.ExpandNodeInfo): Thenable<boolean> {
+	public expandNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
 		return Promise.resolve(undefined);
 	}
 
-	public refreshNode(nodeInfo: data.ExpandNodeInfo): Thenable<boolean> {
+	public refreshNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
 		return Promise.resolve(undefined);
 	}
 
-	public closeSession(closeSessionInfo: data.ObjectExplorerCloseSessionInfo): Thenable<data.ObjectExplorerCloseSessionResponse> {
+	public closeSession(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
 		return Promise.resolve(undefined);
 	}
 
-	public registerOnSessionCreated(handler: (response: data.ObjectExplorerSession) => any): void {
+	public registerOnSessionCreated(handler: (response: sqlops.ObjectExplorerSession) => any): void {
 
 	}
 
-	public registerOnExpandCompleted(handler: (response: data.ObjectExplorerExpandInfo) => any): void {
+	public registerOnExpandCompleted(handler: (response: sqlops.ObjectExplorerExpandInfo) => any): void {
 
 	}
 }

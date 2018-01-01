@@ -7,7 +7,7 @@
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import Event from 'vs/base/common/event';
-import data = require('data');
+import * as sqlops from 'sqlops';
 
 import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -53,15 +53,15 @@ export const IBackupService = createDecorator<IBackupService>(SERVICE_ID);
 export interface IBackupService {
 	_serviceBrand: any;
 
-	getBackupConfigInfo(connectionUri: string): Thenable<data.BackupConfigInfo>;
+	getBackupConfigInfo(connectionUri: string): Thenable<sqlops.BackupConfigInfo>;
 
 	/**
 	 * Backup a data source using the provided connection
 	 */
-	backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: data.TaskExecutionMode): Thenable<data.BackupResponse>;
+	backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.BackupResponse>;
 
 	/**
 	 * Register a disaster recovery provider
 	 */
-	registerProvider(providerId: string, provider: data.BackupProvider): void;
+	registerProvider(providerId: string, provider: sqlops.BackupProvider): void;
 }

@@ -5,7 +5,7 @@
 
 'use strict';
 import vscode = require('vscode');
-import data = require('data');
+import * as sqlops from 'sqlops';
 import { Constants } from '../models/constants';
 import { Serialization } from '../serialize/serialization';
 import { AzureResourceProvider } from '../resourceProvider/resourceProvider';
@@ -124,20 +124,20 @@ export default class MainController implements vscode.Disposable {
 
 				self.createSerializationClient().then(serializationClient => {
 					// Serialization
-					let serializationProvider: data.SerializationProvider = {
+					let serializationProvider: sqlops.SerializationProvider = {
 						handle: 0,
-						saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<data.SaveResultRequestResult> {
+						saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> {
 							return self._serialization.saveAs(saveFormat, savePath, results, appendToFile);
 						}
 					};
-					data.serialization.registerProvider(serializationProvider);
+					sqlops.serialization.registerProvider(serializationProvider);
 				}, error => {
 					Utils.logDebug('Cannot find Serialization executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);
 				});
 
 				self.createResourceProviderClient().then(rpClient => {
 					let resourceProvider = new AzureResourceProvider(self._client, rpClient);
-					data.resources.registerResourceProvider({
+					sqlops.resources.registerResourceProvider({
 						displayName: 'Azure SQL Resource Provider', // TODO Localize
 						id: 'Microsoft.Azure.SQL.ResourceProvider',
 						settings: {
@@ -152,19 +152,19 @@ export default class MainController implements vscode.Disposable {
 				self.createCredentialClient().then(credentialClient => {
 
 					self._credentialStore.languageClient = credentialClient;
-					let credentialProvider: data.CredentialProvider = {
+					let credentialProvider: sqlops.CredentialProvider = {
 						handle: 0,
 						saveCredential(credentialId: string, password: string): Thenable<boolean> {
 							return self._credentialStore.saveCredential(credentialId, password);
 						},
-						readCredential(credentialId: string): Thenable<data.Credential> {
+						readCredential(credentialId: string): Thenable<sqlops.Credential> {
 							return self._credentialStore.readCredential(credentialId);
 						},
 						deleteCredential(credentialId: string): Thenable<boolean> {
 							return self._credentialStore.deleteCredential(credentialId);
 						}
 					};
-					data.credentials.registerProvider(credentialProvider);
+					sqlops.credentials.registerProvider(credentialProvider);
 					Utils.logDebug('credentialProvider registered', MainController._extensionConstants.extensionConfigSectionName);
 				}, error => {
 					Utils.logDebug('Cannot find credentials executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);

@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import Event from 'vs/base/common/event';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
@@ -15,10 +15,10 @@ export class AccountManagementTestService implements IAccountManagementService {
 	_serviceBrand: any;
 
 	public get addAccountProviderEvent(): Event<AccountProviderAddedEventParams> { return () => { return undefined; }; }
-	public get removeAccountProviderEvent(): Event<data.AccountProviderMetadata> { return () => { return undefined; }; }
+	public get removeAccountProviderEvent(): Event<sqlops.AccountProviderMetadata> { return () => { return undefined; }; }
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return () => { return undefined; }; }
 
-	accountUpdated(account: data.Account): Thenable<void> {
+	accountUpdated(account: sqlops.Account): Thenable<void> {
 		return undefined;
 	}
 
@@ -42,23 +42,23 @@ export class AccountManagementTestService implements IAccountManagementService {
 		return undefined;
 	}
 
-	getAccountProviderMetadata(): Thenable<data.AccountProviderMetadata[]> {
+	getAccountProviderMetadata(): Thenable<sqlops.AccountProviderMetadata[]> {
 		return undefined;
 	}
 
-	getAccountsForProvider(providerId: string): Thenable<data.Account[]> {
+	getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]> {
 		return undefined;
 	}
 
-	getSecurityToken(account: data.Account): Thenable<{}> {
+	getSecurityToken(account: sqlops.Account): Thenable<{}> {
 		return undefined;
 	}
 
-	removeAccount(accountKey: data.AccountKey): Thenable<boolean> {
+	removeAccount(accountKey: sqlops.AccountKey): Thenable<boolean> {
 		return undefined;
 	}
 
-	refreshAccount(account: data.Account): Thenable<data.Account> {
+	refreshAccount(account: sqlops.Account): Thenable<sqlops.Account> {
 		return undefined;
 	}
 
@@ -66,7 +66,7 @@ export class AccountManagementTestService implements IAccountManagementService {
 		return undefined;
 	}
 
-	registerProvider(providerMetadata: data.AccountProviderMetadata, provider: data.AccountProvider): void {
+	registerProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): void {
 		return undefined;
 	}
 
@@ -74,33 +74,33 @@ export class AccountManagementTestService implements IAccountManagementService {
 		return undefined;
 	}
 
-	unregisterProvider(providerMetadata: data.AccountProviderMetadata): void {
+	unregisterProvider(providerMetadata: sqlops.AccountProviderMetadata): void {
 		return undefined;
 	}
 }
 
-export class AccountProviderStub implements data.AccountProvider {
+export class AccountProviderStub implements sqlops.AccountProvider {
 	autoOAuthCancelled(): Thenable<void> {
 		return Promise.resolve();
 	}
 
-	clear(account: data.AccountKey): Thenable<void> {
+	clear(account: sqlops.AccountKey): Thenable<void> {
 		return Promise.resolve();
 	}
 
-	getSecurityToken(account: data.Account): Thenable<{}> {
+	getSecurityToken(account: sqlops.Account): Thenable<{}> {
 		return Promise.resolve({});
 	}
 
-	initialize(storedAccounts: data.Account[]): Thenable<data.Account[]> {
+	initialize(storedAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> {
 		return Promise.resolve(storedAccounts);
 	}
 
-	prompt(): Thenable<data.Account> {
+	prompt(): Thenable<sqlops.Account> {
 		return Promise.resolve(undefined);
 	}
 
-	refresh(account: data.Account): Thenable<data.Account> {
+	refresh(account: sqlops.Account): Thenable<sqlops.Account> {
 		return Promise.resolve(account);
 	}
 }

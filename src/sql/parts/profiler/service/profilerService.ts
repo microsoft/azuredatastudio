@@ -12,7 +12,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { ProfilerColumnEditorDialog } from 'sql/parts/profiler/dialog/profilerColumnEditorDialog';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -44,7 +44,7 @@ class TwoWayMap<T, K> {
 
 export class ProfilerService implements IProfilerService {
 	public _serviceBrand: any;
-	private _providers = new Map<string, data.ProfilerProvider>();
+	private _providers = new Map<string, sqlops.ProfilerProvider>();
 	private _idMap = new TwoWayMap<ProfilerSessionID, string>();
 	private _sessionMap = new Map<ProfilerSessionID, IProfilerSession>();
 	private _dialog: ProfilerColumnEditorDialog;
@@ -55,7 +55,7 @@ export class ProfilerService implements IProfilerService {
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) { }
 
-	public registerProvider(providerId: string, provider: data.ProfilerProvider): void {
+	public registerProvider(providerId: string, provider: sqlops.ProfilerProvider): void {
 		this._providers.set(providerId, provider);
 	}
 
@@ -77,7 +77,7 @@ export class ProfilerService implements IProfilerService {
 		return uri;
 	}
 
-	public onMoreRows(params: data.ProfilerSessionEvents): void {
+	public onMoreRows(params: sqlops.ProfilerSessionEvents): void {
 
 		this._sessionMap.get(this._idMap.reverseGet(params.sessionId)).onMoreRows(params);
 	}
@@ -102,7 +102,7 @@ export class ProfilerService implements IProfilerService {
 		return this._runAction(id, provider => provider.stopSession(this._idMap.get(id)));
 	}
 
-	private _runAction<T>(id: ProfilerSessionID, action: (handler: data.ProfilerProvider) => Thenable<T>): Thenable<T> {
+	private _runAction<T>(id: ProfilerSessionID, action: (handler: sqlops.ProfilerProvider) => Thenable<T>): Thenable<T> {
 		// let providerId = this._connectionService.getProviderIdFromUri(this._idMap.get(id));
 		let providerId = 'MSSQL';
 

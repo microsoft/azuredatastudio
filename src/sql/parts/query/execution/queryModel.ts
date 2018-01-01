@@ -18,7 +18,7 @@ import {
 	EditCreateRowResult,
 	EditRevertCellResult,
 	ExecutionPlanOptions
-} from 'data';
+} from 'sqlops';
 
 export const SERVICE_ID = 'queryModelService';
 

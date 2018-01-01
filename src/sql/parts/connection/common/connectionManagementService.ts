@@ -30,7 +30,7 @@ import { warn } from 'sql/base/common/log';
 import { IResourceProviderService } from 'sql/parts/accountManagement/common/interfaces';
 import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 import * as nls from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
@@ -62,7 +62,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 
 	private disposables: IDisposable[] = [];
 
-	private _providers: { [handle: string]: data.ConnectionProvider; } = Object.create(null);
+	private _providers: { [handle: string]: sqlops.ConnectionProvider; } = Object.create(null);
 
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 
@@ -74,7 +74,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 	private _onDisconnect: Emitter<IConnectionParams>;
 	private _onConnectRequestSent: Emitter<void>;
 	private _onConnectionChanged: Emitter<IConnectionParams>;
-	private _onLanguageFlavorChanged: Emitter<data.DidChangeLanguageFlavorParams>;
+	private _onLanguageFlavorChanged: Emitter<sqlops.DidChangeLanguageFlavorParams>;
 
 	private _connectionGlobalStatus: ConnectionGlobalStatus;
 
@@ -124,7 +124,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		this._onDisconnect = new Emitter<IConnectionParams>();
 		this._onConnectionChanged = new Emitter<IConnectionParams>();
 		this._onConnectRequestSent = new Emitter<void>();
-		this._onLanguageFlavorChanged = new Emitter<data.DidChangeLanguageFlavorParams>();
+		this._onLanguageFlavorChanged = new Emitter<sqlops.DidChangeLanguageFlavorParams>();
 
 		this._onProvidersReady = new Deferred();
 
@@ -180,7 +180,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		return this._onConnectRequestSent.event;
 	}
 
-	public get onLanguageFlavorChanged(): Event<data.DidChangeLanguageFlavorParams> {
+	public get onLanguageFlavorChanged(): Event<sqlops.DidChangeLanguageFlavorParams> {
 		return this._onLanguageFlavorChanged.event;
 	}
 
@@ -193,7 +193,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 	private _providerCount: number = 0;
 
 	// Connection Provider Registration
-	public registerProvider(providerId: string, provider: data.ConnectionProvider): void {
+	public registerProvider(providerId: string, provider: sqlops.ConnectionProvider): void {
 		this._providers[providerId] = provider;
 
 		// temporarily close splash screen when a connection provider has been registered
@@ -677,7 +677,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		return Object.keys(this._providers);
 	}
 
-	public getCapabilities(providerName: string): data.DataProtocolServerCapabilities {
+	public getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities {
 		let capabilities = this._capabilitiesService.getCapabilities();
 		if (capabilities !== undefined && capabilities.length > 0) {
 			return capabilities.find(c => c.providerName === providerName);
@@ -685,7 +685,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		return undefined;
 	}
 
-	public getAdvancedProperties(): data.ConnectionOption[] {
+	public getAdvancedProperties(): sqlops.ConnectionOption[] {
 
 		let capabilities = this._capabilitiesService.getCapabilities();
 		if (capabilities !== undefined && capabilities.length > 0) {
@@ -830,13 +830,13 @@ export class ConnectionManagementService implements IConnectionManagementService
 		});
 	}
 
-	private sendListDatabasesRequest(uri: string): Thenable<data.ListDatabasesResult> {
+	private sendListDatabasesRequest(uri: string): Thenable<sqlops.ListDatabasesResult> {
 		let providerId: string = this.getProviderIdFromUri(uri);
 		if (!providerId) {
 			return Promise.resolve(undefined);
 		}
 
-		return new Promise<data.ListDatabasesResult>((resolve, reject) => {
+		return new Promise<sqlops.ListDatabasesResult>((resolve, reject) => {
 			let provider = this._providers[providerId];
 			provider.listDatabases(uri).then(result => {
 				if (result && result.databaseNames) {
@@ -893,7 +893,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		});
 	}
 
-	public onConnectionComplete(handle: number, info: data.ConnectionInfoSummary): void {
+	public onConnectionComplete(handle: number, info: sqlops.ConnectionInfoSummary): void {
 		const self = this;
 		let connection = this._connectionStatusManager.onConnectionComplete(info);
 
@@ -921,7 +921,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		}
 	}
 
-	public onConnectionChangedNotification(handle: number, changedConnInfo: data.ChangedConnectionInfo): void {
+	public onConnectionChangedNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo): void {
 		let profile: IConnectionProfile = this._connectionStatusManager.onConnectionChanged(changedConnInfo);
 		this._notifyConnectionChanged(profile, changedConnInfo.connectionUri);
 	}
@@ -1195,7 +1195,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.findConnection(fileUri) : undefined;
 	}
 
-	public listDatabases(connectionUri: string): Thenable<data.ListDatabasesResult> {
+	public listDatabases(connectionUri: string): Thenable<sqlops.ListDatabasesResult> {
 		const self = this;
 		if (self.isConnected(connectionUri)) {
 			return self.sendListDatabasesRequest(connectionUri);

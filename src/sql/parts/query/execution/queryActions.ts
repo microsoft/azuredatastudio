@@ -17,7 +17,7 @@ import { IWorkspaceConfigurationService } from 'vs/workbench/services/configurat
 import { IReadOnlyModel } from 'vs/editor/common/editorCommon';
 import { IModel, ICommonCodeEditor } from 'vs/editor/common/editorCommon';
 
-import { ISelectionData } from 'data';
+import { ISelectionData } from 'sqlops';
 import {
 	IConnectionManagementService,
 	IConnectionParams,

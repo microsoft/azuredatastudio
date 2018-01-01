@@ -15,7 +15,7 @@ import { IAngularEventingService, AngularEventType } from 'sql/services/angularE
 import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import * as Constants from 'sql/common/constants';
-import { ObjectMetadata } from 'data';
+import { ObjectMetadata } from 'sqlops';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import { TaskAction } from 'sql/platform/tasks/taskRegistry';
 

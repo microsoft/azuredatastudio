@@ -15,7 +15,7 @@ import { CredentialsService } from 'sql/services/credentials/credentialsService'
 import * as assert from 'assert';
 import { Memento } from 'vs/workbench/common/memento';
 import { CapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { Emitter } from 'vs/base/common/event';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
@@ -32,9 +32,9 @@ suite('SQL ConnectionStore tests', () => {
 	let capabilitiesService: TypeMoq.Mock<CapabilitiesService>;
 	let mementoArray: any = [];
 	let maxRecent = 5;
-	let msSQLCapabilities: data.DataProtocolServerCapabilities;
+	let msSQLCapabilities: sqlops.DataProtocolServerCapabilities;
 	let defaultNamedConnectionProfile: ConnectionProfile;
-	let onProviderRegistered = new Emitter<data.DataProtocolServerCapabilities>();
+	let onProviderRegistered = new Emitter<sqlops.DataProtocolServerCapabilities>();
 
 
 	setup(() => {
@@ -97,8 +97,8 @@ suite('SQL ConnectionStore tests', () => {
 		};
 
 		capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesService, TypeMoq.MockBehavior.Loose, extensionManagementServiceMock, {});
-		let capabilities: data.DataProtocolServerCapabilities[] = [];
-		let connectionProvider: data.ConnectionProviderOptions = {
+		let capabilities: sqlops.DataProtocolServerCapabilities[] = [];
+		let connectionProvider: sqlops.ConnectionProviderOptions = {
 			options: [
 				{
 					name: 'serverName',
@@ -371,7 +371,7 @@ suite('SQL ConnectionStore tests', () => {
 
 	test('isPasswordRequired should return false if the password is not required in capabilities', () => {
 		let providerName: string = 'providername';
-		let connectionProvider: data.ConnectionProviderOptions = {
+		let connectionProvider: sqlops.ConnectionProviderOptions = {
 			options: msSQLCapabilities.connectionProvider.options.map(o => {
 				if (o.name === 'password') {
 					o.isRequired = false;

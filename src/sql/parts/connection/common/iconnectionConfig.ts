@@ -8,7 +8,7 @@
 import { IConnectionProfile } from './interfaces';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from './connectionProfileGroup';
 import { ConnectionProfile } from './connectionProfile';
-import data = require('data');
+import * as sqlops from 'sqlops';
 
 /**
  * Interface for a configuration file that stores connection profiles.
@@ -23,8 +23,8 @@ export interface IConnectionConfig {
 	getAllGroups(): IConnectionProfileGroup[];
 	changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void>;
 	changeGroupIdForConnection(source: ConnectionProfile, targetGroupId: string): Promise<void>;
-	setCachedMetadata(cachedMetaData: data.DataProtocolServerCapabilities[]): void;
-	getCapabilities(providerName: string): data.DataProtocolServerCapabilities;
+	setCachedMetadata(cachedMetaData: sqlops.DataProtocolServerCapabilities[]): void;
+	getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities;
 	editGroup(group: ConnectionProfileGroup): Promise<void>;
 	deleteConnection(profile: ConnectionProfile): Promise<void>;
 	deleteGroup(group: ConnectionProfileGroup): Promise<void>;

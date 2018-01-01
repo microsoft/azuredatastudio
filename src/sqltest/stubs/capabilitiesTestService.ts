@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import Event from 'vs/base/common/event';
@@ -16,14 +16,14 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 
 	public _serviceBrand: any;
 
-	private _providers: data.CapabilitiesProvider[] = [];
+	private _providers: sqlops.CapabilitiesProvider[] = [];
 
-	private _capabilities: data.DataProtocolServerCapabilities[] = [];
+	private _capabilities: sqlops.DataProtocolServerCapabilities[] = [];
 
 
 	constructor() {
 
-		let connectionProvider: data.ConnectionProviderOptions = {
+		let connectionProvider: sqlops.ConnectionProviderOptions = {
 			options: [
 				{
 					name: 'serverName',
@@ -102,7 +102,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 	/**
 	 * Retrieve a list of registered server capabilities
 	 */
-	public getCapabilities(): data.DataProtocolServerCapabilities[] {
+	public getCapabilities(): sqlops.DataProtocolServerCapabilities[] {
 		return this._capabilities;
 	}
 
@@ -110,11 +110,11 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 	 * Register the capabilities provider and query the provider for its capabilities
 	 * @param provider
 	 */
-	public registerProvider(provider: data.CapabilitiesProvider): void {
+	public registerProvider(provider: sqlops.CapabilitiesProvider): void {
 	}
 
 	// Event Emitters
-	public get onProviderRegisteredEvent(): Event<data.DataProtocolServerCapabilities> {
+	public get onProviderRegisteredEvent(): Event<sqlops.DataProtocolServerCapabilities> {
 		return undefined;
 	}
 

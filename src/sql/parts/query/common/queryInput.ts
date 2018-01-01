@@ -12,7 +12,7 @@ import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import Event, { Emitter } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
-import { ISelectionData, ExecutionPlanOptions } from 'data';
+import { ISelectionData, ExecutionPlanOptions } from 'sqlops';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 
 /**

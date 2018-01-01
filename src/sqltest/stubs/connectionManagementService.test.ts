@@ -9,7 +9,7 @@ import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/conne
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import Event, { Emitter } from 'vs/base/common/event';
 
 // Test stubs for commonly used objects
@@ -31,7 +31,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return conEvent.event;
 	}
 
-	registerProvider(providerId: string, provider: data.ConnectionProvider): void {
+	registerProvider(providerId: string, provider: sqlops.ConnectionProvider): void {
 
 	}
 
@@ -47,7 +47,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	onConnectionComplete(handle: number, connectionInfoSummary: data.ConnectionInfoSummary): void {
+	onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void {
 
 	}
 
@@ -55,11 +55,11 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	}
 
-	public onConnectionChangedNotification(handle: number, changedConnInfo: data.ChangedConnectionInfo): void {
+	public onConnectionChangedNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo): void {
 
 	}
 
-	getCurrentConnectionSummary(): data.ConnectionSummary {
+	getCurrentConnectionSummary(): sqlops.ConnectionSummary {
 		return undefined;
 	}
 
@@ -111,7 +111,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		});
 	}
 
-	getAdvancedProperties(): data.ConnectionOption[] {
+	getAdvancedProperties(): sqlops.ConnectionOption[] {
 		return [];
 	}
 
@@ -177,7 +177,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return new Promise<IConnectionProfile>(() => connectionProfile);
 	}
 
-	public listDatabases(connectionUri: string): Thenable<data.ListDatabasesResult> {
+	public listDatabases(connectionUri: string): Thenable<sqlops.ListDatabasesResult> {
 		return Promise.resolve(undefined);
 	}
 
@@ -211,7 +211,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return true;
 	}
 
-	getCapabilities(providerName: string): data.DataProtocolServerCapabilities {
+	getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities {
 		return undefined;
 	}
 

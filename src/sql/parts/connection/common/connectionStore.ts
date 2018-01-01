@@ -18,7 +18,7 @@ import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionPro
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -207,9 +207,9 @@ export class ConnectionStore {
 		});
 	}
 
-	private getCachedServerCapabilities(): data.DataProtocolServerCapabilities[] {
+	private getCachedServerCapabilities(): sqlops.DataProtocolServerCapabilities[] {
 		if (this._memento) {
-			let metadata: data.DataProtocolServerCapabilities[] = this._memento[Constants.capabilitiesOptions];
+			let metadata: sqlops.DataProtocolServerCapabilities[] = this._memento[Constants.capabilitiesOptions];
 			return metadata;
 		} else {
 			return undefined;
@@ -228,7 +228,7 @@ export class ConnectionStore {
 	 * Gets the list of recently used connections. These will not include the password - a separate call to
 	 * {addSavedPassword} is needed to fill that before connecting
 	 *
-	 * @returns {data.ConnectionInfo} the array of connections, empty if none are found
+	 * @returns {sqlops.ConnectionInfo} the array of connections, empty if none are found
 	 */
 	public getRecentlyUsedConnections(): ConnectionProfile[] {
 		let configValues: IConnectionProfile[] = this._memento[Constants.recentConnections];
@@ -269,7 +269,7 @@ export class ConnectionStore {
 	 * Gets the list of active connections. These will not include the password - a separate call to
 	 * {addSavedPassword} is needed to fill that before connecting
 	 *
-	 * @returns {data.ConnectionInfo} the array of connections, empty if none are found
+	 * @returns {sqlops.ConnectionInfo} the array of connections, empty if none are found
 	 */
 	public getActiveConnections(): ConnectionProfile[] {
 		let configValues: IConnectionProfile[] = this._memento[Constants.activeConnections];

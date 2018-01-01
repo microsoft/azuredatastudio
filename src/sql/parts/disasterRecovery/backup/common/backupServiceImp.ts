@@ -5,7 +5,7 @@
 
 'use strict';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import * as Constants from 'sql/common/constants';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
@@ -26,7 +26,7 @@ import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConn
 export class BackupService implements IBackupService {
 
 	public _serviceBrand: any;
-	private _providers: { [handle: string]: data.BackupProvider; } = Object.create(null);
+	private _providers: { [handle: string]: sqlops.BackupProvider; } = Object.create(null);
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
@@ -37,7 +37,7 @@ export class BackupService implements IBackupService {
 	/**
 	 * Get database metadata needed to populate backup UI
 	 */
-	public getBackupConfigInfo(connectionUri: string): Thenable<data.BackupConfigInfo> {
+	public getBackupConfigInfo(connectionUri: string): Thenable<sqlops.BackupConfigInfo> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -51,8 +51,8 @@ export class BackupService implements IBackupService {
 	/**
 	 * Backup a data source using the provided connection
 	 */
-	public backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<data.BackupResponse> {
-		return new Promise<data.BackupResponse>((resolve, reject) => {
+	public backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<sqlops.BackupResponse> {
+		return new Promise<sqlops.BackupResponse>((resolve, reject) => {
 			let providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
 				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.BackupCreated, { provider: providerResult.providerName });
@@ -67,7 +67,7 @@ export class BackupService implements IBackupService {
 		});
 	}
 
-	private getProvider(connectionUri: string): { provider: data.BackupProvider, providerName: string } {
+	private getProvider(connectionUri: string): { provider: sqlops.BackupProvider, providerName: string } {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			return { provider: this._providers[providerId], providerName: providerId };
@@ -79,7 +79,7 @@ export class BackupService implements IBackupService {
 	/**
 	 * Register a disaster recovery provider
 	 */
-	public registerProvider(providerId: string, provider: data.BackupProvider): void {
+	public registerProvider(providerId: string, provider: sqlops.BackupProvider): void {
 		this._providers[providerId] = provider;
 	}
 }
@@ -88,7 +88,7 @@ export class BackupUiService implements IBackupUiService {
 	public _serviceBrand: any;
 	private _backupDialogs: { [providerName: string]: BackupDialog | OptionsDialog } = {};
 	private _currentProvider: string;
-	private _optionsMap: { [providerName: string]: data.ServiceOption[] } = {};
+	private _optionsMap: { [providerName: string]: sqlops.ServiceOption[] } = {};
 	private _optionValues: { [optionName: string]: any } = {};
 	private _connectionUri: string;
 	private static _connectionUniqueId: number = 0;

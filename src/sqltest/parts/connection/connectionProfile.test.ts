@@ -8,12 +8,12 @@
 
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile, IConnectionProfileStore } from 'sql/parts/connection/common/interfaces';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import * as assert from 'assert';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('SQL ConnectionProfileInfo tests', () => {
-	let msSQLCapabilities: data.DataProtocolServerCapabilities;
+	let msSQLCapabilities: sqlops.DataProtocolServerCapabilities;
 
 	let connectionProfile: IConnectionProfile = {
 		serverName: 'new server',
@@ -47,8 +47,8 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	};
 
 	setup(() => {
-		let capabilities: data.DataProtocolServerCapabilities[] = [];
-		let connectionProvider: data.ConnectionProviderOptions = {
+		let capabilities: sqlops.DataProtocolServerCapabilities[] = [];
+		let connectionProvider: sqlops.ConnectionProviderOptions = {
 			options: [
 				{
 					name: 'serverName',

@@ -6,7 +6,7 @@
 'use strict';
 
 import * as assert from 'assert';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import * as TypeMoq from 'typemoq';
 
 import { AdminService } from 'sql/parts/admin/common/adminService';

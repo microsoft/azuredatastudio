@@ -20,7 +20,6 @@ function npmInstall(location, opts) {
 }
 
 // {{SQL CARBON EDIT}}
-npmInstall('dataprotocol-client');
 npmInstall('extensions-modules');
 npmInstall('extensions'); // node modules shared by all extensions
 

@@ -6,7 +6,7 @@
 'use strict';
 
 import * as assert from 'assert';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import { ConnectionStatusManager } from 'sql/parts/connection/common/connectionStatusManager';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -127,7 +127,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 
 	test('addConnection should set connecting to true', () => {
 		let expected = true;
-		let summary: data.ConnectionInfoSummary = {
+		let summary: sqlops.ConnectionInfoSummary = {
 			ownerUri: connection1Id,
 			connectionId: connection1Id,
 			messages: undefined,
@@ -143,7 +143,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 
 	test('onConnectionComplete should set connecting to false', () => {
 		let expected = false;
-		let summary: data.ConnectionInfoSummary = {
+		let summary: sqlops.ConnectionInfoSummary = {
 			ownerUri: connection1Id,
 			connectionId: connection1Id,
 			messages: undefined,
@@ -177,7 +177,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 
 	test('updateDatabaseName should update the database name in connection', () => {
 		let dbName: string = 'db name';
-		let summary: data.ConnectionInfoSummary = {
+		let summary: sqlops.ConnectionInfoSummary = {
 			connectionSummary: {
 				databaseName: dbName,
 				serverName: undefined,
@@ -203,7 +203,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 
 	test('getOriginalOwnerUri should return the original uri given uri with db name', () => {
 		let dbName: string = 'db name';
-		let summary: data.ConnectionInfoSummary = {
+		let summary: sqlops.ConnectionInfoSummary = {
 			connectionSummary: {
 				databaseName: dbName,
 				serverName: undefined,

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
@@ -16,8 +16,8 @@ import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStu
 // SUITE STATE /////////////////////////////////////////////////////////////
 let mockUpdateAccountEmitter: Emitter<UpdateAccountListEventParams>;
 
-let providers: data.AccountProviderMetadata[];
-let accounts: data.Account[];
+let providers: sqlops.AccountProviderMetadata[];
+let accounts: sqlops.Account[];
 suite('Account picker view model tests', () => {
 	setup(() => {
 		providers = [{

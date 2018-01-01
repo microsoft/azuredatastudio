@@ -11,7 +11,7 @@ import { ConnectionManagementInfo } from 'sql/parts/connection/common/connection
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import { ITaskDialogComponent } from 'sql/parts/tasks/common/tasks';
 
-import data = require('data');
+import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
 
 export const CREATEDATABASE_SELECTOR: string = 'createdatabase-component';
@@ -54,8 +54,8 @@ export class CreateDatabaseComponent implements ITaskDialogComponent {
         this._adminService = this._bootstrapService.adminService;
 	}
 
-    private getDatabaseInfo(form: NgForm): data.DatabaseInfo {
-        return <data.DatabaseInfo>{
+    private getDatabaseInfo(form: NgForm): sqlops.DatabaseInfo {
+        return <sqlops.DatabaseInfo>{
             options: {
                 name: form.value.databaseName,
                 owner: form.value.databaseOwner

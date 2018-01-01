@@ -12,7 +12,7 @@ import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
 import { error } from 'sql/base/common/log';
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
 
-import { DatabaseInfo, ServerInfo } from 'data';
+import { DatabaseInfo, ServerInfo } from 'sqlops';
 
 import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';

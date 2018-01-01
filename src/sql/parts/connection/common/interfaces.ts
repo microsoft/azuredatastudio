@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 // A Connection Profile contains all the properties of connection credentials, with additional
 // optional name and details on whether password should be saved
-export interface IConnectionProfile extends data.ConnectionInfo {
+export interface IConnectionProfile extends sqlops.ConnectionInfo {
 	serverName: string;
 	databaseName: string;
 	userName: string;

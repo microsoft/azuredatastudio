@@ -10,7 +10,7 @@ import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import Event, { Emitter } from 'vs/base/common/event';
-import { EditSessionReadyParams } from 'data';
+import { EditSessionReadyParams } from 'sqlops';
 import URI from 'vs/base/common/uri';
 import nls = require('vs/nls');
 

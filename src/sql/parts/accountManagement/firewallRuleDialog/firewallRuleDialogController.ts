@@ -7,7 +7,7 @@
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
 import { localize } from 'vs/nls';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
@@ -62,7 +62,7 @@ export class FirewallRuleDialogController {
 		let resourceProviderId = this._resourceProviderId;
 
 		this._accountManagementService.getSecurityToken(this._firewallRuleDialog.viewModel.selectedAccount).then(tokenMappings => {
-			let firewallRuleInfo: data.FirewallRuleInfo = {
+			let firewallRuleInfo: sqlops.FirewallRuleInfo = {
 				startIpAddress: this._firewallRuleDialog.viewModel.isIPAddressSelected ? this._firewallRuleDialog.viewModel.defaultIPAddress : this._firewallRuleDialog.viewModel.fromSubnetIPRange,
 				endIpAddress: this._firewallRuleDialog.viewModel.isIPAddressSelected ? this._firewallRuleDialog.viewModel.defaultIPAddress : this._firewallRuleDialog.viewModel.toSubnetIPRange,
 				serverName: this._connection.serverName,

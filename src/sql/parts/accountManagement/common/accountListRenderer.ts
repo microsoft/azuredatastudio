@@ -15,20 +15,20 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 import { RemoveAccountAction, RefreshAccountAction } from 'sql/parts/accountManagement/common/accountActions';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
-export class AccountListDelegate implements IDelegate<data.Account> {
+export class AccountListDelegate implements IDelegate<sqlops.Account> {
 
 	constructor(
 		private _height: number
 	) {
 	}
 
-	public getHeight(element: data.Account): number {
+	public getHeight(element: sqlops.Account): number {
 		return this._height;
 	}
 
-	public getTemplateId(element: data.Account): string {
+	public getTemplateId(element: sqlops.Account): string {
 		return 'accountListRenderer';
 	}
 }
@@ -44,7 +44,7 @@ export interface AccountListTemplate {
 	actions?: ActionBar;
 }
 
-export class AccountPickerListRenderer implements IRenderer<data.Account, AccountListTemplate> {
+export class AccountPickerListRenderer implements IRenderer<sqlops.Account, AccountListTemplate> {
 	public static TEMPLATE_ID = 'accountListRenderer';
 
 	public get templateId(): string {
@@ -64,7 +64,7 @@ export class AccountPickerListRenderer implements IRenderer<data.Account, Accoun
 		return tableTemplate;
 	}
 
-	public renderElement(account: data.Account, index: number, templateData: AccountListTemplate): void {
+	public renderElement(account: sqlops.Account, index: number, templateData: AccountListTemplate): void {
 		// Set the account icon
 		templateData.icon.classList.add('account-logo', account.displayInfo.accountType);
 
@@ -101,7 +101,7 @@ export class AccountListRenderer extends AccountPickerListRenderer {
 		return tableTemplate;
 	}
 
-	public renderElement(account: data.Account, index: number, templateData: AccountListTemplate): void {
+	public renderElement(account: sqlops.Account, index: number, templateData: AccountListTemplate): void {
 		super.renderElement(account, index, templateData);
 		if (account.isStale) {
 			templateData.content.innerText = localize('refreshCredentials', 'You need to refresh the credentials for this account.');

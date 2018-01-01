@@ -9,7 +9,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import * as pfs from 'vs/base/node/pfs';
 import * as path from 'path';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 declare var __dirname;
 
@@ -30,7 +30,7 @@ const columns = [
 	'BinaryData'
 ];
 
-export class ProfilerTestBackend implements data.ProfilerProvider {
+export class ProfilerTestBackend implements sqlops.ProfilerProvider {
 	public readonly providerId = 'MSSQL';
 	private index = 0;
 	private timeOutMap = new Map<string, number>();
@@ -44,7 +44,7 @@ export class ProfilerTestBackend implements data.ProfilerProvider {
 		return TPromise.as(true);
 	}
 
-	registerOnSessionEventsAvailable(handler: (response: data.ProfilerSessionEvents) => any) {
+	registerOnSessionEventsAvailable(handler: (response: sqlops.ProfilerSessionEvents) => any) {
 		return;
 	}
 
