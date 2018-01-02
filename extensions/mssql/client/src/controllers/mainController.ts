@@ -33,7 +33,6 @@ export default class MainController implements vscode.Disposable {
 		vscodeWrapper?: VscodeWrapper) {
 		this._context = context;
 		this._vscodeWrapper = vscodeWrapper || new VscodeWrapper(MainController._extensionConstants);
-		this._vscodeWrapper.logToOutputChannel('logging');
 		SqlToolsServiceClient.constants = MainController._extensionConstants;
 		this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
 		this._credentialStore = new CredentialStore(this._client);
