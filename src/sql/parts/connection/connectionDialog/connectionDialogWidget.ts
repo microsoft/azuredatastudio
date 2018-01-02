@@ -4,10 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/connectionDialog';
 
-import nls = require('vs/nls');
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/styler';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
@@ -16,24 +14,28 @@ import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
 import { TreeCreationUtils } from 'sql/parts/registeredServer/viewlet/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
+import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/parts/connection/connectionDialog/recentConnectionTreeController';
+import { SavedConnectionTreeController } from 'sql/parts/connection/connectionDialog/savedConnectionTreeController';
+import * as TelemetryKeys from 'sql/common/telemetryKeys';
+
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
-import * as styler from 'vs/platform/theme/common/styler';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import Event, { Emitter } from 'vs/base/common/event';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { localize } from 'vs/nls';
-import * as DOM from 'vs/base/browser/dom';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/parts/connection/connectionDialog/recentConnectionTreeController';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IMessageService, IConfirmation } from 'vs/platform/message/common/message';
+import * as styler from 'vs/platform/theme/common/styler';
+import { TPromise } from 'vs/base/common/winjs.base';
+import * as DOM from 'vs/base/browser/dom';
 
 export interface OnShowUIResponse {
 	selectedProviderType: string;
@@ -44,13 +46,19 @@ export class ConnectionDialogWidget extends Modal {
 	private _bodyBuilder: Builder;
 	private _recentConnectionBuilder: Builder;
 	private _noRecentConnectionBuilder: Builder;
+	private _savedConnectionBuilder: Builder;
+	private _noSavedConnectionBuilder: Builder;
 	private _dividerBuilder: Builder;
 	private _connectButton: Button;
 	private _closeButton: Button;
 	private _providerTypeSelectBox: SelectBox;
 	private _newConnectionParams: INewConnectionParams;
 	private _recentConnectionTree: ITree;
+	private _savedConnectionTree: ITree;
 	private $connectionUIContainer: Builder;
+
+	private _panel: TabbedPanel;
+	private _recentConnectionTabId: PanelTabIdentifier;
 
 	private _onInitDialog = new Emitter<void>();
 	public onInitDialog: Event<void> = this._onInitDialog.event;
@@ -86,14 +94,67 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement): void {
-		this._bodyBuilder = new Builder(container);
+		let connectionContainer = $('.connection-dialog');
+		container.appendChild(connectionContainer.getHTMLElement());
+
+		this._bodyBuilder = new Builder(connectionContainer.getHTMLElement());
 		this._providerTypeSelectBox = new SelectBox(this.providerTypeOptions, this.selectedProviderType);
 
-		this._bodyBuilder.div({ class: 'connection-recent', id: 'recentConnection' }, (builder) => {
+		// Recent connection tab
+		let recentConnectionTab = $('.connection-recent-tab');
+		recentConnectionTab.div({ class: 'connection-recent', id: 'recentConnection' }, (builder) => {
 			this._recentConnectionBuilder = new Builder(builder.getHTMLElement());
 			this._noRecentConnectionBuilder = new Builder(builder.getHTMLElement());
 			this.createRecentConnections();
 			this._recentConnectionBuilder.hide();
+		});
+
+		// Saved connection tab
+		let savedConnectionTab = $('.connection-saved-tab');
+		savedConnectionTab.div({ class: 'connection-saved' }, (builder) => {
+			this._savedConnectionBuilder = new Builder(builder.getHTMLElement());
+			this._noSavedConnectionBuilder = new Builder(builder.getHTMLElement());
+			this.createSavedConnections();
+			this._savedConnectionBuilder.hide();
+		});
+
+		this._panel = new TabbedPanel(connectionContainer.getHTMLElement());
+		this._recentConnectionTabId = this._panel.pushTab({
+			identifier: 'recent_connection',
+			title: localize('recentConnectionTitle', 'Recent connections'),
+			view: {
+				render: c => {
+					recentConnectionTab.appendTo(c);
+				},
+				layout: () => { }
+			}
+		});
+
+		let savedConnectionTabId = this._panel.pushTab({
+			identifier: 'saved_connection',
+			title: localize('savedConnectionTitle', 'Saved connections'),
+			view: {
+				layout: () => { },
+				render: c => {
+					savedConnectionTab.appendTo(c);
+				}
+			}
+		});
+
+		this._panel.onTabChange(c => {
+			if (c === savedConnectionTabId && this._savedConnectionTree.getContentHeight() === 0) {
+				// Update saved connection tree
+				TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this._connectionManagementService);
+
+				if (this._savedConnectionTree.getContentHeight() > 0) {
+					this._noSavedConnectionBuilder.hide();
+					this._savedConnectionBuilder.show();
+				} else {
+					this._noSavedConnectionBuilder.show();
+					this._savedConnectionBuilder.hide();
+				}
+				this._savedConnectionTree.layout(DOM.getTotalHeight(this._savedConnectionTree.getHTMLElement()));
+			}
 		});
 
 		this._bodyBuilder.div({ class: 'Connection-divider' }, (dividerContainer) => {
@@ -194,7 +255,7 @@ export class ConnectionDialogWidget extends Modal {
 	private clearRecentConnectionList(): TPromise<boolean> {
 
 		let confirm: IConfirmation = {
-			message: nls.localize('clearRecentConnectionMessage', 'Are you sure you want to delete all the connections from the list?'),
+			message: localize('clearRecentConnectionMessage', 'Are you sure you want to delete all the connections from the list?'),
 			primaryButton: localize('yes', 'Yes'),
 			secondaryButton: localize('no', 'No'),
 			type: 'question'
@@ -214,11 +275,11 @@ export class ConnectionDialogWidget extends Modal {
 	private createRecentConnectionList(): void {
 		this._recentConnectionBuilder.div({ class: 'connection-recent-content' }, (recentConnectionContainer) => {
 			let recentHistoryLabel = localize('recentHistory', 'Recent history');
-			recentConnectionContainer.div({ class: 'recent-titles-container'}, (container) => {
+			recentConnectionContainer.div({ class: 'recent-titles-container' }, (container) => {
 				container.div({ class: 'connection-history-label' }, (recentTitle) => {
 					recentTitle.innerHtml(recentHistoryLabel);
 				});
-				container.div({ class: 'search-action clear-search-results'}, (clearSearchIcon) => {
+				container.div({ class: 'search-action clear-search-results' }, (clearSearchIcon) => {
 					clearSearchIcon.on('click', () => this.clearRecentConnectionList());
 				});
 			});
@@ -227,7 +288,7 @@ export class ConnectionDialogWidget extends Modal {
 					let leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
 						// element will be a server group if the tree is clicked rather than a item
 						if (element instanceof ConnectionProfile) {
-							this.onRecentConnectionClick({ payload: { origin: origin, originalEvent: eventish } }, element);
+							this.onConnectionClick({ payload: { origin: origin, originalEvent: eventish } }, element);
 						}
 					};
 					let actionProvider = this._instantiationService.createInstance(RecentConnectionActionsProvider, this._instantiationService, this._connectionManagementService,
@@ -238,7 +299,7 @@ export class ConnectionDialogWidget extends Modal {
 					});
 					controller.onRecentConnectionRemoved(() => {
 						this.open(this._connectionManagementService.getRecentConnections().length > 0);
-					})
+					});
 					this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer.getHTMLElement(), this._instantiationService, controller);
 
 					// Theme styler
@@ -252,18 +313,46 @@ export class ConnectionDialogWidget extends Modal {
 	private createRecentConnections() {
 		this.createRecentConnectionList();
 		this._noRecentConnectionBuilder.div({ class: 'connection-recent-content' }, (noRecentConnectionContainer) => {
-			let recentHistoryLabel = localize('recentHistory', 'Recent history');
-			noRecentConnectionContainer.div({ class: 'connection-history-label' }, (recentTitle) => {
-				recentTitle.innerHtml(recentHistoryLabel);
-			});
-			let noRecentHistoryLabel = localize('noRecentConnections', 'No Recent Connections');
+			let noRecentHistoryLabel = localize('noRecentConnections', 'No recent connection');
 			noRecentConnectionContainer.div({ class: 'no-recent-connections' }, (noRecentTitle) => {
 				noRecentTitle.innerHtml(noRecentHistoryLabel);
 			});
 		});
 	}
 
-	private onRecentConnectionClick(event: any, element: IConnectionProfile) {
+	private createSavedConnectionList(): void {
+		this._savedConnectionBuilder.div({ class: 'connection-saved-content' }, (savedConnectioncontainer) => {
+			savedConnectioncontainer.div({ class: 'server-explorer-viewlet' }, (divContainer: Builder) => {
+				divContainer.div({ class: 'explorer-servers' }, (treeContainer: Builder) => {
+					let leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
+						// element will be a server group if the tree is clicked rather than a item
+						if (element instanceof ConnectionProfile) {
+							this.onConnectionClick({ payload: { origin: origin, originalEvent: eventish } }, element);
+						}
+					};
+
+					let controller = new SavedConnectionTreeController(leftClick);
+					this._savedConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer.getHTMLElement(), this._instantiationService, controller);
+
+					// Theme styler
+					this._register(styler.attachListStyler(this._savedConnectionTree, this._themeService));
+					divContainer.append(this._savedConnectionTree.getHTMLElement());
+				});
+			});
+		});
+	}
+
+	private createSavedConnections() {
+		this.createSavedConnectionList();
+		this._noSavedConnectionBuilder.div({ class: 'connection-saved-content' }, (noSavedConnectionContainer) => {
+			let noSavedConnectionLabel = localize('noSavedConnections', 'No saved connection');
+			noSavedConnectionContainer.div({ class: 'no-saved-connections' }, (titleContainer) => {
+				titleContainer.innerHtml(noSavedConnectionLabel);
+			});
+		});
+	}
+
+	private onConnectionClick(event: any, element: IConnectionProfile) {
 		let isMouseOrigin = event.payload && (event.payload.origin === 'mouse');
 		let isDoubleClick = isMouseOrigin && event.payload.originalEvent && event.payload.originalEvent.detail === 2;
 		if (isDoubleClick) {
@@ -280,6 +369,7 @@ export class ConnectionDialogWidget extends Modal {
 	 * @param recentConnections Are there recent connections that should be shown
 	 */
 	public open(recentConnections: boolean) {
+		this._panel.showTab(this._recentConnectionTabId);
 		this.show();
 		if (recentConnections) {
 			this._noRecentConnectionBuilder.hide();
@@ -289,6 +379,10 @@ export class ConnectionDialogWidget extends Modal {
 			this._noRecentConnectionBuilder.show();
 		}
 		TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this._connectionManagementService);
+
+		// reset saved connection tree
+		this._savedConnectionTree.setInput([]);
+
 		// call layout with view height
 		this.layout();
 		this.initDialog();

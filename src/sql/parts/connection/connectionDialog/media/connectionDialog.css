@@ -14,16 +14,23 @@
 	padding-bottom: 5px;
 }
 
-.connection-recent {
+.connection-dialog {
+	height: calc(100% - 20px);
+}
+
+.connection-dialog .tabbedPanel {
+	border-top-color: transparent;
+	height: calc(100% - 350px);
+}
+
+.connection-recent, .connection-saved {
 	margin: 15px;
-	height: calc(100% - 400px);
+	height: calc(100% - 60px);
 	overflow-y: auto;
 }
 
-.no-recent-connections {
+.no-recent-connections, .no-saved-connections {
 	font-size: 12px;
-	text-align: left;
-	display: block;
 	padding-top: 5px;
 }
 
@@ -50,6 +57,10 @@
 .connection-table-content {
 	width:100%;
 	table-layout: fixed;
+}
+
+.connection-saved-content {
+	height: 100%;
 }
 
 .connection-type {
