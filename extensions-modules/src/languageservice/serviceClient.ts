@@ -317,7 +317,7 @@ export class SqlToolsServiceClient {
 		}
 	}
 
-	public createClient(context: ExtensionContext, runtimeId: Runtime, languageClientHelper: LanguageServiceContracts.ILanguageClientHelper, executableFiles: string[], clientOptions?: any): Promise<SqlOpsDataClient> {
+	public createClient(context: ExtensionContext, runtimeId: Runtime, languageClientHelper: LanguageServiceContracts.ILanguageClientHelper, executableFiles: string[]): Promise<SqlOpsDataClient> {
 		return new Promise<SqlOpsDataClient>((resolve, reject) => {
 			let client: SqlOpsDataClient;
 			this._server.findServerPath(this.installDirectory, executableFiles).then(serverPath => {
@@ -338,10 +338,6 @@ export class SqlToolsServiceClient {
 						errorHandler: new LanguageClientErrorHandler(SqlToolsServiceClient._constants),
 						serverConnectionMetadata: this._config.getConfigValue(Constants.serverConnectionMetadata)
 					};
-
-					if (clientOptions) {
-						clientOptions_default = Utils.mixin(clientOptions_default, clientOptions, true);
-					}
 
 					this._serviceStatus.showServiceLoading();
 					// cache the client instance for later use
