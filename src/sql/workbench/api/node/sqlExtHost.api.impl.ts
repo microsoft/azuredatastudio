@@ -28,7 +28,7 @@ import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
-	dataFactory(extension: IExtensionDescription): typeof sqlops;
+	sqlopsFactory(extension: IExtensionDescription): typeof sqlops;
 }
 
 /**
@@ -54,7 +54,7 @@ export function createApiFactory(
 
 	return {
 		vsCodeFactory: vsCodeFactory,
-		dataFactory: function (extension: IExtensionDescription): typeof sqlops {
+		sqlopsFactory: function (extension: IExtensionDescription): typeof sqlops {
 			// namespace: accounts
 			const accounts: typeof sqlops.accounts = {
 				registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): vscode.Disposable {
@@ -325,9 +325,9 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 				defaultApiImpl,
 				(impl) => defaultApiImpl = <typeof vscode>impl,
 				parent);
-		} else if (request === 'data') {
+		} else if (request === 'sqlops') {
 			return getModuleFactory(dataExtApiImpl,
-				(ext) => factory.dataFactory(ext),
+				(ext) => factory.sqlopsFactory(ext),
 				defaultDataApiImpl,
 				(impl) => defaultDataApiImpl = <typeof sqlops>impl,
 				parent);

@@ -317,7 +317,7 @@ export class SqlToolsServiceClient {
 		}
 	}
 
-	public createClient(context: ExtensionContext, runtimeId: Runtime, languageClientHelper: LanguageServiceContracts.ILanguageClientHelper, executableFiles: string[]): Promise<SqlOpsDataClient> {
+	public createClient(context: ExtensionContext, runtimeId: Runtime, languageClientHelper: LanguageServiceContracts.ILanguageClientHelper, executableFiles: string[], clientOptions?: any): Promise<SqlOpsDataClient> {
 		return new Promise<SqlOpsDataClient>((resolve, reject) => {
 			let client: SqlOpsDataClient;
 			this._server.findServerPath(this.installDirectory, executableFiles).then(serverPath => {
@@ -329,18 +329,23 @@ export class SqlToolsServiceClient {
 						languageClientHelper.createServerOptions(serverPath, runtimeId) : this.createServerOptions(serverPath);
 
 					// Options to control the language client
-					let clientOptions: LanguageClientOptions = {
+					let clientOptions_default: LanguageClientOptions = {
 						documentSelector: [SqlToolsServiceClient._constants.languageId],
-						providerId: 'MSSQL',
+						providerId: '',
 						synchronize: {
 							configurationSection: SqlToolsServiceClient._constants.extensionConfigSectionName
 						},
 						errorHandler: new LanguageClientErrorHandler(SqlToolsServiceClient._constants),
 						serverConnectionMetadata: this._config.getConfigValue(Constants.serverConnectionMetadata)
 					};
+
+					if (clientOptions) {
+						clientOptions_default = Utils.mixin(clientOptions_default, clientOptions, true);
+					}
+
 					this._serviceStatus.showServiceLoading();
 					// cache the client instance for later use
-					client = new SqlOpsDataClient(SqlToolsServiceClient._constants.serviceName, serverOptions, clientOptions);
+					client = new SqlOpsDataClient(SqlToolsServiceClient._constants.serviceName, serverOptions, clientOptions_default);
 
 					if (context !== undefined) {
 						// Create the language client and start the client.

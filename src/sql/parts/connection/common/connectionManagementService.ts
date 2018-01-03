@@ -1021,28 +1021,26 @@ export class ConnectionManagementService implements IConnectionManagementService
 		const self = this;
 
 		return new Promise<IConnectionResult>((resolve, reject) => {
-			this._capabilitiesService.onCapabilitiesReady().then(() => {
-				let connectionInfo = this._connectionStatusManager.addConnection(connection, uri);
-				// Setup the handler for the connection complete notification to call
-				connectionInfo.connectHandler = ((connectResult, errorMessage, errorCode, callStack) => {
-					let connectionMngInfo = this._connectionStatusManager.findConnection(uri);
-					if (connectionMngInfo && connectionMngInfo.deleted) {
+			let connectionInfo = this._connectionStatusManager.addConnection(connection, uri);
+			// Setup the handler for the connection complete notification to call
+			connectionInfo.connectHandler = ((connectResult, errorMessage, errorCode, callStack) => {
+				let connectionMngInfo = this._connectionStatusManager.findConnection(uri);
+				if (connectionMngInfo && connectionMngInfo.deleted) {
+					this._connectionStatusManager.deleteConnection(uri);
+					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true });
+				} else {
+					if (errorMessage) {
+						// Connection to the server failed
 						this._connectionStatusManager.deleteConnection(uri);
-						resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack });
 					} else {
-						if (errorMessage) {
-							// Connection to the server failed
-							this._connectionStatusManager.deleteConnection(uri);
-							resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack });
-						} else {
-							resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack });
-						}
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack });
 					}
-				});
-
-				// send connection request
-				self.sendConnectRequest(connection, uri);
+				}
 			});
+
+			// send connection request
+			self.sendConnectRequest(connection, uri);
 		});
 	}
 

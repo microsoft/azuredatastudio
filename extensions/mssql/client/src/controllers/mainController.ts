@@ -4,17 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import vscode = require('vscode');
+import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 import { Constants } from '../models/constants';
 import { Serialization } from '../serialize/serialization';
-import { AzureResourceProvider } from '../resourceProvider/resourceProvider';
 import { CredentialStore } from '../credentialstore/credentialstore';
 import { IExtensionConstants, Telemetry, Constants as SharedConstants, SqlToolsServiceClient, VscodeWrapper, Utils, PlatformInformation } from 'extensions-modules';
-import {
-	SqlOpsDataClient, BackupFeature, CapabilitiesFeature, ConnectionFeature, FileBrowserFeature, MetadataFeature, ObjectExplorerFeature, ProfilerFeature,
-	QueryFeature, RestoreFeature, ScriptingFeature, TaskServicesFeature
-} from 'dataprotocol-client';
+import { SqlOpsDataClient } from 'dataprotocol-client';
 import * as path from 'path';
 
 /**
@@ -71,9 +67,9 @@ export default class MainController implements vscode.Disposable {
 		return this._initialized;
 	}
 
-	private createClient(executableFiles: string[]): Promise<SqlOpsDataClient> {
+	private createClient(executableFiles: string[], clientOptions?: any): Promise<SqlOpsDataClient> {
 		return PlatformInformation.getCurrent(SqlToolsServiceClient.constants.getRuntimeId, SqlToolsServiceClient.constants.extensionName).then(platformInfo => {
-			return SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json')).createClient(this._context, platformInfo.runtimeId, undefined, executableFiles);
+			return SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json')).createClient(this._context, platformInfo.runtimeId, undefined, executableFiles, clientOptions);
 		});
 	}
 
@@ -83,25 +79,6 @@ export default class MainController implements vscode.Disposable {
 
 	private createSerializationClient(): Promise<SqlOpsDataClient> {
 		return this.createClient(['MicrosoftSqlToolsSerialization.exe', 'MicrosoftSqlToolsSerialization']);
-	}
-
-	private createResourceProviderClient(): Promise<SqlOpsDataClient> {
-		return this.createClient(['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService']).then(client => {
-			client.registerFeatures([
-				new QueryFeature(client),
-				new ConnectionFeature(client),
-				new FileBrowserFeature(client),
-				new BackupFeature(client),
-				new CapabilitiesFeature(client),
-				new MetadataFeature(client),
-				new ObjectExplorerFeature(client),
-				new ProfilerFeature(client),
-				new RestoreFeature(client),
-				new ScriptingFeature(client),
-				new TaskServicesFeature(client)
-			]);
-			return client;
-		});
 	}
 
 	/**
@@ -133,20 +110,6 @@ export default class MainController implements vscode.Disposable {
 					sqlops.serialization.registerProvider(serializationProvider);
 				}, error => {
 					Utils.logDebug('Cannot find Serialization executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);
-				});
-
-				self.createResourceProviderClient().then(rpClient => {
-					let resourceProvider = new AzureResourceProvider(self._client, rpClient);
-					sqlops.resources.registerResourceProvider({
-						displayName: 'Azure SQL Resource Provider', // TODO Localize
-						id: 'Microsoft.Azure.SQL.ResourceProvider',
-						settings: {
-
-						}
-					}, resourceProvider);
-					Utils.logDebug('resourceProvider registered', MainController._extensionConstants.extensionConfigSectionName);
-				}, error => {
-					Utils.logDebug('Cannot find ResourceProvider executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);
 				});
 
 				self.createCredentialClient().then(credentialClient => {
