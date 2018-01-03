@@ -238,4 +238,3 @@ export class ProviderConnectionInfo implements data.ConnectionInfo {
 		return parts;
 	}
 }
-
