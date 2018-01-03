@@ -329,7 +329,7 @@ export class SqlToolsServiceClient {
 						languageClientHelper.createServerOptions(serverPath, runtimeId) : this.createServerOptions(serverPath);
 
 					// Options to control the language client
-					let clientOptions_default: LanguageClientOptions = {
+					let clientOptions: LanguageClientOptions = {
 						documentSelector: [SqlToolsServiceClient._constants.languageId],
 						providerId: '',
 						synchronize: {
@@ -341,7 +341,7 @@ export class SqlToolsServiceClient {
 
 					this._serviceStatus.showServiceLoading();
 					// cache the client instance for later use
-					client = new SqlOpsDataClient(SqlToolsServiceClient._constants.serviceName, serverOptions, clientOptions_default);
+					client = new SqlOpsDataClient(SqlToolsServiceClient._constants.serviceName, serverOptions, clientOptions);
 
 					if (context !== undefined) {
 						// Create the language client and start the client.

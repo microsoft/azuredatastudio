@@ -9,6 +9,7 @@ import * as sqlops from 'sqlops';
 import { Constants } from '../models/constants';
 import { Serialization } from '../serialize/serialization';
 import { CredentialStore } from '../credentialstore/credentialstore';
+import { AzureResourceProvider } from '../resourceProvider/resourceProvider';
 import { IExtensionConstants, Telemetry, Constants as SharedConstants, SqlToolsServiceClient, VscodeWrapper, Utils, PlatformInformation } from 'extensions-modules';
 import { SqlOpsDataClient } from 'dataprotocol-client';
 import * as path from 'path';
@@ -80,6 +81,10 @@ export default class MainController implements vscode.Disposable {
 		return this.createClient(['MicrosoftSqlToolsSerialization.exe', 'MicrosoftSqlToolsSerialization']);
 	}
 
+	private createResourceProviderClient(): Promise<SqlOpsDataClient> {
+		return this.createClient(['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService']);
+	}
+
 	/**
 	 * Initializes the extension
 	 */
@@ -132,7 +137,19 @@ export default class MainController implements vscode.Disposable {
 					Utils.logDebug('Cannot find credentials executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);
 				});
 
+				self.createResourceProviderClient().then(rpClient => {
+					let resourceProvider = new AzureResourceProvider(self._client, rpClient);
+					sqlops.resources.registerResourceProvider({
+						displayName: 'Azure SQL Resource Provider', // TODO Localize
+						id: 'Microsoft.Azure.SQL.ResourceProvider',
+						settings: {
 
+						}
+					}, resourceProvider);
+					Utils.logDebug('resourceProvider registered', MainController._extensionConstants.extensionConfigSectionName);
+				}, error => {
+					Utils.logDebug('Cannot find ResourceProvider executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);
+				});
 
 				Utils.logDebug(SharedConstants.extensionActivated, MainController._extensionConstants.extensionConfigSectionName);
 				self._initialized = true;
