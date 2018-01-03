@@ -123,6 +123,14 @@ export class ExtensionManagementService implements IExtensionManagementService {
 
 				this._onInstallExtension.fire({ identifier, zipPath });
 
+				// {{SQL CARBON EDIT}}
+				// Until there's a gallery for SQL Ops Studio, skip retrieving the metadata from the gallery
+				return this.installExtension({ zipPath, id: identifier.id, metadata: null })
+					.then(
+					local => this._onDidInstallExtension.fire({ identifier, zipPath, local }),
+					error => { this._onDidInstallExtension.fire({ identifier, zipPath, error }); return TPromise.wrapError(error); }
+					);
+				/*
 				return this.galleryService.query({ names: [getGalleryExtensionId(manifest.publisher, manifest.name)], pageSize: 1 })
 					.then(galleryResult => {
 						const galleryExtension = galleryResult.firstPage[0];
@@ -133,6 +141,7 @@ export class ExtensionManagementService implements IExtensionManagementService {
 							error => { this._onDidInstallExtension.fire({ identifier, zipPath, error }); return TPromise.wrapError(error); }
 							);
 					});
+				*/
 
 			});
 		});
