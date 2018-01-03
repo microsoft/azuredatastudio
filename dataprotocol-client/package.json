@@ -1,7 +1,7 @@
 {
   "name": "dataprotocol-client",
   "version": "1.0.0",
-  "description": "sqlops studio implementation of vscode-language-client",
+  "description": "SQL Operations Studio studio implementation of vscode-language-client",
   "main": "lib/main.js",
   "scripts": {
     "prepublish": "node ./node_modules/vscode/bin/install && tsc -p ./src",
