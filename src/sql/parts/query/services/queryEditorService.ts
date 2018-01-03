@@ -6,13 +6,12 @@
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
-import { IConnectableInput } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectableInput, IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
 import { IQueryEditorService, IQueryEditorOptions } from 'sql/parts/query/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/parts/common/customInputConverter';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 
 import { IMode } from 'vs/editor/common/modes';
 import { IModel } from 'vs/editor/common/editorCommon';
@@ -23,7 +22,6 @@ import { IUntitledEditorService, UNTITLED_SCHEMA } from 'vs/workbench/services/u
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileEditorInput } from 'vs/workbench/parts/files/common/editors/fileEditorInput';
-import { indexOf } from 'vs/platform/files/common/files';
 import { IMessageService } from 'vs/platform/message/common/message';
 import Severity from 'vs/base/common/severity';
 import nls = require('vs/nls');
