@@ -13,6 +13,13 @@ declare module 'sqlops' {
 	export namespace dataprotocol {
 		export function registerConnectionProvider(provider: ConnectionProvider): vscode.Disposable;
 
+		/**
+		 * @deprecated; TO BE REMOVED
+		 * Register provider for data protocol
+		 * @param provider
+		 */
+		export function registerProvider(provider: DataProtocolProvider): vscode.Disposable;
+
 		export function registerBackupProvider(provider: BackupProvider): vscode.Disposable;
 
 		export function registerRestoreProvider(provider: RestoreProvider): vscode.Disposable;
@@ -39,6 +46,53 @@ declare module 'sqlops' {
 		 * to MSSQL
 		 */
 		export const onDidChangeLanguageFlavor: vscode.Event<DidChangeLanguageFlavorParams>;
+	}
+
+	/**
+	 * @deprecated; TO BE REMOVED
+	 * Data Management Protocol main provider class that DMP extensions should implement.
+	 * This provider interface contains references to providers for the various capabilitiesProvider
+	 * that an extension can implement.
+	 */
+	export interface DataProtocolProvider {
+		handle: number;
+
+		providerId: string;
+
+		capabilitiesProvider: CapabilitiesProvider;
+
+		connectionProvider: ConnectionProvider;
+
+		queryProvider: QueryProvider;
+
+		metadataProvider: MetadataProvider;
+
+		scriptingProvider: ScriptingProvider;
+
+		objectExplorerProvider: ObjectExplorerProvider;
+
+		adminServicesProvider: AdminServicesProvider;
+
+		disasterRecoveryProvider: DisasterRecoveryProvider;
+
+		taskServicesProvider: TaskServicesProvider;
+
+		fileBrowserProvider: FileBrowserProvider;
+
+		profilerProvider: ProfilerProvider;
+	}
+
+	/**
+	 * @deprecated; TO BE REMOVED
+	 * DisasterRecoveryProvider shape
+	 */
+	export interface DisasterRecoveryProvider {
+		backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<BackupResponse>;
+		getBackupConfigInfo(connectionUri: string): Thenable<BackupConfigInfo>;
+		getRestorePlan(connectionUri: string, restoreInfo: RestoreInfo): Thenable<RestorePlanResponse>;
+		cancelRestorePlan(connectionUri: string, restoreInfo: RestoreInfo): Thenable<boolean>;
+		restore(connectionUri: string, restoreInfo: RestoreInfo): Thenable<RestoreResponse>;
+		getRestoreConfigInfo(connectionUri: string): Thenable<RestoreConfigInfo>;
 	}
 
 	/**
