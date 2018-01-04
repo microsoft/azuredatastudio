@@ -238,4 +238,3 @@ export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 		return parts;
 	}
 }
-

@@ -24,7 +24,6 @@ export enum ConnectionOptionSpecialType {
 	appName = 'appName'
 }
 
-
 export enum MetadataType {
 	Table = 0,
 	View = 1,
@@ -38,7 +37,6 @@ export enum EditRowState {
 	dirtyDelete = 2,
 	dirtyUpdate = 3
 }
-
 
 export enum TaskStatus {
 	notStarted = 0,

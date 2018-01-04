@@ -52,6 +52,9 @@ export class ConnectionStore {
 			this._connectionConfig = new ConnectionConfig(this._configurationEditService,
 				this._workspaceConfigurationService, this._capabilitiesService, cachedServerCapabilities);
 		}
+		_capabilitiesService.onProviderRegisteredEvent(e => {
+			this.saveCachedServerCapabilities();
+		});
 	}
 
 	public static get CRED_PREFIX(): string { return 'Microsoft.SqlTools'; }
