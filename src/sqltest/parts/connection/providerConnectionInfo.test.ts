@@ -10,7 +10,7 @@ import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConn
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import * as sqlops from 'sqlops';
 import * as assert from 'assert';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ServiceOptionType, ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 suite('SQL ProviderConnectionInfo tests', () => {
