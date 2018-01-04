@@ -352,6 +352,7 @@ export abstract class MainThreadResourceProviderShape {
 }
 
 export abstract class MainThreadDataProtocolShape {
+	$registerProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
 	$registerConnectionProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
 	$registerBackupProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
 	$registerRestoreProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }

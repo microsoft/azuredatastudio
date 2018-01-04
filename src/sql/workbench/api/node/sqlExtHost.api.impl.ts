@@ -216,8 +216,97 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAdminServicesProvider(provider);
 			};
 
+			/**
+			 * @deprecated TO BE REMOVED;
+			 */
+			let registerProvider = (provider: data.DataProtocolProvider): vscode.Disposable => {
+				// Connection callbacks
+				provider.connectionProvider.registerOnConnectionComplete((connSummary: data.ConnectionInfoSummary) => {
+					extHostDataProvider.$onConnectComplete(provider.handle, connSummary);
+				});
+
+				provider.connectionProvider.registerOnIntelliSenseCacheComplete((connectionUri: string) => {
+					extHostDataProvider.$onIntelliSenseCacheComplete(provider.handle, connectionUri);
+				});
+
+				provider.connectionProvider.registerOnConnectionChanged((changedConnInfo: data.ChangedConnectionInfo) => {
+					extHostDataProvider.$onConnectionChanged(provider.handle, changedConnInfo);
+				});
+
+				// Query callbacks
+				provider.queryProvider.registerOnQueryComplete((result: data.QueryExecuteCompleteNotificationResult) => {
+					extHostDataProvider.$onQueryComplete(provider.handle, result);
+				});
+
+				provider.queryProvider.registerOnBatchStart((batchInfo: data.QueryExecuteBatchNotificationParams) => {
+					extHostDataProvider.$onBatchStart(provider.handle, batchInfo);
+				});
+
+				provider.queryProvider.registerOnBatchComplete((batchInfo: data.QueryExecuteBatchNotificationParams) => {
+					extHostDataProvider.$onBatchComplete(provider.handle, batchInfo);
+				});
+
+				provider.queryProvider.registerOnResultSetComplete((resultSetInfo: data.QueryExecuteResultSetCompleteNotificationParams) => {
+					extHostDataProvider.$onResultSetComplete(provider.handle, resultSetInfo);
+				});
+
+				provider.queryProvider.registerOnMessage((message: data.QueryExecuteMessageParams) => {
+					extHostDataProvider.$onQueryMessage(provider.handle, message);
+				});
+
+				//OE callbacks
+				provider.objectExplorerProvider.registerOnSessionCreated((response: data.ObjectExplorerSession) => {
+					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
+				});
+
+				provider.objectExplorerProvider.registerOnExpandCompleted((response: data.ObjectExplorerExpandInfo) => {
+					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
+				});
+
+				//Tasks callbacks
+				provider.taskServicesProvider.registerOnTaskCreated((response: data.TaskInfo) => {
+					extHostDataProvider.$onTaskCreated(provider.handle, response);
+				});
+
+				provider.taskServicesProvider.registerOnTaskStatusChanged((response: data.TaskProgressInfo) => {
+					extHostDataProvider.$onTaskStatusChanged(provider.handle, response);
+				});
+
+				// Edit Data callbacks
+				provider.queryProvider.registerOnEditSessionReady((ownerUri: string, success: boolean, message: string) => {
+					extHostDataProvider.$onEditSessionReady(provider.handle, ownerUri, success, message);
+				});
+
+				// File browser callbacks
+				provider.fileBrowserProvider.registerOnFileBrowserOpened((response: data.FileBrowserOpenedParams) => {
+					extHostDataProvider.$onFileBrowserOpened(provider.handle, response);
+				});
+
+				provider.fileBrowserProvider.registerOnFolderNodeExpanded((response: data.FileBrowserExpandedParams) => {
+					extHostDataProvider.$onFolderNodeExpanded(provider.handle, response);
+				});
+
+				provider.fileBrowserProvider.registerOnFilePathsValidated((response: data.FileBrowserValidatedParams) => {
+					extHostDataProvider.$onFilePathsValidated(provider.handle, response);
+				});
+
+				// Scripting callbacks
+				provider.scriptingProvider.registerOnScriptingComplete((response: data.ScriptingCompleteResult) => {
+					extHostDataProvider.$onScriptingComplete(provider.handle, response);
+				});
+
+				// Profiler callbacks
+				provider.profilerProvider.registerOnSessionEventsAvailable((response: data.ProfilerSessionEvents) => {
+					extHostDataProvider.$onSessionEventsAvailable(provider.handle, response);
+				});
+
+				// Complete registration
+				return extHostDataProvider.$registerProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof data.dataprotocol = {
+				registerProvider,
 				registerBackupProvider,
 				registerConnectionProvider,
 				registerFileBrowserProvider,
