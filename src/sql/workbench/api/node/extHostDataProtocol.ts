@@ -10,6 +10,7 @@ import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape }
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
+import { isObject } from 'vs/base/common/types';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -54,6 +55,31 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		this._adapter.set(provider.handle, provider);
 		return this._createDisposable(provider.handle);
 	};
+
+	/**
+	 * @deprecated; TO BE REMOVED
+	 * @param provider
+	 */
+	$registerProvider(provider: sqlops.DataProtocolProvider): vscode.Disposable {
+		let altProvider: any = {};
+		for (let key in provider) {
+			if (provider.hasOwnProperty(key)) {
+				if (isObject(provider[key])) {
+					for (let innerkey in provider[key]) {
+						if (provider[key].hasOwnProperty(innerkey)) {
+							altProvider[innerkey] = provider[key][innerkey];
+						}
+					}
+				} else {
+					altProvider[key] = provider[key];
+				}
+			}
+		}
+		altProvider.providerId = provider.providerId;
+		let rt = this.registerProvider(altProvider as sqlops.DataProtocolProvider);
+		this._proxy.$registerProvider(altProvider.providerId, altProvider.handle);
+		return rt;
+	}
 
 	$registerConnectionProvider(provider: sqlops.ConnectionProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider);

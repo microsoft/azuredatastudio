@@ -216,8 +216,97 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAdminServicesProvider(provider);
 			};
 
+			/**
+			 * @deprecated TO BE REMOVED;
+			 */
+			let registerProvider = (provider: sqlops.DataProtocolProvider): vscode.Disposable => {
+				// Connection callbacks
+				provider.connectionProvider.registerOnConnectionComplete((connSummary: sqlops.ConnectionInfoSummary) => {
+					extHostDataProvider.$onConnectComplete(provider.handle, connSummary);
+				});
+
+				provider.connectionProvider.registerOnIntelliSenseCacheComplete((connectionUri: string) => {
+					extHostDataProvider.$onIntelliSenseCacheComplete(provider.handle, connectionUri);
+				});
+
+				provider.connectionProvider.registerOnConnectionChanged((changedConnInfo: sqlops.ChangedConnectionInfo) => {
+					extHostDataProvider.$onConnectionChanged(provider.handle, changedConnInfo);
+				});
+
+				// Query callbacks
+				provider.queryProvider.registerOnQueryComplete((result: sqlops.QueryExecuteCompleteNotificationResult) => {
+					extHostDataProvider.$onQueryComplete(provider.handle, result);
+				});
+
+				provider.queryProvider.registerOnBatchStart((batchInfo: sqlops.QueryExecuteBatchNotificationParams) => {
+					extHostDataProvider.$onBatchStart(provider.handle, batchInfo);
+				});
+
+				provider.queryProvider.registerOnBatchComplete((batchInfo: sqlops.QueryExecuteBatchNotificationParams) => {
+					extHostDataProvider.$onBatchComplete(provider.handle, batchInfo);
+				});
+
+				provider.queryProvider.registerOnResultSetComplete((resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams) => {
+					extHostDataProvider.$onResultSetComplete(provider.handle, resultSetInfo);
+				});
+
+				provider.queryProvider.registerOnMessage((message: sqlops.QueryExecuteMessageParams) => {
+					extHostDataProvider.$onQueryMessage(provider.handle, message);
+				});
+
+				//OE callbacks
+				provider.objectExplorerProvider.registerOnSessionCreated((response: sqlops.ObjectExplorerSession) => {
+					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
+				});
+
+				provider.objectExplorerProvider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
+					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
+				});
+
+				//Tasks callbacks
+				provider.taskServicesProvider.registerOnTaskCreated((response: sqlops.TaskInfo) => {
+					extHostDataProvider.$onTaskCreated(provider.handle, response);
+				});
+
+				provider.taskServicesProvider.registerOnTaskStatusChanged((response: sqlops.TaskProgressInfo) => {
+					extHostDataProvider.$onTaskStatusChanged(provider.handle, response);
+				});
+
+				// Edit Data callbacks
+				provider.queryProvider.registerOnEditSessionReady((ownerUri: string, success: boolean, message: string) => {
+					extHostDataProvider.$onEditSessionReady(provider.handle, ownerUri, success, message);
+				});
+
+				// File browser callbacks
+				provider.fileBrowserProvider.registerOnFileBrowserOpened((response: sqlops.FileBrowserOpenedParams) => {
+					extHostDataProvider.$onFileBrowserOpened(provider.handle, response);
+				});
+
+				provider.fileBrowserProvider.registerOnFolderNodeExpanded((response: sqlops.FileBrowserExpandedParams) => {
+					extHostDataProvider.$onFolderNodeExpanded(provider.handle, response);
+				});
+
+				provider.fileBrowserProvider.registerOnFilePathsValidated((response: sqlops.FileBrowserValidatedParams) => {
+					extHostDataProvider.$onFilePathsValidated(provider.handle, response);
+				});
+
+				// Scripting callbacks
+				provider.scriptingProvider.registerOnScriptingComplete((response: sqlops.ScriptingCompleteResult) => {
+					extHostDataProvider.$onScriptingComplete(provider.handle, response);
+				});
+
+				// Profiler callbacks
+				provider.profilerProvider.registerOnSessionEventsAvailable((response: sqlops.ProfilerSessionEvents) => {
+					extHostDataProvider.$onSessionEventsAvailable(provider.handle, response);
+				});
+
+				// Complete registration
+				return extHostDataProvider.$registerProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof sqlops.dataprotocol = {
+				registerProvider,
 				registerBackupProvider,
 				registerConnectionProvider,
 				registerFileBrowserProvider,
