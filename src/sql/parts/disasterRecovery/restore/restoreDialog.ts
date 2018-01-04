@@ -350,7 +350,9 @@ export class RestoreDialog extends Modal {
 			});
 		});
 
-		this._panel = new TabbedPanel(container);
+		let restorePanel = $('.restore-panel');
+		container.appendChild(restorePanel.getHTMLElement());
+		this._panel = new TabbedPanel(restorePanel.getHTMLElement());
 		this._generalTabId = this._panel.pushTab({
 			identifier: 'general',
 			title: localize('generalTitle', 'General'),

@@ -148,6 +148,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 			// otherwise, either run the statement or the script depending on parameter
 			let selection: ISelectionData = editor.getSelection(false);
 			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
+				editor.currentQueryInput.runQueryStatement(selection);
 			} else {
 				// get the selection again this time with trimming
 				selection = editor.getSelection();

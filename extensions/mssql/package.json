@@ -191,10 +191,6 @@
       ]
     }
   },
-  "dependencies": {
-    "dataprotocol-client": "git://github.com/anthonydresser/dataprotocol-client.git#release",
-    "vscode-languageclient": "^3.5.0"
-  },
   "devDependencies": {
     "vscode": "1.0.1"
   }

@@ -42,6 +42,10 @@ import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { isMacintosh } from 'vs/base/common/platform';
 import { GroupOnePicker, GroupTwoPicker, GroupThreePicker, AllEditorsPicker } from 'vs/workbench/browser/parts/editor/editorPicker';
 
+// {{SQL CARBON EDIT}}
+import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
+
 // Register String Editor
 Registry.as<IEditorRegistry>(EditorExtensions.Editors).registerEditor(
 	new EditorDescriptor(
@@ -132,15 +136,23 @@ class UntitledEditorInputFactory implements IEditorInputFactory {
 		return JSON.stringify(serialized);
 	}
 
-	public deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): UntitledEditorInput {
-		return instantiationService.invokeFunction<UntitledEditorInput>(accessor => {
+	// {{SQL CARBON EDIT}}
+	public deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): EditorInput {
+		return instantiationService.invokeFunction<EditorInput>(accessor => {
 			const deserialized: ISerializedUntitledEditorInput = JSON.parse(serializedEditorInput);
 			const resource = !!deserialized.resourceJSON ? URI.revive(deserialized.resourceJSON) : URI.parse(deserialized.resource);
 			const filePath = resource.scheme === 'file' ? resource.fsPath : void 0;
 			const language = deserialized.modeId;
 			const encoding = deserialized.encoding;
 
-			return accessor.get(IWorkbenchEditorService).createInput({ resource, filePath, language, encoding }) as UntitledEditorInput;
+			// {{SQL CARBON EDIT}}
+			let input = accessor.get(IWorkbenchEditorService).createInput({ resource, filePath, language, encoding }) as UntitledEditorInput;
+			if (deserialized.modeId === QueryInput.SCHEMA) {
+				const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, resource.toString());
+				return instantiationService.createInstance(QueryInput, input.getName(), '', input, queryResultsInput, undefined);
+			} else {
+				return input;
+			}
 		});
 	}
 }
