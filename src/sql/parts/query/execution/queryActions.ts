@@ -13,9 +13,6 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
-import { IReadOnlyModel } from 'vs/editor/common/editorCommon';
-import { IModel, ICommonCodeEditor } from 'vs/editor/common/editorCommon';
 
 import { ISelectionData } from 'data';
 import {
@@ -27,8 +24,6 @@ import {
 } from 'sql/parts/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
-import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import * as Constants from 'sql/parts/query/common/constants';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -153,6 +148,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 			// otherwise, either run the statement or the script depending on parameter
 			let selection: ISelectionData = editor.getSelection(false);
 			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
+				editor.currentQueryInput.runQueryStatement(selection);
 			} else {
 				// get the selection again this time with trimming
 				selection = editor.getSelection();

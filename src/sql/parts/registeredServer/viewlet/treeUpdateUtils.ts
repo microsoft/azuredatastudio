@@ -32,13 +32,17 @@ export class TreeUpdateUtils {
 			targetsToExpand = tree.getExpandedElements();
 		}
 		let groups;
+		let treeInput = new ConnectionProfileGroup('root', null, undefined, undefined, undefined);
 		if (viewKey === 'recent') {
 			groups = connectionManagementService.getRecentConnections();
+			treeInput.addConnections(groups);
 		} else if (viewKey === 'active') {
 			groups = connectionManagementService.getActiveConnections();
+			treeInput.addConnections(groups);
+		} else if (viewKey === 'saved') {
+			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 		}
-		const treeInput = new ConnectionProfileGroup('root', null, undefined, undefined, undefined);
-		treeInput.addConnections(groups);
+
 		tree.setInput(treeInput).done(() => {
 			// Make sure to expand all folders that where expanded in the previous session
 			if (targetsToExpand) {

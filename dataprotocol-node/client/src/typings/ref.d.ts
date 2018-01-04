@@ -3,13 +3,5 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.statusbar-item .linked-account-staus a.linked-account-status-selection .linked-account-icon {
-	-webkit-mask: url('accounts_statusbar_inverse.svg') no-repeat 50% 50%;
-	-webkit-mask-size: 12px;
-	width: 12px;
-	height: 22px;
-}
-
-.statusbar-item .linked-account-staus a.linked-account-status-selection {
-	padding: 0 5px 0 5px;
-}
+/// <reference path='../../../../src/vs/vscode.d.ts'/>
+/// <reference path='../../../../src/sql/data.d.ts'/>
