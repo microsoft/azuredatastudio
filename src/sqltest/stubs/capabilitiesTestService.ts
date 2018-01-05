@@ -98,25 +98,6 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 
 	}
 
-	/**
-	 * Retrieve a list of registered server capabilities
-	 */
-	public getCapabilities(): sqlops.DataProtocolServerCapabilities[] {
-		return this._capabilities;
-	}
-
-	/**
-	 * Register the capabilities provider and query the provider for its capabilities
-	 * @param provider
-	 */
-	public registerProvider(provider: sqlops.CapabilitiesProvider): void {
-	}
-
-	// Event Emitters
-	public get onProviderRegisteredEvent(): Event<sqlops.DataProtocolServerCapabilities> {
-		return undefined;
-	}
-
 	public isFeatureAvailable(featureName: Action, connectionManagementInfo: ConnectionManagementInfo): boolean {
 		return true;
 	}

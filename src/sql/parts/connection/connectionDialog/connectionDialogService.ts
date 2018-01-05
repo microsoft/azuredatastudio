@@ -63,13 +63,13 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connectionManagementService: IConnectionManagementService;
 	private _container: HTMLElement;
 	private _connectionDialog: ConnectionDialogWidget;
-	private _connectionControllerMap: { [providerDisplayName: string]: IConnectionComponentController };
+	private _connectionControllerMap: { [providerDisplayName: string]: IConnectionComponentController } = {};
 	private _model: ConnectionProfile;
 	private _params: INewConnectionParams;
 	private _inputModel: IConnectionProfile;
-	private _capabilitiesMaps: { [providerDisplayName: string]: ConnectionProviderProperties };
-	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
-	private _providerTypes: string[];
+	private _capabilitiesMaps: { [providerDisplayName: string]: ConnectionProviderProperties } = {};
+	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string } = {};
+	private _providerTypes: string[] = [];
 	private _currentProviderType: string = 'Microsoft SQL Server';
 	private _connecting: boolean = false;
 	private _connectionErrorTitle = localize('connectionError', 'Connection error');
@@ -84,10 +84,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService
 	) {
-		this._capabilitiesMaps = {};
-		this._providerNameToDisplayNameMap = {};
-		this._connectionControllerMap = {};
-		this._providerTypes = [];
 		if (_capabilitiesService) {
 			_capabilitiesService.onProviderRegisteredEvent((capabilities => {
 				let defaultProvider = this.getDefaultProviderName();
@@ -294,9 +290,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._inputModel = model;
 
 		if (this._providerTypes.length === 0) {
-			let capabilities = this._capabilitiesService.getCapabilities();
-			capabilities.forEach(c => {
-				this.cacheCapabilities(c);
+			let capabilities = this._capabilitiesService.providers;
+			Object.values(capabilities).forEach(c => {
+				this.cacheCapabilities(c.connection);
 			});
 		}
 

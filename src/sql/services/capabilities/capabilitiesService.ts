@@ -14,9 +14,10 @@ import { IAction } from 'vs/base/common/actions';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { clone } from 'vs/base/common/objects';
 import { BackupProviderProperties, IBackupProviderRegistry, Extensions as BackupExtensions } from 'sql/workbench/parts/backup/common/backupProviderExtension';
+import { SerializationProviderProperties, ISerializationProviderRegistry, Extensions as SerializationExtensions } from 'sql/workbench/parts/serialization/common/serializationProviderExtension';
 import { RestoreProviderProperties } from 'sql/workbench/parts/restore/common/restoreProviderRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { entries } from 'sql/base/common/objects';
+import { toObject } from 'sql/base/common/map';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'sqlops';
@@ -25,9 +26,11 @@ export const ICapabilitiesService = createDecorator<ICapabilitiesService>(SERVIC
 
 const connectionRegistry = Registry.as<IConnectionProviderRegistry>(ConnectionExtensions.ConnectionProviderContributions);
 const backupRegistry = Registry.as<IBackupProviderRegistry>(BackupExtensions.BackupProviderContributions);
+const serializationRegistry = Registry.as<ISerializationProviderRegistry>(SerializationExtensions.SerializationProviderContributions);
 
 export interface ProviderFeatures {
 	connection: ConnectionProviderProperties;
+	serialization: SerializationProviderProperties;
 	backup: { [id: string]: BackupProviderProperties };
 	restore: { [id: string]: RestoreProviderProperties };
 }
@@ -72,48 +75,82 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 
 	public _serviceBrand: any;
 
-	private _providers: { [id: string]: ProviderFeatures } = {};
+	private _providers = new Map<string, ProviderFeatures>();
 	private _onConnectionProviderRegistered = this._register(new Emitter<ProviderFeatures>());
-	private _featureUpdateEvents: { [id: string]: Emitter<ProviderFeatures> } = {};
+	private _featureUpdateEvents = new Map<string, Emitter<ProviderFeatures>>();
 
 	public readonly onConnectionProviderRegistered: Event<ProviderFeatures> = this._onConnectionProviderRegistered.event;
 
 	constructor() {
 		super();
 		let connectionProviderHandler = (e: {id: string, properties: ConnectionProviderProperties}) => {
-			let o: ProviderFeatures = {
-				connection: e.properties,
-				backup: {},
-				restore: {}
-			};
-			this._providers[e.id] = o;
-			this._onConnectionProviderRegistered.fire(o);
+			let provider = this._providers.get(e.id);
+			if (provider) {
+				provider.connection = e.properties;
+			} else {
+				provider = {
+					connection: e.properties,
+					serialization: undefined,
+					backup: {},
+					restore: {}
+				};
+				this._providers.set(e.id, provider);
+			}
+			this._onConnectionProviderRegistered.fire(provider);
 		};
 		let backupProviderHandler = (e: { id: string, properties: BackupProviderProperties }) => {
-			let provider = this._providers[e.properties.useConnection];
+			let provider = this._providers.get(e.properties.useConnection);
 			if (provider) {
 				provider.backup[e.id] = e.properties;
-				this._featureUpdateEvents[e.properties.useConnection].fire(provider);
+			} else {
+				provider = {
+					connection: undefined,
+					serialization: undefined,
+					backup: { [e.id]: e.properties },
+					restore: {}
+				};
+				this._providers.set(e.properties.useConnection, provider);
 			}
+			this._featureUpdateEvents.get(e.properties.useConnection).fire(provider);
+		};
+		let serializationProviderHandler = (e: { id: string, properties: SerializationProviderProperties }) => {
+			let provider = this._providers.get(e.id);
+			if (provider) {
+				provider.serialization = e.properties;
+			} else {
+				provider = {
+					connection: undefined,
+					serialization: e.properties,
+					backup: {},
+					restore: {}
+				};
+				this._providers.set(e.id, provider);
+			}
+			this._featureUpdateEvents.get(e.id).fire(provider);
 		};
 
-		entries(connectionRegistry.providers).map(v => {
-			connectionProviderHandler({ id: v[0], properties: v[1]});
+		Object.entries(connectionRegistry.providers).map(v => {
+			connectionProviderHandler({ id: v[0], properties: v[1] });
 		});
 		connectionRegistry.onNewProvider(connectionProviderHandler);
 
-		entries(backupRegistry.providers).map(v => {
-			backupProviderHandler({ id: v[0], properties: v[1]});
+		Object.entries(backupRegistry.providers).map(v => {
+			backupProviderHandler({ id: v[0], properties: v[1] });
 		});
 		backupRegistry.onNewProvider(backupProviderHandler);
+
+		Object.entries(serializationRegistry).map(v => {
+			serializationProviderHandler({ id: v[0], properties: v[1] });
+		});
+		serializationRegistry.onNewProvider(serializationProviderHandler);
 	}
 
 	public get providers(): { [id: string]: ProviderFeatures} {
-		return clone(this._providers);
+		return toObject(this._providers);
 	}
 
 	public getCapabilities(providerId: string): ProviderFeatures {
-		return clone(this._providers[providerId]);
+		return clone(this._providers.get(providerId));
 	}
 
 	/**
@@ -149,7 +186,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	}
 
 	public onFeatureUpdateRegistered(providerId: string): Event<ProviderFeatures> {
-		let emitter = this._featureUpdateEvents[providerId];
+		let emitter = this._featureUpdateEvents.get(providerId);
 		if (emitter) {
 			return emitter.event;
 		}

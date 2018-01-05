@@ -59,8 +59,6 @@ declare module 'sqlops' {
 
 		providerId: string;
 
-		capabilitiesProvider: CapabilitiesProvider;
-
 		connectionProvider: ConnectionProvider;
 
 		queryProvider: QueryProvider;

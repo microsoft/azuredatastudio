@@ -711,6 +711,10 @@
           "isArray": false
         }
       ]
+    },
+    "serializationProvider": {
+      "providerId": "MSSQL",
+      "displayName": "Microsoft SQL Server"
     }
   },
   "devDependencies": {

@@ -1,4 +1,3 @@
-/// <reference path="globals/core-js/index.d.ts" />
 /// <reference path="globals/jqueryui/index.d.ts" />
 /// <reference path="globals/slickgrid/index.d.ts" />
 /// <reference path="globals/systemjs/index.d.ts" />

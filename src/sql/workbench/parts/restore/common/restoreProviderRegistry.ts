@@ -10,7 +10,7 @@ import { localize } from 'vs/nls';
 import Event, { Emitter } from 'vs/base/common/event';
 
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 export interface IRestoreOption {
 	name: string;
@@ -20,7 +20,7 @@ export interface IRestoreOption {
 	valueType: ServiceOptionType;
 	defaultValue: any;
 	objectType: string;
-	categoryValues: data.CategoryValue[];
+	categoryValues: sqlops.CategoryValue[];
 	isRequired: boolean;
 	isArray: boolean;
 }

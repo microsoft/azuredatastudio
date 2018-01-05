@@ -11,6 +11,7 @@ import { IConnectionManagementService } from 'sql/parts/connection/common/connec
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import * as Constants from 'sql/common/constants';
 import * as sqlops from 'sqlops';
+import { SerializationProviderProperties } from 'sql/workbench/parts/serialization/common/serializationProviderExtension';
 
 export const SERVICE_ID = 'serializationService';
 
@@ -29,7 +30,7 @@ export interface ISerializationService {
 
 	addEventListener(handle: number, events: SerializationProviderEvents): IDisposable;
 
-	getSerializationFeatureMetadataProvider(ownerUri: string): sqlops.FeatureMetadataProvider;
+	getSerializationFeatureMetadataProvider(ownerUri: string): SerializationProviderProperties;
 }
 
 export class SerializationService implements ISerializationService {
@@ -72,12 +73,12 @@ export class SerializationService implements ISerializationService {
 
 	}
 
-	public getSerializationFeatureMetadataProvider(ownerUri: string): sqlops.FeatureMetadataProvider {
+	public getSerializationFeatureMetadataProvider(ownerUri: string): SerializationProviderProperties {
 		let providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
-		let providerCapabilities = this._capabilitiesService.getCapabilities().find(c => c.providerName === providerId);
+		let providerCapabilities = this._capabilitiesService.getCapabilities(providerId);
 
 		if (providerCapabilities) {
-			return providerCapabilities.features.find(f => f.featureName === SERVICE_ID);
+			return providerCapabilities.serialization;
 		}
 
 		return undefined;

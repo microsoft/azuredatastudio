@@ -361,7 +361,6 @@ export abstract class MainThreadDataProtocolShape {
 	$registerMetadataProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
 	$registerTaskServicesProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
 	$registerFileBrowserProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
-	$registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
 	$registerAdminServicesProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
 	$unregisterProvider(handle: number): TPromise<any> { throw ni(); }
 	$onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void { throw ni(); }

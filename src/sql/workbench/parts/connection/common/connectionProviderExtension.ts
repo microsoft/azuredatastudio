@@ -10,12 +10,12 @@ import { localize } from 'vs/nls';
 import Event, { Emitter } from 'vs/base/common/event';
 import { clone } from 'vs/base/common/objects';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 export interface ConnectionProviderProperties {
 	providerId: string;
 	displayName: string;
-	connectionOptions: data.ConnectionOption[];
+	connectionOptions: sqlops.ConnectionOption[];
 }
 
 

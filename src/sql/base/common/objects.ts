@@ -32,20 +32,3 @@ export function mixin(destination: any, source: any, overwrite: boolean = true, 
 	}
 	return destination;
 }
-
-/**
- * Returns an array entries as arrays where the first value is the key and the second is the value
- * ex. [['v', 'k']]
- */
-export function entries(input: any): [string, any][] {
-	if (input) {
-		var ownProps = Object.keys( input ),
-        i = ownProps.length,
-        resArray = new Array(i);
-		while (i--) {
-			resArray[i] = [ownProps[i], input[ownProps[i]]];
-		}
-    	return resArray;
-	}
-	return [];
-}

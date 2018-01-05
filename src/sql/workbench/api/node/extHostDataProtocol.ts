@@ -147,15 +147,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	/**
+	 * @deprecated; TO BE REMOVED
+	 * @param provider
+	 */
 	$registerCapabilitiesServiceProvider(provider: sqlops.CapabilitiesProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
-		this._proxy.$registerCapabilitiesServiceProvider(provider.providerId, provider.handle);
-		return rt;
-	}
-
-	// Capabilities Discovery handlers
-	$getServerCapabilities(handle: number, client: sqlops.DataProtocolClientCapabilities): Thenable<sqlops.DataProtocolServerCapabilities> {
-		return this._resolveProvider<sqlops.CapabilitiesProvider>(handle).getServerCapabilities(client);
+		// NO OP
+		return undefined;
 	}
 
 	// Connection Management handlers
