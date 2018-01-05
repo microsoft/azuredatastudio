@@ -23,7 +23,7 @@ export interface IAdminProviderRegistry {
 	registerSerializationProvider(id: string, properties: AdminProviderProperties): void;
 	getProperties(id: string): AdminProviderProperties;
 	readonly onNewProvider: Event<{ id: string, properties: AdminProviderProperties }>;
-	readonly providers: { [id: string]: AdminProviderProperties};
+	readonly providers: { [id: string]: AdminProviderProperties };
 }
 
 class AdminProviderRegistryImpl implements IAdminProviderRegistry {
@@ -40,8 +40,8 @@ class AdminProviderRegistryImpl implements IAdminProviderRegistry {
 		return this._providers.get(id);
 	}
 
-	public get providers(): { [id: string]: AdminProviderProperties} {
-		let rt: { [id: string]: AdminProviderProperties} = {};
+	public get providers(): { [id: string]: AdminProviderProperties } {
+		let rt: { [id: string]: AdminProviderProperties } = {};
 		this._providers.forEach((v, k) => {
 			rt[k] = clone(v);
 		});

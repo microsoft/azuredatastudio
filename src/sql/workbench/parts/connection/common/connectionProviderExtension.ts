@@ -26,26 +26,26 @@ export const Extensions = {
 export interface IConnectionProviderRegistry {
 	registerConnectionProvider(id: string, properties: ConnectionProviderProperties): void;
 	getProperties(id: string): ConnectionProviderProperties;
-	readonly onNewProvider: Event<{id: string, properties: ConnectionProviderProperties}>;
-	readonly providers: { [id: string]: ConnectionProviderProperties};
+	readonly onNewProvider: Event<{ id: string, properties: ConnectionProviderProperties }>;
+	readonly providers: { [id: string]: ConnectionProviderProperties };
 }
 
 class ConnectionProviderRegistryImpl implements IConnectionProviderRegistry {
 	private _providers = new Map<string, ConnectionProviderProperties>();
-	private _onNewProvider = new Emitter<{id: string, properties: ConnectionProviderProperties}>();
-	public readonly onNewProvider: Event<{id: string, properties: ConnectionProviderProperties}> = this._onNewProvider.event;
+	private _onNewProvider = new Emitter<{ id: string, properties: ConnectionProviderProperties }>();
+	public readonly onNewProvider: Event<{ id: string, properties: ConnectionProviderProperties }> = this._onNewProvider.event;
 
 	public registerConnectionProvider(id: string, properties: ConnectionProviderProperties): void {
 		this._providers.set(id, properties);
-		this._onNewProvider.fire({id, properties});
+		this._onNewProvider.fire({ id, properties });
 	}
 
 	public getProperties(id: string): ConnectionProviderProperties {
 		return this._providers.get(id);
 	}
 
-	public get providers(): { [id: string]: ConnectionProviderProperties} {
-		let rt: { [id: string]: ConnectionProviderProperties} = {};
+	public get providers(): { [id: string]: ConnectionProviderProperties } {
+		let rt: { [id: string]: ConnectionProviderProperties } = {};
 		this._providers.forEach((v, k) => {
 			rt[k] = clone(v);
 		});

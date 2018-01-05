@@ -19,7 +19,7 @@ export function mixin(destination: any, source: any, overwrite: boolean = true, 
 				if (overwrite) {
 					if (Types.isObject(destination[key]) && Types.isObject(source[key])) {
 						mixin(destination[key], source[key], overwrite, fn);
-					} else if(fn) {
+					} else if (fn) {
 						destination[key] = fn(destination[key], source[key], overwrite);
 					} else {
 						destination[key] = source[key];

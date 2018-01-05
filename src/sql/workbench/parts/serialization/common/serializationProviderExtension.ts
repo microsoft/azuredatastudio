@@ -23,7 +23,7 @@ export interface ISerializationProviderRegistry {
 	registerSerializationProvider(id: string, properties: SerializationProviderProperties): void;
 	getProperties(id: string): SerializationProviderProperties;
 	readonly onNewProvider: Event<{ id: string, properties: SerializationProviderProperties }>;
-	readonly providers: { [id: string]: SerializationProviderProperties};
+	readonly providers: { [id: string]: SerializationProviderProperties };
 }
 
 class SerializationProviderRegistryImpl implements ISerializationProviderRegistry {
@@ -40,8 +40,8 @@ class SerializationProviderRegistryImpl implements ISerializationProviderRegistr
 		return this._providers.get(id);
 	}
 
-	public get providers(): { [id: string]: SerializationProviderProperties} {
-		let rt: { [id: string]: SerializationProviderProperties} = {};
+	public get providers(): { [id: string]: SerializationProviderProperties } {
+		let rt: { [id: string]: SerializationProviderProperties } = {};
 		this._providers.forEach((v, k) => {
 			rt[k] = clone(v);
 		});

@@ -83,7 +83,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 
 	constructor() {
 		super();
-		let connectionProviderHandler = (e: {id: string, properties: ConnectionProviderProperties}) => {
+		let connectionProviderHandler = (e: { id: string, properties: ConnectionProviderProperties }) => {
 			let provider = this._providers.get(e.id);
 			if (provider) {
 				provider.connection = e.properties;
@@ -145,7 +145,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		serializationRegistry.onNewProvider(serializationProviderHandler);
 	}
 
-	public get providers(): { [id: string]: ProviderFeatures} {
+	public get providers(): { [id: string]: ProviderFeatures } {
 		return toObject(this._providers);
 	}
 
