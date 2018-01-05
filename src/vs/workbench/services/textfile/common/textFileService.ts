@@ -366,9 +366,7 @@ export abstract class TextFileService implements ITextFileService {
 		}
 
 		// Hot exit
-		// {{SQL CARBON EDIT}}
-		// const hotExitMode = configuration && configuration.files ? configuration.files.hotExit : HotExitConfiguration.ON_EXIT;
-		const hotExitMode = HotExitConfiguration.OFF;
+		const hotExitMode = configuration && configuration.files ? configuration.files.hotExit : HotExitConfiguration.ON_EXIT;
 		if (hotExitMode === HotExitConfiguration.OFF || hotExitMode === HotExitConfiguration.ON_EXIT_AND_WINDOW_CLOSE) {
 			this.configuredHotExit = hotExitMode;
 		} else {

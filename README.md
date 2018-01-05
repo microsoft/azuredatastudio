@@ -15,6 +15,8 @@ Linux RPM | https://go.microsoft.com/fwlink/?linkid=865309
 
 Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instructions.
 
+Try out the latest insiders build from `master` at https://github.com/Microsoft/sqlopsstudio/releases.
+
 **Feature Highlights**
 
 - Cross-Platform DB management for Windows, macOS and Linux with simple XCopy deployment

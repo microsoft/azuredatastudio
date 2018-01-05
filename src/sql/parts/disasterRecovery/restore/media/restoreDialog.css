@@ -7,6 +7,10 @@
 	padding: 15px
 }
 
+.restore-panel .tabbedPanel {
+	border-top-color: transparent;
+}
+
 .modal .restore-dialog .dialog-label.header {
 	font-size: 15px;
 }

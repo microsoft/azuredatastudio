@@ -157,7 +157,7 @@ const config = {
 	version: packageJson.electronVersion,
 	productAppName: product.nameLong,
 	companyName: 'Microsoft Corporation',
-	copyright: 'Copyright (C) 2017 Microsoft. All rights reserved',
+	copyright: 'Copyright (C) 2018 Microsoft. All rights reserved',
 	darwinIcon: 'resources/darwin/code.icns',
 	darwinBundleIdentifier: product.darwinBundleIdentifier,
 	darwinApplicationCategoryType: 'public.app-category.developer-tools',
@@ -167,7 +167,7 @@ const config = {
 		name: product.nameLong + ' document',
 		role: 'Editor',
 		ostypes: ["TEXT", "utxt", "TUTX", "****"],
-		  // {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}}
 		extensions: ["csv", "json", "sqlplan", "sql", "xml"],
 		iconFile: 'resources/darwin/code_file.icns'
 	}],
@@ -289,9 +289,9 @@ function packageTask(platform, arch, opts) {
 		const sources = es.merge(src, localExtensions, localExtensionDependencies)
 			.pipe(util.setExecutableBit(['**/*.sh']))
 			.pipe(filter(['**',
-						  '!**/*.js.map',
-						  '!extensions/**/node_modules/**/{test, tests}/**',
-						  '!extensions/**/node_modules/**/test.js']));
+						'!**/*.js.map',
+						'!extensions/**/node_modules/**/{test, tests}/**',
+						'!extensions/**/node_modules/**/test.js']));
 
 		let version = packageJson.version;
 		const quality = product.quality;
@@ -316,7 +316,7 @@ function packageTask(platform, arch, opts) {
 		// TODO the API should be copied to `out` during compile, not here
 		const api = gulp.src('src/vs/vscode.d.ts').pipe(rename('out/vs/vscode.d.ts'));
 		// {{SQL CARBON EDIT}}
-    	const dataApi = gulp.src('src/vs/data.d.ts').pipe(rename('out/sql/data.d.ts'));
+		const dataApi = gulp.src('src/vs/data.d.ts').pipe(rename('out/sql/data.d.ts'));
 
 		const depsSrc = _.flatten(dependencies
 			.map(function (d) { return ['node_modules/' + d + '/**', '!node_modules/' + d + '/**/{test,tests}/**']; }));
