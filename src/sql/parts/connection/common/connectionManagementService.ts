@@ -137,12 +137,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		};
 
 		registry.onNewProvider(providerRegistration, this);
-		registry.providers.map(providerRegistration);
-
-		if (!this.hasRegisteredServers()) {
-			// prompt the user for a new connection on startup if no profiles are registered
-			this.showConnectionDialog();
-		}
+		Object.entries(registry.providers).map(v => {
+			providerRegistration({ id: v[0], properties: v[1] });
+		});
 
 		// Refresh editor titles when connections start/end/change to ensure tabs are colored correctly
 		this.onConnectionChanged(this.refreshEditorTitles, this);
@@ -183,6 +180,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public registerProvider(providerId: string, provider: sqlops.ConnectionProvider): void {
 		if (!this._providers.has(providerId)) {
 			console.error('Provider', providerId, 'attempted to register but has no metadata');
+			let providerType = {
+				onReady: new Deferred<sqlops.ConnectionProvider>(),
+				properties: undefined
+			};
+			this._providers.set(providerId, providerType);
 		}
 
 		// we know this is a deferred promise because we made it
@@ -649,23 +651,23 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return map.keys(this._providers);
 	}
 
-	public getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities {
-		let capabilities = this._capabilitiesService.getCapabilities();
-		if (capabilities !== undefined && capabilities.length > 0) {
-			return capabilities.find(c => c.providerName === providerName);
+	public getCapabilities(providerName: string): ConnectionProviderProperties {
+		let capabilities = this._capabilitiesService.providers[providerName];
+		if (capabilities) {
+			return capabilities.connection;
 		}
 		return undefined;
 	}
 
 	public getAdvancedProperties(): sqlops.ConnectionOption[] {
 
-		let capabilities = this._capabilitiesService.getCapabilities();
-		if (capabilities !== undefined && capabilities.length > 0) {
+		let capabilities = this._capabilitiesService.providers;
+		if (capabilities) {
 			// just grab the first registered provider for now, this needs to change
 			// to lookup based on currently select provider
-			let providerCapabilities = capabilities[0];
-			if (!!providerCapabilities.connectionProvider) {
-				return providerCapabilities.connectionProvider.options;
+			let providerCapabilities = Object.values(capabilities)[0];
+			if (!!providerCapabilities.connection) {
+				return providerCapabilities.connection.connectionOptions;
 			}
 		}
 

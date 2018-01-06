@@ -96,6 +96,9 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 				};
 				this._providers.set(e.id, provider);
 			}
+			if (!this._featureUpdateEvents.has(e.id)) {
+				this._featureUpdateEvents.set(e.id, new Emitter<ProviderFeatures>());
+			}
 			this._onConnectionProviderRegistered.fire(provider);
 		};
 		let backupProviderHandler = (e: { id: string, properties: BackupProviderProperties }) => {
@@ -110,6 +113,9 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 					restore: {}
 				};
 				this._providers.set(e.properties.useConnection, provider);
+			}
+			if (!this._featureUpdateEvents.has(e.properties.useConnection)) {
+				this._featureUpdateEvents.set(e.id, new Emitter<ProviderFeatures>());
 			}
 			this._featureUpdateEvents.get(e.properties.useConnection).fire(provider);
 		};
@@ -126,6 +132,9 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 				};
 				this._providers.set(e.id, provider);
 			}
+			if (!this._featureUpdateEvents.has(e.id)) {
+				this._featureUpdateEvents.set(e.id, new Emitter<ProviderFeatures>());
+			}
 			this._featureUpdateEvents.get(e.id).fire(provider);
 		};
 
@@ -139,7 +148,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		});
 		backupRegistry.onNewProvider(backupProviderHandler);
 
-		Object.entries(serializationRegistry).map(v => {
+		Object.entries(serializationRegistry.providers).map(v => {
 			serializationProviderHandler({ id: v[0], properties: v[1] });
 		});
 		serializationRegistry.onNewProvider(serializationProviderHandler);

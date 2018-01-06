@@ -128,13 +128,9 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			},
 			saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult> {
 				let serializationProvider = self._serializationService.getSerializationFeatureMetadataProvider(requestParams.ownerUri);
-				if (serializationProvider && serializationProvider.enabled) {
+				if (serializationProvider && serializationProvider) {
 					return self._proxy.$saveResults(handle, requestParams);
-				}
-				else if (serializationProvider && !serializationProvider.enabled) {
-					return self._serializationService.disabledSaveAs();
-				}
-				else {
+				} else {
 					return self._serializationService.saveAs(requestParams.resultFormat, requestParams.filePath, undefined, true);
 				}
 			},
@@ -339,13 +335,9 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			},
 			saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult> {
 				let serializationProvider = self._serializationService.getSerializationFeatureMetadataProvider(requestParams.ownerUri);
-				if (serializationProvider && serializationProvider.enabled) {
+				if (serializationProvider) {
 					return self._proxy.$saveResults(handle, requestParams);
-				}
-				else if (serializationProvider && !serializationProvider.enabled) {
-					return self._serializationService.disabledSaveAs();
-				}
-				else {
+				} else {
 					return self._serializationService.saveAs(requestParams.resultFormat, requestParams.filePath, undefined, true);
 				}
 			},

@@ -151,7 +151,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 * @deprecated; TO BE REMOVED
 	 * @param provider
 	 */
-	$registerCapabilitiesServiceProvider(provider: sqlops.CapabilitiesProvider): vscode.Disposable {
+	$registerCapabilitiesServiceProvider(): vscode.Disposable {
 		// NO OP
 		return undefined;
 	}

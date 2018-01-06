@@ -11,6 +11,8 @@ import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import * as sqlops from 'sqlops';
 import Event, { Emitter } from 'vs/base/common/event';
+import { ProviderFeatures } from 'sql/services/capabilities/capabilitiesService';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 // Test stubs for commonly used objects
 
@@ -211,7 +213,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return true;
 	}
 
-	getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities {
+	getCapabilities(providerName: string): ConnectionProviderProperties {
 		return undefined;
 	}
 

@@ -147,7 +147,7 @@ export class ServerTreeRenderer implements IRenderer {
 		}
 
 		let databaseName = connection.databaseName ? connection.databaseName : '<default>';
-		let userName = connection.userName ? connection.userName : "Windows Authentication";
+		let userName = connection.userName ? connection.userName : 'Windows Authentication';
 		let label = connection.serverName + ', ' + databaseName + ' (' + userName + ')';
 
 		templateData.label.textContent = label;

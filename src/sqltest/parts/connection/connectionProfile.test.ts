@@ -11,9 +11,11 @@ import { IConnectionProfile, IConnectionProfileStore } from 'sql/parts/connectio
 import * as sqlops from 'sqlops';
 import * as assert from 'assert';
 import { ServiceOptionType, ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ProviderFeatures } from 'sql/services/capabilities/capabilitiesService';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 suite('SQL ConnectionProfileInfo tests', () => {
-	let msSQLCapabilities: sqlops.DataProtocolServerCapabilities;
+	let msSQLCapabilities: ConnectionProviderProperties;
 
 	let connectionProfile: IConnectionProfile = {
 		serverName: 'new server',
@@ -47,80 +49,75 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	};
 
 	setup(() => {
-		let capabilities: sqlops.DataProtocolServerCapabilities[] = [];
-		let connectionProvider: sqlops.ConnectionProviderOptions = {
-			options: [
-				{
-					name: 'serverName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.serverName,
-					valueType: ServiceOptionType.string
-				},
-				{
-					name: 'databaseName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.databaseName,
-					valueType: ServiceOptionType.string
-				},
-				{
-					name: 'userName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.userName,
-					valueType: ServiceOptionType.string
-				},
-				{
-					name: 'authenticationType',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.authType,
-					valueType: ServiceOptionType.string
-				},
-				{
-					name: 'password',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.password,
-					valueType: ServiceOptionType.string
-				}
-			]
-		};
+		let capabilities: { [id: string]: ProviderFeatures } = {};
+		let connectionProvider: sqlops.ConnectionOption[] = [
+			{
+				name: 'serverName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.serverName,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'databaseName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.databaseName,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'userName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.userName,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'authenticationType',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.authType,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'password',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.password,
+				valueType: ServiceOptionType.string
+			}
+		];
 		msSQLCapabilities = {
-			protocolVersion: '1',
-			providerName: 'MSSQL',
-			providerDisplayName: 'MSSQL',
-			connectionProvider: connectionProvider,
-			adminServicesProvider: undefined,
-			features: undefined
+			providerId: 'MSSQL',
+			displayName: 'MSSQL',
+			connectionOptions: connectionProvider
 		};
-		capabilities.push(msSQLCapabilities);
+		capabilities['MSSQL'] = { connection: msSQLCapabilities, restore: undefined, backup: undefined, serialization: undefined };
 	});
 
 	test('set properties should set the values correctly', () => {

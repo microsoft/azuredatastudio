@@ -48,14 +48,8 @@ export class ConnectionStore {
 		this._groupIdToFullNameMap = {};
 		this._groupFullNameToIdMap = {};
 		if (!this._connectionConfig) {
-			let cachedServerCapabilities = this.getCachedServerCapabilities();
 			this._connectionConfig = new ConnectionConfig(this._configurationEditService,
-				this._workspaceConfigurationService, this._capabilitiesService, cachedServerCapabilities);
-		}
-		if (_capabilitiesService) {
-			_capabilitiesService.onProviderRegisteredEvent(e => {
-				this.saveCachedServerCapabilities();
-			});
+				this._workspaceConfigurationService, this._capabilitiesService);
 		}
 	}
 
@@ -172,7 +166,6 @@ export class ConnectionStore {
 					// Add necessary default properties before returning
 					// this is needed to support immediate connections
 					ConnInfo.fixupConnectionCredentials(profile);
-					this.saveCachedServerCapabilities();
 					resolve(profile);
 				}, err => {
 					reject(err);
@@ -212,23 +205,6 @@ export class ConnectionStore {
 		});
 	}
 
-	private getCachedServerCapabilities(): sqlops.DataProtocolServerCapabilities[] {
-		if (this._memento) {
-			let metadata: sqlops.DataProtocolServerCapabilities[] = this._memento[Constants.capabilitiesOptions];
-			return metadata;
-		} else {
-			return undefined;
-		}
-
-	}
-
-	private saveCachedServerCapabilities(): void {
-		if (this._memento) {
-			let capabilities = this._capabilitiesService.getCapabilities();
-			this._memento[Constants.capabilitiesOptions] = capabilities;
-		}
-	}
-
 	/**
 	 * Gets the list of recently used connections. These will not include the password - a separate call to
 	 * {addSavedPassword} is needed to fill that before connecting
@@ -250,9 +226,6 @@ export class ConnectionStore {
 			if (c) {
 				let capabilities = this._connectionConfig.getCapabilities(c.providerName);
 				let connectionProfile = new ConnectionProfile(capabilities, c);
-				this._capabilitiesService.onProviderRegisteredEvent((serverCapabilities) => {
-					connectionProfile.onProviderRegistered(serverCapabilities);
-				});
 				if (connectionProfile.saveProfile) {
 					if (!connectionProfile.groupFullName && connectionProfile.groupId) {
 						connectionProfile.groupFullName = this.getGroupFullName(connectionProfile.groupId);

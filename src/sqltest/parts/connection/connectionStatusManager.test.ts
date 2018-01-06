@@ -72,8 +72,7 @@ let connection3Id: string;
 suite('SQL ConnectionStatusManager tests', () => {
 	setup(() => {
 		capabilitiesService = new CapabilitiesTestService();
-		connectionProfileObject = new ConnectionProfile(capabilitiesService.getCapabilities().find(x => x.providerName === 'MSSQL')
-			, connectionProfile);
+		connectionProfileObject = new ConnectionProfile(capabilitiesService.getCapabilities('MSSQL').connection, connectionProfile);
 		connections = new ConnectionStatusManager(capabilitiesService);
 		connection1Id = Utils.generateUri(connectionProfile);
 		connection2Id = 'connection2Id';

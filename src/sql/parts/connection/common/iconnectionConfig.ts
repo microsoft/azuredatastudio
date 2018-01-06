@@ -23,7 +23,6 @@ export interface IConnectionConfig {
 	getAllGroups(): IConnectionProfileGroup[];
 	changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void>;
 	changeGroupIdForConnection(source: ConnectionProfile, targetGroupId: string): Promise<void>;
-	setCachedMetadata(cachedMetaData: ConnectionProviderProperties[]): void;
 	getCapabilities(providerName: string): ConnectionProviderProperties;
 	editGroup(group: ConnectionProfileGroup): Promise<void>;
 	deleteConnection(profile: ConnectionProfile): Promise<void>;

@@ -14,12 +14,14 @@ import { ConnectionStore } from 'sql/parts/connection/common/connectionStore';
 import { CredentialsService } from 'sql/services/credentials/credentialsService';
 import * as assert from 'assert';
 import { Memento } from 'vs/workbench/common/memento';
-import { CapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { CapabilitiesService, ProviderFeatures } from 'sql/services/capabilities/capabilitiesService';
 import * as sqlops from 'sqlops';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { Emitter } from 'vs/base/common/event';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { ConnectionOption } from 'sqlops';
 
 suite('SQL ConnectionStore tests', () => {
 	let defaultNamedProfile: IConnectionProfile;
@@ -32,9 +34,9 @@ suite('SQL ConnectionStore tests', () => {
 	let capabilitiesService: TypeMoq.Mock<CapabilitiesService>;
 	let mementoArray: any = [];
 	let maxRecent = 5;
-	let msSQLCapabilities: sqlops.DataProtocolServerCapabilities;
+	let msSQLCapabilities: ConnectionProviderProperties;
 	let defaultNamedConnectionProfile: ConnectionProfile;
-	let onProviderRegistered = new Emitter<sqlops.DataProtocolServerCapabilities>();
+	let onProviderRegistered = new Emitter<ProviderFeatures>();
 
 
 	setup(() => {
@@ -97,82 +99,77 @@ suite('SQL ConnectionStore tests', () => {
 		};
 
 		capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesService, TypeMoq.MockBehavior.Loose, extensionManagementServiceMock, {});
-		let capabilities: sqlops.DataProtocolServerCapabilities[] = [];
-		let connectionProvider: sqlops.ConnectionProviderOptions = {
-			options: [
-				{
-					name: 'serverName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.serverName,
-					valueType: ServiceOptionType.string
-				},
-				{
-					name: 'databaseName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.databaseName,
-					valueType: ServiceOptionType.string
-				},
-				{
-					name: 'userName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.userName,
-					valueType: ServiceOptionType.string
-				},
-				{
-					name: 'authenticationType',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.authType,
-					valueType: ServiceOptionType.string
-				},
-				{
-					name: 'password',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.password,
-					valueType: ServiceOptionType.string
-				}
-			]
-		};
+		let capabilities: { [id: string]: ProviderFeatures } = {};
+		let connectionProvider: ConnectionOption[] = [
+			{
+				name: 'serverName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.serverName,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'databaseName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.databaseName,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'userName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.userName,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'authenticationType',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.authType,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'password',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.password,
+				valueType: ServiceOptionType.string
+			}
+		];
 		msSQLCapabilities = {
-			protocolVersion: '1',
-			providerName: 'MSSQL',
-			providerDisplayName: 'MSSQL',
-			connectionProvider: connectionProvider,
-			adminServicesProvider: undefined,
-			features: undefined
+			providerId: 'MSSQL',
+			displayName: 'MSSQL',
+			connectionOptions: connectionProvider
 		};
-		capabilities.push(msSQLCapabilities);
-		capabilitiesService.setup(x => x.getCapabilities()).returns(() => capabilities);
-		capabilitiesService.setup(x => x.onProviderRegisteredEvent).returns(() => onProviderRegistered.event);
+		capabilities['MSSQL'] = { connection: msSQLCapabilities, backup: undefined, restore: undefined, serialization: undefined };
+		capabilitiesService.setup(x => x.providers).returns(() => capabilities);
+		capabilitiesService.setup(x => x.onConnectionProviderRegistered).returns(() => onProviderRegistered.event);
 		connectionConfig.setup(x => x.getCapabilities('MSSQL')).returns(() => msSQLCapabilities);
 		let groups: IConnectionProfileGroup[] = [
 			{
@@ -207,7 +204,7 @@ suite('SQL ConnectionStore tests', () => {
 		// Expect all of them to be saved even if size is limited to 3
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService.object, connectionConfig.object);
-		let promise = Promise.resolve();
+		let promise = Promise.resolve<any>();
 		for (let i = 0; i < numCreds; i++) {
 			let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			let connectionProfile = new ConnectionProfile(msSQLCapabilities, cred);
@@ -371,21 +368,16 @@ suite('SQL ConnectionStore tests', () => {
 
 	test('isPasswordRequired should return false if the password is not required in capabilities', () => {
 		let providerName: string = 'providername';
-		let connectionProvider: sqlops.ConnectionProviderOptions = {
-			options: msSQLCapabilities.connectionProvider.options.map(o => {
-				if (o.name === 'password') {
-					o.isRequired = false;
-				}
-				return o;
-			})
-		};
-		let providerCapabilities = {
-			protocolVersion: '1',
-			providerName: providerName,
-			providerDisplayName: providerName,
-			connectionProvider: connectionProvider,
-			adminServicesProvider: undefined,
-			features: undefined
+		let connectionProvider: ConnectionOption[] = msSQLCapabilities.connectionOptions.map(o => {
+			if (o.name === 'password') {
+				o.isRequired = false;
+			}
+			return o;
+		});
+		let providerCapabilities: ConnectionProviderProperties = {
+			providerId: providerName,
+			displayName: providerName,
+			connectionOptions: connectionProvider
 		};
 		connectionConfig.setup(x => x.getCapabilities(providerName)).returns(() => providerCapabilities);
 

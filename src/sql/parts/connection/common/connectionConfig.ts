@@ -14,10 +14,10 @@ import { IWorkspaceConfigurationService } from 'vs/workbench/services/configurat
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { ConnectionProfile } from './connectionProfile';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
 
 import { generateUuid } from 'vs/base/common/uuid';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 export interface ISaveGroupResult {
 	groups: IConnectionProfileGroup[];
@@ -29,27 +29,15 @@ export interface ISaveGroupResult {
  */
 export class ConnectionConfig implements IConnectionConfig {
 
-	private _providerCapabilitiesMap: { [providerName: string]: sqlops.DataProtocolServerCapabilities };
 	/**
 	 * Constructor.
 	 */
 	public constructor(
 		private _configurationEditService: ConfigurationEditingService,
 		private _workspaceConfigurationService: IWorkspaceConfigurationService,
-		private _capabilitiesService: ICapabilitiesService,
-		cachedMetadata?: sqlops.DataProtocolServerCapabilities[]
-	) {
-		this._providerCapabilitiesMap = {};
-		this.setCachedMetadata(cachedMetadata);
-	}
+		private _capabilitiesService: ICapabilitiesService
+	) { }
 
-	public setCachedMetadata(cachedMetadata: sqlops.DataProtocolServerCapabilities[]): void {
-		if (cachedMetadata) {
-			cachedMetadata.forEach(item => {
-				this.updateCapabilitiesCache(item.providerName, item);
-			});
-		}
-	}
 
 	/**
 	 * Returns connection groups from user and workspace settings.
@@ -76,41 +64,17 @@ export class ConnectionConfig implements IConnectionConfig {
 		return allGroups;
 	}
 
-	private updateCapabilitiesCache(providerName: string, providerCapabilities: sqlops.DataProtocolServerCapabilities): void {
-		if (providerName && providerCapabilities) {
-			this._providerCapabilitiesMap[providerName] = providerCapabilities;
-		}
-	}
-
-	private getCapabilitiesFromCache(providerName: string): sqlops.DataProtocolServerCapabilities {
-		if (providerName in this._providerCapabilitiesMap) {
-			return this._providerCapabilitiesMap[providerName];
-		}
-		return undefined;
-	}
-
 	/**
 	* Returns the capabilities for given provider name. First tries to get it from capabilitiesService and if it's not registered yet,
 	* Gets the data from the metadata stored in the config
 	* @param providerName Provider Name
 	*/
-	public getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities {
-		let result: sqlops.DataProtocolServerCapabilities = this.getCapabilitiesFromCache(providerName);
-		if (result) {
-			return result;
+	public getCapabilities(providerName: string): ConnectionProviderProperties {
+		let capabilities = this._capabilitiesService.providers[providerName];
+		if (capabilities) {
+			return capabilities.connection;
 		} else {
-			let capabilities = this._capabilitiesService.getCapabilities();
-			if (capabilities) {
-				let providerCapabilities = capabilities.find(c => c.providerName === providerName);
-				if (providerCapabilities) {
-					this.updateCapabilitiesCache(providerName, providerCapabilities);
-					return providerCapabilities;
-				} else {
-					return undefined;
-				}
-			} else {
-				return undefined;
-			}
+			return undefined;
 		}
 	}
 
@@ -154,7 +118,7 @@ export class ConnectionConfig implements IConnectionConfig {
 		});
 	}
 
-	private getConnectionProfileInstance(profile: IConnectionProfile, groupId: string, providerCapabilities: sqlops.DataProtocolServerCapabilities): ConnectionProfile {
+	private getConnectionProfileInstance(profile: IConnectionProfile, groupId: string, providerCapabilities: ConnectionProviderProperties): ConnectionProfile {
 		let connectionProfile = profile as ConnectionProfile;
 		if (connectionProfile === undefined) {
 			connectionProfile = new ConnectionProfile(providerCapabilities, profile);
@@ -284,10 +248,13 @@ export class ConnectionConfig implements IConnectionConfig {
 			let capabilitiesForProvider = this.getCapabilities(p.providerName);
 
 			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(p, capabilitiesForProvider);
-			providerConnectionProfile.setServerCapabilities(capabilitiesForProvider);
-			this._capabilitiesService.onProviderRegisteredEvent((serverCapabilities) => {
-				providerConnectionProfile.onProviderRegistered(serverCapabilities);
-			});
+			if (!capabilitiesForProvider) {
+				this._capabilitiesService.onConnectionProviderRegistered(e => {
+					if (e.connection.providerId === p.providerName) {
+						providerConnectionProfile.serverCapabilities = e.connection;
+					}
+				});
+			}
 
 			return providerConnectionProfile;
 		});
@@ -514,7 +481,7 @@ export class ConnectionConfig implements IConnectionConfig {
 	 */
 	private getConfiguration(key: string): any {
 		let configs: any;
-		configs = this._workspaceConfigurationService.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | sqlops.DataProtocolServerCapabilities[]>(key);
+		configs = this._workspaceConfigurationService.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | ConnectionProviderProperties[]>(key);
 		return configs;
 	}
 
@@ -525,7 +492,7 @@ export class ConnectionConfig implements IConnectionConfig {
 	 */
 	private writeConfiguration(
 		key: string,
-		profiles: IConnectionProfileStore[] | IConnectionProfileGroup[] | sqlops.DataProtocolServerCapabilities[],
+		profiles: IConnectionProfileStore[] | IConnectionProfileGroup[] | ConnectionProviderProperties[],
 		target: ConfigurationTarget = ConfigurationTarget.USER): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			let configValue: IConfigurationValue = {

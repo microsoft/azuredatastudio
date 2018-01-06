@@ -19,7 +19,7 @@ export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 	private static readonly SqlAuthentication = 'SqlLogin';
 	public static readonly ProviderPropertyName = 'providerName';
 
-	public constructor(public serverCapabilities?: ConnectionProviderProperties, model?: interfaces.IConnectionProfile) {
+	public constructor(public serverCapabilities?: ConnectionProviderProperties, private model?: interfaces.IConnectionProfile) {
 		this.options = {};
 		if (serverCapabilities) {
 			this.serverCapabilities = serverCapabilities;
@@ -107,7 +107,7 @@ export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 	}
 
 	private getSpecialTypeOptionValue(type: string): string {
-		let name = this.getSpecialTypeOptionName(type);
+		let name = this.getSpecialTypeOptionName(type) || type;
 		if (name) {
 			return this.options[name];
 		}
@@ -164,7 +164,7 @@ export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 		return providerId;
 	}
 
-	public getSpecialTypeOptionName(type: number): string {
+	public getSpecialTypeOptionName(type: string): string {
 		if (this.serverCapabilities) {
 			let optionMetadata = this.serverCapabilities.connectionOptions.find(o => o.specialValueType === type);
 			return !!optionMetadata ? optionMetadata.name : undefined;

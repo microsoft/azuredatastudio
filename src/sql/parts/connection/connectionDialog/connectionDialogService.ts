@@ -18,8 +18,6 @@ import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesServ
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { localize } from 'vs/nls';
 
-import * as sqlops from 'sqlops';
-
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { withElementById } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -83,16 +81,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IWindowsService private _windowsService: IWindowsService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService
-	) {
-		if (_capabilitiesService) {
-			_capabilitiesService.onProviderRegisteredEvent((capabilities => {
-				let defaultProvider = this.getDefaultProviderName();
-				if (capabilities.providerId === defaultProvider) {
-					this.showDialogWithModel();
-				}
-			}));
-		}
-	}
+	) { }
 
 	private getDefaultProviderName() {
 		if (this._workspaceConfigurationService) {
@@ -261,7 +250,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private cacheCapabilities(capabilities: ConnectionProviderProperties) {
 		if (capabilities) {
-			this._providerTypes.push(capabilities.providerId);
+			this._providerTypes.push(capabilities.displayName);
 			this._capabilitiesMaps[capabilities.providerId] = capabilities;
 			this._providerNameToDisplayNameMap[capabilities.providerId] = capabilities.displayName;
 		}
@@ -290,8 +279,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._inputModel = model;
 
 		if (this._providerTypes.length === 0) {
-			let capabilities = this._capabilitiesService.providers;
-			Object.values(capabilities).forEach(c => {
+			Object.values(this._capabilitiesService.providers).forEach(c => {
 				this.cacheCapabilities(c.connection);
 			});
 		}

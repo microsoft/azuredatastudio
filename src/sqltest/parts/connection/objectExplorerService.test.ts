@@ -17,6 +17,7 @@ import * as sqlops from 'sqlops';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 suite('SQL Object Explorer Service tests', () => {
 	var sqlOEProvider: TypeMoq.Mock<ObjectExplorerProviderTestService>;
@@ -120,88 +121,83 @@ suite('SQL Object Explorer Service tests', () => {
 		sqlOEProvider = TypeMoq.Mock.ofType(ObjectExplorerProviderTestService, TypeMoq.MockBehavior.Loose);
 		sqlOEProvider.callBase = true;
 
-
-		let sqlProvider = {
-			protocolVersion: '1',
-			providerName: 'MSSQL',
-			providerDisplayName: 'MSSQL',
-			connectionProvider: {
-				options: [
-					{
-						name: 'serverName',
-						displayName: undefined,
-						description: undefined,
-						groupName: undefined,
-						categoryValues: undefined,
-						defaultValue: undefined,
-						isIdentity: true,
-						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.serverName,
-						valueType: ServiceOptionType.string
-					},
-					{
-						name: 'databaseName',
-						displayName: undefined,
-						description: undefined,
-						groupName: undefined,
-						categoryValues: undefined,
-						defaultValue: undefined,
-						isIdentity: true,
-						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.databaseName,
-						valueType: ServiceOptionType.string
-					},
-					{
-						name: 'userName',
-						displayName: undefined,
-						description: undefined,
-						groupName: undefined,
-						categoryValues: undefined,
-						defaultValue: undefined,
-						isIdentity: true,
-						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.userName,
-						valueType: ServiceOptionType.string
-					},
-					{
-						name: 'authenticationType',
-						displayName: undefined,
-						description: undefined,
-						groupName: undefined,
-						categoryValues: undefined,
-						defaultValue: undefined,
-						isIdentity: true,
-						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.authType,
-						valueType: ServiceOptionType.string
-					},
-					{
-						name: 'password',
-						displayName: undefined,
-						description: undefined,
-						groupName: undefined,
-						categoryValues: undefined,
-						defaultValue: undefined,
-						isIdentity: true,
-						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.password,
-						valueType: ServiceOptionType.string
-					},
-					{
-						name: 'encrypt',
-						displayName: undefined,
-						description: undefined,
-						groupName: undefined,
-						categoryValues: undefined,
-						defaultValue: undefined,
-						isIdentity: false,
-						isRequired: false,
-						specialValueType: undefined,
-						valueType: ServiceOptionType.string
-					}]
-			},
-			adminServicesProvider: { databaseInfoOptions: [], databaseFileInfoOptions: [], fileGroupInfoOptions: [] },
-			features: undefined
+		let sqlProvider: ConnectionProviderProperties = {
+			providerId: 'MSSQL',
+			displayName: 'MSSQL',
+			connectionOptions: [
+				{
+					name: 'serverName',
+					displayName: undefined,
+					description: undefined,
+					groupName: undefined,
+					categoryValues: undefined,
+					defaultValue: undefined,
+					isIdentity: true,
+					isRequired: true,
+					specialValueType: ConnectionOptionSpecialType.serverName,
+					valueType: ServiceOptionType.string
+				},
+				{
+					name: 'databaseName',
+					displayName: undefined,
+					description: undefined,
+					groupName: undefined,
+					categoryValues: undefined,
+					defaultValue: undefined,
+					isIdentity: true,
+					isRequired: true,
+					specialValueType: ConnectionOptionSpecialType.databaseName,
+					valueType: ServiceOptionType.string
+				},
+				{
+					name: 'userName',
+					displayName: undefined,
+					description: undefined,
+					groupName: undefined,
+					categoryValues: undefined,
+					defaultValue: undefined,
+					isIdentity: true,
+					isRequired: true,
+					specialValueType: ConnectionOptionSpecialType.userName,
+					valueType: ServiceOptionType.string
+				},
+				{
+					name: 'authenticationType',
+					displayName: undefined,
+					description: undefined,
+					groupName: undefined,
+					categoryValues: undefined,
+					defaultValue: undefined,
+					isIdentity: true,
+					isRequired: true,
+					specialValueType: ConnectionOptionSpecialType.authType,
+					valueType: ServiceOptionType.string
+				},
+				{
+					name: 'password',
+					displayName: undefined,
+					description: undefined,
+					groupName: undefined,
+					categoryValues: undefined,
+					defaultValue: undefined,
+					isIdentity: true,
+					isRequired: true,
+					specialValueType: ConnectionOptionSpecialType.password,
+					valueType: ServiceOptionType.string
+				},
+				{
+					name: 'encrypt',
+					displayName: undefined,
+					description: undefined,
+					groupName: undefined,
+					categoryValues: undefined,
+					defaultValue: undefined,
+					isIdentity: false,
+					isRequired: false,
+					specialValueType: undefined,
+					valueType: ServiceOptionType.string
+				}
+			]
 		};
 
 		connection = new ConnectionProfile(sqlProvider, {

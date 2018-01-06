@@ -8,6 +8,8 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
 import Event, { Emitter } from 'vs/base/common/event';
 import { clone } from 'vs/base/common/objects';
+import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/common/extensionsRegistry';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface IBackupOption {
 	specialValueType: string;
@@ -16,7 +18,7 @@ export interface IBackupOption {
 	displayName: string;
 	description: string;
 	groupName: string;
-	valueType: string;
+	valueType: ServiceOptionType;
 	defaultValue: any;
 	objectType: any;
 	categoryValues: any;
@@ -105,7 +107,8 @@ const BackupProviderContrib: IJSONSchema = {
 						type: 'string'
 					},
 					valueType: {
-						type: 'string'
+						type: 'string',
+						enum: [Object.values(ServiceOptionType)]
 					},
 					defaultValue: {
 						type: 'any'
@@ -129,7 +132,6 @@ const BackupProviderContrib: IJSONSchema = {
 	required: ['providerId']
 };
 
-/* Saved for later
 ExtensionsRegistry.registerExtensionPoint<BackupProviderProperties | BackupProviderProperties[]>('backupProvider', [], BackupProviderContrib).setHandler(extensions => {
 
 	function handleCommand(contrib: BackupProviderProperties, extension: IExtensionPointUser<any>) {
@@ -147,4 +149,3 @@ ExtensionsRegistry.registerExtensionPoint<BackupProviderProperties | BackupProvi
 		}
 	}
 });
-*/

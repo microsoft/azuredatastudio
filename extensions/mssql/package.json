@@ -195,7 +195,7 @@
       "displayName": "Microsoft SQL Server",
       "connectionOptions": [
         {
-          "specialValueType": "serverName",
+          "specialValueType": "server",
           "isIdentity": true,
           "name": "server",
           "displayName": "Server",
@@ -206,7 +206,7 @@
           "isArray": false
         },
         {
-          "specialValueType": "databaseName",
+          "specialValueType": "database",
           "isIdentity": true,
           "name": "database",
           "displayName": "Database",
@@ -217,7 +217,7 @@
           "isArray": false
         },
         {
-          "specialValueType": "authType",
+          "specialValueType": "authenticationType",
           "isIdentity": true,
           "name": "authenticationType",
           "displayName": "Authentication type",
@@ -238,9 +238,9 @@
           "isArray": false
         },
         {
-          "specialValueType": "userName",
+          "specialValueType": "server",
           "isIdentity": true,
-          "name": "user",
+          "name": "server",
           "displayName": "User name",
           "description": "Indicates the user ID to be used when connecting to the data source",
           "groupName": "Security",
