@@ -59,8 +59,8 @@ export class TreeNode {
 	public nodeStatus: string;
 
 	/**
-  * Children of this node
-  */
+  	* Children of this node
+  	*/
 	public children: TreeNode[];
 
 
@@ -106,6 +106,18 @@ export class TreeNode {
 			return true;
 		}
 		return false;
+	}
+
+	public get notFolderParent(): TreeNode {
+		if (!this.parent) {
+			return undefined;
+		} else {
+			if (this.parent.nodeTypeId === 'Folder') {
+				return this.parent.notFolderParent;
+			} else {
+				return this.parent;
+			}
+		}
 	}
 
 	constructor(nodeTypeId: string, label: string, isAlwaysLeaf: boolean, nodePath: string,

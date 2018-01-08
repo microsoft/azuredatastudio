@@ -19,11 +19,26 @@ import Severity from 'vs/base/common/severity';
  */
 export class ServerTreeDataSource implements IDataSource {
 
+	private _nodesVisibleStates: { [id: string]: { [id: string]: boolean } } = {};
+
 	constructor(
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService
 	) {
+
+	}
+
+	public get ObjectExplorerService(): IObjectExplorerService {
+		return this._objectExplorerService;
+	}
+
+	public get nodesVisibleStates(): { [id: string]: { [id: string]: boolean } } {
+		return this._nodesVisibleStates;
+	}
+
+	public set nodesVisibleStates(value: { [id: string]: { [id: string]: boolean } }) {
+		this._nodesVisibleStates = value;
 	}
 
 	/**

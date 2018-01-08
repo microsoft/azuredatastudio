@@ -12,9 +12,10 @@ import { ServerTreeDataSource } from 'sql/parts/registeredServer/viewlet/serverT
 import { ServerTreeController } from 'sql/parts/registeredServer/viewlet/serverTreeController';
 import { ServerTreeActionProvider } from 'sql/parts/registeredServer/viewlet/serverTreeActionProvider';
 import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from 'vs/base/parts/tree/browser/treeDefaults';
-import { IController } from 'vs/base/parts/tree/browser/tree';
+import { IController, IFilter } from 'vs/base/parts/tree/browser/tree';
 import { ServerTreeDragAndDrop, RecentConnectionsDragAndDrop } from 'sql/parts/registeredServer/viewlet/dragAndDropController';
 import { RecentConnectionDataSource } from 'sql/parts/registeredServer/viewlet/recentConnectionDataSource';
+import { ServerTreeFilter } from 'sql/parts/registeredServer/viewlet/serverTreeFilter';
 
 export class TreeCreationUtils {
 	/**
@@ -40,14 +41,17 @@ export class TreeCreationUtils {
 	/**
 	 * Create a Servers viewlet tree
 	 */
-	public static createRegisteredServersTree(treeContainer: HTMLElement, instantiationService: IInstantiationService): Tree {
+	public static createRegisteredServersTree(treeContainer: HTMLElement, instantiationService: IInstantiationService, treeFilter?: ServerTreeFilter): Tree {
 
 		const dataSource = instantiationService.createInstance(ServerTreeDataSource);
 		const actionProvider = instantiationService.createInstance(ServerTreeActionProvider);
 		const renderer = instantiationService.createInstance(ServerTreeRenderer, false);
 		const controller = instantiationService.createInstance(ServerTreeController, actionProvider);
 		const dnd = instantiationService.createInstance(ServerTreeDragAndDrop);
-		const filter = new DefaultFilter();
+		const filter = treeFilter ? treeFilter : new DefaultFilter();
+		if (treeFilter) {
+			treeFilter.DataSource = dataSource;
+		}
 		const sorter = undefined;
 		const accessibilityProvider = new DefaultAccessibilityProvider();
 

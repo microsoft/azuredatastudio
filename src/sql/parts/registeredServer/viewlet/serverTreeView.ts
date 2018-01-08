@@ -27,6 +27,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
+import { ServerTreeFilter } from 'sql/parts/registeredServer/viewlet/serverTreeFilter';
 
 const $ = builder.$;
 
@@ -40,6 +41,7 @@ export class ServerTreeView {
 	private _treeSelectionHandler: TreeSelectionHandler;
 	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
 	private _tree: ITree;
+	private _treeFilter: ServerTreeFilter;
 	private _toDispose: IDisposable[] = [];
 
 	constructor(
@@ -56,6 +58,7 @@ export class ServerTreeView {
 			ActiveConnectionsFilterAction.LABEL,
 			this);
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
+		this._treeFilter = new ServerTreeFilter();
 	}
 
 	/**
@@ -84,7 +87,8 @@ export class ServerTreeView {
 			}));
 		}
 
-		this._tree = TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService);
+		this._tree = TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService, this._treeFilter);
+
 		//this._tree.setInput(undefined);
 		this._toDispose.push(this._tree.addListener('selection', (event) => this.onSelected(event)));
 
@@ -234,6 +238,10 @@ export class ServerTreeView {
 	public refreshTree(): void {
 		this.messages.hide();
 		this.clearOtherActions();
+		this._treeFilter.filterString = undefined;
+		if (this._treeFilter.DataSource) {
+			this._treeFilter.DataSource.nodesVisibleStates = {};
+		}
 		TreeUpdateUtils.registeredServerUpdate(this._tree, this._connectionManagementService);
 	}
 
@@ -317,6 +325,13 @@ export class ServerTreeView {
 		// Clear other actions if user searched during other views
 		this.clearOtherActions();
 		// Filter connections based on search
+		if (self._treeFilter.DataSource) {
+			self._treeFilter.DataSource.nodesVisibleStates = {};
+		}
+		self._treeFilter.filterString = searchString;
+
+		self._tree.refresh();
+		/*
 		let filteredResults = this.searchConnections(searchString);
 		if (!filteredResults || filteredResults.length === 0) {
 			this.messages.show();
@@ -333,43 +348,7 @@ export class ServerTreeView {
 				self._tree.clearFocus();
 			}
 		}, errors.onUnexpectedError);
-	}
-
-	/**
-	 * Searches through all the connections and returns a list of matching connections
-	 */
-	private searchConnections(searchString: string): ConnectionProfile[] {
-
-		let root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
-		let connections = ConnectionProfileGroup.getConnectionsInGroup(root);
-		let results = connections.filter(con => {
-			if (searchString && (searchString.length > 0)) {
-				return this.isMatch(con, searchString);
-			} else {
-				return false;
-			}
-		});
-		return results;
-	}
-
-	/**
-	 * Returns true if the connection matches the search string.
-	 * For now, the search criteria is true if the
-	 * server name or database name contains the search string (ignores case).
-	 */
-	private isMatch(connection: ConnectionProfile, searchString: string): boolean {
-		searchString = searchString.trim().toLocaleUpperCase();
-		if (this.checkIncludes(searchString, connection.databaseName) || this.checkIncludes(searchString, connection.serverName)) {
-			return true;
-		}
-		return false;
-	}
-
-	private checkIncludes(searchString: string, candidate: string): boolean {
-		if (candidate && searchString) {
-			return candidate.toLocaleUpperCase().includes(searchString);
-		}
-		return false;
+		*/
 	}
 
 	/**
