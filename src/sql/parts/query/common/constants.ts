@@ -10,3 +10,6 @@ export const configShowBatchTime = 'showBatchTime';
 export const querySection = 'query';
 export const shortcutStart = 'shortcut';
 
+export const tabColorModeOff = 'off';
+export const tabColorModeBorder = 'border';
+export const tabColorModeFill = 'fill';

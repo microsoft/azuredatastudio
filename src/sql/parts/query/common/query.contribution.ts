@@ -31,6 +31,7 @@ import * as gridActions from 'sql/parts/grid/views/gridActions';
 import * as gridCommands from 'sql/parts/grid/views/gridCommands';
 import { QueryPlanEditor } from 'sql/parts/queryPlan/queryPlanEditor';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
+import * as Constants from 'sql/parts/query/common/constants';
 import { localize } from 'vs/nls';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands
@@ -240,10 +241,16 @@ let registryProperties = {
 		'description': localize('sql.showBatchTime', '[Optional] Should execution time be shown for individual batches'),
 		'default': false
 	},
-	'sql.enableTabColors': {
-		'type': 'boolean',
-		'description': localize('sql.enableTabColors', 'True to color tabs based on the server group of their active connection, false otherwise'),
-		'default': true
+	'sql.tabColorMode': {
+		'type': 'string',
+		'enum': [Constants.tabColorModeOff, Constants.tabColorModeBorder, Constants.tabColorModeFill],
+		'enumDescriptions': [
+			localize('tabColorMode.off', "Tab coloring will be disabled"),
+			localize('tabColorMode.border', "The top border of each editor tab will be colored to match the relevant server group"),
+			localize('tabColorMode.fill', "Each editor tab's background color will match the relevant server group"),
+		],
+		'default': Constants.tabColorModeOff,
+		'description': localize('tabColorMode', "Controls how to color tabs based on the server group of their active connection")
 	},
 	'mssql.intelliSense.enableIntelliSense': {
 		'type': 'boolean',
