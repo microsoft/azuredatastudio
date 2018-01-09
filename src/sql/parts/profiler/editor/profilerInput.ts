@@ -62,19 +62,17 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public set sessionTemplate(template: IProfilerSessionTemplate) {
-		if (!this.state.isConnected || this.state.isStopped) {
-			this._sessionTemplate = template;
-			let newColumns = this.sessionTemplate.view.events.reduce<Array<string>>((p, e) => {
-				e.columns.forEach(c => {
-					if (!p.includes(c)) {
-						p.push(c);
-					}
-				});
-				return p;
-			}, []);
-			newColumns.unshift('EventClass');
-			this.setColumns(newColumns);
-		}
+		this._sessionTemplate = template;
+		let newColumns = this.sessionTemplate.view.events.reduce<Array<string>>((p, e) => {
+			e.columns.forEach(c => {
+				if (!p.includes(c)) {
+					p.push(c);
+				}
+			});
+			return p;
+		}, []);
+		newColumns.unshift('EventClass');
+		this.setColumns(newColumns);
 	}
 
 	public get sessionTemplate(): IProfilerSessionTemplate {
