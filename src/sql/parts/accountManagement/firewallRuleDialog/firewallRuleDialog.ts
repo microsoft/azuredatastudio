@@ -102,7 +102,7 @@ export class FirewallRuleDialog extends Modal {
 				'Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.');
 			this.createLabelElement(new Builder(textDescriptionContainer), dialogDescription, false);
 
-			// TODO: Make this 1) extensible and 2) open the info via an action
+			// TODO: Make this 1) extensible and 2) open the info via an action (01/08/2018, https://github.com/Microsoft/sqlopsstudio/issues/450)
 			// this._helpLink = DOM.append(textDescriptionContainer, DOM.$('a.help-link'));
 			// this._helpLink.setAttribute('href', 'https://docs.microsoft.com/en-us/azure/sql-database/sql-database-firewall-configure');
 			// this._helpLink.innerHTML += localize('firewallRuleHelpDescription', 'Learn more about firewall settings');
