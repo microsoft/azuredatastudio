@@ -27,7 +27,6 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
-import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
 
 const $ = builder.$;
 
@@ -57,7 +56,6 @@ export class ServerTreeView {
 			ActiveConnectionsFilterAction.LABEL,
 			this);
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
-		_objectExplorerService.registerServerTreeView(this);
 	}
 
 	/**
@@ -408,28 +406,16 @@ export class ServerTreeView {
 		}
 	}
 
-	public getSelectedProfile(): ConnectionProfile {
-		let selection = this._tree.getSelection();
-		if (selection.length === 1) {
-			let selectedNode = selection[0];
-			if (selectedNode instanceof ConnectionProfile) {
-				return selectedNode;
-			} else if (selectedNode instanceof TreeNode) {
-				if (selectedNode.nodeTypeId === 'Database' && selectedNode.isAlwaysLeaf) {
-					return undefined;
-				}
-				let profile = selectedNode.getConnectionProfile();
-				let database = selectedNode.getDatabaseName();
-				if (database) {
-					return profile.cloneWithDatabase(database);
-				} else {
-					return profile;
-				}
-			}
-		}
-		return undefined;
+	/**
+	 * Get the list of selected nodes in the tree
+	*/
+	public getSelection(): any[] {
+		return this._tree.getSelection();
 	}
 
+	/**
+	 * Get whether the tree view currently has focus
+	*/
 	public isFocused(): boolean {
 		return this._tree.isDOMFocused();
 	}

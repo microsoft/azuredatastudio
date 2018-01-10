@@ -243,7 +243,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	getDefaultConnection(): IConnectionProfile {
+	getCurrentGlobalConnection(): IConnectionProfile {
 		return undefined;
 	}
 

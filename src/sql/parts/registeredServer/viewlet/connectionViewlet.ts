@@ -26,6 +26,7 @@ import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ClearSearchAction, AddServerAction, AddServerGroupAction, ActiveConnectionsFilterAction } from 'sql/parts/registeredServer/viewlet/connectionTreeAction';
 import { warn } from 'sql/base/common/log';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 
 export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 
@@ -48,7 +49,8 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IViewletService private viewletService: IViewletService,
-		@IMessageService private messageService: IMessageService
+		@IMessageService private messageService: IMessageService,
+		@IObjectExplorerService private objectExplorerService: IObjectExplorerService
 	) {
 		super(VIEWLET_ID, telemetryService, _themeService);
 		this._searchDelayer = new ThrottledDelayer(500);
@@ -62,6 +64,7 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 			AddServerGroupAction.LABEL);
 		this._serverTreeView = this._instantiationService.createInstance(ServerTreeView);
 		this._activeConnectionsFilterAction = this._serverTreeView.activeConnectionsFilterAction;
+		this.objectExplorerService.registerServerTreeView(this._serverTreeView);
 	}
 
 	private onError(err: any): void {

@@ -58,7 +58,7 @@ export interface IObjectExplorerService {
 
 	registerServerTreeView(view: ServerTreeView): void;
 
-	getSelectedProfile(): ConnectionProfile;
+	getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string };
 
 	isFocused(): boolean;
 }
@@ -367,17 +367,41 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public registerServerTreeView(view: ServerTreeView): void {
-		console.log('registering server view');
+		if (this._serverTreeView) {
+			throw new Error('The object explorer server tree view is already registered');
+		}
 		this._serverTreeView = view;
 	}
 
-	public getSelectedProfile(): ConnectionProfile {
+	/**
+	 * Returns the connection profile corresponding to the current Object Explorer selection,
+	 * or undefined if there are multiple selections or no such connection
+	 */
+	public getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string } {
 		if (!this._serverTreeView) {
 			return undefined;
 		}
-		return this._serverTreeView.getSelectedProfile();
+		let selection = this._serverTreeView.getSelection();
+		if (selection.length === 1) {
+			let selectedNode = selection[0];
+			if (selectedNode instanceof ConnectionProfile) {
+				return { profile: selectedNode, databaseName: undefined };
+			} else if (selectedNode instanceof TreeNode) {
+				let profile = selectedNode.getConnectionProfile();
+				let database = selectedNode.getDatabaseName();
+				// If the database is unavailable, use the server connection
+				if (selectedNode.nodeTypeId === 'Database' && selectedNode.isAlwaysLeaf) {
+					database = undefined;
+				}
+				return { profile: profile, databaseName: database };
+			}
+		}
+		return undefined;
 	}
 
+	/**
+	 * Returns a boolean indicating whether the Object Explorer tree has focus
+	*/
 	public isFocused(): boolean {
 		return this._serverTreeView.isFocused();
 	}

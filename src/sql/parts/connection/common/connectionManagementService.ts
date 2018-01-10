@@ -105,7 +105,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		@IStatusbarService private _statusBarService: IStatusbarService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IViewletService private _viewletService: IViewletService,
-		@IAngularEventingService private _angularEventing: IAngularEventingService,
+		@IAngularEventingService private _angularEventing: IAngularEventingService
 	) {
 		if (this._instantiationService) {
 			this._configurationEditService = this._instantiationService.createInstance(ConfigurationEditingService);
@@ -1351,34 +1351,43 @@ export class ConnectionManagementService implements IConnectionManagementService
 		return matchingGroup.color;
 	}
 
-	public getDefaultConnection(): IConnectionProfile {
-		let focused = this._objectExplorerService.isFocused();
-		console.log('object explorer has focus: ' + focused);
-		let selectedConnection: IConnectionProfile;
-		let objectExplorerConnection = this._objectExplorerService.getSelectedProfile();
-		if (objectExplorerConnection) {
-			console.log(objectExplorerConnection.id);
-			selectedConnection = objectExplorerConnection;
-		} else {
-			console.log('no selected connection');
+	/**
+	 * Get the current global connection, which is the connection from the active editor, unless OE
+	 * is focused or there is no such editor, in which case it comes from the OE selection. Returns
+	 * undefined when there is no such connection.
+	*/
+	public getCurrentGlobalConnection(): IConnectionProfile {
+		let connection: IConnectionProfile;
+
+		let objectExplorerSelection = this._objectExplorerService.getSelectedProfileAndDatabase();
+		if (objectExplorerSelection) {
+			let objectExplorerProfile = objectExplorerSelection.profile;
+			if (this.isProfileConnected(objectExplorerProfile)) {
+				if (objectExplorerSelection.databaseName) {
+					connection = objectExplorerProfile.cloneWithDatabase(objectExplorerSelection.databaseName);
+				} else {
+					connection = objectExplorerProfile;
+				}
+			}
+			if (this._objectExplorerService.isFocused()) {
+				return connection;
+			}
 		}
+
 		let activeInput = this._editorService.getActiveEditorInput();
 		if (activeInput) {
 			if (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput) {
-				console.log(activeInput.uri);
-				if (!focused) {
-					selectedConnection = this.getConnectionProfile(activeInput.uri);
-				}
-			} else {
-				console.log('active input is not a sql editor');
+				connection = this.getConnectionProfile(activeInput.uri);
 			}
-		} else {
-			console.log('no active editor');
 		}
-		return selectedConnection;
+
+		return connection;
 	}
 
 	public registerObjectExplorerService(service: IObjectExplorerService): void {
+		if (this._objectExplorerService) {
+			throw new Error('The object explorer service is already registered');
+		}
 		this._objectExplorerService = service;
 	}
 

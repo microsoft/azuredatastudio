@@ -256,10 +256,17 @@ export interface IConnectionManagementService {
 	rebuildIntelliSenseCache(uri: string): Thenable<void>;
 
 	/**
-	 * TODO
-	 */
-	getDefaultConnection(): IConnectionProfile;
+	 * Get the current global connection, which is the connection from the active editor, unless OE
+	 * is focused or there is no such editor, in which case it comes from the OE selection. Returns
+	 * undefined when there is no such connection.
+	 * @returns {IConnectionProfile} The connection profile for the current global connection
+	*/
+	getCurrentGlobalConnection(): IConnectionProfile;
 
+	/**
+	 * Register the object explorer service so that the connection service can interact with it
+	 * @param service The object explorer service instance to register
+	 */
 	registerObjectExplorerService(service: IObjectExplorerService): void;
 }
 

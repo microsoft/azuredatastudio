@@ -544,7 +544,6 @@ export class GlobalNewUntitledFileAction extends Action {
 	public run(): TPromise<any> {
 		// {{SQL CARBON EDIT}}
 		TaskUtilities.newQuery(undefined, this.connectionManagementService, this.queryEditorService);
-		// this.queryEditorService.newSqlEditor(undefined, undefined);
 		return undefined;
 	}
 }

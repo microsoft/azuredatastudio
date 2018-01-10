@@ -241,7 +241,7 @@ export function newQuery(
 ): Promise<void> {
 	return new Promise<void>((resolve) => {
 		if (!connectionProfile) {
-			connectionProfile = connectionService.getDefaultConnection();
+			connectionProfile = connectionService.getCurrentGlobalConnection();
 		}
 		queryEditorService.newSqlEditor(sqlContent).then((owner: IConnectableInput) => {
 			// Connect our editor to the input connection
