@@ -18,6 +18,7 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
+import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeView';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -54,6 +55,12 @@ export interface IObjectExplorerService {
 	deleteObjectExplorerNode(connection: IConnectionProfile): void;
 
 	onUpdateObjectExplorerNodes: Event<ObjectExplorerNodeEventArgs>;
+
+	registerServerTreeView(view: ServerTreeView): void;
+
+	getSelectedProfile(): ConnectionProfile;
+
+	isFocused(): boolean;
 }
 
 interface SessionStatus {
@@ -85,6 +92,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _onUpdateObjectExplorerNodes: Emitter<ObjectExplorerNodeEventArgs>;
 
+	private _serverTreeView: ServerTreeView;
+
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ITelemetryService private _telemetryService: ITelemetryService
@@ -93,6 +102,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._activeObjectExplorerNodes = {};
 		this._sessions = {};
 		this._providers = {};
+		this._connectionManagementService.registerObjectExplorerService(this);
 	}
 
 	public get onUpdateObjectExplorerNodes(): Event<ObjectExplorerNodeEventArgs> {
@@ -354,5 +364,21 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 		return new TreeNode(nodeInfo.nodeType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
 			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata);
+	}
+
+	public registerServerTreeView(view: ServerTreeView): void {
+		console.log('registering server view');
+		this._serverTreeView = view;
+	}
+
+	public getSelectedProfile(): ConnectionProfile {
+		if (!this._serverTreeView) {
+			return undefined;
+		}
+		return this._serverTreeView.getSelectedProfile();
+	}
+
+	public isFocused(): boolean {
+		return this._serverTreeView.isFocused();
 	}
 }

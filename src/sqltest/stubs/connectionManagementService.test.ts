@@ -11,6 +11,7 @@ import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import data = require('data');
 import Event, { Emitter } from 'vs/base/common/event';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 
 // Test stubs for commonly used objects
 
@@ -239,6 +240,14 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getTabColorForUri(uri: string): string {
+		return undefined;
+	}
+
+	getDefaultConnection(): IConnectionProfile {
+		return undefined;
+	}
+
+	registerObjectExplorerService(service: IObjectExplorerService): void {
 		return undefined;
 	}
 }

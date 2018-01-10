@@ -56,6 +56,9 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { Deferred } from 'sql/base/common/promise';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 
 export class ConnectionManagementService implements IConnectionManagementService {
 
@@ -81,6 +84,8 @@ export class ConnectionManagementService implements IConnectionManagementService
 
 	private _configurationEditService: ConfigurationEditingService;
 
+	private _objectExplorerService: IObjectExplorerService;
+
 	constructor(
 		private _connectionMemento: Memento,
 		private _connectionStore: ConnectionStore,
@@ -100,7 +105,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		@IStatusbarService private _statusBarService: IStatusbarService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IViewletService private _viewletService: IViewletService,
-		@IAngularEventingService private _angularEventing: IAngularEventingService
+		@IAngularEventingService private _angularEventing: IAngularEventingService,
 	) {
 		if (this._instantiationService) {
 			this._configurationEditService = this._instantiationService.createInstance(ConfigurationEditingService);
@@ -1344,6 +1349,37 @@ export class ConnectionManagementService implements IConnectionManagementService
 			return undefined;
 		}
 		return matchingGroup.color;
+	}
+
+	public getDefaultConnection(): IConnectionProfile {
+		let focused = this._objectExplorerService.isFocused();
+		console.log('object explorer has focus: ' + focused);
+		let selectedConnection: IConnectionProfile;
+		let objectExplorerConnection = this._objectExplorerService.getSelectedProfile();
+		if (objectExplorerConnection) {
+			console.log(objectExplorerConnection.id);
+			selectedConnection = objectExplorerConnection;
+		} else {
+			console.log('no selected connection');
+		}
+		let activeInput = this._editorService.getActiveEditorInput();
+		if (activeInput) {
+			if (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput) {
+				console.log(activeInput.uri);
+				if (!focused) {
+					selectedConnection = this.getConnectionProfile(activeInput.uri);
+				}
+			} else {
+				console.log('active input is not a sql editor');
+			}
+		} else {
+			console.log('no active editor');
+		}
+		return selectedConnection;
+	}
+
+	public registerObjectExplorerService(service: IObjectExplorerService): void {
+		this._objectExplorerService = service;
 	}
 
 	private refreshEditorTitles(): void {

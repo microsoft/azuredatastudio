@@ -16,6 +16,7 @@ import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/conne
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ConnectionManagementInfo } from './connectionManagementInfo';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 
 export const VIEWLET_ID = 'workbench.view.connections';
 
@@ -253,6 +254,13 @@ export interface IConnectionManagementService {
 	 * Refresh the IntelliSense cache for the connection with the given URI
 	 */
 	rebuildIntelliSenseCache(uri: string): Thenable<void>;
+
+	/**
+	 * TODO
+	 */
+	getDefaultConnection(): IConnectionProfile;
+
+	registerObjectExplorerService(service: IObjectExplorerService): void;
 }
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');

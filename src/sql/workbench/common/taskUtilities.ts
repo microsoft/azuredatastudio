@@ -240,6 +240,9 @@ export function newQuery(
 	executeOnOpen: RunQueryOnConnectionMode = RunQueryOnConnectionMode.none
 ): Promise<void> {
 	return new Promise<void>((resolve) => {
+		if (!connectionProfile) {
+			connectionProfile = connectionService.getDefaultConnection();
+		}
 		queryEditorService.newSqlEditor(sqlContent).then((owner: IConnectableInput) => {
 			// Connect our editor to the input connection
 			let options: IConnectionCompletionOptions = {
@@ -249,9 +252,13 @@ export function newQuery(
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			};
-			connectionService.connect(connectionProfile, owner.uri, options).then(() => {
+			if (connectionProfile) {
+				connectionService.connect(connectionProfile, owner.uri, options).then(() => {
+					resolve();
+				});
+			} else {
 				resolve();
-			});
+			}
 		});
 	});
 }
