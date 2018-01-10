@@ -123,16 +123,40 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._state;
 	}
 
-	public onMoreRows(events: data.ProfilerSessionEvents) {
+	public onMoreRows(eventMessage: data.ProfilerSessionEvents) {
+		for (let i: number  = 0; i < eventMessage.events.length && i < 500; ++i) {
+			let e: data.ProfilerEvent = eventMessage.events[i];
+			let data = {};
+			data['EventClass'] =  e.name;
+			const columns = [
+				'EventClass',
+				'TextData',
+				'ApplicationName',
+				'NTUserName',
+				'LoginName',
+				'CPU',
+				'Reads',
+				'Writes',
+				'Duration',
+				'ClientProcessID',
+				'SPID',
+				'StartTime',
+				'EndTime',
+				'BinaryData'
+			];
 
-		events = undefined;
+			let p = 1;
+			for (let key in e.values) {
+				let value = e.values[key];
+				data[columns[p]] = value;
+				++p;
+				if (p === columns.length) {
+					break;
+				}
+			}
+			this._data.push(data);
+		}
 
-		// let validColumns = this.sessionTemplate.view.events.find(i => i.name === data.EventClass).columns;
-		// Object.keys(rowCount).forEach(k => {
-		// 	if (!validColumns.includes(k)) {
-		// 		delete rowCount[k];
-		// 	}
-		// });
-		// this._data.push(data);
+
 	}
 }
