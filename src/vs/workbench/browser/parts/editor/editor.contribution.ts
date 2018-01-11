@@ -110,7 +110,7 @@ class UntitledEditorInputFactory implements IEditorInputFactory {
 			return null; // never restore untitled unless hot exit is enabled
 		}
 
-		let untitledEditorInput = <UntitledEditorInput>editorInput;
+		const untitledEditorInput = <UntitledEditorInput>editorInput;
 
 		// {{SQL CARBON EDIT}}
 		if (!untitledEditorInput.getResource()) {
