@@ -17,6 +17,10 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { Position, Direction } from 'vs/platform/editor/common/editor';
 import { ResourceMap } from 'vs/base/common/map';
 
+// {{SQL CARBON EDIT}}
+import { QueryInput } from 'sql/parts/query/common/queryInput';
+import * as CustomInputConverter from 'sql/parts/common/customInputConverter';
+
 export interface EditorCloseEvent extends IEditorCloseEvent {
 	editor: EditorInput;
 }
@@ -643,7 +647,14 @@ export class EditorGroup implements IEditorGroup {
 		let serializableEditors: EditorInput[] = [];
 		let serializedEditors: ISerializedEditorInput[] = [];
 		let serializablePreviewIndex: number;
-		this.editors.forEach(e => {
+		// {{SQL CARBON EDIT}}
+		let editors = this.editors.map(e => {
+			if (e instanceof QueryInput) {
+				return e.sql;
+			}
+			return e;
+		});
+		editors.forEach(e => {
 			let factory = registry.getEditorInputFactory(e.getTypeId());
 			if (factory) {
 				let value = factory.serialize(e);
@@ -658,7 +669,14 @@ export class EditorGroup implements IEditorGroup {
 			}
 		});
 
-		const serializableMru = this.mru.map(e => this.indexOf(e, serializableEditors)).filter(i => i >= 0);
+		// {{SQL CARBON EDIT}}
+		let mru = this.mru.map(e => {
+			if (e instanceof QueryInput) {
+				return e.sql;
+			}
+			return e;
+		});
+		const serializableMru = mru.map(e => this.indexOf(e, serializableEditors)).filter(i => i >= 0);
 
 		return {
 			label: this.label,
@@ -680,7 +698,8 @@ export class EditorGroup implements IEditorGroup {
 				this.hookEditorListeners(editor);
 				this.updateResourceMap(editor, false /* add */);
 
-				return editor;
+				// {{SQL CARBON EDIT}}
+				return CustomInputConverter.convertEditorInput(editor, undefined, this.instantiationService);
 			}
 
 			return null;
