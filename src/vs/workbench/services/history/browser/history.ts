@@ -32,6 +32,10 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ResourceGlobMatcher } from 'vs/workbench/common/resources';
 import { IEditorRegistry, Extensions } from 'vs/workbench/browser/editor';
 
+// {{SQL CARBON EDIT}}
+import { QueryInput } from 'sql/parts/query/common/queryInput';
+import * as CustomInputConverter from 'sql/parts/common/customInputConverter';
+
 /**
  * Stores the selection & view state of an editor and allows to compare it to other selection states.
  */
@@ -716,7 +720,16 @@ export class HistoryService extends BaseHistoryService implements IHistoryServic
 
 		const registry = Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories);
 
-		const entries: ISerializedEditorHistoryEntry[] = this.history.map(input => {
+		// {{SQL CARBON EDIT}}
+		let history = this.history.map(input => {
+			if (input instanceof QueryInput) {
+				return input.sql;
+			} else {
+				return input;
+			}
+		});
+
+		const entries: ISerializedEditorHistoryEntry[] = history.map(input => {
 
 			// Editor input: try via factory
 			if (input instanceof EditorInput) {
@@ -768,7 +781,8 @@ export class HistoryService extends BaseHistoryService implements IHistoryServic
 						once(input.onDispose)(() => this.removeFromHistory(input)); // remove from history once disposed
 					}
 
-					return input;
+					// {{SQL CARBON EDIT}}
+					return CustomInputConverter.convertEditorInput(input, undefined, this.instantiationService);
 				}
 			}
 

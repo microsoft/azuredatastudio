@@ -42,10 +42,6 @@ import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { isMacintosh } from 'vs/base/common/platform';
 import { GroupOnePicker, GroupTwoPicker, GroupThreePicker, AllEditorsPicker } from 'vs/workbench/browser/parts/editor/editorPicker';
 
-// {{SQL CARBON EDIT}}
-import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
-
 // Register String Editor
 Registry.as<IEditorRegistry>(EditorExtensions.Editors).registerEditor(
 	new EditorDescriptor(
@@ -114,7 +110,7 @@ class UntitledEditorInputFactory implements IEditorInputFactory {
 			return null; // never restore untitled unless hot exit is enabled
 		}
 
-		const untitledEditorInput = <UntitledEditorInput>editorInput;
+		let untitledEditorInput = <UntitledEditorInput>editorInput;
 
 		// {{SQL CARBON EDIT}}
 		if (!untitledEditorInput.getResource()) {
@@ -145,14 +141,7 @@ class UntitledEditorInputFactory implements IEditorInputFactory {
 			const language = deserialized.modeId;
 			const encoding = deserialized.encoding;
 
-			// {{SQL CARBON EDIT}}
-			let input = accessor.get(IWorkbenchEditorService).createInput({ resource, filePath, language, encoding }) as UntitledEditorInput;
-			if (deserialized.modeId === QueryInput.SCHEMA) {
-				const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, resource.toString());
-				return instantiationService.createInstance(QueryInput, input.getName(), '', input, queryResultsInput, undefined);
-			} else {
-				return input;
-			}
+			return accessor.get(IWorkbenchEditorService).createInput({ resource, filePath, language, encoding }) as UntitledEditorInput;
 		});
 	}
 }

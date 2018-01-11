@@ -267,7 +267,7 @@ configurationRegistry.registerConfiguration({
 		'files.hotExit': {
 			'type': 'string',
 			'enum': [HotExitConfiguration.OFF, HotExitConfiguration.ON_EXIT, HotExitConfiguration.ON_EXIT_AND_WINDOW_CLOSE],
-			'default': HotExitConfiguration.ON_EXIT,
+			'default': HotExitConfiguration.OFF,
 			'enumDescriptions': [
 				nls.localize('hotExit.off', 'Disable hot exit.'),
 				nls.localize('hotExit.onExit', 'Hot exit will be triggered when the application is closed, that is when the last window is closed on Windows/Linux or when the workbench.action.quit command is triggered (command palette, keybinding, menu). All windows with backups will be restored upon next launch.'),
