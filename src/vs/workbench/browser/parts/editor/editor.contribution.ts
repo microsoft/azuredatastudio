@@ -132,9 +132,8 @@ class UntitledEditorInputFactory implements IEditorInputFactory {
 		return JSON.stringify(serialized);
 	}
 
-	// {{SQL CARBON EDIT}}
-	public deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): EditorInput {
-		return instantiationService.invokeFunction<EditorInput>(accessor => {
+	public deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): UntitledEditorInput {
+		return instantiationService.invokeFunction<UntitledEditorInput>(accessor => {
 			const deserialized: ISerializedUntitledEditorInput = JSON.parse(serializedEditorInput);
 			const resource = !!deserialized.resourceJSON ? URI.revive(deserialized.resourceJSON) : URI.parse(deserialized.resource);
 			const filePath = resource.scheme === 'file' ? resource.fsPath : void 0;
