@@ -128,8 +128,9 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			let e: data.ProfilerEvent = eventMessage.events[i];
 			let data = {};
 			data['EventClass'] =  e.name;
+			data['StartTime'] = e.timestamp;
+			data['EndTime'] = e.timestamp;
 			const columns = [
-				'EventClass',
 				'TextData',
 				'ApplicationName',
 				'NTUserName',
@@ -145,18 +146,31 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 				'BinaryData'
 			];
 
-			let p = 1;
+			let columnNameMap: Map<string, string> = new Map<string, string>();
+			columnNameMap['client_app_name'] = 'ApplicationName';
+			columnNameMap['nt_username'] = 'NTUserName';
+			columnNameMap['options_text'] = 'TextData';
+			columnNameMap['server_principal_name'] = 'LoginName';
+			columnNameMap['session_id'] = 'SPID';
+			columnNameMap['batch_text'] = 'TextData';
+			columnNameMap['cpu_time'] = 'CPU';
+			columnNameMap['duration'] = 'Duration';
+			columnNameMap['logical_reads'] = 'Reads';
+
+			for (let idx = 0; idx < columns.length; ++idx) {
+				let columnName = columns[idx];
+				data[columnName] = '';
+			}
+
 			for (let key in e.values) {
-				let value = e.values[key];
-				data[columns[p]] = value;
-				++p;
-				if (p === columns.length) {
-					break;
+				let columnName = columnNameMap[key];
+				if (columnName) {
+					let value = e.values[key];
+					data[columnName] = value;
 				}
 			}
 			this._data.push(data);
 		}
-
 
 	}
 }
