@@ -1,6 +1,6 @@
 {
   "name": "sqlops",
-  "version": "0.25.2",
+  "version": "0.25.4",
   "dependencies": {
     "@angular/animations": {
       "version": "4.1.3",

@@ -1,5 +1,29 @@
 # Change Log
 
+## Version 0.25.2
+* Release date: January 17, 2017
+* Release status: Public Preview
+
+## What's new in this version
+The January release focuses on addressing a few of the top upvoted feature suggestions, as well as fixing high-priority bugs.  This release period coincides with holiday vacations, so the churn in this release is
+relatively scoped.
+
+Here's some of the highlights in the January release.
+
+* Tab-coloring based on Server Group
+* Saved Server connections are available in Connection Dialog
+* Enable HotExit feature
+* Fix broken Run Current Query command
+* Fix drag-and-drop breaking scripting bug
+* Fix incorrect pinned Start Menu icon
+* Fix missing Azure Account branding icon
+* Change "Server name" to "Server" in Connection Dialog
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* alextercete for `Fix "No extension gallery service configured" error (#427)`
+
 ## Version 0.24.1
 * Release date: December 19, 2017
 * Release status: Public Preview
