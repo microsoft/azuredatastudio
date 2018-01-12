@@ -41,7 +41,8 @@ export class Win32AutoUpdaterImpl extends EventEmitter implements IAutoUpdater {
 	}
 
 	get cachePath(): TPromise<string> {
-		const result = path.join(tmpdir(), `vscode-update-${process.arch}`);
+		// {{SQL CARBON EDIT}}
+		const result = path.join(tmpdir(), `sqlops-update-${process.arch}`);
 		return new TPromise<string>((c, e) => mkdirp(result, null, err => err ? e(err) : c(result)));
 	}
 
@@ -112,7 +113,8 @@ export class Win32AutoUpdaterImpl extends EventEmitter implements IAutoUpdater {
 	}
 
 	private getUpdatePackagePath(version: string): TPromise<string> {
-		return this.cachePath.then(cachePath => path.join(cachePath, `CodeSetup-${product.quality}-${version}.exe`));
+		// {{SQL CARBON EDIT}}
+		return this.cachePath.then(cachePath => path.join(cachePath, `SqlOpsStudioSetup-${product.quality}-${version}.exe`));
 	}
 
 	private cleanup(exceptVersion: string = null): Promise {
