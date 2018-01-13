@@ -23,6 +23,7 @@ Here's some of the highlights in the January release.
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
 * alextercete for `Fix "No extension gallery service configured" error (#427)`
+* SebastianPfliegel for `Add cursor snippet (#475)`
 
 ## Version 0.24.1
 * Release date: December 19, 2017
