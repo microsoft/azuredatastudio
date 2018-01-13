@@ -22,6 +22,8 @@ import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { DataType, ILineConfig } from 'sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.component';
 import * as PathUtilities from 'sql/common/pathUtilities';
 import { IChartViewActionContext, CopyAction, CreateInsightAction, SaveImageAction } from 'sql/parts/grid/views/query/chartViewerActions';
+import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
+import * as Constants from 'sql/parts/query/common/constants';
 
 /* Insights */
 import {
@@ -107,7 +109,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		this._initActionBar();
 
 		// Init chart type dropdown
-		this.chartTypesSelectBox = new SelectBox(insightRegistry.getAllIds(), 'horizontalBar');
+		this.chartTypesSelectBox = new SelectBox(insightRegistry.getAllIds(), this.getDefaultChartType());
 		this.chartTypesSelectBox.render(this.chartTypesElement.nativeElement);
 		this.chartTypesSelectBox.onDidSelect(selected => this.onChartChanged());
 		this._disposables.push(attachSelectBoxStyler(this.chartTypesSelectBox, this._bootstrapService.themeService));
@@ -133,6 +135,18 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		this._disposables.push(attachSelectBoxStyler(this.legendSelectBox, this._bootstrapService.themeService));
 	}
 
+	private getDefaultChartType(): string {
+		let defaultChartType = Constants.chartTypeHorizontalBar;
+		if (this._bootstrapService.configurationService) {
+			let chartSettings = WorkbenchUtils.getSqlConfigSection(this._bootstrapService.configurationService, 'chart');
+			// Only use the value if it's a known chart type. Ideally could query this dynamically but can't figure out how
+			if (chartSettings && Constants.allChartTypes.indexOf(chartSettings[Constants.defaultChartType]) > -1) {
+				defaultChartType = chartSettings[Constants.defaultChartType];
+			}
+		}
+		return defaultChartType;
+	}
+
 	private _initActionBar() {
 		this._createInsightAction = this._bootstrapService.instantiationService.createInstance(CreateInsightAction);
 		this._copyAction = this._bootstrapService.instantiationService.createInstance(CopyAction);
@@ -150,7 +164,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 
 
 	public onChartChanged(): void {
-		if (['scatter', 'timeSeries'].some(item => item === this.chartTypesSelectBox.value)) {
+		if ([Constants.chartTypeScatter, Constants.chartTypeTimeSeries].some(item => item === this.chartTypesSelectBox.value)) {
 			this.dataType = DataType.Point;
 			this.dataDirection = DataDirection.Horizontal;
 		}
