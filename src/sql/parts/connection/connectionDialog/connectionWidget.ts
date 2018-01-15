@@ -27,9 +27,7 @@ import data = require('data');
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
-import * as Utils from 'sql/parts/connection/common/utils';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { IMessageService, Severity } from 'vs/platform/message/common/message';
+import { Severity } from 'vs/platform/message/common/message';
 
 export class ConnectionWidget {
 	private _builder: Builder;
@@ -75,8 +73,7 @@ export class ConnectionWidget {
 		parentId: undefined,
 		color: undefined,
 		description: undefined
-	}
-
+	};
 	private _addNewServerGroup = {
 		id: '',
 		name: localize('addNewServerGroup', 'Add new group...'),
@@ -200,7 +197,7 @@ export class ConnectionWidget {
 			this._databaseNameInputBox.disable();
 
 			// connect to server and fetch database names
-			if (this.authenticationType == Constants.integrated) {
+			if (this.authenticationType === Constants.integrated) {
 				this._callbacks.onUpdateDatabaseNames().then(result => {
 					if (result) {
 						this._databaseNameOptions = [this.DefaultDatabaseGroup];
@@ -221,7 +218,7 @@ export class ConnectionWidget {
 				}).catch(err => {
 					this._errorMessageService.showDialog(Severity.Error, '', err);
 					this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup].map(d => d.name));
-				})
+				});
 			}
 
 			this._databaseNameInputBox.enable();
@@ -295,7 +292,7 @@ export class ConnectionWidget {
 		}));
 		this._toDispose.push(this._databaseNameInputBox.onDidSelect(selectedDatabase => {
 			this._databaseNameInputBox.selectWithOptionName(selectedDatabase.selected);
-		}))
+		}));
 	}
 
 	private onGroupSelected(selectedGroup: string) {

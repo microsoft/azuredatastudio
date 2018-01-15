@@ -15,8 +15,6 @@ import * as Constants from 'sql/parts/connection/common/constants';
 import data = require('data');
 import * as Utils from 'sql/parts/connection/common/utils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { TPromise } from 'vs/base/common/winjs.base';
-import { resolve } from 'path';
 
 export class ConnectionController implements IConnectionComponentController {
 	private _container: HTMLElement;
@@ -77,7 +75,7 @@ export class ConnectionController implements IConnectionComponentController {
 				} else {
 					reject(connResult.errorMessage);
 				}
-			})
+			});
 		});
 	}
 
