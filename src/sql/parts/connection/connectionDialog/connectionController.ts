@@ -15,6 +15,8 @@ import * as Constants from 'sql/parts/connection/common/constants';
 import data = require('data');
 import * as Utils from 'sql/parts/connection/common/utils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { resolve } from 'path';
 
 export class ConnectionController implements IConnectionComponentController {
 	private _container: HTMLElement;
@@ -31,7 +33,7 @@ export class ConnectionController implements IConnectionComponentController {
 		sqlCapabilities: data.DataProtocolServerCapabilities,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
-		@IInstantiationService private _instantiationService: IInstantiationService, ) {
+		@IInstantiationService private _instantiationService: IInstantiationService ) {
 		this._container = container;
 		this._connectionManagementService = connectionManagementService;
 		this._callback = callback;
@@ -42,7 +44,10 @@ export class ConnectionController implements IConnectionComponentController {
 			onSetConnectButton: (enable: boolean) => this._callback.onSetConnectButton(enable),
 			onCreateNewServerGroup: () => this.onCreateNewServerGroup(),
 			onAdvancedProperties: () => this.handleOnAdvancedProperties(),
-			onSetAzureTimeOut: () => this.handleonSetAzureTimeOut()
+			onSetAzureTimeOut: () => this.handleonSetAzureTimeOut(),
+			onUpdateDatabaseNames: () => this.updateDatabaseNames(this._connectionWidget.serverName).then(result => {
+				return result;
+			})
 		}, providerName);
 		this._providerName = providerName;
 	}
@@ -51,6 +56,28 @@ export class ConnectionController implements IConnectionComponentController {
 		this._connectionManagementService.showCreateServerGroupDialog({
 			onAddGroup: (groupName) => this._connectionWidget.updateServerGroup(this.getAllServerGroups(), groupName),
 			onClose: () => this._connectionWidget.focusOnServerGroup()
+		});
+	}
+
+	private updateDatabaseNames(serverName : string): Promise<string[]> {
+		let tempProfile = this._model;
+		tempProfile.authenticationType = Constants.integrated;
+		tempProfile.serverName = serverName;
+		let uri = this._connectionManagementService.getConnectionId(tempProfile);
+		return new Promise<string[]>((resolve, reject) => {
+			this._connectionManagementService.connect(tempProfile, uri).then(connResult => {
+				if (connResult && connResult.connected){
+					this._connectionManagementService.listDatabases(uri).then(result => {
+						if (result && result.databaseNames) {
+							resolve(result.databaseNames);
+						} else {
+							reject();
+						}
+					});
+				} else {
+					reject(connResult.errorMessage);
+				}
+			})
 		});
 	}
 
