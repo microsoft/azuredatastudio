@@ -11,29 +11,7 @@ declare module 'data' {
 	 * Namespace for Data Management Protocol global methods
 	 */
 	export namespace dataprotocol {
-		export function registerConnectionProvider(provider: ConnectionProvider): vscode.Disposable;
-
-		export function registerBackupProvider(provider: BackupProvider): vscode.Disposable;
-
-		export function registerRestoreProvider(provider: RestoreProvider): vscode.Disposable;
-
-		export function registerScriptingProvider(provider: ScriptingProvider): vscode.Disposable;
-
-		export function registerObjectExplorerProvider(provider: ObjectExplorerProvider): vscode.Disposable;
-
-		export function registerTaskServicesProvider(provider: TaskServicesProvider): vscode.Disposable;
-
-		export function registerFileBrowserProvider(provider: FileBrowserProvider): vscode.Disposable;
-
-		export function registerProfilerProvider(provider: ProfilerProvider): vscode.Disposable;
-
-		export function registerMetadataProvider(provider: MetadataProvider): vscode.Disposable;
-
-		export function registerQueryProvider(provider: QueryProvider): vscode.Disposable;
-
-		export function registerAdminServicesProvider(provider: AdminServicesProvider): vscode.Disposable;
-
-		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
+		export function registerProvider(provider: DataProtocolProvider): vscode.Disposable;
 
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
@@ -177,12 +155,8 @@ declare module 'data' {
 		osVersion: string;
 	}
 
-	export interface DataProvider {
-		handle?: number;
-		readonly providerId: string;
-	}
-
-	export interface ConnectionProvider extends DataProvider {
+	export interface ConnectionProvider {
+		handle: number;
 
 		connect(connectionUri: string, connectionInfo: ConnectionInfo): Thenable<boolean>;
 
@@ -196,11 +170,11 @@ declare module 'data' {
 
 		rebuildIntelliSenseCache(connectionUri: string): Thenable<void>;
 
-		registerOnConnectionComplete(handler: (connSummary: ConnectionInfoSummary) => any): void;
+		registerOnConnectionComplete(handler: (connSummary: ConnectionInfoSummary) => any);
 
-		registerOnIntelliSenseCacheComplete(handler: (connectionUri: string) => any): void;
+		registerOnIntelliSenseCacheComplete(handler: (connectionUri: string) => any);
 
-		registerOnConnectionChanged(handler: (changedConnInfo: ChangedConnectionInfo) => any): void;
+		registerOnConnectionChanged(handler: (changedConnInfo: ChangedConnectionInfo) => any);
 	}
 
 	export enum ServiceOptionType {
@@ -214,12 +188,12 @@ declare module 'data' {
 	}
 
 	export enum ConnectionOptionSpecialType {
-		serverName = 'serverName',
-		databaseName = 'databaseName',
-		authType = 'authType',
-		userName = 'userName',
-		password = 'password',
-		appName = 'appName'
+		serverName = 0,
+		databaseName = 1,
+		authType = 2,
+		userName = 3,
+		password = 4,
+		appName = 5
 	}
 
 	export interface CategoryValue {
@@ -332,7 +306,7 @@ declare module 'data' {
 		hostVersion: string;
 	}
 
-	export interface CapabilitiesProvider extends DataProvider {
+	export interface CapabilitiesProvider {
 		getServerCapabilities(client: DataProtocolClientCapabilities): Thenable<DataProtocolServerCapabilities>;
 	}
 
@@ -413,7 +387,7 @@ declare module 'data' {
 		objectMetadata: ObjectMetadata[];
 	}
 
-	export interface MetadataProvider extends DataProvider {
+	export interface MetadataProvider {
 		getMetadata(connectionUri: string): Thenable<ProviderMetadata>;
 
 		getDatabases(connectionUri: string): Thenable<string[]>;
@@ -445,7 +419,7 @@ declare module 'data' {
 		targetDatabaseEngineType: string;
 	}
 
-	export interface ScriptingProvider extends DataProvider {
+	export interface ScriptingProvider {
 
 		scriptAsOperation(connectionUri: string, operation: ScriptOperation, metadata: ObjectMetadata, paramDetails: ScriptingParamDetails): Thenable<ScriptingResult>;
 
@@ -464,6 +438,38 @@ declare module 'data' {
 		success: boolean;
 
 		operationId: string;
+	}
+	/**
+	 * Data Management Protocol main provider class that DMP extensions should implement.
+	 * This provider interface contains references to providers for the various capabilitiesProvider
+	 * that an extension can implement.
+	 */
+	export interface DataProtocolProvider {
+		handle: number;
+
+		providerId: string;
+
+		capabilitiesProvider: CapabilitiesProvider;
+
+		connectionProvider: ConnectionProvider;
+
+		queryProvider: QueryProvider;
+
+		metadataProvider: MetadataProvider;
+
+		scriptingProvider: ScriptingProvider;
+
+		objectExplorerProvider: ObjectExplorerProvider;
+
+		adminServicesProvider: AdminServicesProvider;
+
+		disasterRecoveryProvider: DisasterRecoveryProvider;
+
+		taskServicesProvider: TaskServicesProvider;
+
+		fileBrowserProvider: FileBrowserProvider;
+
+		profilerProvider: ProfilerProvider;
 	}
 
 	/**
@@ -503,7 +509,10 @@ declare module 'data' {
 		flavor: string;
 	}
 
-	export interface QueryProvider extends DataProvider {
+	export interface QueryProvider {
+		handle: number;
+		// TODO replace this temporary queryType field with a standard definition for supported platform
+		queryType: string;
 		cancelQuery(ownerUri: string): Thenable<QueryCancelResult>;
 		runQuery(ownerUri: string, selection: ISelectionData, runOptions?: ExecutionPlanOptions): Thenable<void>;
 		runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
@@ -664,7 +673,6 @@ declare module 'data' {
 	export interface QueryExecuteParams {
 		ownerUri: string;
 		querySelection: ISelectionData;
-		executionPlanOptions?: ExecutionPlanOptions;
 	}
 
 	export interface QueryExecuteSubsetParams {
@@ -686,7 +694,6 @@ declare module 'data' {
 	}
 
 	export interface QueryExecuteSubsetResult {
-		message: string;
 		resultSubset: ResultSetSubset;
 	}
 
@@ -753,14 +760,11 @@ declare module 'data' {
 	export interface EditInitializeFiltering {
 		LimitResults?: number;
 	}
-
 	export interface EditInitializeParams extends IEditSessionOperationParams {
 		filters: EditInitializeFiltering;
 		objectName: string;
-		schemaName: string;
 		objectType: string;
 	}
-
 
 	export interface EditInitializeResult { }
 
@@ -845,7 +849,7 @@ declare module 'data' {
 		success: boolean;
 	}
 
-	export interface ObjectExplorerProvider extends DataProvider {
+	export interface ObjectExplorerProvider {
 		createNewSession(connInfo: ConnectionInfo): Thenable<ObjectExplorerSessionResponse>;
 
 		expandNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
@@ -879,7 +883,7 @@ declare module 'data' {
 		taskId: number;
 	}
 
-	export interface AdminServicesProvider extends DataProvider {
+	export interface AdminServicesProvider {
 		createDatabase(connectionUri: string, database: DatabaseInfo): Thenable<CreateDatabaseResponse>;
 
 		createLogin(connectionUri: string, login: LoginInfo): Thenable<CreateLoginResponse>;
@@ -937,7 +941,7 @@ declare module 'data' {
 		duration: number;
 	}
 
-	export interface TaskServicesProvider extends DataProvider {
+	export interface TaskServicesProvider {
 		getAllTasks(listTasksParams: ListTasksParams): Thenable<ListTasksResponse>;
 
 		cancelTask(cancelTaskParams: CancelTaskParams): Thenable<boolean>;
@@ -960,12 +964,9 @@ declare module 'data' {
 		taskId: number;
 	}
 
-	export interface BackupProvider extends DataProvider {
+	export interface DisasterRecoveryProvider {
 		backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<BackupResponse>;
 		getBackupConfigInfo(connectionUri: string): Thenable<BackupConfigInfo>;
-	}
-
-	export interface RestoreProvider extends DataProvider {
 		getRestorePlan(connectionUri: string, restoreInfo: RestoreInfo): Thenable<RestorePlanResponse>;
 		cancelRestorePlan(connectionUri: string, restoreInfo: RestoreInfo): Thenable<boolean>;
 		restore(connectionUri: string, restoreInfo: RestoreInfo): Thenable<RestoreResponse>;
@@ -1028,7 +1029,7 @@ declare module 'data' {
 		errorMessage: string;
 	}
 
-	export interface ProfilerProvider extends DataProvider {
+	export interface ProfilerProvider {
 		startSession(sessionId: string): Thenable<boolean>;
 		stopSession(sessionId: string): Thenable<boolean>;
 		pauseSession(sessionId: string): Thenable<boolean>;
@@ -1080,7 +1081,7 @@ declare module 'data' {
 
 	// File browser interfaces  -----------------------------------------------------------------------
 
-	export interface FileBrowserProvider extends DataProvider {
+	export interface FileBrowserProvider {
 		openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean>;
 		registerOnFileBrowserOpened(handler: (response: FileBrowserOpenedParams) => any);
 		expandFolderNode(ownerUri: string, expandPath: string): Thenable<boolean>;

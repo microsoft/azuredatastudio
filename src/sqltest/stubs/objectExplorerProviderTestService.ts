@@ -8,8 +8,6 @@ import data = require('data');
 
 export class ObjectExplorerProviderTestService implements data.ObjectExplorerProvider {
 
-	public readonly providerId = 'MSSQL';
-
 	public createNewSession(connInfo: data.ConnectionInfo): Thenable<data.ObjectExplorerCloseSessionResponse> {
 		return Promise.resolve(undefined);
 	}

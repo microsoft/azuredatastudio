@@ -14,8 +14,7 @@ import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
-import { IRestoreDialogController } from 'sql/parts/disasterRecovery/restore/common/restoreService';
-import { IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
+import { IDisasterRecoveryUiService, IRestoreDialogController } from 'sql/parts/disasterRecovery/common/interfaces';
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
@@ -315,9 +314,9 @@ export function showCreateLogin(uri: string, connection: IConnectionProfile, adm
 	});
 }
 
-export function showBackup(connection: IConnectionProfile, backupUiService: IBackupUiService): Promise<void> {
+export function showBackup(connection: IConnectionProfile, disasterRecoveryUiService: IDisasterRecoveryUiService): Promise<void> {
 	return new Promise<void>((resolve) => {
-		backupUiService.showBackup(connection);
+		disasterRecoveryUiService.showBackup(connection);
 	});
 }
 

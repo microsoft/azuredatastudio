@@ -20,7 +20,15 @@ function npmInstall(location, opts) {
 }
 
 // {{SQL CARBON EDIT}}
-npmInstall('dataprotocol-client');
+const protocol = [
+	'jsonrpc',
+	'types',
+	'client'
+];
+
+protocol.forEach(item => npmInstall(`dataprotocol-node/${item}`));
+
+// {{SQL CARBON EDIT}}
 npmInstall('extensions-modules');
 npmInstall('extensions'); // node modules shared by all extensions
 

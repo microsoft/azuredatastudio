@@ -16,7 +16,6 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import * as data from 'data';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('SQL Object Explorer Service tests', () => {
 	var sqlOEProvider: TypeMoq.Mock<ObjectExplorerProviderTestService>;
@@ -136,7 +135,7 @@ suite('SQL Object Explorer Service tests', () => {
 						defaultValue: undefined,
 						isIdentity: true,
 						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.serverName,
+						specialValueType: 0,
 						valueType: 0
 					},
 					{
@@ -148,7 +147,7 @@ suite('SQL Object Explorer Service tests', () => {
 						defaultValue: undefined,
 						isIdentity: true,
 						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.databaseName,
+						specialValueType: 1,
 						valueType: 0
 					},
 					{
@@ -160,7 +159,7 @@ suite('SQL Object Explorer Service tests', () => {
 						defaultValue: undefined,
 						isIdentity: true,
 						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.userName,
+						specialValueType: 3,
 						valueType: 0
 					},
 					{
@@ -172,7 +171,7 @@ suite('SQL Object Explorer Service tests', () => {
 						defaultValue: undefined,
 						isIdentity: true,
 						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.authType,
+						specialValueType: 2,
 						valueType: 0
 					},
 					{
@@ -184,7 +183,7 @@ suite('SQL Object Explorer Service tests', () => {
 						defaultValue: undefined,
 						isIdentity: true,
 						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.password,
+						specialValueType: 4,
 						valueType: 0
 					},
 					{

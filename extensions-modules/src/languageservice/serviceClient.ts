@@ -5,8 +5,11 @@
 'use strict';
 
 import { ExtensionContext, workspace, window, OutputChannel, languages } from 'vscode';
-import { SqlOpsDataClient, LanguageClientOptions } from 'dataprotocol-client';
-import { CloseAction, ErrorAction, ServerOptions, NotificationHandler, NotificationType, RequestType, TransportKind } from 'vscode-languageclient';
+import {
+	LanguageClient, LanguageClientOptions, ServerOptions,
+	TransportKind, RequestType, NotificationType, NotificationHandler,
+	ErrorAction, CloseAction
+} from 'dataprotocol-client';
 
 import { VscodeWrapper } from '../controllers/vscodeWrapper';
 import { Telemetry } from '../models/telemetry';
@@ -132,14 +135,14 @@ export class SqlToolsServiceClient {
 	}
 
 	// VS Code Language Client
-	private _client: SqlOpsDataClient = undefined;
+	private _client: LanguageClient = undefined;
 
 	// getter method for the Language Client
-	private get client(): SqlOpsDataClient {
+	private get client(): LanguageClient {
 		return this._client;
 	}
 
-	private set client(client: SqlOpsDataClient) {
+	private set client(client: LanguageClient) {
 		this._client = client;
 	}
 
@@ -230,7 +233,6 @@ export class SqlToolsServiceClient {
 			}
 
 			this._logger.appendLine();
-
 			this._server.getServerPath(platformInfo.runtimeId).then(serverPath => {
 				if (serverPath === undefined) {
 					// Check if the service already installed and if not open the output channel to show the logs
@@ -317,9 +319,9 @@ export class SqlToolsServiceClient {
 		}
 	}
 
-	public createClient(context: ExtensionContext, runtimeId: Runtime, languageClientHelper: LanguageServiceContracts.ILanguageClientHelper, executableFiles: string[]): Promise<SqlOpsDataClient> {
-		return new Promise<SqlOpsDataClient>((resolve, reject) => {
-			let client: SqlOpsDataClient;
+	public createClient(context: ExtensionContext, runtimeId: Runtime, languageClientHelper: LanguageServiceContracts.ILanguageClientHelper, executableFiles: string[]): Promise<LanguageClient> {
+		return new Promise<LanguageClient>((resolve, reject) => {
+			let client: LanguageClient;
 			this._server.findServerPath(this.installDirectory, executableFiles).then(serverPath => {
 				if (serverPath === undefined) {
 					reject(new Error(SqlToolsServiceClient._constants.invalidServiceFilePath));
@@ -340,7 +342,7 @@ export class SqlToolsServiceClient {
 					};
 					this._serviceStatus.showServiceLoading();
 					// cache the client instance for later use
-					client = new SqlOpsDataClient(SqlToolsServiceClient._constants.serviceName, serverOptions, clientOptions);
+					client = new LanguageClient(SqlToolsServiceClient._constants.serviceName, serverOptions, clientOptions);
 
 					if (context !== undefined) {
 						// Create the language client and start the client.
@@ -387,7 +389,7 @@ export class SqlToolsServiceClient {
 		return serverOptions;
 	}
 
-	private createLanguageClient(serverOptions: ServerOptions): SqlOpsDataClient {
+	private createLanguageClient(serverOptions: ServerOptions): LanguageClient {
 		// Options to control the language client
 		let clientOptions: LanguageClientOptions = {
 			documentSelector: [SqlToolsServiceClient._constants.languageId],
@@ -401,7 +403,7 @@ export class SqlToolsServiceClient {
 
 		this._serviceStatus.showServiceLoading();
 		// cache the client instance for later use
-		let client = new SqlOpsDataClient(SqlToolsServiceClient._constants.serviceName, serverOptions, clientOptions);
+		let client = new LanguageClient(SqlToolsServiceClient._constants.serviceName, serverOptions, clientOptions);
 		client.onReady().then(() => {
 			this.checkServiceCompatibility();
 			this._serviceStatus.showServiceLoaded();
@@ -447,7 +449,7 @@ export class SqlToolsServiceClient {
 	 * @param params The params to pass with the request
 	 * @returns A thenable object for when the request receives a response
 	 */
-	public sendRequest<P, R, E, RO>(type: RequestType<P, R, E, RO>, params?: P, client: SqlOpsDataClient = undefined): Thenable<R> {
+	public sendRequest<P, R, E>(type: RequestType<P, R, E>, params?: P, client: LanguageClient = undefined): Thenable<R> {
 		if (client === undefined) {
 			client = this._client;
 		}
@@ -461,7 +463,7 @@ export class SqlToolsServiceClient {
 	 * @param type The notification type to register the handler for
 	 * @param handler The handler to register
 	 */
-	public onNotification<P, RO>(type: NotificationType<P, RO>, handler: NotificationHandler<P>, client: SqlOpsDataClient = undefined): void {
+	public onNotification<P>(type: NotificationType<P>, handler: NotificationHandler<P>, client: LanguageClient = undefined): void {
 		if (client === undefined) {
 			client = this._client;
 		}

@@ -9,7 +9,6 @@ import { ConnectionManagementInfo } from 'sql/parts/connection/common/connection
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import Event from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 
 export class CapabilitiesTestService implements ICapabilitiesService {
@@ -34,7 +33,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.serverName,
+					specialValueType: 0,
 					valueType: 0
 				},
 				{
@@ -46,7 +45,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.databaseName,
+					specialValueType: 1,
 					valueType: 0
 				},
 				{
@@ -58,7 +57,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.userName,
+					specialValueType: 3,
 					valueType: 0
 				},
 				{
@@ -70,7 +69,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.authType,
+					specialValueType: 2,
 					valueType: 0
 				},
 				{
@@ -82,7 +81,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.password,
+					specialValueType: 4,
 					valueType: 0
 				}
 			]
