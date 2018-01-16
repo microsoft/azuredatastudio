@@ -238,9 +238,9 @@
           "isArray": false
         },
         {
-          "specialValueType": "server",
+          "specialValueType": "user",
           "isIdentity": true,
-          "name": "server",
+          "name": "user",
           "displayName": "User name",
           "description": "Indicates the user ID to be used when connecting to the data source",
           "groupName": "Security",
