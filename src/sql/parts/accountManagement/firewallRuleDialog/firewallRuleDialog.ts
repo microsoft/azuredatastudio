@@ -19,6 +19,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IWindowsService } from 'vs/platform/windows/common/windows';
 
 import * as data from 'data';
 import { Button } from 'sql/base/browser/ui/button/button';
@@ -28,6 +29,10 @@ import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/st
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IAccountPickerService } from 'sql/parts/accountManagement/common/interfaces';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
+
+// TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/sqlopsstudio/issues/450)
+// in case that other non-Azure sign in is to be used
+const firewallHelpUri = 'https://aka.ms/sqlopsfirewallhelp';
 
 export class FirewallRuleDialog extends Modal {
 	public viewModel: FirewallRuleViewModel;
@@ -58,7 +63,8 @@ export class FirewallRuleDialog extends Modal {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IWindowsService private _windowsService: IWindowsService,
 	) {
 		super(
 			localize('createNewFirewallRule', 'Create new firewall rule'),
@@ -102,10 +108,12 @@ export class FirewallRuleDialog extends Modal {
 				'Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.');
 			this.createLabelElement(new Builder(textDescriptionContainer), dialogDescription, false);
 
-			// TODO: Make this 1) extensible and 2) open the info via an action (01/08/2018, https://github.com/Microsoft/sqlopsstudio/issues/450)
-			// this._helpLink = DOM.append(textDescriptionContainer, DOM.$('a.help-link'));
-			// this._helpLink.setAttribute('href', 'https://docs.microsoft.com/en-us/azure/sql-database/sql-database-firewall-configure');
-			// this._helpLink.innerHTML += localize('firewallRuleHelpDescription', 'Learn more about firewall settings');
+			this._helpLink = DOM.append(textDescriptionContainer, DOM.$('a.help-link'));
+			this._helpLink.setAttribute('href', firewallHelpUri);
+			this._helpLink.innerHTML += localize('firewallRuleHelpDescription', 'Learn more about firewall settings');
+			this._helpLink.onclick = () => {
+				this._windowsService.openExternal(firewallHelpUri);
+			};
 		});
 
 		// Create account picker with event handling
@@ -225,7 +233,6 @@ export class FirewallRuleDialog extends Modal {
 	private updateTheme(theme: IColorTheme): void {
 		let linkColor = theme.getColor(buttonBackground);
 		let link = linkColor ? linkColor.toString() : null;
-		this._helpLink.style.color = link;
 		if (this._helpLink) {
 			this._helpLink.style.color = link;
 		}
