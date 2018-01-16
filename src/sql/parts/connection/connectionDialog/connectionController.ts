@@ -76,6 +76,7 @@ export class ConnectionController implements IConnectionComponentController {
 					reject(connResult.errorMessage);
 				}
 			});
+
 		});
 	}
 

@@ -53,16 +53,17 @@ export class ConnectionWidget {
 		[Constants.mssqlProviderName]: [new AuthenticationType(Constants.integrated, false), new AuthenticationType(Constants.sqlLogin, true)]
 	};
 	private _saveProfile: boolean;
+	private _defaultDatabaseName : string = '<Default>';
 	public DefaultServerGroup: IConnectionProfileGroup = {
 		id: '',
-		name: localize('defaultServerGroup', '<Default>'),
+		name: localize('defaultServerGroup', this._defaultDatabaseName),
 		parentId: undefined,
 		color: undefined,
 		description: undefined,
 	};
 	public DefaultDatabaseGroup: IConnectionProfileGroup = {
 		id: '',
-		name: localize('defaultDatabaseGroup', '<Default>'),
+		name: localize('defaultDatabaseGroup', this._defaultDatabaseName),
 		parentId: undefined,
 		color: undefined,
 		description: undefined
@@ -168,7 +169,8 @@ export class ConnectionWidget {
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
 		let databaseNameBuilder = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
 		this._databaseNameOptions = [this.DefaultDatabaseGroup, this.LoadingDatabaseGroup];
-		this._databaseNameInputBox = new SelectBox(this._databaseNameOptions.map(d => d.name), '<Default>', databaseNameBuilder.getHTMLElement());
+		this._databaseNameInputBox = new SelectBox(this._databaseNameOptions.map(d => d.name), this._defaultDatabaseName, databaseNameBuilder.getHTMLElement());
+
 		DialogHelper.appendInputSelectBox(databaseNameBuilder, this._databaseNameInputBox);
 
 		let serverGroupLabel = localize('serverGroup', 'Server group');
@@ -212,13 +214,28 @@ export class ConnectionWidget {
 					} else {
 						this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup, this.LoadingDatabaseGroup].map(d => d.name), 0);
 					}
+					this._serverNameInputBox.enable();
+					this._databaseNameInputBox.enable();
 				}).catch(err => {
-					this._errorMessageService.showDialog(Severity.Error, '', err);
-					this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup].map(d => d.name), 0);
+					this.showErrorPromise(err).then(() => {
+						this._serverNameInputBox.enable();
+						this._databaseNameInputBox.enable();
+						this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup].map(d => d.name), 0);
+					})
 				});
-				this._databaseNameInputBox.enable();
 			}
 		}
+	}
+
+	private showErrorPromise(errorMessage: string): Promise<void> {
+		return new Promise((resolve, reject) => {
+			if (errorMessage) {
+				this._errorMessageService.showDialog(Severity.Error, '', errorMessage);
+				resolve();
+			} else {
+				reject();
+			}
+		});
 	}
 
 	private createAdvancedButton(container: Builder, title: string): Button {
@@ -267,6 +284,7 @@ export class ConnectionWidget {
 				if (this._authTypeSelectBox.value === this.getAuthTypeDisplayName(Constants.integrated)) {
 					this._updateDatabaseNames();
 				} else {
+
 					this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup].map(d => d.name), 0);
 				}
 				this.setConnectButton();
@@ -289,15 +307,9 @@ export class ConnectionWidget {
 			this._password = passwordInput;
 		}));
 		this._toDispose.push(this._serverNameInputBox.onLoseFocus(() => {
+			this._serverNameInputBox.disable();
 			this._updateDatabaseNames();
 		}));
-		// this._toDispose.push(this._databaseNameInputBox.onDidSelect(selectedDatabase => {
-		// 	if (selectedDatabase.selected === '<Default>') {
-		// 		this._databaseNameInputBox.selectWithOptionName('master');
-		// 	} else {
-		// 		this._databaseNameInputBox.selectWithOptionName(selectedDatabase.selected);
-		// 	}
-		// }));
 	}
 
 	private onGroupSelected(selectedGroup: string) {
@@ -530,7 +542,7 @@ export class ConnectionWidget {
 		let validInputs = this.validateInputs();
 		if (validInputs) {
 			model.serverName = this.serverName;
-			model.databaseName = this.databaseName === '<Default>' ? 'master' : this.databaseName;
+			model.databaseName = this.databaseName === this._defaultDatabaseName ? 'master' : this.databaseName;
 			model.userName = this.userName;
 			model.password = this.password;
 			model.authenticationType = this.authenticationType;
