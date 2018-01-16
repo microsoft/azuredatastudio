@@ -16,7 +16,7 @@
   "scripts": {
     "compile": "gulp compile-extension:mssql-client",
     "postinstall": "node ./node_modules/vscode/bin/install",
-		"update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
+    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
   "contributes": {
     "languages": [
@@ -190,9 +190,6 @@
         }
       ]
     }
-  },
-  "dependencies": {
-    "dataprotocol-client": "file:../../dataprotocol-node/client"
   },
   "devDependencies": {
     "vscode": "1.0.1"

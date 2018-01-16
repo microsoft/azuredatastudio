@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { IConnectionManagementService, ConnectionOptionSpecialType } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionValidateResult } from 'sql/parts/connection/connectionDialog/connectionDialogService';
 import { ConnectionWidget } from 'sql/parts/connection/connectionDialog/connectionWidget';
 import { AdvancedPropertiesController } from 'sql/parts/connection/connectionDialog/advancedPropertiesController';
@@ -15,6 +15,7 @@ import * as Constants from 'sql/parts/connection/common/constants';
 import data = require('data');
 import * as Utils from 'sql/parts/connection/common/utils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ConnectionController implements IConnectionComponentController {
 	private _container: HTMLElement;

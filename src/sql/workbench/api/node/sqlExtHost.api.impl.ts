@@ -22,7 +22,7 @@ import { ExtHostDataProtocol } from 'sql/workbench/api/node/extHostDataProtocol'
 import { ExtHostSerializationProvider } from 'sql/workbench/api/node/extHostSerializationProvider';
 import { ExtHostResourceProvider } from 'sql/workbench/api/node/extHostResourceProvider';
 import { ExtHostThreadService } from 'vs/workbench/services/thread/node/extHostThreadService';
-import * as sqlExtHostTypes from 'sql/workbench/api/node/sqlExtHostTypes';
+import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
 
@@ -95,92 +95,141 @@ export function createApiFactory(
 				}
 			};
 
+			let registerConnectionProvider = (provider: data.ConnectionProvider): vscode.Disposable => {
+				// Connection callbacks
+				provider.registerOnConnectionComplete((connSummary: data.ConnectionInfoSummary) => {
+					extHostDataProvider.$onConnectComplete(provider.handle, connSummary);
+				});
+
+				provider.registerOnIntelliSenseCacheComplete((connectionUri: string) => {
+					extHostDataProvider.$onIntelliSenseCacheComplete(provider.handle, connectionUri);
+				});
+
+				provider.registerOnConnectionChanged((changedConnInfo: data.ChangedConnectionInfo) => {
+					extHostDataProvider.$onConnectionChanged(provider.handle, changedConnInfo);
+				});
+
+				return extHostDataProvider.$registerConnectionProvider(provider);
+			};
+
+			let registerQueryProvider = (provider: data.QueryProvider): vscode.Disposable => {
+				provider.registerOnQueryComplete((result: data.QueryExecuteCompleteNotificationResult) => {
+					extHostDataProvider.$onQueryComplete(provider.handle, result);
+				});
+
+				provider.registerOnBatchStart((batchInfo: data.QueryExecuteBatchNotificationParams) => {
+					extHostDataProvider.$onBatchStart(provider.handle, batchInfo);
+				});
+
+				provider.registerOnBatchComplete((batchInfo: data.QueryExecuteBatchNotificationParams) => {
+					extHostDataProvider.$onBatchComplete(provider.handle, batchInfo);
+				});
+
+				provider.registerOnResultSetComplete((resultSetInfo: data.QueryExecuteResultSetCompleteNotificationParams) => {
+					extHostDataProvider.$onResultSetComplete(provider.handle, resultSetInfo);
+				});
+
+				provider.registerOnMessage((message: data.QueryExecuteMessageParams) => {
+					extHostDataProvider.$onQueryMessage(provider.handle, message);
+				});
+
+				provider.registerOnEditSessionReady((ownerUri: string, success: boolean, message: string) => {
+					extHostDataProvider.$onEditSessionReady(provider.handle, ownerUri, success, message);
+				});
+
+				return extHostDataProvider.$registerQueryProvider(provider);
+			};
+
+			let registerObjectExplorerProvider = (provider: data.ObjectExplorerProvider): vscode.Disposable => {
+				provider.registerOnSessionCreated((response: data.ObjectExplorerSession) => {
+					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
+				});
+
+				provider.registerOnExpandCompleted((response: data.ObjectExplorerExpandInfo) => {
+					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
+				});
+
+				return extHostDataProvider.$registerObjectExplorerProvider(provider);
+			};
+
+			let registerTaskServicesProvider = (provider: data.TaskServicesProvider): vscode.Disposable => {
+				provider.registerOnTaskCreated((response: data.TaskInfo) => {
+					extHostDataProvider.$onTaskCreated(provider.handle, response);
+				});
+
+				provider.registerOnTaskStatusChanged((response: data.TaskProgressInfo) => {
+					extHostDataProvider.$onTaskStatusChanged(provider.handle, response);
+				});
+
+				return extHostDataProvider.$registerTaskServicesProvider(provider);
+			};
+
+			let registerFileBrowserProvider = (provider: data.FileBrowserProvider): vscode.Disposable => {
+				provider.registerOnFileBrowserOpened((response: data.FileBrowserOpenedParams) => {
+					extHostDataProvider.$onFileBrowserOpened(provider.handle, response);
+				});
+
+				provider.registerOnFolderNodeExpanded((response: data.FileBrowserExpandedParams) => {
+					extHostDataProvider.$onFolderNodeExpanded(provider.handle, response);
+				});
+
+				provider.registerOnFilePathsValidated((response: data.FileBrowserValidatedParams) => {
+					extHostDataProvider.$onFilePathsValidated(provider.handle, response);
+				});
+
+				return extHostDataProvider.$registerFileBrowserProvider(provider);
+			};
+
+			let registerScriptingProvider = (provider: data.ScriptingProvider): vscode.Disposable => {
+				provider.registerOnScriptingComplete((response: data.ScriptingCompleteResult) => {
+					extHostDataProvider.$onScriptingComplete(provider.handle, response);
+				});
+
+				return extHostDataProvider.$registerScriptingProvider(provider);
+			};
+
+			let registerProfilerProvider = (provider: data.ProfilerProvider): vscode.Disposable => {
+				provider.registerOnSessionEventsAvailable((response: data.ProfilerSessionEvents) => {
+					extHostDataProvider.$onSessionEventsAvailable(provider.handle, response);
+				});
+
+				return extHostDataProvider.$registerProfilerProvider(provider);
+			};
+
+			let registerBackupProvider = (provider: data.BackupProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerBackupProvider(provider);
+			};
+
+			let registerRestoreProvider = (provider: data.RestoreProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerRestoreProvider(provider);
+			};
+
+			let registerMetadataProvider = (provider: data.MetadataProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerMetadataProvider(provider);
+			};
+
+			let registerCapabilitiesServiceProvider = (provider: data.CapabilitiesProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerCapabilitiesServiceProvider(provider);
+			};
+
+			let registerAdminServicesProvider = (provider: data.AdminServicesProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerAdminServicesProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof data.dataprotocol = {
-				registerProvider(provider: data.DataProtocolProvider): vscode.Disposable {
-					// Connection callbacks
-					provider.connectionProvider.registerOnConnectionComplete((connSummary: data.ConnectionInfoSummary) => {
-						extHostDataProvider.$onConnectComplete(provider.handle, connSummary);
-					});
-
-					provider.connectionProvider.registerOnIntelliSenseCacheComplete((connectionUri: string) => {
-						extHostDataProvider.$onIntelliSenseCacheComplete(provider.handle, connectionUri);
-					});
-
-					provider.connectionProvider.registerOnConnectionChanged((changedConnInfo: data.ChangedConnectionInfo) => {
-						extHostDataProvider.$onConnectionChanged(provider.handle, changedConnInfo);
-					});
-
-					// Query callbacks
-					provider.queryProvider.registerOnQueryComplete((result: data.QueryExecuteCompleteNotificationResult) => {
-						extHostDataProvider.$onQueryComplete(provider.handle, result);
-					});
-
-					provider.queryProvider.registerOnBatchStart((batchInfo: data.QueryExecuteBatchNotificationParams) => {
-						extHostDataProvider.$onBatchStart(provider.handle, batchInfo);
-					});
-
-					provider.queryProvider.registerOnBatchComplete((batchInfo: data.QueryExecuteBatchNotificationParams) => {
-						extHostDataProvider.$onBatchComplete(provider.handle, batchInfo);
-					});
-
-					provider.queryProvider.registerOnResultSetComplete((resultSetInfo: data.QueryExecuteResultSetCompleteNotificationParams) => {
-						extHostDataProvider.$onResultSetComplete(provider.handle, resultSetInfo);
-					});
-
-					provider.queryProvider.registerOnMessage((message: data.QueryExecuteMessageParams) => {
-						extHostDataProvider.$onQueryMessage(provider.handle, message);
-					});
-
-					//OE callbacks
-					provider.objectExplorerProvider.registerOnSessionCreated((response: data.ObjectExplorerSession) => {
-						extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
-					});
-
-					provider.objectExplorerProvider.registerOnExpandCompleted((response: data.ObjectExplorerExpandInfo) => {
-						extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
-					});
-
-					//Tasks callbacks
-					provider.taskServicesProvider.registerOnTaskCreated((response: data.TaskInfo) => {
-						extHostDataProvider.$onTaskCreated(provider.handle, response);
-					});
-
-					provider.taskServicesProvider.registerOnTaskStatusChanged((response: data.TaskProgressInfo) => {
-						extHostDataProvider.$onTaskStatusChanged(provider.handle, response);
-					});
-
-					// Edit Data callbacks
-					provider.queryProvider.registerOnEditSessionReady((ownerUri: string, success: boolean, message: string) => {
-						extHostDataProvider.$onEditSessionReady(provider.handle, ownerUri, success, message);
-					});
-
-					// File browser callbacks
-					provider.fileBrowserProvider.registerOnFileBrowserOpened((response: data.FileBrowserOpenedParams) => {
-						extHostDataProvider.$onFileBrowserOpened(provider.handle, response);
-					});
-
-					provider.fileBrowserProvider.registerOnFolderNodeExpanded((response: data.FileBrowserExpandedParams) => {
-						extHostDataProvider.$onFolderNodeExpanded(provider.handle, response);
-					});
-
-					provider.fileBrowserProvider.registerOnFilePathsValidated((response: data.FileBrowserValidatedParams) => {
-						extHostDataProvider.$onFilePathsValidated(provider.handle, response);
-					});
-
-					// Scripting callbacks
-					provider.scriptingProvider.registerOnScriptingComplete((response: data.ScriptingCompleteResult) => {
-						extHostDataProvider.$onScriptingComplete(provider.handle, response);
-					});
-
-					// Profiler callbacks
-					provider.profilerProvider.registerOnSessionEventsAvailable((response: data.ProfilerSessionEvents) => {
-						extHostDataProvider.$onSessionEventsAvailable(provider.handle, response);
-					});
-
-					// Complete registration
-					return extHostDataProvider.$registerProvider(provider);
-				},
+				registerBackupProvider,
+				registerConnectionProvider,
+				registerFileBrowserProvider,
+				registerMetadataProvider,
+				registerObjectExplorerProvider,
+				registerProfilerProvider,
+				registerRestoreProvider,
+				registerScriptingProvider,
+				registerTaskServicesProvider,
+				registerQueryProvider,
+				registerAdminServicesProvider,
+				registerCapabilitiesServiceProvider,
 				onDidChangeLanguageFlavor(listener: (e: data.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				}

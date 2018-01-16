@@ -19,6 +19,7 @@ import * as data from 'data';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { Emitter } from 'vs/base/common/event';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('SQL ConnectionStore tests', () => {
 	let defaultNamedProfile: IConnectionProfile;
@@ -108,7 +109,7 @@ suite('SQL ConnectionStore tests', () => {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: 0,
+					specialValueType: ConnectionOptionSpecialType.serverName,
 					valueType: 0
 				},
 				{
@@ -120,7 +121,7 @@ suite('SQL ConnectionStore tests', () => {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: 1,
+					specialValueType: ConnectionOptionSpecialType.databaseName,
 					valueType: 0
 				},
 				{
@@ -132,7 +133,7 @@ suite('SQL ConnectionStore tests', () => {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: 3,
+					specialValueType: ConnectionOptionSpecialType.userName,
 					valueType: 0
 				},
 				{
@@ -144,7 +145,7 @@ suite('SQL ConnectionStore tests', () => {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: 2,
+					specialValueType: ConnectionOptionSpecialType.authType,
 					valueType: 0
 				},
 				{
@@ -156,7 +157,7 @@ suite('SQL ConnectionStore tests', () => {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: 4,
+					specialValueType: ConnectionOptionSpecialType.password,
 					valueType: 0
 				}
 			]

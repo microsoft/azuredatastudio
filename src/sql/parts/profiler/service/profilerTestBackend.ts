@@ -31,6 +31,7 @@ const columns = [
 ];
 
 export class ProfilerTestBackend implements data.ProfilerProvider {
+	public readonly providerId = 'MSSQL';
 	private index = 0;
 	private timeOutMap = new Map<string, number>();
 	private testData: Array<Array<string>> = new Array<Array<string>>();

@@ -5,11 +5,11 @@
 
 'use strict';
 import * as data from 'data';
-import { ServiceOptionType } from 'sql/parts/connection/common/connectionManagement';
 import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
 import * as types from 'vs/base/common/types';
 
 import Event, { Emitter } from 'vs/base/common/event';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface RestoreOptionsElement {
 	optionMetadata: data.ServiceOption;
