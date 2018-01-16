@@ -16,8 +16,7 @@ import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
-import { IRestoreDialogController, IRestoreService } from 'sql/parts/disasterRecovery/restore/common/restoreService';
-import { IBackupService, IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
+import { IDisasterRecoveryService, IDisasterRecoveryUiService, IRestoreDialogController } from 'sql/parts/disasterRecovery/common/interfaces';
 import { IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
 import { ISqlOAuthService } from 'sql/common/sqlOAuthService';
@@ -68,10 +67,9 @@ export class BootstrapService implements IBootstrapService {
 		@IAdminService public adminService: IAdminService,
 		@IWorkbenchThemeService public themeService: IWorkbenchThemeService,
 		@IWorkbenchEditorService public editorService: IWorkbenchEditorService,
-		@IBackupService public backupService: IBackupService,
-		@IBackupUiService public backupUiService: IBackupUiService,
+		@IDisasterRecoveryService public disasterRecoveryService: IDisasterRecoveryService,
+		@IDisasterRecoveryUiService public disasterRecoveryUiService: IDisasterRecoveryUiService,
 		@IRestoreDialogController public restoreDialogService: IRestoreDialogController,
-		@IRestoreService public restoreService: IRestoreService,
 		@IConnectionDialogService public connectionDialogService: IConnectionDialogService,
 		@IQueryModelService public queryModelService: IQueryModelService,
 		@IKeybindingService public keybindingService: IKeybindingService,

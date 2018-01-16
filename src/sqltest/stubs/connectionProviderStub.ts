@@ -3,10 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as data from 'data';
+import data = require('data');
 
 export class ConnectionProviderStub implements data.ConnectionProvider {
-	public readonly providerId = 'MSSQL';
+	handle: number = 1;
 
 	connect(connectionUri: string, connectionInfo: data.ConnectionInfo): Thenable<boolean> {
 		return undefined;
