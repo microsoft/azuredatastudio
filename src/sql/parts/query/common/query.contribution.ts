@@ -241,6 +241,11 @@ let registryProperties = {
 		'description': localize('sql.showBatchTime', '[Optional] Should execution time be shown for individual batches'),
 		'default': false
 	},
+	'sql.chart.defaultChartType': {
+		'enum': Constants.allChartTypes,
+		'default': Constants.chartTypeHorizontalBar,
+		'description': localize('defaultChartType', "[Optional] the default chart type to use when opening Chart Viewer from a Query Results")
+	},
 	'sql.tabColorMode': {
 		'type': 'string',
 		'enum': [Constants.tabColorModeOff, Constants.tabColorModeBorder, Constants.tabColorModeFill],
