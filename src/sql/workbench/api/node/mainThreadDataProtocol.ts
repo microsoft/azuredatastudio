@@ -103,11 +103,13 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			}
 		});
 
-		return undefined;
-	}
+		this._capabilitiesService.registerProvider(<data.CapabilitiesProvider>{
+			getServerCapabilities(client: data.DataProtocolClientCapabilities): Thenable<data.DataProtocolServerCapabilities> {
+				return self._proxy.$getServerCapabilities(handle, client);
+			}
+		});
 
-	public $registerQueryProvider(providerId: string, handle: number): TPromise<any> {
-		const self = this;
+		// register query provider
 		this._queryManagementService.addQueryRequestHandler(providerId, {
 			cancelQuery(ownerUri: string): Thenable<data.QueryCancelResult> {
 				return self._proxy.$cancelQuery(handle, ownerUri);
@@ -171,45 +173,6 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			}
 		});
 
-		return undefined;
-	}
-
-	public $registerBackupProvider(providerId: string, handle: number): TPromise<any> {
-		const self = this;
-		this._backupService.registerProvider(providerId, <data.BackupProvider>{
-			backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: data.TaskExecutionMode): Thenable<data.BackupResponse> {
-				return self._proxy.$backup(handle, connectionUri, backupInfo, taskExecutionMode);
-			},
-			getBackupConfigInfo(connectionUri: string): Thenable<data.BackupConfigInfo> {
-				return self._proxy.$getBackupConfigInfo(handle, connectionUri);
-			}
-		});
-
-		return undefined;
-	}
-
-	public $registerRestoreProvider(providerId: string, handle: number): TPromise<any> {
-		const self = this;
-		this._restoreService.registerProvider(providerId, <data.RestoreProvider>{
-			getRestorePlan(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestorePlanResponse> {
-				return self._proxy.$getRestorePlan(handle, connectionUri, restoreInfo);
-			},
-			cancelRestorePlan(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<boolean> {
-				return self._proxy.$cancelRestorePlan(handle, connectionUri, restoreInfo);
-			},
-			restore(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestoreResponse> {
-				return self._proxy.$restore(handle, connectionUri, restoreInfo);
-			},
-			getRestoreConfigInfo(connectionUri: string): Thenable<data.RestoreConfigInfo> {
-				return self._proxy.$getRestoreConfigInfo(handle, connectionUri);
-			}
-		});
-
-		return undefined;
-	}
-
-	public $registerMetadataProvider(providerId: string, handle: number): TPromise<any> {
-		const self = this;
 		this._metadataService.registerProvider(providerId, <data.MetadataProvider>{
 			getMetadata(connectionUri: string): Thenable<data.ProviderMetadata> {
 				return self._proxy.$getMetadata(handle, connectionUri);
@@ -225,11 +188,6 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			}
 		});
 
-		return undefined;
-	}
-
-	public $registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any> {
-		const self = this;
 		this._objectExplorerService.registerProvider(providerId, <data.ObjectExplorerProvider>{
 			createNewSession(connection: data.ConnectionInfo): Thenable<data.ObjectExplorerSessionResponse> {
 				return self._proxy.$createObjectExplorerSession(handle, connection);
@@ -245,11 +203,6 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			}
 		});
 
-		return undefined;
-	}
-
-	public $registerTaskServicesProvider(providerId: string, handle: number): TPromise<any> {
-		const self = this;
 		this._taskService.registerProvider(providerId, <data.TaskServicesProvider>{
 			getAllTasks(listTasksParams: data.ListTasksParams): Thenable<data.ListTasksResponse> {
 				return self._proxy.$getAllTasks(handle, listTasksParams);
@@ -259,11 +212,6 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			}
 		});
 
-		return undefined;
-	}
-
-	public $registerScriptingProvider(providerId: string, handle: number): TPromise<any> {
-		const self = this;
 		this._scriptingService.registerProvider(providerId, <data.ScriptingProvider>{
 			scriptAsOperation(connectionUri: string, operation: data.ScriptOperation, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
 				return self._proxy.$scriptAsOperation(handle, connectionUri, operation, metadata, paramDetails);
