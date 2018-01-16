@@ -9,7 +9,7 @@ import 'vs/css!./media/sqlConnection';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { SelectBox, ISelectBoxStyles } from 'sql/base/browser/ui/selectBox/selectBox';
+import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
@@ -28,7 +28,6 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { localize } from 'vs/nls';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { Severity } from 'vs/platform/message/common/message';
-import { Color } from 'vs/base/common/color';
 
 export class ConnectionWidget {
 	private _builder: Builder;
