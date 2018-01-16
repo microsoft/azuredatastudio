@@ -171,9 +171,6 @@ export class ConnectionWidget {
 		let databaseNameBuilder = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
 		this._databaseNameOptions = [this.DefaultDatabaseGroup, this.LoadingDatabaseGroup];
 		this._databaseNameInputBox = new SelectBox(this._databaseNameOptions.map(d => d.name), this._defaultDatabaseName, databaseNameBuilder.getHTMLElement());
-		let disabledBackground : ISelectBoxStyles = {
-			disabledSelectBackground : Color.fromHex('#444444')
-		}
 		DialogHelper.appendInputSelectBox(databaseNameBuilder, this._databaseNameInputBox);
 
 		let serverGroupLabel = localize('serverGroup', 'Server group');
@@ -220,7 +217,7 @@ export class ConnectionWidget {
 					this.showErrorPromise(err).then(() => {
 						this._serverNameInputBox.enable();
 						this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup].map(d => d.name), 0);
-					})
+					});
 				});
 			}
 		}
