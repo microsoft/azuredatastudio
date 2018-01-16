@@ -1,6 +1,6 @@
 # Change Log
 
-## Version 0.25.2
+## Version 0.25.4
 * Release date: January 17, 2017
 * Release status: Public Preview
 
