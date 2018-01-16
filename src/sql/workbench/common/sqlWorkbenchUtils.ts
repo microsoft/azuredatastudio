@@ -7,7 +7,7 @@
 import ConnectionConstants = require('sql/parts/connection/common/constants');
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IEditorInput } from 'vs/platform/editor/common/editor';
 import URI from 'vs/base/common/uri';
 
@@ -20,12 +20,12 @@ import URI from 'vs/base/common/uri';
  * @param {string} sectionName
  * @returns {*}
  */
-export function getSqlConfigSection(workspaceConfigService: IWorkspaceConfigurationService, sectionName: string): any {
+export function getSqlConfigSection(workspaceConfigService: IConfigurationService, sectionName: string): any {
 	let config = workspaceConfigService.getConfiguration(ConnectionConstants.sqlConfigSectionName);
 	return config ? config[sectionName] : {};
 }
 
-export function getSqlConfigValue<T>(workspaceConfigService: IWorkspaceConfigurationService, configName: string): T {
+export function getSqlConfigValue<T>(workspaceConfigService: IConfigurationService, configName: string): T {
 	let config = workspaceConfigService.getConfiguration(ConnectionConstants.sqlConfigSectionName);
 	return config[configName];
 }

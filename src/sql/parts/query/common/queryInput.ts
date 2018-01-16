@@ -116,7 +116,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public getQueryResultsInputResource(): string { return this._results.uri; }
 	public showQueryResultsEditor(): void { this._showQueryResultsEditor.fire(); }
 	public updateSelection(selection: ISelectionData): void { this._updateSelection.fire(selection); }
-	public getTypeId(): string { return UntitledEditorInput.ID; }
+	public getTypeId(): string { return QueryInput.ID; }
 	public getDescription(): string { return this._description; }
 	public supportsSplitEditor(): boolean { return false; }
 	public getModeId(): string { return QueryInput.SCHEMA; }

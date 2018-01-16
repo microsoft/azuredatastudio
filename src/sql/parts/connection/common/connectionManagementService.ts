@@ -30,6 +30,7 @@ import { warn } from 'sql/base/common/log';
 import { IResourceProviderService } from 'sql/parts/accountManagement/common/interfaces';
 import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
 import { Extensions as ConnectionProviderExtensions, ConnectionProviderProperties, IConnectionProviderRegistry } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import * as QueryConstants from 'sql/parts/query/common/constants';
 
 import * as sqlops from 'sqlops';
 
@@ -1294,7 +1295,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public getTabColorForUri(uri: string): string {
-		if (!WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, 'enableTabColors')) {
+		if (WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, 'tabColorMode') === QueryConstants.tabColorModeOff) {
 			return undefined;
 		}
 		let connectionProfile = this.getConnectionProfile(uri);
