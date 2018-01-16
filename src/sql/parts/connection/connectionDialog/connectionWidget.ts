@@ -168,7 +168,7 @@ export class ConnectionWidget {
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
 		let databaseNameBuilder = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
 		this._databaseNameOptions = [this.DefaultDatabaseGroup, this.LoadingDatabaseGroup];
-		this._databaseNameInputBox = new SelectBox(this._databaseNameOptions.map(d => d.name), '<default>', databaseNameBuilder.getHTMLElement());
+		this._databaseNameInputBox = new SelectBox(this._databaseNameOptions.map(d => d.name), '<Default>', databaseNameBuilder.getHTMLElement());
 		DialogHelper.appendInputSelectBox(databaseNameBuilder, this._databaseNameInputBox);
 
 		let serverGroupLabel = localize('serverGroup', 'Server group');
@@ -190,14 +190,12 @@ export class ConnectionWidget {
 	}
 
 	private _updateDatabaseNames() {
-
 		if (this.serverName) {
-			// disable database dropdown until it's populated
-			this._databaseNameInputBox.setOptions(['Loading...'], 0);
-			this._databaseNameInputBox.disable();
-
 			// connect to server and fetch database names
 			if (this.authenticationType === Constants.integrated) {
+				// disable database dropdown until it's populated
+				this._databaseNameInputBox.setOptions(['Loading...'], 0);
+				this._databaseNameInputBox.disable();
 				this._callbacks.onUpdateDatabaseNames().then(result => {
 					if (result) {
 						this._databaseNameOptions = [this.DefaultDatabaseGroup];
@@ -210,18 +208,16 @@ export class ConnectionWidget {
 								description: undefined,
 							});
 						}
-						// change database name options here
-						this._databaseNameInputBox.setOptions(this._databaseNameOptions.map(d => d.name));
+						this._databaseNameInputBox.setOptions(this._databaseNameOptions.map(d => d.name), 0);
 					} else {
-						this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup, this.LoadingDatabaseGroup].map(d => d.name));
+						this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup, this.LoadingDatabaseGroup].map(d => d.name), 0);
 					}
 				}).catch(err => {
 					this._errorMessageService.showDialog(Severity.Error, '', err);
-					this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup].map(d => d.name));
+					this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup].map(d => d.name), 0);
 				});
+				this._databaseNameInputBox.enable();
 			}
-
-			this._databaseNameInputBox.enable();
 		}
 	}
 
@@ -268,6 +264,11 @@ export class ConnectionWidget {
 			this._toDispose.push(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
 			this._toDispose.push(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
 				this.onAuthTypeSelected(selectedAuthType.selected);
+				if (this._authTypeSelectBox.value === this.getAuthTypeDisplayName(Constants.integrated)) {
+					this._updateDatabaseNames();
+				} else {
+					this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup].map(d => d.name), 0);
+				}
 				this.setConnectButton();
 			}));
 		}
@@ -290,9 +291,13 @@ export class ConnectionWidget {
 		this._toDispose.push(this._serverNameInputBox.onLoseFocus(() => {
 			this._updateDatabaseNames();
 		}));
-		this._toDispose.push(this._databaseNameInputBox.onDidSelect(selectedDatabase => {
-			this._databaseNameInputBox.selectWithOptionName(selectedDatabase.selected);
-		}));
+		// this._toDispose.push(this._databaseNameInputBox.onDidSelect(selectedDatabase => {
+		// 	if (selectedDatabase.selected === '<Default>') {
+		// 		this._databaseNameInputBox.selectWithOptionName('master');
+		// 	} else {
+		// 		this._databaseNameInputBox.selectWithOptionName(selectedDatabase.selected);
+		// 	}
+		// }));
 	}
 
 	private onGroupSelected(selectedGroup: string) {
@@ -517,19 +522,15 @@ export class ConnectionWidget {
 			this._passwordInputBox.focus();
 			isFocused = true;
 		}
-		//let validateDatabaseName = this._databaseNameInputBox.validate();
-		// let validateDatabaseName;
-		// if (!validateDatabaseName && !isFocused) {
-		// 	this._databaseNameInputBox.focus();
-		// }
-		return validateServerName && validateUserName && validatePassword;// && validateDatabaseName;
+
+		return validateServerName && validateUserName && validatePassword;
 	}
 
 	public connect(model: IConnectionProfile): boolean {
 		let validInputs = this.validateInputs();
 		if (validInputs) {
 			model.serverName = this.serverName;
-			model.databaseName = this.databaseName;
+			model.databaseName = this.databaseName === '<Default>' ? 'master' : this.databaseName;
 			model.userName = this.userName;
 			model.password = this.password;
 			model.authenticationType = this.authenticationType;
