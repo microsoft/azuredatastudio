@@ -24,7 +24,6 @@ const options: minimist.Opts = {
 		'debugBrkPluginHost',
 		'debugSearch',
 		'debugBrkSearch',
-		'open-url',
 		'enable-proposed-api',
 		'export-default-configuration',
 		'install-source'
@@ -39,6 +38,7 @@ const options: minimist.Opts = {
 		'new-window',
 		'unity-launch',
 		'reuse-window',
+		'open-url',
 		'performance',
 		'prof-startup',
 		'verbose',

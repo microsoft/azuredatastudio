@@ -5,7 +5,6 @@
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import URI from 'vs/base/common/uri';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -70,7 +69,7 @@ export class DashboardInput extends EditorInput {
 	}
 
 	public getTypeId(): string {
-		return UntitledEditorInput.ID;
+		return DashboardInput.ID;
 	}
 
 	public getResource(): URI {

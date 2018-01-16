@@ -2,16 +2,16 @@
 
 SQL Operations Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download SQL Operations Studio December Public Preview**
+**Download SQL Operations Studio January Public Preview**
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=865305
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=865304
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=865306
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=865307
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=865308
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=865309
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=866480
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=866479
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=866481
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=866482
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=866484
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=866483
 
 Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instructions.
 

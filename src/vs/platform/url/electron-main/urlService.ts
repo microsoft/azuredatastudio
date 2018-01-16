@@ -26,7 +26,7 @@ export class URLService implements IURLService {
 			...globalBuffer
 		];
 
-		app.setAsDefaultProtocolClient(product.urlProtocol, process.execPath, ['--open-url']);
+		app.setAsDefaultProtocolClient(product.urlProtocol, process.execPath, ['--open-url', '--']);
 
 		const rawOnOpenUrl = fromEventEmitter(app, 'open-url', (event: Electron.Event, url: string) => ({ event, url }));
 
