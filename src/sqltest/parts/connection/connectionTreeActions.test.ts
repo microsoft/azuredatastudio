@@ -63,6 +63,7 @@ suite('SQL Connection Tree Action tests', () => {
 		connectionManagementService.setup(x => x.onDisconnect).returns(() => new Emitter<any>().event);
 		connectionManagementService.setup(x => x.deleteConnectionGroup(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 		connectionManagementService.setup(x => x.deleteConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
+		connectionManagementService.setup(x => x.registerObjectExplorerService(TypeMoq.It.isAny())).returns(() => undefined);
 
 		return connectionManagementService;
 	}
@@ -374,6 +375,7 @@ suite('SQL Connection Tree Action tests', () => {
 			resolve(connection);
 		}));
 		connectionManagementService.setup(x => x.isConnected(undefined, TypeMoq.It.isAny())).returns(() => isConnectedReturnValue);
+		connectionManagementService.setup(x => x.registerObjectExplorerService(TypeMoq.It.isAny())).returns(() => undefined);
 
 		var objectExplorerSession = {
 			success: true,
@@ -463,6 +465,7 @@ suite('SQL Connection Tree Action tests', () => {
 			resolve(connection);
 		}));
 		connectionManagementService.setup(x => x.isConnected(undefined, TypeMoq.It.isAny())).returns(() => isConnectedReturnValue);
+		connectionManagementService.setup(x => x.registerObjectExplorerService(TypeMoq.It.isAny())).returns(() => undefined);
 
 		var objectExplorerSession = {
 			success: true,
