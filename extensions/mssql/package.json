@@ -540,6 +540,7 @@
     "restoreProvider": {
       "providerId": "MSSQL",
       "displayName": "Microsoft SQL Server",
+      "useConnection": "MSSQL",
       "restoreOptions": [
         {
           "name": "keepReplication",

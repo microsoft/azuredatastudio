@@ -8,6 +8,7 @@ import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
 import Event, { Emitter } from 'vs/base/common/event';
+import { clone } from 'vs/base/common/objects';
 
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as sqlops from 'sqlops';
@@ -40,7 +41,7 @@ export interface IRestoreProviderRegistry {
 	registerRestoreProvider(id: string, properties: RestoreProviderProperties): void;
 	getProperties(id: string): RestoreProviderProperties;
 	readonly onNewProvider: Event<{ id: string, properties: RestoreProviderProperties }>;
-	readonly providers: { id: string, properties: RestoreProviderProperties }[];
+	readonly providers: { [id: string]: RestoreProviderProperties};
 }
 
 class RestoreProviderRegistryImpl implements IRestoreProviderRegistry {
@@ -57,12 +58,12 @@ class RestoreProviderRegistryImpl implements IRestoreProviderRegistry {
 		return this._providers.get(id);
 	}
 
-	public get providers(): { id: string, properties: RestoreProviderProperties }[] {
-		const out = [];
+	public get providers(): { [id: string]: RestoreProviderProperties} {
+		let rt: { [id: string]: RestoreProviderProperties} = {};
 		this._providers.forEach((v, k) => {
-			out.push({ id: k, propreties: v });
+			rt[k] = clone(v);
 		});
-		return out;
+		return rt;
 	}
 }
 

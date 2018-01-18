@@ -14,8 +14,8 @@ import { IAction } from 'vs/base/common/actions';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { clone } from 'vs/base/common/objects';
 import { BackupProviderProperties, IBackupProviderRegistry, Extensions as BackupExtensions } from 'sql/workbench/parts/backup/common/backupProviderExtension';
+import { RestoreProviderProperties, IRestoreProviderRegistry, Extensions as RestoreExtensions } from 'sql/workbench/parts/restore/common/restoreProviderExtension';
 import { SerializationProviderProperties, ISerializationProviderRegistry, Extensions as SerializationExtensions } from 'sql/workbench/parts/serialization/common/serializationProviderExtension';
-import { RestoreProviderProperties } from 'sql/workbench/parts/restore/common/restoreProviderRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { toObject } from 'sql/base/common/map';
 import { Memento } from 'vs/workbench/common/memento';
@@ -29,6 +29,7 @@ export const ICapabilitiesService = createDecorator<ICapabilitiesService>(SERVIC
 const connectionRegistry = Registry.as<IConnectionProviderRegistry>(ConnectionExtensions.ConnectionProviderContributions);
 const backupRegistry = Registry.as<IBackupProviderRegistry>(BackupExtensions.BackupProviderContributions);
 const serializationRegistry = Registry.as<ISerializationProviderRegistry>(SerializationExtensions.SerializationProviderContributions);
+const restoreRegistry = Registry.as<IRestoreProviderRegistry>(RestoreExtensions.RestoreProviderContributions);
 
 interface ConnectionCache {
 	[id: string]: ConnectionProviderProperties;
@@ -166,7 +167,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 				this._providers.set(e.properties.useConnection, provider);
 			}
 			if (!this._featureUpdateEvents.has(e.properties.useConnection)) {
-				this._featureUpdateEvents.set(e.id, new Emitter<ProviderFeatures>());
+				this._featureUpdateEvents.set(e.properties.useConnection, new Emitter<ProviderFeatures>());
 			}
 			this._featureUpdateEvents.get(e.properties.useConnection).fire(provider);
 		};
@@ -174,7 +175,22 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 			if (save) {
 				this._momento_data.restoreProviderCache[e.id] = e.properties;
 			}
-			let provider = this._providers.get(e)
+			let provider = this._providers.get(e.properties.useConnection);
+			if (provider) {
+				provider.restore[e.id] = e.properties;
+			} else {
+				provider = {
+					connection: undefined,
+					serialization: undefined,
+					backup: { },
+					restore: { [e.id]: e.properties }
+				};
+				this._providers.set(e.properties.useConnection, provider);
+			}
+			if (!this._featureUpdateEvents.has(e.properties.useConnection)) {
+				this._featureUpdateEvents.set(e.properties.useConnection, new Emitter<ProviderFeatures>());
+			}
+			this._featureUpdateEvents.get(e.properties.useConnection).fire(provider);
 		};
 		let serializationProviderHandler = (e: { id: string, properties: SerializationProviderProperties }, save = true) => {
 			if (save) {
@@ -210,6 +226,11 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		});
 		backupRegistry.onNewProvider(backupProviderHandler);
 
+		Object.entries(restoreRegistry.providers).map(v => {
+			restoreProviderHandler({ id: v[0], properties: v[1]});
+		});
+		restoreRegistry.onNewProvider(restoreProviderHandler);
+
 		Object.entries(serializationRegistry.providers).map(v => {
 			serializationProviderHandler({ id: v[0], properties: v[1] });
 		});
@@ -221,6 +242,9 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		});
 		Object.entries(this._momento_data.backupProviderCache).map(v => {
 			backupProviderHandler({ id: v[0], properties: v[1] }, false);
+		});
+		Object.entries(this._momento_data.restoreProviderCache).map(v => {
+			restoreProviderHandler({ id: v[0], properties: v[1] }, false);
 		});
 		Object.entries(this._momento_data.serializationProviderCache).map(v => {
 			serializationProviderHandler({ id: v[0], properties: v[1] }, false);
