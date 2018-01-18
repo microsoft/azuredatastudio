@@ -170,6 +170,12 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 			}
 			this._featureUpdateEvents.get(e.properties.useConnection).fire(provider);
 		};
+		let restoreProviderHandler = (e: { id: string, properties: RestoreProviderProperties }, save = true) => {
+			if (save) {
+				this._momento_data.restoreProviderCache[e.id] = e.properties;
+			}
+			let provider = this._providers.get(e)
+		};
 		let serializationProviderHandler = (e: { id: string, properties: SerializationProviderProperties }, save = true) => {
 			if (save) {
 				this._momento_data.serializationProviderCache[e.id] = e.properties;

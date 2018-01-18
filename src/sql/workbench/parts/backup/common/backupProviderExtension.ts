@@ -33,7 +33,6 @@ export interface BackupProviderProperties {
 	backupOptions: IBackupOption[];
 }
 
-
 export const Extensions = {
 	BackupProviderContributions: 'backup.providers'
 };
@@ -81,6 +80,10 @@ const BackupProviderContrib: IJSONSchema = {
 		displayName: {
 			type: 'string',
 			description: localize('schema.displayName', "Display Name for the provider")
+		},
+		useConnection: {
+			type: 'string',
+			description: localize('schema.userConnection', "What provider's connection this provider uses")
 		},
 		connectionOptions: {
 			type: 'array',

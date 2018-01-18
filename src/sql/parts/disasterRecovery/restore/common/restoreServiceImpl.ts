@@ -15,7 +15,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import * as types from 'vs/base/common/types';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { IRestoreService, IRestoreDialogController, TaskExecutionMode } from 'sql/parts/disasterRecovery/restore/common/restoreService';
-import { Registry } from 'vs/platform/registry/common/platform';
 
 import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
 import { RestoreDialog } from 'sql/parts/disasterRecovery/restore/restoreDialog';
@@ -24,7 +23,6 @@ import { MssqlRestoreInfo } from 'sql/parts/disasterRecovery/restore/mssqlRestor
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
 import * as Utils from 'sql/parts/connection/common/utils';
-import { RestoreProviderProperties, Extensions, IRestoreProviderRegistry } from 'sql/workbench/parts/restore/common/restoreProviderRegistry';
 
 export class RestoreService implements IRestoreService {
 
@@ -133,7 +131,6 @@ export class RestoreService implements IRestoreService {
 export class RestoreDialogController implements IRestoreDialogController {
 	_serviceBrand: any;
 
-	private _providers = new Map<string, RestoreProviderProperties>();
 	private _restoreDialogs: { [provider: string]: RestoreDialog | OptionsDialog } = {};
 	private _currentProvider: string;
 	private _ownerUri: string;
@@ -145,15 +142,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 		@IRestoreService private _restoreService: IRestoreService,
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
-	) {
-		const registry = Registry.as<IRestoreProviderRegistry>(Extensions.RestoreProviderContributions);
-		let providerRegistration = (e: { id: string, properties: RestoreProviderProperties }) => {
-			this._providers.set(e.id, e.properties);
-		};
-
-		registry.onNewProvider(providerRegistration, this);
-		registry.providers.map(providerRegistration);
-	}
+	) { }
 
 	private handleOnRestore(isScriptOnly: boolean = false): void {
 		let restoreOption = this.setRestoreOption();
@@ -287,7 +276,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 						let newRestoreDialog: RestoreDialog | OptionsDialog = undefined;
 						if (this._currentProvider === ConnectionConstants.mssqlProviderName) {
 							let provider = this._currentProvider;
-							newRestoreDialog = this._instantiationService.createInstance(RestoreDialog, this._providers.get(provider).restoreOptions);
+							newRestoreDialog = this._instantiationService.createInstance(RestoreDialog, this.getRestoreOption());
 							newRestoreDialog.onCancel(() => this.handleOnCancel());
 							newRestoreDialog.onRestore((isScriptOnly) => this.handleOnRestore(isScriptOnly));
 							newRestoreDialog.onValidate((overwriteTargetDatabase) => this.handleMssqlOnValidateFile(overwriteTargetDatabase));
@@ -314,7 +303,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 
 					} else {
 						let restoreDialog = this._restoreDialogs[this._currentProvider] as OptionsDialog;
-						restoreDialog.open(this._providers.get(this._currentProvider).restoreOptions, this._optionValues);
+						restoreDialog.open(this.getRestoreOption(), this._optionValues);
 					}
 
 					resolve(result);

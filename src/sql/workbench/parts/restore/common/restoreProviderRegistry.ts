@@ -28,6 +28,7 @@ export interface IRestoreOption {
 export interface RestoreProviderProperties {
 	providerId: string;
 	displayName: string;
+	useConnection: string;
 	restoreOptions: IRestoreOption[];
 }
 
@@ -78,6 +79,10 @@ const RestoreProviderContrib: IJSONSchema = {
 		displayName: {
 			type: 'string',
 			description: localize('schema.displayName', "Display Name for the provider")
+		},
+		useConnection: {
+			type: 'string',
+			description: localize('schema.userConnection', "What provider's connection this provider uses")
 		},
 		restoreOptions: {
 			type: 'array',
