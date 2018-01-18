@@ -297,8 +297,8 @@
     },
     "html-query-plan": {
       "version": "2.4.0",
-      "from": "..\\html-query-plan",
-      "resolved": "file:..\\html-query-plan"
+      "from": "git://github.com/anthonydresser/html-query-plan.git#2.3",
+      "resolved": "git://github.com/anthonydresser/html-query-plan.git#5e7713622e2badde65563394925c6432d3237449"
     },
     "http-proxy-agent": {
       "version": "0.2.7",
