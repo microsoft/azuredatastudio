@@ -663,7 +663,8 @@ export class Workbench implements IPartService {
 		serviceCollection.set(IAngularEventingService, this.instantiationService.createInstance(AngularEventingService));
 		serviceCollection.set(ISqlOAuthService, this.instantiationService.createInstance(SqlOAuthService));
 		serviceCollection.set(sqlIClipboardService, this.instantiationService.createInstance(sqlClipboardService));
-		serviceCollection.set(ICapabilitiesService, this.instantiationService.createInstance(CapabilitiesService));
+		let capabilitiesService = this.instantiationService.createInstance(CapabilitiesService);
+		serviceCollection.set(ICapabilitiesService, capabilitiesService);
 		serviceCollection.set(IErrorMessageService, this.instantiationService.createInstance(ErrorMessageService));
 		serviceCollection.set(IConnectionDialogService, this.instantiationService.createInstance(ConnectionDialogService));
 		serviceCollection.set(IServerGroupController, this.instantiationService.createInstance(ServerGroupController));
@@ -697,6 +698,7 @@ export class Workbench implements IPartService {
 		this.toDispose.push(connectionManagementService);
 		this.toShutdown.push(connectionManagementService);
 		this.toShutdown.push(accountManagementService);
+		this.toShutdown.push(capabilitiesService);
 
 		// Contributed services
 		const contributedServices = getServices();

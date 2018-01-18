@@ -107,7 +107,7 @@ export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 	}
 
 	private getSpecialTypeOptionValue(type: string): string {
-		let name = this.getSpecialTypeOptionName(type) || type;
+		let name = this.getSpecialTypeOptionName(type);
 		if (name) {
 			return this.options[name];
 		}

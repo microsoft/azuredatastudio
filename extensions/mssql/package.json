@@ -195,7 +195,7 @@
       "displayName": "Microsoft SQL Server",
       "connectionOptions": [
         {
-          "specialValueType": "server",
+          "specialValueType": "serverName",
           "isIdentity": true,
           "name": "server",
           "displayName": "Server",
@@ -206,7 +206,7 @@
           "isArray": false
         },
         {
-          "specialValueType": "database",
+          "specialValueType": "databaseName",
           "isIdentity": true,
           "name": "database",
           "displayName": "Database",
@@ -217,7 +217,7 @@
           "isArray": false
         },
         {
-          "specialValueType": "authenticationType",
+          "specialValueType": "authType",
           "isIdentity": true,
           "name": "authenticationType",
           "displayName": "Authentication type",
@@ -238,7 +238,7 @@
           "isArray": false
         },
         {
-          "specialValueType": "user",
+          "specialValueType": "userName",
           "isIdentity": true,
           "name": "user",
           "displayName": "User name",
