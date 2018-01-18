@@ -16,7 +16,7 @@ import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
 import { IConnectionComponentCallbacks } from 'sql/parts/connection/connectionDialog/connectionDialogService';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ConnectionOptionSpecialType } from 'sql/parts/connection/common/connectionManagement';
+import { ConnectionOptionSpecialType, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import * as Constants from 'sql/parts/connection/common/constants';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -27,14 +27,16 @@ import data = require('data');
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
+import { Severity } from 'vs/platform/message/common/message';
 
 export class ConnectionWidget {
 	private _builder: Builder;
 	private _serverGroupSelectBox: SelectBox;
 	private _previousGroupOption: string;
 	private _serverGroupOptions: IConnectionProfileGroup[];
+	private _databaseNameOptions: IConnectionProfileGroup[];
 	private _serverNameInputBox: InputBox;
-	private _databaseNameInputBox: InputBox;
+	private _databaseNameInputBox: SelectBox;
 	private _userNameInputBox: InputBox;
 	private _passwordInputBox: InputBox;
 	private _password: string;
@@ -51,14 +53,28 @@ export class ConnectionWidget {
 		[Constants.mssqlProviderName]: [new AuthenticationType(Constants.integrated, false), new AuthenticationType(Constants.sqlLogin, true)]
 	};
 	private _saveProfile: boolean;
+	private _defaultDatabaseName : string = '<Default>';
 	public DefaultServerGroup: IConnectionProfileGroup = {
 		id: '',
-		name: localize('defaultServerGroup', '<Default>'),
+		name: localize('defaultServerGroup', this._defaultDatabaseName),
 		parentId: undefined,
 		color: undefined,
 		description: undefined,
 	};
-
+	public DefaultDatabaseGroup: IConnectionProfileGroup = {
+		id: '',
+		name: localize('defaultDatabaseGroup', this._defaultDatabaseName),
+		parentId: undefined,
+		color: undefined,
+		description: undefined
+	};
+	public LoadingDatabaseGroup: IConnectionProfileGroup = {
+		id: '',
+		name: localize('loadingDatabaseGroup', 'Loading...'),
+		parentId: undefined,
+		color: undefined,
+		description: undefined
+	};
 	private _addNewServerGroup = {
 		id: '',
 		name: localize('addNewServerGroup', 'Add new group...'),
@@ -77,7 +93,8 @@ export class ConnectionWidget {
 		callbacks: IConnectionComponentCallbacks,
 		providerName: string,
 		@IThemeService private _themeService: IThemeService,
-		@IContextViewService private _contextViewService: IContextViewService) {
+		@IContextViewService private _contextViewService: IContextViewService,
+		@IErrorMessageService private _errorMessageService: IErrorMessageService ) {
 		this._callbacks = callbacks;
 		this._toDispose = [];
 		this._optionsMaps = {};
@@ -151,12 +168,9 @@ export class ConnectionWidget {
 
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
 		let databaseNameBuilder = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
-		this._databaseNameInputBox = new InputBox(databaseNameBuilder.getHTMLElement(), this._contextViewService, {
-			validationOptions: {
-				validation: (value: string) => (!value && databaseOption.isRequired) ? ({ type: MessageType.ERROR, content: databaseOption.displayName + errorMessage }) : null
-			},
-			placeholder: (databaseOption.defaultValue || '')
-		});
+		this._databaseNameOptions = [this.DefaultDatabaseGroup, this.LoadingDatabaseGroup];
+		this._databaseNameInputBox = new SelectBox(this._databaseNameOptions.map(d => d.name), this._defaultDatabaseName, databaseNameBuilder.getHTMLElement());
+		DialogHelper.appendInputSelectBox(databaseNameBuilder, this._databaseNameInputBox);
 
 		let serverGroupLabel = localize('serverGroup', 'Server group');
 		let serverGroupBuilder = DialogHelper.appendRow(this._tableContainer, serverGroupLabel, 'connection-label', 'connection-input');
@@ -174,6 +188,50 @@ export class ConnectionWidget {
 			}
 		}
 		return false;
+	}
+
+	private _updateDatabaseNames() : void {
+		if (this.serverName) {
+			// connect to server and fetch database names
+			if (this.authenticationType === Constants.integrated) {
+				this._databaseNameInputBox.setOptions(['Loading...'], 0);
+				this._callbacks.onUpdateDatabaseNames().then(result => {
+					if (result) {
+						this._databaseNameOptions = [this.DefaultDatabaseGroup];
+						for (let database of result) {
+							this._databaseNameOptions.push({
+								id: '',
+								name: database,
+								parentId: undefined,
+								color: undefined,
+								description: undefined,
+							});
+						}
+						this._databaseNameInputBox.setOptions(this._databaseNameOptions.map(d => d.name), 0);
+					} else {
+						this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup, this.LoadingDatabaseGroup].map(d => d.name), 0);
+					}
+					this._serverNameInputBox.enable();
+				}).catch(err => {
+					this.showErrorPromise(err).then(() => {
+						this._serverNameInputBox.enable();
+						this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup].map(d => d.name), 0);
+					});
+				});
+			}
+		}
+
+	}
+
+	private showErrorPromise(errorMessage: string): Promise<void> {
+		return new Promise((resolve, reject) => {
+			if (errorMessage) {
+				this._errorMessageService.showDialog(Severity.Error, '', errorMessage);
+				resolve();
+			} else {
+				reject();
+			}
+		});
 	}
 
 	private createAdvancedButton(container: Builder, title: string): Button {
@@ -208,7 +266,7 @@ export class ConnectionWidget {
 	private registerListeners(): void {
 		// Theme styler
 		this._toDispose.push(attachInputBoxStyler(this._serverNameInputBox, this._themeService));
-		this._toDispose.push(attachInputBoxStyler(this._databaseNameInputBox, this._themeService));
+		this._toDispose.push(styler.attachSelectBoxStyler(this._databaseNameInputBox, this._themeService));
 		this._toDispose.push(attachInputBoxStyler(this._userNameInputBox, this._themeService));
 		this._toDispose.push(attachInputBoxStyler(this._passwordInputBox, this._themeService));
 		this._toDispose.push(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
@@ -219,6 +277,12 @@ export class ConnectionWidget {
 			this._toDispose.push(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
 			this._toDispose.push(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
 				this.onAuthTypeSelected(selectedAuthType.selected);
+				if (this._authTypeSelectBox.value === this.getAuthTypeDisplayName(Constants.integrated)) {
+					this._updateDatabaseNames();
+				} else {
+
+					this._databaseNameInputBox.setOptions([this.DefaultDatabaseGroup].map(d => d.name), 0);
+				}
 				this.setConnectButton();
 			}));
 		}
@@ -237,6 +301,10 @@ export class ConnectionWidget {
 
 		this._toDispose.push(this._passwordInputBox.onDidChange(passwordInput => {
 			this._password = passwordInput;
+		}));
+		this._toDispose.push(this._serverNameInputBox.onLoseFocus(() => {
+			this._serverNameInputBox.disable();
+			this._updateDatabaseNames();
 		}));
 	}
 
@@ -321,7 +389,7 @@ export class ConnectionWidget {
 	public fillInConnectionInputs(connectionInfo: IConnectionProfile) {
 		if (connectionInfo) {
 			this._serverNameInputBox.value = this.getModelValue(connectionInfo.serverName);
-			this._databaseNameInputBox.value = this.getModelValue(connectionInfo.databaseName);
+			this._databaseNameInputBox.setOptions([connectionInfo.databaseName], 0);
 			this._userNameInputBox.value = this.getModelValue(connectionInfo.userName);
 			this._passwordInputBox.value = connectionInfo.password ? Constants.passwordChars : '';
 			this._password = this.getModelValue(connectionInfo.password);
@@ -462,18 +530,15 @@ export class ConnectionWidget {
 			this._passwordInputBox.focus();
 			isFocused = true;
 		}
-		let validateDatabaseName = this._databaseNameInputBox.validate();
-		if (!validateDatabaseName && !isFocused) {
-			this._databaseNameInputBox.focus();
-		}
-		return validateServerName && validateUserName && validatePassword && validateDatabaseName;
+
+		return validateServerName && validateUserName && validatePassword;
 	}
 
 	public connect(model: IConnectionProfile): boolean {
 		let validInputs = this.validateInputs();
 		if (validInputs) {
 			model.serverName = this.serverName;
-			model.databaseName = this.databaseName;
+			model.databaseName = this.databaseName === this._defaultDatabaseName ? 'master' : this.databaseName;
 			model.userName = this.userName;
 			model.password = this.password;
 			model.authenticationType = this.authenticationType;
