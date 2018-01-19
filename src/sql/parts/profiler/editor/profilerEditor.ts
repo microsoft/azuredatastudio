@@ -44,8 +44,6 @@ import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/fi
 import * as types from 'vs/base/common/types';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
-import { ProfilerTestBackend } from 'sql/parts/profiler/service/profilerTestBackend';
-
 class BasicView extends View {
 	private _previousSize: number;
 	private _collapsed: boolean;
@@ -157,7 +155,7 @@ export class ProfilerEditor extends BaseEditor {
 		let tableContainer = this._createProfilerTable();
 		let paneContainer = this._createProfilerPane();
 		this._splitView.addView(new BasicView(
-			undefined,
+			300,
 			tableContainer,
 			() => this._profilerTableEditor.focus(),
 			size => this._profilerTableEditor.layout(new Dimension(parseFloat(DOM.getComputedStyle(this._body).width), size)),
@@ -165,7 +163,7 @@ export class ProfilerEditor extends BaseEditor {
 		));
 
 		this._panelView = new BasicView(
-			undefined,
+			300,
 			paneContainer,
 			() => this._tabbedPanel.focus(),
 			size => this._tabbedPanel.layout(new Dimension(DOM.getTotalWidth(this._body), size)),

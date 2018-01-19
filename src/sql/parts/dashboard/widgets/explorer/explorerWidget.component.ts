@@ -118,4 +118,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	public refresh(): void {
 		this.init();
 	}
+
+	public layout(): void {
+		this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
+	}
 }

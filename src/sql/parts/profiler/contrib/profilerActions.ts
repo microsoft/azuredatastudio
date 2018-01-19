@@ -17,6 +17,9 @@ import * as nls from 'vs/nls';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ObjectExplorerActionsContext } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/parts/connection/common/connectionManagement';
 
 export class ProfilerConnect extends Action {
 	public static ID = 'profiler.connect';
@@ -228,17 +231,35 @@ export class NewProfilerAction extends TaskAction {
 	public static LABEL = nls.localize('newProfiler', 'New Profiler');
 	public static ICON = 'profile';
 
+	private _connectionProfile: ConnectionProfile;
+
 	constructor(
 		id: string, label: string, icon: string,
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(id, label, icon);
 	}
 
 	run(actionContext: BaseActionContext): TPromise<boolean> {
+		if (actionContext instanceof ObjectExplorerActionsContext) {
+			this._connectionProfile = actionContext.connectionProfile;
+		}
+
 		let profilerInput = this._instantiationService.createInstance(ProfilerInput, actionContext.profile);
 		return this._editorService.openEditor(profilerInput, { pinned: true }, false).then(() => {
+			let options: IConnectionCompletionOptions = {
+				params: undefined,
+				saveTheConnection: false,
+				showConnectionDialogOnError: true,
+				showDashboard: false,
+				showFirewallRuleOnError: true
+			};
+			this._connectionService.connect(this._connectionProfile, profilerInput.id, options).then(() => {
+				TPromise.as(true);
+			});
+
 			return TPromise.as(true);
 		});
 	}

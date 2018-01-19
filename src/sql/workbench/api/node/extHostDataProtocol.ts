@@ -56,31 +56,6 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._createDisposable(provider.handle);
 	};
 
-	/**
-	 * @deprecated; TO BE REMOVED
-	 * @param provider
-	 */
-	$registerProvider(provider: sqlops.DataProtocolProvider): vscode.Disposable {
-		let altProvider: any = {};
-		for (let key in provider) {
-			if (provider.hasOwnProperty(key)) {
-				if (isObject(provider[key])) {
-					for (let innerkey in provider[key]) {
-						if (provider[key].hasOwnProperty(innerkey)) {
-							altProvider[innerkey] = provider[key][innerkey];
-						}
-					}
-				} else {
-					altProvider[key] = provider[key];
-				}
-			}
-		}
-		altProvider.providerId = provider.providerId;
-		let rt = this.registerProvider(altProvider as sqlops.DataProtocolProvider);
-		this._proxy.$registerProvider(altProvider.providerId, altProvider.handle);
-		return rt;
-	}
-
 	$registerConnectionProvider(provider: sqlops.ConnectionProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider);
 		this._proxy.$registerConnectionProvider(provider.providerId, provider.handle);
