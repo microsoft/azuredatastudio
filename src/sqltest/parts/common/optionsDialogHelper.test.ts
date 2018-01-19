@@ -5,12 +5,12 @@
 
 'use strict';
 import * as OptionsDialogHelper from 'sql/base/browser/ui/modal/optionsDialogHelper';
-import { ServiceOptionType } from 'sql/parts/connection/common/connectionManagement';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import data = require('data');
 import { Builder, $ } from 'vs/base/browser/builder';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('Advanced options helper tests', () => {
 	var possibleInputs: string[];

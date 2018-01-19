@@ -291,8 +291,7 @@ export class ConnectionDialogWidget extends Modal {
 							this.onConnectionClick({ payload: { origin: origin, originalEvent: eventish } }, element);
 						}
 					};
-					let actionProvider = this._instantiationService.createInstance(RecentConnectionActionsProvider, this._instantiationService, this._connectionManagementService,
-						this._messageService);
+					let actionProvider = this._instantiationService.createInstance(RecentConnectionActionsProvider);
 					let controller = new RecentConnectionTreeController(leftClick, actionProvider, this._connectionManagementService, this._contextMenuService);
 					actionProvider.onRecentConnectionRemoved(() => {
 						this.open(this._connectionManagementService.getRecentConnections().length > 0);

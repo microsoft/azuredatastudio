@@ -352,7 +352,18 @@ export abstract class MainThreadResourceProviderShape {
 }
 
 export abstract class MainThreadDataProtocolShape {
-	$registerProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
+	$registerConnectionProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
+	$registerBackupProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
+	$registerRestoreProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
+	$registerScriptingProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
+	$registerQueryProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
+	$registerProfilerProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
+	$registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
+	$registerMetadataProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
+	$registerTaskServicesProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
+	$registerFileBrowserProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
+	$registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
+	$registerAdminServicesProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
 	$unregisterProvider(handle: number): TPromise<any> { throw ni(); }
 	$onConnectionComplete(handle: number, connectionInfoSummary: data.ConnectionInfoSummary): void { throw ni(); }
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void { throw ni(); }

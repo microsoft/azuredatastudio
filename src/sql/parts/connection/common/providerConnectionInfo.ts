@@ -7,7 +7,7 @@
 
 import data = require('data');
 import * as interfaces from 'sql/parts/connection/common/interfaces';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/parts/connection/common/connectionManagement';
+import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/parts/connection/common/constants';
 
 export class ProviderConnectionInfo implements data.ConnectionInfo {
@@ -114,7 +114,7 @@ export class ProviderConnectionInfo implements data.ConnectionInfo {
 		return isPasswordRequired;
 	}
 
-	private getSpecialTypeOptionValue(type: number): string {
+	private getSpecialTypeOptionValue(type: string): string {
 		let name = this.getSpecialTypeOptionName(type);
 		if (name) {
 			return this.options[name];
@@ -172,7 +172,7 @@ export class ProviderConnectionInfo implements data.ConnectionInfo {
 		return providerId;
 	}
 
-	public getSpecialTypeOptionName(type: number): string {
+	public getSpecialTypeOptionName(type: string): string {
 		if (this._serverCapabilities) {
 			let optionMetadata = this._serverCapabilities.connectionProvider.options.find(o => o.specialValueType === type);
 			return !!optionMetadata ? optionMetadata.name : undefined;
@@ -181,7 +181,7 @@ export class ProviderConnectionInfo implements data.ConnectionInfo {
 		}
 	}
 
-	public setSpecialTypeOptionName(type: number, value: string): void {
+	public setSpecialTypeOptionName(type: string, value: string): void {
 		let name = this.getSpecialTypeOptionName(type);
 		if (!!name) {
 			this.options[name] = value;
@@ -238,4 +238,3 @@ export class ProviderConnectionInfo implements data.ConnectionInfo {
 		return parts;
 	}
 }
-

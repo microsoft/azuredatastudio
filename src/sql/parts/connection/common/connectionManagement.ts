@@ -136,7 +136,7 @@ export interface IConnectionManagementService {
 
 	clearRecentConnectionsList(): void;
 
-	clearRecentConnection(connectionProfile: IConnectionProfile) : void;
+	clearRecentConnection(connectionProfile: IConnectionProfile): void;
 
 	getActiveConnections(): ConnectionProfile[];
 
@@ -276,24 +276,6 @@ export const IErrorMessageService = createDecorator<IErrorMessageService>('error
 export interface IErrorMessageService {
 	_serviceBrand: any;
 	showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]): void;
-}
-
-export enum ServiceOptionType {
-	string = 0,
-	multistring = 1,
-	password = 2,
-	number = 3,
-	category = 4,
-	boolean = 5
-}
-
-export enum ConnectionOptionSpecialType {
-	serverName = 0,
-	databaseName = 1,
-	authType = 2,
-	userName = 3,
-	password = 4,
-	appName = 5
 }
 
 export enum RunQueryOnConnectionMode {

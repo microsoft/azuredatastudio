@@ -14,20 +14,12 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as types from 'vs/base/common/types';
 import data = require('data');
 import { localize } from 'vs/nls';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface IOptionElement {
 	optionWidget: any;
 	option: data.ServiceOption;
 	optionValue: any;
-}
-
-export enum ServiceOptionType {
-	string = 0,
-	multistring = 1,
-	password = 2,
-	number = 3,
-	category = 4,
-	boolean = 5
 }
 
 export function createOptionElement(option: data.ServiceOption, rowContainer: Builder, options: { [name: string]: any },

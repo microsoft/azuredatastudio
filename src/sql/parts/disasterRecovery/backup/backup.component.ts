@@ -17,7 +17,7 @@ import { SplitView } from 'sql/base/browser/ui/splitview/splitview';
 import { attachButtonStyler, attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'sql/common/theme/styler';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
-import { IDisasterRecoveryService, IDisasterRecoveryUiService, TaskExecutionMode } from 'sql/parts/disasterRecovery/common/interfaces';
+import { IBackupService, IBackupUiService, TaskExecutionMode } from 'sql/parts/disasterRecovery/backup/common/backupService';
 import FileValidationConstants = require('sql/parts/fileBrowser/common/fileValidationServiceConstants');
 import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
@@ -140,8 +140,8 @@ export class BackupComponent {
 
 	// tslint:enable:no-unused-variable
 
-	private _disasterRecoveryService: IDisasterRecoveryService;
-	private _disasterRecoveryUiService: IDisasterRecoveryUiService;
+	private _backupService: IBackupService;
+	private _backupUiService: IBackupUiService;
 	private _uri: string;
 	private _toDispose: lifecycle.IDisposable[] = [];
 	private _advancedHeaderSize = 32;
@@ -198,9 +198,9 @@ export class BackupComponent {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeDetectorRef: ChangeDetectorRef,
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
 	) {
-		this._disasterRecoveryService = _bootstrapService.disasterRecoveryService;
-		this._disasterRecoveryUiService = _bootstrapService.disasterRecoveryUiService;
-		this._disasterRecoveryUiService.onShowBackupEvent((param) => this.onGetBackupConfigInfo(param));
+		this._backupService = _bootstrapService.backupService;
+		this._backupUiService = _bootstrapService.backupUiService;
+		this._backupUiService.onShowBackupEvent((param) => this.onGetBackupConfigInfo(param));
 	}
 
 	ngOnInit() {
@@ -315,12 +315,12 @@ export class BackupComponent {
 	ngAfterViewInit() {
 		// Set category view for advanced options. This should be defined in ngAfterViewInit so that it correctly calculates the text height after data binding.
 		var splitview = new SplitView(this.advancedOptionElement.nativeElement);
-		var advancedBodySize =  DOM.getTotalHeight(this.advancedOptionBodyElement.nativeElement);
+		var advancedBodySize = DOM.getTotalHeight(this.advancedOptionBodyElement.nativeElement);
 		var categoryView = new CategoryView(this.advancedConfigurationLabel, this.advancedOptionBodyElement.nativeElement, true, advancedBodySize, this._advancedHeaderSize);
 		splitview.addView(categoryView);
 		splitview.layout(advancedBodySize + this._advancedHeaderSize);
 
-		this._disasterRecoveryUiService.onShowBackupDialog();
+		this._backupUiService.onShowBackupDialog();
 	}
 
 	private onGetBackupConfigInfo(param: DashboardComponentParams) {
@@ -336,7 +336,7 @@ export class BackupComponent {
 		this._uri = param.ownerUri;
 
 		// Get backup configuration info
-		this._disasterRecoveryService.getBackupConfigInfo(this._uri).then(configInfo => {
+		this._backupService.getBackupConfigInfo(this._uri).then(configInfo => {
 			if (configInfo) {
 				this.defaultNewBackupFolder = configInfo.defaultBackupFolder;
 				this.recoveryModel = configInfo.recoveryModel;
@@ -546,12 +546,12 @@ export class BackupComponent {
 	* UI event handlers
 	*/
 	private onScript(): void {
-		this._disasterRecoveryService.backup(this._uri, this.createBackupInfo(), TaskExecutionMode.script);
+		this._backupService.backup(this._uri, this.createBackupInfo(), TaskExecutionMode.script);
 		this.close();
 	}
 
 	private onOk(): void {
-		this._disasterRecoveryService.backup(this._uri, this.createBackupInfo(), TaskExecutionMode.executeAndScript);
+		this._backupService.backup(this._uri, this.createBackupInfo(), TaskExecutionMode.executeAndScript);
 		this.close();
 	}
 
@@ -561,7 +561,7 @@ export class BackupComponent {
 	}
 
 	private close(): void {
-		this._disasterRecoveryUiService.closeBackup();
+		this._backupUiService.closeBackup();
 		this.resetDialog();
 	}
 

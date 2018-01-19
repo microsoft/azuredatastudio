@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "description": "Shared modules for Carbon extensions",
   "dependencies": {
-    "dataprotocol-client": "file:../dataprotocol-node/client",
+    "dataprotocol-client": "file:./../dataprotocol-client",
     "decompress": "^4.2.0",
     "fs-extra-promise": "^1.0.1",
     "http-proxy-agent": "^2.0.0",
     "https-proxy-agent": "^2.1.0",
     "opener": "^1.4.3",
     "tmp": "0.0.33",
-    "vscode-extension-telemetry": "0.0.8"
+    "vscode-extension-telemetry": "0.0.8",
+    "vscode-languageclient": "^3.5.0"
   },
   "devDependencies": {
     "@types/node": "^6.0.61",

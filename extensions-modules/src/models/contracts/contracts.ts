@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { RequestType } from 'dataprotocol-client';
+import { RequestType } from 'vscode-languageclient';
 import { Runtime, LinuxDistribution } from '../platform';
 
 // --------------------------------- < Version Request > -------------------------------------------------
 
 // Version request message callback declaration
 export namespace VersionRequest {
-	export const type: RequestType<void, VersionResult, void> = { get method(): string { return 'version'; } };
+	export const type = new RequestType<void, VersionResult, void, void>('version');
 }
 
 // Version response format

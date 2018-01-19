@@ -16,7 +16,7 @@ import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
 import { IConnectionComponentCallbacks } from 'sql/parts/connection/connectionDialog/connectionDialogService';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ConnectionOptionSpecialType } from 'sql/parts/connection/common/connectionManagement';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/parts/connection/common/constants';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -87,7 +87,7 @@ export class ConnectionWidget {
 		}
 
 		var authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
-		if(authTypeOption) {
+		if (authTypeOption) {
 			if (OS === OperatingSystem.Windows) {
 				authTypeOption.defaultValue = this.getAuthTypeDisplayName(Constants.integrated);
 			} else {
@@ -250,11 +250,11 @@ export class ConnectionWidget {
 		}
 	}
 
-	private setConnectButton() : void {
+	private setConnectButton(): void {
 		let authDisplayName: string = this.getAuthTypeDisplayName(this.authenticationType);
 		let authType: AuthenticationType = this.getMatchingAuthType(authDisplayName);
 		let showUsernameAndPassword: boolean = true;
-		if(authType) {
+		if (authType) {
 			showUsernameAndPassword = authType.showUsernameAndPassword;
 		}
 		showUsernameAndPassword ? this._callbacks.onSetConnectButton(!!this.serverName && !!this.userName) :
@@ -366,7 +366,7 @@ export class ConnectionWidget {
 		var displayName: string;
 		var authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 
-		if(authTypeOption) {
+		if (authTypeOption) {
 			authTypeOption.categoryValues.forEach(c => {
 				if (c.name === authTypeName) {
 					displayName = c.displayName;
