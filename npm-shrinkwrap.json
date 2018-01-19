@@ -134,9 +134,9 @@
       "resolved": "https://registry.npmjs.org/buffer-crc32/-/buffer-crc32-0.2.13.tgz"
     },
     "caniuse-db": {
-      "version": "1.0.30000787",
+      "version": "1.0.30000793",
       "from": "caniuse-db@>=1.0.30000161 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-db/-/caniuse-db-1.0.30000787.tgz"
+      "resolved": "https://registry.npmjs.org/caniuse-db/-/caniuse-db-1.0.30000793.tgz"
     },
     "chart.js": {
       "version": "2.7.1",
@@ -296,9 +296,9 @@
       "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.11.tgz"
     },
     "html-query-plan": {
-      "version": "2.2.6",
-      "from": "git://github.com/anthonydresser/html-query-plan.git#2.2.6",
-      "resolved": "git://github.com/anthonydresser/html-query-plan.git#e09ffda978113c73366b663066372f884cf75e05"
+      "version": "2.4.0",
+      "from": "git://github.com/anthonydresser/html-query-plan.git#2.3",
+      "resolved": "git://github.com/anthonydresser/html-query-plan.git#5e7713622e2badde65563394925c6432d3237449"
     },
     "http-proxy-agent": {
       "version": "0.2.7",
@@ -628,9 +628,9 @@
       }
     },
     "reflect-metadata": {
-      "version": "0.1.10",
+      "version": "0.1.12",
       "from": "reflect-metadata@>=0.1.8 <0.2.0",
-      "resolved": "https://registry.npmjs.org/reflect-metadata/-/reflect-metadata-0.1.10.tgz"
+      "resolved": "https://registry.npmjs.org/reflect-metadata/-/reflect-metadata-0.1.12.tgz"
     },
     "regex-cache": {
       "version": "0.4.4",
@@ -811,9 +811,9 @@
       "resolved": "https://registry.npmjs.org/yauzl/-/yauzl-2.8.0.tgz"
     },
     "zone.js": {
-      "version": "0.8.19",
+      "version": "0.8.20",
       "from": "zone.js@>=0.8.4 <0.9.0",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.8.19.tgz"
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.8.20.tgz"
     }
   }
 }
