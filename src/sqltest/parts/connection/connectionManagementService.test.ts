@@ -33,11 +33,6 @@ import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfig
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import { IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import URI from 'vs/base/common/uri';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -792,108 +787,6 @@ suite('SQL ConnectionManagementService tests', () => {
 				done();
 			} catch (e) {
 				done(e);
-			}
-		}, err => done(err));
-	});
-
-	test('getCurrentGlobalConnection returns the selected OE server if a server or one of its children is selected', done => {
-		let mockObjectExplorerService = TypeMoq.Mock.ofInstance({isFocused: () => undefined, getSelectedProfileAndDatabase: () => undefined } as IObjectExplorerService);
-		let expectedProfile = new ConnectionProfile(undefined, connectionProfile);
-		mockObjectExplorerService.setup(x => x.isFocused()).returns(() => true);
-		mockObjectExplorerService.setup(x => x.getSelectedProfileAndDatabase()).returns(() => {
-			return { profile: expectedProfile, databaseName: undefined };
-		});
-		connectionManagementService.registerObjectExplorerService(mockObjectExplorerService.object);
-
-		connect(undefined, undefined, false, expectedProfile).then(() => {
-			// If I call getCurrentGlobalConnection, it should return the expected server profile
-			try {
-				let actualProfile = connectionManagementService.getCurrentGlobalConnection();
-				assert.equal(actualProfile, expectedProfile);
-				done();
-			} catch (err) {
-				done(err);
-			}
-		}, err => done(err));
-	});
-
-	test('getCurrentGlobalConnection returns the selected OE database if a database or its children is selected', done => {
-		let mockObjectExplorerService = TypeMoq.Mock.ofInstance({isFocused: () => undefined, getSelectedProfileAndDatabase: () => undefined } as IObjectExplorerService);
-		let serverProfile = new ConnectionProfile(undefined, connectionProfile);
-		let dbName = 'test_database';
-		mockObjectExplorerService.setup(x => x.isFocused()).returns(() => true);
-		mockObjectExplorerService.setup(x => x.getSelectedProfileAndDatabase()).returns(() => {
-			return { profile: serverProfile, databaseName: dbName };
-		});
-		connectionManagementService.registerObjectExplorerService(mockObjectExplorerService.object);
-
-		connect(undefined, undefined, false, serverProfile).then(() => {
-			// If I call getCurrentGlobalConnection, it should return the expected database profile
-			try {
-				let actualProfile = connectionManagementService.getCurrentGlobalConnection();
-				assert.equal(actualProfile.databaseName, dbName);
-				assert.notEqual(actualProfile.id, serverProfile.id);
-				// Other connection attributes still match
-				assert.equal(actualProfile.authenticationType, serverProfile.authenticationType);
-				assert.equal(actualProfile.password, serverProfile.password);
-				assert.equal(actualProfile.serverName, serverProfile.serverName);
-				assert.equal(actualProfile.userName, serverProfile.userName);
-				done();
-			} catch (err) {
-				done(err);
-			}
-		}, err => done(err));
-	});
-
-	test('getCurrentGlobalConnection returns the connection from the active tab, if there is one and OE is not focused', done => {
-		let mockObjectExplorerService = TypeMoq.Mock.ofInstance({isFocused: () => undefined, getSelectedProfileAndDatabase: () => undefined } as IObjectExplorerService);
-		let oeProfile = new ConnectionProfile(undefined, connectionProfile);
-		let tabProfile = new ConnectionProfile(undefined, connectionProfileWithEmptySavedPassword);
-		mockObjectExplorerService.setup(x => x.isFocused()).returns(() => false);
-		mockObjectExplorerService.setup(x => x.getSelectedProfileAndDatabase()).returns(() => {
-			return { profile: oeProfile, databaseName: undefined };
-		});
-		connectionManagementService.registerObjectExplorerService(mockObjectExplorerService.object);
-
-		// Mock the workbench service to return the active tab connection
-		let tabConnectionUri = URI.parse('test_uri');
-		let editorInput = new UntitledEditorInput(tabConnectionUri, false, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
-		let queryInput = new QueryInput(undefined, undefined, editorInput, undefined, undefined, connectionManagementService, undefined, undefined);
-		workbenchEditorService.setup(x => x.getActiveEditorInput()).returns(() => queryInput);
-
-		connect(tabConnectionUri.toString(), undefined, false, tabProfile).then(() => {
-			// If I call getCurrentGlobalConnection, it should return the expected profile from the active tab
-			try {
-				let actualProfile = connectionManagementService.getCurrentGlobalConnection();
-				assert.equal(actualProfile.databaseName, tabProfile.databaseName);
-				assert.equal(actualProfile.authenticationType, tabProfile.authenticationType);
-				assert.equal(actualProfile.password, tabProfile.password);
-				assert.equal(actualProfile.serverName, tabProfile.serverName);
-				assert.equal(actualProfile.userName, tabProfile.userName);
-				done();
-			} catch (err) {
-				done(err);
-			}
-		}, err => done(err));
-	});
-
-	test('getCurrentGlobalConnection returns the connection from OE if there is no active tab, even if OE is not focused', done => {
-		let mockObjectExplorerService = TypeMoq.Mock.ofInstance({isFocused: () => undefined, getSelectedProfileAndDatabase: () => undefined } as IObjectExplorerService);
-		let oeProfile = new ConnectionProfile(undefined, connectionProfile);
-		mockObjectExplorerService.setup(x => x.isFocused()).returns(() => false);
-		mockObjectExplorerService.setup(x => x.getSelectedProfileAndDatabase()).returns(() => {
-			return { profile: oeProfile, databaseName: undefined };
-		});
-		connectionManagementService.registerObjectExplorerService(mockObjectExplorerService.object);
-
-		connect(undefined, undefined, false, oeProfile).then(() => {
-			// If I call getCurrentGlobalConnection, it should return the expected profile from the active tab
-			try {
-				let actualProfile = connectionManagementService.getCurrentGlobalConnection();
-				assert.equal(actualProfile, oeProfile);
-				done();
-			} catch (err) {
-				done(err);
 			}
 		}, err => done(err));
 	});

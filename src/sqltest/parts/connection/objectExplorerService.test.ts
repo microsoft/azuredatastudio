@@ -248,7 +248,6 @@ suite('SQL Object Explorer Service tests', () => {
 		}));
 
 		connectionManagementService.setup(x => x.getCapabilities('MSSQL')).returns(() => undefined);
-		connectionManagementService.setup(x => x.registerObjectExplorerService(TypeMoq.It.isAny())).returns(() => undefined);
 
 		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, undefined);
 		objectExplorerService.registerProvider('MSSQL', sqlOEProvider.object);

@@ -102,7 +102,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._activeObjectExplorerNodes = {};
 		this._sessions = {};
 		this._providers = {};
-		this._connectionManagementService.registerObjectExplorerService(this);
 	}
 
 	public get onUpdateObjectExplorerNodes(): Event<ObjectExplorerNodeEventArgs> {

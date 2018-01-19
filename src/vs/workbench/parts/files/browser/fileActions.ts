@@ -54,6 +54,7 @@ import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configur
 import { once } from 'vs/base/common/event';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 
 export interface IEditableData {
 	action: IAction;
@@ -536,14 +537,16 @@ export class GlobalNewUntitledFileAction extends Action {
 		@IUntitledEditorService private untitledEditorService: IUntitledEditorService,
 		// {{SQL CARBON EDIT}}
 		@IQueryEditorService private queryEditorService: IQueryEditorService,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
+		@IWorkbenchEditorService protected _workbenchEditorService: IWorkbenchEditorService
 	) {
 		super(id, label);
 	}
 
 	public run(): TPromise<any> {
 		// {{SQL CARBON EDIT}}
-		TaskUtilities.newQuery(undefined, this.connectionManagementService, this.queryEditorService);
+		TaskUtilities.newQuery(undefined, this.connectionManagementService, this.queryEditorService, this._objectExplorerService, this._workbenchEditorService);
 		return undefined;
 	}
 }

@@ -16,7 +16,6 @@ import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/conne
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ConnectionManagementInfo } from './connectionManagementInfo';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 
 export const VIEWLET_ID = 'workbench.view.connections';
 
@@ -254,20 +253,6 @@ export interface IConnectionManagementService {
 	 * Refresh the IntelliSense cache for the connection with the given URI
 	 */
 	rebuildIntelliSenseCache(uri: string): Thenable<void>;
-
-	/**
-	 * Get the current global connection, which is the connection from the active editor, unless OE
-	 * is focused or there is no such editor, in which case it comes from the OE selection. Returns
-	 * undefined when there is no such connection.
-	 * @returns {IConnectionProfile} The connection profile for the current global connection
-	*/
-	getCurrentGlobalConnection(): IConnectionProfile;
-
-	/**
-	 * Register the object explorer service so that the connection service can interact with it
-	 * @param service The object explorer service instance to register
-	 */
-	registerObjectExplorerService(service: IObjectExplorerService): void;
 }
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');
