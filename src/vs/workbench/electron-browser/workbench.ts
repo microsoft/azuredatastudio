@@ -123,10 +123,10 @@ import { IQueryManagementService, QueryManagementService } from 'sql/parts/query
 import { IEditorDescriptorService, EditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
 import { IScriptingService, ScriptingService } from 'sql/services/scripting/scriptingService';
 import { IAdminService, AdminService } from 'sql/parts/admin/common/adminService';
-import { DisasterRecoveryService } from 'sql/parts/disasterRecovery/common/disasterRecoveryService';
-import { DisasterRecoveryUiService } from 'sql/parts/disasterRecovery/common/disasterRecoveryUiService';
-import { RestoreDialogController } from 'sql/parts/disasterRecovery/restore/restoreDialogController';
-import { IDisasterRecoveryService, IDisasterRecoveryUiService, IRestoreDialogController } from 'sql/parts/disasterRecovery/common/interfaces';
+import { IBackupService, IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
+import { BackupService, BackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupServiceImp';
+import { IRestoreDialogController, IRestoreService } from 'sql/parts/disasterRecovery/restore/common/restoreService';
+import { RestoreService, RestoreDialogController } from 'sql/parts/disasterRecovery/restore/common/restoreServiceImpl';
 import { IFileBrowserService, IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
 import { FileBrowserService } from 'sql/parts/fileBrowser/common/fileBrowserService';
 import { FileBrowserDialogController } from 'sql/parts/fileBrowser/fileBrowserDialogController';
@@ -681,8 +681,9 @@ export class Workbench implements IPartService {
 		serviceCollection.set(IObjectExplorerService, this.instantiationService.createInstance(ObjectExplorerService));
 		serviceCollection.set(IScriptingService, this.instantiationService.createInstance(ScriptingService));
 		serviceCollection.set(IAdminService, this.instantiationService.createInstance(AdminService));
-		serviceCollection.set(IDisasterRecoveryService, this.instantiationService.createInstance(DisasterRecoveryService));
-		serviceCollection.set(IDisasterRecoveryUiService, this.instantiationService.createInstance(DisasterRecoveryUiService));
+		serviceCollection.set(IBackupService, this.instantiationService.createInstance(BackupService));
+		serviceCollection.set(IBackupUiService, this.instantiationService.createInstance(BackupUiService));
+		serviceCollection.set(IRestoreService, this.instantiationService.createInstance(RestoreService));
 		serviceCollection.set(IRestoreDialogController, this.instantiationService.createInstance(RestoreDialogController));
 		serviceCollection.set(IFileBrowserService, this.instantiationService.createInstance(FileBrowserService));
 		serviceCollection.set(IFileBrowserDialogController, this.instantiationService.createInstance(FileBrowserDialogController));

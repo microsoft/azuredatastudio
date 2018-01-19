@@ -62,19 +62,17 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public set sessionTemplate(template: IProfilerSessionTemplate) {
-		if (!this.state.isConnected || this.state.isStopped) {
-			this._sessionTemplate = template;
-			let newColumns = this.sessionTemplate.view.events.reduce<Array<string>>((p, e) => {
-				e.columns.forEach(c => {
-					if (!p.includes(c)) {
-						p.push(c);
-					}
-				});
-				return p;
-			}, []);
-			newColumns.unshift('EventClass');
-			this.setColumns(newColumns);
-		}
+		this._sessionTemplate = template;
+		let newColumns = this.sessionTemplate.view.events.reduce<Array<string>>((p, e) => {
+			e.columns.forEach(c => {
+				if (!p.includes(c)) {
+					p.push(c);
+				}
+			});
+			return p;
+		}, []);
+		newColumns.unshift('EventClass');
+		this.setColumns(newColumns);
 	}
 
 	public get sessionTemplate(): IProfilerSessionTemplate {
@@ -125,16 +123,54 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._state;
 	}
 
-	public onMoreRows(events: data.ProfilerSessionEvents) {
+	public onMoreRows(eventMessage: data.ProfilerSessionEvents) {
+		for (let i: number  = 0; i < eventMessage.events.length && i < 500; ++i) {
+			let e: data.ProfilerEvent = eventMessage.events[i];
+			let data = {};
+			data['EventClass'] =  e.name;
+			data['StartTime'] = e.timestamp;
+			data['EndTime'] = e.timestamp;
+			const columns = [
+				'TextData',
+				'ApplicationName',
+				'NTUserName',
+				'LoginName',
+				'CPU',
+				'Reads',
+				'Writes',
+				'Duration',
+				'ClientProcessID',
+				'SPID',
+				'StartTime',
+				'EndTime',
+				'BinaryData'
+			];
 
-		events = undefined;
+			let columnNameMap: Map<string, string> = new Map<string, string>();
+			columnNameMap['client_app_name'] = 'ApplicationName';
+			columnNameMap['nt_username'] = 'NTUserName';
+			columnNameMap['options_text'] = 'TextData';
+			columnNameMap['server_principal_name'] = 'LoginName';
+			columnNameMap['session_id'] = 'SPID';
+			columnNameMap['batch_text'] = 'TextData';
+			columnNameMap['cpu_time'] = 'CPU';
+			columnNameMap['duration'] = 'Duration';
+			columnNameMap['logical_reads'] = 'Reads';
 
-		// let validColumns = this.sessionTemplate.view.events.find(i => i.name === data.EventClass).columns;
-		// Object.keys(rowCount).forEach(k => {
-		// 	if (!validColumns.includes(k)) {
-		// 		delete rowCount[k];
-		// 	}
-		// });
-		// this._data.push(data);
+			for (let idx = 0; idx < columns.length; ++idx) {
+				let columnName = columns[idx];
+				data[columnName] = '';
+			}
+
+			for (let key in e.values) {
+				let columnName = columnNameMap[key];
+				if (columnName) {
+					let value = e.values[key];
+					data[columnName] = value;
+				}
+			}
+			this._data.push(data);
+		}
+
 	}
 }

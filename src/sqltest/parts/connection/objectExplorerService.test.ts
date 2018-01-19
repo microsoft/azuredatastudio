@@ -17,6 +17,7 @@ import * as data from 'data';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeView';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('SQL Object Explorer Service tests', () => {
 	var sqlOEProvider: TypeMoq.Mock<ObjectExplorerProviderTestService>;
@@ -136,7 +137,7 @@ suite('SQL Object Explorer Service tests', () => {
 						defaultValue: undefined,
 						isIdentity: true,
 						isRequired: true,
-						specialValueType: 0,
+						specialValueType: ConnectionOptionSpecialType.serverName,
 						valueType: 0
 					},
 					{
@@ -148,7 +149,7 @@ suite('SQL Object Explorer Service tests', () => {
 						defaultValue: undefined,
 						isIdentity: true,
 						isRequired: true,
-						specialValueType: 1,
+						specialValueType: ConnectionOptionSpecialType.databaseName,
 						valueType: 0
 					},
 					{
@@ -160,7 +161,7 @@ suite('SQL Object Explorer Service tests', () => {
 						defaultValue: undefined,
 						isIdentity: true,
 						isRequired: true,
-						specialValueType: 3,
+						specialValueType: ConnectionOptionSpecialType.userName,
 						valueType: 0
 					},
 					{
@@ -172,7 +173,7 @@ suite('SQL Object Explorer Service tests', () => {
 						defaultValue: undefined,
 						isIdentity: true,
 						isRequired: true,
-						specialValueType: 2,
+						specialValueType: ConnectionOptionSpecialType.authType,
 						valueType: 0
 					},
 					{
@@ -184,7 +185,7 @@ suite('SQL Object Explorer Service tests', () => {
 						defaultValue: undefined,
 						isIdentity: true,
 						isRequired: true,
-						specialValueType: 4,
+						specialValueType: ConnectionOptionSpecialType.password,
 						valueType: 0
 					},
 					{

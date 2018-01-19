@@ -1,21 +1,4 @@
 {
   "name": "mssql",
-  "version": "0.1.0",
-  "dependencies": {
-    "dataprotocol-client": {
-      "version": "2.6.3",
-      "from": "..\\..\\dataprotocol-node\\client",
-      "resolved": "file:..\\..\\dataprotocol-node\\client"
-    },
-    "dataprotocol-jsonrpc": {
-      "version": "2.4.0",
-      "from": "..\\..\\dataprotocol-node\\jsonrpc",
-      "resolved": "file:..\\..\\dataprotocol-node\\jsonrpc"
-    },
-    "dataprotocol-languageserver-types": {
-      "version": "1.0.4",
-      "from": "..\\..\\dataprotocol-node\\types",
-      "resolved": "file:..\\..\\dataprotocol-node\\types"
-    }
-  }
+  "version": "0.1.0"
 }

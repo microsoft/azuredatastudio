@@ -10,6 +10,7 @@ import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile
 import { IConnectionProfile, IConnectionProfileStore } from 'sql/parts/connection/common/interfaces';
 import data = require('data');
 import * as assert from 'assert';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('SQL ConnectionProfileInfo tests', () => {
 	let msSQLCapabilities: data.DataProtocolServerCapabilities;
@@ -58,7 +59,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: 0,
+					specialValueType: ConnectionOptionSpecialType.serverName,
 					valueType: 0
 				},
 				{
@@ -70,7 +71,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: 1,
+					specialValueType: ConnectionOptionSpecialType.databaseName,
 					valueType: 0
 				},
 				{
@@ -82,7 +83,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: 3,
+					specialValueType: ConnectionOptionSpecialType.userName,
 					valueType: 0
 				},
 				{
@@ -94,7 +95,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: 2,
+					specialValueType: ConnectionOptionSpecialType.authType,
 					valueType: 0
 				},
 				{
@@ -106,7 +107,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 					defaultValue: undefined,
 					isIdentity: true,
 					isRequired: true,
-					specialValueType: 4,
+					specialValueType: ConnectionOptionSpecialType.password,
 					valueType: 0
 				}
 			]

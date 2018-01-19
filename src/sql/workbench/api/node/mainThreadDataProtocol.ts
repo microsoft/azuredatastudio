@@ -18,7 +18,8 @@ import { IMetadataService } from 'sql/services/metadata/metadataService';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
-import { IDisasterRecoveryService } from 'sql/parts/disasterRecovery/common/interfaces';
+import { IBackupService } from 'sql/parts/disasterRecovery/backup/common/backupService';
+import { IRestoreService } from 'sql/parts/disasterRecovery/restore/common/restoreService';
 import { ITaskService } from 'sql/parts/taskHistory/common/taskService';
 import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
 import { ISerializationService } from 'sql/services/serialization/serializationService';
@@ -47,7 +48,8 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IScriptingService private _scriptingService: IScriptingService,
 		@IAdminService private _adminService: IAdminService,
-		@IDisasterRecoveryService private _disasterRecoveryService: IDisasterRecoveryService,
+		@IBackupService private _backupService: IBackupService,
+		@IRestoreService private _restoreService: IRestoreService,
 		@ITaskService private _taskService: ITaskService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
@@ -66,10 +68,8 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 		this._toDispose = dispose(this._toDispose);
 	}
 
-	public $registerProvider(providerId: string, handle: number): TPromise<any> {
-		let self = this;
-
-		// register connection management provider
+	public $registerConnectionProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
 		this._connectionManagementService.registerProvider(providerId, <data.ConnectionProvider>{
 			connect(connectionUri: string, connectionInfo: data.ConnectionInfo): Thenable<boolean> {
 				return self._proxy.$connect(handle, connectionUri, connectionInfo);
@@ -91,13 +91,11 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			}
 		});
 
-		this._capabilitiesService.registerProvider(<data.CapabilitiesProvider>{
-			getServerCapabilities(client: data.DataProtocolClientCapabilities): Thenable<data.DataProtocolServerCapabilities> {
-				return self._proxy.$getServerCapabilities(handle, client);
-			}
-		});
+		return undefined;
+	}
 
-		// register query provider
+	public $registerQueryProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
 		this._queryManagementService.addQueryRequestHandler(providerId, {
 			cancelQuery(ownerUri: string): Thenable<data.QueryCancelResult> {
 				return self._proxy.$cancelQuery(handle, ownerUri);
@@ -161,6 +159,45 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			}
 		});
 
+		return undefined;
+	}
+
+	public $registerBackupProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
+		this._backupService.registerProvider(providerId, <data.BackupProvider>{
+			backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: data.TaskExecutionMode): Thenable<data.BackupResponse> {
+				return self._proxy.$backup(handle, connectionUri, backupInfo, taskExecutionMode);
+			},
+			getBackupConfigInfo(connectionUri: string): Thenable<data.BackupConfigInfo> {
+				return self._proxy.$getBackupConfigInfo(handle, connectionUri);
+			}
+		});
+
+		return undefined;
+	}
+
+	public $registerRestoreProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
+		this._restoreService.registerProvider(providerId, <data.RestoreProvider>{
+			getRestorePlan(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestorePlanResponse> {
+				return self._proxy.$getRestorePlan(handle, connectionUri, restoreInfo);
+			},
+			cancelRestorePlan(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<boolean> {
+				return self._proxy.$cancelRestorePlan(handle, connectionUri, restoreInfo);
+			},
+			restore(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestoreResponse> {
+				return self._proxy.$restore(handle, connectionUri, restoreInfo);
+			},
+			getRestoreConfigInfo(connectionUri: string): Thenable<data.RestoreConfigInfo> {
+				return self._proxy.$getRestoreConfigInfo(handle, connectionUri);
+			}
+		});
+
+		return undefined;
+	}
+
+	public $registerMetadataProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
 		this._metadataService.registerProvider(providerId, <data.MetadataProvider>{
 			getMetadata(connectionUri: string): Thenable<data.ProviderMetadata> {
 				return self._proxy.$getMetadata(handle, connectionUri);
@@ -176,6 +213,11 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			}
 		});
 
+		return undefined;
+	}
+
+	public $registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
 		this._objectExplorerService.registerProvider(providerId, <data.ObjectExplorerProvider>{
 			createNewSession(connection: data.ConnectionInfo): Thenable<data.ObjectExplorerSessionResponse> {
 				return self._proxy.$createObjectExplorerSession(handle, connection);
@@ -191,6 +233,11 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			}
 		});
 
+		return undefined;
+	}
+
+	public $registerTaskServicesProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
 		this._taskService.registerProvider(providerId, <data.TaskServicesProvider>{
 			getAllTasks(listTasksParams: data.ListTasksParams): Thenable<data.ListTasksResponse> {
 				return self._proxy.$getAllTasks(handle, listTasksParams);
@@ -200,48 +247,22 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			}
 		});
 
+		return undefined;
+	}
+
+	public $registerScriptingProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
 		this._scriptingService.registerProvider(providerId, <data.ScriptingProvider>{
 			scriptAsOperation(connectionUri: string, operation: data.ScriptOperation, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
 				return self._proxy.$scriptAsOperation(handle, connectionUri, operation, metadata, paramDetails);
 			}
 		});
 
-		this._adminService.registerProvider(providerId, <data.AdminServicesProvider>{
-			createDatabase(connectionUri: string, database: data.DatabaseInfo): Thenable<data.CreateDatabaseResponse> {
-				return self._proxy.$createDatabase(handle, connectionUri, database);
-			},
-			getDefaultDatabaseInfo(connectionUri: string): Thenable<data.DatabaseInfo> {
-				return self._proxy.$getDefaultDatabaseInfo(handle, connectionUri);
-			},
-			getDatabaseInfo(connectionUri: string): Thenable<data.DatabaseInfo> {
-				return self._proxy.$getDatabaseInfo(handle, connectionUri);
-			},
-			createLogin(connectionUri: string, login: data.LoginInfo): Thenable<data.CreateLoginResponse> {
-				return self._proxy.$createLogin(handle, connectionUri, login);
-			}
-		});
+		return undefined;
+	}
 
-		this._disasterRecoveryService.registerProvider(providerId, <data.DisasterRecoveryProvider>{
-			backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: data.TaskExecutionMode): Thenable<data.BackupResponse> {
-				return self._proxy.$backup(handle, connectionUri, backupInfo, taskExecutionMode);
-			},
-			getBackupConfigInfo(connectionUri: string): Thenable<data.BackupConfigInfo> {
-				return self._proxy.$getBackupConfigInfo(handle, connectionUri);
-			},
-			getRestorePlan(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestorePlanResponse> {
-				return self._proxy.$getRestorePlan(handle, connectionUri, restoreInfo);
-			},
-			cancelRestorePlan(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<boolean> {
-				return self._proxy.$cancelRestorePlan(handle, connectionUri, restoreInfo);
-			},
-			restore(connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestoreResponse> {
-				return self._proxy.$restore(handle, connectionUri, restoreInfo);
-			},
-			getRestoreConfigInfo(connectionUri: string): Thenable<data.RestoreConfigInfo> {
-				return self._proxy.$getRestoreConfigInfo(handle, connectionUri);
-			}
-		});
-
+	public $registerFileBrowserProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
 		this._fileBrowserService.registerProvider(providerId, <data.FileBrowserProvider>{
 			openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> {
 				return self._proxy.$openFileBrowser(handle, ownerUri, expandPath, fileFilters, changeFilter);
@@ -257,6 +278,11 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			}
 		});
 
+		return undefined;
+	}
+
+	public $registerProfilerProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
 		this._profilerService.registerProvider(providerId, <data.ProfilerProvider>{
 			startSession(sessionId: string): Thenable<boolean> {
 				return self._proxy.$startSession(handle, sessionId);
@@ -272,6 +298,37 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 			},
 			disconnectSession(sessionId: string): Thenable<boolean> {
 				return TPromise.as(true);
+			}
+		});
+
+		return undefined;
+	}
+
+	public $registerAdminServicesProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
+		this._adminService.registerProvider(providerId, <data.AdminServicesProvider>{
+			createDatabase(connectionUri: string, database: data.DatabaseInfo): Thenable<data.CreateDatabaseResponse> {
+				return self._proxy.$createDatabase(handle, connectionUri, database);
+			},
+			getDefaultDatabaseInfo(connectionUri: string): Thenable<data.DatabaseInfo> {
+				return self._proxy.$getDefaultDatabaseInfo(handle, connectionUri);
+			},
+			getDatabaseInfo(connectionUri: string): Thenable<data.DatabaseInfo> {
+				return self._proxy.$getDatabaseInfo(handle, connectionUri);
+			},
+			createLogin(connectionUri: string, login: data.LoginInfo): Thenable<data.CreateLoginResponse> {
+				return self._proxy.$createLogin(handle, connectionUri, login);
+			}
+		});
+
+		return undefined;
+	}
+
+	public $registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
+		this._capabilitiesService.registerProvider(<data.CapabilitiesProvider>{
+			getServerCapabilities(client: data.DataProtocolClientCapabilities): Thenable<data.DataProtocolServerCapabilities> {
+				return self._proxy.$getServerCapabilities(handle, client);
 			}
 		});
 
@@ -349,10 +406,7 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 
 	// Profiler handlers
 	public $onSessionEventsAvailable(handle: number, response: data.ProfilerSessionEvents): void {
-
 		this._profilerService.onMoreRows(response);
-		//this._profilerService.onMoreRows
-		//this._taskService.onNewTaskCreated(handle, taskInfo);
 	}
 
 	public $unregisterProvider(handle: number): TPromise<any> {
@@ -364,6 +418,4 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 
 		return undefined;
 	}
-
-
 }
