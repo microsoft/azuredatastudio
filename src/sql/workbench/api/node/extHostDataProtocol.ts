@@ -10,7 +10,6 @@ import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape }
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
-import { isObject } from 'vs/base/common/types';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
