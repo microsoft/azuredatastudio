@@ -77,6 +77,7 @@ export class DashboardWidgetWrapper implements AfterContentInit, OnInit, OnDestr
 		if (this._actions) {
 			this._actionbar.push(this._bootstrap.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this._component.actionsContext), { icon: true, label: false });
 		}
+		this.layout();
 	}
 
 	ngOnDestroy() {
