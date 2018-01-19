@@ -243,6 +243,33 @@
 		"description": "Lists all the columns and their types for tables matching a LIKE statement"
 	},
 
+	"Declare a cursor": {
+		"prefix": "sqlCursor",
+		"body": [
+			"-- Declare a cursor for a Table or a View '${1:TableOrViewName}' in schema '${2:SchemaName}'",
+			"DECLARE @Column1 NVARCHAR(50), @Column2 NVARCHAR(50)",
+			"",
+			"DECLARE db_cursor CURSOR FOR",
+			"SELECT Column1, Column2",
+			"FROM $2.$1",
+			"",
+			"OPEN db_cursor",
+			"FETCH NEXT FROM db_cursor INTO @Column1, @Column2",
+			"",
+			"WHILE @@FETCH_STATUS = 0",
+			"BEGIN",
+			"\t-- add instructions to be executed for every row",
+			"\t$3",
+			"\tFETCH NEXT FROM db_cursor INTO @Column1, @Column2",
+			"END",
+			"",
+			"CLOSE db_cursor",
+			"DEALLOCATE db_cursor",
+			"GO"
+		],
+		"description": "Declare a cursor"
+	},
+
 	"Show space used by tables": {
 		"prefix": "sqlGetSpaceUsed",
 		"body": [

@@ -406,10 +406,7 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 
 	// Profiler handlers
 	public $onSessionEventsAvailable(handle: number, response: data.ProfilerSessionEvents): void {
-
 		this._profilerService.onMoreRows(response);
-		//this._profilerService.onMoreRows
-		//this._taskService.onNewTaskCreated(handle, taskInfo);
 	}
 
 	public $unregisterProvider(handle: number): TPromise<any> {
@@ -421,6 +418,4 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 
 		return undefined;
 	}
-
-
 }

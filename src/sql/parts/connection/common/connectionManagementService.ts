@@ -29,6 +29,7 @@ import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { warn } from 'sql/base/common/log';
 import { IResourceProviderService } from 'sql/parts/accountManagement/common/interfaces';
 import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
+import * as QueryConstants from 'sql/parts/query/common/constants';
 
 import * as data from 'data';
 
@@ -1331,7 +1332,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 	}
 
 	public getTabColorForUri(uri: string): string {
-		if (!WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, 'enableTabColors')) {
+		if (WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, 'tabColorMode') === QueryConstants.tabColorModeOff) {
 			return undefined;
 		}
 		let connectionProfile = this.getConnectionProfile(uri);

@@ -19,6 +19,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IWindowsService } from 'vs/platform/windows/common/windows';
 
 import * as data from 'data';
 import { Button } from 'sql/base/browser/ui/button/button';
@@ -28,6 +29,10 @@ import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/st
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IAccountPickerService } from 'sql/parts/accountManagement/common/interfaces';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
+
+// TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/sqlopsstudio/issues/450)
+// in case that other non-Azure sign in is to be used
+const firewallHelpUri = 'https://aka.ms/sqlopsfirewallhelp';
 
 export class FirewallRuleDialog extends Modal {
 	public viewModel: FirewallRuleViewModel;
@@ -58,7 +63,8 @@ export class FirewallRuleDialog extends Modal {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IWindowsService private _windowsService: IWindowsService,
 	) {
 		super(
 			localize('createNewFirewallRule', 'Create new firewall rule'),
@@ -93,7 +99,7 @@ export class FirewallRuleDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		let descriptionSection;
-		$().div({ class: 'firewall-rule-description-section new-section' }, (descriptionContainer) => {
+		$().div({ 'class': 'firewall-rule-description-section new-section' }, (descriptionContainer) => {
 			descriptionSection = descriptionContainer.getHTMLElement();
 			DOM.append(descriptionContainer.getHTMLElement(), DOM.$('div.firewall-rule-icon'));
 
@@ -101,9 +107,13 @@ export class FirewallRuleDialog extends Modal {
 			let dialogDescription = localize('firewallRuleDialogDescription',
 				'Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.');
 			this.createLabelElement(new Builder(textDescriptionContainer), dialogDescription, false);
+
 			this._helpLink = DOM.append(textDescriptionContainer, DOM.$('a.help-link'));
-			this._helpLink.setAttribute('href', 'https://docs.microsoft.com/en-us/azure/sql-database/sql-database-firewall-configure');
+			this._helpLink.setAttribute('href', firewallHelpUri);
 			this._helpLink.innerHTML += localize('firewallRuleHelpDescription', 'Learn more about firewall settings');
+			this._helpLink.onclick = () => {
+				this._windowsService.openExternal(firewallHelpUri);
+			};
 		});
 
 		// Create account picker with event handling
@@ -116,43 +126,43 @@ export class FirewallRuleDialog extends Modal {
 		this._accountPickerService.onAccountSelectionChangeEvent((account) => this.onAccountSelectionChange(account));
 
 		let azureAccountSection;
-		$().div({ class: 'azure-account-section new-section' }, (azureAccountContainer) => {
+		$().div({ 'class': 'azure-account-section new-section' }, (azureAccountContainer) => {
 			azureAccountSection = azureAccountContainer.getHTMLElement();
 			let azureAccountLabel = localize('azureAccount', 'Azure account');
 			this.createLabelElement(azureAccountContainer, azureAccountLabel, true);
-			azureAccountContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
+			azureAccountContainer.div({ 'class': 'dialog-input' }, (inputCellContainer) => {
 				this._accountPickerService.renderAccountPicker(inputCellContainer.getHTMLElement());
 			});
 		});
 
 		let subnetIPRangeSection;
-		$().div({ class: 'subnet-ip-range-input' }, (subnetIPRangeContainer) => {
+		$().div({ 'class': 'subnet-ip-range-input' }, (subnetIPRangeContainer) => {
 			subnetIPRangeSection = subnetIPRangeContainer.getHTMLElement();
-			subnetIPRangeContainer.div({ class: 'dialog-input-section' }, (inputContainer) => {
-				inputContainer.div({ class: 'dialog-label' }, (labelContainer) => {
+			subnetIPRangeContainer.div({ 'class': 'dialog-input-section' }, (inputContainer) => {
+				inputContainer.div({ 'class': 'dialog-label' }, (labelContainer) => {
 					labelContainer.innerHtml(localize('from', 'From'));
 				});
 
-				inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
+				inputContainer.div({ 'class': 'dialog-input' }, (inputCellContainer) => {
 					this._fromRangeinputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService);
 				});
 
-				inputContainer.div({ class: 'dialog-label' }, (labelContainer) => {
+				inputContainer.div({ 'class': 'dialog-label' }, (labelContainer) => {
 					labelContainer.innerHtml(localize('to', 'To'));
 				});
 
-				inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
+				inputContainer.div({ 'class': 'dialog-input' }, (inputCellContainer) => {
 					this._toRangeinputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService);
 				});
 			});
 		});
 
 		let firewallRuleSection;
-		$().div({ class: 'firewall-rule-section new-section' }, (firewallRuleContainer) => {
+		$().div({ 'class': 'firewall-rule-section new-section' }, (firewallRuleContainer) => {
 			firewallRuleSection = firewallRuleContainer.getHTMLElement();
 			let firewallRuleLabel = localize('filewallRule', 'Firewall rule');
 			this.createLabelElement(firewallRuleContainer, firewallRuleLabel, true);
-			firewallRuleContainer.div({ class: 'radio-section' }, (radioContainer) => {
+			firewallRuleContainer.div({ 'class': 'radio-section' }, (radioContainer) => {
 				const form = DOM.append(radioContainer.getHTMLElement(), DOM.$('form.firewall-rule'));
 				const IPAddressDiv = DOM.append(form, DOM.$('div.firewall-ip-address dialog-input'));
 				const subnetIPRangeDiv = DOM.append(form, DOM.$('div.firewall-subnet-ip-range dialog-input'));
@@ -177,7 +187,7 @@ export class FirewallRuleDialog extends Modal {
 			});
 		});
 
-		new Builder(container).div({ class: 'firewall-rule-dialog' }, (builder) => {
+		new Builder(container).div({ 'class': 'firewall-rule-dialog' }, (builder) => {
 			builder.append(descriptionSection);
 			builder.append(azureAccountSection);
 			builder.append(firewallRuleSection);
@@ -214,7 +224,7 @@ export class FirewallRuleDialog extends Modal {
 		if (isHeader) {
 			className += ' header';
 		}
-		container.div({ class: className }, (labelContainer) => {
+		container.div({ 'class': className }, (labelContainer) => {
 			labelContainer.innerHtml(content);
 		});
 	}
@@ -223,7 +233,6 @@ export class FirewallRuleDialog extends Modal {
 	private updateTheme(theme: IColorTheme): void {
 		let linkColor = theme.getColor(buttonBackground);
 		let link = linkColor ? linkColor.toString() : null;
-		this._helpLink.style.color = link;
 		if (this._helpLink) {
 			this._helpLink.style.color = link;
 		}

@@ -47,6 +47,9 @@ import { IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 
 // {{SQL CARBON EDIT}} -- Display the editor's tab color
 import { Color } from 'vs/base/common/color';
+import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
+import * as QueryConstants from 'sql/parts/query/common/constants';
+import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 
 interface IEditorInputLabel {
 	name: string;
@@ -80,7 +83,9 @@ export class TabsTitleControl extends TitleControl {
 		@IWindowsService private windowsService: IWindowsService,
 		@IThemeService themeService: IThemeService,
 		@IFileService private fileService: IFileService,
-		@IWorkspacesService private workspacesService: IWorkspacesService
+		@IWorkspacesService private workspacesService: IWorkspacesService,
+		// {{SQL CARBON EDIT}} -- Display the editor's tab color
+		@IWorkspaceConfigurationService private workspaceConfigurationService: IWorkspaceConfigurationService
 	) {
 		super(contextMenuService, instantiationService, editorService, editorGroupService, contextKeyService, keybindingService, telemetryService, messageService, menuService, quickOpenService, themeService);
 
@@ -245,6 +250,17 @@ export class TabsTitleControl extends TitleControl {
 			element.style.outlineColor = activeContrastBorderColor;
 			element.style.outlineOffset = null;
 		}
+
+		// {{SQL CARBON EDIT}} -- Display the editor's tab color
+		if (isTab) {
+			const tabContainer = this.tabsContainer.children[index];
+			if (tabContainer instanceof HTMLElement) {
+				let editor = this.context.getEditor(index);
+				if (editor) {
+					this.setEditorTabColor(editor, tabContainer, isActiveTab);
+				}
+			}
+		}
 	}
 
 	public allowDragging(element: HTMLElement): boolean {
@@ -335,18 +351,7 @@ export class TabsTitleControl extends TitleControl {
 				}
 
 				// {{SQL CARBON EDIT}} -- Display the editor's tab color
-				let sqlEditor = editor as any;
-				if (sqlEditor.tabColor && this.themeService.getTheme().type !== HIGH_CONTRAST) {
-					tabContainer.style.borderTopColor = sqlEditor.tabColor;
-					tabContainer.style.borderTopWidth = isTabActive ? '2px' : '1px';
-					let backgroundColor = Color.Format.CSS.parseHex(sqlEditor.tabColor);
-					if (backgroundColor) {
-						tabContainer.style.backgroundColor = backgroundColor.transparent(isTabActive ? 0.3 : 0.2).toString();
-					}
-				} else {
-					tabContainer.style.borderTopColor = '';
-					tabContainer.style.borderTopWidth = '';
-				}
+				this.setEditorTabColor(editor, tabContainer, isTabActive);
 			}
 		});
 
@@ -861,6 +866,26 @@ export class TabsTitleControl extends TitleControl {
 		const isCopy = (e.ctrlKey && !isMacintosh) || (e.altKey && isMacintosh);
 
 		return !isCopy || source.id === target.id;
+	}
+
+	// {{SQL CARBON EDIT}} -- Display the editor's tab color
+	private setEditorTabColor(editor: IEditorInput, tabContainer: HTMLElement, isTabActive: boolean) {
+		let sqlEditor = editor as any;
+		let tabColorMode = WorkbenchUtils.getSqlConfigValue<string>(this.workspaceConfigurationService, 'tabColorMode');
+		if (tabColorMode === QueryConstants.tabColorModeOff || (tabColorMode !== QueryConstants.tabColorModeBorder && tabColorMode !== QueryConstants.tabColorModeFill)
+			|| this.themeService.getTheme().type === HIGH_CONTRAST || !sqlEditor.tabColor) {
+			tabContainer.style.borderTopColor = '';
+			tabContainer.style.borderTopWidth = '';
+			return;
+		}
+		tabContainer.style.borderTopColor = sqlEditor.tabColor;
+		tabContainer.style.borderTopWidth = isTabActive ? '3px' : '2px';
+		if (tabColorMode === QueryConstants.tabColorModeFill) {
+			let backgroundColor = Color.Format.CSS.parseHex(sqlEditor.tabColor);
+			if (backgroundColor) {
+				tabContainer.style.backgroundColor = backgroundColor.transparent(isTabActive ? 0.5 : 0.2).toString();
+			}
+		}
 	}
 }
 
