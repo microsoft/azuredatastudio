@@ -32,6 +32,14 @@ export interface WidgetConfig {
 	padding?: string;
 }
 
+export interface TabConfig {
+	id: string;
+	name: string;
+	widgets: Array<WidgetConfig>;
+	context: string;
+	originalConfig: Array<WidgetConfig>;
+}
+
 export abstract class DashboardWidget extends Disposable implements OnDestroy {
 	protected _config: WidgetConfig;
 
