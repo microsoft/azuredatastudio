@@ -6,7 +6,6 @@
 import 'vs/css!./dashboardPage';
 
 import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { NgGridItem } from 'angular2-grid';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { WidgetConfig, TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
@@ -30,7 +29,6 @@ import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as objects from 'vs/base/common/objects';
-import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
 /**
  * @returns whether the provided parameter is a JavaScript Array and each element in the array is a number.
