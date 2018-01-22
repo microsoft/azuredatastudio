@@ -14,8 +14,8 @@ import * as mime from 'mime';
 import * as minimist from 'minimist';
 import { DocumentClient, NewDocument } from 'documentdb';
 
-if (process.argv.length < 6) {
-	console.error('Usage: node publish.js <product> <platform> <type> <name> <version> <commit> <is_update> <file>');
+if (process.argv.length < 9) {
+	console.error('Usage: node publish.js <product_quality> <platform> <file_type> <file_name> <version> <is_update> <file> [commit_id]');
 	process.exit(-1);
 }
 
@@ -263,7 +263,10 @@ function main(): void {
 		boolean: ['upload-only']
 	});
 
-	const [commit, quality, platform, type, name, version, _isUpdate, file] = opts._;
+	let [quality, platform, type, name, version, _isUpdate, file, commit] = opts._;
+	if (!commit) {
+		commit = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+	}
 
 	publish(commit, quality, platform, type, name, version, _isUpdate, file, opts).catch(err => {
 		console.error(err);
