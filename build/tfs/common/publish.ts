@@ -263,8 +263,7 @@ function main(): void {
 		boolean: ['upload-only']
 	});
 
-	const [quality, platform, type, name, version, _isUpdate, file] = opts._;
-	const commit = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+	const [commit, quality, platform, type, name, version, _isUpdate, file] = opts._;
 
 	publish(commit, quality, platform, type, name, version, _isUpdate, file, opts).catch(err => {
 		console.error(err);
