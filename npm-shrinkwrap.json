@@ -391,9 +391,9 @@
       "resolved": "https://registry.npmjs.org/isobject/-/isobject-2.1.0.tgz"
     },
     "jquery": {
-      "version": "2.2.4",
-      "from": "jquery@>=2.2.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.2.4.tgz"
+      "version": "3.1.0",
+      "from": "jquery@3.1.0",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.1.0.tgz"
     },
     "jquery-ui": {
       "version": "1.12.1",
