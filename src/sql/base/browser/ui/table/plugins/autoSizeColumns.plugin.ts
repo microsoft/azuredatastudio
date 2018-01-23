@@ -32,7 +32,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 		this._$container.off();
 	}
 
-	private reSizeColumn(e: Event) {
+	private reSizeColumn(e: JQuery.Event<HTMLElement, string>) {
 		let headerEl = $(e.currentTarget).closest('.slick-header-column');
 		let columnDef = headerEl.data('column');
 

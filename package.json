@@ -49,7 +49,7 @@
     "http-proxy-agent": "0.2.7",
     "https-proxy-agent": "0.3.6",
     "iconv-lite": "0.4.15",
-    "jquery": "^2.2.0",
+    "jquery": "3.1.0",
     "make-error": "^1.1.1",
     "jschardet": "^1.5.1",
     "keytar": "^4.0.5",
