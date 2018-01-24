@@ -203,7 +203,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 			// Perform a revert row operation
 			self.dataService.revertRow(index)
-				.then(() => self.dataService.commitEdit())
 				.then(() => self.refreshResultsets());
 		};
 	}
