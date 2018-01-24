@@ -41,8 +41,8 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		super(dashboardService, el, cd);
 		// revert back to default database
 		this.dashboardService.connectionManagementService.changeDatabase('master').then(() => {
-			this.dashboardService.connectionManagementService.connectionInfo.connectionProfile.databaseName = undefined;
 			this.init();
+			this.dashboardService.connectionManagementService.connectionInfo.connectionProfile.databaseName = undefined;
 			cd.detectChanges();
 		});
 	}

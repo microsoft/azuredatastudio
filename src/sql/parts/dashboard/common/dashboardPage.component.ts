@@ -15,6 +15,7 @@ import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidg
 import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { DashboardTab } from 'sql/parts/dashboard/common/dashboardTab.component';
+import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -167,12 +168,12 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		this.tabs.push(tab);
 		this._cd.detectChanges();
 		let tabComponents = this._tabs.find(i => i.tab.id === tab.id);
-		this._register(tabComponents.onSetScrollDimensions.subscribe(() => {
+		this._register(subscriptionToDisposable(tabComponents.onSetScrollDimensions.subscribe(() => {
 			this._scrollableElement.setScrollDimensions({
 				scrollHeight: getContentHeight(this._scrollable.nativeElement),
 				height: getContentHeight(this._scrollContainer.nativeElement)
 			});
-		}));
+		})));
 	}
 
 	private updateTheme(theme: IColorTheme): void {

@@ -43,10 +43,11 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 			this.refresh(true);
 			this._cd.detectChanges();
 		}));
-		this.init();
+
 	}
 
 	ngOnInit() {
+		this.init();
 		this._breadcrumbService.setBreadcrumbs(BreadcrumbClass.DatabasePage);
 	}
 }
