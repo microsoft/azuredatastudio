@@ -120,6 +120,7 @@ export class DashboardTab extends Disposable implements OnDestroy {
 				item.layout();
 			});
 		}
+		this._grid.triggerResize();
 	}
 
 	public refresh(): void {

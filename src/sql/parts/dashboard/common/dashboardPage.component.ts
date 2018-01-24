@@ -103,11 +103,11 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			this.propertiesWidget = properties ? properties[0] : undefined;
 
 			// Create home tab
-			let homeWidget = tempWidgets;
+			let homeWidgets = tempWidgets;
 			let homeTab: TabConfig = {
 				id: 'homeTab',
 				name: this.homeTabTitle,
-				widgets: homeWidget,
+				widgets: homeWidgets,
 				context: this.context,
 				originalConfig: this._originalConfig
 			};
