@@ -407,6 +407,20 @@ export class ServerTreeView {
 	}
 
 	/**
+	 * Get the list of selected nodes in the tree
+	*/
+	public getSelection(): any[] {
+		return this._tree.getSelection();
+	}
+
+	/**
+	 * Get whether the tree view currently has focus
+	*/
+	public isFocused(): boolean {
+		return this._tree.isDOMFocused();
+	}
+
+	/**
 	 * dispose the server tree view
 	 */
 	public dispose(): void {

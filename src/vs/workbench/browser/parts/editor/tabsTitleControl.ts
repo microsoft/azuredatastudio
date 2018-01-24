@@ -50,6 +50,10 @@ import { Color } from 'vs/base/common/color';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import * as QueryConstants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
+import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 
 interface IEditorInputLabel {
 	name: string;
@@ -85,7 +89,11 @@ export class TabsTitleControl extends TitleControl {
 		@IFileService private fileService: IFileService,
 		@IWorkspacesService private workspacesService: IWorkspacesService,
 		// {{SQL CARBON EDIT}} -- Display the editor's tab color
-		@IWorkspaceConfigurationService private workspaceConfigurationService: IWorkspaceConfigurationService
+		@IWorkspaceConfigurationService private workspaceConfigurationService: IWorkspaceConfigurationService,
+		@IConnectionManagementService private connectionService: IConnectionManagementService,
+		@IQueryEditorService private queryEditorService: IQueryEditorService,
+		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
+		@IWorkbenchEditorService private workbenchEditorService: IWorkbenchEditorService,
 	) {
 		super(contextMenuService, instantiationService, editorService, editorGroupService, contextKeyService, keybindingService, telemetryService, messageService, menuService, quickOpenService, themeService);
 
@@ -154,7 +162,7 @@ export class TabsTitleControl extends TitleControl {
 
 				const group = this.context;
 				if (group) {
-					this.editorService.openEditor({ options: { pinned: true, index: group.count /* always at the end */ } } as IUntitledResourceInput).done(null, errors.onUnexpectedError); // untitled are always pinned
+					TaskUtilities.newQuery(undefined, this.connectionService, this.queryEditorService, this.objectExplorerService, this.workbenchEditorService).then(undefined, errors.onUnexpectedError);
 				}
 			}
 		}));

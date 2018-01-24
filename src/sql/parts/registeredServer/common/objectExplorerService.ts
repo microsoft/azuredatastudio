@@ -18,6 +18,7 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
+import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeView';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -54,6 +55,12 @@ export interface IObjectExplorerService {
 	deleteObjectExplorerNode(connection: IConnectionProfile): void;
 
 	onUpdateObjectExplorerNodes: Event<ObjectExplorerNodeEventArgs>;
+
+	registerServerTreeView(view: ServerTreeView): void;
+
+	getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string };
+
+	isFocused(): boolean;
 }
 
 interface SessionStatus {
@@ -84,6 +91,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private _sessions: { [sessionId: string]: SessionStatus };
 
 	private _onUpdateObjectExplorerNodes: Emitter<ObjectExplorerNodeEventArgs>;
+
+	private _serverTreeView: ServerTreeView;
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -354,5 +363,45 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 		return new TreeNode(nodeInfo.nodeType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
 			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata);
+	}
+
+	public registerServerTreeView(view: ServerTreeView): void {
+		if (this._serverTreeView) {
+			throw new Error('The object explorer server tree view is already registered');
+		}
+		this._serverTreeView = view;
+	}
+
+	/**
+	 * Returns the connection profile corresponding to the current Object Explorer selection,
+	 * or undefined if there are multiple selections or no such connection
+	 */
+	public getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string } {
+		if (!this._serverTreeView) {
+			return undefined;
+		}
+		let selection = this._serverTreeView.getSelection();
+		if (selection.length === 1) {
+			let selectedNode = selection[0];
+			if (selectedNode instanceof ConnectionProfile) {
+				return { profile: selectedNode, databaseName: undefined };
+			} else if (selectedNode instanceof TreeNode) {
+				let profile = selectedNode.getConnectionProfile();
+				let database = selectedNode.getDatabaseName();
+				// If the database is unavailable, use the server connection
+				if (selectedNode.nodeTypeId === 'Database' && selectedNode.isAlwaysLeaf) {
+					database = undefined;
+				}
+				return { profile: profile, databaseName: database };
+			}
+		}
+		return undefined;
+	}
+
+	/**
+	 * Returns a boolean indicating whether the Object Explorer tree has focus
+	*/
+	public isFocused(): boolean {
+		return this._serverTreeView.isFocused();
 	}
 }

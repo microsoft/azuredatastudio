@@ -16,6 +16,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import * as data from 'data';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
+import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeView';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('SQL Object Explorer Service tests', () => {
@@ -447,5 +448,58 @@ suite('SQL Object Explorer Service tests', () => {
 		assert.equal(table1Node.getSession(), objectExplorerSession);
 		assert.equal(table1Node.getConnectionProfile(), connection);
 		assert.equal(table1Node.getDatabaseName(), 'Db1');
+	});
+
+	test('getSelectedProfileAndDatabase returns the profile if it is selected', () => {
+		let serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined } as ServerTreeView);
+		serverTreeView.setup(x => x.getSelection()).returns(() => [connection]);
+		objectExplorerService.registerServerTreeView(serverTreeView.object);
+
+		let selectedProfileAndDatabase = objectExplorerService.getSelectedProfileAndDatabase();
+		assert.equal(selectedProfileAndDatabase.profile, connection);
+		assert.equal(selectedProfileAndDatabase.databaseName, undefined);
+	});
+
+	test('getSelectedProfileAndDatabase returns the profile but no database if children of a server are selected', () => {
+		let serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined } as ServerTreeView);
+		let databaseNode = new TreeNode(NodeType.Folder, 'Folder1', false, 'testServerName\\Folder1', '', '', undefined, undefined);
+		databaseNode.connection = connection;
+		serverTreeView.setup(x => x.getSelection()).returns(() => [databaseNode]);
+		objectExplorerService.registerServerTreeView(serverTreeView.object);
+
+		let selectedProfileAndDatabase = objectExplorerService.getSelectedProfileAndDatabase();
+		assert.equal(selectedProfileAndDatabase.profile, connection);
+		assert.equal(selectedProfileAndDatabase.databaseName, undefined);
+	});
+
+	test('getSelectedProfileAndDatabase returns the profile and database if children of a database node are selected', () => {
+		let serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined } as ServerTreeView);
+		let databaseMetadata = {
+			metadataType: 0,
+			metadataTypeName: 'Database',
+			urn: '//server/db1/',
+			name: 'Db1',
+			schema: undefined
+		};
+		let databaseName = 'Db1';
+		let databaseNode = new TreeNode(NodeType.Database, databaseName, false, 'testServerName\\Db1', '', '', undefined, databaseMetadata);
+		let tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\\Db1\\tables', '', '', databaseNode, undefined);
+		databaseNode.connection = connection;
+		databaseNode.children = [tablesNode];
+		serverTreeView.setup(x => x.getSelection()).returns(() => [tablesNode]);
+		objectExplorerService.registerServerTreeView(serverTreeView.object);
+
+		let selectedProfileAndDatabase = objectExplorerService.getSelectedProfileAndDatabase();
+		assert.equal(selectedProfileAndDatabase.profile, connection);
+		assert.equal(selectedProfileAndDatabase.databaseName, databaseName);
+	});
+
+	test('getSelectedProfileAndDatabase returns undefined when there is no selection', () => {
+		let serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined } as ServerTreeView);
+		serverTreeView.setup(x => x.getSelection()).returns(() => []);
+		objectExplorerService.registerServerTreeView(serverTreeView.object);
+
+		let selectedProfileAndDatabase = objectExplorerService.getSelectedProfileAndDatabase();
+		assert.equal(selectedProfileAndDatabase, undefined);
 	});
 });

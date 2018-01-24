@@ -24,6 +24,10 @@ import data = require('data');
 import nls = require('vs/nls');
 import os = require('os');
 import path = require('path');
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {
@@ -237,10 +241,15 @@ export function newQuery(
 	connectionProfile: IConnectionProfile,
 	connectionService: IConnectionManagementService,
 	queryEditorService: IQueryEditorService,
+	objectExplorerService: IObjectExplorerService,
+	workbenchEditorService: IWorkbenchEditorService,
 	sqlContent?: string,
 	executeOnOpen: RunQueryOnConnectionMode = RunQueryOnConnectionMode.none
 ): Promise<void> {
 	return new Promise<void>((resolve) => {
+		if (!connectionProfile) {
+			connectionProfile = getCurrentGlobalConnection(objectExplorerService, connectionService, workbenchEditorService);
+		}
 		queryEditorService.newSqlEditor(sqlContent).then((owner: IConnectableInput) => {
 			// Connect our editor to the input connection
 			let options: IConnectionCompletionOptions = {
@@ -250,9 +259,13 @@ export function newQuery(
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			};
-			connectionService.connect(connectionProfile, owner.uri, options).then(() => {
+			if (connectionProfile) {
+				connectionService.connect(connectionProfile, owner.uri, options).then(() => {
+					resolve();
+				});
+			} else {
 				resolve();
-			});
+			}
 		});
 	});
 }
@@ -329,6 +342,39 @@ export function showRestore(connection: IConnectionProfile, restoreDialogService
 
 export function openInsight(query: IInsightsConfig, profile: IConnectionProfile, insightDialogService: IInsightsDialogService) {
 	insightDialogService.show(query, profile);
+}
+
+/**
+ * Get the current global connection, which is the connection from the active editor, unless OE
+ * is focused or there is no such editor, in which case it comes from the OE selection. Returns
+ * undefined when there is no such connection.
+*/
+export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IWorkbenchEditorService): IConnectionProfile {
+	let connection: IConnectionProfile;
+
+	let objectExplorerSelection = objectExplorerService.getSelectedProfileAndDatabase();
+	if (objectExplorerSelection) {
+		let objectExplorerProfile = objectExplorerSelection.profile;
+		if (connectionManagementService.isProfileConnected(objectExplorerProfile)) {
+			if (objectExplorerSelection.databaseName) {
+				connection = objectExplorerProfile.cloneWithDatabase(objectExplorerSelection.databaseName);
+			} else {
+				connection = objectExplorerProfile;
+			}
+		}
+		if (objectExplorerService.isFocused()) {
+			return connection;
+		}
+	}
+
+	let activeInput = workbenchEditorService.getActiveEditorInput();
+	if (activeInput) {
+		if (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput) {
+			connection = connectionManagementService.getConnectionProfile(activeInput.uri);
+		}
+	}
+
+	return connection;
 }
 
 /* Helper Methods */
