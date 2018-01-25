@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -70,12 +70,12 @@ class MyInputFactory implements IEditorInputFactory {
 	}
 
 	deserialize(instantiationService: IInstantiationService, raw: string): EditorInput {
-		return <EditorInput>{};
+		return {} as EditorInput;
 	}
 }
 
 class MyInput extends EditorInput {
-	getPreferredEditorId(ids) {
+	getPreferredEditorId(ids: string[]) {
 		return ids[1];
 	}
 

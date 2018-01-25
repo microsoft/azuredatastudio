@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
@@ -33,13 +33,6 @@ export class PanelRegistry extends CompositeRegistry<Panel> {
 	 */
 	public registerPanel(descriptor: PanelDescriptor): void {
 		super.registerComposite(descriptor);
-	}
-
-	/**
-	 * Returns the panel descriptor for the given id or null if none.
-	 */
-	public getPanel(id: string): PanelDescriptor {
-		return this.getComposite(id) as PanelDescriptor;
 	}
 
 	/**

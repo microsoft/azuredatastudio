@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -57,8 +57,6 @@ export class LcsDiff2 {
 	private ids_for_x: number[];
 	private ids_for_y: number[];
 
-	private hashFunc: IHashFunction;
-
 	private resultX: boolean[];
 	private resultY: boolean[];
 	private forwardPrev: number[];
@@ -71,14 +69,6 @@ export class LcsDiff2 {
 		this.y = newSequence;
 		this.ids_for_x = [];
 		this.ids_for_y = [];
-
-		if (hashFunc) {
-			this.hashFunc = hashFunc;
-		} else {
-			this.hashFunc = function (sequence, index) {
-				return sequence[index];
-			};
-		}
 
 		this.resultX = [];
 		this.resultY = [];

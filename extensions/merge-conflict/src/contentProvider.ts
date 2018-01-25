@@ -1,10 +1,9 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as vscode from 'vscode';
-import * as interfaces from './interfaces';
 
 export default class MergeConflictContentProvider implements vscode.TextDocumentContentProvider, vscode.Disposable {
 
@@ -13,7 +12,7 @@ export default class MergeConflictContentProvider implements vscode.TextDocument
 	constructor(private context: vscode.ExtensionContext) {
 	}
 
-	begin(config: interfaces.IExtensionConfiguration) {
+	begin() {
 		this.context.subscriptions.push(
 			vscode.workspace.registerTextDocumentContentProvider(MergeConflictContentProvider.scheme, this)
 		);

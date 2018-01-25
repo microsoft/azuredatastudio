@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -30,22 +30,13 @@ export class RGBA8 {
 	public readonly a: number;
 
 	constructor(r: number, g: number, b: number, a: number) {
-		this.r = RGBA8._clampInt_0_255(r);
-		this.g = RGBA8._clampInt_0_255(g);
-		this.b = RGBA8._clampInt_0_255(b);
-		this.a = RGBA8._clampInt_0_255(a);
+		this.r = RGBA8._clamp(r);
+		this.g = RGBA8._clamp(g);
+		this.b = RGBA8._clamp(b);
+		this.a = RGBA8._clamp(a);
 	}
 
-	public static equals(a: RGBA8, b: RGBA8): boolean {
-		return (
-			a.r === b.r
-			&& a.g === b.g
-			&& a.b === b.b
-			&& a.a === b.a
-		);
-	}
-
-	private static _clampInt_0_255(c: number): number {
+	private static _clamp(c: number): number {
 		if (c < 0) {
 			return 0;
 		}

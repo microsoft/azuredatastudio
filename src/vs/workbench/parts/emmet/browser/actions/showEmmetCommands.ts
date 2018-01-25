@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -8,14 +8,13 @@
 import nls = require('vs/nls');
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { ICommonCodeEditor } from 'vs/editor/common/editorCommon';
-import { editorAction, EditorAction, ServicesAccessor } from 'vs/editor/common/editorCommonExtensions';
+import { registerEditorAction, EditorAction, ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 
 const EMMET_COMMANDS_PREFIX = '>Emmet: ';
 
-@editorAction
 class ShowEmmetCommandsAction extends EditorAction {
 
 	constructor() {
@@ -27,9 +26,11 @@ class ShowEmmetCommandsAction extends EditorAction {
 		});
 	}
 
-	public run(accessor: ServicesAccessor, editor: ICommonCodeEditor): TPromise<void> {
+	public run(accessor: ServicesAccessor, editor: ICodeEditor): TPromise<void> {
 		const quickOpenService = accessor.get(IQuickOpenService);
 		quickOpenService.show(EMMET_COMMANDS_PREFIX);
 		return TPromise.as(null);
 	}
 }
+
+registerEditorAction(ShowEmmetCommandsAction);

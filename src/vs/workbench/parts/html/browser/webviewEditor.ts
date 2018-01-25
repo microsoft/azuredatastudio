@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -9,7 +9,7 @@ import { BaseWebviewEditor } from 'vs/workbench/browser/parts/editor/webviewEdit
 import { IStorageService } from 'vs/platform/storage/common/storage';
 
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { Command, ICommandOptions } from 'vs/editor/common/editorCommonExtensions';
+import { Command, ICommandOptions } from 'vs/editor/browser/editorExtensions';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { ContextKeyExpr, IContextKey, RawContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';

@@ -1,26 +1,22 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { InlineDecoration } from 'vs/editor/common/viewModel/viewModel';
+import { InlineDecoration, InlineDecorationType } from 'vs/editor/common/viewModel/viewModel';
 import { Constants } from 'vs/editor/common/core/uint';
 import * as strings from 'vs/base/common/strings';
 
 export class LineDecoration {
 	_lineDecorationBrand: void;
 
-	public readonly startColumn: number;
-	public readonly endColumn: number;
-	public readonly className: string;
-	public readonly insertsBeforeOrAfter: boolean;
-
-	constructor(startColumn: number, endColumn: number, className: string, insertsBeforeOrAfter: boolean) {
-		this.startColumn = startColumn;
-		this.endColumn = endColumn;
-		this.className = className;
-		this.insertsBeforeOrAfter = insertsBeforeOrAfter;
+	constructor(
+		public readonly startColumn: number,
+		public readonly endColumn: number,
+		public readonly className: string,
+		public readonly type: InlineDecorationType
+	) {
 	}
 
 	private static _equals(a: LineDecoration, b: LineDecoration): boolean {
@@ -28,7 +24,7 @@ export class LineDecoration {
 			a.startColumn === b.startColumn
 			&& a.endColumn === b.endColumn
 			&& a.className === b.className
-			&& a.insertsBeforeOrAfter === b.insertsBeforeOrAfter
+			&& a.type === b.type
 		);
 	}
 
@@ -62,7 +58,7 @@ export class LineDecoration {
 				continue;
 			}
 
-			if (range.isEmpty()) {
+			if (range.isEmpty() && d.type === InlineDecorationType.Regular) {
 				// Ignore empty range decorations
 				continue;
 			}
@@ -70,12 +66,7 @@ export class LineDecoration {
 			let startColumn = (range.startLineNumber === lineNumber ? range.startColumn : minLineColumn);
 			let endColumn = (range.endLineNumber === lineNumber ? range.endColumn : maxLineColumn);
 
-			if (endColumn <= 1) {
-				// An empty decoration (endColumn === 1)
-				continue;
-			}
-
-			result[resultLen++] = new LineDecoration(startColumn, endColumn, d.inlineClassName, d.insertsBeforeOrAfter);
+			result[resultLen++] = new LineDecoration(startColumn, endColumn, d.inlineClassName, d.type);
 		}
 
 		return result;

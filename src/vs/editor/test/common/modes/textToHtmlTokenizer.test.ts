@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -197,7 +197,7 @@ suite('Editor Modes - textToHtmlTokenizer', () => {
 
 class Mode extends MockMode {
 
-	private static _id = new LanguageIdentifier('textToHtmlTokenizerMode', 3);
+	private static readonly _id = new LanguageIdentifier('textToHtmlTokenizerMode', 3);
 
 	constructor() {
 		super(Mode._id);

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -185,10 +185,6 @@ export abstract class AbstractScrollbar extends Widget {
 			// Act as if it was a mouse down on the scrollbar
 			this._onMouseDown(e);
 		}
-	}
-
-	public delegateSliderMouseDown(e: ISimplifiedMouseEvent, onDragFinished: () => void): void {
-		this._sliderMouseDown(e, onDragFinished);
 	}
 
 	private _onMouseDown(e: IMouseEvent): void {

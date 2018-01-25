@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as glob from 'vs/base/common/glob';
@@ -32,7 +32,7 @@ interface IPathWatcher {
 }
 
 export class NsfwWatcherService implements IWatcherService {
-	private static FS_EVENT_DELAY = 50; // aggregate and only emit events when changes have stopped for this duration (in ms)
+	private static readonly FS_EVENT_DELAY = 50; // aggregate and only emit events when changes have stopped for this duration (in ms)
 
 	private _pathWatchers: { [watchPath: string]: IPathWatcher } = {};
 	private _watcherPromise: TPromise<void>;

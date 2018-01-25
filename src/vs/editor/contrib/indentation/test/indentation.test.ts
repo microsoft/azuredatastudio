@@ -1,11 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Selection } from 'vs/editor/common/core/selection';
-import { IndentationToSpacesCommand, IndentationToTabsCommand } from 'vs/editor/contrib/indentation/common/indentation';
-import { testCommand } from 'vs/editor/test/common/commands/commandTestUtils';
+import { IndentationToSpacesCommand, IndentationToTabsCommand } from 'vs/editor/contrib/indentation/indentation';
+import { testCommand } from 'vs/editor/test/browser/testCommand';
 
 function testIndentationToSpacesCommand(lines: string[], selection: Selection, tabSize: number, expectedLines: string[], expectedSelection: Selection): void {
 	testCommand(lines, null, selection, (sel) => new IndentationToSpacesCommand(sel, tabSize), expectedLines, expectedSelection);

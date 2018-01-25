@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -24,6 +24,11 @@ export class LinkedList<E> {
 
 	isEmpty(): boolean {
 		return !this._first;
+	}
+
+	clear(): void {
+		this._first = undefined;
+		this._last = undefined;
 	}
 
 	unshift(element: E) {
@@ -90,21 +95,19 @@ export class LinkedList<E> {
 	}
 
 	iterator(): IIterator<E> {
-		let _done: boolean;
-		let _value: E;
 		let element = {
-			get done() { return _done; },
-			get value() { return _value; }
+			done: undefined,
+			value: undefined,
 		};
 		let node = this._first;
 		return {
 			next(): { done: boolean; value: E } {
 				if (!node) {
-					_done = true;
-					_value = undefined;
+					element.done = true;
+					element.value = undefined;
 				} else {
-					_done = false;
-					_value = node.element;
+					element.done = false;
+					element.value = node.element;
 					node = node.next;
 				}
 				return element;

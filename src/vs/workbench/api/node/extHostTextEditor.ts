@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -20,7 +20,7 @@ import { IRange } from 'vs/editor/common/core/range';
 
 export class TextEditorDecorationType implements vscode.TextEditorDecorationType {
 
-	private static _Keys = new IdGenerator('TextEditorDecorationType');
+	private static readonly _Keys = new IdGenerator('TextEditorDecorationType');
 
 	private _proxy: MainThreadEditorsShape;
 	public key: string;

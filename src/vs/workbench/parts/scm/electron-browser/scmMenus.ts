@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -28,7 +28,7 @@ export class SCMMenus implements IDisposable {
 	private disposables: IDisposable[] = [];
 
 	constructor(
-		private provider: ISCMProvider | undefined,
+		provider: ISCMProvider | undefined,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IMenuService private menuService: IMenuService
 	) {

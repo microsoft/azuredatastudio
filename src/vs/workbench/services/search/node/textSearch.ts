@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -17,7 +17,7 @@ import { ITextSearchWorkerProvider } from './textSearchWorkerProvider';
 
 export class Engine implements ISearchEngine<ISerializedFileMatch[]> {
 
-	private static PROGRESS_FLUSH_CHUNK_SIZE = 50; // optimization: number of files to process before emitting progress event
+	private static readonly PROGRESS_FLUSH_CHUNK_SIZE = 50; // optimization: number of files to process before emitting progress event
 
 	private config: IRawSearch;
 	private walker: FileWalker;

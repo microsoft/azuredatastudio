@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -11,7 +11,6 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { Gesture, EventType as GestureEventType } from 'vs/base/browser/touch';
 import { ActionRunner, IAction } from 'vs/base/common/actions';
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
-import { EventEmitter } from 'vs/base/common/eventEmitter';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { IMenuOptions } from 'vs/base/browser/ui/menu/menu';
@@ -68,7 +67,7 @@ export class BaseDropdown extends ActionRunner {
 			this._toDispose.push(cleanupFn);
 		}
 
-		this._toDispose.push(new Gesture(this.$label.getHTMLElement()));
+		Gesture.addTarget(this.$label.getHTMLElement());
 	}
 
 	public get toDispose(): IDisposable[] {
@@ -243,23 +242,5 @@ export class DropdownMenu extends BaseDropdown {
 
 	public hide(): void {
 		// noop
-	}
-}
-
-export class DropdownGroup extends EventEmitter {
-
-	private el: HTMLElement;
-
-	constructor(container: HTMLElement) {
-		super();
-
-		this.el = document.createElement('div');
-		this.el.className = 'dropdown-group';
-
-		container.appendChild(this.el);
-	}
-
-	public get element(): HTMLElement {
-		return this.el;
 	}
 }

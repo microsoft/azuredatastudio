@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 
@@ -10,7 +10,6 @@ import 'vs/css!./contextview';
 import { Builder, $ } from 'vs/base/browser/builder';
 import DOM = require('vs/base/browser/dom');
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { EventEmitter } from 'vs/base/common/eventEmitter';
 
 export interface IAnchor {
 	x: number;
@@ -103,10 +102,10 @@ function layout(view: ISize, around: IView, viewport: IView, anchorPosition: Anc
 	return { top: top, left: left };
 }
 
-export class ContextView extends EventEmitter {
+export class ContextView {
 
-	private static BUBBLE_UP_EVENTS = ['click', 'keydown', 'focus', 'blur'];
-	private static BUBBLE_DOWN_EVENTS = ['click'];
+	private static readonly BUBBLE_UP_EVENTS = ['click', 'keydown', 'focus', 'blur'];
+	private static readonly BUBBLE_DOWN_EVENTS = ['click'];
 
 	private $container: Builder;
 	private $view: Builder;
@@ -115,7 +114,6 @@ export class ContextView extends EventEmitter {
 	private toDisposeOnClean: IDisposable;
 
 	constructor(container: HTMLElement) {
-		super();
 		this.$view = $('.context-view').hide();
 		this.setContainer(container);
 
@@ -265,7 +263,6 @@ export class ContextView extends EventEmitter {
 	}
 
 	public dispose(): void {
-		super.dispose();
 		this.hide();
 
 		this.toDispose = dispose(this.toDispose);

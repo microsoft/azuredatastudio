@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -11,24 +11,24 @@ import net = require('net');
  * Given a start point and a max number of retries, will find a port that
  * is openable. Will return 0 in case no free port can be found.
  */
-export function findFreePort(startPort: number, giveUpAfter: number, timeout: number, clb: (port: number) => void): void {
+export function findFreePort(startPort: number, giveUpAfter: number, timeout: number): Thenable<number> {
 	let done = false;
 
-	const timeoutHandle = setTimeout(() => {
-		if (!done) {
-			done = true;
+	return new Promise(resolve => {
+		const timeoutHandle = setTimeout(() => {
+			if (!done) {
+				done = true;
+				return resolve(0);
+			}
+		}, timeout);
 
-			return clb(0);
-		}
-	}, timeout);
-
-	doFindFreePort(startPort, giveUpAfter, (port) => {
-		if (!done) {
-			done = true;
-			clearTimeout(timeoutHandle);
-
-			return clb(port);
-		}
+		doFindFreePort(startPort, giveUpAfter, (port) => {
+			if (!done) {
+				done = true;
+				clearTimeout(timeoutHandle);
+				return resolve(port);
+			}
+		});
 	});
 }
 

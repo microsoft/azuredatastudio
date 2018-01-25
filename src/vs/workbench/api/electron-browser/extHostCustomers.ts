@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -37,7 +37,7 @@ export namespace ExtHostCustomersRegistry {
 
 class ExtHostCustomersRegistryImpl {
 
-	public static INSTANCE = new ExtHostCustomersRegistryImpl();
+	public static readonly INSTANCE = new ExtHostCustomersRegistryImpl();
 
 	private _namedCustomers: IExtHostNamedCustomer<any>[];
 	private _customers: IExtHostCustomerCtor<any>[];

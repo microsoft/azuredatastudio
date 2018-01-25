@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -22,8 +22,8 @@ import { IWatcherRequest, IWatcherService } from './watcher';
 
 export class ChokidarWatcherService implements IWatcherService {
 
-	private static FS_EVENT_DELAY = 50; // aggregate and only emit events when changes have stopped for this duration (in ms)
-	private static EVENT_SPAM_WARNING_THRESHOLD = 60 * 1000; // warn after certain time span of event spam
+	private static readonly FS_EVENT_DELAY = 50; // aggregate and only emit events when changes have stopped for this duration (in ms)
+	private static readonly EVENT_SPAM_WARNING_THRESHOLD = 60 * 1000; // warn after certain time span of event spam
 
 	private spamCheckStartTime: number;
 	private spamWarningLogged: boolean;

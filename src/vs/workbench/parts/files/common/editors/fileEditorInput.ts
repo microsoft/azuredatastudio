@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -31,11 +31,8 @@ import { IHashService } from 'vs/workbench/services/hash/common/hashService';
  */
 export class FileEditorInput extends EditorInput implements IFileEditorInput {
 	private forceOpenAsBinary: boolean;
-
 	private textModelReference: TPromise<IReference<ITextEditorModel>>;
-
 	private name: string;
-
 	private toUnbind: IDisposable[];
 
 	/**
@@ -265,9 +262,7 @@ export class FileEditorInput extends EditorInput implements IFileEditorInput {
 	}
 
 	private resolveAsBinary(): TPromise<BinaryEditorModel> {
-		return this.instantiationService.createInstance(BinaryEditorModel, this.resource, this.getName())
-			.load()
-			.then(x => x as BinaryEditorModel);
+		return this.instantiationService.createInstance(BinaryEditorModel, this.resource, this.getName()).load().then(m => m as BinaryEditorModel);
 	}
 
 	public isResolved(): boolean {

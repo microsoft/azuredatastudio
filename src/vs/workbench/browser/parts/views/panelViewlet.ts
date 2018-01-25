@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/panelviewlet';
@@ -70,7 +70,7 @@ export abstract class ViewletPanel extends Panel {
 
 		const focusTracker = trackFocus(container);
 		this.disposables.push(focusTracker);
-		this.disposables.push(focusTracker.addFocusListener(() => this._onDidFocus.fire()));
+		this.disposables.push(focusTracker.onDidFocus(() => this._onDidFocus.fire()));
 	}
 
 	protected renderHeader(container: HTMLElement): void {

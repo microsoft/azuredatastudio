@@ -1,11 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
-import Event from 'vs/base/common/event';
+import Event, { NodeEventEmitter } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
 
@@ -35,7 +35,7 @@ export interface IUpdate {
 	url?: string;
 }
 
-export interface IAutoUpdater extends NodeJS.EventEmitter {
+export interface IAutoUpdater extends NodeEventEmitter {
 	setFeedURL(url: string): void;
 	checkForUpdates(): void;
 	quitAndInstall(): void;

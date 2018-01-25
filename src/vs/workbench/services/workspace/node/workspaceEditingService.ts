@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -35,7 +35,7 @@ export class WorkspaceEditingService implements IWorkspaceEditingService {
 
 	public _serviceBrand: any;
 
-	private static INFO_MESSAGE_KEY = 'enterWorkspace.message';
+	private static readonly INFO_MESSAGE_KEY = 'enterWorkspace.message';
 
 	constructor(
 		@IJSONEditingService private jsonEditingService: IJSONEditingService,

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -127,9 +127,6 @@ interface IGlobals {
 const _globals = <IGlobals>(typeof self === 'object' ? self : global);
 export const globals: any = _globals;
 
-export function hasWebWorkerSupport(): boolean {
-	return typeof _globals.Worker !== 'undefined';
-}
 export const setTimeout = _globals.setTimeout.bind(_globals);
 export const clearTimeout = _globals.clearTimeout.bind(_globals);
 

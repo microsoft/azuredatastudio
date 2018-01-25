@@ -65,23 +65,65 @@
 			]
 		},
 		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code Emmet Tests",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"${workspaceFolder}/extensions/emmet/test-fixtures",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/emmet",
+				"--extensionTestsPath=${workspaceFolder}/extensions/emmet/out/test"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			]
+		},
+		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code API Tests",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"${workspaceFolder}/extensions/vscode-api-tests/testWorkspace",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-api-tests",
+				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-api-tests/out"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			]
+		},
+		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code Tokenizer Tests",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"${workspaceFolder}/extensions/vscode-colorize-tests/test",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-colorize-tests",
+				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-colorize-tests/out"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			]
+		},
+		{
 			"type": "chrome",
 			"request": "attach",
-			"name": "Attach to sqlops",
+			"name": "Attach to VS Code",
 			"port": 9222
 		},
 		{
 			"type": "chrome",
 			"request": "launch",
-			"name": "Launch sqlops",
+			"name": "Launch VS Code",
 			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
+				"runtimeExecutable": "${workspaceFolder}/scripts/code.bat"
 			},
 			"osx": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+				"runtimeExecutable": "${workspaceFolder}/scripts/code.sh"
 			},
 			"linux": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+				"runtimeExecutable": "${workspaceFolder}/scripts/code.sh"
 			},
 			"urlFilter": "*index.html*",
 			"runtimeArgs": [
@@ -92,18 +134,31 @@
 		{
 			"type": "node",
 			"request": "launch",
+			"name": "Git Unit Tests",
+			"protocol": "inspector",
+			"program": "${workspaceFolder}/extensions/git/node_modules/mocha/bin/_mocha",
+			"stopOnEntry": false,
+			"cwd": "${workspaceFolder}/extensions/git",
+			"outFiles": [
+				"${workspaceFolder}/extensions/git/out/**/*.js"
+			]
+		},
+		{
+			"type": "node",
+			"request": "launch",
 			"name": "Unit Tests",
 			"protocol": "inspector",
 			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-			"runtimeExecutable": "${workspaceFolder}/.build/electron/SQL Operations Studio.app/Contents/MacOS/Electron",
+			"runtimeExecutable": "${workspaceFolder}/.build/electron/Code - OSS.app/Contents/MacOS/Electron",
 			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/.build/electron/sqlops.exe"
+				"runtimeExecutable": "${workspaceFolder}/.build/electron/Code - OSS.exe"
 			},
 			"linux": {
-				"runtimeExecutable": "${workspaceFolder}/.build/electron/sqlops"
+				"runtimeExecutable": "${workspaceFolder}/.build/electron/code-oss"
 			},
 			"stopOnEntry": false,
 			"args": [
+				"--delay",
 				"--timeout",
 				"2000"
 			],
@@ -114,20 +169,41 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			]
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Launch Smoke Test",
+			"program": "${workspaceFolder}/test/smoke/out/main.js",
+			"cwd": "${workspaceFolder}/test/smoke",
+			"timeout": 240000,
+			"port": 9999,
+			"args": [
+				"-l",
+				"${workspaceFolder}/.build/electron/Code - OSS.app/Contents/MacOS/Electron"
+			],
+			"outFiles": [
+				"${cwd}/out/**/*.js"
+			],
+			"env": {
+				"NODE_ENV": "development",
+				"VSCODE_DEV": "1",
+				"VSCODE_CLI": "1"
+			}
 		}
 	],
 	"compounds": [
 		{
-			"name": "Debug sqlops Main and Renderer",
+			"name": "Debug VS Code Main and Renderer",
 			"configurations": [
-				"Launch sqlops",
+				"Launch VS Code",
 				"Attach to Main Process"
 			]
 		},
 		{
 			"name": "Search and Renderer processes",
 			"configurations": [
-				"Launch sqlops",
+				"Launch VS Code",
 				"Attach to Search Process"
 			]
 		}

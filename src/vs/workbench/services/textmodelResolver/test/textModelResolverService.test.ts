@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -71,9 +71,9 @@ suite('Workbench - TextModelResolverService', () => {
 		let resource = URI.from({ scheme: 'test', authority: null, path: 'thePath' });
 		let input: ResourceEditorInput = instantiationService.createInstance(ResourceEditorInput, 'The Name', 'The Description', resource);
 
-		input.resolve().then((model: ResourceEditorModel) => {
+		input.resolve().then(model => {
 			assert.ok(model);
-			assert.equal(model.getValue(), 'Hello Test');
+			assert.equal((model as ResourceEditorModel).getValue(), 'Hello Test');
 
 			let disposed = false;
 			once(model.onDispose)(() => {

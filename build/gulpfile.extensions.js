@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 // Increase max listeners for event emitters
@@ -62,6 +62,8 @@ const tasks = compilations.map(function (tsconfigFile) {
 		const reporter = createReporter();
 
 		tsOptions.inlineSources = !!build;
+		tsOptions.base = path.dirname(absolutePath);
+
 		const compilation = tsb.create(tsOptions, null, null, err => reporter(err.toString()));
 
 		return function () {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -66,14 +66,14 @@ const isIEWithZoomingIssuesNearRoundedBorders = browser.isEdgeOrIE;
 
 export class SelectionsOverlay extends DynamicViewOverlay {
 
-	private static SELECTION_CLASS_NAME = 'selected-text';
-	private static SELECTION_TOP_LEFT = 'top-left-radius';
-	private static SELECTION_BOTTOM_LEFT = 'bottom-left-radius';
-	private static SELECTION_TOP_RIGHT = 'top-right-radius';
-	private static SELECTION_BOTTOM_RIGHT = 'bottom-right-radius';
-	private static EDITOR_BACKGROUND_CLASS_NAME = 'monaco-editor-background';
+	private static readonly SELECTION_CLASS_NAME = 'selected-text';
+	private static readonly SELECTION_TOP_LEFT = 'top-left-radius';
+	private static readonly SELECTION_BOTTOM_LEFT = 'bottom-left-radius';
+	private static readonly SELECTION_TOP_RIGHT = 'top-right-radius';
+	private static readonly SELECTION_BOTTOM_RIGHT = 'bottom-right-radius';
+	private static readonly EDITOR_BACKGROUND_CLASS_NAME = 'monaco-editor-background';
 
-	private static ROUNDED_PIECE_WIDTH = 10;
+	private static readonly ROUNDED_PIECE_WIDTH = 10;
 
 	private _context: ViewContext;
 	private _lineHeight: number;

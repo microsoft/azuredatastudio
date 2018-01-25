@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
@@ -195,7 +195,7 @@ async function setup(): Promise<void> {
  * @see https://github.com/webdriverio/webdriverio/issues/2076
  */
 // Filter out the following messages:
-const wdioDeprecationWarning = /^WARNING: the "\w+" command will be depcrecated soon./; // [sic]
+const wdioDeprecationWarning = /^WARNING: the "\w+" command will be deprecated soon../; // [sic]
 // Monkey patch:
 const warn = console.warn;
 console.warn = function suppressWebdriverWarnings(message) {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -218,7 +218,7 @@ export class ProcessRunnerDetector {
 
 	private resolveCommandOptions(workspaceFolder: IWorkspaceFolder, options: CommandOptions): CommandOptions {
 		// TODO@Dirk adopt new configuration resolver service https://github.com/Microsoft/vscode/issues/31365
-		let result = Objects.clone(options);
+		let result = Objects.deepClone(options);
 		if (result.cwd) {
 			result.cwd = this.configurationResolverService.resolve(workspaceFolder, result.cwd);
 		}

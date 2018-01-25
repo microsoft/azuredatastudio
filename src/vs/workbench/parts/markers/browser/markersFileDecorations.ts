@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -17,6 +17,7 @@ import Severity from 'vs/base/common/severity';
 import { editorErrorForeground, editorWarningForeground } from 'vs/editor/common/view/editorColorRegistry';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions } from 'vs/platform/configuration/common/configurationRegistry';
+import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 
 class MarkersDecorationsProvider implements IDecorationsProvider {
 
@@ -75,12 +76,8 @@ class MarkersFileDecorations implements IWorkbenchContribution {
 		dispose(this._disposables);
 	}
 
-	getId(): string {
-		return 'markers.MarkersFileDecorations';
-	}
-
 	private _updateEnablement(): void {
-		let value = this._configurationService.getConfiguration<{ decorations: { enabled: boolean } }>('problems');
+		let value = this._configurationService.getValue<{ decorations: { enabled: boolean } }>('problems');
 		if (value.decorations.enabled === this._enabled) {
 			return;
 		}
@@ -95,7 +92,7 @@ class MarkersFileDecorations implements IWorkbenchContribution {
 	}
 }
 
-Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(MarkersFileDecorations);
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(MarkersFileDecorations, LifecyclePhase.Running);
 
 Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration).registerConfiguration({
 	'id': 'problems',

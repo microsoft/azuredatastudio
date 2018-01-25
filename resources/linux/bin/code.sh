@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the Source EULA. See License.txt in the project root for license information.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 # If root, ensure that --user-data-dir is specified
 if [ "$(id -u)" = "0" ]; then
@@ -12,7 +12,7 @@ if [ "$(id -u)" = "0" ]; then
 		fi
 	done
 	if [ -z $DATA_DIR_SET ]; then
-		echo "It is recommended to start SQL Operations Studio as a normal user. To run as root, you must specify an alternate user data directory with the --user-data-dir argument." 1>&2
+		echo "You are trying to start vscode as a super user which is not recommended. If you really want to, you must specify an alternate user data directory using the --user-data-dir argument." 1>&2
 		exit 1
 	fi
 fi

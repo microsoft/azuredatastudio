@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -191,7 +191,7 @@ export class TextMateService implements ITextMateService {
 			let s1 = r1.settings;
 			let s2 = r2.settings;
 			if (s1 && s2) {
-				if (s1.fontStyle !== s2.fontStyle || s1.foreground !== s2.foreground) {
+				if (s1.fontStyle !== s2.fontStyle || s1.foreground !== s2.foreground || s1.background !== s2.background) {
 					return true;
 				}
 			} else if (!s1 || !s2) {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
@@ -20,16 +20,19 @@ export interface IProductConfiguration {
 	quality?: string;
 	commit?: string;
 	settingsSearchBuildId?: number;
+	settingsSearchUrl?: string;
 	date: string;
 	extensionsGallery: {
 		serviceUrl: string;
 		itemUrl: string;
+		controlUrl: string;
 	};
 	extensionTips: { [id: string]: string; };
 	extensionImportantTips: { [id: string]: { name: string; pattern: string; }; };
 	exeBasedExtensionTips: { [id: string]: any; };
 	extensionKeywords: { [extension: string]: string[]; };
 	extensionAllowedBadgeProviders: string[];
+	extensionAllowedProposedApi: string[];
 	keymapExtensionTips: string[];
 	crashReporter: {
 		companyName: string;

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -42,6 +42,10 @@ export class MarkdownEngine {
 			this.md = (await import('markdown-it'))({
 				html: true,
 				highlight: (str: string, lang: string) => {
+					// Workaround for highlight not supporting tsx: https://github.com/isagalaev/highlight.js/issues/1155
+					if (lang && ['tsx', 'typescriptreact'].indexOf(lang.toLocaleLowerCase()) >= 0) {
+						lang = 'jsx';
+					}
 					if (lang && hljs.getLanguage(lang)) {
 						try {
 							return `<pre class="hljs"><code><div>${hljs.highlight(lang, str, true).value}</div></code></pre>`;

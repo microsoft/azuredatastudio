@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
@@ -10,7 +10,7 @@ import { parseTree, findNodeAtLocation, Node as JsonNode } from 'jsonc-parser';
 import * as nls from 'vscode-nls';
 import * as MarkdownItType from 'markdown-it';
 
-import { languages, workspace, Disposable, ExtensionContext, TextDocument, Uri, Diagnostic, Range, DiagnosticSeverity, Position } from 'vscode';
+import { languages, workspace, Disposable, TextDocument, Uri, Diagnostic, Range, DiagnosticSeverity, Position } from 'vscode';
 
 const product = require('../../../product.json');
 const allowedBadgeProviders: string[] = (product.extensionAllowedBadgeProviders || []).map(s => s.toLowerCase());
@@ -54,7 +54,7 @@ export class ExtensionLinter {
 	private timer: NodeJS.Timer;
 	private markdownIt: MarkdownItType.MarkdownIt;
 
-	constructor(private context: ExtensionContext) {
+	constructor() {
 		this.disposables.push(
 			workspace.onDidOpenTextDocument(document => this.queue(document)),
 			workspace.onDidChangeTextDocument(event => this.queue(event.document)),
@@ -227,7 +227,7 @@ export class ExtensionLinter {
 			}
 
 			this.diagnosticsCollection.set(document.uri, diagnostics);
-		};
+		}
 	}
 
 	private locateToken(text: string, begin: number, end: number, token: MarkdownItType.Token, content: string) {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as interfaces from './interfaces';
 import * as vscode from 'vscode';
@@ -13,7 +13,7 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
 	public commonAncestors: interfaces.IMergeRegion[];
 	public splitter: vscode.Range;
 
-	constructor(document: vscode.TextDocument, descriptor: interfaces.IDocumentMergeConflictDescriptor) {
+	constructor(descriptor: interfaces.IDocumentMergeConflictDescriptor) {
 		this.range = descriptor.range;
 		this.current = descriptor.current;
 		this.incoming = descriptor.incoming;
@@ -27,7 +27,7 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
 
 			this.applyEdit(type, editor, edit);
 			return Promise.resolve(true);
-		};
+		}
 
 		return editor.edit((edit) => this.applyEdit(type, editor, edit));
 	}

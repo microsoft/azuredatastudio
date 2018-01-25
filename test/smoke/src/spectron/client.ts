@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Application } from 'spectron';
@@ -52,10 +52,6 @@ export class SpectronClient {
 	async waitForValue(selector: string, value?: string, accept?: (result: string) => boolean): Promise<any> {
 		accept = accept ? accept : result => value !== void 0 ? value === result : !!result;
 		return this.waitFor(() => this.spectron.client.getValue(selector), accept, `getValue with selector ${selector}`);
-	}
-
-	async waitForHTML(selector: string, accept: (result: string) => boolean = (result: string) => !!result): Promise<any> {
-		return this.waitFor(() => this.spectron.client.getHTML(selector), accept, `getHTML with selector ${selector}`);
 	}
 
 	async waitAndClick(selector: string): Promise<any> {

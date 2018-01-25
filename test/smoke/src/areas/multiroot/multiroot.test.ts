@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -17,7 +17,7 @@ describe('Multiroot', () => {
 
 		// for some reason Code opens 2 windows at this point
 		// so let's select the last one
-		await app.client.windowByIndex(2);
+		await app.client.windowByIndex(1);
 	});
 
 	it('shows results from all folders', async function () {

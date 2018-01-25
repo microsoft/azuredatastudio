@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { SpectronApplication } from '../../spectron/application';
@@ -9,8 +9,8 @@ import { Viewlet } from '../workbench/viewlet';
 
 export class Explorer extends Viewlet {
 
-	private static EXPLORER_VIEWLET = 'div[id="workbench.view.explorer"]';
-	private static OPEN_EDITORS_VIEW = `${Explorer.EXPLORER_VIEWLET} .split-view-view:nth-child(1) .title`;
+	private static readonly EXPLORER_VIEWLET = 'div[id="workbench.view.explorer"]';
+	private static readonly OPEN_EDITORS_VIEW = `${Explorer.EXPLORER_VIEWLET} .split-view-view:nth-child(1) .title`;
 
 	constructor(spectron: SpectronApplication) {
 		super(spectron);

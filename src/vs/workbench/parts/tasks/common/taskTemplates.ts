@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -114,7 +114,7 @@ const maven: TaskEntry = {
 		'\t\t\t"group": "build"',
 		'\t\t},',
 		'\t\t{',
-		'\t\t\t"taskName": "test",',
+		'\t\t\t"label": "test",',
 		'\t\t\t"type": "shell",',
 		'\t\t\t"command": "mvn -B test",',
 		'\t\t\t"group": "test"',

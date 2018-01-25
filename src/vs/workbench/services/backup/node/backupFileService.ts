@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -95,14 +95,14 @@ export class BackupFileService implements IBackupFileService {
 
 	private isShuttingDown: boolean;
 	private ready: TPromise<IBackupFilesModel>;
-	private ioOperationQueues: ResourceQueue<void>; // queue IO operations to ensure write order
+	private ioOperationQueues: ResourceQueue; // queue IO operations to ensure write order
 
 	constructor(
 		backupWorkspacePath: string,
 		@IFileService private fileService: IFileService
 	) {
 		this.isShuttingDown = false;
-		this.ioOperationQueues = new ResourceQueue<void>();
+		this.ioOperationQueues = new ResourceQueue();
 
 		this.initialize(backupWorkspacePath);
 	}

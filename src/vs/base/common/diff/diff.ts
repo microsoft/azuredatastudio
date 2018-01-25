@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -95,7 +95,7 @@ export class MyArray {
 // LcsDiff.cs
 //
 // An implementation of the difference algorithm described in
-// "An O(ND) Difference Algorithm and its letiations" by Eugene W. Myers
+// "An O(ND) Difference Algorithm and its variations" by Eugene W. Myers
 //
 // Copyright (C) 2008 Microsoft Corporation @minifier_do_not_preserve
 //*****************************************************************************
@@ -215,7 +215,7 @@ const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 /**
  * An implementation of the difference algorithm described in
- * "An O(ND) Difference Algorithm and its letiations" by Eugene W. Myers
+ * "An O(ND) Difference Algorithm and its variations" by Eugene W. Myers
  */
 export class LcsDiff {
 

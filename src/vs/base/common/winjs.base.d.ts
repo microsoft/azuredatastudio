@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 /// Interfaces for WinJS
 
@@ -29,6 +29,7 @@ export declare class Promise<T = any, TProgress = any> {
 
 	public static as(value: null): Promise<null>;
 	public static as(value: undefined): Promise<undefined>;
+	public static as<T>(value: PromiseLike<T>): PromiseLike<T>;
 	public static as<T, SomePromise extends PromiseLike<T>>(value: SomePromise): SomePromise;
 	public static as<T>(value: T): Promise<T>;
 

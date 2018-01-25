@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -15,8 +15,8 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 
 export class ToggleSidebarVisibilityAction extends Action {
 
-	public static ID = 'workbench.action.toggleSidebarVisibility';
-	public static LABEL = nls.localize('toggleSidebar', "Toggle Side Bar Visibility");
+	public static readonly ID = 'workbench.action.toggleSidebarVisibility';
+	public static readonly LABEL = nls.localize('toggleSidebar', "Toggle Side Bar Visibility");
 
 	constructor(
 		id: string,

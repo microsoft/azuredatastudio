@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -22,7 +22,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import { IStatusbarService, IStatusbarEntry } from 'vs/platform/statusbar/common/statusbar';
-import { getCodeEditor } from 'vs/editor/common/services/codeEditorService';
+import { getCodeEditor } from 'vs/editor/browser/services/codeEditorService';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { Action } from 'vs/base/common/actions';
 import { IThemeService, registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
@@ -36,8 +36,8 @@ export class StatusbarPart extends Part implements IStatusbarService {
 
 	public _serviceBrand: any;
 
-	private static PRIORITY_PROP = 'priority';
-	private static ALIGNMENT_PROP = 'alignment';
+	private static readonly PRIORITY_PROP = 'priority';
+	private static readonly ALIGNMENT_PROP = 'alignment';
 
 	private statusItemsContainer: Builder;
 	private statusMsgDispose: IDisposable;

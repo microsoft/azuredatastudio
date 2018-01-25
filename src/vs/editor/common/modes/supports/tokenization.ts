@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -278,14 +278,6 @@ export class ThemeTrieElementRule {
 
 	public clone(): ThemeTrieElementRule {
 		return new ThemeTrieElementRule(this._fontStyle, this._foreground, this._background);
-	}
-
-	public static cloneArr(arr: ThemeTrieElementRule[]): ThemeTrieElementRule[] {
-		let r: ThemeTrieElementRule[] = [];
-		for (let i = 0, len = arr.length; i < len; i++) {
-			r[i] = arr[i].clone();
-		}
-		return r;
 	}
 
 	public acceptOverwrite(fontStyle: FontStyle, foreground: ColorId, background: ColorId): void {

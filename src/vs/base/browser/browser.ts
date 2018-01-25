@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -10,7 +10,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 
 class WindowManager {
 
-	public static INSTANCE = new WindowManager();
+	public static readonly INSTANCE = new WindowManager();
 
 	// --- Zoom Level
 	private _zoomLevel: number = 0;

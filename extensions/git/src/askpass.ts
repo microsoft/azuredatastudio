@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -28,7 +28,7 @@ function getIPCHandlePath(nonce: string): string {
 	}
 
 	if (process.env['XDG_RUNTIME_DIR']) {
-		return path.join(process.env['XDG_RUNTIME_DIR'], `vscode-git-askpass-${nonce}.sock`);
+		return path.join(process.env['XDG_RUNTIME_DIR'] as string, `vscode-git-askpass-${nonce}.sock`);
 	}
 
 	return path.join(os.tmpdir(), `vscode-git-askpass-${nonce}.sock`);

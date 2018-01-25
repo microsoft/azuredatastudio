@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -321,7 +321,7 @@ export class ContextKeyNotExpr implements ContextKeyExpr {
 }
 
 export class ContextKeyAndExpr implements ContextKeyExpr {
-	private expr: ContextKeyExpr[];
+	public readonly expr: ContextKeyExpr[];
 
 	constructor(expr: ContextKeyExpr[]) {
 		this.expr = ContextKeyAndExpr._normalizeArr(expr);
@@ -461,11 +461,15 @@ export interface IContextKeyServiceTarget {
 
 export const IContextKeyService = createDecorator<IContextKeyService>('contextKeyService');
 
+export interface IContextKeyChangeEvent {
+	affectsSome(keys: Set<string>): boolean;
+}
+
 export interface IContextKeyService {
 	_serviceBrand: any;
 	dispose(): void;
 
-	onDidChangeContext: Event<string[]>;
+	onDidChangeContext: Event<IContextKeyChangeEvent>;
 	createKey<T>(key: string, defaultValue: T): IContextKey<T>;
 	contextMatchesRules(rules: ContextKeyExpr): boolean;
 	getContextKeyValue<T>(key: string): T;

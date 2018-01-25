@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -33,12 +33,16 @@ export class MainThreadProgress implements MainThreadProgressShape {
 	}
 
 	$progressReport(handle: number, message: IProgressStep): void {
-		this._progress.get(handle).progress.report(message);
+		if (this._progress.has(handle)) {
+			this._progress.get(handle).progress.report(message);
+		}
 	}
 
 	$progressEnd(handle: number): void {
-		this._progress.get(handle).resolve();
-		this._progress.delete(handle);
+		if (this._progress.has(handle)) {
+			this._progress.get(handle).resolve();
+			this._progress.delete(handle);
+		}
 	}
 
 	private _createTask(handle: number) {

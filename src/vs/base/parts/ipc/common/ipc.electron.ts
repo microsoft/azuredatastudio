@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
@@ -18,7 +18,7 @@ export class Protocol implements IMessagePassingProtocol {
 	private _onMessage: Event<any>;
 	get onMessage(): Event<any> { return this._onMessage; }
 
-	constructor(private sender: Sender, private onMessageEvent: Event<any>) {
+	constructor(private sender: Sender, onMessageEvent: Event<any>) {
 		const emitter = new Emitter<any>();
 		onMessageEvent(msg => emitter.fire(msg));
 		this._onMessage = emitter.event;

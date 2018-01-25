@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 .monaco-tree {
 	height: 100%;
@@ -75,14 +75,6 @@
 
 .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.expanded > .content:before {
 	background-image: url('expanded.svg');
-}
-
-.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected.expanded > .content:before {
-	background-image: url('expanded-hc.svg');
-}
-
-.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected > .content:before {
-	background-image: url('collapsed-hc.svg');
 }
 
 .monaco-tree .monaco-tree-rows > .monaco-tree-row.has-children.loading > .content:before {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -18,7 +18,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 export class OutputLinkProvider {
 
-	private static DISPOSE_WORKER_TIME = 3 * 60 * 1000; // dispose worker after 3 minutes of inactivity
+	private static readonly DISPOSE_WORKER_TIME = 3 * 60 * 1000; // dispose worker after 3 minutes of inactivity
 
 	private worker: MonacoWebWorker<OutputLinkComputer>;
 	private disposeWorkerScheduler: RunOnceScheduler;

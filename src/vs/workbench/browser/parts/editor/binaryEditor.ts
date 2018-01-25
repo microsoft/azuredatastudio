@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -68,7 +68,7 @@ export abstract class BaseBinaryResourceEditor extends BaseEditor {
 		// Return early for same input unless we force to open
 		const forceOpen = options && options.forceOpen;
 		if (!forceOpen && input.matches(this.input)) {
-			return TPromise.as<void>(null);
+			return TPromise.wrap<void>(null);
 		}
 
 		// Otherwise set input and resolve
@@ -88,7 +88,7 @@ export abstract class BaseBinaryResourceEditor extends BaseEditor {
 				// Render Input
 				const model = <BinaryEditorModel>resolvedModel;
 				ResourceViewer.show(
-					{ name: model.getName(), resource: model.getResource(), size: model.getSize(), etag: model.getETag() },
+					{ name: model.getName(), resource: model.getResource(), size: model.getSize(), etag: model.getETag(), mime: model.getMime() },
 					this.binaryContainer,
 					this.scrollbar,
 					(resource: URI) => {

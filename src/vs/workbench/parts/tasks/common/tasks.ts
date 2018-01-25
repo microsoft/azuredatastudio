@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -22,13 +22,6 @@ export interface ShellConfiguration {
 	 * The arguments to be passed to the shell executable.
 	 */
 	args?: string[];
-}
-
-export namespace ShellConfiguration {
-	export function is(value: any): value is ShellConfiguration {
-		let candidate: ShellConfiguration = value;
-		return candidate && Types.isString(candidate.executable) && (candidate.args === void 0 || Types.isStringArray(candidate.args));
-	}
 }
 
 export interface CommandOptions {
@@ -576,6 +569,47 @@ export class TaskSorter {
 			return +1;
 		} else {
 			return 0;
+		}
+	}
+}
+
+export enum TaskEventKind {
+	Active = 'active',
+	Inactive = 'inactive',
+	Terminated = 'terminated',
+	Changed = 'changed',
+}
+
+
+export enum TaskRunType {
+	SingleRun = 'singleRun',
+	Background = 'background'
+}
+
+export interface TaskEvent {
+	kind: TaskEventKind;
+	taskId?: string;
+	taskName?: string;
+	runType?: TaskRunType;
+	group?: string;
+	__task?: Task;
+}
+
+export namespace TaskEvent {
+	export function create(kind: TaskEventKind.Active | TaskEventKind.Inactive | TaskEventKind.Terminated, task: Task);
+	export function create(kind: TaskEventKind.Changed);
+	export function create(kind: TaskEventKind, task?: Task): TaskEvent {
+		if (task) {
+			return Object.freeze({
+				kind: kind,
+				taskId: task._id,
+				taskName: task.name,
+				runType: task.isBackground ? TaskRunType.Background : TaskRunType.SingleRun,
+				group: task.group,
+				__task: task,
+			});
+		} else {
+			return Object.freeze({ kind: TaskEventKind.Changed });
 		}
 	}
 }

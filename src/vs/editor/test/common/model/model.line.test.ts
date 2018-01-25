@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -11,7 +11,7 @@ import { MetadataConsts } from 'vs/editor/common/modes';
 import { ViewLineToken, ViewLineTokenFactory } from 'vs/editor/common/core/viewLineToken';
 
 function assertLineTokens(_actual: LineTokens, _expected: TestToken[]): void {
-	let expected = ViewLineTokenFactory.inflateArr(TestToken.toTokens(_expected), _actual.getLineLength());
+	let expected = ViewLineTokenFactory.inflateArr(TestToken.toTokens(_expected), _actual.getLineContent().length);
 	let actual = _actual.inflate();
 	let decode = (token: ViewLineToken) => {
 		return {
@@ -1521,4 +1521,3 @@ suite('Editor Model - modelLine.append', () => {
 		);
 	});
 });
-

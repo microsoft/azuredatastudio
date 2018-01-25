@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -13,7 +13,7 @@ import * as viewEvents from 'vs/editor/common/view/viewEvents';
 
 export class Margin extends ViewPart {
 
-	public static CLASS_NAME = 'glyph-margin';
+	public static readonly CLASS_NAME = 'glyph-margin';
 
 	private _domNode: FastDomNode<HTMLElement>;
 	private _canUseLayerHinting: boolean;

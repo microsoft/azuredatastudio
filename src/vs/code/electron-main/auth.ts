@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -8,7 +8,7 @@
 import { localize } from 'vs/nls';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IWindowsMainService } from 'vs/platform/windows/electron-main/windows';
-import { fromEventEmitter } from 'vs/base/node/event';
+import { fromNodeEventEmitter } from 'vs/base/common/event';
 import { BrowserWindow, app } from 'electron';
 
 type LoginEvent = {
@@ -32,9 +32,9 @@ export class ProxyAuthHandler {
 	private disposables: IDisposable[] = [];
 
 	constructor(
-		@IWindowsMainService private windowsService: IWindowsMainService
+		@IWindowsMainService private windowsMainService: IWindowsMainService
 	) {
-		const onLogin = fromEventEmitter<LoginEvent>(app, 'login', (event, webContents, req, authInfo, cb) => ({ event, webContents, req, authInfo, cb }));
+		const onLogin = fromNodeEventEmitter<LoginEvent>(app, 'login', (event, webContents, req, authInfo, cb) => ({ event, webContents, req, authInfo, cb }));
 		onLogin(this.onLogin, this, this.disposables);
 	}
 
@@ -59,7 +59,7 @@ export class ProxyAuthHandler {
 			title: 'VS Code'
 		};
 
-		const focusedWindow = this.windowsService.getFocusedWindow();
+		const focusedWindow = this.windowsMainService.getFocusedWindow();
 
 		if (focusedWindow) {
 			opts.parent = focusedWindow.win;

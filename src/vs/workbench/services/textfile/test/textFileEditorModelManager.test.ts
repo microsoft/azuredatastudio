@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -322,15 +322,15 @@ suite('Files - TextFileEditorModelManager', () => {
 
 		const resource = toResource('/path/index_something.txt');
 
-		manager.loadOrCreate(resource, { encoding: 'utf8' }).done((model: TextFileEditorModel) => {
+		manager.loadOrCreate(resource, { encoding: 'utf8' }).done(model => {
 			model.textEditorModel.setValue('make dirty');
 
-			manager.disposeModel(model);
+			manager.disposeModel(model as TextFileEditorModel);
 			assert.ok(!model.isDisposed());
 
 			model.revert(true);
 
-			manager.disposeModel(model);
+			manager.disposeModel(model as TextFileEditorModel);
 			assert.ok(model.isDisposed());
 
 			manager.dispose();

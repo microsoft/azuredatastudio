@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -116,7 +116,7 @@ export default class DocumentMergeConflictTracker implements vscode.Disposable, 
 		this.cache.clear();
 	}
 
-	private getConflictsOrEmpty(document: vscode.TextDocument, origins: string[]): interfaces.IDocumentMergeConflict[] {
+	private getConflictsOrEmpty(document: vscode.TextDocument, _origins: string[]): interfaces.IDocumentMergeConflict[] {
 		const containsConflict = MergeConflictParser.containsConflict(document);
 
 		if (!containsConflict) {

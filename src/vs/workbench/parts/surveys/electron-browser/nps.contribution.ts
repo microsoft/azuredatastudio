@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -17,6 +17,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import pkg from 'vs/platform/node/package';
 import product from 'vs/platform/node/product';
+import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 
 const PROBABILITY = 0.15;
 const SESSION_COUNT_KEY = 'nps/sessionCount';
@@ -88,13 +89,9 @@ class NPSContribution implements IWorkbenchContribution {
 
 		messageService.show(Severity.Info, { message, actions });
 	}
-
-	getId(): string {
-		return 'nps';
-	}
 }
 
 if (language === 'en' && product.npsSurveyUrl) {
 	const workbenchRegistry = <IWorkbenchContributionsRegistry>Registry.as(WorkbenchExtensions.Workbench);
-	workbenchRegistry.registerWorkbenchContribution(NPSContribution);
+	workbenchRegistry.registerWorkbenchContribution(NPSContribution, LifecyclePhase.Running);
 }

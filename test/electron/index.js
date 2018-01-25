@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 const { app, BrowserWindow, ipcMain } = require('electron');
@@ -39,7 +39,7 @@ function deserializeSuite(suite) {
 		retries: () => suite.retries,
 		enableTimeouts: () => suite.enableTimeouts,
 		slow: () => suite.slow,
-		bail: () => suite.bail,
+		bail: () => suite.bail
 	};
 }
 

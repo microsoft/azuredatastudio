@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -96,7 +96,7 @@ export class GlobalMouseMoveMonitor<R> extends Disposable {
 		for (let i = 0; i < windowChain.length; i++) {
 			this.hooks.push(dom.addDisposableThrottledListener(windowChain[i].window.document, 'mousemove',
 				(data: R) => this.mouseMoveCallback(data),
-				(lastEvent: R, currentEvent: MouseEvent) => this.mouseMoveEventMerger(lastEvent, currentEvent)
+				(lastEvent: R, currentEvent) => this.mouseMoveEventMerger(lastEvent, currentEvent as MouseEvent)
 			));
 			this.hooks.push(dom.addDisposableListener(windowChain[i].window.document, 'mouseup', (e: MouseEvent) => this.stopMonitoring(true)));
 		}

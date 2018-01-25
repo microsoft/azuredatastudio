@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import Event, { Emitter } from 'vs/base/common/event';
@@ -15,16 +15,12 @@ export class ViewModel implements debug.IViewModel {
 	private _onDidFocusProcess: Emitter<debug.IProcess | undefined>;
 	private _onDidFocusStackFrame: Emitter<{ stackFrame: debug.IStackFrame, explicit: boolean }>;
 	private _onDidSelectExpression: Emitter<debug.IExpression>;
-	private _onDidSelectFunctionBreakpoint: Emitter<debug.IFunctionBreakpoint>;
 	private multiProcessView: boolean;
-	public changedWorkbenchViewState: boolean;
 
 	constructor() {
 		this._onDidFocusProcess = new Emitter<debug.IProcess | undefined>();
 		this._onDidFocusStackFrame = new Emitter<{ stackFrame: debug.IStackFrame, explicit: boolean }>();
 		this._onDidSelectExpression = new Emitter<debug.IExpression>();
-		this._onDidSelectFunctionBreakpoint = new Emitter<debug.IFunctionBreakpoint>();
-		this.changedWorkbenchViewState = false;
 		this.multiProcessView = false;
 	}
 
@@ -80,11 +76,6 @@ export class ViewModel implements debug.IViewModel {
 
 	public setSelectedFunctionBreakpoint(functionBreakpoint: debug.IFunctionBreakpoint): void {
 		this.selectedFunctionBreakpoint = functionBreakpoint;
-		this._onDidSelectFunctionBreakpoint.fire(functionBreakpoint);
-	}
-
-	public get onDidSelectFunctionBreakpoint(): Event<debug.IFunctionBreakpoint> {
-		return this._onDidSelectFunctionBreakpoint.event;
 	}
 
 	public isMultiProcessView(): boolean {

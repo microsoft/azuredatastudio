@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as dom from 'vs/base/browser/dom';
@@ -55,8 +55,8 @@ export class DataSource implements IDataSource {
 
 export class Renderer implements IRenderer {
 
-	private static EXTENSION_TEMPLATE_ID = 'extension-template';
-	private static UNKNOWN_EXTENSION_TEMPLATE_ID = 'unknown-extension-template';
+	private static readonly EXTENSION_TEMPLATE_ID = 'extension-template';
+	private static readonly UNKNOWN_EXTENSION_TEMPLATE_ID = 'unknown-extension-template';
 
 	constructor( @IInstantiationService private instantiationService: IInstantiationService) {
 	}

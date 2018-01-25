@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -12,7 +12,7 @@ import { IEditorMouseEvent } from 'vs/editor/browser/editorBrowser';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IViewModel } from 'vs/editor/common/viewModel/viewModel';
 import { ViewOutgoingEvents } from 'vs/editor/browser/view/viewOutgoingEvents';
-import { CoreNavigationCommands, CoreEditorCommand } from 'vs/editor/common/controller/coreCommands';
+import { CoreNavigationCommands, CoreEditorCommand } from 'vs/editor/browser/controller/coreCommands';
 import { Configuration } from 'vs/editor/browser/config/configuration';
 
 export interface ExecCoreEditorCommandFunc {

@@ -1,13 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import * as assert from 'assert';
-import { EditorModel } from 'vs/workbench/common/editor';
-import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel';
 import { TextDiffEditorModel } from 'vs/workbench/common/editor/textDiffEditorModel';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -20,9 +18,6 @@ import { TestTextFileService, workbenchInstantiationService } from 'vs/workbench
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IModel } from 'vs/editor/common/editorCommon';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-
-class MyEditorModel extends EditorModel { }
-class MyTextEditorModel extends BaseTextEditorModel { }
 
 class ServiceAccessor {
 	constructor(

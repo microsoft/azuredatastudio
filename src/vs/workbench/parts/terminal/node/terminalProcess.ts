@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as os from 'os';
@@ -113,7 +113,8 @@ function cleanEnv() {
 		'PTYSHELL',
 		'PTYCOLS',
 		'PTYROWS',
-		'PTYSHELLCMDLINE'
+		'PTYSHELLCMDLINE',
+		'VSCODE_LOGS'
 	];
 	keys.forEach(function (key) {
 		if (process.env[key]) {

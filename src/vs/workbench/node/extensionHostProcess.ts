@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -120,6 +120,8 @@ function connectToRenderer(protocol: IMessagePassingProtocol): TPromise<IRendere
 	});
 }
 
+patchExecArgv();
+
 createExtHostProtocol().then(protocol => {
 	// connect to main side
 	return connectToRenderer(protocol);
@@ -129,3 +131,18 @@ createExtHostProtocol().then(protocol => {
 	onTerminate = () => extensionHostMain.terminate();
 	return extensionHostMain.start();
 }).done(null, err => console.error(err));
+
+
+
+function patchExecArgv() {
+	// when encountering the prevent-inspect flag we delete this
+	// and the prior flag
+	if (process.env.VSCODE_PREVENT_FOREIGN_INSPECT) {
+		for (let i = 0; i < process.execArgv.length; i++) {
+			if (process.execArgv[i].match(/--inspect-brk=\d+|--inspect=\d+/)) {
+				process.execArgv.splice(i, 1);
+				break;
+			}
+		}
+	}
+}

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -11,22 +11,6 @@ import { IKeyboardMapper } from 'vs/workbench/services/keybinding/common/keyboar
 import { IKeyboardEvent } from 'vs/platform/keybinding/common/keybinding';
 import { USLayoutResolvedKeybinding } from 'vs/platform/keybinding/common/usLayoutResolvedKeybinding';
 import { ScanCodeBinding, ScanCode, IMMUTABLE_CODE_TO_KEY_CODE } from 'vs/workbench/services/keybinding/common/scanCode';
-
-export interface IMacLinuxKeyMapping {
-	value: string;
-	withShift: string;
-	withAltGr: string;
-	withShiftAltGr: string;
-
-	valueIsDeadKey?: boolean;
-	withShiftIsDeadKey?: boolean;
-	withAltGrIsDeadKey?: boolean;
-	withShiftAltGrIsDeadKey?: boolean;
-}
-
-export interface IMacLinuxKeyboardMapping {
-	[scanCode: string]: IMacLinuxKeyMapping;
-}
 
 /**
  * A keyboard mapper to be used when reading the keymap from the OS fails.

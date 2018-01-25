@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -175,10 +175,6 @@ export interface ISearchConfiguration extends IFilesConfiguration {
 		exclude: glob.IExpression;
 		useRipgrep: boolean;
 		/**
-		 * Use ignore file for text search.
-		 */
-		useIgnoreFilesByDefault: boolean;
-		/**
 		 * Use ignore file for file search.
 		 */
 		useIgnoreFiles: boolean;
@@ -202,8 +198,9 @@ export function getExcludes(configuration: ISearchConfiguration): glob.IExpressi
 	}
 
 	let allExcludes: glob.IExpression = Object.create(null);
-	allExcludes = objects.mixin(allExcludes, fileExcludes);
-	allExcludes = objects.mixin(allExcludes, searchExcludes, true);
+	// clone the config as it could be frozen
+	allExcludes = objects.mixin(allExcludes, objects.deepClone(fileExcludes));
+	allExcludes = objects.mixin(allExcludes, objects.deepClone(searchExcludes), true);
 
 	return allExcludes;
 }

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -25,12 +25,10 @@ var REPO_ROOT_PATH = path.join(__dirname, '../..');
 function log(prefix, message) {
     gulpUtil.log(gulpUtil.colors.cyan('[' + prefix + ']'), message);
 }
-// {{SQL CARBON EDIT}}
 function loaderConfig(emptyPaths) {
     var result = {
         paths: {
             'vs': 'out-build/vs',
-            'sql': 'out-build/sql',
             'vscode': 'empty:'
         },
         nodeModules: emptyPaths || []
@@ -212,8 +210,7 @@ function uglifyWithCopyrights() {
         return stream.pipe(minify({
             output: {
                 comments: preserveComments(f),
-                // linux tfs build agent is crashing, does this help?§
-                max_line_len: 3200000
+                max_line_len: 1024
             }
         }));
     }));

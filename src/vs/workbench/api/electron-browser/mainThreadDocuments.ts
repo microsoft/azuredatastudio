@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -66,7 +66,6 @@ export class BoundModelReferenceCollection {
 export class MainThreadDocuments implements MainThreadDocumentsShape {
 
 	private _modelService: IModelService;
-	private _modeService: IModeService;
 	private _textModelResolverService: ITextModelService;
 	private _textFileService: ITextFileService;
 	private _fileService: IFileService;
@@ -89,7 +88,6 @@ export class MainThreadDocuments implements MainThreadDocumentsShape {
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 	) {
 		this._modelService = modelService;
-		this._modeService = modeService;
 		this._textModelResolverService = textModelResolverService;
 		this._textFileService = textFileService;
 		this._fileService = fileService;

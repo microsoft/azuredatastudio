@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as es from 'event-stream';
@@ -22,7 +22,7 @@ import * as File from 'vinyl';
 export function fromLocal(extensionPath: string): Stream {
 	const result = es.through();
 
-	vsce.listFiles({ cwd: extensionPath })
+	vsce.listFiles({ cwd: extensionPath, packageManager: vsce.PackageManager.Yarn })
 		.then(fileNames => {
 			const files = fileNames
 				.map(fileName => path.join(extensionPath, fileName))

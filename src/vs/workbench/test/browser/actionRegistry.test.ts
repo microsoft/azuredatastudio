@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -9,13 +9,6 @@ import * as assert from 'assert';
 import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { prepareActions } from 'vs/workbench/browser/actions';
 import { Action } from 'vs/base/common/actions';
-
-
-class MyClass extends Action {
-	constructor(id: string, label: string) {
-		super(id, label);
-	}
-}
 
 suite('Workbench Action Registry', () => {
 

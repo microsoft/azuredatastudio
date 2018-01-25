@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import uri from 'vs/base/common/uri';
@@ -9,7 +9,6 @@ import * as errors from 'vs/base/common/errors';
 import { IMouseEvent, StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import * as nls from 'vs/nls';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 
 export class LinkDetector {
 	private static FILE_LOCATION_PATTERNS: RegExp[] = [
@@ -23,8 +22,7 @@ export class LinkDetector {
 	];
 
 	constructor(
-		@IWorkbenchEditorService private editorService: IWorkbenchEditorService,
-		@IWorkspaceContextService private contextService: IWorkspaceContextService
+		@IWorkbenchEditorService private editorService: IWorkbenchEditorService
 	) {
 		// noop
 	}

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -10,6 +10,7 @@ import { EXTENSION_IDENTIFIER_PATTERN } from 'vs/platform/extensionManagement/co
 export const ExtensionsConfigurationSchemaId = 'vscode://schemas/extensions';
 export const ExtensionsConfigurationSchema: IJSONSchema = {
 	id: ExtensionsConfigurationSchemaId,
+	allowComments: true,
 	type: 'object',
 	title: localize('app.extensions.json.title', "Extensions"),
 	properties: {

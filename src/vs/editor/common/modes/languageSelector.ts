@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -15,10 +15,6 @@ export interface LanguageFilter {
 }
 
 export type LanguageSelector = string | LanguageFilter | (string | LanguageFilter)[];
-
-export default function matches(selection: LanguageSelector, uri: URI, language: string): boolean {
-	return score(selection, uri, language) > 0;
-}
 
 export function score(selector: LanguageSelector, candidateUri: URI, candidateLanguage: string): number {
 

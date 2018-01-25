@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
@@ -11,6 +11,7 @@ import { QuickOpenHandler } from 'vs/workbench/browser/quickopen';
 import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/parts/extensions/common/extensions';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IExtensionGalleryService, IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IMessageService, Severity } from 'vs/platform/message/common/message';
 
 class SimpleEntry extends QuickOpenEntry {
 
@@ -75,7 +76,8 @@ export class GalleryExtensionsHandler extends QuickOpenHandler {
 	constructor(
 		@IViewletService private viewletService: IViewletService,
 		@IExtensionGalleryService private galleryService: IExtensionGalleryService,
-		@IExtensionManagementService private extensionsService: IExtensionManagementService
+		@IExtensionManagementService private extensionsService: IExtensionManagementService,
+		@IMessageService private messageService: IMessageService
 	) {
 		super();
 	}
@@ -97,7 +99,8 @@ export class GalleryExtensionsHandler extends QuickOpenHandler {
 							return this.viewletService.openViewlet(VIEWLET_ID, true)
 								.then(viewlet => viewlet as IExtensionsViewlet)
 								.then(viewlet => viewlet.search(`@id:${text}`))
-								.done(() => this.extensionsService.installFromGallery(galleryExtension));
+								.then(() => this.extensionsService.installFromGallery(galleryExtension))
+								.done(null, err => this.messageService.show(Severity.Error, err));
 						};
 
 						entries.push(new SimpleEntry(label, action));

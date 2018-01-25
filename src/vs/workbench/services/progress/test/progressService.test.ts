@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -17,7 +17,7 @@ import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { IViewlet } from 'vs/workbench/common/viewlet';
 import { Emitter } from 'vs/base/common/event';
 
-let activeViewlet: Viewlet = <any>{};
+let activeViewlet: Viewlet = {} as any;
 
 class TestViewletService implements IViewletService {
 	public _serviceBrand: any;

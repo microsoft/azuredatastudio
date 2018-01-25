@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -75,7 +75,7 @@ export class TelemetryService implements ITelemetryService {
 	}
 
 	private _updateUserOptIn(): void {
-		const config = this._configurationService.getConfiguration<any>(TELEMETRY_SECTION_ID);
+		const config = this._configurationService.getValue<any>(TELEMETRY_SECTION_ID);
 		this._userOptIn = config ? config.enableTelemetry : this._userOptIn;
 	}
 

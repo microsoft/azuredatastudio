@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -92,7 +92,7 @@ suite('Files - TextFileEditorModel', () => {
 		const model: TextFileEditorModel = instantiationService.createInstance(TextFileEditorModel, toResource.call(this, '/path/index_async.txt'), 'utf8');
 
 		model.load().done(() => {
-			model.textEditorModel.destroy();
+			model.textEditorModel.dispose();
 
 			assert.ok(model.isDisposed());
 

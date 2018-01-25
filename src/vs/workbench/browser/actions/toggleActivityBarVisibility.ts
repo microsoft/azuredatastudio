@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -15,10 +15,10 @@ import { IPartService, Parts } from 'vs/workbench/services/part/common/partServi
 
 export class ToggleActivityBarVisibilityAction extends Action {
 
-	public static ID = 'workbench.action.toggleActivityBarVisibility';
-	public static LABEL = nls.localize('toggleActivityBar', "Toggle Activity Bar Visibility");
+	public static readonly ID = 'workbench.action.toggleActivityBarVisibility';
+	public static readonly LABEL = nls.localize('toggleActivityBar', "Toggle Activity Bar Visibility");
 
-	private static activityBarVisibleKey = 'workbench.activityBar.visible';
+	private static readonly activityBarVisibleKey = 'workbench.activityBar.visible';
 
 	constructor(
 		id: string,

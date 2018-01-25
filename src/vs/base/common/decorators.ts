@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -62,7 +62,7 @@ export function debounce(delay: number): Function {
 	return createDecorator((fn, key) => {
 		const timerKey = `$debounce$${key}`;
 
-		return function (...args: any[]) {
+		return function (this: any, ...args: any[]) {
 			clearTimeout(this[timerKey]);
 			this[timerKey] = setTimeout(() => fn.apply(this, args), delay);
 		};

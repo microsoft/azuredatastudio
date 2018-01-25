@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -13,7 +13,6 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 export interface IStorage {
 	length: number;
 	key(index: number): string;
-	clear(): void;
 	setItem(key: string, value: any): void;
 	getItem(key: string): string;
 	removeItem(key: string): void;
@@ -23,11 +22,11 @@ export class StorageService implements IStorageService {
 
 	public _serviceBrand: any;
 
-	public static COMMON_PREFIX = 'storage://';
-	public static GLOBAL_PREFIX = `${StorageService.COMMON_PREFIX}global/`;
-	public static WORKSPACE_PREFIX = `${StorageService.COMMON_PREFIX}workspace/`;
-	public static WORKSPACE_IDENTIFIER = 'workspaceidentifier';
-	public static NO_WORKSPACE_IDENTIFIER = '__$noWorkspace__';
+	public static readonly COMMON_PREFIX = 'storage://';
+	public static readonly GLOBAL_PREFIX = `${StorageService.COMMON_PREFIX}global/`;
+	public static readonly WORKSPACE_PREFIX = `${StorageService.COMMON_PREFIX}workspace/`;
+	public static readonly WORKSPACE_IDENTIFIER = 'workspaceidentifier';
+	public static readonly NO_WORKSPACE_IDENTIFIER = '__$noWorkspace__';
 
 	private _workspaceStorage: IStorage;
 	private _globalStorage: IStorage;
@@ -122,11 +121,6 @@ export class StorageService implements IStorageService {
 		}
 	}
 
-	public clear(): void {
-		this._globalStorage.clear();
-		this._workspaceStorage.clear();
-	}
-
 	public store(key: string, value: any, scope = StorageScope.GLOBAL): void {
 		const storage = (scope === StorageScope.GLOBAL) ? this._globalStorage : this._workspaceStorage;
 
@@ -215,10 +209,6 @@ export class InMemoryLocalStorage implements IStorage {
 		}
 
 		return null;
-	}
-
-	public clear(): void {
-		this.store = {};
 	}
 
 	public setItem(key: string, value: any): void {

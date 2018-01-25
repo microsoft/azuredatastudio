@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -11,12 +11,11 @@ import * as browser from 'vs/base/browser/browser';
 import * as dom from 'vs/base/browser/dom';
 import { IEditorContribution } from 'vs/editor/common/editorCommon';
 import { ICodeEditor, IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference } from 'vs/editor/browser/editorBrowser';
-import { editorContribution } from 'vs/editor/browser/editorBrowserExtensions';
+import { registerEditorContribution } from 'vs/editor/browser/editorExtensions';
 
-@editorContribution
 export class IPadShowKeyboard implements IEditorContribution {
 
-	private static ID = 'editor.contrib.iPadShowKeyboard';
+	private static readonly ID = 'editor.contrib.iPadShowKeyboard';
 
 	private editor: ICodeEditor;
 	private widget: ShowKeyboardWidget;
@@ -62,7 +61,7 @@ export class IPadShowKeyboard implements IEditorContribution {
 
 class ShowKeyboardWidget implements IOverlayWidget {
 
-	private static ID = 'editor.contrib.ShowKeyboardWidget';
+	private static readonly ID = 'editor.contrib.ShowKeyboardWidget';
 
 	private editor: ICodeEditor;
 
@@ -106,3 +105,5 @@ class ShowKeyboardWidget implements IOverlayWidget {
 		};
 	}
 }
+
+registerEditorContribution(IPadShowKeyboard);

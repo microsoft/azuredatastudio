@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -86,7 +86,7 @@ class SymbolEntry extends EditorQuickOpenEntry {
 
 		TPromise.as(this._bearingResolve)
 			.then(_ => super.run(mode, context))
-			.done(undefined, onUnexpectedError);
+			.then(undefined, onUnexpectedError);
 
 		// hide if OPEN
 		return mode === Mode.OPEN;
@@ -96,7 +96,7 @@ class SymbolEntry extends EditorQuickOpenEntry {
 		let input: IResourceInput = {
 			resource: this._bearing.location.uri,
 			options: {
-				pinned: !this._configurationService.getConfiguration<IWorkbenchEditorConfiguration>().workbench.editor.enablePreviewFromQuickOpen
+				pinned: !this._configurationService.getValue<IWorkbenchEditorConfiguration>().workbench.editor.enablePreviewFromQuickOpen
 			}
 		};
 
@@ -132,7 +132,7 @@ export class OpenSymbolHandler extends QuickOpenHandler {
 
 	public static readonly ID = 'workbench.picker.symbols';
 
-	private static SEARCH_DELAY = 500; // This delay accommodates for the user typing a word and then stops typing to start searching
+	private static readonly SEARCH_DELAY = 500; // This delay accommodates for the user typing a word and then stops typing to start searching
 
 	private delayer: ThrottledDelayer<QuickOpenEntry[]>;
 	private options: IOpenSymbolOptions;

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -247,13 +247,6 @@ export class Range {
 	}
 
 	/**
-	 * Clone this range.
-	 */
-	public cloneRange(): Range {
-		return new Range(this.startLineNumber, this.startColumn, this.endLineNumber, this.endColumn);
-	}
-
-	/**
 	 * Transform to a user presentable string representation.
 	 */
 	public toString(): string {
@@ -387,4 +380,3 @@ export class Range {
 		return range.endLineNumber > range.startLineNumber;
 	}
 }
-

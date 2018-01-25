@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -23,6 +23,6 @@ export class MenuService implements IMenuService {
 	}
 
 	createMenu(id: MenuId, contextKeyService: IContextKeyService): IMenu {
-		return new Menu(id, this._extensionService.onReady(), this._commandService, contextKeyService);
+		return new Menu(id, this._extensionService.whenInstalledExtensionsRegistered(), this._commandService, contextKeyService);
 	}
 }

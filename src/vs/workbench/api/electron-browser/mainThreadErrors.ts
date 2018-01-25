@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -15,11 +15,11 @@ export class MainThreadErrors implements MainThreadErrorsShape {
 		//
 	}
 
-	$onUnexpectedError(err: any | SerializedError, extensionId: string | undefined): void {
+	$onUnexpectedError(err: any | SerializedError): void {
 		if (err.$isError) {
 			const { name, message, stack } = err;
 			err = new Error();
-			err.message = extensionId ? `[${extensionId}] ${message}` : message;
+			err.message = message;
 			err.name = name;
 			err.stack = stack;
 		}

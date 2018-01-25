@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -19,9 +19,6 @@ import * as types from 'vs/workbench/api/node/extHostTypes';
 import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
 import * as vscode from 'vscode';
 
-interface StringMap<V> {
-	[key: string]: V;
-}
 
 /*
 namespace ProblemPattern {
@@ -431,7 +428,7 @@ export class ExtHostTask implements ExtHostTaskShape {
 		this._extHostWorkspace = extHostWorkspace;
 		this._handleCounter = 0;
 		this._handlers = new Map<number, HandlerData>();
-	};
+	}
 
 	public registerTaskProvider(extension: IExtensionDescription, provider: vscode.TaskProvider): vscode.Disposable {
 		if (!provider) {

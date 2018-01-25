@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -133,7 +133,7 @@ export class ColorThemeStore {
 	}
 
 	public getColorThemes(): TPromise<IColorTheme[]> {
-		return this.extensionService.onReady().then(isReady => {
+		return this.extensionService.whenInstalledExtensionsRegistered().then(isReady => {
 			return this.extensionsColorThemes;
 		});
 	}

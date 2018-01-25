@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -61,7 +61,7 @@ export class TestService implements ITestService {
 				}
 				progress(batch);
 				process.nextTick(send);
-			};
+			}
 			process.nextTick(send);
 		});
 	}
@@ -94,7 +94,7 @@ export class TestChannel implements ITestChannel {
 export class TestServiceClient implements ITestService {
 
 	private _onMarco: Event<IMarcoPoloEvent>;
-	get onMarco(): Event<IMarcoPoloEvent> { return this._onMarco; };
+	get onMarco(): Event<IMarcoPoloEvent> { return this._onMarco; }
 
 	constructor(private channel: ITestChannel) {
 		this._onMarco = eventFromCall<IMarcoPoloEvent>(channel, 'event:marco');

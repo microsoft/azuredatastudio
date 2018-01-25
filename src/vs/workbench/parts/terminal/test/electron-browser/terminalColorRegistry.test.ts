@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import * as assert from 'assert';
-import { Extensions as ThemeingExtensions, IColorRegistry } from 'vs/platform/theme/common/colorRegistry';
+import { Extensions as ThemeingExtensions, IColorRegistry, ColorIdentifier } from 'vs/platform/theme/common/colorRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ansiColorIdentifiers, registerColors } from 'vs/workbench/parts/terminal/electron-browser/terminalColorRegistry';
 import { ITheme, ThemeType } from 'vs/platform/theme/common/themeService';
@@ -20,7 +20,7 @@ function getMockTheme(type: ThemeType): ITheme {
 		selector: '',
 		label: '',
 		type: type,
-		getColor: (colorId) => themingRegistry.resolveDefaultColor(colorId, theme),
+		getColor: (colorId: ColorIdentifier): Color => themingRegistry.resolveDefaultColor(colorId, theme),
 		defines: () => true
 	};
 	return theme;

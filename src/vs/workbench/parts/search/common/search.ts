@@ -1,14 +1,13 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { onUnexpectedError, illegalArgument } from 'vs/base/common/errors';
+import { onUnexpectedError } from 'vs/base/common/errors';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { CommonEditorRegistry } from 'vs/editor/common/editorCommonExtensions';
 import { ISearchConfiguration } from 'vs/platform/search/common/search';
 import glob = require('vs/base/common/glob');
 import { SymbolInformation } from 'vs/editor/common/modes';
@@ -65,14 +64,6 @@ export function getWorkspaceSymbols(query: string): TPromise<[IWorkspaceSymbolPr
 	return TPromise.join(promises).then(_ => result);
 }
 
-CommonEditorRegistry.registerLanguageCommand('_executeWorkspaceSymbolProvider', function (accessor, args: { query: string; }) {
-	let { query } = args;
-	if (typeof query !== 'string') {
-		throw illegalArgument();
-	}
-	return getWorkspaceSymbols(query);
-});
-
 export interface IWorkbenchSearchConfiguration extends ISearchConfiguration {
 	search: {
 		quickOpen: {
@@ -80,10 +71,6 @@ export interface IWorkbenchSearchConfiguration extends ISearchConfiguration {
 		},
 		exclude: glob.IExpression,
 		useRipgrep: boolean,
-		/**
-		 * Use ignore file for text search.
-		 */
-		useIgnoreFilesByDefault: boolean,
 		/**
 		 * Use ignore file for file search.
 		 */

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -203,10 +203,6 @@ export class PrefixSumComputerWithCache {
 	private _bustCache(): void {
 		this._cacheAccumulatedValueStart = 0;
 		this._cache = null;
-	}
-
-	public getCount(): number {
-		return this._actual.getCount();
 	}
 
 	public insertValues(insertIndex: number, insertValues: Uint32Array): void {

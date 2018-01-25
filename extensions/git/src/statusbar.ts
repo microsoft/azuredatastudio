@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -20,7 +20,7 @@ class CheckoutStatusBar {
 	private disposables: Disposable[] = [];
 
 	constructor(private repository: Repository) {
-		repository.onDidChangeStatus(this._onDidChange.fire, this._onDidChange, this.disposables);
+		repository.onDidRunGitStatus(this._onDidChange.fire, this._onDidChange, this.disposables);
 	}
 
 	get command(): Command | undefined {
@@ -65,7 +65,7 @@ class SyncStatusBar {
 	}
 
 	constructor(private repository: Repository) {
-		repository.onDidChangeStatus(this.onModelChange, this, this.disposables);
+		repository.onDidRunGitStatus(this.onModelChange, this, this.disposables);
 		repository.onDidChangeOperations(this.onOperationsChange, this, this.disposables);
 		this._onDidChange.fire();
 	}

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -10,7 +10,7 @@ import { LanguageIdentifier } from 'vs/editor/common/modes';
 import { MockMode } from 'vs/editor/test/common/mocks/mockMode';
 
 export class CommentMode extends MockMode {
-	private static _id = new LanguageIdentifier('commentMode', 3);
+	private static readonly _id = new LanguageIdentifier('commentMode', 3);
 
 	constructor(commentsConfig: CommentRule) {
 		super(CommentMode._id);

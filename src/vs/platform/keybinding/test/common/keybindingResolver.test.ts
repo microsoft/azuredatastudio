@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -28,7 +28,7 @@ suite('KeybindingResolver', () => {
 			resolvedKeybinding,
 			command,
 			commandArgs,
-			when,
+			when ? when.normalize() : null,
 			isDefault
 		);
 	}
@@ -194,10 +194,14 @@ suite('KeybindingResolver', () => {
 
 	test('contextIsEntirelyIncluded', function () {
 		let assertIsIncluded = (a: ContextKeyExpr[], b: ContextKeyExpr[]) => {
-			assert.equal(KeybindingResolver.whenIsEntirelyIncluded(false, new ContextKeyAndExpr(a), new ContextKeyAndExpr(b)), true);
+			let tmpA = new ContextKeyAndExpr(a).normalize();
+			let tmpB = new ContextKeyAndExpr(b).normalize();
+			assert.equal(KeybindingResolver.whenIsEntirelyIncluded(tmpA, tmpB), true);
 		};
 		let assertIsNotIncluded = (a: ContextKeyExpr[], b: ContextKeyExpr[]) => {
-			assert.equal(KeybindingResolver.whenIsEntirelyIncluded(false, new ContextKeyAndExpr(a), new ContextKeyAndExpr(b)), false);
+			let tmpA = new ContextKeyAndExpr(a).normalize();
+			let tmpB = new ContextKeyAndExpr(b).normalize();
+			assert.equal(KeybindingResolver.whenIsEntirelyIncluded(tmpA, tmpB), false);
 		};
 		let key1IsTrue = ContextKeyExpr.equals('key1', true);
 		let key1IsNotFalse = ContextKeyExpr.notEquals('key1', false);

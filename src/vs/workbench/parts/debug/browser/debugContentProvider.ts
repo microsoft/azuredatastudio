@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import uri from 'vs/base/common/uri';
@@ -37,10 +37,6 @@ export class DebugContentProvider implements IWorkbenchContribution, ITextModelC
 		@IModeService private modeService: IModeService
 	) {
 		textModelResolverService.registerTextModelContentProvider(DEBUG_SCHEME, this);
-	}
-
-	public getId(): string {
-		return 'debug.contentprovider';
 	}
 
 	public provideTextContent(resource: uri): TPromise<IModel> {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -64,18 +64,6 @@ export class OverviewRulerZone {
 				return this._darkColor;
 		}
 		return this._color;
-	}
-
-	public equals(other: OverviewRulerZone): boolean {
-		return (
-			this.startLineNumber === other.startLineNumber
-			&& this.endLineNumber === other.endLineNumber
-			&& this.position === other.position
-			&& this.forceHeight === other.forceHeight
-			&& this._color === other._color
-			&& this._darkColor === other._darkColor
-			&& this._hcColor === other._hcColor
-		);
 	}
 
 	public compareTo(other: OverviewRulerZone): number {

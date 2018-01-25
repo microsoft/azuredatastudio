@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -26,8 +26,8 @@ const inputOptions: WalkThroughInputOptions = {
 
 export class EditorWalkThroughAction extends Action {
 
-	public static ID = 'workbench.action.showInteractivePlayground';
-	public static LABEL = localize('editorWalkThrough', "Interactive Playground");
+	public static readonly ID = 'workbench.action.showInteractivePlayground';
+	public static readonly LABEL = localize('editorWalkThrough', "Interactive Playground");
 
 	constructor(
 		id: string,

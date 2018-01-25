@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -14,8 +14,8 @@ import { IPartService } from 'vs/workbench/services/part/common/partService';
 
 class ToggleZenMode extends Action {
 
-	public static ID = 'workbench.action.toggleZenMode';
-	public static LABEL = nls.localize('toggleZenMode', "Toggle Zen Mode");
+	public static readonly ID = 'workbench.action.toggleZenMode';
+	public static readonly LABEL = nls.localize('toggleZenMode', "Toggle Zen Mode");
 
 	constructor(
 		id: string,

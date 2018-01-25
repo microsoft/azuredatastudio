@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -153,7 +153,7 @@ export class ConfigWatcher<T> implements IConfigWatcher<T>, IDisposable {
 
 		try {
 			const watcher = extfs.watch(path, (type, file) => this.onConfigFileChange(type, file, isParentFolder));
-			watcher.on('error', (code, signal) => this.options.onError(`Error watching ${path} for configuration changes (${code}, ${signal})`));
+			watcher.on('error', (code: number, signal: string) => this.options.onError(`Error watching ${path} for configuration changes (${code}, ${signal})`));
 
 			this.disposables.push(toDisposable(() => {
 				watcher.removeAllListeners();
@@ -209,7 +209,7 @@ export class ConfigWatcher<T> implements IConfigWatcher<T>, IDisposable {
 			return fallback;
 		}
 
-		const value = this.cache ? this.cache[key] : void 0;
+		const value = this.cache ? (this.cache as any)[key] : void 0;
 
 		return typeof value !== 'undefined' ? value : fallback;
 	}

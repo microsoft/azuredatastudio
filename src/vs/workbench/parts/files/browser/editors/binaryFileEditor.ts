@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -16,7 +16,7 @@ import { IWindowsService } from 'vs/platform/windows/common/windows';
  */
 export class BinaryFileEditor extends BaseBinaryResourceEditor {
 
-	public static ID = BINARY_FILE_EDITOR_ID;
+	public static readonly ID = BINARY_FILE_EDITOR_ID;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -133,7 +133,7 @@ export interface IQuickOpenStyleOverrides extends IListStyleOverrides, IInputBox
 	widgetShadow?: ColorIdentifier;
 	pickerGroupForeground?: ColorIdentifier;
 	pickerGroupBorder?: ColorIdentifier;
-};
+}
 
 export function attachQuickOpenStyler(widget: IThemable, themeService: IThemeService, style?: IQuickOpenStyleOverrides): IDisposable {
 	return attachStyler(themeService, {

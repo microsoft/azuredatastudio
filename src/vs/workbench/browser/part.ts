@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -98,20 +98,13 @@ export abstract class Part extends Component {
 	public layout(dimension: Dimension): Dimension[] {
 		return this.partLayout.layout(dimension);
 	}
-
-	/**
-	 * Returns the part layout implementation.
-	 */
-	public getLayout(): PartLayout {
-		return this.partLayout;
-	}
 }
 
 const TITLE_HEIGHT = 35;
 
 export class PartLayout {
 
-	constructor(private container: Builder, private options: IPartOptions, private titleArea: Builder, private contentArea: Builder) {
+	constructor(container: Builder, private options: IPartOptions, titleArea: Builder, private contentArea: Builder) {
 	}
 
 	public layout(dimension: Dimension): Dimension[] {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import uri from 'vs/base/common/uri';
@@ -41,6 +41,10 @@ export class MockDebugService implements debug.IDebugService {
 	}
 
 	public addBreakpoints(uri: uri, rawBreakpoints: debug.IRawBreakpoint[]): TPromise<void> {
+		return TPromise.as(null);
+	}
+
+	public updateBreakpoints(uri: uri, data: { [id: string]: DebugProtocol.Breakpoint }): TPromise<void> {
 		return TPromise.as(null);
 	}
 

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -8,7 +8,7 @@ import URI from 'vs/base/common/uri';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IModel } from 'vs/editor/common/editorCommon';
-import { ICodeEditorService } from 'vs/editor/common/services/codeEditorService';
+import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
 import { MainThreadDocumentContentProvidersShape, ExtHostContext, ExtHostDocumentContentProvidersShape, MainContext, IExtHostContext } from '../node/extHost.protocol';
 import { ITextSource } from 'vs/editor/common/model/textSource';

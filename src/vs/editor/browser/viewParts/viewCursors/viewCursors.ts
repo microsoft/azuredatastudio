@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -191,10 +191,6 @@ export class ViewCursors extends ViewPart {
 	}
 
 	// --- end event handlers
-
-	public getPosition(): Position {
-		return this._primaryCursor.getPosition();
-	}
 
 	// ---- blinking logic
 

@@ -18,10 +18,8 @@ import { Part } from 'vs/workbench/browser/part';
 import { GlobalActivityActionItem, GlobalActivityAction, ViewletActivityAction, ToggleViewletAction } from 'vs/workbench/browser/parts/activitybar/activitybarActions';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IBadge } from 'vs/workbench/services/activity/common/activity';
-import { IPartService, Position as SideBarPosition } from 'vs/workbench/services/part/common/partService';
+import { IPartService, Parts, Position as SideBarPosition } from 'vs/workbench/services/part/common/partService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IExtensionService } from 'vs/platform/extensions/common/extensions';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import { dispose, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
@@ -31,17 +29,17 @@ import { ACTIVITY_BAR_BACKGROUND, ACTIVITY_BAR_BORDER, ACTIVITY_BAR_FOREGROUND, 
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { CompositeBar } from 'vs/workbench/browser/parts/compositebar/compositeBar';
 import { ToggleCompositePinnedAction } from 'vs/workbench/browser/parts/compositebar/compositeBarActions';
-import { ViewletDescriptor } from 'vs/workbench/browser/viewlet';
 
 export class ActivitybarPart extends Part {
 
 	private static readonly PINNED_VIEWLETS = 'workbench.activity.pinnedViewlets';
-	private static COLORS = {
+	private static readonly COLORS = {
 		backgroundColor: ACTIVITY_BAR_FOREGROUND,
 		badgeBackground: ACTIVITY_BAR_BADGE_BACKGROUND,
 		badgeForeground: ACTIVITY_BAR_BADGE_FOREGROUND,
 		dragAndDropBackground: ACTIVITY_BAR_DRAG_AND_DROP_BACKGROUND
 	};
+	private static readonly ACTION_HEIGHT = 50;
 
 	public _serviceBrand: any;
 
@@ -55,8 +53,6 @@ export class ActivitybarPart extends Part {
 	constructor(
 		id: string,
 		@IViewletService private viewletService: IViewletService,
-		@IExtensionService private extensionService: IExtensionService,
-		@IStorageService private storageService: IStorageService,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IPartService private partService: IPartService,
@@ -69,7 +65,7 @@ export class ActivitybarPart extends Part {
 			icon: true,
 			storageId: ActivitybarPart.PINNED_VIEWLETS,
 			orientation: ActionsOrientation.VERTICAL,
-			composites: this.getViewlets(), // {{SQL CARBON EDIT}}
+			composites: this.viewletService.getViewlets(),
 			openComposite: (compositeId: string) => this.viewletService.openViewlet(compositeId, true),
 			getActivityAction: (compositeId: string) => this.instantiationService.createInstance(ViewletActivityAction, this.viewletService.getViewlet(compositeId)),
 			getCompositePinnedAction: (compositeId: string) => new ToggleCompositePinnedAction(this.viewletService.getViewlet(compositeId), this.compositeBar),
@@ -77,11 +73,11 @@ export class ActivitybarPart extends Part {
 			getDefaultCompositeId: () => this.viewletService.getDefaultViewletId(),
 			hidePart: () => this.partService.setSideBarHidden(true),
 			colors: ActivitybarPart.COLORS,
-			overflowActionSize: 50
+			overflowActionSize: ActivitybarPart.ACTION_HEIGHT
 		});
 		this.registerListeners();
 	}
-
+	
 	// {{SQL CARBON EDIT}}
 	private getViewlets(): ViewletDescriptor[] {
 		const pinnedViewlets = JSON.parse(this.storageService.get(ActivitybarPart.PINNED_VIEWLETS, StorageScope.GLOBAL, null)) as string[];
@@ -194,13 +190,16 @@ export class ActivitybarPart extends Part {
 	}
 
 	public getPinned(): string[] {
-		return this.viewletService.getViewlets().map(v => v.id).filter(id => this.compositeBar.isPinned(id));;
+		return this.viewletService.getViewlets().map(v => v.id).filter(id => this.compositeBar.isPinned(id));
 	}
 
 	/**
 	 * Layout title, content and status area in the given dimension.
 	 */
 	public layout(dimension: Dimension): Dimension[] {
+		if (!this.partService.isVisible(Parts.ACTIVITYBAR_PART)) {
+			return [dimension];
+		}
 
 		// Pass to super
 		const sizes = super.layout(dimension);
@@ -210,7 +209,7 @@ export class ActivitybarPart extends Part {
 		let availableHeight = this.dimension.height;
 		if (this.globalActionBar) {
 			// adjust height for global actions showing
-			availableHeight -= (this.globalActionBar.items.length * this.globalActionBar.domNode.clientHeight);
+			availableHeight -= (this.globalActionBar.items.length * ActivitybarPart.ACTION_HEIGHT);
 		}
 		this.compositeBar.layout(new Dimension(dimension.width, availableHeight));
 

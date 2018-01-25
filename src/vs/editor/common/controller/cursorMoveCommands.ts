@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -670,7 +670,7 @@ export namespace CursorMove {
 		select?: boolean;
 		by?: string;
 		value?: number;
-	};
+	}
 
 	export function parse(args: RawArguments): ParsedArguments {
 		if (!args.to) {
@@ -753,7 +753,7 @@ export namespace CursorMove {
 		unit: Unit;
 		select: boolean;
 		value: number;
-	};
+	}
 
 	export const enum Direction {
 		Left,
@@ -772,7 +772,7 @@ export namespace CursorMove {
 		ViewPortBottom,
 
 		ViewPortIfOutside,
-	};
+	}
 
 	export const enum Unit {
 		None,
@@ -780,6 +780,6 @@ export namespace CursorMove {
 		WrappedLine,
 		Character,
 		HalfLine,
-	};
+	}
 
 }

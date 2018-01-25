@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -47,10 +47,6 @@ class CSSBasedConfigurationCache {
 		let itemId = item.getId();
 		delete this._keys[itemId];
 		delete this._values[itemId];
-	}
-
-	public getKeys(): BareFontInfo[] {
-		return Object.keys(this._keys).map(id => this._keys[id]);
 	}
 
 	public getValues(): FontInfo[] {
@@ -100,7 +96,7 @@ export interface ISerializedFontInfo {
 
 class CSSBasedConfiguration extends Disposable {
 
-	public static INSTANCE = new CSSBasedConfiguration();
+	public static readonly INSTANCE = new CSSBasedConfiguration();
 
 	private _cache: CSSBasedConfigurationCache;
 	private _evictUntrustedReadingsTimeout: number;

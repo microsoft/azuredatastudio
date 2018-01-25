@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -34,7 +34,10 @@ export class TelemetryAppenderClient implements ITelemetryAppender {
 	constructor(private channel: ITelemetryAppenderChannel) { }
 
 	log(eventName: string, data?: any): any {
-		return this.channel.call('log', { eventName, data });
+		this.channel.call('log', { eventName, data })
+			.done(null, err => `Failed to log telemetry: ${console.warn(err)}`);
+
+		return TPromise.as(null);
 	}
 
 	dispose(): any {

@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import { IGrammarContributions, ILanguageIdentifierResolver, EmmetEditorAction } from 'vs/workbench/parts/emmet/electron-browser/emmetActions';
-import { withMockCodeEditor } from 'vs/editor/test/common/mocks/mockCodeEditor';
+import { withTestCodeEditor } from 'vs/editor/test/browser/testCodeEditor';
 import assert = require('assert');
 import { LanguageId, LanguageIdentifier } from 'vs/editor/common/modes';
 
@@ -43,7 +43,7 @@ class MockGrammarContributions implements IGrammarContributions {
 suite('Emmet', () => {
 
 	test('Get language mode and parent mode for emmet', () => {
-		withMockCodeEditor([], {}, (editor) => {
+		withTestCodeEditor([], {}, (editor) => {
 
 			function testIsEnabled(mode: string, scopeName: string, expectedLanguage?: string, expectedParentLanguage?: string) {
 				const languageIdentifier = new LanguageIdentifier(mode, 73);

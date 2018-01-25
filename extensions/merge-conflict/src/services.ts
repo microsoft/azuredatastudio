@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import DocumentTracker from './documentTracker';
@@ -26,8 +26,8 @@ export default class ServiceWrapper implements vscode.Disposable {
 
 		this.services.push(
 			documentTracker,
-			new CommandHandler(this.context, documentTracker),
-			new CodeLensProvider(this.context, documentTracker),
+			new CommandHandler(documentTracker),
+			new CodeLensProvider(documentTracker),
 			new ContentProvider(this.context),
 			new Decorator(this.context, documentTracker),
 		);

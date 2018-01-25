@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -78,7 +78,6 @@ const taskDefinitionsExtPoint = ExtensionsRegistry.registerExtensionPoint<Config
 export interface ITaskDefinitionRegistry {
 	onReady(): TPromise<void>;
 
-	exists(key: string): boolean;
 	get(key: string): Tasks.TaskDefinition;
 	all(): Tasks.TaskDefinition[];
 }
@@ -101,7 +100,7 @@ class TaskDefinitionRegistryImpl implements ITaskDefinitionRegistry {
 								this.taskTypes[type.taskType] = type;
 							}
 						}
-					};
+					}
 				} catch (error) {
 				}
 				resolve(undefined);
@@ -115,10 +114,6 @@ class TaskDefinitionRegistryImpl implements ITaskDefinitionRegistry {
 
 	public get(key: string): Tasks.TaskDefinition {
 		return this.taskTypes[key];
-	}
-
-	public exists(key: string): boolean {
-		return !!this.taskTypes[key];
 	}
 
 	public all(): Tasks.TaskDefinition[] {

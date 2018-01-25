@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 	//package.json suggestions
 	context.subscriptions.push(registerPackageDocumentCompletions());
 
-	context.subscriptions.push(new ExtensionLinter(context));
+	context.subscriptions.push(new ExtensionLinter());
 }
 
 const _linkProvider = new class implements vscode.DocumentLinkProvider {

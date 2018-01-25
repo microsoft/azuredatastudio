@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -14,11 +14,6 @@ export interface HtmlPreviewEditorViewState {
 	scrollYPercentage: number;
 }
 
-interface HtmlPreviewEditorViewStates {
-	0?: HtmlPreviewEditorViewState;
-	1?: HtmlPreviewEditorViewState;
-	2?: HtmlPreviewEditorViewState;
-}
 
 /**
  * This class is only intended to be subclassed and not instantiated.

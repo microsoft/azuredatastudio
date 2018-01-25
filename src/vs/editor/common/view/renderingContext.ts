@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -56,13 +56,6 @@ export abstract class RestrictedRenderingContext {
 
 	public getVerticalOffsetForLineNumber(lineNumber: number): number {
 		return this._viewLayout.getVerticalOffsetForLineNumber(lineNumber);
-	}
-
-	public lineIsVisible(lineNumber: number): boolean {
-		return (
-			this.visibleRange.startLineNumber <= lineNumber
-			&& lineNumber <= this.visibleRange.endLineNumber
-		);
 	}
 
 	public getDecorationsInViewport(): ViewModelDecoration[] {

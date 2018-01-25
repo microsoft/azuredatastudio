@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { CharCode } from 'vs/base/common/charCode';
@@ -214,7 +214,7 @@ export class HSVA {
 			m = ((r - g) / delta) + 4;
 		}
 
-		return new HSVA(m * 60, s, cmax, rgba.a);
+		return new HSVA(Math.round(m * 60), s, cmax, rgba.a);
 	}
 
 	// from http://www.rapidtables.com/convert/color/hsv-to-rgb.htm

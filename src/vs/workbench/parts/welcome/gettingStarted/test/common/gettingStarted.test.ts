@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -18,7 +18,7 @@ suite('Workbench - GettingStarted', () => {
 
 	suiteSetup(() => {
 		instantiation = new TestInstantiationService();
-		instantiation.stub(IWorkspaceContextService, <any>{
+		instantiation.stub(IWorkspaceContextService, {
 			getConfiguration: () => {
 				return {
 					env: {
@@ -28,7 +28,7 @@ suite('Workbench - GettingStarted', () => {
 				};
 			}
 		});
-		instantiation.stub(IStorageService, <any>{
+		instantiation.stub(IStorageService, {
 			get: () => hideWelcomeSettingsValue,
 			store: (value) => hideWelcomeSettingsValue = value
 		});

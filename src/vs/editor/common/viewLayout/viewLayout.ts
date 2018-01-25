@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -46,10 +46,6 @@ export class ViewLayout extends Disposable implements IViewLayout {
 
 	public dispose(): void {
 		super.dispose();
-	}
-
-	public getScrollable(): Scrollable {
-		return this.scrollable;
 	}
 
 	public onHeightMaybeChanged(): void {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -60,7 +60,7 @@ export class ViewLines extends ViewPart implements IVisibleLinesHost<ViewLine>, 
 	/**
 	 * Adds this ammount of pixels to the right of lines (no-one wants to type near the edge of the viewport)
 	 */
-	private static HORIZONTAL_EXTRA_PX = 30;
+	private static readonly HORIZONTAL_EXTRA_PX = 30;
 
 	private readonly _linesContent: FastDomNode<HTMLElement>;
 	private readonly _textRangeRestingSpot: HTMLElement;

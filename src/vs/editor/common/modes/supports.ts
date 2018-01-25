@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -69,10 +69,6 @@ export class ScopedLineTokens {
 
 	public findTokenIndexAtOffset(offset: number): number {
 		return this._actual.findTokenIndexAtOffset(offset + this.firstCharOffset) - this._firstTokenIndex;
-	}
-
-	public getTokenStartOffset(tokenIndex: number): number {
-		return this._actual.getTokenStartOffset(tokenIndex + this._firstTokenIndex) - this.firstCharOffset;
 	}
 
 	public getStandardTokenType(tokenIndex: number): modes.StandardTokenType {
