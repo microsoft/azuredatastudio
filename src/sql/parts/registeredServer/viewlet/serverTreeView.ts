@@ -27,6 +27,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
+import Event, { Emitter } from 'vs/base/common/event';
 
 const $ = builder.$;
 
@@ -41,6 +42,7 @@ export class ServerTreeView {
 	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
 	private _tree: ITree;
 	private _toDispose: IDisposable[] = [];
+	private _onSelectionOrFocusChange: Emitter<void>;
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -56,6 +58,11 @@ export class ServerTreeView {
 			ActiveConnectionsFilterAction.LABEL,
 			this);
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
+		this._onSelectionOrFocusChange = new Emitter();
+	}
+
+	public get onSelectionOrFocusChange(): Event<void> {
+		return this._onSelectionOrFocusChange.event;
 	}
 
 	/**
@@ -87,6 +94,8 @@ export class ServerTreeView {
 		this._tree = TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService);
 		//this._tree.setInput(undefined);
 		this._toDispose.push(this._tree.addListener('selection', (event) => this.onSelected(event)));
+		this._toDispose.push(this._tree.onDOMBlur(() => this._onSelectionOrFocusChange.fire()));
+		this._toDispose.push(this._tree.onDOMFocus(() => this._onSelectionOrFocusChange.fire()));
 
 		// Theme styler
 		this._toDispose.push(attachListStyler(this._tree, this._themeService));
@@ -385,7 +394,8 @@ export class ServerTreeView {
 	}
 
 	private onSelected(event: any): void {
-		this._treeSelectionHandler.onTreeSelect(event, this._tree, this._connectionManagementService, this._objectExplorerService);
+		this._treeSelectionHandler.onTreeSelect(event, this._tree, this._connectionManagementService, this._objectExplorerService, this._onSelectionOrFocusChange);
+		this._onSelectionOrFocusChange.fire();
 	}
 
 	/**
@@ -426,5 +436,9 @@ export class ServerTreeView {
 	public dispose(): void {
 		this._tree.dispose();
 		this._toDispose = dispose(this._toDispose);
+	}
+
+	public get tree(): ITree {
+		return this._tree;
 	}
 }

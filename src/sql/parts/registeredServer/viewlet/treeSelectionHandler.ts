@@ -11,6 +11,7 @@ import { IObjectExplorerService } from 'sql/parts/registeredServer/common/object
 import { IProgressService, IProgressRunner } from 'vs/platform/progress/common/progress';
 import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
 import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
+import { Emitter } from 'vs/base/common/event';
 
 export class TreeSelectionHandler {
 	progressRunner: IProgressRunner;
@@ -41,7 +42,7 @@ export class TreeSelectionHandler {
 	/**
 	 * Handle selection of tree element
 	 */
-	public onTreeSelect(event: any, tree: ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService) {
+	public onTreeSelect(event: any, tree: ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, connectionCompleteEmitter: Emitter<void>) {
 		if (this.isMouseEvent(event)) {
 			this._clicks++;
 		}
@@ -60,7 +61,7 @@ export class TreeSelectionHandler {
 			// don't send tree update events while dragging
 			if (!TreeUpdateUtils.isInDragAndDrop) {
 				let isDoubleClick = this._clicks > 1;
-				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, isKeyboard, selection, tree);
+				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, isKeyboard, selection, tree, connectionCompleteEmitter);
 			}
 			this._clicks = 0;
 			this._doubleClickTimeoutId = -1;
@@ -75,7 +76,7 @@ export class TreeSelectionHandler {
 	 * @param isKeyboard
 	 * @param selection
 	 */
-	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: ITree): void {
+	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: ITree, connectionCompleteEmitter: Emitter<void>): void {
 		let connectionProfile: ConnectionProfile = undefined;
 		let options: IConnectionCompletionOptions = {
 			params: undefined,
@@ -94,6 +95,7 @@ export class TreeSelectionHandler {
 					if (!sessionCreated) {
 						this.onTreeActionStateChange(false);
 					}
+					connectionCompleteEmitter.fire();
 				}, error => {
 					this.onTreeActionStateChange(false);
 				});
