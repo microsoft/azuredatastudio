@@ -144,7 +144,7 @@ gulp.task('eslint', () => {
 });
 
 gulp.task('tslint', () => {
-	const options = { emitError: true };
+	const options = { emitError: false };
 
 	return vfs.src(all, { base: '.', follow: true, allowEmpty: true })
 		.pipe(filter(tslintFilter))
@@ -218,7 +218,7 @@ const hygiene = exports.hygiene = (some, options) => {
 			const line = position.lineAndCharacter ? position.lineAndCharacter.line : position.line;
 			const character = position.lineAndCharacter ? position.lineAndCharacter.character : position.character;
 
-			console.error(`${name}:${line + 1}:${character + 1}:${failure.failure}`);
+			// console.error(`${name}:${line + 1}:${character + 1}:${failure.failure}`);
 		});
 	}
 

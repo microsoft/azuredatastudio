@@ -102,7 +102,8 @@ export class MainThreadDebugService implements MainThreadDebugServiceShape {
 					enabled: bp.enabled,
 					functionName: fbp.name,
 					hitCondition: bp.hitCondition,
-					/* condition: bp.condition */
+					// {{SQL CARBON EDIT}}
+					// condition: bp.condition
 				};
 			} else {
 				const sbp = <IBreakpoint>bp;

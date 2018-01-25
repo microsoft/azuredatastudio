@@ -79,14 +79,14 @@ export class ServerTreeView {
 			var connectButton = new Button(this._buttonSection);
 			connectButton.label = localize('addConnection', 'Add Connection');
 			this._toDispose.push(attachButtonStyler(connectButton, this._themeService));
-			this._toDispose.push(connectButton.addListener('click', () => {
+			this._toDispose.push(connectButton.onDidClick(() => {
 				this._connectionManagementService.showConnectionDialog();
 			}));
 		}
 
 		this._tree = TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService);
 		//this._tree.setInput(undefined);
-		this._toDispose.push(this._tree.addListener('selection', (event) => this.onSelected(event)));
+		this._toDispose.push(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 
 		// Theme styler
 		this._toDispose.push(attachListStyler(this._tree, this._themeService));

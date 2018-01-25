@@ -6,6 +6,7 @@
 		"no-string-throw": true,
 		"no-unused-expression": true,
 		"no-duplicate-variable": true,
+		// {{SQL CARBON EDIT}}
 		// "no-unused-variable": true, // requires type information in tslint > v4
 		"curly": true,
 		"class-name": true,
@@ -45,23 +46,9 @@
 					"node"
 				]
 			}
-		],
-		"import-patterns": [
-			true,
-			// {{SQL CARBON EDIT}}
-			{			
-				"target": "**/{node,electron-browser,electron-main,extensions}/**",
-				"restrictions": "**/*"
-			},
-			{
-				"target": "{**/**.test.ts,**/test/**}",
-				"restrictions": "{**/vs/**,**/sql/**,**/sqltest/**,assert,sinon,crypto,typemoq,data,@angular/**,rxjs/**}"
-			},
-			{
-				"target": "**/{common,browser,workbench}/**",
-				"restrictions": "**/*"
-			}
-		],
+		],	
+		// {{SQL CARBON EDIT}}
+		// remove import patterns	
 		"duplicate-imports": true,
 		"translation-remind": true
 	},

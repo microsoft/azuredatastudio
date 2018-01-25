@@ -500,7 +500,7 @@ export class ConnectionStore {
 	}
 
 	private getMaxRecentConnectionsCount(): number {
-		let config = this._workspaceConfigurationService.getConfiguration(Constants.sqlConfigSectionName);
+		let config = this._workspaceConfigurationService.getValue(Constants.sqlConfigSectionName);
 
 		let maxConnections: number = config[Constants.configMaxRecentConnections];
 		if (typeof (maxConnections) !== 'number' || maxConnections <= 0) {

@@ -35,4 +35,11 @@ export class MessageServiceStub implements IMessageService{
 	confirmSync(confirmation: IConfirmation): boolean {
 		return undefined;
 	}
+
+	/**
+	 * Ask the user for confirmation with a checkbox.
+	 */
+	confirmWithCheckbox(confirmation: IConfirmation): TPromise<IConfirmationResult> {
+		return undefined;
+	}
 }

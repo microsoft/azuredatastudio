@@ -53,7 +53,7 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 		@IEditorGroupService editorGroupService: IEditorGroupService
 
 	) {
-		super(ProfilerResourceEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, modeService, textFileService, editorGroupService);
+		super(ProfilerResourceEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, textFileService, editorGroupService);
 	}
 
 	public createEditorControl(parent: Builder, configuration: IEditorOptions): editorCommon.IEditor {

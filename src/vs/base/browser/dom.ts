@@ -500,7 +500,23 @@ const sizeUtils = {
 	getMarginBottom: function (element: HTMLElement): number {
 		return getDimension(element, 'margin-bottom', 'marginBottom');
 	},
+
+
+	// {{SQL CARBON EDIT}}
+	getPaddingLeft: function (element: HTMLElement): number {
+		return getDimension(element, 'padding-left', 'paddingLeft');
+	},
+	getPaddingRight: function (element: HTMLElement): number {
+		return getDimension(element, 'padding-right', 'paddingRight');
+	},
+	getBorderRightWidth: function (element: HTMLElement): number {
+		return getDimension(element, 'border-right-width', 'borderRightWidth');
+	},
+
+
 	__commaSentinel: false
+
+
 };
 
 // ----------------------------------------------------------------------------------------
@@ -598,6 +614,16 @@ export function getContentHeight(element: HTMLElement): number {
 	let padding = sizeUtils.getPaddingTop(element) + sizeUtils.getPaddingBottom(element);
 	return element.offsetHeight - border - padding;
 }
+
+// {{SQL CARBON EDIT}}
+// Adapted from WinJS
+// Gets the width of the content of the specified element. The content width does not include borders or padding.
+export function getContentWidth(element: HTMLElement): number {
+	let border = sizeUtils.getBorderLeftWidth(element) + sizeUtils.getBorderRightWidth(element);
+	let padding = sizeUtils.getPaddingLeft(element) + sizeUtils.getPaddingRight(element);
+	return element.offsetWidth - border - padding;
+}
+
 
 // Adapted from WinJS
 // Gets the height of the element, including its margins.

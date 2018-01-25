@@ -104,7 +104,7 @@ export class OptionsDialog extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		if (this.backButton) {
-			this.backButton.addListener('click', () => this.cancel());
+			this.backButton.onDidClick(() => this.cancel());
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 		this._okButton = this.addFooterButton(this.okLabel, () => this.ok());

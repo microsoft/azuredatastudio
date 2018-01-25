@@ -354,9 +354,12 @@ export class QueryEditorService implements IQueryEditorService {
 		let group: IEditorGroup = QueryEditorService.editorGroupService.getStacksModel().groupAt(position);
 		if (isPinned) {
 			QueryEditorService.editorGroupService.pinEditor(group, editor.input);
-		} else {
-			QueryEditorService.editorGroupService.unpinEditor(group, editor.input);
 		}
+
+		// @SQLTODO do we need the below
+		// else {
+		// 	QueryEditorService.editorGroupService.p  .unpinEditor(group, editor.input);
+		// }
 
 		// Grab and returns the IModel that will be used to resolve the sqlLanguageModeCheck promise.
 		let control = editor.getControl();
