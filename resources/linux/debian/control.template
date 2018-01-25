@@ -4,11 +4,11 @@ Section: devel
 Depends: libnotify4, libnss3, gnupg, apt, libxkbfile1, libgconf-2-4, libsecret-1-0
 Priority: optional
 Architecture: @@ARCHITECTURE@@
-Maintainer: Microsoft Corporation <vscode-linux@microsoft.com>
-Homepage: https://code.visualstudio.com/
+Maintainer: Microsoft Corporation
+Homepage: https://github.com/microsoft/sqlopsstudio
 Installed-Size: @@INSTALLEDSIZE@@
-Provides: visual-studio-@@NAME@@
-Conflicts: visual-studio-@@NAME@@
-Replaces: visual-studio-@@NAME@@
-Description: Code editing. Redefined.
- Visual Studio Code is a new choice of tool that combines the simplicity of a code editor with what developers need for the core edit-build-debug cycle. See https://code.visualstudio.com/docs/setup/linux for installation instructions and FAQ.
+Provides: @@NAME@@
+Conflicts: @@NAME@@
+Replaces: @@NAME@@
+Description: SQL Operations Studio
+ SQL Operations Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB, and SQL DW from Linux. See https://docs.microsoft.com/en-us/sql/sql-operations-studio/what-is for documentation.

@@ -22,7 +22,7 @@ export interface IConnectionProfile extends data.ConnectionInfo {
 	providerName: string;
 	saveProfile: boolean;
 	id: string;
-};
+}
 
 export interface IConnectionProfileStore {
 	options: {};
@@ -30,5 +30,5 @@ export interface IConnectionProfileStore {
 	providerName: string;
 	savePassword: boolean;
 	id: string;
-};
+}
 
