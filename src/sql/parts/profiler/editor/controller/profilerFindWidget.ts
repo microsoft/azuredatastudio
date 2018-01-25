@@ -5,7 +5,8 @@
 
 'use strict';
 
-import 'vs/css!vs/editor/contrib/find/browser/findWidget';
+import 'vs/css!vs/editor/contrib/find/findWidget';
+
 import * as nls from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';

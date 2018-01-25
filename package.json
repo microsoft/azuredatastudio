@@ -77,7 +77,8 @@
     "vscode-textmate": "^3.2.0",
     "winreg": "1.2.0",
     "xterm": "Tyriar/xterm.js#vscode-release/1.19",
-    "yauzl": "2.8.0"
+    "yauzl": "2.8.0",
+    "zone.js": "^0.8.4"
   },
   "devDependencies": {
     "7zip": "0.0.6",

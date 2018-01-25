@@ -257,10 +257,11 @@ export class CodeMenu {
 		const viewMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mView', comment: ['&& denotes a mnemonic'] }, "&&View")), submenu: viewMenu });
 		this.setViewMenu(viewMenu);
 
+		// {{SQL CARBON EDIT}}
 		// Goto
-		const gotoMenu = new Menu();
-		const gotoMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go")), submenu: gotoMenu });
-		this.setGotoMenu(gotoMenu);
+		// const gotoMenu = new Menu();
+		// const gotoMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go")), submenu: gotoMenu });
+		// this.setGotoMenu(gotoMenu);
 
 		// {{SQL CARBON EDIT}}
 		// Debug
@@ -297,8 +298,8 @@ export class CodeMenu {
 		// {{SQL CARBON EDIT}}
 		//menubar.append(selectionMenuItem);
 		menubar.append(viewMenuItem);
-		menubar.append(gotoMenuItem);
 		// {{SQL CARBON EDIT}}
+		//menubar.append(gotoMenuItem);
 		// menubar.append(debugMenuItem);
 		// menubar.append(taskMenuItem);
 

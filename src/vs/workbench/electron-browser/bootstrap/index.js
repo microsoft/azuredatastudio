@@ -57,6 +57,16 @@ function parseURLQueryArgs() {
 		.reduce(function (r, param) { r[param[0]] = decodeURIComponent(param[1]); return r; }, {});
 }
 
+// {{SQL CARBON EDIT}}
+function createScript(src, onload) {
+	const script = document.createElement('script');
+	script.src = src;
+	script.addEventListener('load', onload);
+
+	const head = document.getElementsByTagName('head')[0];
+	head.insertBefore(script, head.lastChild);
+}
+
 function uriFromPath(_path) {
 	var pathName = path.resolve(_path).replace(/\\/g, '/');
 	if (pathName.length > 0 && pathName.charAt(0) !== '/') {
@@ -175,13 +185,29 @@ function main() {
 	window.MonacoEnvironment = {};
 
 	const onNodeCachedData = window.MonacoEnvironment.onNodeCachedData = [];
+
+	// {{SQL CARBON EDIT}}
 	require.config({
 		baseUrl: uriFromPath(configuration.appRoot) + '/out',
 		'vs/nls': nlsConfig,
 		recordStats: !!configuration.performance,
 		nodeCachedDataDir: configuration.nodeCachedDataDir,
 		onNodeCachedData: function () { onNodeCachedData.push(arguments); },
-		nodeModules: [/*BUILD->INSERT_NODE_MODULES*/]
+		nodeModules: [
+			'@angular/common',
+			'@angular/core',
+			'@angular/forms',
+			'@angular/platform-browser',
+			'@angular/platform-browser-dynamic',
+			'@angular/router',
+			'angular2-grid',
+			'pretty-data',
+			'html-query-plan',
+			'ng2-charts/ng2-charts',
+			'rxjs/Observable',
+			'rxjs/Subject',
+			'rxjs/Observer'
+		]
 	});
 
 	if (nlsConfig.pseudo) {
