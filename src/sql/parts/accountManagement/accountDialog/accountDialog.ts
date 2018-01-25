@@ -10,7 +10,7 @@ import 'vs/css!sql/parts/accountManagement/common/media/accountActions';
 import * as DOM from 'vs/base/browser/dom';
 import { SplitView } from 'sql/base/browser/ui/splitview/splitview';
 import { List } from 'vs/base/browser/ui/list/listWidget';
-import { IListService } from 'vs/platform/list/browser/listService';
+import { IListService, ListService } from 'vs/platform/list/browser/listService';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import Event, { Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
@@ -192,7 +192,9 @@ export class AccountDialog extends Modal {
 		// Append the list view to the split view
 		this._splitView.addView(providerView);
 		this._register(attachListStyler(accountList, this._themeService));
-		this._register(this._listService.register(accountList));
+
+		let listService = <ListService>this._listService;
+		this._register(listService.register(accountList));
 		this._splitView.layout(DOM.getContentHeight(this._container));
 
 		// Set the initial items of the list

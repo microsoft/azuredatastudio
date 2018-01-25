@@ -497,6 +497,16 @@ export class Builder implements IDisposable {
 		return this;
 	}
 
+	// {{SQL CARBON EDIT}}
+	public overflow(overflow: string): Builder {
+		this.currentElement.style.overflow = overflow;
+		return this;
+	}
+	public background(color: string): Builder {
+		this.currentElement.style.backgroundColor = color;
+		return this;
+	}
+
 	/**
 	 *  Registers listener on event types on the current element and removes
 	 *  them after first invocation.

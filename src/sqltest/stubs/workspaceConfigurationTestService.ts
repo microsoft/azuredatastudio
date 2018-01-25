@@ -20,7 +20,7 @@ export class WorkspaceConfigurationTestService implements IWorkspaceConfiguratio
 	getValue<T>(section: string): T
 	getValue<T>(overrides: IConfigurationOverrides): T
 	getValue<T>(section: string, overrides: IConfigurationOverrides): T {
-		return TPromise.as(null);
+		return TPromise.wrap(null);
 	}
 
 	onDidChangeConfiguration: Event<IConfigurationChangeEvent>;

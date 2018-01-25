@@ -25,6 +25,8 @@ import { ExtHostThreadService } from 'vs/workbench/services/thread/node/extHostT
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
+import { ILogService } from 'vs/platform/log/common/log';
+import { IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -32,18 +34,17 @@ export interface ISqlExtensionApiFactory {
 }
 
 /**
- * This method instantiates and returns the extension API surface. This overrides the default ApiFactory by extending it to add Carbon-related functions
+ * This method instantiates and returns the extension API surface
  */
 export function createApiFactory(
 	initData: IInitData,
 	threadService: ExtHostThreadService,
 	extHostWorkspace: ExtHostWorkspace,
 	extHostConfiguration: ExtHostConfiguration,
-	extensionService: ExtHostExtensionService
-
-
+	extensionService: ExtHostExtensionService,
+	logService: ILogService
 ): ISqlExtensionApiFactory {
-	let vsCodeFactory = extHostApi.createApiFactory(initData, threadService, extHostWorkspace, extHostConfiguration, extensionService);
+	let vsCodeFactory = extHostApi.createApiFactory(initData, threadService, extHostWorkspace, extHostConfiguration, extensionService, logService);
 
 	// Addressable instances
 	const extHostAccountManagement = threadService.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(threadService));

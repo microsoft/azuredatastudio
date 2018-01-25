@@ -21,10 +21,9 @@ import { Widget } from 'vs/base/browser/ui/widget';
 import { Sash, IHorizontalSashLayoutProvider, ISashEvent, Orientation } from 'vs/base/browser/ui/sash/sash';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference } from 'vs/editor/browser/editorBrowser';
-import { FIND_IDS, MATCHES_LIMIT } from 'vs/editor/contrib/find/common/findModel';
-import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/common/findState';
-import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { CONTEXT_FIND_INPUT_FOCUSED } from 'vs/editor/contrib/find/common/findController';
+import { FIND_IDS, MATCHES_LIMIT, CONTEXT_FIND_INPUT_FOCUSED } from 'vs/editor/contrib/find/findModel';
+import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
+import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';s
 import { ITheme, registerThemingParticipant, IThemeService } from 'vs/platform/theme/common/themeService';
 import { Color } from 'vs/base/common/color';
 import { editorFindRangeHighlight, editorFindMatch, editorFindMatchHighlight, activeContrastBorder, contrastBorder, inputBackground, editorWidgetBackground, inputActiveOptionBorder, widgetShadow, inputForeground, inputBorder, inputValidationInfoBackground, inputValidationInfoBorder, inputValidationWarningBackground, inputValidationWarningBorder, inputValidationErrorBackground, inputValidationErrorBorder, errorForeground } from 'vs/platform/theme/common/colorRegistry';

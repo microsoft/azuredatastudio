@@ -28,7 +28,7 @@ import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeS
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
 import { generateUuid } from 'vs/base/common/uuid';
-import * as objects from 'vs/base/common/objects';
+import * as objects from 'sql/base/common/objects';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
 /**

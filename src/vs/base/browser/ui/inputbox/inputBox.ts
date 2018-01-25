@@ -97,6 +97,7 @@ export class InputBox extends Widget {
 	private cachedHeight: number;
 
 	// {{SQL CARBON EDIT}}
+	protected showValidationMessage: boolean;
 	protected inputBackground: Color;
 	protected inputForeground: Color;
 	protected inputBorder: Color;
@@ -139,7 +140,7 @@ export class InputBox extends Widget {
 		if (this.options.validationOptions) {
 			this.validation = this.options.validationOptions.validation;
 			// {{SQL CARBON EDIT}} Canidate for addition to vscode
-			this.showValidationMessage = this.options.validationOptions.showMessage || true;
+			this.showValidationMessage = true;
 		}
 
 		this.element = dom.append(container, $('.monaco-inputbox.idle'));
