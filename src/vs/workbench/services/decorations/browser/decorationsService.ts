@@ -303,10 +303,13 @@ class DecorationProviderWrapper {
 		} else {
 			// async -> we have a result soon
 			const request = Promise.resolve(dataOrThenable)
-				.then(data => this._keepItem(uri, data))
+				.then(item => {
+					this._keepItem(uri, item);
+					this.data.set(uri.toString(), item);
+				})
 				.catch(_ => this.data.delete(uri.toString()));
 
-			this.data.set(uri.toString(), request);
+			//this.data.set(uri.toString(), request);
 			return undefined;
 		}
 	}

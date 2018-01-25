@@ -22,8 +22,8 @@ import { ITextFileService } from 'vs/workbench/services/textfile/common/textfile
 import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
-import { IEditorContributionCtor } from 'vs/editor/browser/editorBrowser';
-import { FoldingController } from 'vs/editor/contrib/folding/browser/folding';
+import { IEditorContributionCtor } from 'vs/editor/browser/editorExtensions';
+import { FoldingController } from 'vs/editor/contrib/folding/folding';
 
 class ProfilerResourceCodeEditor extends CodeEditor {
 

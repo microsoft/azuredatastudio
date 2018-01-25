@@ -48,6 +48,7 @@ import { Dimension } from 'vs/base/browser/builder';
 import { scheduleAtNextAnimationFrame } from 'vs/base/browser/dom';
 
 // {{SQL CARBON EDIT}} -- Display the editor's tab color
+import {  HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import { Color } from 'vs/base/common/color';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import * as QueryConstants from 'sql/parts/query/common/constants';
@@ -939,7 +940,7 @@ export class TabsTitleControl extends TitleControl {
 
 		return !isCopy || source.id === target.id;
 	}
-	
+
 	// {{SQL CARBON EDIT}} -- Display the editor's tab color
 	private setEditorTabColor(editor: IEditorInput, tabContainer: HTMLElement, isTabActive: boolean) {
 		let sqlEditor = editor as any;

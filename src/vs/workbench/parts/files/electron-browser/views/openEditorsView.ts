@@ -41,6 +41,9 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { memoize } from 'vs/base/common/decorators';
 
+// {{SQL CARBON EDIT}}
+import { ITree, IDragAndDropData } from 'vs/base/parts/tree/browser/tree';
+
 const $ = dom.$;
 
 export class OpenEditorsView extends ViewsViewletPanel {
@@ -638,7 +641,7 @@ export class ActionProvider extends ContributableActionProvider {
 			return result;
 		});
 	}
-	
+
 	// {{SQL CARBON EDIT}}
 	public dropAbort(tree: ITree, data: IDragAndDropData): void { }
 }

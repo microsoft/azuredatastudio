@@ -38,8 +38,6 @@ import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { Position, IResourceInput, IUntitledResourceInput } from 'vs/platform/editor/common/editor';
 import { IInstantiationService, IConstructorSignature2, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-// {{SQL CARBON EDIT}}
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IMessageService, IMessageWithAction, IConfirmation, Severity, CancelAction, IConfirmationResult } from 'vs/platform/message/common/message';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { getCodeEditor } from 'vs/editor/browser/services/codeEditorService';
@@ -54,6 +52,12 @@ import { once } from 'vs/base/common/event';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
+
+// {{SQL CARBON EDIT}}
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 
 export interface IEditableData {
 	action: IAction;

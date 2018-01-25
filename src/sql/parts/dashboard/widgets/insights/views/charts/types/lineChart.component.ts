@@ -6,8 +6,8 @@
 import { ChartType, customMixin, defaultChartConfig, IDataSet, IPointDataSet } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 import BarChart, { IBarChartConfig } from './barChart.component';
 import { memoize, unmemoize } from 'sql/base/common/decorators';
-import { mixin } from 'sql/base/common/objects';
-import { clone } from 'vs/base/common/objects';
+import { mixin } from 'vs/base/common/objects';
+import { clone } from 'sql/base/common/objects';
 
 export enum DataType {
 	Number = 'number',
@@ -93,6 +93,7 @@ export default class LineChart extends BarChart {
 			}
 		};
 
-		this.options = mixin(this.options, options, true, customMixin);
+		// @SQLTODO
+		this.options = mixin(this.options, options, true);
 	}
 }

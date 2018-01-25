@@ -29,6 +29,9 @@ import { ACTIVITY_BAR_BACKGROUND, ACTIVITY_BAR_BORDER, ACTIVITY_BAR_FOREGROUND, 
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { CompositeBar } from 'vs/workbench/browser/parts/compositebar/compositeBar';
 import { ToggleCompositePinnedAction } from 'vs/workbench/browser/parts/compositebar/compositeBarActions';
+import { ViewletDescriptor } from 'vs/workbench/browser/viewlet';
+// {{SQL CARBON EDIT}}
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 
 export class ActivitybarPart extends Part {
 
@@ -56,7 +59,9 @@ export class ActivitybarPart extends Part {
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IPartService private partService: IPartService,
-		@IThemeService themeService: IThemeService
+		@IThemeService themeService: IThemeService,
+		// {{SQL CARBON EDIT}}
+		@IStorageService private storageService: IStorageService
 	) {
 		super(id, { hasTitle: false }, themeService);
 
@@ -77,7 +82,7 @@ export class ActivitybarPart extends Part {
 		});
 		this.registerListeners();
 	}
-	
+
 	// {{SQL CARBON EDIT}}
 	private getViewlets(): ViewletDescriptor[] {
 		const pinnedViewlets = JSON.parse(this.storageService.get(ActivitybarPart.PINNED_VIEWLETS, StorageScope.GLOBAL, null)) as string[];

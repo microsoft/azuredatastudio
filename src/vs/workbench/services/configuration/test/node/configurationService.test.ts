@@ -56,13 +56,7 @@ function setUpFolder(folderName: string, parentDir: string): TPromise<string> {
 	// {{SQL CARBON EDIT}}
 	const workspaceSettingsDir = path.join(folderDir, '.sqlops');
 	return new TPromise((c, e) => {
-		extfs.mkdirp(workspaceSettingsDir, 493, (error) => {
-			if (error) {
-				e(error);
-				return null;
-			}
-			c(folderDir);
-		});
+		extfs.mkdirp(workspaceSettingsDir, 493);
 	});
 }
 

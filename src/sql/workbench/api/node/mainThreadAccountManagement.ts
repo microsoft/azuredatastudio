@@ -17,9 +17,8 @@ import {
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 
-
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)
-export class MainThreadAccountManagement extends MainThreadAccountManagementShape {
+export class MainThreadAccountManagement implements MainThreadAccountManagementShape {
 	private _providerMetadata: { [handle: number]: data.AccountProviderMetadata };
 	private _proxy: ExtHostAccountManagementShape;
 	private _toDispose: IDisposable[];
@@ -28,7 +27,6 @@ export class MainThreadAccountManagement extends MainThreadAccountManagementShap
 		extHostContext: IExtHostContext,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
-		super();
 		this._providerMetadata = {};
 		if (extHostContext) {
 			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostAccountManagement);

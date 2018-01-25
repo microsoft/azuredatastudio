@@ -23,7 +23,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference } from 'vs/editor/browser/editorBrowser';
 import { FIND_IDS, MATCHES_LIMIT, CONTEXT_FIND_INPUT_FOCUSED } from 'vs/editor/contrib/find/findModel';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
-import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';s
+import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ITheme, registerThemingParticipant, IThemeService } from 'vs/platform/theme/common/themeService';
 import { Color } from 'vs/base/common/color';
 import { editorFindRangeHighlight, editorFindMatch, editorFindMatchHighlight, activeContrastBorder, contrastBorder, inputBackground, editorWidgetBackground, inputActiveOptionBorder, widgetShadow, inputForeground, inputBorder, inputValidationInfoBackground, inputValidationInfoBorder, inputValidationWarningBackground, inputValidationWarningBorder, inputValidationErrorBackground, inputValidationErrorBorder, errorForeground } from 'vs/platform/theme/common/colorRegistry';
@@ -101,7 +101,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 
 		this._isVisible = false;
 
-		this._register(this._state.addChangeListener((e) => this._onStateChanged(e)));
+		this._register(this._state.onFindReplaceStateChange((e) => this._onStateChanged(e)));
 		this._buildDomNode();
 		this._updateButtons();
 
@@ -147,10 +147,10 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 
 		this._findInputFocussed = CONTEXT_FIND_INPUT_FOCUSED.bindTo(contextKeyService);
 		this._focusTracker = this._register(dom.trackFocus(this._findInput.inputBox.inputElement));
-		this._focusTracker.addFocusListener(() => {
+		this._focusTracker.onDidFocus(() => {
 			this._findInputFocussed.set(true);
 		});
-		this._focusTracker.addBlurListener(() => {
+		this._focusTracker.onDidBlur(() => {
 			this._findInputFocussed.set(false);
 		});
 
@@ -479,11 +479,11 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		this._resizeSash = new Sash(this._domNode, this, { orientation: Orientation.VERTICAL });
 		let originalWidth = FIND_WIDGET_INITIAL_WIDTH;
 
-		this._register(this._resizeSash.addListener('start', (e: ISashEvent) => {
+		this._register(this._resizeSash.onDidStart((e: ISashEvent) => {
 			originalWidth = dom.getTotalWidth(this._domNode);
 		}));
 
-		this._register(this._resizeSash.addListener('change', (evt: ISashEvent) => {
+		this._register(this._resizeSash.onDidChange((evt: ISashEvent) => {
 			let width = originalWidth + evt.startX - evt.currentX;
 
 			if (width < FIND_WIDGET_INITIAL_WIDTH) {

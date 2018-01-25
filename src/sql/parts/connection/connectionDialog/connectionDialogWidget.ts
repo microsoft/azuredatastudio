@@ -261,15 +261,35 @@ export class ConnectionDialogWidget extends Modal {
 			type: 'question'
 		};
 
-		return this._messageService.confirm(confirm).then(confirmation => {
-			if (!confirmation.confirmed) {
-				return TPromise.as(false);
-			} else {
+		// @SQLTODO
+		return new TPromise<boolean>((resolve, reject) => {
+			let confirmed: boolean = this._messageService.confirm(confirm);
+			if (confirmed) {
 				this._connectionManagementService.clearRecentConnectionsList();
 				this.open(false);
-				return TPromise.as(true);
 			}
+			resolve(confirmed);
 		});
+
+			//this._messageService.confirm(confirm).then(confirmation => {
+		// 	if (!confirmation.confirmed) {
+		// 		return TPromise.as(false);
+		// 	} else {
+		// 		this._connectionManagementService.clearRecentConnectionsList();
+		// 		this.open(false);
+		// 		return TPromise.as(true);
+		// 	}
+		// });
+
+		// return this._messageService.confirm(confirm).then(confirmation => {
+		// 	if (!confirmation.confirmed) {
+		// 		return TPromise.as(false);
+		// 	} else {
+		// 		this._connectionManagementService.clearRecentConnectionsList();
+		// 		this.open(false);
+		// 		return TPromise.as(true);
+		// 	}
+		// });
 	}
 
 	private createRecentConnectionList(): void {
