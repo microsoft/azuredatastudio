@@ -113,6 +113,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._onUpdateObjectExplorerNodes.event;
 	}
 
+	/**
+	 * Event fired when the selection or focus of Object Explorer changes
+	 */
 	public get onSelectionOrFocusChange(): Event<void> {
 		return this._onSelectionOrFocusChange.event;
 	}

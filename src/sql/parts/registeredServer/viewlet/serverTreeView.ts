@@ -61,16 +61,20 @@ export class ServerTreeView {
 		this._onSelectionOrFocusChange = new Emitter();
 	}
 
-	public get onSelectionOrFocusChange(): Event<void> {
-		return this._onSelectionOrFocusChange.event;
-	}
-
 	/**
 	 * Get active connections filter action
 	 */
 	public get activeConnectionsFilterAction(): ActiveConnectionsFilterAction {
 		return this._activeConnectionsFilterAction;
 	}
+
+	/**
+	 * Event fired when the tree's selection or focus changes
+	 */
+	public get onSelectionOrFocusChange(): Event<void> {
+		return this._onSelectionOrFocusChange.event;
+	}
+
 	/**
 	 * Render the view body
 	 */
@@ -394,7 +398,7 @@ export class ServerTreeView {
 	}
 
 	private onSelected(event: any): void {
-		this._treeSelectionHandler.onTreeSelect(event, this._tree, this._connectionManagementService, this._objectExplorerService, this._onSelectionOrFocusChange);
+		this._treeSelectionHandler.onTreeSelect(event, this._tree, this._connectionManagementService, this._objectExplorerService, () => this._onSelectionOrFocusChange.fire());
 		this._onSelectionOrFocusChange.fire();
 	}
 

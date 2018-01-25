@@ -13,7 +13,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 
-// Connection status bar for editor
+// Connection status bar showing the current global connection
 export class ConnectionStatusbarItem implements IStatusbarItem {
 
 	private _element: HTMLElement;
@@ -47,7 +47,7 @@ export class ConnectionStatusbarItem implements IStatusbarItem {
 		return combinedDisposable(this._toDispose);
 	}
 
-	// Show/hide query status for active editor
+	// Update the connection status shown in the bar
 	private _updateStatus(): void {
 		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService);
 		if (activeConnection) {
