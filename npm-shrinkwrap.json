@@ -64,8 +64,8 @@
     },
     "angular2-slickgrid": {
       "version": "1.3.6",
-      "from": "git://github.com/Microsoft/angular2-slickgrid.git#1.3.6",
-      "resolved": "git://github.com/Microsoft/angular2-slickgrid.git#0393bae34ba65464e6b6fc248b950ccea44382d9"
+      "from": "git://github.com/Microsoft/angular2-slickgrid.git#1.3.7",
+      "resolved": "git://github.com/Microsoft/angular2-slickgrid.git#c6ede45d37b5aa6df3823dac096dbdd8010bbccd"
     },
     "anymatch": {
       "version": "1.3.2",
@@ -391,9 +391,9 @@
       "resolved": "https://registry.npmjs.org/isobject/-/isobject-2.1.0.tgz"
     },
     "jquery": {
-      "version": "2.2.4",
-      "from": "jquery@>=2.2.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.2.4.tgz"
+      "version": "3.1.0",
+      "from": "jquery@3.1.0",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.1.0.tgz"
     },
     "jquery-ui": {
       "version": "1.12.1",
@@ -690,9 +690,9 @@
       "resolved": "https://registry.npmjs.org/set-immediate-shim/-/set-immediate-shim-1.0.1.tgz"
     },
     "slickgrid": {
-      "version": "2.3.4",
-      "from": "anthonydresser/SlickGrid#2.3.7",
-      "resolved": "git://github.com/anthonydresser/SlickGrid.git#fa7911c34b5449f9ce1e7148480fbc24fd20743a"
+      "version": "2.3.12",
+      "from": "anthonydresser/SlickGrid#2.3.12",
+      "resolved": "git://github.com/anthonydresser/SlickGrid.git#5610e05166cd7068dcf196498ae20054382b1684"
     },
     "string_decoder": {
       "version": "1.0.3",

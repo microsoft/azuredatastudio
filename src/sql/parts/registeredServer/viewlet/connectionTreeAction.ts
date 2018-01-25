@@ -21,6 +21,7 @@ import { IObjectExplorerService } from 'sql/parts/registeredServer/common/object
 import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext, ObjectExplorerActionUtilities } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
+import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export class RefreshAction extends Action {
 
@@ -373,7 +374,9 @@ export class NewQueryAction extends Action {
 		id: string,
 		label: string,
 		@IQueryEditorService private queryEditorService: IQueryEditorService,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
+		@IWorkbenchEditorService protected _workbenchEditorService: IWorkbenchEditorService
 	) {
 		super(id, label);
 		this.class = 'extension-action update';
@@ -384,7 +387,7 @@ export class NewQueryAction extends Action {
 			this._connectionProfile = actionContext.connectionProfile;
 		}
 
-		TaskUtilities.newQuery(this._connectionProfile, this.connectionManagementService, this.queryEditorService);
+		TaskUtilities.newQuery(this._connectionProfile, this.connectionManagementService, this.queryEditorService, this._objectExplorerService, this._workbenchEditorService);
 		return TPromise.as(true);
 	}
 }

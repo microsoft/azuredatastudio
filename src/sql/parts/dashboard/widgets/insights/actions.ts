@@ -10,6 +10,8 @@ import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { RunQueryOnConnectionMode, IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { InsightActionContext } from 'sql/workbench/common/actions';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export class RunInsightQueryAction extends Action {
 	public static ID = 'runQuery';
@@ -18,7 +20,9 @@ export class RunInsightQueryAction extends Action {
 	constructor(
 		id: string, label: string,
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
+		@IWorkbenchEditorService protected _workbenchEditorService: IWorkbenchEditorService
 	) {
 		super(id, label);
 	}
@@ -29,6 +33,8 @@ export class RunInsightQueryAction extends Action {
 				context.profile,
 				this._connectionManagementService,
 				this._queryEditorService,
+				this._objectExplorerService,
+				this._workbenchEditorService,
 				context.insight.query as string,
 				RunQueryOnConnectionMode.executeQuery
 			).then(() => resolve(true), () => resolve(false));
