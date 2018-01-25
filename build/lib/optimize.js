@@ -25,10 +25,12 @@ var REPO_ROOT_PATH = path.join(__dirname, '../..');
 function log(prefix, message) {
     gulpUtil.log(gulpUtil.colors.cyan('[' + prefix + ']'), message);
 }
+// {{SQL CARBON EDIT}}
 function loaderConfig(emptyPaths) {
     var result = {
         paths: {
             'vs': 'out-build/vs',
+            'sql': 'out-build/sql',
             'vscode': 'empty:'
         },
         nodeModules: emptyPaths || []
