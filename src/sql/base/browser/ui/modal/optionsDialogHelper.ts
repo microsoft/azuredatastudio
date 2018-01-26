@@ -69,10 +69,12 @@ export function createOptionElement(option: data.ServiceOption, rowContainer: Bu
 }
 
 export function getOptionValueAndCategoryValues(option: data.ServiceOption, options: { [optionName: string]: any }, possibleInputs: string[]): any {
+
+	let valueTypeName:string = option.valueType.toString();
 	var optionValue = option.defaultValue;
 	if (options[option.name]) {
 		// if the value type is boolean, the option value can be either boolean or string
-		if (option.valueType === ServiceOptionType.boolean) {
+		if (valueTypeName === ServiceOptionTypeNames.boolean) {
 			if (options[option.name] === true || options[option.name] === this.trueInputValue) {
 				optionValue = this.trueInputValue;
 			} else {
@@ -83,7 +85,6 @@ export function getOptionValueAndCategoryValues(option: data.ServiceOption, opti
 		}
 	}
 
-	let valueTypeName:string = option.valueType.toString();
 	if (valueTypeName === ServiceOptionTypeNames.boolean || valueTypeName === ServiceOptionTypeNames.category) {
 		// If the option is not required, the empty string should be add at the top of possible choices
 		if (!option.isRequired) {
@@ -110,9 +111,9 @@ export function validateInputs(optionsMap: { [optionName: string]: IOptionElemen
 	for (var optionName in optionsMap) {
 		var optionElement: IOptionElement = optionsMap[optionName];
 		var widget = optionElement.optionWidget;
-		var isInputBox = (optionElement.option.valueType === ServiceOptionType.string ||
-			optionElement.option.valueType === ServiceOptionType.password ||
-			optionElement.option.valueType === ServiceOptionType.number);
+		var isInputBox = (optionElement.option.valueType.toString() === ServiceOptionTypeNames.string ||
+			optionElement.option.valueType.toString() === ServiceOptionTypeNames.password ||
+			optionElement.option.valueType.toString() === ServiceOptionTypeNames.number);
 
 		if (isInputBox) {
 			if (!widget.validate()) {
