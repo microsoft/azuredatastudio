@@ -126,9 +126,9 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * @param options Modal options
 	 */
 	constructor(
-		protected _title: string,
+		private _title: string,
 		private _name: string,
-		protected _partService: IPartService,
+		private _partService: IPartService,
 		private _telemetryService: ITelemetryService,
 		private _contextKeyService: IContextKeyService,
 		options?: IModalOptions
@@ -404,10 +404,14 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Set the title of the modal
 	 * @param title
 	 */
-	protected set title(title: string) {
+	public set title(title: string) {
 		if (this._title !== undefined) {
 			this._modalTitle.innerHtml(title);
 		}
+	}
+
+	public get title(): string {
+		return this._title;
 	}
 
 	/**

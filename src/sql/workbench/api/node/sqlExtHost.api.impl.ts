@@ -256,7 +256,7 @@ export function createApiFactory(
 				TaskStatus: sqlExtHostTypes.TaskStatus,
 				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode,
 				ScriptOperation: sqlExtHostTypes.ScriptOperation,
-				window: window
+				window
 			};
 		}
 	};

@@ -1,7 +1,8 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 'use strict';
 
 import 'vs/css!sql/media/icons/common-icons';
@@ -30,7 +31,7 @@ export class WebViewDialog extends Modal {
 	private _okLabel: string;
 	private _closeLabel: string;
 	private _webview: WebView;
-	public _html: string;
+	private _html: string;
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
@@ -42,23 +43,15 @@ export class WebViewDialog extends Modal {
 	constructor(
 		@IThemeService private _themeService: IThemeService,
 		@IClipboardService private _clipboardService: IClipboardService,
-		@IPartService private partService: IPartService,
+		@IPartService private _webViewPartService: IPartService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IEnvironmentService private _environmentService: IEnvironmentService,
 	) {
-		super('', TelemetryKeys.WebView, partService, telemetryService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.WebView, _webViewPartService, telemetryService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 		this._okLabel = localize('OK', 'OK');
 		this._closeLabel = localize('close', 'Close');
-	}
-
-	public set title(value: string) {
-		this._title = value;
-	}
-
-	public get title(): string {
-		return this._title;
 	}
 
 	public set html(value: string) {
@@ -88,7 +81,7 @@ export class WebViewDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		new Builder(container).div({ 'class': 'webview-dialog' }, (bodyBuilder) => {
 			this._body = bodyBuilder.getHTMLElement();
-			this._webview = new WebView(this._body, this._partService.getContainer(Parts.EDITOR_PART),
+			this._webview = new WebView(this._body, this._webViewPartService.getContainer(Parts.EDITOR_PART),
 				this._contextViewService,
 				undefined,
 				undefined,
