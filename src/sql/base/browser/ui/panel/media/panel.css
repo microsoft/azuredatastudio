@@ -23,11 +23,11 @@
 	line-height: 35px;
 }
 
-.tabbedPanel .tabList > .tab {
+.tabbedPanel .tabList .tab {
 	cursor: pointer;
 }
 
-.tabbedPanel .tabList > .tab > .tabLabel {
+.tabbedPanel .tabList .tab .tabLabel {
 	text-transform: uppercase;
 	margin-left: 16px;
 	margin-right: 16px;

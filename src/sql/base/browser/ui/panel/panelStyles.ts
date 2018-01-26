@@ -15,8 +15,8 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const titleActiveBorder = theme.getColor(PANEL_ACTIVE_TITLE_BORDER);
 	if (titleActive || titleActiveBorder) {
 		collector.addRule(`
-			.tabbedPanel > .title > .tabList > .tab:hover .tabLabel,
-			.tabbedPanel > .title > .tabList > .tab .tabLabel.active {
+			.tabbedPanel > .title > .tabList .tab:hover .tabLabel,
+			.tabbedPanel > .title > .tabList .tab .tabLabel.active {
 				color: ${titleActive};
 				border-bottom-color: ${titleActiveBorder};
 			}
@@ -27,7 +27,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const titleInactive = theme.getColor(PANEL_INACTIVE_TITLE_FOREGROUND);
 	if (titleInactive) {
 		collector.addRule(`
-			.tabbedPanel > .title > .tabList > .tab .tabLabel {
+			.tabbedPanel > .title > .tabList .tab .tabLabel {
 				color: ${titleInactive};
 			}
 		`);
@@ -37,7 +37,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const focusBorderColor = theme.getColor(focusBorder);
 	if (focusBorderColor) {
 		collector.addRule(`
-			.tabbedPanel > .title > .tabList > .tab .tabLabel:focus {
+			.tabbedPanel > .title > .tabList .tab .tabLabel:focus {
 				color: ${titleActive};
 				border-bottom-color: ${focusBorderColor} !important;
 				border-bottom: 1px solid;
@@ -52,8 +52,8 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 		const outline = theme.getColor(activeContrastBorder);
 
 		collector.addRule(`
-			.tabbedPanel > .title > .tabList > .tab .tabLabel.active,
-			.tabbedPanel > .title > .tabList > .tab .tabLabel:hover {
+			.tabbedPanel > .title > .tabList .tab .tabLabel.active,
+			.tabbedPanel > .title > .tabList .tab .tabLabel:hover {
 				outline-color: ${outline};
 				outline-width: 1px;
 				outline-style: solid;
@@ -62,7 +62,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 				outline-offset: 3px;
 			}
 
-			.tabbedPanel > .title > .tabList > .tab .tabLabel:hover:not(.active) {
+			.tabbedPanel > .title > .tabList .tab .tabLabel:hover:not(.active) {
 				outline-style: dashed;
 			}
 		`);

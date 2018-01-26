@@ -134,6 +134,9 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _onDeleteWidget = new Emitter<string>();
 	public readonly onDeleteWidget: Event<string> = this._onDeleteWidget.event;
 
+	private _onCloseTab = new Emitter<string>();
+	public readonly onCloseTab: Event<string> = this._onCloseTab.event;
+
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => Router)) private _router: Router,
@@ -283,6 +286,9 @@ export class DashboardServiceInterface implements OnDestroy {
 				break;
 			case AngularEventType.DELETE_WIDGET:
 				this._onDeleteWidget.fire(event.payload.id);
+				break;
+			case AngularEventType.CLOSE_TAB:
+				this._onCloseTab.fire(event.payload.id);
 		}
 	}
 }

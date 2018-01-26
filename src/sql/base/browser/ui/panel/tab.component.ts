@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import { Component, Input, ContentChild } from '@angular/core';
 
+import { Action } from 'vs/base/common/actions';
+
 export abstract class TabChild {
 	public abstract layout(): void;
 }
@@ -19,6 +21,7 @@ export abstract class TabChild {
 export class TabComponent {
 	@ContentChild(TabChild) private _child: TabChild;
 	@Input() public title: string;
+	@Input() public actions: Array<Action>;
 	public _active = false;
 	@Input() public identifier: string;
 
