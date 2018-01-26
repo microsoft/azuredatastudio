@@ -404,13 +404,13 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Set the title of the modal
 	 * @param title
 	 */
-	public set title(title: string) {
+	protected set title(title: string) {
 		if (this._title !== undefined) {
 			this._modalTitle.innerHtml(title);
 		}
 	}
 
-	public get title(): string {
+	protected get title(): string {
 		return this._title;
 	}
 

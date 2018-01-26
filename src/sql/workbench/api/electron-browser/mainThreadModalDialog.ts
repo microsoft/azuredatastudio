@@ -49,7 +49,7 @@ export class MainThreadModalDialog implements MainThreadModalDialogShape {
 
 	$setTitle(handle: number, value: string): void {
 		const dialog = this._dialogs.get(handle);
-		dialog.title = value;
+		dialog.headerTitle = value;
 	}
 
 	$setHtml(handle: number, value: string): void {
@@ -60,7 +60,7 @@ export class MainThreadModalDialog implements MainThreadModalDialogShape {
 	$show(handle: number): void {
 		const dialog = this._dialogs.get(handle);
 		dialog.render();
-		dialog.open(dialog.title);
+		dialog.open();
 	}
 
 	async $sendMessage(handle: number, message: any): Promise<boolean> {

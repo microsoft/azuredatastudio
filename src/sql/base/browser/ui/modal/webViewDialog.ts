@@ -32,6 +32,7 @@ export class WebViewDialog extends Modal {
 	private _closeLabel: string;
 	private _webview: WebView;
 	private _html: string;
+	private _headerTitle: string;
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
@@ -76,6 +77,14 @@ export class WebViewDialog extends Modal {
 
 	public get closeTitle(): string {
 		return this._closeLabel;
+	}
+
+	public set headerTitle(value: string) {
+		this._headerTitle = value
+	}
+
+	public get headerTitle(): string {
+		return this._headerTitle;
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -149,8 +158,8 @@ export class WebViewDialog extends Modal {
 		this._webview.sendMessage(message);
 	}
 
-	public open(headerTitle: string) {
-		this.title = headerTitle;
+	public open() {
+		this.title = this.headerTitle;
 		this.updateDialogBody();
 		this.show();
 		this._okButton.focus();
