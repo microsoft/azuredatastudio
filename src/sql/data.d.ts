@@ -1385,7 +1385,7 @@ declare module 'data' {
 		/**
 		 * Opens the dialog.
 		 */
-		open():void;
+		open(): void;
 
 		/**
 		 * Closes the dialog.
@@ -1415,7 +1415,7 @@ declare module 'data' {
 		 * creates a dialog
 		 * @param title
 		 */
-		export function  createDialog(
+		export function createDialog(
 			title: string
 		): ModalDialog;
 	}

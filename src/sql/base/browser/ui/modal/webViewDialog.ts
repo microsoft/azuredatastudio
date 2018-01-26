@@ -17,7 +17,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
-import WebView  from 'vs/workbench/parts/html/browser/webview';
+import WebView from 'vs/workbench/parts/html/browser/webview';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
@@ -89,26 +89,26 @@ export class WebViewDialog extends Modal {
 		new Builder(container).div({ 'class': 'webview-dialog' }, (bodyBuilder) => {
 			this._body = bodyBuilder.getHTMLElement();
 			this._webview = new WebView(this._body, this._partService.getContainer(Parts.EDITOR_PART),
-			this._contextViewService,
-			undefined,
-			undefined,
-			{
-				allowScripts: true,
-				enableWrappedPostMessage: true,
-				hideFind: true
-			}
-		);
+				this._contextViewService,
+				undefined,
+				undefined,
+				{
+					allowScripts: true,
+					enableWrappedPostMessage: true,
+					hideFind: true
+				}
+			);
 
-		this._webview.style(this._themeService.getTheme());
+			this._webview.style(this._themeService.getTheme());
 
-		this._webview.onMessage(message => {
-			this._onMessage.fire(message);
-		}, null, this.contentDisposables);
+			this._webview.onMessage(message => {
+				this._onMessage.fire(message);
+			}, null, this.contentDisposables);
 
-		this._themeService.onThemeChange(theme => this._webview.style(theme), null, this.contentDisposables);
+			this._themeService.onThemeChange(theme => this._webview.style(theme), null, this.contentDisposables);
 
-		this.contentDisposables.push(this._webview);
-		this.contentDisposables.push(toDisposable(() => this._webview = null));
+			this.contentDisposables.push(this._webview);
+			this.contentDisposables.push(toDisposable(() => this._webview = null));
 		});
 	}
 

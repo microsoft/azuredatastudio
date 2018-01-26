@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
-import { WebViewDialog }  from 'sql/base/browser/ui/modal/webViewDialog';
+import { WebViewDialog } from 'sql/base/browser/ui/modal/webViewDialog';
 
 import { MainThreadModalDialogShape, SqlMainContext, SqlExtHostContext, ExtHostModalDialogsShape } from 'sql/workbench/api/node/sqlextHost.protocol';
-import {  IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

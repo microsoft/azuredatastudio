@@ -61,7 +61,7 @@ class ExtHostDialog implements data.ModalDialog {
 		return this._closeTitle;
 	}
 
-	public open():void {
+	public open(): void {
 		this._proxy.$show(this._handle);
 	}
 
