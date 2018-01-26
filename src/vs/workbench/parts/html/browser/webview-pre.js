@@ -265,8 +265,9 @@
 		});
 
 		// forward messages from the embedded iframe
-		// {{SQL CARBON EDIT}}
+
 		window.onmessage = function (message) {
+			// {{SQL CARBON EDIT}}
 			if (enableWrappedPostMessage) {
 				// Modern webview. Forward wrapped message
 				ipcRenderer.sendToHost('onmessage', message.data);
