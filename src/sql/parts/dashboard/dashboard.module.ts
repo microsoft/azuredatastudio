@@ -27,9 +27,13 @@ import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost
 /* Base Components */
 import { DashboardComponent, DASHBOARD_SELECTOR } from 'sql/parts/dashboard/dashboard.component';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
+import { DashboardTab } from 'sql/parts/dashboard/common/dashboardTab.component';
 import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
-let baseComponents = [DashboardComponent, DashboardWidgetWrapper, ComponentHostDirective, BreadcrumbComponent];
+let baseComponents = [DashboardComponent, DashboardWidgetWrapper, DashboardTab, ComponentHostDirective, BreadcrumbComponent];
+
+/* Panel */
+import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
 
 /* Pages */
 import { ServerDashboardPage } from 'sql/parts/dashboard/pages/serverDashboardPage.component';
@@ -78,7 +82,8 @@ const appRoutes: Routes = [
 		FormsModule,
 		NgGridModule,
 		ChartsModule,
-		RouterModule.forRoot(appRoutes)
+		RouterModule.forRoot(appRoutes),
+		PanelModule
 	],
 	providers: [
 		{ provide: APP_BASE_HREF, useValue: '/' },
