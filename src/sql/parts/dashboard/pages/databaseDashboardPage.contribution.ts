@@ -3,12 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Registry } from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import { Extensions, IDashboardWidgetRegistry } from 'sql/platform/dashboard/common/widgetRegistry';
 import * as nls from 'vs/nls';
-
-let widgetRegistry = <IDashboardWidgetRegistry>Registry.as(Extensions.DashboardWidgetContribution);
+import { GenerateDashboardWidgetSchema } from './dashboardPageContribution';
 
 export const databaseDashboardPropertiesSchema: IJSONSchema = {
 	description: nls.localize('dashboardDatabaseProperties', 'Enable or disable the properties widget'),
@@ -85,58 +82,7 @@ export const databaseDashboardPropertiesSchema: IJSONSchema = {
 export const databaseDashboardSettingSchema: IJSONSchema = {
 	type: ['array'],
 	description: nls.localize('dashboardDatabase', 'Customizes the database dashboard page'),
-	items: <IJSONSchema>{
-		type: 'object',
-		properties: {
-			name: {
-				type: 'string'
-			},
-			icon: {
-				type: 'string'
-			},
-			provider: {
-				anyOf: [
-					'string',
-					{
-						type: 'array',
-						items: 'string'
-					}
-				]
-			},
-			edition: {
-				anyOf: [
-					'number',
-					{
-						type: 'array',
-						items: 'number'
-					}
-				]
-			},
-			gridItemConfig: {
-				type: 'object',
-				properties: {
-					sizex: {
-						type: 'number'
-					},
-					sizey: {
-						type: 'number'
-					},
-					col: {
-						type: 'number'
-					},
-					row: {
-						type: 'number'
-					}
-				}
-			},
-			widget: {
-				type: 'object',
-				properties: widgetRegistry.databaseWidgetSchema.properties,
-				minItems: 1,
-				maxItems: 1
-			}
-		}
-	},
+	items: GenerateDashboardWidgetSchema('database'),
 	default: [
 		{
 			name: 'Tasks',
