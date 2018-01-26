@@ -1,6 +1,6 @@
 /**
  * marked - a markdown parser
- * Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
+ * Copyright (c) 2011-2014, Christopher Jeffrey. (Source EULAd)
  * https://github.com/chjj/marked
  */
 
