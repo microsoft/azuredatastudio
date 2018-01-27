@@ -28,10 +28,8 @@ const defaultOptions: IPanelOptions = {
 		<div class="tabbedPanel fullsize">
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
 				<div class="tabList">
-					<div *ngFor="let tab of _tabs" class="tab" (click)="selectTab(tab)">
-						<a class="tabLabel" [class.active]="tab.active">
-							{{tab.title}}
-						</a>
+					<div *ngFor="let tab of _tabs">
+						<tab-header [tab]="tab" (onSelectTab)='selectTab($event)'> </tab-header>
 					</div>
 				</div>
 				<div class="title-actions">

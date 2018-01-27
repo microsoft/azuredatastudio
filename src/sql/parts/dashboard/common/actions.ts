@@ -111,3 +111,22 @@ export class DeleteWidgetAction extends Action {
 		return TPromise.as(true);
 	}
 }
+
+export class CloseTabAction extends Action {
+	private static readonly ID = 'closeTab';
+	private static readonly LABEL = nls.localize('closeTab', "Close");
+	private static readonly ICON = 'close';
+
+	constructor(
+		private _tabId,
+		private _uri,
+		@IAngularEventingService private angularEventService: IAngularEventingService
+	) {
+		super(CloseTabAction.ID, CloseTabAction.LABEL, CloseTabAction.ICON);
+	}
+
+	run(): TPromise<boolean> {
+		this.angularEventService.sendAngularEvent(this._uri, AngularEventType.CLOSE_TAB, { id: this._tabId });
+		return TPromise.as(true);
+	}
+}

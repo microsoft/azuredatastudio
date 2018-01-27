@@ -16,6 +16,7 @@ import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { DashboardTab } from 'sql/parts/dashboard/common/dashboardTab.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
+import { CloseTabAction } from './actions';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -110,7 +111,8 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				name: this.homeTabTitle,
 				widgets: homeWidgets,
 				context: this.context,
-				originalConfig: this._originalConfig
+				originalConfig: this._originalConfig,
+				actions: []
 			};
 			this.addNewTab(homeTab);
 			this._panel.selectTab(homeTab.id);
@@ -150,6 +152,12 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 					height: getContentHeight(container)
 				});
 			}, 100);
+		}));
+
+		this._register(this.dashboardService.onCloseTab(e => {
+			let index = this.tabs.findIndex(i => i.id === e);
+			this.tabs.splice(index, 1);
+			this._cd.detectChanges();
 		}));
 
 		// unforunately because of angular rendering behavior we need to do a double check to make sure nothing changed after this point
