@@ -6,7 +6,7 @@
         "vscode": "*"
     },
     "contributes": {
-        "insights": [
+        "dashboard.insights": [
             {
                 "id": "query-data-store-db-insight",
                 "contrib": {

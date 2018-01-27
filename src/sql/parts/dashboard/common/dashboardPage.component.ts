@@ -16,6 +16,7 @@ import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { DashboardTab } from 'sql/parts/dashboard/common/dashboardTab.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
+import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -30,6 +31,10 @@ import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as objects from 'vs/base/common/objects';
+import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
+import Event, { Emitter } from 'vs/base/common/event';
+
+const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
 /**
  * @returns whether the provided parameter is a JavaScript Array and each element in the array is a number.
@@ -59,6 +64,9 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	@ViewChild('propertiesContainer', { read: ElementRef }) private _propertiesContainer: ElementRef;
 	@ViewChildren(DashboardTab) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
+
+	private _editEnabled = new Emitter<boolean>();
+	public readonly editEnabled: Event<boolean> = this._editEnabled.event;
 
 
 	// tslint:disable:no-unused-variable
@@ -110,12 +118,35 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				name: this.homeTabTitle,
 				widgets: homeWidgets,
 				context: this.context,
-				originalConfig: this._originalConfig
+				originalConfig: this._originalConfig,
+				editable: true
 			};
 			this.addNewTab(homeTab);
 			this._panel.selectTab(homeTab.id);
 			let homeTabContent = this._tabs.find(i => i.tab.id === homeTab.id);
 			homeTabContent.layout();
+
+			// add any tab extensions
+			dashboardRegistry.tabs.map(v => {
+				let configs = v.widgets;
+				this._configModifiers.forEach(cb => {
+					configs = cb.apply(this, [configs]);
+				});
+				this._gridModifiers.forEach(cb => {
+					configs = cb.apply(this, [configs]);
+				});
+				return { title: v.title, widgets: configs };
+			}).map(v => {
+				let config: TabConfig = {
+					id: v.title,
+					name: v.title,
+					context: this.context,
+					widgets: v.widgets,
+					originalConfig: undefined,
+					editable: false
+				};
+				this.addNewTab(config);
+			});
 		}
 	}
 
@@ -394,5 +425,10 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				tabContent.enableEdit();
 			});
 		}
+	}
+
+	public handleTabChange(tab: TabComponent): void {
+		let localtab = this._tabs.find(i => i.tab.id === tab.identifier);
+		this._editEnabled.fire(localtab.tab.editable);
 	}
 }

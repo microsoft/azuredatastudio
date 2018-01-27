@@ -9,18 +9,27 @@ import * as nls from 'vs/nls';
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/common/extensionsRegistry';
 
 import { ProviderProperties } from 'sql/parts/dashboard/widgets/properties/propertiesWidget.component';
+import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 
 export const Extensions = {
 	DashboardContributions: 'dashboard.contributions'
 };
 
+export interface IDashboardTabContrib {
+	title: string;
+	widgets: WidgetConfig[];
+}
+
 export interface IDashboardRegistry {
 	registerDashboardProvider(id: string, properties: ProviderProperties): void;
 	getProperties(id: string): ProviderProperties;
+	registerTab(tab: IDashboardTabContrib): void;
+	tabs: Array<IDashboardTabContrib>;
 }
 
 class DashboardRegistry implements IDashboardRegistry {
 	private _properties = new Map<string, ProviderProperties>();
+	private _tabs = new Array<IDashboardTabContrib>();
 
 	/**
 	 * Register a dashboard widget
@@ -33,10 +42,22 @@ class DashboardRegistry implements IDashboardRegistry {
 	public getProperties(id: string): ProviderProperties {
 		return this._properties.get(id);
 	}
+
+	public registerTab(tab: IDashboardTabContrib): void {
+		this._tabs.push(tab);
+	}
+
+	public get tabs(): Array<IDashboardTabContrib> {
+		return this._tabs;
+	}
 }
 
 const dashboardRegistry = new DashboardRegistry();
 Registry.add(Extensions.DashboardContributions, dashboardRegistry);
+
+export function RegisterTab(tab: IDashboardTabContrib): void {
+	dashboardRegistry.registerTab(tab);
+}
 
 const dashboardPropertiesPropertyContrib: IJSONSchema = {
 	description: nls.localize('dashboard.properties.property', "Defines a property to show on the dashboard"),

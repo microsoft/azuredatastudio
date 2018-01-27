@@ -38,6 +38,7 @@ export interface TabConfig {
 	widgets: Array<WidgetConfig>;
 	context: string;
 	originalConfig: Array<WidgetConfig>;
+	editable: boolean;
 }
 
 export abstract class DashboardWidget extends Disposable implements OnDestroy {

@@ -32,6 +32,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 	@ViewChild('header', { read: ElementRef }) private header: ElementRef;
 	@ViewChild('actionBar', { read: ElementRef }) private actionbarContainer: ElementRef;
 	private actionbar: ActionBar;
+	private editAction: EditDashboardAction;
+	private editDisposable: IDisposable;
 
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrapService: DashboardServiceInterface,
@@ -48,7 +50,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 			icon: true,
 			label: false,
 		});
-		this.actionbar.push(new EditDashboardAction(this.edit, this), {
+		this.editAction = new EditDashboardAction(this.edit, this);
+		this.actionbar.push(this.editAction, {
 			icon: true,
 			label: false,
 		});
@@ -72,7 +75,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 	}
 
 	onActivate(page: DashboardPage) {
+		if (this.editDisposable) {
+			this.editDisposable.dispose();
+		}
 		this._currentPage = page;
+		this.editDisposable = page.editEnabled(e => this.editEnabled = e, this);
 	}
 
 	refresh(): void {
@@ -83,5 +90,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
 	edit(): void {
 		this._currentPage.enableEdit();
+	}
+
+	set editEnabled(val: boolean) {
+		this.editAction.enabled = val;
 	}
 }

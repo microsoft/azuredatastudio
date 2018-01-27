@@ -5,8 +5,8 @@
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 
-import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { GenerateDashboardWidgetSchema } from 'sql/parts/dashboard/pages/dashboardPageContribution';
+import { IDashboardTabContrib, RegisterTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 
 const tabContributionSchema: IJSONSchema = {
 	type: 'object',
@@ -21,15 +21,10 @@ const tabContributionSchema: IJSONSchema = {
 	}
 };
 
-export interface IDashboardTabContrib {
-	title: string;
-	widgets: WidgetConfig[];
-}
-
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>('dashboard.tabs', [], tabContributionSchema).setHandler(extensions => {
 
-	function handleCommand(insight: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
-
+	function handleCommand(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
+		RegisterTab(tab);
 	}
 
 	for (let extension of extensions) {
