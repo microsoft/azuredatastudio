@@ -14,6 +14,35 @@ const tabContributionSchema: IJSONSchema = {
 		title: {
 			type: 'string'
 		},
+		icon: {
+			type: 'string'
+		},
+		provider: {
+			anyOf: [
+				{
+					type: 'string'
+				},
+				{
+					type: 'array',
+					items: {
+						type: 'string'
+					}
+				}
+			]
+		},
+		edition: {
+			anyOf: [
+				{
+					type: 'number'
+				},
+				{
+					type: 'array',
+					items: {
+						type: 'number'
+					}
+				}
+			]
+		},
 		widgets: {
 			type: 'array',
 			items: GenerateDashboardWidgetSchema()
