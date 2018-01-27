@@ -155,6 +155,6 @@ import 'sql/parts/dashboard/widgets/insights/insightsWidget.contribution';
 import 'sql/parts/dashboard/widgets/explorer/explorerWidget.contribution';
 import 'sql/parts/dashboard/widgets/tasks/tasksWidget.contribution';
 import 'sql/parts/dashboard/dashboardConfig.contribution';
-import 'sql/platform/dashboard/common/dashboardTabRegistry';
+import 'sql/parts/dashboard/dashboardTab.contribution';
 /* Tasks */
 import 'sql/workbench/common/actions.contribution';
