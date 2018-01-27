@@ -25,6 +25,7 @@ import { ExtHostThreadService } from 'vs/workbench/services/thread/node/extHostT
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
+import { ExtHostConnectionManagement } from 'sql/workbench/api/node/extHostConnectionManagement';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -47,6 +48,7 @@ export function createApiFactory(
 
 	// Addressable instances
 	const extHostAccountManagement = threadService.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(threadService));
+	const extHostConnectionManagement = threadService.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(threadService));
 	const extHostCredentialManagement = threadService.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(threadService));
 	const extHostDataProvider = threadService.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(threadService));
 	const extHostSerializationProvider = threadService.set(SqlExtHostContext.ExtHostSerializationProvider, new ExtHostSerializationProvider(threadService));
@@ -68,6 +70,16 @@ export function createApiFactory(
 				},
 				accountUpdated(updatedAccount: data.Account): void {
 					return extHostAccountManagement.$accountUpdated(updatedAccount);
+				}
+			};
+
+			// namespace: connection
+			const connection: typeof data.connection = {
+				getActiveConnections(): Thenable<data.connection.Connection[]> {
+					return extHostConnectionManagement.$getActiveConnections();
+				},
+				getCurrentConnection(): Thenable<data.connection.Connection> {
+					return extHostConnectionManagement.$getCurrentConnection();
 				}
 			};
 
@@ -237,6 +249,7 @@ export function createApiFactory(
 
 			return {
 				accounts,
+				connection,
 				credentials,
 				resources,
 				serialization,

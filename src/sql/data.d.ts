@@ -71,6 +71,46 @@ declare module 'data' {
 		export function registerProvider(provider: SerializationProvider): vscode.Disposable;
 	}
 
+	/**
+	 * Namespace for connection management
+	 */
+	export namespace connection {
+		/**
+		 * Get the current connection based on the active editor or Object Explorer selection
+		*/
+		export function getCurrentConnection(): Thenable<Connection>;
+
+		/**
+		 * Get all connected connections
+		*/
+		export function getActiveConnections(): Thenable<Connection[]>;
+
+		/**
+		 * Interface for representing a connection when working with connection APIs
+		*/
+		export interface Connection extends ConnectionInfo {
+			/**
+			 * The name of the provider managing the connection (e.g. MSSQL)
+			*/
+			providerName: string;
+
+			/**
+			 * URI identifying the owner of the connection
+			*/
+			ownerUri: string;
+
+			/**
+			 * A unique identifier for the connection
+			*/
+			connectionId: string;
+
+			/**
+			* Information about the connected server.
+			*/
+			serverInfo: ServerInfo;
+		}
+	}
+
 	// EXPORTED INTERFACES /////////////////////////////////////////////////
 	export interface ConnectionInfo {
 

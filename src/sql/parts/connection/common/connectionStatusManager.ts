@@ -146,6 +146,7 @@ export class ConnectionStatusManager {
 		if (connection.connectionProfile.databaseName !== summary.connectionSummary.databaseName) {
 			//Add the ownerUri with database name to the map if not already exists
 			connection.connectionProfile.databaseName = summary.connectionSummary.databaseName;
+			connection.connectionProfile.options['databaseDisplayName'] = summary.connectionSummary.databaseName;
 			let prefix = Utils.getUriPrefix(summary.ownerUri);
 			let ownerUriWithDbName = Utils.generateUriWithPrefix(connection.connectionProfile, prefix);
 			if (!(ownerUriWithDbName in this._connections)) {
