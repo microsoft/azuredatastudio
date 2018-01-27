@@ -16,7 +16,7 @@ const tabContributionSchema: IJSONSchema = {
 		},
 		widgets: {
 			type: 'array',
-			items:  GenerateDashboardWidgetSchema()
+			items: GenerateDashboardWidgetSchema()
 		}
 	}
 };
