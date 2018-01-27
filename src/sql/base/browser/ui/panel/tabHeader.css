@@ -1,0 +1,11 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+tab-header .action-label {
+	padding-left: 7px;
+	padding-right: 7px;
+	padding-top: 11px;
+	padding-bottom: 1px;
+}
