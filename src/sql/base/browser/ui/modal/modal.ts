@@ -410,6 +410,10 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 	}
 
+	protected get title(): string {
+		return this._title;
+	}
+
 	/**
 	 * Set the icon title class name
 	 * @param iconClassName

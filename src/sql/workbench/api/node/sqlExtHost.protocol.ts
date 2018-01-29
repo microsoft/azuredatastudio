@@ -409,7 +409,8 @@ export const SqlMainContext = {
 	MainThreadCredentialManagement: createMainId<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
 	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
 	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
-	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider')
+	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
+	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
 };
 
 export const SqlExtHostContext = {
@@ -417,5 +418,19 @@ export const SqlExtHostContext = {
 	ExtHostCredentialManagement: createExtId<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
 	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
 	ExtHostSerializationProvider: createExtId<ExtHostSerializationProviderShape>('ExtHostSerializationProvider'),
-	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider')
+	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
+	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs')
 };
+
+export interface MainThreadModalDialogShape extends IDisposable {
+	$createDialog(handle: number): void;
+	$disposeDialog(handle: number): void;
+	$show(handle: number): void;
+	$setTitle(handle: number, value: string): void;
+	$setHtml(handle: number, value: string): void;
+	$sendMessage(handle: number, value: any): Thenable<boolean>;
+}
+export interface ExtHostModalDialogsShape {
+	$onMessage(handle: number, message: any): void;
+	$onClosed(handle: number): void;
+}

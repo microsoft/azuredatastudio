@@ -1360,4 +1360,63 @@ declare module 'data' {
 		result: boolean;
 		ipAddress: string;
 	}
+
+	export interface ModalDialog {
+		/**
+		 * Title of the webview.
+		 */
+		title: string;
+
+		/**
+		 * Contents of the dialog body.
+		 */
+		html: string;
+
+		/**
+		 * The caption of the OK button.
+		 */
+		okTitle: string;
+
+		/**
+		 * The caption of the Close button.
+		 */
+		closeTitle: string;
+
+		/**
+		 * Opens the dialog.
+		 */
+		open(): void;
+
+		/**
+		 * Closes the dialog.
+		 */
+		close(): void;
+
+		/**
+		 * Raised when the webview posts a message.
+		 */
+		readonly onMessage: vscode.Event<any>;
+
+		/**
+		 * Raised when dialog closed.
+		 */
+		readonly onClosed: vscode.Event<any>;
+
+		/**
+		 * Post a message to the dialog.
+		 *
+		 * @param message Body of the message.
+		 */
+		postMessage(message: any): Thenable<any>;
+	}
+
+	export namespace window {
+		/**
+		 * creates a dialog
+		 * @param title
+		 */
+		export function createDialog(
+			title: string
+		): ModalDialog;
+	}
 }
