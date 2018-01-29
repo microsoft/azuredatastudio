@@ -4,51 +4,29 @@
  *--------------------------------------------------------------------------------------------*/
 import { $, append, show, hide } from 'vs/base/browser/dom';
 import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
-import URI from 'vs/base/common/uri';
-import { IEditorInput } from 'vs/platform/editor/common/editor';
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
-import { IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
-import { IConnectionManagementService, IConnectionParams } from 'sql/parts/connection/common/connectionManagement';
-import { ConnectionStatusManager } from 'sql/parts/connection/common/connectionStatusManager';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 
-enum ConnectionActivityStatus {
-	Connected,
-	Disconnected
-}
-
-// Contains connection status for each editor
-class ConnectionStatusEditor {
-	public connectionActivityStatus: ConnectionActivityStatus;
-	public connectionProfile: IConnectionProfile;
-
-	constructor() {
-		this.connectionActivityStatus = ConnectionActivityStatus.Disconnected;
-	}
-}
-
-// Connection status bar for editor
+// Connection status bar showing the current global connection
 export class ConnectionStatusbarItem implements IStatusbarItem {
 
 	private _element: HTMLElement;
 	private _connectionElement: HTMLElement;
-	private _connectionStatusEditors: { [connectionUri: string]: ConnectionStatusEditor };
 	private _toDispose: IDisposable[];
-	private _connectionStatusManager: ConnectionStatusManager;
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IEditorGroupService private _editorGroupService: IEditorGroupService,
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 	) {
-		this._connectionStatusEditors = {};
-		this._connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService);
 	}
 
 	public render(container: HTMLElement): IDisposable {
@@ -58,80 +36,25 @@ export class ConnectionStatusbarItem implements IStatusbarItem {
 
 		this._toDispose = [];
 		this._toDispose.push(
-			this._connectionManagementService.onConnect((connectionUri: IConnectionParams) => this._onConnect(connectionUri)),
-			this._connectionManagementService.onConnectionChanged((connectionUri: IConnectionParams) => this._onConnect(connectionUri)),
-			this._connectionManagementService.onDisconnect((connectionUri: IConnectionParams) => this._onDisconnect(connectionUri)),
-			this._editorGroupService.onEditorsChanged(() => this._onEditorsChanged()),
-			this._editorGroupService.getStacksModel().onEditorClosed(event => this._onEditorClosed(event))
+			this._connectionManagementService.onConnect(() => this._updateStatus()),
+			this._connectionManagementService.onConnectionChanged(() => this._updateStatus()),
+			this._connectionManagementService.onDisconnect(() => this._updateStatus()),
+			this._editorGroupService.onEditorsChanged(() => this._updateStatus()),
+			this._editorGroupService.getStacksModel().onEditorClosed(() => this._updateStatus()),
+			this._objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus())
 		);
 
 		return combinedDisposable(this._toDispose);
 	}
 
-	private _onEditorClosed(event: IEditorCloseEvent): void {
-		let uri = WorkbenchUtils.getEditorUri(event.editor);
-		if (uri && uri in this._connectionStatusEditors) {
-			this._updateStatus(uri, ConnectionActivityStatus.Disconnected, undefined);
-			delete this._connectionStatusEditors[uri];
-		}
-	}
-
-	private _onEditorsChanged(): void {
-		let activeEditor = this._editorService.getActiveEditor();
-		if (activeEditor) {
-			let uri = WorkbenchUtils.getEditorUri(activeEditor.input);
-
-			// Show active editor's query status
-			if (uri && uri in this._connectionStatusEditors) {
-				this._showStatus(uri);
-			} else {
-				hide(this._connectionElement);
-			}
+	// Update the connection status shown in the bar
+	private _updateStatus(): void {
+		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService);
+		if (activeConnection) {
+			this._setConnectionText(activeConnection);
+			show(this._connectionElement);
 		} else {
 			hide(this._connectionElement);
-		}
-	}
-
-	private _onConnect(connectionParams: IConnectionParams): void {
-		if (!this._connectionStatusManager.isDefaultTypeUri(connectionParams.connectionUri)) {
-			this._updateStatus(connectionParams.connectionUri, ConnectionActivityStatus.Connected, connectionParams.connectionProfile);
-		}
-	}
-
-	private _onDisconnect(connectionUri: IConnectionParams): void {
-		if (!this._connectionStatusManager.isDefaultTypeUri(connectionUri.connectionUri)) {
-			this._updateStatus(connectionUri.connectionUri, ConnectionActivityStatus.Disconnected, undefined);
-		}
-	}
-
-	// Update connection status for the editor
-	private _updateStatus(uri: string, newStatus: ConnectionActivityStatus, connectionProfile: IConnectionProfile) {
-		if (uri) {
-			if (!(uri in this._connectionStatusEditors)) {
-				this._connectionStatusEditors[uri] = new ConnectionStatusEditor();
-			}
-			this._connectionStatusEditors[uri].connectionActivityStatus = newStatus;
-			this._connectionStatusEditors[uri].connectionProfile = connectionProfile;
-			this._showStatus(uri);
-		}
-	}
-
-	// Show/hide query status for active editor
-	private _showStatus(uri: string): void {
-		let activeEditor = this._editorService.getActiveEditor();
-		if (activeEditor) {
-			let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
-			if (uri === currentUri) {
-				switch (this._connectionStatusEditors[uri].connectionActivityStatus) {
-					case ConnectionActivityStatus.Connected:
-						this._setConnectionText(this._connectionStatusEditors[uri].connectionProfile);
-						show(this._connectionElement);
-						break;
-					case ConnectionActivityStatus.Disconnected:
-						hide(this._connectionElement);
-						break;
-				}
-			}
 		}
 	}
 
