@@ -18,6 +18,7 @@ import { DashboardTab } from 'sql/parts/dashboard/common/dashboardTab.component'
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { CloseTabAction } from './actions';
+import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -32,7 +33,6 @@ import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as objects from 'vs/base/common/objects';
-import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 import Event, { Emitter } from 'vs/base/common/event';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
