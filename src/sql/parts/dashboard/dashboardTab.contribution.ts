@@ -4,12 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import URI from 'vs/base/common/uri';
-import { join } from 'path';
-import { createCSSRule } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { IdGenerator } from 'vs/base/common/idGenerator';
-import * as types from 'vs/base/common/types';
 
 import { GenerateDashboardWidgetSchema } from 'sql/parts/dashboard/pages/dashboardPageContribution';
 import { RegisterTab } from 'sql/platform/dashboard/common/dashboardRegistry';
@@ -19,39 +14,29 @@ export interface IDashboardTabContrib {
 	id: string;
 	title: string;
 	widgets: WidgetConfig[];
-	icon: string | { light: string, dark: string };
+	description: string;
 	provider: string | string[];
 	edition: number | number[];
+	alwaysShow: boolean;
 }
 
 const tabContributionSchema: IJSONSchema = {
 	type: 'object',
 	properties: {
 		id: {
-			type: 'string'
+			type: 'string',
+			description: localize('sqlops.extension.contributes.dashboard.tab.id', "Unique identifier for this tab. Will be passed to the extension for any requests.")
 		},
 		title: {
+			type: 'string',
+			description: localize('sqlops.extension.contributes.dashboard.tab.title', "Title of the tab to show the user.")
+		},
+		description: {
+			description: localize('sqlops.extension.contributes.dashboard.tab.description', "Description of this tab that will be shown to the user."),
 			type: 'string'
 		},
-		icon: {
-			anyOf: [{
-				type: 'string'
-			},
-			{
-				type: 'object',
-				properties: {
-					light: {
-						description: localize('sqlops.extension.contributes.dashboard.tab.icon.light', 'Icon path when a light theme is used'),
-						type: 'string'
-					},
-					dark: {
-						description: localize('sqlops.extension.contributes.dashboard.tab.icon.dark', 'Icon path when a dark theme is used'),
-						type: 'string'
-					}
-				}
-			}]
-		},
 		provider: {
+			description: localize('sqlops.extension.contributes.dashboard.tab.provider', "Providers for which this tab should be allowed for."),
 			anyOf: [
 				{
 					type: 'string'
@@ -65,6 +50,7 @@ const tabContributionSchema: IJSONSchema = {
 			]
 		},
 		edition: {
+			description: localize('sqlops.extension.contributes.dashboard.tab.edition', "Editions for which this tab should be allowed for."),
 			anyOf: [
 				{
 					type: 'number'
@@ -78,34 +64,34 @@ const tabContributionSchema: IJSONSchema = {
 			]
 		},
 		widgets: {
+			description: localize('sqlops.extension.cotnributes.dashboard.tab.edition', "The list of widgets that will be displayed in this tab."),
 			type: 'array',
 			items: GenerateDashboardWidgetSchema()
+		},
+		alwaysShow: {
+			description: localize('sqlops.extension.contributes.dashboard.tab.alwaysShow', "Whether or not this tab should always be shown or only when the user adds it."),
+			type: 'boolean'
 		}
 	}
 };
 
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>('dashboard.tabs', [], tabContributionSchema).setHandler(extensions => {
 
-	const ids = new IdGenerator('contrib-dashboard-tab-icon-');
-
 	function handleCommand(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
-		let iconClass: string;
-		let iconPath: string;
-		let { icon, widgets, title, edition, provider, id } = tab;
-		if (icon) {
-			iconClass = ids.nextId();
-			if (types.isString(icon)) {
-				iconPath = join(extension.description.extensionFolderPath, icon);
-				createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(iconPath).toString()}")`);
-			} else {
-				const light = join(extension.description.extensionFolderPath, icon.light);
-				const dark = join(extension.description.extensionFolderPath, icon.dark);
-				createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(light).toString()}")`);
-				createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${URI.file(dark).toString()}")`);
-				iconPath = join(extension.description.extensionFolderPath, icon.dark);
-			}
+		let { description, widgets, title, edition, provider, id, alwaysShow } = tab;
+		alwaysShow = alwaysShow || false;
+		let publisher = extension.description.publisher;
+		if (!title) {
+			extension.collector.error('No title specified for extension.');
+			return;
 		}
-		RegisterTab({ iconClass, title, widgets, edition, provider, id });
+		if (!widgets) {
+			extension.collector.warn('No widgets specified to show; an empty dashboard tab will be shown.');
+		}
+		if (!description) {
+			extension.collector.warn('No description specified to show.');
+		}
+		RegisterTab({ description, title, widgets, edition, provider, id, alwaysShow, publisher });
 	}
 
 	for (let extension of extensions) {
