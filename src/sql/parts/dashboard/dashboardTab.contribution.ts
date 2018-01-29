@@ -19,7 +19,7 @@ export interface IDashboardTabContrib {
 	id: string;
 	title: string;
 	widgets: WidgetConfig[];
-	icon: string | { light: string, dark: string};
+	icon: string | { light: string, dark: string };
 	provider: string | string[];
 	edition: number | number[];
 }
