@@ -25,16 +25,13 @@ suite('ExtHostWorkspace', function () {
 	}
 
 	test('asRelativePath', function () {
-
-		// const ws = new ExtHostWorkspace(new TestThreadService(), { id: 'foo', folders: [aWorkspaceFolderData(URI.file('/Coding/Applications/NewsWoWBot'), 0)], name: 'Test' });
-
-		// assertAsRelativePath(ws, '/Coding/Applications/NewsWoWBot/bernd/das/brot', 'bernd/das/brot');
-		// assertAsRelativePath(ws, '/Apps/DartPubCache/hosted/pub.dartlang.org/convert-2.0.1/lib/src/hex.dart',
-		// 	'/Apps/DartPubCache/hosted/pub.dartlang.org/convert-2.0.1/lib/src/hex.dart');
-
-		// assertAsRelativePath(ws, '', '');
-		// assertAsRelativePath(ws, '/foo/bar', '/foo/bar');
-		// assertAsRelativePath(ws, 'in/out', 'in/out');
 	});
 
+	function aWorkspaceFolderData(uri: URI, index: number, name: string = ''): IWorkspaceFolderData {
+		return {
+			uri,
+			index,
+			name: name || basename(uri.path)
+		};
+	}
 });

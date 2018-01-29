@@ -269,11 +269,8 @@ export class UntitledEditorInput extends EditorInput implements IEncodingSupport
 			return true;
 		}
 
-		// {{SQL CARBON EDIT}}
-		let isUntitledInput: boolean = otherInput instanceof UntitledEditorInput;
-		let isQueryInput: boolean = otherInput && otherInput.sql && otherInput.sql instanceof UntitledEditorInput;
-		if (isUntitledInput || isQueryInput) {
-			const otherUntitledEditorInput = isUntitledInput ? <UntitledEditorInput>otherInput : <UntitledEditorInput>otherInput.sql;
+		if (otherInput instanceof UntitledEditorInput) {
+			const otherUntitledEditorInput = <UntitledEditorInput>otherInput;
 
 			// Otherwise compare by properties
 			return otherUntitledEditorInput.resource.toString() === this.resource.toString();

@@ -21,12 +21,12 @@ import URI from 'vs/base/common/uri';
  * @returns {*}
  */
 export function getSqlConfigSection(workspaceConfigService: IConfigurationService, sectionName: string): any {
-	let config = workspaceConfigService.getConfiguration(ConnectionConstants.sqlConfigSectionName);
+	let config = workspaceConfigService.getValue(ConnectionConstants.sqlConfigSectionName);
 	return config ? config[sectionName] : {};
 }
 
 export function getSqlConfigValue<T>(workspaceConfigService: IConfigurationService, configName: string): T {
-	let config = workspaceConfigService.getConfiguration(ConnectionConstants.sqlConfigSectionName);
+	let config = workspaceConfigService.getValue(ConnectionConstants.sqlConfigSectionName);
 	return config[configName];
 }
 

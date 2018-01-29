@@ -79,17 +79,8 @@ export class FileBrowserDialog extends Modal {
 
 		if (this.backButton) {
 
-			this.backButton.addListener(DOM.EventType.CLICK, () => {
+			this.backButton.onDidClick(() => {
 				this.close();
-			});
-
-			this.backButton.addListener(DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-				var event = new StandardKeyboardEvent(e);
-				if (event.keyCode === KeyCode.Enter) {
-					this.close();
-					event.preventDefault();
-					event.stopPropagation();
-				}
 			});
 
 			this._register(attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));

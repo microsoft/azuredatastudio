@@ -10,7 +10,7 @@ import { Action, IAction } from 'vs/base/common/actions';
 import * as DOM from 'vs/base/browser/dom';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
-import { PersistentViewsViewlet } from 'vs/workbench/browser/parts/views/viewsViewlet';
+import { PersistentViewsViewlet, ViewsViewletPanel } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IDebugService, VIEWLET_ID, State, VARIABLES_VIEW_ID, WATCH_VIEW_ID, CALLSTACK_VIEW_ID, BREAKPOINTS_VIEW_ID } from 'vs/workbench/parts/debug/common/debug';
 import { StartAction, ToggleReplAction, ConfigureAction } from 'vs/workbench/parts/debug/browser/debugActions';
 import { StartDebugActionItem } from 'vs/workbench/parts/debug/browser/debugActionItems';
@@ -25,11 +25,14 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { ViewLocation } from 'vs/workbench/browser/parts/views/viewsRegistry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 export class DebugViewlet extends PersistentViewsViewlet {
 
 	private startDebugActionItem: StartDebugActionItem;
 	private progressRunner: IProgressRunner;
+	private breakpointView: ViewsViewletPanel;
+	private panelListeners = new Map<string, IDisposable>();
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -103,6 +106,32 @@ export class DebugViewlet extends PersistentViewsViewlet {
 			this.progressRunner = this.progressService.show(true);
 		} else {
 			this.progressRunner = null;
+		}
+	}
+
+	addPanel(panel: ViewsViewletPanel, size: number, index?: number): void {
+		super.addPanel(panel, size, index);
+
+		// attach event listener to
+		if (panel.id === BREAKPOINTS_VIEW_ID) {
+			this.breakpointView = panel;
+			this.updateBreakpointsMaxSize();
+		} else {
+			this.panelListeners.set(panel.id, panel.onDidChange(() => this.updateBreakpointsMaxSize()));
+		}
+	}
+
+	removePanel(panel: ViewsViewletPanel): void {
+		super.removePanel(panel);
+		dispose(this.panelListeners.get(panel.id));
+		this.panelListeners.delete(panel.id);
+	}
+
+	private updateBreakpointsMaxSize(): void {
+		if (this.breakpointView) {
+			// We need to update the breakpoints view since all other views are collapsed #25384
+			const allOtherCollapsed = this.views.every(view => !view.isExpanded() || view === this.breakpointView);
+			this.breakpointView.maximumBodySize = allOtherCollapsed ? Number.POSITIVE_INFINITY : this.breakpointView.minimumBodySize;
 		}
 	}
 }

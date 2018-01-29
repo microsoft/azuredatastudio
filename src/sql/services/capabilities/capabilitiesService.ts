@@ -99,14 +99,34 @@ export class CapabilitiesService implements ICapabilitiesService {
 		// Get extensions and filter where the category has 'Data Provider' in it
 		this.extensionManagementService.getInstalled(LocalExtensionType.User).then((extensions: ILocalExtension[]) => {
 			let dataProviderExtensions = extensions.filter(extension  =>
-				extension.manifest.categories.indexOf(CapabilitiesService.DATA_PROVIDER_CATEGORY) > -1)
+				extension.manifest.categories.indexOf(CapabilitiesService.DATA_PROVIDER_CATEGORY) > -1);
 
-			if(dataProviderExtensions.length > 0) {
+			if (dataProviderExtensions.length > 0) {
 				// Scrape out disabled extensions
-				const disabledExtensions = this.extensionEnablementService.getGloballyDisabledExtensions()
-																			.map(disabledExtension => disabledExtension.id);
-				dataProviderExtensions = dataProviderExtensions.filter(extension =>
-					disabledExtensions.indexOf(getGalleryExtensionId(extension.manifest.publisher, extension.manifest.name)) < 0)
+
+				// @SQLTODO reenable this code
+				// this.extensionEnablementService.getDisabledExtensions()
+				// 	.then(disabledExtensions => {
+
+				// 		let disabledExtensionsId = disabledExtensions.map(disabledExtension => disabledExtension.id);
+				// 		dataProviderExtensions = dataProviderExtensions.filter(extension =>
+				// 			disabledExtensions.indexOf(getGalleryExtensionId(extension.manifest.publisher, extension.manifest.name)) < 0);
+
+
+				// 	// 	return extensions.map(extension => {
+				// 	// 		return {
+				// 	// 			identifier: { id: adoptToGalleryExtensionId(stripVersion(extension.identifier.id)), uuid: extension.identifier.uuid },
+				// 	// 			local: extension,
+				// 	// 			globallyEnabled: disabledExtensions.every(disabled => !areSameExtensions(disabled, extension.identifier))
+				// 	// 		};
+				// 	// 	});
+				// 	});
+
+
+				// const disabledExtensions = this.extensionEnablementService.getGloballyDisabledExtensions()
+				// 															.map(disabledExtension => disabledExtension.id);
+				// dataProviderExtensions = dataProviderExtensions.filter(extension =>
+				// 	disabledExtensions.indexOf(getGalleryExtensionId(extension.manifest.publisher, extension.manifest.name)) < 0);
 			}
 
 			this._expectedCapabilitiesCount += dataProviderExtensions.length;

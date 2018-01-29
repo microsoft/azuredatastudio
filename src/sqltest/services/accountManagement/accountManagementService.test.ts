@@ -445,7 +445,7 @@ suite('Account Management Service Tests:', () => {
 		// ... Add mocking for instantiating an account dialog controller
 		let mockDialogController = TypeMoq.Mock.ofType(AccountDialogController);
 		mockDialogController.setup(x => x.openAccountDialog());
-		state.instantiationService.setup(x => x.createInstance<AccountDialogController>(TypeMoq.It.isValue(AccountDialogController)))
+		state.instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountDialogController)))
 			.returns(() => mockDialogController.object);
 
 		// If: I open the account dialog when it doesn't exist
@@ -453,7 +453,7 @@ suite('Account Management Service Tests:', () => {
 			.then(() => {
 				// Then:
 				// ... The instantiation service should have been called once
-				state.instantiationService.verify(x => x.createInstance<AccountDialogController>(TypeMoq.It.isValue(AccountDialogController)), TypeMoq.Times.once());
+				state.instantiationService.verify(x => x.createInstance(TypeMoq.It.isValue(AccountDialogController)), TypeMoq.Times.once());
 
 				// ... The dialog should have been opened
 				mockDialogController.verify(x => x.openAccountDialog(), TypeMoq.Times.once());
@@ -472,7 +472,7 @@ suite('Account Management Service Tests:', () => {
 		// ... Add mocking for instantiating an account dialog controller
 		let mockDialogController = TypeMoq.Mock.ofType(AccountDialogController);
 		mockDialogController.setup(x => x.openAccountDialog());
-		state.instantiationService.setup(x => x.createInstance<AccountDialogController>(TypeMoq.It.isValue(AccountDialogController)))
+		state.instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountDialogController)))
 			.returns(() => mockDialogController.object);
 
 		// If: I open the account dialog for a second time
@@ -481,7 +481,7 @@ suite('Account Management Service Tests:', () => {
 			.then(() => {
 				// Then:
 				// ... The instantiation service should have only been called once
-				state.instantiationService.verify(x => x.createInstance<AccountDialogController>(TypeMoq.It.isValue(AccountDialogController)), TypeMoq.Times.once());
+				state.instantiationService.verify(x => x.createInstance(TypeMoq.It.isValue(AccountDialogController)), TypeMoq.Times.once());
 
 				// ... The dialog should have been opened twice
 				mockDialogController.verify(x => x.openAccountDialog(), TypeMoq.Times.exactly(2));
@@ -559,7 +559,7 @@ function getTestState(): AccountManagementState {
 
 	// Create instantiation service
 	let mockInstantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
-	mockInstantiationService.setup(x => x.createInstance<AccountStore>(TypeMoq.It.isValue(AccountStore), TypeMoq.It.isAny()))
+	mockInstantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountStore), TypeMoq.It.isAny()))
 		.returns(() => mockAccountStore.object);
 
 	// Create mock memento

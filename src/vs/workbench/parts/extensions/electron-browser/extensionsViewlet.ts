@@ -51,6 +51,9 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IContextKeyService, ContextKeyExpr, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { getGalleryExtensionIdFromLocal, getMaliciousExtensionsSet } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
+import { ILogService } from 'vs/platform/log/common/log';
+import { ReloadWindowAction } from 'vs/workbench/electron-browser/actions';
 
 interface SearchInputEvent extends Event {
 	target: HTMLInputElement;
@@ -85,7 +88,6 @@ export class ExtensionsViewlet extends PersistentViewsViewlet implements IExtens
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IWorkbenchEditorService private editorService: IWorkbenchEditorService,
 		@IEditorGroupService private editorInputService: IEditorGroupService,
-		@IExtensionsWorkbenchService private extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IExtensionManagementService private extensionManagementService: IExtensionManagementService,
 		@IMessageService private messageService: IMessageService,
 		@IViewletService private viewletService: IViewletService,
@@ -106,7 +108,7 @@ export class ExtensionsViewlet extends PersistentViewsViewlet implements IExtens
 		this.searchInstalledExtensionsContextKey = SearchInstalledExtensionsContext.bindTo(contextKeyService);
 		this.recommendedExtensionsContextKey = RecommendedExtensionsContext.bindTo(contextKeyService);
 
-		this.disposables.push(viewletService.onDidViewletOpen(this.onViewletOpen, this, this.disposables));
+		this.disposables.push(this.viewletService.onDidViewletOpen(this.onViewletOpen, this, this.disposables));
 
 		this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration(AutoUpdateConfigurationKey)) {
@@ -432,10 +434,6 @@ export class StatusUpdater implements IWorkbenchContribution {
 		extensionsWorkbenchService.onChange(this.onServiceChange, this, this.disposables);
 	}
 
-	getId(): string {
-		return 'vs.extensions.statusupdater';
-	}
-
 	private onServiceChange(): void {
 
 		dispose(this.badgeHandle);
@@ -455,5 +453,51 @@ export class StatusUpdater implements IWorkbenchContribution {
 	dispose(): void {
 		this.disposables = dispose(this.disposables);
 		dispose(this.badgeHandle);
+	}
+}
+
+export class MaliciousExtensionChecker implements IWorkbenchContribution {
+
+	private disposables: IDisposable[];
+
+	constructor(
+		@IExtensionManagementService private extensionsManagementService: IExtensionManagementService,
+		@IInstantiationService private instantiationService: IInstantiationService,
+		@ILogService private logService: ILogService,
+		@IMessageService private messageService: IMessageService
+	) {
+		this.loopCheckForMaliciousExtensions();
+	}
+
+	private loopCheckForMaliciousExtensions(): void {
+		this.checkForMaliciousExtensions()
+			.then(() => TPromise.timeout(1000 * 60 * 5)) // every five minutes
+			.then(() => this.loopCheckForMaliciousExtensions());
+	}
+
+	private checkForMaliciousExtensions(): TPromise<any> {
+		return this.extensionsManagementService.getExtensionsReport().then(report => {
+			const maliciousSet = getMaliciousExtensionsSet(report);
+
+			return this.extensionsManagementService.getInstalled(LocalExtensionType.User).then(installed => {
+				const maliciousExtensions = installed
+					.filter(e => maliciousSet.has(getGalleryExtensionIdFromLocal(e)));
+
+				if (maliciousExtensions.length) {
+					return TPromise.join(maliciousExtensions.map(e => this.extensionsManagementService.uninstall(e, true).then(() => {
+						this.messageService.show(Severity.Warning, {
+							message: localize('malicious warning', "We have uninstalled '{0}' which was reported to be malicious.", getGalleryExtensionIdFromLocal(e)),
+							actions: [this.instantiationService.createInstance(ReloadWindowAction, ReloadWindowAction.ID, localize('reloadNow', "Reload Now"))]
+						});
+					})));
+				} else {
+					return TPromise.as(null);
+				}
+			});
+		}, err => this.logService.error(err));
+	}
+
+	dispose(): void {
+		this.disposables = dispose(this.disposables);
 	}
 }
