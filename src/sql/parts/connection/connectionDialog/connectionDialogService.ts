@@ -43,6 +43,7 @@ export interface IConnectionComponentCallbacks {
 	onCreateNewServerGroup?: () => void;
 	onAdvancedProperties?: () => void;
 	onSetAzureTimeOut?: () => void;
+	onFetchDatabases?: (serverName: string) => Promise<string[]>;
 }
 
 export interface IConnectionComponentController {
