@@ -44,17 +44,24 @@ export class ConnectionController implements IConnectionComponentController {
 			onCreateNewServerGroup: () => this.onCreateNewServerGroup(),
 			onAdvancedProperties: () => this.handleOnAdvancedProperties(),
 			onSetAzureTimeOut: () => this.handleonSetAzureTimeOut(),
-			onFetchDatabases: () => this.onFetchDatabases(this._connectionWidget.serverName).then(result => {
+			onFetchDatabases: (serverName: string, authenticationType: string, userName?: string, password?: string) => this.onFetchDatabases(
+				serverName, authenticationType, userName, password).then(result => {
 				return result;
 			})
 		}, providerName);
 		this._providerName = providerName;
 	}
 
-	private onFetchDatabases(serverName: string): Promise<string[]> {
+	private onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string): Promise<string[]> {
 		let tempProfile = this._model;
 		tempProfile.serverName = serverName;
-		tempProfile.authenticationType = Constants.integrated;
+		if (authenticationType === Constants.integrated) {
+			tempProfile.authenticationType = Constants.integrated;
+		} else {
+			tempProfile.authenticationType = Constants.sqlLogin;
+			tempProfile.userName = userName;
+			tempProfile.password = password;
+		}
 		let uri = this._connectionManagementService.getConnectionId(tempProfile);
 		return new Promise<string[]>((resolve, reject) => {
 			this._connectionManagementService.connect(tempProfile, uri).then(connResult => {

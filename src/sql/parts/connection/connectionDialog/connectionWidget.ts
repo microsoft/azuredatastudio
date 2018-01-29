@@ -159,23 +159,6 @@ export class ConnectionWidget {
 			placeholder: '<Default>'
 		});
 
-		this._databaseNameInputBox.onFocus(() => {
-			if (this.serverName) {
-				this._databaseNameInputBox.values = ['Loading...'];
-				this._callbacks.onFetchDatabases(this.serverName).then(databases => {
-					if (databases) {
-						this._databaseNameInputBox.values = databases;
-					} else {
-						this._databaseNameInputBox.values = ['<Default>'];
-					}
-				}).catch(() => {
-					this._databaseNameInputBox.values = ['<Default>'];
-				});
-			} else {
-				this._databaseNameInputBox.values = ['<Default>'];
-			}
-		});
-
 		let serverGroupLabel = localize('serverGroup', 'Server group');
 		let serverGroupBuilder = DialogHelper.appendRow(this._tableContainer, serverGroupLabel, 'connection-label', 'connection-input');
 		DialogHelper.appendInputSelectBox(serverGroupBuilder, this._serverGroupSelectBox);
@@ -255,6 +238,31 @@ export class ConnectionWidget {
 
 		this._toDispose.push(this._passwordInputBox.onDidChange(passwordInput => {
 			this._password = passwordInput;
+		}));
+
+		this._toDispose.push(this._databaseNameInputBox.onFocus(() => {
+			if (this.serverName) {
+				this._databaseNameInputBox.values = ['Loading...'];
+				this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password).then(databases => {
+					if (databases) {
+						this._databaseNameInputBox.values = databases;
+					} else {
+						this._databaseNameInputBox.values = ['<Default>'];
+					}
+				}).catch(() => {
+					this._databaseNameInputBox.values = ['<Default>'];
+				});
+			} else {
+				this._databaseNameInputBox.values = ['<Default>'];
+			}
+		}));
+
+		this._toDispose.push(this._databaseNameInputBox.onValueChange(s => {
+			if (s === '<Default>' || s === 'Loading...') {
+				this._databaseNameInputBox.value = '';
+			} else {
+				this._databaseNameInputBox.value = s;
+			}
 		}));
 	}
 
