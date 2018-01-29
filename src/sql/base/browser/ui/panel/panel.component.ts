@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone, OnInit, Input } from '@angular/core';
+import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
 import { TabComponent } from './tab.component';
 import './panelStyles';
@@ -43,6 +43,7 @@ export class PanelComponent implements AfterContentInit, OnInit {
 	@Input() public options: IPanelOptions;
 	@ContentChildren(TabComponent) private _tabs: QueryList<TabComponent>;
 	private _activeTab: TabComponent;
+	@Output() public onTabChange = new EventEmitter<TabComponent>();
 
 	constructor( @Inject(forwardRef(() => NgZone)) private _zone: NgZone) { }
 
@@ -90,6 +91,7 @@ export class PanelComponent implements AfterContentInit, OnInit {
 
 				this._activeTab = tab;
 				this._activeTab.active = true;
+				this.onTabChange.emit(tab);
 			});
 		}
 	}

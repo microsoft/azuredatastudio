@@ -10,7 +10,7 @@
 			<dashboard-widget-wrapper #properties *ngIf="propertiesWidget" [_config]="propertiesWidget" style="padding-left: 10px; padding-right: 10px; height: 90px; display: block">
 			</dashboard-widget-wrapper>
 		</div>
-		<panel class="fullsize">
+		<panel class="fullsize" (onTabChange)="handleTabChange($event)">
 			<tab *ngFor="let tab of tabs" [title]="tab.name" class="fullsize" [identifier]="tab.id" [actions] = "tab.actions">
 				<dashboard-tab [tab]="tab">
 				</dashboard-tab>

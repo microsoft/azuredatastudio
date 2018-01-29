@@ -7,6 +7,7 @@ import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces
 import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
+import { clone } from 'vs/base/common/objects';
 
 export type WidgetIdentifier = string;
 
@@ -17,11 +18,13 @@ export const Extensions = {
 export interface IDashboardWidgetRegistry {
 	databaseWidgetSchema: IJSONSchema;
 	serverWidgetSchema: IJSONSchema;
+	allSchema: IJSONSchema;
 	registerWidget(id: string, description: string, schema: IJSONSchema, context?: 'database' | 'server'): WidgetIdentifier;
 	registerNonCustomDashboardWidget(id: string, description: string, val: IInsightsConfig, context?: 'database' | 'server'): WidgetIdentifier;
 }
 
 class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
+	private _allSchema: IJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets', 'Widget used in the dashboards'), properties: {}, additionalProperties: false };
 	private _dashboardWidgetSchema: IJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets', 'Widget used in the dashboards'), properties: {}, additionalProperties: false };
 	private _serverWidgetSchema: IJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets', 'Widget used in the dashboards'), properties: {}, additionalProperties: false };
 	/**
@@ -39,6 +42,8 @@ class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
 		if (context === undefined || context === 'server') {
 			this._serverWidgetSchema.properties[id] = schema;
 		}
+
+		this._allSchema.properties[id] = schema;
 
 		return id;
 	}
@@ -63,11 +68,15 @@ class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
 	}
 
 	public get databaseWidgetSchema(): IJSONSchema {
-		return this._dashboardWidgetSchema;
+		return clone(this._dashboardWidgetSchema);
 	}
 
 	public get serverWidgetSchema(): IJSONSchema {
-		return this._serverWidgetSchema;
+		return clone(this._serverWidgetSchema);
+	}
+
+	public get allSchema(): IJSONSchema {
+		return clone(this._allSchema);
 	}
 }
 
