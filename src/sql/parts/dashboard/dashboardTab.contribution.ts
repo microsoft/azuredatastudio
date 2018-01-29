@@ -4,18 +4,52 @@
  *--------------------------------------------------------------------------------------------*/
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
+import URI from 'vs/base/common/uri';
+import { join } from 'path';
+import { createCSSRule } from 'vs/base/browser/dom';
+import { localize } from 'vs/nls';
+import { IdGenerator } from 'vs/base/common/idGenerator';
+import * as types from 'vs/base/common/types';
 
 import { GenerateDashboardWidgetSchema } from 'sql/parts/dashboard/pages/dashboardPageContribution';
-import { IDashboardTabContrib, RegisterTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { RegisterTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
+
+export interface IDashboardTabContrib {
+	id: string;
+	title: string;
+	widgets: WidgetConfig[];
+	icon: string | { light: string, dark: string};
+	provider: string | string[];
+	edition: number | number[];
+}
 
 const tabContributionSchema: IJSONSchema = {
 	type: 'object',
 	properties: {
+		id: {
+			type: 'string'
+		},
 		title: {
 			type: 'string'
 		},
 		icon: {
-			type: 'string'
+			anyOf: [{
+				type: 'string'
+			},
+			{
+				type: 'object',
+				properties: {
+					light: {
+						description: localize('sqlops.extension.contributes.dashboard.tab.icon.light', 'Icon path when a light theme is used'),
+						type: 'string'
+					},
+					dark: {
+						description: localize('sqlops.extension.contributes.dashboard.tab.icon.dark', 'Icon path when a dark theme is used'),
+						type: 'string'
+					}
+				}
+			}]
 		},
 		provider: {
 			anyOf: [
@@ -52,8 +86,26 @@ const tabContributionSchema: IJSONSchema = {
 
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>('dashboard.tabs', [], tabContributionSchema).setHandler(extensions => {
 
+	const ids = new IdGenerator('contrib-dashboard-tab-icon-');
+
 	function handleCommand(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
-		RegisterTab(tab);
+		let iconClass: string;
+		let iconPath: string;
+		let { icon, widgets, title, edition, provider, id } = tab;
+		if (icon) {
+			iconClass = ids.nextId();
+			if (types.isString(icon)) {
+				iconPath = join(extension.description.extensionFolderPath, icon);
+				createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(iconPath).toString()}")`);
+			} else {
+				const light = join(extension.description.extensionFolderPath, icon.light);
+				const dark = join(extension.description.extensionFolderPath, icon.dark);
+				createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(light).toString()}")`);
+				createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${URI.file(dark).toString()}")`);
+				iconPath = join(extension.description.extensionFolderPath, icon.dark);
+			}
+		}
+		RegisterTab({ iconClass, title, widgets, edition, provider, id });
 	}
 
 	for (let extension of extensions) {
