@@ -8,7 +8,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
-import { EventEmitter } from 'vs/base/common/eventEmitter';
+import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { IMessageService, Severity } from 'vs/platform/message/common/message';

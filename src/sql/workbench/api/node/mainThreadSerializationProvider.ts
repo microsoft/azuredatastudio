@@ -16,7 +16,7 @@ import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadSerializationProvider)
-export class MainThreadSerializationProvider extends MainThreadSerializationProviderShape {
+export class MainThreadSerializationProvider implements MainThreadSerializationProviderShape {
 
 	private _proxy: ExtHostSerializationProviderShape;
 
@@ -29,7 +29,6 @@ export class MainThreadSerializationProvider extends MainThreadSerializationProv
 		@ISerializationService private serializationService: ISerializationService
 
 	) {
-		super();
 		if (extHostContext) {
 			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostSerializationProvider);
 		}

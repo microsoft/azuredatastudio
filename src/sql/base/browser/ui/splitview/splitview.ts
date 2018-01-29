@@ -7,7 +7,7 @@
 
 import 'vs/css!./splitview';
 import lifecycle = require('vs/base/common/lifecycle');
-import ee = require('vs/base/common/eventEmitter');
+import ee = require('sql/base/common/eventEmitter');
 import types = require('vs/base/common/types');
 import dom = require('vs/base/browser/dom');
 import numbers = require('vs/base/common/numbers');
@@ -347,11 +347,11 @@ export abstract class AbstractCollapsibleView extends HeaderView {
 		// Track state of focus in header so that other components can adjust styles based on that
 		// (for example show or hide actions based on the state of being focused or not)
 		this.focusTracker = dom.trackFocus(this.header);
-		this.focusTracker.addFocusListener(() => {
+		this.focusTracker.onDidFocus(() => {
 			dom.addClass(this.header, 'focused');
 		});
 
-		this.focusTracker.addBlurListener(() => {
+		this.focusTracker.onDidBlur(() => {
 			dom.removeClass(this.header, 'focused');
 		});
 	}
@@ -602,8 +602,8 @@ export class SplitView extends lifecycle.Disposable implements
 		if (this.views.length > 2) {
 			let s = new sash.Sash(this.el, this, { orientation: this.sashOrientation });
 			this.sashes.splice(index - 1, 0, s);
-			this.sashesListeners.push(s.addListener('start', e => this.onSashStart(s, this.eventWrapper(e))));
-			this.sashesListeners.push(s.addListener('change', e => this.onSashChange(s, this.eventWrapper(e))));
+			this.sashesListeners.push(s.onDidStart((e) => this.onSashStart(s, this.eventWrapper(e))));
+			this.sashesListeners.push(s.onDidChange((e) => this.onSashChange(s, this.eventWrapper(e))));
 		}
 
 		this.viewChangeListeners.splice(index, 0, view.addListener('change', size => this.onViewChange(view, size)));
@@ -611,7 +611,7 @@ export class SplitView extends lifecycle.Disposable implements
 
 		let viewFocusTracker = dom.trackFocus(viewElement);
 		this.viewFocusListeners.splice(index, 0, viewFocusTracker);
-		viewFocusTracker.addFocusListener(() => this._onFocus.fire(view));
+		viewFocusTracker.onDidFocus(() => this._onFocus.fire(view));
 
 		this.viewFocusPreviousListeners.splice(index, 0, view.addListener('focusPrevious', () => index > 0 && this.views[index - 1].focus()));
 		this.viewFocusNextListeners.splice(index, 0, view.addListener('focusNext', () => index < this.views.length && this.views[index + 1].focus()));

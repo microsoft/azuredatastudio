@@ -205,7 +205,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 
 		if (this._providerCount === 1) {
 			// show the Registered Server viewlet
-			let startupConfig = this._workspaceConfigurationService.getConfiguration('startup');
+			let startupConfig = this._workspaceConfigurationService.getValue('startup');
 			if (startupConfig) {
 				let showServerViewlet = <boolean>startupConfig['alwaysShowServersView'];
 				if (showServerViewlet) {

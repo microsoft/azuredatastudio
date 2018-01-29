@@ -20,7 +20,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
-import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/common/findState';
+import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
 import { Dimension, Builder } from 'vs/base/browser/builder';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -70,7 +70,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		attachTableStyler(this._profilerTable, this._themeService);
 
 		this._findState = new FindReplaceState();
-		this._findState.addChangeListener(e => this._onFindStateChange(e));
+		this._findState.onFindReplaceStateChange(e => this._onFindStateChange(e));
 
 		this._finder = new FindWidget(
 			this,

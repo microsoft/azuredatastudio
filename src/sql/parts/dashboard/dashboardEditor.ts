@@ -75,7 +75,7 @@ export class DashboardEditor extends BaseEditor {
 			return TPromise.wrap(input.initializedPromise.then(() => this.bootstrapAngular(input)));
 		} else {
 			this._dashboardContainer = DOM.append(parentElement, this.input.container);
-			return TPromise.as<void>(null);
+			return TPromise.wrap<void>(null);
 		}
 	}
 

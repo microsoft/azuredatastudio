@@ -15,6 +15,17 @@ export enum ServiceOptionType {
 	object = 6
 }
 
+// SQL added extension host types
+export enum ServiceOptionTypeNames {
+	string = 'string',
+	multistring = 'multistring',
+	password = 'password',
+	number = 'number',
+	category = 'category',
+	boolean = 'boolean',
+	object = 'object'
+}
+
 export enum ConnectionOptionSpecialType {
 	serverName = 'serverName',
 	databaseName = 'databaseName',

@@ -130,7 +130,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		// Setup configuration to return a config that can be modified later.
 		workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.getConfiguration(Constants.sqlConfigSectionName))
+		workspaceConfigurationServiceMock.setup(x => x.getValue(Constants.sqlConfigSectionName))
 			.returns(() => configResult);
 
 		connectionManagementService = createConnectionManagementService();

@@ -10,7 +10,7 @@ import { FileKind } from 'vs/platform/files/common/files';
 import URI from 'vs/base/common/uri';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileLabel } from 'vs/workbench/browser/labels';
-import { IFileTemplateData } from 'vs/workbench/parts/files/browser/views/explorerViewer';
+import { IFileTemplateData } from 'vs/workbench/parts/files/electron-browser/views/explorerViewer';
 
 /**
  * Renders the tree items.

@@ -19,7 +19,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostC
 
 
 @extHostNamedCustomer(SqlMainContext.MainThreadResourceProvider)
-export class MainThreadResourceProvider extends MainThreadResourceProviderShape {
+export class MainThreadResourceProvider implements MainThreadResourceProviderShape {
 	private _providerMetadata: {[handle: number]: data.AccountProviderMetadata};
 	private _proxy: ExtHostResourceProviderShape;
 	private _toDispose: IDisposable[];
@@ -28,7 +28,6 @@ export class MainThreadResourceProvider extends MainThreadResourceProviderShape 
 		extHostContext: IExtHostContext,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService
 	) {
-		super();
 		this._providerMetadata = {};
 		if (extHostContext) {
 			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostResourceProvider);

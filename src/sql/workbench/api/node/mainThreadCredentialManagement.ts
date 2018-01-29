@@ -15,7 +15,7 @@ import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadCredentialManagement)
-export class MainThreadCredentialManagement extends MainThreadCredentialManagementShape {
+export class MainThreadCredentialManagement implements MainThreadCredentialManagementShape {
 
 	private _proxy: ExtHostCredentialManagementShape;
 
@@ -27,7 +27,6 @@ export class MainThreadCredentialManagement extends MainThreadCredentialManageme
 		extHostContext: IExtHostContext,
 		@ICredentialsService private credentialService: ICredentialsService
 	) {
-		super();
 		if (extHostContext) {
 			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostCredentialManagement);
 		}

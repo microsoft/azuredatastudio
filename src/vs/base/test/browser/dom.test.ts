@@ -10,15 +10,5 @@ const $ = dom.$;
 
 suite('dom', () => {
 	test('hasClass', () => {
-
-		// let element = document.createElement('div');
-		// element.className = 'foobar boo far';
-
-		// assert(dom.hasClass(element, 'foobar'));
-		// assert(dom.hasClass(element, 'boo'));
-		// assert(dom.hasClass(element, 'far'));
-		// assert(!dom.hasClass(element, 'bar'));
-		// assert(!dom.hasClass(element, 'foo'));
-		// assert(!dom.hasClass(element, ''));
 	});
 });

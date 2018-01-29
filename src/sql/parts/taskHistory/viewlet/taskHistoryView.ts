@@ -59,7 +59,7 @@ export class TaskHistoryView {
 		$('span').text(noTaskMessage).appendTo(this._messages);
 
 		this._tree = this.createTaskHistoryTree(container, this._instantiationService);
-		this._toDispose.push(this._tree.addListener('selection', (event) => this.onSelected(event)));
+		this._toDispose.push(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 
 		// Theme styler
 		this._toDispose.push(attachListStyler(this._tree, this._themeService));
