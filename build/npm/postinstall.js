@@ -5,14 +5,15 @@
 
 const cp = require('child_process');
 const path = require('path');
-const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+const fs = require('fs');
+const yarn = process.platform === 'win32' ? 'yarn.cmd' : 'yarn';
 
-function npmInstall(location, opts) {
+function yarnInstall(location, opts) {
 	opts = opts || {};
 	opts.cwd = location;
 	opts.stdio = 'inherit';
 
-	const result = cp.spawnSync(npm, ['install'], opts);
+	const result = cp.spawnSync(yarn, ['install'], opts);
 
 	if (result.error || result.status !== 0) {
 		process.exit(1);
@@ -20,36 +21,46 @@ function npmInstall(location, opts) {
 }
 
 // {{SQL CARBON EDIT}}
-npmInstall('dataprotocol-client');
-npmInstall('extensions-modules');
-npmInstall('extensions'); // node modules shared by all extensions
+yarnInstall('dataprotocol-client');
+yarnInstall('extensions-modules');
+yarnInstall('extensions'); // node modules shared by all extensions
+
+yarnInstall('extensions'); // node modules shared by all extensions
 
 const extensions = [
 	'vscode-colorize-tests',
-	'git',
 	'json',
-	'mssql',
+  'mssql',
 	'configuration-editing',
 	'extension-editing',
 	'markdown',
+	'git',
 	'merge-conflict',
 	'insights-default',
 	'account-provider-azure'
+
 ];
 
-extensions.forEach(extension => npmInstall(`extensions/${extension}`));
+extensions.forEach(extension => yarnInstall(`extensions/${extension}`));
 
-function npmInstallBuildDependencies() {
-	// make sure we install gulp watch for the system installed
+function yarnInstallBuildDependencies() {
+	// make sure we install the deps of build/lib/watch for the system installed
 	// node, since that is the driver of gulp
 	const env = Object.assign({}, process.env);
+	const watchPath = path.join(path.dirname(__dirname), 'lib', 'watch');
+	const yarnrcPath = path.join(watchPath, '.yarnrc');
 
-	delete env['npm_config_disturl'];
-	delete env['npm_config_target'];
-	delete env['npm_config_runtime'];
+	const disturl = 'https://nodejs.org/download/release';
+	const target = process.versions.node;
+	const runtime = 'node';
 
-	npmInstall(path.join(path.dirname(__dirname), 'lib', 'watch'), { env });
+	const yarnrc = `disturl "${disturl}"
+target "${target}"
+runtime "${runtime}"`;
+
+	fs.writeFileSync(yarnrcPath, yarnrc, 'utf8');
+	yarnInstall(watchPath, { env });
 }
 
-npmInstall(`build`); // node modules required for build
-npmInstallBuildDependencies(); // node modules for watching, specific to host node version, not electron
+yarnInstall(`build`); // node modules required for build
+yarnInstallBuildDependencies(); // node modules for watching, specific to host node version, not electron

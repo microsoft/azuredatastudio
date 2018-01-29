@@ -27,4 +27,24 @@ export class ClipboardService implements IClipboardService {
 	writeText(text: string): void {
 		this._vsClipboardService.writeText(text);
 	}
+
+	/**
+	 * Reads the content of the clipboard in plain text
+	 */
+	readText(): string {
+		return this._vsClipboardService.readText();
+	}
+	/**
+	 * Reads text from the system find pasteboard.
+	 */
+	readFindText(): string {
+		return this._vsClipboardService.readFindText();
+	}
+
+	/**
+	 * Writes text to the system find pasteboard.
+	 */
+	writeFindText(text: string): void {
+		this._vsClipboardService.writeFindText(text);
+	}
 }

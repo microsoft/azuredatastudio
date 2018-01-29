@@ -24,53 +24,7 @@ function createKeyboardMapper(isUSStandard: boolean, file: string, OS: Operating
 }
 
 suite('keyboardMapper - MAC de_ch', () => {
-
-	//let mapper: MacLinuxKeyboardMapper;
-
-	suiteSetup((done) => {
-		done();
-		// createKeyboardMapper(false, 'mac_de_ch', OperatingSystem.Macintosh).then((_mapper) => {
-		// 	mapper = _mapper;
-		// 	done();
-		// }, done);
-	});
-
 	test('mapping', (done) => {
 		done();
-	//	assertMapping(WRITE_FILE_IF_DIFFERENT, mapper, 'mac_de_ch.txt', done);
 	});
-
-	// function assertKeybindingTranslation(kb: number, expected: string | string[]): void {
-	// 	_assertKeybindingTranslation(mapper, OperatingSystem.Macintosh, kb, expected);
-	// }
-
-	// function _assertResolveKeybinding(k: number, expected: IResolvedKeybinding[]): void {
-	// 	assertResolveKeybinding(mapper, createKeybinding(k, OperatingSystem.Macintosh), expected);
-	// }
-
 });
-
-function _assertKeybindingTranslation(mapper: MacLinuxKeyboardMapper, OS: OperatingSystem, kb: number, _expected: string | string[]): void {
-	let expected: string[];
-	if (typeof _expected === 'string') {
-		expected = [_expected];
-	} else if (Array.isArray(_expected)) {
-		expected = _expected;
-	} else {
-		expected = [];
-	}
-
-	const runtimeKeybinding = createKeybinding(kb, OS);
-
-	const keybindingLabel = new USLayoutResolvedKeybinding(runtimeKeybinding, OS).getUserSettingsLabel();
-
-	const actualHardwareKeypresses = mapper.simpleKeybindingToScanCodeBinding(<SimpleKeybinding>runtimeKeybinding);
-	if (actualHardwareKeypresses.length === 0) {
-		assert.deepEqual([], expected, `simpleKeybindingToHardwareKeypress -- "${keybindingLabel}" -- actual: "[]" -- expected: "${expected}"`);
-		return;
-	}
-
-	const actual = actualHardwareKeypresses
-		.map(k => UserSettingsLabelProvider.toLabel(k, ScanCodeUtils.toString(k.scanCode), null, null, OS));
-	assert.deepEqual(actual, expected, `simpleKeybindingToHardwareKeypress -- "${keybindingLabel}" -- actual: "${actual}" -- expected: "${expected}"`);
-}

@@ -61,6 +61,8 @@ export interface IObjectExplorerService {
 	getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string };
 
 	isFocused(): boolean;
+
+	onSelectionOrFocusChange: Event<void>;
 }
 
 interface SessionStatus {
@@ -94,6 +96,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _serverTreeView: ServerTreeView;
 
+	private _onSelectionOrFocusChange: Emitter<void>;
+
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ITelemetryService private _telemetryService: ITelemetryService
@@ -102,10 +106,18 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._activeObjectExplorerNodes = {};
 		this._sessions = {};
 		this._providers = {};
+		this._onSelectionOrFocusChange = new Emitter<void>();
 	}
 
 	public get onUpdateObjectExplorerNodes(): Event<ObjectExplorerNodeEventArgs> {
 		return this._onUpdateObjectExplorerNodes.event;
+	}
+
+	/**
+	 * Event fired when the selection or focus of Object Explorer changes
+	 */
+	public get onSelectionOrFocusChange(): Event<void> {
+		return this._onSelectionOrFocusChange.event;
 	}
 
 	public updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> {
@@ -370,6 +382,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			throw new Error('The object explorer server tree view is already registered');
 		}
 		this._serverTreeView = view;
+		this._serverTreeView.onSelectionOrFocusChange(() => this._onSelectionOrFocusChange.fire());
 	}
 
 	/**

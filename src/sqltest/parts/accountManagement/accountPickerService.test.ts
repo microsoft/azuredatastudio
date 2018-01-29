@@ -94,7 +94,7 @@ function createInstantiationService(): InstantiationService {
 
 	// Create a mocked out instantiation service
 	let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
-	instantiationService.setup(x => x.createInstance<AccountPickerViewModel>(TypeMoq.It.isValue(AccountPickerViewModel), TypeMoq.It.isAny()))
+	instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountPickerViewModel), TypeMoq.It.isAny()))
 		.returns(() => mockAccountViewModel.object);
 
 	// Create a mock account picker
@@ -113,7 +113,7 @@ function createInstantiationService(): InstantiationService {
 		.returns((container) => undefined);
 	mockAccountDialog.setup(x => x.createAccountPickerComponent());
 
-	instantiationService.setup(x => x.createInstance<AccountPicker>(TypeMoq.It.isValue(AccountPicker), TypeMoq.It.isAny()))
+	instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountPicker), TypeMoq.It.isAny()))
 		.returns(() => mockAccountDialog.object);
 
 	return instantiationService.object;

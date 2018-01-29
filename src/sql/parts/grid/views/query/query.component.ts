@@ -28,7 +28,7 @@ import { error } from 'sql/base/common/log';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import * as strings from 'vs/base/common/strings';
-import { clone } from 'vs/base/common/objects';
+import { clone } from 'sql/base/common/objects';
 import * as DOM from 'vs/base/browser/dom';
 
 export const QUERY_SELECTOR: string = 'query-component';

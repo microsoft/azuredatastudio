@@ -349,7 +349,7 @@ export class EditDataEditor extends BaseEditor {
 				params,
 				this.editDataInput);
 		}
-		return TPromise.as<void>(null);
+		return TPromise.wrap<void>(null);
 	}
 
 	private _setTableViewVisible(): void {

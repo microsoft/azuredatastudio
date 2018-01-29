@@ -11,7 +11,6 @@ import { checksum } from 'vs/base/node/crypto';
 import { EventEmitter } from 'events';
 import { tmpdir } from 'os';
 import { spawn } from 'child_process';
-import { mkdirp } from 'vs/base/node/extfs';
 import { isString } from 'vs/base/common/types';
 import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { download, asJson } from 'vs/base/node/request';
@@ -43,7 +42,7 @@ export class Win32AutoUpdaterImpl extends EventEmitter implements IAutoUpdater {
 	get cachePath(): TPromise<string> {
 		// {{SQL CARBON EDIT}}
 		const result = path.join(tmpdir(), `sqlops-update-${process.arch}`);
-		return new TPromise<string>((c, e) => mkdirp(result, null, err => err ? e(err) : c(result)));
+		return pfs.mkdirp(result, null).then(() => result);
 	}
 
 	setFeedURL(url: string): void {

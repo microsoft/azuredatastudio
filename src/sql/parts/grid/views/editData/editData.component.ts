@@ -21,8 +21,7 @@ import { EditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams'
 import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDataGridActions';
 import { error } from 'sql/base/common/log';
-
-import { clone } from 'vs/base/common/objects';
+import { clone } from 'sql/base/common/objects';
 
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
