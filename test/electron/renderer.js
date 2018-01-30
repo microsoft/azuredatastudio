@@ -14,12 +14,14 @@ const istanbul = require('istanbul');
 const i_remap = require('remap-istanbul/lib/remap');
 const util = require('util');
 
+require('reflect-metadata');
+
 // Disabled custom inspect. See #38847
 if (util.inspect && util.inspect['defaultOptions']) {
 	util.inspect['defaultOptions'].customInspect = false;
 }
 
-let _tests_glob = '**/test/**/*.test.js';
+let _tests_glob = '**/+(test|sqltest)/**/*.test.js';
 let loader;
 let _out;
 
@@ -36,9 +38,23 @@ function initLoader(opts) {
 		baseUrl: path.join(__dirname, '../../src'),
 		paths: {
 			'vs': `../${outdir}/vs`,
+			'sql': `../${outdir}/sql`,
 			'lib': `../${outdir}/lib`,
 			'bootstrap': `../${outdir}/bootstrap`
-		}
+		},
+		nodeModules: [
+			'@angular/common',
+			'@angular/core',
+			'@angular/forms',
+			'@angular/platform-browser',
+			'@angular/platform-browser-dynamic',
+			'@angular/router',
+			'angular2-grid',
+			'rxjs/add/observable/of',
+			'rxjs/Observable',
+			'rxjs/Subject',
+			'rxjs/Observer'
+		]
 	};
 
 	// nodeInstrumenter when coverage is requested
