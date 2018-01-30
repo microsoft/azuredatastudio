@@ -14,7 +14,7 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
 import { Deferred } from 'sql/base/common/promise';
 import { getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
-import { IExtensionManagementService, ILocalExtension, IExtensionEnablementService,	LocalExtensionType } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionManagementService, ILocalExtension, IExtensionEnablementService, LocalExtensionType } from 'vs/platform/extensionManagement/common/extensionManagement';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'sqlops';
@@ -89,8 +89,8 @@ export class CapabilitiesService implements ICapabilitiesService {
 
 	private _registeredCapabilities: number = 0;
 
-	constructor(@IExtensionManagementService private extensionManagementService: IExtensionManagementService,
-				@IExtensionEnablementService private extensionEnablementService: IExtensionEnablementService) {
+	constructor( @IExtensionManagementService private extensionManagementService: IExtensionManagementService,
+		@IExtensionEnablementService private extensionEnablementService: IExtensionEnablementService) {
 
 		this._onProviderRegistered = new Emitter<data.DataProtocolServerCapabilities>();
 		this.disposables.push(this._onProviderRegistered);
@@ -98,7 +98,7 @@ export class CapabilitiesService implements ICapabilitiesService {
 
 		// Get extensions and filter where the category has 'Data Provider' in it
 		this.extensionManagementService.getInstalled(LocalExtensionType.User).then((extensions: ILocalExtension[]) => {
-			let dataProviderExtensions = extensions.filter(extension  =>
+			let dataProviderExtensions = extensions.filter(extension =>
 				extension.manifest.categories && extension.manifest.categories.indexOf(CapabilitiesService.DATA_PROVIDER_CATEGORY) > -1);
 
 			if (dataProviderExtensions.length > 0) {
