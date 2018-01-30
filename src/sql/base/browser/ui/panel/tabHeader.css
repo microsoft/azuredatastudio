@@ -10,7 +10,7 @@ tab-header .action-item .action-label {
 }
 
 tab-header .action-item {
-    line-height: 1.4em;
+	line-height: 1.4em;
 }
 
 tab-header .tab-header.active .action-label, 		/* always show it for active tab */
