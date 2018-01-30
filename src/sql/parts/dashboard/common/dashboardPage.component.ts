@@ -17,7 +17,7 @@ import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { DashboardTab } from 'sql/parts/dashboard/common/dashboardTab.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
-import { CloseTabAction } from './actions';
+import { PinUnpinTabAction } from './actions';
 import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -112,6 +112,9 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			});
 			this.propertiesWidget = properties ? properties[0] : undefined;
 
+			// Clear all tabs
+			this.tabs = [];
+
 			// Create home tab
 			let homeWidgets = tempWidgets;
 			let homeTab: TabConfig = {
@@ -121,6 +124,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				context: this.context,
 				originalConfig: this._originalConfig,
 				editable: true,
+				canClose: false,
 				actions: []
 			};
 			this.addNewTab(homeTab);
@@ -146,7 +150,8 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 					widgets: v.widgets,
 					originalConfig: undefined,
 					editable: false,
-					actions: [this.dashboardService.instantiationService.createInstance(CloseTabAction, v.title, this.dashboardService.getUnderlyingUri())]
+					canClose: true,
+					actions: []
 				};
 				this.addNewTab(config);
 			});
@@ -186,10 +191,8 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			}, 100);
 		}));
 
-		this._register(this.dashboardService.onCloseTab(e => {
-			let index = this.tabs.findIndex(i => i.id === e);
-			this.tabs.splice(index, 1);
-			this._cd.detectChanges();
+		this._register(this.dashboardService.onPinUnpinTab(e => {
+			// a placeholder for pin/unpin tab
 		}));
 
 		// unforunately because of angular rendering behavior we need to do a double check to make sure nothing changed after this point
@@ -443,5 +446,11 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		setTimeout(() => {
 			localtab.layout();
 		});
+	}
+
+	public handleTabClose(tab: TabComponent): void {
+		let index = this.tabs.findIndex(i => i.id === tab.identifier);
+		this.tabs.splice(index, 1);
+		this._cd.detectChanges();
 	}
 }

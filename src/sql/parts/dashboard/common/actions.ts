@@ -112,21 +112,21 @@ export class DeleteWidgetAction extends Action {
 	}
 }
 
-export class CloseTabAction extends Action {
-	private static readonly ID = 'closeTab';
-	private static readonly LABEL = nls.localize('closeTab', "Close");
-	private static readonly ICON = 'close';
+export class PinUnpinTabAction extends Action {
+	private static readonly ID = 'pinTab';
+	private static readonly LABEL = nls.localize('pinTab', "Pin/Unpin");
+	private static readonly ICON = 'toggle-more'; // to do: need to replace icon
 
 	constructor(
 		private _tabId,
 		private _uri,
 		@IAngularEventingService private angularEventService: IAngularEventingService
 	) {
-		super(CloseTabAction.ID, CloseTabAction.LABEL, CloseTabAction.ICON);
+		super(PinUnpinTabAction.ID, PinUnpinTabAction.LABEL, PinUnpinTabAction.ICON);
 	}
 
 	run(): TPromise<boolean> {
-		this.angularEventService.sendAngularEvent(this._uri, AngularEventType.CLOSE_TAB, { id: this._tabId });
+		this.angularEventService.sendAngularEvent(this._uri, AngularEventType.PINUNPIN_TAB, { id: this._tabId });
 		return TPromise.as(true);
 	}
 }
