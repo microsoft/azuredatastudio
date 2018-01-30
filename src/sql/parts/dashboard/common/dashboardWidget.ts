@@ -39,6 +39,7 @@ export interface TabConfig {
 	context: string;
 	originalConfig: Array<WidgetConfig>;
 	editable: boolean;
+	canClose: boolean;
 	actions: Array<Action>;
 }
 

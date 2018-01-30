@@ -21,6 +21,7 @@ export abstract class TabChild {
 export class TabComponent {
 	@ContentChild(TabChild) private _child: TabChild;
 	@Input() public title: string;
+	@Input() public canClose: boolean;
 	@Input() public actions: Array<Action>;
 	public _active = false;
 	@Input() public identifier: string;

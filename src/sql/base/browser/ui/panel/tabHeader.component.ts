@@ -8,28 +8,34 @@ import 'vs/css!./tabHeader';
 import { Component, AfterContentInit, OnDestroy, Input, Output, ElementRef, ViewChild, EventEmitter } from '@angular/core';
 
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import * as DOM from 'vs/base/browser/dom';
 
 import { TabComponent } from './tab.component';
+import { CloseTabAction } from './tabActions';
 
 @Component({
 	selector: 'tab-header',
 	template: `
-		<div class="tab-header" style="display: flex; flex: 0 0; flex-direction: row-reverse;">
-			<span #actionbar style="flex: 0 0 auto; align-self: end"></span>
+		<div #actionHeader class="tab-header" style="display: flex; flex: 0 0; flex-direction: row;" [class.active]="tab.active" tabindex="0" (keyup)="onKey($event)">
 			<span class="tab" (click)="selectTab(tab)">
 				<a class="tabLabel" [class.active]="tab.active">
 					{{tab.title}}
 				</a>
 			</span>
+			<span #actionbar style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" ></span>
 		</div>
 	`
 })
 export class TabHeaderComponent implements AfterContentInit, OnDestroy {
 	@Input() public tab: TabComponent;
 	@Output() public onSelectTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
+	@Output() public onCloseTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
 
 	private _actionbar: ActionBar;
 
+	@ViewChild('actionHeader', { read: ElementRef }) private _actionHeaderRef: ElementRef;
 	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 	constructor() { }
 
@@ -37,6 +43,10 @@ export class TabHeaderComponent implements AfterContentInit, OnDestroy {
 		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
 		if (this.tab.actions) {
 			this._actionbar.push(this.tab.actions, { icon: true, label: false });
+		}
+		if (this.tab.canClose) {
+			let closeAction = new CloseTabAction(this.closeTab, this);
+			this._actionbar.push(closeAction, { icon: true, label: false });
 		}
 	}
 
@@ -48,5 +58,19 @@ export class TabHeaderComponent implements AfterContentInit, OnDestroy {
 
 	selectTab(tab: TabComponent) {
 		this.onSelectTab.emit(tab);
+	}
+
+	closeTab() {
+		this.onCloseTab.emit(this.tab);
+	}
+
+	onKey(e: Event) {
+		if (DOM.isAncestor(<HTMLElement>e.target, this._actionHeaderRef.nativeElement) && e instanceof KeyboardEvent) {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Enter)) {
+				this.onSelectTab.emit(this.tab);
+				e.stopPropagation();
+			}
+		}
 	}
 }

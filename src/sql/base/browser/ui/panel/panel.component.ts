@@ -29,7 +29,7 @@ const defaultOptions: IPanelOptions = {
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
 				<div class="tabList">
 					<div *ngFor="let tab of _tabs">
-						<tab-header [tab]="tab" (onSelectTab)='selectTab($event)'> </tab-header>
+						<tab-header [tab]="tab" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'> </tab-header>
 					</div>
 				</div>
 				<div class="title-actions">
@@ -44,11 +44,14 @@ export class PanelComponent implements AfterContentInit, OnInit {
 	@ContentChildren(TabComponent) private _tabs: QueryList<TabComponent>;
 	private _activeTab: TabComponent;
 	@Output() public onTabChange = new EventEmitter<TabComponent>();
+	@Output() public onTabClose = new EventEmitter<TabComponent>();
+	private _mru: TabComponent[];
 
 	constructor( @Inject(forwardRef(() => NgZone)) private _zone: NgZone) { }
 
 	ngOnInit(): void {
 		this.options = mixin(this.options || {}, defaultOptions, false);
+		this._mru = [];
 	}
 
 	ngAfterContentInit(): void {
@@ -90,9 +93,57 @@ export class PanelComponent implements AfterContentInit, OnInit {
 				}
 
 				this._activeTab = tab;
+				this.setMostRecentlyUsed(tab);
 				this._activeTab.active = true;
 				this.onTabChange.emit(tab);
 			});
+		}
+	}
+
+	private indexOf(candidate: TabComponent, tabs: TabComponent[]): number {
+		if (!candidate) {
+			return -1;
+		}
+
+		for (let i = 0; i < tabs.length; i++) {
+			if (candidate === tabs[i]) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	private setMostRecentlyUsed(tab: TabComponent): void {
+		const mruIndex = this.indexOf(tab, this._mru);
+
+		if (mruIndex !== -1) {
+			// Remove old index
+			this._mru.splice(mruIndex, 1);
+		}
+
+		// Set tab to front
+		this._mru.unshift(tab);
+	}
+
+	/**
+	 * Close a tab
+	 * @param tab tab to close
+	 */
+	closeTab(tab: TabComponent) {
+		this.onTabClose.emit(tab);
+
+		// remove the closed tab from mru
+		const mruIndex = this.indexOf(tab, this._mru);
+
+		if (mruIndex !== -1) {
+			// Remove old index
+			this._mru.splice(mruIndex, 1);
+		}
+
+		// Open the most recent tab
+		if (this._mru.length > 0) {
+			this.selectTab(this._mru[0]);
 		}
 	}
 }
