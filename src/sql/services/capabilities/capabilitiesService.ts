@@ -99,7 +99,7 @@ export class CapabilitiesService implements ICapabilitiesService {
 		// Get extensions and filter where the category has 'Data Provider' in it
 		this.extensionManagementService.getInstalled(LocalExtensionType.User).then((extensions: ILocalExtension[]) => {
 			let dataProviderExtensions = extensions.filter(extension  =>
-				extension.manifest.categories.indexOf(CapabilitiesService.DATA_PROVIDER_CATEGORY) > -1);
+				extension.manifest.categories && extension.manifest.categories.indexOf(CapabilitiesService.DATA_PROVIDER_CATEGORY) > -1);
 
 			if (dataProviderExtensions.length > 0) {
 				// Scrape out disabled extensions
