@@ -15,21 +15,27 @@ export const Extensions = {
 	DashboardContributions: 'dashboard.contributions'
 };
 
-export interface IDashboardTabContrib {
-	title: string;
+export interface IDashboardTab {
+	id: string;
+	description: string;
+	publisher: string;
 	widgets: WidgetConfig[];
+	title: string;
+	provider: string | string[];
+	edition: number | number[];
+	alwaysShow: boolean;
 }
 
 export interface IDashboardRegistry {
 	registerDashboardProvider(id: string, properties: ProviderProperties): void;
 	getProperties(id: string): ProviderProperties;
-	registerTab(tab: IDashboardTabContrib): void;
-	tabs: Array<IDashboardTabContrib>;
+	registerTab(tab: IDashboardTab): void;
+	tabs: Array<IDashboardTab>;
 }
 
 class DashboardRegistry implements IDashboardRegistry {
 	private _properties = new Map<string, ProviderProperties>();
-	private _tabs = new Array<IDashboardTabContrib>();
+	private _tabs = new Array<IDashboardTab>();
 
 	/**
 	 * Register a dashboard widget
@@ -43,11 +49,11 @@ class DashboardRegistry implements IDashboardRegistry {
 		return this._properties.get(id);
 	}
 
-	public registerTab(tab: IDashboardTabContrib): void {
+	public registerTab(tab: IDashboardTab): void {
 		this._tabs.push(tab);
 	}
 
-	public get tabs(): Array<IDashboardTabContrib> {
+	public get tabs(): Array<IDashboardTab> {
 		return this._tabs;
 	}
 }
@@ -55,7 +61,7 @@ class DashboardRegistry implements IDashboardRegistry {
 const dashboardRegistry = new DashboardRegistry();
 Registry.add(Extensions.DashboardContributions, dashboardRegistry);
 
-export function RegisterTab(tab: IDashboardTabContrib): void {
+export function RegisterTab(tab: IDashboardTab): void {
 	dashboardRegistry.registerTab(tab);
 }
 

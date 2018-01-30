@@ -80,7 +80,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		this.addProvider,
 		this.addEdition,
 		this.addContext,
-		this.filterWidgets
+		this.filterConfigs
 	];
 
 	private readonly _gridModifiers: Array<(item: Array<WidgetConfig>) => Array<WidgetConfig>> = [
@@ -129,7 +129,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			homeTabContent.layout();
 
 			// add any tab extensions
-			dashboardRegistry.tabs.map(v => {
+			this.filterConfigs(dashboardRegistry.tabs).map(v => {
 				let configs = v.widgets;
 				this._configModifiers.forEach(cb => {
 					configs = cb.apply(this, [configs]);
@@ -244,7 +244,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	 * Returns a filtered version of the widgets passed based on edition and provider
 	 * @param config widgets to filter
 	 */
-	private filterWidgets(config: WidgetConfig[]): Array<WidgetConfig> {
+	private filterConfigs<T extends { provider: string | string[], edition: number | number[] }>(config: T[]): Array<T> {
 		let connectionInfo: ConnectionManagementInfo = this.dashboardService.connectionManagementService.connectionInfo;
 		let edition = connectionInfo.serverInfo.engineEditionId;
 		let provider = connectionInfo.providerId;
