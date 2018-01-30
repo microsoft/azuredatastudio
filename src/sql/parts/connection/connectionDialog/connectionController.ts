@@ -55,13 +55,9 @@ export class ConnectionController implements IConnectionComponentController {
 	private onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string): Promise<string[]> {
 		let tempProfile = this._model;
 		tempProfile.serverName = serverName;
-		if (authenticationType === Constants.integrated) {
-			tempProfile.authenticationType = Constants.integrated;
-		} else {
-			tempProfile.authenticationType = Constants.sqlLogin;
-			tempProfile.userName = userName;
-			tempProfile.password = password;
-		}
+		tempProfile.authenticationType = authenticationType;
+		tempProfile.userName = userName;
+		tempProfile.password = password;
 		let uri = this._connectionManagementService.getConnectionId(tempProfile);
 		return new Promise<string[]>((resolve, reject) => {
 			this._connectionManagementService.connect(tempProfile, uri).then(connResult => {
