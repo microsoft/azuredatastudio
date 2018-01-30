@@ -114,13 +114,17 @@ export class PanelComponent implements AfterContentInit, OnInit {
 		return -1;
 	}
 
-	private setMostRecentlyUsed(tab: TabComponent): void {
+	private findAndRemoveTabFromMRU(tab: TabComponent): void {
 		const mruIndex = this.indexOf(tab, this._mru);
 
 		if (mruIndex !== -1) {
 			// Remove old index
 			this._mru.splice(mruIndex, 1);
 		}
+	}
+
+	private setMostRecentlyUsed(tab: TabComponent): void {
+		this.findAndRemoveTabFromMRU(tab);
 
 		// Set tab to front
 		this._mru.unshift(tab);
@@ -134,12 +138,7 @@ export class PanelComponent implements AfterContentInit, OnInit {
 		this.onTabClose.emit(tab);
 
 		// remove the closed tab from mru
-		const mruIndex = this.indexOf(tab, this._mru);
-
-		if (mruIndex !== -1) {
-			// Remove old index
-			this._mru.splice(mruIndex, 1);
-		}
+		this.findAndRemoveTabFromMRU(tab);
 
 		// Open the most recent tab
 		if (this._mru.length > 0) {
