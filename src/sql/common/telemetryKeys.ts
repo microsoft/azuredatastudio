@@ -29,6 +29,7 @@ export const FirewallRuleRequested = 'FirewallRuleCreated';
 
 // Modal Dialogs:
 export const ErrorMessage = 'ErrorMessage';
+export const WebView = 'WebView';
 export const ConnectionAdvancedProperties = 'ConnectionAdvancedProperties';
 export const Connection = 'Connection';
 export const Backup = 'Backup';

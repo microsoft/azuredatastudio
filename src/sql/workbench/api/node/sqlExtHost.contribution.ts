@@ -15,6 +15,7 @@ import 'sql/workbench/api/node/mainThreadDataProtocol';
 import 'sql/workbench/api/node/mainThreadSerializationProvider';
 import 'sql/workbench/api/node/mainThreadResourceProvider';
 import './mainThreadAccountManagement';
+import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 
 export class SqlExtHostContribution implements IWorkbenchContribution {
 
@@ -30,5 +31,6 @@ export class SqlExtHostContribution implements IWorkbenchContribution {
 
 // Register File Tracker
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(
-	SqlExtHostContribution
+	SqlExtHostContribution,
+	LifecyclePhase.Running
 );

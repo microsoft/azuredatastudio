@@ -77,14 +77,6 @@
 	background-image: url('expanded.svg');
 }
 
-.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected.expanded > .content:before {
-	background-image: url('expanded-hc.svg');
-}
-
-.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected > .content:before {
-	background-image: url('collapsed-hc.svg');
-}
-
 .monaco-tree .monaco-tree-rows > .monaco-tree-row.has-children.loading > .content:before {
 	background-image: url('loading.svg');
 }

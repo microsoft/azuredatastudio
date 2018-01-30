@@ -7,7 +7,7 @@ import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces
 import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
-import { clone } from 'vs/base/common/objects';
+import { deepClone } from 'vs/base/common/objects';
 
 export type WidgetIdentifier = string;
 
@@ -68,15 +68,15 @@ class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
 	}
 
 	public get databaseWidgetSchema(): IJSONSchema {
-		return clone(this._dashboardWidgetSchema);
+		return deepClone(this._dashboardWidgetSchema);
 	}
 
 	public get serverWidgetSchema(): IJSONSchema {
-		return clone(this._serverWidgetSchema);
+		return deepClone(this._serverWidgetSchema);
 	}
 
 	public get allSchema(): IJSONSchema {
-		return clone(this._allSchema);
+		return deepClone(this._allSchema);
 	}
 }
 

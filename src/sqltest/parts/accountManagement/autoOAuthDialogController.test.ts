@@ -52,7 +52,7 @@ suite('auto OAuth dialog controller tests', () => {
 
 		// Create a mocked out instantiation service
 		instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
-		instantiationService.setup(x => x.createInstance<AutoOAuthDialog>(TypeMoq.It.isValue(AutoOAuthDialog)))
+		instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AutoOAuthDialog)))
 			.returns(() => mockAutoOAuthDialog.object);
 
 

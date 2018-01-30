@@ -184,7 +184,7 @@ export class ConnectionWidget {
 				cellContainer.div({ class: 'advanced-button' }, (divContainer) => {
 					button = new Button(divContainer);
 					button.label = title;
-					button.addListener('click', () => {
+					button.onDidClick(() => {
 						//open advanced page
 						this._callbacks.onAdvancedProperties();
 					});

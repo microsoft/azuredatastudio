@@ -81,9 +81,9 @@ function createInstantiationService(addAccountFailureEmitter?: Emitter<string>):
 
 	// Create a mocked out instantiation service
 	let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
-	instantiationService.setup(x => x.createInstance<AccountViewModel>(TypeMoq.It.isValue(AccountViewModel)))
+	instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountViewModel)))
 		.returns(() => mockAccountViewModel.object);
-	instantiationService.setup(x => x.createInstance<AccountListRenderer>(TypeMoq.It.isValue(AccountListRenderer)))
+	instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountListRenderer)))
 		.returns(() => undefined);
 
 	// Create a mock account dialog
@@ -97,7 +97,7 @@ function createInstantiationService(addAccountFailureEmitter?: Emitter<string>):
 		.returns(() => undefined);
 	mockAccountDialog.setup(x => x.open())
 		.returns(() => undefined);
-	instantiationService.setup(x => x.createInstance<AccountDialog>(TypeMoq.It.isValue(AccountDialog)))
+	instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountDialog)))
 		.returns(() => mockAccountDialog.object);
 
 	return instantiationService.object;

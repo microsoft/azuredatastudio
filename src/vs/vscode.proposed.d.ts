@@ -199,22 +199,119 @@ declare module 'vscode' {
 	//#endregion
 
 	/**
-	 * Represents the debug console.
+	 * Represents an action that can be performed in code.
+	 *
+	 * Shown using the [light bulb](https://code.visualstudio.com/docs/editor/editingevolved#_code-action)
 	 */
-	export interface DebugConsole {
+	export class CodeAction {
 		/**
-		 * Append the given value to the debug console.
-		 *
-		 * @param value A string, falsy values will not be printed.
+		 * Label used to identify the code action in UI.
 		 */
-		append(value: string): void;
+		title: string;
 
 		/**
-		 * Append the given value and a line feed character
-		 * to the debug console.
+		 * Optional command that performs the code action.
 		 *
-		 * @param value A string, falsy values will be printed.
+		 * Executed after `edits` if any edits are provided. Either `command` or `edits` must be provided for a `CodeAction`.
 		 */
-		appendLine(value: string): void;
+		command?: Command;
+
+		/**
+		 * Optional edit that performs the code action.
+		 *
+		 * Either `command` or `edits` must be provided for a `CodeAction`.
+		 */
+		edits?: TextEdit[] | WorkspaceEdit;
+
+		/**
+		 * Diagnostics that this code action resolves.
+		 */
+		diagnostics?: Diagnostic[];
+
+		constructor(title: string, edits?: TextEdit[] | WorkspaceEdit);
+	}
+
+	export interface CodeActionProvider {
+
+		/**
+		 * Provide commands for the given document and range.
+		 *
+		 * If implemented, overrides `provideCodeActions`
+		 *
+		 * @param document The document in which the command was invoked.
+		 * @param range The range for which the command was invoked.
+		 * @param context Context carrying additional information.
+		 * @param token A cancellation token.
+		 * @return An array of commands, quick fixes, or refactorings or a thenable of such. The lack of a result can be
+		 * signaled by returning `undefined`, `null`, or an empty array.
+		 */
+		provideCodeActions2?(document: TextDocument, range: Range, context: CodeActionContext, token: CancellationToken): ProviderResult<(Command | CodeAction)[]>;
+	}
+
+	// {{SQL CARBON EDIT}}
+	// remove debug namespace
+
+	/**
+	 * An event describing a change to the set of [breakpoints](#debug.Breakpoint).
+	 */
+	export interface BreakpointsChangeEvent {
+		/**
+		 * Added breakpoints.
+		 */
+		readonly added: Breakpoint[];
+
+		/**
+		 * Removed breakpoints.
+		 */
+		readonly removed: Breakpoint[];
+
+		/**
+		 * Changed breakpoints.
+		 */
+		readonly changed: Breakpoint[];
+	}
+
+	/**
+	 * The base class of all breakpoint types.
+	 */
+	export class Breakpoint {
+		/**
+		 * Is breakpoint enabled.
+		 */
+		readonly enabled: boolean;
+		/**
+		 * An optional expression for conditional breakpoints.
+		 */
+		readonly condition?: string;
+		/**
+		 * An optional expression that controls how many hits of the breakpoint are ignored.
+		 */
+		readonly hitCondition?: string;
+
+		protected constructor(enabled: boolean, condition: string, hitCondition: string);
+	}
+
+	/**
+	 * A breakpoint specified by a source location.
+	 */
+	export class SourceBreakpoint extends Breakpoint {
+		/**
+		 * The source and line position of this breakpoint.
+		 */
+		readonly location: Location;
+
+		private constructor(enabled: boolean, condition: string, hitCondition: string, location: Location);
+	}
+
+	/**
+	 * A breakpoint specified by a function name.
+	 */
+	export class FunctionBreakpoint extends Breakpoint {
+		/**
+		 * The name of the function to which this breakpoint is attached.
+		 */
+		readonly functionName: string;
+
+		private constructor(enabled: boolean, condition: string, hitCondition: string, functionName: string);
 	}
 }

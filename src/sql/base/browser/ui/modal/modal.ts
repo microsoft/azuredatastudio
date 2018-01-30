@@ -339,7 +339,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		let footerButton = $('div.footer-button');
 		let button = new Button(footerButton);
 		button.label = label;
-		button.addListener('click', () => onSelect());
+		button.onDidClick(() => onSelect());
 		if (orientation === 'left') {
 			footerButton.appendTo(this._leftFooter);
 		} else {
@@ -408,6 +408,10 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (this._title !== undefined) {
 			this._modalTitle.innerHtml(title);
 		}
+	}
+
+	protected get title(): string {
+		return this._title;
 	}
 
 	/**

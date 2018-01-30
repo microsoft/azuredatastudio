@@ -28,19 +28,20 @@ import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiati
 import { ProfilerResourceEditor } from './profilerResourceEditor';
 import { SplitView, View, Orientation, IViewOptions } from 'sql/base/browser/ui/splitview/splitview';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IModel, ICommonCodeEditor } from 'vs/editor/common/editorCommon';
+import { IModel } from 'vs/editor/common/editorCommon';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import URI from 'vs/base/common/uri';
 import { UNTITLED_SCHEMA } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import * as nls from 'vs/nls';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { Command } from 'vs/editor/common/editorCommonExtensions';
+import { Command } from 'vs/editor/browser/editorExtensions';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { ContextKeyExpr, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/find/common/findController';
+import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/find/findController';
 import * as types from 'vs/base/common/types';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
@@ -354,11 +355,12 @@ export class ProfilerEditor extends BaseEditor {
 
 	public toggleSearch(): void {
 		if (this._editor.getControl().isFocused()) {
-			let editor = this._editor.getControl() as ICommonCodeEditor;
+			let editor = this._editor.getControl() as ICodeEditor;
 			let controller = CommonFindController.get(editor);
 			if (controller) {
 				controller.start({
 					forceRevealReplace: false,
+					seedSearchStringFromGlobalClipboard: false,
 					seedSearchStringFromSelection: (controller.getState().searchString.length === 0),
 					shouldFocus: FindStartFocusAction.FocusFindInput,
 					shouldAnimate: true
