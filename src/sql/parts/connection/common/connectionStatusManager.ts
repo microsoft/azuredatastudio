@@ -210,4 +210,14 @@ export class ConnectionStatusManager {
 		}
 		return providerId;
 	}
+
+	/**
+	 * Return a connection matching the given connection profile ID, or undefined if no connection matches
+	 * @param profileId The connection profile ID to match
+	 */
+	public findConnectionFromProfileId(profileId: string): ConnectionManagementInfo {
+		return Object.values(this._connections).find((connection: ConnectionManagementInfo) => {
+			return connection.connectionProfile && connection.connectionProfile.id === profileId;
+		});
+	}
 }

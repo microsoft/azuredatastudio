@@ -13,7 +13,6 @@ import { IObjectExplorerService } from 'sql/parts/registeredServer/common/object
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement extends MainThreadConnectionManagementShape {
@@ -48,21 +47,10 @@ export class MainThreadConnectionManagement extends MainThreadConnectionManageme
 		if (!profile) {
 			return undefined;
 		}
-		let connectionInfo = this.connectionManagementService.getConnectionInfo(this.connectionManagementService.getConnectionId(profile));
-		// TODO: This doesn't work for active connections for some reason. Temporary fix: disable connection info for those
-		// Before checking this in we should get rid of this. connectionInfo should always be defined
-		if (!connectionInfo) {
-			connectionInfo = <ConnectionManagementInfo> {
-				providerId: 'MSSQL',
-				serverInfo: undefined
-			};
-		}
 		let connection: data.connection.Connection = {
-			providerName: connectionInfo.providerId,
+			providerName: profile.providerName,
 			connectionId: profile.id,
-			options: profile.options,
-			ownerUri: this.connectionManagementService.getConnectionId(profile),
-			serverInfo: connectionInfo.serverInfo
+			options: profile.options
 		};
 		return connection;
 	}

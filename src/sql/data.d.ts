@@ -95,19 +95,9 @@ declare module 'data' {
 			providerName: string;
 
 			/**
-			 * URI identifying the owner of the connection
-			*/
-			ownerUri: string;
-
-			/**
 			 * A unique identifier for the connection
 			*/
 			connectionId: string;
-
-			/**
-			* Information about the connected server.
-			*/
-			serverInfo: ServerInfo;
 		}
 	}
 
