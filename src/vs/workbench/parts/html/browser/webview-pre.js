@@ -12,6 +12,8 @@
 	var firstLoad = true;
 	var loadTimeout;
 	var pendingMessages = [];
+	// {{SQL CARBON EDIT}}
+	var enableWrappedPostMessage = false;
 
 	const initData = {
 		initialScrollProgress: undefined
@@ -124,6 +126,8 @@
 		// update iframe-contents
 		ipcRenderer.on('content', function (_event, data) {
 			const options = data.options;
+			// {{SQL CARBON EDIT}}
+			enableWrappedPostMessage = options && options.enableWrappedPostMessage;
 			const text = data.contents.join('\n');
 			const newDocument = new DOMParser().parseFromString(text, 'text/html');
 
@@ -301,8 +305,16 @@
 		});
 
 		// forward messages from the embedded iframe
+
 		window.onmessage = function (message) {
-			ipcRenderer.sendToHost(message.data.command, message.data.data);
+			// {{SQL CARBON EDIT}}
+			if (enableWrappedPostMessage) {
+				// Modern webview. Forward wrapped message
+				ipcRenderer.sendToHost('onmessage', message.data);
+			} else {
+				// Old school webview. Forward exact message
+				ipcRenderer.sendToHost(message.data.command, message.data.data);
+			}
 		};
 
 		// signal ready

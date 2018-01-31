@@ -25,6 +25,7 @@ import { ExtHostThreadService } from 'vs/workbench/services/thread/node/extHostT
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
+import { ExtHostModalDialogs } from 'sql/workbench/api/node/extHostModalDialog';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
 
@@ -52,6 +53,7 @@ export function createApiFactory(
 	const extHostDataProvider = threadService.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(threadService));
 	const extHostSerializationProvider = threadService.set(SqlExtHostContext.ExtHostSerializationProvider, new ExtHostSerializationProvider(threadService));
 	const extHostResourceProvider = threadService.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(threadService));
+	const extHostModalDialogs = threadService.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(threadService));
 
 	return {
 		vsCodeFactory: vsCodeFactory,
@@ -236,6 +238,12 @@ export function createApiFactory(
 				}
 			};
 
+			const window = {
+				createDialog(name: string) {
+					return extHostModalDialogs.createDialog(name);
+				}
+			};
+
 			return {
 				accounts,
 				credentials,
@@ -248,7 +256,8 @@ export function createApiFactory(
 				MetadataType: sqlExtHostTypes.MetadataType,
 				TaskStatus: sqlExtHostTypes.TaskStatus,
 				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode,
-				ScriptOperation: sqlExtHostTypes.ScriptOperation
+				ScriptOperation: sqlExtHostTypes.ScriptOperation,
+				window
 			};
 		}
 	};

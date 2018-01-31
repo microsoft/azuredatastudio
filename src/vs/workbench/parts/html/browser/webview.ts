@@ -37,6 +37,9 @@ export interface WebviewOptions {
 	allowScripts?: boolean;
 	allowSvgs?: boolean;
 	svgWhiteList?: string[];
+	// {{SQL CARBON EDIT}}
+	enableWrappedPostMessage?: boolean;
+	hideFind?: boolean;
 }
 
 export default class Webview {
@@ -49,6 +52,8 @@ export default class Webview {
 
 	private _onDidScroll = new Emitter<{ scrollYPercentage: number }>();
 	private _onFoundInPageResults = new Emitter<FoundInPageResults>();
+	// {{SQL CARBON EDIT}}
+	private _onMessage = new Emitter<any>();
 
 	private _webviewFindWidget: WebviewFindWidget;
 	private _findStarted: boolean = false;
@@ -141,6 +146,13 @@ export default class Webview {
 				console.error('embedded page crashed');
 			}),
 			addDisposableListener(this._webview, 'ipc-message', (event) => {
+				// {{SQL CARBON EDIT}}
+				if (event.channel === 'onmessage') {
+					if (this._options.enableWrappedPostMessage && event.args && event.args.length) {
+						this._onMessage.fire(event.args[0]);
+					}
+					return;
+				}
 				if (event.channel === 'did-click-link') {
 					let [uri] = event.args;
 					this._onDidClickLink.fire(URI.parse(uri));
@@ -181,7 +193,10 @@ export default class Webview {
 		this._disposables.push(this._webviewFindWidget);
 
 		if (parent) {
+			// {{SQL CARBON EDIT}}
+			if (!this._options.hideFind) {
 			parent.appendChild(this._webviewFindWidget.getDomNode());
+			}
 			parent.appendChild(this._webview);
 		}
 	}
@@ -215,6 +230,11 @@ export default class Webview {
 
 	get onFindResults(): Event<FoundInPageResults> {
 		return this._onFoundInPageResults.event;
+	}
+
+	// {{SQL CARBON EDIT}}
+	get onMessage(): Event<any> {
+		return this._onMessage.event;
 	}
 
 	private _send(channel: string, ...args: any[]): void {
