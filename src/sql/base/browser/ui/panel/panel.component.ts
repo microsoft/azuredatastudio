@@ -68,12 +68,14 @@ export class PanelComponent implements AfterContentInit, OnInit, OnChanges {
 			this._activeTab = this._tabs.first;
 			this._activeTab.active = true;
 		}
-
 	}
 
 	ngOnChanges(): void {
-		if (this.actions && this._actionbarRef) {
+		if (this._actionbarRef && !this._actionbar) {
 			this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
+		}
+		if (this.actions) {
+			this._actionbar.clear();
 			this._actionbar.push(this.actions, { icon: true, label: false });
 		}
 	}

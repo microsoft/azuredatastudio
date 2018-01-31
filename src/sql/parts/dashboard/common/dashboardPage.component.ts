@@ -60,7 +60,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private _widgetConfigLocation: string;
 	private _propertiesConfigLocation: string;
 
-	private _panelActions: Action[];
+	protected panelActions: Action[];
 
 	@ViewChild('properties') private _properties: DashboardWidgetWrapper;
 	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
@@ -118,10 +118,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			// Clear all tabs
 			this.tabs = [];
 
-			// set panel actions
-			let addNewTabAction = this._register(this.dashboardService.instantiationService.createInstance(AddFeatureTabAction, this.filterConfigs(dashboardRegistry.tabs), this.dashboardService.getUnderlyingUri()));
-			this._panelActions = [addNewTabAction];
-
 			// Create home tab
 			let homeWidgets = tempWidgets;
 			let homeTab: TabConfig = {
@@ -136,6 +132,11 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			};
 			this.addNewTab(homeTab);
 			this._panel.selectTab(homeTab.id);
+
+			// set panel actions
+			let addNewTabAction = this._register(this.dashboardService.instantiationService.createInstance(AddFeatureTabAction, this.filterConfigs(dashboardRegistry.tabs), this.dashboardService.getUnderlyingUri()));
+			this.panelActions = [addNewTabAction];
+			this._cd.detectChanges();
 		}
 	}
 
