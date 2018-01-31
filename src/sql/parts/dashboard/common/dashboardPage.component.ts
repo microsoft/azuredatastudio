@@ -17,7 +17,7 @@ import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { DashboardTab } from 'sql/parts/dashboard/common/dashboardTab.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
-import { PinUnpinTabAction, AddFeatureTabAction} from './actions';
+import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
 import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 
 import { Registry } from 'vs/platform/registry/common/platform';

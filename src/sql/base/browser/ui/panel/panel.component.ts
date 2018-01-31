@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, OnChanges} from '@angular/core';
+import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, OnChanges } from '@angular/core';
 
 import { TabComponent } from './tab.component';
 import './panelStyles';
