@@ -47,6 +47,7 @@ export class MainThreadConnectionManagement extends MainThreadConnectionManageme
 		if (!profile) {
 			return undefined;
 		}
+		profile = this.connectionManagementService.removeConnectionProfileCredentials(profile);
 		let connection: data.connection.Connection = {
 			providerName: profile.providerName,
 			connectionId: profile.id,

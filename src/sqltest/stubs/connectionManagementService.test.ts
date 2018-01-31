@@ -241,4 +241,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	getTabColorForUri(uri: string): string {
 		return undefined;
 	}
+
+	removeConnectionProfileCredentials(profile: IConnectionProfile): IConnectionProfile {
+		return undefined;
+	}
 }

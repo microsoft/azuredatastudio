@@ -56,6 +56,7 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { Deferred } from 'sql/base/common/promise';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ConnectionManagementService implements IConnectionManagementService {
 
@@ -1352,5 +1353,15 @@ export class ConnectionManagementService implements IConnectionManagementService
 		if (this._editorGroupService instanceof EditorPart) {
 			this._editorGroupService.refreshEditorTitles();
 		}
+	}
+
+	public removeConnectionProfileCredentials(originalProfile: IConnectionProfile): IConnectionProfile {
+		let newProfile = originalProfile instanceof ConnectionProfile ? originalProfile.toIConnectionProfile() : Object.assign({}, originalProfile);
+		newProfile.options = Object.assign({}, newProfile.options);
+		newProfile.password = undefined;
+		let providerCapabilities = this._capabilitiesService.getCapabilities().find(capabilities => capabilities.providerName === newProfile.providerName);
+		let passwordOptions = providerCapabilities.connectionProvider.options.filter(option => option.specialValueType === ConnectionOptionSpecialType.password);
+		passwordOptions.forEach(option => newProfile.options[option.name] = undefined);
+		return newProfile;
 	}
 }
