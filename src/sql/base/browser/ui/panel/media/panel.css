@@ -56,3 +56,7 @@
 .composite.title ~ tab.fullsize > :first-child {
 	height: calc(100% - 38px);
 }
+
+.tabbedPanel .title-actions .panel-actions .actions-container {
+	justify-content: flex-start;
+}

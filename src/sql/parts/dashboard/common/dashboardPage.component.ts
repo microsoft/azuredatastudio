@@ -17,7 +17,7 @@ import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { DashboardTab } from 'sql/parts/dashboard/common/dashboardTab.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
-import { PinUnpinTabAction } from './actions';
+import { PinUnpinTabAction, AddFeatureTabAction} from './actions';
 import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -34,6 +34,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as objects from 'vs/base/common/objects';
 import Event, { Emitter } from 'vs/base/common/event';
+import { Action } from 'vs/base/common/actions';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
@@ -58,6 +59,8 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 	private _widgetConfigLocation: string;
 	private _propertiesConfigLocation: string;
+
+	private _panelActions: Action[];
 
 	@ViewChild('properties') private _properties: DashboardWidgetWrapper;
 	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
@@ -115,6 +118,10 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			// Clear all tabs
 			this.tabs = [];
 
+			// set panel actions
+			let addNewTabAction = this._register(this.dashboardService.instantiationService.createInstance(AddFeatureTabAction, this.filterConfigs(dashboardRegistry.tabs), this.dashboardService.getUnderlyingUri()));
+			this._panelActions = [addNewTabAction];
+
 			// Create home tab
 			let homeWidgets = tempWidgets;
 			let homeTab: TabConfig = {
@@ -129,32 +136,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			};
 			this.addNewTab(homeTab);
 			this._panel.selectTab(homeTab.id);
-			let homeTabContent = this._tabs.find(i => i.tab.id === homeTab.id);
-			homeTabContent.layout();
-
-			// add any tab extensions
-			this.filterConfigs(dashboardRegistry.tabs).map(v => {
-				let configs = v.widgets;
-				this._configModifiers.forEach(cb => {
-					configs = cb.apply(this, [configs]);
-				});
-				this._gridModifiers.forEach(cb => {
-					configs = cb.apply(this, [configs]);
-				});
-				return { title: v.title, widgets: configs };
-			}).map(v => {
-				let config: TabConfig = {
-					id: v.title,
-					name: v.title,
-					context: this.context,
-					widgets: v.widgets,
-					originalConfig: undefined,
-					editable: false,
-					canClose: true,
-					actions: []
-				};
-				this.addNewTab(config);
-			});
 		}
 	}
 
@@ -193,6 +174,37 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 		this._register(this.dashboardService.onPinUnpinTab(e => {
 			// a placeholder for pin/unpin tab
+		}));
+
+		this._register(this.dashboardService.onAddNewTabs(e => {
+			let selectedTabs = e.map(v => {
+				let configs = v.widgets;
+				this._configModifiers.forEach(cb => {
+					configs = cb.apply(this, [configs]);
+				});
+				this._gridModifiers.forEach(cb => {
+					configs = cb.apply(this, [configs]);
+				});
+				return { id: v.id, title: v.title, widgets: configs };
+			}).map(v => {
+				let config: TabConfig = {
+					id: v.id,
+					name: v.title,
+					context: this.context,
+					widgets: v.widgets,
+					originalConfig: undefined,
+					editable: false,
+					canClose: true,
+					actions: []
+				};
+				this.addNewTab(config);
+				return config;
+			});
+
+			// put this immediately on the stack so that is ran *after* the tab is rendered
+			setTimeout(() => {
+				this._panel.selectTab(selectedTabs[0].id);
+			});
 		}));
 
 		// unforunately because of angular rendering behavior we need to do a double check to make sure nothing changed after this point

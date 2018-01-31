@@ -3,11 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, OnChanges} from '@angular/core';
 
 import { TabComponent } from './tab.component';
 import './panelStyles';
 
+import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';
 import { mixin } from 'vs/base/common/objects';
 
@@ -33,20 +35,27 @@ const defaultOptions: IPanelOptions = {
 					</div>
 				</div>
 				<div class="title-actions">
+					<div #panelActionbar class="panel-actions" style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" >
+					</div>
 				</div>
 			</div>
 			<ng-content class="fullsize"></ng-content>
 		</div>
 	`
 })
-export class PanelComponent implements AfterContentInit, OnInit {
+export class PanelComponent implements AfterContentInit, OnInit, OnChanges {
 	@Input() public options: IPanelOptions;
+	@Input() public actions: Array<Action>;
 	@ContentChildren(TabComponent) private _tabs: QueryList<TabComponent>;
-	private _activeTab: TabComponent;
+
 	@Output() public onTabChange = new EventEmitter<TabComponent>();
 	@Output() public onTabClose = new EventEmitter<TabComponent>();
+
+	private _activeTab: TabComponent;
+	private _actionbar: ActionBar;
 	private _mru: TabComponent[];
 
+	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 	constructor( @Inject(forwardRef(() => NgZone)) private _zone: NgZone) { }
 
 	ngOnInit(): void {
@@ -58,6 +67,14 @@ export class PanelComponent implements AfterContentInit, OnInit {
 		if (this._tabs && this._tabs.length > 0) {
 			this._activeTab = this._tabs.first;
 			this._activeTab.active = true;
+		}
+
+	}
+
+	ngOnChanges(): void {
+		if (this.actions && this._actionbarRef) {
+			this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
+			this._actionbar.push(this.actions, { icon: true, label: false });
 		}
 	}
 

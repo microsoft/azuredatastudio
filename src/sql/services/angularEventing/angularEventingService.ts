@@ -15,7 +15,8 @@ export enum AngularEventType {
 	NAV_DATABASE,
 	NAV_SERVER,
 	DELETE_WIDGET,
-	PINUNPIN_TAB
+	PINUNPIN_TAB,
+	NEW_TABS
 }
 
 export interface IDeleteWidgetPayload {

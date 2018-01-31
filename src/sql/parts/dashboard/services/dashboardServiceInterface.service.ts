@@ -21,6 +21,7 @@ import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
+import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 
 import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'data';
 
@@ -136,6 +137,9 @@ export class DashboardServiceInterface implements OnDestroy {
 
 	private _onPinUnpinTab = new Emitter<string>();
 	public readonly onPinUnpinTab: Event<string> = this._onPinUnpinTab.event;
+
+	private _onAddNewTabs = new Emitter<Array<IDashboardTab>>();
+	public readonly onAddNewTabs: Event<Array<IDashboardTab>> = this._onAddNewTabs.event;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
@@ -289,6 +293,9 @@ export class DashboardServiceInterface implements OnDestroy {
 				break;
 			case AngularEventType.PINUNPIN_TAB:
 				this._onPinUnpinTab.fire(event.payload.id);
+				break;
+			case AngularEventType.NEW_TABS:
+				this._onAddNewTabs.fire(event.payload.dashboardTabs);
 		}
 	}
 }

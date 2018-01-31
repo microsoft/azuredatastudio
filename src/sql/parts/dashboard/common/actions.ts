@@ -7,8 +7,10 @@ import * as nls from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
 
+import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
+import { INewDashboardTabService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
+import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 export class EditDashboardAction extends Action {
 
 	private static readonly ID = 'editDashboard';
@@ -127,6 +129,25 @@ export class PinUnpinTabAction extends Action {
 
 	run(): TPromise<boolean> {
 		this.angularEventService.sendAngularEvent(this._uri, AngularEventType.PINUNPIN_TAB, { id: this._tabId });
+		return TPromise.as(true);
+	}
+}
+
+export class AddFeatureTabAction extends Action {
+	private static readonly ID = 'addFeatureTab';
+	private static readonly LABEL = nls.localize('addFeatureTab', "Add a feature tab");
+	private static readonly ICON = 'new';
+
+	constructor(
+		private _dashboardTabs: Array<IDashboardTab>,
+		private _uri: string,
+		@INewDashboardTabService private _newDashboardTabService: INewDashboardTabService
+	) {
+		super(AddFeatureTabAction.ID, AddFeatureTabAction.LABEL, AddFeatureTabAction.ICON);
+	}
+
+	run(): TPromise<boolean> {
+		this._newDashboardTabService.showDialog(this._dashboardTabs, this._uri);
 		return TPromise.as(true);
 	}
 }

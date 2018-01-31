@@ -39,3 +39,4 @@ export const ServerGroups = 'ServerGroups';
 export const Accounts = 'Accounts';
 export const FireWallRule = 'FirewallRule';
 export const AutoOAuth = 'AutoOAuth';
+export const AddNewDashboardTab = 'AddNewDashboardTab';
