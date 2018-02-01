@@ -23,11 +23,7 @@ export abstract class ExtHostAccountManagementShape {
 	$refresh(handle: number, account: data.Account): Thenable<data.Account> { throw ni(); }
 }
 
-export abstract class ExtHostConnectionManagementShape {
-	// $getActiveConnections(): Thenable<data.connection.Connection[]> { throw ni(); }
-	// $getCurrentConnection(): Thenable<data.connection.Connection> { throw ni(); }
-	// $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> { throw ni(); }
-}
+export abstract class ExtHostConnectionManagementShape { }
 
 export abstract class ExtHostDataProtocolShape {
 

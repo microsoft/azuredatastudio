@@ -13,11 +13,13 @@ import { IObjectExplorerService } from 'sql/parts/registeredServer/common/object
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement extends MainThreadConnectionManagementShape {
 
 	private _proxy: ExtHostConnectionManagementShape;
+	private _toDispose: IDisposable[];
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -29,15 +31,14 @@ export class MainThreadConnectionManagement extends MainThreadConnectionManageme
 		if (extHostContext) {
 			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostConnectionManagement);
 		}
+		this._toDispose = [];
 	}
 
 	public dispose(): void {
-
+		this._toDispose = dispose(this._toDispose);
 	}
 
 	public $getActiveConnections(): Thenable<data.connection.Connection[]> {
-		console.log('Connection status length: ' + this.connectionManagementService.getActiveConnections().length);
-		console.log('Connection store length: ' + (this.connectionManagementService as any)._connectionStore.getActiveConnections().length);
 		return Promise.resolve(this.connectionManagementService.getActiveConnections().map(profile => this.convertConnection(profile)));
 	}
 
