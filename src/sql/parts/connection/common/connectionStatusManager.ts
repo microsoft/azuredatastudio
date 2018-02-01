@@ -211,16 +211,6 @@ export class ConnectionStatusManager {
 	}
 
 	/**
-	 * Return a connection matching the given connection profile ID, or undefined if no connection matches
-	 * @param profileId The connection profile ID to match
-	 */
-	public findConnectionFromProfileId(profileId: string): ConnectionManagementInfo {
-		return Object.values(this._connections).find((connection: ConnectionManagementInfo) => {
-			return connection.connectionProfile && connection.connectionProfile.id === profileId;
-		});
-	}
-
-	/**
 	 * Get a list of the active connection profiles managed by the status manager
 	*/
 	public getActiveConnectionProfiles(): ConnectionProfile[] {

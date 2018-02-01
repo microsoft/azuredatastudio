@@ -155,26 +155,6 @@ export default class MainController implements vscode.Disposable {
 
 				Utils.logDebug(SharedConstants.extensionActivated, MainController._extensionConstants.extensionConfigSectionName);
 				self._initialized = true;
-				setInterval(() => {
-					data.connection.getCurrentConnection().then(connection => {
-						if (connection) {
-							console.log('Current connection: ' + connection.connectionId);
-							data.connection.getCredentials(connection.connectionId).then(credentials => {
-								console.log(connection.connectionId + ': ' + credentials['password']);
-							});
-						} else {
-							console.log('no current connection');
-						}
-					}, err => console.log(err));
-					data.connection.getActiveConnections().then(connections => {
-						connections.forEach(connection => {
-							console.log('Active connection: ' + connection.connectionId);
-							data.connection.getCredentials(connection.connectionId).then(credentials => {
-								console.log(connection.connectionId + ': ' + credentials['password']);
-							});
-						});
-					}, err => console.log(err));
-				}, 3000);
 				resolve(true);
 			}).catch(err => {
 				Telemetry.sendTelemetryEventForException(err, 'initialize', MainController._extensionConstants.extensionConfigSectionName);
