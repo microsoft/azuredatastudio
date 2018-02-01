@@ -8,7 +8,7 @@
 import 'vs/css!./media/newDashboardTabDialog';
 import * as DOM from 'vs/base/browser/dom';
 import { List } from 'vs/base/browser/ui/list/listWidget';
-import { IListService } from 'vs/platform/list/browser/listService';
+import { IListService, ListService } from 'vs/platform/list/browser/listService';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import Event, { Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
@@ -164,7 +164,9 @@ export class NewDashboardTabDialog extends Modal {
 		// Append the list view to the split view
 		this._splitView.addView(this._extensionTabView);
 		this._register(attachListStyler(this._extensionList, this._themeService));
-		this._register(this._listService.register(this._extensionList));
+
+		let listService = <ListService>this._listService;
+		this._register(listService.register(this._extensionList));
 		this._splitView.layout(DOM.getContentHeight(this._container));
 	}
 
