@@ -76,7 +76,7 @@ export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDe
 		if (this._actionbarRef && !this._actionbar) {
 			this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
 		}
-		if (this.actions) {
+		if (this.actions && this._actionbar) {
 			this._actionbar.clear();
 			this._actionbar.push(this.actions, { icon: true, label: false });
 		}
