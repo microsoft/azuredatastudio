@@ -26,6 +26,8 @@ export class ConnectionController implements IConnectionComponentController {
 	private _model: IConnectionProfile;
 	private _providerOptions: data.ConnectionOption[];
 	private _providerName: string;
+	/* key: uri, value : list of databases */
+	private _databaseCache = new Map<string, string[]>();
 
 	constructor(container: HTMLElement,
 		connectionManagementService: IConnectionManagementService,
@@ -60,19 +62,30 @@ export class ConnectionController implements IConnectionComponentController {
 		tempProfile.password = password;
 		let uri = this._connectionManagementService.getConnectionId(tempProfile);
 		return new Promise<string[]>((resolve, reject) => {
-			this._connectionManagementService.connect(tempProfile, uri).then(connResult => {
-				if (connResult && connResult.connected) {
-					this._connectionManagementService.listDatabases(uri).then(result => {
-						if (result && result.databaseNames) {
-							resolve(result.databaseNames);
-						} else {
-							reject();
-						}
-					})
+			if (this._databaseCache.has(uri)) {
+				let cachedDatabases : string[] = this._databaseCache.get(uri);
+				if (cachedDatabases !== null) {
+					resolve(cachedDatabases);
 				} else {
-					reject(connResult.errorMessage);
+					reject();
 				}
-			});
+			} else {
+				this._connectionManagementService.connect(tempProfile, uri).then(connResult => {
+					if (connResult && connResult.connected) {
+						this._connectionManagementService.listDatabases(uri).then(result => {
+							if (result && result.databaseNames) {
+								this._databaseCache.set(uri, result.databaseNames);
+								resolve(result.databaseNames);
+							} else {
+								this._databaseCache.set(uri, null);
+								reject();
+							}
+						})
+					} else {
+						reject(connResult.errorMessage);
+					}
+				});
+			}
 		});
 	}
 
