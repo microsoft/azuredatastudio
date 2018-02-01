@@ -374,7 +374,7 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-"dataprotocol-client@file:../dataprotocol-client":
+"dataprotocol-client@file:./../dataprotocol-client":
   version "1.0.0"
   dependencies:
     vscode "1.1.5"
