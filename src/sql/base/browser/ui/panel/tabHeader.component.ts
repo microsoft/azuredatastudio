@@ -40,7 +40,7 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 	constructor() {
 		super();
-	 }
+	}
 
 	ngAfterContentInit(): void {
 		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
