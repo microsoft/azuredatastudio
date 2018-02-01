@@ -104,7 +104,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		} else {
 			let tempWidgets = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'));
 			this._widgetConfigLocation = 'default';
-			this._originalConfig = objects.clone(tempWidgets);
+			this._originalConfig = objects.deepClone(tempWidgets);
 			let properties = this.getProperties();
 			this._configModifiers.forEach((cb) => {
 				tempWidgets = cb.apply(this, [tempWidgets]);

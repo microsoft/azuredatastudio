@@ -65,10 +65,10 @@ export class VerticalFlexibleSash extends Disposable implements IVerticalSashLay
 		this.top = 0;
 		this.sash = new Sash(container, this);
 
-		this._register(this.sash.addListener('start', () => this.onSashDragStart()));
-		this._register(this.sash.addListener('change', (e: ISashEvent) => this.onSashDrag(e)));
-		this._register(this.sash.addListener('end', () => this.onSashDragEnd()));
-		this._register(this.sash.addListener('reset', () => this.onSashReset()));
+		this._register(this.sash.onDidStart(() => this.onSashDragStart()));
+		this._register(this.sash.onDidChange((e: ISashEvent) => this.onSashDrag(e)));
+		this._register(this.sash.onDidEnd(() => this.onSashDragEnd()));
+		this._register(this.sash.onDidReset(() => this.onSashReset()));
 	}
 
 	public getSplitPoint(): number {
@@ -178,10 +178,10 @@ export class HorizontalFlexibleSash extends Disposable implements IHorizontalSas
 		this.left = 0;
 		this.sash = new Sash(container, this, { orientation: Orientation.HORIZONTAL });
 
-		this._register(this.sash.addListener('start', () => this.onSashDragStart()));
-		this._register(this.sash.addListener('change', (e: ISashEvent) => this.onSashDrag(e)));
-		this._register(this.sash.addListener('end', () => this.onSashDragEnd()));
-		this._register(this.sash.addListener('reset', () => this.onSashReset()));
+		this._register(this.sash.onDidStart(() => this.onSashDragStart()));
+		this._register(this.sash.onDidChange((e: ISashEvent) => this.onSashDrag(e)));
+		this._register(this.sash.onDidEnd(() => this.onSashDragEnd()));
+		this._register(this.sash.onDidReset(() => this.onSashReset()));
 	}
 
 	public getSplitPoint(): number {

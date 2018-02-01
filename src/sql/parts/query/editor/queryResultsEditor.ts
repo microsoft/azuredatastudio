@@ -49,7 +49,7 @@ export class QueryResultsEditor extends BaseEditor {
 		if (!input.hasBootstrapped) {
 			this._bootstrapAngular();
 		}
-		return TPromise.as<void>(null);
+		return TPromise.wrap<void>(null);
 	}
 
 	/**

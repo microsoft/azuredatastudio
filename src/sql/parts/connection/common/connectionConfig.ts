@@ -68,9 +68,10 @@ export class ConnectionConfig implements IConnectionConfig {
 			allGroups = allGroups.concat(userGroups);
 		}
 		allGroups = allGroups.map(g => {
-			if (g.parentId === '' || !g.parentId) {
-				g.parentId = undefined;
-			}
+			// @SQLTODO
+			// if (g.parentId === '' || !g.parentId) {
+			// 	g.parentId = undefined;
+			// }
 			return g;
 		});
 		return allGroups;

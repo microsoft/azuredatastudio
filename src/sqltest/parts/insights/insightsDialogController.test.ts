@@ -13,7 +13,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
 import { IDbColumn, BatchSummary, QueryExecuteSubsetResult, ResultSetSubset } from 'data';
-import { EventEmitter } from 'vs/base/common/eventEmitter';
+import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { equal } from 'assert';
 import { Mock, MockBehavior, It } from 'typemoq';
 
@@ -35,7 +35,7 @@ suite('Insights Dialog Controller Tests', () => {
 		let { runner, complete } = getPrimedQueryRunner(testData, testColumns);
 
 		let instMoq = Mock.ofType(InstantiationService, MockBehavior.Strict);
-		instMoq.setup(x => x.createInstance<QueryRunner>(It.isValue(QueryRunner), It.isAny(), undefined))
+		instMoq.setup(x => x.createInstance(It.isValue(QueryRunner), It.isAny(), undefined))
 			.returns(() => runner);
 
 		let connMoq = Mock.ofType(ConnectionManagementService, MockBehavior.Strict, {}, {});

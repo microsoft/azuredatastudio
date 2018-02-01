@@ -7,6 +7,15 @@
 
 import types = require('vs/base/common/types');
 
+export function clamp(value: number, min: number, max: number): number {
+	return Math.min(Math.max(value, min), max);
+}
+
+export function rot(index: number, modulo: number): number {
+	return (modulo + (index % modulo)) % modulo;
+}
+
+// {{SQL CARBON EDIT}}
 export type NumberCallback = (index: number) => void;
 
 export function count(to: number, callback: NumberCallback): void;
@@ -45,13 +54,4 @@ export function countToArray(fromOrTo: number, to?: number): number[] {
 	}
 
 	return result;
-}
-
-
-export function clamp(value: number, min: number, max: number): number {
-	return Math.min(Math.max(value, min), max);
-}
-
-export function rot(index: number, modulo: number): number {
-	return (modulo + (index % modulo)) % modulo;
 }

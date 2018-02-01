@@ -119,7 +119,8 @@ export class Dropdown extends Disposable {
 
 		this._input = new InputBox(this.$input.getHTMLElement(), contextViewService, {
 			validationOptions: {
-				showMessage: false,
+				// @SQLTODO
+				//showMessage: false,
 				validation: v => this._inputValidator(v)
 			},
 			placeholder: this._options.placeholder,

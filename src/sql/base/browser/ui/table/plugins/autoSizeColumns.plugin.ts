@@ -1,6 +1,6 @@
 // Adapted from https://github.com/naresh-n/slickgrid-column-data-autosize/blob/master/src/slick.autocolumnsize.js
 
-import { mixin, clone } from 'vs/base/common/objects';
+import { mixin, clone } from 'sql/base/common/objects';
 
 export interface IAutoColumnSizeOptions extends Slick.PluginOptions {
 	maxWidth?: number;

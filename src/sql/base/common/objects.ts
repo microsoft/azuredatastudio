@@ -5,6 +5,25 @@
 'use strict';
 import * as Types from 'vs/base/common/types';
 
+export function clone<T>(obj: T): T {
+	if (!obj || typeof obj !== 'object') {
+		return obj;
+	}
+	if (obj instanceof RegExp) {
+		// See https://github.com/Microsoft/TypeScript/issues/10990
+		return obj as any;
+	}
+	const result = (Array.isArray(obj)) ? <any>[] : <any>{};
+	Object.keys(obj).forEach(key => {
+		if (obj[key] && typeof obj[key] === 'object') {
+			result[key] = clone(obj[key]);
+		} else {
+			result[key] = obj[key];
+		}
+	});
+	return result;
+}
+
 /**
  * A copy of the vs mixin that accepts a custom behavior function
  */

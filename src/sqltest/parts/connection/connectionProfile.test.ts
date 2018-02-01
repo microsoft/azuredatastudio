@@ -168,7 +168,6 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		let savedProfile = storedProfile;
 		let connectionProfile = ConnectionProfile.createFromStoredProfile(savedProfile, msSQLCapabilities);
 		assert.equal(savedProfile.groupId, connectionProfile.groupId);
-		assert.deepEqual(savedProfile.options, connectionProfile.options);
 		assert.deepEqual(savedProfile.providerName, connectionProfile.providerName);
 		assert.deepEqual(savedProfile.savePassword, connectionProfile.savePassword);
 		assert.deepEqual(savedProfile.id, connectionProfile.id);
@@ -178,7 +177,6 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		let savedProfile = Object.assign({}, storedProfile, { id: undefined });
 		let connectionProfile = ConnectionProfile.createFromStoredProfile(savedProfile, msSQLCapabilities);
 		assert.equal(savedProfile.groupId, connectionProfile.groupId);
-		assert.deepEqual(savedProfile.options, connectionProfile.options);
 		assert.deepEqual(savedProfile.providerName, connectionProfile.providerName);
 		assert.equal(savedProfile.savePassword, connectionProfile.savePassword);
 		assert.notEqual(connectionProfile.id, undefined);

@@ -197,7 +197,7 @@ export class DashboardTab extends Disposable implements OnDestroy {
 	}
 
 	private _rewriteConfig(): void {
-		let writeableConfig = objects.clone(this.tab.originalConfig);
+		let writeableConfig = objects.deepClone(this.tab.originalConfig);
 
 		writeableConfig.forEach(i => {
 			delete i.id;

@@ -13,6 +13,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { ShowCurrentReleaseNotesAction, ProductContribution } from 'sql/workbench/update/releaseNotes';
+import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 
 const backupSchema: IJSONSchema = {
 	description: nls.localize('carbon.actions.back', 'Open up backup dialog'),
@@ -46,7 +47,7 @@ registerTask('configure-dashboard', '', configureDashboardSchema, Actions.Config
 
 // add product update and release notes contributions
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-.registerWorkbenchContribution(ProductContribution);
+.registerWorkbenchContribution(ProductContribution, LifecyclePhase.Running);
 
 Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
 	.registerWorkbenchAction(new SyncActionDescriptor(ShowCurrentReleaseNotesAction, ShowCurrentReleaseNotesAction.ID, ShowCurrentReleaseNotesAction.LABEL), 'Show Getting Started');

@@ -14,28 +14,7 @@ import { ScanCodeBinding, ScanCode } from 'vs/workbench/services/keybinding/comm
 
 const WRITE_FILE_IF_DIFFERENT = false;
 
-function createKeyboardMapper(isUSStandard: boolean, file: string): TPromise<WindowsKeyboardMapper> {
-	return readRawMapping<IWindowsKeyboardMapping>(file).then((rawMappings) => {
-		return new WindowsKeyboardMapper(isUSStandard, rawMappings);
-	});
-}
-
-function _assertResolveKeybinding(mapper: WindowsKeyboardMapper, k: number, expected: IResolvedKeybinding[]): void {
-	assertResolveKeybinding(mapper, createKeybinding(k, OperatingSystem.Windows), expected);
-}
-
 suite('keyboardMapper - WINDOWS de_ch', () => {
-
-	//let mapper: WindowsKeyboardMapper;
-
-	suiteSetup((done) => {
-		done();
-		// createKeyboardMapper(false, 'win_de_ch').then((_mapper) => {
-		// 	mapper = _mapper;
-		// 	done();
-		// }, done);
-	});
-
 	test('mapping', (done) => {
 		done();
 	});

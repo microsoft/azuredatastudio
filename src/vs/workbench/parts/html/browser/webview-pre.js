@@ -12,6 +12,8 @@
 	var firstLoad = true;
 	var loadTimeout;
 	var pendingMessages = [];
+	// {{SQL CARBON EDIT}}
+	var enableWrappedPostMessage = false;
 
 	const initData = {
 		initialScrollProgress: undefined
@@ -95,8 +97,8 @@
 			initData.baseUrl = value;
 		});
 
-		ipcRenderer.on('styles', function (event, value, activeTheme) {
-			initData.styles = value;
+		ipcRenderer.on('styles', function (event, variables, activeTheme) {
+			initData.styles = variables;
 			initData.activeTheme = activeTheme;
 
 			// webview
@@ -108,10 +110,9 @@
 			styleBody(body[0]);
 
 			// iframe
-			var defaultStyles = target.contentDocument.getElementById('_defaultStyles');
-			if (defaultStyles) {
-				defaultStyles.innerHTML = initData.styles;
-			}
+			Object.keys(variables).forEach(function(variable) {
+				target.contentDocument.documentElement.style.setProperty(`--${variable}`,variables[variable]);
+			});
 		});
 
 		// propagate focus
@@ -125,6 +126,8 @@
 		// update iframe-contents
 		ipcRenderer.on('content', function (_event, data) {
 			const options = data.options;
+			// {{SQL CARBON EDIT}}
+			enableWrappedPostMessage = options && options.enableWrappedPostMessage;
 			const text = data.contents.join('\n');
 			const newDocument = new DOMParser().parseFromString(text, 'text/html');
 
@@ -138,7 +141,48 @@
 			// apply default styles
 			const defaultStyles = newDocument.createElement('style');
 			defaultStyles.id = '_defaultStyles';
-			defaultStyles.innerHTML = initData.styles;
+
+			const vars = Object.keys(initData.styles).map(function(variable) {
+				return `--${variable}: ${initData.styles[variable]};`;
+			});
+			defaultStyles.innerHTML = `
+			:root { ${vars.join(' ')} }
+
+			body {
+				background-color: var(--background-color);
+				color: var(--color);
+				font-family: var(--font-family);
+				font-weight: var(--font-weight);
+				font-size: var(--font-size);
+				margin: 0;
+				padding: 0 20px;
+			}
+
+			img {
+				max-width: 100%;
+				max-height: 100%;
+			}
+			a:focus,
+			input:focus,
+			select:focus,
+			textarea:focus {
+				outline: 1px solid -webkit-focus-ring-color;
+				outline-offset: -1px;
+			}
+			::-webkit-scrollbar {
+				width: 10px;
+				height: 10px;
+			}
+			::-webkit-scrollbar-thumb {
+				background-color: var(--scrollbar-thumb);
+			}
+			::-webkit-scrollbar-thumb:hover {
+				background-color: var(--scrollbar-thumb-hover);
+			}
+			::-webkit-scrollbar-thumb:active {
+				background-color: var(--scrollbar-thumb-active);
+			}
+			`;
 			if (newDocument.head.hasChildNodes()) {
 				newDocument.head.insertBefore(defaultStyles, newDocument.head.firstChild);
 			} else {
@@ -261,8 +305,16 @@
 		});
 
 		// forward messages from the embedded iframe
+
 		window.onmessage = function (message) {
-			ipcRenderer.sendToHost(message.data.command, message.data.data);
+			// {{SQL CARBON EDIT}}
+			if (enableWrappedPostMessage) {
+				// Modern webview. Forward wrapped message
+				ipcRenderer.sendToHost('onmessage', message.data);
+			} else {
+				// Old school webview. Forward exact message
+				ipcRenderer.sendToHost(message.data.command, message.data.data);
+			}
 		};
 
 		// signal ready

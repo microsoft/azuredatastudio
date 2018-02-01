@@ -31,7 +31,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostC
  * Main thread class for handling data protocol management registration.
  */
 @extHostNamedCustomer(SqlMainContext.MainThreadDataProtocol)
-export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
+export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	private _proxy: ExtHostDataProtocolShape;
 
@@ -55,7 +55,6 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 		@ISerializationService private _serializationService: ISerializationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService
 	) {
-		super();
 		if (extHostContext) {
 			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostDataProtocol);
 		}
