@@ -158,7 +158,8 @@ export class ConnectionWidget {
 		this._databaseNameInputBox = new Dropdown(databaseNameBuilder.getHTMLElement(), this._contextViewService, this._themeService, {
 			values: [this._defaultDatabaseName, this._loadingDatabaseName],
 			strictSelection : false,
-			placeholder: this._defaultDatabaseName
+			placeholder: this._defaultDatabaseName,
+			maxHeight: 125
 		});
 
 		let serverGroupLabel = localize('serverGroup', 'Server group');
