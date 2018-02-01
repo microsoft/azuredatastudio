@@ -45,7 +45,7 @@ export class ShowCurrentReleaseNotesAction extends AbstractShowReleaseNotesActio
 		@IWorkbenchEditorService editorService: IWorkbenchEditorService,
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(id, label, true, pkg.version, editorService, instantiationService);
+		super(id, label, pkg.version, editorService, instantiationService);
 	}
 }
 

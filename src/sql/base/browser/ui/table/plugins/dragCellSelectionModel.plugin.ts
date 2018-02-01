@@ -1,7 +1,7 @@
 // Drag select selection model gist taken from https://gist.github.com/skoon/5312536
 // heavily modified
 
-import { clone } from 'vs/base/common/objects';
+import { clone } from 'sql/base/common/objects';
 
 export class DragCellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slick.Range>> {
 	private readonly keyColResizeIncr = 5;

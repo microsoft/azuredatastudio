@@ -64,7 +64,7 @@ export class AutoOAuthDialog extends Modal {
 	public render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		this.backButton.addListener('click', () => this.cancel());
+		this.backButton.onDidClick(() => this.cancel());
 		this._register(attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
 
 		this._copyAndOpenButton = this.addFooterButton(localize('copyAndOpen', 'Copy & Open'), () => this.addAccount());

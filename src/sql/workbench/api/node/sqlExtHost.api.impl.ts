@@ -25,6 +25,9 @@ import { ExtHostThreadService } from 'vs/workbench/services/thread/node/extHostT
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
+import { ExtHostModalDialogs } from 'sql/workbench/api/node/extHostModalDialog';
+import { ILogService } from 'vs/platform/log/common/log';
+import { IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
 import { ExtHostConnectionManagement } from 'sql/workbench/api/node/extHostConnectionManagement';
 
 export interface ISqlExtensionApiFactory {
@@ -33,18 +36,17 @@ export interface ISqlExtensionApiFactory {
 }
 
 /**
- * This method instantiates and returns the extension API surface. This overrides the default ApiFactory by extending it to add Carbon-related functions
+ * This method instantiates and returns the extension API surface
  */
 export function createApiFactory(
 	initData: IInitData,
 	threadService: ExtHostThreadService,
 	extHostWorkspace: ExtHostWorkspace,
 	extHostConfiguration: ExtHostConfiguration,
-	extensionService: ExtHostExtensionService
-
-
+	extensionService: ExtHostExtensionService,
+	logService: ILogService
 ): ISqlExtensionApiFactory {
-	let vsCodeFactory = extHostApi.createApiFactory(initData, threadService, extHostWorkspace, extHostConfiguration, extensionService);
+	let vsCodeFactory = extHostApi.createApiFactory(initData, threadService, extHostWorkspace, extHostConfiguration, extensionService, logService);
 
 	// Addressable instances
 	const extHostAccountManagement = threadService.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(threadService));
@@ -53,6 +55,7 @@ export function createApiFactory(
 	const extHostDataProvider = threadService.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(threadService));
 	const extHostSerializationProvider = threadService.set(SqlExtHostContext.ExtHostSerializationProvider, new ExtHostSerializationProvider(threadService));
 	const extHostResourceProvider = threadService.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(threadService));
+	const extHostModalDialogs = threadService.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(threadService));
 
 	return {
 		vsCodeFactory: vsCodeFactory,
@@ -250,6 +253,12 @@ export function createApiFactory(
 				}
 			};
 
+			const window = {
+				createDialog(name: string) {
+					return extHostModalDialogs.createDialog(name);
+				}
+			};
+
 			return {
 				accounts,
 				connection,
@@ -263,7 +272,8 @@ export function createApiFactory(
 				MetadataType: sqlExtHostTypes.MetadataType,
 				TaskStatus: sqlExtHostTypes.TaskStatus,
 				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode,
-				ScriptOperation: sqlExtHostTypes.ScriptOperation
+				ScriptOperation: sqlExtHostTypes.ScriptOperation,
+				window
 			};
 		}
 	};

@@ -25,14 +25,21 @@ export class MessageServiceStub implements IMessageService{
 		return undefined;
 	}
 
-	confirm(confirmation: IConfirmation):  TPromise<IConfirmationResult> {
-		return undefined;
+	confirm(confirmation: IConfirmation):  boolean {
+		return true;
 	}
 
 	/**
 	 * Ask the user for confirmation.
 	 */
 	confirmSync(confirmation: IConfirmation): boolean {
+		return undefined;
+	}
+
+	/**
+	 * Ask the user for confirmation with a checkbox.
+	 */
+	confirmWithCheckbox(confirmation: IConfirmation): TPromise<IConfirmationResult> {
 		return undefined;
 	}
 }

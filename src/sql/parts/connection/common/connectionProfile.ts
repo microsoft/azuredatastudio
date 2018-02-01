@@ -11,6 +11,7 @@ import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConn
 import * as interfaces from 'sql/parts/connection/common/interfaces';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { generateUuid } from 'vs/base/common/uuid';
+import * as objects from 'sql/base/common/objects';
 
 // Concrete implementation of the IConnectionProfile interface
 
@@ -174,9 +175,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		connectionInfo.options = profile.options;
 
 		// append group ID and original display name to build unique OE session ID
- 		connectionInfo.options = profile.options;
- 		connectionInfo.options['groupId'] = connectionInfo.groupId;
- 		connectionInfo.options['databaseDisplayName'] = connectionInfo.databaseName;
+		connectionInfo.options = objects.clone(profile.options);
+		connectionInfo.options['groupId'] = connectionInfo.groupId;
+		connectionInfo.options['databaseDisplayName'] = connectionInfo.databaseName;
 
 		connectionInfo.groupId = profile.groupId;
 		connectionInfo.providerName = profile.providerName;

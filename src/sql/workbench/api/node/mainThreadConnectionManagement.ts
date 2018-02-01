@@ -16,7 +16,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
-export class MainThreadConnectionManagement extends MainThreadConnectionManagementShape {
+export class MainThreadConnectionManagement implements MainThreadConnectionManagementShape {
 
 	private _proxy: ExtHostConnectionManagementShape;
 	private _toDispose: IDisposable[];
@@ -27,7 +27,6 @@ export class MainThreadConnectionManagement extends MainThreadConnectionManageme
 		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
 		@IWorkbenchEditorService private workbenchEditorService: IWorkbenchEditorService
 	) {
-		super();
 		if (extHostContext) {
 			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostConnectionManagement);
 		}
