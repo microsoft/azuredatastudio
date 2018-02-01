@@ -19,6 +19,7 @@ import { ConfigurationEditingService } from 'vs/workbench/services/configuration
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import * as data from 'data';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -285,10 +286,17 @@ export class ConnectionStore {
 		return this.convertConfigValuesToConnectionProfiles(configValues);
 	}
 
-	public getProfileWithoutPassword(conn: IConnectionProfile): ConnectionProfile {
+	public getProfileWithoutPassword(conn: IConnectionProfile, removePasswordFromOptions: boolean = false): ConnectionProfile {
 		if (conn) {
 			let savedConn: ConnectionProfile = ConnectionProfile.convertToConnectionProfile(this._connectionConfig.getCapabilities(conn.providerName), conn);
 			savedConn = savedConn.withoutPassword();
+
+			if (removePasswordFromOptions) {
+				savedConn.options = Object.assign({}, savedConn.options);
+				let providerCapabilities = this._capabilitiesService.getCapabilities().find(capabilities => capabilities.providerName === savedConn.providerName);
+				let passwordOptions = providerCapabilities.connectionProvider.options.filter(option => option.specialValueType === ConnectionOptionSpecialType.password);
+				passwordOptions.forEach(option => savedConn.options[option.name] = undefined);
+			}
 
 			return savedConn;
 		} else {

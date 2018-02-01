@@ -371,8 +371,6 @@ export class ConnectionManagementService implements IConnectionManagementService
 	 * @param callbacks to call after the connection is completed
 	 */
 	public connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
-		// connection.options['groupId'] = connection.groupId;
-		// connection.options['databaseDisplayName'] = connection.databaseName;
 		if (!uri) {
 			uri = Utils.generateUri(connection);
 		}
@@ -662,7 +660,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 	}
 
 	public getActiveConnections(): ConnectionProfile[] {
-		return this._connectionStore.getActiveConnections();
+		return this._connectionStatusManager.getActiveConnectionProfiles();
 	}
 
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
@@ -1356,12 +1354,24 @@ export class ConnectionManagementService implements IConnectionManagementService
 	}
 
 	public removeConnectionProfileCredentials(originalProfile: IConnectionProfile): IConnectionProfile {
-		let newProfile = originalProfile instanceof ConnectionProfile ? originalProfile.toIConnectionProfile() : Object.assign({}, originalProfile);
-		newProfile.options = Object.assign({}, newProfile.options);
-		newProfile.password = undefined;
-		let providerCapabilities = this._capabilitiesService.getCapabilities().find(capabilities => capabilities.providerName === newProfile.providerName);
-		let passwordOptions = providerCapabilities.connectionProvider.options.filter(option => option.specialValueType === ConnectionOptionSpecialType.password);
-		passwordOptions.forEach(option => newProfile.options[option.name] = undefined);
-		return newProfile;
+		return this._connectionStore.getProfileWithoutPassword(originalProfile, true);
+	}
+
+	public getActiveConnectionCredentials(profileId: string): { [name: string]: string } {
+		let profile = this.getActiveConnections().find(connectionProfile => connectionProfile.id === profileId);
+		if (!profile) {
+			return undefined;
+		}
+
+		// Find the password option for the connection provider
+		let passwordOption = this._capabilitiesService.getCapabilities().find(capability => capability.providerName === profile.providerName).connectionProvider.options.find(
+			option => option.specialValueType === ConnectionOptionSpecialType.password);
+		if (!passwordOption) {
+			return {};
+		}
+
+		let credentials = {};
+		credentials[passwordOption.name] = profile.options[passwordOption.name];
+		return credentials;
 	}
 }

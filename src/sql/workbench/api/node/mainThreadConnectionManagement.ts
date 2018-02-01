@@ -36,11 +36,17 @@ export class MainThreadConnectionManagement extends MainThreadConnectionManageme
 	}
 
 	public $getActiveConnections(): Thenable<data.connection.Connection[]> {
+		console.log('Connection status length: ' + this.connectionManagementService.getActiveConnections().length);
+		console.log('Connection store length: ' + (this.connectionManagementService as any)._connectionStore.getActiveConnections().length);
 		return Promise.resolve(this.connectionManagementService.getActiveConnections().map(profile => this.convertConnection(profile)));
 	}
 
 	public $getCurrentConnection(): Thenable<data.connection.Connection> {
 		return Promise.resolve(this.convertConnection(TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.workbenchEditorService, true)));
+	}
+
+	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
+		return Promise.resolve(this.connectionManagementService.getActiveConnectionCredentials(connectionId));
 	}
 
 	private convertConnection(profile: IConnectionProfile): data.connection.Connection {

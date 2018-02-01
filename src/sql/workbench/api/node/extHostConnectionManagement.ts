@@ -26,4 +26,8 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 	public $getCurrentConnection(): Thenable<data.connection.Connection> {
 		return this._proxy.$getCurrentConnection();
 	}
+
+	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string}> {
+		return this._proxy.$getCredentials(connectionId);
+	}
 }

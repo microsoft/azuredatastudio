@@ -159,6 +159,9 @@ export default class MainController implements vscode.Disposable {
 					data.connection.getCurrentConnection().then(connection => {
 						if (connection) {
 							console.log('Current connection: ' + connection.connectionId);
+							data.connection.getCredentials(connection.connectionId).then(credentials => {
+								console.log(connection.connectionId + ': ' + credentials);
+							});
 						} else {
 							console.log('no current connection');
 						}
@@ -166,6 +169,9 @@ export default class MainController implements vscode.Disposable {
 					data.connection.getActiveConnections().then(connections => {
 						connections.forEach(connection => {
 							console.log('Active connection: ' + connection.connectionId);
+							data.connection.getCredentials(connection.connectionId).then(credentials => {
+								console.log(connection.connectionId + ': ' + credentials);
+							});
 						});
 					}, err => console.log(err));
 				}, 3000);

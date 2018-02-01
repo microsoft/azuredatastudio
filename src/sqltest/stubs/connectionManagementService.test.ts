@@ -245,4 +245,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	removeConnectionProfileCredentials(profile: IConnectionProfile): IConnectionProfile {
 		return undefined;
 	}
+
+	getActiveConnectionCredentials(profileId: string): { [name: string]: string } {
+		return undefined;
+	}
 }

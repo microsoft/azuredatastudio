@@ -80,6 +80,9 @@ export function createApiFactory(
 				},
 				getCurrentConnection(): Thenable<data.connection.Connection> {
 					return extHostConnectionManagement.$getCurrentConnection();
+				},
+				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
+					return extHostConnectionManagement.$getCredentials(connectionId);
 				}
 			};
 

@@ -26,6 +26,7 @@ export abstract class ExtHostAccountManagementShape {
 export abstract class ExtHostConnectionManagementShape {
 	// $getActiveConnections(): Thenable<data.connection.Connection[]> { throw ni(); }
 	// $getCurrentConnection(): Thenable<data.connection.Connection> { throw ni(); }
+	// $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> { throw ni(); }
 }
 
 export abstract class ExtHostDataProtocolShape {
@@ -397,6 +398,7 @@ export abstract class MainThreadDataProtocolShape {
 export abstract class MainThreadConnectionManagementShape {
 	$getActiveConnections(): Thenable<data.connection.Connection[]> { throw ni(); }
 	$getCurrentConnection(): Thenable<data.connection.Connection> { throw ni(); }
+	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {throw ni(); }
 }
 
 export abstract class MainThreadCredentialManagementShape {
