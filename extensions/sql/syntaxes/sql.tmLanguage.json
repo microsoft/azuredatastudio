@@ -192,63 +192,63 @@
 			"name": "keyword.operator.concatenator.sql"
 		},
 		{
-			"match": "(?i)\\b(AVG|CHECKSUM_AGG|COUNT|COUNT_BIG|GROUPING|GROUPING_ID|MAX|MIN|SUM|STDEV|STDEVP|VAR|VARP)\\b",
+			"match": "(?i)\\b(avg|checksum_agg|count|count_big|grouping|grouping_id|max|min|sum|stdev|stdevp|var|varp)\\b",
 			"name": "support.function.aggregate.sql"
 		},
 		{
-			"match": "(?i)\\b(CAST|CONVERT|PARSE|TRY_CAST|TRY_CONVERT|TRY_PARSE)\\b",
+			"match": "(?i)\\b(cast|convert|parse|try_cast|try_convert|try_parse)\\b",
 			"name": "support.function.conversion.sql"
 		},
 		{
-			"match": "(?i)\\b(CURSOR_STATUS)\\b",
+			"match": "(?i)\\b(cursor_status)\\b",
 			"name": "support.function.cursor.sql"
 		},
 		{
-			"match": "(?i)\\b(SYSDATETIME|SYSDATETIMEOFFSET|SYSUTCDATETIME|CURRENT_TIME(STAMP)?|GETDATE|GETUTCDATE|DATENAME|DATEPART|DAY|MONTH|YEAR|DATEFROMPARTS|DATETIME2FROMPARTS|DATETIMEFROMPARTS|DATETIMEOFFSETFROMPARTS|SMALLDATETIMEFROMPARTS|TIMEFROMPARTS|DATEDIFF|DATEADD|EOMONTH|SWITCHOFFSET|TODATETIMEOFFSET|ISDATE)\\b",
+			"match": "(?i)\\b(sysdatetime|sysdatetimeoffset|sysutcdatetime|current_time(stamp)?|getdate|getutcdate|datename|datepart|day|month|year|datefromparts|datetime2fromparts|datetimefromparts|datetimeoffsetfromparts|smalldatetimefromparts|timefromparts|datediff|dateadd|eomonth|switchoffset|todatetimeoffset|isdate)\\b",
 			"name": "support.function.datetime.sql"
 		},
 		{
-			"match": "(?i)\\b(COALESCE|NULLIF)\\b",
+			"match": "(?i)\\b(coalesce|nullif)\\b",
 			"name": "support.function.expression.sql"
 		},
 		{
-			"match": "(?<!@)@@(?i)\\b(CURSOR_ROWS|CONNECTIONS|CPU_BUSY|DATEFIRST|DBTS|ERROR|FETCH_STATUS|IDENTITY|IDLE|IO_BUSY|LANGID|LANGUAGE|LOCK_TIMEOUT|MAX_CONNECTIONS|MAX_PRECISION|NESTLEVEL|OPTIONS|PACKET_ERRORS|PACK_RECEIVED|PACK_SENT|PROCID|REMSERVER|ROWCOUNT|SERVERNAME|SERVICENAME|SPID|TEXTSIZE|TIMETICKS|TOTAL_ERRORS|TOTAL_READ|TOTAL_WRITE|TRANCOUNT|VERSION)\\b",
+			"match": "(?<!@)@@(?i)\\b(cursor_rows|connections|cpu_busy|datefirst|dbts|error|fetch_status|identity|idle|io_busy|langid|language|lock_timeout|max_connections|max_precision|nestlevel|options|packet_errors|pack_received|pack_sent|procid|remserver|rowcount|servername|servicename|spid|textsize|timeticks|total_errors|total_read|total_write|trancount|version)\\b",
 			"name": "support.function.globalvar.sql"
 		},
 		{
-			"match": "(?i)\\b(CHOOSE|IIF)\\b",
+			"match": "(?i)\\b(choose|iif)\\b",
 			"name": "support.function.logical.sql"
 		},
 		{
-			"match": "(?i)\\b(ABS|ACOS|ASIN|ATAN|ATN2|CEILING|COS|COT|DEGREES|EXP|FLOOR|LOG|LOG10|PI|POWER|RADIANS|RAND|ROUND|SIGN|SIN|SQRT|SQUARE|TAN)\\b",
+			"match": "(?i)\\b(abs|acos|asin|atan|atn2|ceiling|cos|cot|degrees|exp|floor|log|log10|pi|power|radians|rand|round|sign|sin|sqrt|square|tan)\\b",
 			"name": "support.function.mathematical.sql"
 		},
 		{
-			"match": "(?i)\\b(APP_NAME|APPLOCK_MODE|APPLOCK_TEST|ASSEMBLYPROPERTY|COL_LENGTH|COL_NAME|COLUMNPROPERTY|DATABASE_PRINCIPAL_ID|DATABASEPROPERTYEX|DB_ID|DB_NAME|FILE_ID|FILE_IDEX|FILE_NAME|FILEGROUP_ID|FILEGROUP_NAME|FILEGROUPPROPERTY|FILEPROPERTY|FULLTEXTCATALOGPROPERTY|FULLTEXTSERVICEPROPERTY|INDEX_COL|INDEXKEY_PROPERTY|INDEXPROPERTY|OBJECT_DEFINITION|OBJECT_ID|OBJECT_NAME|OBJECT_SCHEMA_NAME|OBJECTPROPERTY|OBJECTPROPERTYEX|ORIGINAL_DB_NAME|PARSENAME|SCHEMA_ID|SCHEMA_NAME|SCOPE_IDENTITY|SEVEREPROPERTY|STATS_DATE|TYPE_ID|TYPE_NAME|TYPEPROPERTY)\\b",
+			"match": "(?i)\\b(app_name|applock_mode|applock_test|assemblyproperty|col_length|col_name|columnproperty|database_principal_id|databasepropertyex|db_id|db_name|file_id|file_idex|file_name|filegroup_id|filegroup_name|filegroupproperty|fileproperty|fulltextcatalogproperty|fulltextserviceproperty|index_col|indexkey_property|indexproperty|object_definition|object_id|object_name|object_schema_name|objectproperty|objectpropertyex|original_db_name|parsename|schema_id|schema_name|scope_identity|severeproperty|stats_date|type_id|type_name|typeproperty)\\b",
 			"name": "support.function.metadata.sql"
 		},
 		{
-			"match": "(?i)\\b(RANK|DENSE_RANK|NTILE|ROW_NUMBER)\\b",
+			"match": "(?i)\\b(rank|dense_rank|ntile|row_number)\\b",
 			"name": "support.function.ranking.sql"
 		},
 		{
-			"match": "(?i)\\b(OPENDATASOURCE|OPENROWSET|OPENQUERY|OPENXML)\\b",
+			"match": "(?i)\\b(opendatasource|openrowset|openquery|openxml)\\b",
 			"name": "support.function.rowset.sql"
 		},
 		{
-			"match": "(?i)\\b(CERTENCODED|CERTPRIVATEKEY|CURRENT_USER|DATABASE_PRINCIPAL_ID|HAS_PERMS_BY_NAME|IS_MEMBER|IS_ROLEMEMBER|IS_SRVROLEMEMBER|ORIGINAL_LOGIN|PERMISSIONS|PWDCOMPARE|PWDENCRYPT|SCHEMA_ID|SCHEMA_NAME|SESSION_USER|SUSER_ID|SUSER_SID|SUSER_SNAME|SYSTEM_USER|SUSER_NAME|USER_ID|USER_NAME)\\b",
+			"match": "(?i)\\b(certencoded|certprivatekey|current_user|database_principal_id|has_perms_by_name|is_member|is_rolemember|is_srvrolemember|original_login|permissions|pwdcompare|pwdencrypt|schema_id|schema_name|session_user|suser_id|suser_sid|suser_sname|system_user|suser_name|user_id|user_name)\\b",
 			"name": "support.function.security.sql"
 		},
 		{
-			"match": "(?i)\\b(ASCII|CHARINDEX|CONCAT|DIFFERENCE|FORMAT|LEN|LOWER|LTRIM|PATINDEX|QUOTENAME|REPLACE|REPLICATE|REVERSE|RTRIM|SOUNDEX|SPACE|STR|STUFF|SUBSTRING|TRIM|UNICODE|UPPER)\\b",
+			"match": "(?i)\\b(ascii|charindex|concat|difference|format|len|lower|ltrim|patindex|quotename|replace|replicate|reverse|rtrim|soundex|space|str|stuff|substring|trim|unicode|upper)\\b",
 			"name": "support.function.string.sql"
 		},
 		{
-			"match": "(?i)\\b(BINARY_CHECKSUM|CHECKSUM|COMPRESS|CONNECTIONPROPERTY|CONTEXT_INFO|CURRENT_REQUEST_ID|CURRENT_TRANSACTION_ID|DECOMPRESS|ERROR_LINE|ERROR_MESSAGE|ERROR_NUMBER|ERROR_PROCEDURE|ERROR_SEVERITY|ERROR_STATE|FORMATMESSAGE|GET_FILESTREAM_TRANSACTION_CONTEXT|GETANSINULL|HOST_ID|HOST_NAME|ISNULL|ISNUMERIC|MIN_ACTIVE_ROWVERSION|NEWID|NEWSEQUENTIALID|ROWCOUNT_BIG|SESSION_CONTEXT|SESSION_ID|XACT_STATE)\\b",
+			"match": "(?i)\\b(binary_checksum|checksum|compress|connectionproperty|context_info|current_request_id|current_transaction_id|decompress|error_line|error_message|error_number|error_procedure|error_severity|error_state|formatmessage|get_filestream_transaction_context|getansinull|host_id|host_name|isnull|isnumeric|min_active_rowversion|newid|newsequentialid|rowcount_big|session_context|session_id|xact_state)\\b",
 			"name": "support.function.system.sql"
 		},
 		{
-			"match": "(?i)\\b(PATINDEX|TEXTPTR|TEXTVALID)\\b",
+			"match": "(?i)\\b(patindex|textptr|textvalid)\\b",
 			"name": "support.function.textimage.sql"
 		},
 		{
