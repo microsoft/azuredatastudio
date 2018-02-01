@@ -23,7 +23,7 @@ import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
 import { Severity } from 'vs/platform/message/common/message';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -61,6 +61,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private _propertiesConfigLocation: string;
 
 	protected panelActions: Action[];
+	private _tabsDispose: Array<IDisposable> = [];
 
 	@ViewChild('properties') private _properties: DashboardWidgetWrapper;
 	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
@@ -115,28 +116,8 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			});
 			this.propertiesWidget = properties ? properties[0] : undefined;
 
-			// Clear all tabs
-			this.tabs = [];
+			this.createTabs(tempWidgets);
 
-			// Create home tab
-			let homeWidgets = tempWidgets;
-			let homeTab: TabConfig = {
-				id: 'homeTab',
-				name: this.homeTabTitle,
-				widgets: homeWidgets,
-				context: this.context,
-				originalConfig: this._originalConfig,
-				editable: true,
-				canClose: false,
-				actions: []
-			};
-			this.addNewTab(homeTab);
-			this._panel.selectTab(homeTab.id);
-
-			// set panel actions
-			let addNewTabAction = this._register(this.dashboardService.instantiationService.createInstance(AddFeatureTabAction, this.filterConfigs(dashboardRegistry.tabs), this.dashboardService.getUnderlyingUri()));
-			this.panelActions = [addNewTabAction];
-			this._cd.detectChanges();
 		}
 	}
 
@@ -173,11 +154,49 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			}, 100);
 		}));
 
-		this._register(this.dashboardService.onPinUnpinTab(e => {
+		// unforunately because of angular rendering behavior we need to do a double check to make sure nothing changed after this point
+		setTimeout(() => {
+			let currentheight = getContentHeight(scrollable);
+			if (initalHeight !== currentheight) {
+				this._scrollableElement.setScrollDimensions({
+					scrollHeight: getContentHeight(scrollable),
+					height: getContentHeight(container)
+				});
+			}
+		}, 100);
+	}
+
+	private createTabs(homeWidgets: WidgetConfig[]) {
+		// Clear all tabs
+		this.tabs = [];
+		this._tabsDispose.forEach(i => i.dispose());
+		this._tabsDispose = [];
+
+		// Create home tab
+		let homeTab: TabConfig = {
+			id: 'homeTab',
+			name: this.homeTabTitle,
+			widgets: homeWidgets,
+			context: this.context,
+			originalConfig: this._originalConfig,
+			editable: true,
+			canClose: false,
+			actions: []
+		};
+		this.addNewTab(homeTab);
+		this._panel.selectTab(homeTab.id);
+
+		// set panel actions
+		let addNewTabAction = this.dashboardService.instantiationService.createInstance(AddFeatureTabAction, this.filterConfigs(dashboardRegistry.tabs), this.dashboardService.getUnderlyingUri());
+		this._tabsDispose.push(addNewTabAction);
+		this.panelActions = [addNewTabAction];
+		this._cd.detectChanges();
+
+		this._tabsDispose.push(this.dashboardService.onPinUnpinTab(e => {
 			// a placeholder for pin/unpin tab
 		}));
 
-		this._register(this.dashboardService.onAddNewTabs(e => {
+		this._tabsDispose.push(this.dashboardService.onAddNewTabs(e => {
 			let selectedTabs = e.map(v => {
 				let configs = v.widgets;
 				this._configModifiers.forEach(cb => {
@@ -207,29 +226,21 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				this._panel.selectTab(selectedTabs[0].id);
 			});
 		}));
-
-		// unforunately because of angular rendering behavior we need to do a double check to make sure nothing changed after this point
-		setTimeout(() => {
-			let currentheight = getContentHeight(scrollable);
-			if (initalHeight !== currentheight) {
-				this._scrollableElement.setScrollDimensions({
-					scrollHeight: getContentHeight(scrollable),
-					height: getContentHeight(container)
-				});
-			}
-		}, 100);
 	}
 
 	private addNewTab(tab: TabConfig): void {
-		this.tabs.push(tab);
-		this._cd.detectChanges();
-		let tabComponents = this._tabs.find(i => i.tab.id === tab.id);
-		this._register(subscriptionToDisposable(tabComponents.onSetScrollDimensions.subscribe(() => {
-			this._scrollableElement.setScrollDimensions({
-				scrollHeight: getContentHeight(this._scrollable.nativeElement),
-				height: getContentHeight(this._scrollContainer.nativeElement)
-			});
-		})));
+		let existedTab = this.tabs.find(i => i.id === tab.id);
+		if (!existedTab) {
+			this.tabs.push(tab);
+			this._cd.detectChanges();
+			let tabComponents = this._tabs.find(i => i.tab.id === tab.id);
+			this._register(subscriptionToDisposable(tabComponents.onSetScrollDimensions.subscribe(() => {
+				this._scrollableElement.setScrollDimensions({
+					scrollHeight: getContentHeight(this._scrollable.nativeElement),
+					height: getContentHeight(this._scrollContainer.nativeElement)
+				});
+			})));
+		}
 	}
 
 	private updateTheme(theme: IColorTheme): void {

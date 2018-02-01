@@ -11,6 +11,7 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 import { TabComponent } from './tab.component';
 import { CloseTabAction } from './tabActions';
@@ -28,16 +29,18 @@ import { CloseTabAction } from './tabActions';
 		</div>
 	`
 })
-export class TabHeaderComponent implements AfterContentInit, OnDestroy {
+export class TabHeaderComponent extends Disposable implements AfterContentInit, OnDestroy {
 	@Input() public tab: TabComponent;
 	@Output() public onSelectTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
 	@Output() public onCloseTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
 
 	private _actionbar: ActionBar;
 
-	@ViewChild('actionHeader', { read: ElementRef }) private _actionHeaderRef: ElementRef;
+	@ViewChild('actionHeader', { read: ElementRef }) public actionHeaderRef: ElementRef;
 	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
-	constructor() { }
+	constructor() {
+		super();
+	 }
 
 	ngAfterContentInit(): void {
 		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
@@ -45,7 +48,7 @@ export class TabHeaderComponent implements AfterContentInit, OnDestroy {
 			this._actionbar.push(this.tab.actions, { icon: true, label: false });
 		}
 		if (this.tab.canClose) {
-			let closeAction = new CloseTabAction(this.closeTab, this);
+			let closeAction = this._register(new CloseTabAction(this.closeTab, this));
 			this._actionbar.push(closeAction, { icon: true, label: false });
 		}
 	}
@@ -54,6 +57,7 @@ export class TabHeaderComponent implements AfterContentInit, OnDestroy {
 		if (this._actionbar) {
 			this._actionbar.dispose();
 		}
+		this.dispose();
 	}
 
 	selectTab(tab: TabComponent) {
@@ -65,7 +69,7 @@ export class TabHeaderComponent implements AfterContentInit, OnDestroy {
 	}
 
 	onKey(e: Event) {
-		if (DOM.isAncestor(<HTMLElement>e.target, this._actionHeaderRef.nativeElement) && e instanceof KeyboardEvent) {
+		if (DOM.isAncestor(<HTMLElement>e.target, this.actionHeaderRef.nativeElement) && e instanceof KeyboardEvent) {
 			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Enter)) {
 				this.onSelectTab.emit(this.tab);
