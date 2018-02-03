@@ -38,6 +38,8 @@ export class WebViewDialog extends Modal {
 	public onOk: Event<void> = this._onOk.event;
 	private _onClosed = new Emitter<void>();
 	public onClosed: Event<void> = this._onClosed.event;
+	private _onLoaded = new Emitter<void>();
+	public onLoaded: Event<void> = this._onLoaded.event;
 	private contentDisposables: IDisposable[] = [];
 	private _onMessage = new Emitter<any>();
 
@@ -97,14 +99,20 @@ export class WebViewDialog extends Modal {
 				{
 					allowScripts: true,
 					enableWrappedPostMessage: true,
-					hideFind: true
+					hideFind: true,
+					loadModules: true,
+					appRoot: `${this._environmentService.appRoot}/out`
 				}
 			);
 
 			this._webview.style(this._themeService.getTheme());
 
 			this._webview.onMessage(message => {
-				this._onMessage.fire(message);
+				if (message === 'modulesReady') {
+					this._onLoaded.fire();
+				} else {
+					this._onMessage.fire(message);
+				}
 			}, null, this.contentDisposables);
 
 			this._themeService.onThemeChange(theme => this._webview.style(theme), null, this.contentDisposables);

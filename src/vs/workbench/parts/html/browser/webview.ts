@@ -40,6 +40,8 @@ export interface WebviewOptions {
 	// {{SQL CARBON EDIT}}
 	enableWrappedPostMessage?: boolean;
 	hideFind?: boolean;
+	loadModules?: boolean;
+	appRoot?: string;
 }
 
 export default class Webview {

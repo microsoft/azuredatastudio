@@ -433,4 +433,5 @@ export interface MainThreadModalDialogShape extends IDisposable {
 export interface ExtHostModalDialogsShape {
 	$onMessage(handle: number, message: any): void;
 	$onClosed(handle: number): void;
+	$onLoaded(handle: number): void;
 }

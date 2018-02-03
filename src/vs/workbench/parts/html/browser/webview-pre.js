@@ -13,7 +13,11 @@
 	var loadTimeout;
 	var pendingMessages = [];
 	// {{SQL CARBON EDIT}}
+	const path = require('path');
 	var enableWrappedPostMessage = false;
+	var loadModules = false;
+	var appRoot = '';
+	var contentHtml;
 
 	const initData = {
 		initialScrollProgress: undefined
@@ -92,6 +96,16 @@
 		});
 	}
 
+	// {{SQL CARBON EDIT}}
+	function uriFromPath(_path) {
+		var pathName = path.resolve(_path).replace(/\\/g, '/');
+		if (pathName.length > 0 && pathName.charAt(0) !== '/') {
+			pathName = '/' + pathName;
+		}
+
+		return encodeURI('file://' + pathName);
+	}
+
 	document.addEventListener('DOMContentLoaded', function () {
 		ipcRenderer.on('baseUrl', function (event, value) {
 			initData.baseUrl = value;
@@ -128,6 +142,8 @@
 			const options = data.options;
 			// {{SQL CARBON EDIT}}
 			enableWrappedPostMessage = options && options.enableWrappedPostMessage;
+			loadModules = options && options.loadModules;
+			appRoot = options && options.appRoot;
 			const text = data.contents.join('\n');
 			const newDocument = new DOMParser().parseFromString(text, 'text/html');
 
@@ -187,6 +203,23 @@
 				newDocument.head.insertBefore(defaultStyles, newDocument.head.firstChild);
 			} else {
 				newDocument.head.appendChild(defaultStyles);
+			}
+
+			// {{SQL CARBON EDIT}}
+			if (options.loadModules) {
+				let loaderScript = document.createElement('script');
+				loaderScript.setAttribute('src', `${appRoot}/vs/loader.js`);
+				newDocument.head.appendChild(loaderScript);
+				let configScript = document.createElement('script');
+				configScript.text = `
+					require.config({
+						baseUrl: "${uriFromPath(appRoot)}",
+					});
+				`;
+				newDocument.head.appendChild(configScript);
+				let mainScript = document.createElement('script');
+				mainScript.setAttribute('src', `${appRoot}/sql/base/browser/ui/uiControlLoader.js`);
+				newDocument.head.appendChild(mainScript);
 			}
 
 			styleBody(newDocument.body);

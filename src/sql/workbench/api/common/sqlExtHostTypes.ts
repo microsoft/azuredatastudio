@@ -73,3 +73,7 @@ export enum ScriptOperation {
 	Execute = 5,
 	Alter = 6
 }
+
+export enum ControlTypes {
+	button = 0
+}
