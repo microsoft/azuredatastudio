@@ -23,6 +23,8 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { ITaskService } from 'sql/parts/taskHistory/common/taskService';
+import { TaskStatus, TaskNode } from 'sql/parts/taskHistory/common/taskNode';
 
 export class RestoreService implements IRestoreService {
 
@@ -136,6 +138,8 @@ export class RestoreDialogController implements IRestoreDialogController {
 	private _ownerUri: string;
 	private _sessionId: string;
 	private readonly _restoreFeature = 'Restore';
+	private readonly _restoreTaskName: string = 'Restore Database';
+	private readonly _restoreCompleted : string = 'Completed';
 	private _optionValues: { [optionName: string]: any } = {};
 
 	constructor(
@@ -143,7 +147,8 @@ export class RestoreDialogController implements IRestoreDialogController {
 		@IRestoreService private _restoreService: IRestoreService,
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
+		@ITaskService private _taskService: ITaskService
 	) {
 	}
 
@@ -156,14 +161,28 @@ export class RestoreDialogController implements IRestoreDialogController {
 		}
 
 		this._restoreService.restore(this._ownerUri, restoreOption).then(() => {
-			let connectionProfile = this._connectionService.getConnectionProfile(this._ownerUri);
-			let activeNode = this._objectExplorerService.getObjectExplorerNode(connectionProfile);
-			this._objectExplorerService.refreshTreeNode(activeNode.getSession(), activeNode).then(() => {
-				this._objectExplorerService.getServerTreeView().refreshTree();
+			const self = this;
+			let connectionProfile = self._connectionService.getConnectionProfile(self._ownerUri);
+			let activeNode = self._objectExplorerService.getObjectExplorerNode(connectionProfile);
+			this._taskService.onTaskComplete(response => {
+				if (this.isSuccessfulRestore(response) && activeNode) {
+					self._objectExplorerService.refreshTreeNode(activeNode.getSession(), activeNode).then(result => {
+						self._objectExplorerService.getServerTreeView().refreshTree();
+					});
+				}
 			});
 			let restoreDialog = this._restoreDialogs[this._currentProvider];
 			restoreDialog.close();
 		});
+	}
+
+	private isSuccessfulRestore(response: TaskNode): boolean {
+		return (response.taskName === this._restoreTaskName &&
+				response.message === this._restoreCompleted &&
+				(response.status === TaskStatus.succeeded ||
+					response.status === TaskStatus.succeededWithWarning) &&
+				(response.taskExecutionMode === TaskExecutionMode.execute ||
+					response.taskExecutionMode === TaskExecutionMode.executeAndScript));
 	}
 
 	private handleMssqlOnValidateFile(overwriteTargetDatabase: boolean = false): void {
