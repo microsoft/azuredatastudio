@@ -22,6 +22,7 @@ import { MssqlRestoreInfo } from 'sql/parts/disasterRecovery/restore/mssqlRestor
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
 import * as Utils from 'sql/parts/connection/common/utils';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 
 export class RestoreService implements IRestoreService {
 
@@ -141,7 +142,8 @@ export class RestoreDialogController implements IRestoreDialogController {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IRestoreService private _restoreService: IRestoreService,
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
 	) {
 	}
 
@@ -153,9 +155,15 @@ export class RestoreDialogController implements IRestoreDialogController {
 			restoreOption.taskExecutionMode = TaskExecutionMode.executeAndScript;
 		}
 
-		this._restoreService.restore(this._ownerUri, restoreOption);
-		let restoreDialog = this._restoreDialogs[this._currentProvider];
-		restoreDialog.close();
+		this._restoreService.restore(this._ownerUri, restoreOption).then(() => {
+			let connectionProfile = this._connectionService.getConnectionProfile(this._ownerUri);
+			let activeNode = this._objectExplorerService.getObjectExplorerNode(connectionProfile);
+			this._objectExplorerService.refreshTreeNode(activeNode.getSession(), activeNode).then(() => {
+				this._objectExplorerService.getServerTreeView().refreshTree();
+			});
+			let restoreDialog = this._restoreDialogs[this._currentProvider];
+			restoreDialog.close();
+		});
 	}
 
 	private handleMssqlOnValidateFile(overwriteTargetDatabase: boolean = false): void {
@@ -309,7 +317,6 @@ export class RestoreDialogController implements IRestoreDialogController {
 						let restoreDialog = this._restoreDialogs[this._currentProvider] as OptionsDialog;
 						restoreDialog.open(this.getRestoreOption(), this._optionValues);
 					}
-
 					resolve(result);
 				}, error => {
 					reject(error);

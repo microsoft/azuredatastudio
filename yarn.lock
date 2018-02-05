@@ -5175,7 +5175,7 @@ slice-ansi@0.0.4:
 
 "slickgrid@github:anthonydresser/SlickGrid#2.3.12":
   version "2.3.12"
-  resolved "https://codeload.github.com/anthonydresser/SlickGrid/tar.gz/5610e05166cd7068dcf196498ae20054382b1684"
+  resolved "https://codeload.github.com/anthonydresser/SlickGrid/tar.gz/e7783f6a26b0ab0c34997a94caf2cefc186e1b77"
   dependencies:
     jquery ">=1.8.0"
     jquery-ui ">=1.8.0"
