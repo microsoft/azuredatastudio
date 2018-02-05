@@ -33,7 +33,7 @@ export class NewDashboardTabViewModel {
 	public updateDashboardTabs(dashboardTabs: Array<IDashboardTab>, openedTabs: Array<IDashboardTab>) {
 		let tabList: IDashboardUITab[] = [];
 		dashboardTabs.forEach(tab => {
-			tabList.push({tabConfig: tab});
+			tabList.push({ tabConfig: tab });
 		});
 		openedTabs.forEach(tab => {
 			let uiTab = tabList.find(i => i.tabConfig === tab);

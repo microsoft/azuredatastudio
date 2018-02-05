@@ -11,5 +11,5 @@ import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 export const INewDashboardTabService = createDecorator<INewDashboardTabService>('addNewDashboardTabService');
 export interface INewDashboardTabService {
 	_serviceBrand: any;
-	showDialog(dashboardTabs: Array<IDashboardTab>, uri: String): void;
+	showDialog(dashboardTabs: Array<IDashboardTab>, openedTabs: Array<IDashboardTab>, uri: string): void;
 }

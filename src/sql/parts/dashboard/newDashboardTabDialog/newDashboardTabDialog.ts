@@ -5,6 +5,7 @@
 
 'use strict';
 
+import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/newDashboardTabDialog';
 import * as DOM from 'vs/base/browser/dom';
 import { List } from 'vs/base/browser/ui/list/listWidget';
@@ -25,35 +26,39 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/styler';
 import { FixedListView } from 'sql/platform/views/fixedListView';
-import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { SplitView } from 'sql/base/browser/ui/splitview/splitview';
+import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabViewModel';
+import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 
-class ExtensionListDelegate implements IDelegate<IDashboardTab> {
+class ExtensionListDelegate implements IDelegate<IDashboardUITab> {
 
 	constructor(
 		private _height: number
 	) {
 	}
 
-	public getHeight(element: IDashboardTab): number {
+	public getHeight(element: IDashboardUITab): number {
 		return this._height;
 	}
 
-	public getTemplateId(element: IDashboardTab): string {
+	public getTemplateId(element: IDashboardUITab): string {
 		return 'extensionListRenderer';
 	}
 }
 
 interface ExtensionListTemplate {
 	root: HTMLElement;
+	icon: HTMLElement;
 	title: HTMLElement;
 	description: HTMLElement;
 	publisher: HTMLElement;
 }
 
-class ExtensionListRenderer implements IRenderer<IDashboardTab, ExtensionListTemplate> {
+class ExtensionListRenderer implements IRenderer<IDashboardUITab, ExtensionListTemplate> {
 	public static TEMPLATE_ID = 'extensionListRenderer';
+	private static readonly OPENED_TAB_CLASS = 'success';
+	private static readonly ICON_CLASS = 'extension-status-icon icon';
 
 	public get templateId(): string {
 		return ExtensionListRenderer.TEMPLATE_ID;
@@ -62,16 +67,22 @@ class ExtensionListRenderer implements IRenderer<IDashboardTab, ExtensionListTem
 	public renderTemplate(container: HTMLElement): ExtensionListTemplate {
 		const tableTemplate: ExtensionListTemplate = Object.create(null);
 		tableTemplate.root = DOM.append(container, DOM.$('div.list-row.extensionTab-list'));
-		tableTemplate.title = DOM.append(tableTemplate.root, DOM.$('div.title'));
-		tableTemplate.description = DOM.append(tableTemplate.root, DOM.$('div.description'));
-		tableTemplate.publisher = DOM.append(tableTemplate.root, DOM.$('div.publisher'));
+		tableTemplate.icon = DOM.append(tableTemplate.root, DOM.$('div.icon'));
+		var titleContainer = DOM.append(tableTemplate.root, DOM.$('div.extension-details'));
+		tableTemplate.title = DOM.append(titleContainer, DOM.$('div.title'));
+		tableTemplate.description = DOM.append(titleContainer, DOM.$('div.description'));
+		tableTemplate.publisher = DOM.append(titleContainer, DOM.$('div.publisher'));
 		return tableTemplate;
 	}
 
-	public renderElement(dashboardTab: IDashboardTab, index: number, templateData: ExtensionListTemplate): void {
-		templateData.title.innerText = dashboardTab.title;
-		templateData.description.innerText = dashboardTab.description;
-		templateData.publisher.innerText = dashboardTab.publisher;
+	public renderElement(dashboardTab: IDashboardUITab, index: number, templateData: ExtensionListTemplate): void {
+		templateData.icon.className = ExtensionListRenderer.ICON_CLASS;
+		if (dashboardTab.isOpened) {
+			templateData.icon.classList.add(ExtensionListRenderer.OPENED_TAB_CLASS);
+		}
+		templateData.title.innerText = dashboardTab.tabConfig.title;
+		templateData.description.innerText = dashboardTab.tabConfig.description;
+		templateData.publisher.innerText = dashboardTab.tabConfig.publisher;
 	}
 
 	public disposeTemplate(template: ExtensionListTemplate): void {
@@ -80,19 +91,21 @@ class ExtensionListRenderer implements IRenderer<IDashboardTab, ExtensionListTem
 }
 
 export class NewDashboardTabDialog extends Modal {
-	public static EXTENSIONLIST_HEIGHT = 84;
+	public static EXTENSIONLIST_HEIGHT = 101;
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _addNewTabButton: Button;
 	private _cancelButton: Button;
-	private _extensionList: List<IDashboardTab>;
-	private _extensionTabView: FixedListView<IDashboardTab>;
+	private _extensionList: List<IDashboardUITab>;
+	private _extensionTabView: FixedListView<IDashboardUITab>;
 	private _splitView: SplitView;
 	private _container: HTMLElement;
 
+	private _viewModel: NewDashboardTabViewModel;
+
 	// EVENTING ////////////////////////////////////////////////////////////
-	private _onAddTabs: Emitter<Array<IDashboardTab>>;
-	public get onAddTabs(): Event<Array<IDashboardTab>> { return this._onAddTabs.event; }
+	private _onAddTabs: Emitter<Array<IDashboardUITab>>;
+	public get onAddTabs(): Event<Array<IDashboardUITab>> { return this._onAddTabs.event; }
 
 	private _onCancel: Emitter<void>;
 	public get onCancel(): Event<void> { return this._onCancel.event; }
@@ -108,7 +121,7 @@ export class NewDashboardTabDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super(
-			localize('addFeatureTab', 'Add feature tab'),
+			localize('openInstalledFeatures', 'Open installed features'),
 			TelemetryKeys.AddNewDashboardTab,
 			partService,
 			telemetryService,
@@ -117,8 +130,11 @@ export class NewDashboardTabDialog extends Modal {
 		);
 
 		// Setup the event emitters
-		this._onAddTabs = new Emitter<IDashboardTab[]>();
+		this._onAddTabs = new Emitter<IDashboardUITab[]>();
 		this._onCancel = new Emitter<void>();
+
+		this._viewModel = new NewDashboardTabViewModel();
+		this._register(this._viewModel.updateTabListEvent(tabs => this.onUpdateTabList(tabs)));
 	}
 
 	// MODAL OVERRIDE METHODS //////////////////////////////////////////////
@@ -131,7 +147,7 @@ export class NewDashboardTabDialog extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
-		this._addNewTabButton = this.addFooterButton(localize('add', 'Add'), () => this.addNewTabs());
+		this._addNewTabButton = this.addFooterButton(localize('ok', 'Ok'), () => this.addNewTabs());
 		this._cancelButton = this.addFooterButton(localize('cancel', 'Cancel'), () => this.cancel());
 		this.registerListeners();
 	}
@@ -146,8 +162,8 @@ export class NewDashboardTabDialog extends Modal {
 		let extensionTabViewContainer = DOM.$('.extensionTab-view');
 		let delegate = new ExtensionListDelegate(NewDashboardTabDialog.EXTENSIONLIST_HEIGHT);
 		let extensionTabRenderer = new ExtensionListRenderer();
-		this._extensionList = new List<IDashboardTab>(extensionTabViewContainer, delegate, [extensionTabRenderer]);
-		this._extensionTabView = new FixedListView<IDashboardTab>(
+		this._extensionList = new List<IDashboardUITab>(extensionTabViewContainer, delegate, [extensionTabRenderer]);
+		this._extensionTabView = new FixedListView<IDashboardUITab>(
 			undefined,
 			false,
 			localize('allFeatures', 'All features'),
@@ -199,14 +215,18 @@ export class NewDashboardTabDialog extends Modal {
 		this.hide();
 	}
 
-	public open(dashboardTabs: Array<IDashboardTab>) {
+	public open(dashboardTabs: Array<IDashboardTab>, openedTabs: Array<IDashboardTab>) {
 		this.show();
-		this._extensionTabView.updateList(dashboardTabs);
+		this._viewModel.updateDashboardTabs(dashboardTabs, openedTabs);
+		this._addNewTabButton.focus();
+	}
+
+	private onUpdateTabList(tabs: IDashboardUITab[]) {
+		this._extensionTabView.updateList(tabs);
 		this.layout();
 		if (this._extensionList.length > 0) {
 			this._extensionList.setSelection([0]);
 		}
-		this._addNewTabButton.focus();
 	}
 
 	public dispose(): void {
