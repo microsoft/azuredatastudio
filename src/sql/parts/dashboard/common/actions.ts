@@ -136,8 +136,8 @@ export class PinUnpinTabAction extends Action {
 }
 
 export class AddFeatureTabAction extends Action {
-	private static readonly ID = 'addFeatureTab';
-	private static readonly LABEL = nls.localize('addFeatureTab', "Add a feature tab");
+	private static readonly ID = 'openInstalledFeatures';
+	private static readonly LABEL = nls.localize('openInstalledFeatures', "Open installed features");
 	private static readonly ICON = 'new';
 
 	private _disposables: IDisposable[] = [];
