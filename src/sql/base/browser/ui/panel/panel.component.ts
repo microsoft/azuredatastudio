@@ -128,9 +128,8 @@ export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDe
 
 				// Make the tab header focus on the new selected tab
 				let activeTabHeader = this._headerTabs.find(i => i.tab === this._activeTab);
-				if (activeTabHeader && activeTabHeader.actionHeaderRef) {
-					let header = <HTMLElement>activeTabHeader.actionHeaderRef.nativeElement;
-					header.focus();
+				if (activeTabHeader) {
+					activeTabHeader.focusOnTabHeader();
 				}
 
 				this.onTabChange.emit(tab);
@@ -138,22 +137,8 @@ export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDe
 		}
 	}
 
-	private indexOf(candidate: TabComponent, tabs: TabComponent[]): number {
-		if (!candidate) {
-			return -1;
-		}
-
-		for (let i = 0; i < tabs.length; i++) {
-			if (candidate === tabs[i]) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {
-		const mruIndex = this.indexOf(tab, this._mru);
+		let mruIndex = this._mru.findIndex(i => i === tab);
 
 		if (mruIndex !== -1) {
 			// Remove old index

@@ -36,7 +36,7 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 
 	private _actionbar: ActionBar;
 
-	@ViewChild('actionHeader', { read: ElementRef }) public actionHeaderRef: ElementRef;
+	@ViewChild('actionHeader', { read: ElementRef }) private _actionHeaderRef: ElementRef;
 	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 	constructor() {
 		super();
@@ -68,8 +68,13 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 		this.onCloseTab.emit(this.tab);
 	}
 
+	focusOnTabHeader() {
+		let header = <HTMLElement>this._actionHeaderRef.nativeElement;
+		header.focus();
+	}
+
 	onKey(e: Event) {
-		if (DOM.isAncestor(<HTMLElement>e.target, this.actionHeaderRef.nativeElement) && e instanceof KeyboardEvent) {
+		if (DOM.isAncestor(<HTMLElement>e.target, this._actionHeaderRef.nativeElement) && e instanceof KeyboardEvent) {
 			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Enter)) {
 				this.onSelectTab.emit(this.tab);
