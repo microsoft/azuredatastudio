@@ -7,14 +7,14 @@
 import { MainThreadWebviewWidgetShape, SqlMainContext, ExtHostWebviewWidgetsShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlextHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
+import { IDashboardWebviewService, IWebviewWidget } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadWebviewWidget)
 export class MainThreadWebviewWidget implements MainThreadWebviewWidgetShape {
 
 	private static _handlePool = 0;
 	private readonly _proxy: ExtHostWebviewWidgetsShape;
-	private readonly _dialogs = new Map<number, WebviewWidget>();
+	private readonly _dialogs = new Map<number, IWebviewWidget>();
 
 	private knownWidgets = new Array<string>();
 
@@ -26,7 +26,7 @@ export class MainThreadWebviewWidget implements MainThreadWebviewWidgetShape {
 		webviewService.onRegisteredWidget(e => {
 			if (this.knownWidgets.includes(e.id)) {
 				let handle = MainThreadWebviewWidget._handlePool++;
-				this._dialogs.set(handle, e)
+				this._dialogs.set(handle, e);
 				this._proxy.$registerWidget(handle, e.id);
 			}
 		});
@@ -36,12 +36,12 @@ export class MainThreadWebviewWidget implements MainThreadWebviewWidgetShape {
 		throw new Error("Method not implemented.");
 	}
 
-	$sendMessage(handle: any, message: any) {
+	$sendMessage(handle: number, message: string) {
 		throw new Error("Method not implemented.");
 	}
 
-	$setHtml(handle: any, value: any) {
-		throw new Error("Method not implemented.");
+	$setHtml(handle: number, value: string) {
+		this._dialogs.get(handle).setHtml(value);
 	}
 
 	$registerProvider(widgetId: string) {

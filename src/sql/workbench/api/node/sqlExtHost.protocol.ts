@@ -422,7 +422,7 @@ export const SqlExtHostContext = {
 	ExtHostSerializationProvider: createExtId<ExtHostSerializationProviderShape>('ExtHostSerializationProvider'),
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
-	ExtHostWebviewWidgets: createMainId<ExtHostWebviewWidgetsShape>('ExtHostWebviewWidgets')
+	ExtHostWebviewWidgets: createExtId<ExtHostWebviewWidgetsShape>('ExtHostWebviewWidgets')
 };
 
 export interface MainThreadModalDialogShape extends IDisposable {

@@ -29,7 +29,6 @@ import { ExtHostModalDialogs } from 'sql/workbench/api/node/extHostModalDialog';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
 import { ExtHostWebviewWidgets } from 'sql/workbench/api/node/extHostWebviewWidget';
-import { WebviewWidget } from 'data';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -248,8 +247,8 @@ export function createApiFactory(
 			};
 
 			const dashboard = {
-				registerDashboardWebviewWidgetProvider(widgetId: string, handler: (webview: WebviewWidget) => void) {
-					extHostWebviewWidgets.registerProvider(widgetId, handler);
+				registerDashboardWebviewWidgetProvider(widgetId: string, handler: (webview: data.WebviewWidget) => void) {
+					extHostWebviewWidgets.$registerProvider(widgetId, handler);
 				}
 			};
 
