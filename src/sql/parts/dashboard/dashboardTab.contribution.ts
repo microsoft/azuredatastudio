@@ -66,7 +66,7 @@ const tabContributionSchema: IJSONSchema = {
 		widgets: {
 			description: localize('sqlops.extension.cotnributes.dashboard.tab.edition', "The list of widgets that will be displayed in this tab."),
 			type: 'array',
-			items: GenerateDashboardWidgetSchema()
+			items: GenerateDashboardWidgetSchema(undefined, true)
 		},
 		alwaysShow: {
 			description: localize('sqlops.extension.contributes.dashboard.tab.alwaysShow', "Whether or not this tab should always be shown or only when the user adds it."),
