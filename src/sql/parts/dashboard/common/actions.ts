@@ -116,19 +116,35 @@ export class DeleteWidgetAction extends Action {
 
 export class PinUnpinTabAction extends Action {
 	private static readonly ID = 'pinTab';
-	private static readonly LABEL = nls.localize('pinTab', "Pin/Unpin");
-	private static readonly ICON = 'toggle-more'; // to do: need to replace icon
+	private static readonly PINLABEL = nls.localize('clickToUnpin', "Click to unpin");
+	private static readonly UNPINLABEL = nls.localize('clickToPin', "Click to pin");
+	private static readonly PINICON = 'pin';
+	private static readonly UNPINICON = 'unpin';
 
 	constructor(
-		private _tabId,
-		private _uri,
+		private _tabId: string,
+		private _uri: string,
+		private _isPinned: boolean,
 		@IAngularEventingService private angularEventService: IAngularEventingService
 	) {
-		super(PinUnpinTabAction.ID, PinUnpinTabAction.LABEL, PinUnpinTabAction.ICON);
+		super(PinUnpinTabAction.ID, PinUnpinTabAction.PINLABEL, PinUnpinTabAction.PINICON);
+		this.updatePinStatus();
 	}
 
-	run(): TPromise<boolean> {
-		this.angularEventService.sendAngularEvent(this._uri, AngularEventType.PINUNPIN_TAB, { id: this._tabId });
+	private updatePinStatus() {
+		if (this._isPinned) {
+			this.label = PinUnpinTabAction.PINLABEL;
+			this.class = PinUnpinTabAction.PINICON;
+		} else {
+			this.label = PinUnpinTabAction.UNPINLABEL;
+			this.class = PinUnpinTabAction.UNPINICON;
+		}
+	}
+
+	public run(): TPromise<boolean> {
+		this._isPinned = !this._isPinned;
+		this.updatePinStatus();
+		this.angularEventService.sendAngularEvent(this._uri, AngularEventType.PINUNPIN_TAB, { tabId: this._tabId, isPinned: this._isPinned });
 		return TPromise.as(true);
 	}
 }

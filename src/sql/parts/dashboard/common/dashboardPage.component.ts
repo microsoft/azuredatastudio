@@ -8,7 +8,7 @@ import 'vs/css!./dashboardPage';
 import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef } from '@angular/core';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { WidgetConfig, TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
+import { WidgetConfig, TabConfig, PinConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
@@ -16,7 +16,7 @@ import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { DashboardTab } from 'sql/parts/dashboard/common/dashboardTab.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
-import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
 import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 
@@ -35,6 +35,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import * as objects from 'vs/base/common/objects';
 import Event, { Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
+import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
@@ -62,6 +63,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 	protected panelActions: Action[];
 	private _tabsDispose: Array<IDisposable> = [];
+	private _pinnedTabs: Array<PinConfig> = [];
 
 	@ViewChild('properties') private _properties: DashboardWidgetWrapper;
 	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
@@ -169,6 +171,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private createTabs(homeWidgets: WidgetConfig[]) {
 		// Clear all tabs
 		this.tabs = [];
+		this._pinnedTabs = [];
 		this._tabsDispose.forEach(i => i.dispose());
 		this._tabsDispose = [];
 
@@ -186,46 +189,83 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		this.addNewTab(homeTab);
 		this._panel.selectTab(homeTab.id);
 
+		let allTabs = this.filterConfigs(dashboardRegistry.tabs);
+
+		// load pinned tabs
+		this._pinnedTabs = this.dashboardService.getSettings<Array<PinConfig>>([this.context, 'tabs'].join('.'));
+		let pinnedDashboardTabs: IDashboardTab[] = [];
+		this._pinnedTabs.forEach(pinnedTab => {
+			let tab = allTabs.find(i => i.id === pinnedTab.tabId);
+			if (tab) {
+				pinnedDashboardTabs.push(tab);
+			}
+		});
+		if (pinnedDashboardTabs.length > 0) {
+			this.loadNewTabs(pinnedDashboardTabs);
+		}
+
 		// set panel actions
-		let addNewTabAction = this.dashboardService.instantiationService.createInstance(AddFeatureTabAction, this.filterConfigs(dashboardRegistry.tabs), this.dashboardService.getUnderlyingUri());
+		let addNewTabAction = this.dashboardService.instantiationService.createInstance(AddFeatureTabAction, allTabs, this.dashboardService.getUnderlyingUri());
 		this._tabsDispose.push(addNewTabAction);
 		this.panelActions = [addNewTabAction];
 		this._cd.detectChanges();
 
 		this._tabsDispose.push(this.dashboardService.onPinUnpinTab(e => {
-			// a placeholder for pin/unpin tab
+			if (e.isPinned) {
+				this._pinnedTabs.push(e);
+			} else {
+				let index = this._pinnedTabs.findIndex(i => i.tabId === e.tabId);
+				this._pinnedTabs.splice(index, 1);
+			}
+			this.rewriteConfig();
 		}));
 
 		this._tabsDispose.push(this.dashboardService.onAddNewTabs(e => {
-			let selectedTabs = e.map(v => {
-				let configs = v.widgets;
-				this._configModifiers.forEach(cb => {
-					configs = cb.apply(this, [configs]);
-				});
-				this._gridModifiers.forEach(cb => {
-					configs = cb.apply(this, [configs]);
-				});
-				return { id: v.id, title: v.title, widgets: configs };
-			}).map(v => {
-				let config: TabConfig = {
-					id: v.id,
-					name: v.title,
-					context: this.context,
-					widgets: v.widgets,
-					originalConfig: undefined,
-					editable: false,
-					canClose: true,
-					actions: []
-				};
-				this.addNewTab(config);
-				return config;
-			});
-
-			// put this immediately on the stack so that is ran *after* the tab is rendered
-			setTimeout(() => {
-				this._panel.selectTab(selectedTabs[0].id);
-			});
+			this.loadNewTabs(e);
 		}));
+	}
+
+	private rewriteConfig(): void {
+		let writeableConfig = objects.deepClone(this._pinnedTabs);
+
+		writeableConfig.forEach(i => {
+			delete i.isPinned;
+		});
+		let target: ConfigurationTarget = ConfigurationTarget.USER;
+		this.dashboardService.writeSettings([this.context, 'tabs'].join('.'), writeableConfig, target);
+	}
+
+	private loadNewTabs(dashboardTabs: IDashboardTab[]) {
+		let selectedTabs = dashboardTabs.map(v => {
+			let configs = v.widgets;
+			this._configModifiers.forEach(cb => {
+				configs = cb.apply(this, [configs]);
+			});
+			this._gridModifiers.forEach(cb => {
+				configs = cb.apply(this, [configs]);
+			});
+			return { id: v.id, title: v.title, widgets: configs };
+		}).map(v => {
+			let pinnedTab = this._pinnedTabs.find(i => i.tabId === v.id);
+			let pinAction = this.dashboardService.instantiationService.createInstance(PinUnpinTabAction, v.id, this.dashboardService.getUnderlyingUri(), !!pinnedTab);
+			let config: TabConfig = {
+				id: v.id,
+				name: v.title,
+				context: this.context,
+				widgets: v.widgets,
+				originalConfig: undefined,
+				editable: false,
+				canClose: true,
+				actions: [pinAction]
+			};
+			this.addNewTab(config);
+			return config;
+		});
+
+		// put this immediately on the stack so that is ran *after* the tab is rendered
+		setTimeout(() => {
+			this._panel.selectTab(selectedTabs[0].id);
+		});
 	}
 
 	private addNewTab(tab: TabConfig): void {

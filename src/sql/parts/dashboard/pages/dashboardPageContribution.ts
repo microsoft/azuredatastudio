@@ -71,4 +71,15 @@ export function GenerateDashboardWidgetSchema(type?: 'database' | 'server'): IJS
 			}
 		}
 	};
-};
+}
+
+export function GenerateDashboardTabSchema(type?: 'database' | 'server'): IJSONSchema {
+	return {
+		type: 'object',
+		properties: {
+			tabId: {
+				type: 'string'
+			}
+		}
+	};
+}

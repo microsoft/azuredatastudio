@@ -40,7 +40,12 @@ export interface TabConfig {
 	originalConfig: Array<WidgetConfig>;
 	editable: boolean;
 	canClose: boolean;
-	actions: Array<Action>;
+	actions?: Array<Action>;
+}
+
+export interface PinConfig {
+	tabId: string;
+	isPinned?: boolean;
 }
 
 export abstract class DashboardWidget extends Disposable implements OnDestroy {

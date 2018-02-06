@@ -203,6 +203,6 @@ export class DashboardTab extends Disposable implements OnDestroy {
 			delete i.id;
 		});
 		let target: ConfigurationTarget = ConfigurationTarget.USER;
-		this.dashboardService.writeSettings(this.tab.context, writeableConfig, target);
+		this.dashboardService.writeSettings([this.tab.context, 'widgets'].join('.'), writeableConfig, target);
 	}
 }
