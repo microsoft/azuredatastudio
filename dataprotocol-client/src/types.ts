@@ -509,6 +509,17 @@ export interface IResultMessage {
 	message: string;
 }
 
+export interface ExecutionPlanOptions {
+	includeEstimatedExecutionPlanXml?: boolean;
+	includeActualExecutionPlanXml?: boolean;
+}
+
+export interface QueryExecuteParams {
+	ownerUri: string;
+	querySelection: data.ISelectionData;
+	executionPlanOptions?: ExecutionPlanOptions;
+}
+
 export enum EditRowState {
 	clean = 0,
 	dirtyInsert = 1,
