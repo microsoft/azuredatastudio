@@ -10,7 +10,7 @@ import { mixin } from 'vs/base/common/objects';
 
 let widgetRegistry = <IDashboardWidgetRegistry>Registry.as(Extensions.DashboardWidgetContribution);
 
-export function GenerateDashboardWidgetSchema(type?: 'database' | 'server', extension?: boolean): IJSONSchema {
+export function generateDashboardWidgetSchema(type?: 'database' | 'server', extension?: boolean): IJSONSchema {
 	let schemas;
 	if (extension) {
 		let extensionSchemas = type === 'server' ? widgetRegistry.serverWidgetSchema.extensionProperties : type === 'database' ? widgetRegistry.databaseWidgetSchema.extensionProperties : widgetRegistry.allSchema.extensionProperties;

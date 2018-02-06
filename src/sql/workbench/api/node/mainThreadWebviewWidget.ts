@@ -1,10 +1,10 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { MainThreadWebviewWidgetShape, SqlMainContext, ExtHostWebviewWidgetsShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlextHost.protocol';
+import { MainThreadWebviewWidgetShape, SqlMainContext, ExtHostWebviewWidgetsShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { IDashboardWebviewService, IWebviewWidget } from 'sql/services/dashboardWebview/common/dashboardWebviewService';

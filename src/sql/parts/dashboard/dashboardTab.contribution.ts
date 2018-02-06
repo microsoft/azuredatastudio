@@ -6,7 +6,7 @@ import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
 
-import { GenerateDashboardWidgetSchema } from 'sql/parts/dashboard/pages/dashboardPageContribution';
+import { generateDashboardWidgetSchema } from 'sql/parts/dashboard/pages/dashboardPageContribution';
 import { RegisterTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 
@@ -66,7 +66,7 @@ const tabContributionSchema: IJSONSchema = {
 		widgets: {
 			description: localize('sqlops.extension.cotnributes.dashboard.tab.edition', "The list of widgets that will be displayed in this tab."),
 			type: 'array',
-			items: GenerateDashboardWidgetSchema(undefined, true)
+			items: generateDashboardWidgetSchema(undefined, true)
 		},
 		alwaysShow: {
 			description: localize('sqlops.extension.contributes.dashboard.tab.alwaysShow', "Whether or not this tab should always be shown or only when the user adds it."),

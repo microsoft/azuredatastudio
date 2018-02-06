@@ -215,6 +215,7 @@ export default class Webview {
 
 		if (this._webview.parentElement) {
 			this._webview.parentElement.removeChild(this._webview);
+			// {{SQL CARBON EDIT}}
 			if (!this._options.hideFind) {
 				const findWidgetDomNode = this._webviewFindWidget.getDomNode();
 				findWidgetDomNode.parentElement.removeChild(findWidgetDomNode);
