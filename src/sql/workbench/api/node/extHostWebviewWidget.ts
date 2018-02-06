@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { SqlMainContext, ExtHostWebviewWidgetsShape, MainThreadWebviewWidgetShape } from 'sql/workbench/api/node/sqlextHost.protocol';
+import { SqlMainContext, ExtHostWebviewWidgetsShape, MainThreadWebviewWidgetShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import * as vscode from 'vscode';
 import * as data from 'data';
