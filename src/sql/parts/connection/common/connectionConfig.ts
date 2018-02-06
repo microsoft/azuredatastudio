@@ -41,6 +41,11 @@ export class ConnectionConfig implements IConnectionConfig {
 	) {
 		this._providerCapabilitiesMap = {};
 		this.setCachedMetadata(cachedMetadata);
+		if (this._capabilitiesService && this._capabilitiesService.onCapabilitiesReady()) {
+			this._capabilitiesService.onCapabilitiesReady().then(() => {
+				this.setCachedMetadata(this._capabilitiesService.getCapabilities());
+			});
+		}
 	}
 
 	public setCachedMetadata(cachedMetadata: data.DataProtocolServerCapabilities[]): void {
@@ -102,8 +107,10 @@ export class ConnectionConfig implements IConnectionConfig {
 		} else {
 			let capabilities = this._capabilitiesService.getCapabilities();
 			if (capabilities) {
+				console.info('capabilities ' + capabilities.length);
 				let providerCapabilities = capabilities.find(c => c.providerName === providerName);
 				if (providerCapabilities) {
+					console.info('capabilities 2 ' + providerCapabilities);
 					this.updateCapabilitiesCache(providerName, providerCapabilities);
 					return providerCapabilities;
 				} else {

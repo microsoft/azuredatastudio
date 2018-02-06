@@ -104,6 +104,23 @@ export class ProviderConnectionInfo implements data.ConnectionInfo {
 		this.options[name] = value;
 	}
 
+	/**
+	 * Returns the title of the connection
+	 */
+	public get title(): string {
+		let databaseName = this.databaseName ? this.databaseName : '<default>';
+		let userName = this.userName ? this.userName : 'Windows Authentication';
+		let label = this.serverName + ', ' + databaseName + ' (' + userName + ')';
+		return label;
+	}
+
+	/**
+	 * Returns true if the capabilities and options are loaded correctly
+	 */
+	public get isConnectionOptionsValid(): boolean {
+		return this.serverCapabilities && this.title.indexOf('undefined') < 0;
+	}
+
 	public isPasswordRequired(): boolean {
 		let optionMetadata = this._serverCapabilities.connectionProvider.options.find(
 			option => option.specialValueType === ConnectionOptionSpecialType.password);
