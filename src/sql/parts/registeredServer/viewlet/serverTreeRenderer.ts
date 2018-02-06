@@ -8,6 +8,7 @@ import 'vs/css!sql/media/objectTypes/objecttypes';
 import 'vs/css!sql/media/icons/common-icons';
 
 import * as dom from 'vs/base/browser/dom';
+import { localize } from 'vs/nls';
 import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -146,9 +147,10 @@ export class ServerTreeRenderer implements IRenderer {
 			}
 		}
 
-		let databaseName = connection.databaseName ? connection.databaseName : '<default>';
-		let userName = connection.userName ? connection.userName : "Windows Authentication";
-		let label = connection.serverName + ', ' + databaseName + ' (' + userName + ')';
+		let label = connection.title;
+		if (!connection.isConnectionOptionsValid) {
+			label = localize('loading', 'Loading...');
+		}
 
 		templateData.label.textContent = label;
 		templateData.root.title = label;

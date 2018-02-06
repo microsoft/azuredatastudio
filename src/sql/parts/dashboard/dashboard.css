@@ -10,3 +10,7 @@
 .dashboardEditor .header .monaco-action-bar .action-item {
 	margin-right: 5px;
 }
+
+.dashboardEditor .monaco-action-bar {
+	overflow: visible;
+}

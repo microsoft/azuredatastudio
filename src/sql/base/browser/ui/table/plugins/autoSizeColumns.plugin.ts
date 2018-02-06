@@ -1,6 +1,6 @@
 // Adapted from https://github.com/naresh-n/slickgrid-column-data-autosize/blob/master/src/slick.autocolumnsize.js
 
-import { mixin, clone } from 'vs/base/common/objects';
+import { mixin, clone } from 'sql/base/common/objects';
 
 export interface IAutoColumnSizeOptions extends Slick.PluginOptions {
 	maxWidth?: number;
@@ -32,7 +32,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 		this._$container.off();
 	}
 
-	private reSizeColumn(e: Event) {
+	private reSizeColumn(e: JQuery.Event<HTMLElement, string>) {
 		let headerEl = $(e.currentTarget).closest('.slick-header-column');
 		let columnDef = headerEl.data('column');
 

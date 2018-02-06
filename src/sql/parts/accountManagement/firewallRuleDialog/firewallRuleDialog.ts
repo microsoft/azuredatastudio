@@ -90,7 +90,7 @@ export class FirewallRuleDialog extends Modal {
 	public render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		this.backButton.addListener('click', () => this.cancel());
+		this.backButton.onDidClick(() => this.cancel());
 		this._register(attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
 		this._createButton = this.addFooterButton(localize('ok', 'OK'), () => this.createFirewallRule());
 		this._closeButton = this.addFooterButton(localize('cancel', 'Cancel'), () => this.cancel());

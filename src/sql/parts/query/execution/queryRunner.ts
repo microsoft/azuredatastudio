@@ -19,7 +19,7 @@ import { IWorkspaceConfigurationService } from 'vs/workbench/services/configurat
 import * as nls from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import * as types from 'vs/base/common/types';
-import { EventEmitter } from 'vs/base/common/eventEmitter';
+import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 export interface IEditSessionReadyEvent {
@@ -446,7 +446,7 @@ export default class QueryRunner {
 	}
 
 	private getEolString(): string {
-		const { eol } = this._workspaceConfigurationService.getConfiguration<{ eol: string }>('files');
+		const { eol } = this._workspaceConfigurationService.getValue<{ eol: string }>('files');
 		return eol;
 	}
 

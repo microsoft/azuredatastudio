@@ -119,7 +119,7 @@ export abstract class GridParentComponent {
 		const self = this;
 		this.initShortcutsBase();
 		if (this._bootstrapService.configurationService) {
-			let sqlConfig = this._bootstrapService.configurationService.getConfiguration('sql');
+			let sqlConfig = this._bootstrapService.configurationService.getValue('sql');
 			if (sqlConfig) {
 				this._messageActive = sqlConfig['messagesDefaultOpen'];
 			}

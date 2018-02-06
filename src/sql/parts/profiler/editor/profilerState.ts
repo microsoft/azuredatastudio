@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { EventEmitter } from 'vs/base/common/eventEmitter';
+import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 export interface IProfilerStateChangedEvent {

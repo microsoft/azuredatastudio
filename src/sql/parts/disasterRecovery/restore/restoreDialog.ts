@@ -607,17 +607,8 @@ export class RestoreDialog extends Modal {
 			this.onFilePathLoseFocus(params);
 		}));
 
-		this._browseFileButton.addListener(DOM.EventType.CLICK, () => {
+		this._browseFileButton.onDidClick(() => {
 			this.onFileBrowserRequested();
-		});
-
-		this._browseFileButton.addListener(DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-			var event = new StandardKeyboardEvent(e);
-			if (event.keyCode === KeyCode.Enter) {
-				this.onFileBrowserRequested();
-				event.preventDefault();
-				event.stopPropagation();
-			}
 		});
 
 		this._register(this._sourceDatabaseSelectBox.onDidSelect(selectedDatabase => {

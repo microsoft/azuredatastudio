@@ -29,18 +29,16 @@ const root = path.dirname(__dirname);
 const commit = util.getVersion(root);
 const packageJson = require('../package.json');
 const product = require('../product.json');
-const shrinkwrap = require('../npm-shrinkwrap.json');
 const crypto = require('crypto');
 const i18n = require('./lib/i18n');
-var del = require('del');
-
 // {{SQL CARBON EDIT}}
-const serviceInstaller = require('extensions-modules/lib/languageservice/serviceInstallerUtil');
+var del = require('del');
+const serviceInstaller = require('../extensions-modules/lib/languageservice/serviceInstallerUtil');
 const glob = require('glob');
+const deps = require('./dependencies');
+const getElectronVersion = require('./lib/electron').getElectronVersion;
 
-const productDependencies = Object.keys(product.dependencies || {});
-const dependencies = Object.keys(shrinkwrap.dependencies)
-	.concat(productDependencies); // additional dependencies from our product configuration
+const productionDependencies = deps.getProductionDependencies(path.dirname(__dirname));
 const baseModules = Object.keys(process.binding('natives')).filter(n => !/^_|\//.test(n));
 // {{SQL CARBON EDIT}}
 const nodeModules = [
@@ -50,14 +48,15 @@ const nodeModules = [
 	'rxjs/Subject',
 	'rxjs/Observer',
 	'ng2-charts/ng2-charts']
-	.concat(dependencies)
+	.concat(Object.keys(product.dependencies || {}))
+	.concat(_.uniq(productionDependencies.map(d => d.name)))
 	.concat(baseModules);
 
 // Build
 
 const builtInExtensions = [
-	{ name: 'ms-vscode.node-debug', version: '1.18.3' },
-	{ name: 'ms-vscode.node-debug2', version: '1.18.5' }
+	{ name: 'ms-vscode.node-debug', version: '1.19.8' },
+	{ name: 'ms-vscode.node-debug2', version: '1.19.4' }
 ];
 
 const excludedExtensions = [
@@ -79,8 +78,8 @@ const vscodeResources = [
 	'out-build/bootstrap-amd.js',
 	'out-build/paths.js',
 	'out-build/vs/**/*.{svg,png,cur,html}',
-	'out-build/vs/base/node/startupTimers.js',
-	'out-build/vs/base/node/{stdForkStart.js,terminateProcess.sh}',
+	'out-build/vs/base/common/performance.js',
+	'out-build/vs/base/node/{stdForkStart.js,terminateProcess.sh,ps-win.ps1}',
 	'out-build/vs/base/browser/ui/octiconLabel/octicons/**',
 	'out-build/vs/workbench/browser/media/*-theme.css',
 	'out-build/vs/workbench/electron-browser/bootstrap/**',
@@ -154,10 +153,10 @@ gulp.task('minify-vscode', ['clean-minified-vscode', 'optimize-index-js'], commo
 const darwinCreditsTemplate = product.darwinCredits && _.template(fs.readFileSync(path.join(root, product.darwinCredits), 'utf8'));
 
 const config = {
-	version: packageJson.electronVersion,
+	version: getElectronVersion(),
 	productAppName: product.nameLong,
 	companyName: 'Microsoft Corporation',
-	copyright: 'Copyright (C) 2018 Microsoft. All rights reserved',
+	copyright: 'Copyright (C) 2017 Microsoft. All rights reserved',
 	darwinIcon: 'resources/darwin/code.icns',
 	darwinBundleIdentifier: product.darwinBundleIdentifier,
 	darwinApplicationCategoryType: 'public.app-category.developer-tools',
@@ -167,7 +166,7 @@ const config = {
 		name: product.nameLong + ' document',
 		role: 'Editor',
 		ostypes: ["TEXT", "utxt", "TUTX", "****"],
-		// {{SQL CARBON EDIT}}
+    // {{SQL CARBON EDIT}}
 		extensions: ["csv", "json", "sqlplan", "sql", "xml"],
 		iconFile: 'resources/darwin/code_file.icns'
 	}],
@@ -318,8 +317,10 @@ function packageTask(platform, arch, opts) {
 		// {{SQL CARBON EDIT}}
 		const dataApi = gulp.src('src/vs/data.d.ts').pipe(rename('out/sql/data.d.ts'));
 
-		const depsSrc = _.flatten(dependencies
-			.map(function (d) { return ['node_modules/' + d + '/**', '!node_modules/' + d + '/**/{test,tests}/**']; }));
+		const depsSrc = [
+			..._.flatten(productionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`])),
+			..._.flatten(Object.keys(product.dependencies || {}).map(d => [`node_modules/${d}/**`, `!node_modules/${d}/**/{test,tests}/**`]))
+		];
 
 		const deps = gulp.src(depsSrc, { base: '.', dot: true })
 			.pipe(filter(['**', '!**/package-lock.json']))
@@ -328,11 +329,11 @@ function packageTask(platform, arch, opts) {
 			.pipe(util.cleanNodeModule('windows-mutex', ['binding.gyp', 'build/**', 'src/**'], ['**/*.node']))
 			.pipe(util.cleanNodeModule('native-keymap', ['binding.gyp', 'build/**', 'src/**', 'deps/**'], ['**/*.node']))
 			.pipe(util.cleanNodeModule('native-watchdog', ['binding.gyp', 'build/**', 'src/**'], ['**/*.node']))
+			.pipe(util.cleanNodeModule('spdlog', ['binding.gyp', 'build/**', 'deps/**', 'src/**', 'test/**'], ['**/*.node']))
 			.pipe(util.cleanNodeModule('jschardet', ['dist/**']))
 			.pipe(util.cleanNodeModule('windows-foreground-love', ['binding.gyp', 'build/**', 'src/**'], ['**/*.node']))
 			.pipe(util.cleanNodeModule('windows-process-tree', ['binding.gyp', 'build/**', 'src/**'], ['**/*.node']))
 			.pipe(util.cleanNodeModule('gc-signals', ['binding.gyp', 'build/**', 'src/**', 'deps/**'], ['**/*.node', 'src/index.js']))
-			.pipe(util.cleanNodeModule('v8-profiler', ['binding.gyp', 'build/**', 'src/**', 'deps/**'], ['**/*.node', 'src/index.js']))
 			.pipe(util.cleanNodeModule('keytar', ['binding.gyp', 'build/**', 'src/**', 'script/**', 'node_modules/**'], ['**/*.node']))
 			.pipe(util.cleanNodeModule('node-pty', ['binding.gyp', 'build/**', 'src/**', 'tools/**'], ['build/Release/**']))
 			.pipe(util.cleanNodeModule('nsfw', ['binding.gyp', 'build/**', 'src/**', 'openpa/**', 'includes/**'], ['**/*.node', '**/*.a']))
@@ -487,7 +488,7 @@ gulp.task('upload-vscode-sourcemaps', ['minify-vscode'], () => {
 const allConfigDetailsPath = path.join(os.tmpdir(), 'configuration.json');
 gulp.task('upload-vscode-configuration', ['generate-vscode-configuration'], () => {
 	const branch = process.env.BUILD_SOURCEBRANCH;
-	if (!branch.endsWith('/master') && !branch.indexOf('/release/') >= 0) {
+	if (!branch.endsWith('/master') && branch.indexOf('/release/') < 0) {
 		console.log(`Only runs on master and release branches, not ${branch}`);
 		return;
 	}

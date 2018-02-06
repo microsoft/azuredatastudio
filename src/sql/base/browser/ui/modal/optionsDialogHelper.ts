@@ -30,42 +30,38 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 	let inputElement: HTMLElement;
 	let missingErrorMessage = localize('missingRequireField', ' is required.');
 	let invalidInputMessage = localize('invalidInput', 'Invalid input.  Numeric value expected.');
-	switch (option.valueType) {
-		case ServiceOptionType.number:
-			optionWidget = new InputBox(rowContainer.getHTMLElement(), contextViewService, {
-				validationOptions: {
-					validation: (value: string) => {
-						if (!value && option.isRequired) {
-							return { type: MessageType.ERROR, content: option.displayName + missingErrorMessage };
-						} else if (!types.isNumber(Number(value))) {
-							return { type: MessageType.ERROR, content: invalidInputMessage };
-						} else {
-							return null;
-						}
+
+	if (option.valueType === ServiceOptionType.number) {
+		optionWidget = new InputBox(rowContainer.getHTMLElement(), contextViewService, {
+			validationOptions: {
+				validation: (value: string) => {
+					if (!value && option.isRequired) {
+						return { type: MessageType.ERROR, content: option.displayName + missingErrorMessage };
+					} else if (!types.isNumber(Number(value))) {
+						return { type: MessageType.ERROR, content: invalidInputMessage };
+					} else {
+						return null;
 					}
 				}
-			});
-			optionWidget.value = optionValue;
-			inputElement = this.findElement(rowContainer, 'input');
-			break;
-		case ServiceOptionType.category:
-		case ServiceOptionType.boolean:
-			optionWidget = new SelectBox(possibleInputs, optionValue.toString());
-			DialogHelper.appendInputSelectBox(rowContainer, optionWidget);
-			inputElement = this.findElement(rowContainer, 'select-box');
-			break;
-		case ServiceOptionType.string:
-		case ServiceOptionType.password:
-			optionWidget = new InputBox(rowContainer.getHTMLElement(), contextViewService, {
-				validationOptions: {
-					validation: (value: string) => (!value && option.isRequired) ? ({ type: MessageType.ERROR, content: option.displayName + missingErrorMessage }) : null
-				}
-			});
-			optionWidget.value = optionValue;
-			if (option.valueType === ServiceOptionType.password) {
-				optionWidget.inputElement.type = 'password';
 			}
-			inputElement = this.findElement(rowContainer, 'input');
+		});
+		optionWidget.value = optionValue;
+		inputElement = this.findElement(rowContainer, 'input');
+	} else if (option.valueType === ServiceOptionType.category || option.valueType === ServiceOptionType.boolean) {
+		optionWidget = new SelectBox(possibleInputs, optionValue.toString());
+		DialogHelper.appendInputSelectBox(rowContainer, optionWidget);
+		inputElement = this.findElement(rowContainer, 'select-box');
+	} else if (option.valueType === ServiceOptionType.string || option.valueType === ServiceOptionType.password) {
+		optionWidget = new InputBox(rowContainer.getHTMLElement(), contextViewService, {
+			validationOptions: {
+				validation: (value: string) => (!value && option.isRequired) ? ({ type: MessageType.ERROR, content: option.displayName + missingErrorMessage }) : null
+			}
+		});
+		optionWidget.value = optionValue;
+		if (option.valueType === ServiceOptionType.password) {
+			optionWidget.inputElement.type = 'password';
+		}
+		inputElement = this.findElement(rowContainer, 'input');
 	}
 	optionsMap[option.name] = { optionWidget: optionWidget, option: option, optionValue: optionValue };
 	inputElement.onfocus = () => onFocus(option.name);

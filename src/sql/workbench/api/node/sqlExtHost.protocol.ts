@@ -13,7 +13,7 @@ import {
 import * as sqlops from 'sqlops';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-
+import { IDisposable } from 'vs/base/common/lifecycle';
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
 	$clear(handle: number, accountKey: sqlops.AccountKey): Thenable<void> { throw ni(); }
@@ -336,103 +336,68 @@ export abstract class ExtHostSerializationProviderShape {
 	$saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> { throw ni(); }
 }
 
-export abstract class MainThreadAccountManagementShape {
-	$registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, handle: number): Thenable<any> { throw ni(); }
-	$unregisterAccountProvider(handle: number): Thenable<any> { throw ni(); }
+export interface MainThreadAccountManagementShape extends IDisposable {
+	$registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, handle: number): Thenable<any>;
+	$unregisterAccountProvider(handle: number): Thenable<any>;
 
-	$beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> { throw ni(); }
-	$endAutoOAuthDeviceCode(): void { throw ni(); }
+	$beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void>;
+	$endAutoOAuthDeviceCode(): void;
 
-	$accountUpdated(updatedAccount: sqlops.Account): void { throw ni(); }
+	$accountUpdated(updatedAccount: sqlops.Account): void;
 }
 
-export abstract class MainThreadResourceProviderShape {
-	$registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, handle: number): Thenable<any> { throw ni(); }
-	$unregisterResourceProvider(handle: number): Thenable<any> { throw ni(); }
+export interface MainThreadResourceProviderShape extends IDisposable {
+	$registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, handle: number): Thenable<any>;
+	$unregisterResourceProvider(handle: number): Thenable<any>;
 }
 
-export abstract class MainThreadDataProtocolShape {
-	$registerConnectionProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
-	$registerBackupProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
-	$registerRestoreProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
-	$registerScriptingProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
-	$registerQueryProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
-	$registerProfilerProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
-	$registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
-	$registerMetadataProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
-	$registerTaskServicesProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
-	$registerFileBrowserProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
-	$registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
-	$registerAdminServicesProvider(providerId: string, handle: number): TPromise<any> { throw ni(); }
-	$unregisterProvider(handle: number): TPromise<any> { throw ni(); }
-	$onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void { throw ni(); }
-	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void { throw ni(); }
-	$onConnectionChangeNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo): void { throw ni(); }
-	$onQueryComplete(handle: number, result: sqlops.QueryExecuteCompleteNotificationResult): void { throw ni(); }
-	$onBatchStart(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void { throw ni(); }
-	$onBatchComplete(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void { throw ni(); }
-	$onResultSetComplete(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void { throw ni(); }
-	$onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void { throw ni(); }
-	$onObjectExplorerSessionCreated(handle: number, message: sqlops.ObjectExplorerSession): void { throw ni(); }
-	$onObjectExplorerNodeExpanded(handle: number, message: sqlops.ObjectExplorerExpandInfo): void { throw ni(); }
-	$onTaskCreated(handle: number, sessionResponse: sqlops.TaskInfo): void { throw ni(); }
-	$onTaskStatusChanged(handle: number, sessionResponse: sqlops.TaskProgressInfo): void { throw ni(); }
-	$onFileBrowserOpened(handle: number, response: sqlops.FileBrowserOpenedParams): void { throw ni(); }
-	$onFolderNodeExpanded(handle: number, response: sqlops.FileBrowserExpandedParams): void { throw ni(); }
-	$onFilePathsValidated(handle: number, response: sqlops.FileBrowserValidatedParams): void { throw ni(); }
-	$onScriptingComplete(handle: number, message: sqlops.ScriptingCompleteResult): void { throw ni(); }
-	$onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void { throw ni(); }
+export interface MainThreadDataProtocolShape extends IDisposable {
+	$registerConnectionProvider(providerId: string, handle: number): TPromise<any>;
+	$registerBackupProvider(providerId: string, handle: number): TPromise<any>;
+	$registerRestoreProvider(providerId: string, handle: number): TPromise<any>;
+	$registerScriptingProvider(providerId: string, handle: number): TPromise<any>;
+	$registerQueryProvider(providerId: string, handle: number): TPromise<any>;
+	$registerProfilerProvider(providerId: string, handle: number): TPromise<any>;
+	$registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any>;
+	$registerMetadataProvider(providerId: string, handle: number): TPromise<any>;
+	$registerTaskServicesProvider(providerId: string, handle: number): TPromise<any>;
+	$registerFileBrowserProvider(providerId: string, handle: number): TPromise<any>;
+	$registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any>;
+	$registerAdminServicesProvider(providerId: string, handle: number): TPromise<any>;
+	$unregisterProvider(handle: number): TPromise<any>;
+	$onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void;
+	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
+	$onConnectionChangeNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo): void;
+	$onQueryComplete(handle: number, result: sqlops.QueryExecuteCompleteNotificationResult): void;
+	$onBatchStart(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
+	$onBatchComplete(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
+	$onResultSetComplete(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void;
+	$onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void;
+	$onObjectExplorerSessionCreated(handle: number, message: sqlops.ObjectExplorerSession): void;
+	$onObjectExplorerNodeExpanded(handle: number, message: sqlops.ObjectExplorerExpandInfo): void;
+	$onTaskCreated(handle: number, sessionResponse: sqlops.TaskInfo): void;
+	$onTaskStatusChanged(handle: number, sessionResponse: sqlops.TaskProgressInfo): void;
+	$onFileBrowserOpened(handle: number, response: sqlops.FileBrowserOpenedParams): void;
+	$onFolderNodeExpanded(handle: number, response: sqlops.FileBrowserExpandedParams): void;
+	$onFilePathsValidated(handle: number, response: sqlops.FileBrowserValidatedParams): void;
+	$onScriptingComplete(handle: number, message: sqlops.ScriptingCompleteResult): void;
+	$onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void;
 
 	/**
 	 * Callback when a session has completed initialization
 	 */
-	$onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string) { throw ni(); }
+	$onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string);
 }
 
-export abstract class MainThreadCredentialManagementShape {
-	$registerCredentialProvider(handle: number): TPromise<any> { throw ni(); }
-	$unregisterCredentialProvider(handle: number): TPromise<any> { throw ni(); }
+export interface MainThreadCredentialManagementShape extends IDisposable {
+	$registerCredentialProvider(handle: number): TPromise<any>;
+	$unregisterCredentialProvider(handle: number): TPromise<any>;
 }
 
-export abstract class MainThreadSerializationProviderShape {
-	$registerSerializationProvider(handle: number): TPromise<any> { throw ni(); }
-	$unregisterSerializationProvider(handle: number): TPromise<any> { throw ni(); }
+export interface MainThreadSerializationProviderShape extends IDisposable {
+	$registerSerializationProvider(handle: number): TPromise<any>;
+	$unregisterSerializationProvider(handle: number): TPromise<any>;
 }
-
-// export class SqlInstanceCollection {
-// 	private _items: { [id: string]: any; };
-
-// 	constructor() {
-// 		this._items = Object.create(null);
-// 	}
-
-// 	public define<T>(id: ProxyIdentifier<T>): InstanceSetter<T> {
-// 		let that = this;
-// 		return new class {
-// 			set<R extends T>(value: T): R {
-// 				that._set(id, value);
-// 				return <R>value;
-// 			}
-// 		};
-// 	}
-
-// 	_set<T>(id: ProxyIdentifier<T>, value: T): void {
-// 		this._items[id.id] = value;
-// 	}
-
-// 	public finish(isMain: boolean, threadService: IThreadService): void {
-// 		let expected = (isMain ? SqlMainContext : SqlExtHostContext);
-// 		Object.keys(expected).forEach((key) => {
-// 			let id = expected[key];
-// 			let value = this._items[id.id];
-
-// 			if (!value) {
-// 				throw new Error(`Missing actor ${key} (isMain: ${id.isMain}, id:  ${id.id})`);
-// 			}
-// 			threadService.set<any>(id, value);
-// 		});
-// 	}
-// }
 
 function ni() { return new Error('Not implemented'); }
 
@@ -444,7 +409,8 @@ export const SqlMainContext = {
 	MainThreadCredentialManagement: createMainId<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
 	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
 	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
-	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider')
+	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
+	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
 };
 
 export const SqlExtHostContext = {
@@ -452,5 +418,19 @@ export const SqlExtHostContext = {
 	ExtHostCredentialManagement: createExtId<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
 	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
 	ExtHostSerializationProvider: createExtId<ExtHostSerializationProviderShape>('ExtHostSerializationProvider'),
-	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider')
+	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
+	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs')
 };
+
+export interface MainThreadModalDialogShape extends IDisposable {
+	$createDialog(handle: number): void;
+	$disposeDialog(handle: number): void;
+	$show(handle: number): void;
+	$setTitle(handle: number, value: string): void;
+	$setHtml(handle: number, value: string): void;
+	$sendMessage(handle: number, value: any): Thenable<boolean>;
+}
+export interface ExtHostModalDialogsShape {
+	$onMessage(handle: number, message: any): void;
+	$onClosed(handle: number): void;
+}

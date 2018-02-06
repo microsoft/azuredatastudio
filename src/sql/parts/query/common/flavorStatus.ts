@@ -16,7 +16,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Action } from 'vs/base/common/actions';
 import errors = require('vs/base/common/errors');
 import { TPromise } from 'vs/base/common/winjs.base';
-import { getCodeEditor as getEditorWidget } from 'vs/editor/common/services/codeEditorService';
+import { getCodeEditor as getEditorWidget } from 'vs/editor/browser/services/codeEditorService';
 import nls = require('vs/nls');
 
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';

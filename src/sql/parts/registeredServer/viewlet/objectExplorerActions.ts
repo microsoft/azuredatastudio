@@ -21,6 +21,7 @@ import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 import * as Constants from 'sql/parts/connection/common/constants';
+import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export class ObjectExplorerActionsContext {
 	public treeNode: TreeNode;
@@ -39,9 +40,11 @@ export class OENewQueryAction extends NewQueryAction {
 		id: string, label: string, icon: string,
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
 		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
+		@IWorkbenchEditorService protected _workbenchEditorService: IWorkbenchEditorService
 	) {
-		super(id, label, icon, _queryEditorService, _connectionManagementService);
+		super(id, label, icon, _queryEditorService, _connectionManagementService, _objectExplorerService, _workbenchEditorService);
 	}
 
 	public run(actionContext: any): TPromise<boolean> {

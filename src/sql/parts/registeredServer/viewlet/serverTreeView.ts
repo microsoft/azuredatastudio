@@ -27,6 +27,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
+import Event, { Emitter } from 'vs/base/common/event';
 
 const $ = builder.$;
 
@@ -41,6 +42,7 @@ export class ServerTreeView {
 	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
 	private _tree: ITree;
 	private _toDispose: IDisposable[] = [];
+	private _onSelectionOrFocusChange: Emitter<void>;
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -56,6 +58,13 @@ export class ServerTreeView {
 			ActiveConnectionsFilterAction.LABEL,
 			this);
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
+		this._onSelectionOrFocusChange = new Emitter();
+		if (this._capabilitiesService) {
+			this._capabilitiesService.onCapabilitiesReady().then(() => {
+				this.refreshTree();
+				this._treeSelectionHandler.onTreeActionStateChange(false);
+			});
+		}
 	}
 
 	/**
@@ -64,6 +73,14 @@ export class ServerTreeView {
 	public get activeConnectionsFilterAction(): ActiveConnectionsFilterAction {
 		return this._activeConnectionsFilterAction;
 	}
+
+	/**
+	 * Event fired when the tree's selection or focus changes
+	 */
+	public get onSelectionOrFocusChange(): Event<void> {
+		return this._onSelectionOrFocusChange.event;
+	}
+
 	/**
 	 * Render the view body
 	 */
@@ -79,14 +96,16 @@ export class ServerTreeView {
 			var connectButton = new Button(this._buttonSection);
 			connectButton.label = localize('addConnection', 'Add Connection');
 			this._toDispose.push(attachButtonStyler(connectButton, this._themeService));
-			this._toDispose.push(connectButton.addListener('click', () => {
+			this._toDispose.push(connectButton.onDidClick(() => {
 				this._connectionManagementService.showConnectionDialog();
 			}));
 		}
 
 		this._tree = TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService);
 		//this._tree.setInput(undefined);
-		this._toDispose.push(this._tree.addListener('selection', (event) => this.onSelected(event)));
+		this._toDispose.push(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
+		this._toDispose.push(this._tree.onDidBlur(() => this._onSelectionOrFocusChange.fire()));
+		this._toDispose.push(this._tree.onDidChangeFocus(() => this._onSelectionOrFocusChange.fire()));
 
 		// Theme styler
 		this._toDispose.push(attachListStyler(this._tree, this._themeService));
@@ -121,23 +140,9 @@ export class ServerTreeView {
 			self.refreshTree();
 			let root = <ConnectionProfileGroup>this._tree.getInput();
 			if (root && !root.hasValidConnections) {
-
 				this._treeSelectionHandler.onTreeActionStateChange(true);
-				if (this._capabilitiesService) {
-					this._capabilitiesService.onCapabilitiesReady().then(() => {
-						self.refreshTree();
-						this._treeSelectionHandler.onTreeActionStateChange(false);
-						resolve();
-
-					}, error => {
-						reject(error);
-					});
-				} else {
-					self.refreshTree();
-					resolve();
-				}
+				resolve();
 			} else {
-
 				resolve();
 			}
 		});
@@ -385,7 +390,8 @@ export class ServerTreeView {
 	}
 
 	private onSelected(event: any): void {
-		this._treeSelectionHandler.onTreeSelect(event, this._tree, this._connectionManagementService, this._objectExplorerService);
+		this._treeSelectionHandler.onTreeSelect(event, this._tree, this._connectionManagementService, this._objectExplorerService, () => this._onSelectionOrFocusChange.fire());
+		this._onSelectionOrFocusChange.fire();
 	}
 
 	/**
@@ -404,6 +410,20 @@ export class ServerTreeView {
 		} else {
 			this._tree.onHidden();
 		}
+	}
+
+	/**
+	 * Get the list of selected nodes in the tree
+	*/
+	public getSelection(): any[] {
+		return this._tree.getSelection();
+	}
+
+	/**
+	 * Get whether the tree view currently has focus
+	*/
+	public isFocused(): boolean {
+		return this._tree.isDOMFocused();
 	}
 
 	/**

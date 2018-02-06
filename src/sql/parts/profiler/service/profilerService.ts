@@ -118,7 +118,7 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public getSessionTemplates(provider?: string): Array<IProfilerSessionTemplate> {
-		let config = <IProfilerSettings>this._configurationService.getConfiguration(PROFILER_SETTINGS);
+		let config = <IProfilerSettings>this._configurationService.getValue(PROFILER_SETTINGS);
 
 		if (provider) {
 			return config.sessionTemplates;

@@ -57,7 +57,6 @@ export interface IMessage {
 
 export interface IInputValidationOptions {
 	validation: IInputValidator;
-	showMessage?: boolean;
 }
 
 export enum MessageType {
@@ -94,11 +93,11 @@ export class InputBox extends Widget {
 	private placeholder: string;
 	private ariaLabel: string;
 	private validation: IInputValidator;
-	private showValidationMessage: boolean;
 	private state = 'idle';
 	private cachedHeight: number;
 
 	// {{SQL CARBON EDIT}}
+	protected showValidationMessage: boolean;
 	protected inputBackground: Color;
 	protected inputForeground: Color;
 	protected inputBorder: Color;
@@ -141,7 +140,7 @@ export class InputBox extends Widget {
 		if (this.options.validationOptions) {
 			this.validation = this.options.validationOptions.validation;
 			// {{SQL CARBON EDIT}} Canidate for addition to vscode
-			this.showValidationMessage = this.options.validationOptions.showMessage || true;
+			this.showValidationMessage = true;
 		}
 
 		this.element = dom.append(container, $('.monaco-inputbox.idle'));
@@ -233,10 +232,6 @@ export class InputBox extends Widget {
 				this.input.removeAttribute('aria-label');
 			}
 		}
-	}
-
-	public setContextViewProvider(contextViewProvider: IContextViewProvider): void {
-		this.contextViewProvider = contextViewProvider;
 	}
 
 	public get inputElement(): HTMLInputElement {
@@ -405,9 +400,9 @@ export class InputBox extends Widget {
 					className: 'monaco-inputbox-message'
 				};
 
-				let spanElement: HTMLElement = (this.message.formatContent
+				const spanElement = (this.message.formatContent
 					? renderFormattedText(this.message.content, renderOptions)
-					: renderText(this.message.content, renderOptions)) as any;
+					: renderText(this.message.content, renderOptions));
 				dom.addClass(spanElement, this.classForType(this.message.type));
 
 				const styles = this.stylesForType(this.message.type);
@@ -511,7 +506,6 @@ export class InputBox extends Widget {
 		this.placeholder = null;
 		this.ariaLabel = null;
 		this.validation = null;
-		this.showValidationMessage = null;
 		this.state = null;
 		this.actionbar = null;
 

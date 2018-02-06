@@ -97,15 +97,13 @@ export class RemoveAccountAction extends Action {
 			type: 'question'
 		};
 
-		let confirmPromise = this._messageService.confirm(confirm);
-
-		return confirmPromise.then(confirmation => {
-			if (!confirmation.confirmed) {
-				return TPromise.as(false);
-			} else {
-				return new TPromise((resolve, reject) => {
-					self._accountManagementService.removeAccount(self._account.key)
-						.then(
+		let confirmPromise: boolean = this._messageService.confirm(confirm);
+		if (!confirmPromise) {
+			return TPromise.as(false);
+		} else {
+			return new TPromise((resolve, reject) => {
+				self._accountManagementService.removeAccount(self._account.key)
+					.then(
 						(result) => { resolve(result); },
 						(err) => {
 							// Must handle here as this is an independent action
@@ -113,10 +111,9 @@ export class RemoveAccountAction extends Action {
 								localize('removeAccountFailed', 'Failed to remove account'), err);
 							resolve(false);
 						}
-						);
-				});
-			}
-		});
+					);
+			});
+		}
 	}
 }
 

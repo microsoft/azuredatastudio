@@ -10,8 +10,7 @@ import 'vs/css!vs/base/browser/ui/actionbar/actionbar';
 import { Promise } from 'vs/base/common/winjs.base';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { IAction, IActionRunner, ActionRunner } from 'vs/base/common/actions';
-import { EventType as CommonEventType } from 'vs/base/common/events';
-import { EventEmitter } from 'vs/base/common/eventEmitter';
+import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import {
@@ -32,7 +31,7 @@ let defaultOptions: IActionBarOptions = {
  * ActionBar vs/base/browser/ui/actionbar/actionbar. This class was needed because we
  * want the ability to display content other than Action icons in the QueryTaskbar.
  */
-export class ActionBar extends EventEmitter implements IActionRunner {
+export class ActionBar extends ActionRunner implements IActionRunner {
 
 	private _options: IActionBarOptions;
 	private _actionRunner: IActionRunner;
@@ -60,7 +59,7 @@ export class ActionBar extends EventEmitter implements IActionRunner {
 			this._toDispose.push(this._actionRunner);
 		}
 
-		this._toDispose.push(this.addEmitter(this._actionRunner));
+		//this._toDispose.push(this.addEmitter(this._actionRunner));
 
 		this._items = [];
 		this._focusedItem = undefined;
@@ -122,14 +121,16 @@ export class ActionBar extends EventEmitter implements IActionRunner {
 		});
 
 		this._focusTracker = DOM.trackFocus(this._domNode);
-		this._focusTracker.addBlurListener(() => {
+		this._focusTracker.onDidBlur(() => {
 			if (document.activeElement === this._domNode || !DOM.isAncestor(document.activeElement, this._domNode)) {
-				this.emit(DOM.EventType.BLUR, {});
+
+				// @SQLTODO
+				//this.emit(DOM.EventType.BLUR, {});
 				this._focusedItem = undefined;
 			}
 		});
 
-		this._focusTracker.addFocusListener(() => this.updateFocusedItem());
+		this._focusTracker.onDidFocus(() => this.updateFocusedItem());
 
 		this._actionsList = document.createElement('ul');
 		this._actionsList.className = 'actions-container';
@@ -226,7 +227,7 @@ export class ActionBar extends EventEmitter implements IActionRunner {
 
 			item.actionRunner = this._actionRunner;
 			item.setActionContext(this.context);
-			this.addEmitter(item);
+			//this.addEmitter(item);
 			item.render(actionItemElement);
 
 			if (index === null || index < 0 || index >= this._actionsList.children.length) {
@@ -354,7 +355,7 @@ export class ActionBar extends EventEmitter implements IActionRunner {
 			(<HTMLElement>document.activeElement).blur(); // remove focus from focussed action
 		}
 
-		this.emit(CommonEventType.CANCEL);
+		//this.emit('cancel');
 	}
 
 	public run(action: IAction, context?: any): Promise {

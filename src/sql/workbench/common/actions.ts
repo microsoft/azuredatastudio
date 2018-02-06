@@ -24,6 +24,8 @@ import { Action } from 'vs/base/common/actions';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
 
 import * as nls from 'vs/nls';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export interface BaseActionContext {
 	object?: ObjectMetadata;
@@ -47,7 +49,9 @@ export class NewQueryAction extends TaskAction {
 	constructor(
 		id: string, label: string, icon: string,
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
+		@IWorkbenchEditorService protected _workbenchEditorService: IWorkbenchEditorService
 	) {
 		super(id, label, icon);
 	}
@@ -57,7 +61,9 @@ export class NewQueryAction extends TaskAction {
 			TaskUtilities.newQuery(
 				actionContext.profile,
 				this._connectionManagementService,
-				this._queryEditorService
+				this._queryEditorService,
+				this._objectExplorerService,
+				this._workbenchEditorService
 			).then(
 				result => {
 					resolve(true);

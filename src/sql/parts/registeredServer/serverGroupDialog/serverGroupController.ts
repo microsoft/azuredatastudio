@@ -82,7 +82,7 @@ export class ServerGroupController implements IServerGroupController {
 	public showCreateGroupDialog(connectionManagementService: IConnectionManagementService, callbacks?: IServerGroupDialogCallbacks): TPromise<void> {
 		this._connectionManagementService = connectionManagementService;
 		this._group = null;
-		this._viewModel = new ServerGroupViewModel(undefined, this._configurationService.getConfiguration(SERVER_GROUP_CONFIG)[SERVER_GROUP_COLORS_CONFIG]);
+		this._viewModel = new ServerGroupViewModel(undefined, this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_COLORS_CONFIG]);
 		this._callbacks = callbacks ? callbacks : undefined;
 		return this.openServerGroupDialog();
 	}
@@ -90,7 +90,7 @@ export class ServerGroupController implements IServerGroupController {
 	public showEditGroupDialog(connectionManagementService: IConnectionManagementService, group: ConnectionProfileGroup): TPromise<void> {
 		this._connectionManagementService = connectionManagementService;
 		this._group = group;
-		this._viewModel = new ServerGroupViewModel(group, this._configurationService.getConfiguration(SERVER_GROUP_CONFIG)[SERVER_GROUP_COLORS_CONFIG]);
+		this._viewModel = new ServerGroupViewModel(group, this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_COLORS_CONFIG]);
 		return this.openServerGroupDialog();
 	}
 

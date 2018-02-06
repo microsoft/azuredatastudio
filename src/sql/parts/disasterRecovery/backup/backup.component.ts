@@ -525,18 +525,9 @@ export class BackupComponent {
 
 	private addButtonClickHandler(button: Button, handler: () => void) {
 		if (button && handler) {
-			button.addListener(DOM.EventType.CLICK, () => {
+			button.onDidClick(() => {
 				if (button.enabled) {
 					handler();
-				}
-			});
-
-			button.addListener(DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-				var event = new StandardKeyboardEvent(e);
-				if (button.enabled && event.keyCode === KeyCode.Enter) {
-					handler();
-					event.preventDefault();
-					event.stopPropagation();
 				}
 			});
 		}

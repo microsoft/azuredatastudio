@@ -33,7 +33,7 @@ import severity from 'vs/base/common/severity';
  * Main thread class for handling data protocol management registration.
  */
 @extHostNamedCustomer(SqlMainContext.MainThreadDataProtocol)
-export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
+export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	private _proxy: ExtHostDataProtocolShape;
 
@@ -58,7 +58,6 @@ export class MainThreadDataProtocol extends MainThreadDataProtocolShape {
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
 		@IMessageService private _messageService: IMessageService
 	) {
-		super();
 		if (extHostContext) {
 			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostDataProtocol);
 		}

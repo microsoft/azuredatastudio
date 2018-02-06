@@ -55,7 +55,7 @@ suite('Firewall rule dialog controller tests', () => {
 
 		// Create a mocked out instantiation service
 		instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
-		instantiationService.setup(x => x.createInstance<FirewallRuleViewModel>(TypeMoq.It.isValue(FirewallRuleViewModel)))
+		instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(FirewallRuleViewModel)))
 			.returns(() => mockFirewallRuleViewModel.object);
 
 		// Create a mock account picker
@@ -73,7 +73,7 @@ suite('Firewall rule dialog controller tests', () => {
 		mockFirewallRuleDialog.setup(x => x.open());
 		mockFirewallRuleDialog.setup(x => x.close());
 
-		instantiationService.setup(x => x.createInstance<FirewallRuleDialog>(TypeMoq.It.isValue(FirewallRuleDialog)))
+		instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(FirewallRuleDialog)))
 			.returns(() => mockFirewallRuleDialog.object);
 
 		connectionProfile = {
