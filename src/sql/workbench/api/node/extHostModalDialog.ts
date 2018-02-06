@@ -7,10 +7,10 @@
 import { SqlMainContext, MainThreadModalDialogShape, ExtHostModalDialogsShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import * as vscode from 'vscode';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { Emitter } from 'vs/base/common/event';
 
-class ExtHostDialog implements data.ModalDialog {
+class ExtHostDialog implements sqlops.ModalDialog {
 	private _title: string;
 	private _html: string;
 	private _okTitle: string;
@@ -97,7 +97,7 @@ export class ExtHostModalDialogs implements ExtHostModalDialogsShape {
 
 	createDialog(
 		title: string
-	): data.ModalDialog {
+	): sqlops.ModalDialog {
 		console.log(title);
 		const handle = ExtHostModalDialogs._handlePool++;
 		this._proxy.$createDialog(handle);
