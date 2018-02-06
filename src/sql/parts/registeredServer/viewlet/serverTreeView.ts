@@ -441,11 +441,4 @@ export class ServerTreeView {
 		this._tree.dispose();
 		this._toDispose = dispose(this._toDispose);
 	}
-
-	/**
-	 * Return the ITree associated
-	 */
-	public getTree(): ITree {
-		return this._tree;
-	}
 }

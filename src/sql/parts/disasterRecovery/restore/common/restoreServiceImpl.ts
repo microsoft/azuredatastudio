@@ -160,12 +160,12 @@ export class RestoreDialogController implements IRestoreDialogController {
 			restoreOption.taskExecutionMode = TaskExecutionMode.executeAndScript;
 		}
 
-		this._restoreService.restore(this._ownerUri, restoreOption).then(() => {
+		this._restoreService.restore(this._ownerUri, restoreOption).then(result => {
 			const self = this;
 			let connectionProfile = self._connectionService.getConnectionProfile(self._ownerUri);
 			let activeNode = self._objectExplorerService.getObjectExplorerNode(connectionProfile);
 			this._taskService.onTaskComplete(response => {
-				if (this.isSuccessfulRestore(response) && activeNode) {
+				if (result.taskId === response.id && this.isSuccessfulRestore(response) && activeNode) {
 					self._objectExplorerService.refreshTreeNode(activeNode.getSession(), activeNode).then(result => {
 						self._objectExplorerService.getServerTreeView().refreshTree();
 					});
