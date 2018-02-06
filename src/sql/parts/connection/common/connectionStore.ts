@@ -19,6 +19,7 @@ import { ConfigurationEditingService } from 'vs/workbench/services/configuration
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import * as data from 'data';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 

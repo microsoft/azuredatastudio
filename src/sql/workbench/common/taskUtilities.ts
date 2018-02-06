@@ -348,15 +348,20 @@ export function openInsight(query: IInsightsConfig, profile: IConnectionProfile,
  * Get the current global connection, which is the connection from the active editor, unless OE
  * is focused or there is no such editor, in which case it comes from the OE selection. Returns
  * undefined when there is no such connection.
+ *
+ * @param objectExplorerService
+ * @param connectionManagementService
+ * @param workbenchEditorService
+ * @param topLevelOnly If true, only return top-level (i.e. connected) Object Explorer connections instead of database connections when appropriate
 */
-export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IWorkbenchEditorService): IConnectionProfile {
+export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IWorkbenchEditorService, topLevelOnly: boolean = false): IConnectionProfile {
 	let connection: IConnectionProfile;
 
 	let objectExplorerSelection = objectExplorerService.getSelectedProfileAndDatabase();
 	if (objectExplorerSelection) {
 		let objectExplorerProfile = objectExplorerSelection.profile;
 		if (connectionManagementService.isProfileConnected(objectExplorerProfile)) {
-			if (objectExplorerSelection.databaseName) {
+			if (objectExplorerSelection.databaseName && !topLevelOnly) {
 				connection = objectExplorerProfile.cloneWithDatabase(objectExplorerSelection.databaseName);
 			} else {
 				connection = objectExplorerProfile;
