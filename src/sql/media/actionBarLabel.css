@@ -16,19 +16,19 @@
 }
 
 /* Activity Bar - explore */
-.monaco-workbench > .activitybar > .content > .monaco-action-bar .action-label.explore {
+.monaco-workbench > .activitybar .monaco-action-bar .action-label.explore {
     -webkit-mask: url('icons/file_inverse.svg') no-repeat 50% 50%;
 	-webkit-mask-size: 25px 25px;
 }
 
 /* Activity Bar - source control */
-.monaco-workbench > .activitybar > .content > .monaco-action-bar .action-label.scm {
+.monaco-workbench > .activitybar .monaco-action-bar .action-label.scm {
 	-webkit-mask: url('icons/sourcecontrol_inverse.svg') no-repeat 50% 50%;
 	-webkit-mask-size: 25px 25px;
 }
 
 /* Activity Bar - search */
-.monaco-workbench > .activitybar > .content > .monaco-action-bar .action-label.search {
+.monaco-workbench > .activitybar .monaco-action-bar .action-label.search {
     -webkit-mask: url('icons/search_inverse.svg') no-repeat 50% 50%;
 	-webkit-mask-size: 25px 25px;
 }
