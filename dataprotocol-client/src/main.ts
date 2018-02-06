@@ -108,7 +108,7 @@ class CapabilitiesFeature extends SqlOpsFeature<undefined> {
 
 		let getServerCapabilities = (cap: data.DataProtocolClientCapabilities): Thenable<data.DataProtocolServerCapabilities> => {
 			return client.sendRequest(protocol.CapabiltiesDiscoveryRequest.type, cap).then(
-				r => r.capabilities,
+				client.sqlp2c.asServerCapabilities,
 				e => {
 					client.logFailedRequest(protocol.CapabiltiesDiscoveryRequest.type, e);
 					return Promise.resolve(undefined);
@@ -310,7 +310,7 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 		let runQuery = (ownerUri: string, querySelection: data.ISelectionData, executionPlanOptions?: data.ExecutionPlanOptions): Thenable<void> => {
-			let params: data.QueryExecuteParams = {
+			let params: types.QueryExecuteParams = {
 				ownerUri,
 				querySelection,
 				executionPlanOptions: client.sqlc2p.asExecutionPlanOptions(executionPlanOptions)
