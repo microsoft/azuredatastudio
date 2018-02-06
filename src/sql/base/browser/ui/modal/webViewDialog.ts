@@ -22,7 +22,6 @@ import WebView from 'vs/workbench/parts/html/browser/webview';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import data = require('data');
 
 export class WebViewDialog extends Modal {
 

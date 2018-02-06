@@ -398,8 +398,8 @@ function getStartPos(script: string, operation: ScriptOperation, typeName: strin
 
 
 function getScriptingParamDetails(connectionService: IConnectionManagementService, ownerUri: string, metadata: sqlops.ObjectMetadata): sqlops.ScriptingParamDetails {
-	let serverInfo: data.ServerInfo = getServerInfo(connectionService, ownerUri);
-	let paramDetails: data.ScriptingParamDetails = {
+	let serverInfo: sqlops.ServerInfo = getServerInfo(connectionService, ownerUri);
+	let paramDetails: sqlops.ScriptingParamDetails = {
 		filePath: getFilePath(metadata),
 		scriptCompatibilityOption: scriptCompatibilityOptionMap[serverInfo.serverMajorVersion],
 		targetDatabaseEngineEdition: targetDatabaseEngineEditionMap[serverInfo.engineEditionId],
