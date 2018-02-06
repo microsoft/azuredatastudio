@@ -107,10 +107,8 @@ export class ConnectionConfig implements IConnectionConfig {
 		} else {
 			let capabilities = this._capabilitiesService.getCapabilities();
 			if (capabilities) {
-				console.info('capabilities ' + capabilities.length);
 				let providerCapabilities = capabilities.find(c => c.providerName === providerName);
 				if (providerCapabilities) {
-					console.info('capabilities 2 ' + providerCapabilities);
 					this.updateCapabilitiesCache(providerName, providerCapabilities);
 					return providerCapabilities;
 				} else {
