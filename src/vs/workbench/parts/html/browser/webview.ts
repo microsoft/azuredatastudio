@@ -195,7 +195,7 @@ export default class Webview {
 		if (parent) {
 			// {{SQL CARBON EDIT}}
 			if (!this._options.hideFind) {
-			parent.appendChild(this._webviewFindWidget.getDomNode());
+				parent.appendChild(this._webviewFindWidget.getDomNode());
 			}
 			parent.appendChild(this._webview);
 		}
