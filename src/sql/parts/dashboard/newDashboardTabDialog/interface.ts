@@ -8,8 +8,8 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 
-export const INewDashboardTabService = createDecorator<INewDashboardTabService>('addNewDashboardTabService');
-export interface INewDashboardTabService {
+export const INewDashboardTabDialogService = createDecorator<INewDashboardTabDialogService>('addNewDashboardTabService');
+export interface INewDashboardTabDialogService {
 	_serviceBrand: any;
 	showDialog(dashboardTabs: Array<IDashboardTab>, openedTabs: Array<IDashboardTab>, uri: string): void;
 }

@@ -10,7 +10,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
-import { INewDashboardTabService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
+import { INewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
 export class EditDashboardAction extends Action {
@@ -146,7 +146,7 @@ export class AddFeatureTabAction extends Action {
 	constructor(
 		private _dashboardTabs: Array<IDashboardTab>,
 		private _uri: string,
-		@INewDashboardTabService private _newDashboardTabService: INewDashboardTabService,
+		@INewDashboardTabDialogService private _newDashboardTabService: INewDashboardTabDialogService,
 		@IAngularEventingService private _angularEventService: IAngularEventingService
 	) {
 		super(AddFeatureTabAction.ID, AddFeatureTabAction.LABEL, AddFeatureTabAction.ICON);

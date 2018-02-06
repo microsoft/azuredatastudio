@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { INewDashboardTabService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
+import { INewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
 import { NewDashboardTabDialog } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabDialog';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
@@ -12,7 +12,7 @@ import { IDashboardUITab } from 'sql/parts/dashboard/newDashboardTabDialog/newDa
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-export class NewDashboardTabService implements INewDashboardTabService {
+export class NewDashboardTabDialogService implements INewDashboardTabDialogService {
 	_serviceBrand: any;
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////

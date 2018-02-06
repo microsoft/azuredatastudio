@@ -147,7 +147,7 @@ export class NewDashboardTabDialog extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
-		this._addNewTabButton = this.addFooterButton(localize('ok', 'Ok'), () => this.addNewTabs());
+		this._addNewTabButton = this.addFooterButton(localize('ok', 'OK'), () => this.addNewTabs());
 		this._cancelButton = this.addFooterButton(localize('cancel', 'Cancel'), () => this.cancel());
 		this.registerListeners();
 	}
