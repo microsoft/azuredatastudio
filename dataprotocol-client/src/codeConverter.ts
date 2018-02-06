@@ -4,7 +4,7 @@ import * as types from './types';
 
 export interface Ic2p {
 	asConnectionParams(connectionUri: string, connectionInfo: data.ConnectionInfo): proto.ConnectParams;
-	asExecutionPlanOptions(planOptions: data.ExecutionPlanOptions): data.ExecutionPlanOptions;
+	asExecutionPlanOptions(planOptions: data.ExecutionPlanOptions): types.ExecutionPlanOptions;
 	asScriptingParams(connectionUri: string, operation: data.ScriptOperation, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): types.ScriptingParams;
 }
 
@@ -17,10 +17,10 @@ function asConnectionParams(ownerUri: string, connInfo: data.ConnectionInfo): pr
 	};
 }
 
-function asExecutionPlanOptions(planOptions: data.ExecutionPlanOptions): data.ExecutionPlanOptions {
+function asExecutionPlanOptions(planOptions: data.ExecutionPlanOptions): types.ExecutionPlanOptions {
 	return {
-		displayEstimatedQueryPlan: planOptions ? planOptions.displayEstimatedQueryPlan : undefined,
-		displayActualQueryPlan: planOptions ? planOptions.displayActualQueryPlan : undefined
+		includeEstimatedExecutionPlanXml: planOptions ? planOptions.displayEstimatedQueryPlan : undefined,
+		includeActualExecutionPlanXml: planOptions ? planOptions.displayActualQueryPlan : undefined
 	};
 }
 

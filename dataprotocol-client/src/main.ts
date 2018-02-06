@@ -310,7 +310,7 @@ class QueryFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 		let runQuery = (ownerUri: string, querySelection: data.ISelectionData, executionPlanOptions?: data.ExecutionPlanOptions): Thenable<void> => {
-			let params: data.QueryExecuteParams = {
+			let params: types.QueryExecuteParams = {
 				ownerUri,
 				querySelection,
 				executionPlanOptions: client.sqlc2p.asExecutionPlanOptions(executionPlanOptions)

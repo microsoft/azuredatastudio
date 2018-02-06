@@ -335,7 +335,7 @@ export namespace QueryExecuteMessageNotification {
 
 // ------------------------------- < Query Execution Request > ------------------------------------
 export namespace QueryExecuteRequest {
-	export const type = new RequestType<data.QueryExecuteParams, QueryExecuteResult, void, void>('query/executeDocumentSelection');
+	export const type = new RequestType<types.QueryExecuteParams, QueryExecuteResult, void, void>('query/executeDocumentSelection');
 }
 
 export interface QueryExecuteResult { }
