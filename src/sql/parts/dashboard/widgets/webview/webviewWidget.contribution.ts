@@ -14,4 +14,4 @@ let webviewSchema: IJSONSchema = {
 	}
 };
 
-registerDashboardWidget('webview-widget', '', webviewSchema);
+registerDashboardWidget('webview-widget', '', webviewSchema, undefined, { extensionOnly: true });

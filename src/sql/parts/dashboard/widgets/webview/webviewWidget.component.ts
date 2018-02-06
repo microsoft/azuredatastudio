@@ -26,6 +26,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 
 	private _id: string;
 	private _webview: Webview;
+	private _html: string;
 
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
@@ -39,6 +40,26 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 
 	ngOnInit() {
 		this._dashboardService.dashboardWebviewService.registerWebviewWidget(this);
+		this._createWebview();
+	}
+
+	public get id(): string {
+		return this._id;
+	}
+
+	public setHtml(html: string): void {
+		this._html = html;
+		this._webview.contents = [html];
+	}
+
+	public layout(): void {
+		this._createWebview();
+	}
+
+	private _createWebview(): void {
+		if (this._webview) {
+			this._webview.dispose();
+		}
 		this._webview = new Webview(this._el.nativeElement,
 			this._dashboardService.partService.getContainer(Parts.EDITOR_PART),
 			this._dashboardService.contextViewService,
@@ -51,13 +72,8 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 			}
 		);
 		this._webview.style(this._dashboardService.themeService.getTheme());
-	}
-
-	public get id(): string {
-		return this._id;
-	}
-
-	public setHtml(html: string): void {
-		this._webview.contents = [html];
+		if (this._html) {
+			this._webview.contents = [this._html];
+		}
 	}
 }
