@@ -23,9 +23,9 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
-		@IWorkbenchEditorService private workbenchEditorService: IWorkbenchEditorService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
+		@IWorkbenchEditorService private _workbenchEditorService: IWorkbenchEditorService
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostConnectionManagement);
@@ -38,22 +38,22 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 	public $getActiveConnections(): Thenable<data.connection.Connection[]> {
-		return Promise.resolve(this.connectionManagementService.getActiveConnections().map(profile => this.convertConnection(profile)));
+		return Promise.resolve(this._connectionManagementService.getActiveConnections().map(profile => this.convertConnection(profile)));
 	}
 
 	public $getCurrentConnection(): Thenable<data.connection.Connection> {
-		return Promise.resolve(this.convertConnection(TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.workbenchEditorService, true)));
+		return Promise.resolve(this.convertConnection(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true)));
 	}
 
 	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
-		return Promise.resolve(this.connectionManagementService.getActiveConnectionCredentials(connectionId));
+		return Promise.resolve(this._connectionManagementService.getActiveConnectionCredentials(connectionId));
 	}
 
 	private convertConnection(profile: IConnectionProfile): data.connection.Connection {
 		if (!profile) {
 			return undefined;
 		}
-		profile = this.connectionManagementService.removeConnectionProfileCredentials(profile);
+		profile = this._connectionManagementService.removeConnectionProfileCredentials(profile);
 		let connection: data.connection.Connection = {
 			providerName: profile.providerName,
 			connectionId: profile.id,

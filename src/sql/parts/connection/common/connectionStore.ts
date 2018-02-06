@@ -286,17 +286,10 @@ export class ConnectionStore {
 		return this.convertConfigValuesToConnectionProfiles(configValues);
 	}
 
-	public getProfileWithoutPassword(conn: IConnectionProfile, removePasswordFromOptions: boolean = false): ConnectionProfile {
+	public getProfileWithoutPassword(conn: IConnectionProfile): ConnectionProfile {
 		if (conn) {
 			let savedConn: ConnectionProfile = ConnectionProfile.convertToConnectionProfile(this._connectionConfig.getCapabilities(conn.providerName), conn);
 			savedConn = savedConn.withoutPassword();
-
-			if (removePasswordFromOptions) {
-				savedConn.options = Object.assign({}, savedConn.options);
-				let providerCapabilities = this._capabilitiesService.getCapabilities().find(capabilities => capabilities.providerName === savedConn.providerName);
-				let passwordOptions = providerCapabilities.connectionProvider.options.filter(option => option.specialValueType === ConnectionOptionSpecialType.password);
-				passwordOptions.forEach(option => savedConn.options[option.name] = undefined);
-			}
 
 			return savedConn;
 		} else {

@@ -1354,7 +1354,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 	}
 
 	public removeConnectionProfileCredentials(originalProfile: IConnectionProfile): IConnectionProfile {
-		return this._connectionStore.getProfileWithoutPassword(originalProfile, true);
+		return this._connectionStore.getProfileWithoutPassword(originalProfile);
 	}
 
 	public getActiveConnectionCredentials(profileId: string): { [name: string]: string } {
@@ -1367,7 +1367,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		let passwordOption = this._capabilitiesService.getCapabilities().find(capability => capability.providerName === profile.providerName).connectionProvider.options.find(
 			option => option.specialValueType === ConnectionOptionSpecialType.password);
 		if (!passwordOption) {
-			return {};
+			return undefined;
 		}
 
 		let credentials = {};

@@ -81,7 +81,7 @@ declare module 'data' {
 		export function getCurrentConnection(): Thenable<Connection>;
 
 		/**
-		 * Get all connected connections
+		 * Get all active connections
 		*/
 		export function getActiveConnections(): Thenable<Connection[]>;
 

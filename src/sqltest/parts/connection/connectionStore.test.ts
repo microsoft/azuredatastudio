@@ -500,10 +500,10 @@ suite('SQL ConnectionStore tests', () => {
 		profile.options['password'] = profile.password;
 		profile.id = 'testId';
 		let expectedProfile = Object.assign({}, profile);
-		expectedProfile.password = undefined;
-		expectedProfile.options['password'] = undefined;
+		expectedProfile.password = '';
+		expectedProfile.options['password'] = '';
 		expectedProfile = ConnectionProfile.convertToConnectionProfile(msSQLCapabilities, expectedProfile).toIConnectionProfile();
-		let profileWithoutCredentials = connectionStore.getProfileWithoutPassword(profile, true);
+		let profileWithoutCredentials = connectionStore.getProfileWithoutPassword(profile);
 		assert.deepEqual(profileWithoutCredentials.toIConnectionProfile(), expectedProfile);
 	});
 });
