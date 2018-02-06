@@ -41,6 +41,11 @@ export class ConnectionConfig implements IConnectionConfig {
 	) {
 		this._providerCapabilitiesMap = {};
 		this.setCachedMetadata(cachedMetadata);
+		if (this._capabilitiesService && this._capabilitiesService.onCapabilitiesReady()) {
+			this._capabilitiesService.onCapabilitiesReady().then(() => {
+				this.setCachedMetadata(this._capabilitiesService.getCapabilities());
+			});
+		}
 	}
 
 	public setCachedMetadata(cachedMetadata: data.DataProtocolServerCapabilities[]): void {

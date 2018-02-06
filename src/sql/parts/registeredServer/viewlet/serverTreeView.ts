@@ -59,6 +59,12 @@ export class ServerTreeView {
 			this);
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._onSelectionOrFocusChange = new Emitter();
+		if (this._capabilitiesService) {
+			this._capabilitiesService.onCapabilitiesReady().then(() => {
+				this.refreshTree();
+				this._treeSelectionHandler.onTreeActionStateChange(false);
+			});
+		}
 	}
 
 	/**
@@ -134,23 +140,9 @@ export class ServerTreeView {
 			self.refreshTree();
 			let root = <ConnectionProfileGroup>this._tree.getInput();
 			if (root && !root.hasValidConnections) {
-
 				this._treeSelectionHandler.onTreeActionStateChange(true);
-				if (this._capabilitiesService) {
-					this._capabilitiesService.onCapabilitiesReady().then(() => {
-						self.refreshTree();
-						this._treeSelectionHandler.onTreeActionStateChange(false);
-						resolve();
-
-					}, error => {
-						reject(error);
-					});
-				} else {
-					self.refreshTree();
-					resolve();
-				}
+				resolve();
 			} else {
-
 				resolve();
 			}
 		});
