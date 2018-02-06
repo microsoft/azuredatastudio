@@ -108,7 +108,7 @@ class CapabilitiesFeature extends SqlOpsFeature<undefined> {
 
 		let getServerCapabilities = (cap: data.DataProtocolClientCapabilities): Thenable<data.DataProtocolServerCapabilities> => {
 			return client.sendRequest(protocol.CapabiltiesDiscoveryRequest.type, cap).then(
-				r => r.capabilities,
+				client.sqlp2c.asServerCapabilities,
 				e => {
 					client.logFailedRequest(protocol.CapabiltiesDiscoveryRequest.type, e);
 					return Promise.resolve(undefined);
