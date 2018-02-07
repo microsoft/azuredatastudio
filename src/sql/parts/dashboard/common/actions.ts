@@ -7,10 +7,12 @@ import * as nls from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
-import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
-import { INewDashboardTabService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
+import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
+import { INewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
 export class EditDashboardAction extends Action {
 
 	private static readonly ID = 'editDashboard';
@@ -150,20 +152,49 @@ export class PinUnpinTabAction extends Action {
 }
 
 export class AddFeatureTabAction extends Action {
-	private static readonly ID = 'addFeatureTab';
-	private static readonly LABEL = nls.localize('addFeatureTab', "Add a feature tab");
+	private static readonly ID = 'openInstalledFeatures';
+	private static readonly LABEL = nls.localize('openInstalledFeatures', "Open installed features");
 	private static readonly ICON = 'new';
+
+	private _disposables: IDisposable[] = [];
+	private _openedTabs: IDashboardTab[] = [];
 
 	constructor(
 		private _dashboardTabs: Array<IDashboardTab>,
 		private _uri: string,
-		@INewDashboardTabService private _newDashboardTabService: INewDashboardTabService
+		@INewDashboardTabDialogService private _newDashboardTabService: INewDashboardTabDialogService,
+		@IAngularEventingService private _angularEventService: IAngularEventingService
 	) {
 		super(AddFeatureTabAction.ID, AddFeatureTabAction.LABEL, AddFeatureTabAction.ICON);
+		this._disposables.push(toDisposableSubscription(this._angularEventService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
 	}
 
 	run(): TPromise<boolean> {
-		this._newDashboardTabService.showDialog(this._dashboardTabs, this._uri);
+		this._newDashboardTabService.showDialog(this._dashboardTabs, this._openedTabs, this._uri);
 		return TPromise.as(true);
+	}
+
+	dispose() {
+		super.dispose();
+		this._disposables.forEach((item) => item.dispose());
+	}
+
+	private handleDashboardEvent(event: IAngularEvent): void {
+		switch (event.event) {
+			case AngularEventType.NEW_TABS:
+				let openedTabs = <IDashboardTab[]>event.payload.dashboardTabs;
+				openedTabs.forEach(tab => {
+					let existedTab = this._openedTabs.find(i => i === tab);
+					if (!existedTab) {
+						this._openedTabs.push(tab);
+					}
+				});
+				break;
+			case AngularEventType.CLOSE_TAB:
+				let closedTab = <IDashboardTab>event.payload.dashboardTab;
+				let index = this._openedTabs.findIndex(i => i === closedTab);
+				this._openedTabs.splice(index, 1);
+				break;
+		}
 	}
 }
