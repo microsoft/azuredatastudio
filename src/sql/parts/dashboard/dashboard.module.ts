@@ -45,7 +45,14 @@ import { PropertiesWidgetComponent } from 'sql/parts/dashboard/widgets/propertie
 import { ExplorerWidget } from 'sql/parts/dashboard/widgets/explorer/explorerWidget.component';
 import { TasksWidget } from 'sql/parts/dashboard/widgets/tasks/tasksWidget.component';
 import { InsightsWidget } from 'sql/parts/dashboard/widgets/insights/insightsWidget.component';
-let widgetComponents = [PropertiesWidgetComponent, ExplorerWidget, TasksWidget, InsightsWidget];
+import { WebviewWidget } from 'sql/parts/dashboard/widgets/webview/webviewWidget.component';
+let widgetComponents = [
+	PropertiesWidgetComponent,
+	ExplorerWidget,
+	TasksWidget,
+	InsightsWidget,
+	WebviewWidget
+];
 
 /* Insights */
 let insightComponents = Registry.as<IInsightRegistry>(Extensions.InsightContribution).getAllCtors();

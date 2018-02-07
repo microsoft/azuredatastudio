@@ -6,11 +6,20 @@
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { Extensions, IDashboardWidgetRegistry } from 'sql/platform/dashboard/common/widgetRegistry';
+import { mixin } from 'vs/base/common/objects';
 
 let widgetRegistry = <IDashboardWidgetRegistry>Registry.as(Extensions.DashboardWidgetContribution);
 
+export function generateDashboardWidgetSchema(type?: 'database' | 'server', extension?: boolean): IJSONSchema {
+	let schemas;
+	if (extension) {
+		let extensionSchemas = type === 'server' ? widgetRegistry.serverWidgetSchema.extensionProperties : type === 'database' ? widgetRegistry.databaseWidgetSchema.extensionProperties : widgetRegistry.allSchema.extensionProperties;
+		schemas = type === 'server' ? widgetRegistry.serverWidgetSchema.properties : type === 'database' ? widgetRegistry.databaseWidgetSchema.properties : widgetRegistry.allSchema.properties;
+		schemas = mixin(schemas, extensionSchemas, true);
+	} else {
+		schemas = type === 'server' ? widgetRegistry.serverWidgetSchema.properties : type === 'database' ? widgetRegistry.databaseWidgetSchema.properties : widgetRegistry.allSchema.properties;
+	}
 
-export function GenerateDashboardWidgetSchema(type?: 'database' | 'server'): IJSONSchema {
 	return {
 		type: 'object',
 		properties: {
@@ -65,7 +74,7 @@ export function GenerateDashboardWidgetSchema(type?: 'database' | 'server'): IJS
 			},
 			widget: {
 				type: 'object',
-				properties: type === 'server' ? widgetRegistry.serverWidgetSchema.properties : type === 'database' ? widgetRegistry.databaseWidgetSchema.properties : widgetRegistry.allSchema.properties,
+				properties: schemas,
 				minItems: 1,
 				maxItems: 1
 			}
