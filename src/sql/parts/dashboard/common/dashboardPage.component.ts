@@ -191,7 +191,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 		let allTabs = this.filterConfigs(dashboardRegistry.tabs);
 
-		// load pinned tabs
+		// Load pinned tabs
 		this._pinnedTabs = this.dashboardService.getSettings<Array<PinConfig>>([this.context, 'tabs'].join('.'));
 		let pinnedDashboardTabs: IDashboardTab[] = [];
 		this._pinnedTabs.forEach(pinnedTab => {
@@ -200,11 +200,13 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				pinnedDashboardTabs.push(tab);
 			}
 		});
-		if (pinnedDashboardTabs.length > 0) {
-			this.loadNewTabs(pinnedDashboardTabs);
-		}
+		this.loadNewTabs(pinnedDashboardTabs);
 
-		// set panel actions
+		// Load always show tabs
+		let alwaysShowTabs = allTabs.filter(tab => tab.alwaysShow);
+		this.loadNewTabs(alwaysShowTabs);
+
+		// Set panel actions
 		let addNewTabAction = this.dashboardService.instantiationService.createInstance(AddFeatureTabAction, allTabs, this.dashboardService.getUnderlyingUri());
 		this._tabsDispose.push(addNewTabAction);
 		this.panelActions = [addNewTabAction];
@@ -236,36 +238,41 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	}
 
 	private loadNewTabs(dashboardTabs: IDashboardTab[]) {
-		let selectedTabs = dashboardTabs.map(v => {
-			let configs = v.widgets;
-			this._configModifiers.forEach(cb => {
-				configs = cb.apply(this, [configs]);
+		if (dashboardTabs && dashboardTabs.length > 0) {
+			let selectedTabs = dashboardTabs.map(v => {
+				let configs = v.widgets;
+				this._configModifiers.forEach(cb => {
+					configs = cb.apply(this, [configs]);
+				});
+				this._gridModifiers.forEach(cb => {
+					configs = cb.apply(this, [configs]);
+				});
+				return { id: v.id, title: v.title, widgets: configs, alwaysShow: v.alwaysShow };
+			}).map(v => {
+				let actions = [];
+				if (!v.alwaysShow) {
+					let pinnedTab = this._pinnedTabs.find(i => i.tabId === v.id);
+					actions.push(this.dashboardService.instantiationService.createInstance(PinUnpinTabAction, v.id, this.dashboardService.getUnderlyingUri(), !!pinnedTab));
+				}
+				let config: TabConfig = {
+					id: v.id,
+					name: v.title,
+					context: this.context,
+					widgets: v.widgets,
+					originalConfig: undefined,
+					editable: false,
+					canClose: true,
+					actions:  actions
+				};
+				this.addNewTab(config);
+				return config;
 			});
-			this._gridModifiers.forEach(cb => {
-				configs = cb.apply(this, [configs]);
-			});
-			return { id: v.id, title: v.title, widgets: configs };
-		}).map(v => {
-			let pinnedTab = this._pinnedTabs.find(i => i.tabId === v.id);
-			let pinAction = this.dashboardService.instantiationService.createInstance(PinUnpinTabAction, v.id, this.dashboardService.getUnderlyingUri(), !!pinnedTab);
-			let config: TabConfig = {
-				id: v.id,
-				name: v.title,
-				context: this.context,
-				widgets: v.widgets,
-				originalConfig: undefined,
-				editable: false,
-				canClose: true,
-				actions: [pinAction]
-			};
-			this.addNewTab(config);
-			return config;
-		});
 
-		// put this immediately on the stack so that is ran *after* the tab is rendered
-		setTimeout(() => {
-			this._panel.selectTab(selectedTabs[0].id);
-		});
+			// put this immediately on the stack so that is ran *after* the tab is rendered
+			setTimeout(() => {
+				this._panel.selectTab(selectedTabs[0].id);
+			});
+		}
 	}
 
 	private addNewTab(tab: TabConfig): void {
