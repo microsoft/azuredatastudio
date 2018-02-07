@@ -36,7 +36,7 @@ export class DropdownRenderer implements tree.IRenderer {
 	public renderTemplate(tree: tree.ITree, templateId: string, container: HTMLElement) {
 		const row = $('div.list-row').style('height', '22px').style('padding-left', '5px').getHTMLElement();
 		DOM.append(container, row);
-		const label = $('span.label').style('margin', 'auto').getHTMLElement();
+		const label = $('span.label').style('margin', 'auto').style('vertical-align', 'middle').getHTMLElement();
 		DOM.append(row, label);
 
 		return { label };
@@ -91,7 +91,7 @@ export class DropdownFilter extends TreeDefaults.DefaultFilter {
 	public filterString: string;
 
 	public isVisible(tree: tree.ITree, element: Resource): boolean {
-		return element.value.includes(this.filterString);
+		return element.value.toLowerCase().includes(this.filterString.toLowerCase());
 	}
 }
 
