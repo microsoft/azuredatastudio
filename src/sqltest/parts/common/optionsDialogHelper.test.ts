@@ -10,7 +10,7 @@ import data = require('data');
 import { Builder, $ } from 'vs/base/browser/builder';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { ServiceOptionType, ServiceOptionTypeNames } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('Advanced options helper tests', () => {
 	var possibleInputs: string[];
@@ -41,7 +41,7 @@ suite('Advanced options helper tests', () => {
 			],
 			defaultValue: null,
 			isRequired: false,
-			valueType: <any>ServiceOptionTypeNames.category,
+			valueType: ServiceOptionType.category,
 			objectType: undefined,
 			isArray: undefined
 		};
@@ -54,7 +54,7 @@ suite('Advanced options helper tests', () => {
 			categoryValues: null,
 			defaultValue: null,
 			isRequired: false,
-			valueType: <any>ServiceOptionTypeNames.boolean,
+			valueType: ServiceOptionType.boolean,
 			objectType: undefined,
 			isArray: undefined
 		};
@@ -67,7 +67,7 @@ suite('Advanced options helper tests', () => {
 			categoryValues: null,
 			defaultValue: '15',
 			isRequired: false,
-			valueType: <any>ServiceOptionTypeNames.number,
+			valueType: ServiceOptionType.number,
 			objectType: undefined,
 			isArray: undefined
 		};
@@ -80,7 +80,7 @@ suite('Advanced options helper tests', () => {
 			categoryValues: null,
 			defaultValue: null,
 			isRequired: false,
-			valueType: <any>ServiceOptionTypeNames.string,
+			valueType: ServiceOptionType.string,
 			objectType: undefined,
 			isArray: undefined
 		};
@@ -93,7 +93,7 @@ suite('Advanced options helper tests', () => {
 			categoryValues: null,
 			defaultValue: null,
 			isRequired: false,
-			valueType: <any>ServiceOptionTypeNames.string,
+			valueType: ServiceOptionType.string,
 			objectType: undefined,
 			isArray: undefined
 		};
