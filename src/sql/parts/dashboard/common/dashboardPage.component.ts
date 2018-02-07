@@ -266,7 +266,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 					originalConfig: undefined,
 					editable: false,
 					canClose: true,
-					actions:  actions
+					actions: actions
 				};
 				this.addNewTab(config);
 				return config;
