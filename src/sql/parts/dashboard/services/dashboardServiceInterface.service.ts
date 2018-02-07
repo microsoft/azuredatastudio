@@ -142,8 +142,8 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _onAddNewTabs = new Emitter<Array<IDashboardTab>>();
 	public readonly onAddNewTabs: Event<Array<IDashboardTab>> = this._onAddNewTabs.event;
 
-	private _onCloseTab = new Emitter<IDashboardTab>();
-	public readonly onCloseTab: Event<IDashboardTab> = this._onCloseTab.event;
+	private _onCloseTab = new Emitter<string>();
+	public readonly onCloseTab: Event<string> = this._onCloseTab.event;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
@@ -302,7 +302,7 @@ export class DashboardServiceInterface implements OnDestroy {
 				this._onAddNewTabs.fire(event.payload.dashboardTabs);
 				break;
 			case AngularEventType.CLOSE_TAB:
-				this._onCloseTab.fire(event.payload.dashboardTab);
+				this._onCloseTab.fire(event.payload.id);
 		}
 	}
 }

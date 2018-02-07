@@ -157,10 +157,10 @@ export class AddFeatureTabAction extends Action {
 	private static readonly ICON = 'new';
 
 	private _disposables: IDisposable[] = [];
-	private _openedTabs: IDashboardTab[] = [];
 
 	constructor(
 		private _dashboardTabs: Array<IDashboardTab>,
+		private _openedTabs: Array<IDashboardTab>,
 		private _uri: string,
 		@INewDashboardTabDialogService private _newDashboardTabService: INewDashboardTabDialogService,
 		@IAngularEventingService private _angularEventService: IAngularEventingService
@@ -191,8 +191,7 @@ export class AddFeatureTabAction extends Action {
 				});
 				break;
 			case AngularEventType.CLOSE_TAB:
-				let closedTab = <IDashboardTab>event.payload.dashboardTab;
-				let index = this._openedTabs.findIndex(i => i === closedTab);
+				let index = this._openedTabs.findIndex(i => i.id === event.payload.id);
 				this._openedTabs.splice(index, 1);
 				break;
 		}

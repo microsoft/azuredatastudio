@@ -210,7 +210,8 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		this.loadNewTabs(alwaysShowTabs);
 
 		// Set panel actions
-		let addNewTabAction = this.dashboardService.instantiationService.createInstance(AddFeatureTabAction, allTabs, this.dashboardService.getUnderlyingUri());
+		let openedTabs = [...pinnedDashboardTabs, ...alwaysShowTabs];
+		let addNewTabAction = this.dashboardService.instantiationService.createInstance(AddFeatureTabAction, allTabs, openedTabs, this.dashboardService.getUnderlyingUri());
 		this._tabsDispose.push(addNewTabAction);
 		this.panelActions = [addNewTabAction];
 		this._cd.detectChanges();
@@ -526,6 +527,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		let index = this.tabs.findIndex(i => i.id === tab.identifier);
 		this.tabs.splice(index, 1);
 		this._cd.detectChanges();
-		this.bootstrapService.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { dashboardTab: tab });
+		this.bootstrapService.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { id: tab.identifier });
 	}
 }
