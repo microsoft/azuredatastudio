@@ -11,7 +11,7 @@
 			</dashboard-widget-wrapper>
 		</div>
 		<panel class="fullsize" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)" [actions]="panelActions">
-			<tab *ngFor="let tab of tabs" [title]="tab.name" class="fullsize" [identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
+			<tab *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
 				<dashboard-webview-tab *ngIf="tab.isWebview" [tab]="tab">
 				</dashboard-webview-tab>
 				<dashboard-widget-tab *ngIf="!tab.isWebview" [tab]="tab">

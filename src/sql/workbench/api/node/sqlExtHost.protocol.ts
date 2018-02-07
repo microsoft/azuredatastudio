@@ -412,7 +412,7 @@ export const SqlMainContext = {
 	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
 	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
-	MainThreadWebviewWidget: createMainId<MainThreadWebviewWidgetShape>('MainThreadWebviewWidget')
+	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview')
 };
 
 export const SqlExtHostContext = {
@@ -422,7 +422,7 @@ export const SqlExtHostContext = {
 	ExtHostSerializationProvider: createExtId<ExtHostSerializationProviderShape>('ExtHostSerializationProvider'),
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
-	ExtHostWebviewWidgets: createExtId<ExtHostWebviewWidgetsShape>('ExtHostWebviewWidgets')
+	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews')
 };
 
 export interface MainThreadModalDialogShape extends IDisposable {
@@ -439,14 +439,14 @@ export interface ExtHostModalDialogsShape {
 	$onClosed(handle: number): void;
 }
 
-export interface ExtHostWebviewWidgetsShape {
-	$registerProvider(widgetId: string, handler: (webview: data.WebviewWidget) => void): void;
+export interface ExtHostDashboardWebviewsShape {
+	$registerProvider(widgetId: string, handler: (webview: data.DashboardWebview) => void): void;
 	$onMessage(handle: number, message: any): void;
 	$onClosed(handle: number): void;
 	$registerWidget(handle: number, id: string): void;
 }
 
-export interface MainThreadWebviewWidgetShape extends IDisposable {
+export interface MainThreadDashboardWebviewShape extends IDisposable {
 	$sendMessage(handle: number, message: string);
 	$registerProvider(widgetId: string);
 	$setHtml(handle: number, value: string);

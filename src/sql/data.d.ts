@@ -1404,7 +1404,7 @@ declare module 'data' {
 		postMessage(message: any): Thenable<any>;
 	}
 
-	export interface WebviewWidget {
+	export interface DashboardWebview {
 
 		/**
 		 * Raised when the webview posts a message.
@@ -1433,7 +1433,7 @@ declare module 'data' {
 		/**
 		 * Register a provider for a webview widget
 		 */
-		export function registerDashboardWebviewWidgetProvider(widgetId: string, handler: (webview: WebviewWidget) => void): void;
+		export function registerWebviewProvider(widgetId: string, handler: (webview: DashboardWebview) => void): void;
 	}
 
 	export namespace window {

@@ -10,7 +10,7 @@ import { Parts } from 'vs/workbench/services/part/common/partService';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { IWebviewWidget } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
+import { IDashboardWebview } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 
 interface IWebviewWidgetConfig {
 	id: string;
@@ -22,7 +22,7 @@ const selector = 'webview-widget';
 	selector: selector,
 	template: '<div></div>'
 })
-export class WebviewWidget extends DashboardWidget implements IDashboardWidget, OnInit, IWebviewWidget {
+export class WebviewWidget extends DashboardWidget implements IDashboardWidget, OnInit, IDashboardWebview {
 
 	private _id: string;
 	private _webview: Webview;
@@ -39,7 +39,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	}
 
 	ngOnInit() {
-		this._dashboardService.dashboardWebviewService.registerWebviewWidget(this);
+		this._dashboardService.dashboardWebviewService.registerWebview(this);
 		this._createWebview();
 	}
 

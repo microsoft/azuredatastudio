@@ -27,10 +27,11 @@ import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost
 /* Base Components */
 import { DashboardComponent, DASHBOARD_SELECTOR } from 'sql/parts/dashboard/dashboard.component';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
-import { DashboardTab } from 'sql/parts/dashboard/common/dashboardTab.component';
+import { DashboardWidgetTab } from 'sql/parts/dashboard/common/dashboardWidgetTab.component';
+import { DashboardWebviewTab } from 'sql/parts/dashboard/dashboardWebviewTab.component';
 import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
-let baseComponents = [DashboardComponent, DashboardWidgetWrapper, DashboardTab, ComponentHostDirective, BreadcrumbComponent];
+let baseComponents = [DashboardComponent, DashboardWidgetWrapper, DashboardWebviewTab, DashboardWidgetTab, ComponentHostDirective, BreadcrumbComponent];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';

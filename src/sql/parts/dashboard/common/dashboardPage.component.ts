@@ -179,7 +179,8 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		// Create home tab
 		let homeTab: TabConfig = {
 			id: 'homeTab',
-			name: this.homeTabTitle,
+			publisher: undefined,
+			title: this.homeTabTitle,
 			widgets: homeWidgets,
 			context: this.context,
 			originalConfig: this._originalConfig,
@@ -202,25 +203,23 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 		this._tabsDispose.push(this.dashboardService.onAddNewTabs(e => {
 			let selectedTabs = e.map(v => {
-				let configs = v.widgets;
-				this._configModifiers.forEach(cb => {
-					configs = cb.apply(this, [configs]);
-				});
-				this._gridModifiers.forEach(cb => {
-					configs = cb.apply(this, [configs]);
-				});
-				return { id: v.id, title: v.title, widgets: configs };
+				if (v.widgets) {
+					let configs = v.widgets;
+					this._configModifiers.forEach(cb => {
+						configs = cb.apply(this, [configs]);
+					});
+					this._gridModifiers.forEach(cb => {
+						configs = cb.apply(this, [configs]);
+					});
+					return { id: v.id, title: v.title, widgets: configs };
+				}
+				return v;
 			}).map(v => {
-				let config: TabConfig = {
-					id: v.id,
-					name: v.title,
-					context: this.context,
-					widgets: v.widgets,
-					originalConfig: undefined,
-					editable: false,
-					canClose: true,
-					actions: []
-				};
+				let config = v as TabConfig;
+				config.context = this.context;
+				config.editable = false;
+				config.canClose = true;
+				config.actions = [];
 				this.addNewTab(config);
 				return config;
 			});

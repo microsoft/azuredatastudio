@@ -21,7 +21,7 @@ export interface IDashboardTabContrib {
 	isWebview?: boolean;
 }
 
-const tabContributionSchema: IJSONSchema = {
+const tabSchema: IJSONSchema = {
 	type: 'object',
 	properties: {
 		id: {
@@ -65,7 +65,7 @@ const tabContributionSchema: IJSONSchema = {
 			]
 		},
 		widgets: {
-			description: localize('sqlops.extension.cotnributes.dashboard.tab.edition', "The list of widgets that will be displayed in this tab. Mutually exclusive with isWebview."),
+			description: localize('sqlops.extension.contributes.dashboard.tab.widgets', "The list of widgets that will be displayed in this tab. Mutually exclusive with isWebview."),
 			type: 'array',
 			items: generateDashboardWidgetSchema(undefined, true)
 		},
@@ -78,6 +78,17 @@ const tabContributionSchema: IJSONSchema = {
 			type: 'boolean'
 		}
 	}
+};
+
+const tabContributionSchema: IJSONSchema = {
+	description: localize('sqlops.extension.contributes.tabs', "Contributes a single or multiple tabs for users to add to their dashboard."),
+	oneOf: [
+		tabSchema,
+		{
+			type: 'array',
+			items: tabSchema
+		}
+	]
 };
 
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>('dashboard.tabs', [], tabContributionSchema).setHandler(extensions => {
