@@ -17,13 +17,14 @@ export const Extensions = {
 
 export interface IDashboardTab {
 	id: string;
-	description: string;
-	publisher: string;
-	widgets: WidgetConfig[];
 	title: string;
-	provider: string | string[];
-	edition: number | number[];
-	alwaysShow: boolean;
+	publisher: string;
+	description?: string;
+	widgets?: WidgetConfig[];
+	provider?: string | string[];
+	edition?: number | number[];
+	alwaysShow?: boolean;
+	isWebview?: boolean;
 }
 
 export interface IDashboardRegistry {

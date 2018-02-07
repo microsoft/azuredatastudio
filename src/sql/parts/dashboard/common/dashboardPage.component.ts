@@ -14,7 +14,7 @@ import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insi
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
 import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
-import { DashboardTab } from 'sql/parts/dashboard/common/dashboardTab.component';
+import { DashboardWidgetTab } from 'sql/parts/dashboard/common/dashboardWidgetTab.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { PinUnpinTabAction } from './actions';
@@ -34,6 +34,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as objects from 'vs/base/common/objects';
 import Event, { Emitter } from 'vs/base/common/event';
+import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
@@ -129,7 +130,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			};
 			this.addNewTab(homeTab);
 			this._panel.selectTab(homeTab.id);
-			let homeTabContent = this._tabs.find(i => i.tab.id === homeTab.id);
+			let homeTabContent = this._tabs.find(i => i.id === homeTab.id);
 			homeTabContent.layout();
 
 			// add any tab extensions
@@ -210,13 +211,13 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private addNewTab(tab: TabConfig): void {
 		this.tabs.push(tab);
 		this._cd.detectChanges();
-		let tabComponents = this._tabs.find(i => i.tab.id === tab.id);
-		this._register(subscriptionToDisposable(tabComponents.onSetScrollDimensions.subscribe(() => {
+		let tabComponents = this._tabs.find(i => i.id === tab.id);
+		this._register(tabComponents.onResize(() => {
 			this._scrollableElement.setScrollDimensions({
 				scrollHeight: getContentHeight(this._scrollable.nativeElement),
 				height: getContentHeight(this._scrollContainer.nativeElement)
 			});
-		})));
+		}));
 	}
 
 	private updateTheme(theme: IColorTheme): void {
@@ -247,14 +248,18 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	 * Returns a filtered version of the widgets passed based on edition and provider
 	 * @param config widgets to filter
 	 */
-	private filterConfigs<T extends { provider: string | string[], edition: number | number[] }>(config: T[]): Array<T> {
+	private filterConfigs<T extends { provider?: string | string[], edition?: number | number[] }>(config: T[]): Array<T> {
 		let connectionInfo: ConnectionManagementInfo = this.dashboardService.connectionManagementService.connectionInfo;
 		let edition = connectionInfo.serverInfo.engineEditionId;
 		let provider = connectionInfo.providerId;
 
 		// filter by provider
 		return config.filter((item) => {
-			return this.stringCompare(item.provider, provider);
+			if (item.provider) {
+				return this.stringCompare(item.provider, provider);
+			} else {
+				return true;
+			}
 		}).filter((item) => {
 			if (item.edition) {
 				if (edition) {
@@ -440,8 +445,8 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	}
 
 	public handleTabChange(tab: TabComponent): void {
-		let localtab = this._tabs.find(i => i.tab.id === tab.identifier);
-		this._editEnabled.fire(localtab.tab.editable);
+		let localtab = this._tabs.find(i => i.id === tab.identifier);
+		this._editEnabled.fire(localtab.editable);
 		this._cd.detectChanges();
 		localtab.layout();
 	}
