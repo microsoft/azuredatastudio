@@ -1,0 +1,57 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+.extension-view .monaco-split-view .split-view-view .header {
+	padding-right: 12px;
+}
+
+.extension-view .split-view-view .header .title {
+	display: flex;
+	justify-content: flex-start;
+	flex: 1 1 auto;
+}
+
+.extension-view .split-view-view .header .count-badge-wrapper {
+	justify-content: flex-end;
+}
+
+.extension-view .extensionTab-view .list-row {
+	padding: 15px;
+	display: flex;
+	align-items: flex-start;
+}
+
+.extension-view .extensionTab-view .list-row .extension-status-icon {
+	flex: 0 0 20px;
+	height: 16px;
+	width: 16px;
+}
+
+.extension-view .extensionTab-view .list-row.extensionTab-list .extension-details {
+	flex: 1 1 auto;
+	margin-left: 5px;
+}
+
+.extension-view .extensionTab-view .list-row.extensionTab-list .extension-details .title {
+	font-size: 15px;
+	font-weight: 700;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	white-space: pre-wrap;
+	padding-bottom: 5px;
+}
+
+.extension-view .extensionTab-view .list-row.extensionTab-list .extension-details .description {
+	font-size: 13px;
+	overflow: hidden;
+	white-space: pre-wrap;
+	text-overflow: ellipsis;
+}
+
+.extension-view .extensionTab-view .list-row.extensionTab-list .extension-details .publisher {
+	font-size: 90%;
+	padding-right: 6px;
+	opacity: .6;
+	font-weight: 600;
+}

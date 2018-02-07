@@ -155,6 +155,15 @@
 	background: url('ellipsis.svg') center center no-repeat;
 }
 
+.hc-black .icon.new,
+.vs-dark .icon.new {
+	background: url('new_inverse.svg') center center no-repeat;
+}
+
+.vs .icon.new {
+	background: url('new.svg') center center no-repeat;
+}
+
 .hc-black .icon.new-query,
 .vs-dark .icon.new-query {
 	background: url('newquery_inverse.svg') center center no-repeat;

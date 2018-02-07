@@ -32,7 +32,8 @@ const product = require('../product.json');
 const crypto = require('crypto');
 const i18n = require('./lib/i18n');
 // {{SQL CARBON EDIT}}
-const serviceInstaller = require('extensions-modules/lib/languageservice/serviceInstallerUtil');
+var del = require('del');
+const serviceInstaller = require('../extensions-modules/lib/languageservice/serviceInstallerUtil');
 const glob = require('glob');
 const deps = require('./dependencies');
 const getElectronVersion = require('./lib/electron').getElectronVersion;

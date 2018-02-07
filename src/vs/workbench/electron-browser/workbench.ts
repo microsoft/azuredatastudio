@@ -127,6 +127,8 @@ import { IBackupService, IBackupUiService } from 'sql/parts/disasterRecovery/bac
 import { BackupService, BackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupServiceImp';
 import { IRestoreDialogController, IRestoreService } from 'sql/parts/disasterRecovery/restore/common/restoreService';
 import { RestoreService, RestoreDialogController } from 'sql/parts/disasterRecovery/restore/common/restoreServiceImpl';
+import { INewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
+import { NewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabDialogService';
 import { IFileBrowserService, IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
 import { FileBrowserService } from 'sql/parts/fileBrowser/common/fileBrowserService';
 import { FileBrowserDialogController } from 'sql/parts/fileBrowser/fileBrowserDialogController';
@@ -674,6 +676,7 @@ export class Workbench implements IPartService {
 		// SQL Tools services
 		serviceCollection.set(IDashboardWebviewService, this.instantiationService.createInstance(DashboardWebviewService));
 		serviceCollection.set(IAngularEventingService, this.instantiationService.createInstance(AngularEventingService));
+		serviceCollection.set(INewDashboardTabDialogService, this.instantiationService.createInstance(NewDashboardTabDialogService));
 		serviceCollection.set(ISqlOAuthService, this.instantiationService.createInstance(SqlOAuthService));
 		serviceCollection.set(sqlIClipboardService, this.instantiationService.createInstance(sqlClipboardService));
 		serviceCollection.set(ICapabilitiesService, this.instantiationService.createInstance(CapabilitiesService));

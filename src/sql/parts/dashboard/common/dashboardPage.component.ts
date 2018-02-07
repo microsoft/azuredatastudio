@@ -17,13 +17,16 @@ import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { DashboardWidgetTab } from 'sql/parts/dashboard/common/dashboardWidgetTab.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
-import { PinUnpinTabAction } from './actions';
+import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
 import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
+import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
+import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
 import { Severity } from 'vs/platform/message/common/message';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -34,7 +37,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as objects from 'vs/base/common/objects';
 import Event, { Emitter } from 'vs/base/common/event';
-import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
+import { Action } from 'vs/base/common/actions';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
@@ -59,6 +62,9 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 	private _widgetConfigLocation: string;
 	private _propertiesConfigLocation: string;
+
+	protected panelActions: Action[];
+	private _tabsDispose: Array<IDisposable> = [];
 
 	@ViewChild('properties') private _properties: DashboardWidgetWrapper;
 	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
@@ -90,6 +96,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
+		@Inject(BOOTSTRAP_SERVICE_ID) protected bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {
@@ -113,49 +120,8 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			});
 			this.propertiesWidget = properties ? properties[0] : undefined;
 
-			// Clear all tabs
-			this.tabs = [];
+			this.createTabs(tempWidgets);
 
-			// Create home tab
-			let homeWidgets = tempWidgets;
-			let homeTab: TabConfig = {
-				id: 'homeTab',
-				name: this.homeTabTitle,
-				widgets: homeWidgets,
-				context: this.context,
-				originalConfig: this._originalConfig,
-				editable: true,
-				canClose: false,
-				actions: []
-			};
-			this.addNewTab(homeTab);
-			this._panel.selectTab(homeTab.id);
-			let homeTabContent = this._tabs.find(i => i.id === homeTab.id);
-			homeTabContent.layout();
-
-			// add any tab extensions
-			this.filterConfigs(dashboardRegistry.tabs).map(v => {
-				let configs = v.widgets;
-				this._configModifiers.forEach(cb => {
-					configs = cb.apply(this, [configs]);
-				});
-				this._gridModifiers.forEach(cb => {
-					configs = cb.apply(this, [configs]);
-				});
-				return { title: v.title, widgets: configs };
-			}).map(v => {
-				let config: TabConfig = {
-					id: v.title,
-					name: v.title,
-					context: this.context,
-					widgets: v.widgets,
-					originalConfig: undefined,
-					editable: false,
-					canClose: true,
-					actions: []
-				};
-				this.addNewTab(config);
-			});
 		}
 	}
 
@@ -192,10 +158,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			}, 100);
 		}));
 
-		this._register(this.dashboardService.onPinUnpinTab(e => {
-			// a placeholder for pin/unpin tab
-		}));
-
 		// unforunately because of angular rendering behavior we need to do a double check to make sure nothing changed after this point
 		setTimeout(() => {
 			let currentheight = getContentHeight(scrollable);
@@ -208,16 +170,81 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		}, 100);
 	}
 
-	private addNewTab(tab: TabConfig): void {
-		this.tabs.push(tab);
+	private createTabs(homeWidgets: WidgetConfig[]) {
+		// Clear all tabs
+		this.tabs = [];
+		this._tabsDispose.forEach(i => i.dispose());
+		this._tabsDispose = [];
+
+		// Create home tab
+		let homeTab: TabConfig = {
+			id: 'homeTab',
+			name: this.homeTabTitle,
+			widgets: homeWidgets,
+			context: this.context,
+			originalConfig: this._originalConfig,
+			editable: true,
+			canClose: false,
+			actions: []
+		};
+		this.addNewTab(homeTab);
+		this._panel.selectTab(homeTab.id);
+
+		// set panel actions
+		let addNewTabAction = this.dashboardService.instantiationService.createInstance(AddFeatureTabAction, this.filterConfigs(dashboardRegistry.tabs), this.dashboardService.getUnderlyingUri());
+		this._tabsDispose.push(addNewTabAction);
+		this.panelActions = [addNewTabAction];
 		this._cd.detectChanges();
-		let tabComponents = this._tabs.find(i => i.id === tab.id);
-		this._register(tabComponents.onResize(() => {
-			this._scrollableElement.setScrollDimensions({
-				scrollHeight: getContentHeight(this._scrollable.nativeElement),
-				height: getContentHeight(this._scrollContainer.nativeElement)
+
+		this._tabsDispose.push(this.dashboardService.onPinUnpinTab(e => {
+			// a placeholder for pin/unpin tab
+		}));
+
+		this._tabsDispose.push(this.dashboardService.onAddNewTabs(e => {
+			let selectedTabs = e.map(v => {
+				let configs = v.widgets;
+				this._configModifiers.forEach(cb => {
+					configs = cb.apply(this, [configs]);
+				});
+				this._gridModifiers.forEach(cb => {
+					configs = cb.apply(this, [configs]);
+				});
+				return { id: v.id, title: v.title, widgets: configs };
+			}).map(v => {
+				let config: TabConfig = {
+					id: v.id,
+					name: v.title,
+					context: this.context,
+					widgets: v.widgets,
+					originalConfig: undefined,
+					editable: false,
+					canClose: true,
+					actions: []
+				};
+				this.addNewTab(config);
+				return config;
+			});
+
+			// put this immediately on the stack so that is ran *after* the tab is rendered
+			setTimeout(() => {
+				this._panel.selectTab(selectedTabs.pop().id);
 			});
 		}));
+	}
+
+	private addNewTab(tab: TabConfig): void {
+		let existedTab = this.tabs.find(i => i.id === tab.id);
+		if (!existedTab) {
+			this.tabs.push(tab);
+			this._cd.detectChanges();
+			let tabComponents = this._tabs.find(i => i.id === tab.id);
+			this._register(tabComponents.onResize(() => {
+				this._scrollableElement.setScrollDimensions({
+					scrollHeight: getContentHeight(this._scrollable.nativeElement),
+					height: getContentHeight(this._scrollContainer.nativeElement)
+				});
+			}));
+		}
 	}
 
 	private updateTheme(theme: IColorTheme): void {
@@ -455,5 +482,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		let index = this.tabs.findIndex(i => i.id === tab.identifier);
 		this.tabs.splice(index, 1);
 		this._cd.detectChanges();
+		this.bootstrapService.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { dashboardTab: tab });
 	}
 }

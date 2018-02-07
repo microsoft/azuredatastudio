@@ -661,12 +661,6 @@ declare module 'data' {
 		ownerUri: string;
 	}
 
-	export interface QueryExecuteParams {
-		ownerUri: string;
-		querySelection: ISelectionData;
-		executionPlanOptions?: ExecutionPlanOptions;
-	}
-
 	export interface QueryExecuteSubsetParams {
 		ownerUri: string;
 		batchIndex: number;

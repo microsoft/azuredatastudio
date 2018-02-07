@@ -78,7 +78,7 @@ export default class Config implements IConfig {
     public loadConfig(): any {
         let configContent = undefined;
         if (this._fromBuild) {
-            let remainingPath = '../../../../../extensions/' + this._extensionConfigSectionName + '/client/out/config.json';
+            let remainingPath = '../../../extensions/' + this._extensionConfigSectionName + '/client/out/config.json';
             configContent = fs.readFileSync(path.join(__dirname, remainingPath));
         }
         else {

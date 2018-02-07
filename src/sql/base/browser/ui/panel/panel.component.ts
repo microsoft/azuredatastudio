@@ -3,11 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, OnChanges, OnDestroy, ViewChildren } from '@angular/core';
 
 import { TabComponent } from './tab.component';
+import { TabHeaderComponent } from './tabHeader.component';
 import './panelStyles';
 
+import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';
 import { mixin } from 'vs/base/common/objects';
 
@@ -33,20 +36,28 @@ const defaultOptions: IPanelOptions = {
 					</div>
 				</div>
 				<div class="title-actions">
+					<div #panelActionbar class="panel-actions" style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" >
+					</div>
 				</div>
 			</div>
 			<ng-content class="fullsize"></ng-content>
 		</div>
 	`
 })
-export class PanelComponent implements AfterContentInit, OnInit {
+export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDestroy {
 	@Input() public options: IPanelOptions;
+	@Input() public actions: Array<Action>;
 	@ContentChildren(TabComponent) private _tabs: QueryList<TabComponent>;
-	private _activeTab: TabComponent;
+	@ViewChildren(TabHeaderComponent) private _headerTabs: QueryList<TabHeaderComponent>;
+
 	@Output() public onTabChange = new EventEmitter<TabComponent>();
 	@Output() public onTabClose = new EventEmitter<TabComponent>();
+
+	private _activeTab: TabComponent;
+	private _actionbar: ActionBar;
 	private _mru: TabComponent[];
 
+	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 	constructor( @Inject(forwardRef(() => NgZone)) private _zone: NgZone) { }
 
 	ngOnInit(): void {
@@ -61,11 +72,30 @@ export class PanelComponent implements AfterContentInit, OnInit {
 		}
 	}
 
+	ngOnChanges(): void {
+		if (this._actionbarRef && !this._actionbar) {
+			this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
+		}
+		if (this.actions && this._actionbar) {
+			this._actionbar.clear();
+			this._actionbar.push(this.actions, { icon: true, label: false });
+		}
+	}
+
+	ngOnDestroy() {
+		if (this._actionbar) {
+			this._actionbar.dispose();
+		}
+		if (this.actions && this.actions.length > 0) {
+			this.actions.forEach((action) => action.dispose());
+		}
+	}
+
 	/**
 	 * Select a tab based on index (unrecommended)
 	 * @param index index of tab in the html
 	 */
-	selectTab(index: number)
+	selectTab(index: number);
 	/**
 	 * Select a tab based on the identifier that was passed into the tab
 	 * @param identifier specified identifer of the tab
@@ -95,27 +125,20 @@ export class PanelComponent implements AfterContentInit, OnInit {
 				this._activeTab = tab;
 				this.setMostRecentlyUsed(tab);
 				this._activeTab.active = true;
+
+				// Make the tab header focus on the new selected tab
+				let activeTabHeader = this._headerTabs.find(i => i.tab === this._activeTab);
+				if (activeTabHeader) {
+					activeTabHeader.focusOnTabHeader();
+				}
+
 				this.onTabChange.emit(tab);
 			});
 		}
 	}
 
-	private indexOf(candidate: TabComponent, tabs: TabComponent[]): number {
-		if (!candidate) {
-			return -1;
-		}
-
-		for (let i = 0; i < tabs.length; i++) {
-			if (candidate === tabs[i]) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {
-		const mruIndex = this.indexOf(tab, this._mru);
+		let mruIndex = this._mru.findIndex(i => i === tab);
 
 		if (mruIndex !== -1) {
 			// Remove old index

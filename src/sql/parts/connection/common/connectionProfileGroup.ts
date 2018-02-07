@@ -79,9 +79,12 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		return false;
 	}
 
+	/**
+	 * Returns true if all connections in the tree have valid options using the correct capabilities
+	 */
 	public get hasValidConnections(): boolean {
 		if (this.connections) {
-			let invalidConnections = this.connections.find(c => c.serverCapabilities === undefined);
+			let invalidConnections = this.connections.find(c => !c.isConnectionOptionsValid);
 			if (invalidConnections !== undefined) {
 				return false;
 			} else {
