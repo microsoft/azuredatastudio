@@ -248,7 +248,7 @@ export class ConnectionWidget {
 				this._databaseNameInputBox.values = [this._loadingDatabaseName];
 				this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password).then(databases => {
 					if (databases) {
-						this._databaseNameInputBox.values = databases;
+						this._databaseNameInputBox.values = databases.sort((a, b) => a.localeCompare(b));
 					} else {
 						this._databaseNameInputBox.values = [this._defaultDatabaseName];
 					}
