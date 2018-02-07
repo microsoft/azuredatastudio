@@ -18,25 +18,38 @@
 
 .extension-view .extensionTab-view .list-row {
 	padding: 15px;
+	display: flex;
+	align-items: flex-start;
 }
 
-.extension-view .extensionTab-view .list-row.extensionTab-list .title {
+.extension-view .extensionTab-view .list-row .extension-status-icon {
+	flex: 0 0 20px;
+	height: 16px;
+	width: 16px;
+}
+
+.extension-view .extensionTab-view .list-row.extensionTab-list .extension-details {
+	flex: 1 1 auto;
+	margin-left: 5px;
+}
+
+.extension-view .extensionTab-view .list-row.extensionTab-list .extension-details .title {
 	font-size: 15px;
 	font-weight: 700;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	overflow: hidden;
+	white-space: pre-wrap;
 	padding-bottom: 5px;
 }
 
-.extension-view .extensionTab-view .list-row.extensionTab-list .description {
+.extension-view .extensionTab-view .list-row.extensionTab-list .extension-details .description {
 	font-size: 13px;
 	overflow: hidden;
-	white-space: nowrap;
+	white-space: pre-wrap;
 	text-overflow: ellipsis;
 }
 
-.extension-view .extensionTab-view .list-row.extensionTab-list .publisher {
+.extension-view .extensionTab-view .list-row.extensionTab-list .extension-details .publisher {
 	font-size: 90%;
 	padding-right: 6px;
 	opacity: .6;

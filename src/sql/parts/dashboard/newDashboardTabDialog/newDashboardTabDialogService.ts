@@ -4,14 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { INewDashboardTabService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
+import { INewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
 import { NewDashboardTabDialog } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabDialog';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
+import { IDashboardUITab } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabViewModel';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-export class NewDashboardTabService implements INewDashboardTabService {
+export class NewDashboardTabDialogService implements INewDashboardTabDialogService {
 	_serviceBrand: any;
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
@@ -19,14 +20,14 @@ export class NewDashboardTabService implements INewDashboardTabService {
 	private _uri: string;
 
 	constructor(
-		@IAngularEventingService private angularEventService: IAngularEventingService,
+		@IAngularEventingService private _angularEventService: IAngularEventingService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) { }
 
 	/**
 	 * Open account dialog
 	 */
-	public showDialog(dashboardTabs: Array<IDashboardTab>, uri: string): void {
+	public showDialog(dashboardTabs: Array<IDashboardTab>, openedTabs: Array<IDashboardTab>, uri: string): void {
 		this._uri = uri;
 		let self = this;
 
@@ -39,12 +40,13 @@ export class NewDashboardTabService implements INewDashboardTabService {
 		}
 
 		// Open the dialog
-		this._addNewTabDialog.open(dashboardTabs);
+		this._addNewTabDialog.open(dashboardTabs, openedTabs);
 	}
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
-	private handleOnAddTabs(selectedTabs: Array<IDashboardTab>): void {
-		this.angularEventService.sendAngularEvent(this._uri, AngularEventType.NEW_TABS, { dashboardTabs: selectedTabs });
+	private handleOnAddTabs(selectedUiTabs: Array<IDashboardUITab>): void {
+		let selectedTabs = selectedUiTabs.map(tab => tab.tabConfig);
+		this._angularEventService.sendAngularEvent(this._uri, AngularEventType.NEW_TABS, { dashboardTabs: selectedTabs });
 		this._addNewTabDialog.close();
 	}
 
