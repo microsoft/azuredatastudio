@@ -50,10 +50,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean };
 	private currentEditCellValue: string;
+	private newRowVisible: boolean;
 	private removingNewRow: boolean;
 	private rowIdMappings: {[gridRowId: number]: number} = {};
 
 	// Edit Data functions
+	public onActiveCellChanged: (event: { row: number, column: number }) => void;
 	public onCellEditEnd: (event: { row: number, column: number, newValue: any }) => void;
 	public onCellEditBegin: (event: { row: number, column: number }) => void;
 	public onRowEditBegin: (event: { row: number }) => void;
@@ -133,6 +135,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			return true;
 		};
 
+		this.onActiveCellChanged = this.onCellSelect;
+
 		this.onCellEditEnd = (event: { row: number, column: number, newValue: any }): void => {
 			// Store the value that was set
 			self.currentEditCellValue = event.newValue;
@@ -190,7 +194,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		return (index: number): void => {
 			self.dataService.deleteRow(index)
 				.then(() => self.dataService.commitEdit())
-				.then(() => self.removeRow(index, 0));
+				.then(() => self.removeRow(index));
 		};
 	}
 
@@ -202,13 +206,14 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 			// Perform a revert row operation
 			self.dataService.revertRow(index)
-				.then(() => self.dataService.commitEdit())
 				.then(() => self.refreshResultsets());
 		};
 	}
 
-	onCellSelect(row: number, column: number): void {
+	onCellSelect(event: { row: number, column: number }): void {
 		let self = this;
+		let row = event.row;
+		let column = event.column;
 
 		// Skip processing if the newly selected cell is undefined or we don't have column
 		// definition for the column (ie, the selection was reset)
@@ -258,6 +263,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 							// Committing was successful, clean the grid
 							self.setGridClean();
 							self.rowIdMappings = {};
+							self.newRowVisible = false;
 							return Promise.resolve();
 						},
 						error => {
@@ -272,7 +278,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		if (this.isNullRow(row) && !this.removingNewRow) {
 			// We've entered the "new row", so we need to add a row and jump to it
 			cellSelectTasks = cellSelectTasks.then(() => {
-				self.addRow(row, column);
+				self.addRow(row);
 			});
 		}
 
@@ -359,16 +365,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this.currentCell = { row: null, column: null, isEditable: null };
 		this.currentEditCellValue = null;
 		this.removingNewRow = false;
-
-		// HACK: unsafe reference to the slickgrid object
-		// TODO: Reimplement by adding selectCell event to angular2-slickgrid
-		self._cd.detectChanges();
-		let slick: any = self.slickgrids.toArray()[0];
-		let grid: Slick.Grid<any> = slick._grid;
-
-		grid.onActiveCellChanged.subscribe((event: Slick.EventData, data: Slick.OnActiveCellChangedEventArgs<any>) => {
-			self.onCellSelect(data.row, data.cell);
-		});
+		this.newRowVisible = false;
 	}
 
 	/**
@@ -408,13 +405,14 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		// If the esc key was pressed while in a create session
 		let currentNewRowIndex = this.dataSet.totalRows - 2;
 
-		if (e.keyCode === jQuery.ui.keyCode.ESCAPE && this.currentCell.row === currentNewRowIndex) {
+		if (e.keyCode === jQuery.ui.keyCode.ESCAPE && this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
 			// revert our last new row
 			this.removingNewRow = true;
 
 			this.dataService.revertRow(this.idMapping[currentNewRowIndex])
 				.then(() => {
-					this.removeRow(currentNewRowIndex, 0);
+					this.removeRow(currentNewRowIndex);
+					this.newRowVisible = false;
 				});
 			handled = true;
 		}
@@ -463,7 +461,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	// Adds an extra row to the end of slickgrid (just for rendering purposes)
 	// Then sets the focused call afterwards
-	private addRow(row: number, column: number): void {
+	private addRow(row: number): void {
 		let self = this;
 
 		// Add a new row to the edit session in the tools service
@@ -471,6 +469,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			.then(result => {
 				// Map the new row ID to the row ID we have
 				self.rowIdMappings[row] = result.newRowId;
+				self.newRowVisible = true;
 
 				// Add a new "new row" to the end of the results
 				// Adding an extra row for 'new row' functionality
@@ -496,7 +495,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	// removes a row from the end of slickgrid (just for rendering purposes)
 	// Then sets the focused call afterwards
-	private removeRow(row: number, column: number): void {
+	private removeRow(row: number): void {
 		// Removing the new row
 		this.dataSet.totalRows--;
 		this.dataSet.dataRows = new VirtualizedCollection(

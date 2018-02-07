@@ -87,6 +87,7 @@ export abstract class GridParentComponent {
 	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
 
 	// Edit Data functions
+	public onActiveCellChanged: (event: { row: number, column: number }) => void;
 	public onCellEditEnd: (event: { row: number, column: number, newValue: any }) => void;
 	public onCellEditBegin: (event: { row: number, column: number }) => void;
 	public onRowEditBegin: (event: { row: number }) => void;

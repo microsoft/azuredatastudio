@@ -585,7 +585,7 @@ extend@~1.2.1:
 "extensions-modules@file:../extensions-modules":
   version "0.1.0"
   dependencies:
-    dataprotocol-client "file:./../../AppData/Local/Yarn/cache/v1/dataprotocol-client"
+    dataprotocol-client "file:../../../Library/Caches/Yarn/v1/dataprotocol-client"
     decompress "^4.2.0"
     fs-extra-promise "^1.0.1"
     http-proxy-agent "^2.0.0"
