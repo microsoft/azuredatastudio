@@ -12,10 +12,10 @@
   "author": "Microsoft",
   "license": "ISC",
   "dependencies": {
-    "vscode": "1.1.5",
     "vscode-languageclient": "3.5.0"
   },
   "devDependencies": {
+    "vscode": "1.1.5",
     "typescript": "2.6.2"
   },
   "engines": {
