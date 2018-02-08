@@ -247,14 +247,17 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private loadNewTabs(dashboardTabs: IDashboardTab[]) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			let selectedTabs = dashboardTabs.map(v => {
-				let configs = v.widgets;
-				this._configModifiers.forEach(cb => {
-					configs = cb.apply(this, [configs]);
-				});
-				this._gridModifiers.forEach(cb => {
-					configs = cb.apply(this, [configs]);
-				});
-				return { id: v.id, title: v.title, widgets: configs, alwaysShow: v.alwaysShow };
+				if (v.widgets) {
+					let configs = v.widgets;
+					this._configModifiers.forEach(cb => {
+						configs = cb.apply(this, [configs]);
+					});
+					this._gridModifiers.forEach(cb => {
+						configs = cb.apply(this, [configs]);
+					});
+					return { id: v.id, title: v.title, widgets: configs, alwaysShow: v.alwaysShow };
+				}
+				return v;
 			}).map(v => {
 				let actions = [];
 				if (!v.alwaysShow) {
