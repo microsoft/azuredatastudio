@@ -80,4 +80,15 @@ export function generateDashboardWidgetSchema(type?: 'database' | 'server', exte
 			}
 		}
 	};
-};
+}
+
+export function generateDashboardTabSchema(type?: 'database' | 'server'): IJSONSchema {
+	return {
+		type: 'object',
+		properties: {
+			tabId: {
+				type: 'string'
+			}
+		}
+	};
+}

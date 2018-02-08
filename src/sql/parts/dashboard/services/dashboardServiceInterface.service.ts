@@ -22,6 +22,7 @@ import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesServ
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { PinConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 
 import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'data';
 
@@ -139,14 +140,14 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _onDeleteWidget = new Emitter<string>();
 	public readonly onDeleteWidget: Event<string> = this._onDeleteWidget.event;
 
-	private _onPinUnpinTab = new Emitter<string>();
-	public readonly onPinUnpinTab: Event<string> = this._onPinUnpinTab.event;
+	private _onPinUnpinTab = new Emitter<PinConfig>();
+	public readonly onPinUnpinTab: Event<PinConfig> = this._onPinUnpinTab.event;
 
 	private _onAddNewTabs = new Emitter<Array<IDashboardTab>>();
 	public readonly onAddNewTabs: Event<Array<IDashboardTab>> = this._onAddNewTabs.event;
 
-	private _onCloseTab = new Emitter<IDashboardTab>();
-	public readonly onCloseTab: Event<IDashboardTab> = this._onCloseTab.event;
+	private _onCloseTab = new Emitter<string>();
+	public readonly onCloseTab: Event<string> = this._onCloseTab.event;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
@@ -278,8 +279,8 @@ export class DashboardServiceInterface implements OnDestroy {
 		return config;
 	}
 
-	public writeSettings(key: string, value: any, target: ConfigurationTarget) {
-		this._configurationEditingService.writeConfiguration(target, { key: DASHBOARD_SETTINGS + '.' + key + '.widgets', value });
+	public writeSettings(type: string, value: any, target: ConfigurationTarget) {
+		this._configurationEditingService.writeConfiguration(target, { key: [DASHBOARD_SETTINGS, type].join('.'), value });
 	}
 
 	private handleDashboardEvent(event: IAngularEvent): void {
@@ -309,13 +310,13 @@ export class DashboardServiceInterface implements OnDestroy {
 				this._onDeleteWidget.fire(event.payload.id);
 				break;
 			case AngularEventType.PINUNPIN_TAB:
-				this._onPinUnpinTab.fire(event.payload.id);
+				this._onPinUnpinTab.fire(event.payload);
 				break;
 			case AngularEventType.NEW_TABS:
 				this._onAddNewTabs.fire(event.payload.dashboardTabs);
 				break;
 			case AngularEventType.CLOSE_TAB:
-				this._onCloseTab.fire(event.payload.dashboardTab);
+				this._onCloseTab.fire(event.payload.id);
 		}
 	}
 }
