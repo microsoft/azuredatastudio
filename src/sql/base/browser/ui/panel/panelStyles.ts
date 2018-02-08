@@ -22,7 +22,6 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 			}
 
 			.tabbedPanel > .title > .tabList .tab-header.active {
-				border-bottom: 0px solid;
 				outline: none;
 			}
 		`);
@@ -48,32 +47,25 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 				border-bottom: 1px solid;
 				outline: none;
 			}
-
-			.tabbedPanel > .title > .tabList .tab-header:focus {
-				outline-offset: -2px;
-			}
 		`);
 	}
 
 	// Styling with Outline color (e.g. high contrast theme)
 	const outline = theme.getColor(activeContrastBorder);
 	if (outline) {
-		const outline = theme.getColor(activeContrastBorder);
-
 		collector.addRule(`
 			.tabbedPanel > .title > .tabList .tab-header.active,
 			.tabbedPanel > .title > .tabList .tab-header:hover {
 				outline-color: ${outline};
 				outline-width: 1px;
 				outline-style: solid;
-				border-bottom: none;
 				padding-bottom: 0;
-				outline-offset: -2px;
+				outline-offset: -5px;
 			}
 
 			.tabbedPanel > .title > .tabList .tab-header:hover:not(.active) {
 				outline-style: dashed;
-				}
-			`);
-		}
+			}
+		`);
+	}
 });
