@@ -60,6 +60,8 @@ export class ConnectionController implements IConnectionComponentController {
 		tempProfile.authenticationType = authenticationType;
 		tempProfile.userName = userName;
 		tempProfile.password = password;
+		tempProfile.groupFullName = '';
+		tempProfile.saveProfile = false;
 		let uri = this._connectionManagementService.getConnectionId(tempProfile);
 		return new Promise<string[]>((resolve, reject) => {
 			if (this._databaseCache.has(uri)) {
@@ -80,7 +82,7 @@ export class ConnectionController implements IConnectionComponentController {
 								this._databaseCache.set(uri, null);
 								reject();
 							}
-						})
+						});
 					} else {
 						reject(connResult.errorMessage);
 					}
@@ -114,6 +116,7 @@ export class ConnectionController implements IConnectionComponentController {
 	}
 
 	public showUiComponent(container: HTMLElement): void {
+		this._databaseCache = new Map<string, string[]>();
 		this._connectionWidget.createConnectionWidget(container);
 	}
 
