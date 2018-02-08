@@ -68,7 +68,7 @@ export class ProductContribution implements IWorkbenchContribution {
 				text => editorService.openEditor(instantiationService.createInstance(ReleaseNotesInput, pkg.version, text), { pinned: true }),
 				() => {
 					messageService.show(Severity.Info, {
-						message: nls.localize('read the release notes', "Welcome to {0} January Public Preview! Would you like to view the Getting Started Guide?", product.nameLong, pkg.version),
+						message: nls.localize('read the release notes', "Welcome to {0} February Public Preview! Would you like to view the Getting Started Guide?", product.nameLong, pkg.version),
 						actions: [
 							instantiationService.createInstance(OpenGettingStartedInBrowserAction),
 							CloseAction

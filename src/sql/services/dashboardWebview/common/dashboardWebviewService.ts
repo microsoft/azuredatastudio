@@ -11,15 +11,17 @@ import Event from 'vs/base/common/event';
 
 export const SERVICE_ID = 'dashboardWebviewService';
 
-export interface IWebviewWidget {
+export interface IDashboardWebview {
 	readonly id: string;
 	setHtml(html: string): void;
+	onMessage: Event<string>;
+	sendMessage(message: string);
 }
 
 export interface IDashboardWebviewService {
 	_serviceBrand: any;
-	onRegisteredWidget: Event<IWebviewWidget>;
-	registerWebviewWidget(widget: IWebviewWidget);
+	onRegisteredWebview: Event<IDashboardWebview>;
+	registerWebview(widget: IDashboardWebview);
 }
 
 export const IDashboardWebviewService = createDecorator<IDashboardWebviewService>(SERVICE_ID);

@@ -5,17 +5,17 @@
 
 'use strict';
 
-import { IDashboardWebviewService, IWebviewWidget } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
+import { IDashboardWebviewService, IDashboardWebview } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 import Event, { Emitter } from 'vs/base/common/event';
 
 export class DashboardWebviewService implements IDashboardWebviewService {
 	_serviceBrand: any;
 
-	private _onRegisteredWidget = new Emitter<IWebviewWidget>();
-	public readonly onRegisteredWidget: Event<IWebviewWidget> = this._onRegisteredWidget.event;
+	private _onRegisteredWebview = new Emitter<IDashboardWebview>();
+	public readonly onRegisteredWebview: Event<IDashboardWebview> = this._onRegisteredWebview.event;
 
 
-	public registerWebviewWidget(widget: IWebviewWidget) {
-		this._onRegisteredWidget.fire(widget);
+	public registerWebview(widget: IDashboardWebview) {
+		this._onRegisteredWebview.fire(widget);
 	}
 }

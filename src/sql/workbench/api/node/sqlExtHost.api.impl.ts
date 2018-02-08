@@ -28,7 +28,8 @@ import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration
 import { ExtHostModalDialogs } from 'sql/workbench/api/node/extHostModalDialog';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
-import { ExtHostWebviewWidgets } from 'sql/workbench/api/node/extHostWebviewWidget';
+import { ExtHostDashboardWebviews } from 'sql/workbench/api/node/extHostDashboardWebview';
+import { ExtHostConnectionManagement } from 'sql/workbench/api/node/extHostConnectionManagement';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -50,12 +51,13 @@ export function createApiFactory(
 
 	// Addressable instances
 	const extHostAccountManagement = threadService.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(threadService));
+	const extHostConnectionManagement = threadService.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(threadService));
 	const extHostCredentialManagement = threadService.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(threadService));
 	const extHostDataProvider = threadService.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(threadService));
 	const extHostSerializationProvider = threadService.set(SqlExtHostContext.ExtHostSerializationProvider, new ExtHostSerializationProvider(threadService));
 	const extHostResourceProvider = threadService.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(threadService));
 	const extHostModalDialogs = threadService.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(threadService));
-	const extHostWebviewWidgets = threadService.set(SqlExtHostContext.ExtHostWebviewWidgets, new ExtHostWebviewWidgets(threadService));
+	const extHostWebviewWidgets = threadService.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(threadService));
 
 	return {
 		vsCodeFactory: vsCodeFactory,
@@ -73,6 +75,19 @@ export function createApiFactory(
 				},
 				accountUpdated(updatedAccount: data.Account): void {
 					return extHostAccountManagement.$accountUpdated(updatedAccount);
+				}
+			};
+
+			// namespace: connection
+			const connection: typeof data.connection = {
+				getActiveConnections(): Thenable<data.connection.Connection[]> {
+					return extHostConnectionManagement.$getActiveConnections();
+				},
+				getCurrentConnection(): Thenable<data.connection.Connection> {
+					return extHostConnectionManagement.$getCurrentConnection();
+				},
+				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
+					return extHostConnectionManagement.$getCredentials(connectionId);
 				}
 			};
 
@@ -247,13 +262,14 @@ export function createApiFactory(
 			};
 
 			const dashboard = {
-				registerDashboardWebviewWidgetProvider(widgetId: string, handler: (webview: data.WebviewWidget) => void) {
+				registerWebviewProvider(widgetId: string, handler: (webview: data.DashboardWebview) => void) {
 					extHostWebviewWidgets.$registerProvider(widgetId, handler);
 				}
 			};
 
 			return {
 				accounts,
+				connection,
 				credentials,
 				resources,
 				serialization,

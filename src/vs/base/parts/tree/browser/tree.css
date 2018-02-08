@@ -77,6 +77,16 @@
 	background-image: url('expanded.svg');
 }
 
+/* {{SQL CARBON EDIT}} -- Display a high-contrast arrow when an expandable item is selected and expanded */
+.monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected.expanded > .content:before {
+	background-image: url('expanded-hc.svg');
+}
+
+/* {{SQL CARBON EDIT}} -- Display a high-contrast arrow when an expandable item is selected and collapsed */
+.monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected > .content:before {
+	background-image: url('collapsed-hc.svg');
+}
+
 .monaco-tree .monaco-tree-rows > .monaco-tree-row.has-children.loading > .content:before {
 	background-image: url('loading.svg');
 }

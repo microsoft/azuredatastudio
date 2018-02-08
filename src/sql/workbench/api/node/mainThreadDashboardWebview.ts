@@ -4,17 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { MainThreadWebviewWidgetShape, SqlMainContext, ExtHostWebviewWidgetsShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { MainThreadDashboardWebviewShape, SqlMainContext, ExtHostDashboardWebviewsShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { IDashboardWebviewService, IWebviewWidget } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
+import { IDashboardWebviewService, IDashboardWebview } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 
-@extHostNamedCustomer(SqlMainContext.MainThreadWebviewWidget)
-export class MainThreadWebviewWidget implements MainThreadWebviewWidgetShape {
+@extHostNamedCustomer(SqlMainContext.MainThreadDashboardWebview)
+export class MainThreadDashboardWebview implements MainThreadDashboardWebviewShape {
 
 	private static _handlePool = 0;
-	private readonly _proxy: ExtHostWebviewWidgetsShape;
-	private readonly _dialogs = new Map<number, IWebviewWidget>();
+	private readonly _proxy: ExtHostDashboardWebviewsShape;
+	private readonly _dialogs = new Map<number, IDashboardWebview>();
 
 	private knownWidgets = new Array<string>();
 
@@ -22,12 +22,15 @@ export class MainThreadWebviewWidget implements MainThreadWebviewWidgetShape {
 		context: IExtHostContext,
 		@IDashboardWebviewService webviewService: IDashboardWebviewService
 	) {
-		this._proxy = context.get(SqlExtHostContext.ExtHostWebviewWidgets);
-		webviewService.onRegisteredWidget(e => {
+		this._proxy = context.get(SqlExtHostContext.ExtHostDashboardWebviews);
+		webviewService.onRegisteredWebview(e => {
 			if (this.knownWidgets.includes(e.id)) {
-				let handle = MainThreadWebviewWidget._handlePool++;
+				let handle = MainThreadDashboardWebview._handlePool++;
 				this._dialogs.set(handle, e);
 				this._proxy.$registerWidget(handle, e.id);
+				e.onMessage(e => {
+					this._proxy.$onMessage(handle, e);
+				});
 			}
 		});
 	}
@@ -37,7 +40,7 @@ export class MainThreadWebviewWidget implements MainThreadWebviewWidgetShape {
 	}
 
 	$sendMessage(handle: number, message: string) {
-		throw new Error("Method not implemented.");
+		this._dialogs.get(handle).sendMessage(message);
 	}
 
 	$setHtml(handle: number, value: string) {

@@ -12,10 +12,12 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
+import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import * as objects from 'vs/base/common/objects';
+import Event, { Emitter } from 'vs/base/common/event';
 
 /**
  * Sorting function for dashboard widgets
@@ -63,12 +65,14 @@ function configSorter(a, b): number {
 }
 
 @Component({
-	selector: 'dashboard-tab',
-	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/common/dashboardTab.component.html'))
+	selector: 'dashboard-widget-tab',
+	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/common/dashboardTab.component.html')),
+	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWidgetTab) }]
 })
-export class DashboardTab extends Disposable implements OnDestroy {
-	@Input() public tab: TabConfig;
-	public onSetScrollDimensions: EventEmitter<void> = new EventEmitter<void>();
+export class DashboardWidgetTab extends DashboardTab implements OnDestroy {
+	@Input() private tab: TabConfig;
+	private _onResize = new Emitter<void>();
+	public readonly onResize: Event<void> = this._onResize.event;
 
 	protected SKELETON_WIDTH = 5;
 	protected gridConfig: NgGridConfig = {
@@ -114,6 +118,14 @@ export class DashboardTab extends Disposable implements OnDestroy {
 		this.dispose();
 	}
 
+	public get id(): string {
+		return this.tab.id;
+	}
+
+	public get editable(): boolean {
+		return this.tab.editable;
+	}
+
 	public layout() {
 		if (this._widgets) {
 			this._widgets.forEach(item => {
@@ -156,7 +168,7 @@ export class DashboardTab extends Disposable implements OnDestroy {
 				this._cd.detectChanges();
 			}));
 			this._editDispose.push(subscriptionToDisposable(this._grid.onResizeStop.subscribe((e: NgGridItem) => {
-				this.onSetScrollDimensions.emit();
+				this._onResize.fire();
 				let event = e.getEventOutput();
 				let config = this.tab.originalConfig.find(i => i.id === event.payload.id);
 
@@ -172,7 +184,7 @@ export class DashboardTab extends Disposable implements OnDestroy {
 				this._rewriteConfig();
 			})));
 			this._editDispose.push(subscriptionToDisposable(this._grid.onDragStop.subscribe((e: NgGridItem) => {
-				this.onSetScrollDimensions.emit();
+				this._onResize.fire();
 				let event = e.getEventOutput();
 				this._items.forEach(i => {
 					let config = this.tab.originalConfig.find(j => j.id === i.getEventOutput().payload.id);

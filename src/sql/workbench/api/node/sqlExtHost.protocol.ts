@@ -24,6 +24,8 @@ export abstract class ExtHostAccountManagementShape {
 	$refresh(handle: number, account: data.Account): Thenable<data.Account> { throw ni(); }
 }
 
+export abstract class ExtHostConnectionManagementShape { }
+
 export abstract class ExtHostDataProtocolShape {
 
 	/**
@@ -390,6 +392,12 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string);
 }
 
+export interface MainThreadConnectionManagementShape extends IDisposable {
+	$getActiveConnections(): Thenable<data.connection.Connection[]>;
+	$getCurrentConnection(): Thenable<data.connection.Connection>;
+	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
+}
+
 export interface MainThreadCredentialManagementShape extends IDisposable {
 	$registerCredentialProvider(handle: number): TPromise<any>;
 	$unregisterCredentialProvider(handle: number): TPromise<any>;
@@ -407,22 +415,24 @@ function ni() { return new Error('Not implemented'); }
 export const SqlMainContext = {
 	// SQL entries
 	MainThreadAccountManagement: createMainId<MainThreadAccountManagementShape>('MainThreadAccountManagement'),
+	MainThreadConnectionManagement: createMainId<MainThreadConnectionManagementShape>('MainThreadConnectionManagement'),
 	MainThreadCredentialManagement: createMainId<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
 	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
 	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
 	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
-	MainThreadWebviewWidget: createMainId<MainThreadWebviewWidgetShape>('MainThreadWebviewWidget')
+	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview')
 };
 
 export const SqlExtHostContext = {
 	ExtHostAccountManagement: createExtId<ExtHostAccountManagementShape>('ExtHostAccountManagement'),
+	ExtHostConnectionManagement: createExtId<ExtHostConnectionManagementShape>('ExtHostConnectionManagement'),
 	ExtHostCredentialManagement: createExtId<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
 	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
 	ExtHostSerializationProvider: createExtId<ExtHostSerializationProviderShape>('ExtHostSerializationProvider'),
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
-	ExtHostWebviewWidgets: createExtId<ExtHostWebviewWidgetsShape>('ExtHostWebviewWidgets')
+	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews')
 };
 
 export interface MainThreadModalDialogShape extends IDisposable {
@@ -439,14 +449,14 @@ export interface ExtHostModalDialogsShape {
 	$onClosed(handle: number): void;
 }
 
-export interface ExtHostWebviewWidgetsShape {
-	$registerProvider(widgetId: string, handler: (webview: data.WebviewWidget) => void): void;
+export interface ExtHostDashboardWebviewsShape {
+	$registerProvider(widgetId: string, handler: (webview: data.DashboardWebview) => void): void;
 	$onMessage(handle: number, message: any): void;
 	$onClosed(handle: number): void;
 	$registerWidget(handle: number, id: string): void;
 }
 
-export interface MainThreadWebviewWidgetShape extends IDisposable {
+export interface MainThreadDashboardWebviewShape extends IDisposable {
 	$sendMessage(handle: number, message: string);
 	$registerProvider(widgetId: string);
 	$setHtml(handle: number, value: string);
