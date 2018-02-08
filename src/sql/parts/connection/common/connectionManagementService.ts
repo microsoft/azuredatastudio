@@ -56,6 +56,7 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { Deferred } from 'sql/base/common/promise';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ConnectionManagementService implements IConnectionManagementService {
 
@@ -659,7 +660,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 	}
 
 	public getActiveConnections(): ConnectionProfile[] {
-		return this._connectionStore.getActiveConnections();
+		return this._connectionStatusManager.getActiveConnectionProfiles();
 	}
 
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
@@ -1350,5 +1351,27 @@ export class ConnectionManagementService implements IConnectionManagementService
 		if (this._editorGroupService instanceof EditorPart) {
 			this._editorGroupService.refreshEditorTitles();
 		}
+	}
+
+	public removeConnectionProfileCredentials(originalProfile: IConnectionProfile): IConnectionProfile {
+		return this._connectionStore.getProfileWithoutPassword(originalProfile);
+	}
+
+	public getActiveConnectionCredentials(profileId: string): { [name: string]: string } {
+		let profile = this.getActiveConnections().find(connectionProfile => connectionProfile.id === profileId);
+		if (!profile) {
+			return undefined;
+		}
+
+		// Find the password option for the connection provider
+		let passwordOption = this._capabilitiesService.getCapabilities().find(capability => capability.providerName === profile.providerName).connectionProvider.options.find(
+			option => option.specialValueType === ConnectionOptionSpecialType.password);
+		if (!passwordOption) {
+			return undefined;
+		}
+
+		let credentials = {};
+		credentials[passwordOption.name] = profile.options[passwordOption.name];
+		return credentials;
 	}
 }

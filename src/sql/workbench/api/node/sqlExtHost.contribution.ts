@@ -10,6 +10,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 // --- SQL contributions
+import 'sql/workbench/api/node/mainThreadConnectionManagement';
 import 'sql/workbench/api/node/mainThreadCredentialManagement';
 import 'sql/workbench/api/node/mainThreadDataProtocol';
 import 'sql/workbench/api/node/mainThreadSerializationProvider';

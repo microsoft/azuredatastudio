@@ -492,4 +492,18 @@ suite('SQL ConnectionStore tests', () => {
 		actualGroup = connectionStore.getGroupFromId(childGroupId);
 		assert.equal(actualGroup.id, childGroupId, 'Did not get the child group when looking it up with its ID');
 	});
+
+	test('getProfileWithoutPassword can return the profile without credentials in the password property or options dictionary', () => {
+		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+			credentialStore.object, capabilitiesService.object, connectionConfig.object);
+		let profile = Object.assign({}, defaultNamedProfile);
+		profile.options['password'] = profile.password;
+		profile.id = 'testId';
+		let expectedProfile = Object.assign({}, profile);
+		expectedProfile.password = '';
+		expectedProfile.options['password'] = '';
+		expectedProfile = ConnectionProfile.convertToConnectionProfile(msSQLCapabilities, expectedProfile).toIConnectionProfile();
+		let profileWithoutCredentials = connectionStore.getProfileWithoutPassword(profile);
+		assert.deepEqual(profileWithoutCredentials.toIConnectionProfile(), expectedProfile);
+	});
 });

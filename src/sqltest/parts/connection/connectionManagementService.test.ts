@@ -790,4 +790,14 @@ suite('SQL ConnectionManagementService tests', () => {
 			}
 		}, err => done(err));
 	});
+
+	test('getActiveConnectionCredentials returns the credentials dictionary for a connection profile', () => {
+		let profile = Object.assign({}, connectionProfile);
+		profile.options = {password: profile.password};
+		profile.id = 'test_id';
+		connectionStatusManager.addConnection(profile, 'test_uri');
+		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
+		let credentials = connectionManagementService.getActiveConnectionCredentials(profile.id);
+		assert.equal(credentials['password'], profile.options['password']);
+	});
 });
