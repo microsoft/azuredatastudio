@@ -195,6 +195,10 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 		let allTabs = this.filterConfigs(dashboardRegistry.tabs);
 
+		// Load always show tabs
+		let alwaysShowTabs = allTabs.filter(tab => tab.alwaysShow);
+		this.loadNewTabs(alwaysShowTabs);
+
 		// Load pinned tabs
 		this._pinnedTabs = this.dashboardService.getSettings<Array<PinConfig>>([this.context, 'tabs'].join('.'));
 		let pinnedDashboardTabs: IDashboardTab[] = [];
@@ -205,10 +209,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			}
 		});
 		this.loadNewTabs(pinnedDashboardTabs);
-
-		// Load always show tabs
-		let alwaysShowTabs = allTabs.filter(tab => tab.alwaysShow);
-		this.loadNewTabs(alwaysShowTabs);
 
 		// Set panel actions
 		let openedTabs = [...pinnedDashboardTabs, ...alwaysShowTabs];
