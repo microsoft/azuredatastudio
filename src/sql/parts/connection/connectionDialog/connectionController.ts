@@ -79,6 +79,7 @@ export class ConnectionController implements IConnectionComponentController {
 								this._databaseCache.set(uri, result.databaseNames);
 								resolve(result.databaseNames);
 							} else {
+								this._databaseCache.set(uri, null);
 								reject();
 							}
 						});
