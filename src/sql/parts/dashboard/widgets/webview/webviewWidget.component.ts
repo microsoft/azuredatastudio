@@ -7,6 +7,8 @@ import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ViewChild, El
 
 import Webview from 'vs/workbench/parts/html/browser/webview';
 import { Parts } from 'vs/workbench/services/part/common/partService';
+import Event, { Emitter } from 'vs/base/common/event';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
@@ -27,6 +29,9 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	private _id: string;
 	private _webview: Webview;
 	private _html: string;
+	private _onMessage = new Emitter<string>();
+	public readonly onMessage: Event<string> = this._onMessage.event;
+	private _onMessageDisposable: IDisposable;
 
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
@@ -56,9 +61,18 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		this._createWebview();
 	}
 
+	public sendMessage(message: string): void {
+		if (this._webview) {
+			this._webview.sendMessage(message);
+		}
+	}
+
 	private _createWebview(): void {
 		if (this._webview) {
 			this._webview.dispose();
+		}
+		if (this._onMessageDisposable) {
+			this._onMessageDisposable.dispose();
 		}
 		this._webview = new Webview(this._el.nativeElement,
 			this._dashboardService.partService.getContainer(Parts.EDITOR_PART),
@@ -71,6 +85,9 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 				hideFind: true
 			}
 		);
+		this._onMessageDisposable = this._webview.onMessage(e => {
+			this._onMessage.fire(e);
+		});
 		this._webview.style(this._dashboardService.themeService.getTheme());
 		if (this._html) {
 			this._webview.contents = [this._html];

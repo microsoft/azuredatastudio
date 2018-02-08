@@ -7,6 +7,7 @@ import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, Elemen
 import Event, { Emitter } from 'vs/base/common/event';
 import Webview from 'vs/workbench/parts/html/browser/webview';
 import { Parts } from 'vs/workbench/services/part/common/partService';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
@@ -23,6 +24,9 @@ export class DashboardWebviewTab extends DashboardTab implements OnInit, IDashbo
 
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
+	private _onMessage = new Emitter<string>();
+	public readonly onMessage: Event<string> = this._onMessage.event;
+	private _onMessageDisposable: IDisposable;
 	private _webview: Webview;
 	private _html: string;
 
@@ -62,9 +66,19 @@ export class DashboardWebviewTab extends DashboardTab implements OnInit, IDashbo
 		}
 	}
 
+	public sendMessage(message: string): void {
+		if (this._webview) {
+			this._webview.sendMessage(message);
+		}
+	}
+
 	private _createWebview(): void {
 		if (this._webview) {
 			this._webview.dispose();
+		}
+
+		if (this._onMessageDisposable) {
+			this._onMessageDisposable.dispose();
 		}
 
 		this._webview = new Webview(this._el.nativeElement,
@@ -78,6 +92,9 @@ export class DashboardWebviewTab extends DashboardTab implements OnInit, IDashbo
 				hideFind: true
 			}
 		);
+		this._onMessageDisposable = this._webview.onMessage(e => {
+			this._onMessage.fire(e);
+		});
 		this._webview.style(this._dashboardService.themeService.getTheme());
 		if (this._html) {
 			this._webview.contents = [this._html];

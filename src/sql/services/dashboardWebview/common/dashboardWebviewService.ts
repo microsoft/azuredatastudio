@@ -14,6 +14,8 @@ export const SERVICE_ID = 'dashboardWebviewService';
 export interface IDashboardWebview {
 	readonly id: string;
 	setHtml(html: string): void;
+	onMessage: Event<string>;
+	sendMessage(message: string);
 }
 
 export interface IDashboardWebviewService {

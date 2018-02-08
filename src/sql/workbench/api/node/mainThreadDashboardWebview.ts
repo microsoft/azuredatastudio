@@ -28,6 +28,9 @@ export class MainThreadDashboardWebview implements MainThreadDashboardWebviewSha
 				let handle = MainThreadDashboardWebview._handlePool++;
 				this._dialogs.set(handle, e);
 				this._proxy.$registerWidget(handle, e.id);
+				e.onMessage(e => {
+					this._proxy.$onMessage(handle, e);
+				});
 			}
 		});
 	}
@@ -37,7 +40,7 @@ export class MainThreadDashboardWebview implements MainThreadDashboardWebviewSha
 	}
 
 	$sendMessage(handle: number, message: string) {
-		throw new Error("Method not implemented.");
+		this._dialogs.get(handle).sendMessage(message);
 	}
 
 	$setHtml(handle: number, value: string) {
