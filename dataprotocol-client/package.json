@@ -4,7 +4,7 @@
   "description": "SQL Operations Studio studio implementation of vscode-language-client",
   "main": "lib/main.js",
   "scripts": {
-    "prepublish": "node ./node_modules/vscode/bin/install && tsc -p ./src",
+    "prepublish": "tsc -p ./src",
     "compile": "tsc -p ./src",
     "watch": "tsc -w -p ./src",
     "update-vscode": "node ./node_modules/vscode/bin/install"
