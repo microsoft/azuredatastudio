@@ -4,20 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { SqlMainContext, ExtHostWebviewWidgetsShape, MainThreadWebviewWidgetShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { SqlMainContext, ExtHostDashboardWebviewsShape, MainThreadDashboardWebviewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import * as vscode from 'vscode';
 import * as data from 'data';
 import { Emitter } from 'vs/base/common/event';
 
-class ExtHostWebviewWidget implements data.WebviewWidget {
+class ExtHostDashboardWebview implements data.DashboardWebview {
 
 	private _html: string;
 	public onMessageEmitter = new Emitter<any>();
 	public onClosedEmitter = new Emitter<any>();
 
 	constructor(
-		private readonly _proxy: MainThreadWebviewWidgetShape,
+		private readonly _proxy: MainThreadDashboardWebviewShape,
 		private readonly _handle: number,
 	) { }
 
@@ -45,16 +45,16 @@ class ExtHostWebviewWidget implements data.WebviewWidget {
 	}
 }
 
-export class ExtHostWebviewWidgets implements ExtHostWebviewWidgetsShape {
-	private readonly _proxy: MainThreadWebviewWidgetShape;
+export class ExtHostDashboardWebviews implements ExtHostDashboardWebviewsShape {
+	private readonly _proxy: MainThreadDashboardWebviewShape;
 
-	private readonly _webviews = new Map<number, ExtHostWebviewWidget>();
-	private readonly _handlers = new Map<string, (webview: data.WebviewWidget) => void>();
+	private readonly _webviews = new Map<number, ExtHostDashboardWebview>();
+	private readonly _handlers = new Map<string, (webview: data.DashboardWebview) => void>();
 
 	constructor(
 		mainContext: IMainContext
 	) {
-		this._proxy = mainContext.get(SqlMainContext.MainThreadWebviewWidget);
+		this._proxy = mainContext.get(SqlMainContext.MainThreadDashboardWebview);
 	}
 
 	$onMessage(handle: number, message: any): void {
@@ -68,13 +68,13 @@ export class ExtHostWebviewWidgets implements ExtHostWebviewWidgetsShape {
 		this._webviews.delete(handle);
 	}
 
-	$registerProvider(widgetId: string, handler: (webview: data.WebviewWidget) => void): void {
+	$registerProvider(widgetId: string, handler: (webview: data.DashboardWebview) => void): void {
 		this._handlers.set(widgetId, handler);
 		this._proxy.$registerProvider(widgetId);
 	}
 
 	$registerWidget(handle: number, id: string): void {
-		let webview = new ExtHostWebviewWidget(this._proxy, handle);
+		let webview = new ExtHostDashboardWebview(this._proxy, handle);
 		this._webviews.set(handle, webview);
 		this._handlers.get(id)(webview);
 	}

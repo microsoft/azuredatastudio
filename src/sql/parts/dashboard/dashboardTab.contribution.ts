@@ -13,14 +13,15 @@ import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 export interface IDashboardTabContrib {
 	id: string;
 	title: string;
-	widgets: WidgetConfig[];
-	description: string;
-	provider: string | string[];
-	edition: number | number[];
-	alwaysShow: boolean;
+	widgets?: WidgetConfig[];
+	description?: string;
+	provider?: string | string[];
+	edition?: number | number[];
+	alwaysShow?: boolean;
+	isWebview?: boolean;
 }
 
-const tabContributionSchema: IJSONSchema = {
+const tabSchema: IJSONSchema = {
 	type: 'object',
 	properties: {
 		id: {
@@ -64,21 +65,36 @@ const tabContributionSchema: IJSONSchema = {
 			]
 		},
 		widgets: {
-			description: localize('sqlops.extension.cotnributes.dashboard.tab.edition', "The list of widgets that will be displayed in this tab."),
+			description: localize('sqlops.extension.contributes.dashboard.tab.widgets', "The list of widgets that will be displayed in this tab. Mutually exclusive with isWebview."),
 			type: 'array',
 			items: generateDashboardWidgetSchema(undefined, true)
 		},
 		alwaysShow: {
 			description: localize('sqlops.extension.contributes.dashboard.tab.alwaysShow', "Whether or not this tab should always be shown or only when the user adds it."),
 			type: 'boolean'
+		},
+		isWebview: {
+			description: localize('sqlops.extension.contributes.dashboard.tab.isWebview', "Whether or not this tab is a webview tab, mutually exclusive with widgets"),
+			type: 'boolean'
 		}
 	}
+};
+
+const tabContributionSchema: IJSONSchema = {
+	description: localize('sqlops.extension.contributes.tabs', "Contributes a single or multiple tabs for users to add to their dashboard."),
+	oneOf: [
+		tabSchema,
+		{
+			type: 'array',
+			items: tabSchema
+		}
+	]
 };
 
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>('dashboard.tabs', [], tabContributionSchema).setHandler(extensions => {
 
 	function handleCommand(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
-		let { description, widgets, title, edition, provider, id, alwaysShow } = tab;
+		let { description, widgets, title, edition, provider, id, alwaysShow, isWebview } = tab;
 		alwaysShow = alwaysShow || false;
 		let publisher = extension.description.publisher;
 		if (!title) {
@@ -91,7 +107,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		if (!description) {
 			extension.collector.warn('No description specified to show.');
 		}
-		RegisterTab({ description, title, widgets, edition, provider, id, alwaysShow, publisher });
+		RegisterTab({ description, title, widgets, edition, provider, id, alwaysShow, publisher, isWebview });
 	}
 
 	for (let extension of extensions) {

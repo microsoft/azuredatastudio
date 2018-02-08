@@ -14,13 +14,14 @@ import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insi
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
 import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
-import { DashboardTab } from 'sql/parts/dashboard/common/dashboardTab.component';
+import { DashboardWidgetTab } from 'sql/parts/dashboard/common/dashboardWidgetTab.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
 import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
+import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -178,7 +179,8 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		// Create home tab
 		let homeTab: TabConfig = {
 			id: 'homeTab',
-			name: this.homeTabTitle,
+			publisher: undefined,
+			title: this.homeTabTitle,
 			widgets: homeWidgets,
 			context: this.context,
 			originalConfig: this._originalConfig,
@@ -201,25 +203,23 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 		this._tabsDispose.push(this.dashboardService.onAddNewTabs(e => {
 			let selectedTabs = e.map(v => {
-				let configs = v.widgets;
-				this._configModifiers.forEach(cb => {
-					configs = cb.apply(this, [configs]);
-				});
-				this._gridModifiers.forEach(cb => {
-					configs = cb.apply(this, [configs]);
-				});
-				return { id: v.id, title: v.title, widgets: configs };
+				if (v.widgets) {
+					let configs = v.widgets;
+					this._configModifiers.forEach(cb => {
+						configs = cb.apply(this, [configs]);
+					});
+					this._gridModifiers.forEach(cb => {
+						configs = cb.apply(this, [configs]);
+					});
+					return { id: v.id, title: v.title, widgets: configs };
+				}
+				return v;
 			}).map(v => {
-				let config: TabConfig = {
-					id: v.id,
-					name: v.title,
-					context: this.context,
-					widgets: v.widgets,
-					originalConfig: undefined,
-					editable: false,
-					canClose: true,
-					actions: []
-				};
+				let config = v as TabConfig;
+				config.context = this.context;
+				config.editable = false;
+				config.canClose = true;
+				config.actions = [];
 				this.addNewTab(config);
 				return config;
 			});
@@ -236,13 +236,13 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		if (!existedTab) {
 			this.tabs.push(tab);
 			this._cd.detectChanges();
-			let tabComponents = this._tabs.find(i => i.tab.id === tab.id);
-			this._register(subscriptionToDisposable(tabComponents.onSetScrollDimensions.subscribe(() => {
+			let tabComponents = this._tabs.find(i => i.id === tab.id);
+			this._register(tabComponents.onResize(() => {
 				this._scrollableElement.setScrollDimensions({
 					scrollHeight: getContentHeight(this._scrollable.nativeElement),
 					height: getContentHeight(this._scrollContainer.nativeElement)
 				});
-			})));
+			}));
 		}
 	}
 
@@ -274,14 +274,18 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	 * Returns a filtered version of the widgets passed based on edition and provider
 	 * @param config widgets to filter
 	 */
-	private filterConfigs<T extends { provider: string | string[], edition: number | number[] }>(config: T[]): Array<T> {
+	private filterConfigs<T extends { provider?: string | string[], edition?: number | number[] }>(config: T[]): Array<T> {
 		let connectionInfo: ConnectionManagementInfo = this.dashboardService.connectionManagementService.connectionInfo;
 		let edition = connectionInfo.serverInfo.engineEditionId;
 		let provider = connectionInfo.providerId;
 
 		// filter by provider
 		return config.filter((item) => {
-			return this.stringCompare(item.provider, provider);
+			if (item.provider) {
+				return this.stringCompare(item.provider, provider);
+			} else {
+				return true;
+			}
 		}).filter((item) => {
 			if (item.edition) {
 				if (edition) {
@@ -467,8 +471,8 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	}
 
 	public handleTabChange(tab: TabComponent): void {
-		let localtab = this._tabs.find(i => i.tab.id === tab.identifier);
-		this._editEnabled.fire(localtab.tab.editable);
+		let localtab = this._tabs.find(i => i.id === tab.identifier);
+		this._editEnabled.fire(localtab.editable);
 		this._cd.detectChanges();
 		localtab.layout();
 	}
