@@ -77,11 +77,11 @@ export function createApiFactory(
 			};
 
 			// namespace: connection
-			const connection: typeof data.connection = {
-				getActiveConnections(): Thenable<data.connection.Connection[]> {
+			const connection: typeof sqlops.connection = {
+				getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
 					return extHostConnectionManagement.$getActiveConnections();
 				},
-				getCurrentConnection(): Thenable<data.connection.Connection> {
+				getCurrentConnection(): Thenable<sqlops.connection.Connection> {
 					return extHostConnectionManagement.$getCurrentConnection();
 				},
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {

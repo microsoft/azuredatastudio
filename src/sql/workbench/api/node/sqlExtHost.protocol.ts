@@ -392,8 +392,8 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 }
 
 export interface MainThreadConnectionManagementShape extends IDisposable {
-	$getActiveConnections(): Thenable<data.connection.Connection[]>;
-	$getCurrentConnection(): Thenable<data.connection.Connection>;
+	$getActiveConnections(): Thenable<sqlops.connection.Connection[]>;
+	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 }
 

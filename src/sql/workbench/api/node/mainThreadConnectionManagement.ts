@@ -5,7 +5,7 @@
 'use strict';
 
 import { SqlExtHostContext, SqlMainContext, ExtHostConnectionManagementShape, MainThreadConnectionManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
@@ -37,11 +37,11 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		this._toDispose = dispose(this._toDispose);
 	}
 
-	public $getActiveConnections(): Thenable<data.connection.Connection[]> {
+	public $getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
 		return Promise.resolve(this._connectionManagementService.getActiveConnections().map(profile => this.convertConnection(profile)));
 	}
 
-	public $getCurrentConnection(): Thenable<data.connection.Connection> {
+	public $getCurrentConnection(): Thenable<sqlops.connection.Connection> {
 		return Promise.resolve(this.convertConnection(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true)));
 	}
 
@@ -49,12 +49,12 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return Promise.resolve(this._connectionManagementService.getActiveConnectionCredentials(connectionId));
 	}
 
-	private convertConnection(profile: IConnectionProfile): data.connection.Connection {
+	private convertConnection(profile: IConnectionProfile): sqlops.connection.Connection {
 		if (!profile) {
 			return undefined;
 		}
 		profile = this._connectionManagementService.removeConnectionProfileCredentials(profile);
-		let connection: data.connection.Connection = {
+		let connection: sqlops.connection.Connection = {
 			providerName: profile.providerName,
 			connectionId: profile.id,
 			options: profile.options
