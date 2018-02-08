@@ -18,7 +18,7 @@
     "vscode": "1.0.1"
   },
   "scripts": {
-    "prepublish": "tsc -p ./src",
+    "prepare": "tsc -p ./src",
     "compile": "tsc -p ./src",
     "watch": "tsc -w -p ./src",
     "update-vscode": "node ./node_modules/vscode/bin/install"
