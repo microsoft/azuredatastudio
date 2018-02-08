@@ -236,4 +236,19 @@ suite('SQL ConnectionStatusManager tests', () => {
 		let connectionStatus = connections.getOriginalOwnerUri(connection2Id);
 		assert.equal(connectionStatus, connection2Id);
 	});
+
+	test('getActiveConnectionProfiles should return a list of all the unique connections that the status manager knows about', () => {
+		// Add duplicate connections
+		let newConnection = Object.assign({}, connectionProfile);
+		newConnection.id = 'test_id';
+		newConnection.serverName = 'new_server_name';
+		newConnection.options['databaseDisplayName'] = newConnection.databaseName;
+		connections.addConnection(newConnection, 'test_uri_1');
+		connections.addConnection(newConnection, 'test_uri_2');
+
+		// Get the connections and verify that the duplicate is only returned once
+		let activeConnections = connections.getActiveConnectionProfiles();
+		assert.equal(activeConnections.length, 4);
+		assert.equal(activeConnections.filter(connection => connection.matches(newConnection)).length, 1, 'Did not find newConnection in active connections');
+	});
 });

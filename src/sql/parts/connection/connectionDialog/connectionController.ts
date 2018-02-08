@@ -26,6 +26,8 @@ export class ConnectionController implements IConnectionComponentController {
 	private _model: IConnectionProfile;
 	private _providerOptions: sqlops.ConnectionOption[];
 	private _providerName: string;
+	/* key: uri, value : list of databases */
+	private _databaseCache = new Map<string, string[]>();
 
 	constructor(container: HTMLElement,
 		connectionManagementService: IConnectionManagementService,
@@ -43,9 +45,50 @@ export class ConnectionController implements IConnectionComponentController {
 			onSetConnectButton: (enable: boolean) => this._callback.onSetConnectButton(enable),
 			onCreateNewServerGroup: () => this.onCreateNewServerGroup(),
 			onAdvancedProperties: () => this.handleOnAdvancedProperties(),
-			onSetAzureTimeOut: () => this.handleonSetAzureTimeOut()
+			onSetAzureTimeOut: () => this.handleonSetAzureTimeOut(),
+			onFetchDatabases: (serverName: string, authenticationType: string, userName?: string, password?: string) => this.onFetchDatabases(
+				serverName, authenticationType, userName, password).then(result => {
+				return result;
+			})
 		}, providerName);
 		this._providerName = providerName;
+	}
+
+	private onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string): Promise<string[]> {
+		let tempProfile = this._model;
+		tempProfile.serverName = serverName;
+		tempProfile.authenticationType = authenticationType;
+		tempProfile.userName = userName;
+		tempProfile.password = password;
+		tempProfile.groupFullName = '';
+		tempProfile.saveProfile = false;
+		let uri = this._connectionManagementService.getConnectionId(tempProfile);
+		return new Promise<string[]>((resolve, reject) => {
+			if (this._databaseCache.has(uri)) {
+				let cachedDatabases : string[] = this._databaseCache.get(uri);
+				if (cachedDatabases !== null) {
+					resolve(cachedDatabases);
+				} else {
+					reject();
+				}
+			} else {
+				this._connectionManagementService.connect(tempProfile, uri).then(connResult => {
+					if (connResult && connResult.connected) {
+						this._connectionManagementService.listDatabases(uri).then(result => {
+							if (result && result.databaseNames) {
+								this._databaseCache.set(uri, result.databaseNames);
+								resolve(result.databaseNames);
+							} else {
+								this._databaseCache.set(uri, null);
+								reject();
+							}
+						});
+					} else {
+						reject(connResult.errorMessage);
+					}
+				});
+			}
+		});
 	}
 
 	private onCreateNewServerGroup(): void {
@@ -73,6 +116,7 @@ export class ConnectionController implements IConnectionComponentController {
 	}
 
 	public showUiComponent(container: HTMLElement): void {
+		this._databaseCache = new Map<string, string[]>();
 		this._connectionWidget.createConnectionWidget(container);
 	}
 

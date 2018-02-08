@@ -71,6 +71,43 @@ declare module 'sqlops' {
 		export function registerProvider(provider: SerializationProvider): vscode.Disposable;
 	}
 
+	/**
+	 * Namespace for connection management
+	 */
+	export namespace connection {
+		/**
+		 * Get the current connection based on the active editor or Object Explorer selection
+		*/
+		export function getCurrentConnection(): Thenable<Connection>;
+
+		/**
+		 * Get all active connections
+		*/
+		export function getActiveConnections(): Thenable<Connection[]>;
+
+		/**
+		 * Get the credentials for an active connection
+		 * @param {string} connectionId The id of the connection
+		 * @returns {{ [name: string]: string}} A dictionary containing the credentials as they would be included in the connection's options dictionary
+		 */
+		export function getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
+
+		/**
+		 * Interface for representing a connection when working with connection APIs
+		*/
+		export interface Connection extends ConnectionInfo {
+			/**
+			 * The name of the provider managing the connection (e.g. MSSQL)
+			*/
+			providerName: string;
+
+			/**
+			 * A unique identifier for the connection
+			*/
+			connectionId: string;
+		}
+	}
+
 	// EXPORTED INTERFACES /////////////////////////////////////////////////
 	export interface ConnectionInfo {
 

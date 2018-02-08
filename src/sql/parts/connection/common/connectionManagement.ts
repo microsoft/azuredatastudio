@@ -253,6 +253,21 @@ export interface IConnectionManagementService {
 	 * Refresh the IntelliSense cache for the connection with the given URI
 	 */
 	rebuildIntelliSenseCache(uri: string): Thenable<void>;
+
+	/**
+	 * Get a copy of the connection profile with its passwords removed
+	 * @param {IConnectionProfile} profile The connection profile to remove passwords from
+	 * @returns {IConnectionProfile} A copy of the connection profile with passwords removed
+	 */
+	removeConnectionProfileCredentials(profile: IConnectionProfile): IConnectionProfile;
+
+	/**
+	 * Get the credentials for a connected connection profile, as they would appear in the options dictionary
+	 * @param {string} profileId The id of the connection profile to get the password for
+	 * @returns {{ [name: string]: string }} A dictionary containing the credentials as they would be included
+	 * in the connection profile's options dictionary, or undefined if the profile is not connected
+	 */
+	getActiveConnectionCredentials(profileId: string): { [name: string]: string };
 }
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');
