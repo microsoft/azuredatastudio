@@ -5,7 +5,7 @@
 
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
-import { GenerateDashboardWidgetSchema, GenerateDashboardTabSchema } from './dashboardPageContribution';
+import { generateDashboardWidgetSchema, generateDashboardTabSchema } from './dashboardPageContribution';
 
 export const databaseDashboardPropertiesSchema: IJSONSchema = {
 	description: nls.localize('dashboardDatabaseProperties', 'Enable or disable the properties widget'),
@@ -82,7 +82,7 @@ export const databaseDashboardPropertiesSchema: IJSONSchema = {
 export const databaseDashboardSettingSchema: IJSONSchema = {
 	type: ['array'],
 	description: nls.localize('dashboardDatabase', 'Customizes the database dashboard page'),
-	items: GenerateDashboardWidgetSchema('database'),
+	items: generateDashboardWidgetSchema('database'),
 	default: [
 		{
 			name: 'Tasks',
@@ -109,7 +109,7 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 export const databaseDashboardTabsSchema: IJSONSchema = {
 	type: ['array'],
 	description: nls.localize('dashboardDatabaseTabs', 'Customizes the database dashboard tabs'),
-	items: GenerateDashboardTabSchema('database'),
+	items: generateDashboardTabSchema('database'),
 	default: [
 	]
 };

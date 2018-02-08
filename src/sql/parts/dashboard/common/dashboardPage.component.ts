@@ -518,10 +518,8 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	public handleTabChange(tab: TabComponent): void {
 		let localtab = this._tabs.find(i => i.tab.id === tab.identifier);
 		this._editEnabled.fire(localtab.tab.editable);
-		// put this immediately on the stack so that is ran *after* the tab is rendered
-		setTimeout(() => {
-			localtab.layout();
-		});
+		this._cd.detectChanges();
+		localtab.layout();
 	}
 
 	public handleTabClose(tab: TabComponent): void {

@@ -39,6 +39,8 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import Event, { Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
+import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
+import { IPartService } from 'vs/workbench/services/part/common/partService';
 
 const DASHBOARD_SETTINGS = 'dashboard';
 
@@ -129,6 +131,8 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _storageService: IStorageService;
 	private _capabilitiesService: ICapabilitiesService;
 	private _configurationEditingService: ConfigurationEditingService;
+	private _dashboardWebviewService: IDashboardWebviewService;
+	private _partService: IPartService;
 
 	private _updatePage = new Emitter<void>();
 	public readonly onUpdatePage: Event<void> = this._updatePage.event;
@@ -160,6 +164,8 @@ export class DashboardServiceInterface implements OnDestroy {
 		this._storageService = this._bootstrapService.storageService;
 		this._capabilitiesService = this._bootstrapService.capabilitiesService;
 		this._configurationEditingService = this._bootstrapService.configurationEditorService;
+		this._dashboardWebviewService = this._bootstrapService.dashboardWebviewService;
+		this._partService = this._bootstrapService.partService;
 	}
 
 	ngOnDestroy() {
@@ -192,6 +198,14 @@ export class DashboardServiceInterface implements OnDestroy {
 
 	public get instantiationService(): IInstantiationService {
 		return this._instantiationService;
+	}
+
+	public get dashboardWebviewService(): IDashboardWebviewService {
+		return this._dashboardWebviewService;
+	}
+
+	public get partService(): IPartService {
+		return this._partService;
 	}
 
 	public get adminService(): SingleAdminService {
