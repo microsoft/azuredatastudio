@@ -540,6 +540,10 @@ export class ConnectionWidget {
 		const authType = this._authTypeMap[this._providerName];
 		return authType ? authType.find(authType => this.getAuthTypeDisplayName(authType.name) === displayName) : undefined;
 	}
+
+	public closeDatabaseDropdown(): void {
+		this._databaseNameInputBox.blur();
+	}
 }
 
 class AuthenticationType {

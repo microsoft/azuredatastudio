@@ -54,6 +54,7 @@ export interface IConnectionComponentController {
 	handleOnConnecting(): void;
 	handleResetConnection(): void;
 	focusOnOpen(): void;
+	closeDatabaseDropdown(): void;
 }
 
 export class ConnectionDialogService implements IConnectionDialogService {
@@ -149,6 +150,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private handleOnCancel(params: INewConnectionParams): void {
+		this.uiController.closeDatabaseDropdown();
 		if (params && params.input && params.connectionType === ConnectionType.editor) {
 			this._connectionManagementService.cancelEditorConnection(params.input);
 		} else {
