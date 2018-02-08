@@ -9,10 +9,13 @@ import Webview from 'vs/workbench/parts/html/browser/webview';
 import { Parts } from 'vs/workbench/services/part/common/partService';
 import Event, { Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { memoize } from 'vs/base/common/decorators';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { IDashboardWebview } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
+
+import * as data from 'data';
 
 interface IWebviewWidgetConfig {
 	id: string;
@@ -55,6 +58,22 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	public setHtml(html: string): void {
 		this._html = html;
 		this._webview.contents = [html];
+	}
+
+	@memoize
+	public get connection(): data.connection.Connection {
+		let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
+		let connection: data.connection.Connection = {
+			providerName: currentConnection.providerName,
+			connectionId: currentConnection.id,
+			options: currentConnection.options
+		};
+		return connection;
+	}
+
+	@memoize
+	public get serverInfo(): data.ServerInfo {
+		return this._dashboardService.connectionManagementService.connectionInfo.serverInfo;
 	}
 
 	public layout(): void {

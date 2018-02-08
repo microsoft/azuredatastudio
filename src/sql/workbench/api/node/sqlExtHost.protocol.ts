@@ -453,7 +453,7 @@ export interface ExtHostDashboardWebviewsShape {
 	$registerProvider(widgetId: string, handler: (webview: data.DashboardWebview) => void): void;
 	$onMessage(handle: number, message: any): void;
 	$onClosed(handle: number): void;
-	$registerWidget(handle: number, id: string): void;
+	$registerWidget(handle: number, id: string, connection: data.connection.Connection, serverInfo: data.ServerInfo): void;
 }
 
 export interface MainThreadDashboardWebviewShape extends IDisposable {

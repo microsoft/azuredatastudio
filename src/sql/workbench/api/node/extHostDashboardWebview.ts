@@ -5,10 +5,13 @@
 'use strict';
 
 import { SqlMainContext, ExtHostDashboardWebviewsShape, MainThreadDashboardWebviewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { Emitter } from 'vs/base/common/event';
+import { deepClone } from 'vs/base/common/objects';
+
 import * as vscode from 'vscode';
 import * as data from 'data';
-import { Emitter } from 'vs/base/common/event';
 
 class ExtHostDashboardWebview implements data.DashboardWebview {
 
@@ -19,6 +22,8 @@ class ExtHostDashboardWebview implements data.DashboardWebview {
 	constructor(
 		private readonly _proxy: MainThreadDashboardWebviewShape,
 		private readonly _handle: number,
+		private readonly _connection: data.connection.Connection,
+		private readonly _serverInfo: data.ServerInfo
 	) { }
 
 	public postMessage(message: any): Thenable<any> {
@@ -31,6 +36,14 @@ class ExtHostDashboardWebview implements data.DashboardWebview {
 
 	public get onClosed(): vscode.Event<any> {
 		return this.onClosedEmitter.event;
+	}
+
+	public get connection(): data.connection.Connection {
+		return deepClone(this._connection);
+	}
+
+	public get serverInfo(): data.ServerInfo {
+		return deepClone(this._serverInfo);
 	}
 
 	get html(): string {
@@ -73,8 +86,8 @@ export class ExtHostDashboardWebviews implements ExtHostDashboardWebviewsShape {
 		this._proxy.$registerProvider(widgetId);
 	}
 
-	$registerWidget(handle: number, id: string): void {
-		let webview = new ExtHostDashboardWebview(this._proxy, handle);
+	$registerWidget(handle: number, id: string, connection: data.connection.Connection, serverInfo: data.ServerInfo): void {
+		let webview = new ExtHostDashboardWebview(this._proxy, handle, connection, serverInfo);
 		this._webviews.set(handle, webview);
 		this._handlers.get(id)(webview);
 	}

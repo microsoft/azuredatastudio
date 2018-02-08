@@ -1449,16 +1449,26 @@ declare module 'data' {
 		readonly onMessage: vscode.Event<any>;
 
 		/**
-		 * Raised when the widget closed.
+		 * Raised when the webview closed.
 		 */
 		readonly onClosed: vscode.Event<any>;
 
 		/**
-		 * Post a message to the widget.
+		 * Post a message to the webview.
 		 *
 		 * @param message Body of the message.
 		 */
 		postMessage(message: any): Thenable<any>;
+
+		/**
+		 * The connection info for the dashboard the webview exists on
+		 */
+		readonly connection: connection.Connection;
+
+		/**
+		 * The info on the server for the webview dashboard
+		 */
+		readonly serverInfo: ServerInfo;
 
 		/**
 		 * Contents of the dialog body.

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./dashboardTab';
+import 'vs/css!./dashboardWidgetTab';
 
 import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
@@ -66,7 +66,7 @@ function configSorter(a, b): number {
 
 @Component({
 	selector: 'dashboard-widget-tab',
-	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/common/dashboardTab.component.html')),
+	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/common/dashboardWidgetTab.component.html')),
 	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWidgetTab) }]
 })
 export class DashboardWidgetTab extends DashboardTab implements OnDestroy {
