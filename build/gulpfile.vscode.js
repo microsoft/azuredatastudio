@@ -169,7 +169,7 @@ const config = {
 		name: product.nameLong + ' document',
 		role: 'Editor',
 		ostypes: ["TEXT", "utxt", "TUTX", "****"],
-    // {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}}
 		extensions: ["csv", "json", "sqlplan", "sql", "xml"],
 		iconFile: 'resources/darwin/code_file.icns'
 	}],
@@ -294,7 +294,8 @@ function packageTask(platform, arch, opts) {
 			.pipe(filter(['**', '!**/package-lock.json']))
 			.pipe(util.cleanNodeModule('account-provider-azure', ['node_modules/date-utils/doc/**', 'node_modules/adal_node/node_modules/**'], undefined))
 			.pipe(util.cleanNodeModule('dataprotocol-client', ['node_modules/**', 'src/*.js'], undefined))
-			.pipe(util.cleanNodeModule('extensions-modules', ['node_modules/**', 'src/*.js'], undefined));
+			.pipe(util.cleanNodeModule('extensions-modules', ['node_modules/**', 'src/*.js'], undefined))
+			.pipe(util.cleanNodeModule('typescript', ['**/**'], undefined));
 
 		const sources = es.merge(src, localExtensions, localExtensionDependencies)
 			.pipe(util.setExecutableBit(['**/*.sh']))
