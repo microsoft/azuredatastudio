@@ -159,7 +159,7 @@ import 'sql/parts/dashboard/widgets/explorer/explorerWidget.contribution';
 import 'sql/parts/dashboard/widgets/tasks/tasksWidget.contribution';
 import 'sql/parts/dashboard/widgets/webview/webviewWidget.contribution';
 import 'sql/parts/dashboard/dashboardConfig.contribution';
-import 'sql/parts/dashboard/dashboardTab.contribution';
+import 'sql/parts/dashboard/common/dashboardTab.contribution';
 /* Tasks */
 import 'sql/workbench/common/actions.contribution';
 /* Extension Host */

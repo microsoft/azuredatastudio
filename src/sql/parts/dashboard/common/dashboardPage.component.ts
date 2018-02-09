@@ -14,7 +14,6 @@ import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insi
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
 import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
-import { DashboardWidgetTab } from 'sql/parts/dashboard/common/dashboardWidgetTab.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
@@ -144,7 +143,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		container.appendChild(this._scrollableElement.getDomNode());
 		let initalHeight = getContentHeight(scrollable);
 		this._scrollableElement.setScrollDimensions({
-			scrollHeight: getContentHeight(scrollable),
+			scrollHeight: Math.max(getContentHeight(scrollable), getContentHeight(container)),
 			height: getContentHeight(container)
 		});
 
@@ -152,7 +151,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			// Todo: Need to set timeout because we have to make sure that the grids have already rearraged before the getContentHeight gets called.
 			setTimeout(() => {
 				this._scrollableElement.setScrollDimensions({
-					scrollHeight: getContentHeight(scrollable),
+					scrollHeight: Math.max(getContentHeight(scrollable), getContentHeight(container)),
 					height: getContentHeight(container)
 				});
 			}, 100);
@@ -163,7 +162,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			let currentheight = getContentHeight(scrollable);
 			if (initalHeight !== currentheight) {
 				this._scrollableElement.setScrollDimensions({
-					scrollHeight: getContentHeight(scrollable),
+					scrollHeight: Math.max(getContentHeight(scrollable), getContentHeight(container)),
 					height: getContentHeight(container)
 				});
 			}
@@ -239,7 +238,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			let tabComponents = this._tabs.find(i => i.id === tab.id);
 			this._register(tabComponents.onResize(() => {
 				this._scrollableElement.setScrollDimensions({
-					scrollHeight: getContentHeight(this._scrollable.nativeElement),
+					scrollHeight: Math.max(getContentHeight(this._scrollable.nativeElement), getContentHeight(this._scrollContainer.nativeElement)),
 					height: getContentHeight(this._scrollContainer.nativeElement)
 				});
 			}));

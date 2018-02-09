@@ -25,10 +25,12 @@ const defaultOptions: IPanelOptions = {
 	showTabsWhenOne: true
 };
 
+let idPool = 0;
+
 @Component({
 	selector: 'panel',
 	template: `
-		<div class="tabbedPanel fullsize">
+		<div class="tabbedPanel fullsize" style="position: absolute">
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
 				<div class="tabList">
 					<div *ngFor="let tab of _tabs">
@@ -115,6 +117,17 @@ export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDe
 				tab = this._tabs[input];
 			} else if (types.isString(input)) {
 				tab = this._tabs.find(i => i.identifier === input);
+			}
+
+			// since we need to compare identifiers in this next step we are going to go through and make sure all tabs have one
+			this._tabs.forEach(i => {
+				if (!i.identifier) {
+					i.identifier = 'tabIndex_' + idPool++;
+				}
+			});
+
+			if (this._activeTab && tab.identifier === this._activeTab.identifier) {
+				return;
 			}
 
 			this._zone.run(() => {
