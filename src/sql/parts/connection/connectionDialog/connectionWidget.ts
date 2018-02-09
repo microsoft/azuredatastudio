@@ -52,6 +52,7 @@ export class ConnectionWidget {
 		[Constants.mssqlProviderName]: [new AuthenticationType(Constants.integrated, false), new AuthenticationType(Constants.sqlLogin, true)]
 	};
 	private _saveProfile: boolean;
+	private _databaseDropdownExpanded: boolean = false;
 	private _defaultDatabaseName: string = localize('defaultDatabaseOption', '<Default>');
 	private _loadingDatabaseName: string = localize('loadingDatabaseOption', 'Loading...');
 	public DefaultServerGroup: IConnectionProfileGroup = {
@@ -244,6 +245,7 @@ export class ConnectionWidget {
 		}));
 
 		this._toDispose.push(this._databaseNameInputBox.onFocus(() => {
+			this._databaseDropdownExpanded = true;
 			if (this.serverName) {
 				this._databaseNameInputBox.values = [this._loadingDatabaseName];
 				this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password).then(databases => {
@@ -266,6 +268,10 @@ export class ConnectionWidget {
 			} else {
 				this._databaseNameInputBox.value = s;
 			}
+		}));
+
+		this._toDispose.push(this._databaseNameInputBox.onBlur(() => {
+			this._databaseDropdownExpanded = false;
 		}));
 	}
 
@@ -543,6 +549,14 @@ export class ConnectionWidget {
 
 	public closeDatabaseDropdown(): void {
 		this._databaseNameInputBox.blur();
+	}
+
+	public get databaseDropdownExpanded(): boolean {
+		return this._databaseDropdownExpanded;
+	}
+
+	public set databaseDropdownExpanded(val: boolean) {
+		this._databaseDropdownExpanded = val;
 	}
 }
 

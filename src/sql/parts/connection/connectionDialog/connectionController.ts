@@ -184,4 +184,12 @@ export class ConnectionController implements IConnectionComponentController {
 	public closeDatabaseDropdown(): void {
 		this._connectionWidget.closeDatabaseDropdown();
 	}
+
+	public get databaseDropdownExpanded(): boolean {
+		return this._connectionWidget.databaseDropdownExpanded;
+	}
+
+	public set databaseDropdownExpanded(val: boolean) {
+		this._connectionWidget.databaseDropdownExpanded = val;
+	}
 }
