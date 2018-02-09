@@ -195,6 +195,7 @@ async function publish(commit: string, quality: string, platform: string, type: 
 		promises.push(uploadBlob(blobService, quality, blobName, file));
 	}
 
+	// {{SQL CARBON EDIT}}
 	if (process.env['MOONCAKE_STORAGE_ACCESS_KEY']) {
 		const mooncakeBlobService = azure.createBlobService(storageAccount, process.env['MOONCAKE_STORAGE_ACCESS_KEY'], `${storageAccount}.blob.core.chinacloudapi.cn`)
 			.withFilter(new azure.ExponentialRetryPolicyFilter(20));
