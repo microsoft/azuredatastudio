@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
-import { generateDashboardWidgetSchema } from 'sql/parts/dashboard/pages/dashboardPageContribution';
+import { generateDashboardWidgetSchema, generateDashboardTabSchema } from 'sql/parts/dashboard/pages/dashboardPageContribution';
 
 export interface IPropertiesConfig {
 	edition: number | Array<number>;
@@ -112,5 +112,14 @@ export const serverDashboardSettingSchema: IJSONSchema = {
 	default: defaultVal
 };
 
+export const serverDashboardTabsSchema: IJSONSchema = {
+	type: ['array'],
+	description: nls.localize('dashboardServerTabs', 'Customizes the Server dashboard tabs'),
+	items: generateDashboardTabSchema('server'),
+	default: [
+	]
+};
+
 export const SERVER_DASHBOARD_SETTING = 'dashboard.server.widgets';
 export const SERVER_DASHBOARD_PROPERTIES = 'dashboard.server.properties';
+export const SERVER_DASHBOARD_TABS = 'dashboard.server.tabs';

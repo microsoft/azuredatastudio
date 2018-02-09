@@ -10,7 +10,7 @@
 			<dashboard-widget-wrapper #properties *ngIf="propertiesWidget" [_config]="propertiesWidget" style="padding-left: 10px; padding-right: 10px; height: 90px; display: block">
 			</dashboard-widget-wrapper>
 		</div>
-		<panel style="flex: 1 1 auto; position: relative" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)" [actions]="panelActions">
+		<panel style="flex: 1 1 auto; position: relative" class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)" [actions]="panelActions">
 			<tab *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
 				<dashboard-webview-tab *ngIf="tab.isWebview" [tab]="tab">
 				</dashboard-webview-tab>
