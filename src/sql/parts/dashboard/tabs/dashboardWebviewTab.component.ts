@@ -16,6 +16,9 @@ import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { IDashboardWebview } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 
+import * as data from 'data';
+import { memoize } from 'vs/base/common/decorators';
+
 @Component({
 	template: '',
 	selector: 'dashboard-webview-tab',
@@ -55,6 +58,22 @@ export class DashboardWebviewTab extends DashboardTab implements OnInit, IDashbo
 
 	public get editable(): boolean {
 		return this.tab.editable;
+	}
+
+	@memoize
+	public get connection(): data.connection.Connection {
+		let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
+		let connection: data.connection.Connection = {
+			providerName: currentConnection.providerName,
+			connectionId: currentConnection.id,
+			options: currentConnection.options
+		};
+		return connection;
+	}
+
+	@memoize
+	public get serverInfo(): data.ServerInfo {
+		return this._dashboardService.connectionManagementService.connectionInfo.serverInfo;
 	}
 
 	public refresh(): void {

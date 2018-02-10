@@ -6,13 +6,16 @@
 'use strict';
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-
 import Event from 'vs/base/common/event';
+
+import * as data from 'data';
 
 export const SERVICE_ID = 'dashboardWebviewService';
 
 export interface IDashboardWebview {
 	readonly id: string;
+	readonly connection: data.connection.Connection;
+	readonly serverInfo: data.ServerInfo;
 	setHtml(html: string): void;
 	onMessage: Event<string>;
 	sendMessage(message: string);
