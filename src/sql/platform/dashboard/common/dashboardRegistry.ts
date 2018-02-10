@@ -57,7 +57,7 @@ class DashboardRegistry implements IDashboardRegistry {
 
 	public registerTab(tab: IDashboardTab): void {
 		this._tabs.push(tab);
-		let dashboardConfig = this._configurationRegistry.getConfigurations().find(c=> c.id === DASHBOARD_CONFIG_ID);
+		let dashboardConfig = this._configurationRegistry.getConfigurations().find(c => c.id === DASHBOARD_CONFIG_ID);
 
 		if (dashboardConfig) {
 			let dashboardDatabaseTabProperty = (<IJSONSchema>dashboardConfig.properties[DATABASE_DASHBOARD_TABS].items).properties[DASHBOARD_TABS_KEY_PROPERTY];
