@@ -27,7 +27,7 @@ export class MainThreadDashboardWebview implements MainThreadDashboardWebviewSha
 			if (this.knownWidgets.includes(e.id)) {
 				let handle = MainThreadDashboardWebview._handlePool++;
 				this._dialogs.set(handle, e);
-				this._proxy.$registerWidget(handle, e.id);
+				this._proxy.$registerWidget(handle, e.id, e.connection, e.serverInfo);
 				e.onMessage(e => {
 					this._proxy.$onMessage(handle, e);
 				});
