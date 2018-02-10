@@ -101,7 +101,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 			extension.collector.error('No title specified for extension.');
 			return;
 		}
-		if (!widgets) {
+		if (!widgets && !isWebview) {
 			extension.collector.warn('No widgets specified to show; an empty dashboard tab will be shown.');
 		}
 		if (!description) {
