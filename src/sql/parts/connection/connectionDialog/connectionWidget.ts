@@ -270,9 +270,6 @@ export class ConnectionWidget {
 			}
 		}));
 
-		this._toDispose.push(this._databaseNameInputBox.onBlur(() => {
-			this._databaseDropdownExpanded = false;
-		}));
 	}
 
 	private onGroupSelected(selectedGroup: string) {

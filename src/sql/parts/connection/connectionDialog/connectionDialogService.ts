@@ -153,7 +153,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private handleOnCancel(params: INewConnectionParams): void {
 		if (this.uiController.databaseDropdownExpanded) {
 			this.uiController.closeDatabaseDropdown();
-			this.uiController.databaseDropdownExpanded = false;
 		} else {
 			if (params && params.input && params.connectionType === ConnectionType.editor) {
 				this._connectionManagementService.cancelEditorConnection(params.input);
@@ -166,6 +165,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connectionDialog.resetConnection();
 			this._connecting = false;
 		}
+		this.uiController.databaseDropdownExpanded = false;
 	}
 
 	private handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): Thenable<void> {
