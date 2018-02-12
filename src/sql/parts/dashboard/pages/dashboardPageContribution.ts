@@ -2,11 +2,12 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import { Extensions, IDashboardWidgetRegistry } from 'sql/platform/dashboard/common/widgetRegistry';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import { Extensions, IDashboardWidgetRegistry } from 'sql/platform/dashboard/common/widgetRegistry';
 import { mixin } from 'vs/base/common/objects';
+import { localize } from 'vs/nls';
 
 let widgetRegistry = <IDashboardWidgetRegistry>Registry.as(Extensions.DashboardWidgetContribution);
 
@@ -87,8 +88,15 @@ export function generateDashboardTabSchema(type?: 'database' | 'server'): IJSONS
 		type: 'object',
 		properties: {
 			tabId: {
-				type: 'string'
+				type: 'string',
+				description: localize('sqlops.extension.contributes.dashboard.tab.id', "Unique identifier for this tab. Will be passed to the extension for any requests."),
+				enum: [],
+				enumDescriptions: [],
+				errorMessage: localize('dashboardTabError', "Extension tab is unknown or not installed.")
 			}
 		}
 	};
 }
+
+export const DASHBOARD_CONFIG_ID = 'Dashboard';
+export const DASHBOARD_TABS_KEY_PROPERTY = 'tabId';

@@ -207,8 +207,10 @@ export class NewDashboardTabDialog extends Modal {
 	}
 
 	private addNewTabs() {
-		let selectedTabs = this._extensionList.getSelectedElements();
-		this._onAddTabs.fire(selectedTabs);
+		if (this._addNewTabButton.enabled) {
+			let selectedTabs = this._extensionList.getSelectedElements();
+			this._onAddTabs.fire(selectedTabs);
+		}
 	}
 
 	public cancel() {
@@ -218,7 +220,6 @@ export class NewDashboardTabDialog extends Modal {
 	public open(dashboardTabs: Array<IDashboardTab>, openedTabs: Array<IDashboardTab>) {
 		this.show();
 		this._viewModel.updateDashboardTabs(dashboardTabs, openedTabs);
-		this._addNewTabButton.focus();
 	}
 
 	private onUpdateTabList(tabs: IDashboardUITab[]) {
@@ -226,6 +227,11 @@ export class NewDashboardTabDialog extends Modal {
 		this.layout();
 		if (this._extensionList.length > 0) {
 			this._extensionList.setSelection([0]);
+			this._addNewTabButton.enabled = true;
+			this._addNewTabButton.focus();
+		} else {
+			this._addNewTabButton.enabled = false;
+			this._cancelButton.focus();
 		}
 	}
 

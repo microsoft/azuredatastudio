@@ -111,6 +111,10 @@ export class DashboardWidgetWrapper implements AfterContentInit, OnInit, OnDestr
 	}
 
 	private loadWidget(): void {
+		if (Object.keys(this._config.widget).length !== 1) {
+			error('Exactly 1 widget must be defined per space');
+			return;
+		}
 		let key = Object.keys(this._config.widget)[0];
 		let selector = this.getOrCreateSelector(key);
 		if (selector === undefined) {
@@ -168,6 +172,7 @@ export class DashboardWidgetWrapper implements AfterContentInit, OnInit, OnDestr
 			}
 			// Save the widget for future use
 			selector = componentMap['insights-widget'];
+			delete this._config.widget[key];
 			this._config.widget['insights-widget'] = insightConfig;
 		}
 		return selector;
