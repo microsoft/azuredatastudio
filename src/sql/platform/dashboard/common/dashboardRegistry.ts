@@ -13,7 +13,7 @@ import { ProviderProperties } from 'sql/parts/dashboard/widgets/properties/prope
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DATABASE_DASHBOARD_TABS } from 'sql/parts/dashboard/pages/databaseDashboardPage.contribution';
 import { SERVER_DASHBOARD_TABS, SERVER_DASHBOARD_PROPERTIES } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
-import { DASHBOARD_CONFIG_ID, DASHBOARD_TABS_KEY_PROPERTY } from 'sql/parts/dashboard/pages/dashboardPagecontribution';
+import { DASHBOARD_CONFIG_ID, DASHBOARD_TABS_KEY_PROPERTY } from 'sql/parts/dashboard/pages/dashboardPageContribution';
 
 export const Extensions = {
 	DashboardContributions: 'dashboard.contributions'
