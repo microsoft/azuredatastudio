@@ -6,21 +6,14 @@
 'use strict';
 
 const gulp = require('gulp');
-const json = require('gulp-json-editor');
-const buffer = require('gulp-buffer');
-const filter = require('gulp-filter');
-const es = require('event-stream');
-const util = require('./lib/util');
-const remote = require('gulp-remote-src');
-const zip = require('gulp-vinyl-zip');
-const assign = require('object-assign');
-const pkg = require('../package.json');
+// {{SQL CARBON EDIT}}
+const jeditor = require('gulp-json-editor');
 
 gulp.task('mixin', function () {
-	const repo = process.env['VSCODE_MIXIN_REPO'];
-
-	if (!repo) {
-		console.log('Missing VSCODE_MIXIN_REPO, skipping mixin');
+  // {{SQL CARBON EDIT}}
+	const updateUrl = process.env['SQLOPS_UPDATEURL'];
+	if (!updateUrl) {
+		console.log('Missing SQLOPS_UPDATEURL, skipping mixin');
 		return;
 	}
 
@@ -31,39 +24,13 @@ gulp.task('mixin', function () {
 		return;
 	}
 
-	const url = `https://github.com/${repo}/archive/${pkg.distro}.zip`;
-	const opts = { base: url };
-	const username = process.env['VSCODE_MIXIN_USERNAME'];
-	const password = process.env['VSCODE_MIXIN_PASSWORD'];
+  // {{SQL CARBON EDIT}}
+	let newValues = {
+		"updateUrl": updateUrl,
+		"quality": quality
+	};
 
-	if (username || password) {
-		opts.auth = { user: username || '', pass: password || '' };
-	}
-
-	console.log('Mixing in sources from \'' + url + '\':');
-
-	let all = remote('', opts)
-		.pipe(zip.src())
-		.pipe(filter(function (f) { return !f.isDirectory(); }))
-		.pipe(util.rebase(1));
-
-	if (quality) {
-		const productJsonFilter = filter('product.json', { restore: true });
-		const mixin = all
-			.pipe(filter(['quality/' + quality + '/**']))
-			.pipe(util.rebase(2))
-			.pipe(productJsonFilter)
-			.pipe(buffer())
-			.pipe(json(o => assign({}, require('../product.json'), o)))
-			.pipe(productJsonFilter.restore);
-
-		all = es.merge(mixin);
-	}
-
-	return all
-		.pipe(es.mapSync(function (f) {
-			console.log(f.relative);
-			return f;
-		}))
+	return gulp.src('./product.json')
+		.pipe(jeditor(newValues))
 		.pipe(gulp.dest('.'));
 });
