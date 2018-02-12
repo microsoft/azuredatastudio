@@ -4,7 +4,7 @@
   "description": "SQL Operations Studio studio implementation of vscode-language-client",
   "main": "lib/main.js",
   "scripts": {
-    "prepublish": "node ./node_modules/vscode/bin/install && tsc -p ./src",
+    "prepare": "node ./node_modules/vscode/bin/install && tsc -p ./src",
     "compile": "tsc -p ./src",
     "watch": "tsc -w -p ./src",
     "update-vscode": "node ./node_modules/vscode/bin/install"
@@ -12,11 +12,11 @@
   "author": "Microsoft",
   "license": "ISC",
   "dependencies": {
-    "vscode": "1.1.5",
+    "typescript": "2.6.2",
     "vscode-languageclient": "3.5.0"
   },
   "devDependencies": {
-    "typescript": "2.6.2"
+    "vscode": "1.1.5"
   },
   "engines": {
     "vscode": "^1.15"

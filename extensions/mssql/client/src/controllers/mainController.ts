@@ -77,10 +77,6 @@ export default class MainController implements vscode.Disposable {
 		return this.createClient(['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials']);
 	}
 
-	private createSerializationClient(): Promise<LanguageClient> {
-		return this.createClient(['MicrosoftSqlToolsSerialization.exe', 'MicrosoftSqlToolsSerialization']);
-	}
-
 	private createResourceProviderClient(): Promise<LanguageClient> {
 		return this.createClient(['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService']);
 	}
@@ -103,19 +99,6 @@ export default class MainController implements vscode.Disposable {
 					{ serviceInstalled: serverResult.installedBeforeInitializing ? 1 : 0 }
 				);
 
-				self.createSerializationClient().then(serializationClient => {
-					// Serialization
-					let serializationProvider: data.SerializationProvider = {
-						handle: 0,
-						saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<data.SaveResultRequestResult> {
-							return self._serialization.saveAs(saveFormat, savePath, results, appendToFile);
-						}
-					};
-					data.serialization.registerProvider(serializationProvider);
-				}, error => {
-					Utils.logDebug('Cannot find Serialization executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);
-				});
-
 				self.createResourceProviderClient().then(rpClient => {
 					let resourceProvider = new AzureResourceProvider(self._client, rpClient);
 					data.resources.registerResourceProvider({
@@ -131,27 +114,26 @@ export default class MainController implements vscode.Disposable {
 				});
 
 				self.createCredentialClient().then(credentialClient => {
-
 					self._credentialStore.languageClient = credentialClient;
-					let credentialProvider: data.CredentialProvider = {
-						handle: 0,
-						saveCredential(credentialId: string, password: string): Thenable<boolean> {
-							return self._credentialStore.saveCredential(credentialId, password);
-						},
-						readCredential(credentialId: string): Thenable<data.Credential> {
-							return self._credentialStore.readCredential(credentialId);
-						},
-						deleteCredential(credentialId: string): Thenable<boolean> {
-							return self._credentialStore.deleteCredential(credentialId);
-						}
-					};
-					data.credentials.registerProvider(credentialProvider);
-					Utils.logDebug('credentialProvider registered', MainController._extensionConstants.extensionConfigSectionName);
+					(<LanguageClient>credentialClient).onReady().then(() => {
+						let credentialProvider: data.CredentialProvider = {
+							handle: 0,
+							saveCredential(credentialId: string, password: string): Thenable<boolean> {
+								return self._credentialStore.saveCredential(credentialId, password);
+							},
+							readCredential(credentialId: string): Thenable<data.Credential> {
+								return self._credentialStore.readCredential(credentialId);
+							},
+							deleteCredential(credentialId: string): Thenable<boolean> {
+								return self._credentialStore.deleteCredential(credentialId);
+							}
+						};
+						data.credentials.registerProvider(credentialProvider);
+						Utils.logDebug('credentialProvider registered', MainController._extensionConstants.extensionConfigSectionName);
+					});
 				}, error => {
 					Utils.logDebug('Cannot find credentials executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);
 				});
-
-
 
 				Utils.logDebug(SharedConstants.extensionActivated, MainController._extensionConstants.extensionConfigSectionName);
 				self._initialized = true;

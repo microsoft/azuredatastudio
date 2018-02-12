@@ -6,6 +6,8 @@
     "typescript": "2.6.2",
     "extensions-modules": "file:../extensions-modules"
   },
+  "devDependencies": {
+  },
   "scripts": {
     "postinstall": "node ./postinstall"
   }
