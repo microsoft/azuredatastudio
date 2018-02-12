@@ -170,6 +170,7 @@ export class DashboardWidgetWrapper implements AfterContentInit, OnInit, OnDestr
 			}
 			// Save the widget for future use
 			selector = componentMap['insights-widget'];
+			delete this._config.widget[key];
 			this._config.widget['insights-widget'] = insightConfig;
 		}
 		return selector;
