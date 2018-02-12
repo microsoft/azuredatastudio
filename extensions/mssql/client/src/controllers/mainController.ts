@@ -11,7 +11,7 @@ import { Serialization } from '../serialize/serialization';
 import { AzureResourceProvider } from '../resourceProvider/resourceProvider';
 import { CredentialStore } from '../credentialstore/credentialstore';
 import { IExtensionConstants, Telemetry, Constants as SharedConstants, SqlToolsServiceClient, VscodeWrapper, Utils, PlatformInformation } from 'extensions-modules';
-import { LanguageClient } from 'dataprotocol-client';
+import { SqlOpsDataClient } from 'dataprotocol-client';
 import * as path from 'path';
 
 /**
@@ -67,21 +67,21 @@ export default class MainController implements vscode.Disposable {
 		return this._initialized;
 	}
 
-	private createClient(executableFiles: string[]): Promise<LanguageClient> {
+	private createClient(executableFiles: string[]): Promise<SqlOpsDataClient> {
 		return PlatformInformation.getCurrent(SqlToolsServiceClient.constants.getRuntimeId, SqlToolsServiceClient.constants.extensionName).then(platformInfo => {
 			return SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json')).createClient(this._context, platformInfo.runtimeId, undefined, executableFiles);
 		});
 	}
 
-	private createCredentialClient(): Promise<LanguageClient> {
+	private createCredentialClient(): Promise<SqlOpsDataClient> {
 		return this.createClient(['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials']);
 	}
 
-	private createSerializationClient(): Promise<LanguageClient> {
+	private createSerializationClient(): Promise<SqlOpsDataClient> {
 		return this.createClient(['MicrosoftSqlToolsSerialization.exe', 'MicrosoftSqlToolsSerialization']);
 	}
 
-	private createResourceProviderClient(): Promise<LanguageClient> {
+	private createResourceProviderClient(): Promise<SqlOpsDataClient> {
 		return this.createClient(['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService']);
 	}
 
