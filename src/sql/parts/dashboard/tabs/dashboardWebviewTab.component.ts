@@ -2,6 +2,8 @@
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
+import 'vs/css!./dashboardWebviewTab';
+
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef } from '@angular/core';
 
 import Event, { Emitter } from 'vs/base/common/event';
@@ -18,7 +20,7 @@ import * as data from 'data';
 import { memoize } from 'vs/base/common/decorators';
 
 @Component({
-	template: '<div></div>',
+	template: '',
 	selector: 'dashboard-webview-tab',
 	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWebviewTab) }]
 })
@@ -82,6 +84,7 @@ export class DashboardWebviewTab extends DashboardTab implements OnInit, IDashbo
 		this._html = html;
 		if (this._webview) {
 			this._webview.contents = [html];
+			this._webview.layout();
 		}
 	}
 
@@ -118,5 +121,6 @@ export class DashboardWebviewTab extends DashboardTab implements OnInit, IDashbo
 		if (this._html) {
 			this._webview.contents = [this._html];
 		}
+		this._webview.layout();
 	}
 }
