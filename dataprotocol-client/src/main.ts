@@ -23,6 +23,7 @@ function ensure<T, K extends keyof T>(target: T, key: K): T[K] {
 
 export interface LanguageClientOptions extends VSLanguageClientOptions {
 	providerId: string;
+	serverConnectionMetadata: any;
 }
 
 /**
