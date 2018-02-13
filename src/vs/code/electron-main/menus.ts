@@ -447,6 +447,7 @@ export class CodeMenu {
 			__separator__(),
 			autoSave,
 			__separator__(),
+			// {{SQL CARBON EDIT}}
 			installVsixExtension,
 			__separator__(),
 			!isMacintosh ? preferences : null,
