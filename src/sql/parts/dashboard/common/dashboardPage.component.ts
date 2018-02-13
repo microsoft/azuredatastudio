@@ -290,12 +290,8 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	}
 
 
-	private isWebviewContentType(tab: TabConfig): boolean {
-		return tab.content && Object.keys(tab.content)[0] === WEBVIEW_TABS;
-	}
-
-	private isWidgetsContentType(tab: TabConfig): boolean {
-		return tab.content && Object.keys(tab.content)[0] === WIDGETS_TABS;
+	private getContentType(tab: TabConfig): string {
+		return tab.content ? Object.keys(tab.content)[0] : '';
 	}
 
 	private addNewTab(tab: TabConfig): void {
