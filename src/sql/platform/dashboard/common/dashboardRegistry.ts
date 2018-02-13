@@ -82,7 +82,7 @@ class DashboardRegistry implements IDashboardRegistry {
 	 * @param id id of the widget
 	 * @param schema config schema of the widget
 	 */
-	public registerTabContent(id: string, schema: IJSONSchema ): void {
+	public registerTabContent(id: string, schema: IJSONSchema): void {
 		this._dashboardTabContentSchemaProperties[id] = schema;
 	}
 
