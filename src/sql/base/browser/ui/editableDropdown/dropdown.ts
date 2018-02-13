@@ -198,7 +198,7 @@ export class Dropdown extends Disposable {
 					}
 				}, 0);
 				let height = filteredLength * this._renderer.getHeight(undefined, undefined) > this._options.maxHeight ? this._options.maxHeight : filteredLength * this._renderer.getHeight(undefined, undefined);
-				this.$treeContainer.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) + 'px');
+				this.$treeContainer.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) - 2 + 'px');
 				this._tree.layout(parseInt(this.$treeContainer.style('height')));
 				this._tree.refresh();
 			}
@@ -239,7 +239,7 @@ export class Dropdown extends Disposable {
 			this._filter.filterString = '';
 			this._dataSource.options = vals.map(i => { return { value: i }; });
 			let height = this._dataSource.options.length * 22 > this._options.maxHeight ? this._options.maxHeight : this._dataSource.options.length * 22;
-			this.$treeContainer.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) + 'px');
+			this.$treeContainer.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) - 2 + 'px');
 			this._tree.layout(parseInt(this.$treeContainer.style('height')));
 			this._tree.setInput(new DropdownModel());
 			this._input.validate();

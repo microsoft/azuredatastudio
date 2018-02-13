@@ -48,7 +48,7 @@ core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
-"dataprotocol-client@file:../dataprotocol-client":
+"dataprotocol-client@file:./../dataprotocol-client":
   version "1.0.0"
   dependencies:
     typescript "2.6.2"
@@ -133,7 +133,11 @@ es6-promisify@^5.0.0:
 "extensions-modules@file:../extensions-modules":
   version "0.1.0"
   dependencies:
+<<<<<<< HEAD
+    dataprotocol-client "file:./../../../../AppData/Local/Yarn/cache/v1/dataprotocol-client"
+=======
     dataprotocol-client "file:C:/Users/andresse/AppData/Local/Yarn/cache/v1/dataprotocol-client"
+>>>>>>> master
     decompress "^4.2.0"
     fs-extra-promise "^1.0.1"
     http-proxy-agent "^2.0.0"

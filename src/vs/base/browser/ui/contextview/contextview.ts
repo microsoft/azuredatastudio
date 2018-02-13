@@ -230,7 +230,7 @@ export class ContextView {
 		this.$view.removeClass('top', 'bottom', 'left', 'right');
 		this.$view.addClass(anchorPosition === AnchorPosition.BELOW ? 'bottom' : 'top');
 		this.$view.addClass(anchorAlignment === AnchorAlignment.LEFT ? 'left' : 'right');
-		this.$view.style({ top: result.top + 'px', left: result.left + 'px', width: 'initial' });
+		this.$view.style({ top: result.top + 'px', left: result.left + 1 + 'px', width: 'initial' });
 	}
 
 	public hide(data?: any): void {
