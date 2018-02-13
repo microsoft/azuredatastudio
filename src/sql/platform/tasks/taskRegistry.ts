@@ -73,13 +73,6 @@ class TaskRegistry implements ITaskRegistry {
 		return this._taskSchema.properties;
 	}
 
-	/**
-	 * Registers an action as a task which can be ran given the schema as an input
-	 * @param id id of the task
-	 * @param description desciption of the task
-	 * @param schema schema of expected input
-	 * @param ctor contructor of the action
-	 */
 	registerTask(id: string, description: string, schema: IJSONSchema, ctor: ActionICtor): TaskIdentifier {
 		this._idCtorMap[id] = ctor;
 		this._taskSchema.properties[id] = schema;
