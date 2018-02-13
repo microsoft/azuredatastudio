@@ -5,11 +5,11 @@
 
 import 'vs/css!./dashboardWidgetTab';
 
-import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
+import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter, OnChanges } from '@angular/core';
 import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
+import { TabConfig, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
@@ -66,11 +66,12 @@ function configSorter(a, b): number {
 
 @Component({
 	selector: 'dashboard-widget-tab',
-	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/common/dashboardWidgetTab.component.html')),
+	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/tabs/dashboardWidgetTab.component.html')),
 	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWidgetTab) }]
 })
-export class DashboardWidgetTab extends DashboardTab implements OnDestroy {
+export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnChanges {
 	@Input() private tab: TabConfig;
+	private widgets: WidgetConfig[];
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
 
@@ -112,6 +113,13 @@ export class DashboardWidgetTab extends DashboardTab implements OnDestroy {
 	}
 
 	protected init() {
+	}
+
+	ngOnChanges() {
+		if (this.tab.content) {
+			this.widgets = Object.values(this.tab.content)[0];
+			this._cd.detectChanges();
+		}
 	}
 
 	ngOnDestroy() {
@@ -158,8 +166,8 @@ export class DashboardWidgetTab extends DashboardTab implements OnDestroy {
 			this._grid.enableResize();
 			this._grid.enableDrag();
 			this._editDispose.push(this.dashboardService.onDeleteWidget(e => {
-				let index = this.tab.widgets.findIndex(i => i.id === e);
-				this.tab.widgets.splice(index, 1);
+				let index = this.widgets.findIndex(i => i.id === e);
+				this.widgets.splice(index, 1);
 
 				index = this.tab.originalConfig.findIndex(i => i.id === e);
 				this.tab.originalConfig.splice(index, 1);

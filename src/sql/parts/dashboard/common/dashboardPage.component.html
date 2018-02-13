@@ -12,9 +12,9 @@
 		</div>
 		<panel style="flex: 1 1 auto; position: relative" class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)" [actions]="panelActions">
 			<tab *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
-				<dashboard-webview-tab *ngIf="tab.isWebview" [tab]="tab">
+				<dashboard-webview-tab *ngIf="isWebviewContentType(tab)" [tab]="tab">
 				</dashboard-webview-tab>
-				<dashboard-widget-tab *ngIf="!tab.isWebview" [tab]="tab">
+				<dashboard-widget-tab *ngIf="isWidgetsContentType(tab)" [tab]="tab">
 				</dashboard-widget-tab>
 			</tab>
 		</panel>

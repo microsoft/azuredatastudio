@@ -5,12 +5,12 @@
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IConfigurationRegistry, Extensions as ConfigurationExtension } from 'vs/platform/configuration/common/configurationRegistry';
-import { IJSONSchema } from 'vs/base/common/jsonSchema';
+import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
+import { deepClone } from 'vs/base/common/objects';
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/common/extensionsRegistry';
 
 import { ProviderProperties } from 'sql/parts/dashboard/widgets/properties/propertiesWidget.component';
-import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DATABASE_DASHBOARD_TABS } from 'sql/parts/dashboard/pages/databaseDashboardPage.contribution';
 import { SERVER_DASHBOARD_TABS, SERVER_DASHBOARD_PROPERTIES } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
 import { DASHBOARD_CONFIG_ID, DASHBOARD_TABS_KEY_PROPERTY } from 'sql/parts/dashboard/pages/dashboardPageContribution';
@@ -24,11 +24,10 @@ export interface IDashboardTab {
 	title: string;
 	publisher: string;
 	description?: string;
-	widgets?: WidgetConfig[];
+	content?: object;
 	provider?: string | string[];
 	edition?: number | number[];
 	alwaysShow?: boolean;
-	isWebview?: boolean;
 }
 
 export interface IDashboardRegistry {
@@ -36,12 +35,14 @@ export interface IDashboardRegistry {
 	getProperties(id: string): ProviderProperties;
 	registerTab(tab: IDashboardTab): void;
 	tabs: Array<IDashboardTab>;
+	tabContentSchemaProperties: IJSONSchemaMap;
 }
 
 class DashboardRegistry implements IDashboardRegistry {
 	private _properties = new Map<string, ProviderProperties>();
 	private _tabs = new Array<IDashboardTab>();
 	private _configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtension.Configuration);
+	private _dashboardTabContentSchemaProperties: IJSONSchemaMap = {};
 
 	/**
 	 * Register a dashboard widget
@@ -75,13 +76,34 @@ class DashboardRegistry implements IDashboardRegistry {
 	public get tabs(): Array<IDashboardTab> {
 		return this._tabs;
 	}
+
+	/**
+	 * Register a dashboard widget
+	 * @param id id of the widget
+	 * @param schema config schema of the widget
+	 */
+	public registerTabContent(id: string, schema: IJSONSchema ): void {
+		this._dashboardTabContentSchemaProperties[id] = schema;
+	}
+
+	public get tabContentSchemaProperties(): IJSONSchemaMap {
+		return deepClone(this._dashboardTabContentSchemaProperties);
+	}
 }
 
 const dashboardRegistry = new DashboardRegistry();
 Registry.add(Extensions.DashboardContributions, dashboardRegistry);
 
-export function RegisterTab(tab: IDashboardTab): void {
+export function registerTab(tab: IDashboardTab): void {
 	dashboardRegistry.registerTab(tab);
+}
+
+export function registerTabContent(id: string, schema: IJSONSchema): void {
+	dashboardRegistry.registerTabContent(id, schema);
+}
+
+export function generateTabContentSchemaProperties(): IJSONSchemaMap {
+	return dashboardRegistry.tabContentSchemaProperties;
 }
 
 const dashboardPropertiesPropertyContrib: IJSONSchema = {
