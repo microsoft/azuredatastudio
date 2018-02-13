@@ -410,6 +410,9 @@ export class CodeMenu {
 		const autoSaveEnabled = [AutoSaveConfiguration.AFTER_DELAY, AutoSaveConfiguration.ON_FOCUS_CHANGE, AutoSaveConfiguration.ON_WINDOW_CHANGE].some(s => this.currentAutoSaveSetting === s);
 		const autoSave = new MenuItem(this.likeAction('vscode.toggleAutoSave', { label: this.mnemonicLabel(nls.localize('miAutoSave', "Auto Save")), type: 'checkbox', checked: autoSaveEnabled, enabled: this.windowsMainService.getWindowCount() > 0, click: () => this.windowsMainService.sendToFocused('vscode.toggleAutoSave') }, false));
 
+		// {{SQL CARBON EDIT}}
+		const installVsixExtension = this.createMenuItem(nls.localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package"), 'workbench.extensions.action.installVSIX');
+
 		const preferences = this.getPreferencesMenu();
 
 		const newWindow = new MenuItem(this.likeAction('workbench.action.newWindow', { label: this.mnemonicLabel(nls.localize({ key: 'miNewWindow', comment: ['&& denotes a mnemonic'] }, "New &&Window")), click: () => this.windowsMainService.openNewWindow(OpenContext.MENU) }));
@@ -443,6 +446,8 @@ export class CodeMenu {
 			saveAllFiles,
 			__separator__(),
 			autoSave,
+			__separator__(),
+			installVsixExtension,
 			__separator__(),
 			!isMacintosh ? preferences : null,
 			!isMacintosh ? __separator__() : null,
