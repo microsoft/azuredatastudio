@@ -17,6 +17,8 @@ import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { LinkedList } from 'vs/base/common/linkedList';
 
+import * as data from 'data';
+
 export const ITaskService = createDecorator<ITaskService>('taskService');
 
 export interface ITaskOptions {
@@ -104,6 +106,20 @@ export interface ITasksActionMap {
 	[id: string]: ITaskAction;
 }
 
+export class ExecuteTaskAction extends Action {
+
+	constructor(
+		id: string,
+		label: string,
+		@ITaskService private _taskService: ITaskService) {
+		super(id, label);
+	}
+
+	run(connection: data.connection.Connection, serverInfo: data.ServerInfo, ...args: any[]): TPromise<any> {
+		return this._taskService.executeTask(this.id, connection, serverInfo, ...args);
+	}
+}
+
 export interface ITaskAction {
 	id: string;
 	title: string | ILocalizedString;
@@ -115,7 +131,7 @@ export interface ITaskAction {
 export interface ITaskService {
 	_serviceBrand: any;
 	onWillExecuteTask: Event<ITaskEvent>;
-	executeTask<T = any>(commandId: string, profile: IConnectionProfile, ...args: any[]): TPromise<T>;
+	executeTask<T = any>(commandId: string, connection: data.connection.Connection, serverInfo: data.ServerInfo, ...args: any[]): TPromise<T>;
 }
 
 export interface ITaskHandler {

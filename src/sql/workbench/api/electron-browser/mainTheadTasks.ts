@@ -77,9 +77,9 @@ export class MainThreadTasks implements MainThreadTasksShape {
 		return undefined;
 	}
 
-	$executeTask<T>(id: string, profile: any, args: any[]): Thenable<T> {
-		return this._commandService.executeTask<T>(id, profile, ...args);
-	}
+	// $executeTask<T>(id: string, args: any[]): Thenable<T> {
+	// 	return this._commandService.executeTask<T>(id, ...args);
+	// }
 
 	$getTasks(): Thenable<string[]> {
 		return TPromise.as(Object.keys(TaskRegistry.getTasks()));

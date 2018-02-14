@@ -672,7 +672,6 @@ export class Workbench implements IPartService {
 
 		// {{SQL CARBON EDIT}}
 		// SQL Tools services
-		serviceCollection.set(ITaskExecutionService, this.instantiationService.createInstance(TaskExecutionService));
 		serviceCollection.set(IAngularEventingService, this.instantiationService.createInstance(AngularEventingService));
 		serviceCollection.set(ISqlOAuthService, this.instantiationService.createInstance(SqlOAuthService));
 		serviceCollection.set(sqlIClipboardService, this.instantiationService.createInstance(sqlClipboardService));
@@ -684,6 +683,7 @@ export class Workbench implements IPartService {
 		serviceCollection.set(IResourceProviderService, this.instantiationService.createInstance(ResourceProviderService));
 		let connectionManagementService = this.instantiationService.createInstance(ConnectionManagementService, undefined, undefined);
 		serviceCollection.set(IConnectionManagementService, connectionManagementService);
+		serviceCollection.set(ITaskExecutionService, this.instantiationService.createInstance(TaskExecutionService));
 		serviceCollection.set(ISerializationService, this.instantiationService.createInstance(SerializationService));
 		serviceCollection.set(IQueryManagementService, this.instantiationService.createInstance(QueryManagementService));
 		serviceCollection.set(IQueryModelService, this.instantiationService.createInstance(QueryModelService));

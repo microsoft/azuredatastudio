@@ -160,5 +160,6 @@ import 'sql/parts/dashboard/widgets/tasks/tasksWidget.contribution';
 import 'sql/parts/dashboard/dashboardConfig.contribution';
 /* Tasks */
 import 'sql/workbench/common/actions.contribution';
+import 'sql/platform/tasks/task.contribution';
 /* Extension Host */
 import 'sql/workbench/api/electron-browser/sqlExtensionHost.contribution';

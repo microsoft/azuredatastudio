@@ -27,6 +27,7 @@ import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { generateUuid } from 'vs/base/common/uuid';
 import { $ } from 'vs/base/browser/dom';
+import { ExecuteTaskAction } from 'sql/platform/tasks/common/tasks';
 
 export class ObjectMetadataWrapper implements ObjectMetadata {
 	public metadataType: MetadataType;
@@ -370,19 +371,17 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 			actions.push(instantiationService.createInstance(ScriptAlterAction, ScriptAlterAction.ID, ScriptAlterAction.LABEL));
 		}
 	} else {
-		/*
-		actions.push(instantiationService.createInstance(NewQueryAction, NewQueryAction.ID, NewQueryAction.LABEL, NewQueryAction.ICON));
+		actions.push(instantiationService.createInstance(ExecuteTaskAction, NewQueryAction.ID, NewQueryAction.LABEL));
 
-		let action: IAction = instantiationService.createInstance(RestoreAction, RestoreAction.ID, RestoreAction.LABEL, RestoreAction.ICON);
+		let action: IAction = instantiationService.createInstance(ExecuteTaskAction, RestoreAction.ID, RestoreAction.LABEL);
 		if (capabilitiesService.isFeatureAvailable(action, info)) {
 			actions.push(action);
 		}
 
-		action = instantiationService.createInstance(BackupAction, BackupAction.ID, BackupAction.LABEL, BackupAction.ICON);
+		action = instantiationService.createInstance(ExecuteTaskAction, BackupAction.ID, BackupAction.LABEL);
 		if (capabilitiesService.isFeatureAvailable(action, info)) {
 			actions.push(action);
 		}
-		*/
 
 		actions.push(instantiationService.createInstance(ManageAction, ManageAction.ID, ManageAction.LABEL));
 		return TPromise.as(actions);

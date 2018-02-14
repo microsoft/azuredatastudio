@@ -457,6 +457,6 @@ export interface ExtHostTasksShape {
 export interface MainThreadTasksShape extends IDisposable {
 	$registerTask(id: string): TPromise<any>;
 	$unregisterTask(id: string): TPromise<any>;
-	$executeTask<T>(id: string, profile: any, args: any[]): Thenable<T>;
+	// $executeTask<T>(id: string, args: any[]): Thenable<T>;
 	$getTasks(): Thenable<string[]>;
 }

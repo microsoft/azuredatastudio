@@ -24,6 +24,7 @@ import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 import * as Constants from 'sql/parts/connection/common/constants';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ExecuteTaskAction, ITaskService } from 'sql/platform/tasks/common/tasks';
 
 export class ObjectExplorerActionsContext {
 	public treeNode: TreeNode;
@@ -32,8 +33,7 @@ export class ObjectExplorerActionsContext {
 	public tree: ITree;
 }
 
-/*
-export class OENewQueryAction extends NewQueryAction {
+export class OENewQueryAction extends ExecuteTaskAction {
 	public static ID = 'objectExplorer.' + NewQueryAction.ID;
 	private _objectExplorerTreeNode: TreeNode;
 	private _container: HTMLElement;
@@ -41,13 +41,10 @@ export class OENewQueryAction extends NewQueryAction {
 
 	constructor(
 		id: string, label: string, icon: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
-		@IWorkbenchEditorService protected _workbenchEditorService: IWorkbenchEditorService
+		@ITaskService taskService: ITaskService
 	) {
-		super(id, label, icon, _queryEditorService, _connectionManagementService, _objectExplorerService, _workbenchEditorService);
+		super(id, label, taskService);
 	}
 
 	public run(actionContext: any): TPromise<boolean> {
@@ -60,13 +57,12 @@ export class OENewQueryAction extends NewQueryAction {
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
 
-		return super.run({ profile: connectionProfile }).then(() => {
+		return super.run(connectionProfile).then(() => {
 			this._treeSelectionHandler.onTreeActionStateChange(false);
 			return true;
 		});
 	}
 }
-*/
 
 export class ManageConnectionAction extends Action {
 	public static ID = 'objectExplorer.manage';

@@ -13,6 +13,10 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+
+import * as data from 'data';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 
 export class TaskService extends Disposable implements ITaskService {
 
@@ -27,13 +31,14 @@ export class TaskService extends Disposable implements ITaskService {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IExtensionService private _extensionService: IExtensionService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
-		@ILogService private _logService: ILogService
+		@ILogService private _logService: ILogService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super();
 		this._extensionService.whenInstalledExtensionsRegistered().then(value => this._extensionHostIsReady = value);
 	}
 
-	executeTask<T>(id: string, profile: IConnectionProfile, ...args: any[]): TPromise<T> {
+	executeTask<T>(id: string, connection: data.connection.Connection, serverInfo: data.ServerInfo, ...args: any[]): TPromise<T> {
 		this._logService.trace('CommandService#executeCommand', id);
 
 		// we always send an activation event, but
@@ -43,17 +48,18 @@ export class TaskService extends Disposable implements ITaskService {
 		const activation = this._extensionService.activateByEvent(`onCommand:${id}`);
 
 		if (!this._extensionHostIsReady && TaskRegistry.getTask(id)) {
-			return this._tryExecuteTask(id, profile, args);
+			return this._tryExecuteTask(id, connection, serverInfo, args);
 		} else {
-			return activation.then(_ => this._tryExecuteTask(id, profile, args));
+			return activation.then(_ => this._tryExecuteTask(id, connection, serverInfo, args));
 		}
 	}
 
-	private _tryExecuteTask(id: string, profile: IConnectionProfile, args: any[]): TPromise<any> {
+	private _tryExecuteTask(id: string, connection: data.connection.Connection, serverInfo: data.ServerInfo, args: any[]): TPromise<any> {
 		const command = TaskRegistry.getTask(id);
 		if (!command) {
 			return TPromise.wrapError(new Error(`command '${id}' not found`));
 		}
+
 
 		// if (command.precondition && !this._contextKeyService.contextMatchesRules(command.precondition)) {
 		// 	// not enabled
@@ -62,7 +68,7 @@ export class TaskService extends Disposable implements ITaskService {
 
 		try {
 			this._onWillExecuteTask.fire({ taskId: id });
-			const result = this._instantiationService.invokeFunction.apply(this._instantiationService, [command.handler].concat([<any>profile]).concat(args));
+			const result = this._instantiationService.invokeFunction.apply(this._instantiationService, [command.handler].concat([<any>connection, <any>serverInfo]).concat(args));
 			return TPromise.as(result);
 		} catch (err) {
 			return TPromise.wrapError(err);
