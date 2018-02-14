@@ -11,8 +11,10 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IConnectionManagementService, IConnectionCompletionOptions, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction,
-	ScriptExecuteAction, ScriptDeleteAction, ScriptAlterAction } from 'sql/workbench/common/actions';
+import {
+	NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction,
+	ScriptExecuteAction, ScriptDeleteAction, ScriptAlterAction
+} from 'sql/workbench/common/actions';
 import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
 import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/parts/registeredServer/viewlet/treeSelectionHandler';
@@ -445,13 +447,13 @@ export class ObjectExplorerActionUtilities {
 
 		let basicScripting = [OEScriptCreateAction, OEScriptDeleteAction];
 		let storedProcedureScripting = isMssqlProvider ? [OEScriptCreateAction, OEScriptAlterAction, OEScriptDeleteAction, OEScriptExecuteAction] :
-		basicScripting;
+			basicScripting;
 
 		let viewScripting = isMssqlProvider ? [OEScriptSelectAction, OEScriptCreateAction, OEScriptAlterAction, OEScriptDeleteAction] :
-		[OEScriptSelectAction, OEScriptCreateAction, OEScriptDeleteAction];
+			[OEScriptSelectAction, OEScriptCreateAction, OEScriptDeleteAction];
 
 		let functionScripting = isMssqlProvider ? [OEScriptCreateAction, OEScriptAlterAction, OEScriptDeleteAction] :
-		basicScripting;
+			basicScripting;
 		scriptMap.set(NodeType.AggregateFunction, functionScripting);
 		scriptMap.set(NodeType.PartitionFunction, functionScripting);
 		scriptMap.set(NodeType.ScalarValuedFunction, functionScripting);

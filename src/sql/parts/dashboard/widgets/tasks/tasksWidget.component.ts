@@ -55,7 +55,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		super();
 		this._profile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
 		let tasksConfig = <IConfig>Object.values(this._config.widget)[0];
-		let tasks = TaskRegistry. getDisplayTasks();
+		let tasks = TaskRegistry.getDisplayTasks();
 
 		if (tasksConfig.tasks) {
 			let taskIds = Object.keys(tasksConfig.tasks);
