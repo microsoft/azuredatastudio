@@ -1,0 +1,43 @@
+{
+"results": [{
+	"extensions": [
+		{
+			"extensionId": "1",
+			"extensionName": "TestExtension",
+			"disolayName": "Test Extension",
+			"shortDescription": "Test Extension short Desc",
+			"publisher": {
+				"displayName":"Microsoft",
+				"publisherId": "microsoft",
+				"publisherName":"Microsoft"
+			},
+			"versions": [
+				{
+					"version": "1.0.0",
+					"lastUpdated": "1/1/2018",
+					"assetUri": "assetUri",
+					"fallbackAssetUri": "fallbackAssetUri",
+						"files": [
+						{"assetType": "Microsoft.VisualStudio.Services.VSIXPackage"},
+						{"assetType": "Microsoft.VisualStudio.Services.Links.Source"}
+					],
+					"properties": [
+					{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
+					{ "key":"Microsoft.VisualStudio.Services.Links.Source", "value": "https://github.com/Microsoft/sqlopsstudio"},
+					{ "key":"Microsoft.VisualStudio.Services.VSIXPackage", "value": ""},
+					{ "key":"Microsoft.SQLOps.DownloadPage2", "value": "https://github.com/Microsoft/sqlopsstudio"}
+					]
+				}],
+			"statistics": [],
+			"flags": "preview"
+		}
+	],
+	"resultMetadata": [{
+		"metadataType": "ResultCount",
+		"metadataItems": [{
+			"name": "TotalCount",
+			"count": 1
+		}]
+	}]
+}]
+}
