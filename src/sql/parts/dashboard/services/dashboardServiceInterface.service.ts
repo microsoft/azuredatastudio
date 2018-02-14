@@ -38,6 +38,7 @@ import Event, { Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
 import { ITaskService } from 'sql/platform/tasks/common/tasks';
+import { deepClone } from 'vs/base/common/objects';
 
 const DASHBOARD_SETTINGS = 'dashboard';
 
@@ -258,7 +259,7 @@ export class DashboardServiceInterface implements OnDestroy {
 	 */
 	public getSettings<T>(type: string): T {
 		let config = this._configService.getValue<T>([DASHBOARD_SETTINGS, type].join('.'));
-		return config;
+		return deepClone(config);
 	}
 
 	public writeSettings(key: string, value: any, target: ConfigurationTarget) {
