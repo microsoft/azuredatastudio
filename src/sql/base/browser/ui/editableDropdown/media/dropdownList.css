@@ -31,7 +31,7 @@
 	background-size: cover;
 }
 
-.connection-input .monaco-action-bar .action-item .icon {
+.connection-input .monaco-inputbox .monaco-action-bar .action-item .icon {
 	width: 8px;
 	height: 8px;
 }
