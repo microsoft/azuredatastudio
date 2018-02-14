@@ -22,6 +22,9 @@ import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
+import { error } from 'sql/base/common/log';
+import { WIDGETS_TABS } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
+import { WEBVIEW_TABS } from 'sql/parts/dashboard/tabs/dashboardWebviewTab.contribution';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -184,7 +187,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			id: 'homeTab',
 			publisher: undefined,
 			title: this.homeTabTitle,
-			widgets: homeWidgets,
+			content: { 'widgets-tab': homeWidgets },
 			context: this.context,
 			originalConfig: this._originalConfig,
 			editable: true,
@@ -246,15 +249,21 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private loadNewTabs(dashboardTabs: IDashboardTab[]) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			let selectedTabs = dashboardTabs.map(v => {
-				if (v.widgets) {
-					let configs = v.widgets;
+
+				if (Object.keys(v.content).length !== 1) {
+					error('Exactly 1 widget must be defined per space');
+				}
+
+				let key = Object.keys(v.content)[0];
+				if (key === WIDGETS_TABS) {
+					let configs = <WidgetConfig[]>Object.values(v.content)[0];
 					this._configModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs]);
 					});
 					this._gridModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs]);
 					});
-					return { id: v.id, title: v.title, widgets: configs, alwaysShow: v.alwaysShow };
+					return { id: v.id, title: v.title, content: { 'widgets-tab': configs }, alwaysShow: v.alwaysShow };
 				}
 				return v;
 			}).map(v => {
@@ -278,6 +287,11 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				this._panel.selectTab(selectedTabs.pop().id);
 			});
 		}
+	}
+
+
+	private getContentType(tab: TabConfig): string {
+		return tab.content ? Object.keys(tab.content)[0] : '';
 	}
 
 	private addNewTab(tab: TabConfig): void {
