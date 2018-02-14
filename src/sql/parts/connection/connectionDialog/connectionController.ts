@@ -34,7 +34,7 @@ export class ConnectionController implements IConnectionComponentController {
 		sqlCapabilities: data.DataProtocolServerCapabilities,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
-		@IInstantiationService private _instantiationService: IInstantiationService, ) {
+		@IInstantiationService private _instantiationService: IInstantiationService ) {
 		this._container = container;
 		this._connectionManagementService = connectionManagementService;
 		this._callback = callback;
@@ -179,5 +179,17 @@ export class ConnectionController implements IConnectionComponentController {
 
 	public handleResetConnection(): void {
 		this._connectionWidget.handleResetConnection();
+	}
+
+	public closeDatabaseDropdown(): void {
+		this._connectionWidget.closeDatabaseDropdown();
+	}
+
+	public get databaseDropdownExpanded(): boolean {
+		return this._connectionWidget.databaseDropdownExpanded;
+	}
+
+	public set databaseDropdownExpanded(val: boolean) {
+		this._connectionWidget.databaseDropdownExpanded = val;
 	}
 }

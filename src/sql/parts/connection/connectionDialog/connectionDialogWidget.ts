@@ -56,6 +56,7 @@ export class ConnectionDialogWidget extends Modal {
 	private _recentConnectionTree: ITree;
 	private _savedConnectionTree: ITree;
 	private $connectionUIContainer: Builder;
+	private _databaseDropdownExpanded: boolean;
 
 	private _panel: TabbedPanel;
 	private _recentConnectionTabId: PanelTabIdentifier;
@@ -244,7 +245,9 @@ export class ConnectionDialogWidget extends Modal {
 
 	private cancel() {
 		this._onCancel.fire();
-		this.close();
+		if (!this._databaseDropdownExpanded) {
+			this.close();
+		}
 	}
 
 	public close() {
@@ -451,5 +454,13 @@ export class ConnectionDialogWidget extends Modal {
 	public updateProvider(displayName: string) {
 		this._providerTypeSelectBox.selectWithOptionName(displayName);
 		this.onProviderTypeSelected(displayName);
+	}
+
+	public set databaseDropdownExpanded(val: boolean) {
+		this._databaseDropdownExpanded = val;
+	}
+
+	public get databaseDropdownExpanded(): boolean {
+		return this._databaseDropdownExpanded;
 	}
 }
