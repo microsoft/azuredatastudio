@@ -14,8 +14,9 @@ import * as mime from 'mime';
 import * as minimist from 'minimist';
 import { DocumentClient, NewDocument } from 'documentdb';
 
-if (process.argv.length < 6) {
-	console.error('Usage: node publish.js <product> <platform> <type> <name> <version> <commit> <is_update> <file>');
+// {{SQL CARBON EDIT}}
+if (process.argv.length < 9) {
+	console.error('Usage: node publish.js <product_quality> <platform> <file_type> <file_name> <version> <is_update> <file> [commit_id]');
 	process.exit(-1);
 }
 
@@ -183,21 +184,10 @@ async function publish(commit: string, quality: string, platform: string, type: 
 	const blobService = azure.createBlobService(storageAccount, process.env['AZURE_STORAGE_ACCESS_KEY_2'])
 		.withFilter(new azure.ExponentialRetryPolicyFilter(20));
 
-	const mooncakeBlobService = azure.createBlobService(storageAccount, process.env['MOONCAKE_STORAGE_ACCESS_KEY'], `${storageAccount}.blob.core.chinacloudapi.cn`)
-		.withFilter(new azure.ExponentialRetryPolicyFilter(20));
+	// {{SQL CARBON EDIT}}
+	await assertContainer(blobService, quality);
 
-	// mooncake is fussy and far away, this is needed!
-	mooncakeBlobService.defaultClientRequestTimeoutInMs = 10 * 60 * 1000;
-
-	await Promise.all([
-		assertContainer(blobService, quality),
-		assertContainer(mooncakeBlobService, quality)
-	]);
-
-	const [blobExists, moooncakeBlobExists] = await Promise.all([
-		doesAssetExist(blobService, quality, blobName),
-		doesAssetExist(mooncakeBlobService, quality, blobName)
-	]);
+	const blobExists = await doesAssetExist(blobService, quality, blobName);
 
 	const promises = [];
 
@@ -205,8 +195,23 @@ async function publish(commit: string, quality: string, platform: string, type: 
 		promises.push(uploadBlob(blobService, quality, blobName, file));
 	}
 
-	if (!moooncakeBlobExists) {
-		promises.push(uploadBlob(mooncakeBlobService, quality, blobName, file));
+	// {{SQL CARBON EDIT}}
+	if (process.env['MOONCAKE_STORAGE_ACCESS_KEY']) {
+		const mooncakeBlobService = azure.createBlobService(storageAccount, process.env['MOONCAKE_STORAGE_ACCESS_KEY'], `${storageAccount}.blob.core.chinacloudapi.cn`)
+			.withFilter(new azure.ExponentialRetryPolicyFilter(20));
+
+		// mooncake is fussy and far away, this is needed!
+		mooncakeBlobService.defaultClientRequestTimeoutInMs = 10 * 60 * 1000;
+
+		await assertContainer(mooncakeBlobService, quality);
+
+		const mooncakeBlobExists = await doesAssetExist(mooncakeBlobService, quality, blobName);
+
+		if (!mooncakeBlobExists) {
+			promises.push(uploadBlob(mooncakeBlobService, quality, blobName, file));
+		}
+	} else {
+		console.log('Skipping Mooncake publishing.');
 	}
 
 	if (promises.length === 0) {
@@ -228,7 +233,8 @@ async function publish(commit: string, quality: string, platform: string, type: 
 		platform: platform,
 		type: type,
 		url: `${process.env['AZURE_CDN_URL']}/${quality}/${blobName}`,
-		mooncakeUrl: `${process.env['MOONCAKE_CDN_URL']}/${quality}/${blobName}`,
+		// {{SQL CARBON EDIT}}
+		mooncakeUrl: process.env['MOONCAKE_CDN_URL'] ? `${process.env['MOONCAKE_CDN_URL']}/${quality}/${blobName}` : undefined,
 		hash: sha1hash,
 		sha256hash,
 		size
@@ -261,8 +267,11 @@ function main(): void {
 		boolean: ['upload-only']
 	});
 
-	const [quality, platform, type, name, version, _isUpdate, file] = opts._;
-	const commit = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+	// {{SQL CARBON EDIT}}
+	let [quality, platform, type, name, version, _isUpdate, file, commit] = opts._;
+	if (!commit) {
+		commit = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+	}
 
 	publish(commit, quality, platform, type, name, version, _isUpdate, file, opts).catch(err => {
 		console.error(err);

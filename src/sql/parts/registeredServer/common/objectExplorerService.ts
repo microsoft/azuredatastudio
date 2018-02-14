@@ -63,6 +63,8 @@ export interface IObjectExplorerService {
 	isFocused(): boolean;
 
 	onSelectionOrFocusChange: Event<void>;
+
+	getServerTreeView(): ServerTreeView;
 }
 
 interface SessionStatus {
@@ -416,5 +418,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	*/
 	public isFocused(): boolean {
 		return this._serverTreeView.isFocused();
+	}
+
+	public getServerTreeView() {
+		return this._serverTreeView;
 	}
 }

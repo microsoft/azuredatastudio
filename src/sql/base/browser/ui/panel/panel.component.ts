@@ -128,7 +128,8 @@ export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDe
 				}
 			});
 
-			if (this._activeTab && tab.identifier === this._activeTab.identifier) {
+			if (this._activeTab && tab === this._activeTab) {
+				this.onTabChange.emit(tab);
 				return;
 			}
 

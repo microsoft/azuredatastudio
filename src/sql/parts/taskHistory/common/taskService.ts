@@ -9,13 +9,13 @@ import { TaskNode, TaskStatus, TaskExecutionMode } from 'sql/parts/taskHistory/c
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import Event, { Emitter } from 'vs/base/common/event';
-export const SERVICE_ID = 'taskHistoryService';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { IChoiceService } from 'vs/platform/message/common/message';
 import { localize } from 'vs/nls';
 import Severity from 'vs/base/common/severity';
 import { TPromise } from 'vs/base/common/winjs.base';
 
+export const SERVICE_ID = 'taskHistoryService';
 export const ITaskService = createDecorator<ITaskService>(SERVICE_ID);
 
 export interface ITaskService {
