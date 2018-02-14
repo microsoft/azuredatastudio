@@ -30,6 +30,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
 import { ExtHostDashboardWebviews } from 'sql/workbench/api/node/extHostDashboardWebview';
 import { ExtHostConnectionManagement } from 'sql/workbench/api/node/extHostConnectionManagement';
+import { ExtHostObjectExplorer } from './extHostObjectExplorer';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -54,6 +55,7 @@ export function createApiFactory(
 	const extHostConnectionManagement = threadService.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(threadService));
 	const extHostCredentialManagement = threadService.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(threadService));
 	const extHostDataProvider = threadService.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(threadService));
+	const extHostObjectExplorer = threadService.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(threadService));
 	const extHostSerializationProvider = threadService.set(SqlExtHostContext.ExtHostSerializationProvider, new ExtHostSerializationProvider(threadService));
 	const extHostResourceProvider = threadService.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(threadService));
 	const extHostModalDialogs = threadService.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(threadService));
@@ -100,6 +102,19 @@ export function createApiFactory(
 					return extHostCredentialManagement.$getCredentialProvider(namespaceId);
 				}
 			};
+
+			// namespace: objectexplorer
+			const objectExplorer: typeof data.objectexplorer = {
+				getNode(connectionId: string, nodePath?: string): Thenable<data.objectexplorer.ObjectExplorerNode> {
+					return extHostObjectExplorer.$getNode(connectionId, nodePath);
+				},
+				getSavedConnections(active?: boolean): Thenable<data.objectexplorer.ObjectExplorerNode[]> {
+					return extHostObjectExplorer.$getSavedConnections(active);
+				},
+				find(connectionId?: string, type?: string, schema?: string, name?: string): Thenable<data.objectexplorer.ObjectExplorerNode[]> {
+					return extHostObjectExplorer.$find(connectionId, type, schema, name);
+				}
+			}
 
 			// namespace: serialization
 			const serialization: typeof data.serialization = {
@@ -271,6 +286,7 @@ export function createApiFactory(
 				accounts,
 				connection,
 				credentials,
+				objectexplorer: objectExplorer,
 				resources,
 				serialization,
 				dataprotocol,

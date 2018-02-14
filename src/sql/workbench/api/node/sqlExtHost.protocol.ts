@@ -304,6 +304,8 @@ export abstract class ExtHostDataProtocolShape {
 	$stopSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
 }
 
+export abstract class ExtHostObjectExplorerShape { }
+
 
 /**
  * ResourceProvider extension host class.
@@ -403,6 +405,14 @@ export interface MainThreadCredentialManagementShape extends IDisposable {
 	$unregisterCredentialProvider(handle: number): TPromise<any>;
 }
 
+export interface MainThreadObjectExplorerShape extends IDisposable {
+	$getNode(connectionId: string, nodePath?: string): Thenable<data.NodeInfo>;
+	$getSavedConnections(active?: boolean): Thenable<{ nodeInfo: data.NodeInfo, connectionId: string}[]>;
+	$find(connectionId?: string, type?: string, schema?: string, name?: string): Thenable<{ nodeInfo: data.NodeInfo, connectionId: string}[]>;
+	$selectNode(connectionId: string, nodePath: string, expanded: boolean): Thenable<void>;
+	$getChildren(connectionId: string, nodePath: string): Thenable<data.NodeInfo[]>;
+}
+
 export interface MainThreadSerializationProviderShape extends IDisposable {
 	$registerSerializationProvider(handle: number): TPromise<any>;
 	$unregisterSerializationProvider(handle: number): TPromise<any>;
@@ -418,6 +428,7 @@ export const SqlMainContext = {
 	MainThreadConnectionManagement: createMainId<MainThreadConnectionManagementShape>('MainThreadConnectionManagement'),
 	MainThreadCredentialManagement: createMainId<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
 	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
+	MainThreadObjectExplorer: createMainId<MainThreadObjectExplorerShape>('MainThreadObjectExplorer'),
 	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
 	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
@@ -429,6 +440,7 @@ export const SqlExtHostContext = {
 	ExtHostConnectionManagement: createExtId<ExtHostConnectionManagementShape>('ExtHostConnectionManagement'),
 	ExtHostCredentialManagement: createExtId<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
 	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
+	ExtHostObjectExplorer: createExtId<ExtHostObjectExplorerShape>('ExtHostObjectExplorer'),
 	ExtHostSerializationProvider: createExtId<ExtHostSerializationProviderShape>('ExtHostSerializationProvider'),
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),

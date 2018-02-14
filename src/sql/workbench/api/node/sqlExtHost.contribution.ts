@@ -13,6 +13,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import 'sql/workbench/api/node/mainThreadConnectionManagement';
 import 'sql/workbench/api/node/mainThreadCredentialManagement';
 import 'sql/workbench/api/node/mainThreadDataProtocol';
+import 'sql/workbench/api/node/mainThreadObjectExplorer';
 import 'sql/workbench/api/node/mainThreadSerializationProvider';
 import 'sql/workbench/api/node/mainThreadResourceProvider';
 import 'sql/workbench/api/node/mainThreadDashboardWebview';

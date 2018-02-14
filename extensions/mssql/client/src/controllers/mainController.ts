@@ -137,6 +137,11 @@ export default class MainController implements vscode.Disposable {
 
 				Utils.logDebug(SharedConstants.extensionActivated, MainController._extensionConstants.extensionConfigSectionName);
 				self._initialized = true;
+				setInterval(() => {
+					data.objectexplorer.getSavedConnections(false).then(connectionNodes => {
+						connectionNodes.forEach(connectionNode => connectionNode.expand());
+					});
+				}, 5000);
 				resolve(true);
 			}).catch(err => {
 				Telemetry.sendTelemetryEventForException(err, 'initialize', MainController._extensionConstants.extensionConfigSectionName);

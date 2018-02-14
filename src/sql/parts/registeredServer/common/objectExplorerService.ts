@@ -65,6 +65,10 @@ export interface IObjectExplorerService {
 	onSelectionOrFocusChange: Event<void>;
 
 	getServerTreeView(): ServerTreeView;
+
+	getConnections(active?: boolean): { connectionId: string, nodeInfo: data.NodeInfo }[];
+
+	expandNodeForConnection(connectionId: string, nodePath: string): void;
 }
 
 interface SessionStatus {
@@ -422,5 +426,41 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	public getServerTreeView() {
 		return this._serverTreeView;
+	}
+
+	public getConnections(active?: boolean): { connectionId: string, nodeInfo: data.NodeInfo }[] {
+		let connections: [string, TreeNode][] = Object.entries(this._activeObjectExplorerNodes);
+		if (active) {
+			connections = connections.filter(([connectionId, treeNode]) => treeNode.getSession() !== undefined);
+		}
+		return connections.map(([connectionId, treeNode]) => {
+			return {
+				connectionId: connectionId,
+				nodeInfo: <data.NodeInfo> {
+					nodePath: treeNode.nodePath,
+					nodeType: treeNode.nodeTypeId,
+					nodeSubType: treeNode.nodeSubType,
+					nodeStatus: treeNode.nodeStatus,
+					label: treeNode.label,
+					isLeaf: treeNode.isAlwaysLeaf,
+					metadata: treeNode.metadata,
+					errorMessage: treeNode.errorStateMessage
+				}
+			}
+		});
+	}
+
+	public expandNodeForConnection(connectionId: string, nodePath: string): void {
+		let connectionNode = this._activeObjectExplorerNodes[connectionId];
+		if (!connectionNode) {
+			console.log('failed to expand, no connection node');
+			return;
+		}
+		let session = connectionNode.session;
+		if (!session) {
+			console.log('failed to expand, no session');
+			return;
+		}
+		this.expandNode(connectionNode.connection.providerName, session, nodePath);
 	}
 }

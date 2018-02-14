@@ -108,6 +108,87 @@ declare module 'data' {
 		}
 	}
 
+	/**
+	 * Namespace for interacting with Object Explorer
+	*/
+	export namespace objectexplorer {
+		/**
+		 * Get an Object Explorer node corresponding to the given connection and path. If no path
+		 * is given, it returns the top-level node for the given connection. If there is no node at
+		 * the given path, it returns undefined.
+		 * @param {string} connectionId The id of the connection that the node exists on
+		 * @param {string?} nodePath The path of the node to get
+		 * @returns {ObjectExplorerNode} The node corresponding to the given connection and path,
+		 * or undefined if no such node exists.
+		*/
+		export function getNode(connectionId: string, nodePath?: string): Thenable<ObjectExplorerNode>;
+
+		/**
+		 * TODO
+		 */
+		export function find(connectionId?: string, type?: string, schema?: string, name?: string): Thenable<ObjectExplorerNode[]>;
+
+		/**
+		 * Get all saved Object Explorer connections, optionally filtering by whether the
+		 * connection is active (connected)
+		 * @param {boolean?} active If true, only return active (connected) connections
+		 * @returns {ObjectExplorerNode[]} The Object Explorer nodes for each saved connection
+		*/
+		export function getSavedConnections(active?: boolean): Thenable<ObjectExplorerNode[]>;
+
+		/**
+		 * Interface for representing and interacting with items in Object Explorer
+		*/
+		export interface ObjectExplorerNode extends NodeInfo {
+			/**
+			 * Whether the node is currently expanded in Object Explorer
+			 */
+			expanded: boolean;
+
+			/**
+			 * Whether the node has child objects. If so, they can be retrieved by calling the
+			 * getChildren method.
+			*/
+			hasChildren: boolean;
+
+			/**
+			 * Whether the node has a parent object. If so, it can be retrieved by calling the
+			 * getParent method.
+			 */
+			hasParent: boolean;
+
+			/**
+			 * The id of the connection that the node exists under
+			 */
+			connectionId: string;
+
+			/**
+			 * Expand and select the node in Object Explorer
+			 */
+			expand(): void;
+
+			/**
+			 * Collapse and select the node in Object Explorer
+			*/
+			collapse(): void;
+
+			/**
+			 * Select the node in Object Explorer
+			 */
+			select(): void;
+
+			/**
+			 * Get all the child nodes. Returns an empty list if there are no children.
+			 */
+			getChildren(): Thenable<ObjectExplorerNode[]>;
+
+			/**
+			 * Get the parent node. Returns undefined if there is none.
+			 */
+			getParent(): Thenable<ObjectExplorerNode>;
+		}
+	}
+
 	// EXPORTED INTERFACES /////////////////////////////////////////////////
 	export interface ConnectionInfo {
 
