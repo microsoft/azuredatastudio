@@ -19,7 +19,7 @@ import {
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadTasks)
-export class MainThreadCommands implements MainThreadTasksShape {
+export class MainThreadTasks implements MainThreadTasksShape {
 
 	private readonly _disposables = new Map<string, IDisposable>();
 	private readonly _generateCommandsDocumentationRegistration: IDisposable;
@@ -42,7 +42,7 @@ export class MainThreadCommands implements MainThreadTasksShape {
 	}
 
 	private _generateCommandsDocumentation(): TPromise<void> {
-		return this._proxy.$getContributedCommandHandlerDescriptions().then(result => {
+		return this._proxy.$getContributedTaskHandlerDescriptions().then(result => {
 			// add local commands
 			const commands = TaskRegistry.getTasks();
 			for (let id in commands) {
@@ -61,15 +61,15 @@ export class MainThreadCommands implements MainThreadTasksShape {
 		});
 	}
 
-	$registerCommand(id: string): TPromise<any> {
+	$registerTask(id: string): TPromise<any> {
 		this._disposables.set(
 			id,
-			TaskRegistry.registerTask(id, (accessor, ...args) => this._proxy.$executeContributedCommand(id, ...args))
+			TaskRegistry.registerTask(id, (accessor, ...args) => this._proxy.$executeContributedTask(id, ...args))
 		);
 		return undefined;
 	}
 
-	$unregisterCommand(id: string): TPromise<any> {
+	$unregisterTask(id: string): TPromise<any> {
 		if (this._disposables.has(id)) {
 			this._disposables.get(id).dispose();
 			this._disposables.delete(id);
@@ -77,11 +77,11 @@ export class MainThreadCommands implements MainThreadTasksShape {
 		return undefined;
 	}
 
-	$executeCommand<T>(id: string, args: any[]): Thenable<T> {
-		return this._commandService.executeCommand<T>(id, ...args);
+	$executeTask<T>(id: string, profile: any, args: any[]): Thenable<T> {
+		return this._commandService.executeTask<T>(id, profile, ...args);
 	}
 
-	$getCommands(): Thenable<string[]> {
+	$getTasks(): Thenable<string[]> {
 		return TPromise.as(Object.keys(TaskRegistry.getTasks()));
 	}
 }

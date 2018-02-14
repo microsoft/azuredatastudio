@@ -43,13 +43,13 @@ export class TaskService extends Disposable implements ITaskService {
 		const activation = this._extensionService.activateByEvent(`onCommand:${id}`);
 
 		if (!this._extensionHostIsReady && TaskRegistry.getTask(id)) {
-			return this._tryExecuteTask(id, args);
+			return this._tryExecuteTask(id, profile, args);
 		} else {
-			return activation.then(_ => this._tryExecuteTask(id, args));
+			return activation.then(_ => this._tryExecuteTask(id, profile, args));
 		}
 	}
 
-	private _tryExecuteTask(id: string, args: any[]): TPromise<any> {
+	private _tryExecuteTask(id: string, profile: IConnectionProfile, args: any[]): TPromise<any> {
 		const command = TaskRegistry.getTask(id);
 		if (!command) {
 			return TPromise.wrapError(new Error(`command '${id}' not found`));
@@ -62,7 +62,7 @@ export class TaskService extends Disposable implements ITaskService {
 
 		try {
 			this._onWillExecuteTask.fire({ taskId: id });
-			const result = this._instantiationService.invokeFunction.apply(this._instantiationService, [command.handler].concat(args));
+			const result = this._instantiationService.invokeFunction.apply(this._instantiationService, [command.handler].concat([<any>profile]).concat(args));
 			return TPromise.as(result);
 		} catch (err) {
 			return TPromise.wrapError(err);

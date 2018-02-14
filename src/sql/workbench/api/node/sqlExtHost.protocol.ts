@@ -450,13 +450,13 @@ export interface ExtHostModalDialogsShape {
 }
 
 export interface ExtHostTasksShape {
-	$executeContributedCommand<T>(id: string, ...args: any[]): Thenable<T>;
-	$getContributedCommandHandlerDescriptions(): TPromise<{ [id: string]: string | ITaskHandlerDescription }>;
+	$executeContributedTask<T>(id: string, ...args: any[]): Thenable<T>;
+	$getContributedTaskHandlerDescriptions(): TPromise<{ [id: string]: string | ITaskHandlerDescription }>;
 }
 
 export interface MainThreadTasksShape extends IDisposable {
-	$registerCommand(id: string): TPromise<any>;
-	$unregisterCommand(id: string): TPromise<any>;
-	$executeCommand<T>(id: string, args: any[]): Thenable<T>;
-	$getCommands(): Thenable<string[]>;
+	$registerTask(id: string): TPromise<any>;
+	$unregisterTask(id: string): TPromise<any>;
+	$executeTask<T>(id: string, profile: any, args: any[]): Thenable<T>;
+	$getTasks(): Thenable<string[]>;
 }

@@ -41,20 +41,20 @@ export class ExtHostTasks implements ExtHostTasksShape {
 		}
 
 		this._commands.set(id, { callback, thisArg, description });
-		this._proxy.$registerCommand(id);
+		this._proxy.$registerTask(id);
 
 		return new extHostTypes.Disposable(() => {
 			if (this._commands.delete(id)) {
-				this._proxy.$unregisterCommand(id);
+				this._proxy.$unregisterTask(id);
 			}
 		});
 	}
 
-	$executeContributedCommand<T>(id: string, ...args: any[]): Thenable<T> {
+	$executeContributedTask<T>(id: string, ...args: any[]): Thenable<T> {
 		throw new Error("Method not implemented.");
 	}
 
-	$getContributedCommandHandlerDescriptions(): TPromise<{ [id: string]: any; }> {
+	$getContributedTaskHandlerDescriptions(): TPromise<{ [id: string]: any; }> {
 		throw new Error("Method not implemented.");
 	}
 }

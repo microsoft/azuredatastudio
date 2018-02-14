@@ -15,6 +15,7 @@ import Event from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { LinkedList } from 'vs/base/common/linkedList';
 
 export const ITaskService = createDecorator<ITaskService>('taskService');
 
@@ -140,27 +141,95 @@ export interface ITaskRegistry {
 
 export const TaskRegistry: ITaskRegistry = new class implements ITaskRegistry {
 
-	registerTask(idOrCommand: string | ITask, handler?: ITaskHandler): IDisposable {
-		return undefined;
+	private _tasks = new Map<string, LinkedList<ITask>>();
+	private _displayTasks = new Map<string, LinkedList<ITaskAction>>();
+
+	registerTask(idOrTask: string | ITask, handler?: ITaskHandler): IDisposable {
+
+		if (!idOrTask) {
+			throw new Error(`invalid command`);
+		}
+
+		if (typeof idOrTask === 'string') {
+			if (!handler) {
+				throw new Error(`invalid command`);
+			}
+			return this.registerTask({ id: idOrTask, handler });
+		}
+
+		// add argument validation if rich command metadata is provided
+		if (idOrTask.description) {
+			const constraints: TypeConstraint[] = [];
+			for (let arg of idOrTask.description.args) {
+				constraints.push(arg.constraint);
+			}
+			const actualHandler = idOrTask.handler;
+			idOrTask.handler = function (accessor, profile, ...args: any[]) {
+				validateConstraints(args, constraints);
+				return actualHandler(accessor, profile, ...args);
+			};
+		}
+
+		// find a place to store the command
+		const { id } = idOrTask;
+
+		let commands = this._tasks.get(id);
+		if (!commands) {
+			commands = new LinkedList<ITask>();
+			this._tasks.set(id, commands);
+		}
+
+		let removeFn = commands.unshift(idOrTask);
+
+		return {
+			dispose: () => {
+				removeFn();
+				if (this._tasks.get(id).isEmpty()) {
+					this._tasks.delete(id);
+				}
+			}
+		};
 	}
 
-	addTask(userCommand: ITaskAction): boolean {
-		return undefined;
+	addTask(task: ITaskAction): boolean {
+		let tasks = this._displayTasks.get(task.id);
+		if (!tasks) {
+			tasks = new LinkedList<ITaskAction>();
+			this._displayTasks.set(task.id, tasks);
+		}
+		tasks.unshift(task);
+		return false;
 	}
 
 	getTask(id: string): ITask {
-		return undefined;
+		const list = this._tasks.get(id);
+		if (!list || list.isEmpty()) {
+			return undefined;
+		}
+		return list.iterator().next().value;
 	}
 
 	getTasks(): ITasksMap {
-		return undefined;
+		const result: ITasksMap = Object.create(null);
+		this._tasks.forEach((value, key) => {
+			result[key] = this.getTask(key);
+		});
+		return result;
 	}
 
 	getDisplayTask(id: string): ITaskAction {
-		return undefined;
+		const list = this._displayTasks.get(id);
+		if (!list || list.isEmpty()) {
+			return undefined;
+		}
+		return list.iterator().next().value;
 	}
 
 	getDisplayTasks(): ITasksActionMap {
-		return undefined;
+		const result: ITasksActionMap = Object.create(null);
+		this._displayTasks.forEach((value, key) => {
+			result[key] = this.getDisplayTask(key);
+		});
+		return result;
 	}
 };

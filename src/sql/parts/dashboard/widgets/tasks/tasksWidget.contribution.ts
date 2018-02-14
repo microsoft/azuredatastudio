@@ -4,14 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { registerDashboardWidget } from 'sql/platform/dashboard/common/widgetRegistry';
-import { Extensions as TaskExtensions, TaskRegistry } from 'sql/platform/tasks/common/tasks';
+import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 
 let tasksSchema: IJSONSchema = {
 	type: 'object',
 	properties: {
 		tasks: {
-			type: 'object',
-			properties: TaskRegistry.taskSchemas
+			type: 'object'
 		}
 	}
 };

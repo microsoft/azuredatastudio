@@ -27,6 +27,5 @@ const newProfilerSchema: IJSONSchema = {
 if (process.env['VSCODE_DEV']) {
 	const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 	registry.registerWorkbenchAction(new SyncActionDescriptor(GlobalNewProfilerAction, GlobalNewProfilerAction.ID, GlobalNewProfilerAction.LABEL), 'Profiler: New Profiler', category);
-
-	TaskRegistry.registerTask('new-profiler', '', newProfilerSchema, NewProfilerAction);
+	new NewProfilerAction().registerTask();
 }

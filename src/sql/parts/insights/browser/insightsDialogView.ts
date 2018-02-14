@@ -9,7 +9,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { attachButtonStyler, attachModalDialogStyler, attachTableStyler } from 'sql/common/theme/styler';
-import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
+import { TaskRegistry, ITaskService } from 'sql/platform/tasks/common/tasks';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/parts/insights/common/interfaces';
@@ -126,7 +126,8 @@ export class InsightsDialogView extends Modal {
 		@IPartService partService: IPartService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@ITaskService private _taskService: ITaskService
 	) {
 		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, partService, telemetryService, contextKeyService);
 		this._model.onDataChange(e => this.build());
@@ -297,7 +298,7 @@ export class InsightsDialogView extends Modal {
 						} else {
 							return;
 						}
-						this._instantiationService.createInstance(ctor, ctor.ID, ctor.LABEL, ctor.ICON).run(this.topInsightContext(resource));
+						this._taskService.executeTask(task.id, this._connectionProfile);
 					}, 'left');
 					button.enabled = false;
 					this._taskButtonDisposables.push(button);
@@ -333,13 +334,24 @@ export class InsightsDialogView extends Modal {
 	}
 
 	private get insightActions(): TPromise<IAction[]> {
-		let tasks = TaskRegistry.idToCtorMap;
+		let tasks = TaskRegistry.getDisplayTasks();
 		let actions = this._insight.actions.types;
 		let returnActions: IAction[] = [];
 		for (let action of actions) {
-			let ctor = tasks[action];
-			if (ctor) {
-				returnActions.push(this._instantiationService.createInstance(ctor, ctor.ID, ctor.LABEL, ctor.ICON));
+			let task = tasks[action];
+			if (task) {
+				returnActions.push({
+					id: task.id,
+					label: types.isString(task.title) ? task.title : task.title.value,
+					enabled: true,
+					class: task.iconClass,
+					checked: true,
+					radio: false,
+					run: () => this._taskService.executeTask(task.id, this._connectionProfile),
+					tooltip: types.isString(task.title) ? task.title : task.title.value,
+					dispose: () => {
+					}
+				});
 			}
 		}
 		return TPromise.as(returnActions);
