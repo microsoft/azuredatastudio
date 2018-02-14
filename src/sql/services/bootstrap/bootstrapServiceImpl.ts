@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NgModuleRef } from '@angular/core';
+import { NgModuleRef, enableProdMode } from '@angular/core';
 import { platformBrowserDynamic, } from '@angular/platform-browser-dynamic';
 
 import { BootstrapParams } from 'sql/services/bootstrap/bootstrapParams';
@@ -177,4 +177,8 @@ export class BootstrapService implements IBootstrapService {
 		idArray.push(elementId);
 		this._selectorQueueMap.set(selectorString, idArray);
 	}
+}
+
+if (!process.env['VSCODE_DEV']) {
+	enableProdMode();
 }
