@@ -22,12 +22,13 @@
 						{"assetType": "Microsoft.VisualStudio.Services.Links.Source"}
 					],
 					"properties": [
-					{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
-					{ "key":"Microsoft.VisualStudio.Services.Links.Source", "value": "https://github.com/Microsoft/sqlopsstudio"},
-					{ "key":"Microsoft.VisualStudio.Services.VSIXPackage", "value": ""},
-					{ "key":"Microsoft.SQLOps.DownloadPage2", "value": "https://github.com/Microsoft/sqlopsstudio"}
+						{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
+						{ "key":"Microsoft.VisualStudio.Services.Links.Source", "value": "https://github.com/Microsoft/sqlopsstudio"},
+						{ "key":"Microsoft.VisualStudio.Services.VSIXPackage", "value": ""},
+						{ "key":"Microsoft.SQLOps.DownloadPage", "value": "https://github.com/Microsoft/sqlopsstudio"}
 					]
-				}],
+				}
+			],
 			"statistics": [],
 			"flags": "preview"
 		}
