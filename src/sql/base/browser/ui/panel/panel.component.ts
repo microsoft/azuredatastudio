@@ -42,7 +42,9 @@ let idPool = 0;
 					</div>
 				</div>
 			</div>
-			<ng-content class="fullsize"></ng-content>
+			<div class="tab-content fullsize">
+				<ng-content class="fullsize"></ng-content>
+			</div>
 		</div>
 	`
 })
