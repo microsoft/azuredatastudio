@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, OnChanges, OnDestroy, ViewChildren } from '@angular/core';
+import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, OnChanges, OnDestroy, ViewChildren, AfterViewInit } from '@angular/core';
 
 import { TabComponent } from './tab.component';
 import { TabHeaderComponent } from './tabHeader.component';
@@ -19,18 +19,28 @@ export interface IPanelOptions {
 	 * Whether or not to show the tabs if there is only one tab present
 	 */
 	showTabsWhenOne?: boolean;
+	layout?: NavigationBarLayout;
+}
+
+export enum NavigationBarLayout {
+	horizontal = 0,
+	vertical = 1
 }
 
 const defaultOptions: IPanelOptions = {
-	showTabsWhenOne: true
+	showTabsWhenOne: true,
+	layout: NavigationBarLayout.horizontal
 };
+
+const verticalLayout = 'vertical';
+const horizontalLayout = 'horizontal';
 
 let idPool = 0;
 
 @Component({
 	selector: 'panel',
 	template: `
-		<div class="tabbedPanel fullsize" style="position: absolute">
+		<div class="tabbedPanel fullsize" #tabbedPanel style="position: absolute">
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
 				<div class="tabList">
 					<div *ngFor="let tab of _tabs">
@@ -48,7 +58,7 @@ let idPool = 0;
 		</div>
 	`
 })
-export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDestroy {
+export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDestroy, AfterViewInit {
 	@Input() public options: IPanelOptions;
 	@Input() public actions: Array<Action>;
 	@ContentChildren(TabComponent) private _tabs: QueryList<TabComponent>;
@@ -62,6 +72,7 @@ export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDe
 	private _mru: TabComponent[];
 
 	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
+	@ViewChild('tabbedPanel', { read: ElementRef }) private _tabbedPanelRef: ElementRef;
 	constructor( @Inject(forwardRef(() => NgZone)) private _zone: NgZone) { }
 
 	ngOnInit(): void {
@@ -73,6 +84,14 @@ export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDe
 		if (this._tabs && this._tabs.length > 0) {
 			this._activeTab = this._tabs.first;
 			this._activeTab.active = true;
+		}
+	}
+
+	ngAfterViewInit(): void {
+		if (this.options.layout === NavigationBarLayout.horizontal) {
+			(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(horizontalLayout);
+		} else {
+			(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(verticalLayout);
 		}
 	}
 

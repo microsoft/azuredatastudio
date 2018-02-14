@@ -19,7 +19,6 @@
 	margin: 0 auto;
 	padding: 0;
 	justify-content: flex-start;
-	flex-flow: row;
 	line-height: 35px;
 }
 
@@ -59,4 +58,26 @@
 
 .tabbedPanel .title-actions .panel-actions .actions-container {
 	justify-content: flex-start;
+}
+
+.tabbedPanel.vertical {
+	display: flex;
+}
+
+.tabbedPanel.vertical > .title {
+	flex: 0 0 auto;
+	flex-direction: column;
+	height: 100%;
+}
+
+.tabbedPanel.vertical > .tab-content {
+	flex: 1;
+}
+
+.tabbedPanel.vertical > .title > .tabList {
+	flex-flow: column;
+}
+
+.tabbedPanel.horizontal > .title > .tabList {
+	flex-flow: row;
 }

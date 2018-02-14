@@ -65,11 +65,13 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const tabBoarder = theme.getColor(TAB_BORDER);
 	if (tabBoarder) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title > .tabList .tab-header {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title > .tabList .tab-header {
 				border-right-color: ${tabBoarder};
 			}
 
-
+			panel.dashboard-panel > .tabbedPanel.vertical > .title > .tabList .tab-header {
+				border-bottom-color: ${tabBoarder};
+			}
 		`);
 	}
 
@@ -81,6 +83,12 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 				border-bottom-color: ${tabBoarder};
 				border-bottom-width: 1px;
 				border-bottom-style: solid;
+			}
+
+			panel.dashboard-panel > .tabbedPanel.vertical > .title {
+				border-right-color: ${tabBoarder};
+				border-right-width: 1px;
+				border-right-style: solid;
 			}
 		`);
 	}

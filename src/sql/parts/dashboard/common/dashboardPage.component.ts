@@ -5,7 +5,6 @@
 
 import 'vs/css!./dashboardPage';
 import './dashboardPanelStyles';
-import './dashboardLeftNavPanelStyles';
 
 import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef } from '@angular/core';
 
