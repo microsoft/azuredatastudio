@@ -47,7 +47,7 @@ TaskRegistry.registerTask('configure-dashboard', '', configureDashboardSchema, A
 
 // add product update and release notes contributions
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-.registerWorkbenchContribution(ProductContribution, LifecyclePhase.Running);
+	.registerWorkbenchContribution(ProductContribution, LifecyclePhase.Running);
 
 Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
 	.registerWorkbenchAction(new SyncActionDescriptor(ShowCurrentReleaseNotesAction, ShowCurrentReleaseNotesAction.ID, ShowCurrentReleaseNotesAction.LABEL), 'Show Getting Started');

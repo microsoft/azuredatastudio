@@ -18,7 +18,7 @@ interface TaskHandler {
 	description: ITaskHandlerDescription;
 }
 
-export class ExtHostTasks implements ExtHostTasksShape{
+export class ExtHostTasks implements ExtHostTasksShape {
 	private _proxy: MainThreadTasksShape;
 	private _commands = new Map<string, TaskHandler>();
 

@@ -1464,6 +1464,6 @@ declare module 'data' {
 		* @param thisArg The `this` context used when invoking the handler function.
 		* @return Disposable which unregisters this task on disposal.
 		*/
-	   export function registerTask(task: string, callback: (...args: any[]) => any, thisArg?: any): vscode.Disposable;
+		export function registerTask(task: string, callback: (...args: any[]) => any, thisArg?: any): vscode.Disposable;
 	}
 }
