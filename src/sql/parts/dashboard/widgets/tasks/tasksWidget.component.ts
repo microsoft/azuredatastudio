@@ -12,7 +12,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 /* SQL imports */
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { ITaskRegistry, Extensions, TaskAction } from 'sql/platform/tasks/taskRegistry';
+import { ITaskRegistry, Extensions, TaskAction, TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { BaseActionContext } from 'sql/workbench/common/actions';
 
@@ -20,7 +20,6 @@ import { BaseActionContext } from 'sql/workbench/common/actions';
 import * as themeColors from 'vs/workbench/common/theme';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { registerThemingParticipant, ICssStyleCollector, ITheme } from 'vs/platform/theme/common/themeService';
-import { Registry } from 'vs/platform/registry/common/platform';
 import { Action } from 'vs/base/common/actions';
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
@@ -55,17 +54,16 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	) {
 		super();
 		this._profile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
-		let registry = Registry.as<ITaskRegistry>(Extensions.TaskContribution);
 		let tasksConfig = <IConfig>Object.values(this._config.widget)[0];
 		let taskIds: Array<string>;
 
 		if (tasksConfig.tasks) {
 			taskIds = Object.keys(tasksConfig.tasks);
 		} else {
-			taskIds = registry.ids;
+			taskIds = TaskRegistry.ids;
 		}
 
-		let ctorMap = registry.idToCtorMap;
+		let ctorMap = TaskRegistry.idToCtorMap;
 		this._tasks = taskIds.map(id => {
 			let ctor = ctorMap[id];
 			if (ctor) {

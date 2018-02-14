@@ -17,7 +17,7 @@ import { IAdminService } from 'sql/parts/admin/common/adminService';
 import * as Constants from 'sql/common/constants';
 import { ObjectMetadata } from 'data';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
-import { TaskAction } from 'sql/platform/tasks/taskRegistry';
+import { TaskAction } from 'sql/platform/tasks/common/tasks';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';

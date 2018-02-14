@@ -9,11 +9,13 @@ import {
 	createExtHostContextProxyIdentifier as createExtId,
 	ProxyIdentifier, IThreadService
 } from 'vs/workbench/services/thread/common/threadService';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 import * as data from 'data';
 
-import { TPromise } from 'vs/base/common/winjs.base';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
+
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
 	$clear(handle: number, accountKey: data.AccountKey): Thenable<void> { throw ni(); }
@@ -420,6 +422,7 @@ export const SqlMainContext = {
 	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
 	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
+	MainThreadTasks: createMainId<MainThreadTasksShape>('MainThreadTasks')
 };
 
 export const SqlExtHostContext = {
@@ -429,7 +432,8 @@ export const SqlExtHostContext = {
 	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
 	ExtHostSerializationProvider: createExtId<ExtHostSerializationProviderShape>('ExtHostSerializationProvider'),
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
-	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs')
+	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
+	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks')
 };
 
 export interface MainThreadModalDialogShape extends IDisposable {
@@ -443,4 +447,16 @@ export interface MainThreadModalDialogShape extends IDisposable {
 export interface ExtHostModalDialogsShape {
 	$onMessage(handle: number, message: any): void;
 	$onClosed(handle: number): void;
+}
+
+export interface ExtHostTasksShape {
+	$executeContributedCommand<T>(id: string, ...args: any[]): Thenable<T>;
+	$getContributedCommandHandlerDescriptions(): TPromise<{ [id: string]: string | ITaskHandlerDescription }>;
+}
+
+export interface MainThreadTasksShape extends IDisposable {
+	$registerCommand(id: string): TPromise<any>;
+	$unregisterCommand(id: string): TPromise<any>;
+	$executeCommand<T>(id: string, args: any[]): Thenable<T>;
+	$getCommands(): Thenable<string[]>;
 }

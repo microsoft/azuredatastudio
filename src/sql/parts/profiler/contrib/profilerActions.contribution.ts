@@ -6,7 +6,7 @@
 
 import { GlobalNewProfilerAction } from './profilerWorkbenchActions';
 
-import { registerTask } from 'sql/platform/tasks/taskRegistry';
+import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { NewProfilerAction } from './profilerActions';
 
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -28,5 +28,5 @@ if (process.env['VSCODE_DEV']) {
 	const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 	registry.registerWorkbenchAction(new SyncActionDescriptor(GlobalNewProfilerAction, GlobalNewProfilerAction.ID, GlobalNewProfilerAction.LABEL), 'Profiler: New Profiler', category);
 
-	registerTask('new-profiler', '', newProfilerSchema, NewProfilerAction);
+	TaskRegistry.registerTask('new-profiler', '', newProfilerSchema, NewProfilerAction);
 }

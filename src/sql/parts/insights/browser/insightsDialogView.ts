@@ -9,7 +9,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { attachButtonStyler, attachModalDialogStyler, attachTableStyler } from 'sql/common/theme/styler';
-import { ITaskRegistry, Extensions as TaskExtensions } from 'sql/platform/tasks/taskRegistry';
+import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/parts/insights/common/interfaces';
@@ -29,7 +29,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IListService } from 'vs/platform/list/browser/listService';
 import * as nls from 'vs/nls';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { Registry } from 'vs/platform/registry/common/platform';
 import { IAction } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -284,8 +283,7 @@ export class InsightsDialogView extends Modal {
 		this._topTableData.clear();
 		this._topTableData.push(inputArray);
 		if (this._insight.actions && this._insight.actions.types) {
-			const taskRegistry = Registry.as<ITaskRegistry>(TaskExtensions.TaskContribution);
-			let tasks = taskRegistry.idToCtorMap;
+			let tasks = TaskRegistry.idToCtorMap;
 			for (let action of this._insight.actions.types) {
 				let ctor = tasks[action];
 				if (ctor) {
@@ -333,8 +331,7 @@ export class InsightsDialogView extends Modal {
 	}
 
 	private get insightActions(): TPromise<IAction[]> {
-		const taskRegistry = Registry.as<ITaskRegistry>(TaskExtensions.TaskContribution);
-		let tasks = taskRegistry.idToCtorMap;
+		let tasks = TaskRegistry.idToCtorMap;
 		let actions = this._insight.actions.types;
 		let returnActions: IAction[] = [];
 		for (let action of actions) {

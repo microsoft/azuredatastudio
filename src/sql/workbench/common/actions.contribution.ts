@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { registerTask } from 'sql/platform/tasks/taskRegistry';
+import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import * as Actions from './actions';
 
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
@@ -39,11 +39,11 @@ const configureDashboardSchema: IJSONSchema = {
 	default: null
 };
 
-registerTask('backup', '', backupSchema, Actions.BackupAction);
-registerTask('restore', '', restoreSchema, Actions.RestoreAction);
-registerTask('new-query', '', newQuerySchema, Actions.NewQueryAction);
+TaskRegistry.registerTask('backup', '', backupSchema, Actions.BackupAction);
+TaskRegistry.registerTask('restore', '', restoreSchema, Actions.RestoreAction);
+TaskRegistry.registerTask('new-query', '', newQuerySchema, Actions.NewQueryAction);
 
-registerTask('configure-dashboard', '', configureDashboardSchema, Actions.ConfigureDashboardAction);
+TaskRegistry.registerTask('configure-dashboard', '', configureDashboardSchema, Actions.ConfigureDashboardAction);
 
 // add product update and release notes contributions
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)

@@ -1450,4 +1450,20 @@ declare module 'data' {
 			title: string
 		): ModalDialog;
 	}
+
+	export namespace tasks {
+		/**
+		* Registers a task that can be invoked via a keyboard shortcut,
+		* a menu item, an action, or directly.
+		*
+		* Registering a task with an existing task identifier twice
+		* will cause an error.
+		*
+		* @param task A unique identifier for the task.
+		* @param callback A task handler function.
+		* @param thisArg The `this` context used when invoking the handler function.
+		* @return Disposable which unregisters this task on disposal.
+		*/
+	   export function registerTask(task: string, callback: (...args: any[]) => any, thisArg?: any): vscode.Disposable;
+	}
 }
