@@ -143,6 +143,8 @@ import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/
 import { IResourceProviderService, IAccountPickerService } from 'sql/parts/accountManagement/common/interfaces';
 import { ResourceProviderService } from 'sql/parts/accountManagement/common/resourceProviderService';
 import { AccountPickerService } from 'sql/parts/accountManagement/accountPicker/accountPickerService';
+import { ITaskService as ITaskExecutionService } from 'sql/platform/tasks/common/tasks';
+import { TaskService as TaskExecutionService } from 'sql/platform/tasks/common/taskService';
 
 export const MessagesVisibleContext = new RawContextKey<boolean>('globalMessageVisible', false);
 export const EditorsVisibleContext = new RawContextKey<boolean>('editorIsOpen', false);
@@ -667,9 +669,10 @@ export class Workbench implements IPartService {
 		this.toDispose.push(this.quickOpen);
 		this.toShutdown.push(this.quickOpen);
 		serviceCollection.set(IQuickOpenService, this.quickOpen);
-		
+
 		// {{SQL CARBON EDIT}}
 		// SQL Tools services
+		serviceCollection.set(ITaskExecutionService, this.instantiationService.createInstance(TaskExecutionService));
 		serviceCollection.set(IAngularEventingService, this.instantiationService.createInstance(AngularEventingService));
 		serviceCollection.set(ISqlOAuthService, this.instantiationService.createInstance(SqlOAuthService));
 		serviceCollection.set(sqlIClipboardService, this.instantiationService.createInstance(sqlClipboardService));
@@ -707,7 +710,7 @@ export class Workbench implements IPartService {
 		this.toDispose.push(connectionManagementService);
 		this.toShutdown.push(connectionManagementService);
 		this.toShutdown.push(accountManagementService);
-		
+
 		// Contributed services
 		const contributedServices = getServices();
 		for (let contributedService of contributedServices) {

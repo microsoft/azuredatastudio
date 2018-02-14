@@ -30,6 +30,7 @@ export class ObjectExplorerActionsContext {
 	public tree: ITree;
 }
 
+/*
 export class OENewQueryAction extends NewQueryAction {
 	public static ID = 'objectExplorer.' + NewQueryAction.ID;
 	private _objectExplorerTreeNode: TreeNode;
@@ -63,6 +64,7 @@ export class OENewQueryAction extends NewQueryAction {
 		});
 	}
 }
+*/
 
 export class ManageConnectionAction extends Action {
 	public static ID = 'objectExplorer.manage';

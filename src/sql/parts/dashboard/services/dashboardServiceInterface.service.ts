@@ -30,13 +30,14 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { ConfigurationEditingService, IConfigurationValue } from 'vs/workbench/services/configuration/node/configurationEditingService'
+import { ConfigurationEditingService, IConfigurationValue } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IMessageService } from 'vs/platform/message/common/message';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import Event, { Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
+import { ITaskService } from 'sql/platform/tasks/common/tasks';
 
 const DASHBOARD_SETTINGS = 'dashboard';
 
@@ -127,6 +128,7 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _storageService: IStorageService;
 	private _capabilitiesService: ICapabilitiesService;
 	private _configurationEditingService: ConfigurationEditingService;
+	private _taskService: ITaskService;
 
 	private _updatePage = new Emitter<void>();
 	public readonly onUpdatePage: Event<void> = this._updatePage.event;
@@ -149,6 +151,7 @@ export class DashboardServiceInterface implements OnDestroy {
 		this._storageService = this._bootstrapService.storageService;
 		this._capabilitiesService = this._bootstrapService.capabilitiesService;
 		this._configurationEditingService = this._bootstrapService.configurationEditorService;
+		this._taskService = this._bootstrapService.taskService;
 	}
 
 	ngOnDestroy() {
@@ -169,6 +172,10 @@ export class DashboardServiceInterface implements OnDestroy {
 
 	public get connectionManagementService(): SingleConnectionManagementService {
 		return this._connectionManagementService;
+	}
+
+	public get taskService(): ITaskService {
+		return this._taskService;
 	}
 
 	public get themeService(): IWorkbenchThemeService {

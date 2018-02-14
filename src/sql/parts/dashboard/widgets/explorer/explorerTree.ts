@@ -370,6 +370,7 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 			actions.push(instantiationService.createInstance(ScriptAlterAction, ScriptAlterAction.ID, ScriptAlterAction.LABEL));
 		}
 	} else {
+		/*
 		actions.push(instantiationService.createInstance(NewQueryAction, NewQueryAction.ID, NewQueryAction.LABEL, NewQueryAction.ICON));
 
 		let action: IAction = instantiationService.createInstance(RestoreAction, RestoreAction.ID, RestoreAction.LABEL, RestoreAction.ICON);
@@ -381,6 +382,7 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 		if (capabilitiesService.isFeatureAvailable(action, info)) {
 			actions.push(action);
 		}
+		*/
 
 		actions.push(instantiationService.createInstance(ManageAction, ManageAction.ID, ManageAction.LABEL));
 		return TPromise.as(actions);

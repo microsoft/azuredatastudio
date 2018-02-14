@@ -283,11 +283,13 @@ export class InsightsDialogView extends Modal {
 		this._topTableData.clear();
 		this._topTableData.push(inputArray);
 		if (this._insight.actions && this._insight.actions.types) {
-			let tasks = TaskRegistry.idToCtorMap;
+			let tasks = TaskRegistry.getTasks();
+			let displayTasks = TaskRegistry.getDisplayTasks();
 			for (let action of this._insight.actions.types) {
-				let ctor = tasks[action];
-				if (ctor) {
-					let button = this.addFooterButton(ctor.LABEL, () => {
+				let task = tasks[action];
+				let displayTask = displayTasks[action];
+				if (task) {
+					let button = this.addFooterButton(types.isString(displayTask.title) ? displayTask.title : displayTask.title.value, () => {
 						let element = this._topTable.getSelectedRows();
 						let resource: ListResource;
 						if (element && element.length > 0) {
