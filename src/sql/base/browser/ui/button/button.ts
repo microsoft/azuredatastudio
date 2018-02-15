@@ -1,4 +1,4 @@
-/*---------------------------------------------------------------------------------------------
+	/*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
@@ -14,6 +14,7 @@ export interface IButtonStyles extends vsIButtonStyles {
 
 export class Button extends vsButton {
 	private buttonFocusOutline: Color;
+	private _id: number;
 
 	constructor(container: any, options?: IButtonOptions) {
 		super(container, options);
@@ -32,5 +33,13 @@ export class Button extends vsButton {
 
 	public set title(value: string) {
 		this.$el.title(value);
+	}
+
+	public set id(value: number) {
+		this._id = value;
+	}
+
+	public get id(): number {
+		return this._id;
 	}
 }

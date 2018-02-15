@@ -40,6 +40,10 @@ export class MainThreadModalDialog implements MainThreadModalDialogShape {
 		dialog.onClosed(args => {
 			this._proxy.$onClosed(handle);
 		});
+
+		dialog.onLoaded(args => {
+			this._proxy.$onLoaded(handle);
+		});
 	}
 
 	$disposeDialog(handle: number): void {

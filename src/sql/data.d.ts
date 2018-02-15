@@ -1392,6 +1392,10 @@ declare module 'data' {
 		ipAddress: string;
 	}
 
+	export enum ControlTypes {
+		button = 0
+	}
+
 	export interface ModalDialog {
 		/**
 		 * Title of the webview.
@@ -1439,6 +1443,11 @@ declare module 'data' {
 		 * @param message Body of the message.
 		 */
 		postMessage(message: any): Thenable<any>;
+
+		/**
+		 * Adds a control to the dialog
+		 */
+		addControl(controlType: ControlTypes, containerId: string): any;
 	}
 
 	export namespace window {
