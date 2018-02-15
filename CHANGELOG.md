@@ -1,6 +1,6 @@
 # Change Log
 
-## Version 0.26.4
+## Version 0.26.6
 * Release date: February 15, 2017
 * Release status: Public Preview
 
@@ -13,7 +13,6 @@ Here's some of the highlights in the February release.
 * Publish RPM and DEB packages to offical Microsoft repos
 * Fix #6 Keep connection and selected database when opening new query tabs
 * Fix #22 'Server Name' and 'Database Name' - Can these be drop downs instead of text boxes?
-* Fix #549 Silent/Very Silent Install results in application opening after installation
 * Fix #481 Add "Check for updates" option.
 * SQL Editor colorization and auto-completion fixes
   * #584 Keyword "FULL" not highlighted by IntelliSense
