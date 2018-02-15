@@ -68,12 +68,17 @@ export interface IObjectExplorerService {
 
 	getConnections(active?: boolean): { connectionId: string, nodeInfo: data.NodeInfo }[];
 
-	expandNodeForConnection(connectionId: string, nodePath: string): void;
+	expandNodeForConnection(connectionId: string, nodePath: string): Thenable<void>;
+
+	getChildren(connectionId: string, nodePath: string): data.NodeInfo[];
+
+	isExpanded(connectionId: string, nodePath: string): boolean;
 }
 
 interface SessionStatus {
 	nodes: { [nodePath: string]: NodeStatus };
 	connection: ConnectionProfile;
+	treeNodes: { [nodePath: string]: TreeNode };
 
 }
 
@@ -228,7 +233,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				provider.createNewSession(connection.toConnectionInfo()).then(result => {
 					self._sessions[result.sessionId] = {
 						connection: connection,
-						nodes: {}
+						nodes: {},
+						treeNodes: {}
 					};
 					resolve(result);
 				}, error => {
@@ -434,6 +440,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			connections = connections.filter(([connectionId, treeNode]) => treeNode.getSession() !== undefined);
 		}
 		return connections.map(([connectionId, treeNode]) => {
+			this._sessions[treeNode.session.sessionId].treeNodes[treeNode.nodePath] = treeNode;
 			return {
 				connectionId: connectionId,
 				nodeInfo: <data.NodeInfo> {
@@ -446,21 +453,90 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					metadata: treeNode.metadata,
 					errorMessage: treeNode.errorStateMessage
 				}
-			}
+			};
 		});
 	}
 
-	public expandNodeForConnection(connectionId: string, nodePath: string): void {
+	public expandNodeForConnection(connectionId: string, nodePath: string): Thenable<void> {
 		let connectionNode = this._activeObjectExplorerNodes[connectionId];
 		if (!connectionNode) {
 			console.log('failed to expand, no connection node');
-			return;
+			return undefined;
 		}
 		let session = connectionNode.session;
 		if (!session) {
 			console.log('failed to expand, no session');
-			return;
+			return undefined;
 		}
-		this.expandNode(connectionNode.connection.providerName, session, nodePath);
+		return this.expandNode(connectionNode.connection.providerName, session, nodePath).then(expandInfo => {
+			let treeNode = this._sessions[session.sessionId].treeNodes[nodePath];
+			if (!treeNode) {
+				console.log('no visible node for path ' + nodePath);
+				return;
+			}
+			let expandNode: any = treeNode;
+			if (treeNode.nodeTypeId === 'Server') {
+				expandNode = treeNode.connection;
+			}
+			return (this._serverTreeView as any)._tree.expand(expandNode);
+		});
+	}
+
+	public getChildren(connectionId: string, nodePath: string): data.NodeInfo[] {
+		let connectionNode = this._activeObjectExplorerNodes[connectionId];
+		if (!connectionNode) {
+			console.log('failed to expand, no connection node');
+			return [];
+		}
+		let session = connectionNode.session;
+		if (!session) {
+			console.log('failed to expand, no session');
+			return [];
+		}
+		let treeNode = this._sessions[session.sessionId].treeNodes[nodePath];
+		if (!treeNode) {
+			console.log('no visible node for path ' + nodePath);
+			return [];
+		}
+		if (!treeNode.children) {
+			console.log('no children for node ' + nodePath);
+			return [];
+		}
+		return treeNode.children.map(treeNode => {
+			this._sessions[session.sessionId].treeNodes[treeNode.nodePath] = treeNode;
+			return <data.NodeInfo> {
+				nodePath: treeNode.nodePath,
+				nodeType: treeNode.nodeTypeId,
+				nodeSubType: treeNode.nodeSubType,
+				nodeStatus: treeNode.nodeStatus,
+				label: treeNode.label,
+				isLeaf: treeNode.isAlwaysLeaf,
+				metadata: treeNode.metadata,
+				errorMessage: treeNode.errorStateMessage
+			};
+		});
+	}
+
+	public isExpanded(connectionId: string, nodePath: string): boolean {
+		let connectionNode = this._activeObjectExplorerNodes[connectionId];
+		if (!connectionNode) {
+			console.log('failed to find node, no connection node');
+			return undefined;
+		}
+		let session = connectionNode.session;
+		if (!session) {
+			console.log('failed to find node, no session');
+			return undefined;
+		}
+		let treeNode = this._sessions[session.sessionId].treeNodes[nodePath];
+		if (!treeNode) {
+			console.log('no visible node for path ' + nodePath);
+			return undefined;
+		}
+		let expandNode: any = treeNode;
+		if (treeNode.nodeTypeId === 'Server') {
+			expandNode = treeNode.connection;
+		}
+		return (this._serverTreeView as any)._tree.isExpanded(expandNode);
 	}
 }

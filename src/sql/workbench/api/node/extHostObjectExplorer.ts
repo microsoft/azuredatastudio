@@ -38,12 +38,13 @@ export class ExtHostObjectExplorer extends ExtHostObjectExplorerShape  {
 	public $getChildren(connectionId: string, nodePath: string): Thenable<data.objectexplorer.ObjectExplorerNode[]> {
 		return this._proxy.$getChildren(connectionId, nodePath).then(nodes => nodes.map(nodeInfo => new ObjectExplorerNode(nodeInfo, connectionId, this)));
 	}
+
+	public $isExpanded(connectionId: string, nodePath: string): Thenable<boolean> {
+		return this._proxy.$isExpanded(connectionId, nodePath);
+	}
 }
 
 class ObjectExplorerNode implements data.objectexplorer.ObjectExplorerNode {
-	public expanded: boolean;
-	public hasChildren: boolean;
-	public hasParent: boolean;
 	public connectionId: string;
 	public nodePath: string;
 	public nodeType: string;
@@ -59,16 +60,28 @@ class ObjectExplorerNode implements data.objectexplorer.ObjectExplorerNode {
 		this.connectionId = connectionId;
 	}
 
-	expand(): void {
-		this._extHostObjectExplorer.$selectNode(this.connectionId, this.nodePath, true);
+	isExpanded(): Thenable<boolean> {
+		return this._extHostObjectExplorer.$isExpanded(this.connectionId, this.nodePath);
 	}
 
-	collapse(): void {
-		this._extHostObjectExplorer.$selectNode(this.connectionId, this.nodePath, false);
+	hasChildren(): Thenable<boolean> {
+		return undefined;
 	}
 
-	select(): void {
-		this._extHostObjectExplorer.$selectNode(this.connectionId, this.nodePath, undefined);
+	hasParent(): Thenable<boolean> {
+		return undefined;
+	}
+
+	expand(): Thenable<void> {
+		return this._extHostObjectExplorer.$selectNode(this.connectionId, this.nodePath, true);
+	}
+
+	collapse(): Thenable<void> {
+		return this._extHostObjectExplorer.$selectNode(this.connectionId, this.nodePath, false);
+	}
+
+	select(): Thenable<void> {
+		return this._extHostObjectExplorer.$selectNode(this.connectionId, this.nodePath, undefined);
 	}
 
 	getChildren(): Thenable<data.objectexplorer.ObjectExplorerNode[]> {

@@ -411,6 +411,7 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 	$find(connectionId?: string, type?: string, schema?: string, name?: string): Thenable<{ nodeInfo: data.NodeInfo, connectionId: string}[]>;
 	$selectNode(connectionId: string, nodePath: string, expanded: boolean): Thenable<void>;
 	$getChildren(connectionId: string, nodePath: string): Thenable<data.NodeInfo[]>;
+	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
 }
 
 export interface MainThreadSerializationProviderShape extends IDisposable {

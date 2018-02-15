@@ -51,13 +51,16 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 
 	public $selectNode(connectionId: string, nodePath: string, expanded: boolean): Thenable<void> {
 		if (expanded) {
-			return Promise.resolve(this._objectExplorerService.expandNodeForConnection(connectionId, nodePath));
+			return this._objectExplorerService.expandNodeForConnection(connectionId, nodePath);
 		}
 		return undefined;
 	}
 
-
 	public $getChildren(connectionId: string, nodePath: string): Thenable<data.NodeInfo[]> {
-		return Promise.resolve([]);
+		return Promise.resolve(this._objectExplorerService.getChildren(connectionId, nodePath));
+	}
+
+	public $isExpanded(connectionId: string, nodePath: string): Thenable<boolean> {
+		return Promise.resolve(this._objectExplorerService.isExpanded(connectionId, nodePath));
 	}
 }

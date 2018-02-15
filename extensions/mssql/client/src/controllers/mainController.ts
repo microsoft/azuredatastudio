@@ -139,13 +139,31 @@ export default class MainController implements vscode.Disposable {
 				self._initialized = true;
 				setInterval(() => {
 					data.objectexplorer.getSavedConnections(false).then(connectionNodes => {
-						connectionNodes.forEach(connectionNode => connectionNode.expand());
+						connectionNodes.forEach(connectionNode => {
+							connectionNode.isExpanded().then(result => {
+								if (result) {
+									return;
+								}
+								this.expandChildren([connectionNode]);
+							});
+						});
 					});
 				}, 5000);
 				resolve(true);
 			}).catch(err => {
 				Telemetry.sendTelemetryEventForException(err, 'initialize', MainController._extensionConstants.extensionConfigSectionName);
 				reject(err);
+			});
+		});
+	}
+
+	private expandChildren(children: data.objectexplorer.ObjectExplorerNode[]) {
+		children.forEach(child => {
+			child.expand().then(() => {
+				child.getChildren().then(newChildren => {
+					console.log('found ' + newChildren.length + ' children for node ' + child.nodePath);
+					this.expandChildren(newChildren);
+				});
 			});
 		});
 	}

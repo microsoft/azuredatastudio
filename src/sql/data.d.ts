@@ -141,41 +141,41 @@ declare module 'data' {
 		*/
 		export interface ObjectExplorerNode extends NodeInfo {
 			/**
-			 * Whether the node is currently expanded in Object Explorer
-			 */
-			expanded: boolean;
-
-			/**
-			 * Whether the node has child objects. If so, they can be retrieved by calling the
-			 * getChildren method.
-			*/
-			hasChildren: boolean;
-
-			/**
-			 * Whether the node has a parent object. If so, it can be retrieved by calling the
-			 * getParent method.
-			 */
-			hasParent: boolean;
-
-			/**
 			 * The id of the connection that the node exists under
 			 */
 			connectionId: string;
 
 			/**
+			 * Whether the node is currently expanded in Object Explorer
+			 */
+			isExpanded(): Thenable<boolean>;
+
+			/**
+			 * Whether the node has child objects. If so, they can be retrieved by calling the
+			 * getChildren method.
+			*/
+			hasChildren(): Thenable<boolean>;
+
+			/**
+			 * Whether the node has a parent object. If so, it can be retrieved by calling the
+			 * getParent method.
+			 */
+			hasParent(): Thenable<boolean>;
+
+			/**
 			 * Expand and select the node in Object Explorer
 			 */
-			expand(): void;
+			expand(): Thenable<void>;
 
 			/**
 			 * Collapse and select the node in Object Explorer
 			*/
-			collapse(): void;
+			collapse(): Thenable<void>;
 
 			/**
 			 * Select the node in Object Explorer
 			 */
-			select(): void;
+			select(): Thenable<void>;
 
 			/**
 			 * Get all the child nodes. Returns an empty list if there are no children.
