@@ -1441,6 +1441,48 @@ declare module 'data' {
 		postMessage(message: any): Thenable<any>;
 	}
 
+	export interface DashboardWebview {
+
+		/**
+		 * Raised when the webview posts a message.
+		 */
+		readonly onMessage: vscode.Event<any>;
+
+		/**
+		 * Raised when the webview closed.
+		 */
+		readonly onClosed: vscode.Event<any>;
+
+		/**
+		 * Post a message to the webview.
+		 *
+		 * @param message Body of the message.
+		 */
+		postMessage(message: any): Thenable<any>;
+
+		/**
+		 * The connection info for the dashboard the webview exists on
+		 */
+		readonly connection: connection.Connection;
+
+		/**
+		 * The info on the server for the webview dashboard
+		 */
+		readonly serverInfo: ServerInfo;
+
+		/**
+		 * Contents of the dialog body.
+		 */
+		html: string;
+	}
+
+	export namespace dashboard {
+		/**
+		 * Register a provider for a webview widget
+		 */
+		export function registerWebviewProvider(widgetId: string, handler: (webview: DashboardWebview) => void): void;
+	}
+
 	export namespace window {
 		/**
 		 * creates a dialog

@@ -8,3 +8,8 @@ dashboard-page {
 	width: 100%;
 	position: absolute;
 }
+
+dashboard-page .monaco-scrollable-element {
+	height: 100%;
+	width: 100%;
+}

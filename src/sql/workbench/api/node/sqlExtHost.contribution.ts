@@ -15,6 +15,7 @@ import 'sql/workbench/api/node/mainThreadCredentialManagement';
 import 'sql/workbench/api/node/mainThreadDataProtocol';
 import 'sql/workbench/api/node/mainThreadSerializationProvider';
 import 'sql/workbench/api/node/mainThreadResourceProvider';
+import 'sql/workbench/api/node/mainThreadDashboardWebview';
 import './mainThreadAccountManagement';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 

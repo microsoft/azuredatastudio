@@ -5,14 +5,18 @@
  *--------------------------------------------------------------------------------------------*/
 -->
 <div  #scrollContainer style="height: 100%">
-	<div #scrollable style="position: relative">
-		<div #propertiesContainer>
+	<div #scrollable style="position: relative; display: flex; flex-direction: column; height: 100%">
+		<div style="flex: 0 0 auto" #propertiesContainer>
 			<dashboard-widget-wrapper #properties *ngIf="propertiesWidget" [_config]="propertiesWidget" style="padding-left: 10px; padding-right: 10px; height: 90px; display: block">
 			</dashboard-widget-wrapper>
 		</div>
-		<div [ngGrid]="gridConfig">
-			<dashboard-widget-wrapper *ngFor="let widget of widgets" [(ngGridItem)]="widget.gridItemConfig" [_config]="widget">
-			</dashboard-widget-wrapper>
-		</div>
+		<panel style="flex: 1 1 auto; position: relative" class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)" [actions]="panelActions">
+			<tab *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
+				<dashboard-webview-tab *ngIf="getContentType(tab) === 'webview-tab'" [tab]="tab">
+				</dashboard-webview-tab>
+				<dashboard-widget-tab *ngIf="getContentType(tab) === 'widgets-tab'" [tab]="tab">
+				</dashboard-widget-tab>
+			</tab>
+		</panel>
 	</div>
 </div>

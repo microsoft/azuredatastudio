@@ -14,7 +14,10 @@ export const IAngularEventingService = createDecorator<IAngularEventingService>(
 export enum AngularEventType {
 	NAV_DATABASE,
 	NAV_SERVER,
-	DELETE_WIDGET
+	DELETE_WIDGET,
+	PINUNPIN_TAB,
+	NEW_TABS,
+	CLOSE_TAB
 }
 
 export interface IDeleteWidgetPayload {
