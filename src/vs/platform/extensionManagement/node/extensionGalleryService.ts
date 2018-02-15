@@ -207,10 +207,9 @@ function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IG
 	const result = version.files.filter(f => f.assetType === type)[0];
 
 	// {{SQL CARBON EDIT}}
-	let properties = version.properties.filter(p => p.key === type);
-	let uriFromProperty: string = undefined;
-	if (properties && properties.length >= 1) {
-		uriFromProperty = properties[0].value;
+	let uriFromSource: string = undefined;
+	if (result) {
+		uriFromSource = result.source;
 	}
 
 	if (type === AssetType.Repository) {
@@ -239,37 +238,31 @@ function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IG
 			return { uri, fallbackUri: uri };
 		}
 
-		// {{SQL CARBON EDIT}}
-		if (type === AssetType.DownloadPage) {
-			return {
-				uri: uriFromProperty,
-				fallbackUri: `${version.fallbackAssetUri}/${type}?install=true`
-			};
-		}
-
 		return null;
 	}
 
 	if (type === AssetType.VSIX) {
 		return {
 			// {{SQL CARBON EDIT}}
-			uri: uriFromProperty || `${version.fallbackAssetUri}/${type}?redirect=true&install=true`,
+			uri: uriFromSource || `${version.fallbackAssetUri}/${type}?redirect=true&install=true`,
 			fallbackUri: `${version.fallbackAssetUri}/${type}?install=true`
 		};
 	}
 
 	// {{SQL CARBON EDIT}}
-	if (type === AssetType.DownloadPage) {
+	if (version.assetUri) {
 		return {
-			uri: uriFromProperty,
-			fallbackUri: `${version.fallbackAssetUri}/${type}?install=true`
+			uri: `${version.assetUri}/${type}`,
+			fallbackUri: `${version.fallbackAssetUri}/${type}`
+		};
+	} else {
+		return {
+			uri: uriFromSource,
+			fallbackUri: `${version.fallbackAssetUri}/${type}`
 		};
 	}
 
-	return {
-		uri: `${version.assetUri}/${type}`,
-		fallbackUri: `${version.fallbackAssetUri}/${type}`
-	};
+
 }
 
 function getDependencies(version: IRawGalleryExtensionVersion): string[] {
