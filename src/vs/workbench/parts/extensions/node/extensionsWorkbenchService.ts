@@ -571,8 +571,12 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 		if (!gallery) {
 			return TPromise.wrapError<void>(new Error('Missing gallery'));
 		}
-
-		return this.extensionService.installFromGallery(gallery);
+		if (ext.gallery.assets.downloadPage && ext.gallery.assets.downloadPage.uri) {
+			window.open(ext.gallery.assets.downloadPage.uri);
+			return TPromise.wrap<void>(void 0);
+		} else {
+			return this.extensionService.installFromGallery(gallery);
+		}
 	}
 
 	setEnablement(extension: IExtension, enablementState: EnablementState): TPromise<void> {

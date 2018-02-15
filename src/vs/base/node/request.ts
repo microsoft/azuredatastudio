@@ -161,7 +161,8 @@ export function asJson<T>(context: IRequestContext): TPromise<T> {
 		}
 
 		if (!/application\/json/.test(context.res.headers['content-type'])) {
-			return e('Response doesn\'t appear to be JSON');
+			// {{SQL CARBON EDIT}}
+			//return e('Response doesn\'t appear to be JSON');
 		}
 
 		const buffer: string[] = [];
