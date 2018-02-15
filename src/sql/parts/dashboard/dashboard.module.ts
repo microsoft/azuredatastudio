@@ -30,9 +30,10 @@ import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidg
 import { DashboardWidgetTab } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.component';
 import { DashboardWebviewTab } from 'sql/parts/dashboard/tabs/dashboardWebviewTab.component';
 import { WidgetTabContent } from 'sql/parts/dashboard/tabContents/widgetTabContent.component';
+import { WebviewTabContent } from 'sql/parts/dashboard/tabContents/webviewTabContent.component';
 import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
-let baseComponents = [DashboardComponent, DashboardWidgetWrapper, DashboardWebviewTab, DashboardWidgetTab, WidgetTabContent, ComponentHostDirective, BreadcrumbComponent];
+let baseComponents = [DashboardComponent, DashboardWidgetWrapper, DashboardWebviewTab, DashboardWidgetTab, WidgetTabContent, WebviewTabContent, ComponentHostDirective, BreadcrumbComponent];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
