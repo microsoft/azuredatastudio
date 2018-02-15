@@ -68,8 +68,8 @@ import 'vs/workbench/parts/html/browser/html.contribution';
 // import 'vs/workbench/parts/welcome/walkThrough/electron-browser/walkThrough.contribution';
 
 import 'vs/workbench/parts/extensions/electron-browser/extensions.contribution';
-//import 'vs/workbench/parts/extensions/browser/extensionsQuickOpen';
-//import 'vs/workbench/parts/extensions/electron-browser/extensionsViewlet'; // can be packaged separately
+import 'vs/workbench/parts/extensions/browser/extensionsQuickOpen';
+import 'vs/workbench/parts/extensions/electron-browser/extensionsViewlet'; // can be packaged separately
 
 // import 'vs/workbench/parts/welcome/page/electron-browser/welcomePage.contribution';
 
