@@ -29,6 +29,7 @@ import { ExtHostModalDialogs } from 'sql/workbench/api/node/extHostModalDialog';
 import { ExtHostTasks } from 'sql/workbench/api/node/extHostTasks';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
+import { ExtHostDashboardWebviews } from 'sql/workbench/api/node/extHostDashboardWebview';
 import { ExtHostConnectionManagement } from 'sql/workbench/api/node/extHostConnectionManagement';
 
 export interface ISqlExtensionApiFactory {
@@ -58,6 +59,7 @@ export function createApiFactory(
 	const extHostResourceProvider = threadService.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(threadService));
 	const extHostModalDialogs = threadService.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(threadService));
 	const extHostTasks = threadService.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(threadService, logService));
+	const extHostWebviewWidgets = threadService.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(threadService));
 
 	return {
 		vsCodeFactory: vsCodeFactory,
@@ -267,6 +269,12 @@ export function createApiFactory(
 				}
 			};
 
+			const dashboard = {
+				registerWebviewProvider(widgetId: string, handler: (webview: data.DashboardWebview) => void) {
+					extHostWebviewWidgets.$registerProvider(widgetId, handler);
+				}
+			};
+
 			return {
 				accounts,
 				connection,
@@ -282,7 +290,8 @@ export function createApiFactory(
 				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode,
 				ScriptOperation: sqlExtHostTypes.ScriptOperation,
 				window,
-				tasks
+				tasks,
+				dashboard
 			};
 		}
 	};

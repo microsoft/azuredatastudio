@@ -4,18 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IConfigurationRegistry, Extensions, IConfigurationNode } from 'vs/platform/configuration/common/configurationRegistry';
-import { DATABASE_DASHBOARD_SETTING, DATABASE_DASHBOARD_PROPERTIES, databaseDashboardSettingSchema, databaseDashboardPropertiesSchema } from 'sql/parts/dashboard/pages/databaseDashboardPage.contribution';
-import { SERVER_DASHBOARD_SETTING, SERVER_DASHBOARD_PROPERTIES, serverDashboardSettingSchema, serverDashboardPropertiesSchema } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
+import { DASHBOARD_CONFIG_ID } from 'sql/parts/dashboard/pages/dashboardPageContribution';
+import { DATABASE_DASHBOARD_SETTING, DATABASE_DASHBOARD_PROPERTIES, DATABASE_DASHBOARD_TABS, databaseDashboardSettingSchema, databaseDashboardPropertiesSchema, databaseDashboardTabsSchema } from 'sql/parts/dashboard/pages/databaseDashboardPage.contribution';
+import { SERVER_DASHBOARD_SETTING, SERVER_DASHBOARD_PROPERTIES, SERVER_DASHBOARD_TABS, serverDashboardSettingSchema, serverDashboardPropertiesSchema, serverDashboardTabsSchema } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
 
 const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 const dashboardConfig: IConfigurationNode = {
-	id: 'Dashboard',
+	id: DASHBOARD_CONFIG_ID,
 	type: 'object',
 	properties: {
 		[DATABASE_DASHBOARD_PROPERTIES]: databaseDashboardPropertiesSchema,
 		[SERVER_DASHBOARD_PROPERTIES]: serverDashboardPropertiesSchema,
 		[DATABASE_DASHBOARD_SETTING]: databaseDashboardSettingSchema,
-		[SERVER_DASHBOARD_SETTING]: serverDashboardSettingSchema
+		[SERVER_DASHBOARD_SETTING]: serverDashboardSettingSchema,
+		[DATABASE_DASHBOARD_TABS]: databaseDashboardTabsSchema,
+		[SERVER_DASHBOARD_TABS]: serverDashboardTabsSchema
 	}
 };
 

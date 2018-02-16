@@ -6,6 +6,7 @@ import { InjectionToken, OnDestroy } from '@angular/core';
 import { NgGridItemConfig } from 'angular2-grid';
 import { Action } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 
 export interface IDashboardWidget {
 	actions: Array<Action>;
@@ -30,6 +31,19 @@ export interface WidgetConfig {
 	fontSize?: string;
 	fontWeight?: string;
 	padding?: string;
+}
+
+export interface TabConfig extends IDashboardTab {
+	context: string;
+	originalConfig: Array<WidgetConfig>;
+	editable: boolean;
+	canClose: boolean;
+	actions?: Array<Action>;
+}
+
+export interface PinConfig {
+	tabId: string;
+	isPinned?: boolean;
 }
 
 export abstract class DashboardWidget extends Disposable implements OnDestroy {

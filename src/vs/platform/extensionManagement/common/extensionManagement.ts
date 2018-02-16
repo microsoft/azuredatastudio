@@ -131,6 +131,7 @@ export interface IGalleryExtensionAssets {
 	readme: IGalleryExtensionAsset;
 	changelog: IGalleryExtensionAsset;
 	download: IGalleryExtensionAsset;
+	downloadPage?: IGalleryExtensionAsset;
 	icon: IGalleryExtensionAsset;
 	license: IGalleryExtensionAsset;
 	repository: IGalleryExtensionAsset;

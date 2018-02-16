@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NgModuleRef } from '@angular/core';
+import { NgModuleRef, enableProdMode } from '@angular/core';
 import { platformBrowserDynamic, } from '@angular/platform-browser-dynamic';
 
 import { BootstrapParams } from 'sql/services/bootstrap/bootstrapParams';
@@ -24,6 +24,7 @@ import { ISqlOAuthService } from 'sql/common/sqlOAuthService';
 import { IFileBrowserService, IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 
 import { $ } from 'vs/base/browser/dom';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -98,7 +99,8 @@ export class BootstrapService implements IBootstrapService {
 		@IStorageService public storageService: IStorageService,
 		@IClipboardService public clipboardService: IClipboardService,
 		@ICapabilitiesService public capabilitiesService: ICapabilitiesService,
-		@ICommandService public commandService: ICommandService
+		@ICommandService public commandService: ICommandService,
+		@IDashboardWebviewService public dashboardWebviewService: IDashboardWebviewService
 	) {
 		this.configurationEditorService = this.instantiationService.createInstance(ConfigurationEditingService);
 		this._bootstrapParameterMap = new Map<string, BootstrapParams>();
@@ -179,4 +181,8 @@ export class BootstrapService implements IBootstrapService {
 		idArray.push(elementId);
 		this._selectorQueueMap.set(selectorString, idArray);
 	}
+}
+
+if (!process.env['VSCODE_DEV']) {
+	enableProdMode();
 }

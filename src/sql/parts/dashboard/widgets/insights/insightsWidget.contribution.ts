@@ -21,7 +21,7 @@ interface IInsightTypeContrib {
 
 registerDashboardWidget('insights-widget', '', insightsSchema);
 
-ExtensionsRegistry.registerExtensionPoint<IInsightTypeContrib | IInsightTypeContrib[]>('insights', [], insightsContribution).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<IInsightTypeContrib | IInsightTypeContrib[]>('dashboard.insights', [], insightsContribution).setHandler(extensions => {
 
 	function handleCommand(insight: IInsightTypeContrib, extension: IExtensionPointUser<any>) {
 

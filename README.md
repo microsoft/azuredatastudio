@@ -2,20 +2,22 @@
 
 SQL Operations Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download SQL Operations Studio January Public Preview**
+**Download SQL Operations Studio February Public Preview**
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=866480
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=866479
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=866481
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=866482
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=866484
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=866483
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=867998
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=867997
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=867999
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=868000
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=868002
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=868001
 
 Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instructions.
 
 Try out the latest insiders build from `master` at https://github.com/Microsoft/sqlopsstudio/releases.
+
+See the [change log](https://github.com/Microsoft/sqlopsstudio/blob/master/CHANGELOG.md) for additional details of what's in this release.
 
 **Feature Highlights**
 
@@ -48,6 +50,21 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Privacy Statement
 The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement) describes the privacy statement of this software.
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* SebastianPfliegel for `Add cursor snippet (#475)`
+* mikaoelitiana for fix: `revert README and CONTRIBUTING after last VSCode merge (#574)`
+* alextercete for `Reinstate menu item to install from VSIX (#682)`
+* alextercete for `Fix "No extension gallery service configured" error (#427)`
+* SebastianPfliegel for `Add cursor snippet (#475)`
+* mwiedemeyer for `Fix #58: Default sort order for DB size widget (#111)`
+* AlexTroshkin for `Show disconnect in context menu only when connectionProfile connected (#150)`
+* AlexTroshkin for `Fix #138: Invalid syntax color highlighting (identity not highlighting) (#140))`
+* stebet for `Fix #153: Fixing sql snippets that failed on a DB with case-sensitive collation. (#152)`
+* SebastianPfliegel `Remove sqlExtensionHelp (#312)`
+* olljanat for `Implemented npm version check (#314)`
 
 ## License
 

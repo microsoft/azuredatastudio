@@ -422,7 +422,8 @@ export const SqlMainContext = {
 	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
 	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
-	MainThreadTasks: createMainId<MainThreadTasksShape>('MainThreadTasks')
+	MainThreadTasks: createMainId<MainThreadTasksShape>('MainThreadTasks'),
+	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview')
 };
 
 export const SqlExtHostContext = {
@@ -433,7 +434,8 @@ export const SqlExtHostContext = {
 	ExtHostSerializationProvider: createExtId<ExtHostSerializationProviderShape>('ExtHostSerializationProvider'),
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
-	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks')
+	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks'),
+	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews')
 };
 
 export interface MainThreadModalDialogShape extends IDisposable {
@@ -444,6 +446,7 @@ export interface MainThreadModalDialogShape extends IDisposable {
 	$setHtml(handle: number, value: string): void;
 	$sendMessage(handle: number, value: any): Thenable<boolean>;
 }
+
 export interface ExtHostModalDialogsShape {
 	$onMessage(handle: number, message: any): void;
 	$onClosed(handle: number): void;
@@ -457,4 +460,17 @@ export interface ExtHostTasksShape {
 export interface MainThreadTasksShape extends IDisposable {
 	$registerTask(id: string): TPromise<any>;
 	$unregisterTask(id: string): TPromise<any>;
+}
+
+export interface ExtHostDashboardWebviewsShape {
+	$registerProvider(widgetId: string, handler: (webview: data.DashboardWebview) => void): void;
+	$onMessage(handle: number, message: any): void;
+	$onClosed(handle: number): void;
+	$registerWidget(handle: number, id: string, connection: data.connection.Connection, serverInfo: data.ServerInfo): void;
+}
+
+export interface MainThreadDashboardWebviewShape extends IDisposable {
+	$sendMessage(handle: number, message: string);
+	$registerProvider(widgetId: string);
+	$setHtml(handle: number, value: string);
 }

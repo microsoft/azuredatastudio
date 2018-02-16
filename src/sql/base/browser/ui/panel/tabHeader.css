@@ -1,0 +1,20 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+tab-header .action-item .action-label {
+	opacity: 0;
+	padding: 8px;
+	margin-top: 0.3em;
+}
+
+tab-header .action-item {
+	line-height: 1.4em;
+}
+
+tab-header .tab-header.active .action-label, 		/* always show it for active tab */
+tab-header .tab-header:hover .action-label,			/* always show it on hover */
+tab-header .tab-header:focus .action-label {		/* always show it on focus */
+	opacity: 1;
+}

@@ -110,7 +110,9 @@ const AssetType = {
 	Manifest: 'Microsoft.VisualStudio.Code.Manifest',
 	VSIX: 'Microsoft.VisualStudio.Services.VSIXPackage',
 	License: 'Microsoft.VisualStudio.Services.Content.License',
-	Repository: 'Microsoft.VisualStudio.Services.Links.Source'
+	Repository: 'Microsoft.VisualStudio.Services.Links.Source',
+	// {{SQL CARBON EDIT}}
+	DownloadPage: 'Microsoft.SQLOps.DownloadPage'
 };
 
 const PropertyType = {
@@ -204,6 +206,12 @@ function getStatistic(statistics: IRawGalleryExtensionStatistics[], name: string
 function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IGalleryExtensionAsset {
 	const result = version.files.filter(f => f.assetType === type)[0];
 
+	// {{SQL CARBON EDIT}}
+	let uriFromSource: string = undefined;
+	if (result) {
+		uriFromSource = result.source;
+	}
+
 	if (type === AssetType.Repository) {
 		if (version.properties) {
 			const results = version.properties.filter(p => p.key === type);
@@ -235,15 +243,26 @@ function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IG
 
 	if (type === AssetType.VSIX) {
 		return {
-			uri: `${version.fallbackAssetUri}/${type}?redirect=true&install=true`,
+			// {{SQL CARBON EDIT}}
+			uri: uriFromSource || `${version.fallbackAssetUri}/${type}?redirect=true&install=true`,
 			fallbackUri: `${version.fallbackAssetUri}/${type}?install=true`
 		};
 	}
 
-	return {
-		uri: `${version.assetUri}/${type}`,
-		fallbackUri: `${version.fallbackAssetUri}/${type}`
-	};
+	// {{SQL CARBON EDIT}}
+	if (version.assetUri) {
+		return {
+			uri: `${version.assetUri}/${type}`,
+			fallbackUri: `${version.fallbackAssetUri}/${type}`
+		};
+	} else {
+		return {
+			uri: uriFromSource,
+			fallbackUri: `${version.fallbackAssetUri}/${type}`
+		};
+	}
+
+
 }
 
 function getDependencies(version: IRawGalleryExtensionVersion): string[] {
@@ -268,6 +287,8 @@ function toExtension(galleryExtension: IRawGalleryExtension, extensionsGalleryUr
 		readme: getVersionAsset(version, AssetType.Details),
 		changelog: getVersionAsset(version, AssetType.Changelog),
 		download: getVersionAsset(version, AssetType.VSIX),
+		// {{SQL CARBON EDIT}}
+		downloadPage: getVersionAsset(version, AssetType.DownloadPage),
 		icon: getVersionAsset(version, AssetType.Icon),
 		license: getVersionAsset(version, AssetType.License),
 		repository: getVersionAsset(version, AssetType.Repository),
@@ -336,7 +357,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	}
 
 	private api(path = ''): string {
-		return `${this.extensionsGalleryUrl}${path}`;
+		// {{SQL CARBON EDIT}}
+		return `${this.extensionsGalleryUrl}`;
 	}
 
 	isEnabled(): boolean {
@@ -428,7 +450,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			});
 
 			return this.requestService.request({
-				type: 'POST',
+				// {{SQL CARBON EDIT}}
+				type: 'GET',
 				url: this.api('/extensionquery'),
 				data,
 				headers
@@ -538,7 +561,9 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 						if (rawVersion) {
 							extension.properties.dependencies = getDependencies(rawVersion);
 							extension.properties.engine = getEngine(rawVersion);
+							// {{SQL CARBON EDIT}}
 							extension.assets.download = getVersionAsset(rawVersion, AssetType.VSIX);
+							extension.assets.downloadPage = getVersionAsset(rawVersion, AssetType.DownloadPage);
 							extension.version = rawVersion.version;
 							return extension;
 						}

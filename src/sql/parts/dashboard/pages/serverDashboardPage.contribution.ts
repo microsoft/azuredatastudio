@@ -2,12 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Registry } from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import { Extensions, IDashboardWidgetRegistry } from 'sql/platform/dashboard/common/widgetRegistry';
 import * as nls from 'vs/nls';
-
-let widgetRegistry = <IDashboardWidgetRegistry>Registry.as(Extensions.DashboardWidgetContribution);
+import { generateDashboardWidgetSchema, generateDashboardTabSchema } from 'sql/parts/dashboard/pages/dashboardPageContribution';
 
 export interface IPropertiesConfig {
 	edition: number | Array<number>;
@@ -111,53 +108,18 @@ let defaultVal = [
 export const serverDashboardSettingSchema: IJSONSchema = {
 	type: ['array'],
 	description: nls.localize('dashboardServer', 'Customizes the server dashboard page'),
-	items: <IJSONSchema>{
-		type: 'object',
-		properties: {
-			name: {
-				type: 'string'
-			},
-			icon: {
-				type: 'string'
-			},
-			provider: {
-				anyOf: [
-					'string',
-					{
-						type: 'array',
-						items: 'string'
-					}
-				]
-			},
-			edition: {
-				anyOf: [
-					'number',
-					{
-						type: 'array',
-						items: 'number'
-					}
-				]
-			},
-			gridItemConfig: {
-				type: 'object',
-				properties: {
-					sizex: {
-						type: 'number'
-					},
-					sizey: {
-						type: 'number'
-					}
-				}
-			},
-			widget: {
-				type: 'object',
-				properties: widgetRegistry.serverWidgetSchema.properties,
-				maxItems: 1
-			}
-		}
-	},
+	items: generateDashboardWidgetSchema('server'),
 	default: defaultVal
+};
+
+export const serverDashboardTabsSchema: IJSONSchema = {
+	type: ['array'],
+	description: nls.localize('dashboardServerTabs', 'Customizes the Server dashboard tabs'),
+	items: generateDashboardTabSchema('server'),
+	default: [
+	]
 };
 
 export const SERVER_DASHBOARD_SETTING = 'dashboard.server.widgets';
 export const SERVER_DASHBOARD_PROPERTIES = 'dashboard.server.properties';
+export const SERVER_DASHBOARD_TABS = 'dashboard.server.tabs';

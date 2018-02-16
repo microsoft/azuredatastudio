@@ -6,11 +6,12 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { TabComponent } from './tab.component';
+import { TabHeaderComponent } from './tabHeader.component';
 import { PanelComponent } from './panel.component';
 
 @NgModule({
 	imports: [CommonModule],
 	exports: [TabComponent, PanelComponent],
-	declarations: [TabComponent, PanelComponent]
+	declarations: [TabComponent, TabHeaderComponent, PanelComponent]
 })
 export class PanelModule { }

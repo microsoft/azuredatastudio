@@ -4,17 +4,27 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./dashboardPage';
+import './dashboardPanelStyles';
 
 import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
+import { WidgetConfig, TabConfig, PinConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
-import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
+import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
+import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
+import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
+import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
+import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
+import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
+import { error } from 'sql/base/common/log';
+import { WIDGETS_TABS } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
+import { WEBVIEW_TABS } from 'sql/parts/dashboard/tabs/dashboardWebviewTab.contribution';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -28,59 +38,18 @@ import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeS
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
 import { generateUuid } from 'vs/base/common/uuid';
-import * as objects from 'sql/base/common/objects';
+import * as objects from 'vs/base/common/objects';
+import Event, { Emitter } from 'vs/base/common/event';
+import { Action } from 'vs/base/common/actions';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
+
+const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
 /**
  * @returns whether the provided parameter is a JavaScript Array and each element in the array is a number.
  */
 function isNumberArray(value: any): value is number[] {
 	return types.isArray(value) && (<any[]>value).every(elem => types.isNumber(elem));
-}
-
-/**
- * Sorting function for dashboard widgets
- * In order of priority;
- * If neither have defined grid positions, they are equivalent
- * If a has a defined grid position and b does not; a should come first
- * If both have defined grid positions and have the same row; the one with the smaller col position should come first
- * If both have defined grid positions but different rows (it doesn't really matter in this case) the lowers row should come first
- */
-function configSorter(a, b): number {
-	if ((!a.gridItemConfig || !a.gridItemConfig.col)
-		&& (!b.gridItemConfig || !b.gridItemConfig.col)) {
-		return 0;
-	} else if (!a.gridItemConfig || !a.gridItemConfig.col) {
-		return 1;
-	} else if (!b.gridItemConfig || !b.gridItemConfig.col) {
-		return -1;
-	} else if (a.gridItemConfig.row === b.gridItemConfig.row) {
-		if (a.gridItemConfig.col < b.gridItemConfig.col) {
-			return -1;
-		}
-
-		if (a.gridItemConfig.col === b.gridItemConfig.col) {
-			return 0;
-		}
-
-		if (a.gridItemConfig.col > b.gridItemConfig.col) {
-			return 1;
-		}
-	} else {
-		if (a.gridItemConfig.row < b.gridItemConfig.row) {
-			return -1;
-		}
-
-		if (a.gridItemConfig.row === b.gridItemConfig.row) {
-			return 0;
-		}
-
-		if (a.gridItemConfig.row > b.gridItemConfig.row) {
-			return 1;
-		}
-	}
-
-	return void 0; // this should never be reached
 }
 
 @Component({
@@ -90,43 +59,31 @@ function configSorter(a, b): number {
 export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 	protected SKELETON_WIDTH = 5;
-	protected widgets: Array<WidgetConfig> = [];
-	protected gridConfig: NgGridConfig = {
-		'margins': [10],            //  The size of the margins of each item. Supports up to four values in the same way as CSS margins. Can be updated using setMargins()
-		'draggable': false,          //  Whether the items can be dragged. Can be updated using enableDrag()/disableDrag()
-		'resizable': false,          //  Whether the items can be resized. Can be updated using enableResize()/disableResize()
-		'max_cols': this.SKELETON_WIDTH,              //  The maximum number of columns allowed. Set to 0 for infinite. Cannot be used with max_rows
-		'max_rows': 0,              //  The maximum number of rows allowed. Set to 0 for infinite. Cannot be used with max_cols
-		'visible_cols': 0,          //  The number of columns shown on screen when auto_resize is set to true. Set to 0 to not auto_resize. Will be overriden by max_cols
-		'visible_rows': 0,          //  The number of rows shown on screen when auto_resize is set to true. Set to 0 to not auto_resize. Will be overriden by max_rows
-		'min_cols': 0,              //  The minimum number of columns allowed. Can be any number greater than or equal to 1.
-		'min_rows': 0,              //  The minimum number of rows allowed. Can be any number greater than or equal to 1.
-		'col_width': 250,           //  The width of each column
-		'row_height': 250,          //  The height of each row
-		'cascade': 'left',            //  The direction to cascade grid items ('up', 'right', 'down', 'left')
-		'min_width': 100,           //  The minimum width of an item. If greater than col_width, this will update the value of min_cols
-		'min_height': 100,          //  The minimum height of an item. If greater than row_height, this will update the value of min_rows
-		'fix_to_grid': false,       //  Fix all item movements to the grid
-		'auto_style': true,         //  Automatically add required element styles at run-time
-		'auto_resize': false,       //  Automatically set col_width/row_height so that max_cols/max_rows fills the screen. Only has effect is max_cols or max_rows is set
-		'maintain_ratio': false,    //  Attempts to maintain aspect ratio based on the colWidth/rowHeight values set in the config
-		'prefer_new': false,        //  When adding new items, will use that items position ahead of existing items
-		'limit_to_screen': true,   //  When resizing the screen, with this true and auto_resize false, the grid will re-arrange to fit the screen size. Please note, at present this only works with cascade direction up.
-	};
+	protected tabs: Array<TabConfig> = [];
+
 	private _originalConfig: WidgetConfig[];
-	private _editDispose: Array<IDisposable> = [];
 	private _scrollableElement: ScrollableElement;
 
 	private _widgetConfigLocation: string;
 	private _propertiesConfigLocation: string;
 
+	protected panelActions: Action[];
+	private _tabsDispose: Array<IDisposable> = [];
+	private _pinnedTabs: Array<PinConfig> = [];
+
 	@ViewChild('properties') private _properties: DashboardWidgetWrapper;
-	@ViewChild(NgGrid) private _grid: NgGrid;
 	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
 	@ViewChild('scrollContainer', { read: ElementRef }) private _scrollContainer: ElementRef;
 	@ViewChild('propertiesContainer', { read: ElementRef }) private _propertiesContainer: ElementRef;
-	@ViewChildren(DashboardWidgetWrapper) private _widgets: QueryList<DashboardWidgetWrapper>;
-	@ViewChildren(NgGridItem) private _items: QueryList<NgGridItem>;
+	@ViewChildren(DashboardTab) private _tabs: QueryList<DashboardTab>;
+	@ViewChild(PanelComponent) private _panel: PanelComponent;
+
+	private _editEnabled = new Emitter<boolean>();
+	public readonly editEnabled: Event<boolean> = this._editEnabled.event;
+
+
+	// tslint:disable:no-unused-variable
+	private readonly homeTabTitle: string = nls.localize('home', 'Home');
 
 	// a set of config modifiers
 	private readonly _configModifiers: Array<(item: Array<WidgetConfig>) => Array<WidgetConfig>> = [
@@ -135,7 +92,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		this.addProvider,
 		this.addEdition,
 		this.addContext,
-		this.filterWidgets
+		this.filterConfigs
 	];
 
 	private readonly _gridModifiers: Array<(item: Array<WidgetConfig>) => Array<WidgetConfig>> = [
@@ -144,6 +101,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
+		@Inject(BOOTSTRAP_SERVICE_ID) protected bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {
@@ -156,7 +114,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		} else {
 			let tempWidgets = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'));
 			this._widgetConfigLocation = 'default';
-			this._originalConfig = objects.clone(tempWidgets);
+			this._originalConfig = objects.deepClone(tempWidgets);
 			let properties = this.getProperties();
 			this._configModifiers.forEach((cb) => {
 				tempWidgets = cb.apply(this, [tempWidgets]);
@@ -165,8 +123,10 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			this._gridModifiers.forEach(cb => {
 				tempWidgets = cb.apply(this, [tempWidgets]);
 			});
-			this.widgets = tempWidgets;
 			this.propertiesWidget = properties ? properties[0] : undefined;
+
+			this.createTabs(tempWidgets);
+
 		}
 	}
 
@@ -189,15 +149,18 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		container.appendChild(this._scrollableElement.getDomNode());
 		let initalHeight = getContentHeight(scrollable);
 		this._scrollableElement.setScrollDimensions({
-			scrollHeight: getContentHeight(scrollable),
+			scrollHeight: Math.max(getContentHeight(scrollable), getContentHeight(container)),
 			height: getContentHeight(container)
 		});
 
 		this._register(addDisposableListener(window, EventType.RESIZE, () => {
-			this._scrollableElement.setScrollDimensions({
-				scrollHeight: getContentHeight(scrollable),
-				height: getContentHeight(container)
-			});
+			// Todo: Need to set timeout because we have to make sure that the grids have already rearraged before the getContentHeight gets called.
+			setTimeout(() => {
+				this._scrollableElement.setScrollDimensions({
+					scrollHeight: Math.max(getContentHeight(scrollable), getContentHeight(container)),
+					height: getContentHeight(container)
+				});
+			}, 100);
 		}));
 
 		// unforunately because of angular rendering behavior we need to do a double check to make sure nothing changed after this point
@@ -205,11 +168,145 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			let currentheight = getContentHeight(scrollable);
 			if (initalHeight !== currentheight) {
 				this._scrollableElement.setScrollDimensions({
-					scrollHeight: getContentHeight(scrollable),
+					scrollHeight: Math.max(getContentHeight(scrollable), getContentHeight(container)),
 					height: getContentHeight(container)
 				});
 			}
 		}, 100);
+	}
+
+	private createTabs(homeWidgets: WidgetConfig[]) {
+		// Clear all tabs
+		this.tabs = [];
+		this._pinnedTabs = [];
+		this._tabsDispose.forEach(i => i.dispose());
+		this._tabsDispose = [];
+
+		// Create home tab
+		let homeTab: TabConfig = {
+			id: 'homeTab',
+			publisher: undefined,
+			title: this.homeTabTitle,
+			content: { 'widgets-tab': homeWidgets },
+			context: this.context,
+			originalConfig: this._originalConfig,
+			editable: true,
+			canClose: false,
+			actions: []
+		};
+		this.addNewTab(homeTab);
+		this._panel.selectTab(homeTab.id);
+
+		let allTabs = this.filterConfigs(dashboardRegistry.tabs);
+
+		// Load always show tabs
+		let alwaysShowTabs = allTabs.filter(tab => tab.alwaysShow);
+		this.loadNewTabs(alwaysShowTabs);
+
+		// Load pinned tabs
+		this._pinnedTabs = this.dashboardService.getSettings<Array<PinConfig>>([this.context, 'tabs'].join('.'));
+		let pinnedDashboardTabs: IDashboardTab[] = [];
+		this._pinnedTabs.forEach(pinnedTab => {
+			let tab = allTabs.find(i => i.id === pinnedTab.tabId);
+			if (tab) {
+				pinnedDashboardTabs.push(tab);
+			}
+		});
+		this.loadNewTabs(pinnedDashboardTabs);
+
+		// Set panel actions
+		let openedTabs = [...pinnedDashboardTabs, ...alwaysShowTabs];
+		let addNewTabAction = this.dashboardService.instantiationService.createInstance(AddFeatureTabAction, allTabs, openedTabs, this.dashboardService.getUnderlyingUri());
+		this._tabsDispose.push(addNewTabAction);
+		this.panelActions = [addNewTabAction];
+		this._cd.detectChanges();
+
+		this._tabsDispose.push(this.dashboardService.onPinUnpinTab(e => {
+			if (e.isPinned) {
+				this._pinnedTabs.push(e);
+			} else {
+				let index = this._pinnedTabs.findIndex(i => i.tabId === e.tabId);
+				this._pinnedTabs.splice(index, 1);
+			}
+			this.rewriteConfig();
+		}));
+
+		this._tabsDispose.push(this.dashboardService.onAddNewTabs(e => {
+			this.loadNewTabs(e);
+		}));
+	}
+
+	private rewriteConfig(): void {
+		let writeableConfig = objects.deepClone(this._pinnedTabs);
+
+		writeableConfig.forEach(i => {
+			delete i.isPinned;
+		});
+		let target: ConfigurationTarget = ConfigurationTarget.USER;
+		this.dashboardService.writeSettings([this.context, 'tabs'].join('.'), writeableConfig, target);
+	}
+
+	private loadNewTabs(dashboardTabs: IDashboardTab[]) {
+		if (dashboardTabs && dashboardTabs.length > 0) {
+			let selectedTabs = dashboardTabs.map(v => {
+
+				if (Object.keys(v.content).length !== 1) {
+					error('Exactly 1 widget must be defined per space');
+				}
+
+				let key = Object.keys(v.content)[0];
+				if (key === WIDGETS_TABS) {
+					let configs = <WidgetConfig[]>Object.values(v.content)[0];
+					this._configModifiers.forEach(cb => {
+						configs = cb.apply(this, [configs]);
+					});
+					this._gridModifiers.forEach(cb => {
+						configs = cb.apply(this, [configs]);
+					});
+					return { id: v.id, title: v.title, content: { 'widgets-tab': configs }, alwaysShow: v.alwaysShow };
+				}
+				return v;
+			}).map(v => {
+				let actions = [];
+				if (!v.alwaysShow) {
+					let pinnedTab = this._pinnedTabs.find(i => i.tabId === v.id);
+					actions.push(this.dashboardService.instantiationService.createInstance(PinUnpinTabAction, v.id, this.dashboardService.getUnderlyingUri(), !!pinnedTab));
+				}
+
+				let config = v as TabConfig;
+				config.context = this.context;
+				config.editable = false;
+				config.canClose = true;
+				config.actions = actions;
+				this.addNewTab(config);
+				return config;
+			});
+
+			// put this immediately on the stack so that is ran *after* the tab is rendered
+			setTimeout(() => {
+				this._panel.selectTab(selectedTabs.pop().id);
+			});
+		}
+	}
+
+
+	private getContentType(tab: TabConfig): string {
+		return tab.content ? Object.keys(tab.content)[0] : '';
+	}
+
+	private addNewTab(tab: TabConfig): void {
+		let existedTab = this.tabs.find(i => i.id === tab.id);
+		if (!existedTab) {
+			this.tabs.push(tab);
+			this._cd.detectChanges();
+			let tabComponents = this._tabs.find(i => i.id === tab.id);
+			this._register(tabComponents.onResize(() => {
+				this._scrollableElement.setScrollDimensions({
+					scrollHeight: Math.max(getContentHeight(this._scrollable.nativeElement), getContentHeight(this._scrollContainer.nativeElement)),
+					height: getContentHeight(this._scrollContainer.nativeElement)
+				});
+			}));
+		}
 	}
 
 	private updateTheme(theme: IColorTheme): void {
@@ -240,14 +337,18 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	 * Returns a filtered version of the widgets passed based on edition and provider
 	 * @param config widgets to filter
 	 */
-	private filterWidgets(config: WidgetConfig[]): Array<WidgetConfig> {
+	private filterConfigs<T extends { provider?: string | string[], edition?: number | number[] }>(config: T[]): Array<T> {
 		let connectionInfo: ConnectionManagementInfo = this.dashboardService.connectionManagementService.connectionInfo;
 		let edition = connectionInfo.serverInfo.engineEditionId;
 		let provider = connectionInfo.providerId;
 
 		// filter by provider
 		return config.filter((item) => {
-			return this.stringCompare(item.provider, provider);
+			if (item.provider) {
+				return this.stringCompare(item.provider, provider);
+			} else {
+				return true;
+			}
 		}).filter((item) => {
 			if (item.edition) {
 				if (edition) {
@@ -407,96 +508,42 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	public refresh(refreshConfig: boolean = false): void {
 		if (refreshConfig) {
 			this.init();
-			if (this._properties) {
-				this._properties.refresh();
-			}
+			this.refreshProperties();
 		} else {
-			if (this._widgets) {
-				this._widgets.forEach(item => {
-					item.refresh();
+			this.refreshProperties();
+			if (this._tabs) {
+				this._tabs.forEach(tabContent => {
+					tabContent.refresh();
 				});
 			}
+		}
+	}
+
+	private refreshProperties(): void {
+		if (this._properties) {
+			this._properties.refresh();
 		}
 	}
 
 	public enableEdit(): void {
-		if (this._grid.dragEnable) {
-			this._grid.disableDrag();
-			this._grid.disableResize();
-			this._editDispose.forEach(i => i.dispose());
-			this._widgets.forEach(i => {
-				if (i.id) {
-					i.disableEdit();
-				}
-			});
-			this._editDispose = [];
-		} else {
-			this._grid.enableResize();
-			this._grid.enableDrag();
-			this._editDispose.push(this.dashboardService.onDeleteWidget(e => {
-				let index = this.widgets.findIndex(i => i.id === e);
-				this.widgets.splice(index, 1);
-
-				index = this._originalConfig.findIndex(i => i.id === e);
-				this._originalConfig.splice(index, 1);
-
-				this._rewriteConfig();
-				this._cd.detectChanges();
-			}));
-			this._editDispose.push(subscriptionToDisposable(this._grid.onResizeStop.subscribe((e: NgGridItem) => {
-				this._scrollableElement.setScrollDimensions({
-					scrollHeight: getContentHeight(this._scrollable.nativeElement),
-					height: getContentHeight(this._scrollContainer.nativeElement)
-				});
-				let event = e.getEventOutput();
-				let config = this._originalConfig.find(i => i.id === event.payload.id);
-
-				if (!config.gridItemConfig) {
-					config.gridItemConfig = {};
-				}
-				config.gridItemConfig.sizex = e.sizex;
-				config.gridItemConfig.sizey = e.sizey;
-
-				let component = this._widgets.find(i => i.id === event.payload.id);
-
-				component.layout();
-				this._rewriteConfig();
-			})));
-			this._editDispose.push(subscriptionToDisposable(this._grid.onDragStop.subscribe((e: NgGridItem) => {
-				this._scrollableElement.setScrollDimensions({
-					scrollHeight: getContentHeight(this._scrollable.nativeElement),
-					height: getContentHeight(this._scrollContainer.nativeElement)
-				});
-				let event = e.getEventOutput();
-				this._items.forEach(i => {
-					let config = this._originalConfig.find(j => j.id === i.getEventOutput().payload.id);
-					if ((config.gridItemConfig && config.gridItemConfig.col) || config.id === event.payload.id) {
-						if (!config.gridItemConfig) {
-							config.gridItemConfig = {};
-						}
-						config.gridItemConfig.col = i.col;
-						config.gridItemConfig.row = i.row;
-					}
-				});
-				this._originalConfig.sort(configSorter);
-
-				this._rewriteConfig();
-			})));
-			this._widgets.forEach(i => {
-				if (i.id) {
-					i.enableEdit();
-				}
+		if (this._tabs) {
+			this._tabs.forEach(tabContent => {
+				tabContent.enableEdit();
 			});
 		}
 	}
 
-	private _rewriteConfig(): void {
-		let writeableConfig = objects.clone(this._originalConfig);
+	public handleTabChange(tab: TabComponent): void {
+		let localtab = this._tabs.find(i => i.id === tab.identifier);
+		this._editEnabled.fire(localtab.editable);
+		this._cd.detectChanges();
+		localtab.layout();
+	}
 
-		writeableConfig.forEach(i => {
-			delete i.id;
-		});
-		let target: ConfigurationTarget = ConfigurationTarget.USER;
-		this.dashboardService.writeSettings(this.context, writeableConfig, target);
+	public handleTabClose(tab: TabComponent): void {
+		let index = this.tabs.findIndex(i => i.id === tab.identifier);
+		this.tabs.splice(index, 1);
+		this._cd.detectChanges();
+		this.bootstrapService.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { id: tab.identifier });
 	}
 }
