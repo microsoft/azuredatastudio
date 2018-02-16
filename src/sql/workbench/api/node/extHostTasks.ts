@@ -12,7 +12,6 @@ import { TPromise } from 'vs/base/common/winjs.base';
 
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import { SqlMainContext, MainThreadTasksShape, ExtHostTasksShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { ArgumentProcessor } from 'vs/workbench/api/node/extHostCommands';
 
 interface TaskHandler {
 	callback: Function;
@@ -23,7 +22,6 @@ interface TaskHandler {
 export class ExtHostTasks implements ExtHostTasksShape {
 	private _proxy: MainThreadTasksShape;
 	private _tasks = new Map<string, TaskHandler>();
-	private _argumentProcessors: ArgumentProcessor[] = [];
 
 	constructor(
 		mainContext: IMainContext,
@@ -32,19 +30,15 @@ export class ExtHostTasks implements ExtHostTasksShape {
 		this._proxy = mainContext.get(SqlMainContext.MainThreadTasks);
 	}
 
-	registerArgumentProcessor(processor: ArgumentProcessor): void {
-		this._argumentProcessors.push(processor);
-	}
-
 	registerTask(id: string, callback: <T>(...args: any[]) => T | Thenable<T>, thisArg?: any, description?: ITaskHandlerDescription): extHostTypes.Disposable {
-		this.logService.trace('ExtHostCommands#registerCommand', id);
+		this.logService.trace('ExtHostTasks#registerTask', id);
 
 		if (!id.trim().length) {
 			throw new Error('invalid id');
 		}
 
 		if (this._tasks.has(id)) {
-			throw new Error(`command '${id}' already exists`);
+			throw new Error(`task '${id}' already exists`);
 		}
 
 		this._tasks.set(id, { callback, thisArg, description });
@@ -60,7 +54,7 @@ export class ExtHostTasks implements ExtHostTasksShape {
 	$executeContributedTask<T>(id: string, ...args: any[]): Thenable<T> {
 		let command = this._tasks.get(id);
 		if (!command) {
-			return TPromise.wrapError<T>(new Error(`Contributed command '${id}' does not exist.`));
+			return TPromise.wrapError<T>(new Error(`Contributed task '${id}' does not exist.`));
 		}
 
 		let { callback, thisArg, description } = command;
@@ -70,12 +64,10 @@ export class ExtHostTasks implements ExtHostTasksShape {
 				try {
 					validateConstraint(args[i], description.args[i].constraint);
 				} catch (err) {
-					return TPromise.wrapError<T>(new Error(`Running the contributed command:'${id}' failed. Illegal argument '${description.args[i].name}' - ${description.args[i].description}`));
+					return TPromise.wrapError<T>(new Error(`Running the contributed task:'${id}' failed. Illegal argument '${description.args[i].name}' - ${description.args[i].description}`));
 				}
 			}
 		}
-
-		args = args.map(arg => this._argumentProcessors.reduce((r, p) => p.processArgument(r), arg));
 
 		try {
 			let result = callback.apply(thisArg, args);
@@ -87,11 +79,11 @@ export class ExtHostTasks implements ExtHostTasksShape {
 			// } catch (err) {
 			// 	//
 			// }
-			return TPromise.wrapError<T>(new Error(`Running the contributed command:'${id}' failed.`));
+			return TPromise.wrapError<T>(new Error(`Running the contributed task:'${id}' failed.`));
 		}
 	}
 
 	$getContributedTaskHandlerDescriptions(): TPromise<{ [id: string]: any; }> {
-		throw new Error("Method not implemented.");
+		throw new Error('Method not implemented.');
 	}
 }

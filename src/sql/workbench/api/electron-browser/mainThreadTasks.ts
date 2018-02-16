@@ -38,7 +38,6 @@ export class MainThreadTasks implements MainThreadTasksShape {
 		this._generateCommandsDocumentationRegistration.dispose();
 	}
 
-
 	$registerTask(id: string): TPromise<any> {
 		this._disposables.set(
 			id,
@@ -53,13 +52,5 @@ export class MainThreadTasks implements MainThreadTasksShape {
 			this._disposables.delete(id);
 		}
 		return undefined;
-	}
-
-	// $executeTask<T>(id: string, args: any[]): Thenable<T> {
-	// 	return this._commandService.executeTask<T>(id, ...args);
-	// }
-
-	$getTasks(): Thenable<string[]> {
-		return TPromise.as(Object.keys(TaskRegistry.getTasks()));
 	}
 }
