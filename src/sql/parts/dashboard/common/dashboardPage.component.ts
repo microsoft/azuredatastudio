@@ -23,8 +23,8 @@ import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/
 import { AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { error } from 'sql/base/common/log';
-import { WIDGETS_TABS } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
-import { WEBVIEW_TABS } from 'sql/parts/dashboard/tabs/dashboardWebviewTab.contribution';
+import { WIDGETS_TAB } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
+import { WEBVIEW_TAB } from 'sql/parts/dashboard/tabs/dashboardWebviewTab.contribution';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -255,7 +255,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				}
 
 				let key = Object.keys(v.content)[0];
-				if (key === WIDGETS_TABS) {
+				if (key === WIDGETS_TAB) {
 					let configs = <WidgetConfig[]>Object.values(v.content)[0];
 					this._configModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs]);
