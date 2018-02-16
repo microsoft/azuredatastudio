@@ -10,14 +10,14 @@ import Event, { Emitter } from 'vs/base/common/event';
 
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { WebviewTabContent } from 'sql/parts/dashboard/tabContents/webviewTabContent.component';
+import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
 
 @Component({
 	selector: 'dashboard-webview-tab',
 	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWebviewTab) }],
 	template: `
-		<webview-tab-content [webviewId]="tab.id">
-		</webview-tab-content>
+		<webview-content [webviewId]="tab.id">
+		</webview-content>
 	`
 })
 export class DashboardWebviewTab extends DashboardTab implements AfterContentInit {
@@ -26,19 +26,19 @@ export class DashboardWebviewTab extends DashboardTab implements AfterContentIni
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
 
-	@ViewChild(WebviewTabContent) private _webviewTabContent: WebviewTabContent;
+	@ViewChild(WebviewContent) private _webviewContent: WebviewContent;
 	constructor() {
 		super();
 	}
 
 	ngAfterContentInit(): void {
-		this._register(this._webviewTabContent.onResize(() => {
+		this._register(this._webviewContent.onResize(() => {
 			this._onResize.fire();
 		}));
 	}
 
 	public layout(): void {
-		this._webviewTabContent.layout();
+		this._webviewContent.layout();
 	}
 
 	public get id(): string {

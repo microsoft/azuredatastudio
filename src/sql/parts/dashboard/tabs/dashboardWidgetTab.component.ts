@@ -13,7 +13,7 @@ import { TabConfig, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWid
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
-import { WidgetTabContent } from 'sql/parts/dashboard/tabContents/widgetTabContent.component';
+import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
 
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
@@ -24,8 +24,8 @@ import Event, { Emitter } from 'vs/base/common/event';
 	selector: 'dashboard-widget-tab',
 	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWidgetTab) }],
 	template: `
-		<widget-tab-content [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
-		</widget-tab-content>
+		<widget-content [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
+		</widget-content>
 	`
 })
 export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnChanges, AfterContentInit {
@@ -34,7 +34,7 @@ export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnCha
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
 
-	@ViewChild(WidgetTabContent) private _widgetTabContent: WidgetTabContent;
+	@ViewChild(WidgetContent) private _widgetContent: WidgetContent;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {
@@ -49,7 +49,7 @@ export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnCha
 	}
 
 	ngAfterContentInit(): void {
-		this._register(this._widgetTabContent.onResize(() => {
+		this._register(this._widgetContent.onResize(() => {
 			this._onResize.fire();
 		}));
 	}
@@ -67,14 +67,14 @@ export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnCha
 	}
 
 	public layout() {
-		this._widgetTabContent.layout();
+		this._widgetContent.layout();
 	}
 
 	public refresh(): void {
-		this._widgetTabContent.layout();
+		this._widgetContent.layout();
 	}
 
 	public enableEdit(): void {
-		this._widgetTabContent.enableEdit();
+		this._widgetContent.enableEdit();
 	}
 }

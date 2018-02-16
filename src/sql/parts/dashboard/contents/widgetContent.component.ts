@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./widgetTabContent';
+import 'vs/css!./widgetContent';
 
 import { Component, Inject, Input, forwardRef, ViewChild, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
@@ -64,10 +64,10 @@ function configSorter(a, b): number {
 }
 
 @Component({
-	selector: 'widget-tab-content',
-	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/tabContents/widgetTabContent.component.html'))
+	selector: 'widget-content',
+	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/contents/widgetContent.component.html'))
 })
-export class WidgetTabContent {
+export class WidgetContent {
 	@Input() private widgets: WidgetConfig[];
 	@Input() private originalConfig: WidgetConfig[];
 	@Input() private context: string;

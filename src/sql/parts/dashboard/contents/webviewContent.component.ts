@@ -2,7 +2,7 @@
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./webviewTabContent';
+import 'vs/css!./webviewContent';
 
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef } from '@angular/core';
 
@@ -21,9 +21,9 @@ import { memoize } from 'vs/base/common/decorators';
 
 @Component({
 	template: '',
-	selector: 'webview-tab-content'
+	selector: 'webview-content'
 })
-export class WebviewTabContent implements OnInit, IDashboardWebview {
+export class WebviewContent implements OnInit, IDashboardWebview {
 	@Input() private webviewId: string;
 
 	private _onResize = new Emitter<void>();
