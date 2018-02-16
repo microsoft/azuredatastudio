@@ -24,7 +24,6 @@ import { ISqlOAuthService } from 'sql/common/sqlOAuthService';
 import { IFileBrowserService, IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { ITaskService } from 'sql/platform/tasks/common/tasks';
 
 import { $ } from 'vs/base/browser/dom';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -44,6 +43,7 @@ import { IWindowsService, IWindowService } from 'vs/platform/windows/common/wind
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 export class BootstrapService implements IBootstrapService {
 
@@ -98,7 +98,7 @@ export class BootstrapService implements IBootstrapService {
 		@IStorageService public storageService: IStorageService,
 		@IClipboardService public clipboardService: IClipboardService,
 		@ICapabilitiesService public capabilitiesService: ICapabilitiesService,
-		@ITaskService public taskService: ITaskService
+		@ICommandService public commandService: ICommandService
 	) {
 		this.configurationEditorService = this.instantiationService.createInstance(ConfigurationEditingService);
 		this._bootstrapParameterMap = new Map<string, BootstrapParams>();

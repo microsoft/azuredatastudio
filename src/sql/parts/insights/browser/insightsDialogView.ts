@@ -9,7 +9,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { attachButtonStyler, attachModalDialogStyler, attachTableStyler } from 'sql/common/theme/styler';
-import { TaskRegistry, ITaskService } from 'sql/platform/tasks/common/tasks';
+import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/parts/insights/common/interfaces';
@@ -36,6 +36,8 @@ import * as types from 'vs/base/common/types';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { MenuRegistry } from 'vs/platform/actions/common/actions';
 
 const labelDisplay = nls.localize("item", "Item");
 const valueDisplay = nls.localize("value", "Value");
@@ -127,7 +129,7 @@ export class InsightsDialogView extends Modal {
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@ITaskService private _taskService: ITaskService
+		@ICommandService private _commandService: ICommandService
 	) {
 		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, partService, telemetryService, contextKeyService);
 		this._model.onDataChange(e => this.build());
@@ -285,12 +287,11 @@ export class InsightsDialogView extends Modal {
 		this._topTableData.push(inputArray);
 		if (this._insight.actions && this._insight.actions.types) {
 			let tasks = TaskRegistry.getTasks();
-			let displayTasks = TaskRegistry.getDisplayTasks();
 			for (let action of this._insight.actions.types) {
-				let task = tasks[action];
-				let displayTask = displayTasks[action];
+				let task = tasks.includes(action);
+				let commandAction = MenuRegistry.getCommand(action);
 				if (task) {
-					let button = this.addFooterButton(types.isString(displayTask.title) ? displayTask.title : displayTask.title.value, () => {
+					let button = this.addFooterButton(types.isString(commandAction.title) ? commandAction.title : commandAction.title.value, () => {
 						let element = this._topTable.getSelectedRows();
 						let resource: ListResource;
 						if (element && element.length > 0) {
@@ -298,7 +299,7 @@ export class InsightsDialogView extends Modal {
 						} else {
 							return;
 						}
-						this._taskService.executeTask(task.id, this._connectionProfile);
+						this._commandService.executeCommand(action, this._connectionProfile);
 					}, 'left');
 					button.enabled = false;
 					this._taskButtonDisposables.push(button);
@@ -334,21 +335,22 @@ export class InsightsDialogView extends Modal {
 	}
 
 	private get insightActions(): TPromise<IAction[]> {
-		let tasks = TaskRegistry.getDisplayTasks();
+		let tasks = TaskRegistry.getTasks();
 		let actions = this._insight.actions.types;
 		let returnActions: IAction[] = [];
 		for (let action of actions) {
-			let task = tasks[action];
+			let task = tasks.includes(action);
+			let commandAction = MenuRegistry.getCommand(action);
 			if (task) {
 				returnActions.push({
-					id: task.id,
-					label: types.isString(task.title) ? task.title : task.title.value,
+					id: commandAction.id,
+					label: types.isString(commandAction.title) ? commandAction.title : commandAction.title.value,
 					enabled: true,
-					class: task.iconClass,
+					class: commandAction.iconClass,
 					checked: true,
 					radio: false,
-					run: () => this._taskService.executeTask(task.id, this._connectionProfile),
-					tooltip: types.isString(task.title) ? task.title : task.title.value,
+					run: () => this._commandService.executeCommand(commandAction.id, this._connectionProfile),
+					tooltip: types.isString(commandAction.title) ? commandAction.title : commandAction.title.value,
 					dispose: () => {
 					}
 				});

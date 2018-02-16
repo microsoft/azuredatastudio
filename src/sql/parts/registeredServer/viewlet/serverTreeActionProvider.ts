@@ -26,7 +26,7 @@ import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile
 import { NewProfilerAction } from 'sql/parts/profiler/contrib/profilerActions';
 import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { ExecuteTaskAction } from 'sql/platform/tasks/common/tasks';
+import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 
 /**
  *  Provides actions for the server tree elements
@@ -84,7 +84,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, tree, element));
 
 		if (process.env['VSCODE_DEV']) {
-			actions.push(this._instantiationService.createInstance(ExecuteTaskAction, NewProfilerAction.ID, NewProfilerAction.LABEL));
+			actions.push(this._instantiationService.createInstance(ExecuteCommandAction, NewProfilerAction.ID, NewProfilerAction.LABEL));
 		}
 
 		return actions;
@@ -113,7 +113,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 				return actions;
 			}
 		}
-		actions.push(this._instantiationService.createInstance(ExecuteTaskAction, OENewQueryAction.ID, NewQueryAction.LABEL));
+		actions.push(this._instantiationService.createInstance(OENewQueryAction, OENewQueryAction.ID, NewQueryAction.LABEL));
 		let scriptMap: Map<NodeType, any[]> = ObjectExplorerActionUtilities.getScriptMap(treeNode);
 		let supportedActions = scriptMap.get(treeNode.nodeTypeId);
 		let self = this;

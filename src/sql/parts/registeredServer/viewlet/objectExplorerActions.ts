@@ -24,7 +24,8 @@ import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 import * as Constants from 'sql/parts/connection/common/constants';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { ExecuteTaskAction, ITaskService } from 'sql/platform/tasks/common/tasks';
+import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 export class ObjectExplorerActionsContext {
 	public treeNode: TreeNode;
@@ -33,18 +34,18 @@ export class ObjectExplorerActionsContext {
 	public tree: ITree;
 }
 
-export class OENewQueryAction extends ExecuteTaskAction {
+export class OENewQueryAction extends ExecuteCommandAction {
 	public static ID = 'objectExplorer.' + NewQueryAction.ID;
 	private _objectExplorerTreeNode: TreeNode;
 	private _container: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 
 	constructor(
-		id: string, label: string, icon: string,
+		id: string, label: string,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@ITaskService taskService: ITaskService
+		@ICommandService commandService: ICommandService
 	) {
-		super(id, label, taskService);
+		super(id, label, commandService);
 	}
 
 	public run(actionContext: any): TPromise<boolean> {

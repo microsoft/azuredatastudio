@@ -12,7 +12,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 /* SQL imports */
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { TaskRegistry, ITaskAction } from 'sql/platform/tasks/common/tasks';
+import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { BaseActionContext } from 'sql/workbench/common/actions';
 
@@ -28,6 +28,8 @@ import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElemen
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { $, Builder } from 'vs/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
+import { CommandsRegistry, ICommand } from 'vs/platform/commands/common/commands';
+import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
 
 interface IConfig {
 	tasks: Array<Object>;
@@ -39,7 +41,7 @@ interface IConfig {
 })
 export class TasksWidget extends DashboardWidget implements IDashboardWidget, OnInit {
 	private _size: number = 98;
-	private _tasks: Array<ITaskAction> = [];
+	private _tasks: Array<ICommandAction> = [];
 	private _profile: IConnectionProfile;
 	private _scrollableElement: ScrollableElement;
 	private $container: Builder;
@@ -55,20 +57,13 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		super();
 		this._profile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
 		let tasksConfig = <IConfig>Object.values(this._config.widget)[0];
-		let tasks = TaskRegistry.getDisplayTasks();
+		let tasks = TaskRegistry.getTasks();
 
 		if (tasksConfig.tasks) {
-			let taskIds = Object.keys(tasksConfig.tasks);
-			Object.keys(tasks).forEach(i => {
-				if (!taskIds.includes(i)) {
-					delete tasks[i];
-				}
-			});
+			tasks = Object.keys(tasksConfig.tasks).filter(i => tasks.includes(i));
 		}
-		this._tasks = [];
-		for (let key in tasks) {
-			this._tasks.push(tasks[key]);
-		}
+
+		this._tasks = tasks.map(i => MenuRegistry.getCommand(i));
 	}
 
 	ngOnInit() {
@@ -110,11 +105,11 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		this.$container.style('height', height + 'px').style('width', width + 'px');
 	}
 
-	private _createTile(action: ITaskAction): HTMLElement {
+	private _createTile(action: ICommandAction): HTMLElement {
 		let label = $('div').safeInnerHtml(types.isString(action.title) ? action.title : action.title.value);
 		let tile = $('div.task-tile').style('height', this._size + 'px').style('width', this._size + 'px');
 		let innerTile = $('div');
-		if (action.iconClass) {
+		if (action) {
 			let icon = $('span.icon').addClass(action.iconClass);
 			innerTile.append(icon);
 		}
@@ -136,11 +131,11 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		}
 	}
 
-	public runTask(task: ITaskAction) {
+	public runTask(task: ICommandAction) {
 		let context: BaseActionContext = {
 			profile: this._profile
 		};
-		this._bootstrap.taskService.executeTask(task.id, this._profile);
+		this._bootstrap.commandService.executeCommand(task.id, this._profile);
 	}
 
 	public layout(): void {

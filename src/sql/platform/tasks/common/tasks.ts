@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TypeConstraint, validateConstraints } from 'vs/base/common/types';
+import * as types from 'vs/base/common/types';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
 import { Action } from 'vs/base/common/actions';
-import { IConstructorSignature3, ServicesAccessor, createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { IConstructorSignature3, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import * as nls from 'vs/nls';
-import { ILocalizedString } from 'vs/platform/actions/common/actions';
+import { ILocalizedString, IMenuItem, MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
 import Event from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
@@ -18,15 +18,12 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { LinkedList } from 'vs/base/common/linkedList';
 
 import * as data from 'data';
-
-export const ITaskService = createDecorator<ITaskService>('taskService');
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 
 export interface ITaskOptions {
 	id: string;
 	title: string;
-	// precondition: ContextKeyExpr;
 	iconClass: string;
-	// kbOpts?: ICommandKeybindingsOptions;
 	description?: ITaskHandlerDescription;
 }
 
@@ -34,54 +31,33 @@ export abstract class Task {
 	public readonly id: string;
 	public readonly title: string;
 	public readonly iconClass: string;
-	// public readonly precondition: ContextKeyExpr;
-	// private readonly _kbOpts: ITaskKeybindingsOptions;
 	private readonly _description: ITaskHandlerDescription;
 
 	constructor(opts: ITaskOptions) {
 		this.id = opts.id;
 		this.title = opts.title;
 		this.iconClass = opts.iconClass;
-		// this.precondition = opts.precondition;
-		// this._kbOpts = opts.kbOpts;
 		this._description = opts.description;
 	}
 
-	private toITask(/*defaultWeight: number*/): ITask {
-		// const kbOpts = this._kbOpts || { primary: 0 };
-
-		// let kbWhen = kbOpts.kbExpr;
-		// if (this.precondition) {
-		// 	if (kbWhen) {
-		// 		kbWhen = ContextKeyExpr.and(kbWhen, this.precondition);
-		// 	} else {
-		// 		kbWhen = this.precondition;
-		// 	}
-		// }
-
-		// const weight = (typeof kbOpts.weight === 'number' ? kbOpts.weight : defaultWeight);
-
+	private toITask(): ITask {
 		return {
 			id: this.id,
 			handler: (accessor, profile, args) => this.runTask(accessor, profile, args),
-			// weight: weight,
-			// when: kbWhen,
-			// primary: kbOpts.primary,
-			// secondary: kbOpts.secondary,
-			// win: kbOpts.win,
-			// linux: kbOpts.linux,
-			// mac: kbOpts.mac,
 			description: this._description
 		};
 	}
 
-	public registerTask(): IDisposable {
-		TaskRegistry.addTask({
+	private toCommandAction(): ICommandAction {
+		return {
+			iconClass: this.iconClass,
 			id: this.id,
-			title: this.title,
-			iconClass: this.iconClass
-		});
+			title: this.title
+		};
+	}
 
+	public registerTask(): IDisposable {
+		MenuRegistry.addCommand(this.toCommandAction());
 		return TaskRegistry.registerTask(this.toITask());
 	}
 
@@ -90,34 +66,12 @@ export abstract class Task {
 
 export interface ITaskHandlerDescription {
 	description: string;
-	args: { name: string; description?: string; constraint?: TypeConstraint; }[];
+	args: { name: string; description?: string; constraint?: types.TypeConstraint; }[];
 	returns?: string;
 }
 
 export interface ITaskEvent {
 	taskId: string;
-}
-
-export interface ITasksMap {
-	[id: string]: ITask;
-}
-
-export interface ITasksActionMap {
-	[id: string]: ITaskAction;
-}
-
-export class ExecuteTaskAction extends Action {
-
-	constructor(
-		id: string,
-		label: string,
-		@ITaskService private _taskService: ITaskService) {
-		super(id, label);
-	}
-
-	run(connection: data.connection.Connection, serverInfo: data.ServerInfo, ...args: any[]): TPromise<any> {
-		return this._taskService.executeTask(this.id, connection, serverInfo, ...args);
-	}
 }
 
 export interface ITaskAction {
@@ -128,12 +82,6 @@ export interface ITaskAction {
 	iconPath?: string;
 }
 
-export interface ITaskService {
-	_serviceBrand: any;
-	onWillExecuteTask: Event<ITaskEvent>;
-	executeTask<T = any>(commandId: string, connection: data.connection.Connection, serverInfo: data.ServerInfo, ...args: any[]): TPromise<T>;
-}
-
 export interface ITaskHandler {
 	(accessor: ServicesAccessor, profile: IConnectionProfile, ...args: any[]): void;
 }
@@ -141,111 +89,45 @@ export interface ITaskHandler {
 export interface ITask {
 	id: string;
 	handler: ITaskHandler;
-	// precondition?: ContextKeyExpr;
+	precondition?: ContextKeyExpr;
 	description?: ITaskHandlerDescription;
 }
 
 export interface ITaskRegistry {
 	registerTask(id: string, command: ITaskHandler): IDisposable;
 	registerTask(command: ITask): IDisposable;
-	addTask(userCommand: ITaskAction): boolean;
-	getTask(id: string): ITask;
-	getTasks(): ITasksMap;
-	getDisplayTasks(): ITasksActionMap;
-	getDisplayTask(id: string): ITaskAction;
+	getTasks(): string[];
 }
 
 export const TaskRegistry: ITaskRegistry = new class implements ITaskRegistry {
 
-	private _tasks = new Map<string, LinkedList<ITask>>();
-	private _displayTasks = new Map<string, LinkedList<ITaskAction>>();
+	private _tasks = new Array<string>();
 
 	registerTask(idOrTask: string | ITask, handler?: ITaskHandler): IDisposable {
-
-		if (!idOrTask) {
-			throw new Error(`invalid command`);
+		let disposable: IDisposable;
+		let id: string;
+		if (types.isString(idOrTask)) {
+			disposable = CommandsRegistry.registerCommand(idOrTask, handler);
+			id = idOrTask;
+		} else {
+			disposable = CommandsRegistry.registerCommand(idOrTask);
+			id = idOrTask.id;
 		}
 
-		if (typeof idOrTask === 'string') {
-			if (!handler) {
-				throw new Error(`invalid command`);
-			}
-			return this.registerTask({ id: idOrTask, handler });
-		}
-
-		// add argument validation if rich command metadata is provided
-		if (idOrTask.description) {
-			const constraints: TypeConstraint[] = [];
-			for (let arg of idOrTask.description.args) {
-				constraints.push(arg.constraint);
-			}
-			const actualHandler = idOrTask.handler;
-			idOrTask.handler = function (accessor, profile, ...args: any[]) {
-				validateConstraints(args, constraints);
-				return actualHandler(accessor, profile, ...args);
-			};
-		}
-
-		// find a place to store the command
-		const { id } = idOrTask;
-
-		let commands = this._tasks.get(id);
-		if (!commands) {
-			commands = new LinkedList<ITask>();
-			this._tasks.set(id, commands);
-		}
-
-		let removeFn = commands.unshift(idOrTask);
+		this._tasks.push(id);
 
 		return {
 			dispose: () => {
-				removeFn();
-				if (this._tasks.get(id).isEmpty()) {
-					this._tasks.delete(id);
+				let index = this._tasks.indexOf(id);
+				if (index >= 0) {
+					this._tasks = this._tasks.splice(index, 1);
 				}
+				disposable.dispose();
 			}
 		};
 	}
 
-	addTask(task: ITaskAction): boolean {
-		let tasks = this._displayTasks.get(task.id);
-		if (!tasks) {
-			tasks = new LinkedList<ITaskAction>();
-			this._displayTasks.set(task.id, tasks);
-		}
-		tasks.unshift(task);
-		return false;
-	}
-
-	getTask(id: string): ITask {
-		const list = this._tasks.get(id);
-		if (!list || list.isEmpty()) {
-			return undefined;
-		}
-		return list.iterator().next().value;
-	}
-
-	getTasks(): ITasksMap {
-		const result: ITasksMap = Object.create(null);
-		this._tasks.forEach((value, key) => {
-			result[key] = this.getTask(key);
-		});
-		return result;
-	}
-
-	getDisplayTask(id: string): ITaskAction {
-		const list = this._displayTasks.get(id);
-		if (!list || list.isEmpty()) {
-			return undefined;
-		}
-		return list.iterator().next().value;
-	}
-
-	getDisplayTasks(): ITasksActionMap {
-		const result: ITasksActionMap = Object.create(null);
-		this._displayTasks.forEach((value, key) => {
-			result[key] = this.getDisplayTask(key);
-		});
-		return result;
+	getTasks(): string[] {
+		return this._tasks;
 	}
 };

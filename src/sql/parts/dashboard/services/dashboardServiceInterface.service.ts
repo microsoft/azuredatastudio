@@ -37,8 +37,8 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import Event, { Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
-import { ITaskService } from 'sql/platform/tasks/common/tasks';
 import { deepClone } from 'vs/base/common/objects';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 const DASHBOARD_SETTINGS = 'dashboard';
 
@@ -129,7 +129,7 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _storageService: IStorageService;
 	private _capabilitiesService: ICapabilitiesService;
 	private _configurationEditingService: ConfigurationEditingService;
-	private _taskService: ITaskService;
+	private _commandService: ICommandService;
 
 	private _updatePage = new Emitter<void>();
 	public readonly onUpdatePage: Event<void> = this._updatePage.event;
@@ -152,7 +152,7 @@ export class DashboardServiceInterface implements OnDestroy {
 		this._storageService = this._bootstrapService.storageService;
 		this._capabilitiesService = this._bootstrapService.capabilitiesService;
 		this._configurationEditingService = this._bootstrapService.configurationEditorService;
-		this._taskService = this._bootstrapService.taskService;
+		this._commandService = this._bootstrapService.commandService;
 	}
 
 	ngOnDestroy() {
@@ -175,8 +175,8 @@ export class DashboardServiceInterface implements OnDestroy {
 		return this._connectionManagementService;
 	}
 
-	public get taskService(): ITaskService {
-		return this._taskService;
+	public get commandService(): ICommandService {
+		return this._commandService;
 	}
 
 	public get themeService(): IWorkbenchThemeService {

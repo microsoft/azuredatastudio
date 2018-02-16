@@ -27,7 +27,7 @@ import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { generateUuid } from 'vs/base/common/uuid';
 import { $ } from 'vs/base/browser/dom';
-import { ExecuteTaskAction } from 'sql/platform/tasks/common/tasks';
+import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 
 export class ObjectMetadataWrapper implements ObjectMetadata {
 	public metadataType: MetadataType;
@@ -371,14 +371,14 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 			actions.push(instantiationService.createInstance(ScriptAlterAction, ScriptAlterAction.ID, ScriptAlterAction.LABEL));
 		}
 	} else {
-		actions.push(instantiationService.createInstance(ExecuteTaskAction, NewQueryAction.ID, NewQueryAction.LABEL));
+		actions.push(instantiationService.createInstance(ExecuteCommandAction, NewQueryAction.ID, NewQueryAction.LABEL));
 
-		let action: IAction = instantiationService.createInstance(ExecuteTaskAction, RestoreAction.ID, RestoreAction.LABEL);
+		let action: IAction = instantiationService.createInstance(ExecuteCommandAction, RestoreAction.ID, RestoreAction.LABEL);
 		if (capabilitiesService.isFeatureAvailable(action, info)) {
 			actions.push(action);
 		}
 
-		action = instantiationService.createInstance(ExecuteTaskAction, BackupAction.ID, BackupAction.LABEL);
+		action = instantiationService.createInstance(ExecuteCommandAction, BackupAction.ID, BackupAction.LABEL);
 		if (capabilitiesService.isFeatureAvailable(action, info)) {
 			actions.push(action);
 		}

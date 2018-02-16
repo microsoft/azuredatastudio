@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import { TaskRegistry, ITaskHandlerDescription, ITaskService } from 'sql/platform/tasks/common/tasks';
+import { TaskRegistry, ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
@@ -26,12 +26,9 @@ export class MainThreadTasks implements MainThreadTasksShape {
 	private readonly _proxy: ExtHostTasksShape;
 
 	constructor(
-		extHostContext: IExtHostContext,
-		@ITaskService private readonly _commandService: ITaskService,
+		extHostContext: IExtHostContext
 	) {
 		this._proxy = extHostContext.get(SqlExtHostContext.ExtHostTasks);
-
-		this._generateCommandsDocumentationRegistration = TaskRegistry.registerTask('_generateCommandsDocumentation', () => this._generateCommandsDocumentation());
 	}
 
 	dispose() {
@@ -41,25 +38,6 @@ export class MainThreadTasks implements MainThreadTasksShape {
 		this._generateCommandsDocumentationRegistration.dispose();
 	}
 
-	private _generateCommandsDocumentation(): TPromise<void> {
-		return this._proxy.$getContributedTaskHandlerDescriptions().then(result => {
-			// add local commands
-			const commands = TaskRegistry.getTasks();
-			for (let id in commands) {
-				let { description } = commands[id];
-				if (description) {
-					result[id] = description;
-				}
-			}
-
-			// print all as markdown
-			const all: string[] = [];
-			for (let id in result) {
-				all.push('`' + id + '` - ' + _generateMarkdown(result[id]));
-			}
-			console.log(all.join('\n'));
-		});
-	}
 
 	$registerTask(id: string): TPromise<any> {
 		this._disposables.set(
@@ -83,26 +61,5 @@ export class MainThreadTasks implements MainThreadTasksShape {
 
 	$getTasks(): Thenable<string[]> {
 		return TPromise.as(Object.keys(TaskRegistry.getTasks()));
-	}
-}
-
-// --- command doc
-
-function _generateMarkdown(description: string | ITaskHandlerDescription): string {
-	if (typeof description === 'string') {
-		return description;
-	} else {
-		let parts = [description.description];
-		parts.push('\n\n');
-		if (description.args) {
-			for (let arg of description.args) {
-				parts.push(`* _${arg.name}_ ${arg.description || ''}\n`);
-			}
-		}
-		if (description.returns) {
-			parts.push(`* _(returns)_ ${description.returns}`);
-		}
-		parts.push('\n\n');
-		return parts.join('');
 	}
 }
