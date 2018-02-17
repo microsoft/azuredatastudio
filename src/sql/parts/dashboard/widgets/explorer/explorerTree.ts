@@ -27,7 +27,7 @@ import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { generateUuid } from 'vs/base/common/uuid';
 import { $ } from 'vs/base/browser/dom';
-import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
+import { OEAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
 
 export class ObjectMetadataWrapper implements ObjectMetadata {
 	public metadataType: MetadataType;
@@ -371,14 +371,14 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 			actions.push(instantiationService.createInstance(ScriptAlterAction, ScriptAlterAction.ID, ScriptAlterAction.LABEL));
 		}
 	} else {
-		actions.push(instantiationService.createInstance(ExecuteCommandAction, NewQueryAction.ID, NewQueryAction.LABEL));
+		actions.push(instantiationService.createInstance(OEAction, NewQueryAction.ID, NewQueryAction.LABEL));
 
-		let action: IAction = instantiationService.createInstance(ExecuteCommandAction, RestoreAction.ID, RestoreAction.LABEL);
+		let action: IAction = instantiationService.createInstance(OEAction, RestoreAction.ID, RestoreAction.LABEL);
 		if (capabilitiesService.isFeatureAvailable(action, info)) {
 			actions.push(action);
 		}
 
-		action = instantiationService.createInstance(ExecuteCommandAction, BackupAction.ID, BackupAction.LABEL);
+		action = instantiationService.createInstance(OEAction, BackupAction.ID, BackupAction.LABEL);
 		if (capabilitiesService.isFeatureAvailable(action, info)) {
 			actions.push(action);
 		}

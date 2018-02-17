@@ -1494,6 +1494,10 @@ declare module 'data' {
 	}
 
 	export namespace tasks {
+		export interface ITaskHandler {
+			(connection: connection.Connection, serverInfo: ServerInfo, ...args: any[]): any;
+		}
+
 		/**
 		* Registers a task that can be invoked via a keyboard shortcut,
 		* a menu item, an action, or directly.
@@ -1506,6 +1510,6 @@ declare module 'data' {
 		* @param thisArg The `this` context used when invoking the handler function.
 		* @return Disposable which unregisters this task on disposal.
 		*/
-		export function registerTask(task: string, callback: (connection: connection.Connection, serverInfo: ServerInfo, ...args: any[]) => any, thisArg?: any): vscode.Disposable;
+		export function registerTask(task: string, callback: ITaskHandler, thisArg?: any): vscode.Disposable;
 	}
 }

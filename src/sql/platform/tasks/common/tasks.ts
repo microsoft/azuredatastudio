@@ -43,7 +43,7 @@ export abstract class Task {
 	private toITask(): ITask {
 		return {
 			id: this.id,
-			handler: (accessor, profile, args) => this.runTask(accessor, profile, args),
+			handler: (accessor, conn, serverInfo, args) => this.runTask(accessor, conn, serverInfo, args),
 			description: this._description
 		};
 	}
@@ -61,7 +61,7 @@ export abstract class Task {
 		return TaskRegistry.registerTask(this.toITask());
 	}
 
-	public abstract runTask(accessor: ServicesAccessor, profile: IConnectionProfile, args: any): void | TPromise<void>;
+	public abstract runTask(accessor: ServicesAccessor, conn: data.connection.Connection, serverInfo: data.ServerInfo, args: any): void | TPromise<void>;
 }
 
 export interface ITaskHandlerDescription {
@@ -83,7 +83,7 @@ export interface ITaskAction {
 }
 
 export interface ITaskHandler {
-	(accessor: ServicesAccessor, profile: IConnectionProfile, ...args: any[]): void;
+	(accessor: ServicesAccessor, conn: data.connection.Connection, serverInfo: data.ServerInfo, ...args: any[]): void;
 }
 
 export interface ITask {

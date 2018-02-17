@@ -26,6 +26,9 @@ import * as Constants from 'sql/parts/connection/common/constants';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+
+import * as data from 'data';
 
 export class ObjectExplorerActionsContext {
 	public treeNode: TreeNode;
@@ -34,8 +37,7 @@ export class ObjectExplorerActionsContext {
 	public tree: ITree;
 }
 
-export class OENewQueryAction extends ExecuteCommandAction {
-	public static ID = 'objectExplorer.' + NewQueryAction.ID;
+export class OEAction extends ExecuteCommandAction {
 	private _objectExplorerTreeNode: TreeNode;
 	private _container: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
@@ -43,22 +45,31 @@ export class OENewQueryAction extends ExecuteCommandAction {
 	constructor(
 		id: string, label: string,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@ICommandService commandService: ICommandService
+		@ICommandService commandService: ICommandService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super(id, label, commandService);
 	}
 
 	public run(actionContext: any): TPromise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
-		if (actionContext instanceof ObjectExplorerActionsContext) {
-			//set objectExplorerTreeNode for context menu clicks
-			this._objectExplorerTreeNode = actionContext.treeNode;
-			this._container = actionContext.container;
+
+
+		let profile: IConnectionProfile;
+		if (actionContext.connectionProfile) {
+			profile = actionContext.connectionProfile;
+		} else {
+			profile = TreeUpdateUtils.getConnectionProfile(<TreeNode>actionContext.treeNode);
 		}
 		this._treeSelectionHandler.onTreeActionStateChange(true);
-		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
 
-		return super.run(connectionProfile).then(() => {
+		let connection: data.connection.Connection = {
+			connectionId: profile.id,
+			providerName: profile.providerName,
+			options: profile.options
+		};
+
+		return super.run(connection).then(() => {
 			this._treeSelectionHandler.onTreeActionStateChange(false);
 			return true;
 		});

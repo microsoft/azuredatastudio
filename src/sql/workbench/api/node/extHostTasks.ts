@@ -10,6 +10,8 @@ import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
 import { TPromise } from 'vs/base/common/winjs.base';
 
+import * as data from 'data';
+
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import { SqlMainContext, MainThreadTasksShape, ExtHostTasksShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 
@@ -30,7 +32,7 @@ export class ExtHostTasks implements ExtHostTasksShape {
 		this._proxy = mainContext.get(SqlMainContext.MainThreadTasks);
 	}
 
-	registerTask(id: string, callback: <T>(...args: any[]) => T | Thenable<T>, thisArg?: any, description?: ITaskHandlerDescription): extHostTypes.Disposable {
+	registerTask(id: string, callback: data.tasks.ITaskHandler, thisArg?: any, description?: ITaskHandlerDescription): extHostTypes.Disposable {
 		this.logService.trace('ExtHostTasks#registerTask', id);
 
 		if (!id.trim().length) {

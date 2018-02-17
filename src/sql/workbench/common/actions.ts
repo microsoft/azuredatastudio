@@ -15,21 +15,21 @@ import { IAngularEventingService, AngularEventType } from 'sql/services/angularE
 import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import * as Constants from 'sql/common/constants';
-import { ObjectMetadata } from 'data';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import { Task } from 'sql/platform/tasks/common/tasks';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+
+import * as data  from 'data';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
-
 import * as nls from 'vs/nls';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 export interface BaseActionContext {
-	object?: ObjectMetadata;
+	object?: data.ObjectMetadata;
 	profile?: IConnectionProfile;
 }
 
@@ -51,7 +51,22 @@ export class NewQueryAction extends Task {
 		super({ id: NewQueryAction.ID, title: NewQueryAction.LABEL, iconClass: NewQueryAction.ICON });
 	}
 
-	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile, args: any): TPromise<void> {
+	public runTask(accessor: ServicesAccessor, connection: data.connection.Connection, serverInfo: data.ServerInfo, args: any): TPromise<void> {
+		let connMan = accessor.get<IConnectionManagementService>(IConnectionManagementService);
+		let profile: IConnectionProfile;
+		let connectionGroups = connMan.getConnectionGroups().find(cg => {
+			return cg.hasChildren() && !!cg.connections.find(c => c.id === connection.connectionId);
+		})
+		if (connectionGroups) {
+			connectionGroups.connections.forEach(c => {
+				if (c.id === connection.connectionId) {
+					profile = c;
+				}
+			});
+		} else {
+			profile = connMan.getActiveConnections().find(i => i.id === connection.connectionId);
+		}
+
 		return new TPromise<void>((resolve, reject) => {
 			TaskUtilities.newQuery(
 				profile,
@@ -288,7 +303,9 @@ export class BackupAction extends Task {
 		super({ id: BackupAction.ID, title: BackupAction.LABEL, iconClass: BackupAction.ICON });
 	}
 
-	runTask(accessor: ServicesAccessor, profile: IConnectionProfile, args: any): TPromise<void> {
+	runTask(accessor: ServicesAccessor, conn: data.connection.Connection, serverInfo: data.ServerInfo, args: any): TPromise<void> {
+		let connMan = accessor.get<IConnectionManagementService>(IConnectionManagementService);
+		let profile = connMan.getActiveConnections().find(connectionProfile => connectionProfile.id === conn.connectionId);
 		return new TPromise<void>((resolve, reject) => {
 			TaskUtilities.showBackup(
 				profile,
@@ -314,7 +331,9 @@ export class RestoreAction extends Task {
 		super({ id: RestoreAction.ID, title: RestoreAction.LABEL, iconClass: RestoreAction.ICON });
 	}
 
-	runTask(accessor: ServicesAccessor, profile: IConnectionProfile, args: any): TPromise<void> {
+	runTask(accessor: ServicesAccessor, conn: data.connection.Connection, serverInfo: data.ServerInfo, args: any): TPromise<void> {
+		let connMan = accessor.get<IConnectionManagementService>(IConnectionManagementService);
+		let profile = connMan.getActiveConnections().find(connectionProfile => connectionProfile.id === conn.connectionId);
 		return new TPromise<void>((resolve, reject) => {
 			TaskUtilities.showRestore(
 				profile,
@@ -409,7 +428,7 @@ export class ConfigureDashboardAction extends Task {
 		super({ id: ConfigureDashboardAction.ID, title: ConfigureDashboardAction.LABEL, iconClass: ConfigureDashboardAction.ICON });
 	}
 
-	runTask(accessor: ServicesAccessor, profile: IConnectionProfile, args: any): TPromise<void> {
+	runTask(accessor: ServicesAccessor, conn: data.connection.Connection, serverInfo: data.ServerInfo, args: any): TPromise<void> {
 		return new TPromise<void>((resolve, reject) => {
 			accessor.get<IWindowsService>(IWindowsService).openExternal(ConfigureDashboardAction.configHelpUri).then((result) => {
 				resolve(void 0);

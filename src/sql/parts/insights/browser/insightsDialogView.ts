@@ -349,7 +349,7 @@ export class InsightsDialogView extends Modal {
 					class: commandAction.iconClass,
 					checked: true,
 					radio: false,
-					run: () => this._commandService.executeCommand(commandAction.id, this._connectionProfile),
+					run: () => this._commandService.executeCommand(commandAction.id, this._connectionProfile.id),
 					tooltip: types.isString(commandAction.title) ? commandAction.title : commandAction.title.value,
 					dispose: () => {
 					}

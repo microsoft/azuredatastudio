@@ -10,6 +10,12 @@ import { IProfilerController } from 'sql/parts/profiler/editor/controller/interf
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { BaseActionContext } from 'sql/workbench/common/actions';
 import { Task } from 'sql/platform/tasks/common/tasks';
+import { ObjectExplorerActionsContext } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+
+import * as data from 'data';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
@@ -17,10 +23,6 @@ import * as nls from 'vs/nls';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { ObjectExplorerActionsContext } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/parts/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 export class ProfilerConnect extends Action {
 	public static ID = 'profiler.connect';
@@ -238,7 +240,9 @@ export class NewProfilerAction extends Task {
 		super({ id: NewProfilerAction.ID, title: NewProfilerAction.LABEL, iconClass: NewProfilerAction.ICON });
 	}
 
-	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile, args: any): TPromise<void> {
+	public runTask(accessor: ServicesAccessor, conn: data.connection.Connection, serverInfo: data.ServerInfo, args: any): TPromise<void> {
+		let connMan = accessor.get<IConnectionManagementService>(IConnectionManagementService);
+		let profile = connMan.getActiveConnections().find(connectionProfile => connectionProfile.id === conn.connectionId);
 		let profilerInput = accessor.get<IInstantiationService>(IInstantiationService).createInstance(ProfilerInput, profile);
 		return accessor.get<IWorkbenchEditorService>(IWorkbenchEditorService).openEditor(profilerInput, { pinned: true }, false).then(() => {
 			let options: IConnectionCompletionOptions = {
