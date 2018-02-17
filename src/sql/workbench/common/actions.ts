@@ -19,7 +19,7 @@ import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import { Task } from 'sql/platform/tasks/common/tasks';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 
-import * as data  from 'data';
+import * as data from 'data';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
