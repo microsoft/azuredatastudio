@@ -6,22 +6,9 @@
 'use strict';
 import * as data from 'data';
 
-// A Connection Profile contains all the properties of connection credentials, with additional
-// optional name and details on whether password should be saved
-export interface IConnectionProfile extends data.ConnectionInfo {
-	serverName: string;
-	databaseName: string;
-	userName: string;
-	password: string;
-	authenticationType: string;
-	savePassword: boolean;
-	groupFullName: string;
-	groupId: string;
+export interface IConnectionProfile extends data.IConnectionProfile {
 	getOptionsKey(): string;
-	matches(profile: IConnectionProfile): boolean;
-	providerName: string;
-	saveProfile: boolean;
-	id: string;
+	matches(profile: data.IConnectionProfile): boolean;
 }
 
 export interface IConnectionProfileStore {

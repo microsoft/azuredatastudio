@@ -240,9 +240,7 @@ export class NewProfilerAction extends Task {
 		super({ id: NewProfilerAction.ID, title: NewProfilerAction.LABEL, iconClass: NewProfilerAction.ICON });
 	}
 
-	public runTask(accessor: ServicesAccessor, conn: data.connection.Connection, serverInfo: data.ServerInfo, args: any): TPromise<void> {
-		let connMan = accessor.get<IConnectionManagementService>(IConnectionManagementService);
-		let profile = connMan.getActiveConnections().find(connectionProfile => connectionProfile.id === conn.connectionId);
+	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
 		let profilerInput = accessor.get<IInstantiationService>(IInstantiationService).createInstance(ProfilerInput, profile);
 		return accessor.get<IWorkbenchEditorService>(IWorkbenchEditorService).openEditor(profilerInput, { pinned: true }, false).then(() => {
 			let options: IConnectionCompletionOptions = {

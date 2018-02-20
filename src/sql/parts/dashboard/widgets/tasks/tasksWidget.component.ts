@@ -133,7 +133,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 
 	public runTask(task: ICommandAction) {
 		let serverInfo = this._bootstrap.connectionManagementService.connectionInfo.serverInfo;
-		this._bootstrap.commandService.executeCommand(task.id, this._profile.id, serverInfo);
+		this._bootstrap.commandService.executeCommand(task.id, this._profile);
 	}
 
 	public layout(): void {

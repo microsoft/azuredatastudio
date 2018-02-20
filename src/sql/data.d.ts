@@ -114,6 +114,20 @@ declare module 'data' {
 		options: { [name: string]: any };
 	}
 
+	export interface IConnectionProfile extends ConnectionInfo {
+		serverName: string;
+		databaseName: string;
+		userName: string;
+		password: string;
+		authenticationType: string;
+		savePassword: boolean;
+		groupFullName: string;
+		groupId: string;
+		providerName: string;
+		saveProfile: boolean;
+		id: string;
+	}
+
 	export interface ConnectionInfoSummary {
 
 		/**
@@ -1494,8 +1508,9 @@ declare module 'data' {
 	}
 
 	export namespace tasks {
+
 		export interface ITaskHandler {
-			(connection: connection.Connection, serverInfo: ServerInfo, ...args: any[]): any;
+			(profile: IConnectionProfile, ...args: any[]): any;
 		}
 
 		/**

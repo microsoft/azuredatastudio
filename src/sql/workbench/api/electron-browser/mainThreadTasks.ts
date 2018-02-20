@@ -18,6 +18,10 @@ import {
 	MainThreadTasksShape
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 
+import { IConnectionProfile } from 'data';
+
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+
 @extHostNamedCustomer(SqlMainContext.MainThreadTasks)
 export class MainThreadTasks implements MainThreadTasksShape {
 
@@ -41,7 +45,12 @@ export class MainThreadTasks implements MainThreadTasksShape {
 	$registerTask(id: string): TPromise<any> {
 		this._disposables.set(
 			id,
-			TaskRegistry.registerTask(id, (accessor, ...args) => this._proxy.$executeContributedTask(id, ...args))
+			TaskRegistry.registerTask(id, (accessor, profile: IConnectionProfile, ...args) => {
+				if (profile instanceof ConnectionProfile) {
+					profile = profile.toIConnectionProfile();
+				}
+				this._proxy.$executeContributedTask(id, profile, ...args);
+			})
 		);
 		return undefined;
 	}

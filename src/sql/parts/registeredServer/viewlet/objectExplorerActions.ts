@@ -63,13 +63,7 @@ export class OEAction extends ExecuteCommandAction {
 		}
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 
-		let connection: data.connection.Connection = {
-			connectionId: profile.id,
-			providerName: profile.providerName,
-			options: profile.options
-		};
-
-		return super.run(connection).then(() => {
+		return super.run(profile).then(() => {
 			this._treeSelectionHandler.onTreeActionStateChange(false);
 			return true;
 		});
