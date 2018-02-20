@@ -37,7 +37,7 @@ import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import * as strings from 'vs/base/common/strings';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -117,7 +117,7 @@ export class RestoreDialog extends Modal {
 	public onDatabaseListFocused: Event<void> = this._onDatabaseListFocused.event;
 
 	constructor(
-		optionsMetadata: data.ServiceOption[],
+		optionsMetadata: sqlops.ServiceOption[],
 		@IPartService partService: IPartService,
 		@IThemeService private _themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -802,7 +802,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateRestoreDatabaseFiles(dbFiles: data.RestoreDatabaseFileInfo[]) {
+	private updateRestoreDatabaseFiles(dbFiles: sqlops.RestoreDatabaseFileInfo[]) {
 		this._fileListData.clear();
 		if (dbFiles) {
 			let data = [];
@@ -823,7 +823,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateBackupSetsToRestore(backupSetsToRestore: data.DatabaseFileInfo[]) {
+	private updateBackupSetsToRestore(backupSetsToRestore: sqlops.DatabaseFileInfo[]) {
 		if (this._isBackupFileCheckboxChanged) {
 			let selectedRow = [];
 			for (let i = 0; i < backupSetsToRestore.length; i++) {

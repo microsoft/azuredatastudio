@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as data from 'data';
-import {TPromise} from 'vs/base/common/winjs.base';
+import * as sqlops from 'sqlops';
+import { TPromise } from 'vs/base/common/winjs.base';
 import { IResourceProviderService } from 'sql/parts/accountManagement/common/interfaces';
-import {dispose, IDisposable} from 'vs/base/common/lifecycle';
+import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostResourceProviderShape,
 	MainThreadResourceProviderShape,
@@ -20,7 +20,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostC
 
 @extHostNamedCustomer(SqlMainContext.MainThreadResourceProvider)
 export class MainThreadResourceProvider implements MainThreadResourceProviderShape {
-	private _providerMetadata: {[handle: number]: data.AccountProviderMetadata};
+	private _providerMetadata: { [handle: number]: sqlops.AccountProviderMetadata };
 	private _proxy: ExtHostResourceProviderShape;
 	private _toDispose: IDisposable[];
 
@@ -35,15 +35,15 @@ export class MainThreadResourceProvider implements MainThreadResourceProviderSha
 		this._toDispose = [];
 	}
 
-	public $registerResourceProvider(providerMetadata: data.ResourceProviderMetadata, handle: number): Thenable<any> {
+	public $registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, handle: number): Thenable<any> {
 		let self = this;
 
 		// Create the account provider that interfaces with the extension via the proxy and register it
-		let resourceProvider: data.ResourceProvider = {
-			createFirewallRule(account: data.Account, firewallruleInfo: data.FirewallRuleInfo): Thenable<data.CreateFirewallRuleResponse> {
+		let resourceProvider: sqlops.ResourceProvider = {
+			createFirewallRule(account: sqlops.Account, firewallruleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> {
 				return self._proxy.$createFirewallRule(handle, account, firewallruleInfo);
 			},
-			handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<data.HandleFirewallRuleResponse> {
+			handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> {
 				return self._proxy.$handleFirewallRule(handle, errorCode, errorMessage, connectionTypeId);
 			}
 		};

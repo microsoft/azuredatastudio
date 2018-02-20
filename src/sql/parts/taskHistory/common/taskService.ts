@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { TaskNode, TaskStatus, TaskExecutionMode } from 'sql/parts/taskHistory/common/taskNode';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -26,18 +26,18 @@ export interface ITaskService {
 	handleTaskComplete(eventArgs: TaskStatusChangeArgs): void;
 	getAllTasks(): TaskNode;
 	getNumberOfInProgressTasks(): number;
-	onNewTaskCreated(handle: number, taskInfo: data.TaskInfo);
-	onTaskStatusChanged(handle: number, taskProgressInfo: data.TaskProgressInfo);
+	onNewTaskCreated(handle: number, taskInfo: sqlops.TaskInfo);
+	onTaskStatusChanged(handle: number, taskProgressInfo: sqlops.TaskProgressInfo);
 	cancelTask(providerId: string, taskId: string): Thenable<boolean>;
 	/**
 	 * Register a ObjectExplorer provider
 	 */
-	registerProvider(providerId: string, provider: data.TaskServicesProvider): void;
+	registerProvider(providerId: string, provider: sqlops.TaskServicesProvider): void;
 }
 
 export interface TaskStatusChangeArgs {
 	taskId: string;
-	status: data.TaskStatus;
+	status: sqlops.TaskStatus;
 	message?: string;
 	script?: string;
 }
@@ -47,7 +47,7 @@ export class TaskService implements ITaskService {
 	private _taskQueue: TaskNode;
 	private _onTaskComplete = new Emitter<TaskNode>();
 	private _onAddNewTask = new Emitter<TaskNode>();
-	private _providers: { [handle: string]: data.TaskServicesProvider; } = Object.create(null);
+	private _providers: { [handle: string]: sqlops.TaskServicesProvider; } = Object.create(null);
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
@@ -65,17 +65,17 @@ export class TaskService implements ITaskService {
 	/**
 	 * Register a ObjectExplorer provider
 	 */
-	public registerProvider(providerId: string, provider: data.TaskServicesProvider): void {
+	public registerProvider(providerId: string, provider: sqlops.TaskServicesProvider): void {
 		this._providers[providerId] = provider;
 	}
 
-	public onNewTaskCreated(handle: number, taskInfo: data.TaskInfo) {
+	public onNewTaskCreated(handle: number, taskInfo: sqlops.TaskInfo) {
 		let node: TaskNode = new TaskNode(taskInfo.name, taskInfo.serverName, taskInfo.databaseName, taskInfo.taskId, taskInfo.taskExecutionMode, taskInfo.isCancelable);
 		node.providerName = taskInfo.providerName;
 		this.handleNewTask(node);
 	}
 
-	public onTaskStatusChanged(handle: number, taskProgressInfo: data.TaskProgressInfo) {
+	public onTaskStatusChanged(handle: number, taskProgressInfo: sqlops.TaskProgressInfo) {
 		this.handleTaskComplete({
 			taskId: taskProgressInfo.taskId,
 			status: taskProgressInfo.status,

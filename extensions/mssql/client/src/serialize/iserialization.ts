@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 /**
  * Serializer for saving results into a different format
@@ -13,5 +13,5 @@ import * as data from 'data';
  * @interface ISerialization
  */
 export interface ISerialization {
-	saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Promise<data.SaveResultRequestResult>;
+	saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Promise<sqlops.SaveResultRequestResult>;
 }

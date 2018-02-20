@@ -22,7 +22,7 @@ import nls = require('vs/nls');
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 
-import { DidChangeLanguageFlavorParams } from 'data';
+import { DidChangeLanguageFlavorParams } from 'sqlops';
 
 export interface ISqlProviderEntry extends IPickOpenEntry {
 	providerId: string;

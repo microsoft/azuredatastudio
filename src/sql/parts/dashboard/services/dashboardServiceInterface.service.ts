@@ -24,7 +24,7 @@ import { AngularEventType, IAngularEvent } from 'sql/services/angularEventing/an
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { PinConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 
-import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'data';
+import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'sqlops';
 
 /* VS imports */
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';

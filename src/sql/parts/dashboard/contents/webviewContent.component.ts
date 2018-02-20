@@ -16,7 +16,7 @@ import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { IDashboardWebview } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { memoize } from 'vs/base/common/decorators';
 
 @Component({
@@ -55,9 +55,9 @@ export class WebviewContent implements OnInit, IDashboardWebview {
 	}
 
 	@memoize
-	public get connection(): data.connection.Connection {
+	public get connection(): sqlops.connection.Connection {
 		let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
-		let connection: data.connection.Connection = {
+		let connection: sqlops.connection.Connection = {
 			providerName: currentConnection.providerName,
 			connectionId: currentConnection.id,
 			options: currentConnection.options
@@ -66,7 +66,7 @@ export class WebviewContent implements OnInit, IDashboardWebview {
 	}
 
 	@memoize
-	public get serverInfo(): data.ServerInfo {
+	public get serverInfo(): sqlops.ServerInfo {
 		return this._dashboardService.connectionManagementService.connectionInfo.serverInfo;
 	}
 

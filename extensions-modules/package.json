@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Shared modules for Carbon extensions",
   "dependencies": {
-    "dataprotocol-client": "file:../dataprotocol-client",
+    "dataprotocol-client": "git://github.com/Microsoft/sqlops-dataprotocolclient.git#release",
     "decompress": "^4.2.0",
     "fs-extra-promise": "^1.0.1",
     "http-proxy-agent": "^2.0.0",

@@ -5,15 +5,15 @@
 
 'use strict';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { TPromise } from 'vs/base/common/winjs.base';
-import {CredentialManagementEvents, ICredentialsService} from "sql/services/credentials/credentialsService";
-import {IDisposable} from "vs/base/common/lifecycle";
+import { CredentialManagementEvents, ICredentialsService } from 'sql/services/credentials/credentialsService';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
-export class CredentialsTestProvider implements data.CredentialProvider {
+export class CredentialsTestProvider implements sqlops.CredentialProvider {
 	handle: number;
 
-	public storedCredentials: {[K: string]: data.Credential} = {};
+	public storedCredentials: { [K: string]: sqlops.Credential } = {};
 
 	saveCredential(credentialId: string, password: string): Thenable<boolean> {
 		this.storedCredentials[credentialId] = {
@@ -23,7 +23,7 @@ export class CredentialsTestProvider implements data.CredentialProvider {
 		return TPromise.as(true);
 	}
 
-	readCredential(credentialId: string): Thenable<data.Credential> {
+	readCredential(credentialId: string): Thenable<sqlops.Credential> {
 		return TPromise.as(this.storedCredentials[credentialId]);
 	}
 
@@ -41,7 +41,7 @@ export class CredentialsTestService implements ICredentialsService {
 		return undefined;
 	}
 
-	readCredential(credentialId: string): Thenable<data.Credential> {
+	readCredential(credentialId: string): Thenable<sqlops.Credential> {
 		return undefined;
 	}
 

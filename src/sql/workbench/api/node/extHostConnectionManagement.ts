@@ -6,7 +6,7 @@
 
 import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
 import { ExtHostConnectionManagementShape, SqlMainContext, MainThreadConnectionManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape  {
 
@@ -19,11 +19,11 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		this._proxy = threadService.get(SqlMainContext.MainThreadConnectionManagement);
 	}
 
-	public $getActiveConnections(): Thenable<data.connection.Connection[]> {
+	public $getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
 		return this._proxy.$getActiveConnections();
 	}
 
-	public $getCurrentConnection(): Thenable<data.connection.Connection> {
+	public $getCurrentConnection(): Thenable<sqlops.connection.Connection> {
 		return this._proxy.$getCurrentConnection();
 	}
 

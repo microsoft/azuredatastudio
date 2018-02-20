@@ -353,6 +353,7 @@ export class SqlToolsServiceClient {
 							}
 						}
 					};
+
 					this._serviceStatus.showServiceLoading();
 					// cache the client instance for later use
 					client = new SqlOpsDataClient(SqlToolsServiceClient._constants.serviceName, serverOptions, clientOptions);

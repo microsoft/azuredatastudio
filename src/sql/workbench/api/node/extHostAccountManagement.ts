@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
@@ -27,28 +27,28 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public $clear(handle: number, accountKey: data.AccountKey): Thenable<void> {
-		return this._withProvider(handle, (provider: data.AccountProvider) => provider.clear(accountKey));
+	public $clear(handle: number, accountKey: sqlops.AccountKey): Thenable<void> {
+		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.clear(accountKey));
 	}
 
-	public $getSecurityToken(handle: number, account: data.Account): Thenable<{}> {
-		return this._withProvider(handle, (provider: data.AccountProvider) => provider.getSecurityToken(account));
+	public $getSecurityToken(handle: number, account: sqlops.Account): Thenable<{}> {
+		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.getSecurityToken(account));
 	}
 
-	public $initialize(handle: number, restoredAccounts: data.Account[]): Thenable<data.Account[]> {
-		return this._withProvider(handle, (provider: data.AccountProvider) => provider.initialize(restoredAccounts));
+	public $initialize(handle: number, restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> {
+		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.initialize(restoredAccounts));
 	}
 
-	public $prompt(handle: number): Thenable<data.Account> {
-		return this._withProvider(handle, (provider: data.AccountProvider) => provider.prompt());
+	public $prompt(handle: number): Thenable<sqlops.Account> {
+		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.prompt());
 	}
 
-	public $refresh(handle: number, account: data.Account): Thenable<data.Account> {
-		return this._withProvider(handle, (provider: data.AccountProvider) => provider.refresh(account));
+	public $refresh(handle: number, account: sqlops.Account): Thenable<sqlops.Account> {
+		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.refresh(account));
 	}
 
 	public $autoOAuthCancelled(handle: number): Thenable<void> {
-		return this._withProvider(handle, (provider: data.AccountProvider) => provider.autoOAuthCancelled());
+		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.autoOAuthCancelled());
 	}
 
 	// - EXTENSION HOST AVAILABLE METHODS //////////////////////////////////
@@ -60,11 +60,11 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		this._proxy.$endAutoOAuthDeviceCode();
 	}
 
-	public $accountUpdated(updatedAccount: data.Account): void {
+	public $accountUpdated(updatedAccount: sqlops.Account): void {
 		this._proxy.$accountUpdated(updatedAccount);
 	}
 
-	public $registerAccountProvider(providerMetadata: data.AccountProviderMetadata, provider: data.AccountProvider): Disposable {
+	public $registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): Disposable {
 		let self = this;
 
 		// Look for any account providers that have the same provider ID
@@ -105,7 +105,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return this._handlePool++;
 	}
 
-	private _withProvider<R>(handle: number, callback: (provider: data.AccountProvider) => Thenable<R>): Thenable<R> {
+	private _withProvider<R>(handle: number, callback: (provider: sqlops.AccountProvider) => Thenable<R>): Thenable<R> {
 		let provider = this._providers[handle];
 		if (provider === undefined) {
 			return TPromise.wrapError(new Error(`Provider ${handle} not found.`));
@@ -115,8 +115,8 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 }
 
 interface AccountProviderWithMetadata {
-	metadata: data.AccountProviderMetadata;
-	provider: data.AccountProvider;
+	metadata: sqlops.AccountProviderMetadata;
+	provider: sqlops.AccountProvider;
 }
 
 

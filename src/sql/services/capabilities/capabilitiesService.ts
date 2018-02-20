@@ -9,7 +9,7 @@ import { ConnectionManagementInfo } from 'sql/parts/connection/common/connection
 import * as Constants from 'sql/common/constants';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import Event, { Emitter } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
 import { Deferred } from 'sql/base/common/promise';
@@ -31,12 +31,12 @@ export interface ICapabilitiesService {
 	/**
 	 * Retrieve a list of registered capabilities providers
 	 */
-	getCapabilities(): data.DataProtocolServerCapabilities[];
+	getCapabilities(): sqlops.DataProtocolServerCapabilities[];
 
 	/**
 	 * Register a capabilities provider
 	 */
-	registerProvider(provider: data.CapabilitiesProvider): void;
+	registerProvider(provider: sqlops.CapabilitiesProvider): void;
 
 	/**
 	 * Returns true if the feature is available for given connection
@@ -46,7 +46,7 @@ export interface ICapabilitiesService {
 	/**
 	 * Event raised when a provider is registered
 	 */
-	onProviderRegisteredEvent: Event<data.DataProtocolServerCapabilities>;
+	onProviderRegisteredEvent: Event<sqlops.DataProtocolServerCapabilities>;
 
 	/**
 	 * Promise fulfilled when Capabilities are ready
@@ -63,15 +63,15 @@ export class CapabilitiesService implements ICapabilitiesService {
 
 	public _serviceBrand: any;
 
-	private static DATA_PROVIDER_CATEGORY: string = 'Data Provider'
+	private static DATA_PROVIDER_CATEGORY: string = 'Data Provider';
 
-	private _providers: data.CapabilitiesProvider[] = [];
+	private _providers: sqlops.CapabilitiesProvider[] = [];
 
-	private _capabilities: data.DataProtocolServerCapabilities[] = [];
+	private _capabilities: sqlops.DataProtocolServerCapabilities[] = [];
 
-	private _onProviderRegistered: Emitter<data.DataProtocolServerCapabilities>;
+	private _onProviderRegistered: Emitter<sqlops.DataProtocolServerCapabilities>;
 
-	private _clientCapabilties: data.DataProtocolClientCapabilities = {
+	private _clientCapabilties: sqlops.DataProtocolClientCapabilities = {
 
 		hostName: HOST_NAME,
 		hostVersion: HOST_VERSION
@@ -92,7 +92,7 @@ export class CapabilitiesService implements ICapabilitiesService {
 	constructor( @IExtensionManagementService private extensionManagementService: IExtensionManagementService,
 		@IExtensionEnablementService private extensionEnablementService: IExtensionEnablementService) {
 
-		this._onProviderRegistered = new Emitter<data.DataProtocolServerCapabilities>();
+		this._onProviderRegistered = new Emitter<sqlops.DataProtocolServerCapabilities>();
 		this.disposables.push(this._onProviderRegistered);
 		this._onCapabilitiesReady = new Deferred();
 
@@ -140,7 +140,7 @@ export class CapabilitiesService implements ICapabilitiesService {
 	/**
 	 * Retrieve a list of registered server capabilities
 	 */
-	public getCapabilities(): data.DataProtocolServerCapabilities[] {
+	public getCapabilities(): sqlops.DataProtocolServerCapabilities[] {
 		return this._capabilities;
 	}
 
@@ -148,7 +148,7 @@ export class CapabilitiesService implements ICapabilitiesService {
 	 * Register the capabilities provider and query the provider for its capabilities
 	 * @param provider
 	 */
-	public registerProvider(provider: data.CapabilitiesProvider): void {
+	public registerProvider(provider: sqlops.CapabilitiesProvider): void {
 		this._providers.push(provider);
 
 		// request the capabilities from server
@@ -200,7 +200,7 @@ export class CapabilitiesService implements ICapabilitiesService {
 	}
 
 	// Event Emitters
-	public get onProviderRegisteredEvent(): Event<data.DataProtocolServerCapabilities> {
+	public get onProviderRegisteredEvent(): Event<sqlops.DataProtocolServerCapabilities> {
 		return this._onProviderRegistered.event;
 	}
 
