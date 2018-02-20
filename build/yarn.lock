@@ -390,9 +390,9 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-"dataprotocol-client@git+ssh://git@github.com:Microsoft/sqlops-dataprotocolclient.git#release":
+"dataprotocol-client@git://github.com/Microsoft/sqlops-dataprotocolclient.git#release":
   version "1.0.0"
-  resolved "git+ssh://git@github.com:Microsoft/sqlops-dataprotocolclient.git#739fdf93140c3cb1bc882076bf11765b187bf8a3"
+  resolved "git://github.com/Microsoft/sqlops-dataprotocolclient.git#739fdf93140c3cb1bc882076bf11765b187bf8a3"
   dependencies:
     sqlops "git://github.com/anthonydresser/vscode-extension-vscode"
     vscode "1.1.5"
@@ -587,7 +587,7 @@ extend@~1.2.1:
 "extensions-modules@file:../extensions-modules":
   version "0.1.0"
   dependencies:
-    dataprotocol-client "git+ssh://git@github.com:Microsoft/sqlops-dataprotocolclient.git#release"
+    dataprotocol-client "git://github.com/Microsoft/sqlops-dataprotocolclient.git#release"
     decompress "^4.2.0"
     fs-extra-promise "^1.0.1"
     http-proxy-agent "^2.0.0"
@@ -2098,10 +2098,6 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
 typescript@2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.6.1.tgz#ef39cdea27abac0b500242d6726ab90e0c846631"
-
-typescript@2.6.2:
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.6.2.tgz#3c5b6fd7f6de0914269027f03c0946758f7673a4"
 
 unbzip2-stream@^1.0.9:
   version "1.2.5"
