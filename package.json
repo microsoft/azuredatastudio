@@ -44,7 +44,7 @@
     "gc-signals": "^0.0.1",
     "getmac": "1.0.7",
     "graceful-fs": "4.1.11",
-    "html-query-plan": "git://github.com/anthonydresser/html-query-plan.git#2.3",
+    "html-query-plan": "git://github.com/anthonydresser/html-query-plan.git#2.4",
     "http-proxy-agent": "0.2.7",
     "https-proxy-agent": "0.3.6",
     "iconv-lite": "0.4.19",
