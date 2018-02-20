@@ -52,6 +52,7 @@ export class ConnectionWidget {
 		[Constants.mssqlProviderName]: [new AuthenticationType(Constants.integrated, false), new AuthenticationType(Constants.sqlLogin, true)]
 	};
 	private _saveProfile: boolean;
+	private _databaseDropdownExpanded: boolean = false;
 	private _defaultDatabaseName: string = localize('defaultDatabaseOption', '<Default>');
 	private _loadingDatabaseName: string = localize('loadingDatabaseOption', 'Loading...');
 	public DefaultServerGroup: IConnectionProfileGroup = {
@@ -244,11 +245,12 @@ export class ConnectionWidget {
 		}));
 
 		this._toDispose.push(this._databaseNameInputBox.onFocus(() => {
+			this._databaseDropdownExpanded = true;
 			if (this.serverName) {
 				this._databaseNameInputBox.values = [this._loadingDatabaseName];
 				this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password).then(databases => {
 					if (databases) {
-						this._databaseNameInputBox.values = databases;
+						this._databaseNameInputBox.values = databases.sort((a, b) => a.localeCompare(b));
 					} else {
 						this._databaseNameInputBox.values = [this._defaultDatabaseName];
 					}
@@ -267,6 +269,7 @@ export class ConnectionWidget {
 				this._databaseNameInputBox.value = s;
 			}
 		}));
+
 	}
 
 	private onGroupSelected(selectedGroup: string) {
@@ -539,6 +542,18 @@ export class ConnectionWidget {
 	private getMatchingAuthType(displayName: string): AuthenticationType {
 		const authType = this._authTypeMap[this._providerName];
 		return authType ? authType.find(authType => this.getAuthTypeDisplayName(authType.name) === displayName) : undefined;
+	}
+
+	public closeDatabaseDropdown(): void {
+		this._databaseNameInputBox.blur();
+	}
+
+	public get databaseDropdownExpanded(): boolean {
+		return this._databaseDropdownExpanded;
+	}
+
+	public set databaseDropdownExpanded(val: boolean) {
+		this._databaseDropdownExpanded = val;
 	}
 }
 

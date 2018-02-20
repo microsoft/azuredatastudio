@@ -68,8 +68,8 @@ import 'vs/workbench/parts/html/browser/html.contribution';
 // import 'vs/workbench/parts/welcome/walkThrough/electron-browser/walkThrough.contribution';
 
 import 'vs/workbench/parts/extensions/electron-browser/extensions.contribution';
-//import 'vs/workbench/parts/extensions/browser/extensionsQuickOpen';
-//import 'vs/workbench/parts/extensions/electron-browser/extensionsViewlet'; // can be packaged separately
+import 'vs/workbench/parts/extensions/browser/extensionsQuickOpen';
+import 'vs/workbench/parts/extensions/electron-browser/extensionsViewlet'; // can be packaged separately
 
 // import 'vs/workbench/parts/welcome/page/electron-browser/welcomePage.contribution';
 
@@ -157,7 +157,12 @@ import 'sql/parts/dashboard/widgets/insights/views/imageInsight.contribution';
 import 'sql/parts/dashboard/widgets/insights/insightsWidget.contribution';
 import 'sql/parts/dashboard/widgets/explorer/explorerWidget.contribution';
 import 'sql/parts/dashboard/widgets/tasks/tasksWidget.contribution';
+import 'sql/parts/dashboard/widgets/webview/webviewWidget.contribution';
 import 'sql/parts/dashboard/dashboardConfig.contribution';
+/* Tabs */
+import 'sql/parts/dashboard/tabs/dashboardWebviewTab.contribution';
+import 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
+import 'sql/parts/dashboard/common/dashboardTab.contribution';
 /* Tasks */
 import 'sql/workbench/common/actions.contribution';
 /* Extension Host */

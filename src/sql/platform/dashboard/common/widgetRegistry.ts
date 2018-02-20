@@ -5,8 +5,9 @@
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 
 import * as platform from 'vs/platform/registry/common/platform';
-import { IJSONSchema } from 'vs/base/common/jsonSchema';
+import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
+import { deepClone } from 'vs/base/common/objects';
 
 export type WidgetIdentifier = string;
 
@@ -14,16 +15,27 @@ export const Extensions = {
 	DashboardWidgetContribution: 'dashboard.contributions.widgets'
 };
 
+export interface IDashboardRegistryOptions {
+	extensionOnly: boolean;
+}
+
+export interface CustomIJSONSchema extends IJSONSchema {
+	extensionProperties: IJSONSchemaMap;
+}
+
 export interface IDashboardWidgetRegistry {
-	databaseWidgetSchema: IJSONSchema;
-	serverWidgetSchema: IJSONSchema;
+	databaseWidgetSchema: CustomIJSONSchema;
+	serverWidgetSchema: CustomIJSONSchema;
+	allSchema: CustomIJSONSchema;
 	registerWidget(id: string, description: string, schema: IJSONSchema, context?: 'database' | 'server'): WidgetIdentifier;
-	registerNonCustomDashboardWidget(id: string, description: string, val: IInsightsConfig, context?: 'database' | 'server'): WidgetIdentifier;
+	registerNonCustomDashboardWidget(id: string, description: string, val: IInsightsConfig, context?: 'database' | 'server', options?: IDashboardRegistryOptions): WidgetIdentifier;
 }
 
 class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
-	private _dashboardWidgetSchema: IJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets', 'Widget used in the dashboards'), properties: {}, additionalProperties: false };
-	private _serverWidgetSchema: IJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets', 'Widget used in the dashboards'), properties: {}, additionalProperties: false };
+	private _allSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets', 'Widget used in the dashboards'), properties: {}, extensionProperties: {}, additionalProperties: false };
+	private _dashboardWidgetSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets', 'Widget used in the dashboards'), properties: {}, extensionProperties: {}, additionalProperties: false };
+	private _serverWidgetSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets', 'Widget used in the dashboards'), properties: {}, extensionProperties: {}, additionalProperties: false };
+
 	/**
 	 * Register a dashboard widget
 	 * @param id id of the widget
@@ -31,13 +43,27 @@ class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
 	 * @param schema config schema of the widget
 	 * @param context either 'database' or 'server' for what page to register for; if not specified, will register for both
 	 */
-	public registerWidget(id: string, description: string, schema: IJSONSchema, context?: 'database' | 'server'): WidgetIdentifier {
-		if (context === undefined || context === 'database') {
-			this._dashboardWidgetSchema.properties[id] = schema;
-		}
+	public registerWidget(id: string, description: string, schema: IJSONSchema, context?: 'database' | 'server', options?: IDashboardRegistryOptions): WidgetIdentifier {
+		if (options && options.extensionOnly) {
+			if (context === undefined || context === 'database') {
+				this._dashboardWidgetSchema.extensionProperties[id] = schema;
+			}
 
-		if (context === undefined || context === 'server') {
-			this._serverWidgetSchema.properties[id] = schema;
+			if (context === undefined || context === 'server') {
+				this._serverWidgetSchema.extensionProperties[id] = schema;
+			}
+
+			this._allSchema.extensionProperties[id] = schema;
+		} else {
+			if (context === undefined || context === 'database') {
+				this._dashboardWidgetSchema.properties[id] = schema;
+			}
+
+			if (context === undefined || context === 'server') {
+				this._serverWidgetSchema.properties[id] = schema;
+			}
+
+			this._allSchema.properties[id] = schema;
 		}
 
 		return id;
@@ -62,20 +88,24 @@ class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
 		return id;
 	}
 
-	public get databaseWidgetSchema(): IJSONSchema {
-		return this._dashboardWidgetSchema;
+	public get databaseWidgetSchema(): CustomIJSONSchema {
+		return deepClone(this._dashboardWidgetSchema);
 	}
 
-	public get serverWidgetSchema(): IJSONSchema {
-		return this._serverWidgetSchema;
+	public get serverWidgetSchema(): CustomIJSONSchema {
+		return deepClone(this._serverWidgetSchema);
+	}
+
+	public get allSchema(): CustomIJSONSchema {
+		return deepClone(this._allSchema);
 	}
 }
 
 const dashboardWidgetRegistry = new DashboardWidgetRegistry();
 platform.Registry.add(Extensions.DashboardWidgetContribution, dashboardWidgetRegistry);
 
-export function registerDashboardWidget(id: string, description: string, schema: IJSONSchema, context?: 'database' | 'server'): WidgetIdentifier {
-	return dashboardWidgetRegistry.registerWidget(id, description, schema, context);
+export function registerDashboardWidget(id: string, description: string, schema: IJSONSchema, context?: 'database' | 'server', options?: IDashboardRegistryOptions): WidgetIdentifier {
+	return dashboardWidgetRegistry.registerWidget(id, description, schema, context, options);
 }
 
 export function registerNonCustomDashboardWidget(id: string, description: string, val: IInsightsConfig): WidgetIdentifier {

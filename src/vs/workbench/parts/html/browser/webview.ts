@@ -195,7 +195,7 @@ export default class Webview {
 		if (parent) {
 			// {{SQL CARBON EDIT}}
 			if (!this._options.hideFind) {
-			parent.appendChild(this._webviewFindWidget.getDomNode());
+				parent.appendChild(this._webviewFindWidget.getDomNode());
 			}
 			parent.appendChild(this._webview);
 		}
@@ -215,8 +215,11 @@ export default class Webview {
 
 		if (this._webview.parentElement) {
 			this._webview.parentElement.removeChild(this._webview);
-			const findWidgetDomNode = this._webviewFindWidget.getDomNode();
-			findWidgetDomNode.parentElement.removeChild(findWidgetDomNode);
+			// {{SQL CARBON EDIT}}
+			if (!this._options.hideFind) {
+				const findWidgetDomNode = this._webviewFindWidget.getDomNode();
+				findWidgetDomNode.parentElement.removeChild(findWidgetDomNode);
+			}
 		}
 	}
 

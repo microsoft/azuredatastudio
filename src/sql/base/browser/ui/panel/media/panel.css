@@ -5,7 +5,7 @@
 
 .tabbedPanel {
 	border-top-color: rgba(128, 128, 128, 0.35);
-	border-top-width: 1;
+	border-top-width: 1px;
 	border-top-style: solid;
 	box-sizing: border-box;
 }
@@ -19,15 +19,14 @@
 	margin: 0 auto;
 	padding: 0;
 	justify-content: flex-start;
-	flex-flow: row;
 	line-height: 35px;
 }
 
-.tabbedPanel .tabList > .tab {
+.tabbedPanel .tabList .tab {
 	cursor: pointer;
 }
 
-.tabbedPanel .tabList > .tab > .tabLabel {
+.tabbedPanel .tabList .tab .tabLabel {
 	text-transform: uppercase;
 	margin-left: 16px;
 	margin-right: 16px;
@@ -55,4 +54,30 @@
 
 .composite.title ~ tab.fullsize > :first-child {
 	height: calc(100% - 38px);
+}
+
+.tabbedPanel .title-actions .panel-actions .actions-container {
+	justify-content: flex-start;
+}
+
+.tabbedPanel.vertical {
+	display: flex;
+}
+
+.tabbedPanel.vertical > .title {
+	flex: 0 0 auto;
+	flex-direction: column;
+	height: 100%;
+}
+
+.tabbedPanel.vertical > .tab-content {
+	flex: 1;
+}
+
+.tabbedPanel.vertical > .title > .tabList {
+	flex-flow: column;
+}
+
+.tabbedPanel.horizontal > .title > .tabList {
+	flex-flow: row;
 }

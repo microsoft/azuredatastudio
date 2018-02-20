@@ -155,6 +155,15 @@
 	background: url('ellipsis.svg') center center no-repeat;
 }
 
+.hc-black .icon.new,
+.vs-dark .icon.new {
+	background: url('new_inverse.svg') center center no-repeat;
+}
+
+.vs .icon.new {
+	background: url('new.svg') center center no-repeat;
+}
+
 .hc-black .icon.new-query,
 .vs-dark .icon.new-query {
 	background: url('newquery_inverse.svg') center center no-repeat;
@@ -180,4 +189,22 @@
 
 .vs .icon.edit {
 	background: url('edit.svg') center center no-repeat;
+}
+
+.hc-black .icon.pin,
+.vs-dark .icon.pin {
+	background: url('pin_inverse.svg') center center no-repeat;
+}
+
+.vs .icon.pin {
+	background: url('pin.svg') center center no-repeat;
+}
+
+.hc-black .icon.unpin,
+.vs-dark .icon.unpin {
+	background: url('unpin_inverse.svg') center center no-repeat;
+}
+
+.vs .icon.unpin {
+	background: url('unpin.svg') center center no-repeat;
 }

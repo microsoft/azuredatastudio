@@ -27,7 +27,7 @@ yarnInstall('extensions'); // node modules shared by all extensions
 const extensions = [
 	'vscode-colorize-tests',
 	'json',
-  'mssql',
+    'mssql',
 	'configuration-editing',
 	'extension-editing',
 	'markdown',
@@ -35,7 +35,6 @@ const extensions = [
 	'merge-conflict',
 	'insights-default',
 	'account-provider-azure'
-
 ];
 
 extensions.forEach(extension => yarnInstall(`extensions/${extension}`));

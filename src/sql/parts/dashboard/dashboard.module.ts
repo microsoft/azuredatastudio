@@ -27,9 +27,16 @@ import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost
 /* Base Components */
 import { DashboardComponent, DASHBOARD_SELECTOR } from 'sql/parts/dashboard/dashboard.component';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
+import { DashboardWidgetTab } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.component';
+import { DashboardWebviewTab } from 'sql/parts/dashboard/tabs/dashboardWebviewTab.component';
+import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
+import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
 import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
-let baseComponents = [DashboardComponent, DashboardWidgetWrapper, ComponentHostDirective, BreadcrumbComponent];
+let baseComponents = [DashboardComponent, DashboardWidgetWrapper, DashboardWebviewTab, DashboardWidgetTab, WidgetContent, WebviewContent, ComponentHostDirective, BreadcrumbComponent];
+
+/* Panel */
+import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
 
 /* Pages */
 import { ServerDashboardPage } from 'sql/parts/dashboard/pages/serverDashboardPage.component';
@@ -41,7 +48,14 @@ import { PropertiesWidgetComponent } from 'sql/parts/dashboard/widgets/propertie
 import { ExplorerWidget } from 'sql/parts/dashboard/widgets/explorer/explorerWidget.component';
 import { TasksWidget } from 'sql/parts/dashboard/widgets/tasks/tasksWidget.component';
 import { InsightsWidget } from 'sql/parts/dashboard/widgets/insights/insightsWidget.component';
-let widgetComponents = [PropertiesWidgetComponent, ExplorerWidget, TasksWidget, InsightsWidget];
+import { WebviewWidget } from 'sql/parts/dashboard/widgets/webview/webviewWidget.component';
+let widgetComponents = [
+	PropertiesWidgetComponent,
+	ExplorerWidget,
+	TasksWidget,
+	InsightsWidget,
+	WebviewWidget
+];
 
 /* Insights */
 let insightComponents = Registry.as<IInsightRegistry>(Extensions.InsightContribution).getAllCtors();
@@ -78,7 +92,8 @@ const appRoutes: Routes = [
 		FormsModule,
 		NgGridModule,
 		ChartsModule,
-		RouterModule.forRoot(appRoutes)
+		RouterModule.forRoot(appRoutes),
+		PanelModule
 	],
 	providers: [
 		{ provide: APP_BASE_HREF, useValue: '/' },

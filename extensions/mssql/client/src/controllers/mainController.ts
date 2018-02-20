@@ -77,10 +77,6 @@ export default class MainController implements vscode.Disposable {
 		return this.createClient(['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials']);
 	}
 
-	private createSerializationClient(): Promise<SqlOpsDataClient> {
-		return this.createClient(['MicrosoftSqlToolsSerialization.exe', 'MicrosoftSqlToolsSerialization']);
-	}
-
 	private createResourceProviderClient(): Promise<SqlOpsDataClient> {
 		return this.createClient(['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService']);
 	}
@@ -103,40 +99,6 @@ export default class MainController implements vscode.Disposable {
 					{ serviceInstalled: serverResult.installedBeforeInitializing ? 1 : 0 }
 				);
 
-				self.createSerializationClient().then(serializationClient => {
-					// Serialization
-					let serializationProvider: sqlops.SerializationProvider = {
-						handle: 0,
-						saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> {
-							return self._serialization.saveAs(saveFormat, savePath, results, appendToFile);
-						}
-					};
-					sqlops.serialization.registerProvider(serializationProvider);
-				}, error => {
-					Utils.logDebug('Cannot find Serialization executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);
-				});
-
-				self.createCredentialClient().then(credentialClient => {
-
-					self._credentialStore.languageClient = credentialClient;
-					let credentialProvider: sqlops.CredentialProvider = {
-						handle: 0,
-						saveCredential(credentialId: string, password: string): Thenable<boolean> {
-							return self._credentialStore.saveCredential(credentialId, password);
-						},
-						readCredential(credentialId: string): Thenable<sqlops.Credential> {
-							return self._credentialStore.readCredential(credentialId);
-						},
-						deleteCredential(credentialId: string): Thenable<boolean> {
-							return self._credentialStore.deleteCredential(credentialId);
-						}
-					};
-					sqlops.credentials.registerProvider(credentialProvider);
-					Utils.logDebug('credentialProvider registered', MainController._extensionConstants.extensionConfigSectionName);
-				}, error => {
-					Utils.logDebug('Cannot find credentials executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);
-				});
-
 				self.createResourceProviderClient().then(rpClient => {
 					let resourceProvider = new AzureResourceProvider(self._client, rpClient);
 					sqlops.resources.registerResourceProvider({
@@ -149,6 +111,28 @@ export default class MainController implements vscode.Disposable {
 					Utils.logDebug('resourceProvider registered', MainController._extensionConstants.extensionConfigSectionName);
 				}, error => {
 					Utils.logDebug('Cannot find ResourceProvider executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);
+				});
+
+				self.createCredentialClient().then(credentialClient => {
+					self._credentialStore.languageClient = credentialClient;
+					credentialClient.onReady().then(() => {
+						let credentialProvider: sqlops.CredentialProvider = {
+							handle: 0,
+							saveCredential(credentialId: string, password: string): Thenable<boolean> {
+								return self._credentialStore.saveCredential(credentialId, password);
+							},
+							readCredential(credentialId: string): Thenable<sqlops.Credential> {
+								return self._credentialStore.readCredential(credentialId);
+							},
+							deleteCredential(credentialId: string): Thenable<boolean> {
+								return self._credentialStore.deleteCredential(credentialId);
+							}
+						};
+						sqlops.credentials.registerProvider(credentialProvider);
+						Utils.logDebug('credentialProvider registered', MainController._extensionConstants.extensionConfigSectionName);
+					});
+				}, error => {
+					Utils.logDebug('Cannot find credentials executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);
 				});
 
 				Utils.logDebug(SharedConstants.extensionActivated, MainController._extensionConstants.extensionConfigSectionName);

@@ -79,7 +79,7 @@ export class WebViewDialog extends Modal {
 	}
 
 	public set headerTitle(value: string) {
-		this._headerTitle = value
+		this._headerTitle = value;
 	}
 
 	public get headerTitle(): string {

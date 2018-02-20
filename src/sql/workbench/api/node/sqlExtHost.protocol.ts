@@ -14,6 +14,7 @@ import * as sqlops from 'sqlops';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable } from 'vs/base/common/lifecycle';
+
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
 	$clear(handle: number, accountKey: sqlops.AccountKey): Thenable<void> { throw ni(); }
@@ -420,6 +421,7 @@ export const SqlMainContext = {
 	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
 	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
+	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview')
 };
 
 export const SqlExtHostContext = {
@@ -429,7 +431,8 @@ export const SqlExtHostContext = {
 	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
 	ExtHostSerializationProvider: createExtId<ExtHostSerializationProviderShape>('ExtHostSerializationProvider'),
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
-	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs')
+	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
+	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews')
 };
 
 export interface MainThreadModalDialogShape extends IDisposable {
@@ -440,7 +443,21 @@ export interface MainThreadModalDialogShape extends IDisposable {
 	$setHtml(handle: number, value: string): void;
 	$sendMessage(handle: number, value: any): Thenable<boolean>;
 }
+
 export interface ExtHostModalDialogsShape {
 	$onMessage(handle: number, message: any): void;
 	$onClosed(handle: number): void;
+}
+
+export interface ExtHostDashboardWebviewsShape {
+	$registerProvider(widgetId: string, handler: (webview: sqlops.DashboardWebview) => void): void;
+	$onMessage(handle: number, message: any): void;
+	$onClosed(handle: number): void;
+	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
+}
+
+export interface MainThreadDashboardWebviewShape extends IDisposable {
+	$sendMessage(handle: number, message: string);
+	$registerProvider(widgetId: string);
+	$setHtml(handle: number, value: string);
 }

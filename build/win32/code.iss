@@ -48,11 +48,11 @@ Name: "simplifiedChinese"; MessagesFile: "{#RepoDir}\build\win32\i18n\Default.zh
 Name: "traditionalChinese"; MessagesFile: "{#RepoDir}\build\win32\i18n\Default.zh-tw.isl,{#RepoDir}\build\win32\i18n\messages.zh-tw.isl" {#LocalizedLanguageFile("cht")}
 
 [InstallDelete]
-Type: filesandordirs; Name: {app}\resources\app\out
-Type: filesandordirs; Name: {app}\resources\app\plugins
-Type: filesandordirs; Name: {app}\resources\app\extensions
-Type: filesandordirs; Name: {app}\resources\app\node_modules
-Type: files; Name: {app}\resources\app\Credits_45.0.2454.85.html
+Type: filesandordirs; Name: "{app}\resources\app\out"; Check: IsNotUpdate
+Type: filesandordirs; Name: "{app}\resources\app\plugins"; Check: IsNotUpdate
+Type: filesandordirs; Name: "{app}\resources\app\extensions"; Check: IsNotUpdate
+Type: filesandordirs; Name: "{app}\resources\app\node_modules"; Check: IsNotUpdate
+Type: files; Name: "{app}\resources\app\Credits_45.0.2454.85.html"; Check: IsNotUpdate
 
 [Tasks]
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
@@ -68,6 +68,7 @@ Name: "{commondesktop}\{#NameLong}"; Filename: "{app}\{#ExeBasename}.exe"; AppUs
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#NameLong}"; Filename: "{app}\{#ExeBasename}.exe"; Tasks: quicklaunchicon; AppUserModelID: "{#AppUserId}"
 
 [Run]
+Filename: "{app}\{#ExeBasename}.exe"; Description: "{cm:LaunchProgram,{#NameLong}}"; Tasks: runcode; Flags: nowait postinstall; Check: ShouldRunAfterUpdate
 Filename: "{app}\{#ExeBasename}.exe"; Description: "{cm:LaunchProgram,{#NameLong}}"; Flags: nowait postinstall; Check: WizardNotSilent
 
 [Registry]
@@ -108,6 +109,33 @@ end;
 function WizardNotSilent(): Boolean;
 begin
   Result := not WizardSilent();
+end;
+
+// Updates
+function IsBackgroundUpdate(): Boolean;
+begin
+  Result := ExpandConstant('{param:update|false}') <> 'false';
+end;
+
+function IsNotUpdate(): Boolean;
+begin
+  Result := not IsBackgroundUpdate();
+end;
+
+// SqlOps will create a flag file before the update starts (/update=C:\foo\bar)
+// - if the file exists at this point, the user quit SqlOps before the update finished, so don't start SqlOps after update
+// - otherwise, the user has accepted to apply the update and SqlOps should start
+function LockFileExists(): Boolean;
+begin
+  Result := FileExists(ExpandConstant('{param:update}'))
+end;
+
+function ShouldRunAfterUpdate(): Boolean;
+begin
+  if IsBackgroundUpdate() then
+    Result := not LockFileExists()
+  else
+    Result := True;
 end;
 
 // http://stackoverflow.com/a/23838239/261019

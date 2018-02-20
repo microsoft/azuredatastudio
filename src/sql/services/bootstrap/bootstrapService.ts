@@ -22,6 +22,7 @@ import { ISqlOAuthService } from 'sql/common/sqlOAuthService';
 import { IFileBrowserService, IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -88,6 +89,7 @@ export interface IBootstrapService {
 	clipboardService: IClipboardService;
 	capabilitiesService: ICapabilitiesService;
 	configurationEditorService: ConfigurationEditingService;
+	dashboardWebviewService: IDashboardWebviewService;
 
 	/*
 	* Bootstraps the Angular module described. Components that need singleton services should inject the

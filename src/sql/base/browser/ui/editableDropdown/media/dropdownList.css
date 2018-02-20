@@ -25,3 +25,13 @@
 .dropdown-tree .list-row {
 	margin-left: -33px;
 }
+
+.connection-input .dropdown .monaco-action-bar .action-label.icon.dropdown-arrow {
+	background-position: 50%;
+	background-size: cover;
+}
+
+.connection-input .monaco-inputbox .monaco-action-bar .action-item .icon {
+	width: 8px;
+	height: 8px;
+}

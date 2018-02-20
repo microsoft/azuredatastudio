@@ -31,14 +31,17 @@ const packageJson = require('../package.json');
 const product = require('../product.json');
 const crypto = require('crypto');
 const i18n = require('./lib/i18n');
-// {{SQL CARBON EDIT}}
-var del = require('del');
 const serviceInstaller = require('../extensions-modules/lib/languageservice/serviceInstallerUtil');
 const glob = require('glob');
 const deps = require('./dependencies');
 const getElectronVersion = require('./lib/electron').getElectronVersion;
 
 const productionDependencies = deps.getProductionDependencies(path.dirname(__dirname));
+
+// {{SQL CARBON EDIT}}
+var del = require('del');
+const extensionsRoot = path.join(root, 'extensions');
+const extensionsProductionDependencies = deps.getProductionDependencies(extensionsRoot);
 const baseModules = Object.keys(process.binding('natives')).filter(n => !/^_|\//.test(n));
 // {{SQL CARBON EDIT}}
 const nodeModules = [
@@ -93,7 +96,7 @@ const vscodeResources = [
 	'out-build/vs/workbench/services/files/**/*.exe',
 	'out-build/vs/workbench/services/files/**/*.md',
 	'out-build/vs/code/electron-browser/sharedProcess.js',
-  // {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}}
 	'out-build/sql/workbench/electron-browser/splashscreen/*',
 	'out-build/sql/**/*.{svg,png,cur,html}',
 	'out-build/sql/base/browser/ui/table/media/*.{gif,png,svg}',
@@ -166,7 +169,7 @@ const config = {
 		name: product.nameLong + ' document',
 		role: 'Editor',
 		ostypes: ["TEXT", "utxt", "TUTX", "****"],
-    // {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}}
 		extensions: ["csv", "json", "sqlplan", "sql", "xml"],
 		iconFile: 'resources/darwin/code_file.icns'
 	}],
@@ -242,7 +245,7 @@ function computeChecksum(filename) {
 function packageTask(platform, arch, opts) {
 	opts = opts || {};
 
-  // {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}}
 	const destination = path.join(path.dirname(root), 'sqlops') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
 	platform = platform || process.platform;
 
@@ -282,9 +285,18 @@ function packageTask(platform, arch, opts) {
 				.pipe(nlsFilter.restore);
 		}));
 
-		const localExtensionDependencies = gulp.src('extensions/node_modules/**', { base: '.' });
-
 		// {{SQL CARBON EDIT}}
+		const extensionDepsSrc = [
+			..._.flatten(extensionsProductionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`])),
+		];
+
+		const localExtensionDependencies = gulp.src(extensionDepsSrc, { base: '.', dot: true })
+			.pipe(filter(['**', '!**/package-lock.json']))
+			.pipe(util.cleanNodeModule('account-provider-azure', ['node_modules/date-utils/doc/**', 'node_modules/adal_node/node_modules/**'], undefined))
+			.pipe(util.cleanNodeModule('dataprotocol-client', ['node_modules/**', 'src/*.js'], undefined))
+			.pipe(util.cleanNodeModule('extensions-modules', ['node_modules/**', 'src/*.js'], undefined))
+			.pipe(util.cleanNodeModule('typescript', ['**/**'], undefined));
+
 		const sources = es.merge(src, localExtensions, localExtensionDependencies)
 			.pipe(util.setExecutableBit(['**/*.sh']))
 			.pipe(filter(['**',
@@ -335,7 +347,16 @@ function packageTask(platform, arch, opts) {
 			.pipe(util.cleanNodeModule('windows-process-tree', ['binding.gyp', 'build/**', 'src/**'], ['**/*.node']))
 			.pipe(util.cleanNodeModule('gc-signals', ['binding.gyp', 'build/**', 'src/**', 'deps/**'], ['**/*.node', 'src/index.js']))
 			.pipe(util.cleanNodeModule('keytar', ['binding.gyp', 'build/**', 'src/**', 'script/**', 'node_modules/**'], ['**/*.node']))
-			.pipe(util.cleanNodeModule('node-pty', ['binding.gyp', 'build/**', 'src/**', 'tools/**'], ['build/Release/**']))
+
+			// {{SQL CARBON EDIT}}
+			.pipe(util.cleanNodeModule('node-pty', ['binding.gyp', 'build/**', 'src/**', 'tools/**'], ['build/Release/*.node', 'build/Release/*.dll', 'build/Release/*.exe']))
+			.pipe(util.cleanNodeModule('chart.js', ['node_modules/**'], undefined))
+			.pipe(util.cleanNodeModule('emmet', ['node_modules/**'], undefined))
+			.pipe(util.cleanNodeModule('pty.js', ['build/**'], ['build/Release/**']))
+			.pipe(util.cleanNodeModule('jquery-ui', ['external/**', 'demos/**'], undefined))
+			.pipe(util.cleanNodeModule('core-js', ['**/**'], undefined))
+			.pipe(util.cleanNodeModule('slickgrid', ['node_modules/**', 'examples/**'], undefined))
+
 			.pipe(util.cleanNodeModule('nsfw', ['binding.gyp', 'build/**', 'src/**', 'openpa/**', 'includes/**'], ['**/*.node', '**/*.a']))
 			.pipe(util.cleanNodeModule('vsda', ['binding.gyp', 'README.md', 'build/**', '*.bat', '*.sh', '*.cpp', '*.h'], ['build/Release/vsda.node']));
 

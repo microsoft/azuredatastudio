@@ -87,21 +87,23 @@ export class TabbedPanel extends Disposable implements IThemable {
 	}
 
 	private _createTab(tab: IInternalPanelTab): void {
+		let tabHeaderElement = $('.tab-header');
+		tabHeaderElement.attr('tabindex', '0');
 		let tabElement = $('.tab');
-		tabElement.attr('tabindex', '0');
+		tabHeaderElement.append(tabElement);
 		let tabLabel = $('a.tabLabel');
 		tabLabel.safeInnerHtml(tab.title);
 		tabElement.append(tabLabel);
-		tabElement.on(EventType.CLICK, e => this.showTab(tab.identifier));
-		tabElement.on(EventType.KEY_DOWN, (e: KeyboardEvent) => {
+		tabHeaderElement.on(EventType.CLICK, e => this.showTab(tab.identifier));
+		tabHeaderElement.on(EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Enter)) {
 				this.showTab(tab.identifier);
 				e.stopImmediatePropagation();
 			}
 		});
-		this.$tabList.append(tabElement);
-		tab.header = tabElement;
+		this.$tabList.append(tabHeaderElement);
+		tab.header = tabHeaderElement;
 		tab.label = tabLabel;
 	}
 
@@ -112,12 +114,14 @@ export class TabbedPanel extends Disposable implements IThemable {
 
 		if (this._shownTab) {
 			this._tabMap.get(this._shownTab).label.removeClass('active');
+			this._tabMap.get(this._shownTab).header.removeClass('active');
 		}
 
 		this._shownTab = id;
 		this.$body.clearChildren();
 		let tab = this._tabMap.get(this._shownTab);
 		tab.label.addClass('active');
+		tab.header.addClass('active');
 		tab.view.render(this.$body.getHTMLElement());
 		this._onTabChange.fire(id);
 		if (this._currentDimensions) {

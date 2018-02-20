@@ -21,6 +21,7 @@ import { PropertiesWidgetComponent } from 'sql/parts/dashboard/widgets/propertie
 import { ExplorerWidget } from 'sql/parts/dashboard/widgets/explorer/explorerWidget.component';
 import { TasksWidget } from 'sql/parts/dashboard/widgets/tasks/tasksWidget.component';
 import { InsightsWidget } from 'sql/parts/dashboard/widgets/insights/insightsWidget.component';
+import { WebviewWidget } from 'sql/parts/dashboard/widgets/webview/webviewWidget.component';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 
@@ -36,7 +37,8 @@ const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
 	'explorer-widget': ExplorerWidget,
 	'tasks-widget': TasksWidget,
-	'insights-widget': InsightsWidget
+	'insights-widget': InsightsWidget,
+	'webview-widget': WebviewWidget
 };
 
 @Component({
@@ -170,6 +172,7 @@ export class DashboardWidgetWrapper implements AfterContentInit, OnInit, OnDestr
 			}
 			// Save the widget for future use
 			selector = componentMap['insights-widget'];
+			delete this._config.widget[key];
 			this._config.widget['insights-widget'] = insightConfig;
 		}
 		return selector;

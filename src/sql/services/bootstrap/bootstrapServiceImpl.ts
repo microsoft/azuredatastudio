@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NgModuleRef } from '@angular/core';
+import { NgModuleRef, enableProdMode } from '@angular/core';
 import { platformBrowserDynamic, } from '@angular/platform-browser-dynamic';
 
 import { BootstrapParams } from 'sql/services/bootstrap/bootstrapParams';
@@ -43,6 +43,7 @@ import { IWindowsService, IWindowService } from 'vs/platform/windows/common/wind
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
+import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 
 export class BootstrapService implements IBootstrapService {
 
@@ -96,7 +97,8 @@ export class BootstrapService implements IBootstrapService {
 		@ITelemetryService public telemetryService: ITelemetryService,
 		@IStorageService public storageService: IStorageService,
 		@IClipboardService public clipboardService: IClipboardService,
-		@ICapabilitiesService public capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService public capabilitiesService: ICapabilitiesService,
+		@IDashboardWebviewService public dashboardWebviewService: IDashboardWebviewService
 	) {
 		this.configurationEditorService = this.instantiationService.createInstance(ConfigurationEditingService);
 		this._bootstrapParameterMap = new Map<string, BootstrapParams>();
@@ -177,4 +179,8 @@ export class BootstrapService implements IBootstrapService {
 		idArray.push(elementId);
 		this._selectorQueueMap.set(selectorString, idArray);
 	}
+}
+
+if (!process.env['VSCODE_DEV']) {
+	enableProdMode();
 }
