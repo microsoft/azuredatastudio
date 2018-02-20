@@ -37,7 +37,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { MenuRegistry } from 'vs/platform/actions/common/actions';
+import { MenuRegistry, ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 
 const labelDisplay = nls.localize("item", "Item");
 const valueDisplay = nls.localize("value", "Value");
@@ -342,18 +342,7 @@ export class InsightsDialogView extends Modal {
 			let task = tasks.includes(action);
 			let commandAction = MenuRegistry.getCommand(action);
 			if (task) {
-				returnActions.push({
-					id: commandAction.id,
-					label: types.isString(commandAction.title) ? commandAction.title : commandAction.title.value,
-					enabled: true,
-					class: commandAction.iconClass,
-					checked: true,
-					radio: false,
-					run: () => this._commandService.executeCommand(commandAction.id, this._connectionProfile),
-					tooltip: types.isString(commandAction.title) ? commandAction.title : commandAction.title.value,
-					dispose: () => {
-					}
-				});
+				returnActions.push(this._instantiationService.createInstance(ExecuteCommandAction, commandAction.title, commandAction.iconClass));
 			}
 		}
 		return TPromise.as(returnActions);
