@@ -24,7 +24,6 @@ import { AngularEventType, IAngularEvent } from 'sql/services/angularEventing/an
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { error } from 'sql/base/common/log';
 import { WIDGETS_TAB } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
-import { WEBVIEW_TAB } from 'sql/parts/dashboard/tabs/dashboardWebviewTab.contribution';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -251,7 +250,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			let selectedTabs = dashboardTabs.map(v => {
 
 				if (Object.keys(v.content).length !== 1) {
-					error('Exactly 1 widget must be defined per space');
+					error('Exactly 1 content must be defined per space');
 				}
 
 				let key = Object.keys(v.content)[0];

@@ -11,7 +11,7 @@ import { deepClone } from 'vs/base/common/objects';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 
 export const Extensions = {
-	DashboardContributions: 'dashboard.contributions.innerTabs'
+	InnerTabContributions: 'dashboard.contributions.innerTabs'
 };
 
 export interface IDashboardInnerTab {
@@ -55,7 +55,7 @@ class DashboardInnerTabRegistry implements IDashboardInnerTabRegistry {
 }
 
 const dashboardInnerTabRegistry = new DashboardInnerTabRegistry();
-Registry.add(Extensions.DashboardContributions, dashboardInnerTabRegistry);
+Registry.add(Extensions.InnerTabContributions, dashboardInnerTabRegistry);
 
 export function registerInnerTab(innerTab: IDashboardInnerTab): void {
 	dashboardInnerTabRegistry.registerInnerTab(innerTab);
