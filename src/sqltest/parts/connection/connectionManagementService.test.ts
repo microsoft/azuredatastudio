@@ -25,7 +25,7 @@ import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ConnectionProviderStub } from 'sqltest/stubs/connectionProviderStub';
 import { ResourceProviderStub } from 'sqltest/stubs/resourceProviderServiceStub';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfigurationTestService';
@@ -213,7 +213,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			let id = connectionToUse.getOptionsKey();
 			let defaultUri = 'connection://' + (id ? id : connectionToUse.serverName + ':' + connectionToUse.databaseName);
 			connectionManagementService.onConnectionRequestSent(() => {
-				let info: data.ConnectionInfoSummary = {
+				let info: sqlops.ConnectionInfoSummary = {
 					connectionId: error ? undefined : 'id',
 					connectionSummary: {
 						databaseName: connectionToUse.databaseName,
@@ -702,7 +702,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		// when I call doChangeLanguageFlavor
 		try {
 			let called = false;
-			connectionManagementService.onLanguageFlavorChanged((changeParams: data.DidChangeLanguageFlavorParams) => {
+			connectionManagementService.onLanguageFlavorChanged((changeParams: sqlops.DidChangeLanguageFlavorParams) => {
 				called = true;
 				assert.equal(changeParams.uri, uri);
 				assert.equal(changeParams.language, language);
@@ -727,7 +727,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		};
 		let connectionManagementService = createConnectionManagementService();
 		let called = false;
-		connectionManagementService.onLanguageFlavorChanged((changeParams: data.DidChangeLanguageFlavorParams) => {
+		connectionManagementService.onLanguageFlavorChanged((changeParams: sqlops.DidChangeLanguageFlavorParams) => {
 			called = true;
 		});
 		connect(uri, options).then(() => {
@@ -776,7 +776,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		// Set up the connection store to give back a group for the expected connection profile
 		configResult['tabColorMode'] = 'border';
 		let expectedColor = 'red';
-		connectionStore.setup(x => x.getGroupFromId(connectionProfile.groupId)).returns(() => <IConnectionProfileGroup> {
+		connectionStore.setup(x => x.getGroupFromId(connectionProfile.groupId)).returns(() => <IConnectionProfileGroup>{
 			color: expectedColor
 		});
 		let uri = 'testUri';

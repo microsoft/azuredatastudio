@@ -17,7 +17,6 @@ import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { LinkedList } from 'vs/base/common/linkedList';
 
-import * as data from 'data';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 
 export interface ITaskOptions {

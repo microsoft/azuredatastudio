@@ -13,7 +13,7 @@ import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
 import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeView';
@@ -27,11 +27,11 @@ suite('SQL Object Explorer Service tests', () => {
 	let connectionToFail: ConnectionProfile;
 	let conProfGroup: ConnectionProfileGroup;
 	let objectExplorerService: ObjectExplorerService;
-	let objectExplorerSession: data.ObjectExplorerSession;
-	let objectExplorerFailedSession: data.ObjectExplorerSession;
-	let objectExplorerCloseSessionResponse: data.ObjectExplorerCloseSessionResponse;
-	let objectExplorerExpandInfo: data.ObjectExplorerExpandInfo;
-	let objectExplorerExpandInfoRefresh: data.ObjectExplorerExpandInfo;
+	let objectExplorerSession: sqlops.ObjectExplorerSession;
+	let objectExplorerFailedSession: sqlops.ObjectExplorerSession;
+	let objectExplorerCloseSessionResponse: sqlops.ObjectExplorerCloseSessionResponse;
+	let objectExplorerExpandInfo: sqlops.ObjectExplorerExpandInfo;
+	let objectExplorerExpandInfoRefresh: sqlops.ObjectExplorerExpandInfo;
 	let sessionId = '1234';
 	let failedSessionId = '12345';
 	let numberOfFailedSession: number = 0;
@@ -111,11 +111,11 @@ suite('SQL Object Explorer Service tests', () => {
 			errorMessage: '',
 			nodePath: objectExplorerSession.rootNode.nodePath
 		};
-		let response: data.ObjectExplorerSessionResponse = {
+		let response: sqlops.ObjectExplorerSessionResponse = {
 			sessionId: objectExplorerSession.sessionId
 		};
 
-		let failedResponse: data.ObjectExplorerSessionResponse = {
+		let failedResponse: sqlops.ObjectExplorerSessionResponse = {
 			sessionId: failedSessionId
 		};
 
@@ -253,10 +253,10 @@ suite('SQL Object Explorer Service tests', () => {
 
 		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, undefined);
 		objectExplorerService.registerProvider('MSSQL', sqlOEProvider.object);
-		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<data.ConnectionInfo>(x => x.options['serverName'] === connection.serverName))).returns(() => new Promise<any>((resolve) => {
+		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<sqlops.ConnectionInfo>(x => x.options['serverName'] === connection.serverName))).returns(() => new Promise<any>((resolve) => {
 			resolve(response);
 		}));
-		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<data.ConnectionInfo>(x => x.options['serverName'] === connectionToFail.serverName))).returns(() => new Promise<any>((resolve) => {
+		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<sqlops.ConnectionInfo>(x => x.options['serverName'] === connectionToFail.serverName))).returns(() => new Promise<any>((resolve) => {
 			resolve(failedResponse);
 		}));
 		sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.isAny())).callback(() => {

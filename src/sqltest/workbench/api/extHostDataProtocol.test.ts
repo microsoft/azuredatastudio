@@ -27,7 +27,7 @@ import { ExtHostDiagnostics } from 'vs/workbench/api/node/extHostDiagnostics';
 import { ExtHostHeapService } from 'vs/workbench/api/node/extHostHeapService';
 import * as vscode from 'vscode';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { ExtHostDataProtocol } from 'sql/workbench/api/node/extHostDataProtocol';
 import { SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 

@@ -12,7 +12,7 @@ import { AdvancedPropertiesController } from 'sql/parts/connection/connectionDia
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import * as Constants from 'sql/parts/connection/common/constants';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -24,14 +24,14 @@ export class ConnectionController implements IConnectionComponentController {
 	private _connectionWidget: ConnectionWidget;
 	private _advancedController: AdvancedPropertiesController;
 	private _model: IConnectionProfile;
-	private _providerOptions: data.ConnectionOption[];
+	private _providerOptions: sqlops.ConnectionOption[];
 	private _providerName: string;
 	/* key: uri, value : list of databases */
 	private _databaseCache = new Map<string, string[]>();
 
 	constructor(container: HTMLElement,
 		connectionManagementService: IConnectionManagementService,
-		sqlCapabilities: data.DataProtocolServerCapabilities,
+		sqlCapabilities: sqlops.DataProtocolServerCapabilities,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
 		@IInstantiationService private _instantiationService: IInstantiationService ) {

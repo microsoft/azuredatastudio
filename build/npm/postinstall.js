@@ -21,7 +21,6 @@ function yarnInstall(location, opts) {
 }
 
 // {{SQL CARBON EDIT}}
-yarnInstall('dataprotocol-client');
 yarnInstall('extensions-modules');
 yarnInstall('extensions'); // node modules shared by all extensions
 

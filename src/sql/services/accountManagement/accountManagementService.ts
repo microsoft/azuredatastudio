@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
 import * as platform from 'vs/platform/registry/common/platform';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
@@ -39,8 +39,8 @@ export class AccountManagementService implements IAccountManagementService {
 	private _addAccountProviderEmitter: Emitter<AccountProviderAddedEventParams>;
 	public get addAccountProviderEvent(): Event<AccountProviderAddedEventParams> { return this._addAccountProviderEmitter.event; }
 
-	private _removeAccountProviderEmitter: Emitter<data.AccountProviderMetadata>;
-	public get removeAccountProviderEvent(): Event<data.AccountProviderMetadata> { return this._removeAccountProviderEmitter.event; }
+	private _removeAccountProviderEmitter: Emitter<sqlops.AccountProviderMetadata>;
+	public get removeAccountProviderEvent(): Event<sqlops.AccountProviderMetadata> { return this._removeAccountProviderEmitter.event; }
 
 	private _updateAccountListEmitter: Emitter<UpdateAccountListEventParams>;
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return this._updateAccountListEmitter.event; }
@@ -61,7 +61,7 @@ export class AccountManagementService implements IAccountManagementService {
 
 		// Setup the event emitters
 		this._addAccountProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
-		this._removeAccountProviderEmitter = new Emitter<data.AccountProviderMetadata>();
+		this._removeAccountProviderEmitter = new Emitter<sqlops.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
 
 		// Register status bar item
@@ -87,7 +87,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * account's properties have been updated (usually when the account goes stale).
 	 * @param {Account} updatedAccount Account with the updated properties
 	 */
-	public accountUpdated(updatedAccount: data.Account): Thenable<void> {
+	public accountUpdated(updatedAccount: sqlops.Account): Thenable<void> {
 		let self = this;
 
 		// 1) Update the account in the store
@@ -155,7 +155,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @param {Account} account account to refresh
 	 * @return {Thenable<Account>} Promise to return an account
 	 */
-	public refreshAccount(account: data.Account): Thenable<data.Account> {
+	public refreshAccount(account: sqlops.Account): Thenable<sqlops.Account> {
 		let self = this;
 
 		return this.doWithProvider(account.key.providerId, (provider) => {
@@ -186,7 +186,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * Retrieves metadata of all providers that have been registered
 	 * @returns {Thenable<AccountProviderMetadata[]>} Registered account providers
 	 */
-	public getAccountProviderMetadata(): Thenable<data.AccountProviderMetadata[]> {
+	public getAccountProviderMetadata(): Thenable<sqlops.AccountProviderMetadata[]> {
 		return Promise.resolve(Object.values(this._providers).map(provider => provider.metadata));
 	}
 
@@ -195,7 +195,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @param {string} providerId ID of the provider the returned accounts belong to
 	 * @returns {Thenable<Account[]>} Promise to return a list of accounts
 	 */
-	public getAccountsForProvider(providerId: string): Thenable<data.Account[]> {
+	public getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]> {
 		let self = this;
 
 		// Make sure the provider exists before attempting to retrieve accounts
@@ -219,7 +219,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @param {Account} account Account to generate security token for
 	 * @return {Thenable<{}>} Promise to return the security token
 	 */
-	public getSecurityToken(account: data.Account): Thenable<{}> {
+	public getSecurityToken(account: sqlops.Account): Thenable<{}> {
 		return this.doWithProvider(account.key.providerId, provider => {
 			return provider.provider.getSecurityToken(account);
 		});
@@ -231,7 +231,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @returns {Thenable<void>} Promise with result of account removal, true if account was
 	 *                           removed, false otherwise.
 	 */
-	public removeAccount(accountKey: data.AccountKey): Thenable<boolean> {
+	public removeAccount(accountKey: sqlops.AccountKey): Thenable<boolean> {
 		let self = this;
 
 		// Step 1) Remove the account
@@ -309,8 +309,8 @@ export class AccountManagementService implements IAccountManagementService {
 	public cancelAutoOAuthDeviceCode(providerId: string): void {
 		this.doWithProvider(providerId, provider => provider.provider.autoOAuthCancelled())
 			.then(	// Swallow errors
-				null,
-				err => { console.warn(`Error when cancelling auto OAuth: ${err}`); }
+			null,
+			err => { console.warn(`Error when cancelling auto OAuth: ${err}`); }
 			)
 			.then(() => this.autoOAuthDialogController.closeAutoOAuthDialog());
 	}
@@ -326,10 +326,10 @@ export class AccountManagementService implements IAccountManagementService {
 	// SERVICE MANAGEMENT METHODS //////////////////////////////////////////
 	/**
 	 * Called by main thread to register an account provider from extension
-	 * @param {data.AccountProviderMetadata} providerMetadata Metadata of the provider that is being registered
-	 * @param {data.AccountProvider} provider References to the methods of the provider
+	 * @param {sqlops.AccountProviderMetadata} providerMetadata Metadata of the provider that is being registered
+	 * @param {sqlops.AccountProvider} provider References to the methods of the provider
 	 */
-	public registerProvider(providerMetadata: data.AccountProviderMetadata, provider: data.AccountProvider): Thenable<void> {
+	public registerProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): Thenable<void> {
 		let self = this;
 
 		// Store the account provider
@@ -346,10 +346,10 @@ export class AccountManagementService implements IAccountManagementService {
 		// 4) Write the accounts back to the store
 		// 5) Fire the event to let folks know we have another account provider now
 		return this._accountStore.getAccountsByProvider(providerMetadata.id)
-			.then((accounts: data.Account[]) => {
+			.then((accounts: sqlops.Account[]) => {
 				return provider.initialize(accounts);
 			})
-			.then((accounts: data.Account[]) => {
+			.then((accounts: sqlops.Account[]) => {
 				self._providers[providerMetadata.id].accounts = accounts;
 				let writePromises = accounts.map(account => {
 					return self._accountStore.addOrUpdate(account);
@@ -376,7 +376,7 @@ export class AccountManagementService implements IAccountManagementService {
 		}
 	}
 
-	public unregisterProvider(providerMetadata: data.AccountProviderMetadata): void {
+	public unregisterProvider(providerMetadata: sqlops.AccountProviderMetadata): void {
 		// Delete this account provider
 		delete this._providers[providerMetadata.id];
 
@@ -400,7 +400,7 @@ export class AccountManagementService implements IAccountManagementService {
 	private fireAccountListUpdate(provider: AccountProviderWithMetadata, sort: boolean) {
 		// Step 1) Get and sort the list
 		if (sort) {
-			provider.accounts.sort((a: data.Account, b: data.Account) => {
+			provider.accounts.sort((a: sqlops.Account, b: sqlops.Account) => {
 				if (a.displayInfo.displayName < b.displayInfo.displayName) {
 					return -1;
 				}
@@ -419,7 +419,7 @@ export class AccountManagementService implements IAccountManagementService {
 		this._updateAccountListEmitter.fire(eventArg);
 	}
 
-	private spliceModifiedAccount(provider: AccountProviderWithMetadata, modifiedAccount: data.Account) {
+	private spliceModifiedAccount(provider: AccountProviderWithMetadata, modifiedAccount: sqlops.Account) {
 		// Find the updated account and splice the updated one in
 		let indexToRemove: number = provider.accounts.findIndex(account => {
 			return account.key.accountId === modifiedAccount.key.accountId;
@@ -434,7 +434,7 @@ export class AccountManagementService implements IAccountManagementService {
  * Joins together an account provider, its metadata, and its accounts, used in the provider list
  */
 export interface AccountProviderWithMetadata {
-	metadata: data.AccountProviderMetadata;
-	provider: data.AccountProvider;
-	accounts: data.Account[];
+	metadata: sqlops.AccountProviderMetadata;
+	provider: sqlops.AccountProvider;
+	accounts: sqlops.Account[];
 }

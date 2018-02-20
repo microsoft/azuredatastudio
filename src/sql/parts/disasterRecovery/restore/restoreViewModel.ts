@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
 import * as types from 'vs/base/common/types';
 
@@ -12,7 +12,7 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface RestoreOptionsElement {
-	optionMetadata: data.ServiceOption;
+	optionMetadata: sqlops.ServiceOption;
 	defaultValue: any;
 	currentValue: any;
 }
@@ -62,15 +62,15 @@ export class RestoreViewModel {
 	private _onSetRestoreOption = new Emitter<RestoreOptionParam>();
 	public onSetRestoreOption: Event<RestoreOptionParam> = this._onSetRestoreOption.event;
 
-	private _onUpdateBackupSetsToRestore = new Emitter<data.DatabaseFileInfo[]>();
-	public onUpdateBackupSetsToRestore: Event<data.DatabaseFileInfo[]> = this._onUpdateBackupSetsToRestore.event;
+	private _onUpdateBackupSetsToRestore = new Emitter<sqlops.DatabaseFileInfo[]>();
+	public onUpdateBackupSetsToRestore: Event<sqlops.DatabaseFileInfo[]> = this._onUpdateBackupSetsToRestore.event;
 
-	private _onUpdateRestoreDatabaseFiles = new Emitter<data.RestoreDatabaseFileInfo[]>();
-	public onUpdateRestoreDatabaseFiles: Event<data.RestoreDatabaseFileInfo[]> = this._onUpdateRestoreDatabaseFiles.event;
+	private _onUpdateRestoreDatabaseFiles = new Emitter<sqlops.RestoreDatabaseFileInfo[]>();
+	public onUpdateRestoreDatabaseFiles: Event<sqlops.RestoreDatabaseFileInfo[]> = this._onUpdateRestoreDatabaseFiles.event;
 
 	private _optionsMap: { [name: string]: RestoreOptionsElement } = {};
 
-	constructor(optionsMetadata: data.ServiceOption[]) {
+	constructor(optionsMetadata: sqlops.ServiceOption[]) {
 		optionsMetadata.forEach(optionMetadata => {
 			let defaultValue = this.getDisplayValue(optionMetadata, optionMetadata.defaultValue);
 			this._optionsMap[optionMetadata.name] = {
@@ -84,7 +84,7 @@ export class RestoreViewModel {
 	/**
 	* Get option display value
 	*/
-	public getDisplayValue(optionMetadata: data.ServiceOption, optionValue: any): any {
+	public getDisplayValue(optionMetadata: sqlops.ServiceOption, optionValue: any): any {
 		let displayValue: any;
 		switch (optionMetadata.valueType) {
 			case ServiceOptionType.boolean:
@@ -119,7 +119,7 @@ export class RestoreViewModel {
 	/**
 	* Get option metadata from the option map
 	*/
-	public getOptionMetadata(optionName: string): data.ServiceOption {
+	public getOptionMetadata(optionName: string): sqlops.ServiceOption {
 		return this._optionsMap[optionName] ? this._optionsMap[optionName].optionMetadata : undefined;
 	}
 
@@ -170,7 +170,7 @@ export class RestoreViewModel {
 	/**
 	* On restore plan response will update all the information from restore plan response
 	*/
-	public onRestorePlanResponse(restorePlanResponse: data.RestorePlanResponse): void {
+	public onRestorePlanResponse(restorePlanResponse: sqlops.RestorePlanResponse): void {
 		if (restorePlanResponse.planDetails && restorePlanResponse.planDetails['lastBackupTaken']) {
 			this.updateLastBackupTaken(restorePlanResponse.planDetails['lastBackupTaken'].currentValue);
 		}
@@ -187,7 +187,7 @@ export class RestoreViewModel {
 	/**
 	* Update options with plan details
 	*/
-	public updateOptionWithPlanDetail(planDetails: { [key: string]: data.RestorePlanDetailInfo }): void {
+	public updateOptionWithPlanDetail(planDetails: { [key: string]: sqlops.RestorePlanDetailInfo }): void {
 		if (planDetails) {
 			for (var key in planDetails) {
 				let optionElement = this._optionsMap[key];
@@ -234,7 +234,7 @@ export class RestoreViewModel {
 	/**
 	* Update backup sets to restore
 	*/
-	public updateBackupSetsToRestore(backupSetsToRestore: data.DatabaseFileInfo[]): void {
+	public updateBackupSetsToRestore(backupSetsToRestore: sqlops.DatabaseFileInfo[]): void {
 		this.selectedBackupSets = null;
 		if (backupSetsToRestore) {
 			this.selectedBackupSets = [];

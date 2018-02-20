@@ -6,15 +6,15 @@
 'use strict';
 
 import * as assert from 'assert';
-import {TestThreadService} from 'vs/workbench/test/electron-browser/api/testThreadService';
-import {TestInstantiationService} from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import {ExtHostCredentialManagement} from 'sql/workbench/api/node/extHostCredentialManagement';
-import {SqlMainContext} from 'sql/workbench/api/node/sqlExtHost.protocol';
-import {IThreadService} from 'vs/workbench/services/thread/common/threadService';
-import {MainThreadCredentialManagement} from 'sql/workbench/api/node/mainThreadCredentialManagement';
-import {CredentialsTestProvider, CredentialsTestService} from 'sqltest/stubs/credentialsTestStubs';
-import {ICredentialsService} from 'sql/services/credentials/credentialsService';
-import {Credential, CredentialProvider} from 'data';
+import { TestThreadService } from 'vs/workbench/test/electron-browser/api/testThreadService';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { ExtHostCredentialManagement } from 'sql/workbench/api/node/extHostCredentialManagement';
+import { SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
+import { MainThreadCredentialManagement } from 'sql/workbench/api/node/mainThreadCredentialManagement';
+import { CredentialsTestProvider, CredentialsTestService } from 'sqltest/stubs/credentialsTestStubs';
+import { ICredentialsService } from 'sql/services/credentials/credentialsService';
+import { Credential, CredentialProvider } from 'sqlops';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 const IThreadService = createDecorator<IThreadService>('threadService');
@@ -116,18 +116,18 @@ suite('ExtHostCredentialManagement', () => {
 		// Then: I should get an error
 		extHost.$getCredentialProvider(undefined)
 			.then(
-				() => { done('Provider was returned from undefined'); },
-				() => { /* Swallow error, this is success path */ }
+			() => { done('Provider was returned from undefined'); },
+			() => { /* Swallow error, this is success path */ }
 			)
 			.then(() => { return extHost.$getCredentialProvider(null); })
 			.then(
-				() => { done('Provider was returned from null'); },
-				() => { /* Swallow error, this is success path */ }
+			() => { done('Provider was returned from null'); },
+			() => { /* Swallow error, this is success path */ }
 			)
-			.then(() => {return extHost.$getCredentialProvider(''); })
+			.then(() => { return extHost.$getCredentialProvider(''); })
 			.then(
-				() => { done('Provider was returned from \'\''); },
-				() => { done(); }
+			() => { done('Provider was returned from \'\''); },
+			() => { done(); }
 			);
 	});
 });

@@ -8,17 +8,17 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
 import { SqlMainContext, MainThreadSerializationProviderShape, ExtHostSerializationProviderShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as vscode from 'vscode';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 
 class SerializationAdapter {
-	private _provider: data.SerializationProvider;
+	private _provider: sqlops.SerializationProvider;
 
-	constructor(provider: data.SerializationProvider) {
+	constructor(provider: sqlops.SerializationProvider) {
 		this._provider = provider;
 	}
 
-	public saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<data.SaveResultRequestResult>  {
+	public saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> {
 		return this._provider.saveAs(saveFormat, savePath, results, appendToFile);
 	}
 
@@ -26,7 +26,7 @@ class SerializationAdapter {
 
 type Adapter = SerializationAdapter;
 
-export class ExtHostSerializationProvider extends ExtHostSerializationProviderShape  {
+export class ExtHostSerializationProvider extends ExtHostSerializationProviderShape {
 
 	private _proxy: MainThreadSerializationProviderShape;
 
@@ -44,7 +44,7 @@ export class ExtHostSerializationProvider extends ExtHostSerializationProviderSh
 		return ExtHostSerializationProvider._handlePool++;
 	}
 
-	private _withAdapter<A, R>(handle: number, ctor: { new (...args: any[]): A }, callback: (adapter: A) => Thenable<R>): Thenable<R> {
+	private _withAdapter<A, R>(handle: number, ctor: { new(...args: any[]): A }, callback: (adapter: A) => Thenable<R>): Thenable<R> {
 		let adapter = this._adapter[handle];
 		if (!(adapter instanceof ctor)) {
 			return TPromise.wrapError(new Error('no adapter found'));
@@ -59,14 +59,14 @@ export class ExtHostSerializationProvider extends ExtHostSerializationProviderSh
 		this._proxy = threadService.get(SqlMainContext.MainThreadSerializationProvider);
 	}
 
-	public $registerSerializationProvider(provider: data.SerializationProvider): vscode.Disposable {
+	public $registerSerializationProvider(provider: sqlops.SerializationProvider): vscode.Disposable {
 		provider.handle = this._nextHandle();
 		this._adapter[provider.handle] = new SerializationAdapter(provider);
 		this._proxy.$registerSerializationProvider(provider.handle);
 		return this._createDisposable(provider.handle);
 	}
 
-	public $saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<data.SaveResultRequestResult> {
+	public $saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> {
 		return this._withAdapter(0, SerializationAdapter, adapter => adapter.saveAs(saveFormat, savePath, results, appendToFile));
 	}
 

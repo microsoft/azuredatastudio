@@ -23,7 +23,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/styler';
@@ -40,7 +40,7 @@ export class AccountDialog extends Modal {
 	public viewModel: AccountViewModel;
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
-	private _providerViews: { [providerId: string]: FixedListView<data.Account> } = {};
+	private _providerViews: { [providerId: string]: FixedListView<sqlops.Account> } = {};
 
 	private _closeButton: Button;
 	private _delegate: AccountListDelegate;
@@ -174,8 +174,8 @@ export class AccountDialog extends Modal {
 
 		// Create a fixed list view for the account provider
 		let providerViewContainer = DOM.$('.provider-view');
-		let accountList = new List<data.Account>(providerViewContainer, this._delegate, [this._accountRenderer]);
-		let providerView = new FixedListView<data.Account>(
+		let accountList = new List<sqlops.Account>(providerViewContainer, this._delegate, [this._accountRenderer]);
+		let providerView = new FixedListView<sqlops.Account>(
 			undefined,
 			false,
 			newProvider.addedProvider.displayName,
@@ -205,7 +205,7 @@ export class AccountDialog extends Modal {
 		this._providerViews[newProvider.addedProvider.id] = providerView;
 	}
 
-	private removeProvider(removedProvider: data.AccountProviderMetadata) {
+	private removeProvider(removedProvider: sqlops.AccountProviderMetadata) {
 		// Skip removing the provider if it doesn't exist
 		let providerView = this._providerViews[removedProvider.id];
 		if (!providerView) {

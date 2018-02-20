@@ -19,7 +19,7 @@ import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import { Task } from 'sql/platform/tasks/common/tasks';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 
-import * as data from 'data';
+import { ObjectMetadata } from 'sqlops';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
@@ -29,7 +29,7 @@ import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/edi
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 export interface BaseActionContext {
-	object?: data.ObjectMetadata;
+	object?: ObjectMetadata;
 	profile?: IConnectionProfile;
 }
 

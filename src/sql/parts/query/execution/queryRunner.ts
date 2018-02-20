@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 import * as Constants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
@@ -41,10 +41,10 @@ export const enum EventType {
 export interface IEventType {
 	start: void;
 	complete: string;
-	message: data.IResultMessage;
-	batchStart: data.BatchSummary;
-	batchComplete: data.BatchSummary;
-	resultSet: data.ResultSetSummary;
+	message: sqlops.IResultMessage;
+	batchStart: sqlops.BatchSummary;
+	batchComplete: sqlops.BatchSummary;
+	resultSet: sqlops.ResultSetSummary;
 	editSessionReady: IEditSessionReadyEvent;
 }
 
@@ -58,7 +58,7 @@ export default class QueryRunner {
 	private _totalElapsedMilliseconds: number = 0;
 	private _isExecuting: boolean = false;
 	private _hasCompleted: boolean = false;
-	private _batchSets: data.BatchSummary[] = [];
+	private _batchSets: sqlops.BatchSummary[] = [];
 	private _eventEmitter = new EventEmitter();
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
@@ -79,7 +79,7 @@ export default class QueryRunner {
 		return this._hasCompleted;
 	}
 
-	get batchSets(): data.BatchSummary[] {
+	get batchSets(): sqlops.BatchSummary[] {
 		return this._batchSets;
 	}
 
@@ -92,7 +92,7 @@ export default class QueryRunner {
 	/**
 	 * Cancels the running query, if there is one
 	 */
-	public cancelQuery(): Thenable<data.QueryCancelResult> {
+	public cancelQuery(): Thenable<sqlops.QueryCancelResult> {
 		return this._queryManagementService.cancelQuery(this.uri);
 	}
 
@@ -100,13 +100,13 @@ export default class QueryRunner {
 	 * Runs the query with the provided query
 	 * @param input Query string to execute
 	 */
-	public runQuery(input: string, runOptions?: data.ExecutionPlanOptions): Thenable<void>;
+	public runQuery(input: string, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
 	/**
 	 * Runs the query by pulling the query from the document using the provided selection data
 	 * @param input selection data
 	 */
-	public runQuery(input: data.ISelectionData, runOptions?: data.ExecutionPlanOptions): Thenable<void>;
-	public runQuery(input, runOptions?: data.ExecutionPlanOptions): Thenable<void> {
+	public runQuery(input: sqlops.ISelectionData, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
+	public runQuery(input, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void> {
 		return this.doRunQuery(input, false, runOptions);
 	}
 
@@ -114,7 +114,7 @@ export default class QueryRunner {
 	 * Runs the current SQL statement by pulling the query from the document using the provided selection data
 	 * @param input selection data
 	 */
-	public runQueryStatement(input: data.ISelectionData): Thenable<void> {
+	public runQueryStatement(input: sqlops.ISelectionData): Thenable<void> {
 		return this.doRunQuery(input, true);
 	}
 
@@ -122,9 +122,9 @@ export default class QueryRunner {
 	 * Implementation that runs the query with the provided query
 	 * @param input Query string to execute
 	 */
-	private doRunQuery(input: string, runCurrentStatement: boolean, runOptions?: data.ExecutionPlanOptions): Thenable<void>;
-	private doRunQuery(input: data.ISelectionData, runCurrentStatement: boolean, runOptions?: data.ExecutionPlanOptions): Thenable<void>;
-	private doRunQuery(input, runCurrentStatement: boolean, runOptions?: data.ExecutionPlanOptions): Thenable<void> {
+	private doRunQuery(input: string, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
+	private doRunQuery(input: sqlops.ISelectionData, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
+	private doRunQuery(input, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void> {
 		let ownerUri = this.uri;
 		this._batchSets = [];
 		this._hasCompleted = false;
@@ -160,20 +160,20 @@ export default class QueryRunner {
 		// Attempting to launch the query failed, show the error message
 		const eol = this.getEolString();
 		let message = nls.localize('query.ExecutionFailedError', 'Execution failed due to an unexpected error: {0}\t{1}', eol, error);
-		this.handleMessage(<data.QueryExecuteMessageParams> {
+		this.handleMessage(<sqlops.QueryExecuteMessageParams>{
 			ownerUri: this.uri,
 			message: {
 				isError: true,
 				message: message
 			}
 		});
-		this.handleQueryComplete(<data.QueryExecuteCompleteNotificationResult> { ownerUri: this.uri });
+		this.handleQueryComplete(<sqlops.QueryExecuteCompleteNotificationResult>{ ownerUri: this.uri });
 	}
 
 	/**
 	 * Handle a QueryComplete from the service layer
 	 */
-	public handleQueryComplete(result: data.QueryExecuteCompleteNotificationResult): void {
+	public handleQueryComplete(result: sqlops.QueryExecuteCompleteNotificationResult): void {
 
 		// Store the batch sets we got back as a source of "truth"
 		this._isExecuting = false;
@@ -194,7 +194,7 @@ export default class QueryRunner {
 	/**
 	 * Handle a BatchStart from the service layer
 	 */
-	public handleBatchStart(result: data.QueryExecuteBatchNotificationParams): void {
+	public handleBatchStart(result: sqlops.QueryExecuteBatchNotificationParams): void {
 		let batch = result.batchSummary;
 
 		// Recalculate the start and end lines, relative to the result line offset
@@ -214,8 +214,8 @@ export default class QueryRunner {
 	/**
 	 * Handle a BatchComplete from the service layer
 	 */
-	public handleBatchComplete(result: data.QueryExecuteBatchNotificationParams): void {
-		let batch: data.BatchSummary = result.batchSummary;
+	public handleBatchComplete(result: sqlops.QueryExecuteBatchNotificationParams): void {
+		let batch: sqlops.BatchSummary = result.batchSummary;
 
 		// Store the batch again to get the rest of the data
 		this.batchSets[batch.id] = batch;
@@ -231,17 +231,17 @@ export default class QueryRunner {
 	/**
 	 * Handle a ResultSetComplete from the service layer
 	 */
-	public handleResultSetComplete(result: data.QueryExecuteResultSetCompleteNotificationParams): void {
+	public handleResultSetComplete(result: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
-			let batchSet: data.BatchSummary;
+			let batchSet: sqlops.BatchSummary;
 			if (!resultSet.batchId) {
 				// Missing the batchId. In this case, default to always using the first batch in the list
 				// or create one in the case the DMP extension didn't obey the contract perfectly
 				if (this.batchSets.length > 0) {
 					batchSet = this.batchSets[0];
 				} else {
-					batchSet = <data.BatchSummary>{
+					batchSet = <sqlops.BatchSummary>{
 						id: 0,
 						selection: undefined,
 						hasError: false,
@@ -263,7 +263,7 @@ export default class QueryRunner {
 	/**
 	 * Handle a Mssage from the service layer
 	 */
-	public handleMessage(obj: data.QueryExecuteMessageParams): void {
+	public handleMessage(obj: sqlops.QueryExecuteMessageParams): void {
 		let message = obj.message;
 		message.time = new Date(message.time).toLocaleTimeString();
 
@@ -274,9 +274,9 @@ export default class QueryRunner {
 	/**
 	 * Get more data rows from the current resultSets from the service layer
 	 */
-	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Thenable<data.QueryExecuteSubsetResult> {
+	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Thenable<sqlops.QueryExecuteSubsetResult> {
 		const self = this;
-		let rowData: data.QueryExecuteSubsetParams = <data.QueryExecuteSubsetParams>{
+		let rowData: sqlops.QueryExecuteSubsetParams = <sqlops.QueryExecuteSubsetParams>{
 			ownerUri: this.uri,
 			resultSetIndex: resultSetIndex,
 			rowsCount: numberOfRows,
@@ -284,7 +284,7 @@ export default class QueryRunner {
 			batchIndex: batchIndex
 		};
 
-		return new Promise<data.QueryExecuteSubsetResult>((resolve, reject) => {
+		return new Promise<sqlops.QueryExecuteSubsetResult>((resolve, reject) => {
 			self._queryManagementService.getQueryRows(rowData).then(result => {
 				resolve(result);
 			}, error => {
@@ -322,15 +322,15 @@ export default class QueryRunner {
 	 * @param rowStart     The index of the row to start returning (inclusive)
 	 * @param numberOfRows The number of rows to return
 	 */
-	public getEditRows(rowStart: number, numberOfRows: number): Thenable<data.EditSubsetResult> {
+	public getEditRows(rowStart: number, numberOfRows: number): Thenable<sqlops.EditSubsetResult> {
 		const self = this;
-		let rowData: data.EditSubsetParams = {
+		let rowData: sqlops.EditSubsetParams = {
 			ownerUri: this.uri,
 			rowCount: numberOfRows,
 			rowStartIndex: rowStart
 		};
 
-		return new Promise<data.EditSubsetResult>((resolve, reject) => {
+		return new Promise<sqlops.EditSubsetResult>((resolve, reject) => {
 			self._queryManagementService.getEditRows(rowData).then(result => {
 				if (!result.hasOwnProperty('rowCount')) {
 					let error = `Nothing returned from subset query`;
@@ -350,7 +350,7 @@ export default class QueryRunner {
 		this._eventEmitter.emit(EventType.EDIT_SESSION_READY, { ownerUri, success, message });
 	}
 
-	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<data.EditUpdateCellResult> {
+	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult> {
 		return this._queryManagementService.updateCell(ownerUri, rowId, columnId, newValue);
 	}
 
@@ -358,7 +358,7 @@ export default class QueryRunner {
 		return this._queryManagementService.commitEdit(ownerUri);
 	}
 
-	public createRow(ownerUri: string): Thenable<data.EditCreateRowResult> {
+	public createRow(ownerUri: string): Thenable<sqlops.EditCreateRowResult> {
 		return this._queryManagementService.createRow(ownerUri).then(result => {
 			return result;
 		});
@@ -368,7 +368,7 @@ export default class QueryRunner {
 		return this._queryManagementService.deleteRow(ownerUri, rowId);
 	}
 
-	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<data.EditRevertCellResult> {
+	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult> {
 		return this._queryManagementService.revertCell(ownerUri, rowId, columnId).then(result => {
 			return result;
 		});
@@ -468,7 +468,7 @@ export default class QueryRunner {
 
 	private getColumnHeaders(batchId: number, resultId: number, range: ISlickRange): string[] {
 		let headers: string[] = undefined;
-		let batchSummary: data.BatchSummary = this.batchSets[batchId];
+		let batchSummary: sqlops.BatchSummary = this.batchSets[batchId];
 		if (batchSummary !== undefined) {
 			let resultSetSummary = batchSummary.resultSetSummaries[resultId];
 			headers = resultSetSummary.columnInfo.slice(range.fromCell, range.toCell + 1).map((info, i) => {
@@ -495,7 +495,7 @@ export default class QueryRunner {
 		// get config copyRemoveNewLine option from vscode config
 		let showBatchTime: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(this._workspaceConfigurationService, Constants.configShowBatchTime);
 		if (showBatchTime) {
-			let message: data.IResultMessage = {
+			let message: sqlops.IResultMessage = {
 				batchId: batchId,
 				message: nls.localize('elapsedBatchTime', 'Batch execution time: {0}', executionTime),
 				time: undefined,

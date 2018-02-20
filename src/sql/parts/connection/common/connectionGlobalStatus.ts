@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ConnectionSummary } from 'data';
+import { ConnectionSummary } from 'sqlops';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import * as LocalizedConstants from 'sql/parts/connection/common/localizedConstants';
 

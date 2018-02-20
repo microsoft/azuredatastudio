@@ -8,32 +8,32 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
 import { SqlMainContext, MainThreadCredentialManagementShape, ExtHostCredentialManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as vscode from 'vscode';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 
 class CredentialAdapter {
-	public provider: data.CredentialProvider;
+	public provider: sqlops.CredentialProvider;
 
-	constructor(provider: data.CredentialProvider) {
+	constructor(provider: sqlops.CredentialProvider) {
 		this.provider = provider;
 	}
 
-	public saveCredential(credentialId: string, password: string): Thenable<boolean>  {
+	public saveCredential(credentialId: string, password: string): Thenable<boolean> {
 		return this.provider.saveCredential(credentialId, password);
 	}
 
-	public readCredential(credentialId: string): Thenable<data.Credential> {
+	public readCredential(credentialId: string): Thenable<sqlops.Credential> {
 		return this.provider.readCredential(credentialId);
 	}
 
-    public deleteCredential(credentialId: string): Thenable<boolean> {
+	public deleteCredential(credentialId: string): Thenable<boolean> {
 		return this.provider.deleteCredential(credentialId);
 	}
 }
 
 type Adapter = CredentialAdapter;
 
-export class ExtHostCredentialManagement extends ExtHostCredentialManagementShape  {
+export class ExtHostCredentialManagement extends ExtHostCredentialManagementShape {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _adapter: { [handle: number]: Adapter } = Object.create(null);
 	private _handlePool: number = 0;
@@ -54,7 +54,7 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
-	public $registerCredentialProvider(provider: data.CredentialProvider): vscode.Disposable {
+	public $registerCredentialProvider(provider: sqlops.CredentialProvider): vscode.Disposable {
 		// Store the credential provider
 		provider.handle = this._nextHandle();
 		this._adapter[provider.handle] = new CredentialAdapter(provider);
@@ -67,7 +67,7 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 		return this._createDisposable(provider.handle);
 	}
 
-	public $getCredentialProvider(namespaceId: string): Thenable<data.CredentialProvider> {
+	public $getCredentialProvider(namespaceId: string): Thenable<sqlops.CredentialProvider> {
 		let self = this;
 
 		if (!namespaceId) {
@@ -84,11 +84,11 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 		return this._withAdapter(0, CredentialAdapter, adapter => adapter.saveCredential(credentialId, password));
 	}
 
-	public $readCredential(credentialId: string): Thenable<data.Credential> {
+	public $readCredential(credentialId: string): Thenable<sqlops.Credential> {
 		return this._withAdapter(0, CredentialAdapter, adapter => adapter.readCredential(credentialId));
 	}
 
-    public $deleteCredential(credentialId: string): Thenable<boolean> {
+	public $deleteCredential(credentialId: string): Thenable<boolean> {
 		return this._withAdapter(0, CredentialAdapter, adapter => adapter.deleteCredential(credentialId));
 	}
 
@@ -105,9 +105,9 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 		return `${namespaceId}|${credentialId}`;
 	}
 
-	private _createNamespacedCredentialProvider(namespaceId: string, adapter: CredentialAdapter): Thenable<data.CredentialProvider> {
+	private _createNamespacedCredentialProvider(namespaceId: string, adapter: CredentialAdapter): Thenable<sqlops.CredentialProvider> {
 		// Create a provider that wraps the methods in a namespace
-		let provider: data.CredentialProvider = {
+		let provider: sqlops.CredentialProvider = {
 			handle: adapter.provider.handle,
 			deleteCredential: (credentialId: string) => {
 				let namespacedId = ExtHostCredentialManagement._getNamespacedCredentialId(namespaceId, credentialId);
@@ -136,7 +136,7 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 		return this._handlePool++;
 	}
 
-	private _withAdapter<A, R>(handle: number, ctor: { new (...args: any[]): A }, callback: (adapter: A) => Thenable<R>): Thenable<R> {
+	private _withAdapter<A, R>(handle: number, ctor: { new(...args: any[]): A }, callback: (adapter: A) => Thenable<R>): Thenable<R> {
 		let adapter = this._adapter[handle];
 		if (!(adapter instanceof ctor)) {
 			return TPromise.wrapError(new Error('no adapter found'));

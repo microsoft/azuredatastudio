@@ -28,8 +28,6 @@ import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
-import * as data from 'data';
-
 export class ObjectExplorerActionsContext {
 	public treeNode: TreeNode;
 	public connectionProfile: ConnectionProfile;

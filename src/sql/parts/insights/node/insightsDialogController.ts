@@ -11,7 +11,7 @@ import * as Utils from 'sql/parts/connection/common/utils';
 import { IInsightsDialogModel, insertValueRegex } from 'sql/parts/insights/common/interfaces';
 import { error } from 'sql/base/common/log';
 
-import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'data';
+import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'sqlops';
 
 import Severity from 'vs/base/common/severity';
 import * as types from 'vs/base/common/types';

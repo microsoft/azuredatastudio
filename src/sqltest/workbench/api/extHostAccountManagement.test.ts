@@ -6,7 +6,7 @@
 'use strict';
 
 import * as assert from 'assert';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import * as TypeMoq from 'typemoq';
 import { AccountProviderStub, AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
 import { ExtHostAccountManagement } from 'sql/workbench/api/node/extHostAccountManagement';
@@ -22,8 +22,8 @@ const IThreadService = createDecorator<IThreadService>('threadService');
 
 // SUITE STATE /////////////////////////////////////////////////////////////
 let instantiationService: TestInstantiationService;
-let mockAccountMetadata: data.AccountProviderMetadata;
-let mockAccount: data.Account;
+let mockAccountMetadata: sqlops.AccountProviderMetadata;
+let mockAccount: sqlops.Account;
 let threadService: TestThreadService;
 
 // TESTS ///////////////////////////////////////////////////////////////////
@@ -258,8 +258,8 @@ suite('ExtHostAccountManagement', () => {
 	});
 });
 
-function getMockAccountProvider(): TypeMoq.Mock<data.AccountProvider> {
-	let mock = TypeMoq.Mock.ofType<data.AccountProvider>(AccountProviderStub);
+function getMockAccountProvider(): TypeMoq.Mock<sqlops.AccountProvider> {
+	let mock = TypeMoq.Mock.ofType<sqlops.AccountProvider>(AccountProviderStub);
 	mock.setup((obj) => obj.clear(TypeMoq.It.isValue(mockAccount.key)))
 		.returns(() => Promise.resolve(undefined));
 	mock.setup((obj) => obj.refresh(TypeMoq.It.isValue(mockAccount)))

@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { IHandleFirewallRuleResult, IResourceProviderService } from 'sql/parts/accountManagement/common/interfaces';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 export class ResourceProviderStub implements IResourceProviderService {
 	_serviceBrand: any;
 
-	registerProvider(providerId: string, provider: data.ResourceProvider) {
+	registerProvider(providerId: string, provider: sqlops.ResourceProvider) {
 
 	}
 
@@ -18,7 +18,7 @@ export class ResourceProviderStub implements IResourceProviderService {
 
 	}
 
-	createFirewallRule(selectedAccount: data.Account, firewallruleInfo: data.FirewallRuleInfo, resourceProviderId: string): Promise<data.CreateFirewallRuleResponse> {
+	createFirewallRule(selectedAccount: sqlops.Account, firewallruleInfo: sqlops.FirewallRuleInfo, resourceProviderId: string): Promise<sqlops.CreateFirewallRuleResponse> {
 		return undefined;
 	}
 
