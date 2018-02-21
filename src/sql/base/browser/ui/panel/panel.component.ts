@@ -40,7 +40,7 @@ let idPool = 0;
 @Component({
 	selector: 'panel',
 	template: `
-		<div class="tabbedPanel fullsize" #tabbedPanel style="position: absolute">
+		<div class="tabbedPanel fullsize" #tabbedPanel>
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
 				<div class="tabList">
 					<div *ngFor="let tab of _tabs">

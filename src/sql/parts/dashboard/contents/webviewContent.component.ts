@@ -30,6 +30,7 @@ export class WebviewContent implements OnInit, IDashboardWebview {
 	public readonly onResize: Event<void> = this._onResize.event;
 	private _onMessage = new Emitter<string>();
 	public readonly onMessage: Event<string> = this._onMessage.event;
+
 	private _onMessageDisposable: IDisposable;
 	private _webview: Webview;
 	private _html: string;

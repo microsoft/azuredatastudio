@@ -71,7 +71,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private _tabsDispose: Array<IDisposable> = [];
 	private _pinnedTabs: Array<PinConfig> = [];
 
-	@ViewChild('properties') private _properties: DashboardWidgetWrapper;
 	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
 	@ViewChild('scrollContainer', { read: ElementRef }) private _scrollContainer: ElementRef;
 	@ViewChild('propertiesContainer', { read: ElementRef }) private _propertiesContainer: ElementRef;
@@ -508,20 +507,12 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	public refresh(refreshConfig: boolean = false): void {
 		if (refreshConfig) {
 			this.init();
-			this.refreshProperties();
 		} else {
-			this.refreshProperties();
 			if (this._tabs) {
 				this._tabs.forEach(tabContent => {
 					tabContent.refresh();
 				});
 			}
-		}
-	}
-
-	private refreshProperties(): void {
-		if (this._properties) {
-			this._properties.refresh();
 		}
 	}
 
