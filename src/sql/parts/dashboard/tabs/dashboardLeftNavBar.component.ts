@@ -150,7 +150,7 @@ export class DashboardLeftNavBar extends DashboardTab implements OnDestroy, OnCh
 	}
 
 	public layout() {
-		// this._widgetContent.layout();
+
 	}
 
 	public refresh(): void {
