@@ -920,6 +920,29 @@ declare module 'sqlops' {
 		getDatabaseInfo(connectionUri: string): Thenable<DatabaseInfo>;
 	}
 
+	// Agent Services interfaces
+	export interface AgentJobInfo {
+		name: string;
+		currentExecutionStatus: number;
+		lastRunOutcome: number;
+		currentExecutionStep: string;
+		enabled: boolean;
+		hasTarget: boolean;
+		hasSchedule: boolean;
+		hasStep: boolean;
+		runnable: boolean;
+		category: string;
+		categoryId: number;
+		categoryType: number;
+		lastRun: string;
+		nextRun: string;
+		jobId: string;
+	}
+
+	export interface AgentServicesProvider extends DataProvider {
+		getJobs(connectionUri: string): Thenable<AgentJobInfo[]>;
+	}
+
 	// Task service interfaces ----------------------------------------------------------------------------
 	export enum TaskStatus {
 		notStarted = 0,
