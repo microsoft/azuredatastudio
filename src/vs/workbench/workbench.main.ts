@@ -162,6 +162,7 @@ import 'sql/parts/dashboard/dashboardConfig.contribution';
 /* Tabs */
 import 'sql/parts/dashboard/tabs/dashboardWebviewTab.contribution';
 import 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
+import 'sql/parts/dashboard/tabs/dashboardGridTab.contribution';
 import 'sql/parts/dashboard/common/dashboardTab.contribution';
 /* Tasks */
 import 'sql/workbench/common/actions.contribution';
