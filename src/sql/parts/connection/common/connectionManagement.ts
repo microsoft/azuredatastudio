@@ -11,7 +11,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import Event from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
 import Severity from 'vs/base/common/severity';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -81,7 +81,7 @@ export interface IConnectionManagementService {
 	onConnect: Event<IConnectionParams>;
 	onDisconnect: Event<IConnectionParams>;
 	onConnectionChanged: Event<IConnectionParams>;
-	onLanguageFlavorChanged: Event<data.DidChangeLanguageFlavorParams>;
+	onLanguageFlavorChanged: Event<sqlops.DidChangeLanguageFlavorParams>;
 
 	/**
 	 * Opens the connection dialog to create new connection
@@ -124,11 +124,11 @@ export interface IConnectionManagementService {
 	/**
 	 * Adds the successful connection to MRU and send the connection error back to the connection handler for failed connections
 	 */
-	onConnectionComplete(handle: number, connectionInfoSummary: data.ConnectionInfoSummary): void;
+	onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void;
 
 	onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
 
-	onConnectionChangedNotification(handle: number, changedConnInfo: data.ChangedConnectionInfo);
+	onConnectionChangedNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo);
 
 	getConnectionGroups(): ConnectionProfileGroup[];
 
@@ -150,7 +150,7 @@ export interface IConnectionManagementService {
 
 	deleteConnectionGroup(group: ConnectionProfileGroup): Promise<boolean>;
 
-	getAdvancedProperties(): data.ConnectionOption[];
+	getAdvancedProperties(): sqlops.ConnectionOption[];
 
 	getConnectionId(connectionProfile: IConnectionProfile): string;
 
@@ -180,12 +180,12 @@ export interface IConnectionManagementService {
 
 	addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile>;
 
-	listDatabases(connectionUri: string): Thenable<data.ListDatabasesResult>;
+	listDatabases(connectionUri: string): Thenable<sqlops.ListDatabasesResult>;
 
 	/**
 	 * Register a connection provider
 	 */
-	registerProvider(providerId: string, provider: data.ConnectionProvider): void;
+	registerProvider(providerId: string, provider: sqlops.ConnectionProvider): void;
 
 	editGroup(group: ConnectionProfileGroup): Promise<void>;
 
@@ -216,7 +216,7 @@ export interface IConnectionManagementService {
 
 	hasRegisteredServers(): boolean;
 
-	getCapabilities(providerName: string): data.DataProtocolServerCapabilities;
+	getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities;
 
 	canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean;
 
@@ -305,7 +305,7 @@ export interface INewConnectionParams {
 	connectionType: ConnectionType;
 	input?: IConnectableInput;
 	runQueryOnCompletion?: RunQueryOnConnectionMode;
-	querySelection?: data.ISelectionData;
+	querySelection?: sqlops.ISelectionData;
 	showDashboard?: boolean;
 }
 

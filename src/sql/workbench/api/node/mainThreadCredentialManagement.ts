@@ -8,9 +8,10 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostCredentialManagementShape,
-	MainThreadCredentialManagementShape, SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
+	MainThreadCredentialManagementShape, SqlMainContext
+} from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ICredentialsService } from 'sql/services/credentials/credentialsService';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 
@@ -43,7 +44,7 @@ export class MainThreadCredentialManagement implements MainThreadCredentialManag
 			onSaveCredential(credentialId: string, password: string): Thenable<boolean> {
 				return self._proxy.$saveCredential(credentialId, password);
 			},
-			onReadCredential(credentialId: string): Thenable<data.Credential> {
+			onReadCredential(credentialId: string): Thenable<sqlops.Credential> {
 				return self._proxy.$readCredential(credentialId);
 			},
 			onDeleteCredential(credentialId: string): Thenable<boolean> {

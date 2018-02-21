@@ -21,8 +21,9 @@ import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/
 import { AngularEventType } from 'sql/services/angularEventing/angularEventingService';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { error } from 'sql/base/common/log';
-import { WIDGETS_TAB } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
 import * as widgetHelper from 'sql/parts/dashboard/common/dashboardWidgetHelper';
+import { WIDGETS_TAB } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
+import { GRID_TAB } from 'sql/parts/dashboard/tabs/dashboardGridTab.contribution';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -246,7 +247,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				}
 
 				let key = Object.keys(v.content)[0];
-				if (key === WIDGETS_TAB) {
+				if (key === WIDGETS_TAB || key === GRID_TAB) {
 					let configs = <WidgetConfig[]>Object.values(v.content)[0];
 					this._configModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs, this.dashboardService, this.context]);
@@ -254,7 +255,12 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 					this._gridModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs, this._originalConfig]);
 					});
-					return { id: v.id, title: v.title, content: { 'widgets-tab': configs }, alwaysShow: v.alwaysShow };
+					if (key === WIDGETS_TAB) {
+						return { id: v.id, title: v.title, content: { 'widgets-tab': configs }, alwaysShow: v.alwaysShow };
+
+					} else {
+						return { id: v.id, title: v.title, content: { 'grid-tab': configs }, alwaysShow: v.alwaysShow };
+					}
 				}
 				return v;
 			}).map(v => {

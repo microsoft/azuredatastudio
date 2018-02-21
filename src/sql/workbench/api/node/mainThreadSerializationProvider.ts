@@ -6,12 +6,12 @@
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
 import {
 	SqlExtHostContext, ExtHostSerializationProviderShape,
-	MainThreadSerializationProviderShape, SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
+	MainThreadSerializationProviderShape, SqlMainContext
+} from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ISerializationService } from 'sql/services/serialization/serializationService';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 
@@ -42,7 +42,7 @@ export class MainThreadSerializationProvider implements MainThreadSerializationP
 		let self = this;
 
 		this._registrations[handle] = this.serializationService.addEventListener(handle, {
-			onSaveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<data.SaveResultRequestResult> {
+			onSaveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> {
 				return self._proxy.$saveAs(saveFormat, savePath, results, appendToFile);
 			}
 		});

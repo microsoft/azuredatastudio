@@ -8,7 +8,7 @@ import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerSession
 import { ProfilerState } from './profilerState';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput } from 'vs/workbench/common/editor';
@@ -123,9 +123,9 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._state;
 	}
 
-	public onMoreRows(eventMessage: data.ProfilerSessionEvents) {
+	public onMoreRows(eventMessage: sqlops.ProfilerSessionEvents) {
 		for (let i: number  = 0; i < eventMessage.events.length && i < 500; ++i) {
-			let e: data.ProfilerEvent = eventMessage.events[i];
+			let e: sqlops.ProfilerEvent = eventMessage.events[i];
 			let data = {};
 			data['EventClass'] =  e.name;
 			data['StartTime'] = e.timestamp;

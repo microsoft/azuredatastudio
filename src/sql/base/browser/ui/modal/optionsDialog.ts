@@ -14,7 +14,7 @@ import { IModalOptions, Modal } from './modal';
 import * as OptionsDialogHelper from './optionsDialogHelper';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/styler';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import Event, { Emitter } from 'vs/base/common/event';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
@@ -154,9 +154,9 @@ export class OptionsDialog extends Modal {
 		this._optionDescription.innerHtml(option.description);
 	}
 
-	private fillInOptions(container: Builder, options: data.ServiceOption[]): void {
+	private fillInOptions(container: Builder, options: sqlops.ServiceOption[]): void {
 		for (var i = 0; i < options.length; i++) {
-			var option: data.ServiceOption = options[i];
+			var option: sqlops.ServiceOption = options[i];
 			var rowContainer = DialogHelper.appendRow(container, option.displayName, 'optionsDialog-label', 'optionsDialog-input');
 			OptionsDialogHelper.createOptionElement(option, rowContainer, this._optionValues, this._optionElements, this._contextViewService, (name) => this.onOptionLinkClicked(name));
 		}
@@ -221,7 +221,7 @@ export class OptionsDialog extends Modal {
 		this._onCloseEvent.fire();
 	}
 
-	public open(options: data.ServiceOption[], optionValues: { [name: string]: any }) {
+	public open(options: sqlops.ServiceOption[], optionValues: { [name: string]: any }) {
 		this._optionValues = optionValues;
 		var firstOption: string;
 		var containerGroup: Builder;
@@ -233,7 +233,7 @@ export class OptionsDialog extends Modal {
 		var splitview = new SplitView(containerGroup.getHTMLElement());
 		let categoryMap = OptionsDialogHelper.groupOptionsByCategory(options);
 		for (var category in categoryMap) {
-			var serviceOptions: data.ServiceOption[] = categoryMap[category];
+			var serviceOptions: sqlops.ServiceOption[] = categoryMap[category];
 			var bodyContainer = $().element('table', { class: 'optionsDialog-table' }, (tableContainer: Builder) => {
 				this.fillInOptions(tableContainer, serviceOptions);
 			});

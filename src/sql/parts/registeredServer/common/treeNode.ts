@@ -7,7 +7,7 @@
 
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 import * as UUID from 'vs/base/common/uuid';
 
@@ -66,9 +66,9 @@ export class TreeNode {
 
 	public connection: ConnectionProfile;
 
-	public session: data.ObjectExplorerSession;
+	public session: sqlops.ObjectExplorerSession;
 
-	public metadata: data.ObjectMetadata;
+	public metadata: sqlops.ObjectMetadata;
 
 	public getConnectionProfile(): ConnectionProfile {
 		var currentNode: TreeNode = this;
@@ -93,7 +93,7 @@ export class TreeNode {
 		return undefined;
 	}
 
-	public getSession(): data.ObjectExplorerSession {
+	public getSession(): sqlops.ObjectExplorerSession {
 		var currentNode: TreeNode = this;
 		while (!currentNode.session && currentNode.parent) {
 			currentNode = currentNode.parent;
@@ -109,7 +109,7 @@ export class TreeNode {
 	}
 
 	constructor(nodeTypeId: string, label: string, isAlwaysLeaf: boolean, nodePath: string,
-		nodeSubType: string, nodeStatus: string, parent: TreeNode, metadata: data.ObjectMetadata) {
+		nodeSubType: string, nodeStatus: string, parent: TreeNode, metadata: sqlops.ObjectMetadata) {
 		this.nodeTypeId = nodeTypeId;
 		this.label = label;
 		this.isAlwaysLeaf = isAlwaysLeaf;

@@ -12,7 +12,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
-import { IDbColumn, BatchSummary, QueryExecuteSubsetResult, ResultSetSubset } from 'data';
+import { IDbColumn, BatchSummary, QueryExecuteSubsetResult, ResultSetSubset } from 'sqlops';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { equal } from 'assert';
 import { Mock, MockBehavior, It } from 'typemoq';

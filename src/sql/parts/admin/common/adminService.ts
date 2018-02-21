@@ -18,32 +18,32 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
-import data = require('data');
+import * as sqlops from 'sqlops';
 
 export const IAdminService = createDecorator<IAdminService>(SERVICE_ID);
 
 export interface IAdminService {
 	_serviceBrand: any;
 
-	registerProvider(providerId: string, provider: data.AdminServicesProvider): void;
+	registerProvider(providerId: string, provider: sqlops.AdminServicesProvider): void;
 
 	showCreateDatabaseWizard(uri: string, connection: IConnectionProfile): Promise<any>;
 
 	showCreateLoginWizard(uri: string, connection: IConnectionProfile): Promise<any>;
 
-	createDatabase(connectionUri: string, database: data.DatabaseInfo): Thenable<data.CreateDatabaseResponse>;
+	createDatabase(connectionUri: string, database: sqlops.DatabaseInfo): Thenable<sqlops.CreateDatabaseResponse>;
 
-	getDefaultDatabaseInfo(connectionUri: string): Thenable<data.DatabaseInfo>;
+	getDefaultDatabaseInfo(connectionUri: string): Thenable<sqlops.DatabaseInfo>;
 
-	getDatabaseInfo(connectionUri: string): Thenable<data.DatabaseInfo>;
+	getDatabaseInfo(connectionUri: string): Thenable<sqlops.DatabaseInfo>;
 }
 
 export class AdminService implements IAdminService {
 	_serviceBrand: any;
 
-	private _providers: { [handle: string]: data.AdminServicesProvider; } = Object.create(null);
+	private _providers: { [handle: string]: sqlops.AdminServicesProvider; } = Object.create(null);
 
-	private _providerOptions: { [handle: string]: data.AdminServicesOptions; } = Object.create(null);
+	private _providerOptions: { [handle: string]: sqlops.AdminServicesOptions; } = Object.create(null);
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -58,7 +58,7 @@ export class AdminService implements IAdminService {
 		}
 	}
 
-	private _runAction<T>(uri: string, action: (handler: data.AdminServicesProvider) => Thenable<T>): Thenable<T> {
+	private _runAction<T>(uri: string, action: (handler: sqlops.AdminServicesProvider) => Thenable<T>): Thenable<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {
@@ -81,7 +81,7 @@ export class AdminService implements IAdminService {
 		});
 	}
 
-	public createDatabase(connectionUri: string, database: data.DatabaseInfo): Thenable<data.CreateDatabaseResponse> {
+	public createDatabase(connectionUri: string, database: sqlops.DatabaseInfo): Thenable<sqlops.CreateDatabaseResponse> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -104,7 +104,7 @@ export class AdminService implements IAdminService {
 		});
 	}
 
-	public createLogin(connectionUri: string, login: data.LoginInfo): Thenable<data.CreateLoginResponse> {
+	public createLogin(connectionUri: string, login: sqlops.LoginInfo): Thenable<sqlops.CreateLoginResponse> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -115,7 +115,7 @@ export class AdminService implements IAdminService {
 		return Promise.resolve(undefined);
 	}
 
-	public getDefaultDatabaseInfo(connectionUri: string): Thenable<data.DatabaseInfo> {
+	public getDefaultDatabaseInfo(connectionUri: string): Thenable<sqlops.DatabaseInfo> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -126,13 +126,13 @@ export class AdminService implements IAdminService {
 		return Promise.resolve(undefined);
 	}
 
-	public getDatabaseInfo(connectionUri: string): Thenable<data.DatabaseInfo> {
+	public getDatabaseInfo(connectionUri: string): Thenable<sqlops.DatabaseInfo> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getDatabaseInfo(connectionUri);
 		});
 	}
 
-	public registerProvider(providerId: string, provider: data.AdminServicesProvider): void {
+	public registerProvider(providerId: string, provider: sqlops.AdminServicesProvider): void {
 		this._providers[providerId] = provider;
 	}
 }

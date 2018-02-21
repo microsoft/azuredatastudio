@@ -10,7 +10,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { Builder } from 'vs/base/browser/builder';
 import * as types from 'vs/base/common/types';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 export function appendRow(container: Builder, label: string, labelClass: string, cellContainerClass: string): Builder {
 	let cellContainer: Builder;
@@ -61,7 +61,7 @@ export function getBooleanValueFromStringOrBoolean(value: any): boolean {
 	return false;
 }
 
-export function getCategoryDisplayName(categories: data.CategoryValue[], categoryName: string) {
+export function getCategoryDisplayName(categories: sqlops.CategoryValue[], categoryName: string) {
 	var displayName: string;
 	categories.forEach(c => {
 		if (c.name === categoryName) {
@@ -71,7 +71,7 @@ export function getCategoryDisplayName(categories: data.CategoryValue[], categor
 	return displayName;
 }
 
-export function getCategoryName(categories: data.CategoryValue[], categoryDisplayName: string) {
+export function getCategoryName(categories: sqlops.CategoryValue[], categoryDisplayName: string) {
 	var categoryName: string;
 	categories.forEach(c => {
 		if (c.displayName === categoryDisplayName) {
