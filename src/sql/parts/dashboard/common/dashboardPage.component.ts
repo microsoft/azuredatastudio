@@ -10,22 +10,20 @@ import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, Que
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { WidgetConfig, TabConfig, PinConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
 import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
-import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
 import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
+import { AngularEventType } from 'sql/services/angularEventing/angularEventingService';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { error } from 'sql/base/common/log';
-import { WIDGETS_TABS } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
-import { GRID_TABS } from 'sql/parts/dashboard/tabs/dashboardGridTab.contribution';
-import { WEBVIEW_TABS } from 'sql/parts/dashboard/tabs/dashboardWebviewTab.contribution';
+import * as widgetHelper from 'sql/parts/dashboard/common/dashboardWidgetHelper';
+import { WIDGETS_TAB } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
+import { GRID_TAB } from 'sql/parts/dashboard/tabs/dashboardGridTab.contribution';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -38,7 +36,6 @@ import { addDisposableListener, getContentHeight, EventType } from 'vs/base/brow
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
-import { generateUuid } from 'vs/base/common/uuid';
 import * as objects from 'vs/base/common/objects';
 import Event, { Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
@@ -46,12 +43,6 @@ import { ConfigurationTarget } from 'vs/platform/configuration/common/configurat
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
-/**
- * @returns whether the provided parameter is a JavaScript Array and each element in the array is a number.
- */
-function isNumberArray(value: any): value is number[] {
-	return types.isArray(value) && (<any[]>value).every(elem => types.isNumber(elem));
-}
 
 @Component({
 	selector: 'dashboard-page',
@@ -87,17 +78,17 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private readonly homeTabTitle: string = nls.localize('home', 'Home');
 
 	// a set of config modifiers
-	private readonly _configModifiers: Array<(item: Array<WidgetConfig>) => Array<WidgetConfig>> = [
-		this.removeEmpty,
-		this.initExtensionConfigs,
-		this.addProvider,
-		this.addEdition,
-		this.addContext,
-		this.filterConfigs
+	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, dashboardServer: DashboardServiceInterface, context: string) => Array<WidgetConfig>> = [
+		widgetHelper.removeEmpty,
+		widgetHelper.initExtensionConfigs,
+		widgetHelper.addProvider,
+		widgetHelper.addEdition,
+		widgetHelper.addContext,
+		widgetHelper.filterConfigs
 	];
 
-	private readonly _gridModifiers: Array<(item: Array<WidgetConfig>) => Array<WidgetConfig>> = [
-		this.validateGridConfig
+	private readonly _gridModifiers: Array<(item: Array<WidgetConfig>, originalConfig: Array<WidgetConfig>) => Array<WidgetConfig>> = [
+		widgetHelper.validateGridConfig
 	];
 
 	constructor(
@@ -118,11 +109,11 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			this._originalConfig = objects.deepClone(tempWidgets);
 			let properties = this.getProperties();
 			this._configModifiers.forEach((cb) => {
-				tempWidgets = cb.apply(this, [tempWidgets]);
-				properties = properties ? cb.apply(this, [properties]) : undefined;
+				tempWidgets = cb.apply(this, [tempWidgets, this.dashboardService, this.context]);
+				properties = properties ? cb.apply(this, [properties, this.dashboardService, this.context]) : undefined;
 			});
 			this._gridModifiers.forEach(cb => {
-				tempWidgets = cb.apply(this, [tempWidgets]);
+				tempWidgets = cb.apply(this, [tempWidgets, this._originalConfig]);
 			});
 			this.propertiesWidget = properties ? properties[0] : undefined;
 
@@ -198,7 +189,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		this.addNewTab(homeTab);
 		this._panel.selectTab(homeTab.id);
 
-		let allTabs = this.filterConfigs(dashboardRegistry.tabs);
+		let allTabs = widgetHelper.filterConfigs(dashboardRegistry.tabs, this.dashboardService);
 
 		// Load always show tabs
 		let alwaysShowTabs = allTabs.filter(tab => tab.alwaysShow);
@@ -252,19 +243,19 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			let selectedTabs = dashboardTabs.map(v => {
 
 				if (Object.keys(v.content).length !== 1) {
-					error('Exactly 1 widget must be defined per space');
+					error('Exactly 1 content must be defined per space');
 				}
 
 				let key = Object.keys(v.content)[0];
-				if (key === WIDGETS_TABS || key === GRID_TABS) {
+				if (key === WIDGETS_TAB || key === GRID_TAB) {
 					let configs = <WidgetConfig[]>Object.values(v.content)[0];
 					this._configModifiers.forEach(cb => {
-						configs = cb.apply(this, [configs]);
+						configs = cb.apply(this, [configs, this.dashboardService, this.context]);
 					});
 					this._gridModifiers.forEach(cb => {
-						configs = cb.apply(this, [configs]);
+						configs = cb.apply(this, [configs, this._originalConfig]);
 					});
-					if (key === WIDGETS_TABS) {
+					if (key === WIDGETS_TAB) {
 						return { id: v.id, title: v.title, content: { 'widgets-tab': configs }, alwaysShow: v.alwaysShow };
 
 					} else {
@@ -338,158 +329,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 	protected abstract propertiesWidget: WidgetConfig;
 	protected abstract get context(): string;
-
-	/**
-	 * Returns a filtered version of the widgets passed based on edition and provider
-	 * @param config widgets to filter
-	 */
-	private filterConfigs<T extends { provider?: string | string[], edition?: number | number[] }>(config: T[]): Array<T> {
-		let connectionInfo: ConnectionManagementInfo = this.dashboardService.connectionManagementService.connectionInfo;
-		let edition = connectionInfo.serverInfo.engineEditionId;
-		let provider = connectionInfo.providerId;
-
-		// filter by provider
-		return config.filter((item) => {
-			if (item.provider) {
-				return this.stringCompare(item.provider, provider);
-			} else {
-				return true;
-			}
-		}).filter((item) => {
-			if (item.edition) {
-				if (edition) {
-					return this.stringCompare(isNumberArray(item.edition) ? item.edition.map(item => item.toString()) : item.edition.toString(), edition.toString());
-				} else {
-					this.dashboardService.messageService.show(Severity.Warning, nls.localize('providerMissingEdition', 'Widget filters based on edition, but the provider does not have an edition'));
-					return true;
-				}
-			} else {
-				return true;
-			}
-		});
-	}
-
-	/**
-	 * Does a compare against the val passed in and the compare string
-	 * @param val string or array of strings to compare the compare value to; if array, it will compare each val in the array
-	 * @param compare value to compare to
-	 */
-	private stringCompare(val: string | Array<string>, compare: string): boolean {
-		if (types.isUndefinedOrNull(val)) {
-			return true;
-		} else if (types.isString(val)) {
-			return val === compare;
-		} else if (types.isStringArray(val)) {
-			return val.some(item => item === compare);
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Add provider to the passed widgets and returns the new widgets
-	 * @param widgets Array of widgets to add provider onto
-	 */
-	protected addProvider(config: WidgetConfig[]): Array<WidgetConfig> {
-		let provider = this.dashboardService.connectionManagementService.connectionInfo.providerId;
-		return config.map((item) => {
-			if (item.provider === undefined) {
-				item.provider = provider;
-			}
-			return item;
-		});
-	}
-
-	/**
-	 * Adds the edition to the passed widgets and returns the new widgets
-	 * @param widgets Array of widgets to add edition onto
-	 */
-	protected addEdition(config: WidgetConfig[]): Array<WidgetConfig> {
-		let connectionInfo: ConnectionManagementInfo = this.dashboardService.connectionManagementService.connectionInfo;
-		let edition = connectionInfo.serverInfo.engineEditionId;
-		return config.map((item) => {
-			if (item.edition === undefined) {
-				item.edition = edition;
-			}
-			return item;
-		});
-	}
-
-	/**
-	 * Adds the context to the passed widgets and returns the new widgets
-	 * @param widgets Array of widgets to add context to
-	 */
-	protected addContext(config: WidgetConfig[]): Array<WidgetConfig> {
-		let context = this.context;
-		return config.map((item) => {
-			if (item.context === undefined) {
-				item.context = context;
-			}
-			return item;
-		});
-	}
-
-	/**
-	 * Validates configs to make sure nothing will error out and returns the modified widgets
-	 * @param config Array of widgets to validate
-	 */
-	protected removeEmpty(config: WidgetConfig[]): Array<WidgetConfig> {
-		return config.filter(widget => {
-			return !types.isUndefinedOrNull(widget);
-		});
-	}
-
-	/**
-	 * Validates configs to make sure nothing will error out and returns the modified widgets
-	 * @param config Array of widgets to validate
-	 */
-	protected validateGridConfig(config: WidgetConfig[]): Array<WidgetConfig> {
-		return config.map((widget, index) => {
-			if (widget.gridItemConfig === undefined) {
-				widget.gridItemConfig = {};
-			}
-			const id = generateUuid();
-			widget.gridItemConfig.payload = { id };
-			widget.id = id;
-			this._originalConfig[index].id = id;
-			return widget;
-		});
-	}
-
-	protected initExtensionConfigs(configurations: WidgetConfig[]): Array<WidgetConfig> {
-		let widgetRegistry = <IInsightRegistry>Registry.as(Extensions.InsightContribution);
-		return configurations.map((config) => {
-			if (config.widget && Object.keys(config.widget).length === 1) {
-				let key = Object.keys(config.widget)[0];
-				let insightConfig = widgetRegistry.getRegisteredExtensionInsights(key);
-				if (insightConfig !== undefined) {
-					// Setup the default properties for this extension if needed
-					if (!config.provider && insightConfig.provider) {
-						config.provider = insightConfig.provider;
-					}
-					if (!config.name && insightConfig.name) {
-						config.name = insightConfig.name;
-					}
-					if (!config.edition && insightConfig.edition) {
-						config.edition = insightConfig.edition;
-					}
-					if (!config.gridItemConfig && insightConfig.gridItemConfig) {
-						config.gridItemConfig = {
-							sizex: insightConfig.gridItemConfig.x,
-							sizey: insightConfig.gridItemConfig.y
-						};
-					}
-					if (config.gridItemConfig && !config.gridItemConfig.sizex && insightConfig.gridItemConfig && insightConfig.gridItemConfig.x) {
-						config.gridItemConfig.sizex = insightConfig.gridItemConfig.x;
-					}
-					if (config.gridItemConfig && !config.gridItemConfig.sizey && insightConfig.gridItemConfig && insightConfig.gridItemConfig.y) {
-						config.gridItemConfig.sizey = insightConfig.gridItemConfig.y;
-					}
-				}
-			}
-			return config;
-		});
-	}
 
 	private getProperties(): Array<WidgetConfig> {
 		let properties = this.dashboardService.getSettings<IPropertiesConfig[]>([this.context, 'properties'].join('.'));

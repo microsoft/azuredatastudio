@@ -8,7 +8,7 @@ import * as nls from 'vs/nls';
 import { generateDashboardGridLayoutSchema } from 'sql/parts/dashboard/pages/dashboardPageContribution';
 import { registerTabContent } from 'sql/platform/dashboard/common/dashboardRegistry';
 
-export const GRID_TABS = 'grid-tab';
+export const GRID_TAB = 'grid-tab';
 
 let gridContentsSchema: IJSONSchema = {
 	type: 'array',
@@ -16,4 +16,4 @@ let gridContentsSchema: IJSONSchema = {
 	items: generateDashboardGridLayoutSchema(undefined, true)
 };
 
-registerTabContent(GRID_TABS, gridContentsSchema);
+registerTabContent(GRID_TAB, gridContentsSchema);

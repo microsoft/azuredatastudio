@@ -6,15 +6,15 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 
 import { registerTabContent } from 'sql/platform/dashboard/common/dashboardRegistry';
-import { registerInnerTabContent } from 'sql/platform/dashboard/common/innerTabRegistry';
 
-export const WEBVIEW_TAB = 'webview-tab';
+export const LEFT_NAV_TAB = 'left-nav-bar';
 
-let webviewSchema: IJSONSchema = {
-	type: 'null',
-	description: nls.localize('dashboard.tab.widgets', "The list of widgets that will be displayed in this tab."),
-	default: null
+let leftNavSchema: IJSONSchema = {
+	type: 'array',
+	description: nls.localize('dashboard.tab.content.left-nav-bar', "The list of inner tabs IDs that will be displayed in this vertical navigation bar."),
+	items: {
+		type: 'string'
+	}
 };
 
-registerTabContent(WEBVIEW_TAB, webviewSchema);
-registerInnerTabContent(WEBVIEW_TAB, webviewSchema);
+registerTabContent(LEFT_NAV_TAB, leftNavSchema);

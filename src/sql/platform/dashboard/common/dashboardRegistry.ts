@@ -34,6 +34,7 @@ export interface IDashboardRegistry {
 	registerDashboardProvider(id: string, properties: ProviderProperties): void;
 	getProperties(id: string): ProviderProperties;
 	registerTab(tab: IDashboardTab): void;
+	registerTabContent(id: string, schema: IJSONSchema): void;
 	tabs: Array<IDashboardTab>;
 	tabContentSchemaProperties: IJSONSchemaMap;
 }
