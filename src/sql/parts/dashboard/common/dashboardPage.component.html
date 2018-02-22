@@ -8,10 +8,14 @@
 	<div #scrollable style="position: relative">
 		<panel class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)" [actions]="panelActions">
 			<tab *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
-				<dashboard-webview-tab *ngIf="getContentType(tab) === 'webview-tab'" [tab]="tab">
-				</dashboard-webview-tab>
-				<dashboard-widget-tab *ngIf="getContentType(tab) === 'widgets-tab'" [tab]="tab">
-				</dashboard-widget-tab>
+				<dashboard-home-tab *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget" [tab]="tab">
+				</dashboard-home-tab>
+				<ng-template #not_home>
+					<dashboard-webview-tab *ngIf="getContentType(tab) === 'webview-tab'" [tab]="tab">
+					</dashboard-webview-tab>
+					<dashboard-widget-tab *ngIf="getContentType(tab) === 'widgets-tab'" [tab]="tab">
+					</dashboard-widget-tab>
+				</ng-template>
 			</tab>
 		</panel>
 	</div>

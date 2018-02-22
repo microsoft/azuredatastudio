@@ -73,7 +73,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
 	@ViewChild('scrollContainer', { read: ElementRef }) private _scrollContainer: ElementRef;
-	@ViewChild('propertiesContainer', { read: ElementRef }) private _propertiesContainer: ElementRef;
 	@ViewChildren(DashboardTab) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 
@@ -97,6 +96,9 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private readonly _gridModifiers: Array<(item: Array<WidgetConfig>) => Array<WidgetConfig>> = [
 		this.validateGridConfig
 	];
+
+	protected abstract propertiesWidget: WidgetConfig;
+	protected abstract get context(): string;
 
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
@@ -309,28 +311,24 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		let el = this._propertiesContainer.nativeElement as HTMLElement;
-		let border = theme.getColor(colors.contrastBorder, true);
-		let borderColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true);
+		// let el = this._propertiesContainer.nativeElement as HTMLElement;
+		// let border = theme.getColor(colors.contrastBorder, true);
+		// let borderColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true);
 
-		if (border) {
-			el.style.borderColor = border.toString();
-			el.style.borderBottomWidth = '1px';
-			el.style.borderBottomStyle = 'solid';
-		} else if (borderColor) {
-			el.style.borderBottom = '1px solid ' + borderColor.toString();
-		} else {
-			el.style.border = 'none';
-		}
-
+		// if (border) {
+		// 	el.style.borderColor = border.toString();
+		// 	el.style.borderBottomWidth = '1px';
+		// 	el.style.borderBottomStyle = 'solid';
+		// } else if (borderColor) {
+		// 	el.style.borderBottom = '1px solid ' + borderColor.toString();
+		// } else {
+		// 	el.style.border = 'none';
+		// }
 	}
 
 	ngOnDestroy() {
 		this.dispose();
 	}
-
-	protected abstract propertiesWidget: WidgetConfig;
-	protected abstract get context(): string;
 
 	/**
 	 * Returns a filtered version of the widgets passed based on edition and provider
