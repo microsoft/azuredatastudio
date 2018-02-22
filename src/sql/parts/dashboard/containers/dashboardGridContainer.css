@@ -8,11 +8,11 @@ dashboard-tab {
 	width: auto;
 }
 
-.grid-containerle {
+.grid-table {
 	border-spacing: 5px;
 }
 
-.grid-containerle-row {
+.grid-table-row {
 		width: auto;
 		clear: both;
 }
