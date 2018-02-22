@@ -5,16 +5,15 @@
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 
+import { generateDashboardGridLayoutSchema } from 'sql/parts/dashboard/pages/dashboardPageContribution';
 import { registerTabContent } from 'sql/platform/dashboard/common/dashboardRegistry';
-import { registerInnerTabContent } from 'sql/platform/dashboard/common/innerTabRegistry';
 
-export const WEBVIEW_TAB = 'webview-tab';
+export const GRID_TAB = 'grid-tab';
 
-let webviewSchema: IJSONSchema = {
-	type: 'null',
-	description: nls.localize('dashboard.tab.widgets', "The list of widgets that will be displayed in this tab."),
-	default: null
+let gridContentsSchema: IJSONSchema = {
+	type: 'array',
+	description: nls.localize('dashboard.gridtab.content.items', "The list of widgets or webviews that will be displayed in this tab."),
+	items: generateDashboardGridLayoutSchema(undefined, true)
 };
 
-registerTabContent(WEBVIEW_TAB, webviewSchema);
-registerInnerTabContent(WEBVIEW_TAB, webviewSchema);
+registerTabContent(GRID_TAB, gridContentsSchema);

@@ -16,6 +16,10 @@
 				</dashboard-webview-tab>
 				<dashboard-widget-tab *ngIf="getContentType(tab) === 'widgets-tab'" [tab]="tab">
 				</dashboard-widget-tab>
+				<dashboard-left-nav-bar *ngIf="getContentType(tab) === 'left-nav-bar'" [tab]="tab">
+				</dashboard-left-nav-bar>
+				<dashboard-grid-tab *ngIf="getContentType(tab) === 'grid-tab'" [tab]="tab">
+				</dashboard-grid-tab>
 			</tab>
 		</panel>
 	</div>

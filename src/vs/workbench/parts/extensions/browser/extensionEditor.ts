@@ -331,11 +331,12 @@ export class ExtensionEditor extends BaseEditor {
 			this.repository.style.display = 'none';
 		}
 
-		const install = this.instantiationService.createInstance(InstallWidget, this.installCount, { extension });
-		this.transientDisposables.push(install);
+		// {{SQL CARBON EDIT}}
+		//const install = this.instantiationService.createInstance(InstallWidget, this.installCount, { extension });
+		//this.transientDisposables.push(install);
 
-		const ratings = this.instantiationService.createInstance(RatingsWidget, this.rating, { extension });
-		this.transientDisposables.push(ratings);
+		//const ratings = this.instantiationService.createInstance(RatingsWidget, this.rating, { extension });
+		//this.transientDisposables.push(ratings);
 
 		const builtinStatusAction = this.instantiationService.createInstance(BuiltinStatusLabelAction);
 		const maliciousStatusAction = this.instantiationService.createInstance(MaliciousStatusLabelAction, true);

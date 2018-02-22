@@ -1,0 +1,15 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<panel [options]="panelOpt" style="flex: 1 1 auto;" class="dashboard-panel" (onTabChange)="handleTabChange($event)">
+	<tab *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
+		<dashboard-webview-tab *ngIf="getContentType(tab) === 'webview-tab'" [tab]="tab">
+		</dashboard-webview-tab>
+		<dashboard-widget-tab *ngIf="getContentType(tab) === 'widgets-tab'" [tab]="tab">
+		</dashboard-widget-tab>
+	</tab>
+</panel>
+

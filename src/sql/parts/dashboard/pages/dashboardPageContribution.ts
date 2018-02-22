@@ -83,6 +83,55 @@ export function generateDashboardWidgetSchema(type?: 'database' | 'server', exte
 	};
 }
 
+export function generateDashboardGridLayoutSchema(type?: 'database' | 'server', extension?: boolean): IJSONSchema {
+	let schemas;
+	if (extension) {
+		let extensionSchemas = type === 'server' ? widgetRegistry.serverWidgetSchema.extensionProperties : type === 'database' ? widgetRegistry.databaseWidgetSchema.extensionProperties : widgetRegistry.allSchema.extensionProperties;
+		schemas = type === 'server' ? widgetRegistry.serverWidgetSchema.properties : type === 'database' ? widgetRegistry.databaseWidgetSchema.properties : widgetRegistry.allSchema.properties;
+		schemas = mixin(schemas, extensionSchemas, true);
+	} else {
+		schemas = type === 'server' ? widgetRegistry.serverWidgetSchema.properties : type === 'database' ? widgetRegistry.databaseWidgetSchema.properties : widgetRegistry.allSchema.properties;
+	}
+
+	return {
+		type: 'object',
+		properties: {
+			name: {
+				type: 'string'
+			},
+			icon: {
+				type: 'string'
+			},
+			provider: {
+				anyOf: [
+					{
+						type: 'string'
+					},
+					{
+						type: 'array',
+						items: {
+							type: 'string'
+						}
+					}
+				]
+			},
+			edition: {
+				anyOf: [
+					{
+						type: 'number'
+					},
+					{
+						type: 'array',
+						items: {
+							type: 'number'
+						}
+					}
+				]
+			}
+		}
+	};
+}
+
 export function generateDashboardTabSchema(type?: 'database' | 'server'): IJSONSchema {
 	return {
 		type: 'object',

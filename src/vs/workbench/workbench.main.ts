@@ -160,8 +160,11 @@ import 'sql/parts/dashboard/widgets/tasks/tasksWidget.contribution';
 import 'sql/parts/dashboard/widgets/webview/webviewWidget.contribution';
 import 'sql/parts/dashboard/dashboardConfig.contribution';
 /* Tabs */
+import 'sql/parts/dashboard/tabs/dashboardLeftNavBar.contribution';
 import 'sql/parts/dashboard/tabs/dashboardWebviewTab.contribution';
+import 'sql/parts/dashboard/tabs/dashboardGridTab.contribution';
 import 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
+import 'sql/parts/dashboard/tabs/dashboardInnerTab.contribution';
 import 'sql/parts/dashboard/common/dashboardTab.contribution';
 /* Tasks */
 import 'sql/workbench/common/actions.contribution';

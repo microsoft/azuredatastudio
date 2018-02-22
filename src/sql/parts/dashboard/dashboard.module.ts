@@ -28,12 +28,14 @@ import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost
 import { DashboardComponent, DASHBOARD_SELECTOR } from 'sql/parts/dashboard/dashboard.component';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
 import { DashboardWidgetTab } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.component';
+import { DashboardGridTab } from 'sql/parts/dashboard/tabs/dashboardGridTab.component';
 import { DashboardWebviewTab } from 'sql/parts/dashboard/tabs/dashboardWebviewTab.component';
+import { DashboardLeftNavBar } from 'sql/parts/dashboard/tabs/dashboardLeftNavBar.component';
 import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
 import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
 import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
-let baseComponents = [DashboardComponent, DashboardWidgetWrapper, DashboardWebviewTab, DashboardWidgetTab, WidgetContent, WebviewContent, ComponentHostDirective, BreadcrumbComponent];
+let baseComponents = [DashboardComponent, DashboardWidgetWrapper, DashboardWebviewTab, DashboardWidgetTab, DashboardGridTab, DashboardLeftNavBar, WidgetContent, WebviewContent, ComponentHostDirective, BreadcrumbComponent];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
