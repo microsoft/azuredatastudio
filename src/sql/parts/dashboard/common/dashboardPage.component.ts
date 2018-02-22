@@ -31,7 +31,6 @@ import * as types from 'vs/base/common/types';
 import { Severity } from 'vs/platform/message/common/message';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
-import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { addDisposableListener, getContentHeight, EventType } from 'vs/base/browser/dom';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -58,11 +57,9 @@ function isNumberArray(value: any): value is number[] {
 })
 export abstract class DashboardPage extends Disposable implements OnDestroy {
 
-	protected SKELETON_WIDTH = 5;
 	protected tabs: Array<TabConfig> = [];
 
 	private _originalConfig: WidgetConfig[];
-	private _scrollableElement: ScrollableElement;
 
 	private _widgetConfigLocation: string;
 	private _propertiesConfigLocation: string;
@@ -71,8 +68,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private _tabsDispose: Array<IDisposable> = [];
 	private _pinnedTabs: Array<PinConfig> = [];
 
-	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
-	@ViewChild('scrollContainer', { read: ElementRef }) private _scrollContainer: ElementRef;
 	@ViewChildren(DashboardTab) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 
@@ -129,51 +124,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			this.createTabs(tempWidgets);
 
 		}
-	}
-
-	ngAfterViewInit(): void {
-		this._register(this.dashboardService.themeService.onDidColorThemeChange(this.updateTheme, this));
-		this.updateTheme(this.dashboardService.themeService.getColorTheme());
-		let container = this._scrollContainer.nativeElement as HTMLElement;
-		let scrollable = this._scrollable.nativeElement as HTMLElement;
-		container.removeChild(scrollable);
-		this._scrollableElement = new ScrollableElement(scrollable, {
-			horizontal: ScrollbarVisibility.Hidden,
-			vertical: ScrollbarVisibility.Auto,
-			useShadows: false
-		});
-
-		this._scrollableElement.onScroll(e => {
-			scrollable.style.bottom = e.scrollTop + 'px';
-		});
-
-		container.appendChild(this._scrollableElement.getDomNode());
-		let initalHeight = getContentHeight(scrollable);
-		this._scrollableElement.setScrollDimensions({
-			scrollHeight: Math.max(getContentHeight(scrollable), getContentHeight(container)),
-			height: getContentHeight(container)
-		});
-
-		this._register(addDisposableListener(window, EventType.RESIZE, () => {
-			// Todo: Need to set timeout because we have to make sure that the grids have already rearraged before the getContentHeight gets called.
-			setTimeout(() => {
-				this._scrollableElement.setScrollDimensions({
-					scrollHeight: Math.max(getContentHeight(scrollable), getContentHeight(container)),
-					height: getContentHeight(container)
-				});
-			}, 100);
-		}));
-
-		// unforunately because of angular rendering behavior we need to do a double check to make sure nothing changed after this point
-		setTimeout(() => {
-			let currentheight = getContentHeight(scrollable);
-			if (initalHeight !== currentheight) {
-				this._scrollableElement.setScrollDimensions({
-					scrollHeight: Math.max(getContentHeight(scrollable), getContentHeight(container)),
-					height: getContentHeight(container)
-				});
-			}
-		}, 100);
 	}
 
 	private createTabs(homeWidgets: WidgetConfig[]) {
@@ -300,30 +250,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		if (!existedTab) {
 			this.tabs.push(tab);
 			this._cd.detectChanges();
-			let tabComponents = this._tabs.find(i => i.id === tab.id);
-			this._register(tabComponents.onResize(() => {
-				this._scrollableElement.setScrollDimensions({
-					scrollHeight: Math.max(getContentHeight(this._scrollable.nativeElement), getContentHeight(this._scrollContainer.nativeElement)),
-					height: getContentHeight(this._scrollContainer.nativeElement)
-				});
-			}));
 		}
-	}
-
-	private updateTheme(theme: IColorTheme): void {
-		// let el = this._propertiesContainer.nativeElement as HTMLElement;
-		// let border = theme.getColor(colors.contrastBorder, true);
-		// let borderColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true);
-
-		// if (border) {
-		// 	el.style.borderColor = border.toString();
-		// 	el.style.borderBottomWidth = '1px';
-		// 	el.style.borderBottomStyle = 'solid';
-		// } else if (borderColor) {
-		// 	el.style.borderBottom = '1px solid ' + borderColor.toString();
-		// } else {
-		// 	el.style.border = 'none';
-		// }
 	}
 
 	ngOnDestroy() {

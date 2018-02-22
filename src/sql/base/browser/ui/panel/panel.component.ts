@@ -52,8 +52,10 @@ let idPool = 0;
 					</div>
 				</div>
 			</div>
-			<div class="tab-content fullsize">
-				<ng-content class="fullsize"></ng-content>
+			<div class="tab-content">
+				<div class="fullsize" style="position: absolute">
+					<ng-content></ng-content>
+				</div>
 			</div>
 		</div>
 	`
