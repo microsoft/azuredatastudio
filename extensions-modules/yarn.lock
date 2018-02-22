@@ -382,11 +382,11 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-"dataprotocol-client@git://github.com/Microsoft/sqlops-dataprotocolclient.git#0.1.0":
-  version "1.0.0"
-  resolved "git://github.com/Microsoft/sqlops-dataprotocolclient.git#ace880978ea414dc2a1f012855b9a2e1cf6136af"
+"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#0.1.0":
+  version "0.1.0"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/6bd33f43b23227eb01424418a8740e6c0b20578e"
   dependencies:
-    sqlops "git://github.com/anthonydresser/vscode-extension-vscode#1.1.11"
+    sqlops "github:anthonydresser/vscode-extension-vscode#1.1.11"
     vscode "1.1.5"
     vscode-languageclient "3.5.0"
 
@@ -2204,9 +2204,9 @@ split@0.3:
   dependencies:
     through "2"
 
-"sqlops@git://github.com/anthonydresser/vscode-extension-vscode#1.1.11":
-  version "1.1.10"
-  resolved "git://github.com/anthonydresser/vscode-extension-vscode#bccac9662f2d9723dc6a9ca7d9372e13f62627b0"
+"sqlops@github:anthonydresser/vscode-extension-vscode#1.1.11":
+  version "1.1.11"
+  resolved "https://codeload.github.com/anthonydresser/vscode-extension-vscode/tar.gz/06c604d7f6ab9642a678d86a1b93412da37b01cc"
   dependencies:
     glob "^7.1.2"
     gulp-chmod "^2.0.0"
