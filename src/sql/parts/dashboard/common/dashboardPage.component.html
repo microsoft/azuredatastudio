@@ -6,13 +6,17 @@
 -->
 <panel class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)" [actions]="panelActions">
 	<tab *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
-		<dashboard-home-tab *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget" [tab]="tab">
-		</dashboard-home-tab>
+		<dashboard-home-container *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget" [tab]="tab">
+		</dashboard-home-container>
 		<ng-template #not_home>
-			<dashboard-webview-tab *ngIf="getContentType(tab) === 'webview-tab'" [tab]="tab">
-			</dashboard-webview-tab>
-			<dashboard-widget-tab *ngIf="getContentType(tab) === 'widgets-tab'" [tab]="tab">
-			</dashboard-widget-tab>
+			<dashboard-webview-container *ngIf="getContentType(tab) === 'webview-tab'" [tab]="tab">
+			</dashboard-webview-container>
+			<dashboard-widget-container *ngIf="getContentType(tab) === 'widgets-tab'" [tab]="tab">
+			</dashboard-widget-container>
+			<dashboard-nav-section *ngIf="getContentType(tab) === 'nav-section'" [tab]="tab">
+			</dashboard-nav-section>
+			<dashboard-grid-container *ngIf="getContentType(tab) === 'grid-container'" [tab]="tab">
+			</dashboard-grid-container>
 		</ng-template>
 	</tab>
 </panel>

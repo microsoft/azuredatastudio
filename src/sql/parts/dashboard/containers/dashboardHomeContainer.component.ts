@@ -7,13 +7,13 @@ import 'vs/css!./dashboardHomeTab';
 
 import { Component, forwardRef, Input } from '@angular/core';
 
-import { DashboardWidgetTab } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.component';
+import { DashboardWidgetContainer } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.component';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 
 @Component({
-	selector: 'dashboard-home-tab',
-	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardHomeTab) }],
+	selector: 'dashboard-home-container',
+	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardHomeContainer) }],
 	template: `
 		<div class="scroll-container" #scrollContainer>
 			<div class="scrollable" #scrollable>
@@ -25,6 +25,6 @@ import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 		</div>
 	`
 })
-export class DashboardHomeTab extends DashboardWidgetTab {
+export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@Input() private properties: WidgetConfig;
 }

@@ -5,15 +5,16 @@
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 
-import { generateDashboardWidgetSchema } from 'sql/parts/dashboard/pages/dashboardPageContribution';
 import { registerTabContent } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { registerContainerType } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 
-export const WIDGETS_TABS = 'widgets-tab';
+export const WEBVIEW_CONTAINER = 'webview-container';
 
-let widgetsSchema: IJSONSchema = {
-	type: 'array',
-	description: nls.localize('dashboard.tab.content.widgets', "The list of widgets that will be displayed in this tab."),
-	items: generateDashboardWidgetSchema(undefined, true)
+let webviewSchema: IJSONSchema = {
+	type: 'null',
+	description: nls.localize('dashboard.tab.widgets', "The list of widgets that will be displayed in this tab."),
+	default: null
 };
 
-registerTabContent(WIDGETS_TABS, widgetsSchema);
+registerTabContent(WEBVIEW_CONTAINER, webviewSchema);
+registerContainerType(WEBVIEW_CONTAINER, webviewSchema);
