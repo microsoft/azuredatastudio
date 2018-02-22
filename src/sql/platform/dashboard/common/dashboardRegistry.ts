@@ -24,7 +24,7 @@ export interface IDashboardTab {
 	title: string;
 	publisher: string;
 	description?: string;
-	content?: object;
+	container?: object;
 	provider?: string | string[];
 	edition?: number | number[];
 	alwaysShow?: boolean;

@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./dashboardGridTab';
+import 'vs/css!./dashboardGridContainer';
 
 import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter, OnChanges } from '@angular/core';
 import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { TabConfig, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
+import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 
@@ -38,11 +38,11 @@ export interface GridWebviewConfig extends GridCellConfig {
 }
 
 @Component({
-	selector: 'dashboard-grid-tab',
-	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/tabs/dashboardGridTab.component.html')),
-	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardGridTab) }]
+	selector: 'dashboard-grid-container',
+	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/containers/dashboardGridContainer.component.html')),
+	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardGridContainer) }]
 })
-export class DashboardGridTab extends DashboardTab implements OnDestroy, OnChanges {
+export class DashboardGridContainer extends DashboardTab implements OnDestroy, OnChanges {
 	@Input() private tab: TabConfig;
 	private _contents: GridCellConfig[];
 	private _onResize = new Emitter<void>();
@@ -130,8 +130,8 @@ export class DashboardGridTab extends DashboardTab implements OnDestroy, OnChang
 	}
 
 	ngOnChanges() {
-		if (this.tab.content) {
-			this._contents = Object.values(this.tab.content)[0];
+		if (this.tab.container) {
+			this._contents = Object.values(this.tab.container)[0];
 			this._contents.forEach(widget => {
 				if (!widget.row) {
 					widget.row = 0;

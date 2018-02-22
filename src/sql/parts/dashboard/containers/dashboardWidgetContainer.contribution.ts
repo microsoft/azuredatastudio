@@ -7,9 +7,9 @@ import * as nls from 'vs/nls';
 
 import { generateDashboardWidgetSchema } from 'sql/parts/dashboard/pages/dashboardPageContribution';
 import { registerTabContent } from 'sql/platform/dashboard/common/dashboardRegistry';
-import { registerInnerTabContent } from 'sql/platform/dashboard/common/innerTabRegistry';
+import { registerContainerType } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 
-export const WIDGETS_TAB = 'widgets-tab';
+export const WIDGETS_CONTAINER = 'widgets-container';
 
 let widgetsSchema: IJSONSchema = {
 	type: 'array',
@@ -17,5 +17,5 @@ let widgetsSchema: IJSONSchema = {
 	items: generateDashboardWidgetSchema(undefined, true)
 };
 
-registerTabContent(WIDGETS_TAB, widgetsSchema);
-registerInnerTabContent(WIDGETS_TAB, widgetsSchema);
+registerTabContent(WIDGETS_CONTAINER, widgetsSchema);
+registerContainerType(WIDGETS_CONTAINER, widgetsSchema);

@@ -2,7 +2,7 @@
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./dashboardWebviewTab';
+import 'vs/css!./dashboardWebviewContainer';
 
 import { Component, forwardRef, Input, AfterContentInit, ViewChild } from '@angular/core';
 
@@ -13,14 +13,14 @@ import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
 
 @Component({
-	selector: 'dashboard-webview-tab',
-	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWebviewTab) }],
+	selector: 'dashboard-webview-container',
+	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWebviewContainer) }],
 	template: `
 		<webview-content [webviewId]="tab.id">
 		</webview-content>
 	`
 })
-export class DashboardWebviewTab extends DashboardTab implements AfterContentInit {
+export class DashboardWebviewContainer extends DashboardTab implements AfterContentInit {
 	@Input() private tab: TabConfig;
 
 	private _onResize = new Emitter<void>();
