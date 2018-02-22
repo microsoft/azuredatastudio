@@ -3,8 +3,23 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-dashboard-webview-tab {
-	height: 100%;
-	width : 100%;
-	display: block;
+dashboard-tab {
+	height: auto;
+	width: auto;
+}
+
+.grid-containerle {
+	border-spacing: 5px;
+}
+
+.grid-containerle-row {
+		width: auto;
+		clear: both;
+}
+
+.table-cell {
+		height: 270px;
+		min-width: 300px;
+		vertical-align: top;
+		padding: 7px;
 }

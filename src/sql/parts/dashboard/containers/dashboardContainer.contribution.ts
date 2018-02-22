@@ -9,26 +9,26 @@ import { join } from 'path';
 import { createCSSRule } from 'vs/base/browser/dom';
 import URI from 'vs/base/common/uri';
 
-import { registerInnerTab, generateInnerTabContentSchemaProperties } from 'sql/platform/dashboard/common/innerTabRegistry';
+import { registerContainer, generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 
 export type IUserFriendlyIcon = string | { light: string; dark: string; };
 
-export interface IDashboardInnerTabContrib {
+export interface IDashboardContainerContrib {
 	id: string;
 	title: string;
 	icon?: IUserFriendlyIcon;
-	content: object;
+	container: object;
 }
 
-const innerTabSchema: IJSONSchema = {
+const containerSchema: IJSONSchema = {
 	type: 'object',
 	properties: {
 		id: {
 			type: 'string',
-			description: localize('sqlops.extension.contributes.dashboard.innertab.id', "Unique identifier for this inner tab. Will be passed to the extension for any requests.")
+			description: localize('sqlops.extension.contributes.dashboard.container.id', "Unique identifier for this inner tab. Will be passed to the extension for any requests.")
 		},
 		icon: {
-			description: localize('sqlops.extension.contributes.dashboard.innertab.icon', '(Optional) Icon which is used to represent this inner tab in the UI. Either a file path or a themable configuration'),
+			description: localize('sqlops.extension.contributes.dashboard.container.icon', '(Optional) Icon which is used to represent this inner tab in the UI. Either a file path or a themable configuration'),
 			anyOf: [{
 				type: 'string'
 			},
@@ -48,37 +48,37 @@ const innerTabSchema: IJSONSchema = {
 		},
 		title: {
 			type: 'string',
-			description: localize('sqlops.extension.contributes.dashboard.innertab.title', "Title of the inner tab to show the user.")
+			description: localize('sqlops.extension.contributes.dashboard.container.title', "Title of the inner tab to show the user.")
 		},
-		content: {
-			description: localize('sqlops.extension.contributes.dashboard.innertab.content', "The content that will be displayed in this inner tab."),
+		container: {
+			description: localize('sqlops.extension.contributes.dashboard.container.container', "The container that will be displayed in this inner tab."),
 			type: 'object',
-			properties: generateInnerTabContentSchemaProperties()
+			properties: generateContainerTypeSchemaProperties()
 		}
 	}
 };
 
-const innerTabContributionSchema: IJSONSchema = {
-	description: localize('sqlops.extension.contributes.innertabs', "Contributes a single or multiple inner tabs for users to add to their dashboard."),
+const containerContributionSchema: IJSONSchema = {
+	description: localize('sqlops.extension.contributes.containers', "Contributes a single or multiple inner tabs for users to add to their dashboard."),
 	oneOf: [
-		innerTabSchema,
+		containerSchema,
 		{
 			type: 'array',
-			items: innerTabSchema
+			items: containerSchema
 		}
 	]
 };
 
-ExtensionsRegistry.registerExtensionPoint<IDashboardInnerTabContrib | IDashboardInnerTabContrib[]>('dashboard.innertabs', [], innerTabContributionSchema).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboardContainerContrib[]>('dashboard.containers', [], containerContributionSchema).setHandler(extensions => {
 
-	function handleCommand(innerTab: IDashboardInnerTabContrib, extension: IExtensionPointUser<any>) {
-		let { title, id, content, icon } = innerTab;
+	function handleCommand(dashboardContainer: IDashboardContainerContrib, extension: IExtensionPointUser<any>) {
+		let { title, id, container, icon } = dashboardContainer;
 		if (!title) {
 			extension.collector.error('No title specified for extension.');
 			return;
 		}
-		if (!content) {
-			extension.collector.warn('No content specified to show.');
+		if (!container) {
+			extension.collector.warn('No container specified to show.');
 		}
 
 		let iconClass: string;
@@ -95,12 +95,12 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardInnerTabContrib | IDashboard
 			}
 		}
 
-		registerInnerTab({ title, id, content, hasIcon: !!icon });
+		registerContainer({ title, id, container, hasIcon: !!icon });
 	}
 
 	for (let extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray<IDashboardInnerTabContrib>(value)) {
+		if (Array.isArray<IDashboardContainerContrib>(value)) {
 			for (let command of value) {
 				handleCommand(command, extension);
 			}

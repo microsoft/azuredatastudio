@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./dashboardWidgetTab';
+import 'vs/css!./dashboardWidgetContainer';
 
 import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter, OnChanges, AfterContentInit } from '@angular/core';
 import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { TabConfig, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
+import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
@@ -21,14 +21,14 @@ import * as objects from 'vs/base/common/objects';
 import Event, { Emitter } from 'vs/base/common/event';
 
 @Component({
-	selector: 'dashboard-widget-tab',
-	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWidgetTab) }],
+	selector: 'dashboard-widget-container',
+	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWidgetContainer) }],
 	template: `
 		<widget-content [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
 		</widget-content>
 	`
 })
-export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnChanges, AfterContentInit {
+export class DashboardWidgetContainer extends DashboardTab implements OnDestroy, OnChanges, AfterContentInit {
 	@Input() private tab: TabConfig;
 	private widgets: WidgetConfig[];
 	private _onResize = new Emitter<void>();
@@ -42,8 +42,8 @@ export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnCha
 	}
 
 	ngOnChanges() {
-		if (this.tab.content) {
-			this.widgets = Object.values(this.tab.content)[0];
+		if (this.tab.container) {
+			this.widgets = Object.values(this.tab.container)[0];
 			this._cd.detectChanges();
 		}
 	}

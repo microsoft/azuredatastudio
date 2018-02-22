@@ -5,8 +5,8 @@
  *--------------------------------------------------------------------------------------------*/
 -->
 <div >
-	<table class="grid-table">
-		<tr *ngFor="let row of rows" class="grid-table-row">
+	<table class="grid-containerle">
+		<tr *ngFor="let row of rows" class="grid-containerle-row">
 			<ng-container *ngFor="let col of cols">
 					<ng-container *ngIf="getContent(row,col) !== undefined">
 							      <td class="table-cell" [colSpan]=getColspan(row,col) [rowSpan]=getRowspan(row,col) >

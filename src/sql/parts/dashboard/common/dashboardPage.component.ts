@@ -3,15 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./dashboardPage';
-import './dashboardPanelStyles';
+import 'vs/css!sql/parts/dashboard/common/dashboardPage';
+import 'sql/parts/dashboard/common/dashboardPanelStyles';
 
 import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef } from '@angular/core';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { WidgetConfig, TabConfig, PinConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
-import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
+import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
@@ -22,8 +22,8 @@ import { AngularEventType } from 'sql/services/angularEventing/angularEventingSe
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { error } from 'sql/base/common/log';
 import * as widgetHelper from 'sql/parts/dashboard/common/dashboardWidgetHelper';
-import { WIDGETS_TAB } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
-import { GRID_TAB } from 'sql/parts/dashboard/tabs/dashboardGridTab.contribution';
+import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
+import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -179,7 +179,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			id: 'homeTab',
 			publisher: undefined,
 			title: this.homeTabTitle,
-			content: { 'widgets-tab': homeWidgets },
+			container: { 'widgets-container': homeWidgets },
 			context: this.context,
 			originalConfig: this._originalConfig,
 			editable: true,
@@ -242,24 +242,24 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			let selectedTabs = dashboardTabs.map(v => {
 
-				if (Object.keys(v.content).length !== 1) {
+				if (Object.keys(v.container).length !== 1) {
 					error('Exactly 1 content must be defined per space');
 				}
 
-				let key = Object.keys(v.content)[0];
-				if (key === WIDGETS_TAB || key === GRID_TAB) {
-					let configs = <WidgetConfig[]>Object.values(v.content)[0];
+				let key = Object.keys(v.container)[0];
+				if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
+					let configs = <WidgetConfig[]>Object.values(v.container)[0];
 					this._configModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs, this.dashboardService, this.context]);
 					});
 					this._gridModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs, this._originalConfig]);
 					});
-					if (key === WIDGETS_TAB) {
-						return { id: v.id, title: v.title, content: { 'widgets-tab': configs }, alwaysShow: v.alwaysShow };
+					if (key === WIDGETS_CONTAINER) {
+						return { id: v.id, title: v.title, container: { 'widgets-container': configs }, alwaysShow: v.alwaysShow };
 
 					} else {
-						return { id: v.id, title: v.title, content: { 'grid-tab': configs }, alwaysShow: v.alwaysShow };
+						return { id: v.id, title: v.title, container: { 'grid-container': configs }, alwaysShow: v.alwaysShow };
 					}
 				}
 				return v;
@@ -288,7 +288,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 
 	private getContentType(tab: TabConfig): string {
-		return tab.content ? Object.keys(tab.content)[0] : '';
+		return tab.container ? Object.keys(tab.container)[0] : '';
 	}
 
 	private addNewTab(tab: TabConfig): void {
