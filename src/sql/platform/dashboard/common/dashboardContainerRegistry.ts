@@ -16,21 +16,22 @@ export const Extensions = {
 
 export interface IDashboardContainer {
 	id: string;
-	title: string;
-	hasIcon: boolean;
 	container?: object;
 }
 
 export interface IDashboardContainerRegistry {
 	registerContainer(tab: IDashboardContainer): void;
 	registerContainerType(id: string, schema: IJSONSchema): void;
+	registerNavSectionContainerType(id: string, schema: IJSONSchema): void;
 	containers: Array<IDashboardContainer>;
 	containerTypeSchemaProperties: IJSONSchemaMap;
+	navSectionContainerTypeSchemaProperties: IJSONSchemaMap;
 }
 
 class DashboardContainerRegistry implements IDashboardContainerRegistry {
 	private _containers = new Array<IDashboardContainer>();
 	private _dashboardContainerTypeSchemaProperties: IJSONSchemaMap = {};
+	private _dashboardNavSectionContainerTypeSchemaProperties: IJSONSchemaMap = {};
 
 	public registerContainer(tab: IDashboardContainer): void {
 		this._containers.push(tab);
@@ -41,9 +42,9 @@ class DashboardContainerRegistry implements IDashboardContainerRegistry {
 	}
 
 	/**
-	 * Register a dashboard widget
-	 * @param id id of the widget
-	 * @param schema config schema of the widget
+	 * Register a dashboard container
+	 * @param id id of the container
+	 * @param schema config schema of the container
 	 */
 	public registerContainerType(id: string, schema: IJSONSchema): void {
 		this._dashboardContainerTypeSchemaProperties[id] = schema;
@@ -52,13 +53,26 @@ class DashboardContainerRegistry implements IDashboardContainerRegistry {
 	public get containerTypeSchemaProperties(): IJSONSchemaMap {
 		return deepClone(this._dashboardContainerTypeSchemaProperties);
 	}
+
+	/**
+	 * Register a dashboard nav section container
+	 * @param id id of the container
+	 * @param schema config schema of the container
+	 */
+	public registerNavSectionContainerType(id: string, schema: IJSONSchema): void {
+		this._dashboardNavSectionContainerTypeSchemaProperties[id] = schema;
+	}
+
+	public get navSectionContainerTypeSchemaProperties(): IJSONSchemaMap {
+		return deepClone(this._dashboardNavSectionContainerTypeSchemaProperties);
+	}
 }
 
 const dashboardContainerRegistry = new DashboardContainerRegistry();
 Registry.add(Extensions.dashboardContainerContributions, dashboardContainerRegistry);
 
-export function registerContainer(innerTab: IDashboardContainer): void {
-	dashboardContainerRegistry.registerContainer(innerTab);
+export function registerContainer(container: IDashboardContainer): void {
+	dashboardContainerRegistry.registerContainer(container);
 }
 
 export function registerContainerType(id: string, schema: IJSONSchema): void {
@@ -67,4 +81,12 @@ export function registerContainerType(id: string, schema: IJSONSchema): void {
 
 export function generateContainerTypeSchemaProperties(): IJSONSchemaMap {
 	return dashboardContainerRegistry.containerTypeSchemaProperties;
+}
+
+export function registerNavSectionContainerType(id: string, schema: IJSONSchema): void {
+	dashboardContainerRegistry.registerNavSectionContainerType(id, schema);
+}
+
+export function generateNavSectionContainerTypeSchemaProperties(): IJSONSchemaMap {
+	return dashboardContainerRegistry.navSectionContainerTypeSchemaProperties;
 }

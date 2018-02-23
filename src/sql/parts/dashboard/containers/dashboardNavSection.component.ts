@@ -8,9 +8,8 @@ import 'vs/css!./dashboardNavSection';
 import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter, OnChanges, AfterContentInit } from '@angular/core';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { WidgetConfig, TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
+import { WidgetConfig, TabConfig, NavSectionConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
-import { IDashboardContainerRegistry, Extensions as InnerTabExtensions, IDashboardContainer } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { error } from 'sql/base/common/log';
@@ -19,8 +18,6 @@ import * as widgetHelper from 'sql/parts/dashboard/common/dashboardWidgetHelper'
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import Event, { Emitter } from 'vs/base/common/event';
-
-const innerTabRegistry = Registry.as<IDashboardContainerRegistry>(InnerTabExtensions.dashboardContainerContributions);
 
 @Component({
 	selector: 'dashboard-nav-section',
@@ -63,19 +60,10 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 
 	ngOnChanges() {
 		this.tabs = [];
-		let innerTabIds = [];
-		let allPosibleInnerTab = innerTabRegistry.containers;
-		let filteredTabs: IDashboardContainer[] = [];
+		let navSectionContainers: NavSectionConfig[] = [];
 		if (this.tab.container) {
-			innerTabIds = Object.values(this.tab.container)[0];
-			if (innerTabIds && innerTabIds.length > 0) {
-				innerTabIds.forEach(tabId => {
-					let tab = allPosibleInnerTab.find(i => i.id === tabId);
-					filteredTabs.push(tab);
-				});
-				this.loadNewTabs(filteredTabs);
-			}
-			this._cd.detectChanges();
+			navSectionContainers = Object.values(this.tab.container)[0];
+			this.loadNewTabs(navSectionContainers);
 		}
 	}
 
@@ -93,7 +81,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		this.dispose();
 	}
 
-	private loadNewTabs(dashboardTabs: IDashboardContainer[]) {
+	private loadNewTabs(dashboardTabs: NavSectionConfig[]) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			let selectedTabs = dashboardTabs.map(v => {
 
