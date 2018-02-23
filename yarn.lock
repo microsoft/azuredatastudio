@@ -3015,9 +3015,9 @@ html-comment-regex@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/html-comment-regex/-/html-comment-regex-1.1.1.tgz#668b93776eaae55ebde8f3ad464b307a4963625e"
 
-"html-query-plan@git://github.com/anthonydresser/html-query-plan.git#2.3":
+"html-query-plan@git://github.com/anthonydresser/html-query-plan.git#2.4":
   version "2.4.0"
-  resolved "git://github.com/anthonydresser/html-query-plan.git#5e7713622e2badde65563394925c6432d3237449"
+  resolved "git://github.com/anthonydresser/html-query-plan.git#e8e0ded622d7afd6070f291101566ecaaca32cc5"
 
 "htmlparser2@>= 3.7.3 < 4.0.0", htmlparser2@^3.9.1:
   version "3.9.2"
