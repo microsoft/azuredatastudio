@@ -59,8 +59,8 @@ export class TreeNode {
 	public nodeStatus: string;
 
 	/**
-  * Children of this node
-  */
+	 * Children of this node
+	 */
 	public children: TreeNode[];
 
 
@@ -106,6 +106,19 @@ export class TreeNode {
 			return true;
 		}
 		return false;
+	}
+
+	public toNodeInfo(): data.NodeInfo {
+		return <data.NodeInfo> {
+			nodePath: this.nodePath,
+			nodeType: this.nodeTypeId,
+			nodeSubType: this.nodeSubType,
+			nodeStatus: this.nodeStatus,
+			label: this.label,
+			isLeaf: this.isAlwaysLeaf,
+			metadata: this.metadata,
+			errorMessage: this.errorStateMessage
+		}
 	}
 
 	constructor(nodeTypeId: string, label: string, isAlwaysLeaf: boolean, nodePath: string,

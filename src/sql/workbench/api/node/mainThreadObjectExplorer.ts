@@ -38,26 +38,27 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 	}
 
 	public $getNode(connectionId: string, nodePath?: string): Thenable<data.NodeInfo> {
-		return Promise.resolve(undefined);
+		return Promise.resolve(this._objectExplorerService.findNodeInfo(connectionId, nodePath));
 	}
 
-	public $getSavedConnections(active?: boolean): Thenable<{ nodeInfo: data.NodeInfo, connectionId: string}[]> {
-		return Promise.resolve(this._objectExplorerService.getConnections(active));
+	public $getActiveConnections(): Thenable<{ nodeInfo: data.NodeInfo, connectionId: string}[]> {
+		return Promise.resolve(this._objectExplorerService.getActiveConnections());
 	}
 
-	public $find(connectionId?: string, type?: string, schema?: string, name?: string): Thenable<{ nodeInfo: data.NodeInfo, connectionId: string}[]> {
-		return Promise.resolve([]);
+	public $expandNode(connectionId: string, nodePath: string): Thenable<void> {
+		return this._objectExplorerService.expandNodeForConnection(connectionId, nodePath);
 	}
 
-	public $selectNode(connectionId: string, nodePath: string, expanded: boolean): Thenable<void> {
-		if (expanded) {
-			return this._objectExplorerService.expandNodeForConnection(connectionId, nodePath);
-		}
-		return undefined;
+	public $collapseNode(connectionId: string, nodePath: string): Thenable<void> {
+		return this._objectExplorerService.collapseNodeForConnection(connectionId, nodePath);
+	}
+
+	public $selectNode(connectionId: string, nodePath: string): Thenable<void> {
+		return Promise.resolve(this._objectExplorerService.selectNodeForConnection(connectionId, nodePath));
 	}
 
 	public $getChildren(connectionId: string, nodePath: string): Thenable<data.NodeInfo[]> {
-		return Promise.resolve(this._objectExplorerService.getChildren(connectionId, nodePath));
+		return this._objectExplorerService.getChildren(connectionId, nodePath);
 	}
 
 	public $isExpanded(connectionId: string, nodePath: string): Thenable<boolean> {

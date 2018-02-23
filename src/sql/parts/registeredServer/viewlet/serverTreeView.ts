@@ -429,6 +429,39 @@ export class ServerTreeView {
 	}
 
 	/**
+	 * Expand the given element in the tree
+	 */
+	public expand(element: any): Thenable<void> {
+		return this._tree.expand(element);
+	}
+
+	/**
+	 * Collapse the given element in the tree
+	 */
+	public collapse(element: any): Thenable<void> {
+		return this._tree.collapse(element);
+	}
+
+	/**
+	 * Reveal the given element in the tree
+	 */
+	public reveal(element: any): Thenable<void> {
+		return this._tree.reveal(element);
+	}
+
+	/**
+	 * Select the given element in the tree and clear any other selections
+	 */
+	public select(element: any): void {
+		this._tree.clearSelection();
+		this._tree.select(element);
+	}
+
+	public isExpanded(element: any): boolean {
+		return this._tree.isExpanded(element);
+	}
+
+	/**
 	 * dispose the server tree view
 	 */
 	public dispose(): void {

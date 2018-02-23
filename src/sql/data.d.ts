@@ -124,17 +124,10 @@ declare module 'data' {
 		export function getNode(connectionId: string, nodePath?: string): Thenable<ObjectExplorerNode>;
 
 		/**
-		 * TODO
-		 */
-		export function find(connectionId?: string, type?: string, schema?: string, name?: string): Thenable<ObjectExplorerNode[]>;
-
-		/**
-		 * Get all saved Object Explorer connections, optionally filtering by whether the
-		 * connection is active (connected)
-		 * @param {boolean?} active If true, only return active (connected) connections
+		 * Get all active Object Explorer connection nodes
 		 * @returns {ObjectExplorerNode[]} The Object Explorer nodes for each saved connection
 		*/
-		export function getSavedConnections(active?: boolean): Thenable<ObjectExplorerNode[]>;
+		export function getActiveConnections(): Thenable<ObjectExplorerNode[]>;
 
 		/**
 		 * Interface for representing and interacting with items in Object Explorer
@@ -151,29 +144,17 @@ declare module 'data' {
 			isExpanded(): Thenable<boolean>;
 
 			/**
-			 * Whether the node has child objects. If so, they can be retrieved by calling the
-			 * getChildren method.
-			*/
-			hasChildren(): Thenable<boolean>;
-
-			/**
-			 * Whether the node has a parent object. If so, it can be retrieved by calling the
-			 * getParent method.
-			 */
-			hasParent(): Thenable<boolean>;
-
-			/**
-			 * Expand and select the node in Object Explorer
+			 * Expand the node in Object Explorer
 			 */
 			expand(): Thenable<void>;
 
 			/**
-			 * Collapse and select the node in Object Explorer
+			 * Collapse the node in Object Explorer
 			*/
 			collapse(): Thenable<void>;
 
 			/**
-			 * Select the node in Object Explorer
+			 * Select the node in Object Explorer, expanding its parents in the tree if needed
 			 */
 			select(): Thenable<void>;
 

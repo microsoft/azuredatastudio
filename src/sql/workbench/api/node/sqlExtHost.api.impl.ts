@@ -108,13 +108,10 @@ export function createApiFactory(
 				getNode(connectionId: string, nodePath?: string): Thenable<data.objectexplorer.ObjectExplorerNode> {
 					return extHostObjectExplorer.$getNode(connectionId, nodePath);
 				},
-				getSavedConnections(active?: boolean): Thenable<data.objectexplorer.ObjectExplorerNode[]> {
-					return extHostObjectExplorer.$getSavedConnections(active);
-				},
-				find(connectionId?: string, type?: string, schema?: string, name?: string): Thenable<data.objectexplorer.ObjectExplorerNode[]> {
-					return extHostObjectExplorer.$find(connectionId, type, schema, name);
+				getActiveConnections(): Thenable<data.objectexplorer.ObjectExplorerNode[]> {
+					return extHostObjectExplorer.$getActiveConnections();
 				}
-			}
+			};
 
 			// namespace: serialization
 			const serialization: typeof data.serialization = {

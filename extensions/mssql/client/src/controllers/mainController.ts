@@ -138,17 +138,53 @@ export default class MainController implements vscode.Disposable {
 				Utils.logDebug(SharedConstants.extensionActivated, MainController._extensionConstants.extensionConfigSectionName);
 				self._initialized = true;
 				setInterval(() => {
-					data.objectexplorer.getSavedConnections(false).then(connectionNodes => {
+					data.objectexplorer.getActiveConnections().then(connectionNodes => {
 						connectionNodes.forEach(connectionNode => {
-							connectionNode.isExpanded().then(result => {
-								if (result) {
-									return;
+							// data.objectexplorer.getNode(connectionNode.connectionId, 'mairvine-pc/Server Objects/Endpoints/Dedicated Admin Connection').then(node => {
+							// 	return node.select();
+							// });
+							data.objectexplorer.getNode(connectionNode.connectionId, 'mairvine-pc/Server Objects/Endpoints').then(node => {
+							// data.objectexplorer.getNode(connectionNode.connectionId, 'mairvine-pc/Server Objects/Endpoints/Dedicated Admin Connection').then(node => {
+								if (!node) {
+									console.log('could not find node');
+								} else {
+									console.log('found endpoint node');
+									node.getParent().then(parent => {
+										if (parent) {
+											console.log('found parent for endpoint node with path ' + parent.nodePath);
+
+										} else {
+											console.log('no parent for endpoint node');
+										}
+									});
+									return node.isExpanded().then(expanded => {
+										if (expanded) {
+											return node.collapse();
+										} else {
+											return node.expand().then(() => console.log('successful expand'), err => console.log('expand failed: ' + err));
+										}
+									});
 								}
-								this.expandChildren([connectionNode]);
+							}, err => console.log('error getting node: ' + err)).then(() => {
+								// connectionNode.isExpanded().then(result => {
+								// 	if (result) {
+								// 		connectionNode.collapse();
+								// 		return;
+								// 	}
+								// 	this.expandChildren([connectionNode]);
+								// 	connectionNode.select();
+								// });
+							});
+							connectionNode.getParent().then(connectionParent => {
+								if (!connectionParent) {
+									console.log('no parent for connection');
+								} else {
+									console.log('connection has a parent!');
+								}
 							});
 						});
 					});
-				}, 5000);
+				}, 10000);
 				resolve(true);
 			}).catch(err => {
 				Telemetry.sendTelemetryEventForException(err, 'initialize', MainController._extensionConstants.extensionConfigSectionName);
@@ -157,13 +193,21 @@ export default class MainController implements vscode.Disposable {
 		});
 	}
 
-	private expandChildren(children: data.objectexplorer.ObjectExplorerNode[]) {
+	private expandChildren(children: data.objectexplorer.ObjectExplorerNode[], moreLevel: boolean = true) {
 		children.forEach(child => {
-			child.expand().then(() => {
-				child.getChildren().then(newChildren => {
-					console.log('found ' + newChildren.length + ' children for node ' + child.nodePath);
-					this.expandChildren(newChildren);
-				});
+			child.getChildren().then(oldChildren => {
+				console.log('found ' + oldChildren.length + ' old children for node ' + child.nodePath);
+			}).then(() => {
+				if (moreLevel) {
+					child.expand().then(() => {
+						child.getChildren().then(newChildren => {
+							console.log('found ' + newChildren.length + ' children for node ' + child.nodePath);
+							if (moreLevel) {
+								this.expandChildren(newChildren, false);
+							}
+						});
+					});
+				}
 			});
 		});
 	}

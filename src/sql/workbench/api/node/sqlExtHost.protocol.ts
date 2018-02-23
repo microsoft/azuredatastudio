@@ -407,9 +407,10 @@ export interface MainThreadCredentialManagementShape extends IDisposable {
 
 export interface MainThreadObjectExplorerShape extends IDisposable {
 	$getNode(connectionId: string, nodePath?: string): Thenable<data.NodeInfo>;
-	$getSavedConnections(active?: boolean): Thenable<{ nodeInfo: data.NodeInfo, connectionId: string}[]>;
-	$find(connectionId?: string, type?: string, schema?: string, name?: string): Thenable<{ nodeInfo: data.NodeInfo, connectionId: string}[]>;
-	$selectNode(connectionId: string, nodePath: string, expanded: boolean): Thenable<void>;
+	$getActiveConnections(): Thenable<{ nodeInfo: data.NodeInfo, connectionId: string}[]>;
+	$expandNode(connectionId: string, nodePath: string): Thenable<void>;
+	$collapseNode(connectionId: string, nodePath: string): Thenable<void>;
+	$selectNode(connectionId: string, nodePath: string): Thenable<void>;
 	$getChildren(connectionId: string, nodePath: string): Thenable<data.NodeInfo[]>;
 	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
 }
