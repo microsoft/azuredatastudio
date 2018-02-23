@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./dashboardHomeTab';
+import 'vs/css!./dashboardHomeContainer';
 
 import { Component, forwardRef, Input } from '@angular/core';
 
