@@ -18,65 +18,16 @@
       "sqlagent"
     ],
     "dashboard.tabs": [
-            {
-                "id": "data-management-cluster",
-                "title": "Scale-out Data Management",
-                "alwaysShow": false,
-                "description": "Insights on the status of your cluster compute pools and jobs",
-                "provider": "MSSQL",
-                "container": {
-                    "widgets-container": [
-                        {
-                            "name": "Compute Pools",
-                            "gridItemConfig": {
-                                "x": 1,
-                                "y": 1
-                            },
-                            "widget": {
-                                "view-computepools": {}
-                            }
-                        },
-                        {
-                            "name": "Spark Job Status",
-                            "gridItemConfig": {
-                                "x": 1,
-                                "y": 1
-                            },
-                            "widget": {
-                                "spark-jobstatus": {}
-                            }
-                        }
-                    ]
-                }
-            },
-            {
-                "id": "data-management-spark",
-                "description": "Spark Job viewer for your cluster",
-                "provider": "MSSQL",
-                "title": "Spark Jobs",
-                "content": {
-                    "webview-tab": null
-                }
-            },
-            {
-                "id": "data-management-hadoop",
-                "description": "Hadoop management view for your cluster",
-                "provider": "MSSQL",
-                "title": "Hadoop Management",
-                "content": {
-                    "webview-tab": null
-                }
-            },
-            {
-                "id": "data-management-hdfs",
-                "description": "HDFS Health for your cluster",
-                "provider": "MSSQL",
-                "title": "HDFS Health",
-                "content": {
-                    "webview-tab": null
-                }
+        {
+            "id": "data-management-agent",
+            "description": "SQL Agent management",
+            "provider": "MSSQL",
+            "title": "SQL Agent",
+            "container": {
+                "webview-container": null
             }
-        ]
+        }
+    ]
   },
   "devDependencies": {
     "vscode": "1.0.1"
