@@ -6,7 +6,8 @@ import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
 
-import { registerTab, generateTabContentSchemaProperties } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { registerTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 
 export interface IDashboardTabContrib {
 	id: string;
@@ -64,7 +65,7 @@ const tabSchema: IJSONSchema = {
 		container: {
 			description: localize('sqlops.extension.contributes.dashboard.tab.container', "The container that will be displayed in this tab."),
 			type: 'object',
-			properties: generateTabContentSchemaProperties()
+			properties: generateContainerTypeSchemaProperties()
 		},
 		alwaysShow: {
 			description: localize('sqlops.extension.contributes.dashboard.tab.alwaysShow', "Whether or not this tab should always be shown or only when the user adds it."),
