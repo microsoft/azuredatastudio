@@ -41,6 +41,15 @@ export interface TabConfig extends IDashboardTab {
 	actions?: Array<Action>;
 }
 
+export type IUserFriendlyIcon = string | { light: string; dark: string; };
+
+export interface NavSectionConfig {
+	id: string;
+	title: string;
+	icon?: IUserFriendlyIcon;
+	container: object;
+}
+
 export interface PinConfig {
 	tabId: string;
 	isPinned?: boolean;
