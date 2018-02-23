@@ -146,6 +146,7 @@ export class ResultSerializer {
 			title: nls.localize('saveAsFileTitle', 'Choose Results File'),
 			defaultPath: paths.normalize(filepathPlaceHolder, true)
 		});
+		PathUtilities.setOldSavePath(path.dirname(filePath));
 		return filePath;
 	}
 

@@ -12,6 +12,12 @@ import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/
 
 export const FILE_SCHEMA: string = 'file';
 
+let oldSavePath: string;
+
+export function setOldSavePath(path: string): void {
+	oldSavePath = path;
+}
+
 export function resolveCurrentDirectory(uri: string, rootPath: string): string {
 	let sqlUri = URI.parse(uri);
 	let currentDirectory: string;
@@ -22,6 +28,9 @@ export function resolveCurrentDirectory(uri: string, rootPath: string): string {
 	} else if (sqlUri.scheme === UNTITLED_SCHEMA) {
 		// if sql file is unsaved/untitled but a workspace is open use workspace root
 		let root = rootPath;
+		if (oldSavePath) {
+			return oldSavePath;
+		}
 		if (root) {
 			currentDirectory = root;
 		} else {
@@ -31,6 +40,7 @@ export function resolveCurrentDirectory(uri: string, rootPath: string): string {
 	} else {
 		currentDirectory = path.dirname(sqlUri.path);
 	}
+	oldSavePath = currentDirectory;
 	return currentDirectory;
 }
 
