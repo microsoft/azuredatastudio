@@ -57,7 +57,7 @@ export class RefreshWidgetAction extends Action {
 	private static readonly ICON = 'refresh';
 
 	constructor(
-		private refreshFn: () => void,
+		private fn: () => void,
 		private context: any // this
 	) {
 		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, RefreshWidgetAction.ICON);
@@ -65,7 +65,7 @@ export class RefreshWidgetAction extends Action {
 
 	run(): TPromise<boolean> {
 		try {
-			this.refreshFn.apply(this.context);
+			this.fn.apply(this.context);
 			return TPromise.as(true);
 		} catch (e) {
 			return TPromise.as(false);
@@ -195,5 +195,23 @@ export class AddFeatureTabAction extends Action {
 				this._openedTabs.splice(index, 1);
 				break;
 		}
+	}
+}
+
+export class CollapseWidgetAction extends Action {
+	private static readonly ID = 'collapseWidget';
+	private static readonly LABEL = nls.localize('collapseWidget', "Collapse");
+
+	constructor(
+		private _uri: string,
+		private _widgetUuid: string,
+		@IAngularEventingService private _angularEventService: IAngularEventingService
+	) {
+		super(CollapseWidgetAction.ID, CollapseWidgetAction.LABEL);
+	}
+
+	run(): TPromise<boolean> {
+		this._angularEventService.sendAngularEvent(this._uri, AngularEventType.COLLAPSE_WIDGET, this._widgetUuid);
+		return TPromise.as(true);
 	}
 }
