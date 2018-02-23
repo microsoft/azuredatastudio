@@ -193,9 +193,9 @@ export function filterConfigs<T extends { provider?: string | string[], edition?
  * Get registered container if it is specified as the key
  * @param container dashboard container
  */
-export function getOrSetContainer(container: object): object {
+export function getDashboardContainer(container: object): object {
 	if (Object.keys(container).length !== 1) {
-		error('Exactly 1 dashboard container must be defined per space');
+		error(nls.localize('moreThanOneDashboardContainersError','Exactly 1 dashboard container must be defined per space'));
 	}
 
 	let key = Object.keys(container)[0];
@@ -203,7 +203,7 @@ export function getOrSetContainer(container: object): object {
 	if (!containerTypeFound) {
 		let dashboardContainer = dashboardcontainerRegistry.getRegisteredContainer(key);
 		if (!dashboardContainer) {
-			error('The specified dashboard container is unknown.');
+			error(nls.localize('unknownDashboardContainerError','The specified dashboard container is unknown.'));
 		} else {
 			container = dashboardContainer.container;
 		}

@@ -9,15 +9,15 @@ import { registerContainerType, generateNavSectionContainerTypeSchemaProperties 
 
 export const NAV_SECTION = 'nav-section';
 
-const nevSectionContainerSchema: IJSONSchema = {
+const navSectionContainerSchema: IJSONSchema = {
 	type: 'object',
 	properties: {
 		id: {
 			type: 'string',
-			description: nls.localize('dashboard.container.left-nav-bar.id', "Unique identifier for this inner tab. Will be passed to the extension for any requests.")
+			description: nls.localize('dashboard.container.left-nav-bar.id', "Unique identifier for this nav section. Will be passed to the extension for any requests.")
 		},
 		icon: {
-			description: nls.localize('dashboard.container.left-nav-bar.icon', '(Optional) Icon which is used to represent this inner tab in the UI. Either a file path or a themable configuration'),
+			description: nls.localize('dashboard.container.left-nav-bar.icon', '(Optional) Icon which is used to represent this nav section in the UI. Either a file path or a themeable configuration'),
 			anyOf: [{
 				type: 'string'
 			},
@@ -37,10 +37,10 @@ const nevSectionContainerSchema: IJSONSchema = {
 		},
 		title: {
 			type: 'string',
-			description: nls.localize('dashboard.container.left-nav-bar.title', "Title of the inner tab to show the user.")
+			description: nls.localize('dashboard.container.left-nav-bar.title', "Title of the nav section to show the user.")
 		},
 		container: {
-			description: nls.localize('dashboard.container.left-nav-bar.container', "The container that will be displayed in this inner tab."),
+			description: nls.localize('dashboard.container.left-nav-bar.container', "The container that will be displayed in this nav section."),
 			type: 'object',
 			properties: generateNavSectionContainerTypeSchemaProperties()
 		}
@@ -50,7 +50,7 @@ const nevSectionContainerSchema: IJSONSchema = {
 let NavSectionSchema: IJSONSchema = {
 	type: 'array',
 	description: nls.localize('dashboard.container.left-nav-bar', "The list of dashboard containers that will be displayed in this navigation section."),
-	items: nevSectionContainerSchema
+	items: navSectionContainerSchema
 };
 
 registerContainerType(NAV_SECTION, NavSectionSchema);
