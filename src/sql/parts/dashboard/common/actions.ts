@@ -57,7 +57,7 @@ export class RefreshWidgetAction extends Action {
 	private static readonly ICON = 'refresh';
 
 	constructor(
-		private fn: () => void,
+		private refreshFn: () => void,
 		private context: any // this
 	) {
 		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, RefreshWidgetAction.ICON);
@@ -65,7 +65,7 @@ export class RefreshWidgetAction extends Action {
 
 	run(): TPromise<boolean> {
 		try {
-			this.fn.apply(this.context);
+			this.refreshFn.apply(this.context);
 			return TPromise.as(true);
 		} catch (e) {
 			return TPromise.as(false);
