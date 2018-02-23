@@ -6,12 +6,27 @@ import * as types from 'vs/base/common/types';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Severity } from 'vs/platform/message/common/message';
+import { error } from 'sql/base/common/log';
 import * as nls from 'vs/nls';
 
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
+import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
+import { WEBVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
+import { NAV_SECTION } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
+import { IDashboardContainerRegistry, Extensions as DashboardContainerExtensions, IDashboardContainer, registerContainerType } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
+import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+
+const dashboardcontainerRegistry = Registry.as<IDashboardContainerRegistry>(DashboardContainerExtensions.dashboardContainerContributions);
+const containerTypes = [
+	WIDGETS_CONTAINER,
+	GRID_CONTAINER,
+	WEBVIEW_CONTAINER,
+	NAV_SECTION
+];
 
 
 /**
@@ -172,4 +187,26 @@ export function filterConfigs<T extends { provider?: string | string[], edition?
 			return true;
 		}
 	});
+}
+
+/**
+ * Get registered container if it is specified as the key
+ * @param container dashboard container
+ */
+export function getOrSetContainer(container: object): object {
+	if (Object.keys(container).length !== 1) {
+		error('Exactly 1 dashboard container must be defined per space');
+	}
+
+	let key = Object.keys(container)[0];
+	let containerTypeFound = containerTypes.find(c => (c === key));
+	if (!containerTypeFound) {
+		let dashboardContainer = dashboardcontainerRegistry.getRegisteredContainer(key);
+		if (!dashboardContainer) {
+			error('The specified dashboard container is unknown.');
+		} else {
+			container = dashboardContainer.container;
+		}
+	}
+	return container;
 }

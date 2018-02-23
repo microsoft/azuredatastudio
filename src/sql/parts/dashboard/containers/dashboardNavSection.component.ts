@@ -14,7 +14,8 @@ import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { error } from 'sql/base/common/log';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
-import * as widgetHelper from 'sql/parts/dashboard/common/dashboardWidgetHelper';
+import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
+import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import Event, { Emitter } from 'vs/base/common/event';
@@ -37,16 +38,16 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 
 	// a set of config modifiers
 	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, dashboardServer: DashboardServiceInterface, context: string) => Array<WidgetConfig>> = [
-		widgetHelper.removeEmpty,
-		widgetHelper.initExtensionConfigs,
-		widgetHelper.addProvider,
-		widgetHelper.addEdition,
-		widgetHelper.addContext,
-		widgetHelper.filterConfigs
+		dashboardHelper.removeEmpty,
+		dashboardHelper.initExtensionConfigs,
+		dashboardHelper.addProvider,
+		dashboardHelper.addEdition,
+		dashboardHelper.addContext,
+		dashboardHelper.filterConfigs
 	];
 
 	private readonly _gridModifiers: Array<(item: Array<WidgetConfig>, originalConfig: Array<WidgetConfig>) => Array<WidgetConfig>> = [
-		widgetHelper.validateGridConfig
+		dashboardHelper.validateGridConfig
 	];
 
 	@ViewChildren(DashboardTab) private _tabs: QueryList<DashboardTab>;
@@ -85,22 +86,25 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			let selectedTabs = dashboardTabs.map(v => {
 
-				if (Object.keys(v.container).length !== 1) {
-					error('Exactly 1 content must be defined per space');
-				}
+				let container = dashboardHelper.getOrSetContainer(v.container);
+				let key = Object.keys(container)[0];
 
-				let key = Object.keys(v.container)[0];
-				if (key === WIDGETS_CONTAINER) {
-					let configs = <WidgetConfig[]>Object.values(v.container)[0];
+				if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
+					let configs = <WidgetConfig[]>Object.values(container)[0];
 					this._configModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs, this.dashboardService, this.tab.context]);
 					});
 					this._gridModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs]);
 					});
-					return { id: v.id, title: v.title, container: { 'widgets-container': configs } };
+					if (key === WIDGETS_CONTAINER) {
+						return { id: v.id, title: v.title, container: { 'widgets-container': configs }};
+
+					} else {
+						return { id: v.id, title: v.title, container: { 'grid-container': configs }};
+					}
 				}
-				return { id: v.id, title: v.title, container: v.container };
+				return { id: v.id, title: v.title, container: container };
 			}).map(v => {
 				let config = v as TabConfig;
 				config.context = this.tab.context;

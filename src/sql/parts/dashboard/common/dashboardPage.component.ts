@@ -21,7 +21,7 @@ import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/
 import { AngularEventType } from 'sql/services/angularEventing/angularEventingService';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { error } from 'sql/base/common/log';
-import * as widgetHelper from 'sql/parts/dashboard/common/dashboardWidgetHelper';
+import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 
@@ -79,16 +79,16 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 	// a set of config modifiers
 	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, dashboardServer: DashboardServiceInterface, context: string) => Array<WidgetConfig>> = [
-		widgetHelper.removeEmpty,
-		widgetHelper.initExtensionConfigs,
-		widgetHelper.addProvider,
-		widgetHelper.addEdition,
-		widgetHelper.addContext,
-		widgetHelper.filterConfigs
+		dashboardHelper.removeEmpty,
+		dashboardHelper.initExtensionConfigs,
+		dashboardHelper.addProvider,
+		dashboardHelper.addEdition,
+		dashboardHelper.addContext,
+		dashboardHelper.filterConfigs
 	];
 
 	private readonly _gridModifiers: Array<(item: Array<WidgetConfig>, originalConfig: Array<WidgetConfig>) => Array<WidgetConfig>> = [
-		widgetHelper.validateGridConfig
+		dashboardHelper.validateGridConfig
 	];
 
 	constructor(
@@ -189,7 +189,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		this.addNewTab(homeTab);
 		this._panel.selectTab(homeTab.id);
 
-		let allTabs = widgetHelper.filterConfigs(dashboardRegistry.tabs, this.dashboardService);
+		let allTabs = dashboardHelper.filterConfigs(dashboardRegistry.tabs, this.dashboardService);
 
 		// Load always show tabs
 		let alwaysShowTabs = allTabs.filter(tab => tab.alwaysShow);
@@ -241,14 +241,11 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private loadNewTabs(dashboardTabs: IDashboardTab[]) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			let selectedTabs = dashboardTabs.map(v => {
+				let container = dashboardHelper.getOrSetContainer(v.container);
+				let key = Object.keys(container)[0];
 
-				if (Object.keys(v.container).length !== 1) {
-					error('Exactly 1 content must be defined per space');
-				}
-
-				let key = Object.keys(v.container)[0];
 				if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
-					let configs = <WidgetConfig[]>Object.values(v.container)[0];
+					let configs = <WidgetConfig[]>Object.values(container)[0];
 					this._configModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs, this.dashboardService, this.context]);
 					});
@@ -262,7 +259,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 						return { id: v.id, title: v.title, container: { 'grid-container': configs }, alwaysShow: v.alwaysShow };
 					}
 				}
-				return v;
+				return { id: v.id, title: v.title, container: container, alwaysShow: v.alwaysShow };
 			}).map(v => {
 				let actions = [];
 				if (!v.alwaysShow) {

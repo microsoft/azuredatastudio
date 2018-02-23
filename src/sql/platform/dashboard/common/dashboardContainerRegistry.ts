@@ -20,25 +20,25 @@ export interface IDashboardContainer {
 }
 
 export interface IDashboardContainerRegistry {
-	registerContainer(tab: IDashboardContainer): void;
+	registerContainer(container: IDashboardContainer): void;
 	registerContainerType(id: string, schema: IJSONSchema): void;
 	registerNavSectionContainerType(id: string, schema: IJSONSchema): void;
-	containers: Array<IDashboardContainer>;
+	getRegisteredContainer(id: string): IDashboardContainer;
 	containerTypeSchemaProperties: IJSONSchemaMap;
 	navSectionContainerTypeSchemaProperties: IJSONSchemaMap;
 }
 
 class DashboardContainerRegistry implements IDashboardContainerRegistry {
-	private _containers = new Array<IDashboardContainer>();
+	private _containers: { [x: string]: IDashboardContainer } = {};
 	private _dashboardContainerTypeSchemaProperties: IJSONSchemaMap = {};
 	private _dashboardNavSectionContainerTypeSchemaProperties: IJSONSchemaMap = {};
 
-	public registerContainer(tab: IDashboardContainer): void {
-		this._containers.push(tab);
+	public registerContainer(container: IDashboardContainer): void {
+		this._containers[container.id] = container;
 	}
 
-	public get containers(): Array<IDashboardContainer> {
-		return this._containers;
+	public getRegisteredContainer(id: string): IDashboardContainer {
+		return this._containers[id];
 	}
 
 	/**
