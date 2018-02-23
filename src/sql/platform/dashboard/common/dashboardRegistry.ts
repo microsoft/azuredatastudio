@@ -24,7 +24,7 @@ export interface IDashboardTab {
 	title: string;
 	publisher: string;
 	description?: string;
-	content?: object;
+	container?: object;
 	provider?: string | string[];
 	edition?: number | number[];
 	alwaysShow?: boolean;
@@ -34,6 +34,7 @@ export interface IDashboardRegistry {
 	registerDashboardProvider(id: string, properties: ProviderProperties): void;
 	getProperties(id: string): ProviderProperties;
 	registerTab(tab: IDashboardTab): void;
+	registerTabContent(id: string, schema: IJSONSchema): void;
 	tabs: Array<IDashboardTab>;
 	tabContentSchemaProperties: IJSONSchemaMap;
 }

@@ -10,11 +10,11 @@ import {
 	ElementRef, OnInit, ChangeDetectorRef, OnDestroy, ReflectiveInjector, Injector, Type, ComponentRef
 } from '@angular/core';
 
-import { ComponentHostDirective } from './componentHost.directive';
-import { WidgetConfig, WIDGET_CONFIG, IDashboardWidget } from './dashboardWidget';
+import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
+import { WidgetConfig, WIDGET_CONFIG, IDashboardWidget } from 'sql/parts/dashboard/common/dashboardWidget';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { error } from 'sql/base/common/log';
-import { RefreshWidgetAction, ToggleMoreWidgetAction, DeleteWidgetAction } from './actions';
+import { RefreshWidgetAction, ToggleMoreWidgetAction, DeleteWidgetAction } from 'sql/parts/dashboard/common/actions';
 
 /* Widgets */
 import { PropertiesWidgetComponent } from 'sql/parts/dashboard/widgets/properties/propertiesWidget.component';
@@ -43,7 +43,7 @@ const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 
 @Component({
 	selector: 'dashboard-widget-wrapper',
-	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/common/dashboardWidgetWrapper.component.html'))
+	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/contents/dashboardWidgetWrapper.component.html'))
 })
 export class DashboardWidgetWrapper implements AfterContentInit, OnInit, OnDestroy {
 	@Input() private _config: WidgetConfig;

@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-dashboard-webview-tab {
+dashboard-widget-container {
 	height: 100%;
-	width : 100%;
-	display: block;
+	width: 100%;
 }

@@ -58,7 +58,6 @@ We would like to thank all our users who raised issues, and in particular the fo
 * mikaoelitiana for fix: `revert README and CONTRIBUTING after last VSCode merge (#574)`
 * alextercete for `Reinstate menu item to install from VSIX (#682)`
 * alextercete for `Fix "No extension gallery service configured" error (#427)`
-* SebastianPfliegel for `Add cursor snippet (#475)`
 * mwiedemeyer for `Fix #58: Default sort order for DB size widget (#111)`
 * AlexTroshkin for `Show disconnect in context menu only when connectionProfile connected (#150)`
 * AlexTroshkin for `Fix #138: Invalid syntax color highlighting (identity not highlighting) (#140))`
