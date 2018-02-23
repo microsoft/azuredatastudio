@@ -121,6 +121,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerAgentSeriviceProvider(provider: sqlops.AgentServicesProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider);
+		this._proxy.$registerAgentServicesProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	$registerCapabilitiesServiceProvider(provider: sqlops.CapabilitiesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider);
 		this._proxy.$registerCapabilitiesServiceProvider(provider.providerId, provider.handle);
@@ -476,5 +482,17 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	public $onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void {
 		this._proxy.$onSessionEventsAvailable(handle, response);
+	}
+
+
+	/**
+	 * Agent Job Provider methods
+	 */
+
+	/**
+	 * Get Agent Job list
+	 */
+	public $getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobInfo[]> {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getJobs(ownerUri);
 	}
 }

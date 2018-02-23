@@ -16,7 +16,7 @@ import * as sqlops from 'sqlops';
 export class AgentService implements IAgentService {
 	_serviceBrand: any;
 
-	private _providers: { [handle: string]: sqlops.AdminServicesProvider; } = Object.create(null);
+	private _providers: { [handle: string]: sqlops.AgentServicesProvider; } = Object.create(null);
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
@@ -30,7 +30,7 @@ export class AgentService implements IAgentService {
 		});
 	}
 
-	private _runAction<T>(uri: string, action: (handler: sqlops.AdminServicesProvider) => Thenable<T>): Thenable<T> {
+	private _runAction<T>(uri: string, action: (handler: sqlops.AgentServicesProvider) => Thenable<T>): Thenable<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {
@@ -44,7 +44,7 @@ export class AgentService implements IAgentService {
 		}
 	}
 
-	public registerProvider(providerId: string, provider: sqlops.AdminServicesProvider): void {
+	public registerProvider(providerId: string, provider: sqlops.AgentServicesProvider): void {
 		this._providers[providerId] = provider;
 	}
 }

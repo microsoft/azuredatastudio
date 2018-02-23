@@ -18,6 +18,7 @@ import { IMetadataService } from 'sql/services/metadata/metadataService';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
+import { IAgentService } from 'sql/parts/agent/common/interfaces';
 import { IBackupService } from 'sql/parts/disasterRecovery/backup/common/backupService';
 import { IRestoreService } from 'sql/parts/disasterRecovery/restore/common/restoreService';
 import { ITaskService } from 'sql/parts/taskHistory/common/taskService';
@@ -50,6 +51,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IScriptingService private _scriptingService: IScriptingService,
 		@IAdminService private _adminService: IAdminService,
+		@IAgentService private _agentService: IAgentService,
 		@IBackupService private _backupService: IBackupService,
 		@IRestoreService private _restoreService: IRestoreService,
 		@ITaskService private _taskService: ITaskService,
@@ -320,6 +322,17 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			createLogin(connectionUri: string, login: sqlops.LoginInfo): Thenable<sqlops.CreateLoginResponse> {
 				return self._proxy.$createLogin(handle, connectionUri, login);
+			}
+		});
+
+		return undefined;
+	}
+
+	public $registerAgentServicesProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
+		this._agentService.registerProvider(providerId, <sqlops.AgentServicesProvider>{
+			getJobs(connectionUri: string): Thenable<sqlops.AgentJobInfo[]> {
+				return self._proxy.$getJobs(handle, connectionUri);
 			}
 		});
 

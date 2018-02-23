@@ -15,5 +15,5 @@ export const IAgentService = createDecorator<IAgentService>(SERVICE_ID);
 export interface IAgentService {
 	_serviceBrand: any;
 
-	registerProvider(providerId: string, provider: sqlops.AdminServicesProvider): void;
+	registerProvider(providerId: string, provider: sqlops.AgentServicesProvider): void;
 }
