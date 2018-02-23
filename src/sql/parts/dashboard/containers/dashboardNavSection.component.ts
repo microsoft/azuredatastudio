@@ -98,10 +98,10 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 						configs = cb.apply(this, [configs]);
 					});
 					if (key === WIDGETS_CONTAINER) {
-						return { id: v.id, title: v.title, container: { 'widgets-container': configs }};
+						return { id: v.id, title: v.title, container: { 'widgets-container': configs } };
 
 					} else {
-						return { id: v.id, title: v.title, container: { 'grid-container': configs }};
+						return { id: v.id, title: v.title, container: { 'grid-container': configs } };
 					}
 				}
 				return { id: v.id, title: v.title, container: container };
