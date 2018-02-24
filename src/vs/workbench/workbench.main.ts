@@ -161,6 +161,7 @@ import 'sql/parts/dashboard/widgets/webview/webviewWidget.contribution';
 import 'sql/parts/dashboard/dashboardConfig.contribution';
 /* Containers */
 import 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
+import 'sql/parts/dashboard/containers/dashboardControlHostContainer.contribution';
 import 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 import 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import 'sql/parts/dashboard/containers/dashboardContainer.contribution';

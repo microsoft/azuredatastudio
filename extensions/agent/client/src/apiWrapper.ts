@@ -21,6 +21,11 @@ export class ApiWrapper {
         return data.dashboard.registerWebviewProvider(widgetId, handler);
     }
 
+
+    public registerControlHostProvider(widgetId: string, handler: (webview: data.DashboardWebview) => void): void {
+        return data.dashboard.registerWebviewProvider(widgetId, handler);
+    }
+
     /**
      * Get the configuration for a extensionName
      * @param extensionName The string name of the extension to get the configuration for

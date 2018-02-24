@@ -26,6 +26,17 @@
             "container": {
                 "webview-container": null
             }
+        },
+        {
+            "id": "data-management-controlhost",
+            "description": "Control Host test",
+            "provider": "MSSQL",
+            "title": "Control Host",
+            "container": {
+                "controlhost-container": {
+                  "type": "agent"
+                }
+            }
         }
     ]
   },
