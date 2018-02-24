@@ -390,11 +390,11 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-"dataprotocol-client@git://github.com/Microsoft/sqlops-dataprotocolclient.git#release":
-  version "1.0.0"
-  resolved "git://github.com/Microsoft/sqlops-dataprotocolclient.git#739fdf93140c3cb1bc882076bf11765b187bf8a3"
+"dataprotocol-client@git://github.com/Microsoft/sqlops-dataprotocolclient.git#0.1.2":
+  version "0.1.0"
+  resolved "git://github.com/Microsoft/sqlops-dataprotocolclient.git#b526d962270a6508faa42f342f2a93c14f056d55"
   dependencies:
-    sqlops "git://github.com/anthonydresser/vscode-extension-vscode"
+    sqlops "github:anthonydresser/vscode-extension-vscode"
     vscode "1.1.5"
     vscode-languageclient "3.5.0"
 
@@ -587,7 +587,7 @@ extend@~1.2.1:
 "extensions-modules@file:../extensions-modules":
   version "0.1.0"
   dependencies:
-    dataprotocol-client "git://github.com/Microsoft/sqlops-dataprotocolclient.git#release"
+    dataprotocol-client "git://github.com/Microsoft/sqlops-dataprotocolclient.git#0.1.2"
     decompress "^4.2.0"
     fs-extra-promise "^1.0.1"
     http-proxy-agent "^2.0.0"
@@ -1905,9 +1905,9 @@ split@0.3:
   dependencies:
     through "2"
 
-"sqlops@git://github.com/anthonydresser/vscode-extension-vscode":
-  version "1.1.10"
-  resolved "git://github.com/anthonydresser/vscode-extension-vscode#96cc0758d2528a33a12d73894a6d40c8bfb15ca1"
+"sqlops@github:anthonydresser/vscode-extension-vscode":
+  version "1.1.11"
+  resolved "https://codeload.github.com/anthonydresser/vscode-extension-vscode/tar.gz/dac501bbaa03a25239c060c6371dfdcf06707599"
   dependencies:
     glob "^7.1.2"
     gulp-chmod "^2.0.0"

@@ -20,8 +20,10 @@
   "scripts": {
     "prepare": "tsc -p ./src",
     "compile": "tsc -p ./src",
-    "watch": "tsc -w -p ./src",
-    "update-vscode": "node ./node_modules/vscode/bin/install"
+    "watch": "tsc -w -p ./src"
+  },
+  "engines": {
+    "vscode": "*"
   },
   "main": "./lib/main.js",
   "typings": "./lib/main"
