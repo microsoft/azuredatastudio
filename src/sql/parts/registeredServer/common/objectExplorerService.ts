@@ -482,7 +482,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							reject('Could not find tree node for expand due to leaf node on path');
 							return;
 						}
-						this._serverTreeView.expand(treeNode).then(() => {
+						this._serverTreeView.expand(treeNode === rootNode ? rootNode.connection : treeNode).then(() => {
 							if (treeNode.nodePath === nodePath) {
 								resolve();
 								return;
@@ -494,7 +494,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							}
 							let nextNode = children.reduce((currentMax, newNode) => currentMax.nodePath.length < newNode.nodePath.length ? newNode : currentMax);
 							expandFunction(nextNode);
-						});
+						}, err => reject(err));
 					});
 					expandFunction(rootNode);
 				});
