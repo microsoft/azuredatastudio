@@ -6,12 +6,13 @@ import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
 
-import { registerTab, generateTabContentSchemaProperties } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { registerTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 
 export interface IDashboardTabContrib {
 	id: string;
 	title: string;
-	content: object;
+	container: object;
 	description?: string;
 	provider?: string | string[];
 	edition?: number | number[];
@@ -61,10 +62,10 @@ const tabSchema: IJSONSchema = {
 				}
 			]
 		},
-		content: {
-			description: localize('sqlops.extension.contributes.dashboard.tab.content', "The content that will be displayed in this tab."),
+		container: {
+			description: localize('sqlops.extension.contributes.dashboard.tab.container', "The container that will be displayed in this tab."),
 			type: 'object',
-			properties: generateTabContentSchemaProperties()
+			properties: generateContainerTypeSchemaProperties()
 		},
 		alwaysShow: {
 			description: localize('sqlops.extension.contributes.dashboard.tab.alwaysShow', "Whether or not this tab should always be shown or only when the user adds it."),
@@ -87,7 +88,7 @@ const tabContributionSchema: IJSONSchema = {
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>('dashboard.tabs', [], tabContributionSchema).setHandler(extensions => {
 
 	function handleCommand(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
-		let { description, content, title, edition, provider, id, alwaysShow } = tab;
+		let { description, container, title, edition, provider, id, alwaysShow } = tab;
 		alwaysShow = alwaysShow || false;
 		let publisher = extension.description.publisher;
 		if (!title) {
@@ -97,10 +98,10 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		if (!description) {
 			extension.collector.warn('No description specified to show.');
 		}
-		if (!content) {
-			extension.collector.warn('No content specified to show.');
+		if (!container) {
+			extension.collector.warn('No container specified to show.');
 		}
-		registerTab({ description, title, content, edition, provider, id, alwaysShow, publisher });
+		registerTab({ description, title, container, edition, provider, id, alwaysShow, publisher });
 	}
 
 	for (let extension of extensions) {

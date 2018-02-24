@@ -24,6 +24,14 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 			panel.dashboard-panel > .tabbedPanel > .title > .tabList .tab-header.active {
 				background-color: ${tabActiveBackground};
 			}
+
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title > .tabList .tab-header.active {
+				border-bottom-color: transparent;
+			}
+
+			panel.dashboard-panel > .tabbedPanel.vertical > .title > .tabList .tab-header.active {
+				border-right-color: transparent;
+			}
 		`);
 	}
 
@@ -65,12 +73,17 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const tabBoarder = theme.getColor(TAB_BORDER);
 	if (tabBoarder) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel.horizontal > .title > .tabList .tab-header {
+			panel.dashboard-panel > .tabbedPanel > .title > .tabList .tab-header {
 				border-right-color: ${tabBoarder};
+				border-bottom-color: ${tabBoarder};
 			}
 
-			panel.dashboard-panel > .tabbedPanel.vertical > .title > .tabList .tab-header {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title > .title-actions {
 				border-bottom-color: ${tabBoarder};
+			}
+
+			panel.dashboard-panel > .tabbedPanel.vertical > .title > .title-actions {
+				border-right-color: ${tabBoarder};
 			}
 		`);
 	}

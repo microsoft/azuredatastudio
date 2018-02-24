@@ -6,7 +6,7 @@
 'use strict';
 
 import * as adal from 'adal-node';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import * as request from 'request';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
@@ -22,7 +22,7 @@ import TokenCache from './tokenCache';
 
 const localize = nls.loadMessageBundle();
 
-export class AzureAccountProvider implements data.AccountProvider {
+export class AzureAccountProvider implements sqlops.AccountProvider {
 	// CONSTANTS ///////////////////////////////////////////////////////////
 	private static WorkSchoolAccountType: string = 'work_school';
 	private static MicrosoftAccountType: string = 'microsoft';
@@ -57,7 +57,7 @@ export class AzureAccountProvider implements data.AccountProvider {
 	 * @param {"data".AccountKey} accountKey Key identifying the account to delete tokens for
 	 * @returns {Thenable<void>} Promise to clear requested tokens from the token cache
 	 */
-	public clear(accountKey: data.AccountKey): Thenable<void> {
+	public clear(accountKey: sqlops.AccountKey): Thenable<void> {
 		return this.doIfInitialized(() => this.clearAccountTokens(accountKey));
 	}
 
@@ -73,10 +73,10 @@ export class AzureAccountProvider implements data.AccountProvider {
 		return this.doIfInitialized(() => this.getAccessTokens(account));
 	}
 
-	public initialize(restoredAccounts: data.Account[]): Thenable<data.Account[]> {
+	public initialize(restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> {
 		let self = this;
 
-		let rehydrationTasks: Thenable<data.Account>[] = [];
+		let rehydrationTasks: Thenable<sqlops.Account>[] = [];
 		for (let account of restoredAccounts) {
 			// Purge any invalid accounts
 			if (!account) {
@@ -145,7 +145,7 @@ export class AzureAccountProvider implements data.AccountProvider {
 		return Promise.resolve();
 	}
 
-	private clearAccountTokens(accountKey: data.AccountKey): Thenable<void> {
+	private clearAccountTokens(accountKey: sqlops.AccountKey): Thenable<void> {
 		// Put together a query to look up any tokens associated with the account key
 		let query = <adal.TokenResponse>{ userId: accountKey.accountId };
 
@@ -180,7 +180,7 @@ export class AzureAccountProvider implements data.AccountProvider {
 						if (error) {
 							// TODO: We'll assume for now that the account is stale, though that might not be accurate
 							account.isStale = true;
-							data.accounts.accountUpdated(account);
+							sqlops.accounts.accountUpdated(account);
 
 							reject(error);
 							return;
@@ -240,7 +240,7 @@ export class AzureAccountProvider implements data.AccountProvider {
 		let title = isAddAccount ?
 			localize('addAccount', 'Add {0} account', self._metadata.displayName) :
 			localize('refreshAccount', 'Refresh {0} account', self._metadata.displayName);
-		return data.accounts.beginAutoOAuthDeviceCode(self._metadata.id, title, oAuth.userCodeInfo.message, oAuth.userCodeInfo.userCode, oAuth.userCodeInfo.verificationUrl)
+		return sqlops.accounts.beginAutoOAuthDeviceCode(self._metadata.id, title, oAuth.userCodeInfo.message, oAuth.userCodeInfo.userCode, oAuth.userCodeInfo.verificationUrl)
 			.then(() => {
 				return new Promise<adal.TokenResponse>((resolve, reject) => {
 					let context = oAuth.context;
@@ -249,14 +249,14 @@ export class AzureAccountProvider implements data.AccountProvider {
 							if (err) {
 								if (self._autoOAuthCancelled) {
 									// Auto OAuth was cancelled by the user, indicate this with the error we return
-									reject(<data.UserCancelledSignInError>{ userCancelledSignIn: true });
+									reject(<sqlops.UserCancelledSignInError>{ userCancelledSignIn: true });
 								} else {
 									// Auto OAuth failed for some other reason
-									data.accounts.endAutoOAuthDeviceCode();
+									sqlops.accounts.endAutoOAuthDeviceCode();
 									reject(err);
 								}
 							} else {
-								data.accounts.endAutoOAuthDeviceCode();
+								sqlops.accounts.endAutoOAuthDeviceCode();
 								resolve(<adal.TokenResponse>response);
 							}
 

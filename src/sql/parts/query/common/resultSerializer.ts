@@ -7,7 +7,7 @@ import * as ConnectionConstants from 'sql/parts/connection/common/constants';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import { SaveResultsRequestParams } from 'data';
+import { SaveResultsRequestParams } from 'sqlops';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { ISaveRequest, SaveFormat } from 'sql/parts/grid/common/interfaces';
 import * as PathUtilities from 'sql/common/pathUtilities';

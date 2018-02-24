@@ -26,12 +26,18 @@ import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost
 
 /* Base Components */
 import { DashboardComponent, DASHBOARD_SELECTOR } from 'sql/parts/dashboard/dashboard.component';
-import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
-import { DashboardWidgetTab } from 'sql/parts/dashboard/tabs/dashboardWidgetTab.component';
-import { DashboardWebviewTab } from 'sql/parts/dashboard/tabs/dashboardWebviewTab.component';
+import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
+import { DashboardWidgetContainer } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.component';
+import { DashboardGridContainer } from 'sql/parts/dashboard/containers/dashboardGridContainer.component';
+import { DashboardWebviewContainer } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.component';
+import { DashboardNavSection } from 'sql/parts/dashboard/containers/dashboardNavSection.component';
+import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
+import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
 import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
-let baseComponents = [DashboardComponent, DashboardWidgetWrapper, DashboardWebviewTab, DashboardWidgetTab, ComponentHostDirective, BreadcrumbComponent];
+import { DashboardHomeContainer } from 'sql/parts/dashboard/containers/dashboardHomeContainer.component';
+
+let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer, DashboardWidgetContainer, DashboardGridContainer, DashboardNavSection, WidgetContent, WebviewContent, ComponentHostDirective, BreadcrumbComponent];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
@@ -39,6 +45,7 @@ import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
 /* Pages */
 import { ServerDashboardPage } from 'sql/parts/dashboard/pages/serverDashboardPage.component';
 import { DatabaseDashboardPage } from 'sql/parts/dashboard/pages/databaseDashboardPage.component';
+
 let pageComponents = [ServerDashboardPage, DatabaseDashboardPage];
 
 /* Widget Components */
@@ -47,6 +54,7 @@ import { ExplorerWidget } from 'sql/parts/dashboard/widgets/explorer/explorerWid
 import { TasksWidget } from 'sql/parts/dashboard/widgets/tasks/tasksWidget.component';
 import { InsightsWidget } from 'sql/parts/dashboard/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/parts/dashboard/widgets/webview/webviewWidget.component';
+
 let widgetComponents = [
 	PropertiesWidgetComponent,
 	ExplorerWidget,

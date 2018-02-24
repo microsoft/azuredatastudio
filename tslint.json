@@ -46,9 +46,9 @@
 					"node"
 				]
 			}
-		],	
+		],
 		// {{SQL CARBON EDIT}}
-		// remove import patterns	
+		// remove import patterns
 		"duplicate-imports": true,
 		"translation-remind": true
 	},

@@ -12,7 +12,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import Event, { Emitter } from 'vs/base/common/event';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
@@ -27,26 +27,26 @@ export const IObjectExplorerService = createDecorator<IObjectExplorerService>(SE
 export interface IObjectExplorerService {
 	_serviceBrand: any;
 
-	createNewSession(providerId: string, connection: ConnectionProfile): Thenable<data.ObjectExplorerSessionResponse>;
+	createNewSession(providerId: string, connection: ConnectionProfile): Thenable<sqlops.ObjectExplorerSessionResponse>;
 
-	closeSession(providerId: string, session: data.ObjectExplorerSession): Thenable<data.ObjectExplorerCloseSessionResponse>;
+	closeSession(providerId: string, session: sqlops.ObjectExplorerSession): Thenable<sqlops.ObjectExplorerCloseSessionResponse>;
 
-	expandNode(providerId: string, session: data.ObjectExplorerSession, nodePath: string): Thenable<data.ObjectExplorerExpandInfo>;
+	expandNode(providerId: string, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo>;
 
-	refreshNode(providerId: string, session: data.ObjectExplorerSession, nodePath: string): Thenable<data.ObjectExplorerExpandInfo>;
+	refreshNode(providerId: string, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo>;
 
-	expandTreeNode(session: data.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
+	expandTreeNode(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
 
-	refreshTreeNode(session: data.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
+	refreshTreeNode(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
 
-	onSessionCreated(handle: number, sessionResponse: data.ObjectExplorerSession);
+	onSessionCreated(handle: number, sessionResponse: sqlops.ObjectExplorerSession);
 
-	onNodeExpanded(handle: number, sessionResponse: data.ObjectExplorerExpandInfo);
+	onNodeExpanded(handle: number, sessionResponse: sqlops.ObjectExplorerExpandInfo);
 
 	/**
 	 * Register a ObjectExplorer provider
 	 */
-	registerProvider(providerId: string, provider: data.ObjectExplorerProvider): void;
+	registerProvider(providerId: string, provider: sqlops.ObjectExplorerProvider): void;
 
 	getObjectExplorerNode(connection: IConnectionProfile): TreeNode;
 
@@ -66,9 +66,9 @@ export interface IObjectExplorerService {
 
 	getServerTreeView(): ServerTreeView;
 
-	getActiveConnections(): { connectionId: string, nodeInfo: data.NodeInfo }[];
+	getActiveConnections(): { connectionId: string, nodeInfo: sqlops.NodeInfo }[];
 
-	getChildren(connectionId: string, nodePath: string): Thenable<data.NodeInfo[]>;
+	getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]>;
 
 	isExpanded(connectionId: string, nodePath: string): boolean;
 
@@ -78,7 +78,7 @@ export interface IObjectExplorerService {
 
 	selectNodeForConnection(connectionId: string, nodePath: string): Thenable<void>;
 
-	findNodeInfo(connectionId: string, nodePath: string): Thenable<data.NodeInfo>;
+	findNodeInfo(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo>;
 }
 
 interface SessionStatus {
@@ -88,7 +88,7 @@ interface SessionStatus {
 }
 
 interface NodeStatus {
-	expandEmitter: Emitter<data.ObjectExplorerExpandInfo>;
+	expandEmitter: Emitter<sqlops.ObjectExplorerExpandInfo>;
 }
 
 export interface ObjectExplorerNodeEventArgs {
@@ -103,7 +103,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _disposables: IDisposable[] = [];
 
-	private _providers: { [handle: string]: data.ObjectExplorerProvider; } = Object.create(null);
+	private _providers: { [handle: string]: sqlops.ObjectExplorerProvider; } = Object.create(null);
 
 	private _activeObjectExplorerNodes: { [id: string]: TreeNode };
 	private _sessions: { [sessionId: string]: SessionStatus };
@@ -159,7 +159,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	/**
 	 * Gets called when expanded node response is ready
 	 */
-	public onNodeExpanded(handle: number, expandResponse: data.ObjectExplorerExpandInfo) {
+	public onNodeExpanded(handle: number, expandResponse: sqlops.ObjectExplorerExpandInfo) {
 
 		if (expandResponse.errorMessage) {
 			error(expandResponse.errorMessage);
@@ -176,7 +176,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	/**
 	 * Gets called when session is created
 	 */
-	public onSessionCreated(handle: number, session: data.ObjectExplorerSession) {
+	public onSessionCreated(handle: number, session: sqlops.ObjectExplorerSession) {
 		let connection: ConnectionProfile = undefined;
 		let errorMessage: string = undefined;
 		if (this._sessions[session.sessionId]) {
@@ -231,9 +231,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._activeObjectExplorerNodes[connection.id];
 	}
 
-	public createNewSession(providerId: string, connection: ConnectionProfile): Thenable<data.ObjectExplorerSessionResponse> {
+	public createNewSession(providerId: string, connection: ConnectionProfile): Thenable<sqlops.ObjectExplorerSessionResponse> {
 		let self = this;
-		return new Promise<data.ObjectExplorerSessionResponse>((resolve, reject) => {
+		return new Promise<sqlops.ObjectExplorerSessionResponse>((resolve, reject) => {
 			let provider = this._providers[providerId];
 			if (provider) {
 				provider.createNewSession(connection.toConnectionInfo()).then(result => {
@@ -252,8 +252,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	public expandNode(providerId: string, session: data.ObjectExplorerSession, nodePath: string): Thenable<data.ObjectExplorerExpandInfo> {
-		return new Promise<data.ObjectExplorerExpandInfo>((resolve, reject) => {
+	public expandNode(providerId: string, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo> {
+		return new Promise<sqlops.ObjectExplorerExpandInfo>((resolve, reject) => {
 			let provider = this._providers[providerId];
 			if (provider) {
 				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
@@ -267,7 +267,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 		});
 	}
-	private callExpandOrRefreshFromProvider(provider: data.ObjectExplorerProvider, nodeInfo: data.ExpandNodeInfo, refresh: boolean = false) {
+	private callExpandOrRefreshFromProvider(provider: sqlops.ObjectExplorerProvider, nodeInfo: sqlops.ExpandNodeInfo, refresh: boolean = false) {
 		if (refresh) {
 			return provider.refreshNode(nodeInfo);
 		} else {
@@ -276,17 +276,17 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private expandOrRefreshNode(
-		provider: data.ObjectExplorerProvider,
-		session: data.ObjectExplorerSession,
+		provider: sqlops.ObjectExplorerProvider,
+		session: sqlops.ObjectExplorerSession,
 		nodePath: string,
-		refresh: boolean = false): Thenable<data.ObjectExplorerExpandInfo> {
+		refresh: boolean = false): Thenable<sqlops.ObjectExplorerExpandInfo> {
 		let self = this;
-		return new Promise<data.ObjectExplorerExpandInfo>((resolve, reject) => {
+		return new Promise<sqlops.ObjectExplorerExpandInfo>((resolve, reject) => {
 			if (session.sessionId in self._sessions && self._sessions[session.sessionId]) {
 				let newRequest = false;
 				if (!self._sessions[session.sessionId].nodes[nodePath]) {
 					self._sessions[session.sessionId].nodes[nodePath] = {
-						expandEmitter: new Emitter<data.ObjectExplorerExpandInfo>()
+						expandEmitter: new Emitter<sqlops.ObjectExplorerExpandInfo>()
 					};
 					newRequest = true;
 				}
@@ -316,7 +316,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	public refreshNode(providerId: string, session: data.ObjectExplorerSession, nodePath: string): Thenable<data.ObjectExplorerExpandInfo> {
+	public refreshNode(providerId: string, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo> {
 		let provider = this._providers[providerId];
 		if (provider) {
 			TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 1, provider: providerId });
@@ -325,7 +325,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return Promise.resolve(undefined);
 	}
 
-	public closeSession(providerId: string, session: data.ObjectExplorerSession): Thenable<data.ObjectExplorerCloseSessionResponse> {
+	public closeSession(providerId: string, session: sqlops.ObjectExplorerSession): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
 		let provider = this._providers[providerId];
 		if (provider) {
 			return provider.closeSession({
@@ -339,7 +339,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	/**
 	 * Register a ObjectExplorer provider
 	 */
-	public registerProvider(providerId: string, provider: data.ObjectExplorerProvider): void {
+	public registerProvider(providerId: string, provider: sqlops.ObjectExplorerProvider): void {
 		this._providers[providerId] = provider;
 	}
 
@@ -347,15 +347,15 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._disposables = dispose(this._disposables);
 	}
 
-	public expandTreeNode(session: data.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
+	public expandTreeNode(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
 		return this.expandOrRefreshTreeNode(session, parentTree);
 	}
 
-	public refreshTreeNode(session: data.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
+	public refreshTreeNode(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
 		return this.expandOrRefreshTreeNode(session, parentTree, true);
 	}
 
-	private callExpandOrRefreshFromService(providerId: string, session: data.ObjectExplorerSession, nodePath: string, refresh: boolean = false): Thenable<data.ObjectExplorerExpandInfo> {
+	private callExpandOrRefreshFromService(providerId: string, session: sqlops.ObjectExplorerSession, nodePath: string, refresh: boolean = false): Thenable<sqlops.ObjectExplorerExpandInfo> {
 		if (refresh) {
 			return this.refreshNode(providerId, session, nodePath);
 		} else {
@@ -364,7 +364,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private expandOrRefreshTreeNode(
-		session: data.ObjectExplorerSession,
+		session: sqlops.ObjectExplorerSession,
 		parentTree: TreeNode,
 		refresh: boolean = false): Thenable<TreeNode[]> {
 		return new Promise<TreeNode[]>((resolve, reject) => {
@@ -385,7 +385,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	private toTreeNode(nodeInfo: data.NodeInfo, parent: TreeNode): TreeNode {
+	private toTreeNode(nodeInfo: sqlops.NodeInfo, parent: TreeNode): TreeNode {
 		// Show the status for database nodes with a status field
 		let isLeaf: boolean = nodeInfo.isLeaf;
 		if (nodeInfo.nodeType === NodeType.Database) {
@@ -449,7 +449,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._serverTreeView;
 	}
 
-	public getActiveConnections(): { connectionId: string, nodeInfo: data.NodeInfo }[] {
+	public getActiveConnections(): { connectionId: string, nodeInfo: sqlops.NodeInfo }[] {
 		let connections: [string, TreeNode][] = Object.entries(this._activeObjectExplorerNodes);
 		return connections.map(([connectionId, treeNode]) => {
 			this._sessions[treeNode.session.sessionId].treeNodes[treeNode.nodePath] = treeNode;
@@ -545,7 +545,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	public getChildren(connectionId: string, nodePath: string): Thenable<data.NodeInfo[]> {
+	public getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]> {
 		return this.findNodeInfo(connectionId, nodePath).then(parentNode => {
 			if (!parentNode) {
 				throw new Error('There is no object at the given node path');
@@ -599,7 +599,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return currentNode;
 	}
 
-	public findNodeInfo(connectionId: string, nodePath: string): Thenable<data.NodeInfo> {
+	public findNodeInfo(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo> {
 		let rootNode = this._activeObjectExplorerNodes[connectionId];
 		if (!rootNode) {
 			return Promise.resolve(undefined);
@@ -607,7 +607,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return new Promise((resolve, reject) => {
 			let findNodeFunction = (currentNodePath: string) => {
 				this.expandNode(rootNode.connection.providerName, rootNode.session, currentNodePath).then(expandInfo => {
-					let candidates: data.NodeInfo[] = [];
+					let candidates: sqlops.NodeInfo[] = [];
 					expandInfo.nodes.forEach(node => {
 						if (node.nodePath === nodePath) {
 							resolve(node);

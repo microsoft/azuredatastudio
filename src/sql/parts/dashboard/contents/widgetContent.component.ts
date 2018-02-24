@@ -3,16 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./dashboardWidgetTab';
+import 'vs/css!./widgetContent';
 
-import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter, OnChanges } from '@angular/core';
+import { Component, Inject, Input, forwardRef, ViewChild, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { TabConfig, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { DashboardWidgetWrapper } from 'sql/parts/dashboard/common/dashboardWidgetWrapper.component';
+import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
+import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
-import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
@@ -65,13 +64,13 @@ function configSorter(a, b): number {
 }
 
 @Component({
-	selector: 'dashboard-widget-tab',
-	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/tabs/dashboardWidgetTab.component.html')),
-	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWidgetTab) }]
+	selector: 'widget-content',
+	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/contents/widgetContent.component.html'))
 })
-export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnChanges {
-	@Input() private tab: TabConfig;
-	private widgets: WidgetConfig[];
+export class WidgetContent {
+	@Input() private widgets: WidgetConfig[];
+	@Input() private originalConfig: WidgetConfig[];
+	@Input() private context: string;
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
 
@@ -106,32 +105,8 @@ export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnCha
 	@ViewChildren(NgGridItem) private _items: QueryList<NgGridItem>;
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
-		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {
-		super();
-	}
-
-	protected init() {
-	}
-
-	ngOnChanges() {
-		if (this.tab.content) {
-			this.widgets = Object.values(this.tab.content)[0];
-			this._cd.detectChanges();
-		}
-	}
-
-	ngOnDestroy() {
-		this.dispose();
-	}
-
-	public get id(): string {
-		return this.tab.id;
-	}
-
-	public get editable(): boolean {
-		return this.tab.editable;
 	}
 
 	public layout() {
@@ -169,8 +144,8 @@ export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnCha
 				let index = this.widgets.findIndex(i => i.id === e);
 				this.widgets.splice(index, 1);
 
-				index = this.tab.originalConfig.findIndex(i => i.id === e);
-				this.tab.originalConfig.splice(index, 1);
+				index = this.originalConfig.findIndex(i => i.id === e);
+				this.originalConfig.splice(index, 1);
 
 				this._rewriteConfig();
 				this._cd.detectChanges();
@@ -178,7 +153,7 @@ export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnCha
 			this._editDispose.push(subscriptionToDisposable(this._grid.onResizeStop.subscribe((e: NgGridItem) => {
 				this._onResize.fire();
 				let event = e.getEventOutput();
-				let config = this.tab.originalConfig.find(i => i.id === event.payload.id);
+				let config = this.originalConfig.find(i => i.id === event.payload.id);
 
 				if (!config.gridItemConfig) {
 					config.gridItemConfig = {};
@@ -195,7 +170,7 @@ export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnCha
 				this._onResize.fire();
 				let event = e.getEventOutput();
 				this._items.forEach(i => {
-					let config = this.tab.originalConfig.find(j => j.id === i.getEventOutput().payload.id);
+					let config = this.originalConfig.find(j => j.id === i.getEventOutput().payload.id);
 					if ((config.gridItemConfig && config.gridItemConfig.col) || config.id === event.payload.id) {
 						if (!config.gridItemConfig) {
 							config.gridItemConfig = {};
@@ -204,7 +179,7 @@ export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnCha
 						config.gridItemConfig.row = i.row;
 					}
 				});
-				this.tab.originalConfig.sort(configSorter);
+				this.originalConfig.sort(configSorter);
 
 				this._rewriteConfig();
 			})));
@@ -217,12 +192,12 @@ export class DashboardWidgetTab extends DashboardTab implements OnDestroy, OnCha
 	}
 
 	private _rewriteConfig(): void {
-		let writeableConfig = objects.deepClone(this.tab.originalConfig);
+		let writeableConfig = objects.deepClone(this.originalConfig);
 
 		writeableConfig.forEach(i => {
 			delete i.id;
 		});
 		let target: ConfigurationTarget = ConfigurationTarget.USER;
-		this.dashboardService.writeSettings([this.tab.context, 'widgets'].join('.'), writeableConfig, target);
+		this.dashboardService.writeSettings([this.context, 'widgets'].join('.'), writeableConfig, target);
 	}
 }

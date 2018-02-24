@@ -8,10 +8,19 @@
 	border-top-width: 1px;
 	border-top-style: solid;
 	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+}
+
+panel {
+	display: block;
+	height: 100%;
+	width: 100%;
 }
 
 .tabbedPanel .composite.title {
 	display: flex;
+	flex: 0 0 auto;
 }
 
 .tabbedPanel .tabList {
@@ -62,6 +71,7 @@
 
 .tabbedPanel.vertical {
 	display: flex;
+	flex-direction: row;
 }
 
 .tabbedPanel.vertical > .title {
@@ -70,8 +80,9 @@
 	height: 100%;
 }
 
-.tabbedPanel.vertical > .tab-content {
+.tabbedPanel > .tab-content {
 	flex: 1;
+	position: relative;
 }
 
 .tabbedPanel.vertical > .title > .tabList {

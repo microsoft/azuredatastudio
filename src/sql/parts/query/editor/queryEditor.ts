@@ -27,7 +27,7 @@ import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/c
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
-import { ISelectionData } from 'data';
+import { ISelectionData } from 'sqlops';
 import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -737,7 +737,7 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	private _doLayoutSql() {
-		if ( this._resultsEditorContainer) {
+		if (this._resultsEditorContainer) {
 			this._resultsEditorContainer.style.width = '0px';
 			this._resultsEditorContainer.style.height = '0px';
 			this._resultsEditorContainer.style.left = '0px';

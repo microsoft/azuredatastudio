@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import Event, { Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -55,16 +55,16 @@ export class AddAccountAction extends Action {
 		return new TPromise((resolve, reject) => {
 			self._accountManagementService.addAccount(self._providerId)
 				.then(
-					() => {
-						self._addAccountCompleteEmitter.fire();
-						resolve(true);
-					},
-					err => {
-						error(`Error while adding account: ${err}`);
-						self._addAccountErrorEmitter.fire(err);
-						self._addAccountCompleteEmitter.fire();
-						reject(err);
-					}
+				() => {
+					self._addAccountCompleteEmitter.fire();
+					resolve(true);
+				},
+				err => {
+					error(`Error while adding account: ${err}`);
+					self._addAccountErrorEmitter.fire(err);
+					self._addAccountCompleteEmitter.fire();
+					reject(err);
+				}
 				);
 		});
 	}
@@ -78,7 +78,7 @@ export class RemoveAccountAction extends Action {
 	public static LABEL = localize('removeAccount', 'Remove account');
 
 	constructor(
-		private _account: data.Account,
+		private _account: sqlops.Account,
 		@IMessageService private _messageService: IMessageService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
@@ -143,7 +143,7 @@ export class ApplyFilterAction extends Action {
 export class RefreshAccountAction extends Action {
 	public static ID = 'account.refresh';
 	public static LABEL = localize('refreshAccount', 'Reenter your credentials');
-	public account: data.Account;
+	public account: sqlops.Account;
 
 	constructor(
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
@@ -156,14 +156,14 @@ export class RefreshAccountAction extends Action {
 			if (self.account) {
 				self._accountManagementService.refreshAccount(self.account)
 					.then(
-						() => {
-							resolve(true);
-						},
-						err => {
-							error(`Error while refreshing account: ${err}`);
-							reject(err);
-						}
-				);
+					() => {
+						resolve(true);
+					},
+					err => {
+						error(`Error while refreshing account: ${err}`);
+						reject(err);
+					}
+					);
 			} else {
 				let errorMessage = localize('NoAccountToRefresh', 'There is no account to refresh');
 				reject(errorMessage);

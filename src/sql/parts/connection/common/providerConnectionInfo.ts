@@ -5,21 +5,21 @@
 
 'use strict';
 
-import data = require('data');
+import * as sqlops from 'sqlops';
 import * as interfaces from 'sql/parts/connection/common/interfaces';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/parts/connection/common/constants';
 
-export class ProviderConnectionInfo implements data.ConnectionInfo {
+export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 
 	options: { [name: string]: any };
 
 	public providerName: string;
-	protected _serverCapabilities: data.DataProtocolServerCapabilities;
+	protected _serverCapabilities: sqlops.DataProtocolServerCapabilities;
 	private static readonly SqlAuthentication = 'SqlLogin';
 	public static readonly ProviderPropertyName = 'providerName';
 
-	public constructor(serverCapabilities?: data.DataProtocolServerCapabilities, model?: interfaces.IConnectionProfile) {
+	public constructor(serverCapabilities?: sqlops.DataProtocolServerCapabilities, model?: interfaces.IConnectionProfile) {
 		this.options = {};
 		if (serverCapabilities) {
 			this._serverCapabilities = serverCapabilities;
@@ -47,11 +47,11 @@ export class ProviderConnectionInfo implements data.ConnectionInfo {
 		return instance;
 	}
 
-	public get serverCapabilities(): data.DataProtocolServerCapabilities {
+	public get serverCapabilities(): sqlops.DataProtocolServerCapabilities {
 		return this._serverCapabilities;
 	}
 
-	public setServerCapabilities(value: data.DataProtocolServerCapabilities) {
+	public setServerCapabilities(value: sqlops.DataProtocolServerCapabilities) {
 		this._serverCapabilities = value;
 	}
 
@@ -220,7 +220,7 @@ export class ProviderConnectionInfo implements data.ConnectionInfo {
 		return displayName;
 	}
 
-	public getProviderOptions(): data.ConnectionOption[] {
+	public getProviderOptions(): sqlops.ConnectionOption[] {
 		return this._serverCapabilities.connectionProvider.options;
 	}
 

@@ -14,7 +14,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
-import { ISelectionData } from 'data';
+import { ISelectionData } from 'sqlops';
 import {
 	IConnectionManagementService,
 	IConnectionParams,

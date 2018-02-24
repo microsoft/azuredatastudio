@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import vscode = require('vscode');
-import data = require('data');
+import * as vscode from 'vscode';
+import * as sqlops from 'sqlops';
 import { Constants } from '../models/constants';
 import { Serialization } from '../serialize/serialization';
-import { AzureResourceProvider } from '../resourceProvider/resourceProvider';
 import { CredentialStore } from '../credentialstore/credentialstore';
+import { AzureResourceProvider } from '../resourceProvider/resourceProvider';
 import { IExtensionConstants, Telemetry, Constants as SharedConstants, SqlToolsServiceClient, VscodeWrapper, Utils, PlatformInformation } from 'extensions-modules';
 import { SqlOpsDataClient } from 'dataprotocol-client';
 import * as path from 'path';
@@ -101,7 +101,7 @@ export default class MainController implements vscode.Disposable {
 
 				self.createResourceProviderClient().then(rpClient => {
 					let resourceProvider = new AzureResourceProvider(self._client, rpClient);
-					data.resources.registerResourceProvider({
+					sqlops.resources.registerResourceProvider({
 						displayName: 'Azure SQL Resource Provider', // TODO Localize
 						id: 'Microsoft.Azure.SQL.ResourceProvider',
 						settings: {
@@ -116,19 +116,19 @@ export default class MainController implements vscode.Disposable {
 				self.createCredentialClient().then(credentialClient => {
 					self._credentialStore.languageClient = credentialClient;
 					credentialClient.onReady().then(() => {
-						let credentialProvider: data.CredentialProvider = {
+						let credentialProvider: sqlops.CredentialProvider = {
 							handle: 0,
 							saveCredential(credentialId: string, password: string): Thenable<boolean> {
 								return self._credentialStore.saveCredential(credentialId, password);
 							},
-							readCredential(credentialId: string): Thenable<data.Credential> {
+							readCredential(credentialId: string): Thenable<sqlops.Credential> {
 								return self._credentialStore.readCredential(credentialId);
 							},
 							deleteCredential(credentialId: string): Thenable<boolean> {
 								return self._credentialStore.deleteCredential(credentialId);
 							}
 						};
-						data.credentials.registerProvider(credentialProvider);
+						sqlops.credentials.registerProvider(credentialProvider);
 						Utils.logDebug('credentialProvider registered', MainController._extensionConstants.extensionConfigSectionName);
 					});
 				}, error => {
@@ -138,12 +138,12 @@ export default class MainController implements vscode.Disposable {
 				Utils.logDebug(SharedConstants.extensionActivated, MainController._extensionConstants.extensionConfigSectionName);
 				self._initialized = true;
 				setInterval(() => {
-					data.objectexplorer.getActiveConnections().then(connectionNodes => {
+					sqlops.objectexplorer.getActiveConnections().then(connectionNodes => {
 						connectionNodes.forEach(connectionNode => {
 							// data.objectexplorer.getNode(connectionNode.connectionId, 'mairvine-pc/Server Objects/Endpoints/Dedicated Admin Connection').then(node => {
 							// 	return node.select();
 							// });
-							data.objectexplorer.getNode(connectionNode.connectionId, 'mairvine-pc/Server Objects/Endpoints').then(node => {
+							sqlops.objectexplorer.getNode(connectionNode.connectionId, 'mairvine-pc/Server Objects/Endpoints').then(node => {
 							// data.objectexplorer.getNode(connectionNode.connectionId, 'mairvine-pc/Server Objects/Endpoints/Dedicated Admin Connection').then(node => {
 								if (!node) {
 									console.log('could not find node');
@@ -193,7 +193,7 @@ export default class MainController implements vscode.Disposable {
 		});
 	}
 
-	private expandChildren(children: data.objectexplorer.ObjectExplorerNode[], moreLevel: boolean = true) {
+	private expandChildren(children: sqlops.objectexplorer.ObjectExplorerNode[], moreLevel: boolean = true) {
 		children.forEach(child => {
 			child.getChildren().then(oldChildren => {
 				console.log('found ' + oldChildren.length + ' old children for node ' + child.nodePath);

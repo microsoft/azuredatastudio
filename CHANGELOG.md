@@ -1,5 +1,12 @@
 # Change Log
 
+## Version 0.26.7
+* Release date: February 16, 2017
+* Release status: Public Preview Hotfix 1
+
+## What's new in this version
+* Bug fix for `#717 Selecting partial query and hitting Cmd or Ctrl+C opens terminal with Error message`
+
 ## Version 0.26.6
 * Release date: February 15, 2017
 * Release status: Public Preview
@@ -11,15 +18,15 @@ Here's some of the highlights in the February release.
 
 * Support Auto-Update installation on Windows and macOS
 * Publish RPM and DEB packages to offical Microsoft repos
-* Fix #6 Keep connection and selected database when opening new query tabs
-* Fix #22 'Server Name' and 'Database Name' - Can these be drop downs instead of text boxes?
+* Fix `#6 Keep connection and selected database when opening new query tabs`
+* Fix `#22 'Server Name' and 'Database Name' - Can these be drop downs instead of text` boxes?
 * Fix #481 Add "Check for updates" option.
 * SQL Editor colorization and auto-completion fixes
-  * #584 Keyword "FULL" not highlighted by IntelliSense
-  * #345 Colorize SQL functions within the editor
-  * #300 [#tempData] latest "]" will display green color
-  * #225 Keyword color mismatch
-  * #60 invalid sql syntax color highlighting when using temporary table in from clause
+  * `#584 Keyword "FULL" not highlighted by IntelliSense`
+  * `#345 Colorize SQL functions within the editor`
+  * `#300 [#tempData] latest "]" will display green color`
+  * `#225 Keyword color mismatch`
+  * `#60 invalid sql syntax color highlighting when using temporary table in from clause`
 * Introduce Connection extensibility API
 * VS Code Editor 1.19 integration
 * Update JustinPealing/html-query-plan component to pick-up several Query Plan viewer improvements

@@ -107,7 +107,7 @@ registry.registerWorkbenchAction(
 		TaskHistoryViewletAction.ID,
 		TaskHistoryViewletAction.LABEL,
 		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_T }),
-	'View: Show Task Histry',
+	'View: Show Task History',
 	localize('view', "View")
 );
 

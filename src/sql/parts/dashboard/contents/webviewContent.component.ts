@@ -2,7 +2,7 @@
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./dashboardWebviewTab';
+import 'vs/css!./webviewContent';
 
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef } from '@angular/core';
 
@@ -16,21 +16,21 @@ import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { IDashboardWebview } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { memoize } from 'vs/base/common/decorators';
 
 @Component({
 	template: '',
-	selector: 'dashboard-webview-tab',
-	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWebviewTab) }]
+	selector: 'webview-content'
 })
-export class DashboardWebviewTab extends DashboardTab implements OnInit, IDashboardWebview {
-	@Input() private tab: TabConfig;
+export class WebviewContent implements OnInit, IDashboardWebview {
+	@Input() private webviewId: string;
 
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
 	private _onMessage = new Emitter<string>();
 	public readonly onMessage: Event<string> = this._onMessage.event;
+
 	private _onMessageDisposable: IDisposable;
 	private _webview: Webview;
 	private _html: string;
@@ -40,7 +40,6 @@ export class DashboardWebviewTab extends DashboardTab implements OnInit, IDashbo
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
 	) {
-		super();
 	}
 
 	ngOnInit() {
@@ -53,17 +52,13 @@ export class DashboardWebviewTab extends DashboardTab implements OnInit, IDashbo
 	}
 
 	public get id(): string {
-		return this.tab.id;
-	}
-
-	public get editable(): boolean {
-		return this.tab.editable;
+		return this.webviewId;
 	}
 
 	@memoize
-	public get connection(): data.connection.Connection {
+	public get connection(): sqlops.connection.Connection {
 		let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
-		let connection: data.connection.Connection = {
+		let connection: sqlops.connection.Connection = {
 			providerName: currentConnection.providerName,
 			connectionId: currentConnection.id,
 			options: currentConnection.options
@@ -72,12 +67,8 @@ export class DashboardWebviewTab extends DashboardTab implements OnInit, IDashbo
 	}
 
 	@memoize
-	public get serverInfo(): data.ServerInfo {
+	public get serverInfo(): sqlops.ServerInfo {
 		return this._dashboardService.connectionManagementService.connectionInfo.serverInfo;
-	}
-
-	public refresh(): void {
-		// no op
 	}
 
 	public setHtml(html: string): void {

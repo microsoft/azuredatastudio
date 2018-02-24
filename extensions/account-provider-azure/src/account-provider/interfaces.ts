@@ -1,6 +1,6 @@
 'use strict';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 /**
  * Represents a tenant (an Azure Active Directory instance) to which a user has access
@@ -118,7 +118,7 @@ export interface ProviderSettings {
 /**
  * Extension of account provider metadata to override settings type for Azure account providers
  */
-export interface AzureAccountProviderMetadata extends data.AccountProviderMetadata {
+export interface AzureAccountProviderMetadata extends sqlops.AccountProviderMetadata {
 	/**
 	 * Azure specific account provider settings.
 	 */
@@ -143,7 +143,7 @@ export interface AzureAccountProperties {
 /**
  * Override of the Account type to enforce properties that are AzureAccountProperties
  */
-export interface AzureAccount extends data.Account {
+export interface AzureAccount extends sqlops.Account {
 	/**
 	 * AzureAccountProperties specifically used for Azure accounts
 	 */
@@ -179,4 +179,4 @@ export interface AzureAccountSecurityToken {
  * Azure account security token maps a tenant ID to the information returned from a request to get
  * an access token. The list of tenants correspond to the tenants in the account properties.
  */
-export type AzureAccountSecurityTokenCollection = {[tenantId: string]: AzureAccountSecurityToken};
+export type AzureAccountSecurityTokenCollection = { [tenantId: string]: AzureAccountSecurityToken };

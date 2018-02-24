@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-declare module 'data' {
+declare module 'sqlops' {
 	import * as vscode from 'vscode';
 
 	// EXPORTED NAMESPACES /////////////////////////////////////////////////

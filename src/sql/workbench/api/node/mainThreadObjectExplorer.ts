@@ -5,7 +5,7 @@
 'use strict';
 
 import { SqlExtHostContext, SqlMainContext, ExtHostObjectExplorerShape, MainThreadObjectExplorerShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
@@ -37,11 +37,11 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 		this._toDispose = dispose(this._toDispose);
 	}
 
-	public $getNode(connectionId: string, nodePath?: string): Thenable<data.NodeInfo> {
+	public $getNode(connectionId: string, nodePath?: string): Thenable<sqlops.NodeInfo> {
 		return Promise.resolve(this._objectExplorerService.findNodeInfo(connectionId, nodePath));
 	}
 
-	public $getActiveConnections(): Thenable<{ nodeInfo: data.NodeInfo, connectionId: string}[]> {
+	public $getActiveConnections(): Thenable<{ nodeInfo: sqlops.NodeInfo, connectionId: string}[]> {
 		return Promise.resolve(this._objectExplorerService.getActiveConnections());
 	}
 
@@ -57,7 +57,7 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 		return Promise.resolve(this._objectExplorerService.selectNodeForConnection(connectionId, nodePath));
 	}
 
-	public $getChildren(connectionId: string, nodePath: string): Thenable<data.NodeInfo[]> {
+	public $getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]> {
 		return this._objectExplorerService.getChildren(connectionId, nodePath);
 	}
 

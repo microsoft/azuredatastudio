@@ -5,10 +5,10 @@
 
 'use strict';
 
-import * as data from 'data';
-import {TPromise} from 'vs/base/common/winjs.base';
-import {IThreadService} from 'vs/workbench/services/thread/common/threadService';
-import {Disposable} from 'vs/workbench/api/node/extHostTypes';
+import * as sqlops from 'sqlops';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
+import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import {
 	ExtHostResourceProviderShape,
 	MainThreadResourceProviderShape,
@@ -18,7 +18,7 @@ import {
 export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 	private _handlePool: number = 0;
 	private _proxy: MainThreadResourceProviderShape;
-	private _providers: {[handle: number]: ResourceProviderWithMetadata} = {};
+	private _providers: { [handle: number]: ResourceProviderWithMetadata } = {};
 
 	constructor(threadService: IThreadService) {
 		super();
@@ -27,15 +27,15 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public 	$createFirewallRule(handle: number, account: data.Account, firewallRuleInfo: data.FirewallRuleInfo): Thenable<data.CreateFirewallRuleResponse> {
-		return this._withProvider(handle, (provider: data.ResourceProvider) => provider.createFirewallRule(account, firewallRuleInfo));
+	public $createFirewallRule(handle: number, account: sqlops.Account, firewallRuleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> {
+		return this._withProvider(handle, (provider: sqlops.ResourceProvider) => provider.createFirewallRule(account, firewallRuleInfo));
 	}
-	public $handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<data.HandleFirewallRuleResponse> {
-		return this._withProvider(handle, (provider: data.ResourceProvider) => provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId));
+	public $handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> {
+		return this._withProvider(handle, (provider: sqlops.ResourceProvider) => provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId));
 	}
 
 	// - EXTENSION HOST AVAILABLE METHODS //////////////////////////////////
-	public $registerResourceProvider(providerMetadata: data.ResourceProviderMetadata, provider: data.ResourceProvider): Disposable {
+	public $registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, provider: sqlops.ResourceProvider): Disposable {
 		let self = this;
 
 		// Look for any account providers that have the same provider ID
@@ -76,7 +76,7 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 		return this._handlePool++;
 	}
 
-	private _withProvider<R>(handle: number, callback: (provider: data.ResourceProvider) => Thenable<R>): Thenable<R> {
+	private _withProvider<R>(handle: number, callback: (provider: sqlops.ResourceProvider) => Thenable<R>): Thenable<R> {
 		let provider = this._providers[handle];
 		if (provider === undefined) {
 			return TPromise.wrapError(new Error(`Provider ${handle} not found.`));
@@ -86,8 +86,8 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 }
 
 interface ResourceProviderWithMetadata {
-	metadata: data.ResourceProviderMetadata;
-	provider: data.ResourceProvider;
+	metadata: sqlops.ResourceProviderMetadata;
+	provider: sqlops.ResourceProvider;
 }
 
 

@@ -5,7 +5,7 @@
 'use strict';
 
 import { RequestType } from 'vscode-languageclient';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 // DEV-NOTE: Still finalizing what we'll need as part of this interface
 /**
@@ -22,7 +22,7 @@ export class SaveResultsInfo {
 }
 
 export namespace SaveAsRequest {
-	export const type = new RequestType<SaveResultsInfo, data.SaveResultRequestResult, void, void>('query/saveAs');
+	export const type = new RequestType<SaveResultsInfo, sqlops.SaveResultRequestResult, void, void>('query/saveAs');
 }
 
 // --------------------------------- < Read Credential Request > -------------------------------------------------
@@ -77,7 +77,7 @@ export namespace HandleFirewallRuleRequest {
 
 // Firewall rule interfaces
 export interface CreateFirewallRuleParams {
-	account: data.Account;
+	account: sqlops.Account;
 	serverName: string;
 	startIpAddress: string;
 	endIpAddress: string;

@@ -23,7 +23,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as styler from 'vs/platform/theme/common/styler';
 import { attachInputBoxStyler, attachButtonStyler, attachEditableDropdownStyler } from 'sql/common/theme/styler';
 import * as DOM from 'vs/base/browser/dom';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
@@ -44,7 +44,7 @@ export class ConnectionWidget {
 	private _callbacks: IConnectionComponentCallbacks;
 	private _authTypeSelectBox: SelectBox;
 	private _toDispose: lifecycle.IDisposable[];
-	private _optionsMaps: { [optionType: number]: data.ConnectionOption };
+	private _optionsMaps: { [optionType: number]: sqlops.ConnectionOption };
 	private _tableContainer: Builder;
 	private _focusedBeforeHandleOnConnection: HTMLElement;
 	private _providerName: string;
@@ -77,7 +77,7 @@ export class ConnectionWidget {
 		color: undefined,
 		description: undefined,
 	};
-	constructor(options: data.ConnectionOption[],
+	constructor(options: sqlops.ConnectionOption[],
 		callbacks: IConnectionComponentCallbacks,
 		providerName: string,
 		@IThemeService private _themeService: IThemeService,

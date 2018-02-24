@@ -7,7 +7,7 @@
 import * as Contracts from '../models/contracts';
 import { SqlToolsServiceClient } from 'extensions-modules';
 import { SqlOpsDataClient } from 'dataprotocol-client';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import * as path from 'path';
 
 
@@ -16,7 +16,7 @@ import * as path from 'path';
  *
  * Allows a single credential to be stored per service (that is, one username per service);
  */
-export class AzureResourceProvider implements data.ResourceProvider {
+export class AzureResourceProvider implements sqlops.ResourceProvider {
 
 	public languageClient: SqlOpsDataClient;
 
@@ -27,9 +27,9 @@ export class AzureResourceProvider implements data.ResourceProvider {
 		this.languageClient = langClient;
 	}
 
-	public createFirewallRule(account: data.Account, firewallruleInfo: data.FirewallRuleInfo): Thenable<data.CreateFirewallRuleResponse> {
+	public createFirewallRule(account: sqlops.Account, firewallruleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> {
 		let self = this;
-		return new Promise<data.CreateFirewallRuleResponse>((resolve, reject) => {
+		return new Promise<sqlops.CreateFirewallRuleResponse>((resolve, reject) => {
 			self._client.
 				sendRequest(Contracts.CreateFirewallRuleRequest.type, self.asCreateFirewallRuleParams(account, firewallruleInfo), self.languageClient)
 				.then(response => {
@@ -38,9 +38,9 @@ export class AzureResourceProvider implements data.ResourceProvider {
 		});
 	}
 
-	public handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<data.HandleFirewallRuleResponse> {
+	public handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> {
 		let self = this;
-		return new Promise<data.HandleFirewallRuleResponse>((resolve, reject) => {
+		return new Promise<sqlops.HandleFirewallRuleResponse>((resolve, reject) => {
 			let params: Contracts.HandleFirewallRuleParams = { errorCode: errorCode, errorMessage: errorMessage, connectionTypeId: connectionTypeId };
 
 			self._client.
@@ -51,7 +51,7 @@ export class AzureResourceProvider implements data.ResourceProvider {
 		});
 	}
 
-	private asCreateFirewallRuleParams(account: data.Account, params: data.FirewallRuleInfo): Contracts.CreateFirewallRuleParams {
+	private asCreateFirewallRuleParams(account: sqlops.Account, params: sqlops.FirewallRuleInfo): Contracts.CreateFirewallRuleParams {
 		return {
 			account: account,
 			serverName: params.serverName,
