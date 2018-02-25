@@ -128,7 +128,9 @@ export class LanguagesRegistry {
 		if (Array.isArray(lang.extensions)) {
 			for (let extension of lang.extensions) {
 				mime.registerTextMime({ id: langId, mime: primaryMime, extension: extension }, this._warnOnOverwrite);
-				resolvedLanguage.extensions.push(extension);
+				if (!resolvedLanguage.extensions.includes(extension)){
+					resolvedLanguage.extensions.push(extension);
+				}
 			}
 		}
 
