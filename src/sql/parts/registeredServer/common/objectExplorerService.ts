@@ -538,7 +538,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			if (node === rootNode) {
 				selectNode = node.connection;
 			}
-			this._serverTreeView.select(selectNode);
+			return this._serverTreeView.select(selectNode);
 		});
 	}
 

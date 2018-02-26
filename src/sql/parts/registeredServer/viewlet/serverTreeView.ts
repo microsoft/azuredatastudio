@@ -453,9 +453,10 @@ export class ServerTreeView {
 	/**
 	 * Select the given element in the tree and clear any other selections
 	 */
-	public select(element: TreeNode | ConnectionProfile): void {
+	public select(element: TreeNode | ConnectionProfile): Thenable<void> {
 		this._tree.clearSelection();
 		this._tree.select(element);
+		return this._tree.reveal(element);
 	}
 
 	/**
