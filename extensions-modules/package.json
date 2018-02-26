@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Shared modules for Carbon extensions",
   "dependencies": {
-    "dataprotocol-client": "file:../../dataprotocol-client",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.1.1",
     "decompress": "^4.2.0",
     "fs-extra-promise": "^1.0.1",
     "http-proxy-agent": "^2.0.0",
@@ -19,7 +19,7 @@
     "sqlops": "github:anthonydresser/vscode-extension-vscode"
   },
   "scripts": {
-    "prepare": "vscode-install && sqlops-install && tsc -p ./src",
+    "prepare": "node ./node_modules/vscode/bin/install && node ./node_modules/sqlops/bin/install && tsc -p ./src",
     "compile": "tsc -p ./src",
     "watch": "tsc -w -p ./src"
   },
