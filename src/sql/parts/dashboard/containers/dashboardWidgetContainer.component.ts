@@ -5,7 +5,7 @@
 
 import 'vs/css!./dashboardWidgetContainer';
 
-import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter, OnChanges, AfterContentInit } from '@angular/core';
+import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter, OnChanges } from '@angular/core';
 import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
@@ -13,7 +13,6 @@ import { TabConfig, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWid
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
-import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
 
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
@@ -23,19 +22,66 @@ import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElemen
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { getContentHeight, addDisposableListener, EventType } from 'vs/base/browser/dom';
 
+/**
+ * Sorting function for dashboard widgets
+ * In order of priority;
+ * If neither have defined grid positions, they are equivalent
+ * If a has a defined grid position and b does not; a should come first
+ * If both have defined grid positions and have the same row; the one with the smaller col position should come first
+ * If both have defined grid positions but different rows (it doesn't really matter in this case) the lowers row should come first
+ */
+function configSorter(a, b): number {
+	if ((!a.gridItemConfig || !a.gridItemConfig.col)
+		&& (!b.gridItemConfig || !b.gridItemConfig.col)) {
+		return 0;
+	} else if (!a.gridItemConfig || !a.gridItemConfig.col) {
+		return 1;
+	} else if (!b.gridItemConfig || !b.gridItemConfig.col) {
+		return -1;
+	} else if (a.gridItemConfig.row === b.gridItemConfig.row) {
+		if (a.gridItemConfig.col < b.gridItemConfig.col) {
+			return -1;
+		}
+
+		if (a.gridItemConfig.col === b.gridItemConfig.col) {
+			return 0;
+		}
+
+		if (a.gridItemConfig.col > b.gridItemConfig.col) {
+			return 1;
+		}
+	} else {
+		if (a.gridItemConfig.row < b.gridItemConfig.row) {
+			return -1;
+		}
+
+		if (a.gridItemConfig.row === b.gridItemConfig.row) {
+			return 0;
+		}
+
+		if (a.gridItemConfig.row > b.gridItemConfig.row) {
+			return 1;
+		}
+	}
+
+	return void 0; // this should never be reached
+}
+
 @Component({
 	selector: 'dashboard-widget-container',
 	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWidgetContainer) }],
 	template: `
 		<div class="scroll-container" #scrollContainer>
 			<div class="scrollable" #scrollable>
-				<widget-content [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
-				</widget-content>
+				<div [ngGrid]="gridConfig" *ngIf="widgets" >
+					<dashboard-widget-wrapper *ngFor="let widget of widgets" [(ngGridItem)]="widget.gridItemConfig" [_config]="widget">
+					</dashboard-widget-wrapper>
+				</div>
 			</div>
 		</div>
 	`
 })
-export class DashboardWidgetContainer extends DashboardTab implements OnDestroy, OnChanges, AfterContentInit {
+export class DashboardWidgetContainer extends DashboardTab implements OnDestroy, OnChanges {
 	@Input() private tab: TabConfig;
 	private widgets: WidgetConfig[];
 	private _onResize = new Emitter<void>();
@@ -43,12 +89,41 @@ export class DashboardWidgetContainer extends DashboardTab implements OnDestroy,
 
 	private _scrollableElement: ScrollableElement;
 
-	@ViewChild(WidgetContent) private _widgetContent: WidgetContent;
 
+	protected SKELETON_WIDTH = 5;
+	protected gridConfig: NgGridConfig = {
+		'margins': [10],            //  The size of the margins of each item. Supports up to four values in the same way as CSS margins. Can be updated using setMargins()
+		'draggable': false,          //  Whether the items can be dragged. Can be updated using enableDrag()/disableDrag()
+		'resizable': false,          //  Whether the items can be resized. Can be updated using enableResize()/disableResize()
+		'max_cols': this.SKELETON_WIDTH,              //  The maximum number of columns allowed. Set to 0 for infinite. Cannot be used with max_rows
+		'max_rows': 0,              //  The maximum number of rows allowed. Set to 0 for infinite. Cannot be used with max_cols
+		'visible_cols': 0,          //  The number of columns shown on screen when auto_resize is set to true. Set to 0 to not auto_resize. Will be overriden by max_cols
+		'visible_rows': 0,          //  The number of rows shown on screen when auto_resize is set to true. Set to 0 to not auto_resize. Will be overriden by max_rows
+		'min_cols': 0,              //  The minimum number of columns allowed. Can be any number greater than or equal to 1.
+		'min_rows': 0,              //  The minimum number of rows allowed. Can be any number greater than or equal to 1.
+		'col_width': 250,           //  The width of each column
+		'row_height': 250,          //  The height of each row
+		'cascade': 'left',            //  The direction to cascade grid items ('up', 'right', 'down', 'left')
+		'min_width': 100,           //  The minimum width of an item. If greater than col_width, this will update the value of min_cols
+		'min_height': 100,          //  The minimum height of an item. If greater than row_height, this will update the value of min_rows
+		'fix_to_grid': false,       //  Fix all item movements to the grid
+		'auto_style': true,         //  Automatically add required element styles at run-time
+		'auto_resize': false,       //  Automatically set col_width/row_height so that max_cols/max_rows fills the screen. Only has effect is max_cols or max_rows is set
+		'maintain_ratio': false,    //  Attempts to maintain aspect ratio based on the colWidth/rowHeight values set in the config
+		'prefer_new': false,        //  When adding new items, will use that items position ahead of existing items
+		'limit_to_screen': true,   //  When resizing the screen, with this true and auto_resize false, the grid will re-arrange to fit the screen size. Please note, at present this only works with cascade direction up.
+	};
+
+	private _editDispose: Array<IDisposable> = [];
+
+	@ViewChild(NgGrid) private _grid: NgGrid;
+	@ViewChildren(DashboardWidgetWrapper) private _widgets: QueryList<DashboardWidgetWrapper>;
+	@ViewChildren(NgGridItem) private _items: QueryList<NgGridItem>;
 	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
 	@ViewChild('scrollContainer', { read: ElementRef }) private _scrollContainer: ElementRef;
 
 	constructor(
+		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {
 		super();
@@ -59,12 +134,6 @@ export class DashboardWidgetContainer extends DashboardTab implements OnDestroy,
 			this.widgets = Object.values(this.tab.container)[0];
 			this._cd.detectChanges();
 		}
-	}
-
-	ngAfterContentInit(): void {
-		this._register(this._widgetContent.onResize(() => {
-			this._onResize.fire();
-		}));
 	}
 
 	ngAfterViewInit() {
@@ -130,14 +199,94 @@ export class DashboardWidgetContainer extends DashboardTab implements OnDestroy,
 			scrollHeight: getContentHeight(scrollable),
 			height: getContentHeight(container)
 		});
-		this._widgetContent.layout();
+		if (this._widgets) {
+			this._widgets.forEach(item => {
+				item.layout();
+			});
+		}
+		this._grid.triggerResize();
 	}
 
 	public refresh(): void {
-		this._widgetContent.layout();
+		if (this._widgets) {
+			this._widgets.forEach(item => {
+				item.refresh();
+			});
+		}
 	}
 
 	public enableEdit(): void {
-		this._widgetContent.enableEdit();
+		if (this._grid.dragEnable) {
+			this._grid.disableDrag();
+			this._grid.disableResize();
+			this._editDispose.forEach(i => i.dispose());
+			this._widgets.forEach(i => {
+				if (i.id) {
+					i.disableEdit();
+				}
+			});
+			this._editDispose = [];
+		} else {
+			this._grid.enableResize();
+			this._grid.enableDrag();
+			this._editDispose.push(this.dashboardService.onDeleteWidget(e => {
+				let index = this.widgets.findIndex(i => i.id === e);
+				this.widgets.splice(index, 1);
+
+				index = this.tab.originalConfig.findIndex(i => i.id === e);
+				this.tab.originalConfig.splice(index, 1);
+
+				this._rewriteConfig();
+				this._cd.detectChanges();
+			}));
+			this._editDispose.push(subscriptionToDisposable(this._grid.onResizeStop.subscribe((e: NgGridItem) => {
+				this._onResize.fire();
+				let event = e.getEventOutput();
+				let config = this.tab.originalConfig.find(i => i.id === event.payload.id);
+
+				if (!config.gridItemConfig) {
+					config.gridItemConfig = {};
+				}
+				config.gridItemConfig.sizex = e.sizex;
+				config.gridItemConfig.sizey = e.sizey;
+
+				let component = this._widgets.find(i => i.id === event.payload.id);
+
+				component.layout();
+				this._rewriteConfig();
+			})));
+			this._editDispose.push(subscriptionToDisposable(this._grid.onDragStop.subscribe((e: NgGridItem) => {
+				this._onResize.fire();
+				let event = e.getEventOutput();
+				this._items.forEach(i => {
+					let config = this.tab.originalConfig.find(j => j.id === i.getEventOutput().payload.id);
+					if ((config.gridItemConfig && config.gridItemConfig.col) || config.id === event.payload.id) {
+						if (!config.gridItemConfig) {
+							config.gridItemConfig = {};
+						}
+						config.gridItemConfig.col = i.col;
+						config.gridItemConfig.row = i.row;
+					}
+				});
+				this.tab.originalConfig.sort(configSorter);
+
+				this._rewriteConfig();
+			})));
+			this._widgets.forEach(i => {
+				if (i.id) {
+					i.enableEdit();
+				}
+			});
+		}
+	}
+
+	private _rewriteConfig(): void {
+		let writeableConfig = objects.deepClone(this.tab.originalConfig);
+
+		writeableConfig.forEach(i => {
+			delete i.id;
+		});
+		let target: ConfigurationTarget = ConfigurationTarget.USER;
+		this.dashboardService.writeSettings([this.tab.context, 'widgets'].join('.'), writeableConfig, target);
 	}
 }

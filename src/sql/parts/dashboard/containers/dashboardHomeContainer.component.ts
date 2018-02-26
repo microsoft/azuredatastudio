@@ -19,8 +19,10 @@ import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 			<div class="scrollable" #scrollable>
 				<dashboard-widget-wrapper *ngIf="properties" [_config]="properties" style="padding-left: 10px; padding-right: 10px; height: 90px; display: block">
 				</dashboard-widget-wrapper>
-				<widget-content [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
-				</widget-content>
+				<div [ngGrid]="gridConfig" *ngIf="widgets" >
+					<dashboard-widget-wrapper *ngFor="let widget of widgets" [(ngGridItem)]="widget.gridItemConfig" [_config]="widget">
+					</dashboard-widget-wrapper>
+				</div>
 			</div>
 		</div>
 	`
