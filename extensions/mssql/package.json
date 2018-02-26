@@ -190,6 +190,9 @@
       ]
     }
   },
+  "dependencies": {
+    "extensions-modules": "file:../../extensions-modules"
+  },
   "devDependencies": {
     "vscode": "1.0.1"
   }

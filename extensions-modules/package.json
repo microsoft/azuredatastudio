@@ -15,15 +15,17 @@
   },
   "devDependencies": {
     "@types/node": "^6.0.61",
-    "vscode": "1.0.1"
+    "vscode": "^1.1.10",
+    "sqlops": "github:anthonydresser/vscode-extension-vscode"
   },
   "scripts": {
-    "prepare": "tsc -p ./src",
+    "prepare": "vscode-install && sqlops-install && tsc -p ./src",
     "compile": "tsc -p ./src",
     "watch": "tsc -w -p ./src"
   },
   "engines": {
-    "vscode": "*"
+    "vscode": "*",
+    "sqlops": "*"
   },
   "main": "./lib/main.js",
   "typings": "./lib/main"

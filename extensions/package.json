@@ -2,9 +2,6 @@
   "name": "vscode-extensions",
   "version": "0.0.1",
   "description": "Dependencies shared by all extensions",
-  "dependencies": {
-    "extensions-modules": "file:../extensions-modules"
-  },
   "devDependencies": {
     "typescript": "2.6.2"
   },
