@@ -666,7 +666,7 @@ suite('SQL Object Explorer Service tests', () => {
 		serverTreeView.setup(x => x.expand(TypeMoq.It.is(treeNode => treeNode === connection))).returns(() => {
 			return objectExplorerService.expandTreeNode(objectExplorerSession, objectExplorerService.getObjectExplorerNode(connection)).then(() => undefined);
 		});
-		serverTreeView.setup(x => x.select(TypeMoq.It.is(treeNode => treeNode.nodePath === table1NodePath))).returns(() => undefined);
+		serverTreeView.setup(x => x.select(TypeMoq.It.is((treeNode: TreeNode) => treeNode.nodePath === table1NodePath))).returns(() => undefined);
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
 		objectExplorerService.createNewSession('MSSQL', connection).then(result => {
 			objectExplorerService.onSessionCreated(1, objectExplorerSession);
@@ -674,7 +674,7 @@ suite('SQL Object Explorer Service tests', () => {
 			objectExplorerService.selectNodeForConnection(connection.id, table1NodePath).then(() => {
 				try {
 					serverTreeView.verify(x => x.expand(TypeMoq.It.is(treeNode => treeNode === connection)), TypeMoq.Times.once());
-					serverTreeView.verify(x => x.select(TypeMoq.It.is(treeNode => treeNode.nodePath === table1NodePath)), TypeMoq.Times.once());
+					serverTreeView.verify(x => x.select(TypeMoq.It.is((treeNode: TreeNode) => treeNode.nodePath === table1NodePath)), TypeMoq.Times.once());
 					done();
 				} catch (err) {
 					done(err);

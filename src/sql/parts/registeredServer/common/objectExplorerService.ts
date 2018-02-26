@@ -84,7 +84,6 @@ export interface IObjectExplorerService {
 interface SessionStatus {
 	nodes: { [nodePath: string]: NodeStatus };
 	connection: ConnectionProfile;
-	treeNodes: { [nodePath: string]: TreeNode };
 }
 
 interface NodeStatus {
@@ -187,7 +186,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				server.connection = connection;
 				server.session = session;
 				this._activeObjectExplorerNodes[connection.id] = server;
-				this._sessions[session.sessionId].treeNodes[server.nodePath] = server;
 			} else {
 				errorMessage = session && session.errorMessage ? session.errorMessage :
 					nls.localize('OeSessionFailedError', 'Failed to create Object Explorer session');
@@ -239,8 +237,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				provider.createNewSession(connection.toConnectionInfo()).then(result => {
 					self._sessions[result.sessionId] = {
 						connection: connection,
-						nodes: {},
-						treeNodes: {}
+						nodes: {}
 					};
 					resolve(result);
 				}, error => {
@@ -452,7 +449,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public getActiveConnections(): { connectionId: string, nodeInfo: sqlops.NodeInfo }[] {
 		let connections: [string, TreeNode][] = Object.entries(this._activeObjectExplorerNodes);
 		return connections.map(([connectionId, treeNode]) => {
-			this._sessions[treeNode.session.sessionId].treeNodes[treeNode.nodePath] = treeNode;
 			return {
 				connectionId: connectionId,
 				nodeInfo: treeNode.toNodeInfo()
@@ -487,9 +483,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 								resolve();
 								return;
 							}
+							// Expand the next node in the path, which is the child object with the longest path where the desired path starts with the child path
 							let children = treeNode.children.filter(child => nodePath.startsWith(child.nodePath));
 							if (children.length === 0) {
-								reject('Could not find matching tree node for expand');
+								reject('Could not find matching tree node to expand');
 								return;
 							}
 							let nextNode = children.reduce((currentMax, newNode) => currentMax.nodePath.length < newNode.nodePath.length ? newNode : currentMax);
@@ -501,7 +498,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			});
 		}
 		// Otherwise the node is already in the tree, so expand and reveal it
-		let expandNode: any = node;
+		let expandNode: TreeNode | ConnectionProfile = node;
 		if (node === rootNode) {
 			expandNode = node.connection;
 		}
@@ -520,13 +517,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			// Otherwise resolve it since the node is already collapsed
 			return this.findNodeInfo(connectionId, nodePath).then(nodeInfo => {
 				if (!nodeInfo) {
-					throw new Error('Could not find matching tree node for collapse');
+					throw new Error('Could not find matching tree node to collapse');
 				}
 				return Promise.resolve();
 			});
 		}
 		let rootNode = this._activeObjectExplorerNodes[connectionId];
-		let collapseNode: any = treeNode;
+		let collapseNode: TreeNode | ConnectionProfile = treeNode;
 		if (treeNode === rootNode) {
 			collapseNode = treeNode.connection;
 		}
@@ -588,6 +585,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 			let nextNode = undefined;
 			if (currentNode.children) {
+				// Look at the next node in the path, which is the child object with the longest path where the desired path starts with the child path
 				let children = currentNode.children.filter(child => nodePath.startsWith(child.nodePath));
 				nextNode = children.reduce((currentMax, candidate) => currentMax.nodePath.length < candidate.nodePath.length ? candidate : currentMax);
 			}
@@ -619,12 +617,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					if (candidates.length === 0) {
 						resolve(undefined);
 					} else {
+						// Look at the next node in the path, which is the child object with the longest path where the desired path starts with the child path
 						let nextNode = candidates.reduce((currentMax, candidate) => currentMax.nodePath.length < candidate.nodePath.length ? candidate : currentMax);
 						findNodeFunction(nextNode.nodePath);
 					}
 				}, err => reject(err));
 			};
-			if (rootNode.nodePath === nodePath) {
+			if (!nodePath || rootNode.nodePath === nodePath) {
 				resolve(rootNode.toNodeInfo());
 			}
 			findNodeFunction(rootNode.nodePath);

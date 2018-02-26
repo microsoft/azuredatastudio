@@ -28,6 +28,7 @@ import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesServ
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
 import Event, { Emitter } from 'vs/base/common/event';
+import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
 
 const $ = builder.$;
 
@@ -431,33 +432,36 @@ export class ServerTreeView {
 	/**
 	 * Expand the given element in the tree
 	 */
-	public expand(element: any): Thenable<void> {
+	public expand(element: TreeNode | ConnectionProfile): Thenable<void> {
 		return this._tree.expand(element);
 	}
 
 	/**
 	 * Collapse the given element in the tree
 	 */
-	public collapse(element: any): Thenable<void> {
+	public collapse(element: TreeNode | ConnectionProfile): Thenable<void> {
 		return this._tree.collapse(element);
 	}
 
 	/**
 	 * Reveal the given element in the tree
 	 */
-	public reveal(element: any): Thenable<void> {
+	public reveal(element: TreeNode | ConnectionProfile): Thenable<void> {
 		return this._tree.reveal(element);
 	}
 
 	/**
 	 * Select the given element in the tree and clear any other selections
 	 */
-	public select(element: any): void {
+	public select(element: TreeNode | ConnectionProfile): void {
 		this._tree.clearSelection();
 		this._tree.select(element);
 	}
 
-	public isExpanded(element: any): boolean {
+	/**
+	 * Check if the given element in the tree is expanded
+	 */
+	public isExpanded(element: TreeNode | ConnectionProfile): boolean {
 		return this._tree.isExpanded(element);
 	}
 
