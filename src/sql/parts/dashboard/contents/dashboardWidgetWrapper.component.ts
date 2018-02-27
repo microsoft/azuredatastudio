@@ -105,6 +105,9 @@ export class DashboardWidgetWrapper implements OnInit, OnDestroy {
 		this._changeref.detectChanges();
 		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
 		if (this._actions) {
+			if (this.collapsable) {
+				this._actionbar.push(this._bootstrap.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed), { icon: true, label: false });
+			}
 			this._actionbar.push(this._bootstrap.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this._component.actionsContext), { icon: true, label: false });
 		}
 		this.layout();
@@ -163,9 +166,6 @@ export class DashboardWidgetWrapper implements OnInit, OnDestroy {
 			let actions = componentRef.instance.actions;
 			if (componentRef.instance.refresh) {
 				actions.push(new RefreshWidgetAction(componentRef.instance.refresh, componentRef.instance));
-			}
-			if (this.collapsable) {
-				actions.push(this._bootstrap.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid));
 			}
 			if (actions !== undefined && actions.length > 0) {
 				this._actions = actions;
