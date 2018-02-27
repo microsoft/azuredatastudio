@@ -304,9 +304,6 @@ export abstract class ExtHostDataProtocolShape {
 	$stopSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
 }
 
-export abstract class ExtHostObjectExplorerShape { }
-
-
 /**
  * ResourceProvider extension host class.
  */
@@ -405,16 +402,6 @@ export interface MainThreadCredentialManagementShape extends IDisposable {
 	$unregisterCredentialProvider(handle: number): TPromise<any>;
 }
 
-export interface MainThreadObjectExplorerShape extends IDisposable {
-	$getNode(connectionId: string, nodePath?: string): Thenable<sqlops.NodeInfo>;
-	$getActiveConnections(): Thenable<{ nodeInfo: sqlops.NodeInfo, connectionId: string}[]>;
-	$expandNode(connectionId: string, nodePath: string): Thenable<void>;
-	$collapseNode(connectionId: string, nodePath: string): Thenable<void>;
-	$selectNode(connectionId: string, nodePath: string): Thenable<void>;
-	$getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]>;
-	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
-}
-
 export interface MainThreadSerializationProviderShape extends IDisposable {
 	$registerSerializationProvider(handle: number): TPromise<any>;
 	$unregisterSerializationProvider(handle: number): TPromise<any>;
@@ -474,4 +461,17 @@ export interface MainThreadDashboardWebviewShape extends IDisposable {
 	$sendMessage(handle: number, message: string);
 	$registerProvider(widgetId: string);
 	$setHtml(handle: number, value: string);
+}
+
+export interface ExtHostObjectExplorerShape {
+}
+
+export interface MainThreadObjectExplorerShape extends IDisposable {
+	$getNode(connectionId: string, nodePath?: string): Thenable<sqlops.NodeInfo>;
+	$getActiveConnectionNodes(): Thenable<{ nodeInfo: sqlops.NodeInfo, connectionId: string}[]>;
+	$expandNode(connectionId: string, nodePath: string): Thenable<void>;
+	$collapseNode(connectionId: string, nodePath: string): Thenable<void>;
+	$selectNode(connectionId: string, nodePath: string): Thenable<void>;
+	$getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]>;
+	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
 }

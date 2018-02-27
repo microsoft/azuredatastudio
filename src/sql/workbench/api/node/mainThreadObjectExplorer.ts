@@ -41,7 +41,7 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 		return Promise.resolve(this._objectExplorerService.findNodeInfo(connectionId, nodePath));
 	}
 
-	public $getActiveConnections(): Thenable<{ nodeInfo: sqlops.NodeInfo, connectionId: string}[]> {
+	public $getActiveConnectionNodes(): Thenable<{ nodeInfo: sqlops.NodeInfo, connectionId: string}[]> {
 		return Promise.resolve(this._objectExplorerService.getActiveConnections());
 	}
 

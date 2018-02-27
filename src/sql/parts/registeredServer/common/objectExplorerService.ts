@@ -456,46 +456,36 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	public expandNodeForConnection(connectionId: string, nodePath: string, stopAtParent: boolean = false): Thenable<void> {
+	public async expandNodeForConnection(connectionId: string, nodePath: string, stopAtParent: boolean = false): Promise<void> {
 		let rootNode = this._activeObjectExplorerNodes[connectionId];
 		if (!rootNode) {
-			return Promise.reject('The given connection is not active in Object Explorer');
+			throw new Error('The given connection is not active in Object Explorer');
 		}
 		let node = this.findTreeNode(connectionId, nodePath);
 		if (!node) {
 			// The node is not in the tree yet, so expand its parent nodes to make it visible
-			return this.findNodeInfo(connectionId, nodePath).then(nodeInfo => {
-				if (!nodeInfo) {
-					return Promise.reject('There is no object at the given node path');
+			let nodeInfo = await this.findNodeInfo(connectionId, nodePath);
+			if (!nodeInfo) {
+				throw new Error('There is no object at the given node path');
+			}
+			let currentNode = rootNode;
+			while (true) {
+				if ((stopAtParent || currentNode.isAlwaysLeaf) && currentNode.nodePath === nodePath) {
+					return;
+				} else if (currentNode.isAlwaysLeaf) {
+					throw new Error('Could not find tree node for expand due to leaf node on path');
 				}
-				return new Promise((resolve, reject) => {
-					// Recursively expand the tree to get to the given node
-					let expandFunction = ((treeNode: TreeNode) => {
-						if ((stopAtParent || treeNode.isAlwaysLeaf) && treeNode.nodePath === nodePath) {
-							resolve();
-							return;
-						} else if (treeNode.isAlwaysLeaf) {
-							reject('Could not find tree node for expand due to leaf node on path');
-							return;
-						}
-						this._serverTreeView.expand(treeNode === rootNode ? rootNode.connection : treeNode).then(() => {
-							if (treeNode.nodePath === nodePath) {
-								resolve();
-								return;
-							}
-							// Expand the next node in the path, which is the child object with the longest path where the desired path starts with the child path
-							let children = treeNode.children.filter(child => nodePath.startsWith(child.nodePath));
-							if (children.length === 0) {
-								reject('Could not find matching tree node to expand');
-								return;
-							}
-							let nextNode = children.reduce((currentMax, newNode) => currentMax.nodePath.length < newNode.nodePath.length ? newNode : currentMax);
-							expandFunction(nextNode);
-						}, err => reject(err));
-					});
-					expandFunction(rootNode);
-				});
-			});
+				await this._serverTreeView.expand(currentNode === rootNode ? rootNode.connection : currentNode);
+				if (currentNode.nodePath === nodePath) {
+					return;
+				}
+				// Expand the next node in the path, which is the child object with the longest path where the desired path starts with the child path
+				let children = currentNode.children.filter(child => nodePath.startsWith(child.nodePath));
+				if (children.length === 0) {
+					throw new Error('Could not find matching tree node to expand');
+				}
+				currentNode = children.reduce((currentMax, newNode) => currentMax.nodePath.length < newNode.nodePath.length ? newNode : currentMax);
+			}
 		}
 		// Otherwise the node is already in the tree, so expand and reveal it
 		let expandNode: TreeNode | ConnectionProfile = node;
@@ -597,36 +587,27 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return currentNode;
 	}
 
-	public findNodeInfo(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo> {
+	public async findNodeInfo(connectionId: string, nodePath: string): Promise<sqlops.NodeInfo> {
 		let rootNode = this._activeObjectExplorerNodes[connectionId];
 		if (!rootNode) {
-			return Promise.resolve(undefined);
+			return undefined;
 		}
-		return new Promise((resolve, reject) => {
-			let findNodeFunction = (currentNodePath: string) => {
-				this.expandNode(rootNode.connection.providerName, rootNode.session, currentNodePath).then(expandInfo => {
-					let candidates: sqlops.NodeInfo[] = [];
-					expandInfo.nodes.forEach(node => {
-						if (node.nodePath === nodePath) {
-							resolve(node);
-							return;
-						} else if (nodePath.startsWith(node.nodePath) && !node.isLeaf) {
-							candidates.push(node);
-						}
-					});
-					if (candidates.length === 0) {
-						resolve(undefined);
-					} else {
-						// Look at the next node in the path, which is the child object with the longest path where the desired path starts with the child path
-						let nextNode = candidates.reduce((currentMax, candidate) => currentMax.nodePath.length < candidate.nodePath.length ? candidate : currentMax);
-						findNodeFunction(nextNode.nodePath);
-					}
-				}, err => reject(err));
-			};
-			if (!nodePath || rootNode.nodePath === nodePath) {
-				resolve(rootNode.toNodeInfo());
+		if (!nodePath) {
+			return rootNode.toNodeInfo();
+		}
+		let currentNode = rootNode.toNodeInfo();
+		while (currentNode.nodePath !== nodePath) {
+			if (currentNode.isLeaf) {
+				return undefined;
 			}
-			findNodeFunction(rootNode.nodePath);
-		});
+			let expandInfo = await this.expandNode(rootNode.connection.providerName, rootNode.session, currentNode.nodePath);
+			let candidates = expandInfo.nodes.filter(node => nodePath.startsWith(node.nodePath));
+			if (candidates.length === 0) {
+				return undefined;
+			}
+			// Look at the next node in the path, which is the child object with the longest path where the desired path starts with the child path
+			currentNode = candidates.reduce((currentMax, candidate) => currentMax.nodePath.length < candidate.nodePath.length ? candidate : currentMax);
+		}
+		return currentNode;
 	}
 }

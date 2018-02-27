@@ -8,14 +8,13 @@ import { IThreadService } from 'vs/workbench/services/thread/common/threadServic
 import { ExtHostObjectExplorerShape, SqlMainContext, MainThreadObjectExplorerShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as sqlops from 'sqlops';
 
-export class ExtHostObjectExplorer extends ExtHostObjectExplorerShape  {
+export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape  {
 
 	private _proxy: MainThreadObjectExplorerShape;
 
 	constructor(
 		threadService: IThreadService
 	) {
-		super();
 		this._proxy = threadService.get(SqlMainContext.MainThreadObjectExplorer);
 	}
 
@@ -23,8 +22,8 @@ export class ExtHostObjectExplorer extends ExtHostObjectExplorerShape  {
 		return this._proxy.$getNode(connectionId, nodePath).then(nodeInfo => nodeInfo === undefined ? undefined : new ObjectExplorerNode(nodeInfo, connectionId, this));
 	}
 
-	public $getActiveConnections(): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
-		return this._proxy.$getActiveConnections().then(results => results.map(result => new ObjectExplorerNode(result.nodeInfo, result.connectionId, this)));
+	public $getActiveConnectionNodes(): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
+		return this._proxy.$getActiveConnectionNodes().then(results => results.map(result => new ObjectExplorerNode(result.nodeInfo, result.connectionId, this)));
 	}
 
 	public $expandNode(connectionId: string, nodePath: string): Thenable<void> {

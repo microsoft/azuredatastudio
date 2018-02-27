@@ -127,7 +127,7 @@ declare module 'sqlops' {
 		 * Get all active Object Explorer connection nodes
 		 * @returns {ObjectExplorerNode[]} The Object Explorer nodes for each saved connection
 		*/
-		export function getActiveConnections(): Thenable<ObjectExplorerNode[]>;
+		export function getActiveConnectionNodes(): Thenable<ObjectExplorerNode[]>;
 
 		/**
 		 * Interface for representing and interacting with items in Object Explorer

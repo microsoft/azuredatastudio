@@ -108,8 +108,8 @@ export function createApiFactory(
 				getNode(connectionId: string, nodePath?: string): Thenable<sqlops.objectexplorer.ObjectExplorerNode> {
 					return extHostObjectExplorer.$getNode(connectionId, nodePath);
 				},
-				getActiveConnections(): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
-					return extHostObjectExplorer.$getActiveConnections();
+				getActiveConnectionNodes(): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
+					return extHostObjectExplorer.$getActiveConnectionNodes();
 				}
 			};
 
