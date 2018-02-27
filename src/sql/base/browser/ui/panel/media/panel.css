@@ -71,6 +71,7 @@ panel {
 
 .tabbedPanel.vertical {
 	display: flex;
+	flex-direction: row;
 }
 
 .tabbedPanel.vertical > .title {

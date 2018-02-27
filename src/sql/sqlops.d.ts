@@ -116,6 +116,20 @@ declare module 'sqlops' {
 		options: { [name: string]: any };
 	}
 
+	export interface IConnectionProfile extends ConnectionInfo {
+		serverName: string;
+		databaseName: string;
+		userName: string;
+		password: string;
+		authenticationType: string;
+		savePassword: boolean;
+		groupFullName: string;
+		groupId: string;
+		providerName: string;
+		saveProfile: boolean;
+		id: string;
+	}
+
 	export interface ConnectionInfoSummary {
 
 		/**
@@ -1516,5 +1530,26 @@ declare module 'sqlops' {
 		export function createDialog(
 			title: string
 		): ModalDialog;
+	}
+
+	export namespace tasks {
+
+		export interface ITaskHandler {
+			(profile: IConnectionProfile, ...args: any[]): any;
+		}
+
+		/**
+		* Registers a task that can be invoked via a keyboard shortcut,
+		* a menu item, an action, or directly.
+		*
+		* Registering a task with an existing task identifier twice
+		* will cause an error.
+		*
+		* @param task A unique identifier for the task.
+		* @param callback A task handler function.
+		* @param thisArg The `this` context used when invoking the handler function.
+		* @return Disposable which unregisters this task on disposal.
+		*/
+		export function registerTask(task: string, callback: ITaskHandler, thisArg?: any): vscode.Disposable;
 	}
 }

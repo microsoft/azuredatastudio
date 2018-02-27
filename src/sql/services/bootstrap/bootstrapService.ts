@@ -40,6 +40,7 @@ import { IWindowsService, IWindowService } from 'vs/platform/windows/common/wind
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IAgentService } from 'sql/parts/agent/common/interfaces';
 
 export const BOOTSTRAP_SERVICE_ID = 'bootstrapService';
@@ -90,6 +91,7 @@ export interface IBootstrapService {
 	clipboardService: IClipboardService;
 	capabilitiesService: ICapabilitiesService;
 	configurationEditorService: ConfigurationEditingService;
+	commandService: ICommandService;
 	dashboardWebviewService: IDashboardWebviewService;
 	agentService: IAgentService;
 
