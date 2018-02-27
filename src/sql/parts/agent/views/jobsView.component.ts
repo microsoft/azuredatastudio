@@ -14,6 +14,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { IAgentService } from '../common/interfaces';
 
 export const DASHBOARD_SELECTOR: string = 'jobsview-component';
 
@@ -22,14 +23,19 @@ export const DASHBOARD_SELECTOR: string = 'jobsview-component';
 	templateUrl: decodeURI(require.toUrl('./jobsView.component.html'))
 })
 export class JobsViewComponent implements OnInit, OnDestroy {
+
+	private _agentService: IAgentService;
+
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
+		this._agentService = bootstrapService.agentService;
 	}
 
 	ngOnInit() {
+		//this._agentService.getJobs()
 	}
 
 	ngOnDestroy() {

@@ -40,6 +40,7 @@ import { IWindowsService, IWindowService } from 'vs/platform/windows/common/wind
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
+import { IAgentService } from 'sql/parts/agent/common/interfaces';
 
 export const BOOTSTRAP_SERVICE_ID = 'bootstrapService';
 export const IBootstrapService = createDecorator<IBootstrapService>(BOOTSTRAP_SERVICE_ID);
@@ -90,6 +91,7 @@ export interface IBootstrapService {
 	capabilitiesService: ICapabilitiesService;
 	configurationEditorService: ConfigurationEditingService;
 	dashboardWebviewService: IDashboardWebviewService;
+	agentService: IAgentService;
 
 	/*
 	* Bootstraps the Angular module described. Components that need singleton services should inject the
