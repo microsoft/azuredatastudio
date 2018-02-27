@@ -31,12 +31,13 @@ import { DashboardWidgetContainer } from 'sql/parts/dashboard/containers/dashboa
 import { DashboardGridContainer } from 'sql/parts/dashboard/containers/dashboardGridContainer.component';
 import { DashboardWebviewContainer } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.component';
 import { DashboardNavSection } from 'sql/parts/dashboard/containers/dashboardNavSection.component';
+import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
 import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
 import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { DashboardHomeContainer } from 'sql/parts/dashboard/containers/dashboardHomeContainer.component';
 
-let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer, DashboardWidgetContainer, DashboardGridContainer, DashboardNavSection, WebviewContent, ComponentHostDirective, BreadcrumbComponent];
+let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer, DashboardWidgetContainer, DashboardGridContainer, DashboardNavSection, WidgetContent, WebviewContent, ComponentHostDirective, BreadcrumbComponent];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
