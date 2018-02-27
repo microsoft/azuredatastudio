@@ -31,6 +31,7 @@ import { DashboardWidgetContainer } from 'sql/parts/dashboard/containers/dashboa
 import { DashboardGridContainer } from 'sql/parts/dashboard/containers/dashboardGridContainer.component';
 import { DashboardWebviewContainer } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.component';
 import { DashboardNavSection } from 'sql/parts/dashboard/containers/dashboardNavSection.component';
+import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
 import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
 import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
@@ -38,8 +39,9 @@ import { DashboardHomeContainer } from 'sql/parts/dashboard/containers/dashboard
 import { ControlHostContent } from 'sql/parts/dashboard/contents/controlHostContent.component';
 import { DashboardControlHostContainer } from 'sql/parts/dashboard/containers/dashboardControlHostContainer.component';
 import { JobsViewComponent } from 'sql/parts/agent/views/jobsView.component';
+
 let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
-					DashboardWidgetContainer, DashboardGridContainer, DashboardNavSection, WebviewContent,
+					DashboardWidgetContainer, DashboardGridContainer, DashboardNavSection, WebviewContent, WidgetContent,
 					ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
 					JobsViewComponent];
 
