@@ -132,15 +132,18 @@ actionRegistry.registerWorkbenchAction(
 		RefreshIntellisenseKeyboardAction.LABEL
 	);
 
-actionRegistry.registerWorkbenchAction(
-		new SyncActionDescriptor(
-			ToggleQueryResultsKeyboardAction,
-			ToggleQueryResultsKeyboardAction.ID,
-			ToggleQueryResultsKeyboardAction.LABEL
-		),
-		ToggleQueryResultsKeyboardAction.LABEL
-	);
 // Grid actions
+
+actionRegistry.registerWorkbenchAction(
+	new SyncActionDescriptor(
+		ToggleQueryResultsKeyboardAction,
+		ToggleQueryResultsKeyboardAction.ID,
+		ToggleQueryResultsKeyboardAction.LABEL,
+		{ primary:KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_R },
+		QueryEditorVisibleCondition
+	),
+	ToggleQueryResultsKeyboardAction.LABEL
+);
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_COPY_ID,

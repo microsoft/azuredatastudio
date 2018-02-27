@@ -30,12 +30,14 @@ export interface ICommandKeybindingsOptions extends IKeybindings {
 	kbExpr?: ContextKeyExpr;
 	weight?: number;
 }
+
 export interface ICommandOptions {
 	id: string;
 	precondition: ContextKeyExpr;
 	kbOpts?: ICommandKeybindingsOptions;
 	description?: ICommandHandlerDescription;
 }
+
 export abstract class Command {
 	public readonly id: string;
 	public readonly precondition: ContextKeyExpr;

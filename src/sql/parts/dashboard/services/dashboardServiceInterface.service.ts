@@ -41,6 +41,7 @@ import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { deepClone } from 'vs/base/common/objects';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 
@@ -133,6 +134,7 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _storageService: IStorageService;
 	private _capabilitiesService: ICapabilitiesService;
 	private _configurationEditingService: ConfigurationEditingService;
+	private _commandService: ICommandService;
 	private _dashboardWebviewService: IDashboardWebviewService;
 	private _partService: IPartService;
 	private _angularEventingService: IAngularEventingService;
@@ -167,6 +169,7 @@ export class DashboardServiceInterface implements OnDestroy {
 		this._storageService = this._bootstrapService.storageService;
 		this._capabilitiesService = this._bootstrapService.capabilitiesService;
 		this._configurationEditingService = this._bootstrapService.configurationEditorService;
+		this._commandService = this._bootstrapService.commandService;
 		this._dashboardWebviewService = this._bootstrapService.dashboardWebviewService;
 		this._partService = this._bootstrapService.partService;
 		this._angularEventingService = this._bootstrapService.angularEventingService;
@@ -190,6 +193,10 @@ export class DashboardServiceInterface implements OnDestroy {
 
 	public get connectionManagementService(): SingleConnectionManagementService {
 		return this._connectionManagementService;
+	}
+
+	public get commandService(): ICommandService {
+		return this._commandService;
 	}
 
 	public get themeService(): IWorkbenchThemeService {

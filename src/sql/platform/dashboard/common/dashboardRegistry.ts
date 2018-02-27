@@ -34,9 +34,7 @@ export interface IDashboardRegistry {
 	registerDashboardProvider(id: string, properties: ProviderProperties): void;
 	getProperties(id: string): ProviderProperties;
 	registerTab(tab: IDashboardTab): void;
-	registerTabContent(id: string, schema: IJSONSchema): void;
 	tabs: Array<IDashboardTab>;
-	tabContentSchemaProperties: IJSONSchemaMap;
 }
 
 class DashboardRegistry implements IDashboardRegistry {
@@ -77,19 +75,6 @@ class DashboardRegistry implements IDashboardRegistry {
 	public get tabs(): Array<IDashboardTab> {
 		return this._tabs;
 	}
-
-	/**
-	 * Register a dashboard widget
-	 * @param id id of the widget
-	 * @param schema config schema of the widget
-	 */
-	public registerTabContent(id: string, schema: IJSONSchema): void {
-		this._dashboardTabContentSchemaProperties[id] = schema;
-	}
-
-	public get tabContentSchemaProperties(): IJSONSchemaMap {
-		return deepClone(this._dashboardTabContentSchemaProperties);
-	}
 }
 
 const dashboardRegistry = new DashboardRegistry();
@@ -97,14 +82,6 @@ Registry.add(Extensions.DashboardContributions, dashboardRegistry);
 
 export function registerTab(tab: IDashboardTab): void {
 	dashboardRegistry.registerTab(tab);
-}
-
-export function registerTabContent(id: string, schema: IJSONSchema): void {
-	dashboardRegistry.registerTabContent(id, schema);
-}
-
-export function generateTabContentSchemaProperties(): IJSONSchemaMap {
-	return dashboardRegistry.tabContentSchemaProperties;
 }
 
 const dashboardPropertiesPropertyContrib: IJSONSchema = {

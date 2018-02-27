@@ -26,6 +26,7 @@ import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
 import { ExtHostModalDialogs } from 'sql/workbench/api/node/extHostModalDialog';
+import { ExtHostTasks } from 'sql/workbench/api/node/extHostTasks';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
 import { ExtHostDashboardWebviews } from 'sql/workbench/api/node/extHostDashboardWebview';
@@ -57,6 +58,7 @@ export function createApiFactory(
 	const extHostSerializationProvider = threadService.set(SqlExtHostContext.ExtHostSerializationProvider, new ExtHostSerializationProvider(threadService));
 	const extHostResourceProvider = threadService.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(threadService));
 	const extHostModalDialogs = threadService.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(threadService));
+	const extHostTasks = threadService.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(threadService, logService));
 	const extHostWebviewWidgets = threadService.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(threadService));
 
 	return {
@@ -255,9 +257,15 @@ export function createApiFactory(
 				}
 			};
 
-			const window = {
+			const window: typeof sqlops.window = {
 				createDialog(name: string) {
 					return extHostModalDialogs.createDialog(name);
+				}
+			};
+
+			const tasks: typeof sqlops.tasks = {
+				registerTask(id: string, task: (...args: any[]) => any, thisArgs?: any): vscode.Disposable {
+					return extHostTasks.registerTask(id, task, thisArgs);
 				}
 			};
 
@@ -282,6 +290,7 @@ export function createApiFactory(
 				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode,
 				ScriptOperation: sqlExtHostTypes.ScriptOperation,
 				window,
+				tasks,
 				dashboard
 			};
 		}
