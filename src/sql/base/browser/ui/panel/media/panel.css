@@ -21,6 +21,7 @@ panel {
 .tabbedPanel .composite.title {
 	display: flex;
 	flex: 0 0 auto;
+	flex-direction: row-reverse;
 }
 
 .tabbedPanel .tabList {
@@ -29,6 +30,8 @@ panel {
 	padding: 0;
 	justify-content: flex-start;
 	line-height: 35px;
+	white-space: nowrap;
+	flex: 1;
 }
 
 .tabbedPanel .tabList .tab {
@@ -54,7 +57,7 @@ panel {
 }
 
 .composite.title .title-actions {
-	flex: 1;
+	flex: 1 1 auto;
 }
 
 .tab > .tabLabel.active {
@@ -76,8 +79,12 @@ panel {
 
 .tabbedPanel.vertical > .title {
 	flex: 0 0 auto;
-	flex-direction: column;
+	flex-direction: column-reverse;
 	height: 100%;
+}
+
+.tabbedPanel.vertical .tabList {
+	flex-direction: column;
 }
 
 .tabbedPanel > .tab-content {
@@ -91,4 +98,9 @@ panel {
 
 .tabbedPanel.horizontal > .title > .tabList {
 	flex-flow: row;
+}
+
+.tabbedPanel > .title > .monaco-scrollable-element {
+	flex: 0 1 auto;
+	width: inherit;
 }
