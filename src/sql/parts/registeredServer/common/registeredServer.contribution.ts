@@ -53,7 +53,7 @@ registry.registerWorkbenchAction(
 		OpenConnectionsViewletAction.LABEL,
 		{ primary: KeyMod.CtrlCmd | KeyCode.Shift | KeyCode.KEY_C }),
 	'View: Show Servers',
-	localize('view', "View")
+	localize('registeredServers.view', "View")
 );
 
 let configurationRegistry = <IConfigurationRegistry>Registry.as(Extensions.Configuration);

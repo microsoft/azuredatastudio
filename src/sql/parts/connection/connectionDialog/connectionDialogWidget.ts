@@ -184,8 +184,8 @@ export class ConnectionDialogWidget extends Modal {
 	public render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		let connectLabel = localize('connect', 'Connect');
-		let cancelLabel = localize('cancel', 'Cancel');
+		let connectLabel = localize('connectionDialog.connect', 'Connect');
+		let cancelLabel = localize('connectionDialog.cancel', 'Cancel');
 		this._connectButton = this.addFooterButton(connectLabel, () => this.connect());
 		this._connectButton.enabled = false;
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
@@ -259,8 +259,8 @@ export class ConnectionDialogWidget extends Modal {
 
 		let confirm: IConfirmation = {
 			message: localize('clearRecentConnectionMessage', 'Are you sure you want to delete all the connections from the list?'),
-			primaryButton: localize('yes', 'Yes'),
-			secondaryButton: localize('no', 'No'),
+			primaryButton: localize('connectionDialog.yes', 'Yes'),
+			secondaryButton: localize('connectionDialog.no', 'No'),
 			type: 'question'
 		};
 

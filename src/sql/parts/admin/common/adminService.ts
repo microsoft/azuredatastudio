@@ -62,7 +62,7 @@ export class AdminService implements IAdminService {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {
-			return TPromise.wrapError(new Error(localize('providerIdNotValidError', 'Connection is required in order to interact with adminservice')));
+			return TPromise.wrapError(new Error(localize('adminService.providerIdNotValidError', 'Connection is required in order to interact with adminservice')));
 		}
 		let handler = this._providers[providerId];
 		if (handler) {

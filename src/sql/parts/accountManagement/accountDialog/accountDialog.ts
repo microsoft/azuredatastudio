@@ -102,7 +102,7 @@ export class AccountDialog extends Modal {
 
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		this._closeButton = this.addFooterButton(localize('close', 'Close'), () => this.close());
+		this._closeButton = this.addFooterButton(localize('accountDialog.close', 'Close'), () => this.close());
 		this.registerListeners();
 
 		// Load the initial contents of the view model

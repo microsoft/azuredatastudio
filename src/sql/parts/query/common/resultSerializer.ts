@@ -143,7 +143,7 @@ export class ResultSerializer {
 		filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
 
 		let filePath: string = this._windowService.showSaveDialog({
-			title: nls.localize('saveAsFileTitle', 'Choose Results File'),
+			title: nls.localize('resultsSerializer.saveAsFileTitle', 'Choose Results File'),
 			defaultPath: paths.normalize(filepathPlaceHolder, true)
 		});
 		return filePath;

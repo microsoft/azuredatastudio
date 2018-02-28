@@ -121,7 +121,7 @@ export class NewDashboardTabDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super(
-			localize('newDashboardDialog.openInstalledFeatures', 'Open installed features'),
+			localize('newDashboardTab.openInstalledFeatures', 'Open installed features'),
 			TelemetryKeys.AddNewDashboardTab,
 			partService,
 			telemetryService,
@@ -147,8 +147,8 @@ export class NewDashboardTabDialog extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
-		this._addNewTabButton = this.addFooterButton(localize('ok', 'OK'), () => this.addNewTabs());
-		this._cancelButton = this.addFooterButton(localize('cancel', 'Cancel'), () => this.cancel());
+		this._addNewTabButton = this.addFooterButton(localize('newDashboardTab.ok', 'OK'), () => this.addNewTabs());
+		this._cancelButton = this.addFooterButton(localize('newDashboardTab.cancel', 'Cancel'), () => this.cancel());
 		this.registerListeners();
 	}
 

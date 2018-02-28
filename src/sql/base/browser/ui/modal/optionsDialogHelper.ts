@@ -28,8 +28,8 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 	let optionValue = this.getOptionValueAndCategoryValues(option, options, possibleInputs);
 	let optionWidget: any;
 	let inputElement: HTMLElement;
-	let missingErrorMessage = localize('missingRequireField', ' is required.');
-	let invalidInputMessage = localize('invalidInput', 'Invalid input.  Numeric value expected.');
+	let missingErrorMessage = localize('optionsDialog.missingRequireField', ' is required.');
+	let invalidInputMessage = localize('optionsDialog.invalidInput', 'Invalid input.  Numeric value expected.');
 
 	if (option.valueType === ServiceOptionType.number) {
 		optionWidget = new InputBox(rowContainer.getHTMLElement(), contextViewService, {

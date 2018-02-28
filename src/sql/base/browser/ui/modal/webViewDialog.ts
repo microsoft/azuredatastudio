@@ -50,8 +50,8 @@ export class WebViewDialog extends Modal {
 		@IEnvironmentService private _environmentService: IEnvironmentService,
 	) {
 		super('', TelemetryKeys.WebView, _webViewPartService, telemetryService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
-		this._okLabel = localize('OK', 'OK');
-		this._closeLabel = localize('close', 'Close');
+		this._okLabel = localize('webViewDialog.ok', 'OK');
+		this._closeLabel = localize('webViewDialog.close', 'Close');
 	}
 
 	public set html(value: string) {

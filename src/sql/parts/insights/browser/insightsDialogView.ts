@@ -39,8 +39,8 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 
-const labelDisplay = nls.localize("item", "Item");
-const valueDisplay = nls.localize("value", "Value");
+const labelDisplay = nls.localize("insights.item", "Item");
+const valueDisplay = nls.localize("insights.value", "Value");
 
 function stateFormatter(row: number, cell: number, value: any, columnDef: Slick.Column<ListResource>, resource: ListResource): string {
 	// template

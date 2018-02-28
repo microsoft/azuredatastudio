@@ -153,7 +153,7 @@ export class PinUnpinTabAction extends Action {
 
 export class AddFeatureTabAction extends Action {
 	private static readonly ID = 'openInstalledFeatures';
-	private static readonly LABEL = nls.localize('newFeatureTab.openInstalledFeatures', "Open installed features");
+	private static readonly LABEL = nls.localize('addFeatureAction.openInstalledFeatures', "Open installed features");
 	private static readonly ICON = 'new';
 
 	private _disposables: IDisposable[] = [];
