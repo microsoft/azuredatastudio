@@ -121,7 +121,7 @@ export class NewDashboardTabDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super(
-			localize('openInstalledFeatures', 'Open installed features'),
+			localize('newDashboardDialog.openInstalledFeatures', 'Open installed features'),
 			TelemetryKeys.AddNewDashboardTab,
 			partService,
 			telemetryService,
