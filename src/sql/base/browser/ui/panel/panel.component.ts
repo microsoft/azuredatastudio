@@ -47,13 +47,13 @@ let idPool = 0;
 
 		<div class="tabbedPanel fullsize" #tabbedPanel>
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title" #titleContainer>
+				<div class="title-actions">
+					<div #panelActionbar class="panel-actions" style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" >
+					</div>
+				</div>
 				<div class="tabList" #tabList>
 					<div *ngFor="let tab of _tabs">
 						<tab-header [tab]="tab" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'> </tab-header>
-					</div>
-				</div>
-				<div class="title-actions">
-					<div #panelActionbar class="panel-actions" style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" >
 					</div>
 				</div>
 			</div>
