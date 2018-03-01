@@ -323,7 +323,7 @@ export class BackupComponent {
 		this._backupUiService.onShowBackupDialog();
 	}
 
-	private onGetBackupConfigInfo(param: DashboardComponentParams) {
+	private onGetBackupConfigInfo(param: { connection: IConnectionProfile, ownerUri: string }) {
 		// Show spinner
 		this.showSpinner();
 		this.backupEnabled = false;
