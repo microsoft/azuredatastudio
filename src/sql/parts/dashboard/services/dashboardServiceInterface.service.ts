@@ -246,10 +246,6 @@ export class DashboardServiceInterface implements OnDestroy {
 		return this._capabilitiesService;
 	}
 
-	public get scopedContextKeyService(): IContextKeyService {
-		return this._contextKeyService;
-	}
-
 	/**
 	 * Set the selector for this dashboard instance, should only be set once
 	 */
