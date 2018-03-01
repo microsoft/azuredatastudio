@@ -20,18 +20,9 @@
     "dashboard.tabs": [
         {
             "id": "data-management-agent",
-            "description": "SQL Agent management",
+            "description": "Manage and troubleshoot SQL Agent jobs",
             "provider": "MSSQL",
             "title": "SQL Agent",
-            "container": {
-                "webview-container": null
-            }
-        },
-        {
-            "id": "data-management-controlhost",
-            "description": "Control Host test",
-            "provider": "MSSQL",
-            "title": "Control Host",
             "container": {
                 "controlhost-container": {
                   "type": "agent"
