@@ -15,7 +15,8 @@ export enum ContextKeys {
 }
 
 const isCloudEditions = [
-
+	5,
+	6
 ];
 
 export function setCommandContext(key: ContextKeys | string, value: any) {
@@ -32,8 +33,8 @@ export default class ContextProvider {
 
 	public onDashboardOpen(e: sqlops.DashboardDocument): void {
 		let iscloud: boolean;
-		if (e.profile.providerName.toLowerCase() === 'mssql' && .options['edition']) {
-			if (isCloudEditions.some(e.profile.options['edition'])) {
+		if (e.profile.providerName.toLowerCase() === 'mssql' && e.serverInfo.engineEditionId) {
+			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {
 				iscloud = true;
 			} else {
 				iscloud = false;
