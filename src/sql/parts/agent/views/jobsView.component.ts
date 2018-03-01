@@ -15,6 +15,7 @@ import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.componen
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IAgentService } from '../common/interfaces';
+import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 
 export const DASHBOARD_SELECTOR: string = 'jobsview-component';
 
@@ -28,6 +29,7 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService,
+		@Inject(forwardRef(() => DashboardServiceInterface)) protected _dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
@@ -35,7 +37,12 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit() {
-		//this._agentService.getJobs()
+		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		this._agentService.getJobs(ownerUri).then((jobs) => {
+			if (jobs) {
+				jobs = undefined;
+			}
+		});
 	}
 
 	ngOnDestroy() {
