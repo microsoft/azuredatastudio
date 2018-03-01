@@ -92,8 +92,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		alwaysShow = alwaysShow || false;
 		let publisher = extension.description.publisher;
 		if (!title) {
-			extension.collector.error('No title specified for extension.');
-			return;
+			extension.collector.warn('No title specified for extension.');
 		}
 		if (!description) {
 			extension.collector.warn('No description specified to show.');

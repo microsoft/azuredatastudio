@@ -192,6 +192,10 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private loadNewTabs(dashboardTabs: IDashboardTab[]) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			let selectedTabs = dashboardTabs.map(v => {
+				if (!v.title) {
+					v.title = v.id;
+				}
+
 				let container = dashboardHelper.getDashboardContainer(v.container);
 				let key = Object.keys(container)[0];
 
