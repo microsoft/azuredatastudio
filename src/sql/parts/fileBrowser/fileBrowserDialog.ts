@@ -103,9 +103,9 @@ export class FileBrowserDialog extends Modal {
 			});
 		});
 
-		this._okButton = this.addFooterButton(localize('ok', 'OK'), () => this.ok());
+		this._okButton = this.addFooterButton(localize('fileBrowser.ok', 'OK'), () => this.ok());
 		this._okButton.enabled = false;
-		this._cancelButton = this.addFooterButton(localize('discard', 'Discard'), () => this.close());
+		this._cancelButton = this.addFooterButton(localize('fileBrowser.discard', 'Discard'), () => this.close());
 
 		this.registerListeners();
 		this.updateTheme();

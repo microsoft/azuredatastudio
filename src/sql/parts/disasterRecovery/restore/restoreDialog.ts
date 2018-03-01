@@ -126,10 +126,10 @@ export class RestoreDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super(localize('RestoreDialogTitle', 'Restore database'), TelemetryKeys.Restore, partService, telemetryService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
-		this._restoreTitle = localize('restoreTitle', 'Restore database');
-		this._databaseTitle = localize('database', 'Database');
-		this._backupFileTitle = localize('backupFile', 'Backup file');
-		this._restoreLabel = localize('restore', 'Restore');
+		this._restoreTitle = localize('restoreDialog.restoreTitle', 'Restore database');
+		this._databaseTitle = localize('restoreDialog.database', 'Database');
+		this._backupFileTitle = localize('restoreDialog.backupFile', 'Backup file');
+		this._restoreLabel = localize('restoreDialog.restore', 'Restore');
 
 		// view model
 		this.viewModel = new RestoreViewModel(optionsMetadata);
@@ -146,8 +146,8 @@ export class RestoreDialog extends Modal {
 	public render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		let cancelLabel = localize('cancel', 'Cancel');
-		this._scriptButton = this.addFooterButton(localize('script', 'Script'), () => this.restore(true));
+		let cancelLabel = localize('restoreDialog.cancel', 'Cancel');
+		this._scriptButton = this.addFooterButton(localize('restoreDialog.script', 'Script'), () => this.restore(true));
 		this._restoreButton = this.addFooterButton(this._restoreLabel, () => this.restore(false));
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
 		this.registerListeners();

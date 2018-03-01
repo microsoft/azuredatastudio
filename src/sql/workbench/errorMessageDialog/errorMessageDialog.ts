@@ -49,8 +49,8 @@ export class ErrorMessageDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super('', TelemetryKeys.ErrorMessage, partService, telemetryService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
-		this._okLabel = localize('OK', 'OK');
-		this._closeLabel = localize('close', 'Close');
+		this._okLabel = localize('errorMessageDialog.ok', 'OK');
+		this._closeLabel = localize('errorMessageDialog.close', 'Close');
 	}
 
 	protected renderBody(container: HTMLElement) {
