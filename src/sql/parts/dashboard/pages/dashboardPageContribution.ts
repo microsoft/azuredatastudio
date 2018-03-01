@@ -80,31 +80,9 @@ export function generateDashboardGridLayoutSchema(type?: 'database' | 'server', 
 			icon: {
 				type: 'string'
 			},
-			provider: {
-				anyOf: [
-					{
-						type: 'string'
-					},
-					{
-						type: 'array',
-						items: {
-							type: 'string'
-						}
-					}
-				]
-			},
-			edition: {
-				anyOf: [
-					{
-						type: 'number'
-					},
-					{
-						type: 'array',
-						items: {
-							type: 'number'
-						}
-					}
-				]
+			when: {
+				description: localize('sqlops.extension.contributes.widget.when', 'Condition which must be true to show this item'),
+				type: 'string'
 			}
 		}
 	};
