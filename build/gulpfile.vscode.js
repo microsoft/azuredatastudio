@@ -31,7 +31,7 @@ const packageJson = require('../package.json');
 const product = require('../product.json');
 const crypto = require('crypto');
 const i18n = require('./lib/i18n');
-const serviceInstaller = require('../extensions-modules/lib/languageservice/serviceInstallerUtil');
+const servicedownloader = require('service-downloader');
 const glob = require('glob');
 const deps = require('./dependencies');
 const getElectronVersion = require('./lib/electron').getElectronVersion;
@@ -293,8 +293,6 @@ function packageTask(platform, arch, opts) {
 		const localExtensionDependencies = gulp.src(extensionDepsSrc, { base: '.', dot: true })
 			.pipe(filter(['**', '!**/package-lock.json']))
 			.pipe(util.cleanNodeModule('account-provider-azure', ['node_modules/date-utils/doc/**', 'node_modules/adal_node/node_modules/**'], undefined))
-			.pipe(util.cleanNodeModule('dataprotocol-client', ['node_modules/**', 'src/*.js'], undefined))
-			.pipe(util.cleanNodeModule('extensions-modules', ['node_modules/**', 'src/*.js'], undefined))
 			.pipe(util.cleanNodeModule('typescript', ['**/**'], undefined));
 
 		const sources = es.merge(src, localExtensions, localExtensionDependencies)
@@ -642,27 +640,27 @@ gulp.task('generate-vscode-configuration', () => {
 // {{SQL CARBON EDIT}}
 // Install service locally before building carbon
 
-function installService(extObj, path) {
-	var installer = new serviceInstaller.ServiceInstaller(extObj, path);
-	installer.getServiceInstallDirectoryRoot().then(serviceInstallFolder => {
-			console.log('Cleaning up the install folder: ' + serviceInstallFolder);
-			del(serviceInstallFolder + '/*').then(() => {
-				console.log('Installing the service. Install folder: ' + serviceInstallFolder);
-				installer.installService();
-			}, delError => {
-				console.log('failed to delete the install folder error: ' + delError);
-			});
-	}, getFolderPathError => {
-		console.log('failed to call getServiceInstallDirectoryRoot error: ' + getFolderPathError);
-	});
+// function installService(extObj, path) {
+// 	var installer = new serviceInstaller.ServiceInstaller(extObj, path);
+// 	installer.getServiceInstallDirectoryRoot().then(serviceInstallFolder => {
+// 			console.log('Cleaning up the install folder: ' + serviceInstallFolder);
+// 			del(serviceInstallFolder + '/*').then(() => {
+// 				console.log('Installing the service. Install folder: ' + serviceInstallFolder);
+// 				installer.installService();
+// 			}, delError => {
+// 				console.log('failed to delete the install folder error: ' + delError);
+// 			});
+// 	}, getFolderPathError => {
+// 		console.log('failed to call getServiceInstallDirectoryRoot error: ' + getFolderPathError);
+// 	});
 
-}
+// }
 
-gulp.task('install-sqltoolsservice', () => {
-	var mssqlExt = require('../extensions/mssql/client/out/models/constants');
-	var extObj = new mssqlExt.Constants();
-	var path = '../extensions/mssql/client/out/config.json';
-    return installService(extObj, path);
-});
+// gulp.task('install-sqltoolsservice', () => {
+// 	var mssqlExt = require('../extensions/mssql/client/out/models/constants');
+// 	var extObj = new mssqlExt.Constants();
+// 	var path = '../extensions/mssql/client/out/config.json';
+//     return installService(extObj, path);
+// });
 
 

@@ -10,7 +10,7 @@ import { Constants } from '../models/constants';
 import { Serialization } from '../serialize/serialization';
 import { CredentialStore } from '../credentialstore/credentialstore';
 import { AzureResourceProvider } from '../resourceProvider/resourceProvider';
-import { IExtensionConstants, Telemetry, Constants as SharedConstants, SqlToolsServiceClient, VscodeWrapper, Utils, PlatformInformation } from 'extensions-modules';
+import { IExtensionConstants, Telemetry, Constants as SharedConstants, SqlToolsServiceClient, VscodeWrapper, Utils, PlatformInformation } from 'service-downloader';
 import { SqlOpsDataClient } from 'dataprotocol-client';
 import * as path from 'path';
 
