@@ -68,7 +68,7 @@ export class AdminService implements IAdminService {
 		if (handler) {
 			return action(handler);
 		} else {
-			return TPromise.wrapError(new Error(localize('noHandlerRegistered', 'No Handler Registered')));
+			return TPromise.wrapError(new Error(localize('adminService.noHandlerRegistered', 'No Handler Registered')));
 		}
 	}
 
