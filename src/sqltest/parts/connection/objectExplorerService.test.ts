@@ -8,7 +8,7 @@ import { ObjectExplorerProviderTestService } from 'sqltest/stubs/objectExplorerP
 import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagementService.test';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { ObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { ObjectExplorerService, TreeItemCollapsibleState } from 'sql/parts/registeredServer/common/objectExplorerService';
 import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
 import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
 
@@ -275,10 +275,9 @@ suite('SQL Object Explorer Service tests', () => {
 		});
 
 		serverTreeView = TypeMoq.Mock.ofInstance({
-			expand: element => Promise.resolve() as Thenable<void>,
-			collapse: element => Promise.resolve() as Thenable<void>,
+			setExpandedState: (element, expandedState) => Promise.resolve() as Thenable<void>,
 			reveal: element => Promise.resolve() as Thenable<void>,
-			select: element => undefined,
+			setSelected: (element, selected, clearOtherSelections) => undefined,
 			isExpanded: element => undefined,
 			onSelectionOrFocusChange: Event.None
 		} as ServerTreeView);
@@ -599,7 +598,7 @@ suite('SQL Object Explorer Service tests', () => {
 		}, err => done(err));
 	});
 
-	test('expandNodeForConnection calls expand on the requested tree node', (done) => {
+	test('setting a node to expanded calls expand on the requested tree node', (done) => {
 		let table1NodePath = objectExplorerExpandInfo.nodes[0].nodePath;
 		let tableExpandInfo = {
 			sessionId: sessionId,
@@ -615,7 +614,7 @@ suite('SQL Object Explorer Service tests', () => {
 			objectExplorerService.onNodeExpanded(1, tableExpandInfo);
 		}).returns(() => TPromise.as(true));
 		let expandedNodePaths: string[] = [];
-		serverTreeView.setup(x => x.expand(TypeMoq.It.isAny())).returns(treeNode => {
+		serverTreeView.setup(x => x.setExpandedState(TypeMoq.It.isAny(), TypeMoq.It.is(state => state === TreeItemCollapsibleState.Expanded))).returns(treeNode => {
 			if (treeNode instanceof ConnectionProfile) {
 				treeNode = objectExplorerService.getObjectExplorerNode(treeNode);
 			}
@@ -626,9 +625,9 @@ suite('SQL Object Explorer Service tests', () => {
 		objectExplorerService.createNewSession('MSSQL', connection).then(result => {
 			objectExplorerService.onSessionCreated(1, objectExplorerSession);
 			// If I expand the node, then it should get expanded after its parent gets expanded
-			objectExplorerService.expandNodeForConnection(connection.id, table1NodePath).then(() => {
+			objectExplorerService.setNodeExpandedState(connection.id, table1NodePath, TreeItemCollapsibleState.Expanded).then(() => {
 				try {
-					serverTreeView.verify(x => x.expand(TypeMoq.It.isAny()), TypeMoq.Times.exactly(2));
+					serverTreeView.verify(x => x.setExpandedState(TypeMoq.It.isAny(), TypeMoq.It.is(state => state === TreeItemCollapsibleState.Expanded)), TypeMoq.Times.exactly(2));
 					assert.equal(expandedNodePaths[0], objectExplorerSession.rootNode.nodePath);
 					assert.equal(expandedNodePaths[1], table1NodePath);
 					done();
@@ -639,19 +638,19 @@ suite('SQL Object Explorer Service tests', () => {
 		});
 	});
 
-	test('collapseNodeForConnection calls collapse on the requested tree node', (done) => {
+	test('setting a node to collapsed calls collapse on the requested tree node', (done) => {
 		serverTreeView.setup(x => x.isExpanded(TypeMoq.It.isAny())).returns(treeNode => {
 			return treeNode === connection;
 		});
-		serverTreeView.setup(x => x.collapse(TypeMoq.It.is(treeNode => treeNode === connection))).returns(() => Promise.resolve());
+		serverTreeView.setup(x => x.setExpandedState(TypeMoq.It.is(treeNode => treeNode === connection), TypeMoq.It.is(state => state === TreeItemCollapsibleState.Collapsed))).returns(() => Promise.resolve());
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
 		objectExplorerService.createNewSession('MSSQL', connection).then(result => {
 			objectExplorerService.onSessionCreated(1, objectExplorerSession);
 			objectExplorerService.expandTreeNode(objectExplorerSession, objectExplorerService.getObjectExplorerNode(connection)).then(childNodes => {
 				// If I collapse the connection node, then the tree's collapse method should get called
-				objectExplorerService.collapseNodeForConnection(connection.id, objectExplorerSession.rootNode.nodePath).then(() => {
+				objectExplorerService.setNodeExpandedState(connection.id, objectExplorerSession.rootNode.nodePath, TreeItemCollapsibleState.Collapsed).then(() => {
 					try {
-						serverTreeView.verify(x => x.collapse(TypeMoq.It.is(treeNode => treeNode === connection)), TypeMoq.Times.once());
+						serverTreeView.verify(x => x.setExpandedState(TypeMoq.It.is(treeNode => treeNode === connection), TypeMoq.It.is(state => state === TreeItemCollapsibleState.Collapsed)), TypeMoq.Times.once());
 						done();
 					} catch (err) {
 						done(err);
@@ -663,18 +662,18 @@ suite('SQL Object Explorer Service tests', () => {
 
 	test('selectNodeForConnection sets the tree selection to the requested tree node', (done) => {
 		let table1NodePath = objectExplorerExpandInfo.nodes[0].nodePath;
-		serverTreeView.setup(x => x.expand(TypeMoq.It.is(treeNode => treeNode === connection))).returns(() => {
+		serverTreeView.setup(x => x.setExpandedState(TypeMoq.It.is(treeNode => treeNode === connection), TypeMoq.It.is(state => state === TreeItemCollapsibleState.Expanded))).returns(() => {
 			return objectExplorerService.expandTreeNode(objectExplorerSession, objectExplorerService.getObjectExplorerNode(connection)).then(() => undefined);
 		});
-		serverTreeView.setup(x => x.select(TypeMoq.It.is((treeNode: TreeNode) => treeNode.nodePath === table1NodePath))).returns(() => undefined);
+		serverTreeView.setup(x => x.setSelected(TypeMoq.It.is((treeNode: TreeNode) => treeNode.nodePath === table1NodePath), TypeMoq.It.isAny(), undefined)).returns(() => undefined);
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
 		objectExplorerService.createNewSession('MSSQL', connection).then(result => {
 			objectExplorerService.onSessionCreated(1, objectExplorerSession);
 			// If I select the table node, then it should be selected and its parent should get expanded
-			objectExplorerService.selectNodeForConnection(connection.id, table1NodePath).then(() => {
+			objectExplorerService.setNodeSelected(connection.id, table1NodePath, true).then(() => {
 				try {
-					serverTreeView.verify(x => x.expand(TypeMoq.It.is(treeNode => treeNode === connection)), TypeMoq.Times.once());
-					serverTreeView.verify(x => x.select(TypeMoq.It.is((treeNode: TreeNode) => treeNode.nodePath === table1NodePath)), TypeMoq.Times.once());
+					serverTreeView.verify(x => x.setExpandedState(TypeMoq.It.is(treeNode => treeNode === connection), TypeMoq.It.is(state => state === TreeItemCollapsibleState.Expanded)), TypeMoq.Times.once());
+					serverTreeView.verify(x => x.setSelected(TypeMoq.It.is((treeNode: TreeNode) => treeNode.nodePath === table1NodePath), TypeMoq.It.isValue(true), undefined), TypeMoq.Times.once());
 					done();
 				} catch (err) {
 					done(err);

@@ -22,7 +22,7 @@ import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/co
 import { TreeCreationUtils } from 'sql/parts/registeredServer/viewlet/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/parts/registeredServer/viewlet/treeSelectionHandler';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService, TreeItemCollapsibleState } from 'sql/parts/registeredServer/common/objectExplorerService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { Button } from 'sql/base/browser/ui/button/button';
@@ -430,17 +430,15 @@ export class ServerTreeView {
 	}
 
 	/**
-	 * Expand the given element in the tree
+	 * Set whether the given element is expanded or collapsed
 	 */
-	public expand(element: TreeNode | ConnectionProfile): Thenable<void> {
-		return this._tree.expand(element);
-	}
-
-	/**
-	 * Collapse the given element in the tree
-	 */
-	public collapse(element: TreeNode | ConnectionProfile): Thenable<void> {
-		return this._tree.collapse(element);
+	public setExpandedState(element: TreeNode | ConnectionProfile, expandedState: TreeItemCollapsibleState): Thenable<void> {
+		if (expandedState === TreeItemCollapsibleState.Collapsed) {
+			return this._tree.collapse(element);
+		} else if (expandedState === TreeItemCollapsibleState.Expanded) {
+			return this._tree.expand(element);
+		}
+		return Promise.resolve();
 	}
 
 	/**
@@ -453,10 +451,17 @@ export class ServerTreeView {
 	/**
 	 * Select the given element in the tree and clear any other selections
 	 */
-	public select(element: TreeNode | ConnectionProfile): Thenable<void> {
-		this._tree.clearSelection();
-		this._tree.select(element);
-		return this._tree.reveal(element);
+	public setSelected(element: TreeNode | ConnectionProfile, selected: boolean, clearOtherSelections: boolean): Thenable<void> {
+		if (clearOtherSelections || (selected && clearOtherSelections !== false)) {
+			this._tree.clearSelection();
+		}
+		if (selected) {
+			this._tree.select(element);
+			return this._tree.reveal(element);
+		} else {
+			this._tree.deselect(element);
+			return Promise.resolve();
+		}
 	}
 
 	/**

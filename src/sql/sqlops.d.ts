@@ -144,19 +144,18 @@ declare module 'sqlops' {
 			isExpanded(): Thenable<boolean>;
 
 			/**
-			 * Expand the node in Object Explorer
+			 * Set whether the node is expanded or collapsed
+			 * @param expandedState The new state of the node. If 'None', the node will not be changed
 			 */
-			expand(): Thenable<void>;
+			setExpandedState(expandedState: vscode.TreeItemCollapsibleState);
 
 			/**
-			 * Collapse the node in Object Explorer
-			*/
-			collapse(): Thenable<void>;
-
-			/**
-			 * Select the node in Object Explorer, expanding its parents in the tree if needed
+			 * Set whether the node is selected
+			 * @param selected Whether the node should be selected
+			 * @param clearOtherSelections If true, clear any other selections. If false, leave any existing selections.
+			 * Defaults to true when selected is true and false when selected is false.
 			 */
-			select(): Thenable<void>;
+			setSelected(selected: boolean, clearOtherSelections?: boolean): Thenable<void>;
 
 			/**
 			 * Get all the child nodes. Returns an empty list if there are no children.

@@ -6,10 +6,11 @@
 
 import { SqlExtHostContext, SqlMainContext, ExtHostObjectExplorerShape, MainThreadObjectExplorerShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as sqlops from 'sqlops';
+import * as vscode from 'vscode';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService, NodeInfoWithConnection } from 'sql/parts/registeredServer/common/objectExplorerService';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -41,20 +42,16 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 		return Promise.resolve(this._objectExplorerService.findNodeInfo(connectionId, nodePath));
 	}
 
-	public $getActiveConnectionNodes(): Thenable<{ nodeInfo: sqlops.NodeInfo, connectionId: string}[]> {
-		return Promise.resolve(this._objectExplorerService.getActiveConnections());
+	public $getActiveConnectionNodes(): Thenable<NodeInfoWithConnection[]> {
+		return Promise.resolve(this._objectExplorerService.getActiveConnectionNodes());
 	}
 
-	public $expandNode(connectionId: string, nodePath: string): Thenable<void> {
-		return this._objectExplorerService.expandNodeForConnection(connectionId, nodePath);
+	public $setExpandedState(connectionId: string, nodePath: string, expandedState: vscode.TreeItemCollapsibleState): Thenable<void> {
+		return this._objectExplorerService.setNodeExpandedState(connectionId, nodePath, expandedState);
 	}
 
-	public $collapseNode(connectionId: string, nodePath: string): Thenable<void> {
-		return this._objectExplorerService.collapseNodeForConnection(connectionId, nodePath);
-	}
-
-	public $selectNode(connectionId: string, nodePath: string): Thenable<void> {
-		return Promise.resolve(this._objectExplorerService.selectNodeForConnection(connectionId, nodePath));
+	public $setSelected(connectionId: string, nodePath: string, selected: boolean, clearOtherSelections: boolean = undefined): Thenable<void> {
+		return this._objectExplorerService.setNodeSelected(connectionId, nodePath, selected, clearOtherSelections);
 	}
 
 	public $getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]> {

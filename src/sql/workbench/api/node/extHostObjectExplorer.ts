@@ -7,6 +7,7 @@
 import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
 import { ExtHostObjectExplorerShape, SqlMainContext, MainThreadObjectExplorerShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as sqlops from 'sqlops';
+import * as vscode from 'vscode';
 
 export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape  {
 
@@ -26,16 +27,12 @@ export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape  {
 		return this._proxy.$getActiveConnectionNodes().then(results => results.map(result => new ObjectExplorerNode(result.nodeInfo, result.connectionId, this)));
 	}
 
-	public $expandNode(connectionId: string, nodePath: string): Thenable<void> {
-		return this._proxy.$expandNode(connectionId, nodePath);
+	public $setExpandedState(connectionId: string, nodePath: string, expandedState: vscode.TreeItemCollapsibleState): Thenable<void> {
+		return this._proxy.$setExpandedState(connectionId, nodePath, expandedState);
 	}
 
-	public $collapseNode(connectionId: string, nodePath: string): Thenable<void> {
-		return this._proxy.$collapseNode(connectionId, nodePath);
-	}
-
-	public $selectNode(connectionId: string, nodePath: string): Thenable<void> {
-		return this._proxy.$selectNode(connectionId, nodePath);
+	public $setSelected(connectionId: string, nodePath: string, selected: boolean, clearOtherSelections: boolean = undefined): Thenable<void> {
+		return this._proxy.$setSelected(connectionId, nodePath, selected, clearOtherSelections);
 	}
 
 	public $getChildren(connectionId: string, nodePath: string): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
@@ -67,16 +64,12 @@ class ObjectExplorerNode implements sqlops.objectexplorer.ObjectExplorerNode {
 		return this._extHostObjectExplorer.$isExpanded(this.connectionId, this.nodePath);
 	}
 
-	expand(): Thenable<void> {
-		return this._extHostObjectExplorer.$expandNode(this.connectionId, this.nodePath);
+	setExpandedState(expandedState: vscode.TreeItemCollapsibleState): Thenable<void> {
+		return this._extHostObjectExplorer.$setExpandedState(this.connectionId, this.nodePath, expandedState);
 	}
 
-	collapse(): Thenable<void> {
-		return this._extHostObjectExplorer.$collapseNode(this.connectionId, this.nodePath);
-	}
-
-	select(): Thenable<void> {
-		return this._extHostObjectExplorer.$selectNode(this.connectionId, this.nodePath);
+	setSelected(selected: boolean, clearOtherSelections: boolean = undefined): Thenable<void> {
+		return this._extHostObjectExplorer.$setSelected(this.connectionId, this.nodePath, selected, clearOtherSelections);
 	}
 
 	getChildren(): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {

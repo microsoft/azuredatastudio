@@ -19,6 +19,7 @@ import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeView';
+import * as vscode from 'vscode';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -66,17 +67,15 @@ export interface IObjectExplorerService {
 
 	getServerTreeView(): ServerTreeView;
 
-	getActiveConnections(): { connectionId: string, nodeInfo: sqlops.NodeInfo }[];
+	getActiveConnectionNodes(): NodeInfoWithConnection[];
 
 	getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]>;
 
 	isExpanded(connectionId: string, nodePath: string): boolean;
 
-	expandNodeForConnection(connectionId: string, nodePath: string): Thenable<void>;
+	setNodeExpandedState(connectionId: string, nodePath: string, expandedState: TreeItemCollapsibleState): Thenable<void>;
 
-	collapseNodeForConnection(connectionId: string, nodePath: string): Thenable<void>;
-
-	selectNodeForConnection(connectionId: string, nodePath: string): Thenable<void>;
+	setNodeSelected(connectionId: string, nodePath: string, selected: boolean, clearOtherSelections?: boolean): Thenable<void>;
 
 	findNodeInfo(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo>;
 }
@@ -94,6 +93,19 @@ export interface ObjectExplorerNodeEventArgs {
 	connection: IConnectionProfile;
 	errorMessage: string;
 }
+
+export interface NodeInfoWithConnection {
+	connectionId: string;
+	nodeInfo: sqlops.NodeInfo;
+}
+
+export enum TreeItemCollapsibleState {
+	None = 0,
+	Collapsed = 1,
+	Expanded = 2
+}
+
+const noObjectAtNodePathErrorMessage = nls.localize('noObjectAtNodePath', 'There is no object at the given node path');
 
 
 export class ObjectExplorerService implements IObjectExplorerService {
@@ -446,7 +458,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._serverTreeView;
 	}
 
-	public getActiveConnections(): { connectionId: string, nodeInfo: sqlops.NodeInfo }[] {
+	public getActiveConnectionNodes(): NodeInfoWithConnection[] {
 		let connections: [string, TreeNode][] = Object.entries(this._activeObjectExplorerNodes);
 		return connections.map(([connectionId, treeNode]) => {
 			return {
@@ -456,36 +468,23 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	public async expandNodeForConnection(connectionId: string, nodePath: string, stopAtParent: boolean = false): Promise<void> {
+	public setNodeExpandedState(connectionId: string, nodePath: string, expandedState: TreeItemCollapsibleState): Thenable<void> {
+		if (expandedState === TreeItemCollapsibleState.Collapsed) {
+			return this.collapseNodeForConnection(connectionId, nodePath);
+		} else if (expandedState === TreeItemCollapsibleState.Expanded) {
+			return this.expandNodeForConnection(connectionId, nodePath);
+		}
+		return Promise.resolve();
+	}
+
+	private async expandNodeForConnection(connectionId: string, nodePath: string, stopAtParent: boolean = false): Promise<void> {
 		let rootNode = this._activeObjectExplorerNodes[connectionId];
 		if (!rootNode) {
-			throw new Error('The given connection is not active in Object Explorer');
+			throw new Error(nls.localize('noMatchingOEConnection', 'The given connection is not active in Object Explorer'));
 		}
 		let node = this.findTreeNode(connectionId, nodePath);
 		if (!node) {
-			// The node is not in the tree yet, so expand its parent nodes to make it visible
-			let nodeInfo = await this.findNodeInfo(connectionId, nodePath);
-			if (!nodeInfo) {
-				throw new Error('There is no object at the given node path');
-			}
-			let currentNode = rootNode;
-			while (true) {
-				if ((stopAtParent || currentNode.isAlwaysLeaf) && currentNode.nodePath === nodePath) {
-					return;
-				} else if (currentNode.isAlwaysLeaf) {
-					throw new Error('Could not find tree node for expand due to leaf node on path');
-				}
-				await this._serverTreeView.expand(currentNode === rootNode ? rootNode.connection : currentNode);
-				if (currentNode.nodePath === nodePath) {
-					return;
-				}
-				// Expand the next node in the path, which is the child object with the longest path where the desired path starts with the child path
-				let children = currentNode.children.filter(child => nodePath.startsWith(child.nodePath));
-				if (children.length === 0) {
-					throw new Error('Could not find matching tree node to expand');
-				}
-				currentNode = children.reduce((currentMax, newNode) => currentMax.nodePath.length < newNode.nodePath.length ? newNode : currentMax);
-			}
+			return this.findAndExpandTreeNode(connectionId, nodePath, rootNode, stopAtParent);
 		}
 		// Otherwise the node is already in the tree, so expand and reveal it
 		let expandNode: TreeNode | ConnectionProfile = node;
@@ -496,31 +495,65 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			return this._serverTreeView.reveal(expandNode);
 		}
 		return this.expandNode(rootNode.connection.providerName, rootNode.session, nodePath).then(() => {
-			return this._serverTreeView.expand(expandNode).then(() => this._serverTreeView.reveal(expandNode));
+			return this._serverTreeView.setExpandedState(expandNode, TreeItemCollapsibleState.Expanded).then(() => this._serverTreeView.reveal(expandNode));
 		});
 	}
 
-	public collapseNodeForConnection(connectionId: string, nodePath: string): Thenable<void> {
+	private async findAndExpandTreeNode(connectionId: string, nodePath: string, rootNode: TreeNode, stopAtParent: boolean): Promise<void> {
+		// The node is not in the tree yet, so expand its parent nodes to make it visible
+		let nodeInfo = await this.findNodeInfo(connectionId, nodePath);
+		if (!nodeInfo) {
+			throw new Error(noObjectAtNodePathErrorMessage);
+		}
+		let currentNode = rootNode;
+		const noFoundNodeErrorMessage = nls.localize('couldNotFindTreeNodeToExpand', 'Could not find matching tree node to expand');
+		while (true) {
+			if ((stopAtParent || currentNode.isAlwaysLeaf) && currentNode.nodePath === nodePath) {
+				return;
+			} else if (currentNode.isAlwaysLeaf) {
+				throw new Error(noFoundNodeErrorMessage);
+			}
+			await this._serverTreeView.setExpandedState(currentNode === rootNode ? rootNode.connection : currentNode, TreeItemCollapsibleState.Expanded);
+			if (currentNode.nodePath === nodePath) {
+				return;
+			}
+			// Expand the next node in the path, which is the child object with the longest path where the desired path starts with the child path
+			let children = currentNode.children.filter(child => nodePath.startsWith(child.nodePath));
+			if (children.length === 0) {
+				throw new Error(noFoundNodeErrorMessage);
+			}
+			currentNode = children.reduce((currentMax, newNode) => currentMax.nodePath.length < newNode.nodePath.length ? newNode : currentMax);
+		}
+	}
+
+	private async collapseNodeForConnection(connectionId: string, nodePath: string): Promise<void> {
 		let treeNode = this.findTreeNode(connectionId, nodePath);
 		if (!treeNode) {
-			// No visible matching tree node. If there is no object matching the node path at all, reject the promise.
-			// Otherwise resolve it since the node is already collapsed
-			return this.findNodeInfo(connectionId, nodePath).then(nodeInfo => {
-				if (!nodeInfo) {
-					throw new Error('Could not find matching tree node to collapse');
-				}
-				return Promise.resolve();
-			});
+			// No visible matching tree node. If there is no object matching the node path at all, throw an error.
+			// Otherwise return without doing anything since the node is already collapsed
+			let nodeInfo = await this.findNodeInfo(connectionId, nodePath);
+			if (!nodeInfo) {
+				throw new Error(noObjectAtNodePathErrorMessage);
+			}
+			return;
 		}
 		let rootNode = this._activeObjectExplorerNodes[connectionId];
 		let collapseNode: TreeNode | ConnectionProfile = treeNode;
 		if (treeNode === rootNode) {
 			collapseNode = treeNode.connection;
 		}
-		return this._serverTreeView.collapse(collapseNode);
+		return this._serverTreeView.setExpandedState(collapseNode, TreeItemCollapsibleState.Collapsed);
 	}
 
-	public selectNodeForConnection(connectionId: string, nodePath: string): Thenable<void> {
+	public setNodeSelected(connectionId: string, nodePath: string, selected: boolean, clearOtherSelections: boolean = undefined): Thenable<void> {
+		if (selected) {
+			return this.selectNodeForConnection(connectionId, nodePath, clearOtherSelections);
+		} else {
+			return this.deselectNodeForConnection(connectionId, nodePath, clearOtherSelections);
+		}
+	}
+
+	private selectNodeForConnection(connectionId: string, nodePath: string, clearOtherSelections: boolean): Thenable<void> {
 		return this.expandNodeForConnection(connectionId, nodePath, true).then(() => {
 			let node = this.findTreeNode(connectionId, nodePath);
 			let rootNode = this._activeObjectExplorerNodes[connectionId];
@@ -528,14 +561,27 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			if (node === rootNode) {
 				selectNode = node.connection;
 			}
-			return this._serverTreeView.select(selectNode);
+			return this._serverTreeView.setSelected(selectNode, true, clearOtherSelections);
 		});
+	}
+
+	private deselectNodeForConnection(connectionId: string, nodePath: string, clearOtherSelections: boolean): Thenable<void> {
+		let node = this.findTreeNode(connectionId, nodePath);
+		if (!node) {
+			return Promise.resolve();
+		}
+		let selectNode: TreeNode | ConnectionProfile = node;
+		let rootNode = this._activeObjectExplorerNodes[connectionId];
+		if (node === rootNode) {
+			selectNode = node.connection;
+		}
+		return this._serverTreeView.setSelected(selectNode, false, clearOtherSelections);
 	}
 
 	public getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]> {
 		return this.findNodeInfo(connectionId, nodePath).then(parentNode => {
 			if (!parentNode) {
-				throw new Error('There is no object at the given node path');
+				throw new Error(noObjectAtNodePathErrorMessage);
 			}
 			let rootNode = this._activeObjectExplorerNodes[connectionId];
 			if (parentNode.isLeaf) {

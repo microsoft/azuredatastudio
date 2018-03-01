@@ -11,6 +11,7 @@ import {
 } from 'vs/workbench/services/thread/common/threadService';
 
 import * as sqlops from 'sqlops';
+import * as vscode from 'vscode';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -469,9 +470,8 @@ export interface ExtHostObjectExplorerShape {
 export interface MainThreadObjectExplorerShape extends IDisposable {
 	$getNode(connectionId: string, nodePath?: string): Thenable<sqlops.NodeInfo>;
 	$getActiveConnectionNodes(): Thenable<{ nodeInfo: sqlops.NodeInfo, connectionId: string}[]>;
-	$expandNode(connectionId: string, nodePath: string): Thenable<void>;
-	$collapseNode(connectionId: string, nodePath: string): Thenable<void>;
-	$selectNode(connectionId: string, nodePath: string): Thenable<void>;
+	$setExpandedState(connectionId: string, nodePath: string, expandedState: vscode.TreeItemCollapsibleState): Thenable<void>;
+	$setSelected(connectionId: string, nodePath: string, selected: boolean, clearOtherSelections?: boolean): Thenable<void>;
 	$getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]>;
 	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
 }
