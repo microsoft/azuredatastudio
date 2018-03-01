@@ -4,8 +4,7 @@
   "publisher": "Microsoft",
   "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
   "engines": {
-    "vscode": "0.10.x",
-    "sqlops": "feat/context"
+    "vscode": "0.10.x"
   },
   "activationEvents": [
     "*"

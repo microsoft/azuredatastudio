@@ -42,7 +42,7 @@ export default class ContextProvider {
 		}
 
 		if (iscloud === true || iscloud === false) {
-			setCommandContext(ContextKeys.ISCLOUD, true);
+			setCommandContext(ContextKeys.ISCLOUD, iscloud);
 		}
 	}
 

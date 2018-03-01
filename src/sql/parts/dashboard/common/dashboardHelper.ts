@@ -91,14 +91,8 @@ export function initExtensionConfigs(configurations: WidgetConfig[]): Array<Widg
 			let insightConfig = widgetRegistry.getRegisteredExtensionInsights(key);
 			if (insightConfig !== undefined) {
 				// Setup the default properties for this extension if needed
-				if (!config.provider && insightConfig.provider) {
-					config.provider = insightConfig.provider;
-				}
-				if (!config.name && insightConfig.name) {
-					config.name = insightConfig.name;
-				}
-				if (!config.edition && insightConfig.edition) {
-					config.edition = insightConfig.edition;
+				if (!config.when && insightConfig.when) {
+					config.when = insightConfig.when;
 				}
 				if (!config.gridItemConfig && insightConfig.gridItemConfig) {
 					config.gridItemConfig = {
@@ -165,7 +159,6 @@ export function addContext(config: WidgetConfig[], dashboardServer: DashboardSer
  * @param config widgets to filter
  */
 export function filterConfigs<T extends { when?: string }>(config: T[], dashboardService: DashboardServiceInterface): Array<T> {
-	// filter by provider
 	return config.filter((item) => {
 		if (!item.when) {
 			return true;
