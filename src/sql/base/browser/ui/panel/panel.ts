@@ -57,12 +57,12 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this.$parent = this._register($('.tabbedPanel'));
 		this.$parent.appendTo(container);
 		this.$header = $('.composite.title');
-		let actionbarcontainer = $('.title-actions');
-		this._actionbar = new ActionBar(actionbarcontainer);
-		this.$header.append(actionbarcontainer);
 		this.$tabList = $('.tabList');
 		this.$tabList.style('height', this.headersize + 'px');
 		this.$header.append(this.$tabList);
+		let actionbarcontainer = $('.title-actions');
+		this._actionbar = new ActionBar(actionbarcontainer);
+		this.$header.append(actionbarcontainer);
 		this.$parent.append(this.$header);
 		this.$body = $('tabBody');
 		this.$parent.append(this.$body);

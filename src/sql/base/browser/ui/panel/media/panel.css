@@ -21,7 +21,6 @@ panel {
 .tabbedPanel .composite.title {
 	display: flex;
 	flex: 0 0 auto;
-	flex-direction: row-reverse;
 }
 
 .tabbedPanel .tabList {
@@ -79,7 +78,7 @@ panel {
 
 .tabbedPanel.vertical > .title {
 	flex: 0 0 auto;
-	flex-direction: column-reverse;
+	flex-direction: column;
 	height: 100%;
 }
 
