@@ -14,6 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
 	controller = new MainController(context);
 	let contextProvider = new ContextProvider();
 	context.subscriptions.push(controller);
+	context.subscriptions.push(contextProvider);
 	controller.activate();
 }
 

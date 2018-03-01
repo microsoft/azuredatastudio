@@ -22,6 +22,7 @@ import { ConnectionContextkey } from 'sql/parts/connection/common/connectionCont
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { ConnectionProfile } from '../connection/common/connectionProfile';
 import { IConnectionProfile } from 'sqlops';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 
 export class DashboardEditor extends BaseEditor {
 
@@ -35,7 +36,8 @@ export class DashboardEditor extends BaseEditor {
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IBootstrapService private _bootstrapService: IBootstrapService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
-		@IDashboardService private _dashboardService: IDashboardService
+		@IDashboardService private _dashboardService: IDashboardService,
+		@IConnectionManagementService private _connMan: IConnectionManagementService
 	) {
 		super(DashboardEditor.ID, telemetryService, themeService);
 	}
@@ -61,7 +63,8 @@ export class DashboardEditor extends BaseEditor {
 		} else {
 			profile = this.input.connectionProfile;
 		}
-		this._dashboardService.changeToDashboard({ profile });
+		let serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
+		this._dashboardService.changeToDashboard({ profile, serverInfo });
 	}
 
 	/**
@@ -105,7 +108,8 @@ export class DashboardEditor extends BaseEditor {
 		} else {
 			profile = this.input.connectionProfile;
 		}
-		this._dashboardService.openDashboard({ profile });
+		let serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
+		this._dashboardService.changeToDashboard({ profile, serverInfo });
 		let scopedContextService = this._contextKeyService.createScoped(input.container);
 		let connectionContextKey = new ConnectionContextkey(scopedContextService);
 		connectionContextKey.set(input.connectionProfile);

@@ -1521,6 +1521,7 @@ declare module 'sqlops' {
 
 	export interface DashboardDocument {
 		profile: IConnectionProfile;
+		serverInfo: ServerInfo;
 	}
 
 	export namespace tasks {
