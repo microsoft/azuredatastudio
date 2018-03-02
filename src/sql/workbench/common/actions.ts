@@ -44,7 +44,7 @@ export interface ManageActionContext extends BaseActionContext {
 // --- actions
 export class NewQueryAction extends Task {
 	public static ID = 'newQuery';
-	public static LABEL = nls.localize('newQuery', 'New Query');
+	public static LABEL = nls.localize('newQueryAction.newQuery', 'New Query');
 	public static ICON = 'new-query';
 
 	constructor() {
@@ -281,7 +281,7 @@ export class ScriptDeleteAction extends Action {
 
 export class BackupAction extends Task {
 	public static readonly ID = Constants.BackupFeatureName;
-	public static readonly LABEL = nls.localize('backup', 'Backup');
+	public static readonly LABEL = nls.localize('backupAction.backup', 'Backup');
 	public static readonly ICON = Constants.BackupFeatureName;
 
 	constructor() {
@@ -307,7 +307,7 @@ export class BackupAction extends Task {
 
 export class RestoreAction extends Task {
 	public static readonly ID = Constants.RestoreFeatureName;
-	public static readonly LABEL = nls.localize('restore', 'Restore');
+	public static readonly LABEL = nls.localize('restoreAction.restore', 'Restore');
 	public static readonly ICON = Constants.RestoreFeatureName;
 
 	constructor() {

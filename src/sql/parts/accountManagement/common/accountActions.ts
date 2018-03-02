@@ -92,8 +92,8 @@ export class RemoveAccountAction extends Action {
 		// Ask for Confirm
 		let confirm: IConfirmation = {
 			message: localize('confirmRemoveUserAccountMessage', "Are you sure you want to remove '{0}'?", this._account.displayInfo.displayName),
-			primaryButton: localize('yes', 'Yes'),
-			secondaryButton: localize('no', 'No'),
+			primaryButton: localize('accountActions.yes', 'Yes'),
+			secondaryButton: localize('accountActions.no', 'No'),
 			type: 'question'
 		};
 
