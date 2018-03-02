@@ -85,24 +85,24 @@ let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchA
 
 // Query Actions
 actionRegistry.registerWorkbenchAction(
-		new SyncActionDescriptor(
-			RunQueryKeyboardAction,
-			RunQueryKeyboardAction.ID,
-			RunQueryKeyboardAction.LABEL,
-			{ primary: KeyCode.F5 }
-		),
-		RunQueryKeyboardAction.LABEL
-	);
+	new SyncActionDescriptor(
+		RunQueryKeyboardAction,
+		RunQueryKeyboardAction.ID,
+		RunQueryKeyboardAction.LABEL,
+		{ primary: KeyCode.F5 }
+	),
+	RunQueryKeyboardAction.LABEL
+);
 
 actionRegistry.registerWorkbenchAction(
-		new SyncActionDescriptor(
-			RunCurrentQueryKeyboardAction,
-			RunCurrentQueryKeyboardAction.ID,
-			RunCurrentQueryKeyboardAction.LABEL,
-			{ primary:KeyMod.CtrlCmd | KeyCode.F5 }
-		),
-		RunCurrentQueryKeyboardAction.LABEL
-	);
+	new SyncActionDescriptor(
+		RunCurrentQueryKeyboardAction,
+		RunCurrentQueryKeyboardAction.ID,
+		RunCurrentQueryKeyboardAction.LABEL,
+		{ primary: KeyMod.CtrlCmd | KeyCode.F5 }
+	),
+	RunCurrentQueryKeyboardAction.LABEL
+);
 
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
@@ -114,23 +114,23 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-		new SyncActionDescriptor(
-			CancelQueryKeyboardAction,
-			CancelQueryKeyboardAction.ID,
-			CancelQueryKeyboardAction.LABEL,
-			{ primary: KeyMod.Alt | KeyCode.PauseBreak }
-		),
-		CancelQueryKeyboardAction.LABEL
-	);
+	new SyncActionDescriptor(
+		CancelQueryKeyboardAction,
+		CancelQueryKeyboardAction.ID,
+		CancelQueryKeyboardAction.LABEL,
+		{ primary: KeyMod.Alt | KeyCode.PauseBreak }
+	),
+	CancelQueryKeyboardAction.LABEL
+);
 
 actionRegistry.registerWorkbenchAction(
-		new SyncActionDescriptor(
-			RefreshIntellisenseKeyboardAction,
-			RefreshIntellisenseKeyboardAction.ID,
-			RefreshIntellisenseKeyboardAction.LABEL
-		),
+	new SyncActionDescriptor(
+		RefreshIntellisenseKeyboardAction,
+		RefreshIntellisenseKeyboardAction.ID,
 		RefreshIntellisenseKeyboardAction.LABEL
-	);
+	),
+	RefreshIntellisenseKeyboardAction.LABEL
+);
 
 // Grid actions
 
@@ -139,7 +139,7 @@ actionRegistry.registerWorkbenchAction(
 		ToggleQueryResultsKeyboardAction,
 		ToggleQueryResultsKeyboardAction.ID,
 		ToggleQueryResultsKeyboardAction.LABEL,
-		{ primary:KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_R },
+		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_R },
 		QueryEditorVisibleCondition
 	),
 	ToggleQueryResultsKeyboardAction.LABEL
@@ -299,7 +299,7 @@ for (let i = 0; i < 9; i++) {
 	const queryIndex = i + 1;
 	let settingKey = `sql.query.shortcut${queryIndex}`;
 	let defaultVal = i < initialShortcuts.length ? initialShortcuts[i].name : '';
-	let defaultPrimary =  i < initialShortcuts.length ? initialShortcuts[i].primary : null;
+	let defaultPrimary = i < initialShortcuts.length ? initialShortcuts[i].primary : null;
 
 	KeybindingsRegistry.registerCommandAndKeybindingRule({
 		id: `workbench.action.query.shortcut${queryIndex}`,
