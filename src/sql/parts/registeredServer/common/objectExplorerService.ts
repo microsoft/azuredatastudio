@@ -69,7 +69,7 @@ export interface IObjectExplorerService {
 
 	getActiveConnectionNodes(): TreeNode[];
 
-	findTreeNode(connectionId: string, nodePath: string): Thenable<TreeNode>;
+	getTreeNode(connectionId: string, nodePath: string): Thenable<TreeNode>;
 }
 
 interface SessionStatus {
@@ -91,9 +91,6 @@ export interface NodeInfoWithConnection {
 	nodeInfo: sqlops.NodeInfo;
 }
 
-const noObjectAtNodePathErrorMessage = nls.localize('noObjectAtNodePath', 'There is no object at the given node path');
-
-
 export class ObjectExplorerService implements IObjectExplorerService {
 
 	public _serviceBrand: any;
@@ -111,8 +108,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _onSelectionOrFocusChange: Emitter<void>;
 
-	private _nodesExpandedByApi: Set<TreeNode>;
-
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ITelemetryService private _telemetryService: ITelemetryService
@@ -122,7 +117,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._sessions = {};
 		this._providers = {};
 		this._onSelectionOrFocusChange = new Emitter<void>();
-		this._nodesExpandedByApi = new Set<TreeNode>();
 	}
 
 	public get onUpdateObjectExplorerNodes(): Event<ObjectExplorerNodeEventArgs> {
@@ -458,44 +452,20 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private async setNodeExpandedState(treeNode: TreeNode, expandedState: TreeItemCollapsibleState): Promise<void> {
 		treeNode = await this.getUpdatedTreeNode(treeNode);
-		if (expandedState === TreeItemCollapsibleState.Collapsed) {
-			return this.collapseNodeForConnection(treeNode);
-		} else if (expandedState === TreeItemCollapsibleState.Expanded) {
-			return this.expandNodeForConnection(treeNode);
-		}
-		return Promise.resolve();
-	}
-
-	private async expandNodeForConnection(treeNode: TreeNode, stopAtParent: boolean = false): Promise<void> {
 		let expandNode = this.getTreeItem(treeNode);
-		await this._serverTreeView.reveal(expandNode);
-		if (!stopAtParent) {
-			return this._serverTreeView.setExpandedState(expandNode, TreeItemCollapsibleState.Expanded);
+		if (expandedState === TreeItemCollapsibleState.Expanded) {
+			await this._serverTreeView.reveal(expandNode);
 		}
-	}
-
-	private async collapseNodeForConnection(treeNode: TreeNode): Promise<void> {
-		let collapseNode = this.getTreeItem(treeNode);
-		return this._serverTreeView.setExpandedState(collapseNode, TreeItemCollapsibleState.Collapsed);
+		return this._serverTreeView.setExpandedState(expandNode, expandedState);
 	}
 
 	private async setNodeSelected(treeNode: TreeNode, selected: boolean, clearOtherSelections: boolean = undefined): Promise<void> {
 		treeNode = await this.getUpdatedTreeNode(treeNode);
+		let selectNode = this.getTreeItem(treeNode);
 		if (selected) {
-			return this.selectNodeForConnection(treeNode, clearOtherSelections);
-		} else {
-			return this.deselectNodeForConnection(treeNode, clearOtherSelections);
+			await this._serverTreeView.reveal(selectNode);
 		}
-	}
-
-	private async selectNodeForConnection(treeNode: TreeNode, clearOtherSelections: boolean): Promise<void> {
-		let selectNode = this.getTreeItem(treeNode);
-		return this._serverTreeView.reveal(selectNode).then(() => this._serverTreeView.setSelected(selectNode, true, clearOtherSelections));
-	}
-
-	private async deselectNodeForConnection(treeNode: TreeNode, clearOtherSelections: boolean): Promise<void> {
-		let selectNode = this.getTreeItem(treeNode);
-		return this._serverTreeView.setSelected(selectNode, false, clearOtherSelections);
+		return this._serverTreeView.setSelected(selectNode, selected, clearOtherSelections);
 	}
 
 	private async getChildren(treeNode: TreeNode): Promise<TreeNode[]> {
@@ -531,7 +501,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private getUpdatedTreeNode(treeNode: TreeNode): Promise<TreeNode> {
-		return this.findTreeNode(treeNode.getConnectionProfile().id, treeNode.nodePath).then(treeNode => {
+		return this.getTreeNode(treeNode.getConnectionProfile().id, treeNode.nodePath).then(treeNode => {
 			if (!treeNode) {
 				throw new Error(nls.localize('treeNodeNoLongerExists', 'The given tree node no longer exists'));
 			}
@@ -539,7 +509,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	public async findTreeNode(connectionId: string, nodePath: string): Promise<TreeNode> {
+	public async getTreeNode(connectionId: string, nodePath: string): Promise<TreeNode> {
 		let parentNode = this._activeObjectExplorerNodes[connectionId];
 		if (!parentNode) {
 			return undefined;

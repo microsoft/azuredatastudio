@@ -39,7 +39,7 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 	}
 
 	public $getNode(connectionId: string, nodePath?: string): Thenable<sqlops.NodeInfo> {
-		return this._objectExplorerService.findTreeNode(connectionId, nodePath).then(treeNode => {
+		return this._objectExplorerService.getTreeNode(connectionId, nodePath).then(treeNode => {
 			if (!treeNode) {
 				return undefined;
 			}
@@ -55,18 +55,18 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 	}
 
 	public $setExpandedState(connectionId: string, nodePath: string, expandedState: vscode.TreeItemCollapsibleState): Thenable<void> {
-		return this._objectExplorerService.findTreeNode(connectionId, nodePath).then(treeNode => treeNode.setExpandedState(expandedState));
+		return this._objectExplorerService.getTreeNode(connectionId, nodePath).then(treeNode => treeNode.setExpandedState(expandedState));
 	}
 
 	public $setSelected(connectionId: string, nodePath: string, selected: boolean, clearOtherSelections: boolean = undefined): Thenable<void> {
-		return this._objectExplorerService.findTreeNode(connectionId, nodePath).then(treeNode => treeNode.setSelected(selected, clearOtherSelections));
+		return this._objectExplorerService.getTreeNode(connectionId, nodePath).then(treeNode => treeNode.setSelected(selected, clearOtherSelections));
 	}
 
 	public $getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]> {
-		return this._objectExplorerService.findTreeNode(connectionId, nodePath).then(treeNode => treeNode.getChildren().then(children => children.map(node => node.toNodeInfo())));
+		return this._objectExplorerService.getTreeNode(connectionId, nodePath).then(treeNode => treeNode.getChildren().then(children => children.map(node => node.toNodeInfo())));
 	}
 
 	public $isExpanded(connectionId: string, nodePath: string): Thenable<boolean> {
-		return this._objectExplorerService.findTreeNode(connectionId, nodePath).then(treeNode => treeNode.isExpanded());
+		return this._objectExplorerService.getTreeNode(connectionId, nodePath).then(treeNode => treeNode.isExpanded());
 	}
 }
