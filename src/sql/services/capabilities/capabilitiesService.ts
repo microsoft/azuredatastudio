@@ -82,8 +82,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 
 	public _serviceBrand: any;
 
-	private _momento_data: IProtocolMomento;
-	private _momento = new Memento('capabilities');
+	private _momento = new Memento('capabilitiesCache');
 
 	private static DATA_PROVIDER_CATEGORY: string = 'Data Provider';
 
@@ -105,10 +104,9 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	constructor(
 		@IExtensionManagementService private extensionManagementService: IExtensionManagementService,
 		@IExtensionEnablementService private extensionEnablementService: IExtensionEnablementService,
-		@IStorageService storageService: IStorageService
+		@IStorageService private _storageService: IStorageService
 	) {
 		super();
-		this._momento_data = this._momento.getMemento(storageService) as IProtocolMomento | {};
 
 		// Get extensions and filter where the category has 'Data Provider' in it
 		this.extensionManagementService.getInstalled(LocalExtensionType.User).then((extensions: ILocalExtension[]) => {
@@ -155,11 +153,15 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	 * Retrieve a list of registered server capabilities
 	 */
 	public getCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
-		return this._momento_data[provider];
+		return this.capabilities[provider];
 	}
 
 	public get providers(): string[] {
-		return Object.keys(this._momento_data);
+		return Object.keys(this.capabilities);
+	}
+
+	private get capabilities(): IProtocolMomento {
+		return this._momento.getMemento(this._storageService) as IProtocolMomento;
 	}
 
 	/**
@@ -169,9 +171,9 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	public registerProvider(provider: sqlops.CapabilitiesProvider): void {
 		// request the capabilities from server
 		provider.getServerCapabilities(clientCapabilities).then(serverCapabilities => {
-			this._momento_data[provider.providerId] = serverCapabilities;
+			this.capabilities[serverCapabilities.providerName] = serverCapabilities;
 			this._momento.saveMemento();
-			this._onCapabilitiesRegistered.fire(provider.providerId);
+			this._onCapabilitiesRegistered.fire(serverCapabilities.providerName);
 			this._registeredCapabilities++;
 			this.resolveCapabilitiesIfReady();
 		});

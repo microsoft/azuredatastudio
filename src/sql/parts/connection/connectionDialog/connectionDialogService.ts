@@ -65,12 +65,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connectionManagementService: IConnectionManagementService;
 	private _container: HTMLElement;
 	private _connectionDialog: ConnectionDialogWidget;
-	private _connectionControllerMap: { [providerDisplayName: string]: IConnectionComponentController };
+	private _connectionControllerMap: { [providerDisplayName: string]: IConnectionComponentController } = {};
 	private _model: ConnectionProfile;
 	private _params: INewConnectionParams;
 	private _inputModel: IConnectionProfile;
-	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
-	private _providerTypes: string[];
+	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string } = {};
+	private _providerTypes: string[] = [];
 	private _currentProviderType: string = 'Microsoft SQL Server';
 	private _connecting: boolean = false;
 	private _connectionErrorTitle = localize('connectionError', 'Connection error');
@@ -84,11 +84,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IWindowsService private _windowsService: IWindowsService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService
-	) {
-		this._providerNameToDisplayNameMap = {};
-		this._connectionControllerMap = {};
-		this._providerTypes = [];
-	}
+	) { }
 
 	private getDefaultProviderName() {
 		if (this._workspaceConfigurationService) {
@@ -273,17 +269,30 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._inputModel = model;
 
 		return new Promise<void>((resolve, reject) => {
-			this.updateModelServerCapabilities(model);
-			// If connecting from a query editor set "save connection" to false
-			if (params && params.input && params.connectionType === ConnectionType.editor) {
-				this._model.saveProfile = false;
+			// only create the provider maps first time the dialog gets called
+			let capabilitiesPromise: Promise<void> = Promise.resolve();
+			if (this._providerTypes.length === 0) {
+				capabilitiesPromise = this._capabilitiesService.onCapabilitiesReady().then(() => {
+					this._capabilitiesService.providers.map(p => {
+						let capabilities = this._capabilitiesService.getCapabilities(p);
+						this._providerTypes.push(capabilities.providerDisplayName);
+						this._providerNameToDisplayNameMap[capabilities.providerName] = capabilities.providerDisplayName;
+					});
+				});
 			}
-
-			resolve(this.showDialogWithModel().then(() => {
-				if (connectionResult && connectionResult.errorMessage) {
-					this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
+			capabilitiesPromise.then(s => {
+				this.updateModelServerCapabilities(model);
+				// If connecting from a query editor set "save connection" to false
+				if (params && params.input && params.connectionType === ConnectionType.editor) {
+					this._model.saveProfile = false;
 				}
-			}));
+
+				resolve(this.showDialogWithModel().then(() => {
+					if (connectionResult && connectionResult.errorMessage) {
+						this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
+					}
+				}));
+			}, e => reject(e));
 		});
 	}
 
