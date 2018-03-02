@@ -137,6 +137,17 @@ export class ConnectionManagementService implements IConnectionManagementService
 			100 /* High Priority */
 		));
 
+		if (_capabilitiesService) {
+			_capabilitiesService.onCapabilitiesRegistered((p => {
+				if (p === 'MSSQL') {
+					if (!this.hasRegisteredServers()) {
+						// prompt the user for a new connection on startup if no profiles are registered
+						this.showConnectionDialog();
+					}
+				}
+			}));
+		}
+
 		this.disposables.push(this._onAddConnectionProfile);
 		this.disposables.push(this._onDeleteConnectionProfile);
 

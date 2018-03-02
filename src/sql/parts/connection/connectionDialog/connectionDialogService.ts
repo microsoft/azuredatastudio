@@ -240,7 +240,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		let defaultProvider = this.getDefaultProviderName();
 		let providerName = model ? model.providerName : defaultProvider;
 		providerName = providerName ? providerName : defaultProvider;
-		let newProfile = new ConnectionProfile(this._capabilitiesService, model);
+		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
 		newProfile.saveProfile = true;
 		newProfile.generateNewId();
 		// If connecting from a query editor set "save connection" to false
