@@ -97,7 +97,7 @@ suite('SQL ConnectionStore tests', () => {
 		};
 
 		capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesService, TypeMoq.MockBehavior.Loose, extensionManagementServiceMock, {});
-		let capabilities: sqlops.DataProtocolServerCapabilities[] = [];
+		let capabilities: { [id: string]: sqlops.DataProtocolServerCapabilities } = {};
 		let connectionProvider: sqlops.ConnectionProviderOptions = {
 			options: [
 				{
@@ -170,10 +170,9 @@ suite('SQL ConnectionStore tests', () => {
 			adminServicesProvider: undefined,
 			features: undefined
 		};
-		capabilities.push(msSQLCapabilities);
-		capabilitiesService.setup(x => x.getCapabilities()).returns(() => capabilities);
+		capabilities['MSSQL'] = msSQLCapabilities;
+		capabilitiesService.setup(x => x.getCapabilities(TypeMoq.It.isAnyString())).returns((x) => capabilities[x]);
 		capabilitiesService.setup(x => x.onProviderRegisteredEvent).returns(() => onProviderRegistered.event);
-		connectionConfig.setup(x => x.getCapabilities('MSSQL')).returns(() => msSQLCapabilities);
 		let groups: IConnectionProfileGroup[] = [
 			{
 				id: 'root',
@@ -387,7 +386,6 @@ suite('SQL ConnectionStore tests', () => {
 			adminServicesProvider: undefined,
 			features: undefined
 		};
-		connectionConfig.setup(x => x.getCapabilities(providerName)).returns(() => providerCapabilities);
 
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService.object, connectionConfig.object);

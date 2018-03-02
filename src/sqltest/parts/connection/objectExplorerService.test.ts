@@ -18,7 +18,8 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeView';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import Event from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
+import { CapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 
 suite('SQL Object Explorer Service tests', () => {
 	var sqlOEProvider: TypeMoq.Mock<ObjectExplorerProviderTestService>;
@@ -121,6 +122,8 @@ suite('SQL Object Explorer Service tests', () => {
 
 		sqlOEProvider = TypeMoq.Mock.ofType(ObjectExplorerProviderTestService, TypeMoq.MockBehavior.Loose);
 		sqlOEProvider.callBase = true;
+
+		let onProviderRegistered = new Emitter<sqlops.DataProtocolServerCapabilities>();
 
 
 		let sqlProvider = {
@@ -251,7 +254,19 @@ suite('SQL Object Explorer Service tests', () => {
 
 		connectionManagementService.setup(x => x.getCapabilities('MSSQL')).returns(() => undefined);
 
-		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, undefined);
+		let extensionManagementServiceMock = {
+			getInstalled: () => {
+				return Promise.resolve([]);
+			}
+		};
+
+		let capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesService, TypeMoq.MockBehavior.Loose, extensionManagementServiceMock, {});
+		let capabilities: { [id: string]: sqlops.DataProtocolServerCapabilities } = {};
+		capabilities['MSSQL'] = sqlProvider;
+		capabilitiesService.setup(x => x.getCapabilities(TypeMoq.It.isAnyString())).returns((x) => capabilities[x]);
+		capabilitiesService.setup(x => x.onProviderRegisteredEvent).returns(() => onProviderRegistered.event);
+
+		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, undefined, capabilitiesService.object);
 		objectExplorerService.registerProvider('MSSQL', sqlOEProvider.object);
 		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<sqlops.ConnectionInfo>(x => x.options['serverName'] === connection.serverName))).returns(() => new Promise<any>((resolve) => {
 			resolve(response);

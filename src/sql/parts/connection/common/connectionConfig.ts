@@ -29,32 +29,14 @@ export interface ISaveGroupResult {
  */
 export class ConnectionConfig implements IConnectionConfig {
 
-	private _providerCapabilitiesMap: { [providerName: string]: sqlops.DataProtocolServerCapabilities };
 	/**
 	 * Constructor.
 	 */
 	public constructor(
 		private _configurationEditService: ConfigurationEditingService,
 		private _workspaceConfigurationService: IWorkspaceConfigurationService,
-		private _capabilitiesService: ICapabilitiesService,
-		cachedMetadata?: sqlops.DataProtocolServerCapabilities[]
-	) {
-		this._providerCapabilitiesMap = {};
-		this.setCachedMetadata(cachedMetadata);
-		if (this._capabilitiesService && this._capabilitiesService.onCapabilitiesReady()) {
-			this._capabilitiesService.onCapabilitiesReady().then(() => {
-				this.setCachedMetadata(this._capabilitiesService.getCapabilities());
-			});
-		}
-	}
-
-	public setCachedMetadata(cachedMetadata: sqlops.DataProtocolServerCapabilities[]): void {
-		if (cachedMetadata) {
-			cachedMetadata.forEach(item => {
-				this.updateCapabilitiesCache(item.providerName, item);
-			});
-		}
-	}
+		private _capabilitiesService: ICapabilitiesService
+	) { }
 
 	/**
 	 * Returns connection groups from user and workspace settings.
@@ -81,44 +63,6 @@ export class ConnectionConfig implements IConnectionConfig {
 		return allGroups;
 	}
 
-	private updateCapabilitiesCache(providerName: string, providerCapabilities: sqlops.DataProtocolServerCapabilities): void {
-		if (providerName && providerCapabilities) {
-			this._providerCapabilitiesMap[providerName] = providerCapabilities;
-		}
-	}
-
-	private getCapabilitiesFromCache(providerName: string): sqlops.DataProtocolServerCapabilities {
-		if (providerName in this._providerCapabilitiesMap) {
-			return this._providerCapabilitiesMap[providerName];
-		}
-		return undefined;
-	}
-
-	/**
-	* Returns the capabilities for given provider name. First tries to get it from capabilitiesService and if it's not registered yet,
-	* Gets the data from the metadata stored in the config
-	* @param providerName Provider Name
-	*/
-	public getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities {
-		let result: sqlops.DataProtocolServerCapabilities = this.getCapabilitiesFromCache(providerName);
-		if (result) {
-			return result;
-		} else {
-			let capabilities = this._capabilitiesService.getCapabilities();
-			if (capabilities) {
-				let providerCapabilities = capabilities.find(c => c.providerName === providerName);
-				if (providerCapabilities) {
-					this.updateCapabilitiesCache(providerName, providerCapabilities);
-					return providerCapabilities;
-				} else {
-					return undefined;
-				}
-			} else {
-				return undefined;
-			}
-		}
-	}
-
 	/**
 	 * Add a new connection to the connection config.
 	 */
@@ -131,13 +75,13 @@ export class ConnectionConfig implements IConnectionConfig {
 						profiles = [];
 					}
 
-					let providerCapabilities = this.getCapabilities(profile.providerName);
+					let providerCapabilities = this._capabilitiesService.getCapabilities(profile.providerName);
 					let connectionProfile = this.getConnectionProfileInstance(profile, groupId, providerCapabilities);
 					let newProfile = ConnectionProfile.convertToProfileStore(providerCapabilities, connectionProfile);
 
 					// Remove the profile if already set
 					var sameProfileInList = profiles.find(value => {
-						let providerCapabilities = this.getCapabilities(value.providerName);
+						let providerCapabilities = this._capabilitiesService.getCapabilities(value.providerName);
 						let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, providerCapabilities);
 						return providerConnectionProfile.matches(connectionProfile);
 					});
@@ -286,13 +230,10 @@ export class ConnectionConfig implements IConnectionConfig {
 		}
 
 		let connectionProfiles = profiles.map(p => {
-			let capabilitiesForProvider = this.getCapabilities(p.providerName);
+			let capabilitiesForProvider = this._capabilitiesService.getCapabilities(p.providerName);
 
 			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(p, capabilitiesForProvider);
 			providerConnectionProfile.setServerCapabilities(capabilitiesForProvider);
-			this._capabilitiesService.onProviderRegisteredEvent((serverCapabilities) => {
-				providerConnectionProfile.onProviderRegistered(serverCapabilities);
-			});
 
 			return providerConnectionProfile;
 		});
@@ -308,7 +249,7 @@ export class ConnectionConfig implements IConnectionConfig {
 		let profiles = this._workspaceConfigurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user;
 		// Remove the profile from the connections
 		profiles = profiles.filter(value => {
-			let providerCapabilities = this.getCapabilities(value.providerName);
+			let providerCapabilities = this._capabilitiesService.getCapabilities(value.providerName);
 			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, providerCapabilities);
 			return providerConnectionProfile.getOptionsKey() !== profile.getOptionsKey();
 		});
@@ -330,7 +271,7 @@ export class ConnectionConfig implements IConnectionConfig {
 		let profiles = this._workspaceConfigurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user;
 		// Remove the profiles from the connections
 		profiles = profiles.filter(value => {
-			let providerCapabilities = this.getCapabilities(value.providerName);
+			let providerCapabilities = this._capabilitiesService.getCapabilities(value.providerName);
 			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, providerCapabilities);
 			return !connections.some((val) => val.getOptionsKey() === providerConnectionProfile.getOptionsKey());
 		});
@@ -382,7 +323,7 @@ export class ConnectionConfig implements IConnectionConfig {
 			let profiles = target === ConfigurationTarget.USER ? this._workspaceConfigurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user :
 				this._workspaceConfigurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).workspace;
 			if (profiles) {
-				let providerCapabilities = this.getCapabilities(profile.providerName);
+				let providerCapabilities = this._capabilitiesService.getCapabilities(profile.providerName);
 				if (profile.parent && profile.parent.id === Constants.unsavedGroupId) {
 					profile.groupId = newGroupID;
 					profiles.push(ConnectionProfile.convertToProfileStore(providerCapabilities, profile));

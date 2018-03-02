@@ -57,6 +57,11 @@ export interface ICapabilitiesService {
 	 */
 	onCapabilitiesReady(): Promise<void>;
 
+	/**
+	 * Get an array of all known providers
+	 */
+	readonly providers: string[];
+
 }
 
 /**
@@ -75,7 +80,6 @@ export class CapabilitiesService implements ICapabilitiesService {
 	private _onProviderRegistered: Emitter<sqlops.DataProtocolServerCapabilities>;
 
 	private _clientCapabilties: sqlops.DataProtocolClientCapabilities = {
-
 		hostName: HOST_NAME,
 		hostVersion: HOST_VERSION
 	};
@@ -150,6 +154,10 @@ export class CapabilitiesService implements ICapabilitiesService {
 	 */
 	public getCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
 		return this._momento_data[provider];
+	}
+
+	public get providers(): string[] {
+		return Object.keys(this._momento_data);
 	}
 
 	/**

@@ -105,6 +105,10 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 		return this._capabilities[provider];
 	}
 
+	public get providers(): string[] {
+		return Object.keys(this._capabilities);
+	}
+
 	/**
 	 * Register the capabilities provider and query the provider for its capabilities
 	 * @param provider

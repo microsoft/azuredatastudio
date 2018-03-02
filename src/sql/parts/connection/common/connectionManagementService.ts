@@ -137,17 +137,6 @@ export class ConnectionManagementService implements IConnectionManagementService
 			100 /* High Priority */
 		));
 
-		if (_capabilitiesService && _capabilitiesService.onProviderRegisteredEvent) {
-			_capabilitiesService.onProviderRegisteredEvent((capabilities => {
-				if (capabilities.providerName === 'MSSQL') {
-					if (!this.hasRegisteredServers()) {
-						// prompt the user for a new connection on startup if no profiles are registered
-						this.showConnectionDialog();
-					}
-				}
-			}));
-		}
-
 		this.disposables.push(this._onAddConnectionProfile);
 		this.disposables.push(this._onDeleteConnectionProfile);
 
@@ -679,21 +668,13 @@ export class ConnectionManagementService implements IConnectionManagementService
 		return Object.keys(this._providers);
 	}
 
-	public getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities {
-		let capabilities = this._capabilitiesService.getCapabilities();
-		if (capabilities !== undefined && capabilities.length > 0) {
-			return capabilities.find(c => c.providerName === providerName);
-		}
-		return undefined;
-	}
-
 	public getAdvancedProperties(): sqlops.ConnectionOption[] {
 
-		let capabilities = this._capabilitiesService.getCapabilities();
-		if (capabilities !== undefined && capabilities.length > 0) {
+		let providers = this._capabilitiesService.providers;
+		if (providers !== undefined && providers.length > 0) {
 			// just grab the first registered provider for now, this needs to change
 			// to lookup based on currently select provider
-			let providerCapabilities = capabilities[0];
+			let providerCapabilities = this._capabilitiesService.getCapabilities(providers[0]);
 			if (!!providerCapabilities.connectionProvider) {
 				return providerCapabilities.connectionProvider.options;
 			}
@@ -1362,7 +1343,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		}
 
 		// Find the password option for the connection provider
-		let passwordOption = this._capabilitiesService.getCapabilities().find(capability => capability.providerName === profile.providerName).connectionProvider.options.find(
+		let passwordOption = this._capabilitiesService.getCapabilities(profile.providerName).connectionProvider.options.find(
 			option => option.specialValueType === ConnectionOptionSpecialType.password);
 		if (!passwordOption) {
 			return undefined;
