@@ -24,8 +24,8 @@ export interface GridCellConfig {
 	id?: string;
 	row?: number;
 	col?: number;
-	colspan?: number;
-	rowspan?: number;
+	colspan?: string;
+	rowspan?: string;
 }
 
 export interface GridWidgetConfig extends GridCellConfig, WidgetConfig {
@@ -47,6 +47,8 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy, O
 	private _contents: GridCellConfig[];
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
+	private cellWidth: number = 270;
+	private cellHeight: number = 270;
 
 	protected SKELETON_WIDTH = 5;
 
@@ -99,20 +101,47 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy, O
 		return undefined;
 	}
 
-	protected getColspan(row: number, col: number): number {
+	protected getColspan(row: number, col: number): string {
 		let content = this.getContent(row, col);
-		let colspan: number = 1;
+		let colspan: string = '1';
 		if (content && content.colspan) {
 			colspan = content.colspan;
 		}
 		return colspan;
 	}
 
-	protected getRowspan(row: number, col: number): number {
+	protected getRowspan(row: number, col: number): string {
 		let content = this.getContent(row, col);
 		if (content && (content.rowspan)) {
 			return content.rowspan;
 		} else {
+			return '1';
+		}
+	}
+
+	protected getWidgetWidth(row: number, col: number): string {
+		let content = this.getContent(row, col);
+		let colspan = this.getColspan(row, col);
+		let columnCount = this.covertToNumber(colspan, this.cols.length);
+
+		return columnCount * this.cellWidth + 'px';
+	}
+
+	protected getWidgetHeight(row: number, col: number): string {
+		let content = this.getContent(row, col);
+		let rowspan = this.getRowspan(row, col);
+		let rowCount = this.covertToNumber(rowspan, this.rows.length);
+
+		return rowCount * this.cellHeight + 'px';
+	}
+
+	private covertToNumber(value: string, maxNumber: number): number {
+		if (value === '*') {
+			return maxNumber;
+		}
+		try {
+			return +value;
+		} catch {
 			return 1;
 		}
 	}
@@ -140,10 +169,10 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy, O
 					widget.col = 0;
 				}
 				if (!widget.colspan) {
-					widget.colspan = 1;
+					widget.colspan = '1';
 				}
 				if (!widget.rowspan) {
-					widget.rowspan = 1;
+					widget.rowspan = '1';
 				}
 			});
 			this.rows = this.createIndexes(this._contents.map(w => w.row));

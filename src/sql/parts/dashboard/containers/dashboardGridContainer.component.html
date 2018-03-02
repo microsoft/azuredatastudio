@@ -9,15 +9,15 @@
 		<tr *ngFor="let row of rows" class="grid-table-row">
 			<ng-container *ngFor="let col of cols">
 					<ng-container *ngIf="getContent(row,col) !== undefined">
-							      <td class="table-cell" [colSpan]=getColspan(row,col) [rowSpan]=getRowspan(row,col) >
-										<div  style="flex: 0 0 auto">
-											<dashboard-widget-wrapper  *ngIf="isWidget(row,col)" [_config]="getWidgetContent(row,col)" style="position:absolute;">
-											</dashboard-widget-wrapper>
+							      <td class="table-cell" [colSpan]=getColspan(row,col) [rowSpan]=getRowspan(row,col) [width]="getWidgetWidth(row,col)" [height]="getWidgetHeight(row,col)">
 
-											<webview-content *ngIf="isWebview(row,col)" [webviewId]="getWebviewId(row,col)">
-											</webview-content>
-										</div>
-									</td>
+									<dashboard-widget-wrapper  *ngIf="isWidget(row,col)" [_config]="getWidgetContent(row,col)" style="position:absolute;" [style.width]="getWidgetWidth(row,col)" [style.height]="getWidgetHeight(row,col)">
+									</dashboard-widget-wrapper>
+
+									<webview-content *ngIf="isWebview(row,col)" [webviewId]="getWebviewId(row,col)">
+									</webview-content>
+
+								</td>
 					</ng-container>
 			</ng-container>
 		</tr>
