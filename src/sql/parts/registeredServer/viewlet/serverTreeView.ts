@@ -22,13 +22,13 @@ import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/co
 import { TreeCreationUtils } from 'sql/parts/registeredServer/viewlet/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/parts/registeredServer/viewlet/treeSelectionHandler';
-import { IObjectExplorerService, TreeItemCollapsibleState } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
 import Event, { Emitter } from 'vs/base/common/event';
-import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
+import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/registeredServer/common/treeNode';
 
 const $ = builder.$;
 

@@ -11,6 +11,19 @@ import * as sqlops from 'sqlops';
 
 import * as UUID from 'vs/base/common/uuid';
 
+export enum TreeItemCollapsibleState {
+	None = 0,
+	Collapsed = 1,
+	Expanded = 2
+}
+
+export interface ObjectExplorerCallbacks {
+	getChildren(treeNode: TreeNode): Thenable<TreeNode[]>;
+	isExpanded(treeNode: TreeNode): Thenable<boolean>;
+	setNodeExpandedState(TreeNode: TreeNode, expandedState: TreeItemCollapsibleState): Thenable<void>;
+	setNodeSelected(TreeNode: TreeNode, selected: boolean, clearOtherSelections?: boolean): Thenable<void>;
+}
+
 export class TreeNode {
 	/**
 	 * id for TreeNode
@@ -121,8 +134,25 @@ export class TreeNode {
 		};
 	}
 
+	public getChildren(): Thenable<TreeNode[]> {
+		return this._objectExplorerCallbacks.getChildren(this);
+	}
+
+	public isExpanded(): Thenable<boolean> {
+		return this._objectExplorerCallbacks.isExpanded(this);
+	}
+
+	public setExpandedState(expandedState: TreeItemCollapsibleState): Thenable<void> {
+		return this._objectExplorerCallbacks.setNodeExpandedState(this, expandedState);
+	}
+
+	public setSelected(selected: boolean, clearOtherSelections?: boolean): Thenable<void> {
+		return this._objectExplorerCallbacks.setNodeSelected(this, selected, clearOtherSelections);
+	}
+
 	constructor(nodeTypeId: string, label: string, isAlwaysLeaf: boolean, nodePath: string,
-		nodeSubType: string, nodeStatus: string, parent: TreeNode, metadata: sqlops.ObjectMetadata) {
+		nodeSubType: string, nodeStatus: string, parent: TreeNode, metadata: sqlops.ObjectMetadata,
+		private _objectExplorerCallbacks: ObjectExplorerCallbacks) {
 		this.nodeTypeId = nodeTypeId;
 		this.label = label;
 		this.isAlwaysLeaf = isAlwaysLeaf;

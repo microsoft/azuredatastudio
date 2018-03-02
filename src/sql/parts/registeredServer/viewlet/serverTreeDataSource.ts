@@ -74,7 +74,7 @@ export class ServerTreeDataSource implements IDataSource {
 				if (node.children) {
 					resolve(node.children);
 				} else {
-					this._objectExplorerService.expandTreeNode(node.getSession(), node).then(() => {
+					this._objectExplorerService.resolveTreeNodeChildren(node.getSession(), node).then(() => {
 						resolve(node.children);
 					}, expandError => {
 						this.showError(expandError);
