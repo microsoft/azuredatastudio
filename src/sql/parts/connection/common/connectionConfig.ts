@@ -75,14 +75,12 @@ export class ConnectionConfig implements IConnectionConfig {
 						profiles = [];
 					}
 
-					let providerCapabilities = this._capabilitiesService.getCapabilities(profile.providerName);
-					let connectionProfile = this.getConnectionProfileInstance(profile, groupId, providerCapabilities);
-					let newProfile = ConnectionProfile.convertToProfileStore(providerCapabilities, connectionProfile);
+					let connectionProfile = this.getConnectionProfileInstance(profile, groupId);
+					let newProfile = ConnectionProfile.convertToProfileStore(this._capabilitiesService, connectionProfile);
 
 					// Remove the profile if already set
 					var sameProfileInList = profiles.find(value => {
-						let providerCapabilities = this._capabilitiesService.getCapabilities(value.providerName);
-						let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, providerCapabilities);
+						let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 						return providerConnectionProfile.matches(connectionProfile);
 					});
 					if (sameProfileInList) {
@@ -103,10 +101,10 @@ export class ConnectionConfig implements IConnectionConfig {
 		});
 	}
 
-	private getConnectionProfileInstance(profile: IConnectionProfile, groupId: string, providerCapabilities: sqlops.DataProtocolServerCapabilities): ConnectionProfile {
+	private getConnectionProfileInstance(profile: IConnectionProfile, groupId: string): ConnectionProfile {
 		let connectionProfile = profile as ConnectionProfile;
 		if (connectionProfile === undefined) {
-			connectionProfile = new ConnectionProfile(providerCapabilities, profile);
+			connectionProfile = new ConnectionProfile(this._capabilitiesService, profile);
 		}
 		connectionProfile.groupId = groupId;
 		return connectionProfile;
@@ -230,12 +228,7 @@ export class ConnectionConfig implements IConnectionConfig {
 		}
 
 		let connectionProfiles = profiles.map(p => {
-			let capabilitiesForProvider = this._capabilitiesService.getCapabilities(p.providerName);
-
-			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(p, capabilitiesForProvider);
-			providerConnectionProfile.setServerCapabilities(capabilitiesForProvider);
-
-			return providerConnectionProfile;
+			return ConnectionProfile.createFromStoredProfile(p, this._capabilitiesService);
 		});
 
 		return connectionProfiles;
@@ -249,8 +242,7 @@ export class ConnectionConfig implements IConnectionConfig {
 		let profiles = this._workspaceConfigurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user;
 		// Remove the profile from the connections
 		profiles = profiles.filter(value => {
-			let providerCapabilities = this._capabilitiesService.getCapabilities(value.providerName);
-			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, providerCapabilities);
+			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 			return providerConnectionProfile.getOptionsKey() !== profile.getOptionsKey();
 		});
 
@@ -271,8 +263,7 @@ export class ConnectionConfig implements IConnectionConfig {
 		let profiles = this._workspaceConfigurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user;
 		// Remove the profiles from the connections
 		profiles = profiles.filter(value => {
-			let providerCapabilities = this._capabilitiesService.getCapabilities(value.providerName);
-			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, providerCapabilities);
+			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 			return !connections.some((val) => val.getOptionsKey() === providerConnectionProfile.getOptionsKey());
 		});
 
@@ -323,13 +314,12 @@ export class ConnectionConfig implements IConnectionConfig {
 			let profiles = target === ConfigurationTarget.USER ? this._workspaceConfigurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user :
 				this._workspaceConfigurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).workspace;
 			if (profiles) {
-				let providerCapabilities = this._capabilitiesService.getCapabilities(profile.providerName);
 				if (profile.parent && profile.parent.id === Constants.unsavedGroupId) {
 					profile.groupId = newGroupID;
-					profiles.push(ConnectionProfile.convertToProfileStore(providerCapabilities, profile));
+					profiles.push(ConnectionProfile.convertToProfileStore(this._capabilitiesService, profile));
 				} else {
 					profiles.forEach((value) => {
-						let configProf = ConnectionProfile.createFromStoredProfile(value, providerCapabilities);
+						let configProf = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 						if (configProf.getOptionsKey() === profile.getOptionsKey()) {
 							value.groupId = newGroupID;
 						}

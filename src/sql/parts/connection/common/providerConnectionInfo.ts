@@ -5,27 +5,38 @@
 
 'use strict';
 
+import { Disposable } from 'vs/base/common/lifecycle';
+import { isString } from 'vs/base/common/types';
+
 import * as sqlops from 'sqlops';
 import * as interfaces from 'sql/parts/connection/common/interfaces';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/parts/connection/common/constants';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 
-export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
+export class ProviderConnectionInfo extends Disposable implements sqlops.ConnectionInfo {
 
-	options: { [name: string]: any };
+	options: { [name: string]: any } = {};
 
 	public providerName: string;
 	protected _serverCapabilities: sqlops.DataProtocolServerCapabilities;
 	private static readonly SqlAuthentication = 'SqlLogin';
 	public static readonly ProviderPropertyName = 'providerName';
 
-	public constructor(serverCapabilities?: sqlops.DataProtocolServerCapabilities, model?: interfaces.IConnectionProfile) {
-		this.options = {};
-		if (serverCapabilities) {
-			this._serverCapabilities = serverCapabilities;
-			this.providerName = serverCapabilities.providerName;
-		}
-		if (model) {
+	public constructor(
+		protected capabilitiesService: ICapabilitiesService,
+		model: string | interfaces.IConnectionProfile
+	) {
+		super();
+		this.providerName = isString(model) ? model : model.providerName;
+		this._serverCapabilities = capabilitiesService.getCapabilities(this.providerName);
+		this._register(capabilitiesService.onCapabilitiesRegistered(e => {
+			if (e === this.providerName) {
+				this._serverCapabilities = capabilitiesService.getCapabilities(e);
+			}
+		}));
+
+		if (!isString(model)) {
 			if (model.options && this._serverCapabilities) {
 				this._serverCapabilities.connectionProvider.options.forEach(option => {
 					let value = model.options[option.name];
@@ -41,18 +52,13 @@ export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
 	}
 
 	public clone(): ProviderConnectionInfo {
-		let instance = new ProviderConnectionInfo(this._serverCapabilities);
+		let instance = new ProviderConnectionInfo(this.capabilitiesService, this.providerName);
 		instance.options = Object.assign({}, this.options);
-		instance.providerName = this.providerName;
 		return instance;
 	}
 
 	public get serverCapabilities(): sqlops.DataProtocolServerCapabilities {
 		return this._serverCapabilities;
-	}
-
-	public setServerCapabilities(value: sqlops.DataProtocolServerCapabilities) {
-		this._serverCapabilities = value;
 	}
 
 	public get serverName(): string {

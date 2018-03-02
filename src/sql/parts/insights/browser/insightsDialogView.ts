@@ -38,6 +38,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ExecuteCommandAction } from 'vs/platform/actions/common/actions';
+import { ICapabilitiesService } from '../../../services/capabilities/capabilitiesService';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -129,7 +130,8 @@ export class InsightsDialogView extends Modal {
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@ICommandService private _commandService: ICommandService
+		@ICommandService private _commandService: ICommandService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, partService, telemetryService, contextKeyService);
 		this._model.onDataChange(e => this.build());
@@ -388,7 +390,7 @@ export class InsightsDialogView extends Modal {
 		}
 
 		let currentProfile = this._connectionProfile as ConnectionProfile;
-		let profile = new ConnectionProfile(currentProfile.serverCapabilities, currentProfile);
+		let profile = new ConnectionProfile(this._capabilitiesService, currentProfile);
 		profile.databaseName = database;
 		profile.serverName = server;
 		profile.userName = user;

@@ -126,8 +126,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	public updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> {
 		return this._connectionManagementService.addSavedPassword(connection).then(withPassword => {
-			let connectionProfile = ConnectionProfile.convertToConnectionProfile(
-				this._capabilitiesService.getCapabilities(connection.providerName), withPassword);
+			let connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
 			return this.updateNewObjectExplorerNode(connectionProfile);
 		});
 	}

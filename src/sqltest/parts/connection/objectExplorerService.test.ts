@@ -20,6 +20,7 @@ import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeVie
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import Event, { Emitter } from 'vs/base/common/event';
 import { CapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { CapabilitiesTestService } from '../../stubs/capabilitiesTestService';
 
 suite('SQL Object Explorer Service tests', () => {
 	var sqlOEProvider: TypeMoq.Mock<ObjectExplorerProviderTestService>;
@@ -123,8 +124,7 @@ suite('SQL Object Explorer Service tests', () => {
 		sqlOEProvider = TypeMoq.Mock.ofType(ObjectExplorerProviderTestService, TypeMoq.MockBehavior.Loose);
 		sqlOEProvider.callBase = true;
 
-		let onProviderRegistered = new Emitter<sqlops.DataProtocolServerCapabilities>();
-
+		let onCapabilitiesRegistered = new Emitter<string>();
 
 		let sqlProvider = {
 			protocolVersion: '1',
@@ -209,7 +209,10 @@ suite('SQL Object Explorer Service tests', () => {
 			features: undefined
 		};
 
-		connection = new ConnectionProfile(sqlProvider, {
+		let capabilitiesService = new CapabilitiesTestService();
+		capabilitiesService.capabilities['MSSQL'] = sqlProvider;
+
+		connection = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -227,7 +230,7 @@ suite('SQL Object Explorer Service tests', () => {
 		});
 		conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
 
-		connectionToFail = new ConnectionProfile(sqlProvider, {
+		connectionToFail = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName2',
@@ -260,13 +263,7 @@ suite('SQL Object Explorer Service tests', () => {
 			}
 		};
 
-		let capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesService, TypeMoq.MockBehavior.Loose, extensionManagementServiceMock, {});
-		let capabilities: { [id: string]: sqlops.DataProtocolServerCapabilities } = {};
-		capabilities['MSSQL'] = sqlProvider;
-		capabilitiesService.setup(x => x.getCapabilities(TypeMoq.It.isAnyString())).returns((x) => capabilities[x]);
-		capabilitiesService.setup(x => x.onProviderRegisteredEvent).returns(() => onProviderRegistered.event);
-
-		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, undefined, capabilitiesService.object);
+		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, undefined, capabilitiesService);
 		objectExplorerService.registerProvider('MSSQL', sqlOEProvider.object);
 		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<sqlops.ConnectionInfo>(x => x.options['serverName'] === connection.serverName))).returns(() => new Promise<any>((resolve) => {
 			resolve(response);

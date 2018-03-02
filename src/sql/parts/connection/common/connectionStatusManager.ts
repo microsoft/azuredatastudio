@@ -61,7 +61,7 @@ export class ConnectionStatusManager {
 
 	public addConnection(connection: IConnectionProfile, id: string): ConnectionManagementInfo {
 		// Always create a copy and save that in the list
-		let connectionProfile = new ConnectionProfile(this._capabilitiesService.getCapabilities(connection.providerName), connection);
+		let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
 		let connectionInfo: ConnectionManagementInfo = new ConnectionManagementInfo();
 		connectionInfo.providerId = connection.providerName;
 		connectionInfo.extensionTimer = StopWatch.create();

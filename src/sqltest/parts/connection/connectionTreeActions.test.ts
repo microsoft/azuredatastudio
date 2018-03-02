@@ -33,6 +33,7 @@ import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext, ManageConnectionAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
 import { IConnectionResult, IConnectionParams } from 'sql/parts/connection/common/connectionManagement';
 import { TreeSelectionHandler } from 'sql/parts/registeredServer/viewlet/treeSelectionHandler';
+import { CapabilitiesTestService } from '../../stubs/capabilitiesTestService';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<ErrorMessageServiceStub>;
@@ -42,7 +43,9 @@ suite('SQL Connection Tree Action tests', () => {
 		errorCode: undefined,
 		callStack: undefined
 	};
+	let capabilitiesService: CapabilitiesTestService;
 	setup(() => {
+		let capabilitiesService = new CapabilitiesTestService();
 		errorMessageService = TypeMoq.Mock.ofType(ErrorMessageServiceStub, TypeMoq.MockBehavior.Loose);
 		let nothing: void;
 		errorMessageService.setup(x => x.showDialog(Severity.Error, TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => nothing);
@@ -348,7 +351,9 @@ suite('SQL Connection Tree Action tests', () => {
 			features: undefined
 		};
 
-		var connection = new ConnectionProfile(sqlProvider, {
+		capabilitiesService.capabilities['MSSQL'] = sqlProvider;
+
+		var connection = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -437,7 +442,9 @@ suite('SQL Connection Tree Action tests', () => {
 			features: undefined
 		};
 
-		var connection = new ConnectionProfile(sqlProvider, {
+		capabilitiesService.capabilities['MSSQL'] = sqlProvider;
+
+		var connection = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',

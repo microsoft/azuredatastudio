@@ -34,8 +34,7 @@ suite('SQL ConnectionStore tests', () => {
 	let maxRecent = 5;
 	let msSQLCapabilities: sqlops.DataProtocolServerCapabilities;
 	let defaultNamedConnectionProfile: ConnectionProfile;
-	let onProviderRegistered = new Emitter<sqlops.DataProtocolServerCapabilities>();
-
+	let onCapabilitiesRegistered = new Emitter<string>();
 
 	setup(() => {
 		defaultNamedProfile = Object.assign({}, {
@@ -172,7 +171,7 @@ suite('SQL ConnectionStore tests', () => {
 		};
 		capabilities['MSSQL'] = msSQLCapabilities;
 		capabilitiesService.setup(x => x.getCapabilities(TypeMoq.It.isAnyString())).returns((x) => capabilities[x]);
-		capabilitiesService.setup(x => x.onProviderRegisteredEvent).returns(() => onProviderRegistered.event);
+		capabilitiesService.setup(x => x.onCapabilitiesRegistered).returns(() => onCapabilitiesRegistered.event);
 		let groups: IConnectionProfileGroup[] = [
 			{
 				id: 'root',
@@ -191,7 +190,7 @@ suite('SQL ConnectionStore tests', () => {
 		];
 		connectionConfig.setup(x => x.getAllGroups()).returns(() => groups);
 
-		defaultNamedConnectionProfile = new ConnectionProfile(msSQLCapabilities, defaultNamedProfile);
+		defaultNamedConnectionProfile = new ConnectionProfile(capabilitiesService.object, defaultNamedProfile);
 	});
 
 	test('addActiveConnection should limit recent connection saves to the MaxRecentConnections amount', (done) => {
@@ -209,7 +208,7 @@ suite('SQL ConnectionStore tests', () => {
 		let promise = Promise.resolve();
 		for (let i = 0; i < numCreds; i++) {
 			let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
-			let connectionProfile = new ConnectionProfile(msSQLCapabilities, cred);
+			let connectionProfile = new ConnectionProfile(capabilitiesService.object, cred);
 			promise = promise.then(() => {
 				return connectionStore.addActiveConnection(connectionProfile);
 			}).then(() => {
@@ -247,7 +246,7 @@ suite('SQL ConnectionStore tests', () => {
 		connectionStore.clearRecentlyUsed();
 		let promise = Promise.resolve();
 		let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + 1 });
-		let connectionProfile = new ConnectionProfile(msSQLCapabilities, cred);
+		let connectionProfile = new ConnectionProfile(capabilitiesService.object, cred);
 		promise = promise.then(() => {
 			return connectionStore.addActiveConnection(defaultNamedConnectionProfile);
 		}).then(() => {
@@ -290,7 +289,7 @@ suite('SQL ConnectionStore tests', () => {
 			serverName: defaultNamedProfile.serverName + 'NoPwd',
 			password: ''
 		});
-		let connectionProfile = new ConnectionProfile(msSQLCapabilities, defaultNamedProfile);
+		let connectionProfile = new ConnectionProfile(capabilitiesService.object, defaultNamedProfile);
 
 		let expectedCredCount = 0;
 		let promise = Promise.resolve();
@@ -308,7 +307,7 @@ suite('SQL ConnectionStore tests', () => {
 		}).then(() => {
 			// When add integrated auth connection
 			expectedCredCount++;
-			let integratedCredConnectionProfile = new ConnectionProfile(msSQLCapabilities, integratedCred);
+			let integratedCredConnectionProfile = new ConnectionProfile(capabilitiesService.object, integratedCred);
 			return connectionStore.addActiveConnection(integratedCredConnectionProfile);
 		}).then(() => {
 			let current = connectionStore.getRecentlyUsedConnections();
@@ -318,7 +317,7 @@ suite('SQL ConnectionStore tests', () => {
 		}).then(() => {
 			// When add connection without password
 			expectedCredCount++;
-			let noPwdCredConnectionProfile = new ConnectionProfile(msSQLCapabilities, noPwdCred);
+			let noPwdCredConnectionProfile = new ConnectionProfile(capabilitiesService.object, noPwdCred);
 			return connectionStore.addActiveConnection(noPwdCredConnectionProfile);
 		}).then(() => {
 			let current = connectionStore.getRecentlyUsedConnections();
@@ -361,7 +360,7 @@ suite('SQL ConnectionStore tests', () => {
 	test('isPasswordRequired should return true for MSSQL SqlLogin for connection profile object', () => {
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService.object, connectionConfig.object);
-		let connectionProfile = new ConnectionProfile(msSQLCapabilities, defaultNamedProfile);
+		let connectionProfile = new ConnectionProfile(capabilitiesService.object, defaultNamedProfile);
 		let expected: boolean = true;
 		let actual = connectionStore.isPasswordRequired(connectionProfile);
 
@@ -500,7 +499,7 @@ suite('SQL ConnectionStore tests', () => {
 		let expectedProfile = Object.assign({}, profile);
 		expectedProfile.password = '';
 		expectedProfile.options['password'] = '';
-		expectedProfile = ConnectionProfile.convertToConnectionProfile(msSQLCapabilities, expectedProfile).toIConnectionProfile();
+		expectedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService.object, expectedProfile).toIConnectionProfile();
 		let profileWithoutCredentials = connectionStore.getProfileWithoutPassword(profile);
 		assert.deepEqual(profileWithoutCredentials.toIConnectionProfile(), expectedProfile);
 	});

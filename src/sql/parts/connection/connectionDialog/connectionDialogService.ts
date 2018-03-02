@@ -207,7 +207,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private handleShowUiComponent(input: OnShowUIResponse) {
 		this._currentProviderType = input.selectedProviderType;
-		this._model = new ConnectionProfile(this._capabilitiesService.getCapabilities(this._currentProviderType), this._model);
+		this._model = new ConnectionProfile(this._capabilitiesService, this._model);
 		this.uiController.showUiComponent(input.container);
 	}
 
@@ -244,8 +244,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		let defaultProvider = this.getDefaultProviderName();
 		let providerName = model ? model.providerName : defaultProvider;
 		providerName = providerName ? providerName : defaultProvider;
-		let serverCapabilities = this._capabilitiesService.getCapabilities(providerName);
-		let newProfile = new ConnectionProfile(serverCapabilities, model);
+		let newProfile = new ConnectionProfile(this._capabilitiesService, model);
 		newProfile.saveProfile = true;
 		newProfile.generateNewId();
 		// If connecting from a query editor set "save connection" to false

@@ -78,8 +78,8 @@ export class ConnectionStore {
 	 * @returns {string} formatted string with server, DB and username
 	 */
 	public formatCredentialId(connectionProfile: IConnectionProfile, itemType?: string): string {
-		let connectionProfileInstance: ConnectionProfile = ConnectionProfile.convertToConnectionProfile(
-			this._capabilitiesService.getCapabilities(connectionProfile.providerName), connectionProfile);
+		let connectionProfileInstance: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(
+			this._capabilitiesService, connectionProfile);
 		if (!connectionProfileInstance.getConnectionInfoId()) {
 			throw new Error('Missing Id, which is required');
 		}
@@ -105,7 +105,7 @@ export class ConnectionStore {
 	 */
 	public isPasswordRequired(connection: IConnectionProfile): boolean {
 		if (connection) {
-			let connectionProfile = ConnectionProfile.convertToConnectionProfile(this._capabilitiesService.getCapabilities(connection.providerName), connection);
+			let connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, connection);
 			return connectionProfile.isPasswordRequired();
 		} else {
 			return false;
@@ -226,8 +226,7 @@ export class ConnectionStore {
 	private convertConfigValuesToConnectionProfiles(configValues: IConnectionProfile[]): ConnectionProfile[] {
 		return configValues.map(c => {
 			if (c) {
-				let capabilities = this._capabilitiesService.getCapabilities(c.providerName);
-				let connectionProfile = new ConnectionProfile(capabilities, c);
+				let connectionProfile = new ConnectionProfile(this._capabilitiesService, c);
 				if (connectionProfile.saveProfile) {
 					if (!connectionProfile.groupFullName && connectionProfile.groupId) {
 						connectionProfile.groupFullName = this.getGroupFullName(connectionProfile.groupId);
@@ -262,7 +261,7 @@ export class ConnectionStore {
 
 	public getProfileWithoutPassword(conn: IConnectionProfile): ConnectionProfile {
 		if (conn) {
-			let savedConn: ConnectionProfile = ConnectionProfile.convertToConnectionProfile(this._capabilitiesService.getCapabilities(conn.providerName), conn);
+			let savedConn: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, conn);
 			savedConn = savedConn.withoutPassword();
 
 			return savedConn;
