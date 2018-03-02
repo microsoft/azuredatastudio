@@ -139,7 +139,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 	private _sessionId: string;
 	private readonly _restoreFeature = 'Restore';
 	private readonly _restoreTaskName: string = 'Restore Database';
-	private readonly _restoreCompleted : string = 'Completed';
+	private readonly _restoreCompleted: string = 'Completed';
 	private _optionValues: { [optionName: string]: any } = {};
 
 	constructor(
@@ -178,11 +178,11 @@ export class RestoreDialogController implements IRestoreDialogController {
 
 	private isSuccessfulRestore(response: TaskNode): boolean {
 		return (response.taskName === this._restoreTaskName &&
-				response.message === this._restoreCompleted &&
-				(response.status === TaskStatus.succeeded ||
-					response.status === TaskStatus.succeededWithWarning) &&
-				(response.taskExecutionMode === TaskExecutionMode.execute ||
-					response.taskExecutionMode === TaskExecutionMode.executeAndScript));
+			response.message === this._restoreCompleted &&
+			(response.status === TaskStatus.succeeded ||
+				response.status === TaskStatus.succeededWithWarning) &&
+			(response.taskExecutionMode === TaskExecutionMode.execute ||
+				response.taskExecutionMode === TaskExecutionMode.executeAndScript));
 	}
 
 	private handleMssqlOnValidateFile(overwriteTargetDatabase: boolean = false): void {

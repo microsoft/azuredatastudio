@@ -19,7 +19,7 @@ import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeView';
-import { ICapabilitiesService } from '../../../services/capabilities/capabilitiesService';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 

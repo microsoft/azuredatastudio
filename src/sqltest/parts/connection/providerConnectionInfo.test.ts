@@ -12,7 +12,7 @@ import * as sqlops from 'sqlops';
 import * as assert from 'assert';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { CapabilitiesTestService } from '../../stubs/capabilitiesTestService';
+import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 
 suite('SQL ProviderConnectionInfo tests', () => {
 	let msSQLCapabilities: sqlops.DataProtocolServerCapabilities;

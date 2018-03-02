@@ -18,7 +18,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 
 	private _providers: sqlops.CapabilitiesProvider[] = [];
 
-	public capabilities: { [id: string]: sqlops.DataProtocolServerCapabilities} = { };
+	public capabilities: { [id: string]: sqlops.DataProtocolServerCapabilities } = {};
 
 	constructor() {
 

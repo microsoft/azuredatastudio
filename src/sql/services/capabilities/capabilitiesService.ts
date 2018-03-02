@@ -19,7 +19,6 @@ import { Memento } from 'vs/workbench/common/memento';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { fromObject } from 'sql/base/common/map';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'sqlops';

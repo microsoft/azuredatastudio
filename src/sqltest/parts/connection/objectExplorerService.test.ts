@@ -20,7 +20,7 @@ import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeVie
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import Event, { Emitter } from 'vs/base/common/event';
 import { CapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { CapabilitiesTestService } from '../../stubs/capabilitiesTestService';
+import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 
 suite('SQL Object Explorer Service tests', () => {
 	var sqlOEProvider: TypeMoq.Mock<ObjectExplorerProviderTestService>;
