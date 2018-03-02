@@ -85,10 +85,6 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	private loadNewTabs(dashboardTabs: NavSectionConfig[]) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			let selectedTabs = dashboardTabs.map(v => {
-				if (!v.title) {
-					v.title = v.id;
-				}
-
 				let container = dashboardHelper.getDashboardContainer(v.container);
 				let key = Object.keys(container)[0];
 
