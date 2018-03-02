@@ -69,7 +69,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _model: ConnectionProfile;
 	private _params: INewConnectionParams;
 	private _inputModel: IConnectionProfile;
-	private _capabilitiesMaps: { [providerDisplayName: string]: sqlops.DataProtocolServerCapabilities };
 	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
 	private _providerTypes: string[];
 	private _currentProviderType: string = 'Microsoft SQL Server';

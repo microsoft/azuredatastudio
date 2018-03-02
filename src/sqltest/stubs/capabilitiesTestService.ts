@@ -18,8 +18,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 
 	private _providers: sqlops.CapabilitiesProvider[] = [];
 
-	private _capabilities: sqlops.DataProtocolServerCapabilities[] = [];
-
+	private _capabilities: { [id: string]: sqlops.DataProtocolServerCapabilities} = { };
 
 	constructor() {
 
@@ -95,15 +94,15 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 			adminServicesProvider: undefined,
 			features: undefined
 		};
-		this._capabilities.push(msSQLCapabilities);
+		this._capabilities['MSSQL'] = msSQLCapabilities;
 
 	}
 
 	/**
 	 * Retrieve a list of registered server capabilities
 	 */
-	public getCapabilities(): sqlops.DataProtocolServerCapabilities[] {
-		return this._capabilities;
+	public getCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
+		return this._capabilities[provider];
 	}
 
 	/**

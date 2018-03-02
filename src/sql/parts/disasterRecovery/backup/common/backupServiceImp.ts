@@ -22,6 +22,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as ConnectionUtils from 'sql/parts/connection/common/utils';
 import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
+import { ServiceOption } from 'sqlops';
 
 export class BackupService implements IBackupService {
 
@@ -88,7 +89,6 @@ export class BackupUiService implements IBackupUiService {
 	public _serviceBrand: any;
 	private _backupDialogs: { [providerName: string]: BackupDialog | OptionsDialog } = {};
 	private _currentProvider: string;
-	private _optionsMap: { [providerName: string]: sqlops.ServiceOption[] } = {};
 	private _optionValues: { [optionName: string]: any } = {};
 	private _connectionUri: string;
 	private static _connectionUniqueId: number = 0;
@@ -115,20 +115,22 @@ export class BackupUiService implements IBackupUiService {
 		});
 	}
 
+	private getOptions(provider: string): ServiceOption[] {
+		let feature = this._capabilitiesService.getCapabilities(this._currentProvider).features.find(f => f.featureName === 'backup');
+		if (feature) {
+			return feature.optionsMetadata;
+		} else {
+			return undefined;
+		}
+	}
+
 	public showBackupDialog(connection: IConnectionProfile): TPromise<void> {
 		let self = this;
 		self._connectionUri = ConnectionUtils.generateUri(connection);
 		self._currentProvider = connection.providerName;
 		let backupDialog = self._backupDialogs[self._currentProvider];
 		if (!backupDialog) {
-			let capabilitiesList = this._capabilitiesService.getCapabilities();
-			capabilitiesList.forEach(providerCapabilities => {
-				let backupFeature = providerCapabilities.features.find(feature => feature.featureName === 'backup');
-				if (backupFeature && backupFeature.optionsMetadata) {
-					this._optionsMap[providerCapabilities.providerName] = backupFeature.optionsMetadata;
-				}
-			});
-			let backupOptions = self._optionsMap[self._currentProvider];
+			let backupOptions = this.getOptions(this._currentProvider);
 			if (backupOptions) {
 				backupDialog = self._instantiationService ? self._instantiationService.createInstance(
 					OptionsDialog, 'Backup database - ' + connection.serverName + ':' + connection.databaseName, 'BackupOptions', undefined) : undefined;
@@ -141,7 +143,7 @@ export class BackupUiService implements IBackupUiService {
 			self._backupDialogs[self._currentProvider] = backupDialog;
 		}
 
-		let backupOptions = this._optionsMap[self._currentProvider];
+		let backupOptions = this.getOptions(this._currentProvider);
 		return new TPromise<void>(() => {
 			if (backupOptions) {
 				(backupDialog as OptionsDialog).open(backupOptions, self._optionValues);

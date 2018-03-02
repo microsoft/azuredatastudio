@@ -112,3 +112,10 @@ export class TrieMap<E> {
 	}
 }
 
+export function fromObject<T>(object: { [key: string]: T }): Map<string, T> {
+	let map = new Map<string, T>();
+	for(let key in object) {
+		map.set(key, object[key]);
+	}
+	return map;
+}

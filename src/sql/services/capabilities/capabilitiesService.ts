@@ -7,18 +7,27 @@
 
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import * as Constants from 'sql/common/constants';
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { Deferred } from 'sql/base/common/promise';
+
 import * as sqlops from 'sqlops';
+
 import Event, { Emitter } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
-import { Deferred } from 'sql/base/common/promise';
 import { getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IExtensionManagementService, ILocalExtension, IExtensionEnablementService, LocalExtensionType } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { Memento } from 'vs/workbench/common/memento';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { fromObject } from 'sql/base/common/map';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'sqlops';
 export const HOST_VERSION = '1.0';
+
+interface IProtocolMomento {
+	[id: string]: sqlops.DataProtocolServerCapabilities;
+}
 
 export const ICapabilitiesService = createDecorator<ICapabilitiesService>(SERVICE_ID);
 
@@ -31,7 +40,7 @@ export interface ICapabilitiesService {
 	/**
 	 * Retrieve a list of registered capabilities providers
 	 */
-	getCapabilities(): sqlops.DataProtocolServerCapabilities[];
+	getCapabilities(provider: string): sqlops.DataProtocolServerCapabilities;
 
 	/**
 	 * Register a capabilities provider
@@ -42,11 +51,6 @@ export interface ICapabilitiesService {
 	 * Returns true if the feature is available for given connection
 	 */
 	isFeatureAvailable(action: IAction, connectionManagementInfo: ConnectionManagementInfo): boolean;
-
-	/**
-	 * Event raised when a provider is registered
-	 */
-	onProviderRegisteredEvent: Event<sqlops.DataProtocolServerCapabilities>;
 
 	/**
 	 * Promise fulfilled when Capabilities are ready
@@ -63,11 +67,10 @@ export class CapabilitiesService implements ICapabilitiesService {
 
 	public _serviceBrand: any;
 
+	private _momento_data: IProtocolMomento;
+	private _momento = new Memento('capabilities');
+
 	private static DATA_PROVIDER_CATEGORY: string = 'Data Provider';
-
-	private _providers: sqlops.CapabilitiesProvider[] = [];
-
-	private _capabilities: sqlops.DataProtocolServerCapabilities[] = [];
 
 	private _onProviderRegistered: Emitter<sqlops.DataProtocolServerCapabilities>;
 
@@ -89,8 +92,13 @@ export class CapabilitiesService implements ICapabilitiesService {
 
 	private _registeredCapabilities: number = 0;
 
-	constructor( @IExtensionManagementService private extensionManagementService: IExtensionManagementService,
-		@IExtensionEnablementService private extensionEnablementService: IExtensionEnablementService) {
+	constructor(
+		@IExtensionManagementService private extensionManagementService: IExtensionManagementService,
+		@IExtensionEnablementService private extensionEnablementService: IExtensionEnablementService,
+		@IStorageService storageService: IStorageService
+	) {
+
+		this._momento_data = this._momento.getMemento(storageService) as IProtocolMomento | {};
 
 		this._onProviderRegistered = new Emitter<sqlops.DataProtocolServerCapabilities>();
 		this.disposables.push(this._onProviderRegistered);
@@ -140,8 +148,8 @@ export class CapabilitiesService implements ICapabilitiesService {
 	/**
 	 * Retrieve a list of registered server capabilities
 	 */
-	public getCapabilities(): sqlops.DataProtocolServerCapabilities[] {
-		return this._capabilities;
+	public getCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
+		return this._momento_data[provider];
 	}
 
 	/**
@@ -149,11 +157,10 @@ export class CapabilitiesService implements ICapabilitiesService {
 	 * @param provider
 	 */
 	public registerProvider(provider: sqlops.CapabilitiesProvider): void {
-		this._providers.push(provider);
-
 		// request the capabilities from server
 		provider.getServerCapabilities(this._clientCapabilties).then(serverCapabilities => {
-			this._capabilities.push(serverCapabilities);
+			this._momento_data[provider.providerId] = serverCapabilities;
+			this._momento.saveMemento();
 			this._onProviderRegistered.fire(serverCapabilities);
 			this._registeredCapabilities++;
 			this.resolveCapabilitiesIfReady();
