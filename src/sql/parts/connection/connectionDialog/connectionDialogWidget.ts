@@ -274,7 +274,7 @@ export class ConnectionDialogWidget extends Modal {
 			resolve(confirmed);
 		});
 
-			//this._messageService.confirm(confirm).then(confirmation => {
+		//this._messageService.confirm(confirm).then(confirmation => {
 		// 	if (!confirmation.confirmed) {
 		// 		return TPromise.as(false);
 		// 	} else {
