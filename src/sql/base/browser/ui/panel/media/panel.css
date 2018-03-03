@@ -37,10 +37,17 @@ panel {
 
 .tabbedPanel .tabList .tab .tabLabel {
 	text-transform: uppercase;
-	margin-left: 16px;
-	margin-right: 16px;
 	font-size: 11px;
 	padding-bottom: 4px;
+}
+
+.tabbedPanel .tabList .tab-header {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.tabbedPanel .tabList .actions-container {
+	margin-right: 8px;
 }
 
 .tabbedPanel .composite.title .title-actions .action-label {
