@@ -230,9 +230,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private updateModelServerCapabilities(model: IConnectionProfile) {
 		this._model = this.createModel(model);
-		this._currentProviderType = this._providerNameToDisplayNameMap[this._model.providerName];
-		if (this._connectionDialog) {
-			this._connectionDialog.updateProvider(this._currentProviderType);
+		if (this._model.providerName) {
+			this._currentProviderType = this._providerNameToDisplayNameMap[this._model.providerName];
+			if (this._connectionDialog) {
+				this._connectionDialog.updateProvider(this._currentProviderType);
+			}
 		}
 	}
 

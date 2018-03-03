@@ -18,7 +18,7 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 
 	options: { [name: string]: any } = {};
 
-	public providerName: string;
+	private _providerName: string;
 	protected _serverCapabilities: sqlops.DataProtocolServerCapabilities;
 	private static readonly SqlAuthentication = 'SqlLogin';
 	public static readonly ProviderPropertyName = 'providerName';
@@ -28,26 +28,39 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 		model: string | interfaces.IConnectionProfile
 	) {
 		super();
-		this.providerName = isString(model) ? model : model.providerName;
-		this._serverCapabilities = capabilitiesService.getCapabilities(this.providerName);
-		this._register(capabilitiesService.onCapabilitiesRegistered(e => {
-			if (e === this.providerName) {
-				this._serverCapabilities = capabilitiesService.getCapabilities(e);
-			}
-		}));
+		// we can't really do a whole lot if we don't have a provider
+		if (isString(model) || (model && model.providerName)) {
+			this.providerName = isString(model) ? model : model.providerName;
 
-		if (!isString(model)) {
-			if (model.options && this._serverCapabilities) {
-				this._serverCapabilities.connectionProvider.options.forEach(option => {
-					let value = model.options[option.name];
-					this.options[option.name] = value;
-				});
+			if (!isString(model)) {
+				if (model.options && this._serverCapabilities) {
+					this._serverCapabilities.connectionProvider.options.forEach(option => {
+						let value = model.options[option.name];
+						this.options[option.name] = value;
+					});
+				}
+				this.serverName = model.serverName;
+				this.authenticationType = model.authenticationType;
+				this.databaseName = model.databaseName;
+				this.password = model.password;
+				this.userName = model.userName;
 			}
-			this.serverName = model.serverName;
-			this.authenticationType = model.authenticationType;
-			this.databaseName = model.databaseName;
-			this.password = model.password;
-			this.userName = model.userName;
+		}
+	}
+
+	public get providerName(): string {
+		return this._providerName;
+	}
+
+	public set providerName(name: string) {
+		this._providerName = name;
+		if (!this._serverCapabilities) {
+			this._serverCapabilities = this.capabilitiesService.getCapabilities(this.providerName);
+			this._register(this.capabilitiesService.onCapabilitiesRegistered(e => {
+				if (e === this.providerName) {
+					this._serverCapabilities = this.capabilitiesService.getCapabilities(e);
+				}
+			}));
 		}
 	}
 
