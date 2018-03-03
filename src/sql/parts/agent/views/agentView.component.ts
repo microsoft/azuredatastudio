@@ -17,19 +17,36 @@ import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/
 import { IAgentService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentJobInfo } from 'sqlops';
+import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import * as nls from 'vs/nls';
 
-export const DASHBOARD_SELECTOR: string = 'jobsview-component';
+export const DASHBOARD_SELECTOR: string = 'agentview-component';
 
 @Component({
 	selector: DASHBOARD_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./jobsView.component.html'))
+	templateUrl: decodeURI(require.toUrl('./agentView.component.html'))
 })
-export class JobsViewComponent implements OnInit, OnDestroy {
+export class AgentViewComponent implements OnInit, OnDestroy {
+
+	@ViewChild(PanelComponent) private _panel: PanelComponent;
 
 	private _agentService: IAgentService;
 
 	public jobs: AgentJobInfo[];
+
+	// tslint:disable:no-unused-variable
+	private readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
+	private readonly schedulesComponentTitle: string = nls.localize('jobview.Schedules', "Schedules");
+
+	private readonly jobsTabIdentifier = 'jobs';
+	private readonly schedulesTabIdentifier = 'schedule';
+	// tslint:enable:no-unused-variable
+
+	// tslint:disable-next-line:no-unused-variable
+	private readonly panelOpt: IPanelOptions = {
+		showTabsWhenOne: true,
+		layout: NavigationBarLayout.vertical
+	};
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService,
