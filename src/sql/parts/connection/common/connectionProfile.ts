@@ -36,7 +36,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		model: string | interfaces.IConnectionProfile
 	) {
 		super(capabilitiesService, model);
-		if (!isString(model)) {
+		if (model && !isString(model)) {
 			this.groupId = model.groupId;
 			this.groupFullName = model.groupFullName;
 			this.savePassword = model.savePassword;

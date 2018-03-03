@@ -93,7 +93,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 		let id: string = connection1Id;
 		let expected = connectionProfileObject;
 		let actual = connections.findConnection(id);
-		assert.deepEqual(actual.connectionProfile, expected);
+		assert.equal(connectionProfileObject.matches(actual.connectionProfile), true);
 	});
 
 	test('getConnectionProfile should return undefined given invalid id', () => {
@@ -107,7 +107,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 		let id: string = connection1Id;
 		let expected = connectionProfileObject;
 		let actual = connections.getConnectionProfile(id);
-		assert.deepEqual(actual, expected);
+		assert.equal(connectionProfileObject.matches(actual), true);
 	});
 
 	test('hasConnection should return false given invalid id', () => {
