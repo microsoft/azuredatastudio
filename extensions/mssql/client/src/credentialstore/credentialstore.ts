@@ -4,71 +4,115 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as Contracts from '../models/contracts';
-import { ICredentialStore } from './icredentialstore';
-import { SqlToolsServiceClient, Utils } from 'extensions-modules';
-import { SqlOpsDataClient } from 'dataprotocol-client';
+import { SqlOpsDataClient, ClientOptions, SqlOpsFeature } from 'dataprotocol-client';
 import * as path from 'path';
+import { ILogger, IConfig } from 'service-downloader/out/interfaces';
+import ServerProvider from 'service-downloader';
+import { ServerOptions, RPCMessageType, ClientCapabilities, ServerCapabilities, TransportKind } from 'vscode-languageclient';
+import { Disposable } from 'vscode';
+import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+
+import * as sqlops from 'sqlops';
+
+import * as Contracts from './contracts';
+import * as Constants from './constants';
+import * as Utils from '../models/utils';
+
+function ensure(target: object, key: string): any {
+	if (target[key] === void 0) {
+		target[key] = {} as any;
+	}
+	return target[key];
+}
+
+class CredentialsFeature extends SqlOpsFeature<any> {
+
+	private static readonly messagesTypes: RPCMessageType[] = [
+		Contracts.DeleteCredentialRequest.type,
+		Contracts.SaveCredentialRequest.type,
+		Contracts.ReadCredentialRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, CredentialsFeature.messagesTypes);
+	}
+
+	fillClientCapabilities(capabilities: ClientCapabilities): void {
+		ensure(ensure(capabilities, 'credentials')!, 'credentials')!.dynamicRegistration = true;
+	}
+
+	initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: any): Disposable {
+		const client = this._client;
+
+		let readCredential = (credentialId: string): Thenable<sqlops.Credential> => {
+			return client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId });
+		};
+
+		let saveCredential = (credentialId: string, password: string): Thenable<boolean> => {
+			return client.sendRequest(Contracts.SaveCredentialRequest.type, { credentialId, password });
+		};
+
+		let deleteCredential = (credentialId: string): Thenable<boolean> => {
+			return client.sendRequest(Contracts.DeleteCredentialRequest.type, { credentialId });
+		};
+
+		return sqlops.credentials.registerProvider({
+			deleteCredential,
+			readCredential,
+			saveCredential,
+			handle: 0
+		});
+	}
+}
 
 /**
  * Implements a credential storage for Windows, Mac (darwin), or Linux.
  *
  * Allows a single credential to be stored per service (that is, one username per service);
  */
-export class CredentialStore implements ICredentialStore {
+export class CredentialStore {
+	private _client: SqlOpsDataClient;
 
-	public languageClient: SqlOpsDataClient;
-
-	constructor(private _client?: SqlOpsDataClient) {
-		if (!this._client) {
-			this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
-		}
-	}
-
-	/**
-	 * Gets a credential saved in the credential store
-	 *
-	 * @param {string} credentialId the ID uniquely identifying this credential
-	 * @returns {Promise<Credential>} Promise that resolved to the credential, or undefined if not found
-	 */
-	public readCredential(credentialId: string): Promise<Contracts.Credential> {
-		Utils.logDebug(this.languageClient, 'MainController._extensionConstants');
-		let self = this;
-		let cred: Contracts.Credential = new Contracts.Credential();
-		cred.credentialId = credentialId;
-		return new Promise<Contracts.Credential>((resolve, reject) => {
-			self._client
-				.sendRequest(Contracts.ReadCredentialRequest.type, cred, this.languageClient)
-				.then(returnedCred => {
-					resolve(<Contracts.Credential>returnedCred);
-				}, err => reject(err));
+	constructor() {
+		let logger: ILogger = {
+			append: () => { },
+			appendLine: () => { }
+		};
+		let config: IConfig = {
+			downloadFileNames: {},
+			downloadUrl: '',
+			executableFiles: ['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials'],
+			installDirectory: path.join(__dirname, '../../../', 'sqltoolsservice') + '/{#platform#}/{#version#}',
+			proxy: '',
+			strictSSL: false,
+			version: ''
+		};
+		let serverdownloader = new ServerProvider(config, logger);
+		let clientOptions: ClientOptions = {
+			providerId: Constants.providerId,
+			features: [CredentialsFeature],
+			serverConnectionMetadata: undefined
+		};
+		serverdownloader.getOrDownloadServer().then(e => {
+			let serverOptions = this.generateServerOptions(e);
+			this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
+			this._client.start();
 		});
 	}
 
-	public saveCredential(credentialId: string, password: any): Promise<boolean> {
-		let self = this;
-		let cred: Contracts.Credential = new Contracts.Credential();
-		cred.credentialId = credentialId;
-		cred.password = password;
-		return new Promise<boolean>((resolve, reject) => {
-			self._client
-				.sendRequest(Contracts.SaveCredentialRequest.type, cred, this.languageClient)
-				.then(status => {
-					resolve(<boolean>status);
-				}, err => reject(err));
-		});
-	}
+	private generateServerOptions(executablePath: string): ServerOptions {
+		let launchArgs = [];
+		launchArgs.push('--log-dir');
+		let logFileLocation = path.join(Utils.getDefaultLogLocation(), 'mssql');
+		launchArgs.push(logFileLocation);
 
-	public deleteCredential(credentialId: string): Promise<boolean> {
-		let self = this;
-		let cred: Contracts.Credential = new Contracts.Credential();
-		cred.credentialId = credentialId;
-		return new Promise<boolean>((resolve, reject) => {
-			self._client
-				.sendRequest(Contracts.DeleteCredentialRequest.type, cred, this.languageClient)
-				.then(status => {
-					resolve(<boolean>status);
-				}, err => reject(err));
-		});
+		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
 }

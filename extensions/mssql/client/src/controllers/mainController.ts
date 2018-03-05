@@ -78,42 +78,6 @@ export default class MainController implements vscode.Disposable {
 					{ serviceInstalled: serverResult.installedBeforeInitializing ? 1 : 0 }
 				);
 
-				self.createResourceProviderClient().then(rpClient => {
-					let resourceProvider = new AzureResourceProvider(self._client, rpClient);
-					sqlops.resources.registerResourceProvider({
-						displayName: 'Azure SQL Resource Provider', // TODO Localize
-						id: 'Microsoft.Azure.SQL.ResourceProvider',
-						settings: {
-
-						}
-					}, resourceProvider);
-					Utils.logDebug('resourceProvider registered', MainController._extensionConstants.extensionConfigSectionName);
-				}, error => {
-					Utils.logDebug('Cannot find ResourceProvider executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);
-				});
-
-				self.createCredentialClient().then(credentialClient => {
-					self._credentialStore.languageClient = credentialClient;
-					credentialClient.onReady().then(() => {
-						let credentialProvider: sqlops.CredentialProvider = {
-							handle: 0,
-							saveCredential(credentialId: string, password: string): Thenable<boolean> {
-								return self._credentialStore.saveCredential(credentialId, password);
-							},
-							readCredential(credentialId: string): Thenable<sqlops.Credential> {
-								return self._credentialStore.readCredential(credentialId);
-							},
-							deleteCredential(credentialId: string): Thenable<boolean> {
-								return self._credentialStore.deleteCredential(credentialId);
-							}
-						};
-						sqlops.credentials.registerProvider(credentialProvider);
-						Utils.logDebug('credentialProvider registered', MainController._extensionConstants.extensionConfigSectionName);
-					});
-				}, error => {
-					Utils.logDebug('Cannot find credentials executables. error: ' + error, MainController._extensionConstants.extensionConfigSectionName);
-				});
-
 				Utils.logDebug(SharedConstants.extensionActivated, MainController._extensionConstants.extensionConfigSectionName);
 				self._initialized = true;
 				resolve(true);

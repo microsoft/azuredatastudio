@@ -93,8 +93,8 @@ export class AzureResourceProvider {
 		let config: IConfig = {
 			downloadFileNames: {},
 			downloadUrl: '',
-			executableFiles: [],
-			installDirectory: '',
+			executableFiles: ['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService'],
+			installDirectory: path.join(__dirname, '../../../', 'sqltoolsservice') + '/{#platform#}/{#version#}',
 			proxy: '',
 			strictSSL: false,
 			version: ''
@@ -108,21 +108,16 @@ export class AzureResourceProvider {
 		serverdownloader.getOrDownloadServer().then(e => {
 			let serverOptions = this.generateServerOptions(e);
 			this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
+			this._client.start();
 		});
 	}
 
 	private generateServerOptions(executablePath: string): ServerOptions {
-		let launchArgs: string[] = [];
-		let launchCmd = executablePath;
-		if (executablePath.endsWith('dll')) {
-			launchArgs.push(executablePath);
-			launchCmd = 'dotnet';
-		}
-
+		let launchArgs = [];
 		launchArgs.push('--log-dir');
 		let logFileLocation = path.join(Utils.getDefaultLogLocation(), 'mssql');
 		launchArgs.push(logFileLocation);
 
-		return { command: launchCmd, args: launchArgs, transport: TransportKind.stdio };
+		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
 }
