@@ -6,12 +6,25 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { registerDashboardWidget } from 'sql/platform/dashboard/common/widgetRegistry';
 import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 
-let tasksSchema: IJSONSchema = {
-	type: 'object',
-	properties: {
-		tasks: {
-			type: 'object'
-		}
+const tasksSchema: IJSONSchema = {
+	type: 'array',
+	items: {
+		anyOf: [{
+			type: 'string',
+			enum: TaskRegistry.getTasks()
+		},
+		{
+			type: 'object',
+			properties: {
+				name: {
+					type: 'string',
+					enum: TaskRegistry.getTasks()
+				},
+				when: {
+					type: 'string'
+				}
+			}
+		}]
 	}
 };
 
