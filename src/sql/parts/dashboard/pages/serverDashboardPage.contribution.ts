@@ -73,7 +73,7 @@ let defaultVal = [
 	{
 		name: 'Tasks',
 		widget: {
-			'tasks-widget': {}
+			'tasks-widget': ['backup', 'configureDashboard', 'newQuery']
 		},
 		gridItemConfig: {
 			sizex: 1,

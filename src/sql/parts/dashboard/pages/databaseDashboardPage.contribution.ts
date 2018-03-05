@@ -91,7 +91,7 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 				sizey: 1
 			},
 			widget: {
-				'tasks-widget': {}
+				'tasks-widget': ['backup', 'restore', 'configureDashboard', 'newQuery']
 			}
 		},
 		{
