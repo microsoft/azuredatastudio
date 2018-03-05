@@ -147,7 +147,7 @@ declare module 'sqlops' {
 			 * Set whether the node is expanded or collapsed
 			 * @param expandedState The new state of the node. If 'None', the node will not be changed
 			 */
-			setExpandedState(expandedState: vscode.TreeItemCollapsibleState);
+			setExpandedState(expandedState: vscode.TreeItemCollapsibleState): Thenable<void>;
 
 			/**
 			 * Set whether the node is selected
