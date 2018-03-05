@@ -19,7 +19,7 @@ export class CredentialStore implements ICredentialStore {
 
 	public languageClient: SqlOpsDataClient;
 
-	constructor(private _client?: SqlToolsServiceClient) {
+	constructor(private _client?: SqlOpsDataClient) {
 		if (!this._client) {
 			this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
 		}

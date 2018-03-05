@@ -4,61 +4,125 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as Contracts from '../models/contracts';
-import { SqlToolsServiceClient } from 'extensions-modules';
-import { SqlOpsDataClient } from 'dataprotocol-client';
-import * as sqlops from 'sqlops';
 import * as path from 'path';
+import { ILogger, IConfig } from 'service-downloader/out/interfaces';
+import { SqlOpsDataClient, SqlOpsFeature, ClientOptions } from 'dataprotocol-client';
+import { ServerCapabilities, ClientCapabilities, RPCMessageType, ServerOptions, TransportKind } from 'vscode-languageclient';
+import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import ServerProvider from 'service-downloader';
+import ServiceDownloadProvider from 'service-downloader/out/serviceDownloadProvider';
 
+import * as sqlops from 'sqlops';
+import { Disposable } from 'vscode';
 
-/**
- * Implements a credential storage for Windows, Mac (darwin), or Linux.
- *
- * Allows a single credential to be stored per service (that is, one username per service);
- */
-export class AzureResourceProvider implements sqlops.ResourceProvider {
+import { CreateFirewallRuleRequest, HandleFirewallRuleRequest, CreateFirewallRuleParams, HandleFirewallRuleParams } from './contracts';
+import * as Constants from './constants';
+import * as Utils from '../models/utils';
 
-	public languageClient: SqlOpsDataClient;
+function ensure(target: object, key: string): any {
+	if (target[key] === void 0) {
+		target[key] = {} as any;
+	}
+	return target[key];
+}
 
-	constructor(private _client?: SqlToolsServiceClient, langClient?: SqlOpsDataClient) {
-		if (!this._client) {
-			this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
-		}
-		this.languageClient = langClient;
+class FireWallFeature extends SqlOpsFeature<any> {
+
+	private static readonly messagesTypes: RPCMessageType[] = [
+		CreateFirewallRuleRequest.type,
+		HandleFirewallRuleRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, FireWallFeature.messagesTypes);
 	}
 
-	public createFirewallRule(account: sqlops.Account, firewallruleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> {
-		let self = this;
-		return new Promise<sqlops.CreateFirewallRuleResponse>((resolve, reject) => {
-			self._client.
-				sendRequest(Contracts.CreateFirewallRuleRequest.type, self.asCreateFirewallRuleParams(account, firewallruleInfo), self.languageClient)
-				.then(response => {
-					resolve(response);
-				}, err => reject(err));
+	fillClientCapabilities(capabilities: ClientCapabilities): void {
+		ensure(ensure(capabilities, 'firewall')!, 'firwall')!.dynamicRegistration = true;
+	}
+
+	initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
 		});
 	}
 
-	public handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> {
-		let self = this;
-		return new Promise<sqlops.HandleFirewallRuleResponse>((resolve, reject) => {
-			let params: Contracts.HandleFirewallRuleParams = { errorCode: errorCode, errorMessage: errorMessage, connectionTypeId: connectionTypeId };
+	protected registerProvider(options: any): Disposable {
+		const client = this._client;
 
-			self._client.
-				sendRequest(Contracts.HandleFirewallRuleRequest.type, params, self.languageClient)
-				.then(response => {
-					resolve(response);
-				}, err => reject(err));
-		});
-	}
-
-	private asCreateFirewallRuleParams(account: sqlops.Account, params: sqlops.FirewallRuleInfo): Contracts.CreateFirewallRuleParams {
-		return {
-			account: account,
-			serverName: params.serverName,
-			startIpAddress: params.startIpAddress,
-			endIpAddress: params.endIpAddress,
-			securityTokenMappings: params.securityTokenMappings
+		let createFirewallRule = (account: sqlops.Account, firewallruleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> => {
+			return client.sendRequest(CreateFirewallRuleRequest.type, asCreateFirewallRuleParams(account, firewallruleInfo));
 		};
+
+		let handleFirewallRule = (errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> => {
+			let params: HandleFirewallRuleParams = { errorCode: errorCode, errorMessage: errorMessage, connectionTypeId: connectionTypeId };
+			return client.sendRequest(HandleFirewallRuleRequest.type, params);
+		};
+
+		return sqlops.resources.registerResourceProvider({
+			displayName: 'Azure SQL Resource Provider', // TODO Localize
+			id: 'Microsoft.Azure.SQL.ResourceProvider',
+			settings: {
+
+			}
+		}, {
+			handleFirewallRule,
+			createFirewallRule
+		});
 	}
 }
 
+function asCreateFirewallRuleParams(account: sqlops.Account, params: sqlops.FirewallRuleInfo): CreateFirewallRuleParams {
+	return {
+		account: account,
+		serverName: params.serverName,
+		startIpAddress: params.startIpAddress,
+		endIpAddress: params.endIpAddress,
+		securityTokenMappings: params.securityTokenMappings
+	};
+}
+
+export class AzureResourceProvider {
+	private _client: SqlOpsDataClient;
+	constructor() {
+		let logger: ILogger = {
+			append: () => { },
+			appendLine: () => { }
+		};
+		let config: IConfig = {
+			downloadFileNames: {},
+			downloadUrl: '',
+			executableFiles: [],
+			installDirectory: '',
+			proxy: '',
+			strictSSL: false,
+			version: ''
+		};
+		let serverdownloader = new ServerProvider(config, logger);
+		let clientOptions: ClientOptions = {
+			providerId: Constants.providerId,
+			features: [FireWallFeature],
+			serverConnectionMetadata: undefined
+		};
+		serverdownloader.getOrDownloadServer().then(e => {
+			let serverOptions = this.generateServerOptions(e);
+			this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
+		});
+	}
+
+	private generateServerOptions(executablePath: string): ServerOptions {
+		let launchArgs: string[] = [];
+		let launchCmd = executablePath;
+		if (executablePath.endsWith('dll')) {
+			launchArgs.push(executablePath);
+			launchCmd = 'dotnet';
+		}
+
+		launchArgs.push('--log-dir');
+		let logFileLocation = path.join(Utils.getDefaultLogLocation(), 'mssql');
+		launchArgs.push(logFileLocation);
+
+		return { command: launchCmd, args: launchArgs, transport: TransportKind.stdio };
+	}
+}

@@ -10,7 +10,6 @@ import { Constants } from '../models/constants';
 import { Serialization } from '../serialize/serialization';
 import { CredentialStore } from '../credentialstore/credentialstore';
 import { AzureResourceProvider } from '../resourceProvider/resourceProvider';
-import { IExtensionConstants, Telemetry, Constants as SharedConstants, SqlToolsServiceClient, VscodeWrapper, Utils, PlatformInformation } from 'service-downloader';
 import { SqlOpsDataClient } from 'dataprotocol-client';
 import * as path from 'path';
 
@@ -19,22 +18,16 @@ import * as path from 'path';
  */
 export default class MainController implements vscode.Disposable {
 	private _context: vscode.ExtensionContext;
-	private _vscodeWrapper: VscodeWrapper;
 	private _initialized: boolean = false;
 	private _serialization: Serialization;
 	private _credentialStore: CredentialStore;
-	private static _extensionConstants: IExtensionConstants = new Constants();
-	private _client: SqlToolsServiceClient;
+	private _client: SqlOpsDataClient;
 	/**
 	 * The main controller constructor
 	 * @constructor
 	 */
-	constructor(context: vscode.ExtensionContext,
-		vscodeWrapper?: VscodeWrapper) {
+	constructor(context: vscode.ExtensionContext) {
 		this._context = context;
-		this._vscodeWrapper = vscodeWrapper || new VscodeWrapper(MainController._extensionConstants);
-		SqlToolsServiceClient.constants = MainController._extensionConstants;
-		this._client = SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json'));
 		this._credentialStore = new CredentialStore(this._client);
 		this._serialization = new Serialization(this._client);
 	}
@@ -65,20 +58,6 @@ export default class MainController implements vscode.Disposable {
 	 */
 	public isInitialized(): boolean {
 		return this._initialized;
-	}
-
-	private createClient(executableFiles: string[]): Promise<SqlOpsDataClient> {
-		return PlatformInformation.getCurrent(SqlToolsServiceClient.constants.getRuntimeId, SqlToolsServiceClient.constants.extensionName).then(platformInfo => {
-			return SqlToolsServiceClient.getInstance(path.join(__dirname, '../config.json')).createClient(this._context, platformInfo.runtimeId, undefined, executableFiles);
-		});
-	}
-
-	private createCredentialClient(): Promise<SqlOpsDataClient> {
-		return this.createClient(['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials']);
-	}
-
-	private createResourceProviderClient(): Promise<SqlOpsDataClient> {
-		return this.createClient(['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService']);
 	}
 
 	/**

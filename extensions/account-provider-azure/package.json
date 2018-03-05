@@ -19,8 +19,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.clearTokenCache",
-        "title": "%extension.clearTokenCache%",
+        "command": "accounts.clearTokenCache",
+        "title": "%accounts.clearTokenCache%",
         "category": "Azure Accounts"
       }
     ],
