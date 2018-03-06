@@ -8,6 +8,8 @@ import { localize } from 'vs/nls';
 
 import { registerTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
+import { NAV_SECTION } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
+import { NavSectionConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 
 export interface IDashboardTabContrib {
 	id: string;
@@ -95,13 +97,29 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 			extension.collector.error('No title specified for extension.');
 			return;
 		}
+
 		if (!description) {
 			extension.collector.warn('No description specified to show.');
 		}
 		if (!container) {
 			extension.collector.warn('No container specified to show.');
 		}
-		registerTab({ description, title, container, edition, provider, id, alwaysShow, publisher });
+
+		let errorFound = false;
+		let key = Object.keys(container)[0];
+		if (key === NAV_SECTION) {
+			let navSectionContainer: NavSectionConfig[] = Object.values(container)[0];
+			navSectionContainer.forEach(section => {
+				if (!section.title) {
+					errorFound = true;
+					extension.collector.error('No title in nav section specified for extension.');
+				}
+			});
+		}
+
+		if (!errorFound) {
+			registerTab({ description, title, container, edition, provider, id, alwaysShow, publisher });
+		}
 	}
 
 	for (let extension of extensions) {
