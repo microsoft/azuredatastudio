@@ -37,7 +37,7 @@ h1 {
 	/* padding: 0 1em; */
 }
 
-.tab1 {
+.overview-tab {
 	position: relative;
 	margin-bottom: 1px;
 	width: 100%;
@@ -62,7 +62,7 @@ label {
 	width: 100%;
 }
 
-.tab1-content {
+.accordion-content {
 	max-height: 0;
 	overflow: hidden;
 	background: #333333;
@@ -72,12 +72,12 @@ label {
 	width: 100%;
 }
 
-.tab1-content p {
+.accordion-content p {
 	margin: 1em;
 }
 
 /* :checked */
-input:checked ~ .tab1-content {
+input:checked ~ .accordion-content {
 	max-height: 10em;
 }
 
@@ -133,4 +133,5 @@ label::after {
 	display: inline-block;
 	height: 50px;
 	width: 50px;
+	cursor: pointer;
 }
