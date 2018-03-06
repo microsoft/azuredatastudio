@@ -43,7 +43,7 @@ export class DashboardWidgetContainer extends DashboardTab implements OnDestroy,
 
 	private _scrollableElement: ScrollableElement;
 
-	@ViewChild(WidgetContent) private _widgetContent: WidgetContent;
+	@ViewChild(WidgetContent) protected _widgetContent: WidgetContent;
 
 	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
 	@ViewChild('scrollContainer', { read: ElementRef }) private _scrollContainer: ElementRef;

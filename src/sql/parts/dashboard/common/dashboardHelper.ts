@@ -19,6 +19,7 @@ import { WEBVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWebvi
 import { NAV_SECTION } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
 import { IDashboardContainerRegistry, Extensions as DashboardContainerExtensions, IDashboardContainer, registerContainerType } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 
 const dashboardcontainerRegistry = Registry.as<IDashboardContainerRegistry>(DashboardContainerExtensions.dashboardContainerContributions);
 const containerTypes = [
@@ -90,14 +91,8 @@ export function initExtensionConfigs(configurations: WidgetConfig[]): Array<Widg
 			let insightConfig = widgetRegistry.getRegisteredExtensionInsights(key);
 			if (insightConfig !== undefined) {
 				// Setup the default properties for this extension if needed
-				if (!config.provider && insightConfig.provider) {
-					config.provider = insightConfig.provider;
-				}
-				if (!config.name && insightConfig.name) {
-					config.name = insightConfig.name;
-				}
-				if (!config.edition && insightConfig.edition) {
-					config.edition = insightConfig.edition;
+				if (!config.when && insightConfig.when) {
+					config.when = insightConfig.when;
 				}
 				if (!config.gridItemConfig && insightConfig.gridItemConfig) {
 					config.gridItemConfig = {
@@ -163,28 +158,12 @@ export function addContext(config: WidgetConfig[], dashboardServer: DashboardSer
  * Returns a filtered version of the widgets passed based on edition and provider
  * @param config widgets to filter
  */
-export function filterConfigs<T extends { provider?: string | string[], edition?: number | number[] }>(config: T[], dashboardService: DashboardServiceInterface): Array<T> {
-	let connectionInfo: ConnectionManagementInfo = dashboardService.connectionManagementService.connectionInfo;
-	let edition = connectionInfo.serverInfo.engineEditionId;
-	let provider = connectionInfo.providerId;
-
-	// filter by provider
+export function filterConfigs<T extends { when?: string }>(config: T[], dashboardService: DashboardServiceInterface): Array<T> {
 	return config.filter((item) => {
-		if (item.provider) {
-			return stringOrStringArrayCompare(item.provider, provider);
-		} else {
+		if (!item.when) {
 			return true;
-		}
-	}).filter((item) => {
-		if (item.edition) {
-			if (edition) {
-				return stringOrStringArrayCompare(isNumberArray(item.edition) ? item.edition.map(item => item.toString()) : item.edition.toString(), edition.toString());
-			} else {
-				dashboardService.messageService.show(Severity.Warning, nls.localize('providerMissingEdition', 'Widget filters based on edition, but the provider does not have an edition'));
-				return true;
-			}
 		} else {
-			return true;
+			return dashboardService.contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(item.when));
 		}
 	});
 }

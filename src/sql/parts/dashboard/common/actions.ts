@@ -197,3 +197,36 @@ export class AddFeatureTabAction extends Action {
 		}
 	}
 }
+
+export class CollapseWidgetAction extends Action {
+	private static readonly ID = 'collapseWidget';
+	private static readonly COLLPASE_LABEL = nls.localize('collapseWidget', "Collapse");
+	private static readonly EXPAND_LABEL = nls.localize('expandWidget', "Expand");
+	private static readonly COLLAPSE_ICON = 'maximize-panel-action';
+	private static readonly EXPAND_ICON = 'minimize-panel-action';
+
+	constructor(
+		private _uri: string,
+		private _widgetUuid: string,
+		private collpasedState: boolean,
+		@IAngularEventingService private _angularEventService: IAngularEventingService
+	) {
+		super(
+			CollapseWidgetAction.ID,
+			collpasedState ? CollapseWidgetAction.EXPAND_LABEL : CollapseWidgetAction.COLLPASE_LABEL,
+			collpasedState ? CollapseWidgetAction.EXPAND_ICON : CollapseWidgetAction.COLLAPSE_ICON
+		);
+	}
+
+	run(): TPromise<boolean> {
+		this._toggleState();
+		this._angularEventService.sendAngularEvent(this._uri, AngularEventType.COLLAPSE_WIDGET, this._widgetUuid);
+		return TPromise.as(true);
+	}
+
+	private _toggleState(): void {
+		this.collpasedState = !this.collpasedState;
+		this._setClass(this.collpasedState ? CollapseWidgetAction.EXPAND_ICON : CollapseWidgetAction.COLLAPSE_ICON);
+		this._setLabel(this.collpasedState ? CollapseWidgetAction.EXPAND_LABEL : CollapseWidgetAction.COLLPASE_LABEL);
+	}
+}

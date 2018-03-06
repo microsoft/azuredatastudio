@@ -51,8 +51,7 @@ export interface IInsightsConfig {
 	cacheId?: string;
 	type: any;
 	name?: string;
-	provider?: string;
-	edition?: number | Array<number>;
+	when?: string;
 	gridItemConfig?: ISize;
 	query?: string | Array<string>;
 	queryFile?: string;
