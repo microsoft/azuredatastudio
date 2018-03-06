@@ -67,9 +67,9 @@ class FireWallFeature extends SqlOpsFeature<any> {
 
 			}
 		}, {
-			handleFirewallRule,
-			createFirewallRule
-		});
+				handleFirewallRule,
+				createFirewallRule
+			});
 	}
 }
 
@@ -113,7 +113,7 @@ export class AzureResourceProvider {
 	}
 
 	public dispose() {
-		if (this._client){
+		if (this._client) {
 			this._client.stop();
 		}
 	}
