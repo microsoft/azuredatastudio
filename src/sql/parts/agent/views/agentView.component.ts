@@ -36,10 +36,18 @@ export class AgentViewComponent implements OnInit, OnDestroy {
 
 	// tslint:disable:no-unused-variable
 	private readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
+	private readonly alertsComponentTitle: string = nls.localize('jobview.Alerts', "Alerts");
 	private readonly schedulesComponentTitle: string = nls.localize('jobview.Schedules', "Schedules");
+	private readonly operatorComponentTitle: string = nls.localize('jobview.operator', "Operator");
+
+	private readonly jobHistoryComponentTitle: string = nls.localize('jobview.history', "History");
 
 	private readonly jobsTabIdentifier = 'jobs';
-	private readonly schedulesTabIdentifier = 'schedule';
+	private readonly alertsTabIdentifier = 'alerts';
+	private readonly schedulesTabIdentifier = 'schedules';
+	private readonly operatorTabIdentifier = 'operators';
+
+	private readonly historyTabIdentifier = 'history';
 	// tslint:enable:no-unused-variable
 
 	// tslint:disable-next-line:no-unused-variable

@@ -11,9 +11,24 @@
 			<jobsview-component></jobsview-component>
 		</div>
 	</tab>
+	<!-- <tab [title]="alertsComponentTitle" class="fullsize" [identifier]="alertsTabIdentifier">
+		<div id="alertsDiv" class="fullsize">
+			<alertsview-component></alertsview-component>
+		</div>
+	</tab> -->
 	<tab [title]="schedulesComponentTitle" class="fullsize" [identifier]="schedulesTabIdentifier">
 		<div id="scheduleDiv" class="fullsize">
 			<schedulesview-component></schedulesview-component>
+		</div>
+	</tab>
+	<!-- <tab [title]="operatorsComponentTitle" class="fullsize" [identifier]="operatorsTabIdentifier">
+		<div id="operatorDiv" class="fullsize">
+			<operatorsview-component></operatorsview-component>
+		</div>
+	</tab> -->
+	<tab [title]="historyComponentTitle" class="fullsize" [identifier]="historyTabIdentifier">
+		<div id="historyDiv" class="fullsize">
+			<jobHistory-component></jobHistory-component>
 		</div>
 	</tab>
 </panel>
