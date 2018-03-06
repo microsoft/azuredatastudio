@@ -74,7 +74,7 @@ export function validateNavSectionContribution(extension: IExtensionPointUser<an
 		}
 
 		if (Object.keys(section.container).length !== 1) {
-			result =false;
+			result = false;
 			extension.collector.error(nls.localize('navSection.moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space.'));
 		}
 

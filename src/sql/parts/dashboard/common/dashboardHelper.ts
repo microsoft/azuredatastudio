@@ -193,7 +193,7 @@ export function filterConfigs<T extends { provider?: string | string[], edition?
  * Get registered container if it is specified as the key
  * @param container dashboard container
  */
-export function getDashboardContainer(container: object): { result: boolean, message: string, container: object} {
+export function getDashboardContainer(container: object): { result: boolean, message: string, container: object } {
 	let key = Object.keys(container)[0];
 	let containerTypeFound = containerTypes.find(c => (c === key));
 	if (!containerTypeFound) {
