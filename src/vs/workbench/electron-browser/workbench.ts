@@ -147,6 +147,8 @@ import { ResourceProviderService } from 'sql/parts/accountManagement/common/reso
 import { AccountPickerService } from 'sql/parts/accountManagement/accountPicker/accountPickerService';
 import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 import { DashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewServiceImpl';
+import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { DashboardService } from 'sql/services/dashboard/common/dashboardServiceImpl';
 
 export const MessagesVisibleContext = new RawContextKey<boolean>('globalMessageVisible', false);
 export const EditorsVisibleContext = new RawContextKey<boolean>('editorIsOpen', false);
@@ -674,6 +676,7 @@ export class Workbench implements IPartService {
 
 		// {{SQL CARBON EDIT}}
 		// SQL Tools services
+		serviceCollection.set(IDashboardService, this.instantiationService.createInstance(DashboardService));
 		serviceCollection.set(IDashboardWebviewService, this.instantiationService.createInstance(DashboardWebviewService));
 		serviceCollection.set(IAngularEventingService, this.instantiationService.createInstance(AngularEventingService));
 		serviceCollection.set(INewDashboardTabDialogService, this.instantiationService.createInstance(NewDashboardTabDialogService));

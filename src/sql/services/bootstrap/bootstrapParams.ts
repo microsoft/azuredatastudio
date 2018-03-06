@@ -5,6 +5,7 @@
 
 import { DataService } from 'sql/parts/grid/services/dataService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 export interface BootstrapParams {
 }
@@ -20,6 +21,7 @@ export interface EditDataComponentParams extends BootstrapParams {
 export interface DashboardComponentParams extends BootstrapParams {
 	connection: IConnectionProfile;
 	ownerUri: string;
+	scopedContextService: IContextKeyService;
 }
 
 export interface TaskDialogComponentParams extends BootstrapParams {

@@ -66,7 +66,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private _editEnabled = new Emitter<boolean>();
 	public readonly editEnabled: Event<boolean> = this._editEnabled.event;
 
-
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', 'Home');
 
@@ -113,7 +112,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			this.propertiesWidget = properties ? properties[0] : undefined;
 
 			this.createTabs(tempWidgets);
-
 		}
 	}
 
