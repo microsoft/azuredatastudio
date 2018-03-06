@@ -16,6 +16,7 @@ import * as sqlops from 'sqlops';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 export class ConnectionController implements IConnectionComponentController {
 	private _container: HTMLElement;
@@ -31,14 +32,14 @@ export class ConnectionController implements IConnectionComponentController {
 
 	constructor(container: HTMLElement,
 		connectionManagementService: IConnectionManagementService,
-		sqlCapabilities: sqlops.DataProtocolServerCapabilities,
+		connectionProperties: ConnectionProviderProperties,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
 		@IInstantiationService private _instantiationService: IInstantiationService ) {
 		this._container = container;
 		this._connectionManagementService = connectionManagementService;
 		this._callback = callback;
-		this._providerOptions = sqlCapabilities.connectionProvider.options;
+		this._providerOptions = connectionProperties.connectionOptions;
 		var specialOptions = this._providerOptions.filter(
 			(property) => (property.specialValueType !== null && property.specialValueType !== undefined));
 		this._connectionWidget = this._instantiationService.createInstance(ConnectionWidget, specialOptions, {

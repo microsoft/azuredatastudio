@@ -116,7 +116,7 @@ export class BackupUiService implements IBackupUiService {
 	}
 
 	private getOptions(provider: string): ServiceOption[] {
-		let feature = this._capabilitiesService.getCapabilities(this._currentProvider).features.find(f => f.featureName === 'backup');
+		let feature = this._capabilitiesService.getLegacyCapabilities(this._currentProvider).features.find(f => f.featureName === 'backup');
 		if (feature) {
 			return feature.optionsMetadata;
 		} else {

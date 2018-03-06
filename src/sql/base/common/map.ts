@@ -111,3 +111,14 @@ export class TrieMap<E> {
 		return result;
 	}
 }
+
+export function toObject<V>(map: Map<string, V>): { [key: string]: V } {
+	if (map) {
+		let rt: { [key: string]: V } = Object.create(null);
+		map.forEach((v, k) => {
+			rt[k] = v;
+		});
+		return rt;
+	}
+	return {};
+}

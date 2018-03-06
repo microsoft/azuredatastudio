@@ -51,3 +51,11 @@ export function mixin(destination: any, source: any, overwrite: boolean = true, 
 	}
 	return destination;
 }
+
+export function entries<T>(o: { [key: string]: T}): [string, T][] {
+	return Object.entries(o);
+}
+
+export function values<T>(o: { [key: string]: T}): T[] {
+	return Object.values(o);
+}

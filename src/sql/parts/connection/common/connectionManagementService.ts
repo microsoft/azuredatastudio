@@ -57,6 +57,7 @@ import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { values } from 'sql/base/common/objects';
 
 export class ConnectionManagementService implements IConnectionManagementService {
 
@@ -137,15 +138,14 @@ export class ConnectionManagementService implements IConnectionManagementService
 			100 /* High Priority */
 		));
 
-		if (_capabilitiesService) {
-			_capabilitiesService.onCapabilitiesRegistered((p => {
-				if (p === 'MSSQL') {
-					if (!this.hasRegisteredServers()) {
-						// prompt the user for a new connection on startup if no profiles are registered
-						this.showConnectionDialog();
-					}
-				}
-			}));
+		if (_capabilitiesService && Object.keys(_capabilitiesService.providers).length > 0 && !this.hasRegisteredServers()) {
+				// prompt the user for a new connection on startup if no profiles are registered
+				this.showConnectionDialog();
+		} else if (_capabilitiesService && !this.hasRegisteredServers()) {
+			_capabilitiesService.onCapabilitiesRegistered(e => {
+				// prompt the user for a new connection on startup if no profiles are registered
+				this.showConnectionDialog();
+			});
 		}
 
 		this.disposables.push(this._onAddConnectionProfile);
@@ -682,12 +682,12 @@ export class ConnectionManagementService implements IConnectionManagementService
 	public getAdvancedProperties(): sqlops.ConnectionOption[] {
 
 		let providers = this._capabilitiesService.providers;
-		if (providers !== undefined && providers.length > 0) {
+		if (providers) {
 			// just grab the first registered provider for now, this needs to change
 			// to lookup based on currently select provider
-			let providerCapabilities = this._capabilitiesService.getCapabilities(providers[0]);
-			if (!!providerCapabilities.connectionProvider) {
-				return providerCapabilities.connectionProvider.options;
+			let providerCapabilities = values(providers)[0];
+			if (!!providerCapabilities.connection) {
+				return providerCapabilities.connection.connectionOptions;
 			}
 		}
 
@@ -1354,7 +1354,7 @@ export class ConnectionManagementService implements IConnectionManagementService
 		}
 
 		// Find the password option for the connection provider
-		let passwordOption = this._capabilitiesService.getCapabilities(profile.providerName).connectionProvider.options.find(
+		let passwordOption = this._capabilitiesService.getCapabilities(profile.providerName).connection.connectionOptions.find(
 			option => option.specialValueType === ConnectionOptionSpecialType.password);
 		if (!passwordOption) {
 			return undefined;
