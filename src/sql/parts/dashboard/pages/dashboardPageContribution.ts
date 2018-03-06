@@ -97,19 +97,24 @@ export function generateDashboardGridLayoutSchema(type?: 'database' | 'server', 
 		type: 'object',
 		properties: {
 			name: {
-				type: 'string'
+				type: 'string',
+				description: localize('tabName', "The title of the container")
 			},
 			row: {
-				type: 'number'
+				type: 'number',
+				description: localize('rowNumber', "The row of the component in the grid")
 			},
 			rowspan: {
-				type: 'string'
+				type: 'string',
+				description: localize('rowSpan', "The rowspan of the component in the grid. Default value is 1. Use '*' to set to number of rows in teh grid.")
 			},
 			col: {
-				type: 'number'
+				type: 'number',
+				description: localize('colNumber', "The column of the component in the grid")
 			},
 			colspan: {
-				type: 'string'
+				type: 'string',
+				description: localize('colspan', "The colspan of the component in the grid. Default value is 1. Use '*' to set to number of columns in teh grid.")
 			},
 			widget: {
 				anyOf: [
