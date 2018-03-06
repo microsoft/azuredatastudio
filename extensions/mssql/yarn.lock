@@ -195,6 +195,16 @@ make-dir@^1.0.0:
   dependencies:
     pify "^3.0.0"
 
+minimist@0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.8.tgz#857fcabfc3397d2625b8228262e86aa7a011b05d"
+
+mkdirp@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
+  dependencies:
+    minimist "0.0.8"
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -263,11 +273,12 @@ seek-bzip@^1.0.5:
 
 "service-downloader@github:anthonydresser/service-downloader#release":
   version "1.0.0"
-  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/531873923eb253d3dcc4efaf34227c1a78165a17"
+  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/bc3426b2ba18dc1a6c7b2ed77d9a997f9156a887"
   dependencies:
     decompress "^4.2.0"
     http-proxy-agent "^2.0.0"
     https-proxy-agent "^2.1.1"
+    mkdirp "^0.5.1"
     tmp "^0.0.33"
 
 string_decoder@~1.0.3:

@@ -16,7 +16,7 @@ import * as sqlops from 'sqlops';
 
 import * as Contracts from './contracts';
 import * as Constants from './constants';
-import * as Utils from '../models/utils';
+import * as Utils from '../utils';
 
 function ensure(target: object, key: string): any {
 	if (target[key] === void 0) {
@@ -79,22 +79,21 @@ class CredentialsFeature extends SqlOpsFeature<any> {
  */
 export class CredentialStore {
 	private _client: SqlOpsDataClient;
+	private _config: IConfig;
 
-	constructor() {
+	constructor(baseConfig: IConfig) {
+		if (baseConfig) {
+			this._config = JSON.parse(JSON.stringify(baseConfig));
+			this._config.executableFiles = ['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials'];
+		}
+	}
+
+	public start() {
 		let logger: ILogger = {
 			append: () => { },
 			appendLine: () => { }
 		};
-		let config: IConfig = {
-			downloadFileNames: {},
-			downloadUrl: '',
-			executableFiles: ['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials'],
-			installDirectory: path.join(__dirname, '../../../', 'sqltoolsservice') + '/{#platform#}/{#version#}',
-			proxy: '',
-			strictSSL: false,
-			version: ''
-		};
-		let serverdownloader = new ServerProvider(config, logger);
+		let serverdownloader = new ServerProvider(this._config, logger);
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
 			features: [CredentialsFeature],
@@ -105,6 +104,12 @@ export class CredentialStore {
 			this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 			this._client.start();
 		});
+	}
+
+	dispose() {
+		if (this._client) {
+			this._client.stop();
+		}
 	}
 
 	private generateServerOptions(executablePath: string): ServerOptions {

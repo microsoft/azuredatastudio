@@ -6,6 +6,9 @@
   "activationEvents": [
     "*"
   ],
+  "engines": {
+    "vscode": "*"
+  },
   "main": "./client/out/main",
   "extensionDependencies": [
     "vscode.sql"
