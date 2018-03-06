@@ -106,7 +106,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 		let content = this.getContent(row, col);
 		let colspan: string = '1';
 		if (content && content.colspan) {
-			colspan = this.covertToNumber(content.colspan, this.cols.length).toString();
+			colspan = this.convertToNumber(content.colspan, this.cols.length).toString();
 		}
 		return colspan;
 	}
@@ -114,7 +114,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	protected getRowspan(row: number, col: number): string {
 		let content = this.getContent(row, col);
 		if (content && (content.rowspan)) {
-			return this.covertToNumber(content.rowspan, this.rows.length).toString();
+			return this.convertToNumber(content.rowspan, this.rows.length).toString();
 		} else {
 			return '1';
 		}
@@ -123,7 +123,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	protected getWidgetWidth(row: number, col: number): string {
 		let content = this.getContent(row, col);
 		let colspan = this.getColspan(row, col);
-		let columnCount = this.covertToNumber(colspan, this.cols.length);
+		let columnCount = this.convertToNumber(colspan, this.cols.length);
 
 		return columnCount * this.cellWidth + 'px';
 	}
@@ -131,12 +131,12 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	protected getWidgetHeight(row: number, col: number): string {
 		let content = this.getContent(row, col);
 		let rowspan = this.getRowspan(row, col);
-		let rowCount = this.covertToNumber(rowspan, this.rows.length);
+		let rowCount = this.convertToNumber(rowspan, this.rows.length);
 
 		return rowCount * this.cellHeight + 'px';
 	}
 
-	private covertToNumber(value: string, maxNumber: number): number {
+	private convertToNumber(value: string, maxNumber: number): number {
 		if (value === '*') {
 			return maxNumber;
 		}

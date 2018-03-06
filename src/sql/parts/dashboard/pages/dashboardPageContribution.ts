@@ -76,23 +76,23 @@ export function generateDashboardGridLayoutSchema(type?: 'database' | 'server', 
 		properties: {
 			name: {
 				type: 'string',
-				description: localize('tabName', "The title of the container")
+				description: localize('dashboardpage.tabName', "The title of the container")
 			},
 			row: {
 				type: 'number',
-				description: localize('rowNumber', "The row of the component in the grid")
+				description: localize('dashboardpage.rowNumber', "The row of the component in the grid")
 			},
 			rowspan: {
 				type: 'string',
-				description: localize('rowSpan', "The rowspan of the component in the grid. Default value is 1. Use '*' to set to number of rows in teh grid.")
+				description: localize('dashboardpage.rowSpan', "The rowspan of the component in the grid. Default value is 1. Use '*' to set to number of rows in the grid.")
 			},
 			col: {
 				type: 'number',
-				description: localize('colNumber', "The column of the component in the grid")
+				description: localize('dashboardpage.colNumber', "The column of the component in the grid")
 			},
 			colspan: {
 				type: 'string',
-				description: localize('colspan', "The colspan of the component in the grid. Default value is 1. Use '*' to set to number of columns in teh grid.")
+				description: localize('dashboardpage.colspan', "The colspan of the component in the grid. Default value is 1. Use '*' to set to number of columns in the grid.")
 			},
 			widget: {
 				anyOf: [
