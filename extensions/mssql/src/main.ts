@@ -20,23 +20,20 @@ import * as Utils from './utils';
 const baseConfig = require('./config.json');
 
 export function activate(context: vscode.ExtensionContext) {
+	let outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
+	outputChannel.show();
 	let contextProvider = new ContextProvider();
 	context.subscriptions.push(contextProvider);
-
-	let logger: ILogger = {
-		append: () => { },
-		appendLine: () => { }
-	};
 	let config: IConfig = JSON.parse(JSON.stringify(baseConfig));
 	delete config['serverConnectionMetadata'];
 	config.installDirectory = path.join(__dirname, config.installDirectory);
 	config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
 	config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
 
-	let credentialsStore = new CredentialStore(config);
-	let resourceProvider = new AzureResourceProvider(config);
+	let credentialsStore = new CredentialStore(config, outputChannel);
+	let resourceProvider = new AzureResourceProvider(config, outputChannel);
 
-	let serverdownloader = new ServerProvider(config, logger);
+	let serverdownloader = new ServerProvider(config, outputChannel);
 	let clientOptions: ClientOptions = {
 		providerId: Constants.providerId,
 		serverConnectionMetadata: undefined

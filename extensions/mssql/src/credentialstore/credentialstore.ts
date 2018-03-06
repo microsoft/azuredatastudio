@@ -81,7 +81,7 @@ export class CredentialStore {
 	private _client: SqlOpsDataClient;
 	private _config: IConfig;
 
-	constructor(baseConfig: IConfig) {
+	constructor(baseConfig: IConfig, private logger: ILogger) {
 		if (baseConfig) {
 			this._config = JSON.parse(JSON.stringify(baseConfig));
 			this._config.executableFiles = ['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials'];
@@ -89,11 +89,7 @@ export class CredentialStore {
 	}
 
 	public start() {
-		let logger: ILogger = {
-			append: () => { },
-			appendLine: () => { }
-		};
-		let serverdownloader = new ServerProvider(this._config, logger);
+		let serverdownloader = new ServerProvider(this._config, this.logger);
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
 			features: [CredentialsFeature],

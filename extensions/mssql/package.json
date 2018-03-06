@@ -9,7 +9,7 @@
   "engines": {
     "vscode": "*"
   },
-  "main": "./client/out/main",
+  "main": "./out/main",
   "extensionDependencies": [
     "vscode.sql"
   ],

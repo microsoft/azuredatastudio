@@ -14,7 +14,7 @@
 		"Ubuntu_14": "rhel-x64-netcoreapp2.0.tar.gz",
 		"Ubuntu_16": "rhel-x64-netcoreapp2.0.tar.gz"
 	},
-	"installDirectory": "../../sqltoolsservice/{#platform#}/{#version#}",
+	"installDirectory": "../sqltoolsservice/{#platform#}/{#version#}",
 	"executableFiles": ["MicrosoftSqlToolsServiceLayer.exe", "MicrosoftSqlToolsServiceLayer"],
 	"serverConnectionMetadata": {
 		"capabilities": {
