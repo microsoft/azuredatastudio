@@ -99,31 +99,36 @@ export function generateDashboardGridLayoutSchema(type?: 'database' | 'server', 
 			name: {
 				type: 'string'
 			},
-			icon: {
+			row: {
+				type: 'number'
+			},
+			rowspan: {
 				type: 'string'
 			},
-			provider: {
+			col: {
+				type: 'number'
+			},
+			colspan: {
+				type: 'string'
+			},
+			widget: {
 				anyOf: [
 					{
-						type: 'string'
-					},
-					{
-						type: 'array',
-						items: {
-							type: 'string'
-						}
+						type: 'object',
+						properties: schemas,
+						minItems: 1,
+						maxItems: 1
 					}
 				]
 			},
-			edition: {
+			webview: {
 				anyOf: [
 					{
-						type: 'number'
-					},
-					{
-						type: 'array',
-						items: {
-							type: 'number'
+						type: 'object',
+						properties: {
+							id: {
+								type: 'string',
+							}
 						}
 					}
 				]
