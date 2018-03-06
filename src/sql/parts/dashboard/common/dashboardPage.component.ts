@@ -88,7 +88,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
-		@Inject(BOOTSTRAP_SERVICE_ID) protected bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {
@@ -173,7 +172,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		}));
 
 		this._tabsDispose.push(this.dashboardService.onAddNewTabs(e => {
-			this.loadNewTabs(e);
+			this.loadNewTabs(e, true);
 		}));
 	}
 
@@ -187,7 +186,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		this.dashboardService.writeSettings([this.context, 'tabs'].join('.'), writeableConfig, target);
 	}
 
-	private loadNewTabs(dashboardTabs: IDashboardTab[]) {
+	private loadNewTabs(dashboardTabs: IDashboardTab[], openLastTab: boolean = false) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			let selectedTabs = dashboardTabs.map(v => {
 				let container = dashboardHelper.getDashboardContainer(v.container);
@@ -225,10 +224,12 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				return config;
 			});
 
-			// put this immediately on the stack so that is ran *after* the tab is rendered
-			setTimeout(() => {
-				this._panel.selectTab(selectedTabs.pop().id);
-			});
+			if (openLastTab) {
+				// put this immediately on the stack so that is ran *after* the tab is rendered
+				setTimeout(() => {
+					this._panel.selectTab(selectedTabs.pop().id);
+				});
+			}
 		}
 	}
 
@@ -250,12 +251,14 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	}
 
 	private getProperties(): Array<WidgetConfig> {
-		let properties = this.dashboardService.getSettings<IPropertiesConfig[]>([this.context, 'properties'].join('.'));
+		let properties = this.dashboardService.getSettings<IPropertiesConfig[] | string | boolean>([this.context, 'properties'].join('.'));
 		this._propertiesConfigLocation = 'default';
 		if (types.isUndefinedOrNull(properties)) {
 			return [this.propertiesWidget];
 		} else if (types.isBoolean(properties)) {
 			return properties ? [this.propertiesWidget] : [];
+		} else if (types.isString(properties) && properties === 'collapsed') {
+			return [this.propertiesWidget];
 		} else if (types.isArray(properties)) {
 			return properties.map((item) => {
 				let retVal = Object.assign({}, this.propertiesWidget);
@@ -300,6 +303,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		let index = this.tabs.findIndex(i => i.id === tab.identifier);
 		this.tabs.splice(index, 1);
 		this._cd.detectChanges();
-		this.bootstrapService.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { id: tab.identifier });
+		this.dashboardService.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { id: tab.identifier });
 	}
 }

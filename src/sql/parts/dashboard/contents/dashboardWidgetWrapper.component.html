@@ -13,6 +13,8 @@
 			<span *ngIf="_config.icon" [ngClass]="['icon', _config.icon]" style="display: inline-block; padding: 10px; margin-left: 5px"></span>
 		</div>
 	</div>
-	<ng-template component-host>
+	<ng-template [ngIf]="!collapsed">
+		<ng-template component-host>
+		</ng-template>
 	</ng-template>
 </div>

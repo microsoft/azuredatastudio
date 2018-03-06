@@ -275,7 +275,7 @@ export class ProfilerEditor extends BaseEditor {
 			},
 			{
 				id: 'value',
-				name: nls.localize('value', "Value"),
+				name: nls.localize('profilerEditor.value', "Value"),
 				field: 'value'
 			}
 		], { forceFitColumns: true });

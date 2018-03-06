@@ -45,8 +45,8 @@ export class ClearRecentConnectionsAction extends Action {
 			const self = this;
 			return new TPromise<boolean>((resolve, reject) => {
 				let choices: { key, value }[] = [
-					{ key: nls.localize('yes', 'Yes'), value: true },
-					{ key: nls.localize('no', 'No'), value: false }
+					{ key: nls.localize('connectionAction.yes', 'Yes'), value: true },
+					{ key: nls.localize('connectionAction.no', 'No'), value: false }
 				];
 
 				self._quickOpenService.pick(choices.map(x => x.key), { placeHolder: nls.localize('ClearRecentlyUsedLabel', 'Clear Recent Connections List'), ignoreFocusLost: true }).then((choice) => {

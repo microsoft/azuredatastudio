@@ -127,8 +127,8 @@ export class TaskService implements ITaskService {
 	public beforeShutdown(): TPromise<boolean> {
 		const message = localize('InProgressWarning', '1 or more tasks are in progress. Are you sure you want to quit?');
 		const options = [
-			localize('yes', "Yes"),
-			localize('no', "No")
+			localize('taskService.yes', "Yes"),
+			localize('taskService.no', "No")
 		];
 
 		return new TPromise<boolean>((resolve, reject) => {

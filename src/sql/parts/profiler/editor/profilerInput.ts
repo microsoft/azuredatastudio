@@ -88,7 +88,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public getName(): string {
-		return nls.localize('profiler', 'Profiler');
+		return nls.localize('profilerInput.profiler', 'Profiler');
 	}
 
 	public get data(): TableDataView<Slick.SlickData> {

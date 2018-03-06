@@ -120,7 +120,7 @@ export class ConnectionWidget {
 	}
 
 	private fillInConnectionForm(): void {
-		let errorMessage = localize('missingRequireField', ' is required.');
+		let errorMessage = localize('connectionWidget.missingRequireField', ' is required.');
 
 		let serverNameOption = this._optionsMaps[ConnectionOptionSpecialType.serverName];
 		let serverNameBuilder = DialogHelper.appendRow(this._tableContainer, serverNameOption.displayName, 'connection-label', 'connection-input');
