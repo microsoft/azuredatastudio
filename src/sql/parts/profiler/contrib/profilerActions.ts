@@ -24,7 +24,7 @@ import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiati
 
 export class ProfilerConnect extends Action {
 	public static ID = 'profiler.connect';
-	public static LABEL = nls.localize('connect', "Connect");
+	public static LABEL = nls.localize('profiler.connect', "Connect");
 
 	private _connected: boolean = false;
 
@@ -57,7 +57,7 @@ export class ProfilerConnect extends Action {
 	public set connected(value: boolean) {
 		this._connected = value;
 		this._setClass(value ? 'disconnect' : 'connect');
-		this._setLabel(value ? nls.localize('disconnect', 'Disconnected') : nls.localize('connect', "Connect"));
+		this._setLabel(value ? nls.localize('profilerAction.disconnect', 'Disconnected') : nls.localize('profilerAction.connect', "Connect"));
 	}
 
 	public get connected(): boolean {
@@ -108,7 +108,7 @@ export class ProfilerPause extends Action {
 
 export class ProfilerStop extends Action {
 	public static ID = 'profiler.stop';
-	public static LABEL = nls.localize('stop', "Stop");
+	public static LABEL = nls.localize('profilerStop.stop', "Stop");
 
 	constructor(
 		id: string, label: string,
@@ -229,7 +229,7 @@ export class ProfilerFindPrevious implements IEditorAction {
 
 export class NewProfilerAction extends Task {
 	public static readonly ID = 'newProfiler';
-	public static readonly LABEL = nls.localize('newProfiler', 'New Profiler');
+	public static readonly LABEL = nls.localize('profilerAction.newProfiler', 'New Profiler');
 	public static readonly ICON = 'profile';
 
 	private _connectionProfile: ConnectionProfile;

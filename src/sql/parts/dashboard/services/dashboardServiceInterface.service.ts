@@ -20,7 +20,7 @@ import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
 import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
+import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { PinConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 
@@ -137,6 +137,7 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _commandService: ICommandService;
 	private _dashboardWebviewService: IDashboardWebviewService;
 	private _partService: IPartService;
+	private _angularEventingService: IAngularEventingService;
 
 	private _updatePage = new Emitter<void>();
 	public readonly onUpdatePage: Event<void> = this._updatePage.event;
@@ -171,6 +172,7 @@ export class DashboardServiceInterface implements OnDestroy {
 		this._commandService = this._bootstrapService.commandService;
 		this._dashboardWebviewService = this._bootstrapService.dashboardWebviewService;
 		this._partService = this._bootstrapService.partService;
+		this._angularEventingService = this._bootstrapService.angularEventingService;
 	}
 
 	ngOnDestroy() {
@@ -239,6 +241,10 @@ export class DashboardServiceInterface implements OnDestroy {
 
 	public get capabilitiesService(): ICapabilitiesService {
 		return this._capabilitiesService;
+	}
+
+	public get angularEventingService(): IAngularEventingService {
+		return this._angularEventingService;
 	}
 
 	/**

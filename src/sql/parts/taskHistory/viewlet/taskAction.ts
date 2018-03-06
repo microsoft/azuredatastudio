@@ -14,7 +14,7 @@ import Severity from 'vs/base/common/severity';
 
 export class CancelAction extends Action {
 	public static ID = 'taskHistory.cancel';
-	public static LABEL = localize('cancel', 'Cancel');
+	public static LABEL = localize('cancelTask.cancel', 'Cancel');
 
 	constructor(
 		id: string,
@@ -48,7 +48,7 @@ export class CancelAction extends Action {
 
 export class ScriptAction extends Action {
 	public static ID = 'taskHistory.script';
-	public static LABEL = localize('script', 'Script');
+	public static LABEL = localize('taskAction.script', 'Script');
 
 	constructor(
 		id: string,

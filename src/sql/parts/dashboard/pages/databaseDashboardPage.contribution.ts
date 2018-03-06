@@ -13,6 +13,10 @@ export const databaseDashboardPropertiesSchema: IJSONSchema = {
 	oneOf: <IJSONSchema[]>[
 		{ type: 'boolean' },
 		{
+			type: 'string',
+			enum: ['collapsed']
+		},
+		{
 			type: 'array',
 			items: {
 				type: 'object',
