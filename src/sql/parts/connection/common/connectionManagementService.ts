@@ -139,8 +139,8 @@ export class ConnectionManagementService implements IConnectionManagementService
 		));
 
 		if (_capabilitiesService && Object.keys(_capabilitiesService.providers).length > 0 && !this.hasRegisteredServers()) {
-				// prompt the user for a new connection on startup if no profiles are registered
-				this.showConnectionDialog();
+			// prompt the user for a new connection on startup if no profiles are registered
+			this.showConnectionDialog();
 		} else if (_capabilitiesService && !this.hasRegisteredServers()) {
 			_capabilitiesService.onCapabilitiesRegistered(e => {
 				// prompt the user for a new connection on startup if no profiles are registered

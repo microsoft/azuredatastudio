@@ -122,7 +122,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		});
 	}
 
-	private handleConnectionProvider(e: {id: string, properties: ConnectionProviderProperties }, isNew = true): void {
+	private handleConnectionProvider(e: { id: string, properties: ConnectionProviderProperties }, isNew = true): void {
 
 		let provider = this._providers.get(e.id);
 		if (provider) {

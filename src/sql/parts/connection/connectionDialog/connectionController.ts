@@ -35,7 +35,7 @@ export class ConnectionController implements IConnectionComponentController {
 		connectionProperties: ConnectionProviderProperties,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
-		@IInstantiationService private _instantiationService: IInstantiationService ) {
+		@IInstantiationService private _instantiationService: IInstantiationService) {
 		this._container = container;
 		this._connectionManagementService = connectionManagementService;
 		this._callback = callback;
@@ -49,8 +49,8 @@ export class ConnectionController implements IConnectionComponentController {
 			onSetAzureTimeOut: () => this.handleonSetAzureTimeOut(),
 			onFetchDatabases: (serverName: string, authenticationType: string, userName?: string, password?: string) => this.onFetchDatabases(
 				serverName, authenticationType, userName, password).then(result => {
-				return result;
-			})
+					return result;
+				})
 		}, providerName);
 		this._providerName = providerName;
 	}
@@ -66,7 +66,7 @@ export class ConnectionController implements IConnectionComponentController {
 		let uri = this._connectionManagementService.getConnectionId(tempProfile);
 		return new Promise<string[]>((resolve, reject) => {
 			if (this._databaseCache.has(uri)) {
-				let cachedDatabases : string[] = this._databaseCache.get(uri);
+				let cachedDatabases: string[] = this._databaseCache.get(uri);
 				if (cachedDatabases !== null) {
 					resolve(cachedDatabases);
 				} else {

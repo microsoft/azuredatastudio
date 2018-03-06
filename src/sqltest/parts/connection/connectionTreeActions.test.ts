@@ -435,7 +435,7 @@ suite('SQL Connection Tree Action tests', () => {
 			connectionOptions: []
 		};
 
-		capabilitiesService.capabilities['MSSQL'] = { connection: sqlProvider } ;
+		capabilitiesService.capabilities['MSSQL'] = { connection: sqlProvider };
 
 		var connection = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
