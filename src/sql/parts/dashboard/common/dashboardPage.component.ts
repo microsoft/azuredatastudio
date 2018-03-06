@@ -174,7 +174,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		}));
 
 		this._tabsDispose.push(this.dashboardService.onAddNewTabs(e => {
-			this.loadNewTabs(e);
+			this.loadNewTabs(e, true);
 		}));
 	}
 
@@ -188,7 +188,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		this.dashboardService.writeSettings([this.context, 'tabs'].join('.'), writeableConfig, target);
 	}
 
-	private loadNewTabs(dashboardTabs: IDashboardTab[]) {
+	private loadNewTabs(dashboardTabs: IDashboardTab[], openLastTab: boolean = false) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			let selectedTabs = dashboardTabs.map(v => {
 				let container = dashboardHelper.getDashboardContainer(v.container);
@@ -226,10 +226,12 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				return config;
 			});
 
-			// put this immediately on the stack so that is ran *after* the tab is rendered
-			setTimeout(() => {
-				this._panel.selectTab(selectedTabs.pop().id);
-			});
+			if (openLastTab) {
+				// put this immediately on the stack so that is ran *after* the tab is rendered
+				setTimeout(() => {
+					this._panel.selectTab(selectedTabs.pop().id);
+				});
+			}
 		}
 	}
 
