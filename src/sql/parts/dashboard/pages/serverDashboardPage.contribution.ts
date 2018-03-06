@@ -21,6 +21,10 @@ export const serverDashboardPropertiesSchema: IJSONSchema = {
 	oneOf: [
 		{ type: 'boolean' },
 		{
+			type: 'string',
+			enum: ['collapsed']
+		},
+		{
 			type: 'object',
 			properties: {
 				provider: {

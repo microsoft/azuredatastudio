@@ -50,6 +50,8 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	private _scrollableElement: ScrollableElement;
 	private $container: Builder;
 
+	private _inited = false;
+
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
 	constructor(
@@ -82,6 +84,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	}
 
 	ngOnInit() {
+		this._inited = true;
 		this._register(registerThemingParticipant(this.registerThemeing));
 		this._computeContainer();
 
@@ -152,11 +155,13 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	}
 
 	public layout(): void {
-		this._computeContainer();
-		// Update scrollbar
-		this._scrollableElement.setScrollDimensions({
-			width: DOM.getContentWidth(this._container.nativeElement),
-			scrollWidth: DOM.getContentWidth(this.$container.getHTMLElement()) + 18 // right padding
-		});
+		if (this._inited) {
+			this._computeContainer();
+			// Update scrollbar
+			this._scrollableElement.setScrollDimensions({
+				width: DOM.getContentWidth(this._container.nativeElement),
+				scrollWidth: DOM.getContentWidth(this.$container.getHTMLElement()) + 18 // right padding
+			});
+		}
 	}
 }

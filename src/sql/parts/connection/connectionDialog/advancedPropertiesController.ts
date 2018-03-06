@@ -39,7 +39,7 @@ export class AdvancedPropertiesController {
 		if (!this._advancedDialog) {
 			this._advancedDialog = this._instantiationService.createInstance(
 				OptionsDialog, localize('connectionAdvancedProperties', 'Advanced properties'), TelemetryKeys.ConnectionAdvancedProperties, { hasBackButton: true });
-			this._advancedDialog.cancelLabel = localize('discard', 'Discard');
+			this._advancedDialog.cancelLabel = localize('advancedProperties.discard', 'Discard');
 			this._advancedDialog.onCloseEvent(() => this._onCloseAdvancedProperties());
 			this._advancedDialog.onOk(() => this.handleOnOk());
 			this._advancedDialog.render();

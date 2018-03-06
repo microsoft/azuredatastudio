@@ -365,7 +365,7 @@ export class OEScriptDeleteAction extends ScriptDeleteAction {
 
 export class DisconnectAction extends Action {
 	public static ID = 'objectExplorer.disconnect';
-	public static LABEL = localize('disconnect', 'Disconnect');
+	public static LABEL = localize('objectExplorAction.disconnect', 'Disconnect');
 	private _objectExplorerTreeNode: TreeNode;
 	private _container: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;

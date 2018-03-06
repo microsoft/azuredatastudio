@@ -89,6 +89,9 @@ import { HashService } from 'vs/workbench/services/hash/node/hashService';
 import { IHashService } from 'vs/workbench/services/hash/common/hashService';
 import { ILogService } from 'vs/platform/log/common/log';
 
+// {{SQL CARBON EDIT}}
+import { FileTelemetryService } from 'sql/platform/telemetry/fileTelemetryService';
+
 /**
  * Services that we require for the Shell
  */
@@ -315,9 +318,12 @@ export class WorkbenchShell {
 		// Experiments
 		this.experimentService = instantiationService.createInstance(ExperimentService);
 		serviceCollection.set(IExperimentService, this.experimentService);
-
+		// {{SQL CARBON EDIT}}
+		if (this.environmentService.args['perf-test']) {
+			let telemetryOutput = this.environmentService.args['telemetry-output'];
+			this.telemetryService = new FileTelemetryService(telemetryOutput);
 		// Telemetry
-		if (this.environmentService.isBuilt && !this.environmentService.isExtensionDevelopment && !this.environmentService.args['disable-telemetry'] && !!product.enableTelemetry) {
+		} else if (this.environmentService.isBuilt && !this.environmentService.isExtensionDevelopment && !this.environmentService.args['disable-telemetry'] && !!product.enableTelemetry) {
 			const channel = getDelayedChannel<ITelemetryAppenderChannel>(sharedProcess.then(c => c.getChannel('telemetryAppender')));
 			const commit = product.commit;
 			const version = pkg.version;

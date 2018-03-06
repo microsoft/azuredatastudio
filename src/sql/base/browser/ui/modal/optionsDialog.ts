@@ -84,8 +84,8 @@ export class OptionsDialog extends Modal {
 	private _onCloseEvent = new Emitter<void>();
 	public onCloseEvent: Event<void> = this._onCloseEvent.event;
 
-	public okLabel: string = localize('ok', 'OK');
-	public cancelLabel: string = localize('cancel', 'Cancel');
+	public okLabel: string = localize('optionsDialog.ok', 'OK');
+	public cancelLabel: string = localize('optionsDialog.cancel', 'Cancel');
 
 	constructor(
 		title: string,
