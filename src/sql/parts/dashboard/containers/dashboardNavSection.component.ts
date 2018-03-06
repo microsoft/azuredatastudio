@@ -19,6 +19,8 @@ import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import Event, { Emitter } from 'vs/base/common/event';
+import Severity from 'vs/base/common/severity';
+import * as nls from 'vs/nls';
 
 @Component({
 	selector: 'dashboard-nav-section',
@@ -86,11 +88,16 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			let selectedTabs = dashboardTabs.map(v => {
 
-				let container = dashboardHelper.getDashboardContainer(v.container);
-				let key = Object.keys(container)[0];
+				let containerResult = dashboardHelper.getDashboardContainer(v.container);
+				if (!containerResult.result) {
+					let errorTitle = nls.localize('dashboardNavSection_loadTabError', 'There is an error while loading {0} section. ', v.title);
+					this.dashboardService.messageService.show(Severity.Error, errorTitle + containerResult.message);
+					return null;
+				}
 
+				let key = Object.keys(containerResult.container)[0];
 				if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
-					let configs = <WidgetConfig[]>Object.values(container)[0];
+					let configs = <WidgetConfig[]>Object.values(containerResult.container)[0];
 					this._configModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs, this.dashboardService, this.tab.context]);
 					});
@@ -104,20 +111,25 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 						return { id: v.id, title: v.title, container: { 'grid-container': configs } };
 					}
 				}
-				return { id: v.id, title: v.title, container: container };
+				return { id: v.id, title: v.title, container: containerResult.container };
 			}).map(v => {
-				let config = v as TabConfig;
-				config.context = this.tab.context;
-				config.editable = false;
-				config.canClose = false;
-				this.addNewTab(config);
-				return config;
+				if (v) {
+					let config = v as TabConfig;
+					config.context = this.tab.context;
+					config.editable = false;
+					config.canClose = false;
+					this.addNewTab(config);
+					return config;
+				}
+				return null;
 			});
 
-			// put this immediately on the stack so that is ran *after* the tab is rendered
-			setTimeout(() => {
-				this._panel.selectTab(selectedTabs[0].id);
-			});
+			if (selectedTabs && selectedTabs[0]) {
+				// put this immediately on the stack so that is ran *after* the tab is rendered
+				setTimeout(() => {
+					this._panel.selectTab(selectedTabs[0].id);
+				});
+			}
 		}
 	}
 
