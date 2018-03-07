@@ -135,3 +135,11 @@ label::after {
 	width: 50px;
 	cursor: pointer;
 }
+
+#col1, #col2, #col3, #col4 {
+	padding: 10px;
+}
+
+#col2 {
+	padding-right: 300px;
+}
