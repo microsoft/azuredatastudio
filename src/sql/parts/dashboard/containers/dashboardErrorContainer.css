@@ -1,0 +1,21 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+dashboard-error-container {
+	height: 100%;
+	width: 100%;
+}
+
+dashboard-error-container .error-container {
+	padding: 15px;
+}
+
+dashboard-error-container .error-container .icon.error {
+    height: 16px;
+    width: 16px;
+    float: left;
+    padding-right: 10px;
+}
+

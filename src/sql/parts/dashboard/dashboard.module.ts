@@ -30,6 +30,7 @@ import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWi
 import { DashboardWidgetContainer } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.component';
 import { DashboardGridContainer } from 'sql/parts/dashboard/containers/dashboardGridContainer.component';
 import { DashboardWebviewContainer } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.component';
+import { DashboardErrorContainer } from 'sql/parts/dashboard/containers/dashboardErrorContainer.component';
 import { DashboardNavSection } from 'sql/parts/dashboard/containers/dashboardNavSection.component';
 import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
 import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
@@ -37,7 +38,7 @@ import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.c
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { DashboardHomeContainer } from 'sql/parts/dashboard/containers/dashboardHomeContainer.component';
 
-let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer, DashboardWidgetContainer, DashboardGridContainer, DashboardNavSection, WidgetContent, WebviewContent, ComponentHostDirective, BreadcrumbComponent];
+let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer, DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, WidgetContent, WebviewContent, ComponentHostDirective, BreadcrumbComponent];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';

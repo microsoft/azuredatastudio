@@ -178,8 +178,9 @@ export function getDashboardContainer(container: object): { result: boolean, mes
 	if (!containerTypeFound) {
 		let dashboardContainer = dashboardcontainerRegistry.getRegisteredContainer(key);
 		if (!dashboardContainer) {
-			let error = nls.localize('unknownDashboardContainerError', '{0} is an unknown container.', key);
-			return { result: false, message: error, container: null };
+			let errorMessage = nls.localize('unknownDashboardContainerError', '{0} is an unknown container.', key);
+			error(errorMessage);
+			return { result: false, message: errorMessage, container: null };
 		} else {
 			container = dashboardContainer.container;
 		}
