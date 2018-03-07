@@ -7,8 +7,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { ILogger, IConfig } from 'service-downloader/out/interfaces';
-import ServerProvider from 'service-downloader';
+import { ILogger, IConfig, ServerProvider } from 'service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 
 import * as Constants from './constants';

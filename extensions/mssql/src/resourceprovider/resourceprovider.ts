@@ -5,12 +5,10 @@
 'use strict';
 
 import * as path from 'path';
-import { ILogger, IConfig } from 'service-downloader/out/interfaces';
+import { ILogger, IConfig, ServerProvider } from 'service-downloader';
 import { SqlOpsDataClient, SqlOpsFeature, ClientOptions } from 'dataprotocol-client';
 import { ServerCapabilities, ClientCapabilities, RPCMessageType, ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-import ServerProvider from 'service-downloader';
-import ServiceDownloadProvider from 'service-downloader/out/serviceDownloadProvider';
 
 import * as sqlops from 'sqlops';
 import { Disposable } from 'vscode';

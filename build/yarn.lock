@@ -1742,7 +1742,7 @@ semver@^5.4.1:
 
 "service-downloader@github:anthonydresser/service-downloader#release":
   version "1.0.0"
-  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/bc3426b2ba18dc1a6c7b2ed77d9a997f9156a887"
+  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/52211c41b3bcf6b946b2676fc4d380c166c1aad5"
   dependencies:
     decompress "^4.2.0"
     http-proxy-agent "^2.0.0"

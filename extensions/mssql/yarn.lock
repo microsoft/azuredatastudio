@@ -40,9 +40,9 @@ core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
-"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#feat/initFeaturesrelease":
-  version "0.1.0"
-  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/df58d06494422aa412e486c67898d541465c8337"
+"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#0.1.3":
+  version "0.1.3"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/5758b2a5804ea488d14326662f51d19cc970ccd0"
   dependencies:
     vscode-languageclient "3.5.0"
 
@@ -273,7 +273,7 @@ seek-bzip@^1.0.5:
 
 "service-downloader@github:anthonydresser/service-downloader#release":
   version "1.0.0"
-  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/bc3426b2ba18dc1a6c7b2ed77d9a997f9156a887"
+  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/52211c41b3bcf6b946b2676fc4d380c166c1aad5"
   dependencies:
     decompress "^4.2.0"
     http-proxy-agent "^2.0.0"
