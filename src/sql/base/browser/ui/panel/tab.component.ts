@@ -13,7 +13,7 @@ export abstract class TabChild {
 @Component({
 	selector: 'tab',
 	template: `
-		<div *ngIf="active" class="fullsize">
+		<div class="visibility" [class.hidden]="!active" class="fullsize">
 			<ng-content class="body fullsize"></ng-content>
 		</div>
 	`
