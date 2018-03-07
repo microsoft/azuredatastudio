@@ -18,7 +18,7 @@ import * as nls from 'vs/nls';
 	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardErrorContainer) }],
 	template: `
 		<div class="error-container">
-			<div class="icon error">
+			<div class="icon globalError">
 			</div>
 			<div class="error-message" #errorMessage>
 			</div>

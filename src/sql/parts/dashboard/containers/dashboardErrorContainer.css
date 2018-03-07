@@ -9,13 +9,15 @@ dashboard-error-container {
 }
 
 dashboard-error-container .error-container {
-	padding: 15px;
+	padding: 6px;
+	background: #D02E00;
+	color: white;
 }
 
-dashboard-error-container .error-container .icon.error {
+dashboard-error-container .error-container .icon.globalError {
 	height: 16px;
 	width: 16px;
 	float: left;
-	padding-right: 10px;
+	padding-right: 15px;
 }
 

@@ -57,6 +57,12 @@
 	background: url("server_page_inverse.svg") center center no-repeat;
 }
 
+.vs .icon.globalError,
+.vs-dark .icon.globalError,
+.hc-black .icon.globalError {
+	background: url("globalerror.svg") center center no-repeat;
+}
+
 .vs .icon.error,
 .vs-dark .icon.error,
 .hc-black .icon.error {
