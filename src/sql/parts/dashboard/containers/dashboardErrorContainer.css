@@ -13,9 +13,9 @@ dashboard-error-container .error-container {
 }
 
 dashboard-error-container .error-container .icon.error {
-    height: 16px;
-    width: 16px;
-    float: left;
-    padding-right: 10px;
+	height: 16px;
+	width: 16px;
+	float: left;
+	padding-right: 10px;
 }
 
