@@ -142,7 +142,10 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	}
 
 	public layout() {
-
+		let activeTabId = this._panel.getActiveTab;
+		let localtab = this._tabs.find(i => i.id === activeTabId);
+		this._cd.detectChanges();
+		localtab.layout();
 	}
 
 	public refresh(): void {
