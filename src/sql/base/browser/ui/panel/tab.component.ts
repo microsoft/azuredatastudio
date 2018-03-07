@@ -13,7 +13,7 @@ export abstract class TabChild {
 @Component({
 	selector: 'tab',
 	template: `
-		<div class="visibility" [class.hidden]="!active" class="fullsize">
+		<div class="visibility" [class.hidden]="!active && visibilityType == 'visibility'" *ngIf="visibilityType == 'visibility' || active" class="fullsize">
 			<ng-content class="body fullsize"></ng-content>
 		</div>
 	`
@@ -25,6 +25,7 @@ export class TabComponent implements OnDestroy {
 	@Input() public actions: Array<Action>;
 	public _active = false;
 	@Input() public identifier: string;
+	@Input() private visibilityType: 'if' | 'visibility' = 'if';
 
 	public set active(val: boolean) {
 		this._active = val;
