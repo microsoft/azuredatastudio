@@ -20,7 +20,6 @@ import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { AngularEventType } from 'sql/services/angularEventing/angularEventingService';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
-import { error } from 'sql/base/common/log';
 import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
@@ -191,12 +190,10 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			let selectedTabs = dashboardTabs.map(v => {
 				let containerResult = dashboardHelper.getDashboardContainer(v.container);
 				if (!containerResult.result) {
-					let errorTitle = nls.localize('dashboardPage_loadTabError', 'Cannot open {0}. ', v.title);
-					this.dashboardService.messageService.show(Severity.Error, errorTitle + containerResult.message);
-					return null;
+					return { id: v.id, title: v.title, container: { 'error-container': undefined }, alwaysShow: v.alwaysShow };
 				}
-				let key = Object.keys(containerResult.container)[0];
 
+				let key = Object.keys(containerResult.container)[0];
 				if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
 					let configs = <WidgetConfig[]>Object.values(containerResult.container)[0];
 					this._configModifiers.forEach(cb => {
@@ -214,31 +211,26 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				}
 				return { id: v.id, title: v.title, container: containerResult.container, alwaysShow: v.alwaysShow };
 			}).map(v => {
-				if (v) {
-					let actions = [];
-					if (!v.alwaysShow) {
-						let pinnedTab = this._pinnedTabs.find(i => i.tabId === v.id);
-						actions.push(this.dashboardService.instantiationService.createInstance(PinUnpinTabAction, v.id, this.dashboardService.getUnderlyingUri(), !!pinnedTab));
-					}
-
-					let config = v as TabConfig;
-					config.context = this.context;
-					config.editable = false;
-					config.canClose = true;
-					config.actions = actions;
-					this.addNewTab(config);
-					return config;
+				let actions = [];
+				if (!v.alwaysShow) {
+					let pinnedTab = this._pinnedTabs.find(i => i.tabId === v.id);
+					actions.push(this.dashboardService.instantiationService.createInstance(PinUnpinTabAction, v.id, this.dashboardService.getUnderlyingUri(), !!pinnedTab));
 				}
-				return null;
+
+				let config = v as TabConfig;
+				config.context = this.context;
+				config.editable = false;
+				config.canClose = true;
+				config.actions = actions;
+				this.addNewTab(config);
+				return config;
 			});
 
 			if (openLastTab) {
 				// put this immediately on the stack so that is ran *after* the tab is rendered
 				setTimeout(() => {
 					let selectedLastTab = selectedTabs.pop();
-					if (selectedLastTab) {
-						this._panel.selectTab(selectedLastTab.id);
-					}
+					this._panel.selectTab(selectedLastTab.id);
 				});
 			}
 		}

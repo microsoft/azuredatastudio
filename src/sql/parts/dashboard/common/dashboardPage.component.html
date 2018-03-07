@@ -17,6 +17,8 @@
 			</dashboard-nav-section>
 			<dashboard-grid-container *ngIf="getContentType(tab) === 'grid-container'" [tab]="tab">
 			</dashboard-grid-container>
+			<dashboard-error-container *ngIf="getContentType(tab) === 'error-container'" [tab]="tab">
+			</dashboard-error-container>
 		</ng-template>
 	</tab>
 </panel>
