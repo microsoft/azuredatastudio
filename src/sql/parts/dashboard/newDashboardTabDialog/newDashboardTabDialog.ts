@@ -235,8 +235,8 @@ export class NewDashboardTabDialog extends Modal {
 		this.layout();
 		if (this._extensionList.length > 0) {
 			this._extensionList.setSelection([0]);
+			this._extensionList.domFocus();
 			this._addNewTabButton.enabled = true;
-			this._addNewTabButton.focus();
 		} else {
 			this._addNewTabButton.enabled = false;
 			this._cancelButton.focus();
