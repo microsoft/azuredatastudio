@@ -134,6 +134,9 @@ export function generateDashboardTabSchema(type?: 'database' | 'server'): IJSONS
 				enum: [],
 				enumDescriptions: [],
 				errorMessage: localize('dashboardTabError', "Extension tab is unknown or not installed.")
+			},
+			isPinned: {
+				type: 'boolean'
 			}
 		}
 	};
