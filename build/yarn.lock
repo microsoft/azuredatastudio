@@ -1740,7 +1740,7 @@ semver@^5.4.1:
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.5.0.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
 
-"service-downloader@github:anthonydresser/service-downloader#release":
+"service-downloader@github:anthonydresser/service-downloader#0.1.0":
   version "1.0.0"
   resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/52211c41b3bcf6b946b2676fc4d380c166c1aad5"
   dependencies:

@@ -13,7 +13,6 @@ const filter = require('gulp-filter');
 
 gulp.task('clean-mssql-extension', util.rimraf('extensions/mssql/node_modules'));
 gulp.task('clean-credentials-extension', util.rimraf('extensions/credentials/node_modules'));
-gulp.task('clean-protocol', ['clean-mssql-extension', 'clean-credentials-extension', 'clean-client', 'clean-jsonrpc', 'clean-server', 'clean-types']);
 
 gulp.task('fmt', () => formatStagedFiles());
 const formatFiles = (some) => {

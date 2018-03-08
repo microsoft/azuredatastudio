@@ -271,7 +271,7 @@ seek-bzip@^1.0.5:
   dependencies:
     commander "~2.8.1"
 
-"service-downloader@github:anthonydresser/service-downloader#release":
+"service-downloader@github:anthonydresser/service-downloader#0.1.0":
   version "1.0.0"
   resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/52211c41b3bcf6b946b2676fc4d380c166c1aad5"
   dependencies:

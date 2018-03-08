@@ -191,7 +191,7 @@
     }
   },
   "dependencies": {
-    "service-downloader": "github:anthonydresser/service-downloader#release",
+    "service-downloader": "github:anthonydresser/service-downloader#0.1.0",
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.1.3"
   }
 }
