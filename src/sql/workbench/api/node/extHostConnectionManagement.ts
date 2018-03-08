@@ -30,4 +30,8 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string}> {
 		return this._proxy.$getCredentials(connectionId);
 	}
+
+	public $findObjectExplorerNodes(type: string, name: string, schema: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]> {
+		return this._proxy.$findObjectExplorerNodes(type, name, schema, database, parentObjectNames);
+	}
 }

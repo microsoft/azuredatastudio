@@ -65,6 +65,8 @@ export interface IObjectExplorerService {
 	onSelectionOrFocusChange: Event<void>;
 
 	getServerTreeView(): ServerTreeView;
+
+	findObjectExplorerNodes(type: string, name: string, schema: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
 }
 
 interface SessionStatus {
@@ -422,5 +424,19 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	public getServerTreeView() {
 		return this._serverTreeView;
+	}
+
+	public findObjectExplorerNodes(type: string, name: string, schema: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]> {
+		let sessionId = Object.keys(this._sessions)[0];
+		return this._providers[this._sessions[sessionId].connection.providerName].findNodes({
+			type: type,
+			name: name,
+			schema: schema,
+			database: database,
+			parentObjectNames: parentObjectNames,
+			sessionId: sessionId
+		}).then(response => {
+			return response.nodes;
+		});
 	}
 }

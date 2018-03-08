@@ -92,6 +92,9 @@ export function createApiFactory(
 				},
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 					return extHostConnectionManagement.$getCredentials(connectionId);
+				},
+				findObjectExplorerNodes(type: string, name: string, schema: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]> {
+					return extHostConnectionManagement.$findObjectExplorerNodes(type, name, schema, database, parentObjectNames);
 				}
 			};
 

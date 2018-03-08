@@ -49,6 +49,10 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return Promise.resolve(this._connectionManagementService.getActiveConnectionCredentials(connectionId));
 	}
 
+	public $findObjectExplorerNodes(type: string, name: string, schema: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]> {
+		return this._objectExplorerService.findObjectExplorerNodes(type, name, schema, database, parentObjectNames);
+	}
+
 	private convertConnection(profile: IConnectionProfile): sqlops.connection.Connection {
 		if (!profile) {
 			return undefined;
