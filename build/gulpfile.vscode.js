@@ -32,6 +32,7 @@ const product = require('../product.json');
 const crypto = require('crypto');
 const i18n = require('./lib/i18n');
 const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
+const platformInfo = require('service-downloader/out/platform').PlatformInformation;
 const glob = require('glob');
 const deps = require('./dependencies');
 const getElectronVersion = require('./lib/electron').getElectronVersion;
@@ -642,16 +643,23 @@ gulp.task('generate-vscode-configuration', () => {
 
 function installService() {
 	let config = require('../extensions/mssql/src/config.json');
-	// fix path since it won't be correct
-	config.installDirectory = path.join('../extensions/mssql/src', config.installDirectory);
-	var installer = new serviceDownloader(config);
-	let serviceInstallFolder = installer.getInstallDirectoryRoot()
+	let logger = {
+		appendLine: (m) => console.log(m),
+		append: (m) => console.log(m)
+	};
+	platformInfo.getCurrent().then(p => {
+		let runtime = p.runtimeId;
+		// fix path since it won't be correct
+		config.installDirectory = path.join(__dirname, '../extensions/mssql/src', config.installDirectory);
+		var installer = new serviceDownloader(config, logger);
+		let serviceInstallFolder = installer.getInstallDirectoryRoot(runtime);
 		console.log('Cleaning up the install folder: ' + serviceInstallFolder);
-	return del(serviceInstallFolder + '/*').then(() => {
-		console.log('Installing the service. Install folder: ' + serviceInstallFolder);
-		installer.installService();
-	}, delError => {
-		console.log('failed to delete the install folder error: ' + delError);
+		return del(serviceInstallFolder + '/*').then(() => {
+			console.log('Installing the service. Install folder: ' + serviceInstallFolder);
+			installer.installService(runtime);
+		}, delError => {
+			console.log('failed to delete the install folder error: ' + delError);
+		});
 	});
 }
 
