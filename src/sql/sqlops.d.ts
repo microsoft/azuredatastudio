@@ -881,6 +881,15 @@ declare module 'sqlops' {
 		nodePath: string;
 	}
 
+	export interface FindNodesInfo {
+		sessionId: string;
+		type: string;
+		schema: string;
+		name: string;
+		database: string;
+		parentObjectNames: string[];
+	}
+
 	export interface ObjectExplorerCloseSessionInfo {
 		sessionId: string;
 	}
@@ -888,6 +897,10 @@ declare module 'sqlops' {
 	export interface ObjectExplorerCloseSessionResponse {
 		sessionId: string;
 		success: boolean;
+	}
+
+	export interface ObjectExplorerFindNodesResponse {
+		nodes: NodeInfo[];
 	}
 
 	export interface ObjectExplorerProvider extends DataProvider {
@@ -898,6 +911,8 @@ declare module 'sqlops' {
 		refreshNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
 
 		closeSession(closeSessionInfo: ObjectExplorerCloseSessionInfo): Thenable<ObjectExplorerCloseSessionResponse>;
+
+		findNodes(findNodesInfo: FindNodesInfo): Thenable<ObjectExplorerFindNodesResponse>;
 
 		registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any);
 
