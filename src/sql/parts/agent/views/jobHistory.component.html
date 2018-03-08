@@ -4,11 +4,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
+
  <h1>Jobs | {{ job_name }}</h1>
+
+ <!-- Back -->
  <div class="all-jobs">
 	<div class="backButtonIcon"></div>All Jobs
  </div>
 
+<!-- Actions -->
 <ul class="action-buttons">
 	<li>
 		<a class="icon-start"></a>
@@ -20,10 +24,14 @@
 	</li>
 </ul>
 
+<!-- Overview  -->
  <div class="overview-container">
-   <div class="overview-tab">
+   <div class="overview-tab" (click)='toggleCollapse()'>
 	 <input id="accordion" type="checkbox">
-	 <label for="accordion">Overview</label>
+	 <label for="accordion">
+		<div class="resultsViewCollapsible collapsed" (click)='toggleCollapse()'></div>
+		 Overview
+	</label>
 	 <div class="accordion-content">
 		<table align='left'>
 				<tr>
@@ -72,3 +80,11 @@
 	 </div>
    </div>
 </div>
+
+<!-- Job History details -->
+<div class='history-details'>
+	<!-- Previous run list -->
+	<div class="prev-run-list"></div>
+	<div class="job-steps"></div>
+</div>
+
