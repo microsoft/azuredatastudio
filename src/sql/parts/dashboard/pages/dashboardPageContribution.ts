@@ -75,10 +75,46 @@ export function generateDashboardGridLayoutSchema(type?: 'database' | 'server', 
 		type: 'object',
 		properties: {
 			name: {
-				type: 'string'
+				type: 'string',
+				description: localize('dashboardpage.tabName', "The title of the container")
 			},
-			icon: {
-				type: 'string'
+			row: {
+				type: 'number',
+				description: localize('dashboardpage.rowNumber', "The row of the component in the grid")
+			},
+			rowspan: {
+				type: 'string',
+				description: localize('dashboardpage.rowSpan', "The rowspan of the component in the grid. Default value is 1. Use '*' to set to number of rows in the grid.")
+			},
+			col: {
+				type: 'number',
+				description: localize('dashboardpage.colNumber', "The column of the component in the grid")
+			},
+			colspan: {
+				type: 'string',
+				description: localize('dashboardpage.colspan', "The colspan of the component in the grid. Default value is 1. Use '*' to set to number of columns in the grid.")
+			},
+			widget: {
+				anyOf: [
+					{
+						type: 'object',
+						properties: schemas,
+						minItems: 1,
+						maxItems: 1
+					}
+				]
+			},
+			webview: {
+				anyOf: [
+					{
+						type: 'object',
+						properties: {
+							id: {
+								type: 'string',
+							}
+						}
+					}
+				]
 			},
 			when: {
 				description: localize('sqlops.extension.contributes.widget.when', 'Condition which must be true to show this item'),
@@ -94,7 +130,7 @@ export function generateDashboardTabSchema(type?: 'database' | 'server'): IJSONS
 		properties: {
 			tabId: {
 				type: 'string',
-				description: localize('sqlops.extension.contributes.dashboard.tab.id', "Unique identifier for this tab. Will be passed to the extension for any requests."),
+				description: localize('sqlops.extension.contributes.dashboardPage.tab.id', "Unique identifier for this tab. Will be passed to the extension for any requests."),
 				enum: [],
 				enumDescriptions: [],
 				errorMessage: localize('dashboardTabError', "Extension tab is unknown or not installed.")

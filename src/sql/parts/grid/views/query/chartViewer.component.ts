@@ -234,7 +234,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		filepathPlaceHolder = paths.join(filepathPlaceHolder, 'chart.png');
 
 		let filePath: string = this._bootstrapService.windowService.showSaveDialog({
-			title: nls.localize('saveAsFileTitle', 'Choose Results File'),
+			title: nls.localize('chartViewer.saveAsFileTitle', 'Choose Results File'),
 			defaultPath: paths.normalize(filepathPlaceHolder, true)
 		});
 		return filePath;

@@ -26,7 +26,7 @@ import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/edi
 export class RefreshAction extends Action {
 
 	public static ID = 'objectExplorer.refresh';
-	public static LABEL = localize('refresh', 'Refresh');
+	public static LABEL = localize('connectionTree.refresh', 'Refresh');
 	private _tree: ITree;
 
 	constructor(
@@ -185,7 +185,7 @@ export class DisconnectConnectionAction extends Action {
  */
 export class AddServerAction extends Action {
 	public static ID = 'registeredServers.addConnection';
-	public static LABEL = localize('addConnection', 'New Connection');
+	public static LABEL = localize('connectionTree.addConnection', 'New Connection');
 
 	constructor(
 		id: string,
@@ -223,7 +223,7 @@ export class AddServerAction extends Action {
  */
 export class AddServerGroupAction extends Action {
 	public static ID = 'registeredServers.addServerGroup';
-	public static LABEL = localize('addServerGroup', 'New Server Group');
+	public static LABEL = localize('connectionTree.addServerGroup', 'New Server Group');
 
 	constructor(
 		id: string,
@@ -245,7 +245,7 @@ export class AddServerGroupAction extends Action {
  */
 export class EditServerGroupAction extends Action {
 	public static ID = 'registeredServers.editServerGroup';
-	public static LABEL = localize('editServerGroup', 'Edit Server Group');
+	public static LABEL = localize('connectionTree.editServerGroup', 'Edit Server Group');
 
 	constructor(
 		id: string,
@@ -361,7 +361,7 @@ export class RecentConnectionsFilterAction extends Action {
 
 export class NewQueryAction extends Action {
 	public static ID = 'registeredServers.newQuery';
-	public static LABEL = localize('newQuery', 'New Query');
+	public static LABEL = localize('registeredServers.newQuery', 'New Query');
 	private _connectionProfile: ConnectionProfile;
 	get connectionProfile(): ConnectionProfile {
 		return this._connectionProfile;

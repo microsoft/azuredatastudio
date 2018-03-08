@@ -68,7 +68,7 @@ export class RefreshTableAction extends EditDataAction {
 		@IMessageService private _messageService: IMessageService
 	) {
 		super(editor, RefreshTableAction.ID, RefreshTableAction.EnabledClass, _connectionManagementService);
-		this.label = nls.localize('refresh', 'Refresh');
+		this.label = nls.localize('editData.refresh', 'Refresh');
 	}
 
 	public run(): TPromise<void> {
@@ -98,7 +98,7 @@ export class StopRefreshTableAction extends EditDataAction {
 	) {
 		super(editor, StopRefreshTableAction.ID, StopRefreshTableAction.EnabledClass, _connectionManagementService);
 		this.enabled = false;
-		this.label = nls.localize('stop', 'Stop');
+		this.label = nls.localize('editData.stop', 'Stop');
 	}
 
 	public run(): TPromise<void> {

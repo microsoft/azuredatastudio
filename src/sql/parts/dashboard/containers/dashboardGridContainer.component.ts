@@ -5,7 +5,7 @@
 
 import 'vs/css!./dashboardGridContainer';
 
-import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter, OnChanges } from '@angular/core';
+import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
@@ -19,13 +19,14 @@ import { ConfigurationTarget } from 'vs/platform/configuration/common/configurat
 import * as objects from 'vs/base/common/objects';
 import Event, { Emitter } from 'vs/base/common/event';
 import { concat } from 'rxjs/operator/concat';
+import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
 
 export interface GridCellConfig {
 	id?: string;
 	row?: number;
 	col?: number;
-	colspan?: number;
-	rowspan?: number;
+	colspan?: string;
+	rowspan?: string;
 }
 
 export interface GridWidgetConfig extends GridCellConfig, WidgetConfig {
@@ -42,11 +43,13 @@ export interface GridWebviewConfig extends GridCellConfig {
 	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/containers/dashboardGridContainer.component.html')),
 	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardGridContainer) }]
 })
-export class DashboardGridContainer extends DashboardTab implements OnDestroy, OnChanges {
+export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	@Input() private tab: TabConfig;
 	private _contents: GridCellConfig[];
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
+	private cellWidth: number = 270;
+	private cellHeight: number = 270;
 
 	protected SKELETON_WIDTH = 5;
 
@@ -99,25 +102,53 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy, O
 		return undefined;
 	}
 
-	protected getColspan(row: number, col: number): number {
+	protected getColspan(row: number, col: number): string {
 		let content = this.getContent(row, col);
-		let colspan: number = 1;
+		let colspan: string = '1';
 		if (content && content.colspan) {
-			colspan = content.colspan;
+			colspan = this.convertToNumber(content.colspan, this.cols.length).toString();
 		}
 		return colspan;
 	}
 
-	protected getRowspan(row: number, col: number): number {
+	protected getRowspan(row: number, col: number): string {
 		let content = this.getContent(row, col);
 		if (content && (content.rowspan)) {
-			return content.rowspan;
+			return this.convertToNumber(content.rowspan, this.rows.length).toString();
 		} else {
+			return '1';
+		}
+	}
+
+	protected getWidgetWidth(row: number, col: number): string {
+		let content = this.getContent(row, col);
+		let colspan = this.getColspan(row, col);
+		let columnCount = this.convertToNumber(colspan, this.cols.length);
+
+		return columnCount * this.cellWidth + 'px';
+	}
+
+	protected getWidgetHeight(row: number, col: number): string {
+		let content = this.getContent(row, col);
+		let rowspan = this.getRowspan(row, col);
+		let rowCount = this.convertToNumber(rowspan, this.rows.length);
+
+		return rowCount * this.cellHeight + 'px';
+	}
+
+	private convertToNumber(value: string, maxNumber: number): number {
+		if (value === '*') {
+			return maxNumber;
+		}
+		try {
+			return +value;
+		} catch {
 			return 1;
 		}
 	}
 
 	@ViewChildren(DashboardWidgetWrapper) private _widgets: QueryList<DashboardWidgetWrapper>;
+	@ViewChildren(WebviewContent) private _webViews: QueryList<WebviewContent>;
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,
@@ -129,7 +160,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy, O
 	protected init() {
 	}
 
-	ngOnChanges() {
+	ngOnInit() {
 		if (this.tab.container) {
 			this._contents = Object.values(this.tab.container)[0];
 			this._contents.forEach(widget => {
@@ -140,16 +171,14 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy, O
 					widget.col = 0;
 				}
 				if (!widget.colspan) {
-					widget.colspan = 1;
+					widget.colspan = '1';
 				}
 				if (!widget.rowspan) {
-					widget.rowspan = 1;
+					widget.rowspan = '1';
 				}
 			});
 			this.rows = this.createIndexes(this._contents.map(w => w.row));
 			this.cols = this.createIndexes(this._contents.map(w => w.col));
-
-			this._cd.detectChanges();
 		}
 	}
 
@@ -173,6 +202,11 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy, O
 	public layout() {
 		if (this._widgets) {
 			this._widgets.forEach(item => {
+				item.layout();
+			});
+		}
+		if (this._webViews) {
+			this._webViews.forEach(item => {
 				item.layout();
 			});
 		}

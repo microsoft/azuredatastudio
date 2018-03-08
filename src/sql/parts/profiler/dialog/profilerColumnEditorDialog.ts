@@ -316,14 +316,14 @@ export class ProfilerColumnEditorDialog extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super(nls.localize('profiler', 'Profiler'), TelemetryKeys.Profiler, _partService, telemetryService, contextKeyService);
+		super(nls.localize('profilerColumnDialog.profiler', 'Profiler'), TelemetryKeys.Profiler, _partService, telemetryService, contextKeyService);
 	}
 
 	public render(): void {
 		super.render();
 		this._register(attachModalDialogStyler(this, this._themeService));
-		this.addFooterButton(nls.localize('ok', "OK"), () => this.onAccept(undefined));
-		this.addFooterButton(nls.localize('cancel', "Cancel"), () => this.onClose(undefined));
+		this.addFooterButton(nls.localize('profilerColumnDialog.ok', "OK"), () => this.onAccept(undefined));
+		this.addFooterButton(nls.localize('profilerColumnDialog.cancel', "Cancel"), () => this.onClose(undefined));
 	}
 
 	protected renderBody(container: HTMLElement): void {

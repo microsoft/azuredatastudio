@@ -1054,8 +1054,8 @@ export class ConnectionManagementService implements IConnectionManagementService
 		return new Promise<boolean>((resolve, reject) => {
 			// Setup our cancellation choices
 			let choices: { key, value }[] = [
-				{ key: nls.localize('yes', 'Yes'), value: true },
-				{ key: nls.localize('no', 'No'), value: false }
+				{ key: nls.localize('connectionService.yes', 'Yes'), value: true },
+				{ key: nls.localize('connectionService.no', 'No'), value: false }
 			];
 
 			self._quickOpenService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', 'Are you sure you want to cancel this connection?'), ignoreFocusLost: true }).then((choice) => {

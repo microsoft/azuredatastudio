@@ -172,20 +172,18 @@ export function filterConfigs<T extends { when?: string }>(config: T[], dashboar
  * Get registered container if it is specified as the key
  * @param container dashboard container
  */
-export function getDashboardContainer(container: object): object {
-	if (Object.keys(container).length !== 1) {
-		error(nls.localize('moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space'));
-	}
-
+export function getDashboardContainer(container: object): { result: boolean, message: string, container: object } {
 	let key = Object.keys(container)[0];
 	let containerTypeFound = containerTypes.find(c => (c === key));
 	if (!containerTypeFound) {
 		let dashboardContainer = dashboardcontainerRegistry.getRegisteredContainer(key);
 		if (!dashboardContainer) {
-			error(nls.localize('unknownDashboardContainerError', 'The specified dashboard container is unknown.'));
+			let errorMessage = nls.localize('unknownDashboardContainerError', '{0} is an unknown container.', key);
+			error(errorMessage);
+			return { result: false, message: errorMessage, container: null };
 		} else {
 			container = dashboardContainer.container;
 		}
 	}
-	return container;
+	return { result: true, message: null, container: container };
 }
