@@ -647,7 +647,7 @@ function installService() {
 		appendLine: (m) => console.log(m),
 		append: (m) => console.log(m)
 	};
-	platformInfo.getCurrent().then(p => {
+	return platformInfo.getCurrent().then(p => {
 		let runtime = p.runtimeId;
 		// fix path since it won't be correct
 		config.installDirectory = path.join(__dirname, '../extensions/mssql/src', config.installDirectory);
@@ -656,7 +656,7 @@ function installService() {
 		console.log('Cleaning up the install folder: ' + serviceInstallFolder);
 		return del(serviceInstallFolder + '/*').then(() => {
 			console.log('Installing the service. Install folder: ' + serviceInstallFolder);
-			installer.installService(runtime);
+			return installer.installService(runtime);
 		}, delError => {
 			console.log('failed to delete the install folder error: ' + delError);
 		});
