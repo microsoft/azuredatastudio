@@ -29,10 +29,10 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { $ } from 'vs/base/browser/dom';
 import { OEAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
 
-// export declare type TreeResource = IConnectionProfile | ObjectMetadataWrapper;
+// export declare type JobTreeResource = IConnectionProfile | ObjectMetadataWrapper;
 
 // // Empty class just for tree input
-// export class ExplorerModel {
+// export class JobHistoryModel {
 // 	public static readonly id = generateUuid();
 // }
 
@@ -40,16 +40,15 @@ import { OEAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActio
 // 	constructor(
 // 		// URI for the dashboard for managing, should look into some other way of doing this
 // 		private _uri,
-// 		private _connectionService: SingleConnectionManagementService,
+// 		//private _agentService: AgentService,
 // 		private _router: Router,
 // 		private _contextMenuService: IContextMenuService,
-// 		private _capabilitiesService: ICapabilitiesService,
 // 		private _instantiationService: IInstantiationService
 // 	) {
 // 		super();
 // 	}
 
-// 	protected onLeftClick(tree: tree.ITree, element: TreeResource, event: IMouseEvent, origin: string = 'mouse'): boolean {
+// 	protected onLeftClick(tree: tree.ITree, element: JobTreeResource, event: IMouseEvent, origin: string = 'mouse'): boolean {
 // 		const payload = { origin: origin };
 // 		const isDoubleClick = (origin === 'mouse' && event.detail === 2);
 // 		// Cancel Event
@@ -74,7 +73,7 @@ import { OEAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActio
 // 		return true;
 // 	}
 
-// 	public onContextMenu(tree: tree.ITree, element: TreeResource, event: tree.ContextMenuEvent): boolean {
+// 	public onContextMenu(tree: tree.ITree, element: JobTreeResource, event: tree.ContextMenuEvent): boolean {
 // 		let context: ManageActionContext | BaseActionContext;
 
 // 		if (element instanceof ObjectMetadataWrapper) {
@@ -106,43 +105,43 @@ import { OEAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActio
 // }
 
 // export class JobHistoryDataSource implements tree.IDataSource {
-// 	private _data: TreeResource[];
+// 	private _data: JobTreeResource[];
 
-// 	public getId(tree: tree.ITree, element: TreeResource | ExplorerModel): string {
+// 	public getId(tree: tree.ITree, element: JobTreeResource | JobHistoryModel): string {
 // 		if (element instanceof ObjectMetadataWrapper) {
 // 			return element.urn || element.schema + element.name;
-// 		} else if (element instanceof ExplorerModel) {
-// 			return ExplorerModel.id;
+// 		} else if (element instanceof JobHistoryModel) {
+// 			return JobHistoryModel.id;
 // 		} else {
 // 			return (element as IConnectionProfile).getOptionsKey();
 // 		}
 // 	}
 
-// 	public hasChildren(tree: tree.ITree, element: TreeResource | ExplorerModel): boolean {
-// 		if (element instanceof ExplorerModel) {
+// 	public hasChildren(tree: tree.ITree, element: JobTreeResource | JobHistoryModel): boolean {
+// 		if (element instanceof JobHistoryModel) {
 // 			return true;
 // 		} else {
 // 			return false;
 // 		}
 // 	}
 
-// 	public getChildren(tree: tree.ITree, element: TreeResource | ExplorerModel): Promise {
-// 		if (element instanceof ExplorerModel) {
+// 	public getChildren(tree: tree.ITree, element: JobTreeResource | JobHistoryModel): Promise {
+// 		if (element instanceof JobHistoryModel) {
 // 			return TPromise.as(this._data);
 // 		} else {
 // 			return TPromise.as(undefined);
 // 		}
 // 	}
 
-// 	public getParent(tree: tree.ITree, element: TreeResource | ExplorerModel): Promise {
-// 		if (element instanceof ExplorerModel) {
+// 	public getParent(tree: tree.ITree, element: JobTreeResource | JobHistoryModel): Promise {
+// 		if (element instanceof JobHistoryModel) {
 // 			return TPromise.as(undefined);
 // 		} else {
-// 			return TPromise.as(new ExplorerModel());
+// 			return TPromise.as(new JobHistoryModel());
 // 		}
 // 	}
 
-// 	public set data(data: TreeResource[]) {
+// 	public set data(data: JobTreeResource[]) {
 // 		this._data = data;
 // 	}
 // }
@@ -158,11 +157,11 @@ import { OEAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActio
 // }
 
 // export class JobHistoryRenderer implements tree.IRenderer {
-// 	public getHeight(tree: tree.ITree, element: TreeResource): number {
+// 	public getHeight(tree: tree.ITree, element: JobTreeResource): number {
 // 		return 22;
 // 	}
 
-// 	public getTemplateId(tree: tree.ITree, element: TreeResource): string {
+// 	public getTemplateId(tree: tree.ITree, element: JobTreeResource): string {
 // 		if (element instanceof ObjectMetadataWrapper) {
 // 			return TEMPLATEIDS.object;
 // 		} else {
@@ -188,7 +187,7 @@ import { OEAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActio
 // 		return { icon, label };
 // 	}
 
-// 	public renderElement(tree: tree.ITree, element: TreeResource, templateId: string, templateData: IListTemplate): void {
+// 	public renderElement(tree: tree.ITree, element: JobTreeResource, templateId: string, templateData: IListTemplate): void {
 // 		if (element instanceof ObjectMetadataWrapper) {
 // 			switch (element.metadataType) {
 // 				case MetadataType.Function:
@@ -219,7 +218,7 @@ import { OEAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActio
 // export class JobHistoryFilter implements tree.IFilter {
 // 	private _filterString: string;
 
-// 	public isVisible(tree: tree.ITree, element: TreeResource): boolean {
+// 	public isVisible(tree: tree.ITree, element: JobTreeResource): boolean {
 // 		if (element instanceof ObjectMetadataWrapper) {
 // 			return this._doIsVisibleObjectMetadata(element);
 // 		} else {

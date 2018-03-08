@@ -5,7 +5,7 @@
 
 import 'vs/css!./jobHistory';
 
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -25,7 +25,7 @@ export const DASHBOARD_SELECTOR: string = 'jobHistory-component';
 	selector: DASHBOARD_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./jobHistory.component.html'))
 })
-export class JobHistoryComponent implements OnInit {
+export class JobHistoryComponent implements OnInit, OnDestroy {
 
 	private _agentService: IAgentService;
 	private _tree: Tree;
@@ -45,15 +45,18 @@ export class JobHistoryComponent implements OnInit {
 		@IThemeService private _themeService: IThemeService,
 	) {
 		this._agentService = bootstrapService.agentService;
-	}
-
-	ngOnInit() {
 		// this._tree = new Tree(this._tableContainer.nativeElement, {
 		// 	controller: this._treeController,
 		// 	dataSource: this._treeDataSource,
 		// 	filter: this._treeFilter,
 		// 	renderer: this._treeRenderer
 		// });
+	}
+
+	ngOnInit() {
+	}
+
+	ngOnDestroy() {
 	}
 
 	private toggleCollapse(): void {

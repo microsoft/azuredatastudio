@@ -143,3 +143,7 @@ label::after {
 #col2 {
 	padding-right: 300px;
 }
+
+.prev-run-list {
+	width: 30%;
+}
