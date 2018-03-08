@@ -137,6 +137,87 @@ export default class MainController implements vscode.Disposable {
 
 				Utils.logDebug(SharedConstants.extensionActivated, MainController._extensionConstants.extensionConfigSectionName);
 				self._initialized = true;
+				// setInterval(() => {
+				// 	sqlops.objectexplorer.getActiveConnections().then(connectionNodes => {
+				// 		connectionNodes.forEach(connectionNode => {
+				// 			// data.objectexplorer.getNode(connectionNode.connectionId, 'mairvine-pc/Server Objects/Endpoints/Dedicated Admin Connection').then(node => {
+				// 			// 	return node.select();
+				// 			// });
+				// 			sqlops.objectexplorer.getNode(connectionNode.connectionId, 'mairvine-pc/Server Objects/Endpoints').then(node => {
+				// 			// data.objectexplorer.getNode(connectionNode.connectionId, 'mairvine-pc/Server Objects/Endpoints/Dedicated Admin Connection').then(node => {
+				// 				if (!node) {
+				// 					console.log('could not find node');
+				// 				} else {
+				// 					console.log('found endpoint node');
+				// 					node.getParent().then(parent => {
+				// 						if (parent) {
+				// 							console.log('found parent for endpoint node with path ' + parent.nodePath);
+
+				// 						} else {
+				// 							console.log('no parent for endpoint node');
+				// 						}
+				// 					});
+				// 					return node.isExpanded().then(expanded => {
+				// 						if (expanded) {
+				// 							return node.collapse();
+				// 						} else {
+				// 							return node.expand().then(() => console.log('successful expand'), err => console.log('expand failed: ' + err));
+				// 						}
+				// 					});
+				// 				}
+				// 			}, err => console.log('error getting node: ' + err)).then(() => {
+				// 				// connectionNode.isExpanded().then(result => {
+				// 				// 	if (result) {
+				// 				// 		connectionNode.collapse();
+				// 				// 		return;
+				// 				// 	}
+				// 				// 	this.expandChildren([connectionNode]);
+				// 				// 	connectionNode.select();
+				// 				// });
+				// 			});
+				// 			connectionNode.getParent().then(connectionParent => {
+				// 				if (!connectionParent) {
+				// 					console.log('no parent for connection');
+				// 				} else {
+				// 					console.log('connection has a parent!');
+				// 				}
+				// 			});
+				// 		});
+				// 	});
+				// }, 10000);
+
+				vscode.commands.registerCommand('mssql.objectexplorer.interact', async () => {
+					let type = await vscode.window.showInputBox({ prompt: 'type' });
+					let name = await vscode.window.showInputBox({ prompt: 'name' });
+					let schema = await vscode.window.showInputBox({ prompt: 'schema' });
+					let database = await vscode.window.showInputBox({ prompt: 'database' });
+					let parentObjectNames = [];
+					while (true) {
+						let parentObjectName = await vscode.window.showInputBox({ prompt: 'parent name' });
+						if (!parentObjectName || parentObjectName === '') {
+							break;
+						}
+						parentObjectNames.push(parentObjectName);
+					}
+					let foundNodes = await sqlops.connection.findObjectExplorerNodes(type, name, schema, database, parentObjectNames);
+					if (foundNodes.length === 0) {
+						console.log('No matching nodes');
+					} else {
+						foundNodes.forEach((node: sqlops.NodeInfo) => {
+							console.log('found matching node at node path: ' + node.nodePath);
+						});
+					}
+				});
+
+				// vscode.commands.registerCommand('mssql.objectexplorer.interact', () => {
+				// 	sqlops.objectexplorer.getActiveConnectionNodes().then(activeConnections => {
+				// 		vscode.window.showQuickPick(activeConnections.map(connection => connection.label)).then(selection => {
+				// 			let selectedNode = activeConnections.find(connection => connection.label === selection);
+				// 			this.interactWithOENode(selectedNode);
+				// 		});
+				// 	});
+				// });
+
 				resolve(true);
 			}).catch(err => {
 				Telemetry.sendTelemetryEventForException(err, 'initialize', MainController._extensionConstants.extensionConfigSectionName);
@@ -144,4 +225,68 @@ export default class MainController implements vscode.Disposable {
 			});
 		});
 	}
+
+	// private async interactWithOENode(selectedNode: sqlops.objectexplorer.ObjectExplorerNode): Promise<void> {
+	// 	let choices = ['Expand', 'Collapse', 'Select', 'Select (multi)', 'Deselect', 'Deselect (multi)'];
+	// 	if (selectedNode.isLeaf) {
+	// 		choices[0] += ' (is leaf)';
+	// 		choices[1] += ' (is leaf)';
+	// 	} else {
+	// 		let expanded = await selectedNode.isExpanded();
+	// 		if (expanded) {
+	// 			choices[0] += ' (is expanded)';
+	// 		} else {
+	// 			choices[1] += ' (is collapsed)';
+	// 		}
+	// 	}
+	// 	let parent = await selectedNode.getParent();
+	// 	if (parent) {
+	// 		choices.push('Get Parent');
+	// 	}
+	// 	let children = await selectedNode.getChildren();
+	// 	children.forEach(child => choices.push(child.label));
+	// 	let choice = await vscode.window.showQuickPick(choices);
+	// 	let nextNode: sqlops.objectexplorer.ObjectExplorerNode = undefined;
+	// 	if (choice === choices[0]) {
+	// 		selectedNode.setExpandedState(vscode.TreeItemCollapsibleState.Expanded);
+	// 	} else if (choice === choices[1]) {
+	// 		selectedNode.setExpandedState(vscode.TreeItemCollapsibleState.Collapsed);
+	// 	} else if (choice === choices[2]) {
+	// 		selectedNode.setSelected(true);
+	// 	} else if (choice === choices[3]) {
+	// 		selectedNode.setSelected(true, false);
+	// 	} else if (choice === choices[4]) {
+	// 		selectedNode.setSelected(false);
+	// 	} else if (choice === choices[5]) {
+	// 		selectedNode.setSelected(false, true);
+	// 	} else if (choice === 'Get Parent') {
+	// 		nextNode = parent;
+	// 	} else {
+	// 		let childNode = children.find(child => child.label === choice);
+	// 		nextNode = childNode;
+	// 	}
+	// 	if (nextNode) {
+	// 		let updatedNode = await sqlops.objectexplorer.getNode(nextNode.connectionId, nextNode.nodePath);
+	// 		this.interactWithOENode(updatedNode);
+	// 	}
+	// }
+
+	// private expandChildren(children: sqlops.objectexplorer.ObjectExplorerNode[], moreLevel: boolean = true) {
+	// 	children.forEach(child => {
+	// 		child.getChildren().then(oldChildren => {
+	// 			console.log('found ' + oldChildren.length + ' old children for node ' + child.nodePath);
+	// 		}).then(() => {
+	// 			if (moreLevel) {
+	// 				child.setExpandedState(vscode.TreeItemCollapsibleState.Expanded).then(() => {
+	// 					child.getChildren().then(newChildren => {
+	// 						console.log('found ' + newChildren.length + ' children for node ' + child.nodePath);
+	// 						if (moreLevel) {
+	// 							this.expandChildren(newChildren, false);
+	// 						}
+	// 					});
+	// 				});
+	// 			}
+	// 		});
+	// 	});
+	// }
 }

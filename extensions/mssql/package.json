@@ -188,7 +188,13 @@
           ]
         }
       ]
-    }
+    },
+    "commands": [
+      {
+        "command": "mssql.objectexplorer.interact",
+        "title": "Interact with Object Explorer node"
+      }
+    ]
   },
   "dependencies": {
     "extensions-modules": "file:../../extensions-modules"
