@@ -188,9 +188,21 @@ export default class MainController implements vscode.Disposable {
 
 				vscode.commands.registerCommand('mssql.objectexplorer.interact', async () => {
 					let type = await vscode.window.showInputBox({ prompt: 'type' });
+					if (type === '') {
+						type = undefined;
+					}
 					let name = await vscode.window.showInputBox({ prompt: 'name' });
+					if (name === '') {
+						name = undefined;
+					}
 					let schema = await vscode.window.showInputBox({ prompt: 'schema' });
+					if (schema === '') {
+						schema = undefined;
+					}
 					let database = await vscode.window.showInputBox({ prompt: 'database' });
+					if (database === '') {
+						database = undefined;
+					}
 					let parentObjectNames = [];
 					while (true) {
 						let parentObjectName = await vscode.window.showInputBox({ prompt: 'parent name' });

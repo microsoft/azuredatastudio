@@ -99,6 +99,8 @@ export abstract class ExtHostDataProtocolShape {
 
 	$closeObjectExplorerSession(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> { throw ni(); }
 
+	$findNodes(handle: number, findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> { throw ni(); }
+
 	/**
 	 * Tasks
 	 */
