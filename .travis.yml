@@ -5,9 +5,7 @@ os:
   - linux
   - osx
 
-#cache:
-#  directories:
-#    - $HOME/.cache/yarn
+cache: yarn
 
 notifications:
   email: false
