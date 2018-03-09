@@ -56,7 +56,10 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 	public set providerName(name: string) {
 		this._providerName = name;
 		if (!this._serverCapabilities) {
-			this._serverCapabilities = this.capabilitiesService.getCapabilities(this.providerName).connection;
+			let capabilities = this.capabilitiesService.getCapabilities(this.providerName);
+			if (capabilities) {
+				this._serverCapabilities = capabilities.connection;
+			}
 			this._register(this.capabilitiesService.onCapabilitiesRegistered(e => {
 				if (e.connection.providerId === this.providerName) {
 					this._serverCapabilities = e.connection;
