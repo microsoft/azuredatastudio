@@ -50,14 +50,8 @@ export class ConnectionStore {
 		this._groupIdToFullNameMap = {};
 		this._groupFullNameToIdMap = {};
 		if (!this._connectionConfig) {
-			let cachedServerCapabilities = this.getCachedServerCapabilities();
 			this._connectionConfig = new ConnectionConfig(this._configurationEditService,
-				this._workspaceConfigurationService, this._capabilitiesService, cachedServerCapabilities);
-		}
-		if (_capabilitiesService) {
-			_capabilitiesService.onProviderRegisteredEvent(e => {
-				this.saveCachedServerCapabilities();
-			});
+				this._workspaceConfigurationService, this._capabilitiesService);
 		}
 	}
 
@@ -84,8 +78,8 @@ export class ConnectionStore {
 	 * @returns {string} formatted string with server, DB and username
 	 */
 	public formatCredentialId(connectionProfile: IConnectionProfile, itemType?: string): string {
-		let connectionProfileInstance: ConnectionProfile = ConnectionProfile.convertToConnectionProfile(
-			this._connectionConfig.getCapabilities(connectionProfile.providerName), connectionProfile);
+		let connectionProfileInstance: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(
+			this._capabilitiesService, connectionProfile);
 		if (!connectionProfileInstance.getConnectionInfoId()) {
 			throw new Error('Missing Id, which is required');
 		}
@@ -111,7 +105,7 @@ export class ConnectionStore {
 	 */
 	public isPasswordRequired(connection: IConnectionProfile): boolean {
 		if (connection) {
-			let connectionProfile = ConnectionProfile.convertToConnectionProfile(this._connectionConfig.getCapabilities(connection.providerName), connection);
+			let connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, connection);
 			return connectionProfile.isPasswordRequired();
 		} else {
 			return false;
@@ -174,7 +168,6 @@ export class ConnectionStore {
 					// Add necessary default properties before returning
 					// this is needed to support immediate connections
 					ConnInfo.fixupConnectionCredentials(profile);
-					this.saveCachedServerCapabilities();
 					resolve(profile);
 				}, err => {
 					reject(err);
@@ -214,23 +207,6 @@ export class ConnectionStore {
 		});
 	}
 
-	private getCachedServerCapabilities(): sqlops.DataProtocolServerCapabilities[] {
-		if (this._memento) {
-			let metadata: sqlops.DataProtocolServerCapabilities[] = this._memento[Constants.capabilitiesOptions];
-			return metadata;
-		} else {
-			return undefined;
-		}
-
-	}
-
-	private saveCachedServerCapabilities(): void {
-		if (this._memento) {
-			let capabilities = this._capabilitiesService.getCapabilities();
-			this._memento[Constants.capabilitiesOptions] = capabilities;
-		}
-	}
-
 	/**
 	 * Gets the list of recently used connections. These will not include the password - a separate call to
 	 * {addSavedPassword} is needed to fill that before connecting
@@ -250,11 +226,7 @@ export class ConnectionStore {
 	private convertConfigValuesToConnectionProfiles(configValues: IConnectionProfile[]): ConnectionProfile[] {
 		return configValues.map(c => {
 			if (c) {
-				let capabilities = this._connectionConfig.getCapabilities(c.providerName);
-				let connectionProfile = new ConnectionProfile(capabilities, c);
-				this._capabilitiesService.onProviderRegisteredEvent((serverCapabilities) => {
-					connectionProfile.onProviderRegistered(serverCapabilities);
-				});
+				let connectionProfile = new ConnectionProfile(this._capabilitiesService, c);
 				if (connectionProfile.saveProfile) {
 					if (!connectionProfile.groupFullName && connectionProfile.groupId) {
 						connectionProfile.groupFullName = this.getGroupFullName(connectionProfile.groupId);
@@ -289,7 +261,7 @@ export class ConnectionStore {
 
 	public getProfileWithoutPassword(conn: IConnectionProfile): ConnectionProfile {
 		if (conn) {
-			let savedConn: ConnectionProfile = ConnectionProfile.convertToConnectionProfile(this._connectionConfig.getCapabilities(conn.providerName), conn);
+			let savedConn: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, conn);
 			savedConn = savedConn.withoutPassword();
 
 			return savedConn;

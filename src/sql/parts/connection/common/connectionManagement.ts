@@ -216,8 +216,6 @@ export interface IConnectionManagementService {
 
 	hasRegisteredServers(): boolean;
 
-	getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities;
-
 	canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean;
 
 	getTabColorForUri(uri: string): string;
