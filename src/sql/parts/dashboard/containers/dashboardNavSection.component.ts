@@ -12,13 +12,13 @@ import { WidgetConfig, TabConfig, NavSectionConfig } from 'sql/parts/dashboard/c
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
-import { error } from 'sql/base/common/log';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import Event, { Emitter } from 'vs/base/common/event';
+import * as nls from 'vs/nls';
 
 @Component({
 	selector: 'dashboard-nav-section',
@@ -86,11 +86,14 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			let selectedTabs = dashboardTabs.map(v => {
 
-				let container = dashboardHelper.getDashboardContainer(v.container);
-				let key = Object.keys(container)[0];
+				let containerResult = dashboardHelper.getDashboardContainer(v.container);
+				if (!containerResult.result) {
+					return { id: v.id, title: v.title, container: { 'error-container': undefined } };
+				}
 
+				let key = Object.keys(containerResult.container)[0];
 				if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
-					let configs = <WidgetConfig[]>Object.values(container)[0];
+					let configs = <WidgetConfig[]>Object.values(containerResult.container)[0];
 					this._configModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs, this.dashboardService, this.tab.context]);
 					});
@@ -104,7 +107,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 						return { id: v.id, title: v.title, container: { 'grid-container': configs } };
 					}
 				}
-				return { id: v.id, title: v.title, container: container };
+				return { id: v.id, title: v.title, container: containerResult.container };
 			}).map(v => {
 				let config = v as TabConfig;
 				config.context = this.tab.context;
@@ -142,7 +145,10 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	}
 
 	public layout() {
-
+		let activeTabId = this._panel.getActiveTab;
+		let localtab = this._tabs.find(i => i.id === activeTabId);
+		this._cd.detectChanges();
+		localtab.layout();
 	}
 
 	public refresh(): void {
@@ -163,6 +169,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 
 	public handleTabChange(tab: TabComponent): void {
 		let localtab = this._tabs.find(i => i.id === tab.identifier);
+		this._cd.detectChanges();
 		localtab.layout();
 	}
 }

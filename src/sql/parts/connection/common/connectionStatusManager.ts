@@ -22,25 +22,6 @@ export class ConnectionStatusManager {
 		this._providerCapabilitiesMap = {};
 	}
 
-	public getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities {
-		let result: sqlops.DataProtocolServerCapabilities;
-
-		if (providerName in this._providerCapabilitiesMap) {
-			result = this._providerCapabilitiesMap[providerName];
-		} else {
-			let capabilities = this._capabilitiesService.getCapabilities();
-			if (capabilities) {
-				let providerCapabilities = capabilities.find(c => c.providerName === providerName);
-				if (providerCapabilities) {
-					this._providerCapabilitiesMap[providerName] = providerCapabilities;
-					result = providerCapabilities;
-				}
-			}
-		}
-
-		return result;
-	}
-
 	public findConnection(id: string): ConnectionManagementInfo {
 		if (id in this._connections) {
 			return this._connections[id];
@@ -80,15 +61,14 @@ export class ConnectionStatusManager {
 
 	public addConnection(connection: IConnectionProfile, id: string): ConnectionManagementInfo {
 		// Always create a copy and save that in the list
-		let connectionProfile = new ConnectionProfile(this.getCapabilities(connection.providerName), connection);
-		const self = this;
+		let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
 		let connectionInfo: ConnectionManagementInfo = new ConnectionManagementInfo();
 		connectionInfo.providerId = connection.providerName;
 		connectionInfo.extensionTimer = StopWatch.create();
 		connectionInfo.intelliSenseTimer = StopWatch.create();
 		connectionInfo.connectionProfile = connectionProfile;
 		connectionInfo.connecting = true;
-		self._connections[id] = connectionInfo;
+		this._connections[id] = connectionInfo;
 		connectionInfo.serviceTimer = StopWatch.create();
 		connectionInfo.ownerUri = id;
 

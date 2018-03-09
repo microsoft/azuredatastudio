@@ -48,7 +48,7 @@ export class WebviewContent implements OnInit, IDashboardWebview {
 	}
 
 	public layout(): void {
-		this._createWebview();
+		this._webview.layout();
 	}
 
 	public get id(): string {

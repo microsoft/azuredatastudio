@@ -217,6 +217,13 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 		}
 	}
 
+	/**
+	 * Get the id of the active tab
+	 */
+	public get getActiveTab(): string {
+		return this._activeTab.identifier;
+	}
+
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {
 		let mruIndex = this._mru.findIndex(i => i === tab);
 

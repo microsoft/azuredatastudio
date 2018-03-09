@@ -51,9 +51,9 @@ export interface NavSectionConfig {
 	container: object;
 }
 
-export interface PinConfig {
+export interface TabSettingConfig {
 	tabId: string;
-	isPinned?: boolean;
+	isPinned: boolean;
 }
 
 export abstract class DashboardWidget extends Disposable implements OnDestroy {

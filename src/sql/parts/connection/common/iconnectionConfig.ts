@@ -23,8 +23,6 @@ export interface IConnectionConfig {
 	getAllGroups(): IConnectionProfileGroup[];
 	changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void>;
 	changeGroupIdForConnection(source: ConnectionProfile, targetGroupId: string): Promise<void>;
-	setCachedMetadata(cachedMetaData: sqlops.DataProtocolServerCapabilities[]): void;
-	getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities;
 	editGroup(group: ConnectionProfileGroup): Promise<void>;
 	deleteConnection(profile: ConnectionProfile): Promise<void>;
 	deleteGroup(group: ConnectionProfileGroup): Promise<void>;

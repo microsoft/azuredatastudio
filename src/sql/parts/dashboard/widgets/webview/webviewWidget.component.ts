@@ -80,7 +80,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	}
 
 	public layout(): void {
-		this._createWebview();
+		this._webview.layout();
 	}
 
 	public sendMessage(message: string): void {

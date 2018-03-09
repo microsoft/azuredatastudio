@@ -43,19 +43,12 @@ export class AdminService implements IAdminService {
 
 	private _providers: { [handle: string]: sqlops.AdminServicesProvider; } = Object.create(null);
 
-	private _providerOptions: { [handle: string]: sqlops.AdminServicesOptions; } = Object.create(null);
-
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
-		if (_capabilitiesService && _capabilitiesService.onProviderRegisteredEvent) {
-			_capabilitiesService.onProviderRegisteredEvent((capabilities => {
-				this._providerOptions[capabilities.providerName] = capabilities.adminServicesProvider;
-			}));
-		}
 	}
 
 	private _runAction<T>(uri: string, action: (handler: sqlops.AdminServicesProvider) => Thenable<T>): Thenable<T> {
