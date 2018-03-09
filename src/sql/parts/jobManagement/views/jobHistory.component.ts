@@ -16,6 +16,7 @@ import { TreeCreationUtils } from 'sql/parts/registeredServer/viewlet/treeCreati
 import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 // import { JobHistoryController, JobHistoryDataSource,
 // 	JobHistoryRenderer, JobHistoryFilter } from 'sql/parts/agent/views/jobHistoryTree';
 
@@ -29,6 +30,8 @@ export class JobHistoryComponent implements OnInit, OnDestroy {
 
 	private _jobManagementService: IJobManagementService;
 	private _tree: Tree;
+	private job;
+	private _jobID: string;
 
 	// private _treeController: JobHistoryController;
 	// private _treeDataSource: JobHistoryDataSource;
@@ -41,7 +44,7 @@ export class JobHistoryComponent implements OnInit, OnDestroy {
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@IInstantiationService private _instantiationService: IInstantiationService,
+		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@IThemeService private _themeService: IThemeService,
 	) {
 		this._jobManagementService = bootstrapService.jobManagementService;
@@ -54,7 +57,10 @@ export class JobHistoryComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit() {
+		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		this.job = this._jobManagementService.getJobHistory(ownerUri, this._jobID);
 	}
+
 
 	ngOnDestroy() {
 	}
