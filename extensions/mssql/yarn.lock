@@ -378,14 +378,9 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-<<<<<<< HEAD
-"dataprotocol-client@file:../../../sqlops-dataprotocolclient":
-  version "0.1.0"
-=======
 "dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#0.1.3":
   version "0.1.3"
   resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/5758b2a5804ea488d14326662f51d19cc970ccd0"
->>>>>>> feature/agent1
   dependencies:
     sqlops "git://github.com/anthonydresser/vscode-extension-vscode"
     vscode "1.1.5"
@@ -610,11 +605,7 @@ extend@^3.0.0, extend@~3.0.0, extend@~3.0.1:
 "extensions-modules@file:../../extensions-modules":
   version "0.1.0"
   dependencies:
-<<<<<<< HEAD
-    dataprotocol-client "file:../../../../../AppData/Local/Yarn/cache/sqlops-dataprotocolclient"
-=======
     dataprotocol-client "github:Microsoft/sqlops-dataprotocolclient#0.1.3"
->>>>>>> feature/agent1
     decompress "^4.2.0"
     fs-extra-promise "^1.0.1"
     http-proxy-agent "^2.0.0"
