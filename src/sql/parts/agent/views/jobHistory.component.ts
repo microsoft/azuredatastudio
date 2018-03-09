@@ -19,7 +19,7 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 // import { JobHistoryController, JobHistoryDataSource,
 // 	JobHistoryRenderer, JobHistoryFilter } from 'sql/parts/agent/views/jobHistoryTree';
 
-export const DASHBOARD_SELECTOR: string = 'jobHistory-component';
+export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
 @Component({
 	selector: DASHBOARD_SELECTOR,

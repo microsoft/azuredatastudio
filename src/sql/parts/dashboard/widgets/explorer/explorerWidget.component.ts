@@ -59,7 +59,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 
 	ngOnInit() {
 		let inputOptions: IInputOptions = {
-			placeholder: this._config.context === 'database' ? nls.localize('searchObjects', 'Search by name of type (a:, t:, v:, f:, or sp:)') : nls.localize('searchDatabases', 'Search databases')
+			placeholder: this._config.context === 'database' ? nls.localize('seachObjects', 'Search by name of type (a:, t:, v:, f:, or sp:)') : nls.localize('searchDatabases', 'Search databases')
 		};
 		this._input = new InputBox(this._inputContainer.nativeElement, this._bootstrap.contextViewService, inputOptions);
 		this._register(this._input.onDidChange(e => {

@@ -38,9 +38,9 @@ export class AgentViewComponent implements OnInit, OnDestroy {
 	private readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
 	private readonly alertsComponentTitle: string = nls.localize('jobview.Alerts', "Alerts");
 	private readonly schedulesComponentTitle: string = nls.localize('jobview.Schedules', "Schedules");
-	private readonly operatorComponentTitle: string = nls.localize('jobview.operator', "Operator");
+	private readonly operatorsComponentTitle: string = nls.localize('jobview.Operator', "Operators");
 
-	private readonly jobHistoryComponentTitle: string = nls.localize('jobview.history', "History");
+	private readonly jobHistoryComponentTitle: string = nls.localize('jobview.History', "History");
 
 	private readonly jobsTabIdentifier = 'jobs';
 	private readonly alertsTabIdentifier = 'alerts';
@@ -66,13 +66,6 @@ export class AgentViewComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit() {
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._agentService.getJobs(ownerUri).then((result) => {
-			if (result) {
-				this.jobs = result.jobs;
-				this._cd.detectChanges();
-			}
-		});
 	}
 
 	ngOnDestroy() {
