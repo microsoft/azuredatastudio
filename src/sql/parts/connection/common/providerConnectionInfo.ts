@@ -13,7 +13,7 @@ import * as interfaces from 'sql/parts/connection/common/interfaces';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/parts/connection/common/constants';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { ConnectionProviderProperties } from '../../../workbench/parts/connection/common/connectionProviderExtension';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 export class ProviderConnectionInfo extends Disposable implements sqlops.ConnectionInfo {
 
