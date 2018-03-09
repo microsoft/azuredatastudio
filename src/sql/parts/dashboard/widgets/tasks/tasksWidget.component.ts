@@ -12,7 +12,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 /* SQL imports */
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { ITaskRegistry, Extensions, TaskAction } from 'sql/platform/tasks/taskRegistry';
+import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { BaseActionContext } from 'sql/workbench/common/actions';
 
@@ -20,7 +20,6 @@ import { BaseActionContext } from 'sql/workbench/common/actions';
 import * as themeColors from 'vs/workbench/common/theme';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { registerThemingParticipant, ICssStyleCollector, ITheme } from 'vs/platform/theme/common/themeService';
-import { Registry } from 'vs/platform/registry/common/platform';
 import { Action } from 'vs/base/common/actions';
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
@@ -29,6 +28,8 @@ import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElemen
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { $, Builder } from 'vs/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
+import { CommandsRegistry, ICommand } from 'vs/platform/commands/common/commands';
+import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
 
 interface IConfig {
 	tasks: Array<Object>;
@@ -40,10 +41,12 @@ interface IConfig {
 })
 export class TasksWidget extends DashboardWidget implements IDashboardWidget, OnInit {
 	private _size: number = 98;
-	private _tasks: Array<TaskAction> = [];
+	private _tasks: Array<ICommandAction> = [];
 	private _profile: IConnectionProfile;
 	private _scrollableElement: ScrollableElement;
 	private $container: Builder;
+
+	private _inited = false;
 
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
@@ -55,33 +58,18 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	) {
 		super();
 		this._profile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
-		let registry = Registry.as<ITaskRegistry>(Extensions.TaskContribution);
 		let tasksConfig = <IConfig>Object.values(this._config.widget)[0];
-		let taskIds: Array<string>;
+		let tasks = TaskRegistry.getTasks();
 
 		if (tasksConfig.tasks) {
-			taskIds = Object.keys(tasksConfig.tasks);
-		} else {
-			taskIds = registry.ids;
+			tasks = Object.keys(tasksConfig.tasks).filter(i => tasks.includes(i));
 		}
 
-		let ctorMap = registry.idToCtorMap;
-		this._tasks = taskIds.map(id => {
-			let ctor = ctorMap[id];
-			if (ctor) {
-				let action = this._bootstrap.instantiationService.createInstance(ctor, ctor.ID, ctor.LABEL, ctor.ICON);
-				if (this._bootstrap.capabilitiesService.isFeatureAvailable(action, this._bootstrap.connectionManagementService.connectionInfo)) {
-					return action;
-				}
-			} else {
-				this._bootstrap.messageService.show(Severity.Warning, nls.localize('missingTask', 'Could not find task {0}; are you missing an extension?', id));
-			}
-
-			return undefined;
-		}).filter(a => !types.isUndefinedOrNull(a));
+		this._tasks = tasks.map(i => MenuRegistry.getCommand(i));
 	}
 
 	ngOnInit() {
+		this._inited = true;
 		this._register(registerThemingParticipant(this.registerThemeing));
 		this._computeContainer();
 
@@ -120,11 +108,15 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		this.$container.style('height', height + 'px').style('width', width + 'px');
 	}
 
-	private _createTile(action: TaskAction): HTMLElement {
-		let label = $('div').safeInnerHtml(action.label);
-		let icon = $('span.icon').addClass(action.icon);
-		let innerTile = $('div').append(icon).append(label);
+	private _createTile(action: ICommandAction): HTMLElement {
+		let label = $('div').safeInnerHtml(types.isString(action.title) ? action.title : action.title.value);
 		let tile = $('div.task-tile').style('height', this._size + 'px').style('width', this._size + 'px');
+		let innerTile = $('div');
+		if (action) {
+			let icon = $('span.icon').addClass(action.iconClass);
+			innerTile.append(icon);
+		}
+		innerTile.append(label);
 		tile.append(innerTile);
 		tile.on(DOM.EventType.CLICK, () => this.runTask(action));
 		return tile.getHTMLElement();
@@ -142,19 +134,19 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		}
 	}
 
-	public runTask(task: Action) {
-		let context: BaseActionContext = {
-			profile: this._profile
-		};
-		task.run(context);
+	public runTask(task: ICommandAction) {
+		let serverInfo = this._bootstrap.connectionManagementService.connectionInfo.serverInfo;
+		this._bootstrap.commandService.executeCommand(task.id, this._profile);
 	}
 
 	public layout(): void {
-		this._computeContainer();
-		// Update scrollbar
-		this._scrollableElement.setScrollDimensions({
-			width: DOM.getContentWidth(this._container.nativeElement),
-			scrollWidth: DOM.getContentWidth(this.$container.getHTMLElement()) + 18 // right padding
-		});
+		if (this._inited) {
+			this._computeContainer();
+			// Update scrollbar
+			this._scrollableElement.setScrollDimensions({
+				width: DOM.getContentWidth(this._container.nativeElement),
+				scrollWidth: DOM.getContentWidth(this.$container.getHTMLElement()) + 18 // right padding
+			});
+		}
 	}
 }

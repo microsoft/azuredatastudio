@@ -130,10 +130,13 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	private _storeResult(result: SimpleExecuteResult): SimpleExecuteResult {
 		if (this.insightConfig.cacheId) {
+			let currentTime = new Date();
 			let store: IStorageResult = {
-				date: new Date().toString(),
+				date: currentTime.toString(),
 				results: result
 			};
+			this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", currentTime.toLocaleTimeString(), currentTime.toLocaleDateString());
+			this._cd.detectChanges();
 			this.dashboardService.storageService.store(this._getStorageKey(), JSON.stringify(store));
 		}
 		return result;

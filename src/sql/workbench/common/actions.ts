@@ -15,17 +15,18 @@ import { IAngularEventingService, AngularEventType } from 'sql/services/angularE
 import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import * as Constants from 'sql/common/constants';
-import { ObjectMetadata } from 'sqlops';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
-import { TaskAction } from 'sql/platform/tasks/taskRegistry';
+import { Task } from 'sql/platform/tasks/common/tasks';
+import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+
+import { ObjectMetadata } from 'sqlops';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
-
 import * as nls from 'vs/nls';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 export interface BaseActionContext {
 	object?: ObjectMetadata;
@@ -41,35 +42,29 @@ export interface ManageActionContext extends BaseActionContext {
 }
 
 // --- actions
-export class NewQueryAction extends TaskAction {
+export class NewQueryAction extends Task {
 	public static ID = 'newQuery';
-	public static LABEL = nls.localize('newQuery', 'New Query');
+	public static LABEL = nls.localize('newQueryAction.newQuery', 'New Query');
 	public static ICON = 'new-query';
 
-	constructor(
-		id: string, label: string, icon: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
-		@IWorkbenchEditorService protected _workbenchEditorService: IWorkbenchEditorService
-	) {
-		super(id, label, icon);
+	constructor() {
+		super({ id: NewQueryAction.ID, title: NewQueryAction.LABEL, iconClass: NewQueryAction.ICON });
 	}
 
-	public run(actionContext: BaseActionContext): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
+		return new TPromise<void>((resolve, reject) => {
 			TaskUtilities.newQuery(
-				actionContext.profile,
-				this._connectionManagementService,
-				this._queryEditorService,
-				this._objectExplorerService,
-				this._workbenchEditorService
+				profile,
+				accessor.get<IConnectionManagementService>(IConnectionManagementService),
+				accessor.get<IQueryEditorService>(IQueryEditorService),
+				accessor.get<IObjectExplorerService>(IObjectExplorerService),
+				accessor.get<IWorkbenchEditorService>(IWorkbenchEditorService)
 			).then(
 				result => {
-					resolve(true);
+					resolve(void 0);
 				},
 				error => {
-					resolve(false);
+					resolve(void 0);
 				}
 				);
 		});
@@ -284,58 +279,52 @@ export class ScriptDeleteAction extends Action {
 	}
 }
 
-export class BackupAction extends TaskAction {
-	public static ID = Constants.BackupFeatureName;
-	public static LABEL = nls.localize('backup', 'Backup');
-	public static ICON = Constants.BackupFeatureName;
+export class BackupAction extends Task {
+	public static readonly ID = Constants.BackupFeatureName;
+	public static readonly LABEL = nls.localize('backupAction.backup', 'Backup');
+	public static readonly ICON = Constants.BackupFeatureName;
 
-	constructor(
-		id: string, label: string, icon: string,
-		@IBackupUiService protected _backupUiService: IBackupUiService
-	) {
-		super(id, label, icon);
+	constructor() {
+		super({ id: BackupAction.ID, title: BackupAction.LABEL, iconClass: BackupAction.ICON });
 	}
 
-	run(actionContext: BaseActionContext): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
+		return new TPromise<void>((resolve, reject) => {
 			TaskUtilities.showBackup(
-				actionContext.profile,
-				this._backupUiService,
+				profile,
+				accessor.get<IBackupUiService>(IBackupUiService)
 			).then(
 				result => {
-					resolve(true);
+					resolve(void 0);
 				},
 				error => {
-					resolve(false);
+					resolve(void 0);
 				}
 				);
 		});
 	}
 }
 
-export class RestoreAction extends TaskAction {
-	public static ID = Constants.RestoreFeatureName;
-	public static LABEL = nls.localize('restore', 'Restore');
-	public static ICON = Constants.RestoreFeatureName;
+export class RestoreAction extends Task {
+	public static readonly ID = Constants.RestoreFeatureName;
+	public static readonly LABEL = nls.localize('restoreAction.restore', 'Restore');
+	public static readonly ICON = Constants.RestoreFeatureName;
 
-	constructor(
-		id: string, label: string, icon: string,
-		@IRestoreDialogController protected _restoreService: IRestoreDialogController
-	) {
-		super(id, label, icon);
+	constructor() {
+		super({ id: RestoreAction.ID, title: RestoreAction.LABEL, iconClass: RestoreAction.ICON });
 	}
 
-	run(actionContext: BaseActionContext): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
+		return new TPromise<void>((resolve, reject) => {
 			TaskUtilities.showRestore(
-				actionContext.profile,
-				this._restoreService
+				profile,
+				accessor.get<IRestoreDialogController>(IRestoreDialogController)
 			).then(
 				result => {
-					resolve(true);
+					resolve(void 0);
 				},
 				error => {
-					resolve(false);
+					resolve(void 0);
 				}
 				);
 		});
@@ -390,7 +379,7 @@ export class InsightAction extends Action {
 	}
 }
 
-export class NewDatabaseAction extends TaskAction {
+export class NewDatabaseAction extends Action {
 	public static ID = 'newDatabase';
 	public static LABEL = nls.localize('newDatabase', 'New Database');
 	public static ICON = 'new-database';
@@ -410,24 +399,22 @@ export class NewDatabaseAction extends TaskAction {
 	}
 }
 
-export class ConfigureDashboardAction extends TaskAction {
-	public static ID = 'configureDashboard';
-	public static LABEL = nls.localize('configureDashboard', 'Configure');
-	public static ICON = 'configure-dashboard';
+export class ConfigureDashboardAction extends Task {
+	public static readonly ID = 'configureDashboard';
+	public static readonly LABEL = nls.localize('configureDashboard', 'Configure');
+	public static readonly ICON = 'configure-dashboard';
 	private static readonly configHelpUri = 'https://aka.ms/sqldashboardconfig';
-	constructor(
-		id: string, label: string, icon: string,
-		@IWindowsService private _windowsService
-	) {
-		super(id, label, icon);
+
+	constructor() {
+		super({ id: ConfigureDashboardAction.ID, title: ConfigureDashboardAction.LABEL, iconClass: ConfigureDashboardAction.ICON });
 	}
 
-	run(actionContext: BaseActionContext): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
-			this._windowsService.openExternal(ConfigureDashboardAction.configHelpUri).then((result) => {
-				resolve(result);
+	runTask(accessor: ServicesAccessor): TPromise<void> {
+		return new TPromise<void>((resolve, reject) => {
+			accessor.get<IWindowsService>(IWindowsService).openExternal(ConfigureDashboardAction.configHelpUri).then((result) => {
+				resolve(void 0);
 			}, err => {
-				resolve(err);
+				resolve(void 0);
 			});
 		});
 	}

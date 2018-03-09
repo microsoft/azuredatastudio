@@ -5,54 +5,73 @@
 
 'use strict';
 
+import { Disposable } from 'vs/base/common/lifecycle';
+import { isString } from 'vs/base/common/types';
+
 import * as sqlops from 'sqlops';
 import * as interfaces from 'sql/parts/connection/common/interfaces';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/parts/connection/common/constants';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 
-export class ProviderConnectionInfo implements sqlops.ConnectionInfo {
+export class ProviderConnectionInfo extends Disposable implements sqlops.ConnectionInfo {
 
-	options: { [name: string]: any };
+	options: { [name: string]: any } = {};
 
-	public providerName: string;
+	private _providerName: string;
 	protected _serverCapabilities: sqlops.DataProtocolServerCapabilities;
 	private static readonly SqlAuthentication = 'SqlLogin';
 	public static readonly ProviderPropertyName = 'providerName';
 
-	public constructor(serverCapabilities?: sqlops.DataProtocolServerCapabilities, model?: interfaces.IConnectionProfile) {
-		this.options = {};
-		if (serverCapabilities) {
-			this._serverCapabilities = serverCapabilities;
-			this.providerName = serverCapabilities.providerName;
-		}
-		if (model) {
-			if (model.options && this._serverCapabilities) {
-				this._serverCapabilities.connectionProvider.options.forEach(option => {
-					let value = model.options[option.name];
-					this.options[option.name] = value;
-				});
+	public constructor(
+		protected capabilitiesService: ICapabilitiesService,
+		model: string | interfaces.IConnectionProfile
+	) {
+		super();
+		// we can't really do a whole lot if we don't have a provider
+		if (isString(model) || (model && model.providerName)) {
+			this.providerName = isString(model) ? model : model.providerName;
+
+			if (!isString(model)) {
+				if (model.options && this._serverCapabilities) {
+					this._serverCapabilities.connectionProvider.options.forEach(option => {
+						let value = model.options[option.name];
+						this.options[option.name] = value;
+					});
+				}
+				this.serverName = model.serverName;
+				this.authenticationType = model.authenticationType;
+				this.databaseName = model.databaseName;
+				this.password = model.password;
+				this.userName = model.userName;
 			}
-			this.serverName = model.serverName;
-			this.authenticationType = model.authenticationType;
-			this.databaseName = model.databaseName;
-			this.password = model.password;
-			this.userName = model.userName;
+		}
+	}
+
+	public get providerName(): string {
+		return this._providerName;
+	}
+
+	public set providerName(name: string) {
+		this._providerName = name;
+		if (!this._serverCapabilities) {
+			this._serverCapabilities = this.capabilitiesService.getCapabilities(this.providerName);
+			this._register(this.capabilitiesService.onCapabilitiesRegistered(e => {
+				if (e === this.providerName) {
+					this._serverCapabilities = this.capabilitiesService.getCapabilities(e);
+				}
+			}));
 		}
 	}
 
 	public clone(): ProviderConnectionInfo {
-		let instance = new ProviderConnectionInfo(this._serverCapabilities);
+		let instance = new ProviderConnectionInfo(this.capabilitiesService, this.providerName);
 		instance.options = Object.assign({}, this.options);
-		instance.providerName = this.providerName;
 		return instance;
 	}
 
 	public get serverCapabilities(): sqlops.DataProtocolServerCapabilities {
 		return this._serverCapabilities;
-	}
-
-	public setServerCapabilities(value: sqlops.DataProtocolServerCapabilities) {
-		this._serverCapabilities = value;
 	}
 
 	public get serverName(): string {

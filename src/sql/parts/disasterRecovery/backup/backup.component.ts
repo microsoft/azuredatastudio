@@ -285,7 +285,7 @@ export class BackupComponent {
 		this.mediaDescriptionBox = new InputBox(this.mediaDescriptionElement.nativeElement, this._bootstrapService.contextViewService);
 
 		// Set backup retain days
-		let invalidInputMessage = localize('invalidInput', 'Invalid input. Value must be greater than or equal 0.');
+		let invalidInputMessage = localize('backupComponent.invalidInput', 'Invalid input. Value must be greater than or equal 0.');
 		this.backupRetainDaysBox = new InputBox(this.backupDaysElement.nativeElement,
 			this._bootstrapService.contextViewService,
 			{
@@ -323,7 +323,7 @@ export class BackupComponent {
 		this._backupUiService.onShowBackupDialog();
 	}
 
-	private onGetBackupConfigInfo(param: DashboardComponentParams) {
+	private onGetBackupConfigInfo(param: { connection: IConnectionProfile, ownerUri: string }) {
 		// Show spinner
 		this.showSpinner();
 		this.backupEnabled = false;
@@ -367,21 +367,21 @@ export class BackupComponent {
 	private addFooterButtons(): void {
 		// Set script footer button
 		this.scriptButton = new Button(this.scriptButtonElement.nativeElement);
-		this.scriptButton.label = localize('script', 'Script');
+		this.scriptButton.label = localize('backupComponent.script', 'Script');
 		this.addButtonClickHandler(this.scriptButton, () => this.onScript());
 		this._toDispose.push(attachButtonStyler(this.scriptButton, this._bootstrapService.themeService));
 		this.scriptButton.enabled = false;
 
 		// Set backup footer button
 		this.backupButton = new Button(this.backupButtonElement.nativeElement);
-		this.backupButton.label = localize('backup', 'Backup');
+		this.backupButton.label = localize('backupComponent.backup', 'Backup');
 		this.addButtonClickHandler(this.backupButton, () => this.onOk());
 		this._toDispose.push(attachButtonStyler(this.backupButton, this._bootstrapService.themeService));
 		this.backupEnabled = false;
 
 		// Set cancel footer button
 		this.cancelButton = new Button(this.cancelButtonElement.nativeElement);
-		this.cancelButton.label = localize('cancel', 'Cancel');
+		this.cancelButton.label = localize('backupComponent.cancel', 'Cancel');
 		this.addButtonClickHandler(this.cancelButton, () => this.onCancel());
 		this._toDispose.push(attachButtonStyler(this.cancelButton, this._bootstrapService.themeService));
 	}

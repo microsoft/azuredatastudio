@@ -68,7 +68,7 @@ export class AutoOAuthDialog extends Modal {
 		this._register(attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
 
 		this._copyAndOpenButton = this.addFooterButton(localize('copyAndOpen', 'Copy & Open'), () => this.addAccount());
-		this._closeButton = this.addFooterButton(localize('cancel', 'Cancel'), () => this.cancel());
+		this._closeButton = this.addFooterButton(localize('oauthDialog.cancel', 'Cancel'), () => this.cancel());
 		this.registerListeners();
 		this._userCodeInputBox.disable();
 		this._websiteInputBox.disable();

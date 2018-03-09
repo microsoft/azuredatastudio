@@ -11,8 +11,10 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IConnectionManagementService, IConnectionCompletionOptions, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction,
-	ScriptExecuteAction, ScriptDeleteAction, ScriptAlterAction } from 'sql/workbench/common/actions';
+import {
+	NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction,
+	ScriptExecuteAction, ScriptDeleteAction, ScriptAlterAction
+} from 'sql/workbench/common/actions';
 import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
 import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/parts/registeredServer/viewlet/treeSelectionHandler';
@@ -22,6 +24,9 @@ import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
 import * as Constants from 'sql/parts/connection/common/constants';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 export class ObjectExplorerActionsContext {
 	public treeNode: TreeNode;
@@ -30,34 +35,33 @@ export class ObjectExplorerActionsContext {
 	public tree: ITree;
 }
 
-export class OENewQueryAction extends NewQueryAction {
-	public static ID = 'objectExplorer.' + NewQueryAction.ID;
+export class OEAction extends ExecuteCommandAction {
 	private _objectExplorerTreeNode: TreeNode;
 	private _container: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 
 	constructor(
-		id: string, label: string, icon: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
+		id: string, label: string,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
-		@IWorkbenchEditorService protected _workbenchEditorService: IWorkbenchEditorService
+		@ICommandService commandService: ICommandService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
-		super(id, label, icon, _queryEditorService, _connectionManagementService, _objectExplorerService, _workbenchEditorService);
+		super(id, label, commandService);
 	}
 
 	public run(actionContext: any): TPromise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
-		if (actionContext instanceof ObjectExplorerActionsContext) {
-			//set objectExplorerTreeNode for context menu clicks
-			this._objectExplorerTreeNode = actionContext.treeNode;
-			this._container = actionContext.container;
+
+
+		let profile: IConnectionProfile;
+		if (actionContext.connectionProfile) {
+			profile = actionContext.connectionProfile;
+		} else {
+			profile = TreeUpdateUtils.getConnectionProfile(<TreeNode>actionContext.treeNode);
 		}
 		this._treeSelectionHandler.onTreeActionStateChange(true);
-		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
 
-		return super.run({ profile: connectionProfile }).then(() => {
+		return super.run(profile).then(() => {
 			this._treeSelectionHandler.onTreeActionStateChange(false);
 			return true;
 		});
@@ -361,7 +365,7 @@ export class OEScriptDeleteAction extends ScriptDeleteAction {
 
 export class DisconnectAction extends Action {
 	public static ID = 'objectExplorer.disconnect';
-	public static LABEL = localize('disconnect', 'Disconnect');
+	public static LABEL = localize('objectExplorAction.disconnect', 'Disconnect');
 	private _objectExplorerTreeNode: TreeNode;
 	private _container: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
@@ -443,13 +447,13 @@ export class ObjectExplorerActionUtilities {
 
 		let basicScripting = [OEScriptCreateAction, OEScriptDeleteAction];
 		let storedProcedureScripting = isMssqlProvider ? [OEScriptCreateAction, OEScriptAlterAction, OEScriptDeleteAction, OEScriptExecuteAction] :
-		basicScripting;
+			basicScripting;
 
 		let viewScripting = isMssqlProvider ? [OEScriptSelectAction, OEScriptCreateAction, OEScriptAlterAction, OEScriptDeleteAction] :
-		[OEScriptSelectAction, OEScriptCreateAction, OEScriptDeleteAction];
+			[OEScriptSelectAction, OEScriptCreateAction, OEScriptDeleteAction];
 
 		let functionScripting = isMssqlProvider ? [OEScriptCreateAction, OEScriptAlterAction, OEScriptDeleteAction] :
-		basicScripting;
+			basicScripting;
 		scriptMap.set(NodeType.AggregateFunction, functionScripting);
 		scriptMap.set(NodeType.PartitionFunction, functionScripting);
 		scriptMap.set(NodeType.ScalarValuedFunction, functionScripting);

@@ -9,12 +9,13 @@ import {
 	createExtHostContextProxyIdentifier as createExtId,
 	ProxyIdentifier
 } from 'vs/workbench/services/thread/common/threadService';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
-import { TPromise } from 'vs/base/common/winjs.base';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -422,7 +423,9 @@ export const SqlMainContext = {
 	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
 	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
-	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview')
+	MainThreadTasks: createMainId<MainThreadTasksShape>('MainThreadTasks'),
+	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview'),
+	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard')
 };
 
 export const SqlExtHostContext = {
@@ -434,8 +437,19 @@ export const SqlExtHostContext = {
 	ExtHostSerializationProvider: createExtId<ExtHostSerializationProviderShape>('ExtHostSerializationProvider'),
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
-	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews')
+	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks'),
+	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
+	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard')
 };
+
+export interface MainThreadDashboardShape extends IDisposable {
+
+}
+
+export interface ExtHostDashboardShape {
+	$onDidOpenDashboard(dashboard: sqlops.DashboardDocument): void;
+	$onDidChangeToDashboard(dashboard: sqlops.DashboardDocument): void;
+}
 
 export interface MainThreadModalDialogShape extends IDisposable {
 	$createDialog(handle: number): void;
@@ -449,6 +463,16 @@ export interface MainThreadModalDialogShape extends IDisposable {
 export interface ExtHostModalDialogsShape {
 	$onMessage(handle: number, message: any): void;
 	$onClosed(handle: number): void;
+}
+
+export interface ExtHostTasksShape {
+	$executeContributedTask<T>(id: string, ...args: any[]): Thenable<T>;
+	$getContributedTaskHandlerDescriptions(): TPromise<{ [id: string]: string | ITaskHandlerDescription }>;
+}
+
+export interface MainThreadTasksShape extends IDisposable {
+	$registerTask(id: string): TPromise<any>;
+	$unregisterTask(id: string): TPromise<any>;
 }
 
 export interface ExtHostDashboardWebviewsShape {

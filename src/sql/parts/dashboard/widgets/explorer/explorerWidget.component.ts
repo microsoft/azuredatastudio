@@ -43,6 +43,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	private _treeDataSource = new ExplorerDataSource();
 	private _treeFilter = new ExplorerFilter();
 
+	private _inited = false;
+
 	@ViewChild('input') private _inputContainer: ElementRef;
 	@ViewChild('table') private _tableContainer: ElementRef;
 
@@ -58,6 +60,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	ngOnInit() {
+		this._inited = true;
+
 		let inputOptions: IInputOptions = {
 			placeholder: this._config.context === 'database' ? nls.localize('seachObjects', 'Search by name of type (a:, t:, v:, f:, or sp:)') : nls.localize('searchDatabases', 'Search databases')
 		};
@@ -101,7 +105,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			this._register(toDisposableSubscription(this._bootstrap.metadataService.databaseNames.subscribe(
 				data => {
 					let profileData = data.map(d => {
-						let profile = new ConnectionProfile(currentProfile.serverCapabilities, currentProfile);
+						let profile = new ConnectionProfile(this._bootstrap.capabilitiesService, currentProfile);
 						profile.databaseName = d;
 						return profile;
 					});
@@ -120,6 +124,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	public layout(): void {
-		this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
+		if (this._inited) {
+			this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
+		}
 	}
 }

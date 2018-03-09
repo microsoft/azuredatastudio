@@ -17,7 +17,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 export class GlobalNewProfilerAction extends Action {
 	public static ID = 'explorer.newProfiler';
-	public static LABEL = nls.localize('newProfiler', "New Profiler");
+	public static LABEL = nls.localize('profilerWorkbenchAction.newProfiler', "New Profiler");
 
 	constructor(
 		id: string, label: string,

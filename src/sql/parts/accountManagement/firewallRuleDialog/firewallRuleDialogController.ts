@@ -22,7 +22,7 @@ export class FirewallRuleDialogController {
 	private _connection: IConnectionProfile;
 	private _resourceProviderId: string;
 
-	private _addAccountErrorTitle = localize('addAccountErrorTitle', 'Error adding account');
+	private _addAccountErrorTitle = localize('firewallDialog.addAccountErrorTitle', 'Error adding account');
 	private _firewallRuleErrorTitle = localize('firewallRuleError', 'Firewall rule error');
 	private _deferredPromise: Deferred<boolean>;
 

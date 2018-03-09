@@ -40,6 +40,7 @@ import { IWindowsService, IWindowService } from 'vs/platform/windows/common/wind
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 export const BOOTSTRAP_SERVICE_ID = 'bootstrapService';
 export const IBootstrapService = createDecorator<IBootstrapService>(BOOTSTRAP_SERVICE_ID);
@@ -89,6 +90,7 @@ export interface IBootstrapService {
 	clipboardService: IClipboardService;
 	capabilitiesService: ICapabilitiesService;
 	configurationEditorService: ConfigurationEditingService;
+	commandService: ICommandService;
 	dashboardWebviewService: IDashboardWebviewService;
 
 	/*
@@ -110,7 +112,7 @@ export interface IBootstrapService {
 	* Gets the "params" entry associated with the given id and unassociates the id/entry pair.
 	* Returns undefined if no entry is found.
 	*/
-	getBootstrapParams(id: string): any;
+	getBootstrapParams<T extends BootstrapParams>(id: string): T;
 
 	/*
 	* Gets the next unique selector given the baseSelectorString. A unique selector is the baseSelectorString with a

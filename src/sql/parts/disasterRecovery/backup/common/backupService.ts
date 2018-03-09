@@ -35,7 +35,7 @@ export interface IBackupUiService {
 	/**
 	 * On show backup event
 	 */
-	onShowBackupEvent: Event<DashboardComponentParams>;
+	onShowBackupEvent: Event<{ connection: IConnectionProfile, ownerUri: string }>;
 
 	/**
 	 * Close backup wizard

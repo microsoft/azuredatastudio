@@ -19,6 +19,7 @@ import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeView';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import * as vscode from 'vscode';
 
 export const SERVICE_ID = 'ObjectExplorerService';
@@ -110,7 +111,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@ITelemetryService private _telemetryService: ITelemetryService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		this._onUpdateObjectExplorerNodes = new Emitter<ObjectExplorerNodeEventArgs>();
 		this._activeObjectExplorerNodes = {};
@@ -132,8 +134,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	public updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> {
 		return this._connectionManagementService.addSavedPassword(connection).then(withPassword => {
-			let connectionProfile = ConnectionProfile.convertToConnectionProfile(
-				this._connectionManagementService.getCapabilities(connection.providerName), withPassword);
+			let connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
 			return this.updateNewObjectExplorerNode(connectionProfile);
 		});
 	}

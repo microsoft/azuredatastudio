@@ -17,7 +17,8 @@ export enum AngularEventType {
 	DELETE_WIDGET,
 	PINUNPIN_TAB,
 	NEW_TABS,
-	CLOSE_TAB
+	CLOSE_TAB,
+	COLLAPSE_WIDGET
 }
 
 export interface IDeleteWidgetPayload {

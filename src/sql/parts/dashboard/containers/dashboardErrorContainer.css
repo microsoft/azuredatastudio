@@ -3,6 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/// <reference path='../../../../../src/vs/vscode.d.ts'/>
-/// <reference path='../../../../../src/sql/sqlops.d.ts'/>
-/// <reference types='@types/node'/>
+dashboard-error-container {
+	height: 100%;
+	width: 100%;
+}
+
+dashboard-error-container .error-container {
+	padding: 6px;
+	background: #D02E00;
+	color: white;
+}
+
+dashboard-error-container .error-container .icon.globalError {
+	height: 16px;
+	width: 16px;
+	float: left;
+	padding-right: 15px;
+}
+
