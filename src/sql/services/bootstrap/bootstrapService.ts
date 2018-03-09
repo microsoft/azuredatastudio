@@ -41,7 +41,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IAgentService } from 'sql/parts/agent/common/interfaces';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 
 export const BOOTSTRAP_SERVICE_ID = 'bootstrapService';
 export const IBootstrapService = createDecorator<IBootstrapService>(BOOTSTRAP_SERVICE_ID);
@@ -93,7 +93,7 @@ export interface IBootstrapService {
 	configurationEditorService: ConfigurationEditingService;
 	commandService: ICommandService;
 	dashboardWebviewService: IDashboardWebviewService;
-	agentService: IAgentService;
+	jobManagementService: IJobManagementService;
 
 	/*
 	* Bootstraps the Angular module described. Components that need singleton services should inject the
@@ -114,7 +114,7 @@ export interface IBootstrapService {
 	* Gets the "params" entry associated with the given id and unassociates the id/entry pair.
 	* Returns undefined if no entry is found.
 	*/
-	getBootstrapParams(id: string): any;
+	getBootstrapParams<T extends BootstrapParams>(id: string): T;
 
 	/*
 	* Gets the next unique selector given the baseSelectorString. A unique selector is the baseSelectorString with a

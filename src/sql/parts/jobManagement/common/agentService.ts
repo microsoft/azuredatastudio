@@ -6,14 +6,14 @@
 'use strict';
 
 import { localize } from 'vs/nls';
-import { IAgentService } from 'sql/parts/agent/common/interfaces';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { TPromise } from 'vs/base/common/winjs.base';
 
 import * as sqlops from 'sqlops';
 
-export class AgentService implements IAgentService {
+export class AgentService implements IJobManagementService {
 	_serviceBrand: any;
 
 	private _providers: { [handle: string]: sqlops.AgentServicesProvider; } = Object.create(null);

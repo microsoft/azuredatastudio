@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./agent';
+import 'vs/css!../common/jobs';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
@@ -14,7 +14,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { IAgentService } from '../common/interfaces';
+import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentJobInfo } from 'sqlops';
 import * as nls from 'vs/nls';
@@ -32,7 +32,7 @@ export const DASHBOARD_SELECTOR: string = 'schedulesview-component';
 })
 export class SchedulesViewComponent implements OnInit, OnDestroy {
 
-	private _agentService: IAgentService;
+	private _jobManagementService: IJobManagementService;
 
 	private _disposables: Array<IDisposable> = [];
 
@@ -50,7 +50,7 @@ export class SchedulesViewComponent implements OnInit, OnDestroy {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
 	) {
-		this._agentService = this._bootstrapService.agentService;
+		this._jobManagementService = this._bootstrapService.jobManagementService;
 	}
 
 	ngOnInit() {

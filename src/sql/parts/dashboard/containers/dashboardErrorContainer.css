@@ -3,27 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
-agentview-component {
+dashboard-error-container {
 	height: 100%;
-	width : 100%;
-	display: block;
+	width: 100%;
 }
 
-jobsview-component {
-	height: 100%;
-	width : 100%;
-	display: block;
+dashboard-error-container .error-container {
+	padding: 6px;
+	background: #D02E00;
+	color: white;
 }
 
-schedulesview-component {
-	height: 100%;
-	width : 100%;
-	display: block;
+dashboard-error-container .error-container .icon.globalError {
+	height: 16px;
+	width: 16px;
+	float: left;
+	padding-right: 15px;
 }
 
-jobhistory-component {
-	height: 100%;
-	width : 100%;
-	display: block;
-}

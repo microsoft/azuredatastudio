@@ -2,20 +2,22 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 'use strict';
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import Event from 'vs/base/common/event';
+
 import * as sqlops from 'sqlops';
 
-export const SERVICE_ID = 'agentService';
+export const IDashboardService = createDecorator<IDashboardService>('dashboardService');
 
-export const IAgentService = createDecorator<IAgentService>(SERVICE_ID);
+export interface IDashboardService {
 
-export interface IAgentService {
 	_serviceBrand: any;
+	readonly onDidOpenDashboard: Event<sqlops.DashboardDocument>;
+	readonly onDidChangeToDashboard: Event<sqlops.DashboardDocument>;
 
-	registerProvider(providerId: string, provider: sqlops.AgentServicesProvider): void;
+	openDashboard(document: sqlops.DashboardDocument): void;
 
-	getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult>;
+	changeToDashboard(document: sqlops.DashboardDocument): void;
 }

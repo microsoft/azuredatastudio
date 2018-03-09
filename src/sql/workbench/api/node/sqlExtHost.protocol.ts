@@ -430,7 +430,8 @@ export const SqlMainContext = {
 	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
 	MainThreadTasks: createMainId<MainThreadTasksShape>('MainThreadTasks'),
-	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview')
+	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview'),
+	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard')
 };
 
 export const SqlExtHostContext = {
@@ -442,8 +443,18 @@ export const SqlExtHostContext = {
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
 	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks'),
-	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews')
+	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
+	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard')
 };
+
+export interface MainThreadDashboardShape extends IDisposable {
+
+}
+
+export interface ExtHostDashboardShape {
+	$onDidOpenDashboard(dashboard: sqlops.DashboardDocument): void;
+	$onDidChangeToDashboard(dashboard: sqlops.DashboardDocument): void;
+}
 
 export interface MainThreadModalDialogShape extends IDisposable {
 	$createDialog(handle: number): void;

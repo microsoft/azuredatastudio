@@ -1,5 +1,7 @@
 # SQL Operations Studio
 
+[![Join the chat at https://gitter.im/Microsoft/sqlopsstudio](https://badges.gitter.im/Microsoft/sqlopsstudio.svg)](https://gitter.im/Microsoft/sqlopsstudio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 SQL Operations Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
 **Download SQL Operations Studio February Public Preview**
@@ -18,6 +20,14 @@ Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instruc
 Try out the latest insiders build from `master` at https://github.com/Microsoft/sqlopsstudio/releases.
 
 See the [change log](https://github.com/Microsoft/sqlopsstudio/blob/master/CHANGELOG.md) for additional details of what's in this release.
+
+**Design Discussions**
+
+The SQL Operations Studio team would like to incorporate community feedback earlier in the development process.  To facilitate this, we'd like to share our designs while features are actively being built.
+
+We're currently collecting input on the **SQL Agent** experience and enhancements to the Manage Dashboard that we're calling **"Command Center"**.  We'll add additional design feedback requests below as we start work in new feature areas.  Please leave comments on these issues to help us understand your requirements and shape feature development.
+
+* [#750 Seeking community feedback on SQL Agent UX prototype](https://github.com/Microsoft/sqlopsstudio/issues/750)
 
 **Feature Highlights**
 

@@ -14,7 +14,7 @@ import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost
 import { WidgetConfig, WIDGET_CONFIG, IDashboardWidget } from 'sql/parts/dashboard/common/dashboardWidget';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { error } from 'sql/base/common/log';
-import { RefreshWidgetAction, ToggleMoreWidgetAction, DeleteWidgetAction } from 'sql/parts/dashboard/common/actions';
+import { RefreshWidgetAction, ToggleMoreWidgetAction, DeleteWidgetAction, CollapseWidgetAction } from 'sql/parts/dashboard/common/actions';
 
 /* Widgets */
 import { PropertiesWidgetComponent } from 'sql/parts/dashboard/widgets/properties/propertiesWidget.component';
@@ -32,6 +32,8 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { Action } from 'vs/base/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { memoize } from 'vs/base/common/decorators';
+import { generateUuid } from 'vs/base/common/uuid';
 
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
@@ -45,8 +47,32 @@ const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	selector: 'dashboard-widget-wrapper',
 	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/contents/dashboardWidgetWrapper.component.html'))
 })
-export class DashboardWidgetWrapper implements AfterContentInit, OnInit, OnDestroy {
+export class DashboardWidgetWrapper implements OnInit, OnDestroy {
 	@Input() private _config: WidgetConfig;
+	@Input() private collapsable = false;
+
+	private _collapsed = false;
+
+	public get collapsed(): boolean {
+		return this._collapsed;
+	}
+
+	public set collapsed(val: boolean) {
+		if (val === this._collapsed) {
+			return;
+		}
+		this._collapsed = val;
+		this._changeref.detectChanges();
+		if (!val) {
+			this.loadWidget();
+		}
+	}
+
+	@memoize
+	public get guid(): string {
+		return generateUuid();
+	}
+
 	private _themeDispose: IDisposable;
 	private _actions: Array<Action>;
 	private _component: IDashboardWidget;
@@ -71,12 +97,17 @@ export class DashboardWidgetWrapper implements AfterContentInit, OnInit, OnDestr
 		});
 	}
 
-	ngAfterContentInit() {
+	ngAfterViewInit() {
 		this.updateTheme(this._bootstrap.themeService.getColorTheme());
-		this.loadWidget();
+		if (this.componentHost) {
+			this.loadWidget();
+		}
 		this._changeref.detectChanges();
 		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
 		if (this._actions) {
+			if (this.collapsable) {
+				this._actionbar.push(this._bootstrap.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed), { icon: true, label: false });
+			}
 			this._actionbar.push(this._bootstrap.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this._component.actionsContext), { icon: true, label: false });
 		}
 		this.layout();

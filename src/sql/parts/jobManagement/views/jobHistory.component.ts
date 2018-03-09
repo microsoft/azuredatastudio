@@ -9,7 +9,7 @@ import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, O
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IAgentService } from '../common/interfaces';
+import { IJobManagementService } from '../common/interfaces';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { ExplorerDataSource } from 'sql/parts/dashboard/widgets/explorer/explorerTree';
 import { TreeCreationUtils } from 'sql/parts/registeredServer/viewlet/treeCreationUtils';
@@ -27,7 +27,7 @@ export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 })
 export class JobHistoryComponent implements OnInit, OnDestroy {
 
-	private _agentService: IAgentService;
+	private _jobManagementService: IJobManagementService;
 	private _tree: Tree;
 
 	// private _treeController: JobHistoryController;
@@ -44,7 +44,7 @@ export class JobHistoryComponent implements OnInit, OnDestroy {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IThemeService private _themeService: IThemeService,
 	) {
-		this._agentService = bootstrapService.agentService;
+		this._jobManagementService = bootstrapService.jobManagementService;
 		// this._tree = new Tree(this._tableContainer.nativeElement, {
 		// 	controller: this._treeController,
 		// 	dataSource: this._treeDataSource,

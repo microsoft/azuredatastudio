@@ -106,7 +106,7 @@ label::after {
 }
 
 .vs-dark.monaco-shell .backButtonIcon {
-	content: url('../media/back_inverse.svg');
+	content: url('../common/media/back_inverse.svg');
 }
 
 .vs .icon-start,
@@ -115,7 +115,7 @@ label::after {
 	display: inline-block;
 	height: 20px;
 	width: 20px;
-	background-image: url('../media/start.svg');
+	background-image: url('../common/media/start.svg');
 	background-repeat: no-repeat;
 }
 
@@ -123,7 +123,7 @@ label::after {
 .vs-dark .icon-stop,
 .hc-black .icon-stop {
 	display: inline-block;
-	background-image: url('../media/stop.svg');
+	background-image: url('../common/media/stop.svg');
 	background-repeat: no-repeat;
 	height: 20px;
 	width: 20px;

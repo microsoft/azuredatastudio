@@ -13,3 +13,13 @@ dashboard-page .monaco-scrollable-element {
 	height: 100%;
 	width: 100%;
 }
+
+dashboard-page .dashboard-panel .tab-header .action-item .action-label.unpin,
+dashboard-page .dashboard-panel .tab-header .action-item .action-label.pin {
+	padding: 6px;
+	margin-right: 5px;
+}
+
+dashboard-page .dashboard-panel .tab-header .action-item .action-label.close {
+	padding: 5px;
+}
