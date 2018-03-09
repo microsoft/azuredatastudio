@@ -30,7 +30,7 @@ export class AgentViewComponent implements OnInit, OnDestroy {
 
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 
-	private _jobManagementService: IJobManagementService;
+	private _agentService: IJobManagementService;
 
 	public jobs: AgentJobInfo[];
 
@@ -62,7 +62,7 @@ export class AgentViewComponent implements OnInit, OnDestroy {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
-		this._jobManagementService = bootstrapService.jobManagementService;
+		this._agentService = bootstrapService.jobManagementService;
 	}
 
 	ngOnInit() {

@@ -18,4 +18,6 @@ export interface IJobManagementService {
 	registerProvider(providerId: string, provider: sqlops.AgentServicesProvider): void;
 
 	getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult>;
+
+	getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>;
 }
