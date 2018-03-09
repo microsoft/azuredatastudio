@@ -733,11 +733,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @memberof ConnectionManagementService
 	 */
 	public doChangeLanguageFlavor(uri: string, language: string, provider: string): void {
-		this._onLanguageFlavorChanged.fire({
-			uri: uri,
-			language: language,
-			flavor: provider
-		});
+		if (this._providers.has(provider)) {
+			this._onLanguageFlavorChanged.fire({
+				uri: uri,
+				language: language,
+				flavor: provider
+			});
+		} else {
+			throw new Error(`provider "${provider}" is not registered`);
+		}
 	}
 
 	/**
