@@ -2,9 +2,13 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { NotificationType, ServerOptions } from 'vscode-languageclient';
+import { NotificationType, ServerOptions, RequestType, RPCMessageType, ClientCapabilities, ServerCapabilities } from 'vscode-languageclient';
 import { ITelemetryEventProperties, ITelemetryEventMeasures } from '../telemetry';
 import { Runtime } from '../platform';
+import { SqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
+import * as sqlops from 'sqlops';
+import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import { Disposable } from 'vscode';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -56,4 +60,58 @@ export class StatusChangeParams {
 
 export interface ILanguageClientHelper {
 	createServerOptions(servicePath: string, runtimeId?: Runtime): ServerOptions;
+}
+
+export interface AgentJobsParams {
+	ownerUri: string;
+}
+
+export interface AgentJobsResponse {
+	jobInfo: sqlops.AgentJobInfo[];
+}
+
+export namespace AgentJobsRequest {
+	export const type = new RequestType<AgentJobsParams, AgentJobsResponse, void, void>('agent/jobs');
+}
+
+export class AgentServicesFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		AgentJobsRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, AgentServicesFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+		// this isn't explicitly necessary
+		// ensure(ensure(capabilities, 'connection')!, 'agentServices')!.dynamicRegistration = true;
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let getJobs = (ownerUri: string): Thenable<sqlops.AgentJobInfo[]> => {
+			let params: AgentJobsParams = { ownerUri };
+			return client.sendRequest(AgentJobsRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(AgentJobsRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		return sqlops.dataprotocol.registerAgentServicesProvider({
+			providerId: client.providerId,
+			getJobs
+		});
+	}
 }
