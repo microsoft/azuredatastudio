@@ -20,7 +20,6 @@ import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { AngularEventType } from 'sql/services/angularEventing/angularEventingService';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
-import { error } from 'sql/base/common/log';
 import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
@@ -66,7 +65,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	private _editEnabled = new Emitter<boolean>();
 	public readonly editEnabled: Event<boolean> = this._editEnabled.event;
 
-
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', 'Home');
 
@@ -89,7 +87,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
-		@Inject(BOOTSTRAP_SERVICE_ID) protected bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {
@@ -114,7 +111,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			this.propertiesWidget = properties ? properties[0] : undefined;
 
 			this.createTabs(tempWidgets);
-
 		}
 	}
 
@@ -175,7 +171,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		}));
 
 		this._tabsDispose.push(this.dashboardService.onAddNewTabs(e => {
-			this.loadNewTabs(e);
+			this.loadNewTabs(e, true);
 		}));
 	}
 
@@ -189,14 +185,17 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		this.dashboardService.writeSettings([this.context, 'tabs'].join('.'), writeableConfig, target);
 	}
 
-	private loadNewTabs(dashboardTabs: IDashboardTab[]) {
+	private loadNewTabs(dashboardTabs: IDashboardTab[], openLastTab: boolean = false) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			let selectedTabs = dashboardTabs.map(v => {
-				let container = dashboardHelper.getDashboardContainer(v.container);
-				let key = Object.keys(container)[0];
+				let containerResult = dashboardHelper.getDashboardContainer(v.container);
+				if (!containerResult.result) {
+					return { id: v.id, title: v.title, container: { 'error-container': undefined }, alwaysShow: v.alwaysShow };
+				}
 
+				let key = Object.keys(containerResult.container)[0];
 				if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
-					let configs = <WidgetConfig[]>Object.values(container)[0];
+					let configs = <WidgetConfig[]>Object.values(containerResult.container)[0];
 					this._configModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs, this.dashboardService, this.context]);
 					});
@@ -210,7 +209,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 						return { id: v.id, title: v.title, container: { 'grid-container': configs }, alwaysShow: v.alwaysShow };
 					}
 				}
-				return { id: v.id, title: v.title, container: container, alwaysShow: v.alwaysShow };
+				return { id: v.id, title: v.title, container: containerResult.container, alwaysShow: v.alwaysShow };
 			}).map(v => {
 				let actions = [];
 				if (!v.alwaysShow) {
@@ -227,10 +226,13 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				return config;
 			});
 
-			// put this immediately on the stack so that is ran *after* the tab is rendered
-			setTimeout(() => {
-				this._panel.selectTab(selectedTabs.pop().id);
-			});
+			if (openLastTab) {
+				// put this immediately on the stack so that is ran *after* the tab is rendered
+				setTimeout(() => {
+					let selectedLastTab = selectedTabs.pop();
+					this._panel.selectTab(selectedLastTab.id);
+				});
+			}
 		}
 	}
 
@@ -252,12 +254,14 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	}
 
 	private getProperties(): Array<WidgetConfig> {
-		let properties = this.dashboardService.getSettings<IPropertiesConfig[]>([this.context, 'properties'].join('.'));
+		let properties = this.dashboardService.getSettings<IPropertiesConfig[] | string | boolean>([this.context, 'properties'].join('.'));
 		this._propertiesConfigLocation = 'default';
 		if (types.isUndefinedOrNull(properties)) {
 			return [this.propertiesWidget];
 		} else if (types.isBoolean(properties)) {
 			return properties ? [this.propertiesWidget] : [];
+		} else if (types.isString(properties) && properties === 'collapsed') {
+			return [this.propertiesWidget];
 		} else if (types.isArray(properties)) {
 			return properties.map((item) => {
 				let retVal = Object.assign({}, this.propertiesWidget);
@@ -302,6 +306,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 		let index = this.tabs.findIndex(i => i.id === tab.identifier);
 		this.tabs.splice(index, 1);
 		this._cd.detectChanges();
-		this.bootstrapService.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { id: tab.identifier });
+		this.dashboardService.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { id: tab.identifier });
 	}
 }

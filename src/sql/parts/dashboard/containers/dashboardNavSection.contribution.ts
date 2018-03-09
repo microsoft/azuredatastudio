@@ -2,10 +2,15 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import { IExtensionPointUser } from 'vs/platform/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 
+import { NavSectionConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { registerContainerType, generateNavSectionContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
+import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
+import { WEBVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
+import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 
 export const NAV_SECTION = 'nav-section';
 
@@ -54,3 +59,40 @@ let NavSectionSchema: IJSONSchema = {
 };
 
 registerContainerType(NAV_SECTION, NavSectionSchema);
+
+export function validateNavSectionContribution(extension: IExtensionPointUser<any>, navSectionConfigs: NavSectionConfig[]): boolean {
+	let result = true;
+	navSectionConfigs.forEach(section => {
+		if (!section.title) {
+			result = false;
+			extension.collector.error(nls.localize('navSection.missingTitle_error', 'No title in nav section specified for extension.'));
+		}
+
+		if (!section.container) {
+			result = false;
+			extension.collector.error(nls.localize('navSection.missingContainer_error', 'No container in nav section specified for extension.'));
+		}
+
+		if (Object.keys(section.container).length !== 1) {
+			result = false;
+			extension.collector.error(nls.localize('navSection.moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space.'));
+		}
+
+		let containerKey = Object.keys(section.container)[0];
+		let containerValue = Object.values(section.container)[0];
+
+		switch (containerKey) {
+			case WIDGETS_CONTAINER:
+				result = result && validateWidgetContainerContribution(extension, containerValue);
+				break;
+			case GRID_CONTAINER:
+				result = result && validateGridContainerContribution(extension, containerValue);
+				break;
+			case NAV_SECTION:
+				result = false;
+				extension.collector.error(nls.localize('navSection.invalidContainer_error', 'NAV_SECTION within NAV_SECTION is an invalid container for extension.'));
+				break;
+		}
+	});
+	return result;
+}

@@ -6,12 +6,15 @@
 
 import vscode = require('vscode');
 import MainController from './controllers/mainController';
+import ContextProvider from './contextProvider';
 
 export let controller: MainController;
 
 export function activate(context: vscode.ExtensionContext) {
 	controller = new MainController(context);
+	let contextProvider = new ContextProvider();
 	context.subscriptions.push(controller);
+	context.subscriptions.push(contextProvider);
 	controller.activate();
 }
 

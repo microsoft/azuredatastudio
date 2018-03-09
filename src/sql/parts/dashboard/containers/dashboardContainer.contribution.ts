@@ -10,6 +10,17 @@ import { createCSSRule } from 'vs/base/browser/dom';
 import URI from 'vs/base/common/uri';
 
 import { registerContainer, generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
+import { NAV_SECTION, validateNavSectionContribution } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
+import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
+import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
+import { WEBVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
+
+const containerTypes = [
+	WIDGETS_CONTAINER,
+	GRID_CONTAINER,
+	WEBVIEW_CONTAINER,
+	NAV_SECTION
+];
 
 export type IUserFriendlyIcon = string | { light: string; dark: string; };
 
@@ -48,10 +59,45 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboar
 
 	function handleCommand(dashboardContainer: IDashboardContainerContrib, extension: IExtensionPointUser<any>) {
 		let { id, container } = dashboardContainer;
-		if (!container) {
-			extension.collector.warn('No container specified to show.');
+		if (!id) {
+			extension.collector.error(localize('dashboardContainer.contribution.noIdError', 'No id in dashboard container specified for extension.'));
+			return;
 		}
-		registerContainer({ id, container });
+
+		if (!container) {
+			extension.collector.error(localize('dashboardContainer.contribution.noContainerError', 'No container in dashboard container specified for extension.'));
+			return;
+		}
+		if (Object.keys(container).length !== 1) {
+			extension.collector.error(localize('dashboardTab.contribution.moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space.'));
+			return;
+		}
+
+		let result = true;
+		let containerkey = Object.keys(container)[0];
+		let containerValue = Object.values(container)[0];
+
+		let containerTypeFound = containerTypes.find(c => (c === containerkey));
+		if (!containerTypeFound) {
+			extension.collector.error(localize('dashboardTab.contribution.unKnownContainerType', 'Unknown container type defines in dashboard container for extension.'));
+			return;
+		}
+
+		switch (containerkey) {
+			case WIDGETS_CONTAINER:
+				result = validateWidgetContainerContribution(extension, containerValue);
+				break;
+			case GRID_CONTAINER:
+				result = validateGridContainerContribution(extension, containerValue);
+				break;
+			case NAV_SECTION:
+				result = validateNavSectionContribution(extension, containerValue);
+				break;
+		}
+
+		if (result) {
+			registerContainer({ id, container });
+		}
 	}
 
 	for (let extension of extensions) {

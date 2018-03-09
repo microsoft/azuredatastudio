@@ -3,23 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-dashboard-page {
-	height: 100%;
-	width: 100%;
-	position: absolute;
-}
-
-dashboard-page .monaco-scrollable-element {
+dashboard-error-container {
 	height: 100%;
 	width: 100%;
 }
 
-dashboard-page .dashboard-panel .tab-header .action-item .action-label.unpin,
-dashboard-page .dashboard-panel .tab-header .action-item .action-label.pin {
+dashboard-error-container .error-container {
 	padding: 6px;
-	margin-right: 5px;
+	background: #D02E00;
+	color: white;
 }
 
-dashboard-page .dashboard-panel .tab-header .action-item .action-label.close {
-	padding: 5px;
+dashboard-error-container .error-container .icon.globalError {
+	height: 16px;
+	width: 16px;
+	float: left;
+	padding-right: 15px;
 }
+

@@ -1532,6 +1532,23 @@ declare module 'sqlops' {
 		): ModalDialog;
 	}
 
+	export namespace workspace {
+		/**
+		 * An event that is emitted when a [dashboard](#DashboardDocument) is opened.
+		 */
+		export const onDidOpenDashboard: vscode.Event<DashboardDocument>;
+
+		/**
+		 * An event that is emitted when a [dashboard](#DashboardDocument) is focused.
+		 */
+		export const onDidChangeToDashboard: vscode.Event<DashboardDocument>;
+	}
+
+	export interface DashboardDocument {
+		profile: IConnectionProfile;
+		serverInfo: ServerInfo;
+	}
+
 	export namespace tasks {
 
 		export interface ITaskHandler {

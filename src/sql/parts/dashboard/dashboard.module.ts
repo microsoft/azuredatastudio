@@ -30,6 +30,7 @@ import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWi
 import { DashboardWidgetContainer } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.component';
 import { DashboardGridContainer } from 'sql/parts/dashboard/containers/dashboardGridContainer.component';
 import { DashboardWebviewContainer } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.component';
+import { DashboardErrorContainer } from 'sql/parts/dashboard/containers/dashboardErrorContainer.component';
 import { DashboardNavSection } from 'sql/parts/dashboard/containers/dashboardNavSection.component';
 import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
 import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
@@ -43,7 +44,7 @@ import { SchedulesViewComponent } from 'sql/parts/agent/views/schedulesView.comp
 import { AgentViewComponent } from 'sql/parts/agent/views/agentView.component';
 
 let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
-					DashboardWidgetContainer, DashboardGridContainer, DashboardNavSection, WebviewContent, WidgetContent,
+					DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, WebviewContent, WidgetContent,
 					ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
 					JobsViewComponent, SchedulesViewComponent, AgentViewComponent];
 

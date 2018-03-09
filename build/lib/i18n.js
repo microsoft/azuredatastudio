@@ -501,10 +501,8 @@ function prepareXlfFiles(projectName, extensionName) {
 }
 exports.prepareXlfFiles = prepareXlfFiles;
 var editorProject = 'vscode-editor', workbenchProject = 'vscode-workbench', extensionsProject = 'vscode-extensions', setupProject = 'vscode-setup';
-
 // {{SQL CARBON EDIT}}
 var sqlopsProject = 'sqlops-core';
-
 function getResource(sourceFile) {
     var resource;
     if (/^vs\/platform/.test(sourceFile)) {
@@ -533,12 +531,9 @@ function getResource(sourceFile) {
     else if (/^vs\/workbench/.test(sourceFile)) {
         return { name: 'vs/workbench', project: workbenchProject };
     }
-
-    // {{SQL CARBON EDIT}}
-	else if (/^sql/.test(sourceFile)) {
-		return { name: 'sql', project: sqlopsProject };
-	}
-
+    else if (/^sql/.test(sourceFile)) {
+        return { name: 'sql', project: sqlopsProject };
+    }
     throw new Error("Could not identify the XLF bundle for " + sourceFile);
 }
 exports.getResource = getResource;
