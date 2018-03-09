@@ -399,7 +399,6 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getActiveConnections(): Thenable<sqlops.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
-	$findObjectExplorerNodes(type: string, name: string, schema: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
 }
 
 export interface MainThreadCredentialManagementShape extends IDisposable {
@@ -501,4 +500,5 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 	$setSelected(connectionId: string, nodePath: string, selected: boolean, clearOtherSelections?: boolean): Thenable<void>;
 	$getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]>;
 	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
+	$findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
 }

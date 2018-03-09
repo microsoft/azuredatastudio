@@ -92,8 +92,6 @@ declare module 'sqlops' {
 		 */
 		export function getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 
-		export function findObjectExplorerNodes(type: string, name: string, schema: string, database: string, parentObjectNames: string[]): Thenable<NodeInfo[]>;
-
 		/**
 		 * Interface for representing a connection when working with connection APIs
 		*/
@@ -130,6 +128,11 @@ declare module 'sqlops' {
 		 * @returns {ObjectExplorerNode[]} The Object Explorer nodes for each saved connection
 		*/
 		export function getActiveConnectionNodes(): Thenable<ObjectExplorerNode[]>;
+
+		/**
+		 * TODO
+		 */
+		export function findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<ObjectExplorerNode[]>;
 
 		/**
 		 * Interface for representing and interacting with items in Object Explorer

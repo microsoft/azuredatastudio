@@ -186,49 +186,55 @@ export default class MainController implements vscode.Disposable {
 				// 	});
 				// }, 10000);
 
-				vscode.commands.registerCommand('mssql.objectexplorer.interact', async () => {
-					let type = await vscode.window.showInputBox({ prompt: 'type' });
-					if (type === '') {
-						type = undefined;
-					}
-					let name = await vscode.window.showInputBox({ prompt: 'name' });
-					if (name === '') {
-						name = undefined;
-					}
-					let schema = await vscode.window.showInputBox({ prompt: 'schema' });
-					if (schema === '') {
-						schema = undefined;
-					}
-					let database = await vscode.window.showInputBox({ prompt: 'database' });
-					if (database === '') {
-						database = undefined;
-					}
-					let parentObjectNames = [];
-					while (true) {
-						let parentObjectName = await vscode.window.showInputBox({ prompt: 'parent name' });
-						if (!parentObjectName || parentObjectName === '') {
-							break;
-						}
-						parentObjectNames.push(parentObjectName);
-					}
-					let foundNodes = await sqlops.connection.findObjectExplorerNodes(type, name, schema, database, parentObjectNames);
-					if (foundNodes.length === 0) {
-						console.log('No matching nodes');
-					} else {
-						foundNodes.forEach((node: sqlops.NodeInfo) => {
-							console.log('found matching node at node path: ' + node.nodePath);
-						});
-					}
-				});
-
-				// vscode.commands.registerCommand('mssql.objectexplorer.interact', () => {
-				// 	sqlops.objectexplorer.getActiveConnectionNodes().then(activeConnections => {
-				// 		vscode.window.showQuickPick(activeConnections.map(connection => connection.label)).then(selection => {
-				// 			let selectedNode = activeConnections.find(connection => connection.label === selection);
-				// 			this.interactWithOENode(selectedNode);
-				// 		});
-				// 	});
+				// vscode.commands.registerCommand('mssql.objectexplorer.interact', async () => {
+				// 	let activeConnections = await sqlops.objectexplorer.getActiveConnectionNodes();
+				// 	let connectionChoice = await vscode.window.showQuickPick(activeConnections.map(connection => connection.label + '.' + connection.connectionId));
+				// 	let connection = activeConnections.find(activeConnection => activeConnection.label + '.' + activeConnection.connectionId === connectionChoice);
+				// 	let type = await vscode.window.showInputBox({ prompt: 'type' });
+				// 	if (type === '') {
+				// 		type = undefined;
+				// 	}
+				// 	let schema = await vscode.window.showInputBox({ prompt: 'schema' });
+				// 	if (schema === '') {
+				// 		schema = undefined;
+				// 	}
+				// 	let name = await vscode.window.showInputBox({ prompt: 'name' });
+				// 	if (name === '') {
+				// 		name = undefined;
+				// 	}
+				// 	let database = await vscode.window.showInputBox({ prompt: 'database' });
+				// 	if (database === '') {
+				// 		database = undefined;
+				// 	}
+				// 	let parentObjectNames = [];
+				// 	while (true) {
+				// 		let parentObjectName = await vscode.window.showInputBox({ prompt: 'parent name' });
+				// 		if (!parentObjectName || parentObjectName === '') {
+				// 			break;
+				// 		}
+				// 		parentObjectNames.push(parentObjectName);
+				// 	}
+				// 	let foundNodes = await sqlops.objectexplorer.findNodes(connection.connectionId, type, schema, name, database, parentObjectNames);
+				// 	if (foundNodes.length === 0) {
+				// 		console.log('No matching nodes');
+				// 	} else {
+				// 		let selection = foundNodes[0];
+				// 		if (foundNodes.length > 1) {
+				// 			let selectedName = await vscode.window.showQuickPick(foundNodes.map(foundNode => foundNode.label + ' - ' + foundNode.nodePath));
+				// 			selection = foundNodes.find(foundNode => foundNode.label + ' - ' + foundNode.nodePath === selectedName);
+				// 		}
+				// 		await this.interactWithOENode(selection);
+				// 	}
 				// });
+
+				vscode.commands.registerCommand('mssql.objectexplorer.interact', () => {
+					sqlops.objectexplorer.getActiveConnectionNodes().then(activeConnections => {
+						vscode.window.showQuickPick(activeConnections.map(connection => connection.label)).then(selection => {
+							let selectedNode = activeConnections.find(connection => connection.label === selection);
+							this.interactWithOENode(selectedNode);
+						});
+					});
+				});
 
 				resolve(true);
 			}).catch(err => {
@@ -238,50 +244,51 @@ export default class MainController implements vscode.Disposable {
 		});
 	}
 
-	// private async interactWithOENode(selectedNode: sqlops.objectexplorer.ObjectExplorerNode): Promise<void> {
-	// 	let choices = ['Expand', 'Collapse', 'Select', 'Select (multi)', 'Deselect', 'Deselect (multi)'];
-	// 	if (selectedNode.isLeaf) {
-	// 		choices[0] += ' (is leaf)';
-	// 		choices[1] += ' (is leaf)';
-	// 	} else {
-	// 		let expanded = await selectedNode.isExpanded();
-	// 		if (expanded) {
-	// 			choices[0] += ' (is expanded)';
-	// 		} else {
-	// 			choices[1] += ' (is collapsed)';
-	// 		}
-	// 	}
-	// 	let parent = await selectedNode.getParent();
-	// 	if (parent) {
-	// 		choices.push('Get Parent');
-	// 	}
-	// 	let children = await selectedNode.getChildren();
-	// 	children.forEach(child => choices.push(child.label));
-	// 	let choice = await vscode.window.showQuickPick(choices);
-	// 	let nextNode: sqlops.objectexplorer.ObjectExplorerNode = undefined;
-	// 	if (choice === choices[0]) {
-	// 		selectedNode.setExpandedState(vscode.TreeItemCollapsibleState.Expanded);
-	// 	} else if (choice === choices[1]) {
-	// 		selectedNode.setExpandedState(vscode.TreeItemCollapsibleState.Collapsed);
-	// 	} else if (choice === choices[2]) {
-	// 		selectedNode.setSelected(true);
-	// 	} else if (choice === choices[3]) {
-	// 		selectedNode.setSelected(true, false);
-	// 	} else if (choice === choices[4]) {
-	// 		selectedNode.setSelected(false);
-	// 	} else if (choice === choices[5]) {
-	// 		selectedNode.setSelected(false, true);
-	// 	} else if (choice === 'Get Parent') {
-	// 		nextNode = parent;
-	// 	} else {
-	// 		let childNode = children.find(child => child.label === choice);
-	// 		nextNode = childNode;
-	// 	}
-	// 	if (nextNode) {
-	// 		let updatedNode = await sqlops.objectexplorer.getNode(nextNode.connectionId, nextNode.nodePath);
-	// 		this.interactWithOENode(updatedNode);
-	// 	}
-	// }
+	private async interactWithOENode(selectedNode: sqlops.objectexplorer.ObjectExplorerNode): Promise<void> {
+		let choices = ['Expand', 'Collapse', 'Select', 'Select (multi)', 'Deselect', 'Deselect (multi)'];
+		if (selectedNode.isLeaf) {
+			choices[0] += ' (is leaf)';
+			choices[1] += ' (is leaf)';
+		} else {
+			let expanded = await selectedNode.isExpanded();
+			if (expanded) {
+				choices[0] += ' (is expanded)';
+			} else {
+				choices[1] += ' (is collapsed)';
+			}
+		}
+		let parent = await selectedNode.getParent();
+		if (parent) {
+			choices.push('Get Parent');
+		}
+		let children = await selectedNode.getChildren();
+		children.forEach(child => choices.push(child.label));
+		choices.push(selectedNode.nodeType);
+		let choice = await vscode.window.showQuickPick(choices);
+		let nextNode: sqlops.objectexplorer.ObjectExplorerNode = undefined;
+		if (choice === choices[0]) {
+			selectedNode.setExpandedState(vscode.TreeItemCollapsibleState.Expanded);
+		} else if (choice === choices[1]) {
+			selectedNode.setExpandedState(vscode.TreeItemCollapsibleState.Collapsed);
+		} else if (choice === choices[2]) {
+			selectedNode.setSelected(true);
+		} else if (choice === choices[3]) {
+			selectedNode.setSelected(true, false);
+		} else if (choice === choices[4]) {
+			selectedNode.setSelected(false);
+		} else if (choice === choices[5]) {
+			selectedNode.setSelected(false, true);
+		} else if (choice === 'Get Parent') {
+			nextNode = parent;
+		} else {
+			let childNode = children.find(child => child.label === choice);
+			nextNode = childNode;
+		}
+		if (nextNode) {
+			let updatedNode = await sqlops.objectexplorer.getNode(nextNode.connectionId, nextNode.nodePath);
+			this.interactWithOENode(updatedNode);
+		}
+	}
 
 	// private expandChildren(children: sqlops.objectexplorer.ObjectExplorerNode[], moreLevel: boolean = true) {
 	// 	children.forEach(child => {
