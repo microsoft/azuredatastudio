@@ -295,7 +295,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}));
 				if (newRequest) {
 					self.callExpandOrRefreshFromProvider(provider, {
-						sessionId: session ? session.sessionId : undefined,
+						sessionId: session.sessionId,
 						nodePath: nodePath
 					}, refresh).then(result => {
 					}, error => {
