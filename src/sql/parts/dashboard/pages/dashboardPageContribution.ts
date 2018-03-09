@@ -83,7 +83,7 @@ export function generateDashboardGridLayoutSchema(type?: 'database' | 'server', 
 				description: localize('dashboardpage.rowNumber', "The row of the component in the grid")
 			},
 			rowspan: {
-				type: 'string',
+				type: ['string', 'number'],
 				description: localize('dashboardpage.rowSpan', "The rowspan of the component in the grid. Default value is 1. Use '*' to set to number of rows in the grid.")
 			},
 			col: {
@@ -91,7 +91,7 @@ export function generateDashboardGridLayoutSchema(type?: 'database' | 'server', 
 				description: localize('dashboardpage.colNumber', "The column of the component in the grid")
 			},
 			colspan: {
-				type: 'string',
+				type: ['string', 'number'],
 				description: localize('dashboardpage.colspan', "The colspan of the component in the grid. Default value is 1. Use '*' to set to number of columns in the grid.")
 			},
 			widget: {
