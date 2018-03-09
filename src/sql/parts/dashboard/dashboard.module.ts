@@ -39,9 +39,9 @@ import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { DashboardHomeContainer } from 'sql/parts/dashboard/containers/dashboardHomeContainer.component';
 import { ControlHostContent } from 'sql/parts/dashboard/contents/controlHostContent.component';
 import { DashboardControlHostContainer } from 'sql/parts/dashboard/containers/dashboardControlHostContainer.component';
-import { JobsViewComponent } from 'sql/parts/agent/views/jobsView.component';
-import { SchedulesViewComponent } from 'sql/parts/agent/views/schedulesView.component';
-import { AgentViewComponent } from 'sql/parts/agent/views/agentView.component';
+import { JobsViewComponent } from 'sql/parts/jobManagement/views/jobsView.component';
+import { SchedulesViewComponent } from 'sql/parts/jobManagement/views/schedulesView.component';
+import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 
 let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
 					DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, WebviewContent, WidgetContent,

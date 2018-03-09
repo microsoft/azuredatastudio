@@ -8,11 +8,11 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import * as sqlops from 'sqlops';
 
-export const SERVICE_ID = 'agentService';
+export const SERVICE_ID = 'jobManagementService';
 
-export const IAgentService = createDecorator<IAgentService>(SERVICE_ID);
+export const IJobManagementService = createDecorator<IJobManagementService>(SERVICE_ID);
 
-export interface IAgentService {
+export interface IJobManagementService {
 	_serviceBrand: any;
 
 	registerProvider(providerId: string, provider: sqlops.AgentServicesProvider): void;
