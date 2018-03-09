@@ -331,8 +331,6 @@ dashdash@^1.12.0:
   version "0.1.0"
   resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/5758b2a5804ea488d14326662f51d19cc970ccd0"
   dependencies:
-    sqlops "git://github.com/anthonydresser/vscode-extension-vscode"
-    vscode "1.1.5"
     vscode-languageclient "3.5.0"
 
 dateformat@^2.0.0:
@@ -2051,10 +2049,6 @@ vscode-extension-telemetry@0.0.8:
     applicationinsights "0.18.0"
     winreg "1.2.3"
 
-vscode-jsonrpc@3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/vscode-jsonrpc/-/vscode-jsonrpc-3.5.0.tgz#87239d9e166b2d7352245b8a813597804c1d63aa"
-
 vscode-jsonrpc@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/vscode-jsonrpc/-/vscode-jsonrpc-3.6.0.tgz#848d56995d5168950d84feb5d9c237ae5c6a02d4"
@@ -2065,29 +2059,12 @@ vscode-languageclient@3.5.0:
   dependencies:
     vscode-languageserver-protocol "^3.5.0"
 
-vscode-languageclient@^3.5.0:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/vscode-languageclient/-/vscode-languageclient-3.5.1.tgz#c78e582459c24e58f88020dfa34065e976186a98"
-  dependencies:
-    vscode-languageserver-protocol "3.5.1"
-
-vscode-languageserver-protocol@3.5.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.5.1.tgz#5144a3a9eeccbd83fe2745bd4ed75fad6cc45f0d"
-  dependencies:
-    vscode-jsonrpc "3.5.0"
-    vscode-languageserver-types "3.5.0"
-
 vscode-languageserver-protocol@^3.5.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.6.0.tgz#579642cdcccf74b0cd771c33daa3239acb40d040"
   dependencies:
     vscode-jsonrpc "^3.6.0"
     vscode-languageserver-types "^3.6.0"
-
-vscode-languageserver-types@3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/vscode-languageserver-types/-/vscode-languageserver-types-3.5.0.tgz#e48d79962f0b8e02de955e3f524908e2b19c0374"
 
 vscode-languageserver-types@^3.6.0:
   version "3.6.1"
