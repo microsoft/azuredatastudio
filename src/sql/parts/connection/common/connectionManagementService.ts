@@ -68,7 +68,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 
-	private _connectionStatusManager =  new ConnectionStatusManager(this._capabilitiesService);
+	private _connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService);
 
 	private _onAddConnectionProfile = new Emitter<IConnectionProfile>();
 	private _onDeleteConnectionProfile = new Emitter<void>();
