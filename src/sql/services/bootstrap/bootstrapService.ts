@@ -112,7 +112,7 @@ export interface IBootstrapService {
 	* Gets the "params" entry associated with the given id and unassociates the id/entry pair.
 	* Returns undefined if no entry is found.
 	*/
-	getBootstrapParams(id: string): any;
+	getBootstrapParams<T extends BootstrapParams>(id: string): T;
 
 	/*
 	* Gets the next unique selector given the baseSelectorString. A unique selector is the baseSelectorString with a

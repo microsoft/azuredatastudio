@@ -93,15 +93,15 @@ export class BackupUiService implements IBackupUiService {
 	private _connectionUri: string;
 	private static _connectionUniqueId: number = 0;
 
-	private _onShowBackupEvent: Emitter<DashboardComponentParams>;
-	public get onShowBackupEvent(): Event<DashboardComponentParams> { return this._onShowBackupEvent.event; }
+	private _onShowBackupEvent: Emitter<{ connection: IConnectionProfile, ownerUri: string }>;
+	public get onShowBackupEvent(): Event<{ connection: IConnectionProfile, ownerUri: string }> { return this._onShowBackupEvent.event; }
 
 	constructor( @IInstantiationService private _instantiationService: IInstantiationService,
 		@IPartService private _partService: IPartService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IBackupService private _disasterRecoveryService: IBackupService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService) {
-		this._onShowBackupEvent = new Emitter<DashboardComponentParams>();
+		this._onShowBackupEvent = new Emitter<{ connection: IConnectionProfile, ownerUri: string }>();
 	}
 
 	public showBackup(connection: IConnectionProfile): Promise<any> {

@@ -8,6 +8,9 @@ import { localize } from 'vs/nls';
 
 import { registerTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
+import { NAV_SECTION, validateNavSectionContribution } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
+import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
+import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 
 export interface IDashboardTabContrib {
 	id: string;
@@ -92,16 +95,43 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		alwaysShow = alwaysShow || false;
 		let publisher = extension.description.publisher;
 		if (!title) {
-			extension.collector.error('No title specified for extension.');
+			extension.collector.error(localize('dashboardTab.contribution.noTitleError', 'No title specified for extension.'));
 			return;
 		}
+
 		if (!description) {
-			extension.collector.warn('No description specified to show.');
+			extension.collector.warn(localize('dashboardTab.contribution.noDescriptionWarning', 'No description specified to show.'));
 		}
+
 		if (!container) {
-			extension.collector.warn('No container specified to show.');
+			extension.collector.error(localize('dashboardTab.contribution.noContainerError', 'No container specified for extension.'));
+			return;
 		}
-		registerTab({ description, title, container, edition, provider, id, alwaysShow, publisher });
+
+		if (Object.keys(container).length !== 1) {
+			extension.collector.error(localize('dashboardTab.contribution.moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space'));
+			return;
+		}
+
+		let result = true;
+		let containerkey = Object.keys(container)[0];
+		let containerValue = Object.values(container)[0];
+
+		switch (containerkey) {
+			case WIDGETS_CONTAINER:
+				result = validateWidgetContainerContribution(extension, containerValue);
+				break;
+			case GRID_CONTAINER:
+				result = validateGridContainerContribution(extension, containerValue);
+				break;
+			case NAV_SECTION:
+				result = validateNavSectionContribution(extension, containerValue);
+				break;
+		}
+
+		if (result) {
+			registerTab({ description, title, container, edition, provider, id, alwaysShow, publisher });
+		}
 	}
 
 	for (let extension of extensions) {
