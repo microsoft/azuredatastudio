@@ -32,6 +32,7 @@ import { IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
 import { ExtHostDashboardWebviews } from 'sql/workbench/api/node/extHostDashboardWebview';
 import { ExtHostConnectionManagement } from 'sql/workbench/api/node/extHostConnectionManagement';
 import { ExtHostDashboard } from 'sql/workbench/api/node/extHostDashboard';
+import { ExtHostObjectExplorer } from 'sql/workbench/api/node/extHostObjectExplorer';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -56,6 +57,7 @@ export function createApiFactory(
 	const extHostConnectionManagement = threadService.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(threadService));
 	const extHostCredentialManagement = threadService.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(threadService));
 	const extHostDataProvider = threadService.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(threadService));
+	const extHostObjectExplorer = threadService.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(threadService));
 	const extHostSerializationProvider = threadService.set(SqlExtHostContext.ExtHostSerializationProvider, new ExtHostSerializationProvider(threadService));
 	const extHostResourceProvider = threadService.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(threadService));
 	const extHostModalDialogs = threadService.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(threadService));
@@ -92,9 +94,6 @@ export function createApiFactory(
 				},
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 					return extHostConnectionManagement.$getCredentials(connectionId);
-				},
-				findObjectExplorerNodes(type: string, name: string, schema: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]> {
-					return extHostConnectionManagement.$findObjectExplorerNodes(type, name, schema, database, parentObjectNames);
 				}
 			};
 
@@ -105,6 +104,19 @@ export function createApiFactory(
 				},
 				getProvider(namespaceId: string): Thenable<sqlops.CredentialProvider> {
 					return extHostCredentialManagement.$getCredentialProvider(namespaceId);
+				}
+			};
+
+			// namespace: objectexplorer
+			const objectExplorer: typeof sqlops.objectexplorer = {
+				getNode(connectionId: string, nodePath?: string): Thenable<sqlops.objectexplorer.ObjectExplorerNode> {
+					return extHostObjectExplorer.$getNode(connectionId, nodePath);
+				},
+				getActiveConnectionNodes(): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
+					return extHostObjectExplorer.$getActiveConnectionNodes();
+				},
+				findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
+					return extHostObjectExplorer.$findNodes(connectionId, type, schema, name, database, parentObjectNames);
 				}
 			};
 
@@ -289,6 +301,7 @@ export function createApiFactory(
 				accounts,
 				connection,
 				credentials,
+				objectexplorer: objectExplorer,
 				resources,
 				serialization,
 				dataprotocol,

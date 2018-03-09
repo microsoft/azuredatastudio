@@ -5,7 +5,7 @@
 'use strict';
 
 import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
-import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
+import { TreeNode, TreeItemCollapsibleState, ObjectExplorerCallbacks } from 'sql/parts/registeredServer/common/treeNode';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -19,6 +19,7 @@ import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeView';
+import * as vscode from 'vscode';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -35,7 +36,7 @@ export interface IObjectExplorerService {
 
 	refreshNode(providerId: string, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo>;
 
-	expandTreeNode(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
+	resolveTreeNodeChildren(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
 
 	refreshTreeNode(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
 
@@ -66,17 +67,20 @@ export interface IObjectExplorerService {
 
 	getServerTreeView(): ServerTreeView;
 
-	findObjectExplorerNodes(type: string, name: string, schema: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
+	findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
+
+	getActiveConnectionNodes(): TreeNode[];
+
+	getTreeNode(connectionId: string, nodePath: string): Thenable<TreeNode>;
 }
 
 interface SessionStatus {
 	nodes: { [nodePath: string]: NodeStatus };
 	connection: ConnectionProfile;
-
 }
 
 interface NodeStatus {
-	expandHandler: (result: sqlops.ObjectExplorerExpandInfo) => void;
+	expandEmitter: Emitter<sqlops.ObjectExplorerExpandInfo>;
 }
 
 export interface ObjectExplorerNodeEventArgs {
@@ -84,6 +88,10 @@ export interface ObjectExplorerNodeEventArgs {
 	errorMessage: string;
 }
 
+export interface NodeInfoWithConnection {
+	connectionId: string;
+	nodeInfo: sqlops.NodeInfo;
+}
 
 export class ObjectExplorerService implements IObjectExplorerService {
 
@@ -154,8 +162,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		let nodeStatus = this._sessions[expandResponse.sessionId].nodes[expandResponse.nodePath];
-		if (nodeStatus && nodeStatus.expandHandler) {
-			nodeStatus.expandHandler(expandResponse);
+		if (nodeStatus && nodeStatus.expandEmitter) {
+			nodeStatus.expandEmitter.fire(expandResponse);
 		} else {
 			warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
 		}
@@ -269,24 +277,33 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		let self = this;
 		return new Promise<sqlops.ObjectExplorerExpandInfo>((resolve, reject) => {
 			if (session.sessionId in self._sessions && self._sessions[session.sessionId]) {
-				self._sessions[session.sessionId].nodes[nodePath] = {
-					expandHandler: ((expandResult) => {
-						if (expandResult && !expandResult.errorMessage) {
-							resolve(expandResult);
-						}
-						else {
-							reject(expandResult ? expandResult.errorMessage : undefined);
-						}
+				let newRequest = false;
+				if (!self._sessions[session.sessionId].nodes[nodePath]) {
+					self._sessions[session.sessionId].nodes[nodePath] = {
+						expandEmitter: new Emitter<sqlops.ObjectExplorerExpandInfo>()
+					};
+					newRequest = true;
+				}
+				self._sessions[session.sessionId].nodes[nodePath].expandEmitter.event(((expandResult) => {
+					if (expandResult && !expandResult.errorMessage) {
+						resolve(expandResult);
+					}
+					else {
+						reject(expandResult ? expandResult.errorMessage : undefined);
+					}
+					if (newRequest) {
 						delete self._sessions[session.sessionId].nodes[nodePath];
-					})
-				};
-				self.callExpandOrRefreshFromProvider(provider, {
-					sessionId: session ? session.sessionId : undefined,
-					nodePath: nodePath
-				}, refresh).then(result => {
-				}, error => {
-					reject(error);
-				});
+					}
+				}));
+				if (newRequest) {
+					self.callExpandOrRefreshFromProvider(provider, {
+						sessionId: session ? session.sessionId : undefined,
+						nodePath: nodePath
+					}, refresh).then(result => {
+					}, error => {
+						reject(error);
+					});
+				}
 			} else {
 				reject(`session cannot find to expand node. id: ${session.sessionId} nodePath: ${nodePath}`);
 			}
@@ -324,7 +341,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._disposables = dispose(this._disposables);
 	}
 
-	public expandTreeNode(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
+	public resolveTreeNodeChildren(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
 		return this.expandOrRefreshTreeNode(session, parentTree);
 	}
 
@@ -378,7 +395,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		return new TreeNode(nodeInfo.nodeType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
-			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata);
+			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata, {
+				getChildren: treeNode => this.getChildren(treeNode),
+				isExpanded: treeNode => this.isExpanded(treeNode),
+				setNodeExpandedState: (treeNode, expandedState) => this.setNodeExpandedState(treeNode, expandedState),
+				setNodeSelected: (treeNode, selected, clearOtherSelections: boolean = undefined) => this.setNodeSelected(treeNode, selected, clearOtherSelections)
+			});
 	}
 
 	public registerServerTreeView(view: ServerTreeView): void {
@@ -426,8 +448,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._serverTreeView;
 	}
 
-	public findObjectExplorerNodes(type: string, name: string, schema: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]> {
-		let sessionId = Object.keys(this._sessions)[0];
+	public findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]> {
+		let rootNode = this._activeObjectExplorerNodes[connectionId];
+		if (!rootNode) {
+			return Promise.resolve([]);
+		}
+		let sessionId = rootNode.session.sessionId;
 		return this._providers[this._sessions[sessionId].connection.providerName].findNodes({
 			type: type,
 			name: name,
@@ -438,5 +464,97 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}).then(response => {
 			return response.nodes;
 		});
+	}
+
+	public getActiveConnectionNodes(): TreeNode[] {
+		return Object.values(this._activeObjectExplorerNodes);
+	}
+
+	private async setNodeExpandedState(treeNode: TreeNode, expandedState: TreeItemCollapsibleState): Promise<void> {
+		treeNode = await this.getUpdatedTreeNode(treeNode);
+		let expandNode = this.getTreeItem(treeNode);
+		if (expandedState === TreeItemCollapsibleState.Expanded) {
+			await this._serverTreeView.reveal(expandNode);
+		}
+		return this._serverTreeView.setExpandedState(expandNode, expandedState);
+	}
+
+	private async setNodeSelected(treeNode: TreeNode, selected: boolean, clearOtherSelections: boolean = undefined): Promise<void> {
+		treeNode = await this.getUpdatedTreeNode(treeNode);
+		let selectNode = this.getTreeItem(treeNode);
+		if (selected) {
+			await this._serverTreeView.reveal(selectNode);
+		}
+		return this._serverTreeView.setSelected(selectNode, selected, clearOtherSelections);
+	}
+
+	private async getChildren(treeNode: TreeNode): Promise<TreeNode[]> {
+		treeNode = await this.getUpdatedTreeNode(treeNode);
+		if (treeNode.isAlwaysLeaf) {
+			return [];
+		}
+		if (!treeNode.children) {
+			await this.resolveTreeNodeChildren(treeNode.getSession(), treeNode);
+		}
+		return treeNode.children;
+	}
+
+	private async isExpanded(treeNode: TreeNode): Promise<boolean> {
+		treeNode = await this.getUpdatedTreeNode(treeNode);
+		do {
+			let expandNode = this.getTreeItem(treeNode);
+			if (!this._serverTreeView.isExpanded(expandNode)) {
+				return false;
+			}
+			treeNode = treeNode.parent;
+		} while (treeNode);
+
+		return true;
+	}
+
+	private getTreeItem(treeNode: TreeNode): TreeNode | ConnectionProfile {
+		let rootNode = this._activeObjectExplorerNodes[treeNode.getConnectionProfile().id];
+		if (treeNode === rootNode) {
+			return treeNode.connection;
+		}
+		return treeNode;
+	}
+
+	private getUpdatedTreeNode(treeNode: TreeNode): Promise<TreeNode> {
+		return this.getTreeNode(treeNode.getConnectionProfile().id, treeNode.nodePath).then(treeNode => {
+			if (!treeNode) {
+				throw new Error(nls.localize('treeNodeNoLongerExists', 'The given tree node no longer exists'));
+			}
+			return treeNode;
+		});
+	}
+
+	public async getTreeNode(connectionId: string, nodePath: string): Promise<TreeNode> {
+		let parentNode = this._activeObjectExplorerNodes[connectionId];
+		if (!parentNode) {
+			return undefined;
+		}
+		if (!nodePath) {
+			return parentNode;
+		}
+		let currentNode = parentNode;
+		while (currentNode.nodePath !== nodePath) {
+			let nextNode = undefined;
+			if (!currentNode.isAlwaysLeaf && !currentNode.children) {
+				await this.resolveTreeNodeChildren(currentNode.getSession(), currentNode);
+			}
+			if (currentNode.children) {
+				// Look at the next node in the path, which is the child object with the longest path where the desired path starts with the child path
+				let children = currentNode.children.filter(child => nodePath.startsWith(child.nodePath));
+				if (children.length > 0) {
+					nextNode = children.reduce((currentMax, candidate) => currentMax.nodePath.length < candidate.nodePath.length ? candidate : currentMax);
+				}
+			}
+			if (!nextNode) {
+				return undefined;
+			}
+			currentNode = nextNode;
+		}
+		return currentNode;
 	}
 }
