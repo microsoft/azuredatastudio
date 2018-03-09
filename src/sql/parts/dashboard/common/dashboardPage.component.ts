@@ -171,7 +171,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 
 		this._tabsDispose.push(this.dashboardService.onPinUnpinTab(e => {
 			let tabConfig = this._tabSettingConfigs.find(i => i.tabId === e.tabId);
-			if (tabConfig){
+			if (tabConfig) {
 				tabConfig.isPinned = e.isPinned;
 			} else {
 				this._tabSettingConfigs.push(e);
@@ -222,7 +222,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 				let isPinned = false;
 				if (tabConfig) {
 					isPinned = tabConfig.isPinned;
-				} else if (v.alwaysShow){
+				} else if (v.alwaysShow) {
 					isPinned = true;
 				}
 				actions.push(this.dashboardService.instantiationService.createInstance(PinUnpinTabAction, v.id, this.dashboardService.getUnderlyingUri(), isPinned));
