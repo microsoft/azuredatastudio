@@ -308,7 +308,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Get Agent Job list
 	 */
-	$getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobInfo[]>{ throw ni(); }
+	$getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult>{ throw ni(); }
 }
 
 

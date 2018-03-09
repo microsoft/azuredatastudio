@@ -17,5 +17,5 @@ export interface IAgentService {
 
 	registerProvider(providerId: string, provider: sqlops.AgentServicesProvider): void;
 
-	getJobs(connectionUri: string): Thenable<sqlops.AgentJobInfo[]>;
+	getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult>;
 }

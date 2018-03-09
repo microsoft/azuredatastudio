@@ -69,7 +69,7 @@ export class AgentViewComponent implements OnInit, OnDestroy {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._agentService.getJobs(ownerUri).then((result) => {
 			if (result) {
-				this.jobs = result;
+				this.jobs = result.jobs;
 				this._cd.detectChanges();
 			}
 		});

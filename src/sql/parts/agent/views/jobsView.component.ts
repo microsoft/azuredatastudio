@@ -42,12 +42,12 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 
 	ngOnInit() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		// this._agentService.getJobs(ownerUri).then((result) => {
-		// 	if (result) {
-		// 		this.jobs = result;
-		// 		this._cd.detectChanges();
-		// 	}
-		// });
+		this._agentService.getJobs(ownerUri).then((result) => {
+			if (result) {
+				this.jobs = result.jobs;
+				this._cd.detectChanges();
+			}
+		});
 	}
 
 	ngOnDestroy() {

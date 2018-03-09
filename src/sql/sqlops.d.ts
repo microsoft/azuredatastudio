@@ -937,6 +937,12 @@ declare module 'sqlops' {
 	}
 
 	// Agent Services interfaces
+	export interface AgentJobsResult {
+		succeeded: boolean;
+		errorMessage: string;
+		jobs: AgentJobInfo[];
+	}
+
 	export interface AgentJobInfo {
 		name: string;
 		currentExecutionStatus: number;
@@ -956,7 +962,7 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentServicesProvider extends DataProvider {
-		getJobs(connectionUri: string): Thenable<AgentJobInfo[]>;
+		getJobs(connectionUri: string): Thenable<AgentJobsResult>;
 	}
 
 	// Task service interfaces ----------------------------------------------------------------------------

@@ -492,7 +492,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Get Agent Job list
 	 */
-	public $getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobInfo[]> {
+	public $getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult> {
 		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getJobs(ownerUri);
 	}
 }

@@ -24,7 +24,7 @@ export class AgentService implements IAgentService {
 	) {
 	}
 
-	public getJobs(connectionUri: string): Thenable<sqlops.AgentJobInfo[]> {
+	public getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getJobs(connectionUri);
 		});
