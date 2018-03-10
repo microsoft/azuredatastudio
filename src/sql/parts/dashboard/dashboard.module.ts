@@ -132,7 +132,7 @@ export class DashboardModule {
 		appRef.bootstrap(factory);
 
 		this._router.events.subscribe(e => {
-			if(e instanceof NavigationStart) {
+			if (e instanceof NavigationStart) {
 				TelemetryUtils.addTelemetry(this._bootstrapService.telemetryService, TelemetryKeys.DashboardNavigated, {
 					uri: this._bootstrap.getUnderlyingUri(),
 					databaseName: this._bootstrap.connectionManagementService.connectionInfo.connectionProfile.databaseName,

@@ -44,12 +44,12 @@ export class DashboardEditor extends BaseEditor {
 		@IEditorGroupService private _editorGroupService: IEditorGroupService
 	) {
 		super(DashboardEditor.ID, telemetryService, themeService);
-		this._editorGroupService.getStacksModel().onEditorClosed((e) => this.onEditorClosed(e));
+		this._editorGroupService.getStacksModel().onEditorClosed(e => this.onEditorClosed(e));
 	}
 
 	private onEditorClosed(e: IEditorCloseEvent) {
 		if (e.editor instanceof DashboardInput) {
-			TelemetryUtils.addTelemetry(this.telemetryService, TelemetryKeys.DashboardDocumentClosed, { uri: this.input.uri});
+			TelemetryUtils.addTelemetry(this.telemetryService, TelemetryKeys.DashboardDocumentClosed, { uri: this.input.uri });
 		}
 	}
 
@@ -94,7 +94,7 @@ export class DashboardEditor extends BaseEditor {
 
 		super.setInput(input, options);
 
-		TelemetryUtils.addTelemetry(this.telemetryService, TelemetryKeys.DashboardDocumentOpened, { uri: this.input.uri});
+		TelemetryUtils.addTelemetry(this.telemetryService, TelemetryKeys.DashboardDocumentOpened, { uri: this.input.uri });
 
 		$(parentElement).clearChildren();
 
