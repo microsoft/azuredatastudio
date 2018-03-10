@@ -23,8 +23,6 @@ export const RunQueryStatement = 'RunQueryStatement';
 export const CancelQuery = 'CancelQuery';
 export const NewQuery = 'NewQuery';
 export const FirewallRuleRequested = 'FirewallRuleCreated';
-export const DashboardDocumentOpened = 'DashboardDocumentOpened';
-export const DashboardDocumentClosed = 'DashboardDocumentClosed';
 export const DashboardNavigated = 'DashboardNavigated';
 
 

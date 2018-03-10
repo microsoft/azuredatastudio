@@ -6,7 +6,7 @@
 import { Inject, NgModule, forwardRef, ApplicationRef, ComponentFactoryResolver } from '@angular/core';
 import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule, Routes, UrlSerializer, Router, NavigationStart } from '@angular/router';
+import { RouterModule, Routes, UrlSerializer, Router, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgGridModule } from 'angular2-grid';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
@@ -132,10 +132,9 @@ export class DashboardModule {
 		appRef.bootstrap(factory);
 
 		this._router.events.subscribe(e => {
-			if (e instanceof NavigationStart) {
+			if (e instanceof NavigationEnd) {
 				TelemetryUtils.addTelemetry(this._bootstrapService.telemetryService, TelemetryKeys.DashboardNavigated, {
-					uri: this._bootstrap.getUnderlyingUri(),
-					databaseName: this._bootstrap.connectionManagementService.connectionInfo.connectionProfile.databaseName,
+					routeId: e.id,
 					routeUrl: e.url
 				});
 			}
