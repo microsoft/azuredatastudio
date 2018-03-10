@@ -105,7 +105,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			this._register(toDisposableSubscription(this._bootstrap.metadataService.databaseNames.subscribe(
 				data => {
 					let profileData = data.map(d => {
-						let profile = new ConnectionProfile(currentProfile.serverCapabilities, currentProfile);
+						let profile = new ConnectionProfile(this._bootstrap.capabilitiesService, currentProfile);
 						profile.databaseName = d;
 						return profile;
 					});

@@ -22,7 +22,7 @@ import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesServ
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
-import { PinConfig } from 'sql/parts/dashboard/common/dashboardWidget';
+import { TabSettingConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 
 import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'sqlops';
@@ -146,8 +146,8 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _onDeleteWidget = new Emitter<string>();
 	public readonly onDeleteWidget: Event<string> = this._onDeleteWidget.event;
 
-	private _onPinUnpinTab = new Emitter<PinConfig>();
-	public readonly onPinUnpinTab: Event<PinConfig> = this._onPinUnpinTab.event;
+	private _onPinUnpinTab = new Emitter<TabSettingConfig>();
+	public readonly onPinUnpinTab: Event<TabSettingConfig> = this._onPinUnpinTab.event;
 
 	private _onAddNewTabs = new Emitter<Array<IDashboardTab>>();
 	public readonly onAddNewTabs: Event<Array<IDashboardTab>> = this._onAddNewTabs.event;

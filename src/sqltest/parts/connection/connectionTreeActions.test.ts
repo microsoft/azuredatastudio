@@ -33,6 +33,7 @@ import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext, ManageConnectionAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
 import { IConnectionResult, IConnectionParams } from 'sql/parts/connection/common/connectionManagement';
 import { TreeSelectionHandler } from 'sql/parts/registeredServer/viewlet/treeSelectionHandler';
+import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<ErrorMessageServiceStub>;
@@ -42,6 +43,7 @@ suite('SQL Connection Tree Action tests', () => {
 		errorCode: undefined,
 		callStack: undefined
 	};
+	let capabilitiesService = new CapabilitiesTestService();
 	setup(() => {
 		errorMessageService = TypeMoq.Mock.ofType(ErrorMessageServiceStub, TypeMoq.MockBehavior.Loose);
 		let nothing: void;
@@ -91,7 +93,7 @@ suite('SQL Connection Tree Action tests', () => {
 
 		let manageConnectionAction: ManageConnectionAction = new ManageConnectionAction(ManageConnectionAction.ID,
 			ManageConnectionAction.LABEL, connectionManagementService.object, instantiationService.object, objectExplorerService.object);
-		let connection: ConnectionProfile = new ConnectionProfile(undefined, {
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -126,7 +128,7 @@ suite('SQL Connection Tree Action tests', () => {
 
 		let manageConnectionAction: ManageConnectionAction = new ManageConnectionAction(ManageConnectionAction.ID,
 			ManageConnectionAction.LABEL, connectionManagementService.object, instantiationService.object, objectExplorerService.object);
-		let connection: ConnectionProfile = new ConnectionProfile(undefined, {
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -158,7 +160,7 @@ suite('SQL Connection Tree Action tests', () => {
 		let objectExplorerService = createObjectExplorerService(connectionManagementService.object);
 
 		let changeConnectionAction: DisconnectConnectionAction = new DisconnectConnectionAction(DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL, connectionManagementService.object, objectExplorerService.object, errorMessageService.object);
-		let connection: ConnectionProfile = new ConnectionProfile(undefined, {
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -265,7 +267,7 @@ suite('SQL Connection Tree Action tests', () => {
 	test('DeleteConnectionAction - test delete connection', (done) => {
 		let connectionManagementService = createConnectionManagementService(true);
 
-		let connection: ConnectionProfile = new ConnectionProfile(undefined, {
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -311,7 +313,7 @@ suite('SQL Connection Tree Action tests', () => {
 		let isConnectedReturnValue: boolean = false;
 		let connectionManagementService = createConnectionManagementService(isConnectedReturnValue);
 
-		let connection: ConnectionProfile = new ConnectionProfile(undefined, {
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -348,7 +350,9 @@ suite('SQL Connection Tree Action tests', () => {
 			features: undefined
 		};
 
-		var connection = new ConnectionProfile(sqlProvider, {
+		capabilitiesService.capabilities['MSSQL'] = sqlProvider;
+
+		var connection = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -437,7 +441,9 @@ suite('SQL Connection Tree Action tests', () => {
 			features: undefined
 		};
 
-		var connection = new ConnectionProfile(sqlProvider, {
+		capabilitiesService.capabilities['MSSQL'] = sqlProvider;
+
+		var connection = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
