@@ -9,7 +9,8 @@ import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, Elemen
 import Event, { Emitter } from 'vs/base/common/event';
 import Webview from 'vs/workbench/parts/html/browser/webview';
 import { Parts } from 'vs/workbench/services/part/common/partService';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
@@ -23,7 +24,7 @@ import { memoize } from 'vs/base/common/decorators';
 	template: '',
 	selector: 'webview-content'
 })
-export class WebviewContent implements OnInit, IDashboardWebview {
+export class WebviewContent extends Disposable implements OnInit, IDashboardWebview {
 	@Input() private webviewId: string;
 
 	private _onResize = new Emitter<void>();
@@ -40,11 +41,15 @@ export class WebviewContent implements OnInit, IDashboardWebview {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
 	) {
+		super();
 	}
 
 	ngOnInit() {
 		this._dashboardService.dashboardWebviewService.registerWebview(this);
 		this._createWebview();
+		this._register(addDisposableListener(window, EventType.RESIZE, e => {
+			this.layout();
+		}));
 	}
 
 	public layout(): void {
