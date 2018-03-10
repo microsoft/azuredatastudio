@@ -1,0 +1,127 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+
+ <h1>Jobs | {{ job_name }}</h1>
+
+ <!-- Back -->
+ <div class="all-jobs">
+	<div class="backButtonIcon"></div>All Jobs
+ </div>
+
+<!-- Actions -->
+<ul class="action-buttons">
+	<li>
+		<a class="icon-start"></a>
+		<p>Run</p>
+	</li>
+	<li>
+		<a class="icon-stop"></a>
+		<p>Stop</p>
+	</li>
+</ul>
+
+<!-- Overview  -->
+ <div class="overview-container">
+   <div class="overview-tab" (click)='toggleCollapse()'>
+	 <input id="accordion" type="checkbox">
+	 <label for="accordion">
+		<div class="resultsViewCollapsible collapsed" (click)='toggleCollapse()'></div>
+		 Overview
+	</label>
+	 <div class="accordion-content">
+		<table align='left'>
+				<tr>
+					<td id='col1'>
+						User:
+					</td>
+					<td id='col2'>
+						job.User
+					</td>
+					<td id='col3'>
+						Enabled:
+					</td>
+					<td id='col4'>
+						job.Enabled
+					</td>
+				</tr>
+				<tr>
+					<td id='col1'>
+						Alert:
+					</td>
+					<td id='col2'>
+						job.Alert
+					</td>
+					<td id='col3'>
+						Notification:
+					</td>
+					<td id='col4'>
+						job.Notification
+					</td>
+				</tr>
+				<tr>
+					<td id='col1'>
+						Schedule:
+					</td>
+					<td id='col2'>
+						job.Schedule
+					</td>
+					<td id='col3'>
+						Target Server:
+					</td>
+					<td id='col4'>
+						job.Server
+					</td>
+				</tr>
+		</table>
+	 </div>
+   </div>
+</div>
+
+<!-- Job History details -->
+<div class='history-details'>
+	<!-- Previous run list -->
+	<div class="prev-run-list">
+		<div class="prev-run-header">
+			<table>
+				<tr>
+					<td id="#col1">
+						Date
+					</td>
+					<td id="#col2">
+						Status
+					</td>
+				</tr>
+				<tr>
+					<td id="#col1">
+						01/24/2018 00:04:35 AM
+					</td>
+					<td id="#col2">
+						Failed
+					</td>
+				</tr>
+				<tr>
+					<td id="#col1">
+						01/24/2018 00:04:35 AM
+					</td>
+					<td id="#col2">
+						Succeeded
+					</td>
+				</tr>
+				<tr>
+					<td id="#col1">
+						01/24/2018 00:04:35 AM
+					</td>
+					<td id="#col2">
+						Succeeded
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div class="job-steps"></div>
+</div>
+

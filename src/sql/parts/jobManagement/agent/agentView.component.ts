@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!../common/jobs';
+import 'vs/css!../common/media/jobs';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
@@ -30,16 +30,24 @@ export class AgentViewComponent implements OnInit, OnDestroy {
 
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 
-	private _jobManagementService: IJobManagementService;
+	private _agentService: IJobManagementService;
 
 	public jobs: AgentJobInfo[];
 
 	// tslint:disable:no-unused-variable
 	private readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
+	private readonly alertsComponentTitle: string = nls.localize('jobview.Alerts', "Alerts");
 	private readonly schedulesComponentTitle: string = nls.localize('jobview.Schedules', "Schedules");
+	private readonly operatorsComponentTitle: string = nls.localize('jobview.Operator', "Operators");
+
+	private readonly jobHistoryComponentTitle: string = nls.localize('jobview.History', "History");
 
 	private readonly jobsTabIdentifier = 'jobs';
-	private readonly schedulesTabIdentifier = 'schedule';
+	private readonly alertsTabIdentifier = 'alerts';
+	private readonly schedulesTabIdentifier = 'schedules';
+	private readonly operatorTabIdentifier = 'operators';
+
+	private readonly historyTabIdentifier = 'history';
 	// tslint:enable:no-unused-variable
 
 	// tslint:disable-next-line:no-unused-variable
@@ -54,17 +62,10 @@ export class AgentViewComponent implements OnInit, OnDestroy {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
-		this._jobManagementService = bootstrapService.jobManagementService;
+		this._agentService = bootstrapService.jobManagementService;
 	}
 
 	ngOnInit() {
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getJobs(ownerUri).then((result) => {
-			if (result) {
-				this.jobs = result;
-				this._cd.detectChanges();
-			}
-		});
 	}
 
 	ngOnDestroy() {

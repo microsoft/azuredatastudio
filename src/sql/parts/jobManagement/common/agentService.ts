@@ -24,9 +24,15 @@ export class AgentService implements IJobManagementService {
 	) {
 	}
 
-	public getJobs(connectionUri: string): Thenable<sqlops.AgentJobInfo[]> {
+	public getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getJobs(connectionUri);
+		});
+	}
+
+	public getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getJobHistory(connectionUri, jobID);
 		});
 	}
 

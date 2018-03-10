@@ -1,0 +1,149 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.all-jobs {
+	display: inline;
+	font-size: 15px;
+	padding-bottom: 15px;
+}
+
+.action-buttons {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 10px;
+	list-style-type: none;
+}
+
+.resultsViewCollapsible {
+	padding: 15px;
+	display: inline;
+}
+
+body {
+	color: #2c3e50;
+	background: #ecf0f1;
+}
+
+h1 {
+	text-align: left;
+	padding-left: 13px;
+}
+
+.overview-container {
+	padding-top: 5px;
+	width: 90%;
+	/* padding: 0 1em; */
+}
+
+.overview-tab {
+	position: relative;
+	margin-bottom: 1px;
+	width: 100%;
+	color: #fff;
+	overflow: hidden;
+}
+
+input {
+	position: absolute;
+	opacity: 0;
+	z-index: -1;
+}
+
+label {
+	position: relative;
+	display: block;
+	padding: 0 0 0 1em;
+	background: #444444;
+	font-weight: bold;
+	line-height: 3;
+	cursor: pointer;
+	width: 100%;
+}
+
+.accordion-content {
+	max-height: 0;
+	overflow: hidden;
+	background: #333333;
+	-webkit-transition: max-height .35s;
+	-o-transition: max-height .35s;
+	transition: max-height .35s;
+	width: 100%;
+}
+
+.accordion-content p {
+	margin: 1em;
+}
+
+/* :checked */
+input:checked ~ .accordion-content {
+	max-height: 10em;
+}
+
+/* Icon */
+label::after {
+	position: absolute;
+	right: 0;
+	top: 0;
+	display: block;
+	width: 3em;
+	height: 3em;
+	line-height: 3;
+	text-align: center;
+	-webkit-transition: all .3s;
+	-o-transition: all .3s;
+	transition: all .3s;
+}
+
+.backButtonIcon {
+	content: url('../common/media/back.svg');
+	width: 20px;
+	margin-right: 10px;
+	float: left;
+	cursor: pointer;
+	padding-left: 13px;
+}
+
+.vs-dark.monaco-shell .backButtonIcon {
+	content: url('../common/media/back_inverse.svg');
+}
+
+.vs .icon-start,
+.vs-dark .icon-start,
+.hc-black .icon-start {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	background-image: url('../common/media/start.svg');
+	background-repeat: no-repeat;
+}
+
+.vs .icon-stop,
+.vs-dark .icon-stop,
+.hc-black .icon-stop {
+	display: inline-block;
+	background-image: url('../common/media/stop.svg');
+	background-repeat: no-repeat;
+	height: 20px;
+	width: 20px;
+}
+
+.action-buttons li {
+	display: inline-block;
+	height: 50px;
+	width: 50px;
+	cursor: pointer;
+}
+
+#col1, #col2, #col3, #col4 {
+	padding: 10px;
+}
+
+#col2 {
+	padding-right: 300px;
+}
+
+.prev-run-list {
+	width: 30%;
+}
