@@ -97,7 +97,7 @@ label::after {
 }
 
 .backButtonIcon {
-	content: url('../media/back.svg');
+	content: url('../common/media/back.svg');
 	width: 20px;
 	margin-right: 10px;
 	float: left;
