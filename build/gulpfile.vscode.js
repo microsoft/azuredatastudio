@@ -67,6 +67,13 @@ const excludedExtensions = [
 	'vscode-colorize-tests'
 ];
 
+// {{SQL CARBON EDIT}}
+const vsce = require('vsce');
+const sqlBuiltInExtensions = [
+	// Add SQL built-in extensions here.
+	// the extension will be excluded from SQLOps package and ill have separate vsix packages
+];
+
 const vscodeEntryPoints = _.flatten([
 	buildfile.entrypoint('vs/workbench/workbench.main'),
 	buildfile.base,
@@ -242,6 +249,26 @@ function computeChecksum(filename) {
 	return hash;
 }
 
+function packageBuiltInExtensions() {
+	const sqlBuiltInlocalExtensionDescriptions = glob.sync('extensions/*/package.json')
+			.map(manifestPath => {
+				const extensionPath = path.dirname(path.join(root, manifestPath));
+				const extensionName = path.basename(extensionPath);
+				return { name: extensionName, path: extensionPath };
+			})
+			.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
+			.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
+			.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
+	sqlBuiltInlocalExtensionDescriptions.forEach(element => {
+		const packagePath = path.join(path.dirname(root), element.name + '.vsix');
+		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
+		vsce.createVSIX({
+				cwd: element.path,
+				packagePath: packagePath
+		});
+	});
+}
+
 function packageTask(platform, arch, opts) {
 	opts = opts || {};
 
@@ -271,7 +298,10 @@ function packageTask(platform, arch, opts) {
 				return { name: extensionName, path: extensionPath };
 			})
 			.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
-			.filter(({ name }) => builtInExtensions.every(b => b.name !== name));
+			.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
+			// {{SQL CARBON EDIT}}
+			.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1);
+			packageBuiltInExtensions();
 
 		const localExtensions = es.merge(...localExtensionDescriptions.map(extension => {
 			const nlsFilter = filter('**/*.nls.json', { restore: true });
