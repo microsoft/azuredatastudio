@@ -6,12 +6,13 @@
 import * as DOM from 'vs/base/browser/dom';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Dimension, Builder, $ } from 'vs/base/browser/builder';
-import { EditorOptions } from 'vs/workbench/common/editor';
+import { EditorOptions, IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
 
 import { DashboardInput } from './dashboardInput';
 import { DashboardModule } from './dashboard.module';
@@ -23,6 +24,8 @@ import { IDashboardService } from 'sql/services/dashboard/common/dashboardServic
 import { ConnectionProfile } from '../connection/common/connectionProfile';
 import { IConnectionProfile } from 'sqlops';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import * as TelemetryUtils from 'sql/common/telemetryUtilities';
+import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
 export class DashboardEditor extends BaseEditor {
 
@@ -37,9 +40,17 @@ export class DashboardEditor extends BaseEditor {
 		@IBootstrapService private _bootstrapService: IBootstrapService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IDashboardService private _dashboardService: IDashboardService,
-		@IConnectionManagementService private _connMan: IConnectionManagementService
+		@IConnectionManagementService private _connMan: IConnectionManagementService,
+		@IEditorGroupService private _editorGroupService: IEditorGroupService
 	) {
 		super(DashboardEditor.ID, telemetryService, themeService);
+		this._editorGroupService.getStacksModel().onEditorClosed((e) => this.onEditorClosed(e));
+	}
+
+	private onEditorClosed(e: IEditorCloseEvent) {
+		if (e.editor instanceof DashboardInput) {
+			TelemetryUtils.addTelemetry(this.telemetryService, TelemetryKeys.DashboardDocumentClosed, { uri: this.input.uri});
+		}
 	}
 
 	public get input(): DashboardInput {
@@ -82,6 +93,8 @@ export class DashboardEditor extends BaseEditor {
 		const parentElement = this.getContainer().getHTMLElement();
 
 		super.setInput(input, options);
+
+		TelemetryUtils.addTelemetry(this.telemetryService, TelemetryKeys.DashboardDocumentOpened, { uri: this.input.uri});
 
 		$(parentElement).clearChildren();
 

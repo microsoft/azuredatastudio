@@ -63,3 +63,8 @@
 	opacity: .6;
 	font-weight: 600;
 }
+
+.no-extensionTab-label {
+	font-size: 12px;
+	padding: 15px;
+}

@@ -101,6 +101,8 @@ export class NewDashboardTabDialog extends Modal {
 	private _extensionList: List<IDashboardUITab>;
 	private _extensionTabView: FixedListView<IDashboardUITab>;
 	private _container: HTMLElement;
+	private _extensionViewContainer: HTMLElement;
+	private _noExtensionViewContainer: HTMLElement;
 
 	private _viewModel: NewDashboardTabViewModel;
 
@@ -154,10 +156,20 @@ export class NewDashboardTabDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
-		let viewBody = DOM.$('div.extension-view');
-		DOM.append(container, viewBody);
+		this._extensionViewContainer = DOM.$('div.extension-view');
+		DOM.append(container, this._extensionViewContainer);
 
-		// Create a fixed list view for the account provider
+		this.createExtensionList(this._extensionViewContainer);
+		this._noExtensionViewContainer = DOM.$('.no-extension-view');
+		let noExtensionTitle = DOM.append(this._noExtensionViewContainer, DOM.$('.no-extensionTab-label'));
+		let noExtensionLabel = localize('newdashboardTabDialog.noExtensionLabel', 'No available feature tabs. Install extensions from the Extension Manager to get additional features.');
+		noExtensionTitle.innerHTML = noExtensionLabel;
+
+		DOM.append(container, this._noExtensionViewContainer);
+	}
+
+	private createExtensionList(container: HTMLElement) {
+		// Create a fixed list view for the extensions
 		let extensionTabViewContainer = DOM.$('.extensionTab-view');
 		let delegate = new ExtensionListDelegate(NewDashboardTabDialog.EXTENSIONLIST_HEIGHT);
 		let extensionTabRenderer = new ExtensionListRenderer();
@@ -186,7 +198,7 @@ export class NewDashboardTabDialog extends Modal {
 			}
 		});
 
-		this._extensionTabView.render(viewBody, Orientation.VERTICAL);
+		this._extensionTabView.render(container, Orientation.VERTICAL);
 
 		this._register(attachListStyler(this._extensionList, this._themeService));
 
@@ -234,10 +246,14 @@ export class NewDashboardTabDialog extends Modal {
 		this._extensionTabView.updateList(tabs);
 		this.layout();
 		if (this._extensionList.length > 0) {
+			this._extensionViewContainer.hidden = false;
+			this._noExtensionViewContainer.hidden = true;
 			this._extensionList.setSelection([0]);
 			this._extensionList.domFocus();
 			this._addNewTabButton.enabled = true;
 		} else {
+			this._extensionViewContainer.hidden = true;
+			this._noExtensionViewContainer.hidden = false;
 			this._addNewTabButton.enabled = false;
 			this._cancelButton.focus();
 		}
