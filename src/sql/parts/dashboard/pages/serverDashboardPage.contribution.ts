@@ -77,7 +77,7 @@ let defaultVal = [
 	{
 		name: 'Tasks',
 		widget: {
-			'tasks-widget': [{ name: 'backup', when: '!mssql:iscloud' }, 'configureDashboard', 'newQuery']
+			'tasks-widget': [{ name: 'restore', when: '!mssql:iscloud' }, 'configureDashboard', 'newQuery']
 		},
 		gridItemConfig: {
 			sizex: 1,
