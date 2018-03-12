@@ -28,6 +28,8 @@ export interface IProductConfiguration {
 		controlUrl: string;
 	};
 	extensionTips: { [id: string]: string; };
+	// {{SQL CARBON EDIT}}
+	recommendedExtensions: string[];
 	extensionImportantTips: { [id: string]: { name: string; pattern: string; }; };
 	exeBasedExtensionTips: { [id: string]: any; };
 	extensionKeywords: { [extension: string]: string[]; };

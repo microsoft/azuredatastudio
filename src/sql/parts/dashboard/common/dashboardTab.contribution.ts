@@ -5,6 +5,7 @@
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
+import * as types from 'vs/base/common/types';
 
 import { registerTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
@@ -92,7 +93,11 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 
 	function handleCommand(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
 		let { description, container, title, edition, provider, id, alwaysShow } = tab;
-		alwaysShow = alwaysShow || false;
+
+		// If always show is not specified, set it to true by default.
+		if (!types.isBoolean(alwaysShow)) {
+			alwaysShow = true;
+		}
 		let publisher = extension.description.publisher;
 		if (!title) {
 			extension.collector.error(localize('dashboardTab.contribution.noTitleError', 'No title specified for extension.'));

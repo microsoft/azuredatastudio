@@ -32,7 +32,6 @@
 	"extensionsGallery": {
 		"serviceUrl":"https://raw.githubusercontent.com/Microsoft/sqlopsstudio/release/extensions/extensionsGallery.json"
 	},
-	"extensionTips": {
-		"TestExtension": "{**/*.*}"
-	}
+	"recommendedExtensions": [
+	]
 }
