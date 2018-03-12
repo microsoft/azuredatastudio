@@ -10,9 +10,10 @@
 }
 
 .action-buttons {
-	padding-top: 5px;
+	padding-top: 15px;
 	padding-bottom: 5px;
 	padding-left: 10px;
+	border-top: 3px solid #444444;
 	list-style-type: none;
 }
 
@@ -33,7 +34,6 @@ h1 {
 
 .overview-container {
 	padding-top: 5px;
-	width: 90%;
 	/* padding: 0 1em; */
 }
 
@@ -144,6 +144,46 @@ label::after {
 	padding-right: 300px;
 }
 
-.prev-run-list {
-	width: 30%;
+.failed {
+	border-left: 5px solid red;
+	padding-right: 30px;
+}
+
+.passed {
+	border-left: 5px solid green;
+	padding-right: 30px;
+}
+
+table.prev-run-list {
+	border-spacing: 0;
+	border-collapse: collapse;
+	display: inline;
+	padding-right: 30px;
+}
+
+tr.list-row {
+	border-bottom: 1px solid #444444;
+	border-right: none;
+    border-top: none;
+    border-collapse: collapse;
+}
+
+tr.list-row td {
+	width: 70%;
+}
+
+tr.step-row td {
+	padding-right: 100px;
+}
+
+.history-details {
+	height: 100%;
+	display: flex;
+}
+
+.job-steps {
+	display: inline-block;
+	border-left: 3px solid #444444;
+	padding-left: 10px;
+	height: 100%;
 }
