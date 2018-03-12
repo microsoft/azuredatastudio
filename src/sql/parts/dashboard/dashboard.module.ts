@@ -133,8 +133,9 @@ export class DashboardModule {
 
 		this._router.events.subscribe(e => {
 			if (e instanceof NavigationEnd) {
+				this._bootstrap.handlePageNavigation();
 				TelemetryUtils.addTelemetry(this._bootstrapService.telemetryService, TelemetryKeys.DashboardNavigated, {
-					routeId: e.id,
+					numberOfNavigations: this._bootstrap.getNumberOfPageNavigations(),
 					routeUrl: e.url
 				});
 			}

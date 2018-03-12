@@ -155,6 +155,8 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _onCloseTab = new Emitter<string>();
 	public readonly onCloseTab: Event<string> = this._onCloseTab.event;
 
+	private _numberOfPageNavigations: number;
+
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => Router)) private _router: Router,
@@ -174,6 +176,7 @@ export class DashboardServiceInterface implements OnDestroy {
 		this._dashboardWebviewService = this._bootstrapService.dashboardWebviewService;
 		this._partService = this._bootstrapService.partService;
 		this._angularEventingService = this._bootstrapService.angularEventingService;
+		this._numberOfPageNavigations = 0;
 	}
 
 	ngOnDestroy() {
@@ -289,6 +292,20 @@ export class DashboardServiceInterface implements OnDestroy {
 
 	public getOriginalConnectionProfile(): IConnectionProfile {
 		return this._bootstrapParams.connection;
+	}
+
+	/**
+	 * Gets the number of page navigation
+	 */
+	public getNumberOfPageNavigations(): number {
+		return this._numberOfPageNavigations;
+	}
+
+	/**
+	 * Handle on page navigation
+	 */
+	public handlePageNavigation(): void {
+		this._numberOfPageNavigations++;
 	}
 
 	/**
