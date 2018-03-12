@@ -30,13 +30,17 @@ import { $, Builder } from 'vs/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
 import { CommandsRegistry, ICommand } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 
-interface IConfig {
-	tasks: Array<Object>;
+interface ITask {
+	name: string;
+	when: string;
 }
 
+const selector = 'tasks-widget';
+
 @Component({
-	selector: 'tasks-widget',
+	selector,
 	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/widgets/tasks/tasksWidget.component.html'))
 })
 export class TasksWidget extends DashboardWidget implements IDashboardWidget, OnInit {
@@ -58,11 +62,22 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	) {
 		super();
 		this._profile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
-		let tasksConfig = <IConfig>Object.values(this._config.widget)[0];
+		let tasksConfig = this._config.widget[selector] as Array<string | ITask>;
 		let tasks = TaskRegistry.getTasks();
 
-		if (tasksConfig.tasks) {
-			tasks = Object.keys(tasksConfig.tasks).filter(i => tasks.includes(i));
+		if (types.isArray(tasksConfig) && tasksConfig.length > 0) {
+			tasks = tasksConfig.map(i => {
+				if (types.isString(i)) {
+					if (tasks.includes(i)) {
+						return i;
+					}
+				} else {
+					if (tasks.includes(i.name) && _bootstrap.contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(i.when))) {
+						return i.name;
+					}
+				}
+				return undefined;
+			}).filter(i => !!i);
 		}
 
 		this._tasks = tasks.map(i => MenuRegistry.getCommand(i));
