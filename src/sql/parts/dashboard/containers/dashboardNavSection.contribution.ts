@@ -76,7 +76,7 @@ function isValidIcon(icon: IUserFriendlyIcon, extension: IExtensionPointUser<any
 	return false;
 }
 
-function createCSSRuleForIcon(icon: IUserFriendlyIcon, id: string,  extension: IExtensionPointUser<any>): void {
+function createCSSRuleForIcon(icon: IUserFriendlyIcon, id: string, extension: IExtensionPointUser<any>): void {
 	let iconClass: string;
 	if (icon) {
 		iconClass = id;
