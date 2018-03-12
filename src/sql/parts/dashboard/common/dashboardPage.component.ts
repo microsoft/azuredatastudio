@@ -94,6 +94,7 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 	}
 
 	protected init() {
+		this.dashboardService.dashboardContextKey.set(this.context);
 		if (!this.dashboardService.connectionManagementService.connectionInfo) {
 			this.dashboardService.messageService.show(Severity.Warning, nls.localize('missingConnectionInfo', 'No connection information could be found for this dashboard'));
 		} else {

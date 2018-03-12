@@ -43,7 +43,7 @@ import * as nls from 'vs/nls';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { deepClone } from 'vs/base/common/objects';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 
 const DASHBOARD_SETTINGS = 'dashboard';
 
@@ -155,6 +155,9 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _onCloseTab = new Emitter<string>();
 	public readonly onCloseTab: Event<string> = this._onCloseTab.event;
 
+	private _dashboardContextKey =  new RawContextKey<string>('dashboardContext', undefined);
+	public dashboardContextKey: IContextKey<string>;
+
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => Router)) private _router: Router,
@@ -264,6 +267,7 @@ export class DashboardServiceInterface implements OnDestroy {
 		this._bootstrapParams = this._bootstrapService.getBootstrapParams<DashboardComponentParams>(this._uniqueSelector);
 		this.uri = this._bootstrapParams.ownerUri;
 		this._contextKeyService = this._bootstrapParams.scopedContextService;
+		this.dashboardContextKey = this._dashboardContextKey.bindTo(this._contextKeyService);
 	}
 
 	/**
