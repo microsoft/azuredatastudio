@@ -113,7 +113,7 @@ export class SingleQueryManagementService {
 	usage of a widget.
 */
 @Injectable()
-export class DashboardServiceInterface extends AngularDisposable  {
+export class DashboardServiceInterface extends AngularDisposable {
 	private _uniqueSelector: string;
 	private _uri: string;
 	private _bootstrapParams: DashboardComponentParams;
