@@ -71,7 +71,7 @@ const excludedExtensions = [
 const vsce = require('vsce');
 const sqlBuiltInExtensions = [
 	// Add SQL built-in extensions here.
-	// the extension will be excluded from SQLOps package and ill have separate vsix packages
+	// the extension will be excluded from SQLOps package and will have separate vsix packages
 ];
 
 const vscodeEntryPoints = _.flatten([
@@ -250,7 +250,7 @@ function computeChecksum(filename) {
 }
 
 function packageBuiltInExtensions() {
-	const sqlBuiltInlocalExtensionDescriptions = glob.sync('extensions/*/package.json')
+	const sqlBuiltInLocalExtensionDescriptions = glob.sync('extensions/*/package.json')
 			.map(manifestPath => {
 				const extensionPath = path.dirname(path.join(root, manifestPath));
 				const extensionName = path.basename(extensionPath);
@@ -259,7 +259,7 @@ function packageBuiltInExtensions() {
 			.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
 			.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
 			.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
-	sqlBuiltInlocalExtensionDescriptions.forEach(element => {
+	sqlBuiltInLocalExtensionDescriptions.forEach(element => {
 		const packagePath = path.join(path.dirname(root), element.name + '.vsix');
 		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
 		vsce.createVSIX({
