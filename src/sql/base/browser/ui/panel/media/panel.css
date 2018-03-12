@@ -43,6 +43,15 @@ panel {
 	padding-bottom: 4px;
 }
 
+.tabbedPanel .tabList .tab .tabLabel.icon {
+	padding: 16px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	line-height: 50px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
 .tabbedPanel .tabList .tab-header {
 	padding-left: 10px;
 	padding-right: 10px;

@@ -9,7 +9,7 @@ import * as types from 'vs/base/common/types';
 
 import { registerTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
-import { NAV_SECTION, validateNavSectionContribution } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
+import { NAV_SECTION, validateNavSectionContributionAndRegisterIcon } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 
@@ -130,7 +130,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 				result = validateGridContainerContribution(extension, containerValue);
 				break;
 			case NAV_SECTION:
-				result = validateNavSectionContribution(extension, containerValue);
+				result = validateNavSectionContributionAndRegisterIcon(extension, containerValue);
 				break;
 		}
 

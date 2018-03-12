@@ -5,8 +5,11 @@
 import { IExtensionPointUser } from 'vs/platform/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
+import { join } from 'path';
+import { createCSSRule } from 'vs/base/browser/dom';
+import URI from 'vs/base/common/uri';
 
-import { NavSectionConfig } from 'sql/parts/dashboard/common/dashboardWidget';
+import { NavSectionConfig, IUserFriendlyIcon } from 'sql/parts/dashboard/common/dashboardWidget';
 import { registerContainerType, generateNavSectionContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { WEBVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
@@ -60,9 +63,43 @@ let NavSectionSchema: IJSONSchema = {
 
 registerContainerType(NAV_SECTION, NavSectionSchema);
 
-export function validateNavSectionContribution(extension: IExtensionPointUser<any>, navSectionConfigs: NavSectionConfig[]): boolean {
+function isValidIcon(icon: IUserFriendlyIcon, extension: IExtensionPointUser<any>): boolean {
+	if (typeof icon === 'undefined') {
+		return false;
+	}
+	if (typeof icon === 'string') {
+		return true;
+	} else if (typeof icon.dark === 'string' && typeof icon.light === 'string') {
+		return true;
+	}
+	extension.collector.error(nls.localize('opticon', "property `icon` can be omitted or must be either a string or a literal like `{dark, light}`"));
+	return false;
+}
+
+function createCSSRuleForIcon(icon: IUserFriendlyIcon, id: string,  extension: IExtensionPointUser<any>): void {
+	let iconClass: string;
+	if (icon) {
+		iconClass = id;
+		if (typeof icon === 'string') {
+			const path = join(extension.description.extensionFolderPath, icon);
+			createCSSRule(`.icon.panel.${iconClass}`, `background-image: url("${URI.file(path).toString()}")`);
+		} else {
+			const light = join(extension.description.extensionFolderPath, icon.light);
+			const dark = join(extension.description.extensionFolderPath, icon.dark);
+			createCSSRule(`.icon.panel.${iconClass}`, `background-image: url("${URI.file(light).toString()}")`);
+			createCSSRule(`.vs-dark .icon.panel.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${URI.file(dark).toString()}")`);
+		}
+	}
+}
+;
+export function validateNavSectionContributionAndRegisterIcon(extension: IExtensionPointUser<any>, navSectionConfigs: NavSectionConfig[]): boolean {
 	let result = true;
 	navSectionConfigs.forEach(section => {
+		if (!section.id) {
+			result = false;
+			extension.collector.error(nls.localize('navSection.missingId_error', 'No id in nav section specified for extension.'));
+		}
+
 		if (!section.title) {
 			result = false;
 			extension.collector.error(nls.localize('navSection.missingTitle_error', 'No title in nav section specified for extension.'));
@@ -76,6 +113,11 @@ export function validateNavSectionContribution(extension: IExtensionPointUser<an
 		if (Object.keys(section.container).length !== 1) {
 			result = false;
 			extension.collector.error(nls.localize('navSection.moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space.'));
+		}
+
+		section.hasIcon = isValidIcon(section.icon, extension);
+		if (section.hasIcon) {
+			createCSSRuleForIcon(section.icon, section.id, extension);
 		}
 
 		let containerKey = Object.keys(section.container)[0];
@@ -93,6 +135,7 @@ export function validateNavSectionContribution(extension: IExtensionPointUser<an
 				extension.collector.error(nls.localize('navSection.invalidContainer_error', 'NAV_SECTION within NAV_SECTION is an invalid container for extension.'));
 				break;
 		}
+
 	});
 	return result;
 }

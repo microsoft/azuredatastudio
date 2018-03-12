@@ -47,6 +47,7 @@ export type IUserFriendlyIcon = string | { light: string; dark: string; };
 export interface NavSectionConfig {
 	id: string;
 	title: string;
+	hasIcon: boolean;
 	icon?: IUserFriendlyIcon;
 	container: object;
 }

@@ -64,6 +64,14 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		let navSectionContainers: NavSectionConfig[] = [];
 		if (this.tab.container) {
 			navSectionContainers = Object.values(this.tab.container)[0];
+			let hasIcon = true;
+			navSectionContainers.forEach(navSection => {
+				if (!navSection.hasIcon)
+				{
+					hasIcon = false;
+				}
+			});
+			this.panelOpt.showIcon = hasIcon;
 			this.loadNewTabs(navSectionContainers);
 		}
 	}
