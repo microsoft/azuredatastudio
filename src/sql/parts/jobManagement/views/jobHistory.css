@@ -11,10 +11,20 @@
 
 .action-buttons {
 	padding-top: 15px;
-	padding-bottom: 5px;
 	padding-left: 10px;
 	border-top: 3px solid #444444;
 	list-style-type: none;
+}
+
+.icon-start, .icon-stop {
+	padding-left: 25px;
+}
+
+ul.action-buttons li {
+	padding-right: 25px;
+	display: inline-block;
+	width: 50px;
+	cursor: pointer;
 }
 
 .resultsViewCollapsible {
@@ -30,11 +40,6 @@ body {
 h1 {
 	text-align: left;
 	padding-left: 13px;
-}
-
-.overview-container {
-	padding-top: 5px;
-	/* padding: 0 1em; */
 }
 
 .overview-tab {
@@ -127,13 +132,6 @@ label::after {
 	background-repeat: no-repeat;
 	height: 20px;
 	width: 20px;
-}
-
-.action-buttons li {
-	display: inline-block;
-	height: 50px;
-	width: 50px;
-	cursor: pointer;
 }
 
 #col1, #col2, #col3, #col4 {
