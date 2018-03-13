@@ -22,7 +22,7 @@ import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesServ
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
-import { PinConfig } from 'sql/parts/dashboard/common/dashboardWidget';
+import { TabSettingConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 
 import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'sqlops';
@@ -146,14 +146,16 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _onDeleteWidget = new Emitter<string>();
 	public readonly onDeleteWidget: Event<string> = this._onDeleteWidget.event;
 
-	private _onPinUnpinTab = new Emitter<PinConfig>();
-	public readonly onPinUnpinTab: Event<PinConfig> = this._onPinUnpinTab.event;
+	private _onPinUnpinTab = new Emitter<TabSettingConfig>();
+	public readonly onPinUnpinTab: Event<TabSettingConfig> = this._onPinUnpinTab.event;
 
 	private _onAddNewTabs = new Emitter<Array<IDashboardTab>>();
 	public readonly onAddNewTabs: Event<Array<IDashboardTab>> = this._onAddNewTabs.event;
 
 	private _onCloseTab = new Emitter<string>();
 	public readonly onCloseTab: Event<string> = this._onCloseTab.event;
+
+	private _numberOfPageNavigations: number;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
@@ -174,6 +176,7 @@ export class DashboardServiceInterface implements OnDestroy {
 		this._dashboardWebviewService = this._bootstrapService.dashboardWebviewService;
 		this._partService = this._bootstrapService.partService;
 		this._angularEventingService = this._bootstrapService.angularEventingService;
+		this._numberOfPageNavigations = 0;
 	}
 
 	ngOnDestroy() {
@@ -289,6 +292,20 @@ export class DashboardServiceInterface implements OnDestroy {
 
 	public getOriginalConnectionProfile(): IConnectionProfile {
 		return this._bootstrapParams.connection;
+	}
+
+	/**
+	 * Gets the number of page navigation
+	 */
+	public getNumberOfPageNavigations(): number {
+		return this._numberOfPageNavigations;
+	}
+
+	/**
+	 * Handle on page navigation
+	 */
+	public handlePageNavigation(): void {
+		this._numberOfPageNavigations++;
 	}
 
 	/**

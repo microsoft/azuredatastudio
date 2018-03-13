@@ -110,3 +110,7 @@ panel {
 	flex: 0 1 auto;
 	width: inherit;
 }
+
+.visibility.hidden {
+	visibility: hidden;
+}

@@ -111,4 +111,3 @@ export class TrieMap<E> {
 		return result;
 	}
 }
-

@@ -6,8 +6,10 @@ import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces
 
 import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
+import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import * as nls from 'vs/nls';
-import { deepClone } from 'vs/base/common/objects';
+
+const contributionRegistry = platform.Registry.as<IJSONContributionRegistry>(JSONExtensions.JSONContribution);
 
 export type WidgetIdentifier = string;
 
@@ -89,15 +91,15 @@ class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
 	}
 
 	public get databaseWidgetSchema(): CustomIJSONSchema {
-		return deepClone(this._dashboardWidgetSchema);
+		return this._dashboardWidgetSchema;
 	}
 
 	public get serverWidgetSchema(): CustomIJSONSchema {
-		return deepClone(this._serverWidgetSchema);
+		return this._serverWidgetSchema;
 	}
 
 	public get allSchema(): CustomIJSONSchema {
-		return deepClone(this._allSchema);
+		return this._allSchema;
 	}
 }
 
