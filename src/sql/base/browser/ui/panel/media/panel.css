@@ -35,12 +35,23 @@ panel {
 
 .tabbedPanel .tabList .tab {
 	cursor: pointer;
+	margin: auto;
 }
 
 .tabbedPanel .tabList .tab .tabLabel {
 	text-transform: uppercase;
 	font-size: 11px;
 	padding-bottom: 4px;
+}
+
+.tabbedPanel .tabList .tab .tabLabel.icon {
+	background-repeat: no-repeat;
+	background-position: center 10px;
+	background-size: 25px;
+	line-height: 15px;
+	padding-top: 40px;
+	display: inline-block;
+	text-transform: none;
 }
 
 .tabbedPanel .tabList .tab-header {

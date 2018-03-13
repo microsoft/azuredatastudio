@@ -5,7 +5,8 @@
  *--------------------------------------------------------------------------------------------*/
 -->
 <panel [options]="panelOpt" style="flex: 1 1 auto;" class="dashboard-panel" (onTabChange)="handleTabChange($event)">
-	<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
+	<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
+	[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions" [iconClass]="tab.iconClass">
 		<dashboard-webview-container *ngIf="getContentType(tab) === 'webview-container'" [tab]="tab">
 		</dashboard-webview-container>
 		<dashboard-widget-container *ngIf="getContentType(tab) === 'widgets-container'" [tab]="tab">
