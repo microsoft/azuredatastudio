@@ -18,10 +18,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
-<<<<<<< HEAD
 import { AgentJobsResult, AgentJobHistoryInfo } from 'sqlops';
-=======
->>>>>>> feature/agent1
 // import { JobHistoryController, JobHistoryDataSource,
 // 	JobHistoryRenderer, JobHistoryFilter } from 'sql/parts/agent/views/jobHistoryTree';
 
@@ -35,13 +32,8 @@ export class JobHistoryComponent implements OnInit, OnDestroy {
 
 	private _jobManagementService: IJobManagementService;
 	private _tree: Tree;
-<<<<<<< HEAD
 	private _jobHistoryList: AgentJobHistoryInfo[];
 	private _currentJob: AgentJobHistoryInfo;
-=======
-	private job;
-	private _jobID: string;
->>>>>>> feature/agent1
 	@ViewChild(AgentViewComponent) private _agent: AgentViewComponent;
 
 	// private _treeController: JobHistoryController;
