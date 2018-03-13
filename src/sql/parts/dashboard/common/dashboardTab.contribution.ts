@@ -12,7 +12,6 @@ import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/co
 import { NAV_SECTION, validateNavSectionContribution } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 
 export interface IDashboardTabContrib {
 	id: string;
