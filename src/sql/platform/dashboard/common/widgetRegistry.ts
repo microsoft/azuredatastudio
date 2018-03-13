@@ -78,7 +78,7 @@ class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
 	 * @param val cal for default
 	 * @param context either 'database' or 'server' for what page to register for; if not specified, will register for both
 	 */
-	registerNonCustomDashboardWidget(id: string, description: string, val: IInsightsConfig, context?: 'database' | 'server'): WidgetIdentifier {
+	public registerNonCustomDashboardWidget(id: string, description: string, val: IInsightsConfig, context?: 'database' | 'server'): WidgetIdentifier {
 		if (context === undefined || context === 'database') {
 			this._dashboardWidgetSchema.properties[id] = { type: 'null', default: null };
 		}
