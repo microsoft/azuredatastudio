@@ -12,7 +12,7 @@ export class ConnectionContextkey implements IContextKey<IConnectionProfile> {
 
 	static Provider = new RawContextKey<string>('connectionProvider', undefined);
 	static Server = new RawContextKey<string>('serverName', undefined);
-	static Database = new RawContextKey<string>('databasename', undefined);
+	static Database = new RawContextKey<string>('databaseName', undefined);
 	static Connection = new RawContextKey<IConnectionProfile>('connection', undefined);
 
 	private _providerKey: IContextKey<string>;
