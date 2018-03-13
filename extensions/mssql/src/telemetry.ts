@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as vscode  from 'vscode';
+import * as vscode from 'vscode';
 import * as opener from 'opener';
 import TelemetryReporter from 'vscode-extension-telemetry';
 import { PlatformInformation, Runtime, LinuxDistribution } from 'service-downloader/out/platform';
