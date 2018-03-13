@@ -35,6 +35,7 @@ panel {
 
 .tabbedPanel .tabList .tab {
 	cursor: pointer;
+	margin: auto;
 }
 
 .tabbedPanel .tabList .tab .tabLabel {
@@ -44,12 +45,13 @@ panel {
 }
 
 .tabbedPanel .tabList .tab .tabLabel.icon {
-	padding: 16px;
 	background-repeat: no-repeat;
-	background-position: center center;
-	line-height: 50px;
-	margin-left: 10px;
-	margin-right: 10px;
+	background-position: center 10px;
+	background-size: 25px;
+	line-height: 15px;
+	padding-top: 40px;
+	display: inline-block;
+	text-transform: none;
 }
 
 .tabbedPanel .tabList .tab-header {

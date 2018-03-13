@@ -22,6 +22,7 @@ import { CloseTabAction } from './tabActions';
 		<div #actionHeader class="tab-header" style="display: flex; flex: 0 0; flex-direction: row;" [class.active]="tab.active" tabindex="0" (keyup)="onKey($event)">
 			<span class="tab" (click)="selectTab(tab)">
 				<a class="tabLabel" [class.active]="tab.active" #tabLabel>
+					{{tab.title}}
 				</a>
 			</span>
 			<span #actionbar style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" ></span>
@@ -59,10 +60,8 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 		if (this.showIcon) {
 			tabLabelcontainer.className = 'tabLabel icon panel';
 			tabLabelcontainer.classList.add(this.tab.identifier);
-			tabLabelcontainer.title = this.tab.title;
 		} else {
 			tabLabelcontainer.className = 'tabLabel';
-			tabLabelcontainer.innerHTML = this.tab.title;
 		}
 	}
 
