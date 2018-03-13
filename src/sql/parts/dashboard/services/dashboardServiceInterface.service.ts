@@ -157,7 +157,7 @@ export class DashboardServiceInterface extends AngularDisposable {
 	private _onCloseTab = new Emitter<string>();
 	public readonly onCloseTab: Event<string> = this._onCloseTab.event;
 
-	private _dashboardContextKey =  new RawContextKey<string>('dashboardContext', undefined);
+	private _dashboardContextKey = new RawContextKey<string>('dashboardContext', undefined);
 	public dashboardContextKey: IContextKey<string>;
 
 	private _numberOfPageNavigations = 0;
