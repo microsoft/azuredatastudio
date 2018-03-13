@@ -5,8 +5,12 @@
 import { IExtensionPointUser } from 'vs/platform/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
+import { join } from 'path';
+import { createCSSRule } from 'vs/base/browser/dom';
+import URI from 'vs/base/common/uri';
+import { IdGenerator } from 'vs/base/common/idGenerator';
 
-import { NavSectionConfig } from 'sql/parts/dashboard/common/dashboardWidget';
+import { NavSectionConfig, IUserFriendlyIcon } from 'sql/parts/dashboard/common/dashboardWidget';
 import { registerContainerType, generateNavSectionContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { WEBVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
@@ -60,7 +64,39 @@ let NavSectionSchema: IJSONSchema = {
 
 registerContainerType(NAV_SECTION, NavSectionSchema);
 
-export function validateNavSectionContribution(extension: IExtensionPointUser<any>, navSectionConfigs: NavSectionConfig[]): boolean {
+function isValidIcon(icon: IUserFriendlyIcon, extension: IExtensionPointUser<any>): boolean {
+	if (typeof icon === 'undefined') {
+		return false;
+	}
+	if (typeof icon === 'string') {
+		return true;
+	} else if (typeof icon.dark === 'string' && typeof icon.light === 'string') {
+		return true;
+	}
+	extension.collector.error(nls.localize('opticon', "property `icon` can be omitted or must be either a string or a literal like `{dark, light}`"));
+	return false;
+}
+
+const ids = new IdGenerator('contrib-dashboardNavSection-icon-');
+
+function createCSSRuleForIcon(icon: IUserFriendlyIcon, extension: IExtensionPointUser<any>): string {
+	let iconClass: string;
+	if (icon) {
+		iconClass = ids.nextId();
+		if (typeof icon === 'string') {
+			const path = join(extension.description.extensionFolderPath, icon);
+			createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(path).toString()}")`);
+		} else {
+			const light = join(extension.description.extensionFolderPath, icon.light);
+			const dark = join(extension.description.extensionFolderPath, icon.dark);
+			createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(light).toString()}")`);
+			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${URI.file(dark).toString()}")`);
+		}
+	}
+	return iconClass;
+}
+
+export function validateNavSectionContributionAndRegisterIcon(extension: IExtensionPointUser<any>, navSectionConfigs: NavSectionConfig[]): boolean {
 	let result = true;
 	navSectionConfigs.forEach(section => {
 		if (!section.title) {
@@ -78,6 +114,10 @@ export function validateNavSectionContribution(extension: IExtensionPointUser<an
 			extension.collector.error(nls.localize('navSection.moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space.'));
 		}
 
+		if (isValidIcon(section.icon, extension)) {
+			section.iconClass = createCSSRuleForIcon(section.icon, extension);
+		}
+
 		let containerKey = Object.keys(section.container)[0];
 		let containerValue = Object.values(section.container)[0];
 
@@ -93,6 +133,7 @@ export function validateNavSectionContribution(extension: IExtensionPointUser<an
 				extension.collector.error(nls.localize('navSection.invalidContainer_error', 'NAV_SECTION within NAV_SECTION is an invalid container for extension.'));
 				break;
 		}
+
 	});
 	return result;
 }

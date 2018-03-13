@@ -23,6 +23,7 @@ export class TabComponent implements OnDestroy {
 	@Input() public title: string;
 	@Input() public canClose: boolean;
 	@Input() public actions: Array<Action>;
+	@Input() public iconClass: string;
 	public _active = false;
 	@Input() public identifier: string;
 	@Input() private visibilityType: 'if' | 'visibility' = 'if';

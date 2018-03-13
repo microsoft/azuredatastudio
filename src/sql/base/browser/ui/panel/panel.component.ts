@@ -24,6 +24,7 @@ export interface IPanelOptions {
 	 */
 	showTabsWhenOne?: boolean;
 	layout?: NavigationBarLayout;
+	showIcon?: boolean;
 }
 
 export enum NavigationBarLayout {
@@ -33,7 +34,8 @@ export enum NavigationBarLayout {
 
 const defaultOptions: IPanelOptions = {
 	showTabsWhenOne: true,
-	layout: NavigationBarLayout.horizontal
+	layout: NavigationBarLayout.horizontal,
+	showIcon: false
 };
 
 const verticalLayout = 'vertical';
@@ -49,7 +51,7 @@ let idPool = 0;
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title" #titleContainer>
 				<div class="tabList" #tabList>
 					<div *ngFor="let tab of _tabs">
-						<tab-header [tab]="tab" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'> </tab-header>
+						<tab-header [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'> </tab-header>
 					</div>
 				</div>
 				<div class="title-actions">

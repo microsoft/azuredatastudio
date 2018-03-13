@@ -12,7 +12,7 @@ import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 
 export const WIDGETS_CONTAINER = 'widgets-container';
 
-let widgetsSchema: IJSONSchema = {
+const widgetsSchema: IJSONSchema = {
 	type: 'array',
 	description: nls.localize('dashboard.container.widgets', "The list of widgets that will be displayed in this tab."),
 	items: generateDashboardWidgetSchema(undefined, true)

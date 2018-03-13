@@ -10,7 +10,7 @@ import { createCSSRule } from 'vs/base/browser/dom';
 import URI from 'vs/base/common/uri';
 
 import { registerContainer, generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
-import { NAV_SECTION, validateNavSectionContribution } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
+import { NAV_SECTION, validateNavSectionContributionAndRegisterIcon } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 import { WEBVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
@@ -91,7 +91,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboar
 				result = validateGridContainerContribution(extension, containerValue);
 				break;
 			case NAV_SECTION:
-				result = validateNavSectionContribution(extension, containerValue);
+				result = validateNavSectionContributionAndRegisterIcon(extension, containerValue);
 				break;
 		}
 

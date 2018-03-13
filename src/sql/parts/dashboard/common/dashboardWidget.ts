@@ -40,6 +40,7 @@ export interface TabConfig extends IDashboardTab {
 	editable: boolean;
 	canClose: boolean;
 	actions?: Array<Action>;
+	iconClass?: string;
 }
 
 export type IUserFriendlyIcon = string | { light: string; dark: string; };
@@ -47,6 +48,7 @@ export type IUserFriendlyIcon = string | { light: string; dark: string; };
 export interface NavSectionConfig {
 	id: string;
 	title: string;
+	iconClass?: string;
 	icon?: IUserFriendlyIcon;
 	container: object;
 }
