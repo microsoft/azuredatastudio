@@ -5,9 +5,7 @@
 import { registerDashboardWidget } from 'sql/platform/dashboard/common/widgetRegistry';
 import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 
-import { Registry } from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import { IJSONContributionRegistry, Extensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 
 const singleTaskSchema: IJSONSchema = {
 	type: 'string',
