@@ -26,7 +26,7 @@ gulp.task('mixin', function () {
 
 	// {{SQL CARBON EDIT}}
 	let serviceUrl = 'https://raw.githubusercontent.com/Microsoft/sqlopsstudio/release/extensions/extensionsGallery.json';
-	if (quality) {
+	if (quality === 'insider') {
 		serviceUrl = `https://raw.githubusercontent.com/Microsoft/sqlopsstudio/release/extensions/extensionsGallery-${quality}.json`;
 	}
 	let newValues = {
