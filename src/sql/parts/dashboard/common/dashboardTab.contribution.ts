@@ -38,33 +38,9 @@ const tabSchema: IJSONSchema = {
 			description: localize('sqlops.extension.contributes.dashboard.tab.description', "Description of this tab that will be shown to the user."),
 			type: 'string'
 		},
-		provider: {
-			description: localize('sqlops.extension.contributes.dashboard.tab.provider', "Providers for which this tab should be allowed for."),
-			anyOf: [
-				{
-					type: 'string'
-				},
-				{
-					type: 'array',
-					items: {
-						type: 'string'
-					}
-				}
-			]
-		},
-		edition: {
-			description: localize('sqlops.extension.contributes.dashboard.tab.edition', "Editions for which this tab should be allowed for."),
-			anyOf: [
-				{
-					type: 'number'
-				},
-				{
-					type: 'array',
-					items: {
-						type: 'number'
-					}
-				}
-			]
+		when: {
+			description: localize('sqlops.extension.contributes.tab.when', 'Condition which must be true to show this item'),
+			type: 'string'
 		},
 		container: {
 			description: localize('sqlops.extension.contributes.dashboard.tab.container', "The container that will be displayed in this tab."),
