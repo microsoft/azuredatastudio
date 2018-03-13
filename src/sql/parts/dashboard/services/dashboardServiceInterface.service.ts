@@ -24,6 +24,7 @@ import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/se
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { TabSettingConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
+import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'sqlops';
 
@@ -112,33 +113,34 @@ export class SingleQueryManagementService {
 	usage of a widget.
 */
 @Injectable()
-export class DashboardServiceInterface implements OnDestroy {
+export class DashboardServiceInterface extends AngularDisposable {
 	private _uniqueSelector: string;
 	private _uri: string;
 	private _bootstrapParams: DashboardComponentParams;
-	private _disposables: IDisposable[] = [];
 
-	/* Services */
+	/* Static Services */
+	private _themeService = this._bootstrapService.themeService;
+	private _contextMenuService = this._bootstrapService.contextMenuService;
+	private _instantiationService = this._bootstrapService.instantiationService;
+	private _configService = this._bootstrapService.configurationService;
+	private _insightsDialogService = this._bootstrapService.insightsDialogService;
+	private _contextViewService = this._bootstrapService.contextViewService;
+	private _messageService = this._bootstrapService.messageService;
+	private _workspaceContextService = this._bootstrapService.workspaceContextService;
+	private _storageService = this._bootstrapService.storageService;
+	private _capabilitiesService = this._bootstrapService.capabilitiesService;
+	private _configurationEditingService = this._bootstrapService.configurationEditorService;
+	private _commandService = this._bootstrapService.commandService;
+	private _dashboardWebviewService = this._bootstrapService.dashboardWebviewService;
+	private _partService = this._bootstrapService.partService;
+	private _angularEventingService = this._bootstrapService.angularEventingService;
+
+	/* Special Services */
 	private _metadataService: SingleConnectionMetadataService;
 	private _connectionManagementService: SingleConnectionManagementService;
-	private _themeService: IWorkbenchThemeService;
-	private _contextMenuService: IContextMenuService;
-	private _instantiationService: IInstantiationService;
 	private _adminService: SingleAdminService;
 	private _queryManagementService: SingleQueryManagementService;
-	private _configService: IConfigurationService;
-	private _insightsDialogService: IInsightsDialogService;
-	private _contextViewService: IContextViewService;
-	private _messageService: IMessageService;
-	private _workspaceContextService: IWorkspaceContextService;
-	private _storageService: IStorageService;
-	private _capabilitiesService: ICapabilitiesService;
-	private _configurationEditingService: ConfigurationEditingService;
-	private _commandService: ICommandService;
-	private _dashboardWebviewService: IDashboardWebviewService;
-	private _partService: IPartService;
 	private _contextKeyService: IContextKeyService;
-	private _angularEventingService: IAngularEventingService;
 
 	private _updatePage = new Emitter<void>();
 	public readonly onUpdatePage: Event<void> = this._updatePage.event;
@@ -158,32 +160,13 @@ export class DashboardServiceInterface implements OnDestroy {
 	private _dashboardContextKey =  new RawContextKey<string>('dashboardContext', undefined);
 	public dashboardContextKey: IContextKey<string>;
 
-	private _numberOfPageNavigations: number;
+	private _numberOfPageNavigations = 0;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => Router)) private _router: Router,
 	) {
-		this._themeService = this._bootstrapService.themeService;
-		this._contextMenuService = this._bootstrapService.contextMenuService;
-		this._instantiationService = this._bootstrapService.instantiationService;
-		this._configService = this._bootstrapService.configurationService;
-		this._insightsDialogService = this._bootstrapService.insightsDialogService;
-		this._contextViewService = this._bootstrapService.contextViewService;
-		this._messageService = this._bootstrapService.messageService;
-		this._workspaceContextService = this._bootstrapService.workspaceContextService;
-		this._storageService = this._bootstrapService.storageService;
-		this._capabilitiesService = this._bootstrapService.capabilitiesService;
-		this._configurationEditingService = this._bootstrapService.configurationEditorService;
-		this._commandService = this._bootstrapService.commandService;
-		this._dashboardWebviewService = this._bootstrapService.dashboardWebviewService;
-		this._partService = this._bootstrapService.partService;
-		this._angularEventingService = this._bootstrapService.angularEventingService;
-		this._numberOfPageNavigations = 0;
-	}
-
-	ngOnDestroy() {
-		this._disposables.forEach((item) => item.dispose());
+		super();
 	}
 
 	public get messageService(): IMessageService {
@@ -283,7 +266,7 @@ export class DashboardServiceInterface implements OnDestroy {
 		this._connectionManagementService = new SingleConnectionManagementService(this._bootstrapService.connectionManagementService, this._uri);
 		this._adminService = new SingleAdminService(this._bootstrapService.adminService, this._uri);
 		this._queryManagementService = new SingleQueryManagementService(this._bootstrapService.queryManagementService, this._uri);
-		this._disposables.push(toDisposableSubscription(this._bootstrapService.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
+		this._register(toDisposableSubscription(this._bootstrapService.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
 	}
 
 	/**
