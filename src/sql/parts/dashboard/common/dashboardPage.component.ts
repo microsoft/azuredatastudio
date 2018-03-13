@@ -23,6 +23,7 @@ import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
+import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -46,7 +47,7 @@ const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.Da
 	selector: 'dashboard-page',
 	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/common/dashboardPage.component.html'))
 })
-export abstract class DashboardPage extends Disposable implements OnDestroy {
+export abstract class DashboardPage extends AngularDisposable {
 
 	protected tabs: Array<TabConfig> = [];
 
@@ -257,10 +258,6 @@ export abstract class DashboardPage extends Disposable implements OnDestroy {
 			this.tabs.push(tab);
 			this._cd.detectChanges();
 		}
-	}
-
-	ngOnDestroy() {
-		this.dispose();
 	}
 
 	private getProperties(): Array<WidgetConfig> {
