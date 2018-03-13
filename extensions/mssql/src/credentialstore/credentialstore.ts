@@ -17,13 +17,6 @@ import * as Contracts from './contracts';
 import * as Constants from './constants';
 import * as Utils from '../utils';
 
-function ensure(target: object, key: string): any {
-	if (target[key] === void 0) {
-		target[key] = {} as any;
-	}
-	return target[key];
-}
-
 class CredentialsFeature extends SqlOpsFeature<any> {
 
 	private static readonly messagesTypes: RPCMessageType[] = [
@@ -37,7 +30,7 @@ class CredentialsFeature extends SqlOpsFeature<any> {
 	}
 
 	fillClientCapabilities(capabilities: ClientCapabilities): void {
-		ensure(ensure(capabilities, 'credentials')!, 'credentials')!.dynamicRegistration = true;
+		Utils.ensure(Utils.ensure(capabilities, 'credentials')!, 'credentials')!.dynamicRegistration = true;
 	}
 
 	initialize(capabilities: ServerCapabilities): void {

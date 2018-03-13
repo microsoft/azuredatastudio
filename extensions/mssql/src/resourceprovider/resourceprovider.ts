@@ -17,13 +17,6 @@ import { CreateFirewallRuleRequest, HandleFirewallRuleRequest, CreateFirewallRul
 import * as Constants from './constants';
 import * as Utils from '../utils';
 
-function ensure(target: object, key: string): any {
-	if (target[key] === void 0) {
-		target[key] = {} as any;
-	}
-	return target[key];
-}
-
 class FireWallFeature extends SqlOpsFeature<any> {
 
 	private static readonly messagesTypes: RPCMessageType[] = [
@@ -36,7 +29,7 @@ class FireWallFeature extends SqlOpsFeature<any> {
 	}
 
 	fillClientCapabilities(capabilities: ClientCapabilities): void {
-		ensure(ensure(capabilities, 'firewall')!, 'firwall')!.dynamicRegistration = true;
+		Utils.ensure(Utils.ensure(capabilities, 'firewall')!, 'firwall')!.dynamicRegistration = true;
 	}
 
 	initialize(capabilities: ServerCapabilities): void {

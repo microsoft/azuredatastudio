@@ -15,39 +15,57 @@ import ContextProvider from './contextProvider';
 import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
+import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 
 const baseConfig = require('./config.json');
 
 export function activate(context: vscode.ExtensionContext) {
 	let outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 	outputChannel.show();
-	let contextProvider = new ContextProvider();
-	context.subscriptions.push(contextProvider);
 	let config: IConfig = JSON.parse(JSON.stringify(baseConfig));
-	delete config['serverConnectionMetadata'];
 	config.installDirectory = path.join(__dirname, config.installDirectory);
 	config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
 	config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
 
-	let credentialsStore = new CredentialStore(config, outputChannel);
-	let resourceProvider = new AzureResourceProvider(config, outputChannel);
+	const credentialsStore = new CredentialStore(config, outputChannel);
+	const resourceProvider = new AzureResourceProvider(config, outputChannel);
+	let languageClient: SqlOpsDataClient;
 
-	let serverdownloader = new ServerProvider(config, outputChannel);
+	const serverdownloader = new ServerProvider(config, outputChannel);
 	let clientOptions: ClientOptions = {
 		providerId: Constants.providerId,
+		errorHandler: new LanguageClientErrorHandler(),
 		serverConnectionMetadata: undefined
 	};
+
+	const installationStart = Date.now();
 	serverdownloader.getOrDownloadServer().then(e => {
+		const installationComplete = Date.now();
 		// at this point we know they will be downloaded so we can start the other services
 		let serverOptions = generateServerOptions(e);
-		this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
-		this._client.start();
+		languageClient = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
+		const processStart = Date.now();
+		languageClient.onReady().then(() => {
+			const processEnd = Date.now();
+			Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
+				installationTime: String(installationComplete - installationStart),
+				processStartupTime: String(processEnd - processStart),
+				totalTime: String(processEnd - installationStart),
+				beginningTimestamp: String(installationStart)
+			});
+		});
+		languageClient.start();
 		credentialsStore.start();
 		resourceProvider.start();
+	}, e => {
+		Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
 	});
 
+	let contextProvider = new ContextProvider();
+	context.subscriptions.push(contextProvider);
 	context.subscriptions.push(credentialsStore);
 	context.subscriptions.push(resourceProvider);
+	context.subscriptions.push({ dispose: () => languageClient.stop() });
 }
 
 function generateServerOptions(executablePath: string): ServerOptions {

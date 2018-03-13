@@ -8,6 +8,14 @@ agent-base@4, agent-base@^4.1.0:
   dependencies:
     es6-promisify "^5.0.0"
 
+applicationinsights@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/applicationinsights/-/applicationinsights-1.0.1.tgz#53446b830fe8d5d619eee2a278b31d3d25030927"
+  dependencies:
+    diagnostic-channel "0.2.0"
+    diagnostic-channel-publishers "0.2.1"
+    zone.js "0.7.6"
+
 base64-js@0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-0.0.8.tgz#1101e9544f4a76b1bc3b26d452ca96d7a35e7978"
@@ -39,6 +47,10 @@ commander@~2.8.1:
 core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
+
+crypto@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/crypto/-/crypto-1.0.1.tgz#2af1b7cad8175d24c8a1b0778255794a21803037"
 
 "dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#0.1.3":
   version "0.1.3"
@@ -105,6 +117,16 @@ decompress@^4.2.0:
     make-dir "^1.0.0"
     pify "^2.3.0"
     strip-dirs "^2.0.0"
+
+diagnostic-channel-publishers@0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/diagnostic-channel-publishers/-/diagnostic-channel-publishers-0.2.1.tgz#8e2d607a8b6d79fe880b548bc58cc6beb288c4f3"
+
+diagnostic-channel@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/diagnostic-channel/-/diagnostic-channel-0.2.0.tgz#cc99af9612c23fb1fff13612c72f2cbfaa8d5a17"
+  dependencies:
+    semver "^5.3.0"
 
 end-of-stream@^1.0.0:
   version "1.4.1"
@@ -219,6 +241,10 @@ once@^1.4.0:
   dependencies:
     wrappy "1"
 
+opener@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/opener/-/opener-1.4.3.tgz#5c6da2c5d7e5831e8ffa3964950f8d6674ac90b8"
+
 os-tmpdir@~1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
@@ -271,9 +297,13 @@ seek-bzip@^1.0.5:
   dependencies:
     commander "~2.8.1"
 
-"service-downloader@github:anthonydresser/service-downloader#0.1.0":
+semver@^5.3.0:
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-5.5.0.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
+
+"service-downloader@github:anthonydresser/service-downloader#0.1.1":
   version "1.0.0"
-  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/52211c41b3bcf6b946b2676fc4d380c166c1aad5"
+  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/d57278a7da67fff1a33f3a5b8c427683f373c57d"
   dependencies:
     decompress "^4.2.0"
     http-proxy-agent "^2.0.0"
@@ -323,6 +353,12 @@ util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
 
+vscode-extension-telemetry@^0.0.15:
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/vscode-extension-telemetry/-/vscode-extension-telemetry-0.0.15.tgz#685c32f3b67e8fb85ba689c1d7f88ff90ff87856"
+  dependencies:
+    applicationinsights "1.0.1"
+
 vscode-jsonrpc@^3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/vscode-jsonrpc/-/vscode-jsonrpc-3.5.0.tgz#87239d9e166b2d7352245b8a813597804c1d63aa"
@@ -358,3 +394,7 @@ yauzl@^2.4.2:
   dependencies:
     buffer-crc32 "~0.2.3"
     fd-slicer "~1.0.1"
+
+zone.js@0.7.6:
+  version "0.7.6"
+  resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.7.6.tgz#fbbc39d3e0261d0986f1ba06306eb3aeb0d22009"
