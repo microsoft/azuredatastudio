@@ -8,6 +8,7 @@ import * as nls from 'vs/nls';
 import { join } from 'path';
 import { createCSSRule } from 'vs/base/browser/dom';
 import URI from 'vs/base/common/uri';
+import { IdGenerator } from 'vs/base/common/idGenerator';
 
 import { NavSectionConfig, IUserFriendlyIcon } from 'sql/parts/dashboard/common/dashboardWidget';
 import { registerContainerType, generateNavSectionContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
@@ -76,30 +77,28 @@ function isValidIcon(icon: IUserFriendlyIcon, extension: IExtensionPointUser<any
 	return false;
 }
 
-function createCSSRuleForIcon(icon: IUserFriendlyIcon, id: string, extension: IExtensionPointUser<any>): void {
+const ids = new IdGenerator('contrib-dashboardNavSection-icon-');
+
+function createCSSRuleForIcon(icon: IUserFriendlyIcon, extension: IExtensionPointUser<any>): string {
 	let iconClass: string;
 	if (icon) {
-		iconClass = id;
+		iconClass = ids.nextId();
 		if (typeof icon === 'string') {
 			const path = join(extension.description.extensionFolderPath, icon);
-			createCSSRule(`.icon.panel.${iconClass}`, `background-image: url("${URI.file(path).toString()}")`);
+			createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(path).toString()}")`);
 		} else {
 			const light = join(extension.description.extensionFolderPath, icon.light);
 			const dark = join(extension.description.extensionFolderPath, icon.dark);
-			createCSSRule(`.icon.panel.${iconClass}`, `background-image: url("${URI.file(light).toString()}")`);
-			createCSSRule(`.vs-dark .icon.panel.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${URI.file(dark).toString()}")`);
+			createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(light).toString()}")`);
+			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${URI.file(dark).toString()}")`);
 		}
 	}
+	return iconClass;
 }
-;
+
 export function validateNavSectionContributionAndRegisterIcon(extension: IExtensionPointUser<any>, navSectionConfigs: NavSectionConfig[]): boolean {
 	let result = true;
 	navSectionConfigs.forEach(section => {
-		if (!section.id) {
-			result = false;
-			extension.collector.error(nls.localize('navSection.missingId_error', 'No id in nav section specified for extension.'));
-		}
-
 		if (!section.title) {
 			result = false;
 			extension.collector.error(nls.localize('navSection.missingTitle_error', 'No title in nav section specified for extension.'));
@@ -115,9 +114,8 @@ export function validateNavSectionContributionAndRegisterIcon(extension: IExtens
 			extension.collector.error(nls.localize('navSection.moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space.'));
 		}
 
-		section.hasIcon = isValidIcon(section.icon, extension);
-		if (section.hasIcon) {
-			createCSSRuleForIcon(section.icon, section.id, extension);
+		if (isValidIcon(section.icon, extension)) {
+			section.iconClass = createCSSRuleForIcon(section.icon, extension);
 		}
 
 		let containerKey = Object.keys(section.container)[0];

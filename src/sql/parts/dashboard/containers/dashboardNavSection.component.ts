@@ -66,7 +66,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 			navSectionContainers = Object.values(this.tab.container)[0];
 			let hasIcon = true;
 			navSectionContainers.forEach(navSection => {
-				if (!navSection.hasIcon) {
+				if (!navSection.iconClass) {
 					hasIcon = false;
 				}
 			});
@@ -108,13 +108,13 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 						configs = cb.apply(this, [configs]);
 					});
 					if (key === WIDGETS_CONTAINER) {
-						return { id: v.id, title: v.title, container: { 'widgets-container': configs } };
+						return { id: v.id, title: v.title, container: { 'widgets-container': configs }, iconClass: v.iconClass };
 
 					} else {
-						return { id: v.id, title: v.title, container: { 'grid-container': configs } };
+						return { id: v.id, title: v.title, container: { 'grid-container': configs }, iconClass: v.iconClass };
 					}
 				}
-				return { id: v.id, title: v.title, container: containerResult.container };
+				return { id: v.id, title: v.title, container: containerResult.container, iconClass: v.iconClass };
 			}).map(v => {
 				let config = v as TabConfig;
 				config.context = this.tab.context;
