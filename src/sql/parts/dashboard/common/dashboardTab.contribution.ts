@@ -12,14 +12,14 @@ import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/co
 import { NAV_SECTION, validateNavSectionContribution } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 
 export interface IDashboardTabContrib {
 	id: string;
 	title: string;
 	container: object;
+	when?: string;
 	description?: string;
-	provider?: string | string[];
-	edition?: number | number[];
 	alwaysShow?: boolean;
 }
 
@@ -68,7 +68,7 @@ const tabContributionSchema: IJSONSchema = {
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>('dashboard.tabs', [], tabContributionSchema).setHandler(extensions => {
 
 	function handleCommand(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
-		let { description, container, title, edition, provider, id, alwaysShow } = tab;
+		let { description, container, title, when, id, alwaysShow } = tab;
 
 		// If always show is not specified, set it to true by default.
 		if (!types.isBoolean(alwaysShow)) {
@@ -111,7 +111,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		}
 
 		if (result) {
-			registerTab({ description, title, container, edition, provider, id, alwaysShow, publisher });
+			registerTab({ description, title, container, when, id, alwaysShow, publisher });
 		}
 	}
 
