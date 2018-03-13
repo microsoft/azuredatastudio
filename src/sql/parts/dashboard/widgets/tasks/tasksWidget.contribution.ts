@@ -9,8 +9,6 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { IJSONContributionRegistry, Extensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 
-const schemaRegistry = <IJSONContributionRegistry>Registry.as(Extensions.JSONContribution);
-
 const singleTaskSchema: IJSONSchema = {
 	type: 'string',
 	enum: TaskRegistry.getTasks()
@@ -34,6 +32,8 @@ const tasksSchema: IJSONSchema = {
 	}
 };
 
-TaskRegistry.onTaskRegistered(e => singleTaskSchema.enum.push(e));
+TaskRegistry.onTaskRegistered(e => {
+	singleTaskSchema.enum.push(e);
+});
 
 registerDashboardWidget('tasks-widget', '', tasksSchema);
