@@ -35,7 +35,6 @@ export class DropdownRenderer implements tree.IRenderer {
 	}
 
 	public renderTemplate(tree: tree.ITree, templateId: string, container: HTMLElement): Template {
-		container.style.paddingLeft = '0px';
 		const row = $('div.list-row').style('height', '22px').style('padding-left', '5px').getHTMLElement();
 		DOM.append(container, row);
 		const label = $('span.label').style('margin', 'auto').style('vertical-align', 'middle').getHTMLElement();
