@@ -336,7 +336,6 @@ export class SqlToolsServiceClient {
 							configurationSection: SqlToolsServiceClient._constants.extensionConfigSectionName
 						},
 						errorHandler: new LanguageClientErrorHandler(SqlToolsServiceClient._constants),
-						serverConnectionMetadata: this._config.getConfigValue(Constants.serverConnectionMetadata),
 						outputChannel: {
 							append: () => {
 							},
@@ -414,7 +413,6 @@ export class SqlToolsServiceClient {
 				configurationSection: SqlToolsServiceClient._constants.extensionConfigSectionName
 			},
 			errorHandler: new LanguageClientErrorHandler(SqlToolsServiceClient._constants),
-			serverConnectionMetadata: this._config.getConfigValue(Constants.serverConnectionMetadata),
 			outputChannel: {
 				append: () => {
 				},
