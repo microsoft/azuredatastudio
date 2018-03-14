@@ -217,6 +217,10 @@ export class ConnectionStore {
 	private getCachedServerCapabilities(): sqlops.DataProtocolServerCapabilities[] {
 		if (this._memento) {
 			let metadata: sqlops.DataProtocolServerCapabilities[] = this._memento[Constants.capabilitiesOptions];
+			if (metadata) {
+				// Ensure we filter out undefined or null capabilities
+				metadata = metadata.filter(m => !!m);
+			}
 			return metadata;
 		} else {
 			return undefined;
