@@ -1048,7 +1048,7 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentServicesProvider extends DataProvider {
-		getJobs(connectionUri: string): Thenable<AgentJobsResult>;
+		getJobs(connectionUri: string): Thenable<AgentJobInfo[]>;
 		getJobHistory(connectionUri: string, jobID: string): Thenable<AgentJobHistoryResult>;
 	}
 
