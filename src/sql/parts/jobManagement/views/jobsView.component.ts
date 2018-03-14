@@ -22,87 +22,44 @@ import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/
 import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentJobInfo } from 'sqlops';
+import * as vscode from 'vscode';
 import * as nls from 'vs/nls';
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { FieldType, IObservableCollection, CollectionChange, SlickGrid } from 'angular2-slickgrid';
 import { Table } from 'sql/base/browser/ui/table/table';
+import { attachTableStyler } from 'sql/common/theme/styler';
 
-export const DASHBOARD_SELECTOR: string = 'jobsview-component';
-
-class SimpleObservableCollection implements IObservableCollection<any> {
-	private data: any[] =  [{
-		row: 0,
-		values: ['name1']
-	}];
-
-	constructor() {
-		this.data = this.data;
-	}
-
-	public getLength(): number {
-		return this.data.length;
-	}
-
-    public at(index: number): any {
-		return this.data[index];
-	}
-    public getRange(start: number, end: number): any[] {
-		return this.data.slice(start, end);
-	}
-
-    public setCollectionChangedCallback(callback: (change: CollectionChange, startIndex: number, count: number) => void): void {
-		callback(CollectionChange.ItemsReplaced, 0, 1)
-	}
-
-}
+export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 
 @Component({
-	selector: DASHBOARD_SELECTOR,
+	selector: JOBSVIEW_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./jobsView.component.html'))
 })
 export class JobsViewComponent implements OnInit, OnDestroy {
 
 	private _jobManagementService: IJobManagementService;
 
-	private dataRows: SimpleObservableCollection = new SimpleObservableCollection();
-
-	private data2 =  [{
-		name: 'name1'
-	}];
+	private _disposables = new Array<vscode.Disposable>();
 
 	private columns2: Array<Slick.Column<any>> = [
 		{ name: 'Name', field: 'name' },
-		{ name: 'Enabled', field: 'enabled' },
-		{ name: 'Status', field: 'currentExecutionStatus' },
-		{ name: 'Last Run Outcome', field: 'lastRunOutcome' },
 		{ name: 'Last Run', field: 'lastRun' },
 		{ name: 'Next Run', field: 'nextRun' },
+		{ name: 'Enabled', field: 'enabled' },
+		{ name: 'Status', field: 'currentExecutionStatus' },
 		{ name: 'Category', field: 'category' },
 		{ name: 'Runnable', field: 'runnable' },
 		{ name: 'Schedule', field: 'hasSchedule' },
-		{ name: 'Category ID', field: 'categoryId' }
+		{ name: 'Category ID', field: 'categoryId' },
+		{ name: 'Last Run Outcome', field: 'lastRunOutcome' },
 	];
 
-
-
-	protected dataSet: any = {
-		dataRows: this.dataRows,
-		columnDefinitions: [{
-			id: 'name',
-			name: 'Name',
-			type: FieldType.String
-		}],
-		totalRows: 1,
-		batchId: 1,
-		resultId: 1,
-		maxHeight: 500,
-		minHeight: 500
-	};
+	private _table: Table<any>;
 
 	public jobs: AgentJobInfo[];
 
 	constructor(
-		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService,
+		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
@@ -111,23 +68,38 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit() {
-		let options = <Slick.GridOptions<any>>{
-			autoHeight: true,
-			syncColumnCellResize: true,
-			enableColumnReorder: false
-		};
+		// let options = <Slick.GridOptions<any>>{
+		// 	autoHeight: true,
+		// 	syncColumnCellResize: true,
+		// 	enableColumnReorder: false
+		// };
 
-		let table = new Table(this._el.nativeElement, this.jobs, this.columns2, options);
-		//this._disposables.push(attachTableStyler(this._table, this._bootstrapService.themeService));
+		let columns = this.columns2.map((column) => {
+			column.rerenderOnResize = true;
+			return column;
+		});
+		this._table = new Table(this._el.nativeElement, this.jobs, columns);
+		this._disposables.push(attachTableStyler(this._table, this.bootstrapService.themeService));
 		this._cd.detectChanges();
 
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getJobs(ownerUri).then((result) => {
 			if (result) {
 				this.jobs = result.jobs;
-				this._cd.detectChanges();
+				this._table.setData(result.jobs);
+				this._table.resizeCanvas();
+				this._table.autosizeColumns();
 			}
 		});
+	}
+
+	public layout(): void {
+		if (this._table) {
+			setTimeout(() => {
+				this._table.resizeCanvas();
+				this._table.autosizeColumns();
+			});
+		}
 	}
 
 	ngOnDestroy() {
