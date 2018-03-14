@@ -327,7 +327,7 @@ declare module 'sqlops' {
 		object = 6
 	}
 
-	export enum ConnectionOptionSpecialType {
+	export const  enum ConnectionOptionSpecialType {
 		serverName = 'serverName',
 		databaseName = 'databaseName',
 		authType = 'authType',
