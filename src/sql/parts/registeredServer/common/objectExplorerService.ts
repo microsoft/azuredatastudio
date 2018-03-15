@@ -68,7 +68,7 @@ export interface IObjectExplorerService {
 
 	getServerTreeView(): ServerTreeView;
 
-	findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
+	findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Thenable<sqlops.NodeInfo[]>;
 
 	getActiveConnectionNodes(): TreeNode[];
 
@@ -449,7 +449,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._serverTreeView;
 	}
 
-	public findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]> {
+	public findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Thenable<sqlops.NodeInfo[]> {
 		let rootNode = this._activeObjectExplorerNodes[connectionId];
 		if (!rootNode) {
 			return Promise.resolve([]);
