@@ -19,8 +19,9 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { AgentJobsResult, AgentJobHistoryInfo } from 'sqlops';
-// import { JobHistoryController, JobHistoryDataSource,
-// 	JobHistoryRenderer, JobHistoryFilter } from 'sql/parts/agent/views/jobHistoryTree';
+import { JobHistoryController, JobHistoryDataSource,
+	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
+import { getContentHeight } from 'vs/base/browser/dom';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -32,14 +33,10 @@ export class JobHistoryComponent implements OnInit, OnDestroy {
 
 	private _jobManagementService: IJobManagementService;
 	private _tree: Tree;
-	private _jobHistoryList: AgentJobHistoryInfo[];
-	private _currentJob: AgentJobHistoryInfo;
-	@ViewChild(AgentViewComponent) private _agent: AgentViewComponent;
-
-	// private _treeController: JobHistoryController;
-	// private _treeDataSource: JobHistoryDataSource;
-	// private _treeRenderer: JobHistoryRenderer;
-	// private _treeFilter: JobHistoryFilter;
+	private _treeController = new JobHistoryController();
+	private _treeDataSource = new JobHistoryDataSource();
+	private _treeRenderer = new JobHistoryRenderer();
+	private _treeFilter =  new JobHistoryFilter();
 
 	@ViewChild('table') private _tableContainer: ElementRef;
 
@@ -48,22 +45,35 @@ export class JobHistoryComponent implements OnInit, OnDestroy {
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
-		@IThemeService private _themeService: IThemeService,
+		@IThemeService private _themeService: IThemeService
 	) {
-		this._jobManagementService = bootstrapService.jobManagementService;
-		// this._tree = new Tree(this._tableContainer.nativeElement, {
-		// 	controller: this._treeController,
-		// 	dataSource: this._treeDataSource,
-		// 	filter: this._treeFilter,
-		// 	renderer: this._treeRenderer
-		// });
 	}
 
 	ngOnInit() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		//this.job = this._jobManagementService.getJobHistory(ownerUri, this._jobID);
-	}
+		let agentExample2: JobHistoryRow = {
+			jobID: '12312',
+			runStatus: 'Failed',
+			runDate: '01/24/2018 00:04:35 AM'
+		};
+		let agentExample3: JobHistoryRow = {
+			jobID: '1132453',
+			runStatus: 'Succeeded',
+			runDate: '01/24/2018 00:04:35 AM'
+		};
 
+		let agents: JobHistoryRow[] = [agentExample2, agentExample3]
+		this._treeDataSource.data = agents;
+		this._tree = new Tree(this._tableContainer.nativeElement, {
+			controller: this._treeController,
+			dataSource: this._treeDataSource,
+			filter: this._treeFilter,
+			renderer: this._treeRenderer
+		});
+		this._tree.layout(1024);
+		this._tree.setInput(new JobHistoryModel());
+	}
 
 	ngOnDestroy() {
 	}

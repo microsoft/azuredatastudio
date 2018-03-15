@@ -142,34 +142,6 @@ label::after {
 	padding-right: 300px;
 }
 
-.failed {
-	border-left: 5px solid red;
-	padding-right: 30px;
-}
-
-.passed {
-	border-left: 5px solid green;
-	padding-right: 30px;
-}
-
-table.prev-run-list {
-	border-spacing: 0;
-	border-collapse: collapse;
-	display: inline;
-	padding-right: 30px;
-}
-
-tr.list-row {
-	border-bottom: 1px solid #444444;
-	border-right: none;
-    border-top: none;
-    border-collapse: collapse;
-}
-
-tr.list-row td {
-	width: 70%;
-}
-
 tr.step-row td {
 	padding-right: 100px;
 }
@@ -184,4 +156,43 @@ tr.step-row td {
 	border-left: 3px solid #444444;
 	padding-left: 10px;
 	height: 100%;
+}
+
+.vs-dark .step-table .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
+	background-image: none;
+}
+
+.step-table .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
+	background: none;
+}
+
+.step-table .monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected:not(.loading) > .content:before {
+	background-image: none;
+}
+
+.step-table .list-row .status-icon {
+	height: 10px;
+	width: 10px;
+	display: inline-block;
+}
+
+.step-table .list-row .label {
+	padding-left: 10px;
+	display: inline-block;
+}
+
+.list-row {
+	display: inline-block;
+}
+
+.passed {
+	background: green;
+}
+
+.failed {
+	background: red;
+}
+
+.unknown {
+	background: yellow;
 }

@@ -15,9 +15,6 @@ import {
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import * as Constants from 'sql/parts/connection/common/constants';
-
-import { ObjectMetadata } from 'sqlops';
-
 import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { Promise, TPromise } from 'vs/base/common/winjs.base';
@@ -26,264 +23,168 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { generateUuid } from 'vs/base/common/uuid';
-import { $ } from 'vs/base/browser/dom';
+import * as DOM from 'vs/base/browser/dom';
 import { OEAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
+import { Builder, $, withElementById } from 'vs/base/browser/builder';
 
-// export declare type JobTreeResource = IConnectionProfile | ObjectMetadataWrapper;
+export class JobHistoryRow {
+	runDate: string;
+	runStatus: string;
+	jobID: string;
 
-// // Empty class just for tree input
-// export class JobHistoryModel {
-// 	public static readonly id = generateUuid();
-// }
+	public static convertToStatusString(status: number): string {
+		switch(status) {
+			case(1): return 'Succeeded';
+			case(0): return 'Failed';
+			default: return 'Unknown';
+		}
+	}
+}
 
-// export class JobHistoryController extends TreeDefaults.DefaultController {
-// 	constructor(
-// 		// URI for the dashboard for managing, should look into some other way of doing this
-// 		private _uri,
-// 		//private _agentService: AgentService,
-// 		private _router: Router,
-// 		private _contextMenuService: IContextMenuService,
-// 		private _instantiationService: IInstantiationService
-// 	) {
-// 		super();
-// 	}
+// Empty class just for tree input
+export class JobHistoryModel {
+	public static readonly id = generateUuid();
+}
 
-// 	protected onLeftClick(tree: tree.ITree, element: JobTreeResource, event: IMouseEvent, origin: string = 'mouse'): boolean {
-// 		const payload = { origin: origin };
-// 		const isDoubleClick = (origin === 'mouse' && event.detail === 2);
-// 		// Cancel Event
-// 		const isMouseDown = event && event.browserEvent && event.browserEvent.type === 'mousedown';
+export class JobHistoryController extends TreeDefaults.DefaultController {
 
-// 		if (!isMouseDown) {
-// 			event.preventDefault(); // we cannot preventDefault onMouseDown because this would break DND otherwise
-// 		}
+	protected onLeftClick(tree: tree.ITree, element: JobHistoryRow, event: IMouseEvent, origin: string = 'mouse'): boolean {
+		const payload = { origin: origin };
+		const isDoubleClick = (origin === 'mouse' && event.detail === 2);
+		// Cancel Event
+		const isMouseDown = event && event.browserEvent && event.browserEvent.type === 'mousedown';
 
-// 		event.stopPropagation();
+		if (!isMouseDown) {
+			event.preventDefault(); // we cannot preventDefault onMouseDown because this would break DND otherwise
+		}
 
-// 		tree.setFocus(element, payload);
+		event.stopPropagation();
 
-// 		if (!(element instanceof ObjectMetadataWrapper) && isDoubleClick) {
-// 			event.preventDefault(); // focus moves to editor, we need to prevent default
-// 			this.handleItemDoubleClick(element);
-// 		} else {
-// 			tree.setFocus(element, payload);
-// 			tree.setSelection([element], payload);
-// 		}
+		tree.setFocus(element, payload);
 
-// 		return true;
-// 	}
+		if (element && isDoubleClick) {
+			event.preventDefault(); // focus moves to editor, we need to prevent default
+		} else {
+			tree.setFocus(element, payload);
+			tree.setSelection([element], payload);
+		}
 
-// 	public onContextMenu(tree: tree.ITree, element: JobTreeResource, event: tree.ContextMenuEvent): boolean {
-// 		let context: ManageActionContext | BaseActionContext;
+		return true;
+	}
 
-// 		if (element instanceof ObjectMetadataWrapper) {
-// 			context = {
-// 				object: element,
-// 				profile: this._connectionService.connectionInfo.connectionProfile
-// 			};
-// 		} else {
-// 			context = {
-// 				profile: element,
-// 				uri: this._uri
-// 			};
-// 		}
+	public onContextMenu(tree: tree.ITree, element: JobHistoryRow, event: tree.ContextMenuEvent): boolean {
+		return true;
+	}
 
-// 		this._contextMenuService.showContextMenu({
-// 			getAnchor: () => { return { x: event.posx, y: event.posy }; },
-// 			getActions: () => GetExplorerActions(element, this._instantiationService, this._capabilitiesService, this._connectionService.connectionInfo),
-// 			getActionsContext: () => context
-// 		});
+}
 
-// 		return true;
-// 	}
+export class JobHistoryDataSource implements tree.IDataSource {
+	private _data: JobHistoryRow[];
 
-// 	private handleItemDoubleClick(element: IConnectionProfile): void {
-// 		this._connectionService.changeDatabase(element.databaseName).then(result => {
-// 			this._router.navigate(['database-dashboard']);
-// 		});
-// 	}
-// }
+	public getId(tree: tree.ITree, element: JobHistoryRow | JobHistoryModel): string {
+		if (element instanceof JobHistoryModel) {
+			return JobHistoryModel.id;
+		} else {
+			return (element as JobHistoryRow).jobID;
+		}
+	}
 
-// export class JobHistoryDataSource implements tree.IDataSource {
-// 	private _data: JobTreeResource[];
+	public hasChildren(tree: tree.ITree, element: JobHistoryRow | JobHistoryModel): boolean {
+		if (element instanceof JobHistoryModel) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-// 	public getId(tree: tree.ITree, element: JobTreeResource | JobHistoryModel): string {
-// 		if (element instanceof ObjectMetadataWrapper) {
-// 			return element.urn || element.schema + element.name;
-// 		} else if (element instanceof JobHistoryModel) {
-// 			return JobHistoryModel.id;
-// 		} else {
-// 			return (element as IConnectionProfile).getOptionsKey();
-// 		}
-// 	}
+	public getChildren(tree: tree.ITree, element: JobHistoryRow | JobHistoryModel): Promise {
+		if (element instanceof JobHistoryModel) {
+			return TPromise.as(this._data);
+		} else {
+			return TPromise.as(undefined);
+		}
+	}
 
-// 	public hasChildren(tree: tree.ITree, element: JobTreeResource | JobHistoryModel): boolean {
-// 		if (element instanceof JobHistoryModel) {
-// 			return true;
-// 		} else {
-// 			return false;
-// 		}
-// 	}
+	public getParent(tree: tree.ITree, element: JobHistoryRow | JobHistoryModel): Promise {
+		if (element instanceof JobHistoryModel) {
+			return TPromise.as(undefined);
+		} else {
+			return TPromise.as(new JobHistoryModel());
+		}
+	}
 
-// 	public getChildren(tree: tree.ITree, element: JobTreeResource | JobHistoryModel): Promise {
-// 		if (element instanceof JobHistoryModel) {
-// 			return TPromise.as(this._data);
-// 		} else {
-// 			return TPromise.as(undefined);
-// 		}
-// 	}
+	public set data(data: JobHistoryRow[]) {
+		this._data = data;
+	}
+}
 
-// 	public getParent(tree: tree.ITree, element: JobTreeResource | JobHistoryModel): Promise {
-// 		if (element instanceof JobHistoryModel) {
-// 			return TPromise.as(undefined);
-// 		} else {
-// 			return TPromise.as(new JobHistoryModel());
-// 		}
-// 	}
+export interface IListTemplate {
+	statusIcon: HTMLElement;
+	label: HTMLElement;
+}
 
-// 	public set data(data: JobTreeResource[]) {
-// 		this._data = data;
-// 	}
-// }
+export class JobHistoryRenderer implements tree.IRenderer {
+	private _statusIcon: HTMLElement;
 
-// enum TEMPLATEIDS {
-// 	profile = 'profile',
-// 	object = 'object'
-// }
+	public getHeight(tree: tree.ITree, element: JobHistoryRow): number {
+		return 22;
+	}
 
-// export interface IListTemplate {
-// 	icon?: HTMLElement;
-// 	label: HTMLElement;
-// }
+	public getTemplateId(tree: tree.ITree, element: JobHistoryRow | JobHistoryModel): string {
+		if (element instanceof JobHistoryModel) {
+			return 'jobHistoryModel';
+		} else {
+			return 'jobHistoryInfo';
+		}
+	}
 
-// export class JobHistoryRenderer implements tree.IRenderer {
-// 	public getHeight(tree: tree.ITree, element: JobTreeResource): number {
-// 		return 22;
-// 	}
+	public renderTemplate(tree: tree.ITree, templateId: string, container: HTMLElement): IListTemplate {
+		let row = DOM.$('.list-row');
+		let label = DOM.$('.label');
+		this._statusIcon = this.createStatusIcon();
+		row.appendChild(this._statusIcon);
+		row.appendChild(label);
+		container.appendChild(row);
+		let statusIcon = this._statusIcon;
+		return { statusIcon, label };
+	}
 
-// 	public getTemplateId(tree: tree.ITree, element: JobTreeResource): string {
-// 		if (element instanceof ObjectMetadataWrapper) {
-// 			return TEMPLATEIDS.object;
-// 		} else {
-// 			return TEMPLATEIDS.profile;
-// 		}
-// 	}
+	public renderElement(tree: tree.ITree, element: JobHistoryRow, templateId: string, templateData: IListTemplate): void {
+		templateData.label.innerText = element.runDate + '\t\t\t' + element.runStatus;
+		let statusClass: string;
+		if (element.runStatus === 'Succeeded') {
+			statusClass = ' passed';
+		} else if (element.runStatus === 'Failed') {
+			statusClass = ' failed';
+		} else {
+			statusClass = ' unknown';
+		}
+		this._statusIcon.className += statusClass;
+	}
 
-// 	public renderTemplate(tree: tree.ITree, templateId: string, container: HTMLElement): IListTemplate {
-// 		let row = $('.list-row');
-// 		let label = $('.label');
+	public disposeTemplate(tree: tree.ITree, templateId: string, templateData: IListTemplate): void {
+		// no op
+	}
 
-// 		let icon: HTMLElement;
-// 		if (templateId === TEMPLATEIDS.object) {
-// 			icon = $('div');
-// 		} else {
-// 			icon = $('.icon.database');
-// 		}
+	private createStatusIcon(): HTMLElement {
+		let statusIcon: HTMLElement = DOM.$('div');
+		statusIcon.className += ' status-icon';
+		return statusIcon;
+	}
+}
 
-// 		row.appendChild(icon);
-// 		row.appendChild(label);
-// 		container.appendChild(row);
+export class JobHistoryFilter implements tree.IFilter {
+	private _filterString: string;
 
-// 		return { icon, label };
-// 	}
+	public isVisible(tree: tree.ITree, element: JobHistoryRow): boolean {
+		return this._isJobVisible();
+	}
 
-// 	public renderElement(tree: tree.ITree, element: JobTreeResource, templateId: string, templateData: IListTemplate): void {
-// 		if (element instanceof ObjectMetadataWrapper) {
-// 			switch (element.metadataType) {
-// 				case MetadataType.Function:
-// 					templateData.icon.className = 'icon scalarvaluedfunction';
-// 					break;
-// 				case MetadataType.SProc:
-// 					templateData.icon.className = 'icon stored-procedure';
-// 					break;
-// 				case MetadataType.Table:
-// 					templateData.icon.className = 'icon table';
-// 					break;
-// 				case MetadataType.View:
-// 					templateData.icon.className = 'icon view';
-// 					break;
-// 			}
-// 			templateData.label.innerText = element.schema + '.' + element.name;
-// 		} else {
-// 			templateData.label.innerText = element.databaseName;
-// 		}
-// 	}
+	private _isJobVisible(): boolean {
+		return true;
+	}
 
-// 	public disposeTemplate(tree: tree.ITree, templateId: string, templateData: IListTemplate): void {
-// 		// no op
-// 	}
-
-// }
-
-// export class JobHistoryFilter implements tree.IFilter {
-// 	private _filterString: string;
-
-// 	public isVisible(tree: tree.ITree, element: JobTreeResource): boolean {
-// 		if (element instanceof ObjectMetadataWrapper) {
-// 			return this._doIsVisibleObjectMetadata(element);
-// 		} else {
-// 			return this._doIsVisibleConnectionProfile(element);
-// 		}
-// 	}
-
-// 	// apply filter to databasename of the profile
-// 	private _doIsVisibleConnectionProfile(element: IConnectionProfile): boolean {
-// 		if (!this._filterString) {
-// 			return true;
-// 		}
-// 		let filterString = this._filterString.trim().toLowerCase();
-// 		return element.databaseName.toLowerCase().includes(filterString);
-// 	}
-
-// 	// apply filter for objectmetadatawrapper
-// 	// could be improved by pre-processing the filter string
-// 	private _doIsVisibleObjectMetadata(element: ObjectMetadataWrapper): boolean {
-// 		if (!this._filterString) {
-// 			return true;
-// 		}
-// 		// freeze filter string for edge cases
-// 		let filterString = this._filterString.trim().toLowerCase();
-
-// 		// determine if a filter is applied
-// 		let metadataType: MetadataType;
-
-// 		if (filterString.includes(':')) {
-// 			let filterArray = filterString.split(':');
-
-// 			if (filterArray.length > 2) {
-// 				filterString = filterArray.slice(1, filterArray.length - 1).join(':');
-// 			} else {
-// 				filterString = filterArray[1];
-// 			}
-
-// 			switch (filterArray[0].toLowerCase()) {
-// 				case 'v':
-// 					metadataType = MetadataType.View;
-// 					break;
-// 				case 't':
-// 					metadataType = MetadataType.Table;
-// 					break;
-// 				case 'sp':
-// 					metadataType = MetadataType.SProc;
-// 					break;
-// 				case 'f':
-// 					metadataType = MetadataType.Function;
-// 					break;
-// 				case 'a':
-// 					return true;
-// 				default:
-// 					break;
-// 			}
-// 		}
-
-// 		if (metadataType !== undefined) {
-// 			return element.metadataType === metadataType && (element.schema + '.' + element.name).toLowerCase().includes(filterString);
-// 		} else {
-// 			return (element.schema + '.' + element.name).toLowerCase().includes(filterString);
-// 		}
-// 	}
-
-// 	public set filterString(val: string) {
-// 		this._filterString = val;
-// 	}
-// }
+	public set filterString(val: string) {
+		this._filterString = val;
+	}
+}
