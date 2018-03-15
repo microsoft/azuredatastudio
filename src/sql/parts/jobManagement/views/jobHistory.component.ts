@@ -6,22 +6,24 @@
 import 'vs/css!./jobHistory';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IJobManagementService } from '../common/interfaces';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { ExplorerDataSource } from 'sql/parts/dashboard/widgets/explorer/explorerTree';
-import { TreeCreationUtils } from 'sql/parts/registeredServer/viewlet/treeCreationUtils';
+import { AgentJobsResult, AgentJobHistoryInfo } from 'sqlops';
 import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { getContentHeight } from 'vs/base/browser/dom';
+import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
+import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { IJobManagementService } from '../common/interfaces';
+import { ExplorerDataSource } from 'sql/parts/dashboard/widgets/explorer/explorerTree';
+import { TreeCreationUtils } from 'sql/parts/registeredServer/viewlet/treeCreationUtils';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
-import { AgentJobsResult, AgentJobHistoryInfo } from 'sqlops';
 import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
-import { getContentHeight } from 'vs/base/browser/dom';
+
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -29,7 +31,7 @@ export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 	selector: DASHBOARD_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./jobHistory.component.html'))
 })
-export class JobHistoryComponent implements OnInit, OnDestroy {
+export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy {
 
 	private _jobManagementService: IJobManagementService;
 	private _tree: Tree;
@@ -45,8 +47,8 @@ export class JobHistoryComponent implements OnInit, OnDestroy {
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
-		@IThemeService private _themeService: IThemeService
 	) {
+		super();
 	}
 
 	ngOnInit() {
@@ -71,6 +73,7 @@ export class JobHistoryComponent implements OnInit, OnDestroy {
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
 		});
+		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 		this._tree.layout(1024);
 		this._tree.setInput(new JobHistoryModel());
 	}
@@ -87,6 +90,5 @@ export class JobHistoryComponent implements OnInit, OnDestroy {
 			arrow.className = 'resultsViewCollapsible';
 		}
 	}
-
 }
 
