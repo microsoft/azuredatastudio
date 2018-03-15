@@ -8,6 +8,7 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import * as os from 'os';
 import { ExtensionContext } from 'vscode';
+import { PlatformInformation } from 'service-downloader/out/platform';
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
@@ -93,4 +94,12 @@ export function generateGuid(): string {
 	let clockSequenceHi: string = hexValues[8 + (Math.random() * 4) | 0];
 	return oct.substr(0, 8) + '-' + oct.substr(9, 4) + '-4' + oct.substr(13, 3) + '-' + clockSequenceHi + oct.substr(16, 3) + '-' + oct.substr(19, 12);
 	/* tslint:enable:no-bitwise */
+}
+
+export function verifyPlatform(): Thenable<boolean> {
+	if (os.platform() === 'darwin' && parseFloat(os.release()) < 16.0) {
+		return Promise.resolve(false);
+	} else {
+		return Promise.resolve(true);
+	}
 }

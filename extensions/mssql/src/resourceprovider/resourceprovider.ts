@@ -5,7 +5,7 @@
 'use strict';
 
 import * as path from 'path';
-import { ILogger, IConfig, ServerProvider } from 'service-downloader';
+import { IConfig, ServerProvider } from 'service-downloader';
 import { SqlOpsDataClient, SqlOpsFeature, ClientOptions } from 'dataprotocol-client';
 import { ServerCapabilities, ClientCapabilities, RPCMessageType, ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
@@ -78,7 +78,7 @@ export class AzureResourceProvider {
 	private _client: SqlOpsDataClient;
 	private _config: IConfig;
 
-	constructor(baseConfig: IConfig, private logger: ILogger) {
+	constructor(baseConfig: IConfig) {
 		if (baseConfig) {
 			this._config = JSON.parse(JSON.stringify(baseConfig));
 			this._config.executableFiles = ['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService'];
@@ -86,7 +86,7 @@ export class AzureResourceProvider {
 	}
 
 	public start() {
-		let serverdownloader = new ServerProvider(this._config, this.logger);
+		let serverdownloader = new ServerProvider(this._config);
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
 			features: [FireWallFeature],

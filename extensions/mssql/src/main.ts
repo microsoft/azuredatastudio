@@ -7,7 +7,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { ILogger, IConfig, ServerProvider } from 'service-downloader';
+import { IConfig, ServerProvider, Events } from 'service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 
 import * as Constants from './constants';
@@ -18,20 +18,31 @@ import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 
 const baseConfig = require('./config.json');
+const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
+const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
-export function activate(context: vscode.ExtensionContext) {
-	let outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
-	outputChannel.show();
+export async function activate(context: vscode.ExtensionContext) {
+	// lets make sure we support this platform first
+	let supported = await Utils.verifyPlatform();
+
+	if (!supported) {
+		vscode.window.showErrorMessage('Unsupported platform');
+		return;
+	}
+
 	let config: IConfig = JSON.parse(JSON.stringify(baseConfig));
 	config.installDirectory = path.join(__dirname, config.installDirectory);
 	config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
 	config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
 
-	const credentialsStore = new CredentialStore(config, outputChannel);
-	const resourceProvider = new AzureResourceProvider(config, outputChannel);
+	const credentialsStore = new CredentialStore(config);
+	const resourceProvider = new AzureResourceProvider(config);
 	let languageClient: SqlOpsDataClient;
 
-	const serverdownloader = new ServerProvider(config, outputChannel);
+	const serverdownloader = new ServerProvider(config);
+
+	serverdownloader.eventEmitter.onAny(generateHandleServerProviderEvent());
+
 	let clientOptions: ClientOptions = {
 		providerId: Constants.providerId,
 		errorHandler: new LanguageClientErrorHandler(),
@@ -41,12 +52,15 @@ export function activate(context: vscode.ExtensionContext) {
 	const installationStart = Date.now();
 	serverdownloader.getOrDownloadServer().then(e => {
 		const installationComplete = Date.now();
-		// at this point we know they will be downloaded so we can start the other services
 		let serverOptions = generateServerOptions(e);
 		languageClient = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 		const processStart = Date.now();
 		languageClient.onReady().then(() => {
 			const processEnd = Date.now();
+			statusView.text = 'Service Started';
+			setTimeout(() => {
+				statusView.hide();
+			}, 1500);
 			Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
 				installationTime: String(installationComplete - installationStart),
 				processStartupTime: String(processEnd - processStart),
@@ -54,11 +68,14 @@ export function activate(context: vscode.ExtensionContext) {
 				beginningTimestamp: String(installationStart)
 			});
 		});
+		statusView.show();
+		statusView.text = 'Starting service';
 		languageClient.start();
 		credentialsStore.start();
 		resourceProvider.start();
 	}, e => {
 		Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
+		vscode.window.showErrorMessage('Failed to start Sql tools service');
 	});
 
 	let contextProvider = new ContextProvider();
@@ -75,6 +92,38 @@ function generateServerOptions(executablePath: string): ServerOptions {
 	launchArgs.push(logFileLocation);
 
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
+}
+
+function generateHandleServerProviderEvent() {
+	let dots = 0;
+	return (e: string, ...args: any[]) => {
+		outputChannel.show();
+		statusView.show();
+		switch (e) {
+			case Events.INSTALL_START:
+				outputChannel.appendLine(`Installing ${Constants.serviceName} service to ${args[0]}`);
+				statusView.text = 'Installing Service';
+				break;
+			case Events.INSTALL_END:
+				outputChannel.appendLine('Installed');
+				break;
+			case Events.DOWNLOAD_START:
+				outputChannel.appendLine(`Downloading ${args[0]}`);
+				outputChannel.append(`(${Math.ceil(args[1] / 1024)} KB)`);
+				statusView.text = 'Downloading Service';
+				break;
+			case Events.DOWNLOAD_PROGRESS:
+				 let newDots = Math.ceil(args[0] / 5);
+				 if (newDots > dots ) {
+					outputChannel.append('.'.repeat(newDots - dots));
+					dots = newDots;
+				 }
+				break;
+			case Events.DOWNLOAD_END:
+				outputChannel.appendLine('Done!');
+				break;
+		}
+	};
 }
 
 // this method is called when your extension is deactivated

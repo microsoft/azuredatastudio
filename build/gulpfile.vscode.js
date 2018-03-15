@@ -643,16 +643,12 @@ gulp.task('generate-vscode-configuration', () => {
 
 function installService() {
 	let config = require('../extensions/mssql/src/config.json');
-	let logger = {
-		appendLine: (m) => console.log(m),
-		append: (m) => console.log(m)
-	};
 	return platformInfo.getCurrent().then(p => {
 		let runtime = p.runtimeId;
 		// fix path since it won't be correct
 		config.installDirectory = path.join(__dirname, '../extensions/mssql/src', config.installDirectory);
-		var installer = new serviceDownloader(config, logger);
-		let serviceInstallFolder = installer.getInstallDirectoryRoot(runtime);
+		var installer = new serviceDownloader(config);
+		let serviceInstallFolder = installer.getInstallDirectory(runtime);
 		console.log('Cleaning up the install folder: ' + serviceInstallFolder);
 		return del(serviceInstallFolder + '/*').then(() => {
 			console.log('Installing the service. Install folder: ' + serviceInstallFolder);

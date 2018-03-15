@@ -6,7 +6,7 @@
 
 import { SqlOpsDataClient, ClientOptions, SqlOpsFeature } from 'dataprotocol-client';
 import * as path from 'path';
-import { ILogger, IConfig, ServerProvider } from 'service-downloader';
+import { IConfig, ServerProvider } from 'service-downloader';
 import { ServerOptions, RPCMessageType, ClientCapabilities, ServerCapabilities, TransportKind } from 'vscode-languageclient';
 import { Disposable } from 'vscode';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
@@ -73,7 +73,7 @@ export class CredentialStore {
 	private _client: SqlOpsDataClient;
 	private _config: IConfig;
 
-	constructor(baseConfig: IConfig, private logger: ILogger) {
+	constructor(baseConfig: IConfig) {
 		if (baseConfig) {
 			this._config = JSON.parse(JSON.stringify(baseConfig));
 			this._config.executableFiles = ['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials'];
@@ -81,7 +81,7 @@ export class CredentialStore {
 	}
 
 	public start() {
-		let serverdownloader = new ServerProvider(this._config, this.logger);
+		let serverdownloader = new ServerProvider(this._config);
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
 			features: [CredentialsFeature],
