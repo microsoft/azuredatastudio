@@ -51,7 +51,7 @@ class DashboardContainerRegistry implements IDashboardContainerRegistry {
 	}
 
 	public get containerTypeSchemaProperties(): IJSONSchemaMap {
-		return deepClone(this._dashboardContainerTypeSchemaProperties);
+		return this._dashboardContainerTypeSchemaProperties;
 	}
 
 	/**
@@ -64,7 +64,7 @@ class DashboardContainerRegistry implements IDashboardContainerRegistry {
 	}
 
 	public get navSectionContainerTypeSchemaProperties(): IJSONSchemaMap {
-		return deepClone(this._dashboardNavSectionContainerTypeSchemaProperties);
+		return this._dashboardNavSectionContainerTypeSchemaProperties;
 	}
 }
 

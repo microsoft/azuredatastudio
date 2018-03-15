@@ -156,6 +156,8 @@ class Query {
 	get sortBy(): number { return this.state.sortBy; }
 	get sortOrder(): number { return this.state.sortOrder; }
 	get flags(): number { return this.state.flags; }
+	// {{SQL CARBON EDIT}}
+	get criteria(): ICriterium[] { return this.state.criteria ? this.state.criteria : []; }
 
 	withPage(pageNumber: number, pageSize: number = this.state.pageSize): Query {
 		return new Query(assign({}, this.state, { pageNumber, pageSize }));
@@ -439,6 +441,30 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		});
 	}
 
+	// {{SQL CARBON EDIT}}
+	/**
+	 * The result of querying the gallery returns all the extensions because it's only reading a static file.
+	 * So this method should apply all the filters and return the actual result
+	 * @param query
+	 * @param galleryExtensions
+	 */
+	private createQueryResult(query: Query, galleryExtensions: IRawGalleryExtension[]): { galleryExtensions: IRawGalleryExtension[], total: number; } {
+		let filteredExtensions = galleryExtensions;
+		if (query.criteria) {
+			const ids = query.criteria.filter(x => x.filterType === FilterType.ExtensionId).map(v => v.value.toLocaleLowerCase());
+			if (ids && ids.length > 0) {
+					filteredExtensions = filteredExtensions.filter(e => e.extensionId && ids.includes(e.extensionId.toLocaleLowerCase()));
+			}
+			const names = query.criteria.filter(x => x.filterType === FilterType.ExtensionName).map(v => v.value.toLocaleLowerCase());
+			if (names && names.length > 0) {
+					filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && names.includes(`${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
+			}
+		}
+
+		let actualTotal = filteredExtensions.length;
+		return { galleryExtensions: filteredExtensions, total: actualTotal };
+	}
+
 	private queryGallery(query: Query): TPromise<{ galleryExtensions: IRawGalleryExtension[], total: number; }> {
 		return this.commonHeadersPromise.then(commonHeaders => {
 			const data = JSON.stringify(query.raw);
@@ -467,7 +493,10 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0];
 					const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0;
 
-					return { galleryExtensions, total };
+					// {{SQL CARBON EDIT}}
+					let filteredExtensionsResult = this.createQueryResult(query, galleryExtensions);
+
+					return { galleryExtensions: filteredExtensionsResult.galleryExtensions, total: filteredExtensionsResult.total };
 				});
 			});
 		});

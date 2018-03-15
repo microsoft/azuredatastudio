@@ -41,6 +41,8 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	_serviceBrand: any;
 
 	private _fileBasedRecommendations: { [id: string]: number; } = Object.create(null);
+	// {{SQL CARBON EDIT}}
+	private _recommendations: string[] = Object.create(null);
 	private _exeBasedRecommendations: { [id: string]: string; } = Object.create(null);
 	private _availableRecommendations: { [pattern: string]: string[] } = Object.create(null);
 	private importantRecommendations: { [id: string]: { name: string; pattern: string; } } = Object.create(null);
@@ -83,6 +85,8 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 		let output: { [id: string]: string; } = Object.create(null);
 		Object.keys(this._fileBasedRecommendations).forEach(x => output[x.toLowerCase()] = localize('fileBasedRecommendation', "This extension is recommended based on the files you recently opened."));
 		this._allWorkspaceRecommendedExtensions.forEach(x => output[x.toLowerCase()] = localize('workspaceRecommendation', "This extension is recommended by users of the current workspace."));
+		// {{SQL CARBON EDIT}}
+		this._recommendations.forEach(x => output[x.toLowerCase()] = localize('defaultRecommendations', "This extension is recommended by Sql Ops Studio."));
 		forEach(this._exeBasedRecommendations, entry => output[entry.key.toLowerCase()] = localize('exeBasedRecommendation', "This extension is recommended because you have {0} installed.", entry.value));
 		return output;
 	}
@@ -150,7 +154,9 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	}
 
 	getOtherRecommendations(): string[] {
-		return Object.keys(this._exeBasedRecommendations);
+		// {{SQL CARBON EDIT}}
+		let recommendations =  Object.keys(this._exeBasedRecommendations);
+		return recommendations.concat(this._recommendations);
 	}
 
 
@@ -161,6 +167,8 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 	private _suggestTips() {
 		const extensionTips = product.extensionTips;
+		// {{SQL CARBON EDIT}}
+		this._recommendations = product.recommendedExtensions;
 		if (!extensionTips) {
 			return;
 		}

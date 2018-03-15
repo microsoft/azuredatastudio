@@ -11,20 +11,21 @@ import Webview from 'vs/workbench/parts/html/browser/webview';
 import { Parts } from 'vs/workbench/services/part/common/partService';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
+import { memoize } from 'vs/base/common/decorators';
 
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { IDashboardWebview } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
+import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import * as sqlops from 'sqlops';
-import { memoize } from 'vs/base/common/decorators';
 
 @Component({
 	template: '',
 	selector: 'webview-content'
 })
-export class WebviewContent extends Disposable implements OnInit, IDashboardWebview {
+export class WebviewContent extends AngularDisposable implements OnInit, IDashboardWebview {
 	@Input() private webviewId: string;
 
 	private _onResize = new Emitter<void>();
