@@ -10,7 +10,7 @@
 	padding-bottom: 15px;
 }
 
-.vs-dark .action-buttons {
+.vs-dark ul.action-buttons {
 	border-top: 3px solid #444444;
 }
 
@@ -21,7 +21,7 @@
 	list-style-type: none;
 }
 
-.icon-start, .icon-stop {
+ul.action-buttons .icon-start, .icon-stop {
 	padding-left: 25px;
 }
 
@@ -32,26 +32,21 @@ ul.action-buttons li {
 	cursor: pointer;
 }
 
-.resultsViewCollapsible {
+.overview-container .overview-tab .resultsViewCollapsible {
 	padding: 15px;
 	display: inline;
 }
 
-body {
-	color: #2c3e50;
-	background: #ecf0f1;
-}
-
-h1 {
+.job-heading {
 	text-align: left;
 	padding-left: 13px;
 }
 
-.vs-dark .overview-tab {
+.vs-dark .overview-container .overview-tab {
 	color: #fff;
 }
 
-.overview-tab {
+.overview-container > .overview-tab {
 	position: relative;
 	margin-bottom: 1px;
 	width: 100%;
@@ -59,17 +54,17 @@ h1 {
 	overflow: hidden;
 }
 
-input {
+input#accordion {
 	position: absolute;
 	opacity: 0;
 	z-index: -1;
 }
 
-.vs-dark label {
+.vs-dark .overview-container .overview-tab label {
 	background: #444444;
 }
 
-label {
+.overview-container .overview-tab label {
 	position: relative;
 	display: block;
 	padding: 0 0 0 1em;
@@ -80,11 +75,11 @@ label {
 	width: 100%;
 }
 
-.vs-dark .accordion-content {
+.vs-dark .overview-tab .accordion-content {
 	background: #333333;
 }
 
-.accordion-content {
+.overview-tab .accordion-content {
 	max-height: 0;
 	overflow: hidden;
 	background: #eaeaea;
@@ -94,17 +89,17 @@ label {
 	width: 100%;
 }
 
-.accordion-content p {
+.overview-tab .accordion-content p {
 	margin: 1em;
 }
 
 /* :checked */
-input:checked ~ .accordion-content {
+input#accordion:checked ~ .accordion-content {
 	max-height: 10em;
 }
 
 /* Icon */
-label::after {
+.overview-container .overview-tab label::after {
 	position: absolute;
 	right: 0;
 	top: 0;
@@ -118,7 +113,7 @@ label::after {
 	transition: all .3s;
 }
 
-.backButtonIcon {
+.all-jobs > .back-button-icon {
 	content: url('../common/media/back.svg');
 	width: 20px;
 	margin-right: 10px;
@@ -127,13 +122,13 @@ label::after {
 	padding-left: 13px;
 }
 
-.vs-dark.monaco-shell .backButtonIcon {
+.vs-dark.monaco-shell .all-jobs >.back-button-icon {
 	content: url('../common/media/back_inverse.svg');
 }
 
-.vs .icon-start,
-.vs-dark .icon-start,
-.hc-black .icon-start {
+.vs ul.action-buttons a.icon-start,
+.vs-dark ul.action-buttons a.icon-start,
+.hc-black ul.action-buttons a.icon-start {
 	display: inline-block;
 	height: 20px;
 	width: 20px;
@@ -141,9 +136,9 @@ label::after {
 	background-repeat: no-repeat;
 }
 
-.vs .icon-stop,
-.vs-dark .icon-stop,
-.hc-black .icon-stop {
+.vs ul.action-buttons .icon-stop,
+.vs-dark ul.action-buttons .icon-stop,
+.hc-black ul.action-buttons .icon-stop {
 	display: inline-block;
 	background-image: url('../common/media/stop.svg');
 	background-repeat: no-repeat;
@@ -151,15 +146,18 @@ label::after {
 	width: 20px;
 }
 
-#col1, #col2, #col3, #col4 {
+.accordion-content #col1,
+.accordion-content #col2,
+.accordion-content #col3,
+.accordion-content #col4 {
 	padding: 10px;
 }
 
-#col2 {
+.accordion-content #col2 {
 	padding-right: 300px;
 }
 
-tr.step-row td {
+table.step-list tr.step-row td {
 	padding-right: 100px;
 }
 
@@ -168,14 +166,14 @@ tr.step-row td {
 	display: flex;
 }
 
-.vs-dark .job-steps {
+.vs-dark .history-details > .job-steps {
 	display: inline-block;
 	border-left: 3px solid #444444;
 	padding-left: 10px;
 	height: 100%;
 }
 
-.job-steps {
+.history-details > .job-steps {
 	display: inline-block;
 	border-left: 3px solid #f4f4f4;
 	padding-left: 10px;
@@ -202,10 +200,6 @@ tr.step-row td {
 
 .step-table .list-row .label {
 	padding-left: 10px;
-	display: inline-block;
-}
-
-.list-row {
 	display: inline-block;
 }
 
