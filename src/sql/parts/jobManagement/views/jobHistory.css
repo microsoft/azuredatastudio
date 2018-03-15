@@ -196,3 +196,8 @@ tr.step-row td {
 .unknown {
 	background: yellow;
 }
+
+.date-column {
+	padding-left: 50px;
+	width: 140px;
+}

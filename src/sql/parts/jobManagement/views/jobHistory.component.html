@@ -82,7 +82,18 @@
 <!-- Job History details -->
 <div class='history-details'>
 	<!-- Previous run list -->
-	<div #table class="step-table prev-run-list" style="position: relative; height: 100%; width: 20%">
+	<div style="width: 20%">
+		<table>
+			<tr>
+				<td class="date-column">
+					<b>Date</b>
+				</td>
+				<td>
+					<b>Status</b>
+				</td>
+			</tr>
+		</table>
+		<div #table class="step-table prev-run-list" style="position: relative; height: 100%; width: 100%"></div>
 	</div>
 	<!-- Job Steps -->
 	<div class="job-steps">
