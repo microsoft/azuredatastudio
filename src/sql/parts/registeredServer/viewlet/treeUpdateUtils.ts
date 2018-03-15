@@ -209,7 +209,7 @@ export class TreeUpdateUtils {
 			} else {
 				var rootNode = objectExplorerService.getObjectExplorerNode(connection);
 				if (rootNode) {
-					objectExplorerService.expandTreeNode(rootNode.getSession(), rootNode).then(() => {
+					objectExplorerService.resolveTreeNodeChildren(rootNode.getSession(), rootNode).then(() => {
 						resolve(rootNode.children);
 					}, expandError => {
 						resolve([]);

@@ -7,18 +7,31 @@
 
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import * as Constants from 'sql/common/constants';
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { Deferred } from 'sql/base/common/promise';
+
 import * as sqlops from 'sqlops';
+
 import Event, { Emitter } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
-import { Deferred } from 'sql/base/common/promise';
 import { getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IExtensionManagementService, ILocalExtension, IExtensionEnablementService, LocalExtensionType } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { Memento } from 'vs/workbench/common/memento';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'sqlops';
 export const HOST_VERSION = '1.0';
+
+interface IProtocolMomento {
+	[id: string]: sqlops.DataProtocolServerCapabilities;
+}
+
+export const clientCapabilities = {
+	hostName: HOST_NAME,
+	hostVersion: HOST_VERSION
+};
 
 export const ICapabilitiesService = createDecorator<ICapabilitiesService>(SERVICE_ID);
 
@@ -31,7 +44,7 @@ export interface ICapabilitiesService {
 	/**
 	 * Retrieve a list of registered capabilities providers
 	 */
-	getCapabilities(): sqlops.DataProtocolServerCapabilities[];
+	getCapabilities(provider: string): sqlops.DataProtocolServerCapabilities;
 
 	/**
 	 * Register a capabilities provider
@@ -44,14 +57,19 @@ export interface ICapabilitiesService {
 	isFeatureAvailable(action: IAction, connectionManagementInfo: ConnectionManagementInfo): boolean;
 
 	/**
-	 * Event raised when a provider is registered
-	 */
-	onProviderRegisteredEvent: Event<sqlops.DataProtocolServerCapabilities>;
-
-	/**
 	 * Promise fulfilled when Capabilities are ready
 	 */
 	onCapabilitiesReady(): Promise<void>;
+
+	/**
+	 * When a new capabilities is registered, it emits the provider name, be to use to get the new capabilities
+	 */
+	readonly onCapabilitiesRegistered: Event<string>;
+
+	/**
+	 * Get an array of all known providers
+	 */
+	readonly providers: string[];
 
 }
 
@@ -59,27 +77,17 @@ export interface ICapabilitiesService {
  * Capabilities service implementation class.  This class provides the ability
  * to discover the DMP capabilties that a DMP provider offers.
  */
-export class CapabilitiesService implements ICapabilitiesService {
+export class CapabilitiesService extends Disposable implements ICapabilitiesService {
 
 	public _serviceBrand: any;
 
+	private _momento = new Memento('capabilitiesCache');
+
 	private static DATA_PROVIDER_CATEGORY: string = 'Data Provider';
-
-	private _providers: sqlops.CapabilitiesProvider[] = [];
-
-	private _capabilities: sqlops.DataProtocolServerCapabilities[] = [];
-
-	private _onProviderRegistered: Emitter<sqlops.DataProtocolServerCapabilities>;
-
-	private _clientCapabilties: sqlops.DataProtocolClientCapabilities = {
-
-		hostName: HOST_NAME,
-		hostVersion: HOST_VERSION
-	};
 
 	private disposables: IDisposable[] = [];
 
-	private _onCapabilitiesReady: Deferred<void>;
+	private _onCapabilitiesReady = new Deferred<void>();
 
 	// Setting this to 1 by default as we have MS SQL provider by default and then we increament
 	// this number based on extensions installed.
@@ -89,12 +97,15 @@ export class CapabilitiesService implements ICapabilitiesService {
 
 	private _registeredCapabilities: number = 0;
 
-	constructor( @IExtensionManagementService private extensionManagementService: IExtensionManagementService,
-		@IExtensionEnablementService private extensionEnablementService: IExtensionEnablementService) {
+	private _onCapabilitiesRegistered = this._register(new Emitter<string>());
+	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
 
-		this._onProviderRegistered = new Emitter<sqlops.DataProtocolServerCapabilities>();
-		this.disposables.push(this._onProviderRegistered);
-		this._onCapabilitiesReady = new Deferred();
+	constructor(
+		@IExtensionManagementService private extensionManagementService: IExtensionManagementService,
+		@IExtensionEnablementService private extensionEnablementService: IExtensionEnablementService,
+		@IStorageService private _storageService: IStorageService
+	) {
+		super();
 
 		// Get extensions and filter where the category has 'Data Provider' in it
 		this.extensionManagementService.getInstalled(LocalExtensionType.User).then((extensions: ILocalExtension[]) => {
@@ -140,8 +151,16 @@ export class CapabilitiesService implements ICapabilitiesService {
 	/**
 	 * Retrieve a list of registered server capabilities
 	 */
-	public getCapabilities(): sqlops.DataProtocolServerCapabilities[] {
-		return this._capabilities;
+	public getCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
+		return this.capabilities[provider];
+	}
+
+	public get providers(): string[] {
+		return Object.keys(this.capabilities);
+	}
+
+	private get capabilities(): IProtocolMomento {
+		return this._momento.getMemento(this._storageService) as IProtocolMomento;
 	}
 
 	/**
@@ -149,12 +168,11 @@ export class CapabilitiesService implements ICapabilitiesService {
 	 * @param provider
 	 */
 	public registerProvider(provider: sqlops.CapabilitiesProvider): void {
-		this._providers.push(provider);
-
 		// request the capabilities from server
-		provider.getServerCapabilities(this._clientCapabilties).then(serverCapabilities => {
-			this._capabilities.push(serverCapabilities);
-			this._onProviderRegistered.fire(serverCapabilities);
+		provider.getServerCapabilities(clientCapabilities).then(serverCapabilities => {
+			this.capabilities[serverCapabilities.providerName] = serverCapabilities;
+			this._momento.saveMemento();
+			this._onCapabilitiesRegistered.fire(serverCapabilities.providerName);
 			this._registeredCapabilities++;
 			this.resolveCapabilitiesIfReady();
 		});
@@ -197,14 +215,5 @@ export class CapabilitiesService implements ICapabilitiesService {
 			return true;
 		}
 
-	}
-
-	// Event Emitters
-	public get onProviderRegisteredEvent(): Event<sqlops.DataProtocolServerCapabilities> {
-		return this._onProviderRegistered.event;
-	}
-
-	public dispose(): void {
-		this.disposables = dispose(this.disposables);
 	}
 }

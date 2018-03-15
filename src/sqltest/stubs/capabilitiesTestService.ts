@@ -6,11 +6,11 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import Event from 'vs/base/common/event';
-import { Action } from 'vs/base/common/actions';
+import { ICapabilitiesService, clientCapabilities } from 'sql/services/capabilities/capabilitiesService';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
+import Event, { Emitter } from 'vs/base/common/event';
+import { Action } from 'vs/base/common/actions';
 
 export class CapabilitiesTestService implements ICapabilitiesService {
 
@@ -18,8 +18,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 
 	private _providers: sqlops.CapabilitiesProvider[] = [];
 
-	private _capabilities: sqlops.DataProtocolServerCapabilities[] = [];
-
+	public capabilities: { [id: string]: sqlops.DataProtocolServerCapabilities } = {};
 
 	constructor() {
 
@@ -95,15 +94,19 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 			adminServicesProvider: undefined,
 			features: undefined
 		};
-		this._capabilities.push(msSQLCapabilities);
+		this.capabilities['MSSQL'] = msSQLCapabilities;
 
 	}
 
 	/**
 	 * Retrieve a list of registered server capabilities
 	 */
-	public getCapabilities(): sqlops.DataProtocolServerCapabilities[] {
-		return this._capabilities;
+	public getCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
+		return this.capabilities[provider];
+	}
+
+	public get providers(): string[] {
+		return Object.keys(this.capabilities);
 	}
 
 	/**
@@ -125,5 +128,8 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 	public onCapabilitiesReady(): Promise<void> {
 		return Promise.resolve(null);
 	}
+
+	private _onCapabilitiesRegistered = new Emitter<string>();
+	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
 }
 

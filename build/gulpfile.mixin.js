@@ -24,10 +24,17 @@ gulp.task('mixin', function () {
 		return;
 	}
 
-  // {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}}
+	let serviceUrl = 'https://raw.githubusercontent.com/Microsoft/sqlopsstudio/release/extensions/extensionsGallery.json';
+	if (quality === 'insider') {
+		serviceUrl = `https://raw.githubusercontent.com/Microsoft/sqlopsstudio/release/extensions/extensionsGallery-${quality}.json`;
+	}
 	let newValues = {
 		"updateUrl": updateUrl,
-		"quality": quality
+		"quality": quality,
+		"extensionsGallery": {
+			"serviceUrl": serviceUrl
+		}
 	};
 
 	return gulp.src('./product.json')
