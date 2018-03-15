@@ -15,12 +15,10 @@
 <!-- Actions -->
 <ul class="action-buttons">
 	<li>
-		<a class="icon-start"></a>
-		<p>Run</p>
+		<a class="icon-start">Run</a>
 	</li>
 	<li>
-		<a class="icon-stop"></a>
-		<p>Stop</p>
+		<a class="icon-stop">Stop</a>
 	</li>
 </ul>
 
@@ -84,44 +82,74 @@
 <!-- Job History details -->
 <div class='history-details'>
 	<!-- Previous run list -->
-	<div class="prev-run-list">
-		<div class="prev-run-header">
-			<table>
-				<tr>
-					<td id="#col1">
-						Date
-					</td>
-					<td id="#col2">
-						Status
-					</td>
-				</tr>
-				<tr>
-					<td id="#col1">
-						01/24/2018 00:04:35 AM
-					</td>
-					<td id="#col2">
-						Failed
-					</td>
-				</tr>
-				<tr>
-					<td id="#col1">
-						01/24/2018 00:04:35 AM
-					</td>
-					<td id="#col2">
-						Succeeded
-					</td>
-				</tr>
-				<tr>
-					<td id="#col1">
-						01/24/2018 00:04:35 AM
-					</td>
-					<td id="#col2">
-						Succeeded
-					</td>
-				</tr>
-			</table>
-		</div>
+	<div style="width: 20%">
+		<table>
+			<tr>
+				<td class="date-column">
+					<b>Date</b>
+				</td>
+				<td>
+					<b>Status</b>
+				</td>
+			</tr>
+		</table>
+		<div #table class="step-table prev-run-list" style="position: relative; height: 100%; width: 100%"></div>
 	</div>
-	<div class="job-steps"></div>
+	<!-- Job Steps -->
+	<div class="job-steps">
+		<h1>
+			01/24/2018 00:04:35 PM
+		</h1>
+		<table class="step-list">
+			<tr class="step-row">
+				<td height="30">
+					<h3>Status:</h3>
+				</td>
+				<td>
+					<h3>Failed</h3>
+				</td>
+			</tr>
+			<tr class="step-row">
+				<td height="30">
+					Error Message:
+				</td>
+				<td>
+					Step 2: The specified @job_name("BackupAlldb_2") does not exist
+				</td>
+			</tr>
+			<tr class="step-row">
+				<td height="30">
+					Duration:
+				</td>
+				<td>
+					00:00:00
+				</td>
+			</tr>
+			<tr class="step-row">
+				<td height="30">
+					Log:
+				</td>
+				<td>
+					Job History (Demo_CallanotherJob)
+				</td>
+			</tr>
+			<tr class="step-row">
+				<td height="30">
+					SQL message ID:
+				</td>
+				<td>
+					14652
+				</td>
+			</tr>
+			<tr class="step-row">
+				<td height="30">
+					Retries Attempted:
+				</td>
+				<td>
+					0
+				</td>
+			</tr>
+		</table>
+	</div>
 </div>
 
