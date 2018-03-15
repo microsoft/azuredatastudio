@@ -113,11 +113,11 @@ function generateHandleServerProviderEvent() {
 				statusView.text = 'Downloading Service';
 				break;
 			case Events.DOWNLOAD_PROGRESS:
-				 let newDots = Math.ceil(args[0] / 5);
-				 if (newDots > dots ) {
+				let newDots = Math.ceil(args[0] / 5);
+				if (newDots > dots) {
 					outputChannel.append('.'.repeat(newDots - dots));
 					dots = newDots;
-				 }
+				}
 				break;
 			case Events.DOWNLOAD_END:
 				outputChannel.appendLine('Done!');
