@@ -3,8 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable } from 'vs/base/common/lifecycle';
 import Event from 'vs/base/common/event';
+
+import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 export enum Conditional {
 	'equals',
@@ -16,7 +17,7 @@ export enum Conditional {
 	'always'
 }
 
-export abstract class DashboardTab extends Disposable {
+export abstract class DashboardTab extends AngularDisposable {
 	public abstract layout(): void;
 	public abstract readonly id: string;
 	public abstract readonly editable: boolean;

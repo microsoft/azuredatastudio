@@ -19,10 +19,9 @@ export enum BreadcrumbClass {
 };
 
 @Injectable()
-export class BreadcrumbService implements IBreadcrumbService, OnDestroy {
+export class BreadcrumbService implements IBreadcrumbService {
 	public breadcrumbItem: Subject<MenuItem[]>;
 	private itemBreadcrums: MenuItem[];
-	private _disposables: IDisposable[] = [];
 	private _currentPage: BreadcrumbClass;
 
 	constructor( @Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrap: DashboardServiceInterface) {
@@ -42,7 +41,7 @@ export class BreadcrumbService implements IBreadcrumbService, OnDestroy {
 	private getBreadcrumbsLink(page: BreadcrumbClass): MenuItem[] {
 		this.itemBreadcrums = [];
 		let profile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
-		this.itemBreadcrums.push({ label: nls.localize('homeCrumb', 'Home')});
+		this.itemBreadcrums.push({ label: nls.localize('homeCrumb', 'Home') });
 		switch (page) {
 			case BreadcrumbClass.DatabasePage:
 				this.itemBreadcrums.push(this.getServerBreadcrumb(profile));
@@ -66,9 +65,5 @@ export class BreadcrumbService implements IBreadcrumbService, OnDestroy {
 			label: profile.databaseName ? profile.databaseName : 'database-name',
 			routerLink: ['database-dashboard']
 		};
-	}
-
-	ngOnDestroy() {
-		this._disposables = dispose(this._disposables);
 	}
 }

@@ -65,13 +65,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connectionManagementService: IConnectionManagementService;
 	private _container: HTMLElement;
 	private _connectionDialog: ConnectionDialogWidget;
-	private _connectionControllerMap: { [providerDisplayName: string]: IConnectionComponentController };
+	private _connectionControllerMap: { [providerDisplayName: string]: IConnectionComponentController } = {};
 	private _model: ConnectionProfile;
 	private _params: INewConnectionParams;
 	private _inputModel: IConnectionProfile;
-	private _capabilitiesMaps: { [providerDisplayName: string]: sqlops.DataProtocolServerCapabilities };
-	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
-	private _providerTypes: string[];
+	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string } = {};
+	private _providerTypes: string[] = [];
 	private _currentProviderType: string = 'Microsoft SQL Server';
 	private _connecting: boolean = false;
 	private _connectionErrorTitle = localize('connectionError', 'Connection error');
@@ -85,29 +84,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IWindowsService private _windowsService: IWindowsService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService
-	) {
-		this._capabilitiesMaps = {};
-		this._providerNameToDisplayNameMap = {};
-		this._connectionControllerMap = {};
-		this._providerTypes = [];
-		if (_capabilitiesService) {
-			_capabilitiesService.onProviderRegisteredEvent((capabilities => {
-				let defaultProvider = this.getDefaultProviderName();
-				if (capabilities.providerName === defaultProvider) {
-					this.showDialogWithModel();
-				}
-			}));
-		}
-	}
+	) { }
 
 	private getDefaultProviderName() {
 		if (this._workspaceConfigurationService) {
 			let defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, Constants.defaultEngine);
-			if (defaultProvider
-				&& this._capabilitiesMaps
-				&& defaultProvider in this._capabilitiesMaps) {
-				return defaultProvider;
-			}
 		}
 		// as a fallback, default to MSSQL if the value from settings is not available
 		return Constants.mssqlProviderName;
@@ -209,7 +190,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		// Set the model name, initialize the controller if needed, and return the controller
 		this._model.providerName = providerName;
 		if (!this._connectionControllerMap[providerName]) {
-			this._connectionControllerMap[providerName] = this._instantiationService.createInstance(ConnectionController, this._container, this._connectionManagementService, this._capabilitiesMaps[providerName], {
+			this._connectionControllerMap[providerName] = this._instantiationService.createInstance(ConnectionController, this._container, this._connectionManagementService, this._capabilitiesService.getCapabilities(providerName), {
 				onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
 			}, providerName);
 		}
@@ -222,7 +203,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private handleShowUiComponent(input: OnShowUIResponse) {
 		this._currentProviderType = input.selectedProviderType;
-		this._model = new ConnectionProfile(this._capabilitiesMaps[this.getCurrentProviderName()], this._model);
+		this._model = new ConnectionProfile(this._capabilitiesService, this._model);
 		this.uiController.showUiComponent(input.container);
 	}
 
@@ -249,9 +230,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private updateModelServerCapabilities(model: IConnectionProfile) {
 		this._model = this.createModel(model);
-		this._currentProviderType = this._providerNameToDisplayNameMap[this._model.providerName];
-		if (this._connectionDialog) {
-			this._connectionDialog.updateProvider(this._currentProviderType);
+		if (this._model.providerName) {
+			this._currentProviderType = this._providerNameToDisplayNameMap[this._model.providerName];
+			if (this._connectionDialog) {
+				this._connectionDialog.updateProvider(this._currentProviderType);
+			}
 		}
 	}
 
@@ -259,8 +242,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		let defaultProvider = this.getDefaultProviderName();
 		let providerName = model ? model.providerName : defaultProvider;
 		providerName = providerName ? providerName : defaultProvider;
-		let serverCapabilities = this._capabilitiesMaps[providerName];
-		let newProfile = new ConnectionProfile(serverCapabilities, model);
+		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
 		newProfile.saveProfile = true;
 		newProfile.generateNewId();
 		// If connecting from a query editor set "save connection" to false
@@ -270,23 +252,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		return newProfile;
 	}
 
-	private cacheCapabilities(capabilities: sqlops.DataProtocolServerCapabilities) {
-		if (capabilities) {
-			this._providerTypes.push(capabilities.providerDisplayName);
-			this._capabilitiesMaps[capabilities.providerName] = capabilities;
-			this._providerNameToDisplayNameMap[capabilities.providerName] = capabilities.providerDisplayName;
-		}
-	}
-
 	private showDialogWithModel(): TPromise<void> {
 		return new TPromise<void>((resolve, reject) => {
-			if (this.getDefaultProviderName() in this._capabilitiesMaps) {
-				this.updateModelServerCapabilities(this._inputModel);
-
-				this.doShowDialog(this._params);
-			}
-			let none: void;
-			resolve(none);
+			this.updateModelServerCapabilities(this._inputModel);
+			this.doShowDialog(this._params);
+			resolve(null);
 		});
 	}
 
@@ -305,14 +275,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			let capabilitiesPromise: Promise<void> = Promise.resolve();
 			if (this._providerTypes.length === 0) {
 				capabilitiesPromise = this._capabilitiesService.onCapabilitiesReady().then(() => {
-					let capabilities = this._capabilitiesService.getCapabilities();
-					capabilities.forEach(c => {
-						this.cacheCapabilities(c);
+					this._capabilitiesService.providers.map(p => {
+						let capabilities = this._capabilitiesService.getCapabilities(p);
+						this._providerTypes.push(capabilities.providerDisplayName);
+						this._providerNameToDisplayNameMap[capabilities.providerName] = capabilities.providerDisplayName;
 					});
 				});
 			}
-
-			capabilitiesPromise.then(success => {
+			capabilitiesPromise.then(s => {
 				this.updateModelServerCapabilities(model);
 				// If connecting from a query editor set "save connection" to false
 				if (params && params.input && params.connectionType === ConnectionType.editor) {
@@ -324,7 +294,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 						this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
 					}
 				}));
-			}, err => reject(err));
+			}, e => reject(e));
 		});
 	}
 

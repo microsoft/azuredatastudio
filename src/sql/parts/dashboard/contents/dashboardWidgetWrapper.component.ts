@@ -15,6 +15,7 @@ import { WidgetConfig, WIDGET_CONFIG, IDashboardWidget } from 'sql/parts/dashboa
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { error } from 'sql/base/common/log';
 import { RefreshWidgetAction, ToggleMoreWidgetAction, DeleteWidgetAction, CollapseWidgetAction } from 'sql/parts/dashboard/common/actions';
+import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 /* Widgets */
 import { PropertiesWidgetComponent } from 'sql/parts/dashboard/widgets/properties/propertiesWidget.component';
@@ -47,7 +48,7 @@ const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	selector: 'dashboard-widget-wrapper',
 	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/contents/dashboardWidgetWrapper.component.html'))
 })
-export class DashboardWidgetWrapper implements OnInit, OnDestroy {
+export class DashboardWidgetWrapper extends AngularDisposable implements OnInit {
 	@Input() private _config: WidgetConfig;
 	@Input() private collapsable = false;
 
@@ -73,7 +74,6 @@ export class DashboardWidgetWrapper implements OnInit, OnDestroy {
 		return generateUuid();
 	}
 
-	private _themeDispose: IDisposable;
 	private _actions: Array<Action>;
 	private _component: IDashboardWidget;
 	private _actionbar: ActionBar;
@@ -88,13 +88,15 @@ export class DashboardWidgetWrapper implements OnInit, OnDestroy {
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrap: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(forwardRef(() => Injector)) private _injector: Injector
-	) { }
+	) {
+		super();
+	}
 
 	ngOnInit() {
 		let self = this;
-		self._themeDispose = self._bootstrap.themeService.onDidColorThemeChange((event: IColorTheme) => {
+		this._register(self._bootstrap.themeService.onDidColorThemeChange((event: IColorTheme) => {
 			self.updateTheme(event);
-		});
+		}));
 	}
 
 	ngAfterViewInit() {
@@ -111,10 +113,6 @@ export class DashboardWidgetWrapper implements OnInit, OnDestroy {
 			this._actionbar.push(this._bootstrap.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this._component.actionsContext), { icon: true, label: false });
 		}
 		this.layout();
-	}
-
-	ngOnDestroy() {
-		this._themeDispose.dispose();
 	}
 
 	public refresh(): void {

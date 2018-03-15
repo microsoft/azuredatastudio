@@ -25,8 +25,8 @@ export interface GridCellConfig {
 	id?: string;
 	row?: number;
 	col?: number;
-	colspan?: string;
-	rowspan?: string;
+	colspan?: string | number;
+	rowspan?: string | number;
 }
 
 export interface GridWidgetConfig extends GridCellConfig, WidgetConfig {
@@ -136,7 +136,10 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 		return rowCount * this.cellHeight + 'px';
 	}
 
-	private convertToNumber(value: string, maxNumber: number): number {
+	private convertToNumber(value: string | number, maxNumber: number): number {
+		if (!value) {
+			return 1;
+		}
 		if (value === '*') {
 			return maxNumber;
 		}
