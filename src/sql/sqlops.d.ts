@@ -130,6 +130,18 @@ declare module 'sqlops' {
 		export function getActiveConnectionNodes(): Thenable<ObjectExplorerNode[]>;
 
 		/**
+		 * Find Object Explorer nodes that match the given information
+		 * @param {string} connectionId The id of the connection that the node exists on
+		 * @param {string} type The type of the object to retrieve
+		 * @param {string} schema The schema of the object, if applicable
+		 * @param {string} name The name of the object
+		 * @param {string} database The database the object exists under, if applicable
+		 * @param {string[]} parentObjectNames A list of names of parent objects in the tree, ordered from highest to lowest level
+		 * (for example when searching for a table's column, provide the name of its parent table for this argument)
+		 */
+		export function findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<ObjectExplorerNode[]>;
+
+		/**
 		 * Interface for representing and interacting with items in Object Explorer
 		*/
 		export interface ObjectExplorerNode extends NodeInfo {
@@ -942,6 +954,15 @@ declare module 'sqlops' {
 		nodePath: string;
 	}
 
+	export interface FindNodesInfo {
+		sessionId: string;
+		type: string;
+		schema: string;
+		name: string;
+		database: string;
+		parentObjectNames: string[];
+	}
+
 	export interface ObjectExplorerCloseSessionInfo {
 		sessionId: string;
 	}
@@ -949,6 +970,10 @@ declare module 'sqlops' {
 	export interface ObjectExplorerCloseSessionResponse {
 		sessionId: string;
 		success: boolean;
+	}
+
+	export interface ObjectExplorerFindNodesResponse {
+		nodes: NodeInfo[];
 	}
 
 	export interface ObjectExplorerProvider extends DataProvider {
@@ -959,6 +984,8 @@ declare module 'sqlops' {
 		refreshNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
 
 		closeSession(closeSessionInfo: ObjectExplorerCloseSessionInfo): Thenable<ObjectExplorerCloseSessionResponse>;
+
+		findNodes(findNodesInfo: FindNodesInfo): Thenable<ObjectExplorerFindNodesResponse>;
 
 		registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any);
 
