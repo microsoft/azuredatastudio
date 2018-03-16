@@ -1,0 +1,16 @@
+<html>
+    <header>
+    </header>
+    <body>
+        <button onclick="count()">Count</button>
+        <button onclick="openFlyout()">Open Flyout</button>
+        <script>
+            function count() {
+                parent.postMessage('count', '*');
+            }
+            function openFlyout() {
+                parent.postMessage('openFlyout', '*');
+            }
+        </script>
+    </body>
+</html>

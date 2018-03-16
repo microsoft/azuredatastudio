@@ -1,0 +1,15 @@
+<html>
+    <header>
+
+    </header>
+    <body>
+        <div id="output">Total Counts: 0</div>
+        <script>
+            let output = document.getElementById('output');
+            window.addEventListener("message", receiveMessage, false);
+            function receiveMessage(e) {
+                output.innerText = 'Total Counts: ' + e.data;
+            }
+        </script>
+    </body>
+</html>
