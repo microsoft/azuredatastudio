@@ -41,7 +41,7 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 
 	private _disposables = new Array<vscode.Disposable>();
 
-	private columns2: Array<Slick.Column<any>> = [
+	private columns: Array<Slick.Column<any>> = [
 		{ name: 'Name', field: 'name' },
 		{ name: 'Last Run', field: 'lastRun' },
 		{ name: 'Next Run', field: 'nextRun' },
@@ -53,6 +53,10 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		{ name: 'Category ID', field: 'categoryId' },
 		{ name: 'Last Run Outcome', field: 'lastRunOutcome' },
 	];
+
+	@ViewChild('placeholder') placeholder;
+	private isVisible: boolean = false;
+	private isInitialized: boolean = false;
 
 	private _table: Table<any>;
 
@@ -67,14 +71,20 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		this._jobManagementService = bootstrapService.jobManagementService;
 	}
 
-	ngOnInit() {
-		// let options = <Slick.GridOptions<any>>{
-		// 	autoHeight: true,
-		// 	syncColumnCellResize: true,
-		// 	enableColumnReorder: false
-		// };
+	ngAfterContentChecked() {
+		if (this.isVisible === false && this.placeholder.nativeElement.offsetParent !== null) {
+			this.isVisible = true;
+			if (!this.isInitialized) {
+				this.onVisibleUpdate();
+				this.isInitialized = true;
+			}
+		} else if (this.isVisible === true && this.placeholder.nativeElement.offsetParent === null) {
+			this.isVisible = false;
+		}
+	}
 
-		let columns = this.columns2.map((column) => {
+	onVisibleUpdate() {
+		let columns = this.columns.map((column) => {
 			column.rerenderOnResize = true;
 			return column;
 		});
@@ -93,13 +103,8 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	public layout(): void {
-		if (this._table) {
-			setTimeout(() => {
-				this._table.resizeCanvas();
-				this._table.autosizeColumns();
-			});
-		}
+	ngOnInit() {
+
 	}
 
 	ngOnDestroy() {
