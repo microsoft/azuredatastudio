@@ -53,7 +53,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		provider.handle = this._nextHandle();
 		this._adapter.set(provider.handle, provider);
 		return this._createDisposable(provider.handle);
-	};
+	}
 
 	$registerConnectionProvider(provider: sqlops.ConnectionProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider);
@@ -495,4 +495,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	public $getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult> {
 		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getJobs(ownerUri);
 	}
+
+	public $getJobHistory(handle: number, ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getJobHistory(ownerUri, jobID);
+	}
+
 }

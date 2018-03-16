@@ -6,7 +6,6 @@
 import 'vs/css!./jobHistory';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { AgentJobsResult, AgentJobHistoryInfo } from 'sqlops';
 import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -49,11 +48,11 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
 	) {
 		super();
+		this._jobManagementService = bootstrapService.jobManagementService;
 	}
 
 	ngOnInit() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		//this.job = this._jobManagementService.getJobHistory(ownerUri, this._jobID);
 		let agentExample2: JobHistoryRow = {
 			jobID: '12312',
 			runStatus: 'Failed',
@@ -65,7 +64,7 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 			runDate: '01/24/2018 00:04:35 AM'
 		};
 
-		let agents: JobHistoryRow[] = [agentExample2, agentExample3]
+		let agents: JobHistoryRow[] = [agentExample2, agentExample3];
 		this._treeDataSource.data = agents;
 		this._tree = new Tree(this._tableContainer.nativeElement, {
 			controller: this._treeController,
