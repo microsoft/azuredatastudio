@@ -89,8 +89,7 @@ export class AzureResourceProvider {
 		let serverdownloader = new ServerProvider(this._config);
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
-			features: [FireWallFeature],
-			serverConnectionMetadata: undefined
+			features: [FireWallFeature]
 		};
 		serverdownloader.getOrDownloadServer().then(e => {
 			let serverOptions = this.generateServerOptions(e);

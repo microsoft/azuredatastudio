@@ -4,16 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { SqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
-import { ClientCapabilities, ServerCapabilities, RPCMessageType, StaticFeature } from 'vscode-languageclient';
-
-import { Disposable } from 'vscode';
+import { SqlOpsDataClient } from 'dataprotocol-client';
+import { ClientCapabilities, StaticFeature } from 'vscode-languageclient';
 
 import { Telemetry } from './telemetry';
 import * as Utils from './utils';
 import { TelemetryNotification } from './contracts';
 
-class TelemetryFeature implements StaticFeature {
+export class TelemetryFeature implements StaticFeature {
 
 	constructor(private _client: SqlOpsDataClient) { }
 
@@ -22,9 +20,7 @@ class TelemetryFeature implements StaticFeature {
 	}
 
 	initialize(): void {
-		const client = this._client;
-
-		client.onNotification(TelemetryNotification.type, e => {
+		this._client.onNotification(TelemetryNotification.type, e => {
 			Telemetry.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
 		});
 	}

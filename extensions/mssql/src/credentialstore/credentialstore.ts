@@ -84,8 +84,7 @@ export class CredentialStore {
 		let serverdownloader = new ServerProvider(this._config);
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
-			features: [CredentialsFeature],
-			serverConnectionMetadata: undefined
+			features: [CredentialsFeature]
 		};
 		serverdownloader.getOrDownloadServer().then(e => {
 			let serverOptions = this.generateServerOptions(e);

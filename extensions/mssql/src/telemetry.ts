@@ -7,7 +7,7 @@
 import * as vscode from 'vscode';
 import * as opener from 'opener';
 import TelemetryReporter from 'vscode-extension-telemetry';
-import { PlatformInformation, Runtime, LinuxDistribution } from 'service-downloader/out/platform';
+import { PlatformInformation } from 'service-downloader/out/platform';
 import { ErrorAction, ErrorHandler, Message, CloseAction } from 'vscode-languageclient';
 
 import * as Utils from './utils';

@@ -16,6 +16,7 @@ import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
+import { TelemetryFeature } from './features';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -46,7 +47,11 @@ export async function activate(context: vscode.ExtensionContext) {
 	let clientOptions: ClientOptions = {
 		providerId: Constants.providerId,
 		errorHandler: new LanguageClientErrorHandler(),
-		serverConnectionMetadata: undefined
+		features: [
+			// we only want to add new features
+			...SqlOpsDataClient.defaultFeatures,
+			TelemetryFeature
+		]
 	};
 
 	const installationStart = Date.now();
