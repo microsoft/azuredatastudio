@@ -13,7 +13,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 
 import * as sqlops from 'sqlops';
 
-export class AgentService implements IJobManagementService {
+export class JobManagementService implements IJobManagementService {
 	_serviceBrand: any;
 
 	private _providers: { [handle: string]: sqlops.AgentServicesProvider; } = Object.create(null);
@@ -40,7 +40,7 @@ export class AgentService implements IJobManagementService {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {
-			return TPromise.wrapError(new Error(localize('providerIdNotValidError', "Connection is required in order to interact with AgentService")));
+			return TPromise.wrapError(new Error(localize('providerIdNotValidError', "Connection is required in order to interact with JobManagementService")));
 		}
 		let handler = this._providers[providerId];
 		if (handler) {

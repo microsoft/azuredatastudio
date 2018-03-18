@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/parts/grid/media/slickColorTheme';
 import 'vs/css!sql/parts/grid/media/flexbox';
 import 'vs/css!sql/parts/grid/media/styles';
 import 'vs/css!sql/parts/grid/media/slick.grid';
 import 'vs/css!sql/parts/grid/media/slickGrid';
+import 'vs/css!../common/media/jobs';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
@@ -21,7 +21,7 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { AgentJobInfo } from 'sqlops';
+import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import * as nls from 'vs/nls';
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
@@ -60,7 +60,9 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 
 	private _table: Table<any>;
 
-	public jobs: AgentJobInfo[];
+	public jobs: sqlops.AgentJobInfo[];
+
+	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -75,7 +77,7 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		if (this.isVisible === false && this.placeholder.nativeElement.offsetParent !== null) {
 			this.isVisible = true;
 			if (!this.isInitialized) {
-				this.onVisibleUpdate();
+				this.onFirstVisible();
 				this.isInitialized = true;
 			}
 		} else if (this.isVisible === true && this.placeholder.nativeElement.offsetParent === null) {
@@ -83,13 +85,25 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	onVisibleUpdate() {
+	loadJobHistories() {
+		if (this.jobs) {
+			this.jobs.forEach((job) => {
+				let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
+					if (result.jobs) {
+						this.jobHistories[job.jobId] = result.jobs;
+					}
+				});
+			});
+		}
+	}
+
+	onFirstVisible() {
 		let columns = this.columns.map((column) => {
 			column.rerenderOnResize = true;
 			return column;
 		});
 		this._table = new Table(this._el.nativeElement, this.jobs, columns);
-		this._disposables.push(attachTableStyler(this._table, this.bootstrapService.themeService));
 		this._cd.detectChanges();
 
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
@@ -99,6 +113,8 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 				this._table.setData(result.jobs);
 				this._table.resizeCanvas();
 				this._table.autosizeColumns();
+
+				this.loadJobHistories();
 			}
 		});
 	}

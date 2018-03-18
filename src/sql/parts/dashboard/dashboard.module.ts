@@ -45,14 +45,13 @@ import { DashboardHomeContainer } from 'sql/parts/dashboard/containers/dashboard
 import { ControlHostContent } from 'sql/parts/dashboard/contents/controlHostContent.component';
 import { DashboardControlHostContainer } from 'sql/parts/dashboard/containers/dashboardControlHostContainer.component';
 import { JobsViewComponent } from 'sql/parts/jobManagement/views/jobsView.component';
-import { SchedulesViewComponent } from 'sql/parts/jobManagement/views/schedulesView.component';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
 
 let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
 					DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, WebviewContent, WidgetContent,
 					ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
-					JobsViewComponent, SchedulesViewComponent, AgentViewComponent, JobHistoryComponent];
+					JobsViewComponent, AgentViewComponent, JobHistoryComponent];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';

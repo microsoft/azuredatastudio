@@ -26,27 +26,21 @@ export const DASHBOARD_SELECTOR: string = 'agentview-component';
 	selector: DASHBOARD_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./agentView.component.html'))
 })
-export class AgentViewComponent implements OnInit, OnDestroy {
+export class AgentViewComponent {
 
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
-
-	private _agentService: IJobManagementService;
-
-	public jobs: AgentJobInfo[];
 
 	// tslint:disable:no-unused-variable
 	private readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
 	private readonly alertsComponentTitle: string = nls.localize('jobview.Alerts', "Alerts");
 	private readonly schedulesComponentTitle: string = nls.localize('jobview.Schedules', "Schedules");
 	private readonly operatorsComponentTitle: string = nls.localize('jobview.Operator', "Operators");
-
 	private readonly jobHistoryComponentTitle: string = nls.localize('jobview.History', "History");
 
 	private readonly jobsTabIdentifier = 'jobs';
 	private readonly alertsTabIdentifier = 'alerts';
 	private readonly schedulesTabIdentifier = 'schedules';
 	private readonly operatorTabIdentifier = 'operators';
-
 	private readonly historyTabIdentifier = 'history';
 	// tslint:enable:no-unused-variable
 
@@ -55,19 +49,4 @@ export class AgentViewComponent implements OnInit, OnDestroy {
 		showTabsWhenOne: true,
 		layout: NavigationBarLayout.vertical
 	};
-
-	constructor(
-		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService,
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
-	) {
-		this._agentService = bootstrapService.jobManagementService;
-	}
-
-	ngOnInit() {
-	}
-
-	ngOnDestroy() {
-	}
 }
