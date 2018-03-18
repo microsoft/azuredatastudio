@@ -42,7 +42,7 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: 'Name', field: 'name' },
+		{ name: 'Name', field: 'name', formatter: this.renderName, width: 200, },
 		{ name: 'Last Run', field: 'lastRun' },
 		{ name: 'Next Run', field: 'nextRun' },
 		{ name: 'Enabled', field: 'enabled' },
@@ -54,7 +54,7 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		{ name: 'Last Run Outcome', field: 'lastRunOutcome' },
 	];
 
-	@ViewChild('placeholder') placeholder;
+	@ViewChild('jobsgrid') _gridEl: ElementRef;
 	private isVisible: boolean = false;
 	private isInitialized: boolean = false;
 
@@ -74,13 +74,13 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 	}
 
 	ngAfterContentChecked() {
-		if (this.isVisible === false && this.placeholder.nativeElement.offsetParent !== null) {
+		if (this.isVisible === false && this._gridEl.nativeElement.offsetParent !== null) {
 			this.isVisible = true;
 			if (!this.isInitialized) {
 				this.onFirstVisible();
 				this.isInitialized = true;
 			}
-		} else if (this.isVisible === true && this.placeholder.nativeElement.offsetParent === null) {
+		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
 			this.isVisible = false;
 		}
 	}
@@ -103,7 +103,13 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 			column.rerenderOnResize = true;
 			return column;
 		});
-		this._table = new Table(this._el.nativeElement, this.jobs, columns);
+		let options = <Slick.GridOptions<any>>{
+			syncColumnCellResize: true,
+			enableColumnReorder: false,
+			rowHeight: 45,
+			enableCellNavigation: true
+		};
+		this._table = new Table(this._gridEl.nativeElement, this.jobs, columns, options);
 		this._cd.detectChanges();
 
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
@@ -124,5 +130,12 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy() {
+	}
+
+	renderName(row, cell, value, columnDef, dataContext) {
+		return '<table class="jobview-jobnametable"><tr class="jobview-jobnamerow">' +
+			'<td nowrap class="jobview-jobnameindicatorsuccess"></td>' +
+			'<td nowrap class="jobview-jobnametext">' + dataContext.name + '</td>' +
+			'</tr></table>';
 	}
 }

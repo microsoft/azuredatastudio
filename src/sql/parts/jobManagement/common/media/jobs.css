@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-agentview-component {
+ agentview-component {
 	height: 100%;
 	width : 100%;
 	display: block;
@@ -15,23 +15,57 @@ jobsview-component {
 	display: block;
 }
 
-schedulesview-component {
-	height: 100%;
-	width : 100%;
-	display: block;
-}
-
 jobhistory-component {
 	height: 100%;
 	width : 100%;
 	display: block;
 }
 
-#jobsDiv .slick-header-column {
-	background-color: white !important;
-	background: white !important;
-	border: 0px !important;
+.vs-dark #jobsDiv .slick-header-column {
+	background: #333333 !important;
 }
+
+#jobsDiv .slick-header-column {
+	background-color: transparent !important;
+	background: white !important;
+    border: 0px !important;
+    font-weight: bold;
+    font-size: larger;
+}
+
+.vs-dark #jobsDiv .slick-cell {
+	background:#333333 !important;
+}
+
+#jobsDiv .slick-cell {
+    background: white !important;
+    border-right: transparent !important;
+    border-left: transparent !important;
+    line-height: 33px !important;
+    vertical-align: middle;
+}
+
+#jobsDiv .jobview-joblist {
+    height: 100%;
+    width: 100%;
+}
+
+#jobsDiv .jobview-jobnametable {
+    border: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+#jobsDiv .jobview-jobnameindicatorsuccess {
+    width: 5px;
+    background: green;
+}
+
+#jobsDiv .jobview-jobnametext {
+    width: 100%;
+}
+
+
 
 
 
@@ -49,16 +83,13 @@ jobhistory-component {
     background-color: gray;
 }
 
-#jobsDiv .jobview-joblist {
-    height: 100%;
-    width: 100%;
-}
 
 #jobsDiv .jobview-jobitem {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     flex-flow: row wrap;
+    white-space: nowrap;
 }
 
 #jobsDiv .jobview-label {
@@ -106,11 +137,6 @@ padding:            10px;
 margin-left:		20px;
 }
 
-#jobsDiv .slick-cell {
-background: white !important;
-border-color: transparent !important;
-line-height: 19px !important;
-}
 
 /* alternating offsets */
 #jobsDiv .slick-row .cell-inner {
@@ -155,3 +181,9 @@ border-right: 1px dotted gray;
 margin-left: 50px;
 }
 
+
+#jobsDiv .jobview-grid {
+    height: 100%;
+	width : 100%;
+	display: block;
+}
