@@ -53,7 +53,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		provider.handle = this._nextHandle();
 		this._adapter.set(provider.handle, provider);
 		return this._createDisposable(provider.handle);
-	};
+	}
 
 	$registerConnectionProvider(provider: sqlops.ConnectionProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider);
