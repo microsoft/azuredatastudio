@@ -9,6 +9,7 @@ import 'vs/css!sql/parts/grid/media/styles';
 import 'vs/css!sql/parts/grid/media/slick.grid';
 import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!../common/media/jobs';
+import 'vs/css!../common/media/detailview';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
@@ -53,6 +54,9 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		{ name: 'Category ID', field: 'categoryId' },
 		{ name: 'Last Run Outcome', field: 'lastRunOutcome' },
 	];
+
+	private rowDetail: any;
+	private dataView: any;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 	private isVisible: boolean = false;
@@ -99,6 +103,7 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 	}
 
 	onFirstVisible() {
+		let self = this;
 		let columns = this.columns.map((column) => {
 			column.rerenderOnResize = true;
 			return column;
@@ -109,20 +114,81 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 			rowHeight: 45,
 			enableCellNavigation: true
 		};
-		this._table = new Table(this._gridEl.nativeElement, this.jobs, columns, options);
+
+		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
+		let rowDetail = new Slick.Plugins.RowDetailView({
+			cssClass: 'detailView-toggle',
+			preTemplate: this.loadingTemplate,
+			postTemplate: (itemDetail) => {
+				let jobHistory = self.jobHistories[itemDetail.jobId];
+				if (!jobHistory || jobHistory.length === 0) {
+					return '<div>No job history</div>';
+				} else {
+					let lastJobHistory = jobHistory[jobHistory.length - 1];
+					return '<div>Last run (status ' + lastJobHistory.runStatus + ') '
+						+ lastJobHistory.message + '</div>';
+				}
+			},
+			process: (job) => {
+				(<any>rowDetail).onAsyncResponse.notify({
+					'itemDetail': job
+				}, undefined, this);
+			},
+			useRowClick: true,
+			panelRows: 2
+		});
+
+		this.rowDetail = rowDetail;
+
+		columns.unshift(this.rowDetail.getColumnDefinition());
+		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
+		this._table.grid.setData(this.dataView, true);
 		this._cd.detectChanges();
 
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getJobs(ownerUri).then((result) => {
-			if (result) {
+			if (result && result.jobs) {
 				this.jobs = result.jobs;
-				this._table.setData(result.jobs);
-				this._table.resizeCanvas();
-				this._table.autosizeColumns();
-
-				this.loadJobHistories();
+				this.onJobsAvailable(result.jobs);
 			}
 		});
+	}
+
+	onJobsAvailable(jobs: sqlops.AgentJobInfo[]) {
+		let jobViews = jobs.map((job) => {
+			return {
+				id: job.jobId,
+				jobId: job.jobId,
+				name: job.name,
+				lastRun: job.lastRun,
+				nextRun: job.nextRun,
+				enabled: job.enabled,
+				currentExecutionStatus: job.currentExecutionStatus,
+				category: job.category,
+				runnable: job.runnable,
+				hasSchedule: job.hasSchedule,
+				categoryId: job.categoryId,
+				lastRunOutcome: job.lastRunOutcome
+			};
+		});
+
+		this._table.registerPlugin(<any>this.rowDetail);
+
+		this.rowDetail.onBeforeRowDetailToggle.subscribe(function(e, args) {
+		});
+		this.rowDetail.onAfterRowDetailToggle.subscribe(function(e, args) {
+		});
+		this.rowDetail.onAsyncEndUpdate.subscribe(function(e, args) {
+		});
+
+		this.dataView.beginUpdate();
+		this.dataView.setItems(jobViews);
+		this.dataView.endUpdate();
+
+		this._table.resizeCanvas();
+		this._table.autosizeColumns();
+
+		this.loadJobHistories();
 	}
 
 	ngOnInit() {
@@ -130,6 +196,24 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy() {
+	}
+
+	loadJobDetails(job) {
+		this.rowDetail.onAsyncResponse.notify({
+			'job': job
+		}, undefined, this);
+	}
+
+	loadingTemplate() {
+		return '<div class="preload">Loading...</div>';
+	}
+
+	loadView(itemDetail: any) {
+		return [
+		  '<div>',
+		  'aaa',
+		  '</div>'
+		].join('');
 	}
 
 	renderName(row, cell, value, columnDef, dataContext) {
