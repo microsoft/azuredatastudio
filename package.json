@@ -64,7 +64,7 @@
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.4.0",
     "semver": "4.3.6",
-    "slickgrid": "github:anthonydresser/SlickGrid#2.3.13",
+    "slickgrid": "github:anthonydresser/SlickGrid#2.3.16",
     "spdlog": "0.3.7",
     "svg.js": "^2.2.5",
     "systemjs": "0.19.40",
