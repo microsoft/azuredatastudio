@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/parts/grid/media/slickColorTheme';
 import 'vs/css!sql/parts/grid/media/flexbox';
 import 'vs/css!sql/parts/grid/media/styles';
 import 'vs/css!sql/parts/grid/media/slick.grid';
 import 'vs/css!sql/parts/grid/media/slickGrid';
+import 'vs/css!../common/media/jobs';
+import 'vs/css!../common/media/detailview';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
@@ -21,7 +22,7 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { AgentJobInfo } from 'sqlops';
+import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import * as nls from 'vs/nls';
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
@@ -41,8 +42,8 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 
 	private _disposables = new Array<vscode.Disposable>();
 
-	private columns2: Array<Slick.Column<any>> = [
-		{ name: 'Name', field: 'name' },
+	private columns: Array<Slick.Column<any>> = [
+		{ name: 'Name', field: 'name', formatter: this.renderName, width: 200, },
 		{ name: 'Last Run', field: 'lastRun' },
 		{ name: 'Next Run', field: 'nextRun' },
 		{ name: 'Enabled', field: 'enabled' },
@@ -54,9 +55,18 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		{ name: 'Last Run Outcome', field: 'lastRunOutcome' },
 	];
 
+	private rowDetail: any;
+	private dataView: any;
+
+	@ViewChild('jobsgrid') _gridEl: ElementRef;
+	private isVisible: boolean = false;
+	private isInitialized: boolean = false;
+
 	private _table: Table<any>;
 
-	public jobs: AgentJobInfo[];
+	public jobs: sqlops.AgentJobInfo[];
+
+	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -67,41 +77,149 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		this._jobManagementService = bootstrapService.jobManagementService;
 	}
 
-	ngOnInit() {
-		// let options = <Slick.GridOptions<any>>{
-		// 	autoHeight: true,
-		// 	syncColumnCellResize: true,
-		// 	enableColumnReorder: false
-		// };
-
-		let columns = this.columns2.map((column) => {
-			column.rerenderOnResize = true;
-			return column;
-		});
-		this._table = new Table(this._el.nativeElement, this.jobs, columns);
-		this._disposables.push(attachTableStyler(this._table, this.bootstrapService.themeService));
-		this._cd.detectChanges();
-
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getJobs(ownerUri).then((result) => {
-			if (result) {
-				this.jobs = result.jobs;
-				this._table.setData(result.jobs);
-				this._table.resizeCanvas();
-				this._table.autosizeColumns();
+	ngAfterContentChecked() {
+		if (this.isVisible === false && this._gridEl.nativeElement.offsetParent !== null) {
+			this.isVisible = true;
+			if (!this.isInitialized) {
+				this.onFirstVisible();
+				this.isInitialized = true;
 			}
-		});
+		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
+			this.isVisible = false;
+		}
 	}
 
-	public layout(): void {
-		if (this._table) {
-			setTimeout(() => {
-				this._table.resizeCanvas();
-				this._table.autosizeColumns();
+	loadJobHistories() {
+		if (this.jobs) {
+			this.jobs.forEach((job) => {
+				let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
+					if (result.jobs) {
+						this.jobHistories[job.jobId] = result.jobs;
+					}
+				});
 			});
 		}
 	}
 
+	onFirstVisible() {
+		let self = this;
+		let columns = this.columns.map((column) => {
+			column.rerenderOnResize = true;
+			return column;
+		});
+		let options = <Slick.GridOptions<any>>{
+			syncColumnCellResize: true,
+			enableColumnReorder: false,
+			rowHeight: 45,
+			enableCellNavigation: true
+		};
+
+		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
+		let rowDetail = new Slick.Plugins.RowDetailView({
+			cssClass: 'detailView-toggle',
+			preTemplate: this.loadingTemplate,
+			postTemplate: (itemDetail) => {
+				let jobHistory = self.jobHistories[itemDetail.jobId];
+				if (!jobHistory || jobHistory.length === 0) {
+					return '<div>No job history</div>';
+				} else {
+					let lastJobHistory = jobHistory[jobHistory.length - 1];
+					return '<div>Last run (status ' + lastJobHistory.runStatus + ') '
+						+ lastJobHistory.message + '</div>';
+				}
+			},
+			process: (job) => {
+				(<any>rowDetail).onAsyncResponse.notify({
+					'itemDetail': job
+				}, undefined, this);
+			},
+			useRowClick: true,
+			panelRows: 2
+		});
+
+		this.rowDetail = rowDetail;
+
+		columns.unshift(this.rowDetail.getColumnDefinition());
+		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
+		this._table.grid.setData(this.dataView, true);
+		this._cd.detectChanges();
+
+		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		this._jobManagementService.getJobs(ownerUri).then((result) => {
+			if (result && result.jobs) {
+				this.jobs = result.jobs;
+				this.onJobsAvailable(result.jobs);
+			}
+		});
+	}
+
+	onJobsAvailable(jobs: sqlops.AgentJobInfo[]) {
+		let jobViews = jobs.map((job) => {
+			return {
+				id: job.jobId,
+				jobId: job.jobId,
+				name: job.name,
+				lastRun: job.lastRun,
+				nextRun: job.nextRun,
+				enabled: job.enabled,
+				currentExecutionStatus: job.currentExecutionStatus,
+				category: job.category,
+				runnable: job.runnable,
+				hasSchedule: job.hasSchedule,
+				categoryId: job.categoryId,
+				lastRunOutcome: job.lastRunOutcome
+			};
+		});
+
+		this._table.registerPlugin(<any>this.rowDetail);
+
+		this.rowDetail.onBeforeRowDetailToggle.subscribe(function(e, args) {
+		});
+		this.rowDetail.onAfterRowDetailToggle.subscribe(function(e, args) {
+		});
+		this.rowDetail.onAsyncEndUpdate.subscribe(function(e, args) {
+		});
+
+		this.dataView.beginUpdate();
+		this.dataView.setItems(jobViews);
+		this.dataView.endUpdate();
+
+		this._table.resizeCanvas();
+		this._table.autosizeColumns();
+
+		this.loadJobHistories();
+	}
+
+	ngOnInit() {
+
+	}
+
 	ngOnDestroy() {
+	}
+
+	loadJobDetails(job) {
+		this.rowDetail.onAsyncResponse.notify({
+			'job': job
+		}, undefined, this);
+	}
+
+	loadingTemplate() {
+		return '<div class="preload">Loading...</div>';
+	}
+
+	loadView(itemDetail: any) {
+		return [
+		  '<div>',
+		  'aaa',
+		  '</div>'
+		].join('');
+	}
+
+	renderName(row, cell, value, columnDef, dataContext) {
+		return '<table class="jobview-jobnametable"><tr class="jobview-jobnamerow">' +
+			'<td nowrap class="jobview-jobnameindicatorsuccess"></td>' +
+			'<td nowrap class="jobview-jobnametext">' + dataContext.name + '</td>' +
+			'</tr></table>';
 	}
 }

@@ -330,7 +330,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerAgentServicesProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._jobManagementService.registerProvider(providerId, <sqlops.AgentServicesProvider>{
+		this._jobManagementService.registerProvider(providerId, <sqlops.AgentServicesProvider> {
+			providerId: providerId,
 			getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult> {
 				return self._proxy.$getJobs(handle, connectionUri);
 			},

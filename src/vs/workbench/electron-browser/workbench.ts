@@ -124,7 +124,7 @@ import { IEditorDescriptorService, EditorDescriptorService } from 'sql/parts/que
 import { IScriptingService, ScriptingService } from 'sql/services/scripting/scriptingService';
 import { IAdminService, AdminService } from 'sql/parts/admin/common/adminService';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { AgentService } from 'sql/parts/jobManagement/common/agentService';
+import { JobManagementService } from 'sql/parts/jobManagement/common/jobManagementService';
 import { IBackupService, IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
 import { BackupService, BackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupServiceImp';
 import { IRestoreDialogController, IRestoreService } from 'sql/parts/disasterRecovery/restore/common/restoreService';
@@ -702,7 +702,7 @@ export class Workbench implements IPartService {
 		serviceCollection.set(IObjectExplorerService, this.instantiationService.createInstance(ObjectExplorerService));
 		serviceCollection.set(IScriptingService, this.instantiationService.createInstance(ScriptingService));
 		serviceCollection.set(IAdminService, this.instantiationService.createInstance(AdminService));
-		serviceCollection.set(IJobManagementService, this.instantiationService.createInstance(AgentService));
+		serviceCollection.set(IJobManagementService, this.instantiationService.createInstance(JobManagementService));
 		serviceCollection.set(IBackupService, this.instantiationService.createInstance(BackupService));
 		serviceCollection.set(IBackupUiService, this.instantiationService.createInstance(BackupUiService));
 		serviceCollection.set(IRestoreService, this.instantiationService.createInstance(RestoreService));
