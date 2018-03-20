@@ -89,5 +89,10 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 			arrow.className = 'resultsViewCollapsible';
 		}
 	}
+
+	private jobAction(action: string): void {
+		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		this._jobManagementService.jobAction(ownerUri, 'jobName', action);
+	}
 }
 

@@ -121,7 +121,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
-	$registerAgentSeriviceProvider(provider: sqlops.AgentServicesProvider): vscode.Disposable {
+	$registerAgentServiceProvider(provider: sqlops.AgentServicesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider);
 		this._proxy.$registerAgentServicesProvider(provider.providerId, provider.handle);
 		return rt;
