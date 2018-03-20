@@ -1,0 +1,228 @@
+{
+    "name": "whoisactive",
+    "displayName": "whoisactive",
+    "description": "sp_whoisactive for SQL Operations Studio",
+    "version": "0.1.0",
+    "publisher": "Microsoft",
+    "engines": {
+        "vscode": "^1.19.0"
+    },
+    "license": "MIT",
+    
+    "repository": "qqq.com",
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "configuration": [],
+        "commands": [
+            {
+                "command": "sp_whoisactive.create",
+                "title": "Create sp_whoisactive",
+                "icon": {
+                    "light": "./out/src/media/config.svg",
+                    "dark": "./out/src/media/config_inverse.svg"
+                }
+            },
+            {
+                "command": "sp_whoisactive.findBlockLeaders",
+                "title": "Find leader of block",
+                "icon": "./out/src/media/start.svg"
+            }
+        ],
+        "views": {},
+        "menus": {},
+        "dashboard.tabs": [
+            {
+                "id": "sp_whoisactive",
+                "title": "sp_whoisactive",
+                "description": "Extension for checking who is active.",
+                "container": {
+                    "nav-section": [                       
+                        {
+                            "id": "sp_whoisactive_insights",
+                            "title": "Insights",
+                            "icon": {
+                                "light": "./out/src/media/monitor.svg",
+                                "dark": "./out/src/media/monitor_inverse.svg"
+                            },
+                            "container": {
+                                "sp_whoisactive-insights": {}
+                            }
+                        },
+                        {
+                            "id": "sp_whoisactive_documentation",
+                            "title": "Documentation",
+                            "icon": {
+                                "light": "./out/src/media/file.svg",
+                                "dark": "./out/src/media/file_inverse.svg"
+                            },
+                            "container": {
+                                "webview-container": null
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "dashboard.insights": [
+            {
+                "id": "sp_whoisactive-CPU-usage",
+                "contrib": {
+                    "type": {
+                        "bar": {
+                            "dataDirection": "vertical",
+                            "dataType": "number",
+                            "legendPosition": "none",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": true
+                        }
+                    },
+                    "queryFile": "./out/src/sql/cpuUsage.sql"
+                }
+            },
+            {
+                "id": "sp_whoisactive-CPU-delta",
+                "contrib": {
+                    "type": {
+                        "bar": {
+                            "dataDirection": "vertical",
+                            "dataType": "number",
+                            "legendPosition": "none",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": true
+                        }
+                    },
+                    "queryFile": "./out/src/sql/cpuDelta.sql"
+                }
+            },
+            {
+                "id": "sp_whoisactive-memory-usage",
+                "contrib": {
+                    "type": {
+                        "bar": {
+                            "dataDirection": "vertical",
+                            "dataType": "number",
+                            "legendPosition": "none",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": true
+                        }
+                    },
+                    "queryFile": "./out/src/sql/memoryUsage.sql"
+                }
+            },
+            {
+                "id": "sp_whoisactive-memory-delta",
+                "contrib": {
+                    "type": {
+                        "bar": {
+                            "dataDirection": "vertical",
+                            "dataType": "number",
+                            "legendPosition": "none",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": true
+                        }
+                    },
+                    "queryFile": "./out/src/sql/memoryDelta.sql"
+                }
+            }
+        ],
+        "dashboard.containers": [
+            {
+                "id": "sp_whoisactive-insights",
+                "container": {
+                    "grid-container": [
+                        {
+                            "name": "Tasks",
+                            "row": 0,
+                            "col": 0,
+                            "colspan":2,
+                            "widget": {
+                                "tasks-widget": [
+                                    "sp_whoisactive.create", "sp_whoisactive.findBlockLeaders"
+                                ]
+                            }
+                        },
+                        {
+                            "name": "CPU Usage",
+                            "row":1,
+                            "col":0,
+                            "colspan":2,
+                            "widget": {
+                                "sp_whoisactive-CPU-usage": {
+                                }
+                            }
+                        },
+                        {
+                            "name": "CPU Delta",
+                            "row":1,
+                            "col":1,
+                            "colspan":2,
+                            "widget": {
+                                "sp_whoisactive-CPU-delta": {
+                                }
+                            }
+                        },
+                        {
+                            "name": "Memory Usage",
+                            "row":2,
+                            "col":0,
+                            "colspan":2,
+                            "widget": {
+                                "sp_whoisactive-memory-usage": {
+                                }
+                            }
+                        },
+                        {
+                            "name": "Memory Delta",
+                            "row":2,
+                            "col":1,
+                            "colspan":2,
+                            "widget": {
+                                "sp_whoisactive-memory-delta": {
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "snippets": []
+    },
+    "scripts": {
+        "build": "gulp build",
+        "compile": "gulp compile",
+        "watch": "gulp watch",
+        "postinstall": "node ./node_modules/vscode/bin/install"
+    },
+    "dependencies": {
+        "fs-extra": "^5.0.0",
+        "handlebars": "^4.0.11",
+        "vscode-nls": "2.0.2"
+    },
+    "devDependencies": {
+        "@types/handlebars": "^4.0.11",
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^7.0.43",
+        "child-process-promise": "^2.2.1",
+        "del": "^3.0.0",
+        "gulp": "^4.0.0",
+        "gulp-color": "0.0.1",
+        "gulp-sourcemaps": "^2.6.4",
+        "gulp-tslint": "^6.0.2",
+        "gulp-typescript": "^3.2.4",
+        "pm-mocha-jenkins-reporter": "^0.2.6",
+        "should": "^13.2.1",
+        "temp-write": "^3.4.0",
+        "tslint": "^3.14.0",
+        "typemoq": "^2.1.0",
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "vsce": "1.36.2",
+        "vso-node-api": "6.1.2-preview"
+    }
+}
