@@ -215,14 +215,12 @@
         "gulp-sourcemaps": "^2.6.4",
         "gulp-tslint": "^6.0.2",
         "gulp-typescript": "^3.2.4",
-        "pm-mocha-jenkins-reporter": "^0.2.6",
         "should": "^13.2.1",
         "temp-write": "^3.4.0",
         "tslint": "^3.14.0",
         "typemoq": "^2.1.0",
         "typescript": "^2.6.1",
         "vscode": "^1.1.6",
-        "vsce": "1.36.2",
-        "vso-node-api": "6.1.2-preview"
+        "vsce": "1.36.2"
     }
 }
