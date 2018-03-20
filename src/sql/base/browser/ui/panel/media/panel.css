@@ -44,14 +44,26 @@ panel {
 	padding-bottom: 4px;
 }
 
+.tabbedPanel .tabList .tab-header {
+	display: flex;
+}
+
+.tabbedPanel.vertical .tabList .tab-header {
+	display: block;
+	text-transform: none;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	width: 63px;
+	height: 50px;
+	line-height: 45px;
+}
+
 .tabbedPanel .tabList .tab .tabLabel.icon {
 	background-repeat: no-repeat;
-	background-position: center 10px;
+	background-position: center center;
 	background-size: 25px;
-	line-height: 15px;
-	padding-top: 40px;
-	display: inline-block;
-	text-transform: none;
+	padding: 20px 20px;
+	line-height: 50px;
 }
 
 .tabbedPanel .tabList .tab-header {
