@@ -315,6 +315,11 @@ export abstract class ExtHostDataProtocolShape {
 	 * Get a Agent Job's history
 	 */
 	$getJobHistory(handle: number, ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>{ throw ni(); }
+
+	/**
+	 * Run an action on a Job
+	 */
+	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult>{ throw ni(); }
 }
 
 /**

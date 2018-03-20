@@ -36,6 +36,13 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
+	public jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.jobAction(connectionUri, jobName, action);
+		});
+	}
+
+
 	private _runAction<T>(uri: string, action: (handler: sqlops.AgentServicesProvider) => Thenable<T>): Thenable<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 

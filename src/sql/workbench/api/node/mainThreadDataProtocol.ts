@@ -337,6 +337,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
 				return self._proxy.$getJobHistory(handle, connectionUri, jobID);
+			},
+			jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult> {
+				return self._proxy.$jobAction(handle, connectionUri, jobName, action);
 			}
 		});
 

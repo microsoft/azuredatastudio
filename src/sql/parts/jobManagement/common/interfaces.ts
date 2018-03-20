@@ -20,4 +20,6 @@ export interface IJobManagementService {
 	getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult>;
 
 	getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>;
+
+	jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult>;
 }
