@@ -198,7 +198,7 @@ export class InsightsDialogView extends Modal {
 				this._contextMenuService.showContextMenu({
 					getAnchor: () => e.target as HTMLElement,
 					getActions: () => this.insightActions,
-					getActionsContext: () => this.topInsightContext(this._topTableData.getItem(this._topTable.getCellFromEvent(e).row), this._topTable.getCellFromEvent(e))
+					getActionsContext: () => this.topInsightContext(this._topTableData.getItem(this._topTable.getCellFromEvent(e).row))
 				});
 			}
 		}));
@@ -301,7 +301,8 @@ export class InsightsDialogView extends Modal {
 						} else {
 							return;
 						}
-						this._commandService.executeCommand(action, this._connectionProfile);
+						let context = this.topInsightContext(resource);
+						this._commandService.executeCommand(action, context);
 					}, 'left');
 					button.enabled = false;
 					this._taskButtonDisposables.push(button);
@@ -344,7 +345,7 @@ export class InsightsDialogView extends Modal {
 			let task = tasks.includes(action);
 			let commandAction = MenuRegistry.getCommand(action);
 			if (task) {
-				returnActions.push(this._instantiationService.createInstance(ExecuteCommandAction, commandAction.title, commandAction.iconClass));
+				returnActions.push(this._instantiationService.createInstance(ExecuteCommandAction, commandAction.id, commandAction.title));
 			}
 		}
 		return TPromise.as(returnActions);
@@ -354,7 +355,7 @@ export class InsightsDialogView extends Modal {
 	 * Creates the context that should be passed to the action passed on the selected element for the top table
 	 * @param element
 	 */
-	private topInsightContext(element: ListResource, cell?: Slick.Cell): IInsightDialogActionContext {
+	private topInsightContext(element: ListResource): IConnectionProfile {
 		let database = this._insight.actions.database || this._connectionProfile.databaseName;
 		let server = this._insight.actions.server || this._connectionProfile.serverName;
 		let user = this._insight.actions.user || this._connectionProfile.userName;
@@ -395,7 +396,7 @@ export class InsightsDialogView extends Modal {
 		profile.serverName = server;
 		profile.userName = user;
 
-		return { profile, cellData: undefined };
+		return profile;
 	}
 
 	/**
