@@ -1,0 +1,73 @@
+{
+"results": [{
+	"extensions": [
+	
+{
+			"extensionId": "10",
+			"extensionName": "agent",
+			"displayName": "SQL Server Agent",
+			"shortDescription": "SQL Server Agent preview extension",
+			"publisher": {
+				"displayName":"Microsoft",
+				"publisherId": "Microsoft",
+				"publisherName":"Microsoft"
+			},
+			"versions": [
+				{
+					"version": "1.0.0",
+					"lastUpdated": "1/1/2018",
+					"assetUri": "",
+					"fallbackAssetUri": "fallbackAssetUri",
+						"files": [
+						{
+							"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+							"source": "C:/xplat/agent.vsix"
+						},
+						{
+							"assetType": "Microsoft.VisualStudio.Services.Links.Source",
+							"source": "https://github.com/Microsoft/sqlopsstudio"
+						},
+						{
+							"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+							"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+						},						
+						{
+							"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+							"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/README.md"
+						},
+						{
+							"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+							"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/CHANGELOG.md"
+						},
+						{
+							"assetType": "Microsoft.VisualStudio.Code.Manifest",
+							"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/package.json"
+						},
+						{
+							"assetType": "Microsoft.VisualStudio.Services.Content.License",
+							"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/LICENSE.txt"
+						},
+						{
+							"assetType": "Microsoft.VisualStudio.Services.Content.License",
+							"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/LICENSE.txt"
+						}
+					],
+					"properties": [
+					{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+					{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"}
+					]
+				}
+			],
+			"statistics": [],
+			"flags": "preview"
+		}
+	],
+	"resultMetadata": [{
+		"metadataType": "ResultCount",
+		"metadataItems": [{
+			"name": "TotalCount",
+			"count": 1
+		}]
+	}]
+}]
+}
