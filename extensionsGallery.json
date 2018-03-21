@@ -21,7 +21,7 @@
 						"files": [
 						{
 							"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-							"source": "C:/xplat/agent.vsix"
+							"source": "https://sqlopsextensions.blob.core.windows.net/march-extensions/agent/agent-0.27.0.vsix"
 						},
 						{
 							"assetType": "Microsoft.VisualStudio.Services.Links.Source",
