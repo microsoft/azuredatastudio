@@ -102,6 +102,7 @@ export abstract class GridParentComponent {
 		if (this.resultActive) {
 			this.resizeGrids();
 		}
+		this._cd.detectChanges();
 	}
 
 	get messageActive(): boolean {
@@ -202,6 +203,10 @@ export abstract class GridParentComponent {
 
 	private toggleResultPane(): void {
 		this.resultActive = !this.resultActive;
+		if (this.resultActive) {
+			this.resizeGrids();
+		}
+		this._cd.detectChanges();
 	}
 
 	private toggleMessagePane(): void {
