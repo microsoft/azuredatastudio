@@ -9,10 +9,6 @@ panel.dashboard-panel > .tabbedPanel {
 	box-sizing: border-box;
 }
 
-panel.dashboard-panel > .tabbedPanel .tabList .tab .tabLabel {
-	text-transform: none;
-}
-
 panel.dashboard-panel > .tabbedPanel > .title > .monaco-scrollable-element > .tabList .tab-header .tab > .tabLabel.active {
 	border-bottom: 0px solid;
 }
