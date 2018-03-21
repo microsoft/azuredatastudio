@@ -126,9 +126,9 @@ input#accordion:checked ~ .accordion-content {
 	content: url('../common/media/back_inverse.svg');
 }
 
-.vs ul.action-buttons a.icon-start,
-.vs-dark ul.action-buttons a.icon-start,
-.hc-black ul.action-buttons a.icon-start {
+.vs ul.action-buttons div.icon-start,
+.vs-dark ul.action-buttons div.icon-start,
+.hc-black ul.action-buttons div.icon-start {
 	display: inline-block;
 	height: 20px;
 	width: 20px;

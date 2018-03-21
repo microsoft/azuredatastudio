@@ -252,7 +252,7 @@ export function createApiFactory(
 			};
 
 			let registerAgentServicesProvider = (provider: sqlops.AgentServicesProvider): vscode.Disposable => {
-				return extHostDataProvider.$registerAgentSeriviceProvider(provider);
+				return extHostDataProvider.$registerAgentServiceProvider(provider);
 			};
 
 			// namespace: dataprotocol
