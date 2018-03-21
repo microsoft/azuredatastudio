@@ -11,11 +11,16 @@ import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
+import { getZoomLevel } from 'vs/base/browser/browser';
+import { Configuration } from 'vs/editor/browser/config/configuration';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { QueryOutputModule } from 'sql/parts/query/views/queryOutput.module';
 import { QUERY_OUTPUT_SELECTOR } from 'sql/parts/query/views/queryOutput.component';
 
@@ -28,14 +33,25 @@ export class QueryResultsEditor extends BaseEditor {
 
 	public static ID: string = 'workbench.editor.queryResultsEditor';
 	public static AngularSelectorString: string = 'slickgrid-container.slickgridContainer';
+	protected _rawOptions: BareFontInfo;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IBootstrapService private _bootstrapService: IBootstrapService
+		@IBootstrapService private _bootstrapService: IBootstrapService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super(QueryResultsEditor.ID, telemetryService, themeService);
+		this._rawOptions = BareFontInfo.createFromRawSettings(this._configurationService.getValue('editor'), getZoomLevel());
+		this._configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('editor')) {
+				this._rawOptions = BareFontInfo.createFromRawSettings(this._configurationService.getValue('editor'), getZoomLevel());
+				if (this.getContainer().getHTMLElement()) {
+					Configuration.applyFontInfoSlow(this.getContainer().getHTMLElement(), this._rawOptions);
+				}
+			}
+		});
 	}
 
 	createEditor(parent: Builder): void {
@@ -46,6 +62,7 @@ export class QueryResultsEditor extends BaseEditor {
 
 	setInput(input: QueryResultsInput, options: EditorOptions): TPromise<void> {
 		super.setInput(input, options);
+		Configuration.applyFontInfoSlow(this.getContainer().getHTMLElement(), this._rawOptions);
 		if (!input.hasBootstrapped) {
 			this._bootstrapAngular();
 		}
