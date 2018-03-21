@@ -60,8 +60,8 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Localization
 SQL Operations Studio localization is now open for community contributions. You can contribute to localization for both software and docs. https://aka.ms/SQLOpsStudioLoc
-Localization is now opened for 10 languages: French, Italian, German, Spanish, Simplified Chinese, Traditional Chinese, Japanese, Korean, Russian, Brazilian Portuguese.
-Help us make SQL Operations Studio available in your language!
+
+Localization is now opened for 10 languages: French, Italian, German, Spanish, Simplified Chinese, Traditional Chinese, Japanese, Korean, Russian, and Portuguese (Brazil). Help us make SQL Operations Studio available in your language!
 
 ## Privacy Statement
 The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement) describes the privacy statement of this software.

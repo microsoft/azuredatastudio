@@ -20,8 +20,8 @@ import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams
 import { DASHBOARD_SELECTOR } from 'sql/parts/dashboard/dashboard.component';
 import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
-import { ConnectionProfile } from '../connection/common/connectionProfile';
-import { IConnectionProfile } from 'sqlops';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 
 export class DashboardEditor extends BaseEditor {
@@ -117,7 +117,8 @@ export class DashboardEditor extends BaseEditor {
 		let params: DashboardComponentParams = {
 			connection: input.connectionProfile,
 			ownerUri: input.uri,
-			scopedContextService: scopedContextService
+			scopedContextService,
+			connectionContextKey
 		};
 
 		input.hasBootstrapped = true;

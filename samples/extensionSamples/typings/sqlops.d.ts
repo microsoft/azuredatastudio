@@ -33,8 +33,6 @@ declare module 'sqlops' {
 
 		export function registerAdminServicesProvider(provider: AdminServicesProvider): vscode.Disposable;
 
-		export function registerAgentServicesProvider(provider: AgentServicesProvider): vscode.Disposable;
-
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
 
 		/**
@@ -107,79 +105,6 @@ declare module 'sqlops' {
 			 * A unique identifier for the connection
 			*/
 			connectionId: string;
-		}
-	}
-
-	/**
-	 * Namespace for interacting with Object Explorer
-	*/
-	export namespace objectexplorer {
-		/**
-		 * Get an Object Explorer node corresponding to the given connection and path. If no path
-		 * is given, it returns the top-level node for the given connection. If there is no node at
-		 * the given path, it returns undefined.
-		 * @param {string} connectionId The id of the connection that the node exists on
-		 * @param {string?} nodePath The path of the node to get
-		 * @returns {ObjectExplorerNode} The node corresponding to the given connection and path,
-		 * or undefined if no such node exists.
-		*/
-		export function getNode(connectionId: string, nodePath?: string): Thenable<ObjectExplorerNode>;
-
-		/**
-		 * Get all active Object Explorer connection nodes
-		 * @returns {ObjectExplorerNode[]} The Object Explorer nodes for each saved connection
-		*/
-		export function getActiveConnectionNodes(): Thenable<ObjectExplorerNode[]>;
-
-		/**
-		 * Find Object Explorer nodes that match the given information
-		 * @param {string} connectionId The id of the connection that the node exists on
-		 * @param {string} type The type of the object to retrieve
-		 * @param {string} schema The schema of the object, if applicable
-		 * @param {string} name The name of the object
-		 * @param {string} database The database the object exists under, if applicable
-		 * @param {string[]} parentObjectNames A list of names of parent objects in the tree, ordered from highest to lowest level
-		 * (for example when searching for a table's column, provide the name of its parent table for this argument)
-		 */
-		export function findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<ObjectExplorerNode[]>;
-
-		/**
-		 * Interface for representing and interacting with items in Object Explorer
-		*/
-		export interface ObjectExplorerNode extends NodeInfo {
-			/**
-			 * The id of the connection that the node exists under
-			 */
-			connectionId: string;
-
-			/**
-			 * Whether the node is currently expanded in Object Explorer
-			 */
-			isExpanded(): Thenable<boolean>;
-
-			/**
-			 * Set whether the node is expanded or collapsed
-			 * @param expandedState The new state of the node. If 'None', the node will not be changed
-			 */
-			setExpandedState(expandedState: vscode.TreeItemCollapsibleState): Thenable<void>;
-
-			/**
-			 * Set whether the node is selected
-			 * @param selected Whether the node should be selected
-			 * @param clearOtherSelections If true, clear any other selections. If false, leave any existing selections.
-			 * Defaults to true when selected is true and false when selected is false.
-			 */
-			setSelected(selected: boolean, clearOtherSelections?: boolean): Thenable<void>;
-
-			/**
-			 * Get all the child nodes. Returns an empty list if there are no children.
-			 */
-			getChildren(): Thenable<ObjectExplorerNode[]>;
-
-			/**
-			 * Get the parent node. Returns undefined if there is none.
-			 */
-			getParent(): Thenable<ObjectExplorerNode>;
 		}
 	}
 
@@ -956,15 +881,6 @@ declare module 'sqlops' {
 		nodePath: string;
 	}
 
-	export interface FindNodesInfo {
-		sessionId: string;
-		type: string;
-		schema: string;
-		name: string;
-		database: string;
-		parentObjectNames: string[];
-	}
-
 	export interface ObjectExplorerCloseSessionInfo {
 		sessionId: string;
 	}
@@ -972,10 +888,6 @@ declare module 'sqlops' {
 	export interface ObjectExplorerCloseSessionResponse {
 		sessionId: string;
 		success: boolean;
-	}
-
-	export interface ObjectExplorerFindNodesResponse {
-		nodes: NodeInfo[];
 	}
 
 	export interface ObjectExplorerProvider extends DataProvider {
@@ -986,8 +898,6 @@ declare module 'sqlops' {
 		refreshNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
 
 		closeSession(closeSessionInfo: ObjectExplorerCloseSessionInfo): Thenable<ObjectExplorerCloseSessionResponse>;
-
-		findNodes(findNodesInfo: FindNodesInfo): Thenable<ObjectExplorerFindNodesResponse>;
 
 		registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any);
 
@@ -1022,67 +932,6 @@ declare module 'sqlops' {
 		getDefaultDatabaseInfo(connectionUri: string): Thenable<DatabaseInfo>;
 
 		getDatabaseInfo(connectionUri: string): Thenable<DatabaseInfo>;
-	}
-
-	// Agent Services interfaces
-	export interface AgentJobsResult {
-		succeeded: boolean;
-		errorMessage: string;
-		jobs: AgentJobInfo[];
-	}
-
-	export interface AgentJobHistoryResult {
-		succeeded: boolean;
-		errorMessage: string;
-		jobs: AgentJobHistoryInfo[];
-	}
-
-	export interface AgentJobActionResult {
-		succeeded: string;
-		errorMessage: string;
-	}
-
-	export interface AgentJobInfo {
-		name: string;
-		currentExecutionStatus: number;
-		lastRunOutcome: number;
-		currentExecutionStep: string;
-		enabled: boolean;
-		hasTarget: boolean;
-		hasSchedule: boolean;
-		hasStep: boolean;
-		runnable: boolean;
-		category: string;
-		categoryId: number;
-		categoryType: number;
-		lastRun: string;
-		nextRun: string;
-		jobId: string;
-	}
-
-	export interface AgentJobHistoryInfo {
-		instanceID: number;
-		sqlMessageID: number;
-		message: string;
-		stepID: number;
-		stepName: string;
-		sqlSeverity: number;
-		jobID: string;
-		jobName: string;
-		runStatus: number;
-		runDate: string;
-		runDuration: number;
-		operatorEmailed: string;
-		operatorNetsent: string;
-		operatorPaged: string;
-		retriesAttempted: number;
-		server: string;
-	}
-
-	export interface AgentServicesProvider extends DataProvider {
-		getJobs(connectionUri: string): Thenable<AgentJobsResult>;
-		getJobHistory(connectionUri: string, jobID: string): Thenable<AgentJobHistoryResult>;
-		jobAction(connectionUri: string, jobName: string, action: string): Thenable<AgentJobActionResult>;
 	}
 
 	// Task service interfaces ----------------------------------------------------------------------------
@@ -1656,23 +1505,6 @@ declare module 'sqlops' {
 		export function createDialog(
 			title: string
 		): ModalDialog;
-	}
-
-	export namespace workspace {
-		/**
-		 * An event that is emitted when a [dashboard](#DashboardDocument) is opened.
-		 */
-		export const onDidOpenDashboard: vscode.Event<DashboardDocument>;
-
-		/**
-		 * An event that is emitted when a [dashboard](#DashboardDocument) is focused.
-		 */
-		export const onDidChangeToDashboard: vscode.Event<DashboardDocument>;
-	}
-
-	export interface DashboardDocument {
-		profile: IConnectionProfile;
-		serverInfo: ServerInfo;
 	}
 
 	export namespace tasks {

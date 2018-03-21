@@ -33,4 +33,8 @@ export class ObjectExplorerProviderTestService implements sqlops.ObjectExplorerP
 	public registerOnExpandCompleted(handler: (response: sqlops.ObjectExplorerExpandInfo) => any): void {
 
 	}
+
+	public findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
+		return undefined;
+	}
 }

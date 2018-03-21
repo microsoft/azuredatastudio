@@ -305,6 +305,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.ObjectExplorerProvider>(handle).closeSession(closeSessionInfo);
 	}
 
+	public $findNodes(handle: number, findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
+		return this._resolveProvider<sqlops.ObjectExplorerProvider>(handle).findNodes(findNodesInfo);
+	}
+
 	public $onObjectExplorerSessionCreated(handle: number, response: sqlops.ObjectExplorerSession): void {
 		this._proxy.$onObjectExplorerSessionCreated(handle, response);
 	}

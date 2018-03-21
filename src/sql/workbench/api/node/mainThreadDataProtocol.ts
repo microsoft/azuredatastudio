@@ -234,6 +234,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			closeSession(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
 				return self._proxy.$closeObjectExplorerSession(handle, closeSessionInfo);
+			},
+			findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
+				return self._proxy.$findNodes(handle, findNodesInfo);
 			}
 		});
 
