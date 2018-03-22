@@ -21,6 +21,12 @@ jobhistory-component {
 	display: block;
 }
 
+#jobsDiv .jobview-grid {
+    height: 100%;
+	width : 100%;
+	display: block;
+}
+
 .vs-dark #jobsDiv .slick-header-column {
 	background: #333333 !important;
 }
@@ -65,24 +71,11 @@ jobhistory-component {
     width: 100%;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 #jobsDiv .jobview-splitter {
     height: 1px;
     width: 100%;
     background-color: gray;
 }
-
 
 #jobsDiv .jobview-jobitem {
     display: flex;
@@ -102,6 +95,7 @@ jobhistory-component {
     margin-right: 10px;
 }
 
+/*
 #jobsDiv .jobview-highlight-success-light {
     width: 5px;
     background-color: green;
@@ -113,77 +107,32 @@ jobhistory-component {
     background-color: red;
     margin-right: 10px;
 }
+*/
 
-
-
-
-
-
-
-
+#jobsDiv .detail-container {
+    max-height: 100px !important;
+    line-height: 20px;
+}
 
 #jobsDiv .detail {
     padding: 5px
 }
+
 #jobsDiv .preload {
   font-size: 18px;
 }
 
-#jobsDiv .dynamic-cell-detail > :first-child
-{
-vertical-align:     middle;
-line-height:        13px;
-padding:            10px;
-margin-left:		20px;
+#jobsDiv .dynamic-cell-detail > :first-child {
+    vertical-align:     middle;
+    line-height:        13px;
+    padding:            10px;
+    margin-left:		20px;
 }
 
-
-/* alternating offsets */
-#jobsDiv .slick-row .cell-inner {
-margin-right: 60px;
+.vs-dark #jobsDiv .dynamic-cell-detail {
+    background: black !important;
 }
 
-#jobsDiv .slick-row[row$="1"] .cell-inner, .slick-row[row$="3"] .cell-inner, .slick-row[row$="5"] .cell-inner,
-#jobsDiv .slick-row[row$="7"] .cell-inner, .slick-row[row$="9"] .cell-inner {
-margin-left: 60px;
-margin-right: 0;
-}
-
-#jobsDiv .contact-card-cell {
-border-color: transparent !important;
-}
-
-#jobsDiv .cell-inner {
-height: 20px;
-margin: 10px;
-padding: 10px;
-background: #fafafa;
-border: 1px solid gray;
--moz-border-radius: 10px;
--webkit-border-radius: 10px;
--moz-box-shadow: 1px 1px 5px silver;
--webkit-box-shadow: 1px 1px 5px silver;
--webkit-transition: all 0.5s;
-}
-
-#jobsDiv .cell-inner:hover {
-background: #f0f0f0;
-}
-
-#jobsDiv .cell-left {
-width: 40px;
-height: 100%;
-float: left;
-border-right: 1px dotted gray;
-}
-
-#jobsDiv .cell-main {
-margin-left: 50px;
-}
-
-
-#jobsDiv .jobview-grid {
-    height: 100%;
-	width : 100%;
-	display: block;
+#jobsDiv .dynamic-cell-detail {
+    background: #faf5f8 !important;
 }

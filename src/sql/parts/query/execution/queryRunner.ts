@@ -483,7 +483,7 @@ export default class QueryRunner {
 		// Windows(CRLF): \r\n
 		// Linux(LF)/Modern MacOS: \n
 		// Old MacOs: \r
-		if (!inputString) {
+		if (types.isUndefinedOrNull(inputString)) {
 			return 'null';
 		}
 

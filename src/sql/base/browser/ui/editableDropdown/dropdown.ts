@@ -176,7 +176,7 @@ export class Dropdown extends Disposable {
 			filter: this._filter,
 			renderer: this._renderer,
 			controller: this._controller
-		});
+		}, { paddingOnRow: false, indentPixels: 0, twistiePixels: 0 });
 
 		this.values = this._options.values;
 

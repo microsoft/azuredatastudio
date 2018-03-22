@@ -125,7 +125,6 @@ const Slick = window.Slick;
 require('slickgrid/slick.grid');
 require('slickgrid/slick.editors');
 require('slickgrid/slick.dataview');
-require('slickgrid/plugins/slick.rowdetailview');
 require('reflect-metadata');
 require('zone.js');
 

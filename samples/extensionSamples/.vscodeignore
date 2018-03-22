@@ -1,0 +1,29 @@
+# Unwanted compiled files
+out/test/**
+out/**/*.map
+*.vsix
+
+# Build/Source files
+src/**
+tasks/**
+test/**
+typings/**
+packages/**
+samples/**
+.gitignore
+tsconfig.json
+
+# IDE Settings
+.vscode/**
+.vscode-test/**
+.idea/**
+.sqlops/**
+
+# Reference files
+**/*.ts
+**/*.map
+.gitignore
+tsconfig.json
+*.exe
+*.dat
+gulpfile.js

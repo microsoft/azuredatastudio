@@ -31,6 +31,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import { JobHistoryComponent } from './jobHistory.component';
 import { AgentViewComponent } from '../agent/agentView.component';
+import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 
@@ -99,10 +100,27 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
 					if (result.jobs) {
 						this.jobHistories[job.jobId] = result.jobs;
+						this.expandJobsWithFailures();
 					}
 				});
 			});
 		}
+	}
+
+	private expandJobsWithFailures(): void {
+		for (let i: number = 0; i < this.jobs.length; ++i) {
+			let job = this.jobs[i];
+			let jobHistory = this.jobHistories[job.jobId];
+			if (jobHistory && jobHistory.length > 0) {
+				let latestExecution = jobHistory[jobHistory.length - 1];
+				if (latestExecution.runStatus !== 0) {
+					this.expandJobRowDetails(i);
+				}
+			}
+		}
+	}
+
+	private expandJobRowDetails(rowIdx: number): void {
 	}
 
 	onFirstVisible() {
@@ -119,7 +137,7 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		};
 
 		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
-		let rowDetail = new Slick.Plugins.RowDetailView({
+		let rowDetail = new RowDetailView({
 			cssClass: 'detailView-toggle',
 			preTemplate: this.loadingTemplate,
 			process: (job) => {
