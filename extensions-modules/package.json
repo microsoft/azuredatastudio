@@ -1,7 +1,7 @@
 {
   "name": "extensions-modules",
   "version": "0.1.0",
-  "description": "Shared modules for Carbon extensions",
+  "description": "Shared modules for SQL Operations Studio extensions",
   "dependencies": {
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#feature/agentDmp1",
     "decompress": "^4.2.0",
