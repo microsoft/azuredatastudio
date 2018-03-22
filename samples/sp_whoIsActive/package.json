@@ -205,7 +205,6 @@
     "dependencies": {
         "fs-extra": "^5.0.0",
         "handlebars": "^4.0.11",
-        "open": "0.0.5",
         "openurl": "^1.1.1",
         "vscode-nls": "2.0.2"
     },
