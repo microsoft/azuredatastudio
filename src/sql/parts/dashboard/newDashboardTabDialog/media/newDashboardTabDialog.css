@@ -14,6 +14,10 @@
 	display: flex;
 }
 
+.extension-view .header.collapsible.hide {
+	display: none;
+}
+
 .extension-view .header .title {
 	display: flex;
 	justify-content: flex-start;
