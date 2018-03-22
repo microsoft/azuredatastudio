@@ -34,3 +34,11 @@ let buildPackage = function(packageName) {
     console.log(command);
     return exec(command);
 };
+
+function getOnlinePackageName() {
+    return packageVals.name + "-" + packageVals.version + ".vsix";
+}
+
+function getOnlinePackagePath() {
+    return './' + getOnlinePackageName();
+}
