@@ -7,13 +7,11 @@
 
 <panel class="fullsize" [options]="panelOpt">
 	<tab [title]="jobsComponentTitle" class="fullsize" [identifier]="jobsTabIdentifier">
-		<div id="jobsDiv" class="fullsize">
-			<jobsview-component></jobsview-component>
+		<div id="jobsDiv" class="fullsize" *ngIf="showHistory === false">
+			<jobsview-component ></jobsview-component>
 		</div>
-	</tab>
-	<tab [title]="jobHistoryComponentTitle" class="fullsize" [identifier]="jobHistoryTabIdentifier">
-		<div id="historyDiv" class="fullsize">
-			<jobhistory-component></jobhistory-component>
+		<div id="historyDiv" class="fullsize" *ngIf="showHistory === true">
+			<jobhistory-component [jobId]="jobId" [agentJobInfo]="agentJobInfo"></jobhistory-component>
 		</div>
 	</tab>
 </panel>
