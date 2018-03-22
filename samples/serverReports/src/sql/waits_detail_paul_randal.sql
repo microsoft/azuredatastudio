@@ -1,5 +1,5 @@
 -- SOURCE: https://www.sqlskills.com/blogs/paul/wait-statistics-or-please-tell-me-where-it-hurts/
--- Use for a demo purpose only. This query is not built-in to any product.
+-- This query is not built-in to any product.
 
 WITH [Waits] AS
     (SELECT
@@ -17,20 +17,20 @@ WITH [Waits] AS
         N'BROKER_TRANSMITTER', N'CHECKPOINT_QUEUE',
         N'CHKPT', N'CLR_AUTO_EVENT',
         N'CLR_MANUAL_EVENT', N'CLR_SEMAPHORE',
- 
+
         -- Maybe uncomment these four if you have mirroring issues
         N'DBMIRROR_DBM_EVENT', N'DBMIRROR_EVENTS_QUEUE',
         N'DBMIRROR_WORKER_QUEUE', N'DBMIRRORING_CMD',
- 
+
         N'DIRTY_PAGE_POLL', N'DISPATCHER_QUEUE_SEMAPHORE',
         N'EXECSYNC', N'FSAGENT',
         N'FT_IFTS_SCHEDULER_IDLE_WAIT', N'FT_IFTSHC_MUTEX',
- 
+
         -- Maybe uncomment these six if you have AG issues
         N'HADR_CLUSAPI_CALL', N'HADR_FILESTREAM_IOMGR_IOCOMPLETION',
         N'HADR_LOGCAPTURE_WAIT', N'HADR_NOTIFICATION_DEQUEUE',
         N'HADR_TIMER_TASK', N'HADR_WORK_QUEUE',
- 
+
         N'KSOURCE_WAKEUP', N'LAZYWRITER_SLEEP',
         N'LOGMGR_QUEUE', N'MEMORY_ALLOCATION_EXT',
         N'ONDEMAND_TASK_QUEUE',

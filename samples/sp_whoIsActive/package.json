@@ -7,8 +7,8 @@
     "engines": {
         "vscode": "^1.19.0"
     },
-    "license": "MIT",
-    "repository": "",
+    "license": "SEE LICENSE IN LICENSE.txt",
+    "repository": "https://github.com/Microsoft/sqlopsstudio",
     "categories": [
         "Other"
     ],
