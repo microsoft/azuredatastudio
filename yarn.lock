@@ -164,7 +164,7 @@ angular2-grid@2.0.6:
 
 "angular2-slickgrid@git://github.com/Microsoft/angular2-slickgrid.git#feat/setRowHeightRelease":
   version "1.3.9"
-  resolved "git://github.com/Microsoft/angular2-slickgrid.git#2b8f7ce7a7bd10a40f225d02fb0d8f04f0747302"
+  resolved "git://github.com/Microsoft/angular2-slickgrid.git#3899b839916d75b0d14ee04cc9e140fd694391a7"
 
 ansi-colors@^1.0.1:
   version "1.0.1"

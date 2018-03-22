@@ -165,6 +165,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 				this.slickgrids.forEach(i => {
 					i.rowHeight = this.rowHeight;
 				});
+				this.resizeGrids();
 			}
 		});
 	}
