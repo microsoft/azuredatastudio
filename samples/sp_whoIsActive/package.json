@@ -8,12 +8,7 @@
         "vscode": "^1.19.0"
     },
     "license": "MIT",
-<<<<<<< Updated upstream
-    
-    "repository": "qqq.com",
-=======
     "repository": "",
->>>>>>> Stashed changes
     "categories": [
         "Other"
     ],
@@ -25,13 +20,8 @@
         "configuration": [],
         "commands": [
             {
-<<<<<<< Updated upstream
-                "command": "sp_whoisactive.create",
-                "title": "Create sp_whoisactive",
-=======
                 "command": "sp_whoisactive.install",
                 "title": "Install sp_whoisactive",
->>>>>>> Stashed changes
                 "icon": {
                     "light": "./out/src/media/config.svg",
                     "dark": "./out/src/media/config_inverse.svg"
@@ -41,14 +31,11 @@
                 "command": "sp_whoisactive.findBlockLeaders",
                 "title": "Find leader of block",
                 "icon": "./out/src/media/start.svg"
-<<<<<<< Updated upstream
-=======
             },
             {
                 "command": "sp_whoisactive.getPlans",
                 "title": "Get plans",
                 "icon": "./out/src/media/start.svg"
->>>>>>> Stashed changes
             }
         ],
         "views": {},
@@ -59,11 +46,7 @@
                 "title": "sp_whoisactive",
                 "description": "Extension for checking who is active.",
                 "container": {
-<<<<<<< Updated upstream
-                    "nav-section": [                       
-=======
                     "nav-section": [
->>>>>>> Stashed changes
                         {
                             "id": "sp_whoisactive_insights",
                             "title": "Insights",
@@ -156,17 +139,6 @@
             {
                 "id": "sp_whoisactive-insights",
                 "container": {
-<<<<<<< Updated upstream
-                    "grid-container": [
-                        {
-                            "name": "Tasks",
-                            "row": 0,
-                            "col": 0,
-                            "colspan":2,
-                            "widget": {
-                                "tasks-widget": [
-                                    "sp_whoisactive.create", "sp_whoisactive.findBlockLeaders"
-=======
                     "widgets-container": [
                         {
                             "name": "Tasks",
@@ -175,84 +147,47 @@
                                     "sp_whoisactive.getPlans",
                                     "sp_whoisactive.findBlockLeaders",
                                     "sp_whoisactive.install"
->>>>>>> Stashed changes
                                 ]
                             }
                         },
                         {
                             "name": "CPU Usage",
-<<<<<<< Updated upstream
-                            "row":1,
-                            "col":0,
-                            "colspan":2,
-                            "widget": {
-                                "sp_whoisactive-CPU-usage": {
-                                }
-=======
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1
                             },
                             "widget": {
                                 "sp_whoisactive-CPU-usage": {}
->>>>>>> Stashed changes
                             }
                         },
                         {
                             "name": "CPU Delta",
-<<<<<<< Updated upstream
-                            "row":1,
-                            "col":1,
-                            "colspan":2,
-                            "widget": {
-                                "sp_whoisactive-CPU-delta": {
-                                }
-=======
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1
                             },
                             "widget": {
                                 "sp_whoisactive-CPU-delta": {}
->>>>>>> Stashed changes
                             }
                         },
                         {
                             "name": "Memory Usage",
-<<<<<<< Updated upstream
-                            "row":2,
-                            "col":0,
-                            "colspan":2,
-                            "widget": {
-                                "sp_whoisactive-memory-usage": {
-                                }
-=======
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1
                             },
                             "widget": {
                                 "sp_whoisactive-memory-usage": {}
->>>>>>> Stashed changes
                             }
                         },
                         {
                             "name": "Memory Delta",
-<<<<<<< Updated upstream
-                            "row":2,
-                            "col":1,
-                            "colspan":2,
-                            "widget": {
-                                "sp_whoisactive-memory-delta": {
-                                }
-=======
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1
                             },
                             "widget": {
                                 "sp_whoisactive-memory-delta": {}
->>>>>>> Stashed changes
                             }
                         }
                     ]
@@ -270,11 +205,8 @@
     "dependencies": {
         "fs-extra": "^5.0.0",
         "handlebars": "^4.0.11",
-<<<<<<< Updated upstream
-=======
         "open": "0.0.5",
         "openurl": "^1.1.1",
->>>>>>> Stashed changes
         "vscode-nls": "2.0.2"
     },
     "devDependencies": {

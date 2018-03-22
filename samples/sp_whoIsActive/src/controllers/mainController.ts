@@ -11,10 +11,7 @@ import ControllerBase from './controllerBase';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
-<<<<<<< Updated upstream
-=======
 import * as openurl from 'openurl';
->>>>>>> Stashed changes
 
 
 /**
@@ -40,34 +37,19 @@ export default class MainController extends ControllerBase {
             });
         });
 
-<<<<<<< Updated upstream
-        sqlops.tasks.registerTask('sp_whoisactive.create', e => this.onCreated(e));
-        sqlops.tasks.registerTask('sp_whoisactive.findBlockLeaders', e => this.onExecute(e));
-=======
         sqlops.tasks.registerTask('sp_whoisactive.install', e => this.onInstall(e));
         sqlops.tasks.registerTask('sp_whoisactive.findBlockLeaders', e => this.onExecute(e, 'findBlockLeaders.sql'));
         sqlops.tasks.registerTask('sp_whoisactive.getPlans', e => this.onExecute(e, 'getPlans.sql'));
->>>>>>> Stashed changes
 
         return Promise.resolve(true);
     }
 
-<<<<<<< Updated upstream
-    private onCreated(connection: sqlops.IConnectionProfile): void {
-        let sqlFile = fs.readFileSync(path.join(__dirname, '..', 'sql', 'who_is_active_v11_30.sql')).toString();
-        this.openSQLFileWithContent(sqlFile);
-    }
-
-    private onExecute(connection: sqlops.IConnectionProfile): void {
-        let sqlFile = fs.readFileSync(path.join(__dirname, '..', 'sql', 'findBlockLeaders.sql')).toString();
-=======
     private onInstall(connection: sqlops.IConnectionProfile): void {
         openurl.open('http://whoisactive.com/downloads/');
     }
 
     private onExecute(connection: sqlops.IConnectionProfile, fileName: string): void {
         let sqlFile = fs.readFileSync(path.join(__dirname, '..', 'sql', fileName)).toString();
->>>>>>> Stashed changes
         this.openSQLFileWithContent(sqlFile);
     }
 
