@@ -31,6 +31,7 @@ export class JobHistoryRow {
 	runDate: string;
 	runStatus: string;
 	jobID: string;
+	rowID: string = generateUuid();
 
 	public static convertToStatusString(status: number): string {
 		switch(status) {
@@ -85,7 +86,7 @@ export class JobHistoryDataSource implements tree.IDataSource {
 		if (element instanceof JobHistoryModel) {
 			return JobHistoryModel.id;
 		} else {
-			return (element as JobHistoryRow).jobID;
+			return (element as JobHistoryRow).rowID;
 		}
 	}
 

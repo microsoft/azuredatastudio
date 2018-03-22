@@ -15,10 +15,10 @@
 <!-- Actions -->
 <ul class="action-buttons">
 	<li>
-		<div class="icon-start" (click)="jobAction('start')">Run</div>
+		<div class="icon-start" (click)="jobAction('run', agentJobInfo.name)">Run</div>
 	</li>
 	<li>
-		<div class="icon-stop" (click)="jobAction('stop')">Stop</div>
+		<div class="icon-stop" (click)="jobAction('stop', agentJobInfo.name)">Stop</div>
 	</li>
 </ul>
 

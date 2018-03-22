@@ -47,7 +47,6 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 	@Input() public jobId: string = undefined;
 	@Input() public agentJobHistoryInfo: AgentJobHistoryInfo = undefined;
 	private prevJobId: string = undefined;
-	private jobName: string = undefined;
 
 	private isVisible: boolean = false;
 
@@ -65,17 +64,15 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 
 	ngOnInit() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this.loadHistory();
-		this._treeDataSource.data = [];
 		this._tree = new Tree(this._tableContainer.nativeElement, {
 			controller: this._treeController,
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
 		});
+		this.loadHistory();
 		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 		this._tree.layout(1024);
-		//this._tree.setInput(new JobHistoryModel());
 	}
 
 	ngOnDestroy() {
@@ -91,12 +88,14 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 	}
 
 	loadHistory() {
+		const self = this;
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getJobHistory(ownerUri, this.jobId).then((result) => {
 			if (result.jobs) {
 				let jobHistory = result.jobs;
-				this._treeDataSource.data = jobHistory.map(job => this.convertToJobHistoryRow(job));
-				this._tree.setInput(new JobHistoryModel());
+				let jobHistoryRows = jobHistory.map(job => self.convertToJobHistoryRow(job));
+				self._treeDataSource.data = jobHistoryRows;
+				self._tree.setInput(new JobHistoryModel());
 			}
 		});
 	}
@@ -111,9 +110,9 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 		}
 	}
 
-	private jobAction(action: string): void {
+	private jobAction(action: string, jobName): void {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.jobAction(ownerUri, 'jobName', action);
+		this._jobManagementService.jobAction(ownerUri, jobName, action);
 	}
 
 	private goToJobs(): void {
@@ -121,11 +120,10 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 	}
 
 	private convertToJobHistoryRow(historyInfo: AgentJobHistoryInfo): JobHistoryRow {
-		let jobHistoryRow = {
-			runDate: historyInfo.runDate,
-			runStatus: JobHistoryRow.convertToStatusString(historyInfo.runStatus),
-			jobID: historyInfo.jobID
-		};
+		let jobHistoryRow = new JobHistoryRow();
+		jobHistoryRow.runDate = historyInfo.runDate;
+		jobHistoryRow.runStatus = JobHistoryRow.convertToStatusString(historyInfo.runStatus)
+		jobHistoryRow.jobID = historyInfo.jobID;
 		return jobHistoryRow;
 	}
 }
