@@ -3,11 +3,7 @@
   "version": "0.1.0",
   "description": "Shared modules for Carbon extensions",
   "dependencies": {
-<<<<<<< HEAD
-    "dataprotocol-client": "C:/Users/adbist/Desktop/SQL_Tools/sqlops-dataprotocolclient",
-=======
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#feature/agentDmp1",
->>>>>>> feature/agent1
     "decompress": "^4.2.0",
     "fs-extra-promise": "^1.0.1",
     "http-proxy-agent": "^2.0.0",
