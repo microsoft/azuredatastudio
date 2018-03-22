@@ -40,12 +40,19 @@ panel {
 
 .tabbedPanel .tabList .tab .tabLabel {
 	text-transform: uppercase;
-	font-size: 11px;
+	font-size: 13px;
 	padding-bottom: 4px;
+}
+
+.tabbedPanel.vertical .tabList .tab .tabLabel {
+	font-size: 11px;
 }
 
 .tabbedPanel .tabList .tab-header {
 	display: flex;
+	padding-left: 5px;
+	padding-right: 5px;
+	min-width: 65px;
 }
 
 .tabbedPanel.vertical .tabList .tab-header {
@@ -53,22 +60,26 @@ panel {
 	text-transform: none;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	width: 63px;
+	width: 65px;
 	height: 50px;
 	line-height: 45px;
+}
+
+.tabbedPanel .tabList .tab:hover .tabLabel,
+.tabbedPanel .tabList .tab .tabLabel.active {
+	opacity: 1;
+}
+
+.tabbedPanel .tabList .tab .tabLabel {
+	opacity: 0.6;
 }
 
 .tabbedPanel .tabList .tab .tabLabel.icon {
 	background-repeat: no-repeat;
 	background-position: center center;
-	background-size: 25px;
-	padding: 20px 20px;
+	background-size: 20px;
+	padding: 20px 25px;
 	line-height: 50px;
-}
-
-.tabbedPanel .tabList .tab-header {
-	padding-left: 10px;
-	padding-right: 10px;
 }
 
 .tabbedPanel .tabList .actions-container {
