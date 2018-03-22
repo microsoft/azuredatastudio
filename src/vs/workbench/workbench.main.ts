@@ -139,6 +139,7 @@ import 'sql/parts/registeredServer/viewlet/connectionViewlet';
 import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/parts/connection/common/connection.contribution';
 import 'sql/parts/query/common/query.contribution';
+import 'sql/parts/query/editor/resultsGridContribution';
 import 'sql/parts/profiler/contrib/profiler.contribution';
 import 'sql/parts/profiler/contrib/profilerActions.contribution';
 import 'sql/parts/registeredServer/serverGroupDialog/serverGroup.contribution';
