@@ -11,7 +11,11 @@ Here are some quick facts on Who is Active:
   * Who is Active was **designed with performance in mind** at every step; users report that under normal conditions response times are generally subsecond, with slightly longer response times on servers that are extremely taxed
   * Who is Active is **compatible with all versions of SQL Server after SQL Server 2005 RTM**. It does require that the host database (generally master) is not set for SQL Server 2000 compatibility mode
 
+<<<<<<< Updated upstream
 If you haven't installed sp_whoisactive in your server, you can use "Create sp_whoisactive" task to create the procedure. 
+=======
+If you haven't installed sp_whoisactive in your server, you can use "Install sp_whoisactive" task to create the procedure. 
+>>>>>>> Stashed changes
 
 See [sp_whoisactive Documentation] for more infomation.
 
