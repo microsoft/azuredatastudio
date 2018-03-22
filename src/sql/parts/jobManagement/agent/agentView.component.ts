@@ -42,10 +42,13 @@ export class AgentViewComponent {
 	private _agentJobInfo: AgentJobInfo = null;
 	private _agentJobHistoryInfo: AgentJobHistoryInfo[] = null;
 
+	public jobsIconClass: string = 'jobsview-icon';
+
 	// tslint:disable-next-line:no-unused-variable
 	private readonly panelOpt: IPanelOptions = {
 		showTabsWhenOne: true,
-		layout: NavigationBarLayout.vertical
+		layout: NavigationBarLayout.vertical,
+		showIcon: true
 	};
 
 	constructor(

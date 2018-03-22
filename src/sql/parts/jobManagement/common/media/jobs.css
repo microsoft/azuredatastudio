@@ -136,3 +136,13 @@ jobhistory-component {
 #jobsDiv .dynamic-cell-detail {
     background: #faf5f8 !important;
 }
+
+
+.jobsview-icon {
+    content: url('./job.svg');
+    width: 25px;
+}
+
+.vs-dark .jobsview-icon {
+	content: url('./job_inverse.svg');
+}
