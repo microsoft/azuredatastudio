@@ -59,7 +59,6 @@ export class RowDetailView {
 
 	public setOptions(options: any) {
 		this._options = $.extend(true, {}, this._options, options);
-	//s	this._options = mixin(options, this._defaults, false);
 	}
 
 	public handleClick(e: any, args: any) {

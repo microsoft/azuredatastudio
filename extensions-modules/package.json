@@ -25,13 +25,8 @@
   },
   "engines": {
     "vscode": "*",
-    "sqlops": "feature/agent1"
+    "sqlops": "*"
   },
   "main": "./lib/main.js",
-  "typings": "./lib/main",
-  "resolutions": {
-    "vscode-languageserver-protocol": "3.5.0",
-    "vscode-jsonrpc": "3.5.0",
-    "vscode-languageserver-types": "3.5.0"
-  }
+  "typings": "./lib/main"
 }

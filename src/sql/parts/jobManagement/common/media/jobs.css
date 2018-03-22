@@ -95,20 +95,6 @@ jobhistory-component {
     margin-right: 10px;
 }
 
-/*
-#jobsDiv .jobview-highlight-success-light {
-    width: 5px;
-    background-color: green;
-    margin-right: 10px;
-}
-
-#jobsDiv .jobview-highlight-fail-light {
-    width: 5px;
-    background-color: red;
-    margin-right: 10px;
-}
-*/
-
 #jobsDiv .detail-container {
     max-height: 100px !important;
     line-height: 20px;
