@@ -6,7 +6,8 @@
 -->
 
 <panel class="fullsize" [options]="panelOpt">
-	<tab [title]="jobsComponentTitle" class="fullsize" [identifier]="jobsTabIdentifier">
+	<tab [title]="jobsComponentTitle" class="fullsize" [identifier]="jobsTabIdentifier"
+	     [iconClass]="jobsIconClass">
 		<div id="jobsDiv" class="fullsize" *ngIf="showHistory === false">
 			<jobsview-component ></jobsview-component>
 		</div>
