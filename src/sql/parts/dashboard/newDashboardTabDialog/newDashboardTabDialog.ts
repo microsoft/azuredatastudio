@@ -124,7 +124,7 @@ export class NewDashboardTabDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super(
-			localize('newDashboardTab.openInstalledFeatures', 'Open installed features'),
+			localize('newDashboardTab.openDashboardExtensions', 'Open dashboard extensions'),
 			TelemetryKeys.AddNewDashboardTab,
 			partService,
 			telemetryService,
@@ -162,7 +162,7 @@ export class NewDashboardTabDialog extends Modal {
 		this.createExtensionList(this._extensionViewContainer);
 		this._noExtensionViewContainer = DOM.$('.no-extension-view');
 		let noExtensionTitle = DOM.append(this._noExtensionViewContainer, DOM.$('.no-extensionTab-label'));
-		let noExtensionLabel = localize('newdashboardTabDialog.noExtensionLabel', 'No available feature tabs. Install extensions from the Extension Manager to get additional features.');
+		let noExtensionLabel = localize('newdashboardTabDialog.noExtensionLabel', 'No dashboard extensions are installed at this time. Go to Extension Manager to explore recommended extensions.');
 		noExtensionTitle.innerHTML = noExtensionLabel;
 
 		DOM.append(container, this._noExtensionViewContainer);
@@ -199,6 +199,7 @@ export class NewDashboardTabDialog extends Modal {
 		});
 
 		this._extensionTabView.render(container, Orientation.VERTICAL);
+		this._extensionTabView.hideHeader();
 
 		this._register(attachListStyler(this._extensionList, this._themeService));
 
