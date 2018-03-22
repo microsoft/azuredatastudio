@@ -23,19 +23,25 @@
                 "command": "sp_whoisactive.install",
                 "title": "Install sp_whoisactive",
                 "icon": {
-                    "light": "./out/src/media/config.svg",
-                    "dark": "./out/src/media/config_inverse.svg"
+                    "light": "./out/src/media/download.svg",
+                    "dark": "./out/src/media/download_inverse.svg"
                 }
             },
             {
                 "command": "sp_whoisactive.findBlockLeaders",
                 "title": "Find leader of block",
-                "icon": "./out/src/media/start.svg"
+                "icon": {
+                    "light": "./out/src/media/blocker.svg",
+                    "dark": "./out/src/media/blocker_inverse.svg"
+                }
             },
             {
                 "command": "sp_whoisactive.getPlans",
                 "title": "Get plans",
-                "icon": "./out/src/media/start.svg"
+                "icon": {
+                    "light": "./out/src/media/monitor.svg",
+                    "dark": "./out/src/media/monitor_inverse.svg"
+                }
             }
         ],
         "views": {},
@@ -51,8 +57,8 @@
                             "id": "sp_whoisactive_insights",
                             "title": "Insights",
                             "icon": {
-                                "light": "./out/src/media/monitor.svg",
-                                "dark": "./out/src/media/monitor_inverse.svg"
+                                "light": "./out/src/media/insights.svg",
+                                "dark": "./out/src/media/insights_inverse.svg"
                             },
                             "container": {
                                 "sp_whoisactive-insights": {}
@@ -62,8 +68,8 @@
                             "id": "sp_whoisactive_documentation",
                             "title": "Documentation",
                             "icon": {
-                                "light": "./out/src/media/file.svg",
-                                "dark": "./out/src/media/file_inverse.svg"
+                                "light": "./out/src/media/documentation.svg",
+                                "dark": "./out/src/media/documentation_inverse.svg"
                             },
                             "container": {
                                 "webview-container": null

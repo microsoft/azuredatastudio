@@ -61,7 +61,6 @@
                                 "webview-container": null
                             }
                         }
-
                     ]
                 }
             }
@@ -108,12 +107,12 @@
                             "widget": {
                                 "tasks-widget": [
                                     {
-                                      "name": "backup",
-                                      "when": "!mssql:iscloud"
+                                        "name": "backup",
+                                        "when": "!mssql:iscloud"
                                     },
                                     {
-                                      "name": "restore",
-                                      "when": "!mssql:iscloud"
+                                        "name": "restore",
+                                        "when": "!mssql:iscloud"
                                     },
                                     "configureDashboard",
                                     "newQuery"
@@ -148,14 +147,12 @@
                     "widgets-container": [
                         {
                             "widget": {
-                                "query-data-store-db-insight": {
-                                }
+                                "query-data-store-db-insight": {}
                             }
                         },
                         {
                             "widget": {
-                                "explorer-widget": {
-                                }
+                                "explorer-widget": {}
                             }
                         }
                     ]
