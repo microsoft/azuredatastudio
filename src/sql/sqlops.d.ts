@@ -33,6 +33,8 @@ declare module 'sqlops' {
 
 		export function registerAdminServicesProvider(provider: AdminServicesProvider): vscode.Disposable;
 
+		export function registerAgentServicesProvider(provider: AgentServicesProvider): vscode.Disposable;
+
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
 
 		/**
@@ -1020,6 +1022,67 @@ declare module 'sqlops' {
 		getDefaultDatabaseInfo(connectionUri: string): Thenable<DatabaseInfo>;
 
 		getDatabaseInfo(connectionUri: string): Thenable<DatabaseInfo>;
+	}
+
+	// Agent Services interfaces
+	export interface AgentJobsResult {
+		succeeded: boolean;
+		errorMessage: string;
+		jobs: AgentJobInfo[];
+	}
+
+	export interface AgentJobHistoryResult {
+		succeeded: boolean;
+		errorMessage: string;
+		jobs: AgentJobHistoryInfo[];
+	}
+
+	export interface AgentJobActionResult {
+		succeeded: string;
+		errorMessage: string;
+	}
+
+	export interface AgentJobInfo {
+		name: string;
+		currentExecutionStatus: number;
+		lastRunOutcome: number;
+		currentExecutionStep: string;
+		enabled: boolean;
+		hasTarget: boolean;
+		hasSchedule: boolean;
+		hasStep: boolean;
+		runnable: boolean;
+		category: string;
+		categoryId: number;
+		categoryType: number;
+		lastRun: string;
+		nextRun: string;
+		jobId: string;
+	}
+
+	export interface AgentJobHistoryInfo {
+		instanceID: number;
+		sqlMessageID: number;
+		message: string;
+		stepID: number;
+		stepName: string;
+		sqlSeverity: number;
+		jobID: string;
+		jobName: string;
+		runStatus: number;
+		runDate: string;
+		runDuration: number;
+		operatorEmailed: string;
+		operatorNetsent: string;
+		operatorPaged: string;
+		retriesAttempted: number;
+		server: string;
+	}
+
+	export interface AgentServicesProvider extends DataProvider {
+		getJobs(connectionUri: string): Thenable<AgentJobsResult>;
+		getJobHistory(connectionUri: string, jobID: string): Thenable<AgentJobHistoryResult>;
+		jobAction(connectionUri: string, jobName: string, action: string): Thenable<AgentJobActionResult>;
 	}
 
 	// Task service interfaces ----------------------------------------------------------------------------
