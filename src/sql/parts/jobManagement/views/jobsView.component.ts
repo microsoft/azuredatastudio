@@ -29,6 +29,8 @@ import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { FieldType, IObservableCollection, CollectionChange, SlickGrid } from 'angular2-slickgrid';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/common/theme/styler';
+import { JobHistoryComponent } from './jobHistory.component';
+import { AgentViewComponent } from '../agent/agentView.component';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 
@@ -72,7 +74,8 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent
 	) {
 		this._jobManagementService = bootstrapService.jobManagementService;
 	}
@@ -119,22 +122,11 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		let rowDetail = new Slick.Plugins.RowDetailView({
 			cssClass: 'detailView-toggle',
 			preTemplate: this.loadingTemplate,
-			postTemplate: (itemDetail) => {
-				let jobHistory = self.jobHistories[itemDetail.jobId];
-				if (!jobHistory || jobHistory.length === 0) {
-					return '<div>No job history</div>';
-				} else {
-					let lastJobHistory = jobHistory[jobHistory.length - 1];
-					return '<div>Last run (status ' + lastJobHistory.runStatus + ') '
-						+ lastJobHistory.message + '</div>';
-				}
-			},
 			process: (job) => {
 				(<any>rowDetail).onAsyncResponse.notify({
 					'itemDetail': job
 				}, undefined, this);
 			},
-			useRowClick: true,
 			panelRows: 2
 		});
 
@@ -143,6 +135,18 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		columns.unshift(this.rowDetail.getColumnDefinition());
 		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
 		this._table.grid.setData(this.dataView, true);
+		this._table.grid.onClick.subscribe((e, args) => {
+			let job = self.getJob(args);
+			self._agentViewComponent.jobId = job.jobId;
+			self._agentViewComponent.agentJobInfo = job;
+			self.getJobHistoryInfo(ownerUri, job).then(result => {
+				if (result) {
+					this._agentViewComponent.agentJobHistoryInfo = result;
+				}
+			});
+			self.isVisible = false;
+			self._agentViewComponent.showHistory = true;
+		});
 		this._cd.detectChanges();
 
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
@@ -150,6 +154,22 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 			if (result && result.jobs) {
 				this.jobs = result.jobs;
 				this.onJobsAvailable(result.jobs);
+			}
+		});
+	}
+
+	getJobHistoryInfo(ownerUri: string, job: any): Thenable<sqlops.AgentJobHistoryInfo[]> {
+		return new Promise<sqlops.AgentJobHistoryInfo[]>((resolve, reject) => {
+			if (this.jobHistories[job.jobId]){
+				Promise.resolve(this.jobHistories[job.jobId]);
+			} else {
+				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then(result => {
+					if (result && result.jobs) {
+						Promise.resolve(result.jobs);
+					} else {
+						Promise.reject(undefined);
+					}
+				});
 			}
 		});
 	}
@@ -192,28 +212,13 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit() {
-
 	}
 
 	ngOnDestroy() {
 	}
 
-	loadJobDetails(job) {
-		this.rowDetail.onAsyncResponse.notify({
-			'job': job
-		}, undefined, this);
-	}
-
 	loadingTemplate() {
 		return '<div class="preload">Loading...</div>';
-	}
-
-	loadView(itemDetail: any) {
-		return [
-		  '<div>',
-		  'aaa',
-		  '</div>'
-		].join('');
 	}
 
 	renderName(row, cell, value, columnDef, dataContext) {
@@ -221,5 +226,12 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 			'<td nowrap class="jobview-jobnameindicatorsuccess"></td>' +
 			'<td nowrap class="jobview-jobnametext">' + dataContext.name + '</td>' +
 			'</tr></table>';
+	}
+
+	private getJob(args: Slick.OnClickEventArgs<any>): sqlops.AgentJobInfo {
+		let cell = args.cell;
+		let jobName = args.grid.getCellNode(1, cell).innerText.trim();
+		let job = this.jobs.filter(job => job.name === jobName)[0];
+		return job;
 	}
 }

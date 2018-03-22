@@ -5,7 +5,7 @@
 
 import 'vs/css!./jobHistory';
 
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Input } from '@angular/core';
 import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -22,6 +22,8 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
+import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
+import { toDisposableSubscription } from '../../common/rxjsUtils';
 
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
@@ -41,11 +43,21 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 
 	@ViewChild('table') private _tableContainer: ElementRef;
 
+	@Input() public agentJobInfo: AgentJobInfo = undefined;
+	@Input() public jobId: string = undefined;
+	@Input() public agentJobHistoryInfo: AgentJobHistoryInfo = undefined;
+	private prevJobId: string = undefined;
+	private jobName: string = undefined;
+
+	private isVisible: boolean = false;
+
+
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
-		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent
 	) {
 		super();
 		this._jobManagementService = bootstrapService.jobManagementService;
@@ -53,19 +65,8 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 
 	ngOnInit() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		let agentExample2: JobHistoryRow = {
-			jobID: '12312',
-			runStatus: 'Failed',
-			runDate: '01/24/2018 00:04:35 AM'
-		};
-		let agentExample3: JobHistoryRow = {
-			jobID: '1132453',
-			runStatus: 'Succeeded',
-			runDate: '01/24/2018 00:04:35 AM'
-		};
-
-		let agents: JobHistoryRow[] = [agentExample2, agentExample3];
-		this._treeDataSource.data = agents;
+		this.loadHistory();
+		this._treeDataSource.data = [];
 		this._tree = new Tree(this._tableContainer.nativeElement, {
 			controller: this._treeController,
 			dataSource: this._treeDataSource,
@@ -74,10 +75,30 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 		});
 		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 		this._tree.layout(1024);
-		this._tree.setInput(new JobHistoryModel());
+		//this._tree.setInput(new JobHistoryModel());
 	}
 
 	ngOnDestroy() {
+	}
+
+	ngAfterContentChecked() {
+		if (this.isVisible === false && this._tableContainer.nativeElement.offsetParent !== null) {
+			if (this.prevJobId !== undefined && this.prevJobId !== this.jobId) {
+				this.loadHistory();
+				this.prevJobId = this.jobId;
+			}
+		}
+	}
+
+	loadHistory() {
+		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		this._jobManagementService.getJobHistory(ownerUri, this.jobId).then((result) => {
+			if (result.jobs) {
+				let jobHistory = result.jobs;
+				this._treeDataSource.data = jobHistory.map(job => this.convertToJobHistoryRow(job));
+				this._tree.setInput(new JobHistoryModel());
+			}
+		});
 	}
 
 	private toggleCollapse(): void {
@@ -93,6 +114,19 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 	private jobAction(action: string): void {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.jobAction(ownerUri, 'jobName', action);
+	}
+
+	private goToJobs(): void {
+		this._agentViewComponent.showHistory = false;
+	}
+
+	private convertToJobHistoryRow(historyInfo: AgentJobHistoryInfo): JobHistoryRow {
+		let jobHistoryRow = {
+			runDate: historyInfo.runDate,
+			runStatus: JobHistoryRow.convertToStatusString(historyInfo.runStatus),
+			jobID: historyInfo.jobID
+		};
+		return jobHistoryRow;
 	}
 }
 

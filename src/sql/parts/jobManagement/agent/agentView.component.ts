@@ -5,7 +5,7 @@
 
 import 'vs/css!../common/media/jobs';
 
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Injectable } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { RefreshWidgetAction, EditDashboardAction } from 'sql/parts/dashboard/common/actions';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -16,7 +16,7 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { AgentJobInfo } from 'sqlops';
+import { AgentJobInfo, AgentJobHistoryInfo } from 'sqlops';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import * as nls from 'vs/nls';
 
@@ -26,6 +26,7 @@ export const DASHBOARD_SELECTOR: string = 'agentview-component';
 	selector: DASHBOARD_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./agentView.component.html'))
 })
+@Injectable()
 export class AgentViewComponent {
 
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
@@ -36,17 +37,61 @@ export class AgentViewComponent {
 	private readonly schedulesComponentTitle: string = nls.localize('jobview.Schedules', "Schedules");
 	private readonly operatorsComponentTitle: string = nls.localize('jobview.Operator', "Operators");
 	private readonly jobHistoryComponentTitle: string = nls.localize('jobview.History', "History");
-
-	private readonly jobsTabIdentifier = 'jobs';
-	private readonly alertsTabIdentifier = 'alerts';
-	private readonly schedulesTabIdentifier = 'schedules';
-	private readonly operatorTabIdentifier = 'operators';
-	private readonly historyTabIdentifier = 'history';
-	// tslint:enable:no-unused-variable
+	private _showHistory: boolean = false;
+	private _jobId: string = null;
+	private _agentJobInfo: AgentJobInfo = null;
+	private _agentJobHistoryInfo: AgentJobHistoryInfo[] = null;
 
 	// tslint:disable-next-line:no-unused-variable
 	private readonly panelOpt: IPanelOptions = {
 		showTabsWhenOne: true,
 		layout: NavigationBarLayout.vertical
 	};
+
+	constructor(
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
+	){}
+
+	/**
+	 * Public Getters
+	 */
+	public get jobId(): string {
+		return this._jobId;
+	}
+
+	public get showHistory(): boolean {
+		return this._showHistory;
+	}
+
+	public get agentJobInfo(): AgentJobInfo {
+		return this._agentJobInfo;
+	}
+
+	public get agentJobHistoryInfo(): AgentJobHistoryInfo[] {
+		return this._agentJobHistoryInfo;
+	}
+
+	/**
+	 * Public Setters
+	 */
+
+	public set jobId(value: string) {
+		this._jobId = value;
+		this._cd.detectChanges();
+	}
+
+	public set showHistory(value: boolean) {
+		this._showHistory = value;
+		this._cd.detectChanges();
+	}
+
+	public set agentJobInfo(value: AgentJobInfo) {
+		this._agentJobInfo = value;
+		this._cd.detectChanges();
+	}
+
+	public set agentJobHistoryInfo(value: AgentJobHistoryInfo[]) {
+		this._agentJobHistoryInfo = value;
+		this._cd.detectChanges();
+	}
 }
