@@ -1,4 +1,5 @@
---source:https://www.mssqltips.com/sqlservertip/2393/determine-sql-server-memory-use-by-database-and-object/
+-- source:https://www.mssqltips.com/sqlservertip/2393/determine-sql-server-memory-use-by-database-and-object/
+-- Use for a demo/sample purpose only. This query is not built-in to any product.
 
 DECLARE @total_buffer INT;
 

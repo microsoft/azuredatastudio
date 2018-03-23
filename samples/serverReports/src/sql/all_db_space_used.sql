@@ -1,4 +1,6 @@
 --Source: https://gallery.technet.microsoft.com/scriptcenter/All-Databases-Data-log-a36da95d
+-- Use for a demo/sample purpose only. This query is not built-in to any product.
+
 ------------------------------Data file size----------------------------
 declare @dbsize table 
 (Dbname varchar(30),

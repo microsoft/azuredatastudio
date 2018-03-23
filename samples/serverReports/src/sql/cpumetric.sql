@@ -1,4 +1,5 @@
    -- source: https://sqlserverperformance.wordpress.com/2009/07/30/how-to-get-sql-server-cpu-utilization-from-a-query/
+   -- Use for a demo/sample purpose only. This query is not built-in to any product.
    
    DECLARE @ts_now bigint = (SELECT cpu_ticks/(cpu_ticks/ms_ticks)FROM sys.dm_os_sys_info); 
 

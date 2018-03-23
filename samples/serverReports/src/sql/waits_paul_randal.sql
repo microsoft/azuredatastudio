@@ -1,5 +1,5 @@
 -- SOURCE: https://www.sqlskills.com/blogs/paul/wait-statistics-or-please-tell-me-where-it-hurts/
--- This query is not built-in to any product.
+-- Use for a demo/sample purpose only. This query is not built-in to any product.
 
 WITH [Waits] AS
     (SELECT

@@ -5,7 +5,8 @@
     "version": "0.1.0",
     "publisher": "Microsoft",
     "engines": {
-        "vscode": "^1.19.0"
+        "vscode": "^1.19.0",
+        "sqlops": "*"
     },
     "license": "SEE LICENSE IN LICENSE.txt",
     "repository": "https://github.com/Microsoft/sqlopsstudio",
@@ -166,7 +167,7 @@
                             "name": "DB Buffer Usage",
                             "gridItemConfig": {
                                 "sizex": 2,
-                                "sizey": 1
+                                "sizey": 2
                             },
                             "widget": {
                                 "extension-dbbuffer-usage": {}
@@ -179,6 +180,7 @@
         "snippets": []
     },
     "scripts": {
+        "prepare": "node ./node_modules/sqlops/bin/install",
         "build": "gulp build",
         "compile": "gulp compile",
         "watch": "gulp watch",
@@ -187,7 +189,8 @@
     "dependencies": {
         "fs-extra": "^5.0.0",
         "handlebars": "^4.0.11",
-        "vscode-nls": "2.0.2"
+        "vscode-nls": "2.0.2",
+        "sqlops": "github:anthonydresser/vscode-extension-vscode"
     },
     "devDependencies": {
         "@types/handlebars": "^4.0.11",
