@@ -6,26 +6,19 @@
 import 'vs/css!./jobHistory';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Input, Injectable } from '@angular/core';
-import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { getContentHeight } from 'vs/base/browser/dom';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IJobManagementService } from '../common/interfaces';
-import { ExplorerDataSource } from 'sql/parts/dashboard/widgets/explorer/explorerTree';
-import { TreeCreationUtils } from 'sql/parts/registeredServer/viewlet/treeCreationUtils';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
-import { toDisposableSubscription } from '../../common/rxjsUtils';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
@@ -140,7 +133,7 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 		}
 	}
 
-	private jobAction(action: string, jobName): void {
+	private jobAction(action: string, jobName: string): void {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.jobAction(ownerUri, jobName, action);
 	}

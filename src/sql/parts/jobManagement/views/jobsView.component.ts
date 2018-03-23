@@ -93,22 +93,6 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private expandJobsWithFailures(): void {
-		for (let i: number = 0; i < this.jobs.length; ++i) {
-			let job = this.jobs[i];
-			let jobHistory = this.jobHistories[job.jobId];
-			if (jobHistory && jobHistory.length > 0) {
-				let latestExecution = jobHistory[jobHistory.length - 1];
-				if (latestExecution.runStatus !== 0) {
-					this.expandJobRowDetails(i);
-				}
-			}
-		}
-	}
-
-	private expandJobRowDetails(rowIdx: number): void {
-	}
-
 	onFirstVisible() {
 		let self = this;
 		let columns = this.columns.map((column) => {
@@ -190,6 +174,7 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 
 		this._table.resizeCanvas();
 		this._table.autosizeColumns();
+		this.loadJobHistories();
 	}
 
 	ngOnInit() {
@@ -207,6 +192,19 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 			'<td nowrap class="jobview-jobnameindicatorsuccess"></td>' +
 			'<td nowrap class="jobview-jobnametext">' + dataContext.name + '</td>' +
 			'</tr></table>';
+	}
+
+	loadJobHistories() {
+		if (this.jobs) {
+			this.jobs.forEach((job) => {
+				let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
+					if (result.jobs) {
+						this.jobHistories[job.jobId] = result.jobs;
+					}
+				});
+			});
+		}
 	}
 
 	private getJob(args: Slick.OnClickEventArgs<any>): sqlops.AgentJobInfo {
