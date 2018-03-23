@@ -5,7 +5,7 @@
 
 import 'vs/css!./jobHistory';
 
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Input } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Input, Injectable } from '@angular/core';
 import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -24,6 +24,8 @@ import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
 import { toDisposableSubscription } from '../../common/rxjsUtils';
+import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
@@ -46,8 +48,8 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 	@Input() public agentJobInfo: AgentJobInfo = undefined;
 	@Input() public jobId: string = undefined;
 	@Input() public agentJobHistoryInfo: AgentJobHistoryInfo = undefined;
-	private prevJobId: string = undefined;
 
+	private prevJobId: string = undefined;
 	private isVisible: boolean = false;
 
 
@@ -64,13 +66,38 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 
 	ngOnInit() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		const self = this;
+		this._treeController.onClick = (tree, element, event, origin = 'mouse') => {
+			const payload = { origin: origin };
+			const isDoubleClick = (origin === 'mouse' && event.detail === 2);
+			// Cancel Event
+			const isMouseDown = event && event.browserEvent && event.browserEvent.type === 'mousedown';
+
+			if (!isMouseDown) {
+				event.preventDefault(); // we cannot preventDefault onMouseDown because this would break DND otherwise
+			}
+
+			event.stopPropagation();
+
+			tree.setFocus(element, payload);
+
+			if (element && isDoubleClick) {
+				event.preventDefault(); // focus moves to editor, we need to prevent default
+			} else {
+				tree.setFocus(element, payload);
+				tree.setSelection([element], payload);
+				self.agentJobHistoryInfo = self._treeController.jobHistories.filter(history => history.instanceId === element.instanceID)[0];
+				self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
+				self._cd.detectChanges();
+			}
+			return true;
+		};
 		this._tree = new Tree(this._tableContainer.nativeElement, {
 			controller: this._treeController,
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
 		});
-		this.loadHistory();
 		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 		this._tree.layout(1024);
 	}
@@ -80,7 +107,7 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 
 	ngAfterContentChecked() {
 		if (this.isVisible === false && this._tableContainer.nativeElement.offsetParent !== null) {
-			if (this.prevJobId !== undefined && this.prevJobId !== this.jobId) {
+			if (this.prevJobId !== this.jobId) {
 				this.loadHistory();
 				this.prevJobId = this.jobId;
 			}
@@ -92,10 +119,13 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getJobHistory(ownerUri, this.jobId).then((result) => {
 			if (result.jobs) {
-				let jobHistory = result.jobs;
-				let jobHistoryRows = jobHistory.map(job => self.convertToJobHistoryRow(job));
+				self._treeController.jobHistories = result.jobs;
+				let jobHistoryRows = self._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
 				self._treeDataSource.data = jobHistoryRows;
 				self._tree.setInput(new JobHistoryModel());
+				self.agentJobHistoryInfo =  self._treeController.jobHistories[0];
+				self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
+				self._cd.detectChanges();
 			}
 		});
 	}
@@ -116,15 +146,20 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 	}
 
 	private goToJobs(): void {
+		this.isVisible = false;
 		this._agentViewComponent.showHistory = false;
 	}
 
 	private convertToJobHistoryRow(historyInfo: AgentJobHistoryInfo): JobHistoryRow {
 		let jobHistoryRow = new JobHistoryRow();
 		jobHistoryRow.runDate = historyInfo.runDate;
-		jobHistoryRow.runStatus = JobHistoryRow.convertToStatusString(historyInfo.runStatus)
-		jobHistoryRow.jobID = historyInfo.jobID;
+		jobHistoryRow.runStatus = JobHistoryRow.convertToStatusString(historyInfo.runStatus);
+		jobHistoryRow.instanceID = historyInfo.instanceId;
 		return jobHistoryRow;
+	}
+
+	private formatTime(time: string): string {
+		return time.replace('T', ' ');
 	}
 }
 

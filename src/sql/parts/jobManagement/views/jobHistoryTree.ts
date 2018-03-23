@@ -26,11 +26,13 @@ import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
 import { OEAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
 import { Builder, $, withElementById } from 'vs/base/browser/builder';
+import { AgentJobHistoryInfo } from 'sqlops';
+import { Agent } from 'vs/base/node/request';
 
 export class JobHistoryRow {
 	runDate: string;
 	runStatus: string;
-	jobID: string;
+	instanceID: number;
 	rowID: string = generateUuid();
 
 	public static convertToStatusString(status: number): string {
@@ -48,33 +50,22 @@ export class JobHistoryModel {
 }
 
 export class JobHistoryController extends TreeDefaults.DefaultController {
+	private _jobHistories: AgentJobHistoryInfo[];
 
 	protected onLeftClick(tree: tree.ITree, element: JobHistoryRow, event: IMouseEvent, origin: string = 'mouse'): boolean {
-		const payload = { origin: origin };
-		const isDoubleClick = (origin === 'mouse' && event.detail === 2);
-		// Cancel Event
-		const isMouseDown = event && event.browserEvent && event.browserEvent.type === 'mousedown';
-
-		if (!isMouseDown) {
-			event.preventDefault(); // we cannot preventDefault onMouseDown because this would break DND otherwise
-		}
-
-		event.stopPropagation();
-
-		tree.setFocus(element, payload);
-
-		if (element && isDoubleClick) {
-			event.preventDefault(); // focus moves to editor, we need to prevent default
-		} else {
-			tree.setFocus(element, payload);
-			tree.setSelection([element], payload);
-		}
-
 		return true;
 	}
 
 	public onContextMenu(tree: tree.ITree, element: JobHistoryRow, event: tree.ContextMenuEvent): boolean {
 		return true;
+	}
+
+	public set jobHistories(value: AgentJobHistoryInfo[]) {
+		this._jobHistories = value;
+	}
+
+	public get jobHistories(): AgentJobHistoryInfo[] {
+		return this._jobHistories;
 	}
 
 }

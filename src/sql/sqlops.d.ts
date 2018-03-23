@@ -1061,13 +1061,13 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentJobHistoryInfo {
-		instanceID: number;
+		instanceId: number;
 		sqlMessageID: number;
 		message: string;
 		stepID: number;
 		stepName: string;
 		sqlSeverity: number;
-		jobID: string;
+		jobId: string;
 		jobName: string;
 		runStatus: number;
 		runDate: string;
