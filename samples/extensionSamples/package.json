@@ -5,10 +5,11 @@
     "version": "0.1.0",
     "publisher": "Microsoft",
     "engines": {
-        "vscode": "^1.19.0"
+        "vscode": "^1.19.0",
+        "sqlops": "*"
     },
-    "license": "MIT",
-    "repository": "qqq.com",
+    "license": "SEE LICENSE IN LICENSE.txt",
+    "repository": "https://github.com/Microsoft/sqlopsstudio",
     "categories": [
         "Other"
     ],
@@ -61,7 +62,6 @@
                                 "webview-container": null
                             }
                         }
-                        
                     ]
                 }
             }
@@ -108,12 +108,12 @@
                             "widget": {
                                 "tasks-widget": [
                                     {
-                                      "name": "backup",
-                                      "when": "!mssql:iscloud"
+                                        "name": "backup",
+                                        "when": "!mssql:iscloud"
                                     },
                                     {
-                                      "name": "restore",
-                                      "when": "!mssql:iscloud"
+                                        "name": "restore",
+                                        "when": "!mssql:iscloud"
                                     },
                                     "configureDashboard",
                                     "newQuery"
@@ -148,14 +148,12 @@
                     "widgets-container": [
                         {
                             "widget": {
-                                "query-data-store-db-insight": {     
-                                }
+                                "query-data-store-db-insight": {}
                             }
                         },
                         {
                             "widget": {
-                                "explorer-widget": {
-                                }
+                                "explorer-widget": {}
                             }
                         }
                     ]
@@ -165,6 +163,7 @@
         "snippets": []
     },
     "scripts": {
+        "prepare": "node ./node_modules/sqlops/bin/install",
         "build": "gulp build",
         "compile": "gulp compile",
         "watch": "gulp watch",
@@ -173,7 +172,8 @@
     "dependencies": {
         "fs-extra": "^5.0.0",
         "handlebars": "^4.0.11",
-        "vscode-nls": "2.0.2"
+        "vscode-nls": "2.0.2",
+        "sqlops": "github:anthonydresser/vscode-extension-vscode"
     },
     "devDependencies": {
         "@types/handlebars": "^4.0.11",
@@ -186,14 +186,12 @@
         "gulp-sourcemaps": "^2.6.4",
         "gulp-tslint": "^6.0.2",
         "gulp-typescript": "^3.2.4",
-        "pm-mocha-jenkins-reporter": "^0.2.6",
         "should": "^13.2.1",
         "temp-write": "^3.4.0",
         "tslint": "^3.14.0",
         "typemoq": "^2.1.0",
         "typescript": "^2.6.1",
         "vscode": "^1.1.6",
-        "vsce": "1.36.2",
-        "vso-node-api": "6.1.2-preview"
+        "vsce": "1.36.2"
     }
 }

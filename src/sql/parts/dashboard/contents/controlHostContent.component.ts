@@ -30,8 +30,6 @@ export class ControlHostContent implements OnInit {
 	public readonly onMessage: Event<string> = this._onMessage.event;
 
 	private _onMessageDisposable: IDisposable;
-	//private _webview: Webview;
-	private _html: string;
 	private _type: string;
 
 	constructor(

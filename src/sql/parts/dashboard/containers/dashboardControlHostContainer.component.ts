@@ -24,24 +24,24 @@ export class DashboardControlHostContainer extends DashboardTab implements After
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
 
-	@ViewChild(ControlHostContent) private _webviewContent: ControlHostContent;
+	@ViewChild(ControlHostContent) private _hostContent: ControlHostContent;
 	constructor() {
 		super();
 	}
 
 	ngAfterContentInit(): void {
-		this._register(this._webviewContent.onResize(() => {
+		this._register(this._hostContent.onResize(() => {
 			this._onResize.fire();
 		}));
 
 		let container = <any>this.tab.container;
 		if (container['controlhost-container'] && container['controlhost-container'].type) {
-			this._webviewContent.setControlType(container['controlhost-container'].type);
+			this._hostContent.setControlType(container['controlhost-container'].type);
 		}
 	}
 
 	public layout(): void {
-		this._webviewContent.layout();
+		this._hostContent.layout();
 	}
 
 	public get id(): string {
