@@ -255,6 +255,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAdminServicesProvider(provider);
 			};
 
+			let registerAgentServicesProvider = (provider: sqlops.AgentServicesProvider): vscode.Disposable => {
+				return undefined;
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof sqlops.dataprotocol = {
 				registerBackupProvider,
@@ -269,6 +273,7 @@ export function createApiFactory(
 				registerQueryProvider,
 				registerAdminServicesProvider,
 				registerCapabilitiesServiceProvider,
+				registerAgentServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				}
