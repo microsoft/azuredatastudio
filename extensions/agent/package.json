@@ -1,8 +1,8 @@
 {
   "name": "agent",
   "displayName": "SQL Server Agent",
-  "description": "Manage and troubleshoot SQL Agent jobs (early preview)",
-  "version": "0.27.0",
+  "description": "Manage and troubleshoot SQL Server Agent jobs (early preview)",
+  "version": "0.27.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt",
