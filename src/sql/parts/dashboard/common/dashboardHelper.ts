@@ -16,6 +16,7 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 import { WEBVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
+import { CONTROLHOST_CONTAINER } from 'sql/parts/dashboard/containers/dashboardControlHostContainer.contribution';
 import { NAV_SECTION } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
 import { IDashboardContainerRegistry, Extensions as DashboardContainerExtensions, IDashboardContainer, registerContainerType } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
@@ -26,6 +27,7 @@ const containerTypes = [
 	WIDGETS_CONTAINER,
 	GRID_CONTAINER,
 	WEBVIEW_CONTAINER,
+	CONTROLHOST_CONTAINER,
 	NAV_SECTION
 ];
 

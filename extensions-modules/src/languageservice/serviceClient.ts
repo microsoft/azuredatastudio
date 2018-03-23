@@ -5,7 +5,7 @@
 'use strict';
 
 import { ExtensionContext, workspace, window, OutputChannel, languages } from 'vscode';
-import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
+import * as SqlopsClient from 'dataprotocol-client';
 import { CloseAction, ErrorAction, ServerOptions, NotificationHandler, NotificationType, RequestType, TransportKind } from 'vscode-languageclient';
 
 import { VscodeWrapper } from '../controllers/vscodeWrapper';
@@ -132,14 +132,14 @@ export class SqlToolsServiceClient {
 	}
 
 	// VS Code Language Client
-	private _client: SqlOpsDataClient = undefined;
+	private _client: SqlopsClient.SqlOpsDataClient = undefined;
 
 	// getter method for the Language Client
-	private get client(): SqlOpsDataClient {
+	private get client(): SqlopsClient.SqlOpsDataClient {
 		return this._client;
 	}
 
-	private set client(client: SqlOpsDataClient) {
+	private set client(client: SqlopsClient.SqlOpsDataClient) {
 		this._client = client;
 	}
 
@@ -317,9 +317,9 @@ export class SqlToolsServiceClient {
 		}
 	}
 
-	public createClient(context: ExtensionContext, runtimeId: Runtime, languageClientHelper: LanguageServiceContracts.ILanguageClientHelper, executableFiles: string[]): Promise<SqlOpsDataClient> {
-		return new Promise<SqlOpsDataClient>((resolve, reject) => {
-			let client: SqlOpsDataClient;
+	public createClient(context: ExtensionContext, runtimeId: Runtime, languageClientHelper: LanguageServiceContracts.ILanguageClientHelper, executableFiles: string[]): Promise<SqlopsClient.SqlOpsDataClient> {
+		return new Promise<SqlopsClient.SqlOpsDataClient>((resolve, reject) => {
+			let client: SqlopsClient.SqlOpsDataClient;
 			this._server.findServerPath(this.installDirectory, executableFiles).then(serverPath => {
 				if (serverPath === undefined) {
 					reject(new Error(SqlToolsServiceClient._constants.invalidServiceFilePath));
@@ -329,7 +329,7 @@ export class SqlToolsServiceClient {
 						languageClientHelper.createServerOptions(serverPath, runtimeId) : this.createServerOptions(serverPath);
 
 					// Options to control the language client
-					let clientOptions: ClientOptions = {
+					let clientOptions: SqlopsClient.ClientOptions = {
 						documentSelector: [SqlToolsServiceClient._constants.languageId],
 						providerId: '',
 						synchronize: {
@@ -357,7 +357,7 @@ export class SqlToolsServiceClient {
 
 					this._serviceStatus.showServiceLoading();
 					// cache the client instance for later use
-					client = new SqlOpsDataClient(SqlToolsServiceClient._constants.serviceName, serverOptions, clientOptions);
+					client = new SqlopsClient.SqlOpsDataClient(SqlToolsServiceClient._constants.serviceName, serverOptions, clientOptions);
 
 					if (context !== undefined) {
 						// Create the language client and start the client.
@@ -404,9 +404,9 @@ export class SqlToolsServiceClient {
 		return serverOptions;
 	}
 
-	private createLanguageClient(serverOptions: ServerOptions): SqlOpsDataClient {
+	private createLanguageClient(serverOptions: ServerOptions): SqlopsClient.SqlOpsDataClient {
 		// Options to control the language client
-		let clientOptions: ClientOptions = {
+		let clientOptions: SqlopsClient.ClientOptions = {
 			documentSelector: [SqlToolsServiceClient._constants.languageId],
 			providerId: SqlToolsServiceClient._constants.providerId,
 			synchronize: {
@@ -427,12 +427,28 @@ export class SqlToolsServiceClient {
 				name: '',
 				show: () => {
 				}
-			}
+			},
+			features: [
+				SqlopsClient.AdminServicesFeature,
+				SqlopsClient.BackupFeature,
+				SqlopsClient.CapabilitiesFeature,
+				SqlopsClient.ConnectionFeature,
+				SqlopsClient.FileBrowserFeature,
+				SqlopsClient.MetadataFeature,
+				SqlopsClient.ObjectExplorerFeature,
+				SqlopsClient.ProfilerFeature,
+				SqlopsClient.QueryFeature,
+				SqlopsClient.RestoreFeature,
+				SqlopsClient.ScriptingFeature,
+				SqlopsClient.TaskServicesFeature,
+				// heres the important bit
+				LanguageServiceContracts.AgentServicesFeature
+			]
 		};
 
 		this._serviceStatus.showServiceLoading();
 		// cache the client instance for later use
-		let client = new SqlOpsDataClient(SqlToolsServiceClient._constants.serviceName, serverOptions, clientOptions);
+		let client = new SqlopsClient.SqlOpsDataClient(SqlToolsServiceClient._constants.serviceName, serverOptions, clientOptions);
 		client.onReady().then(() => {
 			this.checkServiceCompatibility();
 			this._serviceStatus.showServiceLoaded();
@@ -478,7 +494,7 @@ export class SqlToolsServiceClient {
 	 * @param params The params to pass with the request
 	 * @returns A thenable object for when the request receives a response
 	 */
-	public sendRequest<P, R, E, RO>(type: RequestType<P, R, E, RO>, params?: P, client: SqlOpsDataClient = undefined): Thenable<R> {
+	public sendRequest<P, R, E, RO>(type: RequestType<P, R, E, RO>, params?: P, client: SqlopsClient.SqlOpsDataClient = undefined): Thenable<R> {
 		if (client === undefined) {
 			client = this._client;
 		}
@@ -492,7 +508,7 @@ export class SqlToolsServiceClient {
 	 * @param type The notification type to register the handler for
 	 * @param handler The handler to register
 	 */
-	public onNotification<P, RO>(type: NotificationType<P, RO>, handler: NotificationHandler<P>, client: SqlOpsDataClient = undefined): void {
+	public onNotification<P, RO>(type: NotificationType<P, RO>, handler: NotificationHandler<P>, client: SqlopsClient.SqlOpsDataClient = undefined): void {
 		if (client === undefined) {
 			client = this._client;
 		}

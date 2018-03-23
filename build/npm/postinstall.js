@@ -34,7 +34,8 @@ const extensions = [
 	'git',
 	'merge-conflict',
 	'insights-default',
-	'account-provider-azure'
+	'account-provider-azure',
+	'agent'
 ];
 
 extensions.forEach(extension => yarnInstall(`extensions/${extension}`));
