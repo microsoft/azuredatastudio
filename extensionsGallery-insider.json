@@ -32,15 +32,117 @@
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/feature/agent1/extensions/agent/README.md"
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/agent/README.md"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Code.Manifest",
-								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/feature/agent1/extensions/agent/package.json"
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/agent/package.json"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.License",
-								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/feature/agent1/LICENSE.txt"
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt"
+							}
+						],
+						"properties": [
+						{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+						{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"}
+						]
+					}
+				],
+				"statistics": [],
+				"flags": "preview"
+			},
+			{
+				"extensionId": "11",
+				"extensionName": "whoisactive",
+				"displayName": "whoisactive",
+				"shortDescription": "sp_whoisactive for SQL Operations Studio",
+				"publisher": {
+					"displayName":"Microsoft",
+					"publisherId": "Microsoft",
+					"publisherName":"Microsoft"
+				},
+				"versions": [
+					{
+						"version": "0.10.0",
+						"lastUpdated": "1/1/2018",
+						"assetUri": "",
+						"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+							{
+								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+								"source": "https://sqlopsextensions.blob.core.windows.net/march-extensions/whoisactive/whoisactive-0.1.0.vsix"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Links.Source",
+								"source": "https://github.com/Microsoft/sqlopsstudio"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+								"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/sp_whoIsActive/README.md"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Code.Manifest",
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/sp_whoIsActive/package.json"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Content.License",
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/fmaster/LICENSE.txt"
+							}
+						],
+						"properties": [
+						{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+						{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"}
+						]
+					}
+				],
+				"statistics": [],
+				"flags": "preview"
+			},
+			{
+				"extensionId": "12",
+				"extensionName": "server-report",
+				"displayName": "Server Reports",
+				"shortDescription": "Server Reports for SQL Operations Studio provides server health insights",
+				"publisher": {
+					"displayName":"Microsoft",
+					"publisherId": "Microsoft",
+					"publisherName":"Microsoft"
+				},
+				"versions": [
+					{
+						"version": "0.10.0",
+						"lastUpdated": "1/1/2018",
+						"assetUri": "",
+						"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+							{
+								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+								"source": "https://sqlopsextensions.blob.core.windows.net/march-extensions/serverreports/server-report-0.1.0.vsix"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Links.Source",
+								"source": "https://github.com/Microsoft/sqlopsstudio"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+								"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/serverReports/README.md"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Code.Manifest",
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/serverReports/package.jsonn"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Content.License",
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt"
 							}
 						],
 						"properties": [
@@ -57,7 +159,7 @@
 			"metadataType": "ResultCount",
 			"metadataItems": [{
 				"name": "TotalCount",
-				"count": 1
+				"count": 3
 			}]
 		}]
 	}]
