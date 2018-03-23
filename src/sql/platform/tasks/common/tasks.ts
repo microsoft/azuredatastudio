@@ -131,6 +131,6 @@ export const TaskRegistry: ITaskRegistry = new class implements ITaskRegistry {
 	}
 
 	getTasks(): string[] {
-		return this._tasks;
+		return this._tasks.slice(0);
 	}
 };
