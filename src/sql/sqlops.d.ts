@@ -1061,13 +1061,13 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentJobHistoryInfo {
-		instanceID: number;
-		sqlMessageID: number;
+		instanceId: number;
+		sqlMessageId: number;
 		message: string;
-		stepID: number;
+		stepId: number;
 		stepName: string;
 		sqlSeverity: number;
-		jobID: string;
+		jobId: string;
 		jobName: string;
 		runStatus: number;
 		runDate: string;
@@ -1081,7 +1081,7 @@ declare module 'sqlops' {
 
 	export interface AgentServicesProvider extends DataProvider {
 		getJobs(connectionUri: string): Thenable<AgentJobsResult>;
-		getJobHistory(connectionUri: string, jobID: string): Thenable<AgentJobHistoryResult>;
+		getJobHistory(connectionUri: string, jobId: string): Thenable<AgentJobHistoryResult>;
 		jobAction(connectionUri: string, jobName: string, action: string): Thenable<AgentJobActionResult>;
 	}
 

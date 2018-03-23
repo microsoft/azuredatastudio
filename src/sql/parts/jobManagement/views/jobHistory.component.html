@@ -15,10 +15,10 @@
 <!-- Actions -->
 <ul class="action-buttons">
 	<li>
-		<div class="icon-start" (click)="jobAction('start')">Run</div>
+		<div class="icon-start" (click)="jobAction('run', agentJobInfo.name)">Run</div>
 	</li>
 	<li>
-		<div class="icon-stop" (click)="jobAction('stop')">Stop</div>
+		<div class="icon-stop" (click)="jobAction('stop', agentJobInfo.name)">Stop</div>
 	</li>
 </ul>
 
@@ -34,10 +34,10 @@
 		<table align='left'>
 				<tr>
 					<td id='col1'>
-						User:
+						Category:
 					</td>
 					<td id='col2'>
-
+						{{agentJobInfo.category}}
 					</td>
 					<td id='col3'>
 						Enabled:
@@ -48,30 +48,30 @@
 				</tr>
 				<tr>
 					<td id='col1'>
-						Alert:
+						Has Alert:
 					</td>
 					<td id='col2'>
-
+						{{agentJobInfo.hasTarget}}
 					</td>
 					<td id='col3'>
-						Notification:
+						Has Schedule:
 					</td>
 					<td id='col4'>
-
+						{{agentJobInfo.hasSchedule}}
 					</td>
 				</tr>
 				<tr>
 					<td id='col1'>
-						Schedule:
+						Last Run:
 					</td>
 					<td id='col2'>
-
+						{{agentJobInfo.lastRun}}
 					</td>
 					<td id='col3'>
-						Target Server:
+						Next Run:
 					</td>
 					<td id='col4'>
-
+						{{agentJobInfo.nextRun}}
 					</td>
 				</tr>
 		</table>
@@ -98,31 +98,31 @@
 	<!-- Job Steps -->
 	<div class="job-steps">
 		<h1 class="job-heading">
-			{{agentJobInfo.lastRun}}
+			{{agentJobHistoryInfo?.runDate}}
 		</h1>
 		<table class="step-list">
 			<tr class="step-row">
 				<td height="30">
 					<h3>Status:</h3>
 				</td>
-				<td>
+				<td height="30">
 					<h3></h3>
 				</td>
 			</tr>
 			<tr class="step-row">
 				<td height="30">
-					Error Message:
+					Message:
 				</td>
-				<td>
-
+				<td height="30">
+					{{agentJobHistoryInfo?.message}}
 				</td>
 			</tr>
 			<tr class="step-row">
 				<td height="30">
 					Duration:
 				</td>
-				<td>
-
+				<td height="30">
+					{{agentJobHistoryInfo?.runDuration}}
 				</td>
 			</tr>
 			<tr class="step-row">
@@ -137,7 +137,7 @@
 				<td height="30">
 					SQL message ID:
 				</td>
-				<td>
+				<td height="30">
 
 				</td>
 			</tr>
@@ -145,8 +145,8 @@
 				<td height="30">
 					Retries Attempted:
 				</td>
-				<td>
-
+				<td height="30">
+					{{agentJobHistoryInfo?.retriesAttempted}}
 				</td>
 			</tr>
 		</table>
