@@ -1,0 +1,134 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+ agentview-component {
+	height: 100%;
+	width : 100%;
+	display: block;
+}
+
+jobsview-component {
+	height: 100%;
+	width : 100%;
+	display: block;
+}
+
+jobhistory-component {
+	height: 100%;
+	width : 100%;
+	display: block;
+}
+
+#jobsDiv .jobview-grid {
+    height: 100%;
+	width : 100%;
+	display: block;
+}
+
+.vs-dark #jobsDiv .slick-header-column {
+	background: #333333 !important;
+}
+
+#jobsDiv .slick-header-column {
+	background-color: transparent !important;
+	background: white !important;
+    border: 0px !important;
+    font-weight: bold;
+    font-size: larger;
+}
+
+.vs-dark #jobsDiv .slick-cell {
+	background:#333333 !important;
+}
+
+#jobsDiv .slick-cell {
+    background: white !important;
+    border-right: transparent !important;
+    border-left: transparent !important;
+    line-height: 33px !important;
+    vertical-align: middle;
+}
+
+#jobsDiv .jobview-joblist {
+    height: 100%;
+    width: 100%;
+}
+
+#jobsDiv .jobview-jobnametable {
+    border: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+#jobsDiv .jobview-jobnameindicatorsuccess {
+    width: 5px;
+    background: green;
+}
+
+#jobsDiv .jobview-jobnametext {
+    width: 100%;
+}
+
+#jobsDiv .jobview-splitter {
+    height: 1px;
+    width: 100%;
+    background-color: gray;
+}
+
+#jobsDiv .jobview-jobitem {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    flex-flow: row wrap;
+    white-space: nowrap;
+}
+
+#jobsDiv .jobview-label {
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+#jobsDiv .jobview-highlight-none {
+    width: 5px;
+    margin-right: 10px;
+}
+
+#jobsDiv .detail-container {
+    max-height: 100px !important;
+    line-height: 20px;
+}
+
+#jobsDiv .detail {
+    padding: 5px
+}
+
+#jobsDiv .preload {
+  font-size: 18px;
+}
+
+#jobsDiv .dynamic-cell-detail > :first-child {
+    vertical-align:     middle;
+    line-height:        13px;
+    padding:            10px;
+    margin-left:		20px;
+}
+
+.vs-dark #jobsDiv .dynamic-cell-detail {
+    background: black !important;
+}
+
+#jobsDiv .dynamic-cell-detail {
+    background: #faf5f8 !important;
+}
+
+
+.jobsview-icon {
+    content: url('./job.svg');
+    width: 25px;
+}
+
+.vs-dark .jobsview-icon {
+	content: url('./job_inverse.svg');
+}

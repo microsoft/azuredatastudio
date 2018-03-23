@@ -123,7 +123,8 @@ function registerListeners(enableDeveloperTools) {
 require('slickgrid/slick.core');
 const Slick = window.Slick;
 require('slickgrid/slick.grid');
-require('slickgrid/slick.editors');;
+require('slickgrid/slick.editors');
+require('slickgrid/slick.dataview');
 require('reflect-metadata');
 require('zone.js');
 

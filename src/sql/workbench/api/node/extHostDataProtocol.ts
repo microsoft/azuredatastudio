@@ -53,7 +53,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		provider.handle = this._nextHandle();
 		this._adapter.set(provider.handle, provider);
 		return this._createDisposable(provider.handle);
-	};
+	}
 
 	$registerConnectionProvider(provider: sqlops.ConnectionProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider);
@@ -118,6 +118,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	$registerAdminServicesProvider(provider: sqlops.AdminServicesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider);
 		this._proxy.$registerAdminServicesProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
+	$registerAgentServiceProvider(provider: sqlops.AgentServicesProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider);
+		this._proxy.$registerAgentServicesProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
@@ -480,5 +486,31 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	public $onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void {
 		this._proxy.$onSessionEventsAvailable(handle, response);
+	}
+
+
+	/**
+	 * Agent Job Provider methods
+	 */
+
+	/**
+	 * Get Agent Job list
+	 */
+	public $getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult> {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getJobs(ownerUri);
+	}
+
+	/**
+	 * Get a Agent Job's history
+	 */
+	public $getJobHistory(handle: number, ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getJobHistory(ownerUri, jobID);
+	}
+
+	/**
+	 * Run an action on a job
+	 */
+	public $jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult> {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).jobAction(ownerUri, jobName, action);
 	}
 }

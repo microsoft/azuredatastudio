@@ -26,7 +26,8 @@
 						(mousedown)="navigateToGrid(i)"
 						[selectionModel]="selectionModel"
 						[plugins]="slickgridPlugins"
-						class="boxCol content vertBox slickgrid">
+						class="boxCol content vertBox slickgrid"
+						[rowHeight]="rowHeight">
 			</slick-grid>
 			<span class="boxCol content vertBox">
 				<div class="boxRow content maxHeight" *ngFor="let icon of dataIcons">

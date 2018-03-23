@@ -306,6 +306,22 @@ export abstract class ExtHostDataProtocolShape {
 	 * Stop a profiler session
 	 */
 	$stopSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
+
+
+	/**
+	 * Get Agent Job list
+	 */
+	$getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult>{ throw ni(); }
+
+	/**
+	 * Get a Agent Job's history
+	 */
+	$getJobHistory(handle: number, ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>{ throw ni(); }
+
+	/**
+	 * Run an action on a Job
+	 */
+	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult>{ throw ni(); }
 }
 
 /**
@@ -370,6 +386,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerFileBrowserProvider(providerId: string, handle: number): TPromise<any>;
 	$registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any>;
 	$registerAdminServicesProvider(providerId: string, handle: number): TPromise<any>;
+	$registerAgentServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$unregisterProvider(handle: number): TPromise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;

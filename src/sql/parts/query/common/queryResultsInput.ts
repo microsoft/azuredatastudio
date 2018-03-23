@@ -23,6 +23,7 @@ export class QueryResultsInput extends EditorInput {
 
 	// Holds the HTML content for the editor when the editor discards this input and loads another
 	private _editorContainer: HTMLElement;
+	public css: HTMLStyleElement;
 
 	constructor(private _uri: string) {
 		super();
