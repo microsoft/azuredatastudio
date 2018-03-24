@@ -650,6 +650,11 @@ declare namespace Slick {
 		showHeaderRow?: boolean;
 
 		/**
+		 *
+		 */
+		showRowNumber?: boolean;
+
+		/**
 		* If true, the column being resized will change its width as the mouse is dragging the resize handle. If false, the column will resize after mouse drag ends.
 		**/
 		syncColumnCellResize?: boolean;
