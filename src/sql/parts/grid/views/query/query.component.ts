@@ -133,7 +133,6 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	private resizing = false;
 	private resizeHandleTop: string = '0';
 	private scrollEnabled = true;
-	private rowHeight: number;
 	// tslint:disable-next-line:no-unused-variable
 	private firstRender = true;
 	private totalElapsedTimeSpan: number;
@@ -158,16 +157,6 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	) {
 		super(el, cd, bootstrapService);
 		this._el.nativeElement.className = 'slickgridContainer';
-		this.rowHeight = bootstrapService.configurationService.getValue<any>('resultsGrid').rowHeight;
-		bootstrapService.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('resultsGrid')) {
-				this.rowHeight = bootstrapService.configurationService.getValue<any>('resultsGrid').rowHeight;
-				this.slickgrids.forEach(i => {
-					i.rowHeight = this.rowHeight;
-				});
-				this.resizeGrids();
-			}
-		});
 	}
 
 	/**
