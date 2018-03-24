@@ -111,8 +111,8 @@ export class Table<T extends Slick.SlickData> implements IThemable {
 		return this._grid.getSelectedRows();
 	}
 
-	onSelectedRowsChanged(fn: (e: Slick.EventData, data: Slick.OnSelectedRowsChangedEventArgs<T>) => any): IDisposable
-	onSelectedRowsChanged(fn: (e: DOMEvent, data: Slick.OnSelectedRowsChangedEventArgs<T>) => any): IDisposable
+	onSelectedRowsChanged(fn: (e: Slick.EventData, data: Slick.OnSelectedRowsChangedEventArgs<T>) => any): IDisposable;
+	onSelectedRowsChanged(fn: (e: DOMEvent, data: Slick.OnSelectedRowsChangedEventArgs<T>) => any): IDisposable;
 	onSelectedRowsChanged(fn: any): IDisposable {
 		this._grid.onSelectedRowsChanged.subscribe(fn);
 		return {
@@ -164,8 +164,8 @@ export class Table<T extends Slick.SlickData> implements IThemable {
 		this._grid.resizeCanvas();
 	}
 
-	layout(dimension: Dimension): void
-	layout(size: number, orientation: Orientation): void
+	layout(dimension: Dimension): void;
+	layout(size: number, orientation: Orientation): void;
 	layout(sizing: number | Dimension, orientation?: Orientation): void {
 		if (sizing instanceof Dimension) {
 			this._container.style.width = sizing.width + 'px';
