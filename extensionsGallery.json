@@ -64,7 +64,7 @@
 				},
 				"versions": [
 					{
-						"version": "0.10.0",
+						"version": "0.1.0",
 						"lastUpdated": "1/1/2018",
 						"assetUri": "",
 						"fallbackAssetUri": "fallbackAssetUri",
@@ -115,7 +115,7 @@
 				},
 				"versions": [
 					{
-						"version": "0.10.0",
+						"version": "0.1.0",
 						"lastUpdated": "1/1/2018",
 						"assetUri": "",
 						"fallbackAssetUri": "fallbackAssetUri",
