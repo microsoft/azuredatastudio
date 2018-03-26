@@ -3,10 +3,6 @@
     width: 100%;
 }
 
-.headersVisible > .fullsize {
-    height: calc(100% - 38px);
-}
-
 /* vertical box styles */
 .vertBox {
     display: flex;
