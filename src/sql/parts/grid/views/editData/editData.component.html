@@ -5,9 +5,10 @@
  *--------------------------------------------------------------------------------------------*/
 -->
 
-<div class="fullsize vertBox editdata-component">
+<div class="fullsize vertBox editdata-component" style="position: relative">
 	<div id="results" *ngIf="renderedDataSets.length > 0" class="results vertBox scrollable"
-		 (onScroll)="onScroll($event)" [class.hidden]="!resultActive">
+		 (onScroll)="onScroll($event)" [class.hidden]="!resultActive"
+		 (focusin)="onGridFocus()" (focusout)="onGridFocusout()">
 		<div class="boxRow content horzBox slickgrid editable" *ngFor="let dataSet of renderedDataSets; let i = index"
 			[style.max-height]="dataSet.maxHeight" [style.min-height]="dataSet.minHeight">
 			<slick-grid #slickgrid id="slickgrid_{{i}}" [columnDefinitions]="dataSet.columnDefinitions"
@@ -28,7 +29,9 @@
 						[isCellEditValid]="onIsCellEditValid"
 						[overrideCellFn]="overrideCellFn"
 						enableEditing="true"
-						class="boxCol content vertBox slickgrid">
+						class="boxCol content vertBox slickgrid"
+						[selectionModel]="selectionModel"
+						[rowHeight]="rowHeight">
 			</slick-grid>
 		</div>
 	</div>

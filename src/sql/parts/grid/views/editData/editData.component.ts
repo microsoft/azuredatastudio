@@ -12,9 +12,9 @@ import 'vs/css!sql/parts/grid/media/slick.grid';
 import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!./media/editData';
 
-import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
-import { IGridDataRow, VirtualizedCollection } from 'angular2-slickgrid';
-import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
+import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter, ViewChild, ViewChildren, Input, QueryList } from '@angular/core';
+import { IGridDataRow, VirtualizedCollection, SlickGrid } from 'angular2-slickgrid';
+import { IGridDataSet, IMessage } from 'sql/parts/grid/common/interfaces';
 import * as Services from 'sql/parts/grid/services/sharedServices';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { EditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
@@ -22,6 +22,7 @@ import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDataGridActions';
 import { error } from 'sql/base/common/log';
 import { clone } from 'sql/base/common/objects';
+import * as strings from 'vs/base/common/strings';
 
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
@@ -36,12 +37,18 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private scrollTimeOutTime = 200;
 	private windowSize = 50;
 
+	// create a function alias to use inside query.component
+	// tslint:disable-next-line:no-unused-variable
+	private stringsFormat: any = strings.format;
+
 	// FIELDS
 	// All datasets
 	private dataSet: IGridDataSet;
 	private scrollTimeOut: number;
-	private messagesAdded = false;
+	private resizing = false;
+	private resizeHandleTop: string = '0';
 	private scrollEnabled = true;
+	private rowHeight: number;
 	private firstRender = true;
 	private totalElapsedTimeSpan: number;
 	private complete = false;
@@ -65,6 +72,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
 	public loadDataFunction: (offset: number, count: number) => Promise<IGridDataRow[]>;
 
+	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
+	// tslint:disable-next-line:no-unused-variable
+	@ViewChild('resultsPane', { read: ElementRef }) private _resultsPane: ElementRef;
+
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
@@ -75,6 +86,17 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let editDataParameters: EditDataComponentParams = this._bootstrapService.getBootstrapParams(this._el.nativeElement.tagName);
 		this.dataService = editDataParameters.dataService;
 		this.actionProvider = this._bootstrapService.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
+
+		this.rowHeight = bootstrapService.configurationService.getValue<any>('resultsGrid').rowHeight;
+		bootstrapService.configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('resultsGrid')) {
+				this.rowHeight = bootstrapService.configurationService.getValue<any>('resultsGrid').rowHeight;
+				this.slickgrids.forEach(i => {
+					i.rowHeight = this.rowHeight;
+				});
+				this.resizeGrids();
+			}
+		});
 	}
 
 	/**
@@ -83,6 +105,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	ngOnInit(): void {
 		const self = this;
 		this.baseInit();
+		this.setupResizeBind();
 
 		// Add the subscription to the list of things to be disposed on destroy, or else on a new component init
 		// may get the "destroyed" object still getting called back.
@@ -127,7 +150,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		self.renderedDataSets = self.placeHolderDataSets;
 		self.totalElapsedTimeSpan = undefined;
 		self.complete = false;
-		self.messagesAdded = false;
 
 		// Hooking up edit functions
 		this.onIsCellEditValid = (row, column, value): boolean => {
@@ -302,7 +324,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	handleComplete(self: EditDataComponent, event: any): void {
 		self.totalElapsedTimeSpan = event.data;
 		self.complete = true;
-		self.messagesAdded = true;
 	}
 
 	handleEditSessionReady(self, event): void {
@@ -310,7 +331,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	handleMessage(self: EditDataComponent, event: any): void {
-		// TODO: what do we do with messages?
+		// Ignore messages for EditData
 	}
 
 	handleResultSet(self: EditDataComponent, event: any): void {
@@ -360,7 +381,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		undefinedDataSet.dataRows = undefined;
 		undefinedDataSet.resized = new EventEmitter();
 		self.placeHolderDataSets.push(undefinedDataSet);
-		self.messagesAdded = true;
 		self.onScroll(0);
 
 		// Setup the state of the selected cell
@@ -537,5 +557,110 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		return rowCount > this._defaultNumShowingRows
 			? (this._defaultNumShowingRows + 1) * this._rowHeight + 10
 			: this.getMaxHeight(rowCount);
+	}
+
+	resizeGrids(): void {
+		const self = this;
+		setTimeout(() => {
+			for (let grid of self.renderedDataSets) {
+				grid.resized.emit();
+			}
+		});
+	}
+
+	/**
+	 * Sets up the resize for the messages/results panes bar
+	 */
+	setupResizeBind(): void {
+		const self = this;
+
+		let resizeHandleElement: HTMLElement = self._el.nativeElement.querySelector('#messageResizeHandle');
+		let $resizeHandle = $(resizeHandleElement);
+		let $messages = $(self.getMessagesElement());
+
+		$resizeHandle.bind('dragstart', (e) => {
+			self.resizing = true;
+			self.resizeHandleTop = self.calculateResizeHandleTop(e.pageY);
+			self._cd.detectChanges();
+			return true;
+		});
+
+		$resizeHandle.bind('drag', (e) => {
+			// Update the animation if the drag is within the allowed range.
+			if (self.isDragWithinAllowedRange(e.pageY, resizeHandleElement)) {
+				self.resizeHandleTop = self.calculateResizeHandleTop(e.pageY);
+				self.resizing = true;
+				self._cd.detectChanges();
+
+				// Stop the animation if the drag is out of the allowed range.
+				// The animation is resumed when the drag comes back into the allowed range.
+			} else {
+				self.resizing = false;
+			}
+		});
+
+		$resizeHandle.bind('dragend', (e) => {
+			self.resizing = false;
+			// Redefine the min size for the messages based on the final position
+			// if the drag is within the allowed rang
+			if (self.isDragWithinAllowedRange(e.pageY, resizeHandleElement)) {
+				let minHeightNumber = this._el.nativeElement.getBoundingClientRect().bottom - e.pageY;
+				$messages.css('min-height', minHeightNumber + 'px');
+				self._cd.detectChanges();
+				self.resizeGrids();
+
+				// Otherwise just update the UI to show that the drag is complete
+			} else {
+				self._cd.detectChanges();
+			}
+		});
+	}
+
+	/**
+	 * Returns true if the resize of the messagepane given by the drag at top=eventPageY is valid,
+	 * false otherwise. A drag is valid if it is below the bottom of the resultspane and
+	 * this.messagePaneHeight pixels above the bottom of the entire angular component.
+	 */
+	isDragWithinAllowedRange(eventPageY: number, resizeHandle: HTMLElement): boolean {
+		let resultspaneElement: HTMLElement = this._el.nativeElement.querySelector('#resultspane');
+		let minHeight = this._el.nativeElement.getBoundingClientRect().bottom - eventPageY;
+
+		if (resultspaneElement &&
+			minHeight > 0 &&
+			resultspaneElement.getBoundingClientRect().bottom < eventPageY
+		) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Calculates the position of the top of the resize handle given the Y-axis drag
+	 * coordinate as eventPageY.
+	 */
+	calculateResizeHandleTop(eventPageY: number): string {
+		let resultsWindowTop: number = this._el.nativeElement.getBoundingClientRect().top;
+		let relativeTop: number = eventPageY - resultsWindowTop;
+		return relativeTop + 'px';
+	}
+
+	openMessagesContextMenu(event: any): void {
+		let self = this;
+		event.preventDefault();
+		let selectedRange = this.getSelectedRangeUnderMessages();
+		let selectAllFunc = () => self.selectAllMessages();
+		let anchor = { x: event.x + 1, y: event.y };
+		this.contextMenuService.showContextMenu({
+			getAnchor: () => anchor,
+			getActions: () => this.actionProvider.getMessagesActions(this.dataService, selectAllFunc),
+			getKeyBinding: (action) => this._keybindingFor(action),
+			onHide: (wasCancelled?: boolean) => {
+			},
+			getActionsContext: () => (selectedRange)
+		});
+	}
+
+	layout() {
+		this.resizeGrids();
 	}
 }

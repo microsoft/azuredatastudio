@@ -7,7 +7,7 @@ import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
-import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
+import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
@@ -63,7 +63,7 @@ export abstract class EditDataAction extends Action {
  * Action class that refreshes the table for an edit data session
  */
 export class RefreshTableAction extends EditDataAction {
-	private static EnabledClass = 'refresh';
+	private static EnabledClass = 'start';
 	public static ID = 'refreshTableAction';
 
 	constructor(editor: EditDataEditor,
@@ -72,14 +72,27 @@ export class RefreshTableAction extends EditDataAction {
 		@INotificationService private _notificationService: INotificationService,
 	) {
 		super(editor, RefreshTableAction.ID, RefreshTableAction.EnabledClass, _connectionManagementService);
-		this.label = nls.localize('editData.refresh', 'Refresh');
+		this.label = nls.localize('editData.run', 'Run');
 	}
 
 	public run(): TPromise<void> {
 		if (this.isConnected(this.editor)) {
 			let input = this.editor.editDataInput;
+
+			let rowLimit: number = undefined;
+			let queryString: string = undefined;
+			if (input.queryPaneEnabled) {
+				queryString = input.queryString = this.editor.getEditorText();
+				if (!this.IsQueryStringValid(input.queryString, input.tableName)) {
+					return TPromise.as(null);
+				}
+			} else {
+				rowLimit = input.rowLimit;
+			}
+
 			this._queryModelService.disposeEdit(input.uri).then((result) => {
-				this._queryModelService.initializeEdit(input.uri, input.schemaName, input.tableName, input.objectType, input.rowLimit);
+				this._queryModelService.initializeEdit(input.uri, input.schemaName, input.tableName, input.objectType, rowLimit, queryString);
+				input.showResultsEditor();
 			}, error => {
 				this._notificationService.notify({
 					severity: Severity.Error,
@@ -88,6 +101,53 @@ export class RefreshTableAction extends EditDataAction {
 			});
 		}
 		return TPromise.as(null);
+	}
+
+	private IsQueryStringValid(queryString: string, tableName: string): boolean {
+		if (queryString) {
+			let lowerCaseStr = queryString.toLocaleLowerCase();
+			let fromIndex = lowerCaseStr.indexOf('from'.toLocaleLowerCase());
+
+			if (fromIndex === -1) {
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: nls.localize('noFromClauseFailure', 'EditData query has no FROM clause.')
+				});
+				return false;
+			}
+
+			let afterFromStr = lowerCaseStr.substring(fromIndex + 4);
+			if (afterFromStr.includes('group by'.toLocaleLowerCase()) || afterFromStr.includes('having'.toLocaleLowerCase())) {
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: nls.localize('aggregateNotSupportedFailure', 'EditData queries do not support aggregated results.')
+				});
+				return false;
+			}
+
+			let whereIndex = afterFromStr.indexOf('where'.toLocaleLowerCase());
+			let orderByIndex = afterFromStr.indexOf('order by'.toLocaleLowerCase());
+			let optionIndex = afterFromStr.indexOf('option'.toLocaleLowerCase());
+			let end = Math.min.apply([ whereIndex, orderByIndex, optionIndex ].filter(index => index > 0));
+			let queryTablesStr = afterFromStr.substring(0, end !== NaN ? end : undefined);
+
+			let errorMsg: string = undefined;
+			if (!queryTablesStr.includes(tableName.toLocaleLowerCase())) {
+				errorMsg = nls.localize('wrongTableNameFailure', 'EditData query did not contain original table name.');
+			} else if ((queryTablesStr.match(/,/g) || []).length > 0) {
+				errorMsg = nls.localize('multipleTableNamesFailure', 'EditData queries do not support querying from multiple tables.');
+			}
+
+			if (errorMsg) {
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: errorMsg
+				});
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
 
@@ -162,7 +222,7 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 		this._options = ['200', '1000', '10000'];
 		this._currentOptionsIndex = 0;
 		this.toDispose = [];
-		this.selectBox = new SelectBox([], -1, contextViewService);
+		this.selectBox = new SelectBox(this._options, this._options[this._currentOptionsIndex], contextViewService);
 		this._registerListeners();
 		this._refreshOptions();
 		this.defaultRowCount = Number(this._options[this._currentOptionsIndex]);
@@ -179,6 +239,14 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 
 	public isEnabled(): boolean {
 		return true;
+	}
+
+	public enable(): void {
+		this.selectBox.enable();
+	}
+
+	public disable(): void {
+		this.selectBox.disable();
 	}
 
 	public set setCurrentOptionIndex(selection: number) {
@@ -208,5 +276,35 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 			this._editor.editDataInput.onRowDropDownSet(Number(selection.selected));
 		}));
 		this.toDispose.push(attachSelectBoxStyler(this.selectBox, this._themeService));
+	}
+}
+
+/**
+ * Action class that is tied with toggling the Query editor
+ */
+export class ShowQueryPaneAction extends EditDataAction {
+
+	private static EnabledClass = 'filterLabel';
+	public static ID = 'showQueryPaneAction';
+	private readonly showSqlLabel = nls.localize('editData.editSql', 'Show SQL Pane');
+	private readonly closeSqlLabel = nls.localize('editData.closeSql', 'Close SQL Pane');
+
+	constructor(editor: EditDataEditor,
+		@IQueryModelService private _queryModelService: IQueryModelService,
+		@IConnectionManagementService _connectionManagementService: IConnectionManagementService
+	) {
+		super(editor, ShowQueryPaneAction.ID, ShowQueryPaneAction.EnabledClass, _connectionManagementService);
+		this.label = this.showSqlLabel;
+	}
+
+	public run(): TPromise<void> {
+		this.editor.toggleQueryPane();
+		if (this.editor.queryPaneEnabled()) {
+			this.label = this.closeSqlLabel;
+		} else {
+			this.label = this.showSqlLabel;
+		}
+
+		return TPromise.as(null);
 	}
 }

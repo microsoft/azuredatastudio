@@ -6,13 +6,14 @@
 import 'vs/css!sql/parts/query/editor/media/queryEditor';
 
 import { TPromise } from 'vs/base/common/winjs.base';
+import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
-import { Builder, Dimension } from 'vs/base/browser/builder';
+import { Builder, Dimension, withElementById } from 'vs/base/browser/builder';
 
-import { EditorOptions } from 'vs/workbench/common/editor';
+import { EditorOptions, EditorInput } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { Position } from 'vs/platform/editor/common/editor';
+import { Position, IEditorControl, IEditor } from 'vs/platform/editor/common/editor';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -21,6 +22,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import * as queryContext from 'sql/parts/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -29,13 +31,22 @@ import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import {
-	RefreshTableAction, StopRefreshTableAction,
-	ChangeMaxRowsAction, ChangeMaxRowsActionItem
+	RefreshTableAction, StopRefreshTableAction, ChangeMaxRowsAction, ChangeMaxRowsActionItem, ShowQueryPaneAction
 } from 'sql/parts/editData/execution/editDataActions';
 import { EditDataModule } from 'sql/parts/grid/views/editData/editData.module';
 import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { EDITDATA_SELECTOR } from 'sql/parts/grid/views/editData/editData.component';
 import { EditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResourceEditor';
+import { CodeEditor } from 'vs/editor/browser/codeEditor';
+import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ISelectionData } from 'sqlops';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IFlexibleSash, VerticalFlexibleSash, HorizontalFlexibleSash } from 'sql/parts/query/views/flexibleSash';
+import { Orientation } from 'vs/base/browser/ui/sash/sash';
+import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
+import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -44,16 +55,33 @@ export class EditDataEditor extends BaseEditor {
 
 	public static ID: string = 'workbench.editor.editDataEditor';
 
+	// The height of the tabs above the editor
+	private readonly _tabHeight: number = 35;
+
+	// The minimum width/height of the editors hosted in the QueryEditor
+	private readonly _minEditorSize: number = 220;
+
+	private _sash: IFlexibleSash;
 	private _dimension: Dimension;
-	private _container: HTMLElement;
+
+	private _resultsEditor: EditDataResultsEditor;
+	private _resultsEditorContainer: HTMLElement;
+
+	private _sqlEditor: TextResourceEditor;
+	private _sqlEditorContainer: HTMLElement;
+
 	private _taskbar: Taskbar;
 	private _taskbarContainer: HTMLElement;
 	private _changeMaxRowsActionItem: ChangeMaxRowsActionItem;
 	private _stopRefreshTableAction: StopRefreshTableAction;
 	private _refreshTableAction: RefreshTableAction;
 	private _changeMaxRowsAction: ChangeMaxRowsAction;
+	private _showQueryPaneAction: ShowQueryPaneAction;
 	private _spinnerElement: HTMLElement;
 	private _initialized: boolean = false;
+
+	private _queryEditorVisible: IContextKey<boolean>;
+	private hideQueryResultsView = false;
 
 	constructor(
 		@ITelemetryService _telemetryService: ITelemetryService,
@@ -62,19 +90,61 @@ export class EditDataEditor extends BaseEditor {
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
+		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
+		@IEditorGroupService private _editorGroupService: IEditorGroupService,
+		@IContextKeyService contextKeyService: IContextKeyService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IBootstrapService private _bootstrapService: IBootstrapService
 	) {
 		super(EditDataEditor.ID, _telemetryService, themeService);
+
+		if (contextKeyService) {
+			this._queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
+		}
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
 
 	// Getters and Setters
 	public get editDataInput(): EditDataInput { return <EditDataInput>this.input; }
-	public get uri(): string { return this.input ? this.editDataInput.uri.toString() : undefined; }
 	public get tableName(): string { return this.editDataInput.tableName; }
+	public get uri(): string { return this.input ? this.editDataInput.uri.toString() : undefined; }
+	public set resultsEditorVisibility(isVisible: boolean) {
+		let input: EditDataInput = <EditDataInput>this.input;
+		input.results.visible = isVisible;
+	}
 
+	/**
+	 * Changes the position of the editor.
+	 */
+	public changePosition(position: Position): void {
+		if (this._resultsEditor) {
+			this._resultsEditor.changePosition(position);
+		}
+		if (this._sqlEditor) {
+			this._sqlEditor.changePosition(position);
+		}
+		super.changePosition(position);
+	}
+
+	/**
+	 * Called to indicate to the editor that the input should be cleared and resources associated with the
+	 * input should be freed.
+	 */
+	public clearInput(): void {
+		if (this._resultsEditor) {
+			this._resultsEditor.clearInput();
+		}
+		if (this._sqlEditor) {
+			this._sqlEditor.clearInput();
+		}
+		this._disposeEditors();
+		super.clearInput();
+	}
+
+	public close(): void {
+		this.editDataInput.close();
+	}
 
 	/**
 	 * Called to create the editor in the parent builder.
@@ -83,9 +153,82 @@ export class EditDataEditor extends BaseEditor {
 		const parentElement = parent.getHTMLElement();
 		DOM.addClass(parentElement, 'side-by-side-editor');
 		this._createTaskbar(parentElement);
-		this._container = document.createElement('div');
-		this._container.style.height = 'calc(100% - 28px)';
-		DOM.append(parentElement, this._container);
+	}
+
+	public dispose(): void {
+		this._disposeEditors();
+		super.dispose();
+	}
+
+	/**
+	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
+	 */
+	public focus(): void {
+		if (this._sqlEditor) {
+			this._sqlEditor.focus();
+		}
+	}
+
+	public getControl(): IEditorControl {
+		if (this._sqlEditor) {
+			return this._sqlEditor.getControl();
+		}
+		return null;
+	}
+
+	public getEditorText(): string {
+		if (this._sqlEditor && this._sqlEditor.getControl()) {
+			let control = this._sqlEditor.getControl();
+			let codeEditor: CodeEditor = <CodeEditor>control;
+
+			if (codeEditor) {
+				let value = codeEditor.getModel().getValue();
+				if (value !== undefined && value.length > 0) {
+					return value;
+				}
+			}
+		}
+		return '';
+	}
+
+	/**
+	 * Hide the spinner element to show that something was happening, hidden by default
+	 */
+	public hideSpinner(): void {
+		this._spinnerElement.style.visibility = 'hidden';
+	}
+
+	/**
+	 * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
+	 * To be called when the container of this editor changes size.
+	 */
+	public layout(dimension: Dimension): void {
+		this._dimension = dimension;
+
+		if (this._sash) {
+			this._setSashDimension();
+			this._sash.layout();
+		}
+
+		this._doLayout();
+		this._resizeGridContents();
+	}
+
+	/**
+	 * Sets this editor and the sub-editors to visible.
+	 */
+	public setEditorVisible(visible: boolean, position: Position): void {
+		if (this._resultsEditor) {
+			this._resultsEditor.setVisible(visible, position);
+		}
+		if (this._sqlEditor) {
+			this._sqlEditor.setVisible(visible, position);
+		}
+
+		super.setEditorVisible(visible, position);
+
+		// Note: must update after calling super.setEditorVisible so that the accurate count is handled
+		this._updateQueryEditorVisible(visible);
 	}
 
 	/**
@@ -95,24 +238,15 @@ export class EditDataEditor extends BaseEditor {
 		let oldInput = <EditDataInput>this.input;
 		if (!newInput.setup) {
 			this._initialized = false;
-			this._register(newInput.updateTaskbar((owner) => this._updateTaskbar(owner)));
-			this._register(newInput.editorInitializing((initializing) => this.onEditorInitializingChanged(initializing)));
-			this._register(newInput.showTableView(() => this._showTableView()));
+			this._register(newInput.updateTaskbarEvent((owner) => this._updateTaskbar(owner)));
+			this._register(newInput.editorInitializingEvent((initializing) => this._onEditorInitializingChanged(initializing)));
+			this._register(newInput.showResultsEditorEvent(() => this._showResultsEditor()));
 			newInput.onRowDropDownSet(this._changeMaxRowsActionItem.defaultRowCount);
 			newInput.setupComplete();
 		}
 
 		return super.setInput(newInput, options)
 			.then(() => this._updateInput(oldInput, newInput, options));
-	}
-
-	private onEditorInitializingChanged(initializing: boolean): void {
-		if (initializing) {
-			this.showSpinner();
-		} else {
-			this._initialized = true;
-			this.hideSpinner();
-		}
 	}
 
 	/**
@@ -126,92 +260,74 @@ export class EditDataEditor extends BaseEditor {
 		}, 200);
 	}
 
-	/**
-	 * Hide the spinner element to show that something was happening, hidden by default
-	 */
-	public hideSpinner(): void {
-		this._spinnerElement.style.visibility = 'hidden';
-	}
-
-	/**
-	 * Sets this editor and the sub-editors to visible.
-	 */
-	public setEditorVisible(visible: boolean, position: Position): void {
-		super.setEditorVisible(visible, position);
-	}
-
-	/**
-	 * Changes the position of the editor.
-	 */
-	public changePosition(position: Position): void {
-		super.changePosition(position);
-	}
-
-	/**
-	 * Called to indicate to the editor that the input should be cleared and resources associated with the
-	 * input should be freed.
-	 */
-	public clearInput(): void {
-		this._disposeEditors();
-		super.clearInput();
-	}
-
-	/**
-	 * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
-	 * To be called when the container of this editor changes size.
-	 */
-	public layout(dimension: Dimension): void {
-		this._dimension = dimension;
-		let input: EditDataInput = <EditDataInput>this.input;
-		if (input) {
-			let uri: string = input.uri;
-			if (uri) {
-				this._queryModelService.resizeResultsets(uri);
-			}
-		}
-	}
-
-	public dispose(): void {
-		this._disposeEditors();
-		super.dispose();
-	}
-
-	public close(): void {
-		this.input.close();
-	}
-
-	/**
-	 * Returns true if the results table for the current edit data session is visible
-	 * Public for testing only.
-	 */
-	public _isResultsEditorVisible(): boolean {
-		if (!this.editDataInput) {
-			return false;
-		}
-		return this.editDataInput.visible;
-	}
-
-	/**
-	 * Makes visible the results table for the current edit data session
-	 */
-	private _showTableView(): void {
-		if (this._isResultsEditorVisible()) {
+	public toggleResultsEditorVisibility(): void {
+		let input = <EditDataInput>this.input;
+		let hideResults = this.hideQueryResultsView;
+		this.hideQueryResultsView = !this.hideQueryResultsView;
+		if (!input.results) {
 			return;
 		}
-
-		this._createTableViewContainer();
-		this._setTableViewVisible();
-		this.setInput(this.editDataInput, this.options);
+		this.resultsEditorVisibility = hideResults;
+		this._doLayout();
 	}
 
 	// PRIVATE METHODS ////////////////////////////////////////////////////////////
-	private _updateTaskbar(owner: EditDataInput): void {
-		// Update the taskbar if the owner of this call is being presented
-		if (owner.matches(this.editDataInput)) {
-			this._refreshTableAction.enabled = owner.refreshButtonEnabled;
-			this._stopRefreshTableAction.enabled = owner.stopButtonEnabled;
-			this._changeMaxRowsActionItem.setCurrentOptionIndex = owner.rowLimit;
+	private _createEditor(editorInput: EditorInput, container: HTMLElement): TPromise<BaseEditor> {
+		const descriptor = this._editorDescriptorService.getEditor(editorInput);
+		if (!descriptor) {
+			return TPromise.wrapError(new Error(strings.format('Can not find a registered editor for the input {0}', editorInput)));
 		}
+
+		let editor = descriptor.instantiate(this._instantiationService);
+		editor.create(new Builder(container));
+		editor.setVisible(this.isVisible(), this.position);
+		return TPromise.as(editor);
+	}
+
+	/**
+	 * Appends the HTML for the EditDataResultsEditor to the EditDataEditor. If the HTML has not yet been
+	 * created, it creates it and appends it. If it has already been created, it locates it and
+	 * appends it.
+	 */
+	private _createResultsEditorContainer() {
+		this._createSash();
+
+		const parentElement = this.getContainer().getHTMLElement();
+		let input = <EditDataInput>this.input;
+
+		if (!input.results.container) {
+			this._resultsEditorContainer = DOM.append(parentElement, DOM.$('.editDataContainer-horizontal'));
+			this._resultsEditorContainer.style.position = 'absolute';
+
+			input.results.container = this._resultsEditorContainer;
+		} else {
+			this._resultsEditorContainer = DOM.append(parentElement, input.results.container);
+		}
+	}
+
+	/**
+	 * Creates the sash with the requested orientation and registers sash callbacks
+	 */
+	private _createSash(): void {
+		if (!this._sash) {
+			let parentElement: HTMLElement = this.getContainer().getHTMLElement();
+
+			this._sash = this._register(new HorizontalFlexibleSash(parentElement, this._minEditorSize));
+			this._setSashDimension();
+
+			this._register(this._sash.onPositionChange(position => this._doLayout()));
+		}
+
+		this._sash.show();
+	}
+
+	/**
+	 * Appends the HTML for the SQL editor. Creates new HTML every time.
+	 */
+	private _createSqlEditorContainer() {
+		const parentElement = this.getContainer().getHTMLElement();
+		this._sqlEditorContainer = DOM.append(parentElement, DOM.$('.details-editor-container'));
+		this._sqlEditorContainer.style.position = 'absolute';
 	}
 
 	private _createTaskbar(parentElement: HTMLElement): void {
@@ -222,22 +338,25 @@ export class EditDataEditor extends BaseEditor {
 		});
 
 		// Create Actions for the toolbar
-		this._stopRefreshTableAction = this._instantiationService.createInstance(StopRefreshTableAction, this);
 		this._refreshTableAction = this._instantiationService.createInstance(RefreshTableAction, this);
+		this._stopRefreshTableAction = this._instantiationService.createInstance(StopRefreshTableAction, this);
 		this._changeMaxRowsAction = this._instantiationService.createInstance(ChangeMaxRowsAction, this);
+		this._showQueryPaneAction = this._instantiationService.createInstance(ShowQueryPaneAction, this);
 
 		// Create HTML Elements for the taskbar
 		let separator = Taskbar.createTaskbarSeparator();
-		let textSeperator = Taskbar.createTaskbarText(nls.localize('maxRowTaskbar', 'Max Rows:'));
+		let textSeparator = Taskbar.createTaskbarText(nls.localize('maxRowTaskbar', 'Max Rows:'));
 
 		this._spinnerElement = Taskbar.createTaskbarSpinner();
+
 		// Set the content in the order we desire
 		let content: ITaskbarContent[] = [
-			{ action: this._stopRefreshTableAction },
 			{ action: this._refreshTableAction },
+			{ action: this._stopRefreshTableAction },
 			{ element: separator },
-			{ element: textSeperator },
+			{ element: textSeparator },
 			{ action: this._changeMaxRowsAction },
+			{ action: this._showQueryPaneAction },
 			{ element: this._spinnerElement }
 		];
 		this._taskbar.setContent(content);
@@ -258,32 +377,181 @@ export class EditDataEditor extends BaseEditor {
 		return null;
 	}
 
-	/**
-	 * Handles setting input for this editor. If this new input does not match the old input (e.g. a new file
-	 * has been opened with the same editor, or we are opening the editor for the first time).
-	 */
-	private _updateInput(oldInput: EditDataInput, newInput: EditDataInput, options?: EditorOptions): TPromise<void> {
-		let returnValue: TPromise<void>;
-
-		if (!newInput.matches(oldInput)) {
-			this._disposeEditors();
-
-			if (this._isResultsEditorVisible()) {
-				this._createTableViewContainer();
-				let uri: string = newInput.uri;
-				if (uri) {
-					this._queryModelService.refreshResultsets(uri);
-				}
-			}
-
-			returnValue = this._setNewInput(newInput, options);
-		} else {
-			this._setNewInput(newInput, options);
-			returnValue = TPromise.as(null);
+	private _disposeEditors(): void {
+		if (this._sqlEditor) {
+			this._sqlEditor.dispose();
+			this._sqlEditor = null;
+		}
+		if (this._resultsEditor) {
+			this._resultsEditor.dispose();
+			this._resultsEditor = null;
 		}
 
-		this._updateTaskbar(newInput);
-		return returnValue;
+		let thisEditorParent: HTMLElement = this.getContainer().getHTMLElement();
+
+		if (this._sqlEditorContainer) {
+			let sqlEditorParent: HTMLElement = this._sqlEditorContainer.parentElement;
+			if (sqlEditorParent && sqlEditorParent === thisEditorParent) {
+				this._sqlEditorContainer.parentElement.removeChild(this._sqlEditorContainer);
+			}
+			this._sqlEditorContainer = null;
+		}
+
+		if (this._resultsEditorContainer) {
+			let resultsEditorParent: HTMLElement = this._resultsEditorContainer.parentElement;
+			if (resultsEditorParent && resultsEditorParent === thisEditorParent) {
+				this._resultsEditorContainer.parentElement.removeChild(this._resultsEditorContainer);
+			}
+			this._resultsEditorContainer = null;
+			this.hideQueryResultsView = false;
+		}
+	}
+
+	private _doLayout(skipResizeGridContent: boolean = false): void {
+		if (!this._isResultsEditorVisible() && this._sqlEditor) {
+			this._doLayoutSql();
+			return;
+		}
+		if (!this._sqlEditor || !this._resultsEditor || !this._dimension || !this._sash) {
+			return;
+		}
+
+		this._doLayoutHorizontal();
+
+		if (!skipResizeGridContent) {
+			this._resizeGridContents();
+		}
+	}
+
+	private _doLayoutHorizontal(): void {
+		let splitPointTop: number = this._sash.getSplitPoint();
+		let parent: ClientRect = this.getContainer().getHTMLElement().getBoundingClientRect();
+
+		let sqlEditorHeight: number;
+		let sqlEditorTop: number;
+		let resultsEditorHeight: number;
+		let resultsEditorTop: number;
+
+		let editorTopOffset = parent.top + this._getTaskBarHeight();
+
+		this._resultsEditorContainer.hidden = false;
+
+		let titleBar = withElementById('workbench.parts.titlebar');
+		if (this.queryPaneEnabled()) {
+			this._sqlEditorContainer.hidden = false;
+
+			sqlEditorTop = editorTopOffset;
+			sqlEditorHeight = splitPointTop - sqlEditorTop;
+
+			resultsEditorTop = splitPointTop;
+			resultsEditorHeight = parent.bottom - resultsEditorTop;
+
+			if (titleBar) {
+				sqlEditorHeight += DOM.getContentHeight(titleBar.getHTMLElement());
+			}
+		} else {
+			this._sqlEditorContainer.hidden = true;
+
+			sqlEditorTop = editorTopOffset;
+			sqlEditorHeight = 0;
+
+			resultsEditorTop = editorTopOffset;
+			resultsEditorHeight = parent.bottom - resultsEditorTop;
+
+			if (titleBar) {
+				resultsEditorHeight += DOM.getContentHeight(titleBar.getHTMLElement());
+			}
+		}
+
+		this._sqlEditorContainer.style.height = `${sqlEditorHeight}px`;
+		this._sqlEditorContainer.style.width = `${this._dimension.width}px`;
+		this._sqlEditorContainer.style.top = `${sqlEditorTop}px`;
+
+		this._resultsEditorContainer.style.height = `${resultsEditorHeight}px`;
+		this._resultsEditorContainer.style.width = `${this._dimension.width}px`;
+		this._resultsEditorContainer.style.top = `${resultsEditorTop}px`;
+
+		this._sqlEditor.layout(new Dimension(this._dimension.width, sqlEditorHeight));
+		this._resultsEditor.layout(new Dimension(this._dimension.width, resultsEditorHeight));
+	}
+
+	private _doLayoutSql() {
+		if (this._resultsEditorContainer) {
+			this._resultsEditorContainer.style.width = '0px';
+			this._resultsEditorContainer.style.height = '0px';
+			this._resultsEditorContainer.style.left = '0px';
+			this._resultsEditorContainer.hidden = true;
+		}
+
+		if (this._dimension) {
+			let sqlEditorHeight: number;
+
+			if (this.queryPaneEnabled()) {
+				this._sqlEditorContainer.hidden = false;
+				sqlEditorHeight = this._dimension.height - this._getTaskBarHeight();
+			} else {
+				this._sqlEditorContainer.hidden = true;
+				sqlEditorHeight = 0;
+			}
+
+			this._sqlEditorContainer.style.height = `${sqlEditorHeight}px`;
+			this._sqlEditorContainer.style.width = `${this._dimension.width}px`;
+
+			this._sqlEditor.layout(new Dimension(this._dimension.width, sqlEditorHeight));
+		}
+	}
+
+	private _getTaskBarHeight(): number {
+		let taskBarElement = this._taskbar.getContainer().getHTMLElement();
+		return DOM.getContentHeight(taskBarElement);
+	}
+
+	/**
+	 * Returns true if the results table for the current edit data session is visible
+	 * Public for testing only.
+	 */
+	private _isResultsEditorVisible(): boolean {
+		let input: EditDataInput = <EditDataInput>this.input;
+
+		if (!input) {
+			return false;
+		}
+		return input.results.visible;
+	}
+
+	private _onEditorInitializingChanged(initializing: boolean): void {
+		if (initializing) {
+			this.showSpinner();
+		} else {
+			this._initialized = true;
+			this.hideSpinner();
+		}
+	}
+
+	/**
+	 * Sets input for the results editor after it has been created.
+	 */
+	private _onResultsEditorCreated(resultsEditor: EditDataResultsEditor, resultsInput: EditDataResultsInput, options: EditorOptions): TPromise<void> {
+		this._resultsEditor = resultsEditor;
+		return this._resultsEditor.setInput(resultsInput, options);
+	}
+
+	/**
+	 * Sets input for the SQL editor after it has been created.
+	 */
+	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledEditorInput, options: EditorOptions): TPromise<void> {
+		this._sqlEditor = sqlEditor;
+		return this._sqlEditor.setInput(sqlInput, options);
+	}
+
+	private _resizeGridContents(): void {
+		if (this._isResultsEditorVisible()) {
+			let queryInput: EditDataInput = <EditDataInput>this.input;
+			let uri: string = queryInput.uri;
+			if (uri) {
+				this._queryModelService.resizeResultsets(uri);
+			}
+		}
 	}
 
 	/**
@@ -291,68 +559,176 @@ export class EditDataEditor extends BaseEditor {
 	 * - Opened for the first time
 	 * - Opened with a new EditDataInput
 	 */
-	private _setNewInput(newInput: EditDataInput, options?: EditorOptions): TPromise<void> {
+	private _setNewInput(newInput: EditDataInput, options?: EditorOptions): TPromise<any> {
+
+		// Promises that will ensure proper ordering of editor creation logic
+		let createEditors: () => TPromise<any>;
+		let onEditorsCreated: (result) => TPromise<any>;
+
+		// If both editors exist, create joined promises - one for each editor
 		if (this._isResultsEditorVisible()) {
-			// If both editors exist, create a joined promise and wait for both editors to be created
-			return this._bootstrapAngularAndResults(newInput, options);
-		}
-
-		return TPromise.as(undefined);
-	}
-	/**
-	 * Appends the HTML for the edit data table view
-	 */
-	private _createTableViewContainer() {
-		if (!this.editDataInput.container) {
-			this.editDataInput.container = DOM.append(this._container, DOM.$('.editDataContainer'));
-			this.editDataInput.container.style.height = '100%';
-		} else {
-			DOM.append(this._container, this.editDataInput.container);
-		}
-	}
-
-	private _disposeEditors(): void {
-		if (this._container) {
-			new Builder(this._container).clearChildren();
-		}
-	}
-
-	/**
-	 * Load the angular components and record for this input that we have done so
-	 */
-	private _bootstrapAngularAndResults(input: EditDataInput, options: EditorOptions): TPromise<void> {
-		super.setInput(input, options);
-		if (!input.hasBootstrapped) {
-			let uri = this.editDataInput.uri;
-
-			// Pass the correct DataService to the new angular component
-			let dataService = this._queryModelService.getDataService(uri);
-			if (!dataService) {
-				throw new Error('DataService not found for URI: ' + uri);
-			}
-
-			// Mark that we have bootstrapped
-			input.setBootstrappedTrue();
-
-			// Get the bootstrap params and perform the bootstrap
-			// Note: pass in input so on disposal this is cleaned up.
-			// Otherwise many components will be left around and be subscribed
-			// to events from the backing data service
-			const parent = this.editDataInput.container;
-			let params: EditDataComponentParams = {
-				dataService: dataService
+			createEditors = () => {
+				return TPromise.join([
+					this._createEditor(<EditDataResultsInput>newInput.results, this._resultsEditorContainer),
+					this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer)
+				]);
 			};
-			this._bootstrapService.bootstrap(
-				EditDataModule,
-				parent,
-				EDITDATA_SELECTOR,
-				params,
-				this.editDataInput);
+			onEditorsCreated = (result: IEditor[]) => {
+				return TPromise.join([
+					this._onResultsEditorCreated(<EditDataResultsEditor>result[0], newInput.results, options),
+					this._onSqlEditorCreated(<TextResourceEditor>result[1], newInput.sql, options)
+				]);
+			};
+
+			// If only the sql editor exists, create a promise and wait for the sql editor to be created
+		} else {
+			createEditors = () => {
+				return this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer);
+			};
+			onEditorsCreated = (result: TextResourceEditor) => {
+				return this._onSqlEditorCreated(result, newInput.sql, options);
+			};
 		}
-		return TPromise.wrap<void>(null);
+
+		// Create a promise to re render the layout after the editor creation logic
+		let doLayout: () => TPromise<any> = () => {
+			this._doLayout();
+			return TPromise.as(undefined);
+		};
+
+		// Run all three steps synchronously
+		return createEditors()
+			.then(onEditorsCreated)
+			.then(doLayout);
 	}
 
-	private _setTableViewVisible(): void {
-		this.editDataInput.setVisibleTrue();
+	private _setSashDimension(): void {
+		if (!this._dimension) {
+			return;
+		}
+		this._sash.setDimenesion(this._dimension);
+	}
+
+	/**
+	 * Makes visible the results table for the current edit data session
+	 */
+	private _showResultsEditor(): void {
+		if (this._isResultsEditorVisible()) {
+			return;
+		}
+
+		this._editorGroupService.pinEditor(this.position, this.input);
+
+		let input = <EditDataInput>this.input;
+		this._createResultsEditorContainer();
+
+		this._createEditor(<EditDataResultsInput>input.results, this._resultsEditorContainer)
+			.then(result => {
+				this._onResultsEditorCreated(<EditDataResultsEditor>result, input.results, this.options);
+				this.resultsEditorVisibility = true;
+				this.hideQueryResultsView = false;
+				this._doLayout(true);
+			});
+	}
+
+	/**
+	 * Handles setting input for this editor. If this new input does not match the old input (e.g. a new file
+	 * has been opened with the same editor, or we are opening the editor for the first time).
+	 */
+	private _updateInput(oldInput: EditDataInput, newInput: EditDataInput, options?: EditorOptions): TPromise<void> {
+
+		if (this._sqlEditor) {
+			this._sqlEditor.clearInput();
+		}
+
+		if (oldInput) {
+			this._disposeEditors();
+		}
+
+		this._createSqlEditorContainer();
+		if (this._isResultsEditorVisible()) {
+			this._createResultsEditorContainer();
+
+			let uri: string = newInput.uri;
+			if (uri) {
+				this._queryModelService.refreshResultsets(uri);
+			}
+		}
+
+		if (this._sash) {
+			if (this._isResultsEditorVisible()) {
+				this._sash.show();
+			} else {
+				this._sash.hide();
+			}
+		}
+
+		this._updateTaskbar(newInput);
+		return this._setNewInput(newInput, options);
+	}
+
+	private _updateQueryEditorVisible(currentEditorIsVisible: boolean): void {
+		if (this._queryEditorVisible) {
+			let visible = currentEditorIsVisible;
+			if (!currentEditorIsVisible) {
+				// Current editor is closing but still tracked as visible. Check if any other editor is visible
+				const candidates = [...this._editorService.getVisibleEditors()].filter(e => {
+					if (e && e.getId) {
+						return e.getId() === EditDataEditor.ID;
+					}
+					return false;
+				});
+				// Note: require 2 or more candidates since current is closing but still
+				// counted as visible
+				visible = candidates.length > 1;
+			}
+			this._queryEditorVisible.set(visible);
+		}
+	}
+
+	private _updateTaskbar(owner: EditDataInput): void {
+		// Update the taskbar if the owner of this call is being presented
+		if (owner.matches(this.editDataInput)) {
+			this._refreshTableAction.enabled = owner.refreshButtonEnabled;
+			this._stopRefreshTableAction.enabled = owner.stopButtonEnabled;
+			this._changeMaxRowsActionItem.setCurrentOptionIndex = owner.rowLimit;
+		}
+	}
+
+	/**
+	 * Calls the run method of this editor's RunQueryAction
+	 */
+	public runQuery(): void {
+		this._refreshTableAction.run();
+	}
+
+	/**
+	 * Calls the run method of this editor's CancelQueryAction
+	 */
+	public cancelQuery(): void {
+		this._stopRefreshTableAction.run();
+	}
+
+	public toggleQueryPane(): void {
+		this.editDataInput.queryPaneEnabled = !this.queryPaneEnabled();
+		if (this.queryPaneEnabled()) {
+			this._showQueryEditor();
+		} else {
+			this._hideQueryEditor();
+		}
+		this._doLayout(false);
+	}
+
+	private _showQueryEditor(): void {
+		this._sqlEditorContainer.hidden = false;
+		this._changeMaxRowsActionItem.disable();
+	}
+	private _hideQueryEditor(): void {
+		this._sqlEditorContainer.hidden = true;
+		this._changeMaxRowsActionItem.enable();
+	}
+
+	public queryPaneEnabled(): boolean {
+		return this.editDataInput.queryPaneEnabled;
 	}
 }

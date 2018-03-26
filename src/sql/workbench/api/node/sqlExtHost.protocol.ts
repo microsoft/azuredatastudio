@@ -196,7 +196,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Initializes a new edit data session for the requested table/view
 	 */
-	$initializeEdit(handle: number, ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void> { throw ni(); }
+	$initializeEdit(handle: number, ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void> { throw ni(); }
 
 	/**
 	 * Reverts any pending changes for the requested cell and returns the original value
