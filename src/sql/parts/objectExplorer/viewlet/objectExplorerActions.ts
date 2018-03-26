@@ -192,9 +192,10 @@ export class OEEditDataAction extends EditDataAction {
 		id: string, label: string,
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
 		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
+		@IScriptingService protected _scriptingService: IScriptingService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
-		super(id, label, _queryEditorService, _connectionManagementService);
+		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService);
 	}
 
 	public run(actionContext: any): TPromise<boolean> {

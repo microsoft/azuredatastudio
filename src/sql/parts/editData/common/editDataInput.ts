@@ -4,19 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, ConfirmResult, EncodingMode } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/parts/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import Event, { Emitter } from 'vs/base/common/event';
-import { EditSessionReadyParams } from 'sqlops';
+import { EditSessionReadyParams, ISelectionData } from 'sqlops';
 import URI from 'vs/base/common/uri';
 import nls = require('vs/nls');
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 
 /**
- * Input for the EditDataEditor. This input is simply a wrapper around a QueryResultsInput for the QueryResultsEditor
+ * Input for the EditDataEditor.
  */
 export class EditDataInput extends EditorInput implements IConnectableInput {
 	public static ID: string = 'workbench.editorinputs.editDataInput';
@@ -25,15 +27,23 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	private _editorContainer: HTMLElement;
 	private _updateTaskbar: Emitter<EditDataInput>;
 	private _editorInitializing: Emitter<boolean>;
-	private _showTableView: Emitter<EditDataInput>;
+	private _showResultsEditor: Emitter<EditDataInput>;
 	private _refreshButtonEnabled: boolean;
 	private _stopButtonEnabled: boolean;
 	private _setup: boolean;
 	private _toDispose: IDisposable[];
 	private _rowLimit: number;
 	private _objectType: string;
+	private _css: HTMLStyleElement;
+	private _useQueryFilter: boolean;
 
-	constructor(private _uri: URI, private _schemaName, private _tableName,
+	constructor(
+		private _uri: URI,
+		private _schemaName,
+		private _tableName,
+		private _sql: UntitledEditorInput,
+		private _queryString: string,
+		private _results: EditDataResultsInput,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@INotificationService private notificationService: INotificationService
@@ -42,12 +52,20 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		this._visible = false;
 		this._hasBootstrapped = false;
 		this._updateTaskbar = new Emitter<EditDataInput>();
-		this._showTableView = new Emitter<EditDataInput>();
+		this._showResultsEditor = new Emitter<EditDataInput>();
 		this._editorInitializing = new Emitter<boolean>();
 		this._setup = false;
 		this._stopButtonEnabled = false;
 		this._refreshButtonEnabled = false;
 		this._toDispose = [];
+		this._useQueryFilter = false;
+
+		// re-emit sql editor events through this editor if it exists
+		if (this._sql) {
+			this._toDispose.push(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
+			this._sql.disableSaving();
+		}
+		this.disableSaving();
 
 		//TODO determine is this is a table or a view
 		this._objectType = 'TABLE';
@@ -79,27 +97,45 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public get tableName(): string { return this._tableName; }
 	public get schemaName(): string { return this._schemaName; }
 	public get uri(): string { return this._uri.toString(); }
-	public get updateTaskbar(): Event<EditDataInput> { return this._updateTaskbar.event; }
-	public get editorInitializing(): Event<boolean> { return this._editorInitializing.event; }
-	public get showTableView(): Event<EditDataInput> { return this._showTableView.event; }
+	public get sql(): UntitledEditorInput { return this._sql; }
+	public get results(): EditDataResultsInput { return this._results; }
+	public getResultsInputResource(): string { return this._results.uri; }
+	public get updateTaskbarEvent(): Event<EditDataInput> { return this._updateTaskbar.event; }
+	public get editorInitializingEvent(): Event<boolean> { return this._editorInitializing.event; }
+	public get showResultsEditorEvent(): Event<EditDataInput> { return this._showResultsEditor.event; }
 	public get stopButtonEnabled(): boolean { return this._stopButtonEnabled; }
 	public get refreshButtonEnabled(): boolean { return this._refreshButtonEnabled; }
 	public get container(): HTMLElement { return this._editorContainer; }
 	public get hasBootstrapped(): boolean { return this._hasBootstrapped; }
-	public get visible(): boolean { return this._visible; }
 	public get setup(): boolean { return this._setup; }
 	public get rowLimit(): number { return this._rowLimit; }
 	public get objectType(): string { return this._objectType; }
+	public showResultsEditor(): void { this._showResultsEditor.fire(); }
+	public isDirty(): boolean { return false; }
+	public save(): TPromise<boolean> { return TPromise.as(false); }
+	public confirmSave(): TPromise<ConfirmResult> { return TPromise.wrap(ConfirmResult.DONT_SAVE); }
 	public getTypeId(): string { return EditDataInput.ID; }
-	public setVisibleTrue(): void { this._visible = true; }
 	public setBootstrappedTrue(): void { this._hasBootstrapped = true; }
 	public getResource(): URI { return this._uri; }
-	public getName(): string { return this._uri.path; }
 	public supportsSplitEditor(): boolean { return false; }
 	public setupComplete() { this._setup = true; }
-	public set container(container: HTMLElement) {
-		this._disposeContainer();
-		this._editorContainer = container;
+	public get queryString(): string {
+		return this._queryString;
+	}
+	public set queryString(queryString: string) {
+		this._queryString = queryString;
+	}
+	public get css(): HTMLStyleElement {
+		return this._css;
+	}
+	public set css(css: HTMLStyleElement) {
+		this._css = css;
+	}
+	public get queryPaneEnabled(): boolean {
+		return this._useQueryFilter;
+	}
+	public set queryPaneEnabled(useQueryFilter: boolean) {
+		this._useQueryFilter = useQueryFilter;
 	}
 
 	// State Update Callbacks
@@ -111,13 +147,9 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	}
 
 	public initEditEnd(result: EditSessionReadyParams): void {
-		if (result.success) {
-			this._refreshButtonEnabled = true;
-			this._stopButtonEnabled = false;
-		} else {
-			this._refreshButtonEnabled = false;
-			this._stopButtonEnabled = false;
-
+		this._refreshButtonEnabled = true;
+		this._stopButtonEnabled = false;
+		if (!result.success) {
 			this.notificationService.notify({
 				severity: Severity.Error,
 				message: result.message
@@ -142,8 +174,16 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	}
 
 	public onConnectSuccess(params?: INewConnectionParams): void {
-		this._queryModelService.initializeEdit(this.uri, this.schemaName, this.tableName, this._objectType, this._rowLimit);
-		this._showTableView.fire(this);
+		let rowLimit: number = undefined;
+		let queryString: string = undefined;
+		if (this._useQueryFilter) {
+			queryString = this._queryString;
+		} else {
+			rowLimit = this._rowLimit;
+		}
+
+		this._queryModelService.initializeEdit(this.uri, this.schemaName, this.tableName, this._objectType, rowLimit, queryString);
+		this.showResultsEditor();
 	}
 
 	public onDisconnect(): void {
@@ -157,27 +197,19 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	// Boiler Plate Functions
 	public matches(otherInput: any): boolean {
 		if (otherInput instanceof EditDataInput) {
-			return (this.uri === otherInput.uri);
+			return this._sql.matches(otherInput.sql);
 		}
 
-		return false;
-	}
-
-	public resolve(refresh?: boolean): TPromise<EditorModel> {
-		return TPromise.as(null);
+		return this._sql.matches(otherInput);
 	}
 
 	public dispose(): void {
+		this._queryModelService.disposeQuery(this.uri);
+		this._sql.dispose();
+		this._results.dispose();
 		this._toDispose = dispose(this._toDispose);
-		this._disposeContainer();
-		super.dispose();
-	}
 
-	private _disposeContainer() {
-		if (this._editorContainer && this._editorContainer.parentElement) {
-			this._editorContainer.parentElement.removeChild(this._editorContainer);
-			this._editorContainer = null;
-		}
+		super.dispose();
 	}
 
 	public close(): void {
@@ -186,11 +218,22 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 			return this._connectionManagementService.disconnectEditor(this, true);
 		}).then(() => {
 			this.dispose();
-			super.close();
 		});
 	}
 
 	public get tabColor(): string {
 		return this._connectionManagementService.getTabColorForUri(this.uri);
+	}
+
+	public get onDidModelChangeContent(): Event<void> { return this._sql.onDidModelChangeContent; }
+	public get onDidModelChangeEncoding(): Event<void> { return this._sql.onDidModelChangeEncoding; }
+	public resolve(refresh?: boolean): TPromise<EditorModel> { return this._sql.resolve(); }
+	public getEncoding(): string { return this._sql.getEncoding(); }
+	public suggestFileName(): string { return this._sql.suggestFileName(); }
+	public getName(): string { return this._sql.getName(); }
+	public get hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }
+
+	public setEncoding(encoding: string, mode: EncodingMode /* ignored, we only have Encode */): void {
+		this._sql.setEncoding(encoding, mode);
 	}
 }

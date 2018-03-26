@@ -169,19 +169,33 @@ export function scriptSelect(connectionProfile: IConnectionProfile, metadata: sq
 /**
  * Opens a new Edit Data session
  */
-export function editData(connectionProfile: IConnectionProfile, tableName: string, schemaName: string, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService): Promise<void> {
-	return new Promise<void>((resolve) => {
-		queryEditorService.newEditDataEditor(schemaName, tableName).then((owner: EditDataInput) => {
-			// Connect our editor
-			let options: IConnectionCompletionOptions = {
-				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },
-				saveTheConnection: false,
-				showDashboard: false,
-				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true
-			};
-			connectionService.connect(connectionProfile, owner.uri, options).then(() => {
-				resolve();
+export function scriptEditSelect(connectionProfile: IConnectionProfile, metadata: sqlops.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<void> {
+	return new Promise<void>((resolve, reject) => {
+		connectionService.connectIfNotConnected(connectionProfile).then(connectionResult => {
+			let paramDetails: sqlops.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
+			scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails).then(result => {
+				if (result.script) {
+					queryEditorService.newEditDataEditor(metadata.schema, metadata.name, result.script).then((owner: EditDataInput) => {
+						// Connect our editor
+						let options: IConnectionCompletionOptions = {
+							params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },
+							saveTheConnection: false,
+							showDashboard: false,
+							showConnectionDialogOnError: true,
+							showFirewallRuleOnError: true
+						};
+						connectionService.connect(connectionProfile, owner.uri, options).then(() => {
+							resolve();
+						});
+					}).catch(editorError => {
+						reject(editorError);
+					});
+				} else {
+					let errMsg: string = nls.localize('scriptSelectNotFound', 'No script was returned when calling select script on object ');
+					reject(errMsg.concat(metadata.metadataTypeName));
+				}
+			}, scriptError => {
+				reject(scriptError);
 			});
 		});
 	});
