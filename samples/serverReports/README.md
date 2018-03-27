@@ -1,4 +1,4 @@
-# Server reports for SQL Operations Studio
+# Server Reports for SQL Operations Studio
 
 Welcome to **Server Reports** for SQL Operations Studio! Server Reports give useful insights about the server related to performance. These can be used to see current activity as well as historical activity. Here is a list of some of the available reports.
 
