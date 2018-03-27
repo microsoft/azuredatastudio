@@ -154,7 +154,7 @@ export class ExtensionManagementService implements IExtensionManagementService {
 							.then(validated => {
 								if (validated) {
 									this._onInstallExtension.fire({ identifier, zipPath });
-
+									
 									// {{SQL CARBON EDIT}}
 									// Until there's a gallery for SQL Ops Studio, skip retrieving the metadata from the gallery
 									return this.installExtension({ zipPath, id: identifier.id, metadata: null })
@@ -239,8 +239,7 @@ export class ExtensionManagementService implements IExtensionManagementService {
 		return this.galleryService.loadCompatibleVersion(extension)
 			.then(compatible => {
 				if (!compatible) {
-					// {{SQL CARBON EDIT}}
-					return TPromise.wrapError<IGalleryExtension[]>(new InstallationError(nls.localize('notFoundCompatible', "Unable to install because, the extension '{0}' compatible with current version '{1}' of SQL Operations Studio is not found.", extension.identifier.id, pkg.version), INSTALL_ERROR_INCOMPATIBLE));
+					return TPromise.wrapError<IGalleryExtension[]>(new InstallationError(nls.localize('notFoundCompatible', "Unable to install because, the extension '{0}' compatible with current version '{1}' of VS Code is not found.", extension.identifier.id, pkg.version), INSTALL_ERROR_INCOMPATIBLE));
 				}
 				return this.getDependenciesToInstall(compatible.properties.dependencies)
 					.then(
