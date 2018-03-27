@@ -1,6 +1,6 @@
-# Server Reports for SQL Operations Studio
+# Server reports for SQL Operations Studio
 
-Welcome to **server reports** for SQL Operations Studio! Server reports give useful insights about the server related to performance that can be used to see current activity as well as historical activity. Here is a list of some of the available reports.
+Welcome to **Server Reports** for SQL Operations Studio! Server Reports give useful insights about the server related to performance. These can be used to see current activity as well as historical activity. Here is a list of some of the available reports.
 
 * DB Space Usage
 * DB Buffer Usage
@@ -8,10 +8,18 @@ Welcome to **server reports** for SQL Operations Studio! Server reports give use
 * Backup Growth Trend
 * Wait counts
 
-<img src="https://github.com/Microsoft/sqlopsstudio/tree/master/samples/serverReports/images/server_reports.png" alt="server reports" style="width:480px;"/>
+<img src="https://github.com/Microsoft/sqlopsstudio/tree/master/samples/serverReports/images/server_reports.png" alt="Server Reports" style="width:480px;"/>
 
-It is a sample of dashboard extension. It demonstrates capabilities of the dashboard and the extension. This extension is inspired by SQL Server Management Studio (SSMS)'s reports. We will continually add more useful server insights and tasks.
+This extension is inspired by SQL Server Management Studio (SSMS)'s reports. We will continually add more useful server insights and tasks.
 
-See [serverReports github repro] for the extension source code.
+## Building your own reports
+This extension is also useful as a sample dashboard extension. It demonstrates building a dedicated dashboard extension with a set of insights built in. You can get started building your own reports by following the [extension authoring guide].
 
-[serverReports github repro]:https://github.com/Microsoft/sqlopsstudio/tree/master/samples/serverReports
+See the [Server Reports Extension Project] in the SQL Operations Studio repository on Github for the extension source code.
+
+[Server Reports Extension Project]:https://github.com/Microsoft/sqlopsstudio/tree/master/samples/serverReports
+[extension authoring guide]:https://github.com/Microsoft/sqlopsstudio/wiki/Getting-started-with-Extensibility
+
+
+## Contributions and "thank you"
+Special thank to Paul Randal, Aaron Bertrand, and Glenn Berry for providing useful queries.
