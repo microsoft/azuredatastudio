@@ -8,7 +8,7 @@ Welcome to **Server Reports** for SQL Operations Studio! Server Reports give use
 * Backup Growth Trend
 * Wait counts
 
-<img src="https://github.com/Microsoft/sqlopsstudio/tree/master/samples/serverReports/images/server_reports.png" alt="Server Reports" style="width:480px;"/>
+<img src="https://github.com/Microsoft/sqlopsstudio/raw/master/samples/serverReports/images/server_reports.png" alt="Server Reports" style="width:480px;"/>
 
 This extension is inspired by SQL Server Management Studio (SSMS)'s reports. We will continually add more useful server insights and tasks.
 

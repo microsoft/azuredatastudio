@@ -4,8 +4,7 @@ Welcome to **sp_whoisactive** for SQL Operations Studio! Sp_whoisactive is a pro
 
 ## Tasks and insights:
 
-<img src="https://github.com/Microsoft/sqlopsstudio/tree/master/samples/sp_whoIsActive/images/insights_section.png" alt="insights" style="width:480px;"/>
-
+<img src="https://github.com/Microsoft/sqlopsstudio/raw/master/samples/sp_whoIsActive/images/insights_section.png" alt="insights" style="width:480px;"/>
 
 ## Why use sp_whoisactive?
 Here are some quick facts on Who is Active from [Adam Machanic’s blog]:
@@ -17,7 +16,7 @@ Here are some quick facts on Who is Active from [Adam Machanic’s blog]:
 
 ## Documentation: 
 
-<img src="https://github.com/Microsoft/sqlopsstudio/tree/master/samples/sp_whoIsActive/images/documentation_section.png" alt="documentation" style="width:480px;"/>
+<img src="https://github.com/Microsoft/sqlopsstudio/raw/master/samples/sp_whoIsActive/images/documentation_section.png" alt="documentation" style="width:480px;"/>
 
 If you haven't installed sp_whoisactive in your server, you can use the "Install sp_whoisactive" task to create the procedure. 
 
