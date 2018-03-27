@@ -16,7 +16,7 @@
   "devDependencies": {
     "@types/node": "^6.0.61",
     "vscode": "^1.1.10",
-    "sqlops": "github:anthonydresser/vscode-extension-vscode"
+    "sqlops": "github:anthonydresser/sqlops-extension-sqlops"
   },
   "scripts": {
     "prepare": "node ./node_modules/vscode/bin/install && node ./node_modules/sqlops/bin/install && tsc -p ./src",
