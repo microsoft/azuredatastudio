@@ -81,6 +81,10 @@ We would like to thank all our users who raised issues, and in particular the fo
 * stebet for `Fix #153: Fixing sql snippets that failed on a DB with case-sensitive collation. (#152)`
 * SebastianPfliegel `Remove sqlExtensionHelp (#312)`
 * olljanat for `Implemented npm version check (#314)`
+* Adam Mechanic for helping with the `whoisactive` extension
+* All community localization contributors *(will get list of individuals next month)*
+
+And of course we'd like to thank the authors of all upstream dependencies.  Please see a full list in the [ThirdPartyNotices.txt](https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/ThirdPartyNotices.txt)
 
 ## License
 
