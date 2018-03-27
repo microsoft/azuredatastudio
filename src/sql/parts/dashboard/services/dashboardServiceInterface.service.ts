@@ -25,6 +25,7 @@ import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { TabSettingConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
 
 import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'sqlops';
 
@@ -70,11 +71,16 @@ export class SingleConnectionManagementService {
 
 	constructor(
 		private _connectionService: IConnectionManagementService,
-		private _uri: string
+		private _uri: string,
+		private _contextKey: ConnectionContextkey
 	) { }
 
 	public changeDatabase(name: string): Thenable<boolean> {
-		return this._connectionService.changeDatabase(this._uri, name);
+		return this._connectionService.changeDatabase(this._uri, name).then(e => {
+			// we need to update our context
+			this._contextKey.set(this.connectionInfo.connectionProfile);
+			return e;
+		});
 	}
 
 	public get connectionInfo(): ConnectionManagementInfo {
@@ -159,6 +165,8 @@ export class DashboardServiceInterface extends AngularDisposable {
 
 	private _dashboardContextKey = new RawContextKey<string>('dashboardContext', undefined);
 	public dashboardContextKey: IContextKey<string>;
+
+	private _connectionContextKey: ConnectionContextkey;
 
 	private _numberOfPageNavigations = 0;
 
@@ -251,9 +259,10 @@ export class DashboardServiceInterface extends AngularDisposable {
 
 	private _getbootstrapParams(): void {
 		this._bootstrapParams = this._bootstrapService.getBootstrapParams<DashboardComponentParams>(this._uniqueSelector);
-		this.uri = this._bootstrapParams.ownerUri;
 		this._contextKeyService = this._bootstrapParams.scopedContextService;
+		this._connectionContextKey = this._bootstrapParams.connectionContextKey;
 		this.dashboardContextKey = this._dashboardContextKey.bindTo(this._contextKeyService);
+		this.uri = this._bootstrapParams.ownerUri;
 	}
 
 	/**
@@ -263,7 +272,7 @@ export class DashboardServiceInterface extends AngularDisposable {
 	private set uri(uri: string) {
 		this._uri = uri;
 		this._metadataService = new SingleConnectionMetadataService(this._bootstrapService.metadataService, this._uri);
-		this._connectionManagementService = new SingleConnectionManagementService(this._bootstrapService.connectionManagementService, this._uri);
+		this._connectionManagementService = new SingleConnectionManagementService(this._bootstrapService.connectionManagementService, this._uri, this._connectionContextKey);
 		this._adminService = new SingleAdminService(this._bootstrapService.adminService, this._uri);
 		this._queryManagementService = new SingleQueryManagementService(this._bootstrapService.queryManagementService, this._uri);
 		this._register(toDisposableSubscription(this._bootstrapService.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));

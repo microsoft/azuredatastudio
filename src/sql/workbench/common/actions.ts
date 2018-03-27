@@ -245,7 +245,7 @@ export class ScriptCreateAction extends Action {
 
 export class ScriptDeleteAction extends Action {
 	public static ID = 'scriptDelete';
-	public static LABEL = nls.localize('scriptDelete', 'Script as Delete');
+	public static LABEL = nls.localize('scriptDelete', 'Script as Drop');
 
 	constructor(
 		id: string, label: string,

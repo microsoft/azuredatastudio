@@ -100,6 +100,8 @@ export abstract class ExtHostDataProtocolShape {
 
 	$closeObjectExplorerSession(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> { throw ni(); }
 
+	$findNodes(handle: number, findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> { throw ni(); }
+
 	/**
 	 * Tasks
 	 */
@@ -304,6 +306,22 @@ export abstract class ExtHostDataProtocolShape {
 	 * Stop a profiler session
 	 */
 	$stopSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
+
+
+	/**
+	 * Get Agent Job list
+	 */
+	$getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult>{ throw ni(); }
+
+	/**
+	 * Get a Agent Job's history
+	 */
+	$getJobHistory(handle: number, ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>{ throw ni(); }
+
+	/**
+	 * Run an action on a Job
+	 */
+	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult>{ throw ni(); }
 }
 
 /**
@@ -368,6 +386,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerFileBrowserProvider(providerId: string, handle: number): TPromise<any>;
 	$registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any>;
 	$registerAdminServicesProvider(providerId: string, handle: number): TPromise<any>;
+	$registerAgentServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$unregisterProvider(handle: number): TPromise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -498,4 +517,5 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 	$setSelected(connectionId: string, nodePath: string, selected: boolean, clearOtherSelections?: boolean): Thenable<void>;
 	$getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]>;
 	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
+	$findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
 }

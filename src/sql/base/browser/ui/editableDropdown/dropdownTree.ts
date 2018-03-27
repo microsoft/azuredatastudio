@@ -14,6 +14,7 @@ import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export interface Template {
 	label: HTMLElement;
+	row: HTMLElement;
 }
 
 export interface Resource {
@@ -33,17 +34,18 @@ export class DropdownRenderer implements tree.IRenderer {
 		return '';
 	}
 
-	public renderTemplate(tree: tree.ITree, templateId: string, container: HTMLElement) {
+	public renderTemplate(tree: tree.ITree, templateId: string, container: HTMLElement): Template {
 		const row = $('div.list-row').style('height', '22px').style('padding-left', '5px').getHTMLElement();
 		DOM.append(container, row);
 		const label = $('span.label').style('margin', 'auto').style('vertical-align', 'middle').getHTMLElement();
 		DOM.append(row, label);
 
-		return { label };
+		return { label, row };
 	}
 
 	public renderElement(tree: tree.ITree, element: Resource, templateId: string, templateData: Template): void {
 		templateData.label.innerText = element.value;
+		templateData.row.title = element.value;
 	}
 
 	public disposeTemplate(tree: tree.ITree, templateId: string, templateData: Template): void {

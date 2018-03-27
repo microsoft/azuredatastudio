@@ -69,4 +69,8 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 	public $isExpanded(connectionId: string, nodePath: string): Thenable<boolean> {
 		return this._objectExplorerService.getTreeNode(connectionId, nodePath).then(treeNode => treeNode.isExpanded());
 	}
+
+	public $findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]> {
+		return this._objectExplorerService.findNodes(connectionId, type, schema, name, database, parentObjectNames);
+	}
 }
