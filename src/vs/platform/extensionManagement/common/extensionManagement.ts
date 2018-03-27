@@ -105,7 +105,7 @@ export interface IExtensionManifest {
 	name: string;
 	publisher: string;
 	version: string;
-	engines: { vscode: string; sqlops?:string };
+	engines: { vscode: string; sqlops?: string };
 	displayName?: string;
 	description?: string;
 	main?: string;
