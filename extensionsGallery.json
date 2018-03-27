@@ -28,7 +28,7 @@
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-								"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/sp_whoIsActive/images/sqlserver.png"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -40,7 +40,7 @@
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.License",
-								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/fmaster/LICENSE.txt"
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/sp_whoIsActive/LICENSE.txt"
 							}
 						],
 						"properties": [
@@ -79,7 +79,7 @@
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-								"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/serverReports/images/sqlserver.png"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -91,7 +91,7 @@
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.License",
-								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt"
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/serverReports/LICENSE.txt"
 							}
 						],
 						"properties": [
