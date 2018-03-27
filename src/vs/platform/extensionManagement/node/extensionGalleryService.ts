@@ -263,8 +263,6 @@ function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IG
 			fallbackUri: `${version.fallbackAssetUri}/${type}`
 		};
 	}
-
-
 }
 
 function getDependencies(version: IRawGalleryExtensionVersion): string[] {
@@ -748,14 +746,17 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return this.getAsset(asset, { headers })
 			.then(context => asJson<IExtensionManifest>(context))
 			.then(manifest => {
-				const engine = manifest.engines.vscode;
+				if (manifest.engines && !manifest.engines.sqlops) {
+					manifest.engines.sqlops = '*';
+				}
+				const engine = manifest.engines.sqlops;
 
 				if (!this.isEngineValid(engine)) {
 					return this.getLastValidExtensionVersionReccursively(extension, versions.slice(1));
 				}
 
 				version.properties = version.properties || [];
-				version.properties.push({ key: PropertyType.Engine, value: manifest.engines.vscode });
+				version.properties.push({ key: PropertyType.Engine, value: manifest.engines.sqlops });
 				return version;
 			});
 	}

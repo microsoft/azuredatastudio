@@ -208,6 +208,8 @@ export interface IReducedExtensionDescription {
 	isBuiltin: boolean;
 	engines: {
 		vscode: string;
+		// {{SQL CARBON EDIT}}
+		sqlops?: string;
 	};
 	main?: string;
 }
@@ -219,7 +221,8 @@ export function isValidExtensionVersion(version: string, extensionDesc: IReduced
 		return true;
 	}
 
-	return isVersionValid(version, extensionDesc.engines.vscode, notices);
+	// {{SQL CARBON EDIT}}
+	return (extensionDesc.engines.sqlops && extensionDesc.engines.sqlops === '*') ||  isVersionValid(version, extensionDesc.engines.vscode, notices);
 }
 
 export function isVersionValid(currentVersion: string, requestedVersion: string, notices: string[] = []): boolean {
@@ -289,8 +292,8 @@ function baseIsValidExtensionDescription(extensionFolderPath: string, extensionD
 		notices.push(nls.localize('extensionDescription.engines', "property `{0}` is mandatory and must be of type `object`", 'engines'));
 		return false;
 	}
-	if (typeof extensionDescription.engines.vscode !== 'string') {
-		notices.push(nls.localize('extensionDescription.engines.vscode', "property `{0}` is mandatory and must be of type `string`", 'engines.vscode'));
+	if (typeof extensionDescription.engines.sqlops !== 'string') {
+		notices.push(nls.localize('extensionDescription.engines.sqlops', "property `{0}` is mandatory and must be of type `string`", 'engines.sqlops'));
 		return false;
 	}
 	if (typeof extensionDescription.extensionDependencies !== 'undefined') {

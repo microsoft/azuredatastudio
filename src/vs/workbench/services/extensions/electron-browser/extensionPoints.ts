@@ -58,6 +58,10 @@ class ExtensionManifestParser extends ExtensionManifestHandler {
 				if (manifest.__metadata) {
 					manifest.uuid = manifest.__metadata.id;
 				}
+				// {{SQL CARBON EDIT}}
+				if (manifest.engines && !manifest.engines.sqlops) {
+					manifest.engines.sqlops = '*';
+				}
 				delete manifest.__metadata;
 				return manifest;
 			} catch (e) {
