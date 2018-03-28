@@ -4,11 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import vscode = require('vscode');
+import * as vscode from 'vscode';
+import * as opener from 'opener';
 import TelemetryReporter from 'vscode-extension-telemetry';
-import { Utils } from './utils';
-import { PlatformInformation, Runtime, LinuxDistribution } from './platform';
-import { IExtensionConstants } from './contracts/contracts';
+import { PlatformInformation } from 'service-downloader/out/platform';
+import { ErrorAction, ErrorHandler, Message, CloseAction } from 'vscode-languageclient';
+
+import * as Utils from './utils';
+import * as Constants from './constants';
+
+const packageJson = require('../package.json');
 
 export interface ITelemetryEventProperties {
 	[key: string]: string;
@@ -38,15 +43,6 @@ export class Telemetry {
 	private static userId: string;
 	private static platformInformation: PlatformInformation;
 	private static disabled: boolean;
-	private static _getRuntimeId: (platform: string, architecture: string, distribution: LinuxDistribution) => Runtime;
-
-	public static get getRuntimeId() {
-		return this._getRuntimeId;
-	}
-
-	public static set getRuntimeId(runtimeIdGetter: (platform: string, architecture: string, distribution: LinuxDistribution) => Runtime) {
-		this._getRuntimeId = runtimeIdGetter;
-	}
 
 	// Get the unique ID for the current user of the extension
 	public static getUserId(): Promise<string> {
@@ -69,15 +65,13 @@ export class Telemetry {
 			return Promise.resolve(this.platformInformation);
 		} else {
 			return new Promise<PlatformInformation>(resolve => {
-				PlatformInformation.getCurrent(this.getRuntimeId, 'telemetry').then(info => {
+				PlatformInformation.getCurrent().then(info => {
 					this.platformInformation = info;
 					resolve(this.platformInformation);
 				});
 			});
 		}
 	}
-
-
 
 	/**
 	 * Disable telemetry reporting
@@ -89,7 +83,7 @@ export class Telemetry {
 	/**
 	 * Initialize the telemetry reporter for use.
 	 */
-	public static initialize(context: vscode.ExtensionContext, extensionConstants: IExtensionConstants): void {
+	public static initialize(): void {
 		if (typeof this.reporter === 'undefined') {
 			// Check if the user has opted out of telemetry
 			if (!vscode.workspace.getConfiguration('telemetry').get<boolean>('enableTelemetry', true)) {
@@ -97,8 +91,8 @@ export class Telemetry {
 				return;
 			}
 
-			let packageInfo = Utils.getPackageInfo(context);
-			this.reporter = new TelemetryReporter(extensionConstants.telemetryExtensionName, packageInfo.version, packageInfo.aiKey);
+			let packageInfo = Utils.getPackageInfo(packageJson);
+			this.reporter = new TelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 		}
 	}
 
@@ -120,10 +114,10 @@ export class Telemetry {
 
 			// Only adding the method name and the fist line of the stack trace. We don't add the error message because it might have PII
 			this.sendTelemetryEvent('Exception', { methodName: methodName, errorLine: firstLine });
-			Utils.logDebug('Unhandled Exception occurred. error: ' + err + ' method: ' + methodName, extensionConfigName);
+			// Utils.logDebug('Unhandled Exception occurred. error: ' + err + ' method: ' + methodName, extensionConfigName);
 		} catch (telemetryErr) {
 			// If sending telemetry event fails ignore it so it won't break the extension
-			Utils.logDebug('Failed to send telemetry event. error: ' + telemetryErr, extensionConfigName);
+			// Utils.logDebug('Failed to send telemetry event. error: ' + telemetryErr, extensionConfigName);
 		}
 	}
 
@@ -138,6 +132,7 @@ export class Telemetry {
 		if (typeof this.disabled === 'undefined') {
 			this.disabled = false;
 		}
+
 		if (this.disabled || typeof (this.reporter) === 'undefined') {
 			// Don't do anything if telemetry is disabled
 			return;
@@ -148,7 +143,7 @@ export class Telemetry {
 		}
 
 		// Augment the properties structure with additional common properties before sending
-		Promise.all([this.getUserId, this.getPlatformInformation]).then(() => {
+		Promise.all([this.getUserId(), this.getPlatformInformation()]).then(() => {
 			properties['userId'] = this.userId;
 			properties['distribution'] = (this.platformInformation && this.platformInformation.distribution) ?
 				`${this.platformInformation.distribution.name}, ${this.platformInformation.distribution.version}` : '';
@@ -157,3 +152,60 @@ export class Telemetry {
 		});
 	}
 }
+
+/**
+ * Handle Language Service client errors
+ * @class LanguageClientErrorHandler
+ */
+export class LanguageClientErrorHandler implements ErrorHandler {
+
+	/**
+	 * Show an error message prompt with a link to known issues wiki page
+	 * @memberOf LanguageClientErrorHandler
+	 */
+	showOnErrorPrompt(): void {
+		Telemetry.sendTelemetryEvent(Constants.serviceName + 'Crash');
+		vscode.window.showErrorMessage(
+			Constants.serviceCrashMessage,
+			Constants.serviceCrashButton).then(action => {
+				if (action && action === Constants.serviceCrashButton) {
+					opener(Constants.serviceCrashLink);
+				}
+			});
+	}
+
+	/**
+	 * Callback for language service client error
+	 *
+	 * @param {Error} error
+	 * @param {Message} message
+	 * @param {number} count
+	 * @returns {ErrorAction}
+	 *
+	 * @memberOf LanguageClientErrorHandler
+	 */
+	error(error: Error, message: Message, count: number): ErrorAction {
+		this.showOnErrorPrompt();
+
+		// we don't retry running the service since crashes leave the extension
+		// in a bad, unrecovered state
+		return ErrorAction.Shutdown;
+	}
+
+	/**
+	 * Callback for language service client closed
+	 *
+	 * @returns {CloseAction}
+	 *
+	 * @memberOf LanguageClientErrorHandler
+	 */
+	closed(): CloseAction {
+		this.showOnErrorPrompt();
+
+		// we don't retry running the service since crashes leave the extension
+		// in a bad, unrecovered state
+		return CloseAction.DoNotRestart;
+	}
+}
+
+Telemetry.initialize();

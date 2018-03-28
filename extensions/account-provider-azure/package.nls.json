@@ -1,5 +1,5 @@
 {
-	"extension.clearTokenCache": "Clear Azure Account Token Cache",
+	"accounts.clearTokenCache": "Clear Azure Account Token Cache",
 	"config.enablePublicCloudDescription": "Should Azure public cloud integration be enabled",
 	"config.enableUsGovCloudDescription": "Should US Government Azure cloud (Fairfax) integration be enabled",
 	"config.enableChinaCloudDescription": "Should Azure China integration be enabled",

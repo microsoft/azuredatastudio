@@ -3,14 +3,13 @@
   "version": "0.1.0",
   "publisher": "Microsoft",
   "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
-  "engines": {
-    "vscode": "0.10.x",
-    "sqlops": "feature/agent1"
-  },
   "activationEvents": [
     "*"
   ],
-  "main": "./client/out/main",
+  "engines": {
+    "vscode": "*"
+  },
+  "main": "./out/main",
   "extensionDependencies": [
     "vscode.sql"
   ],
@@ -659,9 +658,16 @@
     }
   },
   "dependencies": {
-    "extensions-modules": "file:../../extensions-modules"
+    "crypto": "^1.0.1",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.1.5",
+    "opener": "^1.4.3",
+    "service-downloader": "github:anthonydresser/service-downloader#0.1.2",
+    "vscode-extension-telemetry": "^0.0.15"
   },
-  "devDependencies": {
-    "vscode": "1.0.1"
+  "resolutions": {
+    "vscode-jsonrpc": "3.5.0",
+    "vscode-languageclient": "3.5.0",
+    "vscode-languageserver-protocol": "3.5.0",
+    "vscode-languageserver-types": "3.5.0"
   }
 }
