@@ -134,7 +134,7 @@ export class DashboardWidgetContainer extends DashboardTab implements OnDestroy,
 	}
 
 	public refresh(): void {
-		this._widgetContent.layout();
+		this._widgetContent.refresh();
 	}
 
 	public enableEdit(): void {
