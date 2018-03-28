@@ -60,14 +60,6 @@ export class ServerTreeView {
 			this);
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._onSelectionOrFocusChange = new Emitter();
-		if (this._capabilitiesService) {
-			this._capabilitiesService.onCapabilitiesReady().then(() => {
-				if (this._connectionManagementService.hasRegisteredServers()) {
-					this.refreshTree();
-					this._treeSelectionHandler.onTreeActionStateChange(false);
-				}
-			});
-		}
 	}
 
 	/**

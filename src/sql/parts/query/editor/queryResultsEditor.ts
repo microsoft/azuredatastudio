@@ -65,6 +65,26 @@ export class BareResultsGridInfo extends BareFontInfo {
 	}
 }
 
+function getBareResultsGridInfoStyles(info: BareResultsGridInfo): string {
+	let content = '';
+	if (info.fontFamily) {
+		content += `font-family: ${info.fontFamily};`;
+	}
+	if (info.fontWeight) {
+		content += `font-weight: ${info.fontWeight};`;
+	}
+	if (info.fontSize) {
+		content += `font-size: ${info.fontSize}px;`;
+	}
+	if (info.lineHeight) {
+		content += `line-height: ${info.lineHeight}px;`;
+	}
+	if (info.letterSpacing) {
+		content += `letter-spacing: ${info.letterSpacing}px;`;
+	}
+	return content;
+}
+
 /**
  * Editor associated with viewing and editing the data of a query results grid.
  */
@@ -98,7 +118,6 @@ export class QueryResultsEditor extends BaseEditor {
 
 	private applySettings() {
 		if (this.input && this.input.container) {
-			Configuration.applyFontInfoSlow(this.getContainer().getHTMLElement(), this._rawOptions);
 			if (!this.input.css) {
 				this.input.css = dom.createStyleSheet(this.input.container);
 			}
@@ -109,6 +128,7 @@ export class QueryResultsEditor extends BaseEditor {
 				cssRuleText = this._rawOptions.cellPadding.join('px ') + 'px;';
 			}
 			let content = `.grid .slick-cell { padding: ${cssRuleText}; }`;
+			content += `.grid { ${getBareResultsGridInfoStyles(this._rawOptions)} }`;
 			this.input.css.innerHTML = content;
 		}
 	}

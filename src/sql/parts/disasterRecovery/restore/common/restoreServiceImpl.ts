@@ -266,7 +266,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 	private getRestoreOption(): sqlops.ServiceOption[] {
 		let options: sqlops.ServiceOption[] = [];
 		let providerId: string = this.getCurrentProviderId();
-		let providerCapabilities = this._capabilitiesService.getCapabilities(providerId);
+		let providerCapabilities = this._capabilitiesService.getLegacyCapabilities(providerId);
 
 		if (providerCapabilities) {
 			let restoreMetadataProvider = providerCapabilities.features.find(f => f.featureName === this._restoreFeature);

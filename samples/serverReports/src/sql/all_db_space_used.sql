@@ -2,8 +2,8 @@
 -- Use for a demo/sample purpose only. This query is not built-in to any product.
 
 ------------------------------Data file size----------------------------
-declare @dbsize table 
-(Dbname varchar(30),
+declare @dbsize table
+(Dbname nvarchar(128),
     file_Size_MB decimal(20,2)default (0),
     Space_Used_MB decimal(20,2)default (0),
     Free_Space_MB decimal(20,2) default (0))
@@ -14,11 +14,11 @@ exec sp_msforeachdb
   select DB_NAME() AS DbName,
 sum(size)/128.0 AS File_Size_MB,
 sum(CAST(FILEPROPERTY(name, ''SpaceUsed'') AS INT))/128.0 as Space_Used_MB,
-SUM( size)/128.0 - sum(CAST(FILEPROPERTY(name,''SpaceUsed'') AS INT))/128.0 AS Free_Space_MB 
+SUM( size)/128.0 - sum(CAST(FILEPROPERTY(name,''SpaceUsed'') AS INT))/128.0 AS Free_Space_MB
 from sys.database_files  where type=0 group by type'
 -------------------log size--------------------------------------
 declare @logsize table
-(Dbname varchar(30),
+(Dbname nvarchar(128),
     Log_File_Size_MB decimal(20,2)default (0),
     log_Space_Used_MB decimal(20,2)default (0),
     log_Free_Space_MB decimal(20,2)default (0))
@@ -29,11 +29,11 @@ exec sp_msforeachdb
   select DB_NAME() AS DbName,
 sum(size)/128.0 AS Log_File_Size_MB,
 sum(CAST(FILEPROPERTY(name, ''SpaceUsed'') AS INT))/128.0 as log_Space_Used_MB,
-SUM( size)/128.0 - sum(CAST(FILEPROPERTY(name,''SpaceUsed'') AS INT))/128.0 AS log_Free_Space_MB 
+SUM( size)/128.0 - sum(CAST(FILEPROPERTY(name,''SpaceUsed'') AS INT))/128.0 AS log_Free_Space_MB
 from sys.database_files  where type=1 group by type'
 --------------------------------database free size
-declare @dbfreesize table 
-(name varchar(50),
+declare @dbfreesize table
+(name nvarchar(128),
     database_size varchar(50),
     Freespace varchar(50)default (0.00))
 insert into @dbfreesize
@@ -42,19 +42,19 @@ exec sp_msforeachdb
 'use ?;SELECT database_name = db_name()
     ,database_size = ltrim(str((convert(DECIMAL(15, 2), dbsize) + convert(DECIMAL(15, 2), logsize)) * 8192 / 1048576, 15, 2) + ''MB'')
     ,''unallocated space'' = ltrim(str((
-                CASE 
+                CASE
                     WHEN dbsize >= reservedpages
                         THEN (convert(DECIMAL(15, 2), dbsize) - convert(DECIMAL(15, 2), reservedpages)) * 8192 / 1048576
                     ELSE 0
                     END
                 ), 15, 2) + '' MB'')
 FROM (
-    SELECT dbsize = sum(convert(BIGINT, CASE 
+    SELECT dbsize = sum(convert(BIGINT, CASE
                     WHEN type = 0
                         THEN size
                     ELSE 0
                     END))
-        ,logsize = sum(convert(BIGINT, CASE 
+        ,logsize = sum(convert(BIGINT, CASE
                     WHEN type <> 0
                         THEN size
                     ELSE 0
@@ -64,7 +64,7 @@ FROM (
 ,(
     SELECT reservedpages = sum(a.total_pages)
         ,usedpages = sum(a.used_pages)
-        ,pages = sum(CASE 
+        ,pages = sum(CASE
                 WHEN it.internal_type IN (
                         202
                         ,204
@@ -89,11 +89,11 @@ FROM (
         ON p.object_id = it.object_id
 ) AS partitions'
 -----------------------------------
-select 
-    d.Dbname, 
+select
+    d.Dbname,
     --(file_size_mb + log_file_size_mb) as DBsize,
     --d.file_Size_MB,
-    d.Space_Used_MB, 
+    d.Space_Used_MB,
     --d.Free_Space_MB,
     --l.Log_File_Size_MB,
     l.log_Space_Used_MB--,

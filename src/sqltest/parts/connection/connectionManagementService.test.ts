@@ -32,7 +32,8 @@ import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfig
 
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
-import { IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
+import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -86,6 +87,8 @@ suite('SQL ConnectionManagementService tests', () => {
 		mssqlConnectionProvider = TypeMoq.Mock.ofType(ConnectionProviderStub);
 		let resourceProviderStub = new ResourceProviderStub();
 		resourceProviderStubMock = TypeMoq.Mock.ofInstance(resourceProviderStub);
+		let root = new ConnectionProfileGroup(ConnectionProfileGroup.RootGroupName, undefined, ConnectionProfileGroup.RootGroupName, undefined, undefined);
+		root.connections = [ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile)];
 
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined)).returns(() => TPromise.as(none));
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined)).returns(() => TPromise.as(none));
@@ -105,6 +108,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			c => c.serverName === connectionProfileWithEmptyUnsavedPassword.serverName))).returns(
 			() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
 		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns(() => true);
+		connectionStore.setup(x => x.getConnectionProfileGroups()).returns(() => [root]);
 
 		mssqlConnectionProvider.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => undefined);
 

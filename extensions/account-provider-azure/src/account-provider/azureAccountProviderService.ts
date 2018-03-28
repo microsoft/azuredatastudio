@@ -20,7 +20,7 @@ let localize = nls.loadMessageBundle();
 
 export class AzureAccountProviderService implements vscode.Disposable {
 	// CONSTANTS ///////////////////////////////////////////////////////////////
-	private static CommandClearTokenCache = 'extension.clearTokenCache';
+	private static CommandClearTokenCache = 'accounts.azure.clearTokenCache';
 	private static ConfigurationSection = 'accounts.azure';
 	private static CredentialNamespace = 'azureAccountProviderCredentials';
 

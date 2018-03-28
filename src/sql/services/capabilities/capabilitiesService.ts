@@ -8,30 +8,42 @@
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import * as Constants from 'sql/common/constants';
 import { Deferred } from 'sql/base/common/promise';
+import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { toObject } from 'sql/base/common/map';
 
 import * as sqlops from 'sqlops';
 
 import Event, { Emitter } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
-import { getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
-import { IExtensionManagementService, ILocalExtension, IExtensionEnablementService, LocalExtensionType } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { Memento } from 'vs/workbench/common/memento';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { Registry } from 'vs/platform/registry/common/platform';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'sqlops';
 export const HOST_VERSION = '1.0';
 
-interface IProtocolMomento {
-	[id: string]: sqlops.DataProtocolServerCapabilities;
+const connectionRegistry = Registry.as<IConnectionProviderRegistry>(ConnectionExtensions.ConnectionProviderContributions);
+
+interface ConnectionCache {
+	[id: string]: ConnectionProviderProperties;
+}
+
+interface CapabilitiesMomento {
+	connectionProviderCache: ConnectionCache;
 }
 
 export const clientCapabilities = {
 	hostName: HOST_NAME,
 	hostVersion: HOST_VERSION
 };
+
+export interface ProviderFeatures {
+	connection: ConnectionProviderProperties;
+}
+
 
 export const ICapabilitiesService = createDecorator<ICapabilitiesService>(SERVICE_ID);
 
@@ -44,7 +56,12 @@ export interface ICapabilitiesService {
 	/**
 	 * Retrieve a list of registered capabilities providers
 	 */
-	getCapabilities(provider: string): sqlops.DataProtocolServerCapabilities;
+	getCapabilities(provider: string): ProviderFeatures;
+
+	/**
+	 * get the old version of provider information
+	 */
+	getLegacyCapabilities(provider: string): sqlops.DataProtocolServerCapabilities;
 
 	/**
 	 * Register a capabilities provider
@@ -57,19 +74,14 @@ export interface ICapabilitiesService {
 	isFeatureAvailable(action: IAction, connectionManagementInfo: ConnectionManagementInfo): boolean;
 
 	/**
-	 * Promise fulfilled when Capabilities are ready
-	 */
-	onCapabilitiesReady(): Promise<void>;
-
-	/**
 	 * When a new capabilities is registered, it emits the provider name, be to use to get the new capabilities
 	 */
-	readonly onCapabilitiesRegistered: Event<string>;
+	readonly onCapabilitiesRegistered: Event<ProviderFeatures>;
 
 	/**
 	 * Get an array of all known providers
 	 */
-	readonly providers: string[];
+	readonly providers: { [id: string]: ProviderFeatures };
 
 }
 
@@ -78,89 +90,76 @@ export interface ICapabilitiesService {
  * to discover the DMP capabilties that a DMP provider offers.
  */
 export class CapabilitiesService extends Disposable implements ICapabilitiesService {
+	_serviceBrand: any;
 
-	public _serviceBrand: any;
+	private _momento = new Memento('capabilities');
+	private _providers = new Map<string, ProviderFeatures>();
+	private _featureUpdateEvents = new Map<string, Emitter<ProviderFeatures>>();
+	private _legacyProviders = new Map<string, sqlops.DataProtocolServerCapabilities>();
 
-	private _momento = new Memento('capabilitiesCache');
-
-	private static DATA_PROVIDER_CATEGORY: string = 'Data Provider';
-
-	private disposables: IDisposable[] = [];
-
-	private _onCapabilitiesReady = new Deferred<void>();
-
-	// Setting this to 1 by default as we have MS SQL provider by default and then we increament
-	// this number based on extensions installed.
-	// TODO once we have a complete extension story this might change and will have to be looked into
-
-	private _expectedCapabilitiesCount: number = 1;
-
-	private _registeredCapabilities: number = 0;
-
-	private _onCapabilitiesRegistered = this._register(new Emitter<string>());
+	private _onCapabilitiesRegistered = this._register(new Emitter<ProviderFeatures>());
 	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
 
 	constructor(
-		@IExtensionManagementService private extensionManagementService: IExtensionManagementService,
-		@IExtensionEnablementService private extensionEnablementService: IExtensionEnablementService,
 		@IStorageService private _storageService: IStorageService
 	) {
 		super();
 
-		// Get extensions and filter where the category has 'Data Provider' in it
-		this.extensionManagementService.getInstalled(LocalExtensionType.User).then((extensions: ILocalExtension[]) => {
-			let dataProviderExtensions = extensions.filter(extension =>
-				extension.manifest.categories && extension.manifest.categories.indexOf(CapabilitiesService.DATA_PROVIDER_CATEGORY) > -1);
+		if (!this.capabilities.connectionProviderCache) {
+			this.capabilities.connectionProviderCache = {};
+		}
 
-			if (dataProviderExtensions.length > 0) {
-				// Scrape out disabled extensions
+		// handle in case some extensions have already registered (unlikley)
+		Object.entries(connectionRegistry.providers).map(v => {
+			this.handleConnectionProvider({ id: v[0], properties: v[1] });
+		});
+		// register for when new extensions are added
+		connectionRegistry.onNewProvider(this.handleConnectionProvider, this);
 
-				// @SQLTODO reenable this code
-				// this.extensionEnablementService.getDisabledExtensions()
-				// 	.then(disabledExtensions => {
-
-				// 		let disabledExtensionsId = disabledExtensions.map(disabledExtension => disabledExtension.id);
-				// 		dataProviderExtensions = dataProviderExtensions.filter(extension =>
-				// 			disabledExtensions.indexOf(getGalleryExtensionId(extension.manifest.publisher, extension.manifest.name)) < 0);
-
-
-				// 	// 	return extensions.map(extension => {
-				// 	// 		return {
-				// 	// 			identifier: { id: adoptToGalleryExtensionId(stripVersion(extension.identifier.id)), uuid: extension.identifier.uuid },
-				// 	// 			local: extension,
-				// 	// 			globallyEnabled: disabledExtensions.every(disabled => !areSameExtensions(disabled, extension.identifier))
-				// 	// 		};
-				// 	// 	});
-				// 	});
-
-
-				// const disabledExtensions = this.extensionEnablementService.getGloballyDisabledExtensions()
-				// 															.map(disabledExtension => disabledExtension.id);
-				// dataProviderExtensions = dataProviderExtensions.filter(extension =>
-				// 	disabledExtensions.indexOf(getGalleryExtensionId(extension.manifest.publisher, extension.manifest.name)) < 0);
-			}
-
-			this._expectedCapabilitiesCount += dataProviderExtensions.length;
+		// handle adding already known capabilities (could have caching problems)
+		Object.entries(this.capabilities.connectionProviderCache).map(v => {
+			this.handleConnectionProvider({ id: v[0], properties: v[1] }, false);
 		});
 	}
 
-	public onCapabilitiesReady(): Promise<void> {
-		return this._onCapabilitiesReady.promise;
+	private handleConnectionProvider(e: { id: string, properties: ConnectionProviderProperties }, isNew = true): void {
+
+		let provider = this._providers.get(e.id);
+		if (provider) {
+			provider.connection = e.properties;
+		} else {
+			provider = {
+				connection: e.properties
+			};
+			this._providers.set(e.id, provider);
+		}
+		if (!this._featureUpdateEvents.has(e.id)) {
+			this._featureUpdateEvents.set(e.id, new Emitter<ProviderFeatures>());
+		}
+
+		if (isNew) {
+			this.capabilities.connectionProviderCache[e.id] = e.properties;
+			this._onCapabilitiesRegistered.fire(provider);
+		}
 	}
 
 	/**
 	 * Retrieve a list of registered server capabilities
 	 */
-	public getCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
-		return this.capabilities[provider];
+	public getCapabilities(provider: string): ProviderFeatures {
+		return this._providers.get(provider);
 	}
 
-	public get providers(): string[] {
-		return Object.keys(this.capabilities);
+	public getLegacyCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
+		return this._legacyProviders.get(provider);
 	}
 
-	private get capabilities(): IProtocolMomento {
-		return this._momento.getMemento(this._storageService) as IProtocolMomento;
+	public get providers(): { [id: string]: ProviderFeatures } {
+		return toObject(this._providers);
+	}
+
+	private get capabilities(): CapabilitiesMomento {
+		return this._momento.getMemento(this._storageService) as CapabilitiesMomento;
 	}
 
 	/**
@@ -170,18 +169,8 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	public registerProvider(provider: sqlops.CapabilitiesProvider): void {
 		// request the capabilities from server
 		provider.getServerCapabilities(clientCapabilities).then(serverCapabilities => {
-			this.capabilities[serverCapabilities.providerName] = serverCapabilities;
-			this._momento.saveMemento();
-			this._onCapabilitiesRegistered.fire(serverCapabilities.providerName);
-			this._registeredCapabilities++;
-			this.resolveCapabilitiesIfReady();
+			this._legacyProviders.set(serverCapabilities.providerName, serverCapabilities);
 		});
-	}
-
-	private resolveCapabilitiesIfReady(): void {
-		if (this._registeredCapabilities === this._expectedCapabilitiesCount) {
-			this._onCapabilitiesReady.resolve();
-		}
 	}
 
 	/**
@@ -214,6 +203,9 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		} else {
 			return true;
 		}
+	}
 
+	public shutdown(): void {
+		this._momento.saveMemento();
 	}
 }

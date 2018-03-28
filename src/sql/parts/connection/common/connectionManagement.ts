@@ -240,14 +240,6 @@ export interface IConnectionManagementService {
 	ensureDefaultLanguageFlavor(uri: string): void;
 
 	/**
-	 * Gets an array of all known providers.
-	 *
-	 * @returns {string[]} An array of provider names
-	 * @memberof IConnectionManagementService
-	 */
-	getProviderNames(): string[];
-
-	/**
 	 * Refresh the IntelliSense cache for the connection with the given URI
 	 */
 	rebuildIntelliSenseCache(uri: string): Thenable<void>;

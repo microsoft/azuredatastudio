@@ -128,90 +128,86 @@ suite('SQL Object Explorer Service tests', () => {
 		let onCapabilitiesRegistered = new Emitter<string>();
 
 		let sqlProvider = {
-			protocolVersion: '1',
-			providerName: 'MSSQL',
-			providerDisplayName: 'MSSQL',
-			connectionProvider: {
-				options: [
-					{
-						name: 'serverName',
-						displayName: undefined,
-						description: undefined,
-						groupName: undefined,
-						categoryValues: undefined,
-						defaultValue: undefined,
-						isIdentity: true,
-						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.serverName,
-						valueType: 0
-					},
-					{
-						name: 'databaseName',
-						displayName: undefined,
-						description: undefined,
-						groupName: undefined,
-						categoryValues: undefined,
-						defaultValue: undefined,
-						isIdentity: true,
-						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.databaseName,
-						valueType: 0
-					},
-					{
-						name: 'userName',
-						displayName: undefined,
-						description: undefined,
-						groupName: undefined,
-						categoryValues: undefined,
-						defaultValue: undefined,
-						isIdentity: true,
-						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.userName,
-						valueType: 0
-					},
-					{
-						name: 'authenticationType',
-						displayName: undefined,
-						description: undefined,
-						groupName: undefined,
-						categoryValues: undefined,
-						defaultValue: undefined,
-						isIdentity: true,
-						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.authType,
-						valueType: 0
-					},
-					{
-						name: 'password',
-						displayName: undefined,
-						description: undefined,
-						groupName: undefined,
-						categoryValues: undefined,
-						defaultValue: undefined,
-						isIdentity: true,
-						isRequired: true,
-						specialValueType: ConnectionOptionSpecialType.password,
-						valueType: 0
-					},
-					{
-						name: 'encrypt',
-						displayName: undefined,
-						description: undefined,
-						groupName: undefined,
-						categoryValues: undefined,
-						defaultValue: undefined,
-						isIdentity: false,
-						isRequired: false,
-						specialValueType: undefined,
-						valueType: 0
-					}]
-			},
-			adminServicesProvider: { databaseInfoOptions: [], databaseFileInfoOptions: [], fileGroupInfoOptions: [] },
-			features: undefined
+			providerId: 'MSSQL',
+			displayName: 'MSSQL',
+			connectionOptions: [
+				{
+					name: 'serverName',
+					displayName: undefined,
+					description: undefined,
+					groupName: undefined,
+					categoryValues: undefined,
+					defaultValue: undefined,
+					isIdentity: true,
+					isRequired: true,
+					specialValueType: ConnectionOptionSpecialType.serverName,
+					valueType: 0
+				},
+				{
+					name: 'databaseName',
+					displayName: undefined,
+					description: undefined,
+					groupName: undefined,
+					categoryValues: undefined,
+					defaultValue: undefined,
+					isIdentity: true,
+					isRequired: true,
+					specialValueType: ConnectionOptionSpecialType.databaseName,
+					valueType: 0
+				},
+				{
+					name: 'userName',
+					displayName: undefined,
+					description: undefined,
+					groupName: undefined,
+					categoryValues: undefined,
+					defaultValue: undefined,
+					isIdentity: true,
+					isRequired: true,
+					specialValueType: ConnectionOptionSpecialType.userName,
+					valueType: 0
+				},
+				{
+					name: 'authenticationType',
+					displayName: undefined,
+					description: undefined,
+					groupName: undefined,
+					categoryValues: undefined,
+					defaultValue: undefined,
+					isIdentity: true,
+					isRequired: true,
+					specialValueType: ConnectionOptionSpecialType.authType,
+					valueType: 0
+				},
+				{
+					name: 'password',
+					displayName: undefined,
+					description: undefined,
+					groupName: undefined,
+					categoryValues: undefined,
+					defaultValue: undefined,
+					isIdentity: true,
+					isRequired: true,
+					specialValueType: ConnectionOptionSpecialType.password,
+					valueType: 0
+				},
+				{
+					name: 'encrypt',
+					displayName: undefined,
+					description: undefined,
+					groupName: undefined,
+					categoryValues: undefined,
+					defaultValue: undefined,
+					isIdentity: false,
+					isRequired: false,
+					specialValueType: undefined,
+					valueType: 0
+				}
+			]
 		};
 
 		let capabilitiesService = new CapabilitiesTestService();
-		capabilitiesService.capabilities['MSSQL'] = sqlProvider;
+		capabilitiesService.capabilities['MSSQL'] = { connection: sqlProvider };
 
 		connection = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,

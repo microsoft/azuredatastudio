@@ -4,10 +4,12 @@
     "description": "sp_whoisactive for SQL Operations Studio",
     "version": "0.1.0",
     "publisher": "Microsoft",
+    "preview": true,
     "engines": {
-        "vscode": "^1.19.0",
+        "vscode": "^1.17.0",
         "sqlops": "*"
     },
+    "icon": "images/sqlserver.png",
     "license": "SEE LICENSE IN LICENSE.txt",
     "repository": "https://github.com/Microsoft/sqlopsstudio",
     "categories": [

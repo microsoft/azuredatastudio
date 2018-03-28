@@ -342,15 +342,12 @@ suite('SQL Connection Tree Action tests', () => {
 	test('RefreshConnectionAction - refresh should be called if connection status is connect', (done) => {
 		let isConnectedReturnValue: boolean = true;
 		let sqlProvider = {
-			protocolVersion: '1',
-			providerName: 'MSSQL',
-			providerDisplayName: 'MSSQL',
-			connectionProvider: { options: [] },
-			adminServicesProvider: { databaseInfoOptions: [], databaseFileInfoOptions: [], fileGroupInfoOptions: [] },
-			features: undefined
+			providerId: 'MSSQL',
+			displayName: 'MSSQL',
+			connectionOptions: [],
 		};
 
-		capabilitiesService.capabilities['MSSQL'] = sqlProvider;
+		capabilitiesService.capabilities['MSSQL'] = { connection: sqlProvider };
 
 		var connection = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
@@ -433,15 +430,12 @@ suite('SQL Connection Tree Action tests', () => {
 	test('RefreshConnectionAction - refresh should not be called if connection status is not connect', (done) => {
 		let isConnectedReturnValue: boolean = false;
 		let sqlProvider = {
-			protocolVersion: '1',
-			providerName: 'MSSQL',
-			providerDisplayName: 'MSSQL',
-			connectionProvider: { options: [] },
-			adminServicesProvider: { databaseInfoOptions: [], databaseFileInfoOptions: [], fileGroupInfoOptions: [] },
-			features: undefined
+			providerId: 'MSSQL',
+			displayName: 'MSSQL',
+			connectionOptions: []
 		};
 
-		capabilitiesService.capabilities['MSSQL'] = sqlProvider;
+		capabilitiesService.capabilities['MSSQL'] = { connection: sqlProvider };
 
 		var connection = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
