@@ -19,6 +19,9 @@ import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.comp
 import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
+import { StepsViewComponent } from 'sql/parts/jobManagement/views/stepsView.component';
+import { StepsViewRow } from './stepsViewTree';
+import { OnChanges } from '~@angular/core/src/core';
 
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
@@ -27,7 +30,7 @@ export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 	selector: DASHBOARD_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./jobHistory.component.html'))
 })
-export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy {
+export class JobHistoryComponent extends Disposable implements OnInit {
 
 	private _jobManagementService: IJobManagementService;
 	private _tree: Tree;
@@ -44,6 +47,9 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 
 	private prevJobId: string = undefined;
 	private isVisible: boolean = false;
+	private stepRows: StepsViewRow[] = [];
+	private _showSteps: boolean = false;
+	private _runStatus: string = undefined;
 
 
 	constructor(
@@ -65,15 +71,11 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 			const isDoubleClick = (origin === 'mouse' && event.detail === 2);
 			// Cancel Event
 			const isMouseDown = event && event.browserEvent && event.browserEvent.type === 'mousedown';
-
 			if (!isMouseDown) {
 				event.preventDefault(); // we cannot preventDefault onMouseDown because this would break DND otherwise
 			}
-
 			event.stopPropagation();
-
 			tree.setFocus(element, payload);
-
 			if (element && isDoubleClick) {
 				event.preventDefault(); // focus moves to editor, we need to prevent default
 			} else {
@@ -81,6 +83,16 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 				tree.setSelection([element], payload);
 				self.agentJobHistoryInfo = self._treeController.jobHistories.filter(history => history.instanceId === element.instanceID)[0];
 				self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
+				self.stepRows = self.agentJobHistoryInfo.steps.map(step => {
+					let stepViewRow = new StepsViewRow();
+					stepViewRow.message = step.message;
+					stepViewRow.runStatus = JobHistoryRow.convertToStatusString(self.agentJobHistoryInfo.runStatus);
+					self._runStatus = stepViewRow.runStatus;
+					stepViewRow.stepName = step.stepName;
+					stepViewRow.stepID = step.stepId.toString();
+					return stepViewRow;
+				});
+				this._showSteps = true;
 				self._cd.detectChanges();
 			}
 			return true;
@@ -93,9 +105,6 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 		});
 		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 		this._tree.layout(1024);
-	}
-
-	ngOnDestroy() {
 	}
 
 	ngAfterContentChecked() {
@@ -153,6 +162,10 @@ export class JobHistoryComponent extends Disposable implements OnInit, OnDestroy
 
 	private formatTime(time: string): string {
 		return time.replace('T', ' ');
+	}
+
+	public showSteps(): boolean {
+		return this._showSteps;
 	}
 }
 

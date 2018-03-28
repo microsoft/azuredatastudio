@@ -1060,6 +1060,13 @@ declare module 'sqlops' {
 		jobId: string;
 	}
 
+	export interface AgentJobStep {
+		stepId: number;
+		stepName: string;
+		message: string;
+		runDate: string;
+	}
+
 	export interface AgentJobHistoryInfo {
 		instanceId: number;
 		sqlMessageId: number;
@@ -1077,6 +1084,7 @@ declare module 'sqlops' {
 		operatorPaged: string;
 		retriesAttempted: number;
 		server: string;
+		steps: AgentJobStep[];
 	}
 
 	export interface AgentServicesProvider extends DataProvider {

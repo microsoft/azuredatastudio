@@ -208,8 +208,8 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 	}
 
 	private getJob(args: Slick.OnClickEventArgs<any>): sqlops.AgentJobInfo {
-		let cell = args.cell;
-		let jobName = args.grid.getCellNode(1, cell).innerText.trim();
+		let row = args.row;
+		let jobName = args.grid.getCellNode(row, 1).innerText.trim();
 		let job = this.jobs.filter(job => job.name === jobName)[0];
 		return job;
 	}

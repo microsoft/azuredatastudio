@@ -106,7 +106,7 @@
 					<h3>Status:</h3>
 				</td>
 				<td height="30">
-					<h3></h3>
+					<h3>{{_runStatus}}</h3>
 				</td>
 			</tr>
 			<tr class="step-row">
@@ -150,6 +150,7 @@
 				</td>
 			</tr>
 		</table>
+		<stepsview-component *ngIf="showSteps() === true" [stepRows]="stepRows"></stepsview-component>
 	</div>
 </div>
 
