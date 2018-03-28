@@ -222,7 +222,7 @@ export function isValidExtensionVersion(version: string, extensionDesc: IReduced
 	}
 
 	// {{SQL CARBON EDIT}}
-	return (extensionDesc.engines.sqlops && extensionDesc.engines.sqlops === '*') || isVersionValid(version, extensionDesc.engines.vscode, notices);
+	return (extensionDesc.engines.sqlops && extensionDesc.engines.sqlops === '*') || isVersionValid(version, extensionDesc.engines.sqlops, notices);
 }
 
 export function isVersionValid(currentVersion: string, requestedVersion: string, notices: string[] = []): boolean {
