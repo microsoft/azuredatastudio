@@ -173,7 +173,7 @@
         "fs-extra": "^5.0.0",
         "handlebars": "^4.0.11",
         "vscode-nls": "2.0.2",
-        "sqlops": "github:anthonydresser/vscode-extension-vscode"
+        "sqlops": "github:anthonydresser/sqlops-extension-sqlops"
     },
     "devDependencies": {
         "@types/handlebars": "^4.0.11",
