@@ -22,7 +22,7 @@ export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
 @Component({
 	selector: JOBSTEPSVIEW_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./stepsView.component.html'))
+	templateUrl: decodeURI(require.toUrl('./jobStepsView.component.html'))
 })
 export class JobStepsViewComponent extends Disposable implements OnInit, OnChanges {
 
@@ -32,6 +32,7 @@ export class JobStepsViewComponent extends Disposable implements OnInit, OnChang
 	private _treeDataSource = new JobStepsViewDataSource();
 	private _treeRenderer = new JobStepsViewRenderer();
 	private _treeFilter =  new JobStepsViewFilter();
+	private static _pageSize = 1024;
 
 	@ViewChild('table') private _tableContainer: ElementRef;
 
@@ -49,7 +50,6 @@ export class JobStepsViewComponent extends Disposable implements OnInit, OnChang
 
 	ngOnInit() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		const self = this;
 		this._tree = new Tree(this._tableContainer.nativeElement, {
 			controller: this._treeController,
 			dataSource: this._treeDataSource,
@@ -69,7 +69,7 @@ export class JobStepsViewComponent extends Disposable implements OnInit, OnChang
 					renderer: this._treeRenderer
 				});
 			}
-			this._tree.layout(1024);
+			this._tree.layout(JobStepsViewComponent._pageSize);
 			this._tree.setInput(new JobStepsViewModel());
 		}
 	}
