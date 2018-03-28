@@ -126,11 +126,12 @@ export class DashboardWidgetContainer extends DashboardTab implements OnDestroy,
 	public layout() {
 		let container = this._scrollContainer.nativeElement as HTMLElement;
 		let scrollable = this._scrollable.nativeElement as HTMLElement;
+
+		this._widgetContent.layout();
 		this._scrollableElement.setScrollDimensions({
 			scrollHeight: getContentHeight(scrollable),
 			height: getContentHeight(container)
 		});
-		this._widgetContent.layout();
 	}
 
 	public refresh(): void {
