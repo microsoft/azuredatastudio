@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./stepsView';
+import 'vs/css!./jobStepsView';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnChanges, ViewChild, Input, Injectable } from '@angular/core';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
