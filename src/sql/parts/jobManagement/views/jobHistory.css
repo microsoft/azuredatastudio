@@ -209,15 +209,15 @@ table.step-list tr.step-row td {
 	display: inline-block;
 }
 
-.passed {
+.job-passed {
 	background: green;
 }
 
-.failed {
+.job-failed {
 	background: red;
 }
 
-.unknown {
+.job-unknown {
 	background: yellow;
 }
 

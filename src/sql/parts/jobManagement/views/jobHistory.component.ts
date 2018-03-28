@@ -19,8 +19,8 @@ import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.comp
 import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
-import { StepsViewComponent } from 'sql/parts/jobManagement/views/stepsView.component';
-import { StepsViewRow } from './stepsViewTree';
+import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
+import { JobStepsViewRow } from './jobStepsViewTree';
 import { OnChanges } from '~@angular/core/src/core';
 
 
@@ -45,9 +45,9 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	@Input() public jobId: string = undefined;
 	@Input() public agentJobHistoryInfo: AgentJobHistoryInfo = undefined;
 
-	private prevJobId: string = undefined;
-	private isVisible: boolean = false;
-	private stepRows: StepsViewRow[] = [];
+	private _prevJobId: string = undefined;
+	private _isVisible: boolean = false;
+	private _stepRows: JobStepsViewRow[] = [];
 	private _showSteps: boolean = false;
 	private _runStatus: string = undefined;
 
@@ -83,8 +83,8 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 				tree.setSelection([element], payload);
 				self.agentJobHistoryInfo = self._treeController.jobHistories.filter(history => history.instanceId === element.instanceID)[0];
 				self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
-				self.stepRows = self.agentJobHistoryInfo.steps.map(step => {
-					let stepViewRow = new StepsViewRow();
+				self._stepRows = self.agentJobHistoryInfo.steps.map(step => {
+					let stepViewRow = new JobStepsViewRow();
 					stepViewRow.message = step.message;
 					stepViewRow.runStatus = JobHistoryRow.convertToStatusString(self.agentJobHistoryInfo.runStatus);
 					self._runStatus = stepViewRow.runStatus;
@@ -108,10 +108,10 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	}
 
 	ngAfterContentChecked() {
-		if (this.isVisible === false && this._tableContainer.nativeElement.offsetParent !== null) {
-			if (this.prevJobId !== this.jobId) {
+		if (this._isVisible === false && this._tableContainer.nativeElement.offsetParent !== null) {
+			if (this._prevJobId !== this.jobId) {
 				this.loadHistory();
-				this.prevJobId = this.jobId;
+				this._prevJobId = this.jobId;
 			}
 		}
 	}
@@ -148,7 +148,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	}
 
 	private goToJobs(): void {
-		this.isVisible = false;
+		this._isVisible = false;
 		this._agentViewComponent.showHistory = false;
 	}
 

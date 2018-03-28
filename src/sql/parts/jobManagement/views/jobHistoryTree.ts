@@ -145,11 +145,11 @@ export class JobHistoryRenderer implements tree.IRenderer {
 		templateData.label.innerText = element.runDate + '\t\t\t' + element.runStatus;
 		let statusClass: string;
 		if (element.runStatus === 'Succeeded') {
-			statusClass = ' passed';
+			statusClass = ' job-passed';
 		} else if (element.runStatus === 'Failed') {
-			statusClass = ' failed';
+			statusClass = ' job-failed';
 		} else {
-			statusClass = ' unknown';
+			statusClass = ' job-unknown';
 		}
 		this._statusIcon.className += statusClass;
 	}

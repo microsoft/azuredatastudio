@@ -15,26 +15,27 @@ import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/
 import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentJobHistoryInfo } from 'sqlops';
-import { StepsViewController, StepsViewDataSource, StepsViewFilter, StepsViewRenderer, StepsViewRow, StepsViewModel} from 'sql/parts/jobManagement/views/stepsViewTree';
+import { JobStepsViewController, JobStepsViewDataSource, JobStepsViewFilter,
+	JobStepsViewRenderer, JobStepsViewRow, JobStepsViewModel} from 'sql/parts/jobManagement/views/jobStepsViewTree';
 
-export const DASHBOARD_SELECTOR: string = 'stepsview-component';
+export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
 @Component({
-	selector: DASHBOARD_SELECTOR,
+	selector: JOBSTEPSVIEW_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./stepsView.component.html'))
 })
-export class StepsViewComponent extends Disposable implements OnInit, OnChanges {
+export class JobStepsViewComponent extends Disposable implements OnInit, OnChanges {
 
 	private _jobManagementService: IJobManagementService;
 	private _tree: Tree;
-	private _treeController = new StepsViewController();
-	private _treeDataSource = new StepsViewDataSource();
-	private _treeRenderer = new StepsViewRenderer();
-	private _treeFilter =  new StepsViewFilter();
+	private _treeController = new JobStepsViewController();
+	private _treeDataSource = new JobStepsViewDataSource();
+	private _treeRenderer = new JobStepsViewRenderer();
+	private _treeFilter =  new JobStepsViewFilter();
 
 	@ViewChild('table') private _tableContainer: ElementRef;
 
-	@Input() public stepRows: StepsViewRow[] = [];
+	@Input() public stepRows: JobStepsViewRow[] = [];
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -69,7 +70,7 @@ export class StepsViewComponent extends Disposable implements OnInit, OnChanges 
 				});
 			}
 			this._tree.layout(1024);
-			this._tree.setInput(new StepsViewModel());
+			this._tree.setInput(new JobStepsViewModel());
 		}
 	}
 

@@ -16,15 +16,15 @@
 	text-align: center;
 }
 
-.passed {
+.step-passed {
 	background: green;
 }
 
-.failed {
+.step-failed {
 	background: red;
 }
 
-.unknown {
+.step-unknown {
 	background: yellow;
 }
 

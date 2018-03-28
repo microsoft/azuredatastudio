@@ -29,7 +29,7 @@ import { Builder, $, withElementById } from 'vs/base/browser/builder';
 import { AgentJobHistoryInfo } from 'sqlops';
 import { Agent } from 'vs/base/node/request';
 
-export class StepsViewRow {
+export class JobStepsViewRow {
 	public stepID: string;
 	public stepName: string;
 	public message: string;
@@ -38,18 +38,18 @@ export class StepsViewRow {
 }
 
 // Empty class just for tree input
-export class StepsViewModel {
+export class JobStepsViewModel {
 	public static readonly id = generateUuid();
 }
 
-export class StepsViewController extends TreeDefaults.DefaultController {
+export class JobStepsViewController extends TreeDefaults.DefaultController {
 	private _jobHistories: AgentJobHistoryInfo[];
 
-	protected onLeftClick(tree: tree.ITree, element: StepsViewRow, event: IMouseEvent, origin: string = 'mouse'): boolean {
+	protected onLeftClick(tree: tree.ITree, element: JobStepsViewRow, event: IMouseEvent, origin: string = 'mouse'): boolean {
 		return true;
 	}
 
-	public onContextMenu(tree: tree.ITree, element: StepsViewRow, event: tree.ContextMenuEvent): boolean {
+	public onContextMenu(tree: tree.ITree, element: JobStepsViewRow, event: tree.ContextMenuEvent): boolean {
 		return true;
 	}
 
@@ -63,42 +63,42 @@ export class StepsViewController extends TreeDefaults.DefaultController {
 
 }
 
-export class StepsViewDataSource implements tree.IDataSource {
-	private _data: StepsViewRow[];
+export class JobStepsViewDataSource implements tree.IDataSource {
+	private _data: JobStepsViewRow[];
 
-	public getId(tree: tree.ITree, element: StepsViewRow | StepsViewModel): string {
-		if (element instanceof StepsViewModel) {
-			return StepsViewModel.id;
+	public getId(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): string {
+		if (element instanceof JobStepsViewModel) {
+			return JobStepsViewModel.id;
 		} else {
-			return (element as StepsViewRow).rowID;
+			return (element as JobStepsViewRow).rowID;
 		}
 	}
 
-	public hasChildren(tree: tree.ITree, element: StepsViewRow | StepsViewModel): boolean {
-		if (element instanceof StepsViewModel) {
+	public hasChildren(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): boolean {
+		if (element instanceof JobStepsViewModel) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public getChildren(tree: tree.ITree, element: StepsViewRow | StepsViewModel): Promise {
-		if (element instanceof StepsViewModel) {
+	public getChildren(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): Promise {
+		if (element instanceof JobStepsViewModel) {
 			return TPromise.as(this._data);
 		} else {
 			return TPromise.as(undefined);
 		}
 	}
 
-	public getParent(tree: tree.ITree, element: StepsViewRow | StepsViewModel): Promise {
-		if (element instanceof StepsViewModel) {
+	public getParent(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): Promise {
+		if (element instanceof JobStepsViewModel) {
 			return TPromise.as(undefined);
 		} else {
-			return TPromise.as(new StepsViewModel());
+			return TPromise.as(new JobStepsViewModel());
 		}
 	}
 
-	public set data(data: StepsViewRow[]) {
+	public set data(data: JobStepsViewRow[]) {
 		this._data = data;
 	}
 }
@@ -108,18 +108,18 @@ export interface IListTemplate {
 	label: HTMLElement;
 }
 
-export class StepsViewRenderer implements tree.IRenderer {
+export class JobStepsViewRenderer implements tree.IRenderer {
 	private _statusIcon: HTMLElement;
 
-	public getHeight(tree: tree.ITree, element: StepsViewRow): number {
+	public getHeight(tree: tree.ITree, element: JobStepsViewRow): number {
 		return 22;
 	}
 
-	public getTemplateId(tree: tree.ITree, element: StepsViewRow | StepsViewModel): string {
-		if (element instanceof StepsViewModel) {
-			return 'stepsViewModel';
+	public getTemplateId(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): string {
+		if (element instanceof JobStepsViewModel) {
+			return 'jobStepsViewModel';
 		} else {
-			return 'stepsViewRow';
+			return 'jobStepsViewRow';
 		}
 	}
 
@@ -134,7 +134,7 @@ export class StepsViewRenderer implements tree.IRenderer {
 		return { statusIcon, label };
 	}
 
-	public renderElement(tree: tree.ITree, element: StepsViewRow, templateId: string, templateData: IListTemplate): void {
+	public renderElement(tree: tree.ITree, element: JobStepsViewRow, templateId: string, templateData: IListTemplate): void {
 		let stepIdCol: HTMLElement = DOM.$('div');
 		stepIdCol.className = 'tree-id-col';
 		stepIdCol.innerText = element.stepID;
@@ -149,11 +149,11 @@ export class StepsViewRenderer implements tree.IRenderer {
 		templateData.label.appendChild(stepMessageCol);
 		let statusClass: string;
 		if (element.runStatus === 'Succeeded') {
-			statusClass = ' passed';
+			statusClass = ' step-passed';
 		} else if (element.runStatus === 'Failed') {
-			statusClass = ' failed';
+			statusClass = ' step-failed';
 		} else {
-			statusClass = ' unknown';
+			statusClass = ' step-unknown';
 		}
 		this._statusIcon.className += statusClass;
 	}
@@ -169,10 +169,10 @@ export class StepsViewRenderer implements tree.IRenderer {
 	}
 }
 
-export class StepsViewFilter implements tree.IFilter {
+export class JobStepsViewFilter implements tree.IFilter {
 	private _filterString: string;
 
-	public isVisible(tree: tree.ITree, element: StepsViewRow): boolean {
+	public isVisible(tree: tree.ITree, element: JobStepsViewRow): boolean {
 		return this._isJobVisible();
 	}
 
