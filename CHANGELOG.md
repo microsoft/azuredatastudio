@@ -1,5 +1,20 @@
 # Change Log
 
+## Version 0.27.3
+* Release date: March 28, 2017
+* Release status: Public Preview
+
+## What's new in this version
+The March Public Preview release enables some key aspects of the SQL Operations
+Studio extensibility story.  Here are some highlights in this release.
+
+* Enhance the Manage Dashboard extensibility model to support tabbed Insights and Configuration panes
+* Dashboard Insights extensions for `sp_whoisactive` from [whoisactive.com](http://whoisactive.com)
+* Extension Manager enables simple acquisition of 1st-party and 3rd-party extensions
+* Add additional Extensibility APIs for `connection` and `objectexplorer` management
+* Community Localization open for 10 languages
+* Continue to fix important customer impacting GitHub issues
+
 ## Version 0.26.7
 * Release date: February 16, 2017
 * Release status: Public Preview Hotfix 1

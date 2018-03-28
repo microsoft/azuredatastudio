@@ -74,7 +74,7 @@ export class SerializationService implements ISerializationService {
 
 	public getSerializationFeatureMetadataProvider(ownerUri: string): sqlops.FeatureMetadataProvider {
 		let providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
-		let providerCapabilities = this._capabilitiesService.getCapabilities(providerId);
+		let providerCapabilities = this._capabilitiesService.getLegacyCapabilities(providerId);
 
 		if (providerCapabilities) {
 			return providerCapabilities.features.find(f => f.featureName === SERVICE_ID);

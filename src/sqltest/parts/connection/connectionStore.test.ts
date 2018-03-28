@@ -21,6 +21,7 @@ import { Emitter } from 'vs/base/common/event';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CapabilitiesTestService } from '../../stubs/capabilitiesTestService';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 suite('SQL ConnectionStore tests', () => {
 	let defaultNamedProfile: IConnectionProfile;
@@ -33,7 +34,7 @@ suite('SQL ConnectionStore tests', () => {
 	let capabilitiesService: CapabilitiesTestService;
 	let mementoArray: any = [];
 	let maxRecent = 5;
-	let msSQLCapabilities: sqlops.DataProtocolServerCapabilities;
+	let msSQLCapabilities: ConnectionProviderProperties;
 	let defaultNamedConnectionProfile: ConnectionProfile;
 
 	setup(() => {
@@ -96,81 +97,74 @@ suite('SQL ConnectionStore tests', () => {
 		};
 
 		capabilitiesService = new CapabilitiesTestService();
-		let capabilities: { [id: string]: sqlops.DataProtocolServerCapabilities } = {};
-		let connectionProvider: sqlops.ConnectionProviderOptions = {
-			options: [
-				{
-					name: 'serverName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.serverName,
-					valueType: 0
-				},
-				{
-					name: 'databaseName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.databaseName,
-					valueType: 0
-				},
-				{
-					name: 'userName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.userName,
-					valueType: 0
-				},
-				{
-					name: 'authenticationType',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.authType,
-					valueType: 0
-				},
-				{
-					name: 'password',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.password,
-					valueType: 0
-				}
-			]
-		};
+		let connectionProvider: sqlops.ConnectionOption[] = [
+			{
+				name: 'serverName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.serverName,
+				valueType: 0
+			},
+			{
+				name: 'databaseName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.databaseName,
+				valueType: 0
+			},
+			{
+				name: 'userName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.userName,
+				valueType: 0
+			},
+			{
+				name: 'authenticationType',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.authType,
+				valueType: 0
+			},
+			{
+				name: 'password',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.password,
+				valueType: 0
+			}
+		];
 		msSQLCapabilities = {
-			protocolVersion: '1',
-			providerName: 'MSSQL',
-			providerDisplayName: 'MSSQL',
-			connectionProvider: connectionProvider,
-			adminServicesProvider: undefined,
-			features: undefined
+			providerId: 'MSSQL',
+			displayName: 'MSSQL',
+			connectionOptions: connectionProvider
 		};
-		capabilities['MSSQL'] = msSQLCapabilities;
-		capabilitiesService.capabilities['MSSQL'] = msSQLCapabilities;
+		capabilitiesService.capabilities['MSSQL'] = { connection: msSQLCapabilities };
 		let groups: IConnectionProfileGroup[] = [
 			{
 				id: 'root',
@@ -368,24 +362,19 @@ suite('SQL ConnectionStore tests', () => {
 
 	test('isPasswordRequired should return false if the password is not required in capabilities', () => {
 		let providerName: string = 'providername';
-		let connectionProvider: sqlops.ConnectionProviderOptions = {
-			options: msSQLCapabilities.connectionProvider.options.map(o => {
-				if (o.name === 'password') {
-					o.isRequired = false;
-				}
-				return o;
-			})
-		};
+		let connectionProvider = msSQLCapabilities.connectionOptions.map(o => {
+			if (o.name === 'password') {
+				o.isRequired = false;
+			}
+			return o;
+		});
 		let providerCapabilities = {
-			protocolVersion: '1',
-			providerName: providerName,
-			providerDisplayName: providerName,
-			connectionProvider: connectionProvider,
-			adminServicesProvider: undefined,
-			features: undefined
+			providerId: providerName,
+			displayName: providerName,
+			connectionOptions: connectionProvider
 		};
 
-		capabilitiesService.capabilities[providerName] = providerCapabilities;
+		capabilitiesService.capabilities[providerName] = { connection: providerCapabilities };
 
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);

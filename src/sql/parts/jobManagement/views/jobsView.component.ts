@@ -93,36 +93,6 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	loadJobHistories() {
-		if (this.jobs) {
-			this.jobs.forEach((job) => {
-				let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
-					if (result.jobs) {
-						this.jobHistories[job.jobId] = result.jobs;
-						this.expandJobsWithFailures();
-					}
-				});
-			});
-		}
-	}
-
-	private expandJobsWithFailures(): void {
-		for (let i: number = 0; i < this.jobs.length; ++i) {
-			let job = this.jobs[i];
-			let jobHistory = this.jobHistories[job.jobId];
-			if (jobHistory && jobHistory.length > 0) {
-				let latestExecution = jobHistory[jobHistory.length - 1];
-				if (latestExecution.runStatus !== 0) {
-					this.expandJobRowDetails(i);
-				}
-			}
-		}
-	}
-
-	private expandJobRowDetails(rowIdx: number): void {
-	}
-
 	onFirstVisible() {
 		let self = this;
 		let columns = this.columns.map((column) => {
@@ -157,11 +127,6 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 			let job = self.getJob(args);
 			self._agentViewComponent.jobId = job.jobId;
 			self._agentViewComponent.agentJobInfo = job;
-			self.getJobHistoryInfo(ownerUri, job).then(result => {
-				if (result) {
-					this._agentViewComponent.agentJobHistoryInfo = result;
-				}
-			});
 			self.isVisible = false;
 			self._agentViewComponent.showHistory = true;
 		});
@@ -172,22 +137,6 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 			if (result && result.jobs) {
 				this.jobs = result.jobs;
 				this.onJobsAvailable(result.jobs);
-			}
-		});
-	}
-
-	getJobHistoryInfo(ownerUri: string, job: any): Thenable<sqlops.AgentJobHistoryInfo[]> {
-		return new Promise<sqlops.AgentJobHistoryInfo[]>((resolve, reject) => {
-			if (this.jobHistories[job.jobId]){
-				Promise.resolve(this.jobHistories[job.jobId]);
-			} else {
-				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then(result => {
-					if (result && result.jobs) {
-						Promise.resolve(result.jobs);
-					} else {
-						Promise.reject(undefined);
-					}
-				});
 			}
 		});
 	}
@@ -225,7 +174,6 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 
 		this._table.resizeCanvas();
 		this._table.autosizeColumns();
-
 		this.loadJobHistories();
 	}
 
@@ -244,6 +192,19 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 			'<td nowrap class="jobview-jobnameindicatorsuccess"></td>' +
 			'<td nowrap class="jobview-jobnametext">' + dataContext.name + '</td>' +
 			'</tr></table>';
+	}
+
+	loadJobHistories() {
+		if (this.jobs) {
+			this.jobs.forEach((job) => {
+				let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
+					if (result.jobs) {
+						this.jobHistories[job.jobId] = result.jobs;
+					}
+				});
+			});
+		}
 	}
 
 	private getJob(args: Slick.OnClickEventArgs<any>): sqlops.AgentJobInfo {

@@ -32,6 +32,7 @@ import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as types from 'vs/base/common/types';
+import { entries } from 'sql/base/common/objects';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -190,7 +191,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		// Set the model name, initialize the controller if needed, and return the controller
 		this._model.providerName = providerName;
 		if (!this._connectionControllerMap[providerName]) {
-			this._connectionControllerMap[providerName] = this._instantiationService.createInstance(ConnectionController, this._container, this._connectionManagementService, this._capabilitiesService.getCapabilities(providerName), {
+			this._connectionControllerMap[providerName] = this._instantiationService.createInstance(ConnectionController, this._container, this._connectionManagementService, this._capabilitiesService.getCapabilities(providerName).connection, {
 				onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
 			}, providerName);
 		}
@@ -274,12 +275,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			// only create the provider maps first time the dialog gets called
 			let capabilitiesPromise: Promise<void> = Promise.resolve();
 			if (this._providerTypes.length === 0) {
-				capabilitiesPromise = this._capabilitiesService.onCapabilitiesReady().then(() => {
-					this._capabilitiesService.providers.map(p => {
-						let capabilities = this._capabilitiesService.getCapabilities(p);
-						this._providerTypes.push(capabilities.providerDisplayName);
-						this._providerNameToDisplayNameMap[capabilities.providerName] = capabilities.providerDisplayName;
-					});
+				entries(this._capabilitiesService.providers).forEach(p => {
+					this._providerTypes.push(p[1].connection.displayName);
+					this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
 				});
 			}
 			capabilitiesPromise.then(s => {

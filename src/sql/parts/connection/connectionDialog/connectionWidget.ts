@@ -283,11 +283,9 @@ export class ConnectionWidget {
 	}
 
 	private setConnectButton(): void {
-		let authDisplayName: string = this.getAuthTypeDisplayName(this.authenticationType);
-		let authType: AuthenticationType = this.getMatchingAuthType(authDisplayName);
 		let showUsernameAndPassword: boolean = true;
-		if (authType) {
-			showUsernameAndPassword = authType.showUsernameAndPassword;
+		if (this.authType) {
+			showUsernameAndPassword = this.authType.showUsernameAndPassword;
 		}
 		showUsernameAndPassword ? this._callbacks.onSetConnectButton(!!this.serverName && !!this.userName) :
 			this._callbacks.onSetConnectButton(!!this.serverName);
@@ -344,6 +342,7 @@ export class ConnectionWidget {
 
 	public focusOnOpen(): void {
 		this._serverNameInputBox.focus();
+		this.focusPasswordIfNeeded();
 	}
 
 	private getModelValue(value: string): string {
@@ -391,6 +390,7 @@ export class ConnectionWidget {
 			// 1. Authentication type is SQL Login and no username is provided
 			// 2. No server name is provided
 			this.setConnectButton();
+			this.focusPasswordIfNeeded();
 		}
 	}
 
@@ -554,6 +554,17 @@ export class ConnectionWidget {
 
 	public set databaseDropdownExpanded(val: boolean) {
 		this._databaseDropdownExpanded = val;
+	}
+
+	private get authType(): AuthenticationType {
+		let authDisplayName: string = this.getAuthTypeDisplayName(this.authenticationType);
+		return this.getMatchingAuthType(authDisplayName);
+	}
+
+	private focusPasswordIfNeeded(): void {
+		if (this.authType && this.authType.showUsernameAndPassword && this.userName && !this.password) {
+			this._passwordInputBox.focus();
+		}
 	}
 }
 

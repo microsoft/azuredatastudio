@@ -575,7 +575,7 @@ declare module 'sqlops' {
 
 		scriptAsOperation(connectionUri: string, operation: ScriptOperation, metadata: ObjectMetadata, paramDetails: ScriptingParamDetails): Thenable<ScriptingResult>;
 
-		registerOnScriptingComplete(handler: (scriptingCompleteResult: ScriptingCompleteResult) => any);
+		registerOnScriptingComplete(handler: (scriptingCompleteResult: ScriptingCompleteResult) => any): void;
 	}
 
 	export interface ScriptingCompleteResult {
@@ -989,9 +989,9 @@ declare module 'sqlops' {
 
 		findNodes(findNodesInfo: FindNodesInfo): Thenable<ObjectExplorerFindNodesResponse>;
 
-		registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any);
+		registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any): void;
 
-		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any);
+		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
 
 	}
 
@@ -1061,13 +1061,13 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentJobHistoryInfo {
-		instanceID: number;
-		sqlMessageID: number;
+		instanceId: number;
+		sqlMessageId: number;
 		message: string;
-		stepID: number;
+		stepId: number;
 		stepName: string;
 		sqlSeverity: number;
-		jobID: string;
+		jobId: string;
 		jobName: string;
 		runStatus: number;
 		runDate: string;
@@ -1081,7 +1081,7 @@ declare module 'sqlops' {
 
 	export interface AgentServicesProvider extends DataProvider {
 		getJobs(connectionUri: string): Thenable<AgentJobsResult>;
-		getJobHistory(connectionUri: string, jobID: string): Thenable<AgentJobHistoryResult>;
+		getJobHistory(connectionUri: string, jobId: string): Thenable<AgentJobHistoryResult>;
 		jobAction(connectionUri: string, jobName: string, action: string): Thenable<AgentJobActionResult>;
 	}
 
@@ -1138,9 +1138,9 @@ declare module 'sqlops' {
 
 		cancelTask(cancelTaskParams: CancelTaskParams): Thenable<boolean>;
 
-		registerOnTaskCreated(handler: (response: TaskInfo) => any);
+		registerOnTaskCreated(handler: (response: TaskInfo) => any): void;
 
-		registerOnTaskStatusChanged(handler: (response: TaskProgressInfo) => any);
+		registerOnTaskStatusChanged(handler: (response: TaskProgressInfo) => any): void;
 	}
 
 	// Disaster Recovery interfaces  -----------------------------------------------------------------------
@@ -1231,7 +1231,7 @@ declare module 'sqlops' {
 		connectSession(sessionId: string): Thenable<boolean>;
 		disconnectSession(sessionId: string): Thenable<boolean>;
 
-		registerOnSessionEventsAvailable(handler: (response: ProfilerSessionEvents) => any);
+		registerOnSessionEventsAvailable(handler: (response: ProfilerSessionEvents) => any): void;
 	}
 
 	export interface IProfilerTableRow {
@@ -1278,11 +1278,11 @@ declare module 'sqlops' {
 
 	export interface FileBrowserProvider extends DataProvider {
 		openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean>;
-		registerOnFileBrowserOpened(handler: (response: FileBrowserOpenedParams) => any);
+		registerOnFileBrowserOpened(handler: (response: FileBrowserOpenedParams) => any): void;
 		expandFolderNode(ownerUri: string, expandPath: string): Thenable<boolean>;
-		registerOnFolderNodeExpanded(handler: (response: FileBrowserExpandedParams) => any);
+		registerOnFolderNodeExpanded(handler: (response: FileBrowserExpandedParams) => any): void;
 		validateFilePaths(ownerUri: string, serviceType: string, selectedFiles: string[]): Thenable<boolean>;
-		registerOnFilePathsValidated(handler: (response: FileBrowserValidatedParams) => any);
+		registerOnFilePathsValidated(handler: (response: FileBrowserValidatedParams) => any): void;
 		closeFileBrowser(ownerUri: string): Thenable<FileBrowserCloseResponse>;
 	}
 

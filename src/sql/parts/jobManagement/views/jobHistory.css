@@ -158,7 +158,7 @@ input#accordion:checked ~ .accordion-content {
 }
 
 table.step-list tr.step-row td {
-	padding-right: 100px;
+	padding-right: 10px;
 }
 
 .history-details {

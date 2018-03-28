@@ -4,16 +4,16 @@
 
 SQL Operations Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download SQL Operations Studio February Public Preview**
+**Download SQL Operations Studio March Public Preview**
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=867998
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=867997
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=867999
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=868000
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=868002
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=868001
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=870837
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=870838
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=870839
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=870840
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=870842
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=870841
 
 Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instructions.
 
@@ -69,6 +69,8 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* westerncj for `Removed duplicate contribution from README.md (#753)`
+* ntovas for `Fix for duplicate extensions shown in "Save File" dialog. (#779)`
 * SebastianPfliegel for `Add cursor snippet (#475)`
 * mikaoelitiana for fix: `revert README and CONTRIBUTING after last VSCode merge (#574)`
 * alextercete for `Reinstate menu item to install from VSIX (#682)`
@@ -79,6 +81,10 @@ We would like to thank all our users who raised issues, and in particular the fo
 * stebet for `Fix #153: Fixing sql snippets that failed on a DB with case-sensitive collation. (#152)`
 * SebastianPfliegel `Remove sqlExtensionHelp (#312)`
 * olljanat for `Implemented npm version check (#314)`
+* Adam Mechanic for helping with the `whoisactive` extension
+* All community localization contributors *(will get list of individuals next month)*
+
+And of course we'd like to thank the authors of all upstream dependencies.  Please see a full list in the [ThirdPartyNotices.txt](https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/ThirdPartyNotices.txt)
 
 ## License
 
