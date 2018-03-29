@@ -80,18 +80,20 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 				tree.setFocus(element, payload);
 				tree.setSelection([element], payload);
 				self.agentJobHistoryInfo = self._treeController.jobHistories.filter(history => history.instanceId === element.instanceID)[0];
-				self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
-				self._stepRows = self.agentJobHistoryInfo.steps.map(step => {
-					let stepViewRow = new JobStepsViewRow();
-					stepViewRow.message = step.message;
-					stepViewRow.runStatus = JobHistoryRow.convertToStatusString(self.agentJobHistoryInfo.runStatus);
-					self._runStatus = stepViewRow.runStatus;
-					stepViewRow.stepName = step.stepName;
-					stepViewRow.stepID = step.stepId.toString();
-					return stepViewRow;
-				});
-				this._showSteps = true;
-				self._cd.detectChanges();
+				if (self.agentJobHistoryInfo) {
+					self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
+					self._stepRows = self.agentJobHistoryInfo.steps.map(step => {
+						let stepViewRow = new JobStepsViewRow();
+						stepViewRow.message = step.message;
+						stepViewRow.runStatus = JobHistoryRow.convertToStatusString(self.agentJobHistoryInfo.runStatus);
+						self._runStatus = stepViewRow.runStatus;
+						stepViewRow.stepName = step.stepName;
+						stepViewRow.stepID = step.stepId.toString();
+						return stepViewRow;
+					});
+					this._showSteps = true;
+					self._cd.detectChanges();
+				}
 			}
 			return true;
 		};
