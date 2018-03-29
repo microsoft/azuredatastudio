@@ -1038,7 +1038,7 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentJobActionResult {
-		succeeded: string;
+		succeeded: boolean;
 		errorMessage: string;
 	}
 
