@@ -225,3 +225,8 @@ table.step-list tr.step-row td {
 	padding-left: 50px;
 	width: 140px;
 }
+
+.steps-tree .monaco-tree .monaco-tree-row {
+	white-space: normal;
+	height: 40px !important;
+}

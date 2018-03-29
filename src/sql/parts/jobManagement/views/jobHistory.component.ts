@@ -5,7 +5,8 @@
 
 import 'vs/css!./jobHistory';
 
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Input, Injectable } from '@angular/core';
+import { OnInit, OnChanges, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Input, Injectable } from '@angular/core';
+import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
@@ -18,11 +19,8 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
-import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
 import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
 import { JobStepsViewRow } from './jobStepsViewTree';
-import { OnChanges } from '~@angular/core/src/core';
-
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 

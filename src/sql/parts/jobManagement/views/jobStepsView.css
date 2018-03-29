@@ -34,19 +34,27 @@
 }
 
 .step-columns {
-	width: 100%;
 	padding-left: 50px;
-	text-align: center;
 }
 
 .step-id-col, .tree-id-col {
-	width: 56px;
+	padding-left: 10px;
+	white-space: normal;
+	text-align: center;
+	width: 60px;
+
 }
 
 .step-name-col, .tree-name-col  {
-	width: 500px;
+	padding-right: 10px;
+	white-space: normal;
+	text-align: center;
+	width: 350px;
 }
 
 .step-message-col, .tree-message-col {
-	width: 569px;
+	padding-right: 10px;
+	white-space: normal;
+	text-align: center;
+	width: 680px;
 }
