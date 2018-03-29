@@ -22,7 +22,7 @@ import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
 import { JobStepsViewRow } from './jobStepsViewTree';
-import { IMessage } from '../../grid/common/interfaces';
+import { localize } from 'vs/nls';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -156,10 +156,12 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			if (result.succeeded) {
 				switch (action) {
 					case ('run'):
-						this._messageService.show(Severity.Info, 'The job was successfully started.');
+						var startMsg = localize('jobSuccessfullyStarted', 'The job was successfully started.');
+						this._messageService.show(Severity.Info, startMsg);
 						break;
 					case ('stop'):
-						this._messageService.show(Severity.Info, 'The job was successfully stopped.');
+						var stopMsg = localize('jobSuccessfullyStopped', 'The job was successfully stopped.');
+						this._messageService.show(Severity.Info, stopMsg);
 						break;
 					default:
 						break;
