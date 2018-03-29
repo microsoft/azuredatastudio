@@ -57,7 +57,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent
 	) {
 		super();
 		this._jobManagementService = bootstrapService.jobManagementService;
