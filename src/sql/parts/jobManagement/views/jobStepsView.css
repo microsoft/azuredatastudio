@@ -1,0 +1,61 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.steps-tree .list-row .status-icon {
+	height: 10px;
+	width: 10px;
+	display: inline-block;
+	margin-top: 4px;
+}
+
+.list-row .label {
+	padding-left: 10px;
+	display: flex;
+	text-align: center;
+}
+
+.step-passed {
+	background: green;
+}
+
+.step-failed {
+	background: red;
+}
+
+.step-unknown {
+	background: yellow;
+}
+
+.steps-tree .list-row {
+	display: inline-flex;
+	height: 20px
+}
+
+.step-columns {
+	padding-left: 50px;
+}
+
+.step-id-col, .tree-id-col {
+	padding-left: 10px;
+	white-space: normal;
+	text-align: center;
+	width: 60px;
+
+}
+
+.step-name-col, .tree-name-col  {
+	padding-right: 10px;
+	white-space: normal;
+	text-align: center;
+	width: 350px;
+}
+
+.step-message-col, .tree-message-col {
+	padding-right: 10px;
+	white-space: normal;
+	text-align: center;
+	width: 680px;
+	height:
+}
