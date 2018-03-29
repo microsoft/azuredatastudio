@@ -12,6 +12,7 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IJobManagementService } from '../common/interfaces';
@@ -21,6 +22,7 @@ import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
 import { JobStepsViewRow } from './jobStepsViewTree';
+import { localize } from 'vs/nls';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -48,7 +50,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _stepRows: JobStepsViewRow[] = [];
 	private _showSteps: boolean = false;
 	private _runStatus: string = undefined;
-
+	private _messageService: IMessageService;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -59,6 +61,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	) {
 		super();
 		this._jobManagementService = bootstrapService.jobManagementService;
+		this._messageService = bootstrapService.messageService;
 	}
 
 	ngOnInit() {
@@ -82,15 +85,17 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 				self.agentJobHistoryInfo = self._treeController.jobHistories.filter(history => history.instanceId === element.instanceID)[0];
 				if (self.agentJobHistoryInfo) {
 					self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
-					self._stepRows = self.agentJobHistoryInfo.steps.map(step => {
-						let stepViewRow = new JobStepsViewRow();
-						stepViewRow.message = step.message;
-						stepViewRow.runStatus = JobHistoryRow.convertToStatusString(self.agentJobHistoryInfo.runStatus);
-						self._runStatus = stepViewRow.runStatus;
-						stepViewRow.stepName = step.stepName;
-						stepViewRow.stepID = step.stepId.toString();
-						return stepViewRow;
-					});
+					if (self.agentJobHistoryInfo.steps) {
+						self._stepRows = self.agentJobHistoryInfo.steps.map(step => {
+							let stepViewRow = new JobStepsViewRow();
+							stepViewRow.message = step.message;
+							stepViewRow.runStatus = JobHistoryRow.convertToStatusString(self.agentJobHistoryInfo.runStatus);
+							self._runStatus = stepViewRow.runStatus;
+							stepViewRow.stepName = step.stepName;
+							stepViewRow.stepID = step.stepId.toString();
+							return stepViewRow;
+						});
+					}
 					this._showSteps = true;
 					self._cd.detectChanges();
 				}
@@ -120,13 +125,15 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		const self = this;
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getJobHistory(ownerUri, this.jobId).then((result) => {
-			if (result.jobs) {
+			if (result && result.jobs) {
 				self._treeController.jobHistories = result.jobs;
 				let jobHistoryRows = self._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
 				self._treeDataSource.data = jobHistoryRows;
 				self._tree.setInput(new JobHistoryModel());
 				self.agentJobHistoryInfo =  self._treeController.jobHistories[0];
-				self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
+				if (this.agentJobHistoryInfo) {
+					self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
+				}
 				self._cd.detectChanges();
 			}
 		});
@@ -144,7 +151,25 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 
 	private jobAction(action: string, jobName: string): void {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.jobAction(ownerUri, jobName, action);
+		const self = this;
+		this._jobManagementService.jobAction(ownerUri, jobName, action).then(result => {
+			if (result.succeeded) {
+				switch (action) {
+					case ('run'):
+						var startMsg = localize('jobSuccessfullyStarted', 'The job was successfully started.');
+						this._messageService.show(Severity.Info, startMsg);
+						break;
+					case ('stop'):
+						var stopMsg = localize('jobSuccessfullyStopped', 'The job was successfully stopped.');
+						this._messageService.show(Severity.Info, stopMsg);
+						break;
+					default:
+						break;
+				}
+			} else {
+				this._messageService.show(Severity.Error, result.errorMessage);
+			}
+		});
 	}
 
 	private goToJobs(): void {
