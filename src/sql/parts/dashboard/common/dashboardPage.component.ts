@@ -208,7 +208,7 @@ export abstract class DashboardPage extends AngularDisposable {
 						configs = cb.apply(this, [configs, this.dashboardService, this.context]);
 					});
 					this._gridModifiers.forEach(cb => {
-						configs = cb.apply(this, [configs, this._originalConfig]);
+						configs = cb.apply(this, [configs]);
 					});
 					if (key === WIDGETS_CONTAINER) {
 						return { id: v.id, title: v.title, container: { 'widgets-container': configs }, alwaysShow: v.alwaysShow };

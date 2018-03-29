@@ -4,7 +4,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div [ngGrid]="gridConfig" *ngIf="widgets" >
-	<dashboard-widget-wrapper *ngFor="let widget of widgets" [(ngGridItem)]="widget.gridItemConfig" [_config]="widget">
-	</dashboard-widget-wrapper>
+<div class="scroll-container" #scrollContainer>
+	<div class="scrollable" #scrollable>
+		<div [ngGrid]="gridConfig" *ngIf="widgets" >
+			<dashboard-widget-wrapper *ngFor="let widget of widgets" [(ngGridItem)]="widget.gridItemConfig" [_config]="widget">
+			</dashboard-widget-wrapper>
+		</div>
+	</div>
 </div>
