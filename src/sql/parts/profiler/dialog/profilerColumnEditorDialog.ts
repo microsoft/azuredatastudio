@@ -25,6 +25,7 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 import Event, { Emitter } from 'vs/base/common/event';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 
 class EventItem {
 
@@ -314,7 +315,8 @@ export class ProfilerColumnEditorDialog extends Modal {
 		@IPartService _partService: IPartService,
 		@IThemeService private _themeService: IThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IContextViewService private _contextViewService: IContextViewService
 	) {
 		super(nls.localize('profilerColumnDialog.profiler', 'Profiler'), TelemetryKeys.Profiler, _partService, telemetryService, contextKeyService);
 	}
@@ -329,7 +331,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 	protected renderBody(container: HTMLElement): void {
 		let builder = new Builder(container);
 		builder.div({}, b => {
-			this._selectBox = new SelectBox(this._options, 0);
+			this._selectBox = new SelectBox(this._options, 0, this._contextViewService);
 			this._selectBox.render(b.getHTMLElement());
 			this._register(this._selectBox.onDidSelect(e => {
 				this._selectedValue = e.index;

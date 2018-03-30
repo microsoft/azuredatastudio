@@ -46,6 +46,7 @@ import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { deepClone } from 'vs/base/common/objects';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 const DASHBOARD_SETTINGS = 'dashboard';
 
@@ -140,6 +141,7 @@ export class DashboardServiceInterface extends AngularDisposable {
 	private _dashboardWebviewService = this._bootstrapService.dashboardWebviewService;
 	private _partService = this._bootstrapService.partService;
 	private _angularEventingService = this._bootstrapService.angularEventingService;
+	private _environmentService = this._bootstrapService.environmentService;
 
 	/* Special Services */
 	private _metadataService: SingleConnectionMetadataService;
@@ -227,6 +229,10 @@ export class DashboardServiceInterface extends AngularDisposable {
 
 	public get queryManagementService(): SingleQueryManagementService {
 		return this._queryManagementService;
+	}
+
+	public get environmentService(): IEnvironmentService {
+		return this._environmentService;
 	}
 
 	public get contextViewService(): IContextViewService {

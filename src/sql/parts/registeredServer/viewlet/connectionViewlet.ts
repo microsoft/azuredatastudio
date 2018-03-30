@@ -27,6 +27,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ClearSearchAction, AddServerAction, AddServerGroupAction, ActiveConnectionsFilterAction } from 'sql/parts/registeredServer/viewlet/connectionTreeAction';
 import { warn } from 'sql/base/common/log';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IPartService } from 'vs/workbench/services/part/common/partService';
 
 export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 
@@ -50,9 +51,11 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IViewletService private viewletService: IViewletService,
 		@IMessageService private messageService: IMessageService,
-		@IObjectExplorerService private objectExplorerService: IObjectExplorerService
+		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
+		@IPartService partService: IPartService,
 	) {
-		super(VIEWLET_ID, telemetryService, _themeService);
+
+		super(VIEWLET_ID, partService, telemetryService, _themeService);
 		this._searchDelayer = new ThrottledDelayer(500);
 
 		this._clearSearchAction = this._instantiationService.createInstance(ClearSearchAction, ClearSearchAction.ID, ClearSearchAction.LABEL, this);

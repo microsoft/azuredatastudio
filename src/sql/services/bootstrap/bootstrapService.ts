@@ -42,6 +42,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 export const BOOTSTRAP_SERVICE_ID = 'bootstrapService';
 export const IBootstrapService = createDecorator<IBootstrapService>(BOOTSTRAP_SERVICE_ID);
@@ -94,6 +95,7 @@ export interface IBootstrapService {
 	commandService: ICommandService;
 	dashboardWebviewService: IDashboardWebviewService;
 	jobManagementService: IJobManagementService;
+	environmentService: IEnvironmentService;
 
 	/*
 	* Bootstraps the Angular module described. Components that need singleton services should inject the

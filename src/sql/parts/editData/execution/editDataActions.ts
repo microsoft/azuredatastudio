@@ -14,6 +14,7 @@ import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import nls = require('vs/nls');
 import * as dom from 'vs/base/browser/dom';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 const $ = dom.$;
 
 /**
@@ -147,12 +148,14 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 	private _options: string[];
 	private _currentOptionsIndex: number;
 
-	constructor(private _editor: EditDataEditor) {
+	constructor(
+		private _editor: EditDataEditor,
+		@IContextViewService contextViewService: IContextViewService) {
 		super();
 		this._options = ['200', '1000', '10000'];
 		this._currentOptionsIndex = 0;
 		this.toDispose = [];
-		this.selectBox = new SelectBox([], -1);
+		this.selectBox = new SelectBox([], -1, contextViewService);
 		this._registerListeners();
 		this._refreshOptions();
 		this.defaultRowCount = Number(this._options[this._currentOptionsIndex]);

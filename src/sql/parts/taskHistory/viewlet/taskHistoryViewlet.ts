@@ -20,6 +20,7 @@ import Severity from 'vs/base/common/severity';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { TaskHistoryView } from 'sql/parts/taskHistory/viewlet/taskHistoryView';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IPartService } from 'vs/workbench/services/part/common/partService';
 
 export const VIEWLET_ID = 'workbench.view.taskHistory';
 
@@ -35,9 +36,10 @@ export class TaskHistoryViewlet extends Viewlet {
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IViewletService private viewletService: IViewletService,
-		@IMessageService private messageService: IMessageService
+		@IMessageService private messageService: IMessageService,
+		@IPartService partService: IPartService
 	) {
-		super(VIEWLET_ID, telemetryService, themeService);
+		super(VIEWLET_ID, partService, telemetryService, themeService);
 	}
 
 	private onError(err: any): void {

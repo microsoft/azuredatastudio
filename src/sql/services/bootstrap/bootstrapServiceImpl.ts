@@ -46,6 +46,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 export class BootstrapService implements IBootstrapService {
 
@@ -102,7 +103,8 @@ export class BootstrapService implements IBootstrapService {
 		@ICapabilitiesService public capabilitiesService: ICapabilitiesService,
 		@ICommandService public commandService: ICommandService,
 		@IDashboardWebviewService public dashboardWebviewService: IDashboardWebviewService,
-		@IJobManagementService public jobManagementService: IJobManagementService
+		@IJobManagementService public jobManagementService: IJobManagementService,
+		@IEnvironmentService public environmentService: IEnvironmentService
 	) {
 		this.configurationEditorService = this.instantiationService.createInstance(ConfigurationEditingService);
 		this._bootstrapParameterMap = new Map<string, BootstrapParams>();

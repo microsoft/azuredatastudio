@@ -10,34 +10,34 @@ import * as sqlops from 'sqlops';
 import * as TypeMoq from 'typemoq';
 import { AccountProviderStub, AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
 import { ExtHostAccountManagement } from 'sql/workbench/api/node/extHostAccountManagement';
-import { TestThreadService } from 'vs/workbench/test/electron-browser/api/testThreadService';
+import { TestRPCProtocol } from 'vs/workbench/test/electron-browser/api/testRPCProtocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
+import { IRPCProtocol } from 'vs/workbench/services/extensions/node/proxyIdentifier';
 import { SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { MainThreadAccountManagement } from 'sql/workbench/api/node/mainThreadAccountManagement';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
-const IThreadService = createDecorator<IThreadService>('threadService');
+const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 
 // SUITE STATE /////////////////////////////////////////////////////////////
 let instantiationService: TestInstantiationService;
 let mockAccountMetadata: sqlops.AccountProviderMetadata;
 let mockAccount: sqlops.Account;
-let threadService: TestThreadService;
+let threadService: TestRPCProtocol;
 
 // TESTS ///////////////////////////////////////////////////////////////////
 suite('ExtHostAccountManagement', () => {
 	suiteSetup(() => {
-		threadService = new TestThreadService();
+		threadService = new TestRPCProtocol();
 		const accountMgmtStub = new AccountManagementTestService();
 
 		instantiationService = new TestInstantiationService();
-		instantiationService.stub(IThreadService, threadService);
+		instantiationService.stub(IRPCProtocol, threadService);
 		instantiationService.stub(IAccountManagementService, accountMgmtStub);
 
 		const accountMgmtService = instantiationService.createInstance(MainThreadAccountManagement);
-		threadService.setTestInstance(SqlMainContext.MainThreadAccountManagement, accountMgmtService);
+		threadService.set(SqlMainContext.MainThreadAccountManagement, accountMgmtService);
 
 		mockAccountMetadata = {
 			args: {},

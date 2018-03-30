@@ -260,7 +260,8 @@ export class Webview {
 		});
 	}
 
-	private style(theme: ITheme): void {
+	// {{SQL CARBON EDIT}}
+	public style(theme: ITheme): void {
 		const { fontFamily, fontWeight, fontSize } = window.getComputedStyle(this._styleElement); // TODO@theme avoid styleElement
 
 		const styles = {
