@@ -247,11 +247,12 @@ export class CodeMenu {
 		const editMenu = new Menu();
 		const editMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mEdit', comment: ['&& denotes a mnemonic'] }, "&&Edit")), submenu: editMenu });
 		this.setEditMenu(editMenu);
+
 		// {{SQL CARBON EDIT}}
 		// Selection
-		const selectionMenu = new Menu();
-		const selectionMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection")), submenu: selectionMenu });
-		this.setSelectionMenu(selectionMenu);
+		// const selectionMenu = new Menu();
+		// const selectionMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection")), submenu: selectionMenu });
+		// this.setSelectionMenu(selectionMenu);
 
 		// View
 		const viewMenu = new Menu();

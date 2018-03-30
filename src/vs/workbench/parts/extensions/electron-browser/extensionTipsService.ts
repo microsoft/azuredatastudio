@@ -240,14 +240,17 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			reasonText: localize('fileBasedRecommendation', "This extension is recommended based on the files you recently opened.")
 		});
 
-		
+
 		this._allWorkspaceRecommendedExtensions.forEach(x => output[x.toLowerCase()] = {
 			reasonId: ExtensionRecommendationReason.Workspace,
 			reasonText: localize('workspaceRecommendation', "This extension is recommended by users of the current workspace.")
 		});
-		
+
 		// {{SQL CARBON EDIT}}
-		this._recommendations.forEach(x => output[x.toLowerCase()] = localize('defaultRecommendations', "This extension is recommended by SQL Operations Studio."));
+		this._recommendations.forEach(x => output[x.toLowerCase()] = {
+			reasonId: ExtensionRecommendationReason.Executable,
+			reasonText: localize('defaultRecommendations', "This extension is recommended by SQL Operations Studio.")
+		});
 
 		return output;
 	}
@@ -364,7 +367,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	getOtherRecommendations(): TPromise<string[]> {
 		// {{SQL CARBON EDIT}}
 		let recommendations =  Object.keys(this._exeBasedRecommendations);
-		return recommendations.concat(this._recommendations);
+		return TPromise.as(recommendations.concat(this._recommendations));
 	}
 
 	getKeymapRecommendations(): string[] {

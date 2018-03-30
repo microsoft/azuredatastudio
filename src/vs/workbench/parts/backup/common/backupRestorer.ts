@@ -97,7 +97,7 @@ export class BackupRestorer implements IWorkbenchContribution {
 		const options = { pinned: true, preserveFocus: true, inactive: index > 0 || hasOpenedEditors };
 
 		// {{SQL CARBON EDIT}}
-		if (resource.scheme === UNTITLED_SCHEMA
+		if (resource.scheme === Schemas.untitled
 			&& !BackupRestorer.UNTITLED_REGEX.test(resource.fsPath)
 			&& !BackupRestorer.SQLQUERY_REGEX.test(resource.fsPath)) {
 			return { filePath: resource.fsPath, options };

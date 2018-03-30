@@ -3,10 +3,10 @@
 		"build/lib/tslint"
 	],
 	"rules": {
-		"no-string-throw": true,
-		"no-unused-expression": true,
-		"no-duplicate-variable": true,
 		// {{SQL CARBON EDIT}}
+		//"no-string-throw": true,
+		//"no-unused-expression": ,
+		//"no-duplicate-variable": true,
 		// "no-unused-variable": true, // requires type information in tslint > v4
 		"curly": true,
 		"class-name": true,

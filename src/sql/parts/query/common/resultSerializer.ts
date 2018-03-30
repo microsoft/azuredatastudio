@@ -21,7 +21,8 @@ import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
 import URI from 'vs/base/common/uri';
-import { IUntitledEditorService, UNTITLED_SCHEMA } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { Schemas } from 'vs/base/common/network';
 import * as paths from 'vs/base/common/paths';
 import * as nls from 'vs/nls';
 import * as pretty from 'pretty-data';
@@ -103,7 +104,7 @@ export class ResultSerializer {
 	private getUntitledFileUri(columnName: string): URI {
 		let fileName = columnName;
 
-		let uri: URI = URI.from({ scheme: UNTITLED_SCHEMA, path: fileName });
+		let uri: URI = URI.from({ scheme: Schemas.untitled, path: fileName });
 
 		// If the current filename is taken, try another up to a max number
 		if (this._untitledEditorService.exists(uri)) {
@@ -111,7 +112,7 @@ export class ResultSerializer {
 			while (i < ResultSerializer.MAX_FILENAMES
 				&& this._untitledEditorService.exists(uri)) {
 				fileName = [columnName, i.toString()].join('-');
-				uri = URI.from({ scheme: UNTITLED_SCHEMA, path: fileName });
+				uri = URI.from({ scheme: Schemas.untitled, path: fileName });
 				i++;
 			}
 			if (this._untitledEditorService.exists(uri)) {

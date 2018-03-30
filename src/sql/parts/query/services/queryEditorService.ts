@@ -18,7 +18,7 @@ import { IModel } from 'vs/editor/common/editorCommon';
 import { IEditor, IEditorInput, Position } from 'vs/platform/editor/common/editor';
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IEditorGroup } from 'vs/workbench/common/editor';
-import { IUntitledEditorService, UNTITLED_SCHEMA } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileEditorInput } from 'vs/workbench/parts/files/common/editors/fileEditorInput';
@@ -28,6 +28,7 @@ import nls = require('vs/nls');
 import URI from 'vs/base/common/uri';
 import paths = require('vs/base/common/paths');
 import { isLinux } from 'vs/base/common/platform';
+import { Schemas } from 'vs/base/common/network';
 
 const fs = require('fs');
 
@@ -78,7 +79,7 @@ export class QueryEditorService implements IQueryEditorService {
 			try {
 				// Create file path and file URI
 				let filePath = this.createUntitledSqlFilePath();
-				let docUri: URI = URI.from({ scheme: UNTITLED_SCHEMA, path: filePath });
+				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create a sql document pane with accoutrements
 				const fileInput = this._untitledEditorService.createOrGet(docUri, 'sql');
@@ -126,7 +127,7 @@ export class QueryEditorService implements IQueryEditorService {
 				// Create file path and file URI
 				let objectName = schemaName ? schemaName + '.' + tableName : tableName;
 				let filePath = this.createEditDataFileName(objectName);
-				let docUri: URI = URI.from({ scheme: UNTITLED_SCHEMA, path: filePath });
+				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create an EditDataInput for editing
 				let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName);
@@ -211,7 +212,7 @@ export class QueryEditorService implements IQueryEditorService {
 		}
 
 		let uri: URI = QueryEditorService._getEditorChangeUri(editor.input, changingToSql);
-		if(uri.scheme === UNTITLED_SCHEMA && editor.input instanceof QueryInput)
+		if(uri.scheme === Schemas.untitled && editor.input instanceof QueryInput)
 		{
 			QueryEditorService.messageService.show(Severity.Error, QueryEditorService.CHANGE_UNSUPPORTED_ERROR_MESSAGE);
 			return Promise.resolve(undefined);

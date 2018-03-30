@@ -715,10 +715,9 @@ export class Workbench implements IPartService {
 		serviceCollection.set(IBootstrapService, this.instantiationService.createInstance(BootstrapService));
 		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
 
-		this.toDispose.push(connectionManagementService);
-		this.toShutdown.push(connectionManagementService);
-		this.toShutdown.push(accountManagementService);
-		this.toShutdown.push(capabilitiesService);
+		this.toUnbind.push({ dispose: () => connectionManagementService.shutdown() });
+		this.toUnbind.push({ dispose: () => accountManagementService.shutdown() });
+		this.toUnbind.push({ dispose: () => capabilitiesService.shutdown() });
 
 		// Contributed services
 		const contributedServices = getServices();
