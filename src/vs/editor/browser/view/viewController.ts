@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -62,10 +62,11 @@ export class ViewController {
 		this._execCoreEditorCommandFunc(editorCommand, args);
 	}
 
-	public paste(source: string, text: string, pasteOnNewLine: boolean): void {
+	public paste(source: string, text: string, pasteOnNewLine: boolean, multicursorText: string[]): void {
 		this.commandService.executeCommand(editorCommon.Handler.Paste, {
 			text: text,
 			pasteOnNewLine: pasteOnNewLine,
+			multicursorText: multicursorText
 		});
 	}
 

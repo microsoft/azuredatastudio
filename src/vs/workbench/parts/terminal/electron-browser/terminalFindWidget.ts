@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { SimpleFindWidget } from 'vs/editor/contrib/find/simpleFindWidget';
@@ -13,8 +13,8 @@ export class TerminalFindWidget extends SimpleFindWidget {
 
 	constructor(
 		@IContextViewService _contextViewService: IContextViewService,
-		@IContextKeyService private _contextKeyService: IContextKeyService,
-		@ITerminalService private _terminalService: ITerminalService
+		@IContextKeyService private readonly _contextKeyService: IContextKeyService,
+		@ITerminalService private readonly _terminalService: ITerminalService
 	) {
 		super(_contextViewService);
 		this._findInputFocused = KEYBINDING_CONTEXT_TERMINAL_FIND_WIDGET_INPUT_FOCUSED.bindTo(this._contextKeyService);

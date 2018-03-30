@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -9,7 +9,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IMode, LanguageId, LanguageIdentifier } from 'vs/editor/common/modes';
 
-export var IModeService = createDecorator<IModeService>('modeService');
+export const IModeService = createDecorator<IModeService>('modeService');
 
 export interface ILanguageExtensionPoint {
 	id: string;

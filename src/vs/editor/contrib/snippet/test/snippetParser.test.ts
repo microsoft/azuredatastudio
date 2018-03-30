@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -623,5 +623,11 @@ suite('SnippetParser', () => {
 
 		const clone = transform.clone();
 		assert.equal(clone.resolve('my-file-name'), 'MyFileName');
+	});
+
+	test('problem with snippets regex #40570', function () {
+
+		const snippet = new SnippetParser().parse('${TM_DIRECTORY/.*src[\\/](.*)/$1/}');
+		assertMarker(snippet, Variable);
 	});
 });

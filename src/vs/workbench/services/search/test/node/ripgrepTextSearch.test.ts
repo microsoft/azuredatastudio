@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -35,7 +35,7 @@ suite('RipgrepParser', () => {
 	}
 
 	function parseInputStrings(inputChunks: string[]): ISerializedFileMatch[] {
-		return parseInput(inputChunks.map(chunk => new Buffer(chunk)));
+		return parseInput(inputChunks.map(chunk => Buffer.from(chunk)));
 	}
 
 	function parseInput(inputChunks: Buffer[]): ISerializedFileMatch[] {
@@ -157,14 +157,14 @@ suite('RipgrepParser', () => {
 
 	test('Parses chunks broken in the middle of a multibyte character', () => {
 		const multibyteStr = '漢';
-		const multibyteBuf = new Buffer(multibyteStr);
+		const multibyteBuf = Buffer.from(multibyteStr);
 		const text = getFileLine('foo/bar') + '\n' + getMatchLine(0, ['before', 'match', 'after']) + '\n';
 
 		// Split the multibyte char into two pieces and divide between the two buffers
 		const beforeIndex = 24;
 		const inputBufs = [
-			Buffer.concat([new Buffer(text.substr(0, beforeIndex)), multibyteBuf.slice(0, 2)]),
-			Buffer.concat([multibyteBuf.slice(2), new Buffer(text.substr(beforeIndex))])
+			Buffer.concat([Buffer.from(text.substr(0, beforeIndex)), multibyteBuf.slice(0, 2)]),
+			Buffer.concat([multibyteBuf.slice(2), Buffer.from(text.substr(beforeIndex))])
 		];
 
 		const results = parseInput(inputBufs);

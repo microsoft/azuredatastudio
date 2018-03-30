@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -14,7 +14,7 @@ import { LanguageId, LanguageIdentifier } from 'vs/editor/common/modes';
 import { NULL_MODE_ID, NULL_LANGUAGE_IDENTIFIER } from 'vs/editor/common/modes/nullMode';
 import { IConfigurationRegistry, Extensions } from 'vs/platform/configuration/common/configurationRegistry';
 
-var hasOwnProperty = Object.prototype.hasOwnProperty;
+const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 export interface IResolvedLanguage {
 	identifier: LanguageIdentifier;
@@ -302,7 +302,7 @@ export class LanguagesRegistry {
 		if (!filename && !firstLine) {
 			return [];
 		}
-		var mimeTypes = mime.guessMimeTypes(filename, firstLine);
+		let mimeTypes = mime.guessMimeTypes(filename, firstLine);
 		return this.extractModeIds(mimeTypes.join(','));
 	}
 

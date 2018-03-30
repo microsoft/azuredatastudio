@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -8,9 +8,9 @@ import { TextAreaInput, ITextAreaInputHost } from 'vs/editor/browser/controller/
 import { ISimpleModel, TextAreaState, PagedScreenReaderStrategy } from 'vs/editor/browser/controller/textAreaState';
 import { Range, IRange } from 'vs/editor/common/core/range';
 import { Position } from 'vs/editor/common/core/position';
-import * as editorCommon from 'vs/editor/common/editorCommon';
 import { createFastDomNode } from 'vs/base/browser/fastDomNode';
 import * as browser from 'vs/base/browser/browser';
+import { EndOfLinePreference } from 'vs/editor/common/model';
 
 // To run this test, open imeTester.html
 
@@ -30,7 +30,7 @@ class SingleLineTestModel implements ISimpleModel {
 		return this._line.length + 1;
 	}
 
-	getValueInRange(range: IRange, eol: editorCommon.EndOfLinePreference): string {
+	getValueInRange(range: IRange, eol: EndOfLinePreference): string {
 		return this._line.substring(range.startColumn - 1, range.endColumn - 1);
 	}
 

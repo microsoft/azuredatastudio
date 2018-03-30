@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -12,7 +12,7 @@ import URI from 'vs/base/common/uri';
 
 export class ReleaseNotesInput extends EditorInput {
 
-	static get ID() { return 'workbench.releaseNotes.input'; }
+	static readonly ID = 'workbench.releaseNotes.input';
 
 	get version(): string { return this._version; }
 	get text(): string { return this._text; }

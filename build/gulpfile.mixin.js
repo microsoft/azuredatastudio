@@ -1,13 +1,25 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 const gulp = require('gulp');
+const json = require('gulp-json-editor');
+const buffer = require('gulp-buffer');
+const filter = require('gulp-filter');
+const es = require('event-stream');
+const util = require('./lib/util');
+const remote = require('gulp-remote-src');
+const zip = require('gulp-vinyl-zip');
+const assign = require('object-assign');
+
 // {{SQL CARBON EDIT}}
 const jeditor = require('gulp-json-editor');
+
+// @ts-ignore Microsoft/TypeScript#21262 complains about a require of a JSON file
+const pkg = require('../package.json');
 
 gulp.task('mixin', function () {
   // {{SQL CARBON EDIT}}

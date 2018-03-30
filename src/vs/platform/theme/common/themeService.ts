@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -20,6 +20,14 @@ export interface ThemeColor {
 export function themeColorFromId(id: ColorIdentifier) {
 	return { id };
 }
+
+// theme icon
+export interface ThemeIcon {
+	readonly id: string;
+}
+
+export const FileThemeIcon = { id: 'file' };
+export const FolderThemeIcon = { id: 'folder' };
 
 // base themes
 export const DARK: ThemeType = 'dark';

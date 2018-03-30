@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -14,6 +14,7 @@ import { IAction } from 'vs/base/common/actions';
 import { fillInActions } from 'vs/platform/actions/browser/menuItemActionItem';
 import { ISCMProvider, ISCMResource, ISCMResourceGroup } from 'vs/workbench/services/scm/common/scm';
 import { getSCMResourceContextKey } from './scmUtil';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 
 export class SCMMenus implements IDisposable {
 
@@ -30,7 +31,8 @@ export class SCMMenus implements IDisposable {
 	constructor(
 		provider: ISCMProvider | undefined,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IMenuService private menuService: IMenuService
+		@IMenuService private menuService: IMenuService,
+		@IContextMenuService private contextMenuService: IContextMenuService
 	) {
 		this.contextKeyService = contextKeyService.createScoped();
 		const scmProviderKey = this.contextKeyService.createKey<string | undefined>('scmProvider', void 0);
@@ -52,7 +54,7 @@ export class SCMMenus implements IDisposable {
 		this.titleActions = [];
 		this.titleSecondaryActions = [];
 		// TODO@joao: second arg used to be null
-		fillInActions(this.titleMenu, { shouldForwardArgs: true }, { primary: this.titleActions, secondary: this.titleSecondaryActions });
+		fillInActions(this.titleMenu, { shouldForwardArgs: true }, { primary: this.titleActions, secondary: this.titleSecondaryActions }, this.contextMenuService);
 		this._onDidChangeTitle.fire();
 	}
 
@@ -88,7 +90,7 @@ export class SCMMenus implements IDisposable {
 		const primary: IAction[] = [];
 		const secondary: IAction[] = [];
 		const result = { primary, secondary };
-		fillInActions(menu, { shouldForwardArgs: true }, result, g => g === 'inline');
+		fillInActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService, g => /^inline/.test(g));
 
 		menu.dispose();
 		contextKeyService.dispose();

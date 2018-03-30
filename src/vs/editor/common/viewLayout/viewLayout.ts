@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -175,15 +175,15 @@ export class ViewLayout extends Disposable implements IViewLayout {
 		};
 	}
 
-	public restoreState(state: editorCommon.IViewState): void {
+	public reduceRestoreState(state: editorCommon.IViewState): { scrollLeft: number; scrollTop: number; } {
 		let restoreScrollTop = state.scrollTop;
 		if (typeof state.scrollTopWithoutViewZones === 'number' && !this._linesLayout.hasWhitespace()) {
 			restoreScrollTop = state.scrollTopWithoutViewZones;
 		}
-		this.scrollable.setScrollPositionNow({
+		return {
 			scrollLeft: state.scrollLeft,
 			scrollTop: restoreScrollTop
-		});
+		};
 	}
 
 	// ---- IVerticalLayoutProvider

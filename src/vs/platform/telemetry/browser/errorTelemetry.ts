@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -145,12 +145,12 @@ export default class ErrorTelemetry {
 		for (let error of this._buffer) {
 			/* __GDPR__
 			"UnhandledError" : {
-					"message" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
-					"name": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
-					"stack": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
-					"id": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
-					"line": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
-					"column": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+					"message" : { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
+					"name": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
+					"stack": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
+					"id": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
+					"line": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
+					"column": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" }
 				}
 			*/
 			// __GDPR__TODO__ what's the complete set of properties?

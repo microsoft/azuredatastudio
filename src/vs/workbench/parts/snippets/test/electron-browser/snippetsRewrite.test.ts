@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import * as assert from 'assert';
-import { Snippet } from 'vs/workbench/parts/snippets/electron-browser/snippets.contribution';
+import { Snippet } from 'vs/workbench/parts/snippets/electron-browser/snippetsFile';
 
 suite('SnippetRewrite', function () {
 
@@ -45,7 +45,7 @@ suite('SnippetRewrite', function () {
 	});
 
 	test('lazy bogous variable rewrite', function () {
-		const snippet = new Snippet('foo', 'prefix', 'desc', 'This is ${bogous} because it is a ${var}', 'source');
+		const snippet = new Snippet(['fooLang'], 'foo', 'prefix', 'desc', 'This is ${bogous} because it is a ${var}', 'source');
 		assert.equal(snippet.body, 'This is ${bogous} because it is a ${var}');
 		assert.equal(snippet.codeSnippet, 'This is ${1:bogous} because it is a ${2:var}');
 		assert.equal(snippet.isBogous, true);

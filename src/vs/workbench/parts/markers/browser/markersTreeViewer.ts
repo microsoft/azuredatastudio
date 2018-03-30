@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -197,10 +197,12 @@ export class Renderer implements IRenderer {
 		if (templateId === Renderer.FILE_RESOURCE_TEMPLATE_ID) {
 			(<IFileResourceTemplateData>templateData).fileLabel.dispose();
 			(<IFileResourceTemplateData>templateData).styler.dispose();
-		}
-		if (templateId === Renderer.RESOURCE_TEMPLATE_ID) {
+		} else if (templateId === Renderer.RESOURCE_TEMPLATE_ID) {
 			(<IResourceTemplateData>templateData).resourceLabel.dispose();
 			(<IResourceTemplateData>templateData).styler.dispose();
+		} else if (templateId === Renderer.MARKER_TEMPLATE_ID) {
+			(<IMarkerTemplateData>templateData).description.dispose();
+			(<IMarkerTemplateData>templateData).source.dispose();
 		}
 	}
 }

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -22,8 +22,8 @@ export class OpenerService implements IOpenerService {
 	_serviceBrand: any;
 
 	constructor(
-		@IEditorService private _editorService: IEditorService,
-		@ICommandService private _commandService: ICommandService,
+		@IEditorService private readonly _editorService: IEditorService,
+		@ICommandService private readonly _commandService: ICommandService,
 		@optional(ITelemetryService) private _telemetryService: ITelemetryService = NullTelemetryService
 	) {
 		//

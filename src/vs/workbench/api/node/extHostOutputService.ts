@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -35,18 +35,22 @@ export class ExtHostOutputChannel implements vscode.OutputChannel {
 	}
 
 	append(value: string): void {
+		this.validate();
 		this._proxy.$append(this._id, this._name, value);
 	}
 
 	appendLine(value: string): void {
+		this.validate();
 		this.append(value + '\n');
 	}
 
 	clear(): void {
+		this.validate();
 		this._proxy.$clear(this._id, this._name);
 	}
 
 	show(columnOrPreserveFocus?: vscode.ViewColumn | boolean, preserveFocus?: boolean): void {
+		this.validate();
 		if (typeof columnOrPreserveFocus === 'boolean') {
 			preserveFocus = columnOrPreserveFocus;
 		}
@@ -55,7 +59,14 @@ export class ExtHostOutputChannel implements vscode.OutputChannel {
 	}
 
 	hide(): void {
+		this.validate();
 		this._proxy.$close(this._id);
+	}
+
+	private validate(): void {
+		if (this._disposed) {
+			throw new Error('Channel has been closed');
+		}
 	}
 }
 
@@ -64,7 +75,7 @@ export class ExtHostOutputService {
 	private _proxy: MainThreadOutputServiceShape;
 
 	constructor(mainContext: IMainContext) {
-		this._proxy = mainContext.get(MainContext.MainThreadOutputService);
+		this._proxy = mainContext.getProxy(MainContext.MainThreadOutputService);
 	}
 
 	createOutputChannel(name: string): vscode.OutputChannel {

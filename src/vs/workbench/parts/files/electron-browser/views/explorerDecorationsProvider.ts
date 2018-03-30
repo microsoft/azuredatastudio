@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -31,12 +31,18 @@ export class ExplorerDecorationsProvider implements IDecorationsProvider {
 	}
 
 	provideDecorations(resource: URI): IDecorationData {
-		const fileStat = this.model.roots.filter(r => r.resource.toString() === resource.toString()).pop();
+		const fileStat = this.model.findClosest(resource);
 		if (fileStat && fileStat.nonexistentRoot) {
 			return {
 				tooltip: localize('canNotResolve', "Can not resolve workspace folder"),
 				letter: '!',
 				color: listInvalidItemForeground,
+			};
+		}
+		if (fileStat && fileStat.isSymbolicLink) {
+			return {
+				tooltip: localize('symbolicLlink', "Symbolic Link"),
+				letter: '\u2937'
 			};
 		}
 

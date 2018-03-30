@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -9,6 +9,7 @@ import { Disposable } from './extHostTypes';
 import { parse, IRelativePattern } from 'vs/base/common/glob';
 import { Uri, FileSystemWatcher as _FileSystemWatcher } from 'vscode';
 import { FileSystemEvents, ExtHostFileSystemEventServiceShape } from './extHost.protocol';
+import URI from 'vs/base/common/uri';
 
 class FileSystemWatcher implements _FileSystemWatcher {
 
@@ -48,22 +49,25 @@ class FileSystemWatcher implements _FileSystemWatcher {
 		let subscription = dispatcher(events => {
 			if (!ignoreCreateEvents) {
 				for (let created of events.created) {
-					if (parsedPattern(created.fsPath)) {
-						this._onDidCreate.fire(created);
+					let uri = URI.revive(created);
+					if (parsedPattern(uri.fsPath)) {
+						this._onDidCreate.fire(uri);
 					}
 				}
 			}
 			if (!ignoreChangeEvents) {
 				for (let changed of events.changed) {
-					if (parsedPattern(changed.fsPath)) {
-						this._onDidChange.fire(changed);
+					let uri = URI.revive(changed);
+					if (parsedPattern(uri.fsPath)) {
+						this._onDidChange.fire(uri);
 					}
 				}
 			}
 			if (!ignoreDeleteEvents) {
 				for (let deleted of events.deleted) {
-					if (parsedPattern(deleted.fsPath)) {
-						this._onDidDelete.fire(deleted);
+					let uri = URI.revive(deleted);
+					if (parsedPattern(uri.fsPath)) {
+						this._onDidDelete.fire(uri);
 					}
 				}
 			}

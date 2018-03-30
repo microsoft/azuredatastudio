@@ -1,13 +1,10 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import platform = require('vs/base/common/platform');
-import types = require('vs/base/common/types');
 import { IAction } from 'vs/base/common/actions';
-import Severity from 'vs/base/common/severity';
 import { TPromise, IPromiseError, IPromiseErrorDetail } from 'vs/base/common/winjs.base';
 
 // ------ BEGIN Hook up error listeners to winjs promises
@@ -79,7 +76,7 @@ export class ErrorHandler {
 		this.listeners = [];
 
 		this.unexpectedErrorHandler = function (e: any) {
-			platform.setTimeout(() => {
+			setTimeout(() => {
 				if (e.stack) {
 					throw new Error(e.message + '\n\n' + e.stack);
 				}
@@ -238,19 +235,22 @@ export function disposed(what: string): Error {
 }
 
 export interface IErrorOptions {
-	severity?: Severity;
 	actions?: IAction[];
 }
 
-export function create(message: string, options: IErrorOptions = {}): Error {
-	let result = new Error(message);
+export interface IErrorWithActions {
+	actions?: IAction[];
+}
 
-	if (types.isNumber(options.severity)) {
-		(<any>result).severity = options.severity;
-	}
+export function isErrorWithActions(obj: any): obj is IErrorWithActions {
+	return obj instanceof Error && Array.isArray((obj as IErrorWithActions).actions);
+}
+
+export function create(message: string, options: IErrorOptions = Object.create(null)): Error & IErrorWithActions {
+	const result = new Error(message);
 
 	if (options.actions) {
-		(<any>result).actions = options.actions;
+		(<IErrorWithActions>result).actions = options.actions;
 	}
 
 	return result;

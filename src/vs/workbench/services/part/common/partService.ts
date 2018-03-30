@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -128,6 +128,16 @@ export interface IPartService {
 	 * Toggles the workbench in and out of zen mode - parts get hidden and window goes fullscreen.
 	 */
 	toggleZenMode(): void;
+
+	/**
+	 * Returns whether the centered editor layout is active.
+	 */
+	isEditorLayoutCentered(): boolean;
+
+	/**
+	 * Toggles the workbench in and out of centered editor layout.
+	 */
+	toggleCenteredEditorLayout(): void;
 
 	/**
 	 * Resizes currently focused part on main access

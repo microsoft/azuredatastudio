@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -437,4 +437,21 @@ export function arrayInsert<T>(target: T[], insertIndex: number, insertArr: T[])
 	const before = target.slice(0, insertIndex);
 	const after = target.slice(insertIndex);
 	return before.concat(insertArr, after);
+}
+
+/**
+ * Uses Fisher-Yates shuffle to shuffle the given array
+ * @param array
+ */
+export function shuffle<T>(array: T[]): void {
+	var i = 0
+		, j = 0
+		, temp = null;
+
+	for (i = array.length - 1; i > 0; i -= 1) {
+		j = Math.floor(Math.random() * (i + 1));
+		temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
 }

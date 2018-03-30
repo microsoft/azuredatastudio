@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -25,11 +25,7 @@ export class MainThreadTelemetry implements MainThreadTelemetryShape {
 	}
 
 	$publicLog(eventName: string, data: any = Object.create(null)): void {
-		/* __GDPR__FRAGMENT__
-			"MainThreadData" : {
-				"pluginHostTelemetry" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-			}
-		*/
+		// __GDPR__COMMON__ "pluginHostTelemetry" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 		data[MainThreadTelemetry._name] = true;
 		this._telemetryService.publicLog(eventName, data);
 	}

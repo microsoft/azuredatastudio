@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -175,7 +175,7 @@ export class Selection extends Range {
 		if (a.length !== b.length) {
 			return false;
 		}
-		for (var i = 0, len = a.length; i < len; i++) {
+		for (let i = 0, len = a.length; i < len; i++) {
 			if (!this.selectionsEqual(a[i], b[i])) {
 				return false;
 			}

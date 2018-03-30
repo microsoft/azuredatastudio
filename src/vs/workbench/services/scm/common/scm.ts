@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -68,12 +68,30 @@ export interface ISCMProvider extends IDisposable {
 	getOriginalResource(uri: URI): TPromise<URI>;
 }
 
+export enum InputValidationType {
+	Error = 0,
+	Warning = 1,
+	Information = 2
+}
+
+export interface IInputValidation {
+	message: string;
+	type: InputValidationType;
+}
+
+export interface IInputValidator {
+	(value: string, cursorPosition: number): TPromise<IInputValidation | undefined>;
+}
+
 export interface ISCMInput {
 	value: string;
 	readonly onDidChange: Event<string>;
 
 	placeholder: string;
 	readonly onDidChangePlaceholder: Event<string>;
+
+	validateInput: IInputValidator;
+	readonly onDidChangeValidateInput: Event<void>;
 }
 
 export interface ISCMRepository extends IDisposable {

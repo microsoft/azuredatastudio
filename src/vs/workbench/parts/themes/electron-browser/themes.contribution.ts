@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -28,7 +28,7 @@ import { LIGHT, DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeServic
 
 export class SelectColorThemeAction extends Action {
 
-	static ID = 'workbench.action.selectTheme';
+	static readonly ID = 'workbench.action.selectTheme';
 	static LABEL = localize('selectTheme.label', "Color Theme");
 
 	constructor(
@@ -87,7 +87,7 @@ export class SelectColorThemeAction extends Action {
 
 class SelectIconThemeAction extends Action {
 
-	static ID = 'workbench.action.selectIconTheme';
+	static readonly ID = 'workbench.action.selectIconTheme';
 	static LABEL = localize('selectIconTheme.label', "File Icon Theme");
 
 	constructor(
@@ -171,7 +171,7 @@ function toEntries(themes: (IColorTheme | IFileIconTheme)[], label?: string, bor
 
 class GenerateColorThemeAction extends Action {
 
-	static ID = 'workbench.action.generateColorTheme';
+	static readonly ID = 'workbench.action.generateColorTheme';
 	static LABEL = localize('generateColorTheme.label', "Generate Color Theme From Current Settings");
 
 	constructor(

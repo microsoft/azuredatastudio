@@ -1,9 +1,7 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-'use strict';
 
 import * as vscode from 'vscode';
 
@@ -13,7 +11,7 @@ import { TableOfContentsProvider } from '../tableOfContentsProvider';
 export default class MDDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
 
 	constructor(
-		private engine: MarkdownEngine
+		private readonly engine: MarkdownEngine
 	) { }
 
 	public async provideDocumentSymbols(document: vscode.TextDocument): Promise<vscode.SymbolInformation[]> {

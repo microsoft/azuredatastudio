@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -299,6 +299,22 @@ suite('Glob', () => {
 		assert(glob.match(p, '/package.json'));
 		assert(!glob.match(p, 'xpackage.json'));
 		assert(!glob.match(p, '/xpackage.json'));
+	});
+
+	test('issue 41724', function () {
+		let p = 'some/**/*.js';
+
+		assert(glob.match(p, 'some/foo.js'));
+		assert(glob.match(p, 'some/folder/foo.js'));
+		assert(!glob.match(p, 'something/foo.js'));
+		assert(!glob.match(p, 'something/folder/foo.js'));
+
+		p = 'some/**/*';
+
+		assert(glob.match(p, 'some/foo.js'));
+		assert(glob.match(p, 'some/folder/foo.js'));
+		assert(!glob.match(p, 'something/foo.js'));
+		assert(!glob.match(p, 'something/folder/foo.js'));
 	});
 
 	test('brace expansion', function () {

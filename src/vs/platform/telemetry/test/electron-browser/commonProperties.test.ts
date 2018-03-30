@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -49,15 +49,16 @@ suite('Telemetry - common properties', function () {
 				// assert.ok('common.version.shell' in first.data); // only when running on electron
 				// assert.ok('common.version.renderer' in first.data);
 				assert.ok('common.osVersion' in props, 'osVersion');
+				assert.ok('common.platformVersion' in props, 'platformVersion');
 				assert.ok('version' in props);
 				assert.equal(props['common.source'], 'my.install.source');
 
 			// {{SQL CARBON EDIT}}
 			assert.ok('common.application.name' in props);
 
-			assert.ok('common.firstSessionDate' in props, 'firstSessionDate');
-			assert.ok('common.lastSessionDate' in props, 'lastSessionDate'); // conditional, see below, 'lastSessionDate'ow
-			assert.ok('common.isNewSession' in props, 'isNewSession');
+				assert.ok('common.firstSessionDate' in props, 'firstSessionDate');
+				assert.ok('common.lastSessionDate' in props, 'lastSessionDate'); // conditional, see below, 'lastSessionDate'ow
+				assert.ok('common.isNewSession' in props, 'isNewSession');
 
 				// machine id et al
 				assert.ok('common.instanceId' in props, 'instanceId');

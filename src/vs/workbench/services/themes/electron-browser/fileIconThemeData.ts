@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -244,6 +244,9 @@ function _processIconThemeDocument(id: string, iconThemeDocumentPath: string, ic
 
 			let languageIds = associations.languageIds;
 			if (languageIds) {
+				if (!languageIds.jsonc && languageIds.json) {
+					languageIds.jsonc = languageIds.json;
+				}
 				for (let languageId in languageIds) {
 					addSelector(`${qualifier} .${escapeCSS(languageId)}-lang-file-icon.file-icon::before`, languageIds[languageId]);
 					result.hasFileIcons = true;

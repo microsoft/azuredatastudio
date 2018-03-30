@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -11,37 +11,37 @@ import { CompletionModel } from 'vs/editor/contrib/suggest/completionModel';
 import { IPosition } from 'vs/editor/common/core/position';
 import { TPromise } from 'vs/base/common/winjs.base';
 
-suite('CompletionModel', function () {
+export function createSuggestItem(label: string, overwriteBefore: number, type: SuggestionType = 'property', incomplete: boolean = false, position: IPosition = { lineNumber: 1, column: 1 }): ISuggestionItem {
 
-	function createSuggestItem(label: string, overwriteBefore: number, type: SuggestionType = 'property', incomplete: boolean = false, position: IPosition = { lineNumber: 1, column: 1 }): ISuggestionItem {
+	return new class implements ISuggestionItem {
 
-		return new class implements ISuggestionItem {
+		position = position;
 
-			position = position;
+		suggestion: ISuggestion = {
+			label,
+			overwriteBefore,
+			insertText: label,
+			type
+		};
 
-			suggestion: ISuggestion = {
-				label,
-				overwriteBefore,
-				insertText: label,
-				type
-			};
+		container: ISuggestResult = {
+			incomplete,
+			suggestions: [this.suggestion]
+		};
 
-			container: ISuggestResult = {
-				incomplete,
-				suggestions: [this.suggestion]
-			};
-
-			support: ISuggestSupport = {
-				provideCompletionItems(): any {
-					return;
-				}
-			};
-
-			resolve(): TPromise<void> {
-				return null;
+		support: ISuggestSupport = {
+			provideCompletionItems(): any {
+				return;
 			}
 		};
-	}
+
+		resolve(): TPromise<void> {
+			return null;
+		}
+	};
+}
+suite('CompletionModel', function () {
+
 
 	let model: CompletionModel;
 

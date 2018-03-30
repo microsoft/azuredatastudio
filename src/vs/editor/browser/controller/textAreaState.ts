@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
 import { Range } from 'vs/editor/common/core/range';
 import { Position } from 'vs/editor/common/core/position';
-import { EndOfLinePreference } from 'vs/editor/common/editorCommon';
+import { EndOfLinePreference } from 'vs/editor/common/model';
 import * as strings from 'vs/base/common/strings';
 
 export interface ITextAreaWrapper {

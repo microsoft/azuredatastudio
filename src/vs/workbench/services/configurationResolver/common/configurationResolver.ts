@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -13,7 +13,6 @@ export const IConfigurationResolverService = createDecorator<IConfigurationResol
 export interface IConfigurationResolverService {
 	_serviceBrand: any;
 
-	// TODO@Isidor improve this API
 	resolve(root: IWorkspaceFolder, value: string): string;
 	resolve(root: IWorkspaceFolder, value: string[]): string[];
 	resolve(root: IWorkspaceFolder, value: IStringDictionary<string>): IStringDictionary<string>;

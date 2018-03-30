@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -18,7 +18,7 @@ import { ValidationStatus, IProblemReporter as IProblemReporterBase } from 'vs/b
 import {
 	NamedProblemMatcher, ProblemMatcher, ProblemMatcherParser, Config as ProblemMatcherConfig,
 	isNamedProblemMatcher, ProblemMatcherRegistry
-} from 'vs/platform/markers/common/problemMatcher';
+} from 'vs/workbench/parts/tasks/common/problemMatcher';
 
 import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 

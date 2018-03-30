@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -99,7 +99,13 @@ export class EditorScrollbar extends ViewPart {
 		const layoutInfo = this._context.configuration.editor.layoutInfo;
 
 		this.scrollbarDomNode.setLeft(layoutInfo.contentLeft);
-		this.scrollbarDomNode.setWidth(layoutInfo.contentWidth + layoutInfo.minimapWidth);
+
+		const side = this._context.configuration.editor.viewInfo.minimap.side;
+		if (side === 'right') {
+			this.scrollbarDomNode.setWidth(layoutInfo.contentWidth + layoutInfo.minimapWidth);
+		} else {
+			this.scrollbarDomNode.setWidth(layoutInfo.contentWidth);
+		}
 		this.scrollbarDomNode.setHeight(layoutInfo.contentHeight);
 	}
 

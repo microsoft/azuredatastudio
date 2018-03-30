@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -10,6 +10,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import Event from 'vs/base/common/event';
 import { IPager } from 'vs/base/common/paging';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { ILocalization } from 'vs/platform/localizations/common/localizations';
 
 export const EXTENSION_IDENTIFIER_PATTERN = '^([a-z0-9A-Z][a-z0-9\-A-Z]*)\\.([a-z0-9A-Z][a-z0-9\-A-Z]*)$';
 export const EXTENSION_IDENTIFIER_REGEX = new RegExp(EXTENSION_IDENTIFIER_PATTERN);
@@ -42,6 +43,7 @@ export interface IGrammar {
 
 export interface IJSONValidation {
 	fileMatch: string;
+	url: string;
 }
 
 export interface IKeyBinding {
@@ -98,7 +100,8 @@ export interface IExtensionContributions {
 	themes?: ITheme[];
 	iconThemes?: ITheme[];
 	views?: { [location: string]: IView[] };
-	colors: IColor[];
+	colors?: IColor[];
+	localizations?: ILocalization[];
 }
 
 export interface IExtensionManifest {
@@ -132,10 +135,16 @@ export interface IGalleryExtensionAssets {
 	readme: IGalleryExtensionAsset;
 	changelog: IGalleryExtensionAsset;
 	download: IGalleryExtensionAsset;
-	downloadPage?: IGalleryExtensionAsset;
 	icon: IGalleryExtensionAsset;
 	license: IGalleryExtensionAsset;
 	repository: IGalleryExtensionAsset;
+}
+
+export function isIExtensionIdentifier(thing: any): thing is IExtensionIdentifier {
+	return thing
+		&& typeof thing === 'object'
+		&& typeof thing.id === 'string'
+		&& (!thing.uuid || typeof thing.uuid === 'string');
 }
 
 export interface IExtensionIdentifier {
@@ -266,6 +275,7 @@ export interface IExtensionManagementService {
 	install(zipPath: string): TPromise<void>;
 	installFromGallery(extension: IGalleryExtension): TPromise<void>;
 	uninstall(extension: ILocalExtension, force?: boolean): TPromise<void>;
+	reinstall(extension: ILocalExtension): TPromise<void>;
 	getInstalled(type?: LocalExtensionType): TPromise<ILocalExtension[]>;
 	getExtensionsReport(): TPromise<IReportedExtension[]>;
 
@@ -304,7 +314,7 @@ export interface IExtensionEnablementService {
 	/**
 	 * Returns `true` if the enablement can be changed.
 	 */
-	canChangeEnablement(): boolean;
+	canChangeEnablement(extension: ILocalExtension): boolean;
 
 	/**
 	 * Returns `true` if the given extension identifier is enabled.
@@ -320,6 +330,10 @@ export interface IExtensionEnablementService {
 	 *
 	 * Throws error if enablement is requested for workspace and there is no workspace
 	 */
+	setEnablement(extension: ILocalExtension, state: EnablementState): TPromise<boolean>;
+	/**
+	 * TODO: @Sandy. Use setEnablement(extension: ILocalExtension, state: EnablementState): TPromise<boolean>. Use one model for extension management and runtime
+	 */
 	setEnablement(identifier: IExtensionIdentifier, state: EnablementState): TPromise<boolean>;
 
 	migrateToIdentifiers(installed: IExtensionIdentifier[]): void;
@@ -329,13 +343,20 @@ export const IExtensionTipsService = createDecorator<IExtensionTipsService>('ext
 
 export interface IExtensionTipsService {
 	_serviceBrand: any;
-	getAllRecommendationsWithReason(): { [id: string]: string; };
+	getAllRecommendationsWithReason(): { [id: string]: { reasonId: ExtensionRecommendationReason, reasonText: string }; };
 	getFileBasedRecommendations(): string[];
-	getOtherRecommendations(): string[];
+	getOtherRecommendations(): TPromise<string[]>;
 	getWorkspaceRecommendations(): TPromise<string[]>;
 	getKeymapRecommendations(): string[];
 	getKeywordsForExtension(extension: string): string[];
 	getRecommendationsForExtension(extension: string): string[];
+}
+
+export enum ExtensionRecommendationReason {
+	Workspace,
+	File,
+	Executable,
+	DynamicWorkspace
 }
 
 export const ExtensionsLabel = localize('extensions', "Extensions");

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -198,15 +198,15 @@ export class Workspace implements IWorkspace {
 	}
 
 	public toJSON(): IWorkspace {
-		return { id: this.id, folders: this.folders, name: this.name };
+		return { id: this.id, folders: this.folders, name: this.name, configuration: this.configuration };
 	}
 }
 
 export class WorkspaceFolder implements IWorkspaceFolder {
 
 	readonly uri: URI;
-	readonly name: string;
-	readonly index: number;
+	name: string;
+	index: number;
 
 	constructor(data: IWorkspaceFolderData,
 		readonly raw?: IStoredWorkspaceFolder) {

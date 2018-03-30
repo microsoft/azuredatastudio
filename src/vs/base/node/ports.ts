@@ -1,11 +1,20 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import net = require('net');
+
+/**
+ * @returns Returns a random port between 1025 and 65535.
+ */
+export function randomPort(): number {
+	let min = 1025;
+	let max = 65535;
+	return min + Math.floor((max - min) * Math.random());
+}
 
 /**
  * Given a start point and a max number of retries, will find a port that

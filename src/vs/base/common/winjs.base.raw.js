@@ -3,11 +3,11 @@
  * Version: 4.4.0(ec3258a9f3a36805a187848984e3bb938044178d)
  * Copyright (c) Microsoft Corporation.
  * All Rights Reserved.
- * Licensed under the Source EULA.
+ * Licensed under the MIT License.
  */
 (function() {
 
-var _modules = {};
+var _modules = Object.create(null);//{};
 _modules["WinJS/Core/_WinJS"] = {};
 
 var _winjs = function(moduleId, deps, factory) {
@@ -64,11 +64,24 @@ _winjs("WinJS/Core/_BaseCoreUtils", ["WinJS/Core/_Global"], function baseCoreUti
         return func;
     }
 
+    var actualSetImmediate = null;
+
     return {
         hasWinRT: hasWinRT,
         markSupportedForProcessing: markSupportedForProcessing,
-        _setImmediate: _Global.setImmediate ? _Global.setImmediate.bind(_Global) : function (handler) {
-            _Global.setTimeout(handler, 0);
+        _setImmediate: function (callback) {
+            // BEGIN monaco change
+            if (actualSetImmediate === null) {
+                if (_Global.setImmediate) {
+                    actualSetImmediate = _Global.setImmediate.bind(_Global);
+                } else if (typeof process !== 'undefined' && typeof process.nextTick === 'function') {
+                    actualSetImmediate = process.nextTick.bind(process);
+                } else {
+                    actualSetImmediate = _Global.setTimeout.bind(_Global);
+                }
+            }
+            actualSetImmediate(callback);
+            // END monaco change
         }
     };
 });
@@ -2057,15 +2070,9 @@ _winjs("WinJS/Promise", ["WinJS/Core/_Base","WinJS/Promise/_StateMachine"], func
 var exported = _modules["WinJS/Core/_WinJS"];
 
 if (typeof exports === 'undefined' && typeof define === 'function' && define.amd) {
-    define(exported);
+    define([], exported);
 } else {
     module.exports = exported;
-}
-
-if (typeof process !== 'undefined' && typeof process.nextTick === 'function') {
-    _modules["WinJS/Core/_BaseCoreUtils"]._setImmediate = function(handler) {
-        return process.nextTick(handler);
-    };
 }
 
 })();

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -50,6 +50,13 @@ export class Context implements IContext {
 			return this._parent.getValue<T>(key);
 		}
 		return ret;
+	}
+
+	collectAllValues(): { [key: string]: any; } {
+		let result = this._parent ? this._parent.collectAllValues() : Object.create(null);
+		result = { ...result, ...this._value };
+		delete result['_contextId'];
+		return result;
 	}
 }
 
@@ -169,11 +176,7 @@ export class ContextKeyChangeEvent implements IContextKeyChangeEvent {
 	private _keys: string[] = [];
 
 	collect(oneOrManyKeys: string | string[]): void {
-		if (Array.isArray(oneOrManyKeys)) {
-			this._keys = this._keys.concat(oneOrManyKeys);
-		} else {
-			this._keys.push(oneOrManyKeys);
-		}
+		this._keys = this._keys.concat(oneOrManyKeys);
 	}
 
 	affectsSome(keys: Set<string>): boolean {

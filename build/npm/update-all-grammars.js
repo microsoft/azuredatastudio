@@ -1,12 +1,14 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 const cp = require('child_process');
-const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+const fs = require('fs');
+const path = require('path');
 
 function updateGrammar(location) {
+	const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 	const result = cp.spawnSync(npm, ['run', 'update-grammar'], {
 		cwd: location,
 		stdio: 'inherit'
@@ -17,50 +19,17 @@ function updateGrammar(location) {
 	}
 }
 
-const extensions = [
-	'bat',
-	'clojure',
-	'coffeescript',
-	'cpp',
-	'csharp',
-	'css',
-	'diff',
-	'docker',
-	'fsharp',
-	'gitsyntax',
-	'go',
-	'groovy',
-	'handlebars',
-	'hlsl',
-	'html',
-	'ini',
-	'java',
-	// 'javascript',  updated through JavaScript
-	'json',
-	'less',
-	'lua',
-	'make',
-	'markdown',
-	'objective-c',
-	'perl',
-	'php',
-	// 'powershell', grammar not ready yet, @daviwil will ping when ready
-	'pug',
-	'python',
-	'r',
-	'razor',
-	'ruby',
-	'rust',
-	'scss',
-	'shaderlab',
-	'shellscript',
-	'sql',
-	'swift',
-	'typescript',
-	'vb',
-	'xml',
-	'yaml'
-];
+const allExtensionFolders = fs.readdirSync('extensions');
+const extensions = allExtensionFolders.filter(e => {
+	try {
+		let packageJSON = JSON.parse(fs.readFileSync(path.join('extensions', e, 'package.json')).toString());
+		return packageJSON && packageJSON.scripts && packageJSON.scripts['update-grammar'];
+	} catch (e) {
+		return false;
+	}
+});
+
+console.log(`Updating ${extensions.length} grammars...`);
 
 extensions.forEach(extension => updateGrammar(`extensions/${extension}`));
 
@@ -71,3 +40,4 @@ if (process.platform === 'win32') {
 } else {
 	cp.spawn('/bin/bash', ['./scripts/test-integration.sh'], { env: process.env, stdio: 'inherit' });
 }
+

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -100,7 +100,7 @@ export class Gesture implements IDisposable {
 
 	@memoize
 	private static isTouchDevice(): boolean {
-		return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.navigator.msMaxTouchPoints > 0;
+		return 'ontouchstart' in window as any || navigator.maxTouchPoints > 0 || window.navigator.msMaxTouchPoints > 0;
 	}
 
 	public dispose(): void {

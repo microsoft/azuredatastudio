@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
 import * as assert from 'assert';
 import { FoldingModel } from 'vs/editor/contrib/folding/foldingModel';
-import { Model } from 'vs/editor/common/model/model';
+import { TextModel } from 'vs/editor/common/model/textModel';
 import { computeRanges } from 'vs/editor/contrib/folding/indentRangeProvider';
 import { TestDecorationProvider } from './foldingModel.test';
 import { HiddenRangeModel } from 'vs/editor/contrib/folding/hiddenRangeModel';
@@ -40,7 +40,7 @@ suite('Hidden Range Model', () => {
 		/* 9*/	'  }',
 		/* 10*/	'}'];
 
-		let textModel = Model.createFromString(lines.join('\n'));
+		let textModel = TextModel.createFromString(lines.join('\n'));
 		let foldingModel = new FoldingModel(textModel, new TestDecorationProvider(textModel));
 		let hiddenRangeModel = new HiddenRangeModel(foldingModel);
 

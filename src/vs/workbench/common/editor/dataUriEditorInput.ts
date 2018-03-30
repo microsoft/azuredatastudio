@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -18,7 +18,7 @@ import { DataUri } from 'vs/workbench/common/resources';
  */
 export class DataUriEditorInput extends EditorInput {
 
-	static ID: string = 'workbench.editors.dataUriEditorInput';
+	static readonly ID: string = 'workbench.editors.dataUriEditorInput';
 
 	private resource: URI;
 	private name: string;

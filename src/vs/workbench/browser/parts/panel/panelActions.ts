@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/panelpart';
@@ -18,7 +18,7 @@ import { ActivityAction } from 'vs/workbench/browser/parts/compositebar/composit
 import { IActivity } from 'vs/workbench/common/activity';
 
 export class ClosePanelAction extends Action {
-	static ID = 'workbench.action.closePanel';
+	static readonly ID = 'workbench.action.closePanel';
 	static LABEL = nls.localize('closePanel', "Close Panel");
 
 	constructor(
@@ -35,7 +35,7 @@ export class ClosePanelAction extends Action {
 }
 
 export class TogglePanelAction extends Action {
-	static ID = 'workbench.action.togglePanel';
+	static readonly ID = 'workbench.action.togglePanel';
 	static LABEL = nls.localize('togglePanel', "Toggle Panel");
 
 	constructor(

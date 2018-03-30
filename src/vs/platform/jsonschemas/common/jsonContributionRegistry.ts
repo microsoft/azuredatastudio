@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -24,6 +24,13 @@ export interface IJSONContributionRegistry {
 	 * Register a schema to the registry.
 	 */
 	registerSchema(uri: string, unresolvedSchemaContent: IJSONSchema): void;
+
+
+	/**
+	 * Notifies all listeneres that the content of the given schema has changed.
+	 * @param uri The id of the schema
+	 */
+	notifySchemaChanged(uri: string): void;
 
 	/**
 	 * Get all schemas
@@ -57,6 +64,10 @@ class JSONContributionRegistry implements IJSONContributionRegistry {
 
 	public registerSchema(uri: string, unresolvedSchemaContent: IJSONSchema): void {
 		this.schemasById[normalizeId(uri)] = unresolvedSchemaContent;
+		this._onDidChangeSchema.fire(uri);
+	}
+
+	public notifySchemaChanged(uri: string): void {
 		this._onDidChangeSchema.fire(uri);
 	}
 

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -21,11 +21,11 @@ export class ActivityService implements IActivityService {
 		@IPanelService private panelService: IPanelService
 	) { }
 
-	public showActivity(compositeOrActionId: string, badge: IBadge, clazz?: string): IDisposable {
+	public showActivity(compositeOrActionId: string, badge: IBadge, clazz?: string, priority?: number): IDisposable {
 		if (this.panelService.getPanels().filter(p => p.id === compositeOrActionId).length) {
 			return this.panelPart.showActivity(compositeOrActionId, badge, clazz);
 		}
 
-		return this.activitybarPart.showActivity(compositeOrActionId, badge, clazz);
+		return this.activitybarPart.showActivity(compositeOrActionId, badge, clazz, priority);
 	}
 }

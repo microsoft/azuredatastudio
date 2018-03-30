@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { SpectronApplication } from '../../spectron/application';
@@ -16,7 +16,7 @@ const STEP_IN = `.debug-actions-widget .debug-action.step-into`;
 const STEP_OUT = `.debug-actions-widget .debug-action.step-out`;
 const CONTINUE = `.debug-actions-widget .debug-action.continue`;
 const GLYPH_AREA = '.margin-view-overlays>:nth-child';
-const BREAKPOINT_GLYPH = '.debug-breakpoint-glyph';
+const BREAKPOINT_GLYPH = '.debug-breakpoint';
 const PAUSE = `.debug-actions-widget .debug-action.pause`;
 const DEBUG_STATUS_BAR = `.statusbar.debugging`;
 const NOT_DEBUG_STATUS_BAR = `.statusbar:not(debugging)`;

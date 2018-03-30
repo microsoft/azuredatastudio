@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -8,6 +8,7 @@ import types = require('vs/base/common/types');
 import errors = require('vs/base/common/errors');
 import strings = require('vs/base/common/strings');
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import * as perf from 'vs/base/common/performance';
 
 // Browser localStorage interface
 export interface IStorage {
@@ -89,7 +90,9 @@ export class StorageService implements IStorageService {
 	private cleanupWorkspaceScope(workspaceUid: number): void {
 
 		// Get stored identifier from storage
+		perf.mark('willReadWorkspaceIdentifier');
 		const id = this.getInteger(StorageService.WORKSPACE_IDENTIFIER, StorageScope.WORKSPACE);
+		perf.mark('didReadWorkspaceIdentifier');
 
 		// If identifier differs, assume the workspace got recreated and thus clean all storage for this workspace
 		if (types.isNumber(id) && workspaceUid !== id) {

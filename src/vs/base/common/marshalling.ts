@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -32,7 +32,7 @@ function replacer(key: string, value: any): any {
 	return value;
 }
 
-function revive(obj: any, depth: number): any {
+export function revive(obj: any, depth: number): any {
 
 	if (!obj || depth > 200) {
 		return obj;
@@ -55,4 +55,3 @@ function revive(obj: any, depth: number): any {
 
 	return obj;
 }
-

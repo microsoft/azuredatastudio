@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -134,6 +134,7 @@ export abstract class PeekViewWidget extends ZoneWidget {
 		const actionsContainer = $('.peekview-actions').appendTo(this._headElement);
 		const actionBarOptions = this._getActionBarOptions();
 		this._actionbarWidget = new ActionBar(actionsContainer, actionBarOptions);
+		this._disposables.push(this._actionbarWidget);
 
 		this._actionbarWidget.push(new Action('peekview.close', nls.localize('label.close', "Close"), 'close-peekview-action', true, () => {
 			this.dispose();

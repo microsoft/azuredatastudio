@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -35,7 +35,7 @@ export class NodeCachedDataManager implements IWorkbenchContribution {
 			if (err) {
 				/* __GDPR__
 					"cachedDataError" : {
-						"errorCode" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
+						"errorCode" : { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
 						"path": { "classification": "CustomerContent", "purpose": "PerformanceAndHealth" }
 					}
 				*/

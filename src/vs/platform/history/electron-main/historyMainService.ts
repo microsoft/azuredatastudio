@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -21,10 +21,6 @@ import { IHistoryMainService, IRecentlyOpened } from 'vs/platform/history/common
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { isEqual } from 'vs/base/common/paths';
 import { RunOnceScheduler } from 'vs/base/common/async';
-
-export interface ILegacyRecentlyOpened extends IRecentlyOpened {
-	folders: string[]; // TODO@Ben migration
-}
 
 export class HistoryMainService implements IHistoryMainService {
 
@@ -179,9 +175,9 @@ export class HistoryMainService implements IHistoryMainService {
 		let files: string[];
 
 		// Get from storage
-		const storedRecents = this.stateService.getItem<IRecentlyOpened>(HistoryMainService.recentlyOpenedStorageKey) as ILegacyRecentlyOpened;
+		const storedRecents = this.stateService.getItem<IRecentlyOpened>(HistoryMainService.recentlyOpenedStorageKey);
 		if (storedRecents) {
-			workspaces = storedRecents.workspaces || storedRecents.folders || [];
+			workspaces = storedRecents.workspaces || [];
 			files = storedRecents.files || [];
 		} else {
 			workspaces = [];

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { GestureEvent } from 'vs/base/browser/touch';
@@ -15,6 +15,12 @@ export interface IRenderer<TElement, TTemplateData> {
 	renderTemplate(container: HTMLElement): TTemplateData;
 	renderElement(element: TElement, index: number, templateData: TTemplateData): void;
 	disposeTemplate(templateData: TTemplateData): void;
+}
+
+export interface IListOpenEvent<T> {
+	elements: T[];
+	indexes: number[];
+	browserEvent?: UIEvent;
 }
 
 export interface IListEvent<T> {

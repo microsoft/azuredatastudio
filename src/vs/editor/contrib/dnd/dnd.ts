@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -17,7 +17,8 @@ import { Position } from 'vs/editor/common/core/position';
 import { Range } from 'vs/editor/common/core/range';
 import { Selection } from 'vs/editor/common/core/selection';
 import { DragAndDropCommand } from 'vs/editor/contrib/dnd/dragAndDropCommand';
-import { ModelDecorationOptions } from 'vs/editor/common/model/textModelWithDecorations';
+import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
+import { IModelDeltaDecoration } from 'vs/editor/common/model';
 
 export class DragAndDropController implements editorCommon.IEditorContribution {
 
@@ -173,7 +174,7 @@ export class DragAndDropController implements editorCommon.IEditorContribution {
 
 	public showAt(position: Position): void {
 		this._editor.changeDecorations(changeAccessor => {
-			let newDecorations: editorCommon.IModelDeltaDecoration[] = [];
+			let newDecorations: IModelDeltaDecoration[] = [];
 			newDecorations.push({
 				range: new Range(position.lineNumber, position.column, position.lineNumber, position.column),
 				options: DragAndDropController._DECORATION_OPTIONS

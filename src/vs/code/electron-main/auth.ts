@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -68,7 +68,7 @@ export class ProxyAuthHandler {
 
 		const win = new BrowserWindow(opts);
 		const config = {};
-		const baseUrl = require.toUrl('./auth.html');
+		const baseUrl = require.toUrl('vs/code/electron-browser/proxy/auth.html');
 		const url = `${baseUrl}?config=${encodeURIComponent(JSON.stringify(config))}`;
 		const proxyUrl = `${authInfo.host}:${authInfo.port}`;
 		const title = localize('authRequire', "Proxy Authentication Required");

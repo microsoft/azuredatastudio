@@ -1,12 +1,13 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
 import { Range } from 'vs/editor/common/core/range';
 import { Selection } from 'vs/editor/common/core/selection';
 import * as editorCommon from 'vs/editor/common/editorCommon';
+import { ITextModel } from 'vs/editor/common/model';
 
 interface IEditOperation {
 	range: Range;
@@ -26,7 +27,7 @@ export class ReplaceAllCommand implements editorCommon.ICommand {
 		this._replaceStrings = replaceStrings;
 	}
 
-	public getEditOperations(model: editorCommon.ITokenizedModel, builder: editorCommon.IEditOperationBuilder): void {
+	public getEditOperations(model: ITextModel, builder: editorCommon.IEditOperationBuilder): void {
 		if (this._ranges.length > 0) {
 			// Collect all edit operations
 			var ops: IEditOperation[] = [];
@@ -65,7 +66,7 @@ export class ReplaceAllCommand implements editorCommon.ICommand {
 		this._trackedEditorSelectionId = builder.trackSelection(this._editorSelection);
 	}
 
-	public computeCursorState(model: editorCommon.ITokenizedModel, helper: editorCommon.ICursorStateComputerData): Selection {
+	public computeCursorState(model: ITextModel, helper: editorCommon.ICursorStateComputerData): Selection {
 		return helper.getTrackedSelection(this._trackedEditorSelectionId);
 	}
 }

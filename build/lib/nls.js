@@ -1,7 +1,7 @@
 "use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 var ts = require("typescript");
 var lazy = require("lazy.js");
@@ -79,7 +79,7 @@ function isImportNode(node) {
     function fileFrom(file, contents, path) {
         if (path === void 0) { path = file.path; }
         return new File({
-            contents: new Buffer(contents),
+            contents: Buffer.from(contents),
             base: file.base,
             cwd: file.cwd,
             path: path

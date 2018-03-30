@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -9,7 +9,6 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { TypeConstraint, validateConstraints } from 'vs/base/common/types';
 import { ServicesAccessor, createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import Event from 'vs/base/common/event';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { LinkedList } from 'vs/base/common/linkedList';
 
 export const ICommandService = createDecorator<ICommandService>('commandService');
@@ -35,7 +34,6 @@ export interface ICommandHandler {
 export interface ICommand {
 	id: string;
 	handler: ICommandHandler;
-	precondition?: ContextKeyExpr;
 	description?: ICommandHandlerDescription;
 }
 

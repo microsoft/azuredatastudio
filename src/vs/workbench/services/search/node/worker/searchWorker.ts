@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -169,7 +169,7 @@ export class SearchWorkerEngine {
 					return resolve(null);
 				}
 
-				const buffer = new Buffer(options.bufferLength);
+				const buffer = Buffer.allocUnsafe(options.bufferLength);
 				let line = '';
 				let lineNumber = 0;
 				let lastBufferHadTrailingCR = false;

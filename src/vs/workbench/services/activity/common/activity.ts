@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -66,5 +66,5 @@ export interface IActivityService {
 	/**
 	 * Show activity in the panel for the given panel or in the activitybar for the given viewlet or global action.
 	 */
-	showActivity(compositeOrActionId: string, badge: IBadge, clazz?: string): IDisposable;
+	showActivity(compositeOrActionId: string, badge: IBadge, clazz?: string, priority?: number): IDisposable;
 }

@@ -1,21 +1,21 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { parseTree, findNodeAtLocation, Node as JsonNode } from 'jsonc-parser';
 import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
+
+import { parseTree, findNodeAtLocation, Node as JsonNode } from 'jsonc-parser';
 import * as MarkdownItType from 'markdown-it';
 
 import { languages, workspace, Disposable, TextDocument, Uri, Diagnostic, Range, DiagnosticSeverity, Position } from 'vscode';
 
 const product = require('../../../product.json');
 const allowedBadgeProviders: string[] = (product.extensionAllowedBadgeProviders || []).map(s => s.toLowerCase());
-
-const localize = nls.loadMessageBundle();
 
 const httpsRequired = localize('httpsRequired', "Images must use the HTTPS protocol.");
 const svgsNotValid = localize('svgsNotValid', "SVGs are not a valid image source.");

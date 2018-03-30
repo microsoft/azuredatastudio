@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 /* Editor Label */
@@ -9,6 +9,11 @@
 .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab .tab-label {
 	white-space: nowrap;
 	flex: 1;
+}
+
+.monaco-workbench > .part.editor > .content > .one-editor-silo.centered > .container > .title .title-label {
+	flex-direction: row;
+	justify-content: center;
 }
 
 .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .title-label a,

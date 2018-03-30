@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -20,6 +20,7 @@ import { LanguageConfigurationRegistry } from 'vs/editor/common/modes/languageCo
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { IRange } from 'vs/editor/common/core/range';
+import { ITextModel } from 'vs/editor/common/model';
 
 /**
  * Stop syncing a model to the worker if it was not needed for 1 min.
@@ -124,7 +125,7 @@ class WordBasedCompletionItemProvider implements modes.ISuggestSupport {
 		this._modelService = modelService;
 	}
 
-	provideCompletionItems(model: editorCommon.IModel, position: Position): TPromise<modes.ISuggestResult> {
+	provideCompletionItems(model: ITextModel, position: Position): TPromise<modes.ISuggestResult> {
 		const { wordBasedSuggestions } = this._configurationService.getValue<IEditorOptions>(model.uri, position, 'editor');
 		if (!wordBasedSuggestions) {
 			return undefined;

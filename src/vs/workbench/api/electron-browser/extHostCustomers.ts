@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { ProxyIdentifier } from 'vs/workbench/services/thread/common/threadService';
+import { ProxyIdentifier } from 'vs/workbench/services/extensions/node/proxyIdentifier';
 import { IConstructorSignature1 } from 'vs/platform/instantiation/common/instantiation';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 

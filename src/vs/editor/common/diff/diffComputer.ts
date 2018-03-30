@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -32,24 +32,6 @@ class MarkerSequence implements ISequence {
 		this.buffer = buffer;
 		this.startMarkers = startMarkers;
 		this.endMarkers = endMarkers;
-	}
-
-	public equals(other: any): boolean {
-		if (!(other instanceof MarkerSequence)) {
-			return false;
-		}
-		const otherMarkerSequence = <MarkerSequence>other;
-		if (this.getLength() !== otherMarkerSequence.getLength()) {
-			return false;
-		}
-		for (let i = 0, len = this.getLength(); i < len; i++) {
-			const myElement = this.getElementHash(i);
-			const otherElement = otherMarkerSequence.getElementHash(i);
-			if (myElement !== otherElement) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	public getLength(): number {
@@ -321,7 +303,6 @@ class LineChange implements ILineChange {
 export interface IDiffComputerOpts {
 	shouldPostProcessCharChanges: boolean;
 	shouldIgnoreTrimWhitespace: boolean;
-	shouldConsiderTrimWhitespaceInEmptyCase: boolean;
 	shouldMakePrettyDiff: boolean;
 }
 
@@ -347,11 +328,6 @@ export class DiffComputer {
 		this.modifiedLines = modifiedLines;
 		this.original = new LineMarkerSequence(originalLines);
 		this.modified = new LineMarkerSequence(modifiedLines);
-
-		if (opts.shouldConsiderTrimWhitespaceInEmptyCase && this.shouldIgnoreTrimWhitespace && this.original.equals(this.modified)) {
-			// Diff would be empty with `shouldIgnoreTrimWhitespace`
-			this.shouldIgnoreTrimWhitespace = false;
-		}
 	}
 
 	public computeDiff(): ILineChange[] {

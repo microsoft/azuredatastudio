@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -347,5 +347,38 @@ suite('Strings', () => {
 		assert.equal(strings.stripUTF8BOM('foobar' + strings.UTF8_BOM_CHARACTER), 'foobar' + strings.UTF8_BOM_CHARACTER);
 		assert.equal(strings.stripUTF8BOM('abc'), 'abc');
 		assert.equal(strings.stripUTF8BOM(''), '');
+	});
+
+	test('containsUppercaseCharacter', () => {
+		[
+			[null, false],
+			['', false],
+			['foo', false],
+			['föö', false],
+			['ناك', false],
+			['מבוססת', false],
+			['😀', false],
+			['(#@()*&%()@*#&09827340982374}{:">?></\'\\~`', false],
+
+			['Foo', true],
+			['FOO', true],
+			['FöÖ', true],
+			['FöÖ', true],
+			['\\Foo', true],
+		].forEach(([str, result]) => {
+			assert.equal(strings.containsUppercaseCharacter(<string>str), result, `Wrong result for ${str}`);
+		});
+	});
+
+	test('containsUppercaseCharacter (ignoreEscapedChars)', () => {
+		[
+			['\\Woo', false],
+			['f\\S\\S', false],
+			['foo', false],
+
+			['Foo', true],
+		].forEach(([str, result]) => {
+			assert.equal(strings.containsUppercaseCharacter(<string>str, true), result, `Wrong result for ${str}`);
+		});
 	});
 });

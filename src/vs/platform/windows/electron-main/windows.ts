@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { OpenContext, IWindowConfiguration, ReadyState, INativeOpenDialogOptions, IEnterWorkspaceResult } from 'vs/platform/windows/common/windows';
+import { OpenContext, IWindowConfiguration, ReadyState, INativeOpenDialogOptions, IEnterWorkspaceResult, IMessageBoxResult } from 'vs/platform/windows/common/windows';
 import { ParsedArgs } from 'vs/platform/environment/common/environment';
 import Event from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -69,6 +69,9 @@ export interface IWindowsMainService {
 	pickFolderAndOpen(options: INativeOpenDialogOptions): void;
 	pickFileAndOpen(options: INativeOpenDialogOptions): void;
 	pickWorkspaceAndOpen(options: INativeOpenDialogOptions): void;
+	showMessageBox(options: Electron.MessageBoxOptions, win?: ICodeWindow): TPromise<IMessageBoxResult>;
+	showSaveDialog(options: Electron.SaveDialogOptions, win?: ICodeWindow): TPromise<string>;
+	showOpenDialog(options: Electron.OpenDialogOptions, win?: ICodeWindow): TPromise<string[]>;
 	focusLastActive(cli: ParsedArgs, context: OpenContext): ICodeWindow;
 	getLastActiveWindow(): ICodeWindow;
 	waitForWindowCloseOrLoad(windowId: number): TPromise<void>;

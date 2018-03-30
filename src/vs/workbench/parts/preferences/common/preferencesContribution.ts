@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -8,7 +8,7 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import URI from 'vs/base/common/uri';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IModel } from 'vs/editor/common/editorCommon';
+import { ITextModel } from 'vs/editor/common/model';
 import JSONContributionRegistry = require('vs/platform/jsonschemas/common/jsonContributionRegistry');
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
@@ -106,7 +106,7 @@ export class PreferencesContribution implements IWorkbenchContribution {
 	private start(): void {
 
 		this.textModelResolverService.registerTextModelContentProvider('vscode', {
-			provideTextContent: (uri: URI): TPromise<IModel> => {
+			provideTextContent: (uri: URI): TPromise<ITextModel> => {
 				if (uri.scheme !== 'vscode') {
 					return null;
 				}
@@ -121,7 +121,7 @@ export class PreferencesContribution implements IWorkbenchContribution {
 		});
 	}
 
-	private getSchemaModel(uri: URI): IModel {
+	private getSchemaModel(uri: URI): ITextModel {
 		let schema = schemaRegistry.getSchemaContributions().schemas[uri.toString()];
 		if (schema) {
 			const modelContent = JSON.stringify(schema);

@@ -1,10 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IDecorationRenderOptions, IModelDecorationOptions } from 'vs/editor/common/editorCommon';
+import { IModelDecorationOptions } from 'vs/editor/common/model';
+import { IDecorationRenderOptions } from 'vs/editor/common/editorCommon';
 import { AbstractCodeEditorService } from 'vs/editor/browser/services/abstractCodeEditorService';
 
 export class TestCodeEditorService extends AbstractCodeEditorService {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -80,7 +80,7 @@ export class RenderedLinesCollection<T extends ILine> {
 	public getLine(lineNumber: number): T {
 		let lineIndex = lineNumber - this._rendLineNumberStart;
 		if (lineIndex < 0 || lineIndex >= this._lines.length) {
-			throw new Error('Illegal value for lineNumber: ' + lineNumber);
+			throw new Error('Illegal value for lineNumber');
 		}
 		return this._lines[lineIndex];
 	}

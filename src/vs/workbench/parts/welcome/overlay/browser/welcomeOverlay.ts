@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -149,7 +149,7 @@ class WelcomeOverlay {
 		@IPartService private partService: IPartService,
 		@IWorkbenchEditorService private editorService: IWorkbenchEditorService,
 		@ICommandService private commandService: ICommandService,
-		@IContextKeyService private _contextKeyService: IContextKeyService,
+		@IContextKeyService private readonly _contextKeyService: IContextKeyService,
 		@IKeybindingService private keybindingService: IKeybindingService
 	) {
 		this._overlayVisible = OVERLAY_VISIBLE.bindTo(this._contextKeyService);

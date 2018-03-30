@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -124,10 +124,16 @@ const maven: TaskEntry = {
 	].join('\n')
 };
 
-export let templates: TaskEntry[] = [dotnetBuild, msbuild, maven].sort((a, b) => {
-	return (a.sort || a.label).localeCompare(b.sort || b.label);
-});
-templates.push(command);
+let _templates: TaskEntry[] = null;
+export function getTemplates(): TaskEntry[] {
+	if (!_templates) {
+		_templates = [dotnetBuild, msbuild, maven].sort((a, b) => {
+			return (a.sort || a.label).localeCompare(b.sort || b.label);
+		});
+		_templates.push(command);
+	}
+	return _templates;
+}
 
 
 /** Version 1.0 templates

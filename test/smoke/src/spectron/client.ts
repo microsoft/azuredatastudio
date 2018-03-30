@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Application } from 'spectron';
@@ -23,10 +23,6 @@ export class SpectronClient {
 		waitTime: number
 	) {
 		this.retryCount = (waitTime * 1000) / this.retryDuration;
-	}
-
-	windowByIndex(index: number): Promise<any> {
-		return this.spectron.client.windowByIndex(index);
 	}
 
 	keys(keys: string[]): Promise<void> {

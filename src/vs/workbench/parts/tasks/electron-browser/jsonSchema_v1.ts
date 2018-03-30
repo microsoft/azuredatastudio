@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -8,7 +8,7 @@ import * as nls from 'vs/nls';
 import * as Objects from 'vs/base/common/objects';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 
-import { ProblemMatcherRegistry } from 'vs/platform/markers/common/problemMatcher';
+import { ProblemMatcherRegistry } from 'vs/workbench/parts/tasks/common/problemMatcher';
 
 import commonSchema from './jsonSchemaCommon';
 

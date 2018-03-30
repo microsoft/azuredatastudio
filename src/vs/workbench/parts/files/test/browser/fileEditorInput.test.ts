@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -20,7 +20,7 @@ import { IEditorGroupService } from 'vs/workbench/services/group/common/groupSer
 import { IModelService } from 'vs/editor/common/services/modelService';
 
 function toResource(self, path) {
-	return URI.file(join('C:\\', new Buffer(self.test.fullTitle()).toString('base64'), path));
+	return URI.file(join('C:\\', Buffer.from(self.test.fullTitle()).toString('base64'), path));
 }
 
 class ServiceAccessor {

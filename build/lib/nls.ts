@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as ts from 'typescript';
@@ -131,7 +131,7 @@ module nls {
 
 	export function fileFrom(file: File, contents: string, path: string = file.path) {
 		return new File({
-			contents: new Buffer(contents),
+			contents: Buffer.from(contents),
 			base: file.base,
 			cwd: file.cwd,
 			path: path

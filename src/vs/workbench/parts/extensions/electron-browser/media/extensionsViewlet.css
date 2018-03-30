@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 .extensions-viewlet {
@@ -25,10 +25,6 @@
 
 .extensions-viewlet > .extensions {
 	height: calc(100% - 38px);
-}
-
-.extensions-viewlet > .extensions .extensions-list > .monaco-list {
-	height: auto;
 }
 
 .extensions-viewlet > .extensions .list-actionbar-container .monaco-action-bar .action-item > .octicon {
@@ -77,7 +73,6 @@
 	position: absolute;
 	top: 1px;
 	left: 1px;
-	color: white;
 	font-size: 90%;
 }
 

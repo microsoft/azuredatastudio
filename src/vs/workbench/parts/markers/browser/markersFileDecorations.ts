@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -60,9 +60,9 @@ class MarkersFileDecorations implements IWorkbenchContribution {
 	private _enabled: boolean;
 
 	constructor(
-		@IMarkerService private _markerService: IMarkerService,
-		@IDecorationsService private _decorationsService: IDecorationsService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IMarkerService private readonly _markerService: IMarkerService,
+		@IDecorationsService private readonly _decorationsService: IDecorationsService,
+		@IConfigurationService private readonly _configurationService: IConfigurationService
 	) {
 		//
 		this._disposables = [
@@ -102,7 +102,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration).regis
 		'problems.decorations.enabled': {
 			'description': localize('markers.showOnFile', "Show Errors & Warnings on files and folder."),
 			'type': 'boolean',
-			'default': false
+			'default': true
 		}
 	}
 });

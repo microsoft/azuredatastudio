@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -61,7 +61,7 @@ function doLegacySearchTest(config: IRawSearch, expectedResultCount: number | Fu
 	});
 }
 
-function doRipgrepSearchTest(config: IRawSearch, expectedResultCount: number): TPromise<void> {
+function doRipgrepSearchTest(config: IRawSearch, expectedResultCount: number | Function): TPromise<void> {
 	return new TPromise<void>((resolve, reject) => {
 		let engine = new RipgrepEngine(config);
 
@@ -306,5 +306,10 @@ suite('Search-integration', function () {
 });
 
 function makeExpression(...patterns: string[]): glob.IExpression {
-	return patterns.reduce((glob, cur) => { glob[cur] = true; return glob; }, Object.create(null));
+	return patterns.reduce((glob, pattern) => {
+		// glob.ts needs forward slashes
+		pattern = pattern.replace(/\\/g, '/');
+		glob[pattern] = true;
+		return glob;
+	}, Object.create(null));
 }

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./simpleFindWidget';
@@ -33,7 +33,7 @@ export abstract class SimpleFindWidget extends Widget {
 	protected _updateHistoryDelayer: Delayer<void>;
 
 	constructor(
-		@IContextViewService private _contextViewService: IContextViewService,
+		@IContextViewService private readonly _contextViewService: IContextViewService,
 		private animate: boolean = true
 	) {
 		super();

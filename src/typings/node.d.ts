@@ -52,10 +52,10 @@ interface Iterator<T> {
     next(value?: any): IteratorResult<T>;
 }
 interface IteratorResult<T> { }
-// interface SymbolConstructor {
-//     readonly iterator: symbol;
-// }
-// declare var Symbol: SymbolConstructor;
+interface SymbolConstructor {
+    readonly iterator: symbol;
+}
+declare var Symbol: SymbolConstructor;
 
 /************************************************
 *                                               *
@@ -1720,6 +1720,7 @@ declare module "child_process" {
         uid?: number;
         gid?: number;
         shell?: boolean | string;
+        windowsVerbatimArguments?: boolean;
     }
     export function spawn(command: string, args?: string[], options?: SpawnOptions): ChildProcess;
 

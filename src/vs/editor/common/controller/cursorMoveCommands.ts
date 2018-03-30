@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -155,22 +155,6 @@ export class CursorMoveCommands {
 	}
 
 	public static selectAll(context: CursorContext, cursor: CursorState): CursorState {
-
-		if (context.model.hasEditableRange()) {
-			// Toggle between selecting editable range and selecting the entire buffer
-
-			const editableRange = context.model.getEditableRange();
-			const selection = cursor.modelState.selection;
-
-			if (!selection.equalsRange(editableRange)) {
-				// Selection is not editable range => select editable range
-				return CursorState.fromModelState(new SingleCursorState(
-					new Range(editableRange.startLineNumber, editableRange.startColumn, editableRange.startLineNumber, editableRange.startColumn), 0,
-					new Position(editableRange.endLineNumber, editableRange.endColumn), 0
-				));
-			}
-		}
-
 		const lineCount = context.model.getLineCount();
 		const maxColumn = context.model.getLineMaxColumn(lineCount);
 

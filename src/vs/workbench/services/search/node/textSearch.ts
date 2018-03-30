@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -147,20 +147,22 @@ export class Engine implements ISearchEngine<ISerializedFileMatch[]> {
 				nextBatch = [];
 				nextBatchBytes = 0;
 			}
-		}, (error, isLimitHit) => {
-			this.walkerIsDone = true;
-			this.walkerError = error;
+		},
+			onProgress,
+			(error, isLimitHit) => {
+				this.walkerIsDone = true;
+				this.walkerError = error;
 
-			// Send any remaining paths to a worker, or unwind if we're stopping
-			if (nextBatch.length) {
-				if (this.limitReached || this.isCanceled) {
-					unwind(nextBatchBytes);
+				// Send any remaining paths to a worker, or unwind if we're stopping
+				if (nextBatch.length) {
+					if (this.limitReached || this.isCanceled) {
+						unwind(nextBatchBytes);
+					} else {
+						run(nextBatch, nextBatchBytes);
+					}
 				} else {
-					run(nextBatch, nextBatchBytes);
+					unwind(0);
 				}
-			} else {
-				unwind(0);
-			}
-		});
+			});
 	}
 }

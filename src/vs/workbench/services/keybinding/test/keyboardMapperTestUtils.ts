@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -72,7 +72,7 @@ export function assertMapping(writeFileIfDifferent: boolean, mapper: IKeyboardMa
 			writeFile(filePath, actual);
 		}
 		try {
-			assert.deepEqual(actual, expected);
+			assert.deepEqual(actual.split(/\r\n|\n/), expected.split(/\r\n|\n/));
 		} catch (err) {
 			return done(err);
 		}

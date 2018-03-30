@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------------------------
  *---------------------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ var CSSLoaderPlugin;
      * Known issue:
      * - In IE there is no way to know if the CSS file loaded successfully or not.
      */
-    var BrowserCSSLoader = (function () {
+    var BrowserCSSLoader = /** @class */ (function () {
         function BrowserCSSLoader() {
             this._pendingLoads = 0;
         }
@@ -93,7 +93,7 @@ var CSSLoaderPlugin;
         return BrowserCSSLoader;
     }());
     // ------------------------------ Finally, the plugin
-    var CSSPlugin = (function () {
+    var CSSPlugin = /** @class */ (function () {
         function CSSPlugin() {
             this._cssLoader = new BrowserCSSLoader();
         }
@@ -110,12 +110,5 @@ var CSSLoaderPlugin;
         return CSSPlugin;
     }());
     CSSLoaderPlugin.CSSPlugin = CSSPlugin;
-    function init() {
-        define('vs/css', new CSSPlugin());
-    }
-    CSSLoaderPlugin.init = init;
-    ;
-    if (typeof doNotInitLoader === 'undefined') {
-        init();
-    }
+    define('vs/css', new CSSPlugin());
 })(CSSLoaderPlugin || (CSSLoaderPlugin = {}));

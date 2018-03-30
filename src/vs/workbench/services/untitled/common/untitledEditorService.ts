@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -17,8 +17,6 @@ import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorMo
 import { Schemas } from 'vs/base/common/network';
 
 export const IUntitledEditorService = createDecorator<IUntitledEditorService>('untitledEditorService');
-
-export const UNTITLED_SCHEMA = 'untitled';
 
 export interface IModelLoadOrCreateOptions {
 	resource?: URI;
@@ -211,7 +209,7 @@ export class UntitledEditorService implements IUntitledEditorService {
 		let hasAssociatedFilePath = false;
 		if (resource) {
 			hasAssociatedFilePath = (resource.scheme === Schemas.file);
-			resource = resource.with({ scheme: UNTITLED_SCHEMA }); // ensure we have the right scheme
+			resource = resource.with({ scheme: Schemas.untitled }); // ensure we have the right scheme
 
 			if (hasAssociatedFilePath) {
 				this.mapResourceToAssociatedFilePath.set(resource, true); // remember for future lookups
@@ -233,7 +231,7 @@ export class UntitledEditorService implements IUntitledEditorService {
 			// Create new taking a resource URI that is not already taken
 			let counter = this.mapResourceToInput.size + 1;
 			do {
-				resource = URI.from({ scheme: UNTITLED_SCHEMA, path: `Untitled-${counter}` });
+				resource = URI.from({ scheme: Schemas.untitled, path: `Untitled-${counter}` });
 				counter++;
 			} while (this.mapResourceToInput.has(resource));
 		}

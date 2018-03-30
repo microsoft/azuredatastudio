@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -47,7 +47,7 @@ export class EditorWalkThroughAction extends Action {
 
 export class EditorWalkThroughInputFactory implements IEditorInputFactory {
 
-	static ID = typeId;
+	static readonly ID = typeId;
 
 	public serialize(editorInput: EditorInput): string {
 		return '{}';

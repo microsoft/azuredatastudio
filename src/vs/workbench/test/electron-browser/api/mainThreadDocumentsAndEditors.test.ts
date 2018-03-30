@@ -1,13 +1,13 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import * as assert from 'assert';
 import { MainThreadDocumentsAndEditors } from 'vs/workbench/api/electron-browser/mainThreadDocumentsAndEditors';
-import { OneGetThreadService } from './testThreadService';
+import { SingleProxyRPCProtocol } from './testRPCProtocol';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { ModelServiceImpl } from 'vs/editor/common/services/modelServiceImpl';
 import { TestCodeEditorService } from 'vs/editor/test/browser/testCodeEditorService';
@@ -53,7 +53,7 @@ suite('MainThreadDocumentsAndEditors', () => {
 
 		/* tslint:disable */
 		new MainThreadDocumentsAndEditors(
-			OneGetThreadService(new class extends mock<ExtHostDocumentsAndEditorsShape>() {
+			SingleProxyRPCProtocol(new class extends mock<ExtHostDocumentsAndEditorsShape>() {
 				$acceptDocumentsAndEditorsDelta(delta) { deltas.push(delta); }
 			}),
 			modelService,

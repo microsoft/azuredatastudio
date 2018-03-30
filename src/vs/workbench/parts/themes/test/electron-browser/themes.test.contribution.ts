@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -17,8 +17,7 @@ import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/edi
 import { toResource } from 'vs/workbench/common/editor';
 import { ITextMateService } from 'vs/workbench/services/textMate/electron-browser/textMateService';
 import { IGrammar, StackElement } from 'vscode-textmate';
-import { TokenizationRegistry } from 'vs/editor/common/modes';
-import { TokenMetadata } from 'vs/editor/common/model/tokensBinaryEncoding';
+import { TokenizationRegistry, TokenMetadata } from 'vs/editor/common/modes';
 import { ThemeRule, findMatchingThemeRule } from 'vs/workbench/services/textMate/electron-browser/TMHelper';
 import { Color } from 'vs/base/common/color';
 
@@ -264,4 +263,3 @@ CommandsRegistry.registerCommand('_workbench.captureSyntaxTokens', function (acc
 	}
 	return undefined;
 });
-

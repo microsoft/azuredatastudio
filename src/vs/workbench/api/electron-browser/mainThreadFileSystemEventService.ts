@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -19,7 +19,7 @@ export class MainThreadFileSystemEventService {
 		@IFileService fileService: IFileService
 	) {
 
-		const proxy: ExtHostFileSystemEventServiceShape = extHostContext.get(ExtHostContext.ExtHostFileSystemEventService);
+		const proxy: ExtHostFileSystemEventServiceShape = extHostContext.getProxy(ExtHostContext.ExtHostFileSystemEventService);
 		const events: FileSystemEvents = {
 			created: [],
 			changed: [],

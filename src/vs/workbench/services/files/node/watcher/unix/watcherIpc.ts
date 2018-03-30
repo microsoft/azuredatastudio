@@ -1,13 +1,13 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IChannel } from 'vs/base/parts/ipc/common/ipc';
-import { IWatcherRequest, IWatcherService } from './watcher';
+import { IWatcherRequest, IWatcherService } from 'vs/workbench/services/files/node/watcher/unix/watcher';
 
 export interface IWatcherChannel extends IChannel {
 	call(command: 'watch', request: IWatcherRequest): TPromise<void>;

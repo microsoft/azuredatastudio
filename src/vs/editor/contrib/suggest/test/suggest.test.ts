@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -10,17 +10,17 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { SuggestRegistry } from 'vs/editor/common/modes';
 import { provideSuggestionItems } from 'vs/editor/contrib/suggest/suggest';
 import { Position } from 'vs/editor/common/core/position';
-import { Model } from 'vs/editor/common/model/model';
+import { TextModel } from 'vs/editor/common/model/textModel';
 
 
 suite('Suggest', function () {
 
-	let model: Model;
+	let model: TextModel;
 	let registration: IDisposable;
 
 	setup(function () {
 
-		model = Model.createFromString('FOO\nbar\BAR\nfoo', undefined, undefined, URI.parse('foo:bar/path'));
+		model = TextModel.createFromString('FOO\nbar\BAR\nfoo', undefined, undefined, URI.parse('foo:bar/path'));
 		registration = SuggestRegistry.register({ pattern: 'bar/path', scheme: 'foo' }, {
 			provideCompletionItems() {
 				return {

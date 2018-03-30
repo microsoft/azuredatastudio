@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -126,7 +126,12 @@ export const domEvent: IDomEvent = (element: EventHandler, type: string, useCapt
 	return emitter.event;
 };
 
-export function stop<T extends Event>(event: _Event<T>): _Event<T> {
+export interface CancellableEvent {
+	preventDefault();
+	stopPropagation();
+}
+
+export function stop<T extends CancellableEvent>(event: _Event<T>): _Event<T> {
 	return mapEvent(event, e => {
 		e.preventDefault();
 		e.stopPropagation();

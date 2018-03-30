@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -109,7 +109,7 @@ export class TerminalPickerHandler extends QuickOpenHandler {
 	}
 
 	private getTerminals(): TerminalEntry[] {
-		const terminals = this.terminalService.getInstanceLabels();
+		const terminals = this.terminalService.getTabLabels();
 		const terminalEntries = terminals.map(terminal => {
 			return new TerminalEntry(terminal, this.terminalService);
 		});

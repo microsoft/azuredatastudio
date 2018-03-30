@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -66,6 +66,7 @@ export interface IStartupMetrics {
 		ellapsedEditorRestore: number;
 		ellapsedWorkbench: number;
 		ellapsedTimersToTimersComputed: number;
+		ellapsedNlsGeneration: number;
 	};
 	platform: string;
 	release: string;
@@ -83,32 +84,13 @@ export interface IStartupMetrics {
 
 export interface IInitData {
 	start: number;
-
-	appReady: number;
-
 	windowLoad: number;
-
-	beforeLoadWorkbenchMain: number;
-	afterLoadWorkbenchMain: number;
-
 	isInitialStartup: boolean;
 	hasAccessibilitySupport: boolean;
 }
 
 export interface ITimerService extends IInitData {
 	_serviceBrand: any;
-
-	beforeDOMContentLoaded: number;
-	afterDOMContentLoaded: number;
-
-	beforeWorkbenchOpen: number;
-	workbenchStarted: number;
-
-	beforeExtensionLoad: number;
-	afterExtensionLoad: number;
-
-	restoreViewletDuration: number;
-	restoreEditorsDuration: number;
 
 	readonly startupMetrics: IStartupMetrics;
 }

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -711,4 +711,16 @@ export function fuzzyContains(target: string, query: string): boolean {
 	}
 
 	return true;
+}
+
+export function containsUppercaseCharacter(target: string, ignoreEscapedChars = false): boolean {
+	if (!target) {
+		return false;
+	}
+
+	if (ignoreEscapedChars) {
+		target = target.replace(/\\./g, '');
+	}
+
+	return target.toLowerCase() !== target;
 }

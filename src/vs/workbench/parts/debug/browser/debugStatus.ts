@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
@@ -92,8 +92,13 @@ export class DebugStatus extends Themable implements IStatusbarItem {
 	private setLabel(): void {
 		if (this.label && this.statusBarItem) {
 			const manager = this.debugService.getConfigurationManager();
-			const name = manager.selectedName || '';
-			this.label.textContent = manager.getLaunches().length > 1 ? `${name} (${manager.selectedLaunch.workspace.name})` : name;
+			const name = manager.selectedConfiguration.name;
+			if (name) {
+				this.statusBarItem.style.display = 'block';
+				this.label.textContent = manager.getLaunches().length > 1 ? `${name} (${manager.selectedConfiguration.launch.name})` : name;
+			} else {
+				this.statusBarItem.style.display = 'none';
+			}
 		}
 	}
 

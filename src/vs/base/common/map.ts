@@ -1,16 +1,17 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import URI from 'vs/base/common/uri';
 
-export function values<K, V>(map: Map<K, V>): V[] {
+export function values<V = any>(set: Set<V>): V[];
+export function values<K = any, V = any>(map: Map<K, V>): V[];
+export function values<V>(forEachable: { forEach(callback: (value: V, ...more: any[]) => any) }): V[] {
 	const result: V[] = [];
-	map.forEach(value => result.push(value));
-
+	forEachable.forEach(value => result.push(value));
 	return result;
 }
 

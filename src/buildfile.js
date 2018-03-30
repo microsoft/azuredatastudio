@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 exports.base = [{
@@ -10,6 +10,7 @@ exports.base = [{
 	append: [ 'vs/base/worker/workerMain' ],
 	dest: 'vs/base/worker/workerMain.js'
 }];
+//@ts-ignore review
 exports.workbench = require('./vs/workbench/buildfile').collectModules(['vs/workbench/workbench.main']);
 exports.code = require('./vs/code/buildfile').collectModules();
 

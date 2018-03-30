@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -13,6 +13,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { workbenchInstantiationService } from 'vs/workbench/test/workbenchTestServices';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IModeService } from 'vs/editor/common/services/modeService';
+import { snapshotToString } from 'vs/platform/files/common/files';
 
 class ServiceAccessor {
 	constructor(
@@ -39,7 +40,7 @@ suite('Workbench - ResourceEditorInput', () => {
 
 		return input.resolve().then((model: ResourceEditorModel) => {
 			assert.ok(model);
-			assert.equal(model.getValue(), 'function test() {}');
+			assert.equal(snapshotToString(model.createSnapshot()), 'function test() {}');
 		});
 	});
 });

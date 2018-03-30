@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -8,7 +8,7 @@ import * as assert from 'assert';
 import { TextAreaState, ITextAreaWrapper, PagedScreenReaderStrategy } from 'vs/editor/browser/controller/textAreaState';
 import { Position } from 'vs/editor/common/core/position';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { Model } from 'vs/editor/common/model/model';
+import { TextModel } from 'vs/editor/common/model/textModel';
 import { Selection } from 'vs/editor/common/core/selection';
 
 export class MockTextAreaWrapper extends Disposable implements ITextAreaWrapper {
@@ -507,7 +507,7 @@ suite('TextAreaState', () => {
 	suite('PagedScreenReaderStrategy', () => {
 
 		function testPagedScreenReaderStrategy(lines: string[], selection: Selection, expected: TextAreaState): void {
-			const model = Model.createFromString(lines.join('\n'));
+			const model = TextModel.createFromString(lines.join('\n'));
 			const actual = PagedScreenReaderStrategy.fromEditorSelection(TextAreaState.EMPTY, model, selection, true);
 			assert.ok(equalsTextAreaState(actual, expected));
 			model.dispose();

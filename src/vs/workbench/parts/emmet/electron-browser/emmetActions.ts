@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -8,7 +8,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorAction, ServicesAccessor, IActionOptions } from 'vs/editor/browser/editorExtensions';
 import { grammarsExtPoint, ITMSyntaxExtensionPoint } from 'vs/workbench/services/textMate/electron-browser/TMGrammars';
 import { IModeService } from 'vs/editor/common/services/modeService';
-import { IExtensionService, ExtensionPointContribution } from 'vs/platform/extensions/common/extensions';
+import { IExtensionService, ExtensionPointContribution } from 'vs/workbench/services/extensions/common/extensions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { LanguageId, LanguageIdentifier } from 'vs/editor/common/modes';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';

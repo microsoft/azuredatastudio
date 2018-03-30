@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -83,11 +83,11 @@ suite('History Navigator', () => {
 	});
 
 	test('adding existing element changes the position', function () {
-		let testObject = new HistoryNavigator(['1', '2', '3', '4'], 2);
+		let testObject = new HistoryNavigator(['1', '2', '3', '4'], 5);
 
 		testObject.add('2');
 
-		assert.deepEqual(['4', '2'], toArray(testObject));
+		assert.deepEqual(['1', '3', '4', '2'], toArray(testObject));
 	});
 
 	test('add resets the navigator to last', function () {

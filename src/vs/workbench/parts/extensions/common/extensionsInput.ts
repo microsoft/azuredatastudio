@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -13,7 +13,7 @@ import URI from 'vs/base/common/uri';
 
 export class ExtensionsInput extends EditorInput {
 
-	static get ID() { return 'workbench.extensions.input2'; }
+	static readonly ID = 'workbench.extensions.input2';
 	get extension(): IExtension { return this._extension; }
 
 	constructor(private _extension: IExtension) {

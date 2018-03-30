@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -77,6 +77,55 @@ suite('Splitview', () => {
 	});
 
 	test('empty splitview has empty DOM', () => {
+		const splitview = new SplitView(container);
+		assert.equal(container.firstElementChild.childElementCount, 0, 'split view should be empty');
+		splitview.dispose();
+	});
+
+	test('has views and sashes as children', () => {
+		const view1 = new TestView(20, 20);
+		const view2 = new TestView(20, 20);
+		const view3 = new TestView(20, 20);
+		const splitview = new SplitView(container);
+
+		splitview.addView(view1, 20);
+		splitview.addView(view2, 20);
+		splitview.addView(view3, 20);
+
+		let viewQuery = container.querySelectorAll('.monaco-split-view2 > .split-view-view');
+		assert.equal(viewQuery.length, 3, 'split view should have 3 views');
+
+		let sashQuery = container.querySelectorAll('.monaco-split-view2 > .monaco-sash');
+		assert.equal(sashQuery.length, 2, 'split view should have 2 sashes');
+
+		splitview.removeView(2);
+
+		viewQuery = container.querySelectorAll('.monaco-split-view2 > .split-view-view');
+		assert.equal(viewQuery.length, 2, 'split view should have 2 views');
+
+		sashQuery = container.querySelectorAll('.monaco-split-view2 > .monaco-sash');
+		assert.equal(sashQuery.length, 1, 'split view should have 1 sash');
+
+		splitview.removeView(0);
+
+		viewQuery = container.querySelectorAll('.monaco-split-view2 > .split-view-view');
+		assert.equal(viewQuery.length, 1, 'split view should have 1 view');
+
+		sashQuery = container.querySelectorAll('.monaco-split-view2 > .monaco-sash');
+		assert.equal(sashQuery.length, 0, 'split view should have no sashes');
+
+		splitview.removeView(0);
+
+		viewQuery = container.querySelectorAll('.monaco-split-view2 > .split-view-view');
+		assert.equal(viewQuery.length, 0, 'split view should have no views');
+
+		sashQuery = container.querySelectorAll('.monaco-split-view2 > .monaco-sash');
+		assert.equal(sashQuery.length, 0, 'split view should have no sashes');
+
+		splitview.dispose();
+		view1.dispose();
+		view2.dispose();
+		view3.dispose();
 	});
 
 	test('calls view methods on addView and removeView', () => {

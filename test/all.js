@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 /*eslint-env mocha*/
@@ -54,25 +54,10 @@ function main() {
 		baseUrl: path.join(path.dirname(__dirname), 'src'),
 		paths: {
 			'vs': `../${ out }/vs`,
-			'sqltest': `../${ out }/sqltest`,
-			'sql': `../${ out }/sql`,
 			'lib': `../${ out }/lib`,
 			'bootstrap': `../${ out }/bootstrap`
 		},
-		catchError: true,
-		nodeModules: [
-			'@angular/common',
-			'@angular/core',
-			'@angular/forms',
-			'@angular/platform-browser',
-			'@angular/platform-browser-dynamic',
-			'@angular/router',
-			'angular2-grid',
-			'rxjs/add/observable/of',
-			'rxjs/Observable',
-			'rxjs/Subject',
-			'rxjs/Observer'
-		]
+		catchError: true
 	};
 
 	if (argv.coverage) {
@@ -83,7 +68,7 @@ function main() {
 		loaderConfig.nodeInstrumenter = function (contents, source) {
 			seenSources[source] = true;
 
-			if (minimatch(source, SQL_TEST_GLOB)) {
+			if (minimatch(source, TEST_GLOB)) {
 				return contents;
 			}
 
@@ -297,13 +282,12 @@ function main() {
 				}
 			});
 		});
-		*/
 
 		// replace the default unexpected error handler to be useful during tests
 		loader(['vs/base/common/errors'], function(errors) {
 			errors.setUnexpectedErrorHandler(function (err) {
 				let stack = (err && err.stack) || (new Error().stack);
-				//unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
+				unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
 			});
 
 			// fire up mocha

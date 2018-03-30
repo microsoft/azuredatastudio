@@ -9,7 +9,7 @@ import { TrieMap } from 'sql/base/common/map';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IInitData } from 'vs/workbench/api/node/extHost.protocol';
 import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
-import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { realpath } from 'fs';
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
 

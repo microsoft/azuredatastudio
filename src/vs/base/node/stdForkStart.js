@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 const net = require('net');
@@ -59,7 +59,7 @@ log('ELECTRON_RUN_AS_NODE: ' + process.env['ELECTRON_RUN_AS_NODE']);
 
 	var fsWriteSyncString = function (fd, str, position, encoding) {
 		//  fs.writeSync(fd, string[, position[, encoding]]);
-		var buf = new Buffer(str, encoding || 'utf8');
+		var buf = Buffer.from(str, encoding || 'utf8');
 		return fsWriteSyncBuffer(fd, buf, 0, buf.length);
 	};
 

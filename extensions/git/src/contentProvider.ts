@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -52,7 +52,7 @@ export class GitContentProvider {
 			return;
 		}
 
-		this._onDidChange.fire(toGitUri(uri, '', true));
+		this._onDidChange.fire(toGitUri(uri, '', { replaceFileExtension: true }));
 	}
 
 	@debounce(1100)
@@ -83,6 +83,18 @@ export class GitContentProvider {
 	}
 
 	async provideTextDocumentContent(uri: Uri): Promise<string> {
+		let { path, ref, submoduleOf } = fromGitUri(uri);
+
+		if (submoduleOf) {
+			const repository = this.model.getRepository(submoduleOf);
+
+			if (!repository) {
+				return '';
+			}
+
+			return await repository.diff(path, { cached: ref === 'index' });
+		}
+
 		const repository = this.model.getRepository(uri);
 
 		if (!repository) {
@@ -94,8 +106,6 @@ export class GitContentProvider {
 		const cacheValue: CacheRow = { uri, timestamp };
 
 		this.cache[cacheKey] = cacheValue;
-
-		let { path, ref } = fromGitUri(uri);
 
 		if (ref === '~') {
 			const fileUri = Uri.file(path);

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -361,6 +361,53 @@ suite('ExtHostTypes', function () {
 		assert.equal(edit.get(b).length, 1);
 
 	});
+
+	// test('WorkspaceEdit should fail when editing deleted resource', () => {
+	// 	const resource = URI.parse('file:///a.ts');
+
+	// 	const edit = new types.WorkspaceEdit();
+	// 	edit.deleteResource(resource);
+	// 	try {
+	// 		edit.insert(resource, new types.Position(0, 0), '');
+	// 		assert.fail(false, 'Should disallow edit of deleted resource');
+	// 	} catch {
+	// 		// expected
+	// 	}
+	// });
+
+	// test('WorkspaceEdit - keep order of text and file changes', function () {
+
+	// 	const edit = new types.WorkspaceEdit();
+	// 	edit.replace(URI.parse('foo:a'), new types.Range(1, 1, 1, 1), 'foo');
+	// 	edit.renameResource(URI.parse('foo:a'), URI.parse('foo:b'));
+	// 	edit.replace(URI.parse('foo:a'), new types.Range(2, 1, 2, 1), 'bar');
+	// 	edit.replace(URI.parse('foo:b'), new types.Range(3, 1, 3, 1), 'bazz');
+
+	// 	const all = edit.allEntries();
+	// 	assert.equal(all.length, 3);
+
+	// 	function isFileChange(thing: [URI, types.TextEdit[]] | [URI, URI]): thing is [URI, URI] {
+	// 		const [f, s] = thing;
+	// 		return URI.isUri(f) && URI.isUri(s);
+	// 	}
+
+	// 	function isTextChange(thing: [URI, types.TextEdit[]] | [URI, URI]): thing is [URI, types.TextEdit[]] {
+	// 		const [f, s] = thing;
+	// 		return URI.isUri(f) && Array.isArray(s);
+	// 	}
+
+	// 	const [first, second, third] = all;
+	// 	assert.equal(first[0].toString(), 'foo:a');
+	// 	assert.ok(!isFileChange(first));
+	// 	assert.ok(isTextChange(first) && first[1].length === 2);
+
+	// 	assert.equal(second[0].toString(), 'foo:a');
+	// 	assert.ok(isFileChange(second));
+
+	// 	assert.equal(third[0].toString(), 'foo:b');
+	// 	assert.ok(!isFileChange(third));
+	// 	assert.ok(isTextChange(third) && third[1].length === 1);
+	// });
 
 	test('DocumentLink', function () {
 		assert.throws(() => new types.DocumentLink(null, null));

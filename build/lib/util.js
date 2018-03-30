@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -143,7 +143,7 @@ function loadSourcemaps() {
             cb(null, f);
             return;
         }
-        f.contents = new Buffer(contents.replace(/\/\/# sourceMappingURL=(.*)$/g, ''), 'utf8');
+        f.contents = Buffer.from(contents.replace(/\/\/# sourceMappingURL=(.*)$/g, ''), 'utf8');
         fs.readFile(path.join(path.dirname(f.path), lastMatch[1]), 'utf8', function (err, contents) {
             if (err) {
                 return cb(err);
@@ -160,7 +160,7 @@ function stripSourceMappingURL() {
     var output = input
         .pipe(es.mapSync(function (f) {
         var contents = f.contents.toString('utf8');
-        f.contents = new Buffer(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, ''), 'utf8');
+        f.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, ''), 'utf8');
         return f;
     }));
     return es.duplex(input, output);
@@ -173,7 +173,6 @@ function rimraf(dir) {
             if (!err) {
                 return cb();
             }
-            ;
             if (err.code === 'ENOTEMPTY' && ++retries < 5) {
                 return setTimeout(function () { return retry(cb); }, 10);
             }

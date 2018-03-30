@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -25,12 +25,10 @@ var REPO_ROOT_PATH = path.join(__dirname, '../..');
 function log(prefix, message) {
     gulpUtil.log(gulpUtil.colors.cyan('[' + prefix + ']'), message);
 }
-// {{SQL CARBON EDIT}}
 function loaderConfig(emptyPaths) {
     var result = {
         paths: {
             'vs': 'out-build/vs',
-            'sql': 'out-build/sql',
             'vscode': 'empty:'
         },
         nodeModules: emptyPaths || []
@@ -59,7 +57,7 @@ function loader(bundledFileHeader, bundleLoader) {
             this.emit('data', new VinylFile({
                 path: 'fake',
                 base: '',
-                contents: new Buffer(bundledFileHeader)
+                contents: Buffer.from(bundledFileHeader)
             }));
             this.emit('data', data);
         }
@@ -98,7 +96,7 @@ function toConcatStream(bundledFileHeader, sources, dest) {
         return new VinylFile({
             path: source.path ? root + '/' + source.path.replace(/\\/g, '/') : 'fake',
             base: base,
-            contents: new Buffer(source.contents)
+            contents: Buffer.from(source.contents)
         });
     });
     return es.readArray(treatedSources)
@@ -141,7 +139,7 @@ function optimizeTask(opts) {
                 bundleInfoArray.push(new VinylFile({
                     path: 'bundleInfo.json',
                     base: '.',
-                    contents: new Buffer(JSON.stringify(result.bundleData, null, '\t'))
+                    contents: Buffer.from(JSON.stringify(result.bundleData, null, '\t'))
                 }));
             }
             es.readArray(bundleInfoArray).pipe(bundleInfoStream);
@@ -174,7 +172,6 @@ function optimizeTask(opts) {
     };
 }
 exports.optimizeTask = optimizeTask;
-;
 /**
  * Wrap around uglify and allow the preserveComments function
  * to have a file "context" to include our copyright only once per file.
@@ -237,4 +234,3 @@ function minifyTask(src, sourceMapBaseUrl) {
     };
 }
 exports.minifyTask = minifyTask;
-;

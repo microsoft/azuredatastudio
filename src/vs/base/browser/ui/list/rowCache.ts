@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IRenderer } from './list';
@@ -82,7 +82,7 @@ export class RowCache<T> implements IDisposable {
 
 		this.cache.forEach((cachedRows, templateId) => {
 			for (const cachedRow of cachedRows) {
-				const renderer = this.renderers[templateId];
+				const renderer = this.renderers.get(templateId);
 				renderer.disposeTemplate(cachedRow.templateData);
 				cachedRow.domNode = null;
 				cachedRow.templateData = null;

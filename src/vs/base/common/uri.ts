@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -174,27 +174,27 @@ export default class URI implements UriComponents {
 		if (scheme === void 0) {
 			scheme = this.scheme;
 		} else if (scheme === null) {
-			scheme = '';
+			scheme = _empty;
 		}
 		if (authority === void 0) {
 			authority = this.authority;
 		} else if (authority === null) {
-			authority = '';
+			authority = _empty;
 		}
 		if (path === void 0) {
 			path = this.path;
 		} else if (path === null) {
-			path = '';
+			path = _empty;
 		}
 		if (query === void 0) {
 			query = this.query;
 		} else if (query === null) {
-			query = '';
+			query = _empty;
 		}
 		if (fragment === void 0) {
 			fragment = this.fragment;
 		} else if (fragment === null) {
-			fragment = '';
+			fragment = _empty;
 		}
 
 		if (scheme === this.scheme
@@ -315,10 +315,16 @@ export default class URI implements UriComponents {
 	}
 
 	static revive(data: UriComponents | any): URI {
-		let result = new _URI(data);
-		result._fsPath = (<UriState>data).fsPath;
-		result._formatted = (<UriState>data).external;
-		return result;
+		if (!data) {
+			return data;
+		} else if (data instanceof URI) {
+			return data;
+		} else {
+			let result = new _URI(data);
+			result._fsPath = (<UriState>data).fsPath;
+			result._formatted = (<UriState>data).external;
+			return result;
+		}
 	}
 }
 

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -26,6 +26,12 @@ export interface IWorkspaceEditingService {
 	 * When `donotNotifyError` is `true`, error will be bubbled up otherwise, the service handles the error with proper message and action
 	 */
 	removeFolders(folders: URI[], donotNotifyError?: boolean): TPromise<void>;
+
+	/**
+	 * Allows to add and remove folders to the existing workspace at once.
+	 * When `donotNotifyError` is `true`, error will be bubbled up otherwise, the service handles the error with proper message and action
+	 */
+	updateFolders(index: number, deleteCount?: number, foldersToAdd?: IWorkspaceFolderCreationData[], donotNotifyError?: boolean): TPromise<void>;
 
 	/**
 	 * creates a new workspace with the provided folders and opens it. if path is provided

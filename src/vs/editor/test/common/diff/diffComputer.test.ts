@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -55,7 +55,6 @@ function assertDiff(originalLines: string[], modifiedLines: string[], expectedCh
 	var diffComputer = new DiffComputer(originalLines, modifiedLines, {
 		shouldPostProcessCharChanges: shouldPostProcessCharChanges || false,
 		shouldIgnoreTrimWhitespace: shouldIgnoreTrimWhitespace || false,
-		shouldConsiderTrimWhitespaceInEmptyCase: true,
 		shouldMakePrettyDiff: true
 	});
 	var changes = diffComputer.computeDiff();

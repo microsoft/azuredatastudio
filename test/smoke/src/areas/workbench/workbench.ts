@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { SpectronApplication } from '../../spectron/application';
@@ -51,14 +51,8 @@ export class Workbench {
 	}
 
 	public async saveOpenedFile(): Promise<any> {
-		try {
-			await this.spectron.client.waitForElement('.tabs-container div.tab.active.dirty');
-		} catch (e) {
-			// ignore if there is no dirty file
-			return Promise.resolve();
-		}
-		await this.spectron.runCommand('workbench.action.files.save');
-		return this.spectron.client.waitForElement('.tabs-container div.tab.active.dirty', element => !element);
+		await this.spectron.client.waitForElement('.tabs-container div.tab.active.dirty');
+		await this.spectron.workbench.quickopen.runCommand('File: Save');
 	}
 
 	public async selectTab(tabName: string, untitled: boolean = false): Promise<void> {

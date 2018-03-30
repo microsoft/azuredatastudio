@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -17,6 +17,7 @@ import { registerEditorAction, ServicesAccessor } from 'vs/editor/browser/editor
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { Position } from 'vs/editor/common/core/position';
 import { Range } from 'vs/editor/common/core/range';
+import { ITextModel } from 'vs/editor/common/model';
 
 interface ParseResult {
 	position: Position;
@@ -52,7 +53,7 @@ export class GotoLineEntry extends QuickOpenEntry {
 			position = new Position(numbers[0], numbers[1]);
 		}
 
-		let model: editorCommon.IModel;
+		let model: ITextModel;
 		if (isCodeEditor(this.editor)) {
 			model = this.editor.getModel();
 		} else {

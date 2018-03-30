@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 declare module 'spdlog' {
@@ -28,6 +28,10 @@ declare module 'spdlog' {
 		error(message: string);
 		critical(message: string);
 		setLevel(level: number);
+		clearFormatters();
+		/**
+		 * A synchronous operation to flush the contents into file
+		*/
 		flush(): void;
 		drop(): void;
 	}

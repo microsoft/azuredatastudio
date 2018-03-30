@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -12,7 +12,7 @@ export class ExtHostStorage {
 	private _proxy: MainThreadStorageShape;
 
 	constructor(mainContext: IMainContext) {
-		this._proxy = mainContext.get(MainContext.MainThreadStorage);
+		this._proxy = mainContext.getProxy(MainContext.MainThreadStorage);
 	}
 
 	getValue<T>(shared: boolean, key: string, defaultValue?: T): TPromise<T> {

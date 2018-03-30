@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import fs = require('fs');
@@ -44,11 +44,11 @@ interface ILoaderPluginReqFunc {
 
 export interface IEntryPoint {
 	name: string;
-	include: string[];
-	exclude: string[];
+	include?: string[];
+	exclude?: string[];
 	prepend: string[];
-	append: string[];
-	dest: string;
+	append?: string[];
+	dest?: string;
 }
 
 interface IEntryPointMap {
@@ -339,6 +339,7 @@ function removeDuplicateTSBoilerplate(destFiles: IConcatFile[]): IConcatFile[] {
 		{ start: /^var __metadata/, end: /^};$/ },
 		{ start: /^var __param/, end: /^};$/ },
 		{ start: /^var __awaiter/, end: /^};$/ },
+		{ start: /^var __generator/, end: /^};$/ },
 	];
 
 	destFiles.forEach((destFile) => {

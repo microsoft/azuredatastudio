@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as cp from 'child_process';
@@ -13,11 +13,17 @@ import { normalizeNFD, startsWith } from 'vs/base/common/strings';
 import { IFolderSearch, IRawSearch } from './search';
 import { foldersToIncludeGlobs, foldersToRgExcludeGlobs } from './ripgrepTextSearch';
 
+// If vscode-ripgrep is in an .asar file, then the binary is unpacked.
+const rgDiskPath = rgPath.replace(/\bnode_modules\.asar\b/, 'node_modules.asar.unpacked');
+
 export function spawnRipgrepCmd(config: IRawSearch, folderQuery: IFolderSearch, includePattern: glob.IExpression, excludePattern: glob.IExpression) {
 	const rgArgs = getRgArgs(config, folderQuery, includePattern, excludePattern);
+	const cwd = folderQuery.folder;
 	return {
-		cmd: cp.spawn(rgPath, rgArgs.globArgs, { cwd: folderQuery.folder }),
-		siblingClauses: rgArgs.siblingClauses
+		cmd: cp.spawn(rgDiskPath, rgArgs.args, { cwd }),
+		siblingClauses: rgArgs.siblingClauses,
+		rgArgs,
+		cwd
 	};
 }
 
@@ -39,6 +45,8 @@ function getRgArgs(config: IRawSearch, folderQuery: IFolderSearch, includePatter
 	if (folderQuery.disregardIgnoreFiles !== false) {
 		// Don't use .gitignore or .ignore
 		args.push('--no-ignore');
+	} else {
+		args.push('--no-ignore-parent');
 	}
 
 	// Follow symlinks
@@ -55,7 +63,7 @@ function getRgArgs(config: IRawSearch, folderQuery: IFolderSearch, includePatter
 
 	args.push('.');
 
-	return { globArgs: args, siblingClauses };
+	return { args, siblingClauses };
 }
 
 function anchor(glob: string) {

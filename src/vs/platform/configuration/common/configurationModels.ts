@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -396,14 +396,6 @@ export class Configuration {
 
 	protected get folders(): StrictResourceMap<ConfigurationModel> {
 		return this._folderConfigurations;
-	}
-
-	private get memory(): ConfigurationModel {
-		return this._memoryConfiguration;
-	}
-
-	private get memoryByResource(): StrictResourceMap<ConfigurationModel> {
-		return this._memoryConfigurationByResource;
 	}
 
 	private getConsolidateConfigurationModel(overrides: IConfigurationOverrides, workspace: Workspace): ConfigurationModel {
