@@ -39,7 +39,7 @@ declare @dbfreesize table
 insert into @dbfreesize
     (name,database_size,Freespace)
 exec sp_msforeachdb
-'use ?;SELECT database_name = db_name()
+'use [?];SELECT database_name = db_name()
     ,database_size = ltrim(str((convert(DECIMAL(15, 2), dbsize) + convert(DECIMAL(15, 2), logsize)) * 8192 / 1048576, 15, 2) + ''MB'')
     ,''unallocated space'' = ltrim(str((
                 CASE
