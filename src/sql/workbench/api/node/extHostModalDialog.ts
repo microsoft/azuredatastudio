@@ -92,7 +92,7 @@ export class ExtHostModalDialogs implements ExtHostModalDialogsShape {
 	constructor(
 		mainContext: IMainContext
 	) {
-		this._proxy = mainContext.get(SqlMainContext.MainThreadModalDialog);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadModalDialog);
 	}
 
 	createDialog(

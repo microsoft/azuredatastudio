@@ -306,7 +306,7 @@ class DecorationProviderWrapper {
 				.then(data => this._keepItem(uri, data))
 				.catch(_ => this.data.delete(uri.toString()));
 
-			this.data.set(uri.toString(), request);
+			this.data.set(uri.toString(), <any>request);
 			return undefined;
 		}
 	}

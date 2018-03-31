@@ -7,22 +7,22 @@
 
 import * as sqlops from 'sqlops';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import {
 	ExtHostAccountManagementShape,
 	MainThreadAccountManagementShape,
 	SqlMainContext,
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 
 export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	private _handlePool: number = 0;
 	private _proxy: MainThreadAccountManagementShape;
 	private _providers: { [handle: number]: AccountProviderWithMetadata } = {};
 
-	constructor(threadService: IThreadService) {
+	constructor(mainContext: IMainContext) {
 		super();
-		this._proxy = threadService.get(SqlMainContext.MainThreadAccountManagement);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadAccountManagement);
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////

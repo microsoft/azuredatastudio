@@ -28,7 +28,7 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		@IWorkbenchEditorService private _workbenchEditorService: IWorkbenchEditorService
 	) {
 		if (extHostContext) {
-			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostConnectionManagement);
+			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostConnectionManagement);
 		}
 		this._toDispose = [];
 	}

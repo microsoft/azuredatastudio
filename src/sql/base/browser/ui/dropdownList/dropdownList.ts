@@ -43,11 +43,11 @@ export class DropdownList extends Dropdown {
 		if (_action) {
 			let button = new Button(_contentContainer);
 			button.label = _action.label;
-			this.toDispose.push(DOM.addDisposableListener(button.getElement(), DOM.EventType.CLICK, () => {
+			this.toDispose.push(DOM.addDisposableListener(button.element, DOM.EventType.CLICK, () => {
 				this._action.run();
 				this.hide();
 			}));
-			this.toDispose.push(DOM.addDisposableListener(button.getElement(), DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			this.toDispose.push(DOM.addDisposableListener(button.element, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 				let event = new StandardKeyboardEvent(e);
 				if (event.equals(KeyCode.Enter)) {
 					e.stopPropagation();

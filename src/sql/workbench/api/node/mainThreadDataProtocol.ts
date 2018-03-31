@@ -61,7 +61,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@IMessageService private _messageService: IMessageService
 	) {
 		if (extHostContext) {
-			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostDataProtocol);
+			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostDataProtocol);
 		}
 		if (this._connectionManagementService) {
 			this._connectionManagementService.onLanguageFlavorChanged(e => this._proxy.$languageFlavorChanged(e), this, this._toDispose);

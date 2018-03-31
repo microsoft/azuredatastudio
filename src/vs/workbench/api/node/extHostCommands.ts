@@ -112,7 +112,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 				try {
 					validateConstraint(args[i], description.args[i].constraint);
 				} catch (err) {
-					return Promise.reject(new Error(`Running the contributed command:'${id}' failed. Illegal argument '${description.args[i].name}' - ${description.args[i].description}`));
+					return <any>Promise.reject(new Error(`Running the contributed command:'${id}' failed. Illegal argument '${description.args[i].name}' - ${description.args[i].description}`));
 				}
 			}
 		}
@@ -122,13 +122,13 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 			return Promise.resolve(result);
 		} catch (err) {
 			this._logService.error(err, id);
-			return Promise.reject(new Error(`Running the contributed command:'${id}' failed.`));
+			return <any>Promise.reject(new Error(`Running the contributed command:'${id}' failed.`));
 		}
 	}
 
 	$executeContributedCommand<T>(id: string, ...args: any[]): Thenable<T> {
 		if (!this._commands.has(id)) {
-			return Promise.reject(new Error(`Contributed command '${id}' does not exist.`));
+			return <any>Promise.reject(new Error(`Contributed command '${id}' does not exist.`));
 		} else {
 			args = args.map(arg => this._argumentProcessors.reduce((r, p) => p.processArgument(r), arg));
 			return this._executeContributedCommand(id, args);

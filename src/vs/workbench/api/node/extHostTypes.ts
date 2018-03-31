@@ -1637,6 +1637,8 @@ export class FunctionBreakpoint extends Breakpoint {
 	}
 }
 
+// {{SQL CARBON EDIT}}
+/*
 export class DebugAdapterExecutable implements vscode.DebugAdapterExecutable {
 	readonly command: string;
 	readonly args: string[];
@@ -1646,6 +1648,7 @@ export class DebugAdapterExecutable implements vscode.DebugAdapterExecutable {
 		this.args = args;
 	}
 }
+*/
 
 export enum LogLevel {
 	Trace = 1,

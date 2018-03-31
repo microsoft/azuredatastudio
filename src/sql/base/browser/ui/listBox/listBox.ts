@@ -13,6 +13,7 @@ import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { RenderOptions, renderFormattedText, renderText } from 'vs/base/browser/htmlContentRenderer';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 
 const $ = dom.$;
 
@@ -50,8 +51,13 @@ export class ListBox extends SelectBox {
 	private contextViewProvider: IContextViewProvider;
 	private isValid: boolean;
 
-	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, private _clipboardService: IClipboardService) {
-		super(options, 0);
+	constructor(
+		options: string[],
+		selectedOption: string,
+		contextViewProvider: IContextViewProvider,
+		private _clipboardService: IClipboardService) {
+
+		super(options, 0, contextViewProvider);
 		this.contextViewProvider = contextViewProvider;
 		this.isValid = true;
 		this.selectElement.multiple = true;

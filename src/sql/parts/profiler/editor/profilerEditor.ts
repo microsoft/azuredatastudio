@@ -28,7 +28,7 @@ import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiati
 import { ProfilerResourceEditor } from './profilerResourceEditor';
 import { SplitView, View, Orientation, IViewOptions } from 'sql/base/browser/ui/splitview/splitview';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IModel } from 'vs/editor/common/editorCommon';
+import { ITextModel } from 'vs/editor/common/model';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import URI from 'vs/base/common/uri';
@@ -97,7 +97,7 @@ export interface IDetailData {
 export class ProfilerEditor extends BaseEditor {
 	public static ID: string = 'workbench.editor.profiler';
 	private _editor: ProfilerResourceEditor;
-	private _editorModel: IModel;
+	private _editorModel: ITextModel;
 	private _editorInput: UntitledEditorInput;
 	private _splitView: SplitView;
 	private _container: HTMLElement;

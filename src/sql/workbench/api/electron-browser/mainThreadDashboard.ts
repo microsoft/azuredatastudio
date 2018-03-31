@@ -17,7 +17,7 @@ export class MainThreadDashboard implements MainThreadDashboardShape {
 		context: IExtHostContext,
 		@IDashboardService private _dashboardService: IDashboardService
 	) {
-		this._proxy = context.get(SqlExtHostContext.ExtHostDashboard);
+		this._proxy = context.getProxy(SqlExtHostContext.ExtHostDashboard);
 		_dashboardService.onDidChangeToDashboard(e => {
 			this._proxy.$onDidChangeToDashboard(e);
 		});

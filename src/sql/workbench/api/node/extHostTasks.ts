@@ -29,7 +29,7 @@ export class ExtHostTasks implements ExtHostTasksShape {
 		mainContext: IMainContext,
 		private logService: ILogService
 	) {
-		this._proxy = mainContext.get(SqlMainContext.MainThreadTasks);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadTasks);
 	}
 
 	registerTask(id: string, callback: sqlops.tasks.ITaskHandler, thisArg?: any, description?: ITaskHandlerDescription): extHostTypes.Disposable {

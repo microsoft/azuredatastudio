@@ -52,7 +52,7 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 		@IViewletService private viewletService: IViewletService,
 		@IMessageService private messageService: IMessageService,
 		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
-		@IPartService partService: IPartService,
+		@IPartService partService: IPartService
 	) {
 
 		super(VIEWLET_ID, partService, telemetryService, _themeService);

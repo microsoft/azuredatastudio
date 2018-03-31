@@ -22,7 +22,7 @@ export class MainThreadModalDialog implements MainThreadModalDialogShape {
 		@IWorkbenchEditorService private readonly _editorService: IWorkbenchEditorService,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService
 	) {
-		this._proxy = context.get(SqlExtHostContext.ExtHostModalDialogs);
+		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModalDialogs);
 	}
 
 	dispose(): void {

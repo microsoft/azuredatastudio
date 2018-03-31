@@ -47,7 +47,7 @@ export class SelectBox extends vsSelectBox {
 	private element: HTMLElement;
 
 	constructor(options: string[], selectedOption: string, container?: HTMLElement, contextViewProvider?: IContextViewProvider) {
-		super(options, 0);
+		super(options, 0, contextViewProvider);
 		this._optionsDictionary = new Array();
 		for (var i = 0; i < options.length; i++) {
 			this._optionsDictionary[options[i]] = i;

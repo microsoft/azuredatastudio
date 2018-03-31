@@ -14,7 +14,7 @@ import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/pa
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 
 import { IMode } from 'vs/editor/common/modes';
-import { IModel } from 'vs/editor/common/editorCommon';
+import { ITextModel } from 'vs/editor/common/model';
 import { IEditor, IEditorInput, Position } from 'vs/platform/editor/common/editor';
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IEditorGroup } from 'vs/workbench/common/editor';
@@ -193,7 +193,7 @@ export class QueryEditorService implements IQueryEditorService {
 	 * In all other cases (when SQL is involved in the language change and the editor is not dirty),
 	 * returns a promise that will resolve when the old editor has been replaced by a new editor.
 	 */
-	public static sqlLanguageModeCheck(model: IModel, mode: IMode, editor: IEditor): Promise<IModel> {
+	public static sqlLanguageModeCheck(model: ITextModel, mode: IMode, editor: IEditor): Promise<ITextModel> {
 		if (!model || !mode || !editor) {
 			return Promise.resolve(undefined);
 		}
@@ -233,7 +233,7 @@ export class QueryEditorService implements IQueryEditorService {
 		options.pinned = group.isPinned(index);
 
 		// Return a promise that will resovle when the old editor has been replaced by a new editor
-		return new Promise<IModel>((resolve, reject) => {
+		return new Promise<ITextModel>((resolve, reject) => {
 			let newEditorInput = QueryEditorService._getNewEditorInput(changingToSql, editor.input, uri);
 
 			// Override queryEditorCheck to not open this file in a QueryEditor
@@ -345,7 +345,7 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Handle all cleanup actions that need to wait until the editor is fully open.
 	 */
-	private static _onEditorOpened(editor: IEditor, uri: string, position: Position, isPinned: boolean): IModel {
+	private static _onEditorOpened(editor: IEditor, uri: string, position: Position, isPinned: boolean): ITextModel {
 
 		// Reset the editor pin state
 		// TODO: change this so it happens automatically in openEditor in sqlLanguageModeCheck. Performing this here

@@ -269,7 +269,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			.then(compatible => {
 				if (!compatible) {
 					// {{SQL CARBON EDIT}}
-					return TPromise.wrapError<IGalleryExtension[]>(new InstallationError(nls.localize('notFoundCompatible', "Unable to install because, the extension '{0}' compatible with current version '{1}' of SQL Operations Studio is not found.", extension.identifier.id, pkg.version), INSTALL_ERROR_INCOMPATIBLE));
+					return TPromise.wrapError<IGalleryExtension[]>(new ExtensionManagementError(nls.localize('notFoundCompatible', "Unable to install because, the extension '{0}' compatible with current version '{1}' of SQL Operations Studio is not found.", extension.identifier.id, pkg.version), INSTALL_ERROR_INCOMPATIBLE));
 				}
 				return this.getDependenciesToInstall(compatible.properties.dependencies)
 					.then(
