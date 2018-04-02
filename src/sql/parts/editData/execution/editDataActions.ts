@@ -11,10 +11,11 @@ import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
-import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import nls = require('vs/nls');
 import * as dom from 'vs/base/browser/dom';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { INotificationService, INotificationActions } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 const $ = dom.$;
 
 /**
@@ -66,7 +67,7 @@ export class RefreshTableAction extends EditDataAction {
 	constructor(editor: EditDataEditor,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService,
-		@IMessageService private _messageService: IMessageService
+		@INotificationService private _notificationService: INotificationService,
 	) {
 		super(editor, RefreshTableAction.ID, RefreshTableAction.EnabledClass, _connectionManagementService);
 		this.label = nls.localize('editData.refresh', 'Refresh');
@@ -78,7 +79,10 @@ export class RefreshTableAction extends EditDataAction {
 			this._queryModelService.disposeEdit(input.uri).then((result) => {
 				this._queryModelService.initializeEdit(input.uri, input.schemaName, input.tableName, input.objectType, input.rowLimit);
 			}, error => {
-				this._messageService.show(Severity.Error, nls.localize('disposeEditFailure', 'Dispose Edit Failed With Error: ') + error);
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: nls.localize('disposeEditFailure', 'Dispose Edit Failed With Error: ') + error
+				});
 			});
 		}
 		return TPromise.as(null);

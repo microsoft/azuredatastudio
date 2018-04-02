@@ -209,35 +209,37 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	}
 
 	public saveChart(): void {
-		let filePath = this.promptForFilepath();
-		let data = this._chartComponent.getCanvasData();
-		if (!data) {
-			this.showError(this.chartNotFoundError);
-			return;
-		}
-		if (filePath) {
-			let buffer = this.decodeBase64Image(data);
-			pfs.writeFile(filePath, buffer).then(undefined, (err) => {
-				if (err) {
-					this.showError(err.message);
-				} else {
-					let fileUri = URI.from({ scheme: PathUtilities.FILE_SCHEMA, path: filePath });
-					this._bootstrapService.windowsService.openExternal(fileUri.toString());
-					this._bootstrapService.messageService.show(Severity.Info, nls.localize('chartSaved', 'Saved Chart to path: {0}', filePath));
-				}
-			});
-		}
+		this.promptForFilepath().then(filePath => {
+			let data = this._chartComponent.getCanvasData();
+			if (!data) {
+				this.showError(this.chartNotFoundError);
+				return;
+			}
+			if (filePath) {
+				let buffer = this.decodeBase64Image(data);
+				pfs.writeFile(filePath, buffer).then(undefined, (err) => {
+					if (err) {
+						this.showError(err.message);
+					} else {
+						let fileUri = URI.from({ scheme: PathUtilities.FILE_SCHEMA, path: filePath });
+						this._bootstrapService.windowsService.openExternal(fileUri.toString());
+						this._bootstrapService.notificationService.notify({
+							severity: Severity.Error,
+							message: nls.localize('chartSaved', 'Saved Chart to path: {0}', filePath)
+						});
+					}
+				});
+			}
+		});
 	}
 
-	private promptForFilepath(): string {
+	private promptForFilepath(): Thenable<string> {
 		let filepathPlaceHolder = PathUtilities.resolveCurrentDirectory(this.getActiveUriString(), PathUtilities.getRootPath(this._bootstrapService.workspaceContextService));
 		filepathPlaceHolder = paths.join(filepathPlaceHolder, 'chart.png');
-
-		let filePath: string = this._bootstrapService.windowService.showSaveDialog({
+		return this._bootstrapService.windowService.showSaveDialog({
 			title: nls.localize('chartViewer.saveAsFileTitle', 'Choose Results File'),
 			defaultPath: paths.normalize(filepathPlaceHolder, true)
 		});
-		return filePath;
 	}
 
 	private decodeBase64Image(data: string): Buffer {
@@ -282,7 +284,10 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	}
 
 	private showError(errorMsg: string) {
-		this._bootstrapService.messageService.show(Severity.Error, errorMsg);
+		this._bootstrapService.notificationService.notify({
+			severity: Severity.Error,
+			message: errorMsg
+		});
 	}
 
 	private getGridItemConfig(): NgGridItemConfig {

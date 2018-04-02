@@ -32,10 +32,11 @@ import { localize } from 'vs/nls';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IMessageService, IConfirmation } from 'vs/platform/message/common/message';
+import { IConfirmationService, IChoiceService, IConfirmation, IConfirmationResult, Choice } from 'vs/platform/dialogs/common/dialogs';
 import * as styler from 'vs/platform/theme/common/styler';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as DOM from 'vs/base/browser/dom';
+import { DialogService } from 'vs/workbench/services/dialogs/electron-browser/dialogs';
 
 export interface OnShowUIResponse {
 	selectedProviderType: string;
@@ -89,7 +90,7 @@ export class ConnectionDialogWidget extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
-		@IMessageService private _messageService: IMessageService
+		@IConfirmationService private _confirmationService: IConfirmationService,
 	) {
 		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
@@ -264,35 +265,16 @@ export class ConnectionDialogWidget extends Modal {
 			type: 'question'
 		};
 
-		// @SQLTODO
 		return new TPromise<boolean>((resolve, reject) => {
-			let confirmed: boolean = this._messageService.confirm(confirm);
-			if (confirmed) {
-				this._connectionManagementService.clearRecentConnectionsList();
-				this.open(false);
-			}
-			resolve(confirmed);
+			 this._confirmationService.confirm(confirm).then((confirmed) => {
+
+				if (confirmed) {
+					this._connectionManagementService.clearRecentConnectionsList();
+					this.open(false);
+				}
+				resolve(confirmed);
+			});
 		});
-
-		//this._messageService.confirm(confirm).then(confirmation => {
-		// 	if (!confirmation.confirmed) {
-		// 		return TPromise.as(false);
-		// 	} else {
-		// 		this._connectionManagementService.clearRecentConnectionsList();
-		// 		this.open(false);
-		// 		return TPromise.as(true);
-		// 	}
-		// });
-
-		// return this._messageService.confirm(confirm).then(confirmation => {
-		// 	if (!confirmation.confirmed) {
-		// 		return TPromise.as(false);
-		// 	} else {
-		// 		this._connectionManagementService.clearRecentConnectionsList();
-		// 		this.open(false);
-		// 		return TPromise.as(true);
-		// 	}
-		// });
 	}
 
 	private createRecentConnectionList(): void {

@@ -5,10 +5,8 @@
 import * as types from 'vs/base/common/types';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { Severity } from 'vs/platform/message/common/message';
 import { error } from 'sql/base/common/log';
 import * as nls from 'vs/nls';
-
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';

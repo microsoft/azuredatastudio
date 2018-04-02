@@ -22,13 +22,13 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileEditorInput } from 'vs/workbench/parts/files/common/editors/fileEditorInput';
-import { IMessageService } from 'vs/platform/message/common/message';
 import Severity from 'vs/base/common/severity';
 import nls = require('vs/nls');
 import URI from 'vs/base/common/uri';
 import paths = require('vs/base/common/paths');
 import { isLinux } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 const fs = require('fs');
 
@@ -53,20 +53,20 @@ export class QueryEditorService implements IQueryEditorService {
 	private static editorService: IWorkbenchEditorService;
 	private static instantiationService: IInstantiationService;
 	private static editorGroupService: IEditorGroupService;
-	private static messageService: IMessageService;
+	private static notificationService: INotificationService;
 
 	constructor(
 		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
 		@IEditorGroupService private _editorGroupService: IEditorGroupService,
-		@IMessageService private _messageService: IMessageService,
+		@INotificationService private _notificationService: INotificationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 	) {
 		QueryEditorService.editorService = _editorService;
 		QueryEditorService.instantiationService = _instantiationService;
 		QueryEditorService.editorGroupService = _editorGroupService;
-		QueryEditorService.messageService = _messageService;
+		QueryEditorService.notificationService = _notificationService;
 	}
 
 	////// Public functions
@@ -214,14 +214,20 @@ export class QueryEditorService implements IQueryEditorService {
 		let uri: URI = QueryEditorService._getEditorChangeUri(editor.input, changingToSql);
 		if(uri.scheme === Schemas.untitled && editor.input instanceof QueryInput)
 		{
-			QueryEditorService.messageService.show(Severity.Error, QueryEditorService.CHANGE_UNSUPPORTED_ERROR_MESSAGE);
+			QueryEditorService.notificationService.notify({
+				severity: Severity.Error,
+				message: QueryEditorService.CHANGE_UNSUPPORTED_ERROR_MESSAGE
+			});
 			return Promise.resolve(undefined);
 		}
 
 		// Return undefined to notify the calling funciton to not perform the language change
 		// TODO change this - tracked by issue #727
 		if (editor.input.isDirty()) {
-			QueryEditorService.messageService.show(Severity.Error, QueryEditorService.CHANGE_ERROR_MESSAGE);
+			QueryEditorService.notificationService.notify({
+				severity: Severity.Error,
+				message: QueryEditorService.CHANGE_ERROR_MESSAGE
+			});
 			return Promise.resolve(undefined);
 		}
 

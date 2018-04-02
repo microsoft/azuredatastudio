@@ -14,13 +14,13 @@ import { toggleClass } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IMessageService } from 'vs/platform/message/common/message';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import Severity from 'vs/base/common/severity';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { TaskHistoryView } from 'sql/parts/taskHistory/viewlet/taskHistoryView';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export const VIEWLET_ID = 'workbench.view.taskHistory';
 
@@ -36,7 +36,7 @@ export class TaskHistoryViewlet extends Viewlet {
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IViewletService private viewletService: IViewletService,
-		@IMessageService private messageService: IMessageService,
+		@INotificationService private _notificationService: INotificationService,
 		@IPartService partService: IPartService
 	) {
 		super(VIEWLET_ID, partService, telemetryService, themeService);
@@ -46,7 +46,10 @@ export class TaskHistoryViewlet extends Viewlet {
 		if (isPromiseCanceledError(err)) {
 			return;
 		}
-		this.messageService.show(Severity.Error, err);
+		this._notificationService.notify({
+			severity: Severity.Error,
+			message: err
+		});
 	}
 
 	public create(parent: Builder): TPromise<void> {

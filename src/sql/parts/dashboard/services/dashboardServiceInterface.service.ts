@@ -36,7 +36,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { ConfigurationEditingService, IConfigurationValue } from 'vs/workbench/services/configuration/node/configurationEditingService';
-import { IMessageService } from 'vs/platform/message/common/message';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import Event, { Emitter } from 'vs/base/common/event';
@@ -47,6 +46,7 @@ import { deepClone } from 'vs/base/common/objects';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 const DASHBOARD_SETTINGS = 'dashboard';
 
@@ -132,7 +132,7 @@ export class DashboardServiceInterface extends AngularDisposable {
 	private _configService = this._bootstrapService.configurationService;
 	private _insightsDialogService = this._bootstrapService.insightsDialogService;
 	private _contextViewService = this._bootstrapService.contextViewService;
-	private _messageService = this._bootstrapService.messageService;
+	private _notificationService = this._bootstrapService.notificationService;
 	private _workspaceContextService = this._bootstrapService.workspaceContextService;
 	private _storageService = this._bootstrapService.storageService;
 	private _capabilitiesService = this._bootstrapService.capabilitiesService;
@@ -179,8 +179,8 @@ export class DashboardServiceInterface extends AngularDisposable {
 		super();
 	}
 
-	public get messageService(): IMessageService {
-		return this._messageService;
+	public get notificationService(): INotificationService {
+		return this._notificationService;
 	}
 
 	public get configurationEditingService(): ConfigurationEditingService {
@@ -335,11 +335,17 @@ export class DashboardServiceInterface extends AngularDisposable {
 								this._router.navigate(['database-dashboard']);
 							}
 						} else {
-							this.messageService.show(Severity.Error, nls.localize('dashboard.changeDatabaseFailure', "Failed to change database"));
+							this._notificationService.notify({
+								severity: Severity.Error,
+								message: nls.localize('dashboard.changeDatabaseFailure', "Failed to change database")
+							});
 						}
 					},
 					() => {
-						this.messageService.show(Severity.Error, nls.localize('dashboard.changeDatabaseFailure', "Failed to change database"));
+						this._notificationService.notify({
+							severity: Severity.Error,
+							message: nls.localize('dashboard.changeDatabaseFailure', "Failed to change database")
+						});
 					}
 				);
 				break;

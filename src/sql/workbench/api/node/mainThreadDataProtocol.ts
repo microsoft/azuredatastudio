@@ -27,7 +27,6 @@ import { ISerializationService } from 'sql/services/serialization/serializationS
 import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import { IMessageService } from 'vs/platform/message/common/message';
 import severity from 'vs/base/common/severity';
 
 /**
@@ -57,8 +56,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@ITaskService private _taskService: ITaskService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
-		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
-		@IMessageService private _messageService: IMessageService
+		@IFileBrowserService private _fileBrowserService: IFileBrowserService
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostDataProtocol);

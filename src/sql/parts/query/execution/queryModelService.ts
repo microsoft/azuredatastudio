@@ -21,11 +21,12 @@ import * as nls from 'vs/nls';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import * as platform from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import Event, { Emitter } from 'vs/base/common/event';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 
 const selectionSnippetMaxLen = 100;
 
@@ -76,7 +77,7 @@ export class QueryModelService implements IQueryModelService {
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IMessageService private _messageService: IMessageService
+		@INotificationService private _notificationService: INotificationService
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();
@@ -179,7 +180,10 @@ export class QueryModelService implements IQueryModelService {
 	}
 
 	public showCommitError(error: string): void {
-		this._messageService.show(Severity.Error, nls.localize('commitEditFailed', 'Commit row failed: ') + error);
+		this._notificationService.notify({
+			severity: Severity.Error,
+			message: nls.localize('commitEditFailed', 'Commit row failed: ') + error
+		});
 	}
 
 	public isRunningQuery(uri: string): boolean {
@@ -330,7 +334,10 @@ export class QueryModelService implements IQueryModelService {
 		queryRunner.cancelQuery().then(success => undefined, error => {
 			// On error, show error message and notify that the query is complete so that buttons and other status indicators
 			// can be correct
-			this._messageService.show(Severity.Error, strings.format(LocalizedConstants.msgCancelQueryFailed, error));
+			this._notificationService.notify({
+				severity: Severity.Error,
+				message: strings.format(LocalizedConstants.msgCancelQueryFailed, error)
+			});
 			this._fireQueryEvent(queryRunner.uri, 'complete', 0);
 		});
 
@@ -427,7 +434,10 @@ export class QueryModelService implements IQueryModelService {
 		let queryRunner = this._getQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.updateCell(ownerUri, rowId, columnId, newValue).then((result) => result, error => {
-				this._messageService.show(Severity.Error, nls.localize('updateCellFailed', 'Update cell failed: ') + error.message);
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: nls.localize('updateCellFailed', 'Update cell failed: ') + error.message
+				});
 				return Promise.reject(error);
 			});
 		}
@@ -439,7 +449,10 @@ export class QueryModelService implements IQueryModelService {
 		let queryRunner = this._getQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.commitEdit(ownerUri).then(() => { }, error => {
-				this._messageService.show(Severity.Error, nls.localize('commitEditFailed', 'Commit row failed: ') + error.message);
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: nls.localize('commitEditFailed', 'Commit row failed: ') + error.message
+				});
 				return Promise.reject(error);
 			});
 		}

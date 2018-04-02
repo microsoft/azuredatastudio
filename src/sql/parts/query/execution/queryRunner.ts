@@ -13,7 +13,6 @@ import { IQueryManagementService } from 'sql/parts/query/common/queryManagement'
 import { ISlickRange } from 'angular2-slickgrid';
 import * as Utils from 'sql/parts/connection/common/utils';
 
-import { IMessageService } from 'vs/platform/message/common/message';
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import * as nls from 'vs/nls';
@@ -21,6 +20,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import * as types from 'vs/base/common/types';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -66,7 +66,7 @@ export default class QueryRunner {
 		public uri: string,
 		public title: string,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
-		@IMessageService private _messageService: IMessageService,
+		@INotificationService private _notificationService: INotificationService,
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService
 	) { }
@@ -288,7 +288,10 @@ export default class QueryRunner {
 			self._queryManagementService.getQueryRows(rowData).then(result => {
 				resolve(result);
 			}, error => {
-				self._messageService.show(Severity.Error, nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error));
+				self._notificationService.notify({
+					severity: Severity.Error,
+					message:  nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
+				});
 				reject(error);
 			});
 		});
@@ -312,8 +315,10 @@ export default class QueryRunner {
 
 			// TODO issue #228 add statusview callbacks here
 			this._isExecuting = false;
-
-			this._messageService.show(Severity.Error, nls.localize('query.initEditExecutionFailed', 'Init Edit Execution failed: ') + error);
+			this._notificationService.notify({
+				severity: Severity.Error,
+				message:  nls.localize('query.initEditExecutionFailed', 'Init Edit Execution failed: ') + error
+			});
 		});
 	}
 
@@ -334,13 +339,19 @@ export default class QueryRunner {
 			self._queryManagementService.getEditRows(rowData).then(result => {
 				if (!result.hasOwnProperty('rowCount')) {
 					let error = `Nothing returned from subset query`;
-					self._messageService.show(Severity.Error, error);
+					self._notificationService.notify({
+						severity: Severity.Error,
+						message:  error
+					});
 					reject(error);
 				}
 				resolve(result);
 			}, error => {
 				let errorMessage = nls.localize('query.moreRowsFailedError', 'Something went wrong getting more rows:');
-				self._messageService.show(Severity.Error, `${errorMessage} ${error}`);
+				self._notificationService.notify({
+					severity: Severity.Error,
+					message:  `${errorMessage} ${error}`
+				});
 				reject(error);
 			});
 		});

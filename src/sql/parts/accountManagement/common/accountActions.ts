@@ -10,11 +10,13 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
-import { IMessageService, IConfirmation, Severity } from 'vs/platform/message/common/message';
 
 import { error } from 'sql/base/common/log';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IConfirmationService, IConfirmation } from 'vs/platform/dialogs/common/dialogs';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 
 /**
  * Actions to add a new account
@@ -79,7 +81,8 @@ export class RemoveAccountAction extends Action {
 
 	constructor(
 		private _account: sqlops.Account,
-		@IMessageService private _messageService: IMessageService,
+		@IConfirmationService private _confirmationService: IConfirmationService,
+		@INotificationService private _notificationService: INotificationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
@@ -97,23 +100,26 @@ export class RemoveAccountAction extends Action {
 			type: 'question'
 		};
 
-		let confirmPromise: boolean = this._messageService.confirm(confirm);
-		if (!confirmPromise) {
-			return TPromise.as(false);
-		} else {
-			return new TPromise((resolve, reject) => {
-				self._accountManagementService.removeAccount(self._account.key)
-					.then(
-						(result) => { resolve(result); },
-						(err) => {
-							// Must handle here as this is an independent action
-							self._errorMessageService.showDialog(Severity.Error,
-								localize('removeAccountFailed', 'Failed to remove account'), err);
-							resolve(false);
-						}
-					);
-			});
-		}
+		return this._confirmationService.confirm(confirm).then(result => {
+			if (!result) {
+				return TPromise.as(false);
+			} else {
+				return new TPromise((resolve, reject) => {
+					self._accountManagementService.removeAccount(self._account.key)
+						.then(
+							(result) => { resolve(result); },
+							(err) => {
+								// Must handle here as this is an independent action
+								self._notificationService.notify({
+									severity: Severity.Error,
+									message: localize('removeAccountFailed', 'Failed to remove account')
+								});
+								resolve(false);
+							}
+						);
+				});
+			}
+		});
 	}
 }
 
