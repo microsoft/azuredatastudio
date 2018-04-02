@@ -75,7 +75,7 @@ export class ProductContribution implements IWorkbenchContribution {
 					};
 
 					notificationService.notify({
-						severity: Severity.Error,
+						severity: Severity.Info,
 						message: nls.localize('read the release notes', "Welcome to {0} March Public Preview! Would you like to view the Getting Started Guide?", product.nameLong, pkg.version),
 						actions
 					});
