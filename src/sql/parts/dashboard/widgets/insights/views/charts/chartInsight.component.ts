@@ -111,7 +111,6 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 
 	protected abstract get chartType(): ChartType;
 
-
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
@@ -127,7 +126,6 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		// This is because chart.js doesn't auto-update anything other than dataset when re-rendering so defaults are used
 		// hence it's easier to not render until ready
 		this.options = mixin(this.options, { maintainAspectRatio: false });
-		this._isDataAvailable = true;
 		this._changeRef.detectChanges();
 		TelemetryUtils.addTelemetry(this._bootstrapService.telemetryService, TelemetryKeys.ChartCreated, { type: this.chartType });
 	}
@@ -178,6 +176,9 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		unmemoize(this, 'chartData');
 		unmemoize(this, 'labels');
 		this._data = data;
+		if (isValidData(data)) {
+			this._isDataAvailable = true;
+		}
 
 		this._changeRef.detectChanges();
 	}
@@ -226,14 +227,14 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 						data: this._data.rows.map(row => Number(row[i])),
 						label: this._data.columns[i]
 					};
-				}).slice(1);
+				});
 			} else {
 				return this._data.rows[0].map((row, i) => {
 					return {
 						data: this._data.rows.map(row => Number(row[i])),
 						label: 'Series' + i
 					};
-				}).slice(1);
+				});
 			}
 		}
 	}
@@ -283,4 +284,20 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		}
 		this.options = mixin(this.options, options);
 	}
+}
+
+function isValidData(data: IInsightData): boolean {
+	if (types.isUndefinedOrNull(data)) {
+		return false;
+	}
+
+	if (types.isUndefinedOrNull(data.columns)) {
+		return false;
+	}
+
+	if (types.isUndefinedOrNull(data.rows)) {
+		return false;
+	}
+
+	return true;
 }
