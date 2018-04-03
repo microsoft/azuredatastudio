@@ -7,3 +7,12 @@ widget-content {
 	height: 100%;
 	width: 100%;
 }
+
+.scroll-container {
+	height: 100%;
+	width: 100%;
+}
+
+.scrollable {
+	position: relative;
+}
