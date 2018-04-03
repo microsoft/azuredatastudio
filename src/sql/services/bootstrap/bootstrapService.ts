@@ -41,7 +41,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { IJobManagementService, IAgentJobCacheService } from 'sql/parts/jobManagement/common/interfaces';
 
 export const BOOTSTRAP_SERVICE_ID = 'bootstrapService';
 export const IBootstrapService = createDecorator<IBootstrapService>(BOOTSTRAP_SERVICE_ID);
@@ -94,6 +94,7 @@ export interface IBootstrapService {
 	commandService: ICommandService;
 	dashboardWebviewService: IDashboardWebviewService;
 	jobManagementService: IJobManagementService;
+	agentJobCacheService: IAgentJobCacheService;
 
 	/*
 	* Bootstraps the Angular module described. Components that need singleton services should inject the
