@@ -658,8 +658,7 @@
     }
   },
   "dependencies": {
-    "crypto": "^1.0.1",
-    "dataprotocol-client": "C:/Users/adbist/Desktop/SQL_Tools/sqlops-dataprotocolclient",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.1.5",
     "opener": "^1.4.3",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.2",
     "vscode-extension-telemetry": "^0.0.15"
