@@ -321,7 +321,7 @@ function packageTask(platform, arch, opts) {
 				.pipe(nlsFilter.restore);
 		}));
 
-	// {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}}
 		const extensionDepsSrc = [
 			..._.flatten(extensionsProductionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`])),
 		];
@@ -382,7 +382,6 @@ function packageTask(platform, arch, opts) {
 			.pipe(util.cleanNodeModule('keytar', ['binding.gyp', 'build/**', 'src/**', 'script/**', 'node_modules/**'], ['**/*.node']))
 			.pipe(util.cleanNodeModule('node-pty', ['binding.gyp', 'build/**', 'src/**', 'tools/**'], ['build/Release/*.exe', 'build/Release/*.dll', 'build/Release/*.node']))
 			// {{SQL CARBON EDIT}}
-			.pipe(util.cleanNodeModule('node-pty', ['binding.gyp', 'build/**', 'src/**', 'tools/**'], ['build/Release/*.node', 'build/Release/*.dll', 'build/Release/*.exe']))
 			.pipe(util.cleanNodeModule('chart.js', ['node_modules/**'], undefined))
 			.pipe(util.cleanNodeModule('emmet', ['node_modules/**'], undefined))
 			.pipe(util.cleanNodeModule('pty.js', ['build/**'], ['build/Release/**']))
@@ -392,6 +391,18 @@ function packageTask(platform, arch, opts) {
 			.pipe(util.cleanNodeModule('nsfw', ['binding.gyp', 'build/**', 'src/**', 'openpa/**', 'includes/**'], ['**/*.node', '**/*.a']))
 			.pipe(util.cleanNodeModule('vsda', ['binding.gyp', 'README.md', 'build/**', '*.bat', '*.sh', '*.cpp', '*.h'], ['build/Release/vsda.node']))
 			.pipe(createAsar(path.join(process.cwd(), 'node_modules'), ['**/*.node', '**/vscode-ripgrep/bin/*', '**/node-pty/build/Release/*'], 'app/node_modules.asar'));
+
+		// {{SQL CARBON EDIT}}
+		gulp.src(['node_modules/jquery/**/*.*'], { base: '.', dot: true })
+			.pipe(vfs.dest(destination + '/resources/app'));
+		gulp.src(['node_modules/reflect-metadata/**/*.*'], { base: '.', dot: true })
+			.pipe(vfs.dest(destination + '/resources/app'));
+		gulp.src(['node_modules/slickgrid/**/*.*'], { base: '.', dot: true })
+			.pipe(vfs.dest(destination + '/resources/app'));
+		gulp.src(['node_modules/underscore/**/*.*'], { base: '.', dot: true })
+			.pipe(vfs.dest(destination + '/resources/app'));
+		gulp.src(['node_modules/zone.js/**/*.*'], { base: '.', dot: true })
+			.pipe(vfs.dest(destination + '/resources/app'));
 
 		let all = es.merge(
 			packageJsonStream,
