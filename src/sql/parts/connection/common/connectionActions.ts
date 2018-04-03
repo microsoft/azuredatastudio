@@ -83,31 +83,10 @@ export class ClearRecentConnectionsAction extends Action {
 			type: 'question'
 		};
 
-		// @SQLTODO
 		return new TPromise<boolean>((resolve, reject) => {
 			let confirmed: boolean = this._messageService.confirm(confirm);
 			resolve(confirmed);
 		});
-
-		//this._messageService.confirm(confirm).then(confirmation => {
-		// 	if (!confirmation.confirmed) {
-		// 		return TPromise.as(false);
-		// 	} else {
-		// 		this._connectionManagementService.clearRecentConnectionsList();
-		// 		this.open(false);
-		// 		return TPromise.as(true);
-		// 	}
-		// });
-
-		// return this._messageService.confirm(confirm).then(confirmation => {
-		// 	if (!confirmation.confirmed) {
-		// 		return TPromise.as(false);
-		// 	} else {
-		// 		this._connectionManagementService.clearRecentConnectionsList();
-		// 		this.open(false);
-		// 		return TPromise.as(true);
-		// 	}
-		// });
 	}
 }
 
