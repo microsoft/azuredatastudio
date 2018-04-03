@@ -153,6 +153,11 @@ input#accordion:checked ~ .accordion-content {
 	padding: 10px;
 }
 
+.accordion-content #col1,
+.accordion-content #col3 {
+	font-weight: bold;
+}
+
 .accordion-content #col2 {
 	padding-right: 300px;
 }
@@ -171,6 +176,7 @@ table.step-list tr.step-row td {
 	border-left: 3px solid #444444;
 	padding-left: 10px;
 	height: 100%;
+	width: 90%;
 }
 
 .history-details > .job-steps {
@@ -203,19 +209,24 @@ table.step-list tr.step-row td {
 	display: inline-block;
 }
 
-.passed {
+.job-passed {
 	background: green;
 }
 
-.failed {
+.job-failed {
 	background: red;
 }
 
-.unknown {
+.job-unknown {
 	background: yellow;
 }
 
 .date-column {
 	padding-left: 50px;
 	width: 140px;
+}
+
+.steps-tree .monaco-tree .monaco-tree-row {
+	white-space: normal;
+	height: 40px !important;
 }

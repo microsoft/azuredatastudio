@@ -106,7 +106,15 @@
 					<h3>Status:</h3>
 				</td>
 				<td height="30">
-					<h3></h3>
+					<h3>{{_runStatus}}</h3>
+				</td>
+			</tr>
+			<tr class="step-row">
+				<td height="30">
+					Job ID:
+				</td>
+				<td height="30">
+					{{agentJobHistoryInfo?.jobId}}
 				</td>
 			</tr>
 			<tr class="step-row">
@@ -127,10 +135,10 @@
 			</tr>
 			<tr class="step-row">
 				<td height="30">
-					Log:
+					Server:
 				</td>
 				<td>
-
+					{{agentJobHistoryInfo?.server}}
 				</td>
 			</tr>
 			<tr class="step-row">
@@ -138,7 +146,7 @@
 					SQL message ID:
 				</td>
 				<td height="30">
-
+					{{agentJobHistoryInfo?.sqlMessageId}}
 				</td>
 			</tr>
 			<tr class="step-row">
@@ -150,6 +158,7 @@
 				</td>
 			</tr>
 		</table>
+		<jobstepsview-component *ngIf="showSteps() === true" [stepRows]="_stepRows"></jobstepsview-component>
 	</div>
 </div>
 
