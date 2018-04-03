@@ -45,6 +45,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	serverdownloader.eventEmitter.onAny(generateHandleServerProviderEvent());
 
 	let clientOptions: ClientOptions = {
+		documentSelector: ['sql'],
+		synchronize: {
+			configurationSection: 'mssql'
+		},
 		providerId: Constants.providerId,
 		errorHandler: new LanguageClientErrorHandler(),
 		features: [
