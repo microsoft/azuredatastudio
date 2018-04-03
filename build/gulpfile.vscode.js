@@ -33,6 +33,9 @@ const packageJson = require('../package.json');
 const product = require('../product.json');
 const crypto = require('crypto');
 const i18n = require('./lib/i18n');
+// {{SQL CARBON EDIT}}
+const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
+const platformInfo = require('service-downloader/out/platform').PlatformInformation;
 const glob = require('glob');
 const deps = require('./dependencies');
 const getElectronVersion = require('./lib/electron').getElectronVersion;
@@ -329,7 +332,7 @@ function packageTask(platform, arch, opts) {
 			.pipe(util.cleanNodeModule('typescript', ['**/**'], undefined));
 
 
-		const sources = es.merge(src, localExtensions, localExtensionDependencies, marketplaceExtensions)
+		const sources = es.merge(src, localExtensions, localExtensionDependencies)
 			.pipe(util.setExecutableBit(['**/*.sh']))
 			.pipe(filter(['**', '!**/*.js.map']));
 
