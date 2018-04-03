@@ -7,7 +7,7 @@ import nls = require('vs/nls');
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import Event, { Emitter } from 'vs/base/common/event';
-import { IMessageService, Severity } from 'vs/platform/message/common/message';
+import { IMessageService, Severity, IConfirmation } from 'vs/platform/message/common/message';
 import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
@@ -19,6 +19,12 @@ export class ClearRecentConnectionsAction extends Action {
 
 		public static ID = 'clearRecentConnectionsAction';
 		public static LABEL = nls.localize('ClearRecentlyUsedLabel', 'Clear Recent Connections List');
+		public static ICON = 'search-action clear-search-results';
+
+		private _onRecentConnectionsRemoved = new Emitter<void>();
+		public onRecentConnectionsRemoved: Event<void> = this._onRecentConnectionsRemoved.event;
+
+		private _useConfirmationMessage = false;
 
 		constructor(
 			id: string,
@@ -27,21 +33,34 @@ export class ClearRecentConnectionsAction extends Action {
 			@IMessageService private _messageService: IMessageService,
 			@IQuickOpenService private _quickOpenService: IQuickOpenService
 		) {
-			super(id, label);
+			super(id, label, ClearRecentConnectionsAction.ICON);
 			this.enabled = true;
 		}
 
-		public run(): TPromise<void> {
-			let self = this;
-			return self.promptToClearRecentConnectionsList().then(result => {
-				if (result) {
-					self._connectionManagementService.clearRecentConnectionsList();
-					self._messageService.show(Severity.Info, nls.localize('ClearedRecentConnections', 'Recent connections list cleared'));
-				}
-			});
+		public set useConfirmationMessage(value: boolean) {
+			this._useConfirmationMessage = value;
 		}
 
-		private promptToClearRecentConnectionsList(): TPromise<boolean> {
+		public run(): TPromise<void> {
+			if (this._useConfirmationMessage) {
+				return this.promptConfirmationMessage().then(result => {
+					if (result) {
+						this._connectionManagementService.clearRecentConnectionsList();
+						this._onRecentConnectionsRemoved.fire();
+					}
+				});
+			} else {
+				return this.promptQuickOpenService().then(result => {
+					if (result) {
+						this._connectionManagementService.clearRecentConnectionsList();
+						this._messageService.show(Severity.Info, nls.localize('ClearedRecentConnections', 'Recent connections list cleared'));
+						this._onRecentConnectionsRemoved.fire();
+					}
+				});
+			}
+		}
+
+		private promptQuickOpenService(): TPromise<boolean> {
 			const self = this;
 			return new TPromise<boolean>((resolve, reject) => {
 				let choices: { key, value }[] = [
@@ -54,6 +73,41 @@ export class ClearRecentConnectionsAction extends Action {
 					resolve(confirm && confirm.value);
 				});
 			});
+		}
+
+		private promptConfirmationMessage(): TPromise<boolean> {
+			let confirm: IConfirmation = {
+				message: nls.localize('clearRecentConnectionMessage', 'Are you sure you want to delete all the connections from the list?'),
+				primaryButton: nls.localize('connectionDialog.yes', 'Yes'),
+				secondaryButton: nls.localize('connectionDialog.no', 'No'),
+				type: 'question'
+			};
+
+			// @SQLTODO
+			return new TPromise<boolean>((resolve, reject) => {
+				let confirmed: boolean = this._messageService.confirm(confirm);
+				resolve(confirmed);
+			});
+
+			//this._messageService.confirm(confirm).then(confirmation => {
+			// 	if (!confirmation.confirmed) {
+			// 		return TPromise.as(false);
+			// 	} else {
+			// 		this._connectionManagementService.clearRecentConnectionsList();
+			// 		this.open(false);
+			// 		return TPromise.as(true);
+			// 	}
+			// });
+
+			// return this._messageService.confirm(confirm).then(confirmation => {
+			// 	if (!confirmation.confirmed) {
+			// 		return TPromise.as(false);
+			// 	} else {
+			// 		this._connectionManagementService.clearRecentConnectionsList();
+			// 		this.open(false);
+			// 		return TPromise.as(true);
+			// 	}
+			// });
 		}
 	}
 

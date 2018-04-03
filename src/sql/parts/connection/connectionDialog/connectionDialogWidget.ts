@@ -18,6 +18,7 @@ import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel
 import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/parts/connection/connectionDialog/recentConnectionTreeController';
 import { SavedConnectionTreeController } from 'sql/parts/connection/connectionDialog/savedConnectionTreeController';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { ClearRecentConnectionsAction } from 'sql/parts/connection/common/connectionActions';
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -36,6 +37,7 @@ import { IMessageService, IConfirmation } from 'vs/platform/message/common/messa
 import * as styler from 'vs/platform/theme/common/styler';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as DOM from 'vs/base/browser/dom';
+import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 
 export interface OnShowUIResponse {
 	selectedProviderType: string;
@@ -57,6 +59,7 @@ export class ConnectionDialogWidget extends Modal {
 	private _savedConnectionTree: ITree;
 	private $connectionUIContainer: Builder;
 	private _databaseDropdownExpanded: boolean;
+	private _actionbar: ActionBar;
 
 	private _panel: TabbedPanel;
 	private _recentConnectionTabId: PanelTabIdentifier;
@@ -255,46 +258,6 @@ export class ConnectionDialogWidget extends Modal {
 		this.hide();
 	}
 
-	private clearRecentConnectionList(): TPromise<boolean> {
-
-		let confirm: IConfirmation = {
-			message: localize('clearRecentConnectionMessage', 'Are you sure you want to delete all the connections from the list?'),
-			primaryButton: localize('connectionDialog.yes', 'Yes'),
-			secondaryButton: localize('connectionDialog.no', 'No'),
-			type: 'question'
-		};
-
-		// @SQLTODO
-		return new TPromise<boolean>((resolve, reject) => {
-			let confirmed: boolean = this._messageService.confirm(confirm);
-			if (confirmed) {
-				this._connectionManagementService.clearRecentConnectionsList();
-				this.open(false);
-			}
-			resolve(confirmed);
-		});
-
-		//this._messageService.confirm(confirm).then(confirmation => {
-		// 	if (!confirmation.confirmed) {
-		// 		return TPromise.as(false);
-		// 	} else {
-		// 		this._connectionManagementService.clearRecentConnectionsList();
-		// 		this.open(false);
-		// 		return TPromise.as(true);
-		// 	}
-		// });
-
-		// return this._messageService.confirm(confirm).then(confirmation => {
-		// 	if (!confirmation.confirmed) {
-		// 		return TPromise.as(false);
-		// 	} else {
-		// 		this._connectionManagementService.clearRecentConnectionsList();
-		// 		this.open(false);
-		// 		return TPromise.as(true);
-		// 	}
-		// });
-	}
-
 	private createRecentConnectionList(): void {
 		this._recentConnectionBuilder.div({ class: 'connection-recent-content' }, (recentConnectionContainer) => {
 			let recentHistoryLabel = localize('recentHistory', 'Recent history');
@@ -302,8 +265,13 @@ export class ConnectionDialogWidget extends Modal {
 				container.div({ class: 'connection-history-label' }, (recentTitle) => {
 					recentTitle.innerHtml(recentHistoryLabel);
 				});
-				container.div({ class: 'search-action clear-search-results' }, (clearSearchIcon) => {
-					clearSearchIcon.on('click', () => this.clearRecentConnectionList());
+
+				container.div({ class: 'connection-history-actions' }, (actionsContainer) => {
+					this._actionbar = this._register(new ActionBar(actionsContainer, {animated: false}));
+					let clearAction = this._instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
+					clearAction.useConfirmationMessage = true;
+					clearAction.onRecentConnectionsRemoved(() => this.open(false));
+					this._actionbar.push(clearAction, { icon: true, label: false });
 				});
 			});
 			recentConnectionContainer.div({ class: 'server-explorer-viewlet' }, (divContainer: Builder) => {
