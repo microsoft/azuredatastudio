@@ -21,6 +21,7 @@ function yarnInstall(location, opts) {
 }
 
 // {{SQL CARBON EDIT}}
+yarnInstall('extensions-modules');
 yarnInstall('extensions'); // node modules shared by all extensions
 
 const extensions = [

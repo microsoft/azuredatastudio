@@ -4,5 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-export const serviceName = 'SerilizationProvider';
-export const providerId = 'serilizationProvider';
+import * as sqlops from 'sqlops';
+
+/**
+ * Serializer for saving results into a different format
+ *
+ * @export
+ * @interface ISerialization
+ */
+export interface ISerialization {
+	saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Promise<sqlops.SaveResultRequestResult>;
+}
