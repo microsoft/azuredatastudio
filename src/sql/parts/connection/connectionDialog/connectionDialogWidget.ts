@@ -267,7 +267,7 @@ export class ConnectionDialogWidget extends Modal {
 				});
 
 				container.div({ class: 'connection-history-actions' }, (actionsContainer) => {
-					this._actionbar = this._register(new ActionBar(actionsContainer, {animated: false}));
+					this._actionbar = this._register(new ActionBar(actionsContainer, { animated: false }));
 					let clearAction = this._instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
 					clearAction.useConfirmationMessage = true;
 					clearAction.onRecentConnectionsRemoved(() => this.open(false));
