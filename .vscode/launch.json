@@ -87,7 +87,8 @@
 			"runtimeArgs": [
 				"--inspect=5875"
 			],
-			"webRoot": "${workspaceFolder}"
+			"webRoot": "${workspaceFolder}",
+			"timeout": 15000
 		},
 		{
 			"type": "node",
