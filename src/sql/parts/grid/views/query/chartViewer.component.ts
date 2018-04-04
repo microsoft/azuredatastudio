@@ -109,7 +109,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		this._initActionBar();
 
 		// Init chart type dropdown
-		this.chartTypesSelectBox = new SelectBox(insightRegistry.getAllIds(), this.getDefaultChartType());
+		this.chartTypesSelectBox = new SelectBox(insightRegistry.getAllIds(), this.getDefaultChartType(), this._bootstrapService.contextViewService);
 		this.chartTypesSelectBox.render(this.chartTypesElement.nativeElement);
 		this.chartTypesSelectBox.onDidSelect(selected => this.onChartChanged());
 		this._disposables.push(attachSelectBoxStyler(this.chartTypesSelectBox, this._bootstrapService.themeService));
@@ -129,7 +129,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		});
 
 		// Init legend dropdown
-		this.legendSelectBox = new SelectBox(this.legendOptions, this._chartConfig.legendPosition);
+		this.legendSelectBox = new SelectBox(this.legendOptions, this._chartConfig.legendPosition, this._bootstrapService.contextViewService);
 		this.legendSelectBox.render(this.legendElement.nativeElement);
 		this.legendSelectBox.onDidSelect(selected => this.onLegendChanged());
 		this._disposables.push(attachSelectBoxStyler(this.legendSelectBox, this._bootstrapService.themeService));
