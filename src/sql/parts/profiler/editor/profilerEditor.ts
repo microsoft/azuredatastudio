@@ -189,7 +189,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._autoscrollAction = this._instantiationService.createInstance(Actions.ProfilerAutoScroll, Actions.ProfilerAutoScroll.ID, Actions.ProfilerAutoScroll.LABEL);
 
 		this._sessionTemplates = this._profilerService.getSessionTemplates();
-		this._sessionTemplateSelector = new SelectBox(this._sessionTemplates.map(i => i.name), 'Standard');
+		this._sessionTemplateSelector = new SelectBox(this._sessionTemplates.map(i => i.name), 'Standard', this._contextViewService);
 		this._register(this._sessionTemplateSelector.onDidSelect(e => {
 			if (this.input) {
 				this.input.sessionTemplate = this._sessionTemplates.find(i => i.name === e.selected);
