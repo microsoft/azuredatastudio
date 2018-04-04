@@ -267,8 +267,7 @@ export class ConnectionDialogWidget extends Modal {
 		};
 
 		return new TPromise<boolean>((resolve, reject) => {
-			 this._confirmationService.confirm(confirm).then((confirmed) => {
-
+			this._confirmationService.confirm(confirm).then((confirmed) => {
 				if (confirmed) {
 					this._connectionManagementService.clearRecentConnectionsList();
 					this.open(false);
