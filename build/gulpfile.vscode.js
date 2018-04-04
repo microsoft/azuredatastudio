@@ -393,16 +393,14 @@ function packageTask(platform, arch, opts) {
 			.pipe(createAsar(path.join(process.cwd(), 'node_modules'), ['**/*.node', '**/vscode-ripgrep/bin/*', '**/node-pty/build/Release/*'], 'app/node_modules.asar'));
 
 		// {{SQL CARBON EDIT}}
-		gulp.src(['node_modules/jquery/**/*.*'], { base: '.', dot: true })
-			.pipe(vfs.dest(destination + '/resources/app'));
-		gulp.src(['node_modules/reflect-metadata/**/*.*'], { base: '.', dot: true })
-			.pipe(vfs.dest(destination + '/resources/app'));
-		gulp.src(['node_modules/slickgrid/**/*.*'], { base: '.', dot: true })
-			.pipe(vfs.dest(destination + '/resources/app'));
-		gulp.src(['node_modules/underscore/**/*.*'], { base: '.', dot: true })
-			.pipe(vfs.dest(destination + '/resources/app'));
-		gulp.src(['node_modules/zone.js/**/*.*'], { base: '.', dot: true })
-			.pipe(vfs.dest(destination + '/resources/app'));
+		let copiedModules = gulp.src([
+			'node_modules/jquery/**/*.*',
+			'node_modules/reflect-metadata/**/*.*',
+			'node_modules/slickgrid/**/*.*',
+			'node_modules/underscore/**/*.*',
+			'node_modules/zone.js/**/*.*',
+			'node_modules/chart.js/**/*.*'
+		], { base: '.', dot: true });
 
 		let all = es.merge(
 			packageJsonStream,
@@ -410,7 +408,8 @@ function packageTask(platform, arch, opts) {
 			license,
 			watermark,
 			api,
-      // {{SQL CARBON EDIT}}
+	  // {{SQL CARBON EDIT}}
+			copiedModules,
 			dataApi,
 			sources,
 			deps
