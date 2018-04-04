@@ -147,8 +147,8 @@ import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/
 import { IResourceProviderService, IAccountPickerService } from 'sql/parts/accountManagement/common/interfaces';
 import { ResourceProviderService } from 'sql/parts/accountManagement/common/resourceProviderService';
 import { AccountPickerService } from 'sql/parts/accountManagement/accountPicker/accountPickerService';
-import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
-import { DashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewServiceImpl';
+import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
+import { DashboardViewService } from 'sql/services/dashboard/common/dashboardViewServiceImpl';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { DashboardService } from 'sql/services/dashboard/common/dashboardServiceImpl';
 
@@ -679,7 +679,7 @@ export class Workbench implements IPartService {
 		// {{SQL CARBON EDIT}}
 		// SQL Tools services
 		serviceCollection.set(IDashboardService, this.instantiationService.createInstance(DashboardService));
-		serviceCollection.set(IDashboardWebviewService, this.instantiationService.createInstance(DashboardWebviewService));
+		serviceCollection.set(IDashboardViewService, this.instantiationService.createInstance(DashboardViewService));
 		serviceCollection.set(IAngularEventingService, this.instantiationService.createInstance(AngularEventingService));
 		serviceCollection.set(INewDashboardTabDialogService, this.instantiationService.createInstance(NewDashboardTabDialogService));
 		serviceCollection.set(ISqlOAuthService, this.instantiationService.createInstance(SqlOAuthService));

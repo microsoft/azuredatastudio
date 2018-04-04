@@ -16,7 +16,7 @@ import { memoize } from 'vs/base/common/decorators';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { IDashboardWebview } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
+import { IDashboardWebview } from 'sql/services/dashboard/common/dashboardViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import * as sqlops from 'sqlops';
@@ -46,7 +46,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	}
 
 	ngOnInit() {
-		this._dashboardService.dashboardWebviewService.registerWebview(this);
+		this._dashboardService.dashboardViewService.registerWebview(this);
 		this._createWebview();
 		this._register(addDisposableListener(window, EventType.RESIZE, e => {
 			this.layout();

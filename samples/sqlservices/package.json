@@ -24,13 +24,13 @@
                 "container": {
                     "nav-section": [
                         {
-                            "name": "sqlservices",
+                            "id": "sqlservices",
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1
                             },
                             "container": {
-                                "controlhost-container": null
+                                "modelview-container": null
                             }
                         }
                     ]

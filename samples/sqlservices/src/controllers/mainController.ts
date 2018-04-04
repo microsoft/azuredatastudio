@@ -35,35 +35,27 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	public activate(): Promise<boolean> {
-		sqlops.dashboard.registerWebviewProvider('sp_whoisactive_documentation', webview => {
-			let templateValues = { url: 'http://whoisactive.com/docs/' };
-			Utils.renderTemplateHtml(path.join(__dirname, '..'), 'templateTab.html', templateValues)
-				.then(html => {
-					webview.html = html;
-				});
-		});
+		sqlops.dashboard.registerModelViewProvider('sqlservices', view => {
+			let flexModel = view.modelBuilder.createFlexContainer()
+				.withLayout({
+					flexFlow: 'row'
+				}).withComponents([
+					view.modelBuilder.createFlexContainer().withLayout({ flexFlow: 'column'}).withComponents([
+						view.modelBuilder.createCard()
+						.withConfig('label1', 'value1', [{ label: 'action', callback: () => vscode.window.showInformationMessage('Clicked')}])
+					]),
 
-		sqlops.tasks.registerTask('sp_whoisactive.install', e => this.onInstall(e));
-		sqlops.tasks.registerTask('sp_whoisactive.findBlockLeaders', e => this.onExecute(e, 'findBlockLeaders.sql'));
-		sqlops.tasks.registerTask('sp_whoisactive.getPlans', e => this.onExecute(e, 'getPlans.sql'));
+					view.modelBuilder.createFlexContainer().withLayout({ flexFlow: 'column'}).withComponents([
+						view.modelBuilder.createCard()
+						.withConfig('label2', 'value2', [{ label: 'action2', callback: () => vscode.window.showInformationMessage('Clicked')}])
+					])
+				], {
+					flex: '0 1 50%'
+				});
+			view.model = flexModel;
+		});
 
 		return Promise.resolve(true);
 	}
-
-	private onInstall(connection: sqlops.IConnectionProfile): void {
-		// TODO add something
-	}
-
-	private onExecute(connection: sqlops.IConnectionProfile, fileName: string): void {
-		let sqlFile = fs.readFileSync(path.join(__dirname, '..', 'sql', fileName)).toString();
-		this.openSQLFileWithContent(sqlFile);
-	}
-
-	private openSQLFileWithContent(content: string): void {
-		vscode.workspace.openTextDocument({ language: 'sql', content: content }).then(doc => {
-			vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, false);
-		});
-	}
-
 }
 

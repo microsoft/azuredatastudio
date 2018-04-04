@@ -444,6 +444,7 @@ export const SqlMainContext = {
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
 	MainThreadTasks: createMainId<MainThreadTasksShape>('MainThreadTasks'),
 	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview'),
+	MainThreadModelView: createMainId<MainThreadModelViewShape>('MainThreadModelView'),
 	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard')
 };
 
@@ -458,6 +459,7 @@ export const SqlExtHostContext = {
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
 	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks'),
 	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
+	ExtHostModelView: createExtId<ExtHostModelViewShape>('ExtHostModelView'),
 	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard')
 };
 
@@ -505,6 +507,30 @@ export interface MainThreadDashboardWebviewShape extends IDisposable {
 	$sendMessage(handle: number, message: string);
 	$registerProvider(widgetId: string);
 	$setHtml(handle: number, value: string);
+}
+
+export interface ExtHostModelViewShape {
+	$registerProvider(widgetId: string, handler: (webview: sqlops.DashboardModelView) => void): void;
+	$onClosed(handle: number): void;
+	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
+}
+
+export enum ModelComponentTypes {
+	NavContainer,
+	FlexContainer,
+	Card,
+	DashboardWidget,
+	DashboardWebview
+}
+
+export interface MainThreadModelViewShape extends IDisposable {
+	$registerProvider(widgetId: string): void;
+	$setModel(handle: number, componentId: string): void;
+	$createComponent(handle: number, type: ModelComponentTypes, args?: any): string;
+	$clearContainer(handle: number, componentId: string): void;
+	$addToContainer(handle: number, containerId: string, childComponentid: string, config: any): void;
+	$setLayout(handle: number, componentId: string, layout: any): void;
+	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): void;
 }
 
 export interface ExtHostObjectExplorerShape {
