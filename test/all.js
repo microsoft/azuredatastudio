@@ -48,16 +48,33 @@ function main() {
 		console.error(e.stack || e);
 	});
 
+  // {{SQL CARBON EDIT}}
 	var loaderConfig = {
 		nodeRequire: require,
 		nodeMain: __filename,
 		baseUrl: path.join(path.dirname(__dirname), 'src'),
 		paths: {
 			'vs': `../${ out }/vs`,
+			'sqltest': `../${ out }/sqltest`,
+			'sql': `../${ out }/sql`,
 			'lib': `../${ out }/lib`,
 			'bootstrap': `../${ out }/bootstrap`
 		},
-		catchError: true
+		catchError: true,
+    // {{SQL CARBON EDIT}}
+		nodeModules: [
+			'@angular/common',
+			'@angular/core',
+			'@angular/forms',
+			'@angular/platform-browser',
+			'@angular/platform-browser-dynamic',
+			'@angular/router',
+			'angular2-grid',
+			'rxjs/add/observable/of',
+			'rxjs/Observable',
+			'rxjs/Subject',
+			'rxjs/Observer'
+		]
 	};
 
 	if (argv.coverage) {
@@ -68,7 +85,8 @@ function main() {
 		loaderConfig.nodeInstrumenter = function (contents, source) {
 			seenSources[source] = true;
 
-			if (minimatch(source, TEST_GLOB)) {
+      // {{SQL CARBON EDIT}}
+			if (minimatch(source, SQL_TEST_GLOB)) {
 				return contents;
 			}
 
@@ -282,12 +300,15 @@ function main() {
 				}
 			});
 		});
+    // {{SQL CARBON EDIT}}
+		*/
 
 		// replace the default unexpected error handler to be useful during tests
 		loader(['vs/base/common/errors'], function(errors) {
 			errors.setUnexpectedErrorHandler(function (err) {
 				let stack = (err && err.stack) || (new Error().stack);
-				unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
+        // {{SQL CARBON EDIT}}
+				//unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
 			});
 
 			// fire up mocha

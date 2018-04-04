@@ -29,9 +29,9 @@ export ELECTRON_ENABLE_LOGGING=1
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	cd $ROOT ; ulimit -n 4096 ; \
 		"$CODE" \
-		test/electron/index.js "$@"
+		node_modules/mocha/bin/_mocha "$@"
 else
 	cd $ROOT ; \
 		"$CODE" \
-		test/electron/index.js "$@"
+		node_modules/mocha/bin/_mocha "$@"
 fi
