@@ -176,8 +176,14 @@ class Renderer implements IRenderer<ICompletionItem, ISuggestionTemplateData> {
 	}
 
 	disposeTemplate(templateData: ISuggestionTemplateData): void {
-		templateData.highlightedLabel.dispose();
-		templateData.disposables = dispose(templateData.disposables);
+		// {{SQL CARBON EDIT}}
+		if (templateData.highlightedLabel) {
+			templateData.highlightedLabel.dispose();
+		}
+		// {{SQL CARBON EDIT}}
+		if (templateData.disposables) {
+			templateData.disposables = dispose(templateData.disposables);
+		}
 	}
 }
 
