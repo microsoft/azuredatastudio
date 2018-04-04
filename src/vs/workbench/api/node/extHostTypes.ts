@@ -1021,8 +1021,7 @@ export class CompletionItem {
 	label: string;
 	kind: CompletionItemKind;
 	detail: string;
-	// {{SQL CARBON EDIT}}
-	documentation: string;
+	documentation: string | MarkdownString;
 	sortText: string;
 	filterText: string;
 	insertText: string | SnippetString;

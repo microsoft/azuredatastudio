@@ -124,15 +124,29 @@ export function renderMarkdown(markdown: IMarkdownString, options: RenderOptions
 			// when code-block rendering is async we return sync
 			// but update the node with the real result later.
 			const id = defaultGenerator.nextId();
-			const promise = Promise.all([value, withInnerHTML]).then(values => {
-				const strValue = values[0];
-				const span = element.querySelector(`div[data-code="${id}"]`);
-				if (span) {
-					span.innerHTML = strValue;
-				}
-			}).catch(err => {
-				// ignore
+
+			// {{SQL CARBON EDIT}} - Promise.all not returning the strValue properly in original code?
+			const promise = value.then(strValue => {
+				withInnerHTML.then(e => {
+					const span = element.querySelector(`div[data-code="${id}"]`);
+					if (span) {
+						span.innerHTML = strValue;
+					}
+				}).catch(err => {
+					// ignore
+				});
 			});
+
+			// original VS Code source
+			// const promise = Promise.all([value, withInnerHTML]).then(values => {
+			// 	const strValue = values[0];
+			// 	const span = element.querySelector(`div[data-code="${id}"]`);
+			// 	if (span) {
+			// 		span.innerHTML = strValue;
+			// 	}
+			// }).catch(err => {
+			// 	// ignore
+			// });
 
 			if (options.codeBlockRenderCallback) {
 				promise.then(options.codeBlockRenderCallback);

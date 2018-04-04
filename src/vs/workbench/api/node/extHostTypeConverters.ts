@@ -427,8 +427,7 @@ export namespace Suggest {
 		result.insertText = suggestion.insertText;
 		result.kind = CompletionItemKind.to(suggestion.type);
 		result.detail = suggestion.detail;
-		// {{SQL CARBON EDIT}}
-		result.documentation = <string>suggestion.documentation;		
+		result.documentation = htmlContent.isMarkdownString(suggestion.documentation) ? MarkdownString.to(suggestion.documentation) : suggestion.documentation;
 		result.sortText = suggestion.sortText;
 		result.filterText = suggestion.filterText;
 

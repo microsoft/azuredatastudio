@@ -203,10 +203,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private handleShowUiComponent(input: OnShowUIResponse) {
-		// @SQLTODO why is this null now?
-		if (input.selectedProviderType) {
-			this._currentProviderType = input.selectedProviderType;
-		}
+		this._currentProviderType = input.selectedProviderType;
 		this._model = new ConnectionProfile(this._capabilitiesService, this._model);
 		this.uiController.showUiComponent(input.container);
 	}
