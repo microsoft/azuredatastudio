@@ -82,6 +82,9 @@ export class SelectBox extends Widget implements ISelectBoxDelegate {
 			this.selectBoxDelegate = new SelectBoxList(options, selected, contextViewProvider, styles);
 		}
 
+		// {{SQL CARBON EDIT}}
+		this.selectElement = (<any>this.selectBoxDelegate).selectElement;
+
 		this.toDispose.push(this.selectBoxDelegate);
 	}
 

@@ -74,7 +74,8 @@ export class SelectBoxList implements ISelectBoxDelegate, IDelegate<ISelectOptio
 	private static SELECT_DROPDOWN_BOTTOM_MARGIN = 10;
 
 	private _isVisible: boolean;
-	private selectElement: HTMLSelectElement;
+	// {{SQL CARBON EDIT}}
+	public selectElement: HTMLSelectElement;
 	private options: string[];
 	private selected: number;
 	private disabledOptionIndex: number;

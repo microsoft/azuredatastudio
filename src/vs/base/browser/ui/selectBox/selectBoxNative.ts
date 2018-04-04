@@ -13,7 +13,8 @@ import { isMacintosh } from 'vs/base/common/platform';
 
 export class SelectBoxNative implements ISelectBoxDelegate {
 
-	private selectElement: HTMLSelectElement;
+	// {{SQL CARBON EDIT}}
+	public selectElement: HTMLSelectElement;
 	private options: string[];
 	private selected: number;
 	private _onDidSelect: Emitter<ISelectData>;
