@@ -453,6 +453,7 @@ export class ConnectionDialogWidget extends Modal {
 
 	public updateProvider(displayName: string) {
 		this._providerTypeSelectBox.selectWithOptionName(displayName);
+
 		this.onProviderTypeSelected(displayName);
 	}
 
