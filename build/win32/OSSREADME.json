@@ -225,7 +225,7 @@
 		"version": "1.2.1",
 		"repositoryUrl": "https://github.com/BurntSushi/byteorder",
 		"licenseDetail": [
-			"The MIT License (MIT)",
+			"The Source EULA",
 			"",
 			"Copyright (c) 2015 Andrew Gallant",
 			"",
@@ -353,7 +353,7 @@
 		"version": "0.2.0",
 		"repositoryUrl": "https://github.com/vitiral/build_const",
 		"licenseDetail": [
-			"The MIT License (MIT)",
+			"The Source EULA",
 			"",
 			"Copyright (c) 2017 Garrett Berg, vitiral@gmail.com",
 			"",
@@ -474,7 +474,7 @@
 		"version": "0.4.0",
 		"repositoryUrl": "https://github.com/chronotope/chrono",
 		"licenseDetail": [
-			"Rust-chrono is dual-licensed under The MIT License [1] and",
+			"Rust-chrono is dual-licensed under The Source EULA [1] and",
 			"Apache 2.0 License [2]. Copyright (c) 2014--2017, Kang Seonghoon and",
 			"contributors.",
 			"",
@@ -484,7 +484,7 @@
 			"[1]: <http://opensource.org/licenses/MIT>, which is reproduced below:",
 			"",
 			"~~~~",
-			"The MIT License (MIT)",
+			"The Source EULA",
 			"",
 			"Copyright (c) 2014, Kang Seonghoon.",
 			"",
@@ -754,7 +754,7 @@
 		"version": "0.2.0",
 		"repositoryUrl": "https://github.com/Sgeo/take_mut",
 		"licenseDetail": [
-			"The MIT License (MIT)",
+			"The Source EULA",
 			"",
 			"Copyright (c) 2016 Sgeo",
 			"",
@@ -870,7 +870,7 @@
 		"version": "1.5.1",
 		"repositoryUrl": "https://github.com/ticki/termion",
 		"licenseDetail": [
-			"The MIT License (MIT)",
+			"The Source EULA",
 			"",
 			"Copyright (c) 2016 Ticki",
 			"",
