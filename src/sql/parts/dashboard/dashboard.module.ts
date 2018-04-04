@@ -51,7 +51,7 @@ import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.co
 let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
 					DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, WebviewContent, WidgetContent,
 					ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
-					JobsViewComponent, AgentViewComponent, JobHistoryComponent];
+					JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
@@ -68,6 +68,7 @@ import { ExplorerWidget } from 'sql/parts/dashboard/widgets/explorer/explorerWid
 import { TasksWidget } from 'sql/parts/dashboard/widgets/tasks/tasksWidget.component';
 import { InsightsWidget } from 'sql/parts/dashboard/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/parts/dashboard/widgets/webview/webviewWidget.component';
+import { JobStepsViewComponent } from '../jobManagement/views/jobStepsView.component';
 
 let widgetComponents = [
 	PropertiesWidgetComponent,
