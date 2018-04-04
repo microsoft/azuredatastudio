@@ -19,15 +19,11 @@ import { ConfigurationTarget } from 'vs/platform/configuration/common/configurat
 	selector: 'dashboard-home-container',
 	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardHomeContainer) }],
 	template: `
-		<div class="scroll-container" #scrollContainer>
-			<div class="scrollable" #scrollable>
-				<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [_config]="properties"
-					style="padding-left: 10px; padding-right: 10px; display: block" [style.height.px]="_propertiesClass?.collapsed ? '30' : '90'">
-				</dashboard-widget-wrapper>
-				<widget-content [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
-				</widget-content>
-			</div>
-		</div>
+		<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [_config]="properties"
+			style="padding-left: 10px; padding-right: 10px; display: block" [style.height.px]="_propertiesClass?.collapsed ? '30' : '90'">
+		</dashboard-widget-wrapper>
+		<widget-content [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
+		</widget-content>
 	`
 })
 export class DashboardHomeContainer extends DashboardWidgetContainer {
