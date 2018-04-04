@@ -31,6 +31,8 @@ import * as DOM from 'vs/base/browser/dom';
 import { CommandsRegistry, ICommand } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 interface ITask {
 	name: string;
@@ -133,7 +135,15 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		}
 		innerTile.append(label);
 		tile.append(innerTile);
+		tile.attr('tabindex', '0');
 		tile.on(DOM.EventType.CLICK, () => this.runTask(action));
+		tile.on(DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Enter)) {
+				this.runTask(action);
+				e.stopImmediatePropagation();
+			}
+		});
 		return tile.getHTMLElement();
 	}
 
