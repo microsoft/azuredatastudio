@@ -207,13 +207,13 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._currentProviderType = input.selectedProviderType;
 		}
 		this._model.providerName = this.getCurrentProviderName();
+
 		this._model = new ConnectionProfile(this._capabilitiesService, this._model);
 		this.uiController.showUiComponent(input.container);
 	}
 
 	private handleInitDialog() {
 		this.uiController.initDialog(this._model);
-
 	}
 
 	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile): void {
