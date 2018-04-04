@@ -22,7 +22,7 @@ export class MainThreadDashboardWebview implements MainThreadDashboardWebviewSha
 		context: IExtHostContext,
 		@IDashboardWebviewService webviewService: IDashboardWebviewService
 	) {
-		this._proxy = context.get(SqlExtHostContext.ExtHostDashboardWebviews);
+		this._proxy = context.getProxy(SqlExtHostContext.ExtHostDashboardWebviews);
 		webviewService.onRegisteredWebview(e => {
 			if (this.knownWidgets.includes(e.id)) {
 				let handle = MainThreadDashboardWebview._handlePool++;

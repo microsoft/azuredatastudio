@@ -29,7 +29,7 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 		@IWorkbenchEditorService private _workbenchEditorService: IWorkbenchEditorService
 	) {
 		if (extHostContext) {
-			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostObjectExplorer);
+			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostObjectExplorer);
 		}
 		this._toDispose = [];
 	}

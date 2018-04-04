@@ -12,7 +12,6 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
-import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IJobManagementService } from '../common/interfaces';
@@ -23,6 +22,8 @@ import { JobHistoryController, JobHistoryDataSource,
 import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
 import { JobStepsViewRow } from './jobStepsViewTree';
 import { localize } from 'vs/nls';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -50,7 +51,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _stepRows: JobStepsViewRow[] = [];
 	private _showSteps: boolean = false;
 	private _runStatus: string = undefined;
-	private _messageService: IMessageService;
+	private _notificationService: INotificationService;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -61,7 +62,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	) {
 		super();
 		this._jobManagementService = bootstrapService.jobManagementService;
-		this._messageService = bootstrapService.messageService;
+		this._notificationService = bootstrapService.notificationService;
 	}
 
 	ngOnInit() {
@@ -157,17 +158,26 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 				switch (action) {
 					case ('run'):
 						var startMsg = localize('jobSuccessfullyStarted', 'The job was successfully started.');
-						this._messageService.show(Severity.Info, startMsg);
+						self._notificationService.notify({
+							severity: Severity.Info,
+							message: startMsg
+						});
 						break;
 					case ('stop'):
 						var stopMsg = localize('jobSuccessfullyStopped', 'The job was successfully stopped.');
-						this._messageService.show(Severity.Info, stopMsg);
+						self._notificationService.notify({
+							severity: Severity.Info,
+							message: stopMsg
+						});
 						break;
 					default:
 						break;
 				}
 			} else {
-				this._messageService.show(Severity.Error, result.errorMessage);
+				self._notificationService.notify({
+					severity: Severity.Error,
+					message: result.errorMessage
+				});
 			}
 		});
 	}

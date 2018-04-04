@@ -22,20 +22,21 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 export interface ITaskOptions {
 	id: string;
 	title: string;
-	iconClass: string;
+	iconPath: { dark: string; light: string; };
 	description?: ITaskHandlerDescription;
 }
 
 export abstract class Task {
 	public readonly id: string;
 	public readonly title: string;
-	public readonly iconClass: string;
+	public readonly iconPathDark: string;
+	public readonly iconPath: { dark: string; light: string; };
 	private readonly _description: ITaskHandlerDescription;
 
 	constructor(opts: ITaskOptions) {
 		this.id = opts.id;
 		this.title = opts.title;
-		this.iconClass = opts.iconClass;
+		this.iconPath = opts.iconPath;
 		this._description = opts.description;
 	}
 
@@ -49,7 +50,7 @@ export abstract class Task {
 
 	private toCommandAction(): ICommandAction {
 		return {
-			iconClass: this.iconClass,
+			iconPath: this.iconPath,
 			id: this.id,
 			title: this.title
 		};

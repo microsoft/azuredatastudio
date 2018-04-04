@@ -7,10 +7,11 @@ import nls = require('vs/nls');
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import Event, { Emitter } from 'vs/base/common/event';
-import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { INotificationService, INotificationActions } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 
 /**
  * Workbench action to clear the recent connnections list
@@ -24,7 +25,7 @@ export class ClearRecentConnectionsAction extends Action {
 			id: string,
 			label: string,
 			@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-			@IMessageService private _messageService: IMessageService,
+			@INotificationService private _notificationService: INotificationService,
 			@IQuickOpenService private _quickOpenService: IQuickOpenService
 		) {
 			super(id, label);
@@ -36,7 +37,13 @@ export class ClearRecentConnectionsAction extends Action {
 			return self.promptToClearRecentConnectionsList().then(result => {
 				if (result) {
 					self._connectionManagementService.clearRecentConnectionsList();
-					self._messageService.show(Severity.Info, nls.localize('ClearedRecentConnections', 'Recent connections list cleared'));
+
+					const actions: INotificationActions = { primary: [ ] };
+					self._notificationService.notify({
+						severity: Severity.Info,
+						message: nls.localize('ClearedRecentConnections', 'Recent connections list cleared'),
+						actions
+					});
 				}
 			});
 		}

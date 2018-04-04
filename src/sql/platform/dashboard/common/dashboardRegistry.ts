@@ -8,7 +8,7 @@ import { IConfigurationRegistry, Extensions as ConfigurationExtension } from 'vs
 import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { deepClone } from 'vs/base/common/objects';
-import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/common/extensionsRegistry';
+import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 
 import { ProviderProperties } from 'sql/parts/dashboard/widgets/properties/propertiesWidget.component';
 import { DATABASE_DASHBOARD_TABS } from 'sql/parts/dashboard/pages/databaseDashboardPage.contribution';

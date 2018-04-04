@@ -127,8 +127,10 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		let label = $('div').safeInnerHtml(types.isString(action.title) ? action.title : action.title.value);
 		let tile = $('div.task-tile').style('height', this._size + 'px').style('width', this._size + 'px');
 		let innerTile = $('div');
-		if (action.iconClass) {
-			let icon = $('span.icon').addClass(action.iconClass);
+
+		// @SQLTODO - iconPath shouldn't be used as a CSS class
+		if (action.iconPath && action.iconPath.dark) {
+			let icon = $('span.icon').addClass(action.iconPath.dark);
 			innerTile.append(icon);
 		}
 		innerTile.append(label);

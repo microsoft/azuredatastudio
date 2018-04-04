@@ -209,7 +209,7 @@ export class BackupComponent {
 
 		this.recoveryBox = new InputBox(this.recoveryModelElement.nativeElement, this._bootstrapService.contextViewService, { placeholder: this.recoveryModel });
 		// Set backup type
-		this.backupTypeSelectBox = new SelectBox([], '');
+		this.backupTypeSelectBox = new SelectBox([], '', this._bootstrapService.contextViewService);
 		this.backupTypeSelectBox.render(this.backupTypeElement.nativeElement);
 
 		// Set copy-only check box
@@ -264,13 +264,13 @@ export class BackupComponent {
 		this.removePathButton.title = localize('removeFile', 'Remove files');
 
 		// Set compression
-		this.compressionSelectBox = new SelectBox(this.compressionOptions, this.compressionOptions[0]);
+		this.compressionSelectBox = new SelectBox(this.compressionOptions, this.compressionOptions[0], this._bootstrapService.contextViewService);
 		this.compressionSelectBox.render(this.compressionElement.nativeElement);
 
 		// Set encryption
-		this.algorithmSelectBox = new SelectBox(this.encryptionAlgorithms, this.encryptionAlgorithms[0]);
+		this.algorithmSelectBox = new SelectBox(this.encryptionAlgorithms, this.encryptionAlgorithms[0], this._bootstrapService.contextViewService);
 		this.algorithmSelectBox.render(this.encryptionAlgorithmElement.nativeElement);
-		this.encryptorSelectBox = new SelectBox([], '');
+		this.encryptorSelectBox = new SelectBox([], '', this._bootstrapService.contextViewService);
 		this.encryptorSelectBox.render(this.encryptorElement.nativeElement);
 
 		// Set media

@@ -42,8 +42,6 @@ function select(builder: Builder, selector: string, offdom?: boolean): MultiBuil
 }
 
 suite('Builder', () => {
-
 	test('Binding', function () {
 	});
-
 });

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
+import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { ExtHostObjectExplorerShape, SqlMainContext, MainThreadObjectExplorerShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
@@ -14,9 +14,9 @@ export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape  {
 	private _proxy: MainThreadObjectExplorerShape;
 
 	constructor(
-		threadService: IThreadService
+		mainContext: IMainContext
 	) {
-		this._proxy = threadService.get(SqlMainContext.MainThreadObjectExplorer);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadObjectExplorer);
 	}
 
 	public $getNode(connectionId: string, nodePath?: string): Thenable<sqlops.objectexplorer.ObjectExplorerNode> {

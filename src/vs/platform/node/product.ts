@@ -26,6 +26,7 @@ export interface IProductConfiguration {
 		serviceUrl: string;
 		itemUrl: string;
 		controlUrl: string;
+		recommendationsUrl: string;
 	};
 	extensionTips: { [id: string]: string; };
 	// {{SQL CARBON EDIT}}
@@ -72,6 +73,7 @@ export interface IProductConfiguration {
 		'linux-x64': string;
 		'darwin': string;
 	};
+	logUploaderUrl: string;
 }
 
 export interface ISurveyData {
