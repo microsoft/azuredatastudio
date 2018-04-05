@@ -104,7 +104,7 @@ export class BootstrapService implements IBootstrapService {
 		@ICommandService public commandService: ICommandService,
 		@IDashboardWebviewService public dashboardWebviewService: IDashboardWebviewService,
 		@IJobManagementService public jobManagementService: IJobManagementService,
-		@IAgentJobCacheService public agentJobCacheService: IAgentJobCacheService
+		@IAgentJobCacheService public agentJobCacheService: IAgentJobCacheService,
 		@IEnvironmentService public environmentService: IEnvironmentService
 	) {
 		this.configurationEditorService = this.instantiationService.createInstance(ConfigurationEditingService);
