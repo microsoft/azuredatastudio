@@ -57,7 +57,7 @@ export class ClearRecentConnectionsAction extends Action {
 				if (result) {
 					this._connectionManagementService.clearRecentConnectionsList();
 
-					const actions: INotificationActions = { primary: [ ] };
+					const actions: INotificationActions = { primary: [] };
 					this._notificationService.notify({
 						severity: Severity.Info,
 						message: nls.localize('ClearedRecentConnections', 'Recent connections list cleared'),
