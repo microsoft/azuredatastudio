@@ -18,7 +18,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
-import WebView from 'vs/workbench/parts/html/browser/webview';
+import { Webview } from 'vs/workbench/parts/html/browser/webview';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
@@ -29,7 +29,7 @@ export class WebViewDialog extends Modal {
 	private _okButton: Button;
 	private _okLabel: string;
 	private _closeLabel: string;
-	private _webview: WebView;
+	private _webview: Webview;
 	private _html: string;
 	private _headerTitle: string;
 
@@ -89,14 +89,17 @@ export class WebViewDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		new Builder(container).div({ 'class': 'webview-dialog' }, (bodyBuilder) => {
 			this._body = bodyBuilder.getHTMLElement();
-			this._webview = new WebView(this._body, this._webViewPartService.getContainer(Parts.EDITOR_PART),
+			this._webview = new Webview(
+				this._body,
+				this._webViewPartService.getContainer(Parts.EDITOR_PART),
+				this._themeService,
+				this._environmentService,
 				this._contextViewService,
 				undefined,
 				undefined,
 				{
 					allowScripts: true,
-					enableWrappedPostMessage: true,
-					hideFind: true
+					enableWrappedPostMessage: true
 				}
 			);
 
@@ -130,7 +133,7 @@ export class WebViewDialog extends Modal {
 	}
 
 	private updateDialogBody(): void {
-		this._webview.contents = [this.html];
+		this._webview.contents = this.html;
 	}
 
 	/* espace key */

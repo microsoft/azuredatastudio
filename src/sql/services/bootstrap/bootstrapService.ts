@@ -33,7 +33,6 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IMessageService } from 'vs/platform/message/common/message';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
@@ -42,6 +41,8 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IJobManagementService, IAgentJobCacheService } from 'sql/parts/jobManagement/common/interfaces';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export const BOOTSTRAP_SERVICE_ID = 'bootstrapService';
 export const IBootstrapService = createDecorator<IBootstrapService>(BOOTSTRAP_SERVICE_ID);
@@ -78,7 +79,7 @@ export interface IBootstrapService {
 	insightsDialogService: IInsightsDialogService;
 	contextViewService: IContextViewService;
 	restoreDialogService: IRestoreDialogController;
-	messageService: IMessageService;
+	notificationService: INotificationService;
 	workspaceContextService: IWorkspaceContextService;
 	accountManagementService: IAccountManagementService;
 	windowsService: IWindowsService;
@@ -95,6 +96,7 @@ export interface IBootstrapService {
 	dashboardWebviewService: IDashboardWebviewService;
 	jobManagementService: IJobManagementService;
 	agentJobCacheService: IAgentJobCacheService;
+	environmentService: IEnvironmentService;
 
 	/*
 	* Bootstraps the Angular module described. Components that need singleton services should inject the

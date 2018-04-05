@@ -30,7 +30,7 @@ export class MainThreadResourceProvider implements MainThreadResourceProviderSha
 	) {
 		this._providerMetadata = {};
 		if (extHostContext) {
-			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostResourceProvider);
+			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostResourceProvider);
 		}
 		this._toDispose = [];
 	}

@@ -29,7 +29,7 @@ export class MainThreadCredentialManagement implements MainThreadCredentialManag
 		@ICredentialsService private credentialService: ICredentialsService
 	) {
 		if (extHostContext) {
-			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostCredentialManagement);
+			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostCredentialManagement);
 		}
 	}
 

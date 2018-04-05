@@ -14,20 +14,21 @@ import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/pa
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 
 import { IMode } from 'vs/editor/common/modes';
-import { IModel } from 'vs/editor/common/editorCommon';
+import { ITextModel } from 'vs/editor/common/model';
 import { IEditor, IEditorInput, Position } from 'vs/platform/editor/common/editor';
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IEditorGroup } from 'vs/workbench/common/editor';
-import { IUntitledEditorService, UNTITLED_SCHEMA } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileEditorInput } from 'vs/workbench/parts/files/common/editors/fileEditorInput';
-import { IMessageService } from 'vs/platform/message/common/message';
 import Severity from 'vs/base/common/severity';
 import nls = require('vs/nls');
 import URI from 'vs/base/common/uri';
 import paths = require('vs/base/common/paths');
 import { isLinux } from 'vs/base/common/platform';
+import { Schemas } from 'vs/base/common/network';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 const fs = require('fs');
 
@@ -52,20 +53,20 @@ export class QueryEditorService implements IQueryEditorService {
 	private static editorService: IWorkbenchEditorService;
 	private static instantiationService: IInstantiationService;
 	private static editorGroupService: IEditorGroupService;
-	private static messageService: IMessageService;
+	private static notificationService: INotificationService;
 
 	constructor(
 		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
 		@IEditorGroupService private _editorGroupService: IEditorGroupService,
-		@IMessageService private _messageService: IMessageService,
+		@INotificationService private _notificationService: INotificationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 	) {
 		QueryEditorService.editorService = _editorService;
 		QueryEditorService.instantiationService = _instantiationService;
 		QueryEditorService.editorGroupService = _editorGroupService;
-		QueryEditorService.messageService = _messageService;
+		QueryEditorService.notificationService = _notificationService;
 	}
 
 	////// Public functions
@@ -78,7 +79,7 @@ export class QueryEditorService implements IQueryEditorService {
 			try {
 				// Create file path and file URI
 				let filePath = this.createUntitledSqlFilePath();
-				let docUri: URI = URI.from({ scheme: UNTITLED_SCHEMA, path: filePath });
+				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create a sql document pane with accoutrements
 				const fileInput = this._untitledEditorService.createOrGet(docUri, 'sql');
@@ -126,7 +127,7 @@ export class QueryEditorService implements IQueryEditorService {
 				// Create file path and file URI
 				let objectName = schemaName ? schemaName + '.' + tableName : tableName;
 				let filePath = this.createEditDataFileName(objectName);
-				let docUri: URI = URI.from({ scheme: UNTITLED_SCHEMA, path: filePath });
+				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create an EditDataInput for editing
 				let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName);
@@ -192,7 +193,7 @@ export class QueryEditorService implements IQueryEditorService {
 	 * In all other cases (when SQL is involved in the language change and the editor is not dirty),
 	 * returns a promise that will resolve when the old editor has been replaced by a new editor.
 	 */
-	public static sqlLanguageModeCheck(model: IModel, mode: IMode, editor: IEditor): Promise<IModel> {
+	public static sqlLanguageModeCheck(model: ITextModel, mode: IMode, editor: IEditor): Promise<ITextModel> {
 		if (!model || !mode || !editor) {
 			return Promise.resolve(undefined);
 		}
@@ -211,16 +212,22 @@ export class QueryEditorService implements IQueryEditorService {
 		}
 
 		let uri: URI = QueryEditorService._getEditorChangeUri(editor.input, changingToSql);
-		if(uri.scheme === UNTITLED_SCHEMA && editor.input instanceof QueryInput)
+		if(uri.scheme === Schemas.untitled && editor.input instanceof QueryInput)
 		{
-			QueryEditorService.messageService.show(Severity.Error, QueryEditorService.CHANGE_UNSUPPORTED_ERROR_MESSAGE);
+			QueryEditorService.notificationService.notify({
+				severity: Severity.Error,
+				message: QueryEditorService.CHANGE_UNSUPPORTED_ERROR_MESSAGE
+			});
 			return Promise.resolve(undefined);
 		}
 
 		// Return undefined to notify the calling funciton to not perform the language change
 		// TODO change this - tracked by issue #727
 		if (editor.input.isDirty()) {
-			QueryEditorService.messageService.show(Severity.Error, QueryEditorService.CHANGE_ERROR_MESSAGE);
+			QueryEditorService.notificationService.notify({
+				severity: Severity.Error,
+				message: QueryEditorService.CHANGE_ERROR_MESSAGE
+			});
 			return Promise.resolve(undefined);
 		}
 
@@ -232,7 +239,7 @@ export class QueryEditorService implements IQueryEditorService {
 		options.pinned = group.isPinned(index);
 
 		// Return a promise that will resovle when the old editor has been replaced by a new editor
-		return new Promise<IModel>((resolve, reject) => {
+		return new Promise<ITextModel>((resolve, reject) => {
 			let newEditorInput = QueryEditorService._getNewEditorInput(changingToSql, editor.input, uri);
 
 			// Override queryEditorCheck to not open this file in a QueryEditor
@@ -344,7 +351,7 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Handle all cleanup actions that need to wait until the editor is fully open.
 	 */
-	private static _onEditorOpened(editor: IEditor, uri: string, position: Position, isPinned: boolean): IModel {
+	private static _onEditorOpened(editor: IEditor, uri: string, position: Position, isPinned: boolean): ITextModel {
 
 		// Reset the editor pin state
 		// TODO: change this so it happens automatically in openEditor in sqlLanguageModeCheck. Performing this here

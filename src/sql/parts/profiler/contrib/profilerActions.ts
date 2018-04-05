@@ -235,7 +235,11 @@ export class NewProfilerAction extends Task {
 	private _connectionProfile: ConnectionProfile;
 
 	constructor() {
-		super({ id: NewProfilerAction.ID, title: NewProfilerAction.LABEL, iconClass: NewProfilerAction.ICON });
+		super({
+			id: NewProfilerAction.ID,
+			title: NewProfilerAction.LABEL,
+			iconPath: { dark: NewProfilerAction.ICON, light: NewProfilerAction.ICON }
+		});
 	}
 
 	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {

@@ -16,7 +16,6 @@ import { IConnectionManagementService } from 'sql/parts/connection/common/connec
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IAction } from 'vs/base/common/actions';
 import Event, { Emitter } from 'vs/base/common/event';
-import { IMessageService } from 'vs/platform/message/common/message';
 import mouse = require('vs/base/browser/mouseEvent');
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
@@ -27,7 +26,6 @@ export class RecentConnectionActionsProvider extends ContributableActionProvider
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IMessageService private _messageService: IMessageService,
 	) {
 		super();
 	}

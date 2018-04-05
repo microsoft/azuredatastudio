@@ -4,29 +4,31 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import URI from 'vs/base/common/uri';
+import URI, { UriComponents } from 'vs/base/common/uri';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { disposed } from 'vs/base/common/errors';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { ISingleEditOperation, IDecorationRenderOptions, IDecorationOptions, ILineChange } from 'vs/editor/common/editorCommon';
+import { IDecorationRenderOptions, IDecorationOptions, ILineChange } from 'vs/editor/common/editorCommon';
+import { ISingleEditOperation } from 'vs/editor/common/model';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
 import { Position as EditorPosition, ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { MainThreadTextEditor } from './mainThreadEditor';
-import { ITextEditorConfigurationUpdate, TextEditorRevealType, IApplyEditsOptions, IUndoStopOptions } from 'vs/workbench/api/node/extHost.protocol';
+import { ITextEditorConfigurationUpdate, TextEditorRevealType, IApplyEditsOptions, IUndoStopOptions, WorkspaceEditDto, reviveWorkspaceEditDto } from 'vs/workbench/api/node/extHost.protocol';
 import { MainThreadDocumentsAndEditors } from './mainThreadDocumentsAndEditors';
 import { equals as objectEquals } from 'vs/base/common/objects';
-import { ExtHostContext, MainThreadEditorsShape, ExtHostEditorsShape, ITextDocumentShowOptions, ITextEditorPositionData, IExtHostContext, IWorkspaceResourceEdit } from '../node/extHost.protocol';
+import { ExtHostContext, MainThreadTextEditorsShape, ExtHostEditorsShape, ITextDocumentShowOptions, ITextEditorPositionData, IExtHostContext } from '../node/extHost.protocol';
 import { IRange } from 'vs/editor/common/core/range';
 import { ISelection } from 'vs/editor/common/core/selection';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { IFileService } from 'vs/platform/files/common/files';
-import { bulkEdit, IResourceEdit } from 'vs/editor/browser/services/bulkEdit';
+import { BulkEdit } from 'vs/editor/browser/services/bulkEdit';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { isCodeEditor, ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { isResourceFileEdit } from 'vs/editor/common/modes';
 
-export class MainThreadEditors implements MainThreadEditorsShape {
+export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 
 	private _proxy: ExtHostEditorsShape;
 	private _documentsAndEditors: MainThreadDocumentsAndEditors;
@@ -39,14 +41,14 @@ export class MainThreadEditors implements MainThreadEditorsShape {
 	constructor(
 		documentsAndEditors: MainThreadDocumentsAndEditors,
 		extHostContext: IExtHostContext,
-		@ICodeEditorService private _codeEditorService: ICodeEditorService,
+		@ICodeEditorService private readonly _codeEditorService: ICodeEditorService,
 		@IWorkbenchEditorService workbenchEditorService: IWorkbenchEditorService,
 		@IEditorGroupService editorGroupService: IEditorGroupService,
 		@ITextModelService private readonly _textModelResolverService: ITextModelService,
 		@IFileService private readonly _fileService: IFileService,
 		@IModelService private readonly _modelService: IModelService,
 	) {
-		this._proxy = extHostContext.get(ExtHostContext.ExtHostEditors);
+		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostEditors);
 		this._documentsAndEditors = documentsAndEditors;
 		this._workbenchEditorService = workbenchEditorService;
 		this._toDispose = [];
@@ -77,11 +79,8 @@ export class MainThreadEditors implements MainThreadEditorsShape {
 	private _onTextEditorAdd(textEditor: MainThreadTextEditor): void {
 		let id = textEditor.getId();
 		let toDispose: IDisposable[] = [];
-		toDispose.push(textEditor.onConfigurationChanged((opts) => {
-			this._proxy.$acceptOptionsChanged(id, opts);
-		}));
-		toDispose.push(textEditor.onSelectionChanged((event) => {
-			this._proxy.$acceptSelectionsChanged(id, event);
+		toDispose.push(textEditor.onPropertiesChanged((data) => {
+			this._proxy.$acceptEditorPropertiesChanged(id, data);
 		}));
 
 		this._textEditorsListenersMap[id] = toDispose;
@@ -115,7 +114,9 @@ export class MainThreadEditors implements MainThreadEditorsShape {
 
 	// --- from extension host process
 
-	$tryShowTextDocument(resource: URI, options: ITextDocumentShowOptions): TPromise<string> {
+	$tryShowTextDocument(resource: UriComponents, options: ITextDocumentShowOptions): TPromise<string> {
+		const uri = URI.revive(resource);
+
 		const editorOptions: ITextEditorOptions = {
 			preserveFocus: options.preserveFocus,
 			pinned: options.pinned,
@@ -123,7 +124,7 @@ export class MainThreadEditors implements MainThreadEditorsShape {
 		};
 
 		const input = {
-			resource,
+			resource: uri,
 			options: editorOptions
 		};
 
@@ -160,7 +161,7 @@ export class MainThreadEditors implements MainThreadEditorsShape {
 		return undefined;
 	}
 
-	$trySetSelections(id: string, selections: ISelection[]): TPromise<any> {
+	$trySetSelections(id: string, selections: ISelection[]): TPromise<void> {
 		if (!this._documentsAndEditors.getEditor(id)) {
 			return TPromise.wrapError(disposed(`TextEditor(${id})`));
 		}
@@ -168,7 +169,7 @@ export class MainThreadEditors implements MainThreadEditorsShape {
 		return TPromise.as(null);
 	}
 
-	$trySetDecorations(id: string, key: string, ranges: IDecorationOptions[]): TPromise<any> {
+	$trySetDecorations(id: string, key: string, ranges: IDecorationOptions[]): TPromise<void> {
 		if (!this._documentsAndEditors.getEditor(id)) {
 			return TPromise.wrapError(disposed(`TextEditor(${id})`));
 		}
@@ -176,15 +177,15 @@ export class MainThreadEditors implements MainThreadEditorsShape {
 		return TPromise.as(null);
 	}
 
-	$trySetDecorationsFast(id: string, key: string, ranges: string): TPromise<any> {
+	$trySetDecorationsFast(id: string, key: string, ranges: number[]): TPromise<void> {
 		if (!this._documentsAndEditors.getEditor(id)) {
 			return TPromise.wrapError(disposed(`TextEditor(${id})`));
 		}
-		this._documentsAndEditors.getEditor(id).setDecorationsFast(key, /*TODO: marshaller is too slow*/JSON.parse(ranges));
+		this._documentsAndEditors.getEditor(id).setDecorationsFast(key, ranges);
 		return TPromise.as(null);
 	}
 
-	$tryRevealRange(id: string, range: IRange, revealType: TextEditorRevealType): TPromise<any> {
+	$tryRevealRange(id: string, range: IRange, revealType: TextEditorRevealType): TPromise<void> {
 		if (!this._documentsAndEditors.getEditor(id)) {
 			return TPromise.wrapError(disposed(`TextEditor(${id})`));
 		}
@@ -192,7 +193,7 @@ export class MainThreadEditors implements MainThreadEditorsShape {
 		return undefined;
 	}
 
-	$trySetOptions(id: string, options: ITextEditorConfigurationUpdate): TPromise<any> {
+	$trySetOptions(id: string, options: ITextEditorConfigurationUpdate): TPromise<void> {
 		if (!this._documentsAndEditors.getEditor(id)) {
 			return TPromise.wrapError(disposed(`TextEditor(${id})`));
 		}
@@ -207,36 +208,19 @@ export class MainThreadEditors implements MainThreadEditorsShape {
 		return TPromise.as(this._documentsAndEditors.getEditor(id).applyEdits(modelVersionId, edits, opts));
 	}
 
-	$tryApplyWorkspaceEdit(workspaceResourceEdits: IWorkspaceResourceEdit[]): TPromise<boolean> {
+	$tryApplyWorkspaceEdit(dto: WorkspaceEditDto): TPromise<boolean> {
+
+		const { edits } = reviveWorkspaceEditDto(dto);
 
 		// First check if loaded models were not changed in the meantime
-		for (let i = 0, len = workspaceResourceEdits.length; i < len; i++) {
-			const workspaceResourceEdit = workspaceResourceEdits[i];
-			if (workspaceResourceEdit.modelVersionId) {
-				let model = this._modelService.getModel(workspaceResourceEdit.resource);
-				if (model && model.getVersionId() !== workspaceResourceEdit.modelVersionId) {
+		for (let i = 0, len = edits.length; i < len; i++) {
+			const edit = edits[i];
+			if (!isResourceFileEdit(edit) && edit.modelVersionId) {
+				let model = this._modelService.getModel(edit.resource);
+				if (model && model.getVersionId() !== edit.modelVersionId) {
 					// model changed in the meantime
 					return TPromise.as(false);
 				}
-			}
-		}
-
-		// Convert to shape expected by bulkEdit below
-		let resourceEdits: IResourceEdit[] = [];
-		for (let i = 0, len = workspaceResourceEdits.length; i < len; i++) {
-			const workspaceResourceEdit = workspaceResourceEdits[i];
-			const uri = workspaceResourceEdit.resource;
-			const edits = workspaceResourceEdit.edits;
-
-			for (let j = 0, lenJ = edits.length; j < lenJ; j++) {
-				const edit = edits[j];
-
-				resourceEdits.push({
-					resource: uri,
-					newText: edit.newText,
-					newEol: edit.newEol,
-					range: edit.range
-				});
 			}
 		}
 
@@ -249,8 +233,7 @@ export class MainThreadEditors implements MainThreadEditorsShape {
 			}
 		}
 
-		return bulkEdit(this._textModelResolverService, codeEditor, resourceEdits, this._fileService)
-			.then(() => true);
+		return BulkEdit.perform(edits, this._textModelResolverService, this._fileService, codeEditor).then(() => true);
 	}
 
 	$tryInsertSnippet(id: string, template: string, ranges: IRange[], opts: IUndoStopOptions): TPromise<boolean> {

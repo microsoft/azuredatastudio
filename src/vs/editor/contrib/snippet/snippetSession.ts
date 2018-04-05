@@ -7,7 +7,7 @@
 
 import 'vs/css!./snippetSession';
 import { getLeadingWhitespace } from 'vs/base/common/strings';
-import { IModel, TrackedRangeStickiness, IIdentifiedSingleEditOperation } from 'vs/editor/common/editorCommon';
+import { ITextModel, TrackedRangeStickiness, IIdentifiedSingleEditOperation } from 'vs/editor/common/model';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { TextmateSnippet, Placeholder, Choice, SnippetParser } from './snippetParser';
 import { Selection } from 'vs/editor/common/core/selection';
@@ -15,9 +15,11 @@ import { Range } from 'vs/editor/common/core/range';
 import { IPosition } from 'vs/editor/common/core/position';
 import { groupBy } from 'vs/base/common/arrays';
 import { dispose } from 'vs/base/common/lifecycle';
-import { EditorSnippetVariableResolver } from './snippetVariables';
-import { ModelDecorationOptions } from 'vs/editor/common/model/textModelWithDecorations';
+import { SelectionBasedVariableResolver, CompositeSnippetVariableResolver, ModelBasedVariableResolver, ClipboardBasedVariableResolver, TimeBasedVariableResolver } from './snippetVariables';
+import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { optional } from 'vs/platform/instantiation/common/instantiation';
 
 export class OneSnippet {
 
@@ -226,7 +228,7 @@ export class OneSnippet {
 
 export class SnippetSession {
 
-	static adjustWhitespace(model: IModel, position: IPosition, template: string): string {
+	static adjustWhitespace(model: ITextModel, position: IPosition, template: string): string {
 
 		const line = model.getLineContent(position.lineNumber);
 		const lineLeadingWhitespace = getLeadingWhitespace(line, 0, position.column - 1);
@@ -239,7 +241,7 @@ export class SnippetSession {
 		return templateLines.join(model.getEOL());
 	}
 
-	static adjustSelection(model: IModel, selection: Selection, overwriteBefore: number, overwriteAfter: number): Selection {
+	static adjustSelection(model: ITextModel, selection: Selection, overwriteBefore: number, overwriteAfter: number): Selection {
 		if (overwriteBefore !== 0 || overwriteAfter !== 0) {
 			// overwrite[Before|After] is compute using the position, not the whole
 			// selection. therefore we adjust the selection around that position
@@ -269,6 +271,9 @@ export class SnippetSession {
 		const edits: IIdentifiedSingleEditOperation[] = [];
 		const snippets: OneSnippet[] = [];
 
+		const modelBasedVariableResolver = new ModelBasedVariableResolver(model);
+		const clipboardService = editor.invokeWithinContext(accessor => accessor.get(IClipboardService, optional));
+
 		let delta = 0;
 
 		// know what text the overwrite[Before|After] extensions
@@ -281,11 +286,11 @@ export class SnippetSession {
 		// the original index. that allows you to create correct
 		// offset-based selection logic without changing the
 		// primary selection
-		const indexedSelection = editor.getSelections()
+		const indexedSelections = editor.getSelections()
 			.map((selection, idx) => ({ selection, idx }))
 			.sort((a, b) => Range.compareRangesUsingStarts(a.selection, b.selection));
 
-		for (const { selection, idx } of indexedSelection) {
+		for (const { selection, idx } of indexedSelections) {
 
 			// extend selection with the `overwriteBefore` and `overwriteAfter` and then
 			// compare if this matches the extensions of the primary selection
@@ -310,7 +315,12 @@ export class SnippetSession {
 
 			const snippet = new SnippetParser()
 				.parse(adjustedTemplate, true, enforceFinalTabstop)
-				.resolveVariables(new EditorSnippetVariableResolver(model, selection));
+				.resolveVariables(new CompositeSnippetVariableResolver([
+					modelBasedVariableResolver,
+					new ClipboardBasedVariableResolver(clipboardService, idx, indexedSelections.length),
+					new SelectionBasedVariableResolver(model, selection),
+					new TimeBasedVariableResolver
+				]));
 
 			const offset = model.getOffsetAt(start) + delta;
 			delta += snippet.toString().length - model.getValueLengthInRange(snippetSelection);
@@ -386,11 +396,13 @@ export class SnippetSession {
 	next(): void {
 		const newSelections = this._move(true);
 		this._editor.setSelections(newSelections);
+		this._editor.revealPositionInCenterIfOutsideViewport(newSelections[0].getPosition());
 	}
 
 	prev(): void {
 		const newSelections = this._move(false);
 		this._editor.setSelections(newSelections);
+		this._editor.revealPositionInCenterIfOutsideViewport(newSelections[0].getPosition());
 	}
 
 	private _move(fwd: boolean | undefined): Selection[] {
@@ -432,8 +444,7 @@ export class SnippetSession {
 			return false;
 		}
 
-		let ranges: Range[] = [];
-		let placeholderIndex: number = -1;
+		let allPossibleSelections: Map<number, Range[]>;
 		for (const snippet of this._snippets) {
 
 			const possibleSelections = snippet.computePossibleSelections();
@@ -441,49 +452,58 @@ export class SnippetSession {
 			// for the first snippet find the placeholder (and its ranges)
 			// that contain at least one selection. for all remaining snippets
 			// the same placeholder (and their ranges) must be used.
-			if (placeholderIndex < 0) {
+			if (!allPossibleSelections) {
+				allPossibleSelections = new Map<number, Range[]>();
 				possibleSelections.forEach((ranges, index) => {
-					if (placeholderIndex >= 0) {
-						return;
-					}
+
 					ranges.sort(Range.compareRangesUsingStarts);
 					for (const selection of selections) {
 						if (ranges[0].containsRange(selection)) {
-							placeholderIndex = index;
+							allPossibleSelections.set(index, []);
 							break;
 						}
 					}
 				});
 			}
 
-			if (placeholderIndex < 0) {
+			if (allPossibleSelections.size === 0) {
 				// return false if we couldn't associate a selection to
 				// this (the first) snippet
 				return false;
 			}
 
-			ranges.push(...possibleSelections.get(placeholderIndex));
+			// add selections from 'this' snippet so that we know all
+			// selections for this placeholder
+			allPossibleSelections.forEach((array, index) => {
+				array.push(...possibleSelections.get(index));
+			});
 		}
 
-		if (selections.length !== ranges.length) {
-			// this means we started at a placeholder with N
-			// ranges and new have M (N > M) selections.
-			// So (at least) one placeholder is without selection -> cancel
-			return false;
-		}
-
-		// also sort (placeholder)-ranges. then walk both arrays and
-		// make sure the placeholder-ranges contain the corresponding
+		// sort selections (and later placeholder-ranges). then walk both
+		// arrays and make sure the placeholder-ranges contain the corresponding
 		// selection
 		selections.sort(Range.compareRangesUsingStarts);
-		ranges.sort(Range.compareRangesUsingStarts);
 
-		for (let i = 0; i < ranges.length; i++) {
-			if (!ranges[i].containsRange(selections[i])) {
-				return false;
+		allPossibleSelections.forEach((ranges, index) => {
+
+			if (ranges.length !== selections.length) {
+				allPossibleSelections.delete(index);
+				return;
 			}
-		}
 
-		return true;
+			ranges.sort(Range.compareRangesUsingStarts);
+
+			for (let i = 0; i < ranges.length; i++) {
+				if (!ranges[i].containsRange(selections[i])) {
+					allPossibleSelections.delete(index);
+					return;
+				}
+			}
+		});
+
+		// from all possible selections we have deleted those
+		// that don't match with the current selection. if we don't
+		// have any left, we don't have a selection anymore
+		return allPossibleSelections.size > 0;
 	}
 }

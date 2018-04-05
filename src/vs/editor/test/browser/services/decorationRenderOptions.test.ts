@@ -15,6 +15,5 @@ const themeServiceMock = new TestThemeService();
 
 suite('Decoration Render Options', () => {
 	test('register and resolve decoration type', () => {
-		assert.notEqual(true, false);
 	});
 });

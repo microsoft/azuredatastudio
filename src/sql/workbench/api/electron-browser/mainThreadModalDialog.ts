@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import { WebViewDialog } from 'sql/base/browser/ui/modal/webViewDialog';
@@ -22,7 +22,7 @@ export class MainThreadModalDialog implements MainThreadModalDialogShape {
 		@IWorkbenchEditorService private readonly _editorService: IWorkbenchEditorService,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService
 	) {
-		this._proxy = context.get(SqlExtHostContext.ExtHostModalDialogs);
+		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModalDialogs);
 	}
 
 	dispose(): void {

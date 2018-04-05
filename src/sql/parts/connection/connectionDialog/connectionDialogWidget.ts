@@ -30,12 +30,13 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { localize } from 'vs/nls';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IMessageService, IConfirmation } from 'vs/platform/message/common/message';
+import { IConfirmationService, IChoiceService, IConfirmation, IConfirmationResult, Choice } from 'vs/platform/dialogs/common/dialogs';
 import * as styler from 'vs/platform/theme/common/styler';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as DOM from 'vs/base/browser/dom';
+import { DialogService } from 'vs/workbench/services/dialogs/electron-browser/dialogs';
 
 export interface OnShowUIResponse {
 	selectedProviderType: string;
@@ -89,7 +90,8 @@ export class ConnectionDialogWidget extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
-		@IMessageService private _messageService: IMessageService
+		@IConfirmationService private _confirmationService: IConfirmationService,
+		@IContextViewService private _contextViewService: IContextViewService
 	) {
 		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
@@ -99,7 +101,7 @@ export class ConnectionDialogWidget extends Modal {
 		container.appendChild(connectionContainer.getHTMLElement());
 
 		this._bodyBuilder = new Builder(connectionContainer.getHTMLElement());
-		this._providerTypeSelectBox = new SelectBox(this.providerTypeOptions, this.selectedProviderType);
+		this._providerTypeSelectBox = new SelectBox(this.providerTypeOptions, this.selectedProviderType, this._contextViewService);
 
 		// Recent connection tab
 		let recentConnectionTab = $('.connection-recent-tab');
@@ -264,35 +266,15 @@ export class ConnectionDialogWidget extends Modal {
 			type: 'question'
 		};
 
-		// @SQLTODO
 		return new TPromise<boolean>((resolve, reject) => {
-			let confirmed: boolean = this._messageService.confirm(confirm);
-			if (confirmed) {
-				this._connectionManagementService.clearRecentConnectionsList();
-				this.open(false);
-			}
-			resolve(confirmed);
+			this._confirmationService.confirm(confirm).then((confirmed) => {
+				if (confirmed) {
+					this._connectionManagementService.clearRecentConnectionsList();
+					this.open(false);
+				}
+				resolve(confirmed);
+			});
 		});
-
-		//this._messageService.confirm(confirm).then(confirmation => {
-		// 	if (!confirmation.confirmed) {
-		// 		return TPromise.as(false);
-		// 	} else {
-		// 		this._connectionManagementService.clearRecentConnectionsList();
-		// 		this.open(false);
-		// 		return TPromise.as(true);
-		// 	}
-		// });
-
-		// return this._messageService.confirm(confirm).then(confirmation => {
-		// 	if (!confirmation.confirmed) {
-		// 		return TPromise.as(false);
-		// 	} else {
-		// 		this._connectionManagementService.clearRecentConnectionsList();
-		// 		this.open(false);
-		// 		return TPromise.as(true);
-		// 	}
-		// });
 	}
 
 	private createRecentConnectionList(): void {
@@ -453,6 +435,8 @@ export class ConnectionDialogWidget extends Modal {
 
 	public updateProvider(displayName: string) {
 		this._providerTypeSelectBox.selectWithOptionName(displayName);
+
+		this.onProviderTypeSelected(displayName);
 	}
 
 	public set databaseDropdownExpanded(val: boolean) {

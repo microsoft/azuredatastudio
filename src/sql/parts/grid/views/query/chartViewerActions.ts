@@ -6,8 +6,8 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
-
-import { IMessageService, Severity } from 'vs/platform/message/common/message';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 
 export interface IChartViewActionContext {
 	copyChart(): void;
@@ -23,7 +23,7 @@ export class ChartViewActionBase extends Action {
 		id: string,
 		label: string,
 		enabledClass: string,
-		protected messageService: IMessageService
+		protected notificationService: INotificationService
 	) {
 		super(id, label);
 		this.enabled = true;
@@ -51,7 +51,10 @@ export class ChartViewActionBase extends Action {
 	protected doRun(context: IChartViewActionContext, runAction: Function): TPromise<boolean> {
 		if (!context) {
 			// TODO implement support for finding chart view in active window
-			this.messageService.show(Severity.Error, nls.localize('chartContextRequired', 'Chart View context is required to run this action'));
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: nls.localize('chartContextRequired', 'Chart View context is required to run this action')
+			});
 			return TPromise.as(false);
 		}
 		return new TPromise<boolean>((resolve, reject) => {
@@ -66,9 +69,9 @@ export class CreateInsightAction extends ChartViewActionBase {
 	public static ID = 'chartview.createInsight';
 	public static LABEL = nls.localize('createInsightLabel', "Create Insight");
 
-	constructor(@IMessageService messageService: IMessageService
+	constructor(@INotificationService notificationService: INotificationService
 	) {
-		super(CreateInsightAction.ID, CreateInsightAction.LABEL, 'createInsight', messageService);
+		super(CreateInsightAction.ID, CreateInsightAction.LABEL, 'createInsight', notificationService);
 	}
 
 	public run(context: IChartViewActionContext): TPromise<boolean> {
@@ -80,9 +83,9 @@ export class CopyAction extends ChartViewActionBase {
 	public static ID = 'chartview.copy';
 	public static LABEL = nls.localize('copyChartLabel', "Copy as image");
 
-	constructor(@IMessageService messageService: IMessageService
+	constructor(@INotificationService notificationService: INotificationService
 	) {
-		super(CopyAction.ID, CopyAction.LABEL, 'copyImage', messageService);
+		super(CopyAction.ID, CopyAction.LABEL, 'copyImage', notificationService);
 	}
 
 	public run(context: IChartViewActionContext): TPromise<boolean> {
@@ -94,9 +97,9 @@ export class SaveImageAction extends ChartViewActionBase {
 	public static ID = 'chartview.saveImage';
 	public static LABEL = nls.localize('saveImageLabel', "Save as image");
 
-	constructor(@IMessageService messageService: IMessageService
+	constructor(@INotificationService notificationService: INotificationService
 	) {
-		super(SaveImageAction.ID, SaveImageAction.LABEL, 'saveAsImage', messageService);
+		super(SaveImageAction.ID, SaveImageAction.LABEL, 'saveAsImage', notificationService);
 	}
 
 	public run(context: IChartViewActionContext): TPromise<boolean> {
