@@ -14,7 +14,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { IJobManagementService, IAgentJobCacheService } from '../common/interfaces';
+import { IJobManagementService, IJobCacheService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { JobHistoryController, JobHistoryDataSource,
@@ -46,13 +46,14 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	@Input() public agentJobInfo: AgentJobInfo = undefined;
 	@Input() public jobId: string = undefined;
 	@Input() public agentJobHistories: AgentJobHistoryInfo[] = undefined;
+	@Input() public agentRefresh: boolean;
 	public agentJobHistoryInfo: AgentJobHistoryInfo = undefined;
 
 	private _isVisible: boolean = false;
 	private _stepRows: JobStepsViewRow[] = [];
 	private _showSteps: boolean = false;
 	private _runStatus: string = undefined;
-	private _agentJobCacheService: IAgentJobCacheService;
+	private _jobCacheService: IJobCacheService;
 	private _notificationService: INotificationService;
 
 	constructor(
@@ -68,8 +69,9 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		this._treeRenderer = new JobHistoryRenderer();
 		this._treeFilter =  new JobHistoryFilter();
 		this._jobManagementService = bootstrapService.jobManagementService;
-		this._agentJobCacheService = bootstrapService.agentJobCacheService;
+		this._jobCacheService = bootstrapService.jobCacheService;
 		this._notificationService = bootstrapService.notificationService;
+		// this._jobCacheService.server = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 	}
 
 	ngOnInit() {
@@ -124,11 +126,11 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		if (this._isVisible === false && this._tableContainer.nativeElement.offsetParent !== null) {
 			this._isVisible = true;
 			if (this.agentJobHistories && this.agentJobHistories.length > 0) {
-				if (this._agentJobCacheService.prevJobID === this.jobId || this.agentJobHistories[0].jobId === this.jobId) {
+				if (this._jobCacheService.prevJobID === this.jobId || this.agentJobHistories[0].jobId === this.jobId) {
 					this.agentJobHistoryInfo = this.agentJobHistories[0];
 					this.agentJobHistoryInfo.runDate = this.formatTime(this.agentJobHistories[0].runDate);
 					this._treeController.jobHistories = this.agentJobHistories;
-					this._agentJobCacheService.setJobHistory(this.jobId, this.agentJobHistories);
+					this._jobCacheService.setJobHistory(this.jobId, this.agentJobHistories);
 					let jobHistoryRows = this._treeController.jobHistories.map(job => this.convertToJobHistoryRow(job));
 					this._treeDataSource.data = jobHistoryRows;
 					this._tree.setInput(new JobHistoryModel());
@@ -137,7 +139,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			} else {
 				this.loadHistory();
 			}
-			this._agentJobCacheService.prevJobID = this.jobId;
+			this._jobCacheService.prevJobID = this.jobId;
 		} else if (this._isVisible === true && this._tableContainer.nativeElement.offsetParent === null) {
 			this._isVisible = false;
 		}
@@ -149,7 +151,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		this._jobManagementService.getJobHistory(ownerUri, this.jobId).then((result) => {
 			if (result && result.jobs) {
 				self._treeController.jobHistories = result.jobs;
-				self._agentJobCacheService.setJobHistory(self.jobId, result.jobs);
+				self._jobCacheService.setJobHistory(self.jobId, result.jobs);
 				let jobHistoryRows = self._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
 				self._treeDataSource.data = jobHistoryRows;
 				self._tree.setInput(new JobHistoryModel());

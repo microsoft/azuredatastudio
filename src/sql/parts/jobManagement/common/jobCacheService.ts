@@ -8,14 +8,15 @@
 import { Injectable } from '@angular/core';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { IAgentJobCacheService } from './interfaces';
+import { IJobCacheService } from './interfaces';
 
 @Injectable()
-export class AgentJobCacheService implements IAgentJobCacheService {
+export class JobCacheService implements IJobCacheService {
 	_serviceBrand: any;
 	private _jobs: sqlops.AgentJobInfo[];
 	private _jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = {};
 	private _prevJobID: string;
+	private _servers: string[] = [];
 
 		/* Getters */
 		public get jobs(): sqlops.AgentJobInfo[] {
@@ -34,6 +35,10 @@ export class AgentJobCacheService implements IAgentJobCacheService {
 			return this._jobHistories[jobID];
 		}
 
+		public get servers(): string[] {
+			return this._servers;
+		}
+
 		/* Setters */
 		public set jobs(value: sqlops.AgentJobInfo[]) {
 			this._jobs = value;
@@ -49,6 +54,10 @@ export class AgentJobCacheService implements IAgentJobCacheService {
 
 		public setJobHistory(jobID:string, value: sqlops.AgentJobHistoryInfo[]) {
 			this._jobHistories[jobID] = value;
+		}
+
+		public set servers(value: string[]) {
+			this._servers = value;
 		}
 
 }

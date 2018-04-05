@@ -13,7 +13,7 @@ export const SERVICE_ID = 'jobManagementService';
 export const CACHE_ID = 'jobCacheService';
 
 export const IJobManagementService = createDecorator<IJobManagementService>(SERVICE_ID);
-export const IAgentJobCacheService = createDecorator<IAgentJobCacheService>(CACHE_ID);
+export const IJobCacheService = createDecorator<IJobCacheService>(CACHE_ID);
 
 export interface IJobManagementService {
 	_serviceBrand: any;
@@ -27,7 +27,7 @@ export interface IJobManagementService {
 	jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult>;
 }
 
-export interface IAgentJobCacheService {
+export interface IJobCacheService {
 	_serviceBrand: any;
 
 	jobs: sqlops.AgentJobInfo[];
@@ -35,6 +35,8 @@ export interface IAgentJobCacheService {
 	jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; };
 
 	prevJobID: string;
+
+	servers: string[];
 
 	getJobHistory(jobID: string): sqlops.AgentJobHistoryInfo[];
 

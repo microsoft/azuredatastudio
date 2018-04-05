@@ -31,6 +31,7 @@ export class ControlHostContent implements OnInit {
 
 	private _onMessageDisposable: IDisposable;
 	private _type: string;
+	private _agentRefresh: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
@@ -72,5 +73,14 @@ export class ControlHostContent implements OnInit {
 
 	public get controlType(): string {
 		return this._type;
+	}
+
+	public get agentRefresh(): boolean {
+		return this._agentRefresh;
+	}
+
+	public set agentRefresh(value: boolean) {
+		this._agentRefresh = value;
+		this._changeRef.detectChanges();
 	}
 }

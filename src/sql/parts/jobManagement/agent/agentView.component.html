@@ -12,7 +12,11 @@
 			<jobsview-component></jobsview-component>
 		</div>
 		<div id="historyDiv" class="fullsize" *ngIf="showHistory === true">
-			<jobhistory-component [jobId]="jobId" [agentJobInfo]="agentJobInfo" [agentJobHistories]="agentJobHistories"></jobhistory-component>
+			<jobhistory-component
+				[jobId]="jobId"
+				[agentJobInfo]="agentJobInfo"
+				[agentJobHistories]="agentJobHistories">
+			</jobhistory-component>
 		</div>
 	</tab>
 </panel>

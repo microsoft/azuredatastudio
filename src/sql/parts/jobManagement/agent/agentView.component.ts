@@ -5,7 +5,7 @@
 
 import 'vs/css!../common/media/jobs';
 import * as nls from 'vs/nls';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable, AfterContentChecked, Input, OnChanges } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { RefreshWidgetAction, EditDashboardAction } from 'sql/parts/dashboard/common/actions';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -31,14 +31,11 @@ export class AgentViewComponent {
 
 	// tslint:disable:no-unused-variable
 	private readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
-	private readonly alertsComponentTitle: string = nls.localize('jobview.Alerts', "Alerts");
-	private readonly schedulesComponentTitle: string = nls.localize('jobview.Schedules', "Schedules");
-	private readonly operatorsComponentTitle: string = nls.localize('jobview.Operator', "Operators");
-	private readonly jobHistoryComponentTitle: string = nls.localize('jobview.History', "History");
 	private _showHistory: boolean = false;
 	private _jobId: string = null;
 	private _agentJobInfo: AgentJobInfo = null;
 	private _agentJobHistories: AgentJobHistoryInfo[] = null;
+	@Input() private _agentRefresh: boolean;
 
 	public jobsIconClass: string = 'jobsview-icon';
 
@@ -72,6 +69,10 @@ export class AgentViewComponent {
 		return this._agentJobHistories;
 	}
 
+	public get agentRefresh(): boolean {
+		return this._agentRefresh;
+	}
+
 	/**
 	 * Public Setters
 	 */
@@ -93,6 +94,11 @@ export class AgentViewComponent {
 
 	public set agentJobHistories(value: AgentJobHistoryInfo[]) {
 		this._agentJobHistories = value;
+		this._cd.detectChanges();
+	}
+
+	public set agentRefresh(value: boolean) {
+		this._agentRefresh = value;
 		this._cd.detectChanges();
 	}
 }

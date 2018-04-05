@@ -11,7 +11,7 @@ import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!../common/media/jobs';
 import 'vs/css!../common/media/detailview';
 
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Input } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Input, AfterContentChecked, OnChanges } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -19,7 +19,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { IJobManagementService, IAgentJobCacheService } from '../common/interfaces';
+import { IJobManagementService, IJobCacheService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
@@ -31,7 +31,7 @@ import { attachTableStyler } from 'sql/common/theme/styler';
 import { JobHistoryComponent } from './jobHistory.component';
 import { AgentViewComponent } from '../agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
-import { AgentJobCacheService } from 'sql/parts/jobManagement/common/agentJobCacheService';
+import { JobCacheService } from 'sql/parts/jobManagement/common/JobCacheService';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 
@@ -39,10 +39,11 @@ export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 	selector: JOBSVIEW_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./jobsView.component.html'))
 })
-export class JobsViewComponent {
+
+export class JobsViewComponent implements AfterContentChecked {
 
 	private _jobManagementService: IJobManagementService;
-	private _jobCacheService: IAgentJobCacheService;
+	private _jobCacheService: IJobCacheService;
 
 	private _disposables = new Array<vscode.Disposable>();
 
@@ -68,6 +69,7 @@ export class JobsViewComponent {
 	private _table: Table<any>;
 	public jobs: sqlops.AgentJobInfo[];
 	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
+	private _serverName: string;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -77,13 +79,14 @@ export class JobsViewComponent {
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent
 	) {
 		this._jobManagementService = bootstrapService.jobManagementService;
-		this._jobCacheService = bootstrapService.agentJobCacheService;
+		this._jobCacheService = bootstrapService.jobCacheService;
+		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 	}
 
 	ngAfterContentChecked() {
 		if (this.isVisible === false && this._gridEl.nativeElement.offsetParent !== null) {
 			this.isVisible = true;
-			if (!this.isInitialized) {
+			if (this._jobCacheService.servers.indexOf(this._serverName) !== -1 && !this.isInitialized) {
 				if (this._jobCacheService.jobs !== undefined) {
 					this.jobs = this._jobCacheService.jobs;
 					this.onFirstVisible(true);
@@ -93,8 +96,14 @@ export class JobsViewComponent {
 					this.isInitialized = true;
 				}
 			}
+		} else if (this.isVisible === true && this._agentViewComponent.agentRefresh === true) {
+			this.onFirstVisible(true);
+			this._agentViewComponent.agentRefresh = false;
 		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
 			this.isVisible = false;
+		}
+		if (this._jobCacheService.servers.indexOf(this._serverName) === -1) {
+			this._jobCacheService.servers.push(this._serverName);
 		}
 	}
 
@@ -133,15 +142,11 @@ export class JobsViewComponent {
 			self._agentViewComponent.jobId = job.jobId;
 			self._agentViewComponent.agentJobInfo = job;
 			self.isVisible = false;
-			if (self._jobCacheService.getJobHistory(job.jobId)) {
-				self._agentViewComponent.agentJobHistories = self._jobCacheService.getJobHistory(job.jobId);
-			}
 			setTimeout(() => {
 				self._agentViewComponent.showHistory = true;
 			}, 500);
 		});
-		this._cd.detectChanges();
-		if (cached) {
+		if (cached && !this._agentViewComponent.agentRefresh) {
 			this.onJobsAvailable(this._jobCacheService.jobs);
 		} else {
 			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
