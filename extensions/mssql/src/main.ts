@@ -55,7 +55,8 @@ export async function activate(context: vscode.ExtensionContext) {
 			// we only want to add new features
 			...SqlOpsDataClient.defaultFeatures,
 			TelemetryFeature
-		]
+		],
+		outputChannel: new CustomOutputChannel()
 	};
 
 	const installationStart = Date.now();
@@ -137,4 +138,24 @@ function generateHandleServerProviderEvent() {
 
 // this method is called when your extension is deactivated
 export function deactivate(): void {
+}
+
+class CustomOutputChannel implements vscode.OutputChannel {
+	name: string;
+	append(value: string): void {
+		console.log(value);
+	}
+	appendLine(value: string): void {
+		console.log(value);
+	}
+	clear(): void {
+	}
+	show(preserveFocus?: boolean): void;
+	show(column?: vscode.ViewColumn, preserveFocus?: boolean): void;
+	show(column?: any, preserveFocus?: any) {
+	}
+	hide(): void {
+	}
+	dispose(): void {
+	}
 }
