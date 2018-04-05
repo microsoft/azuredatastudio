@@ -52,7 +52,6 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _stepRows: JobStepsViewRow[] = [];
 	private _showSteps: boolean = false;
 	private _runStatus: string = undefined;
-	private _messageService: IMessageService;
 	private _agentJobCacheService: IAgentJobCacheService;
 	private _notificationService: INotificationService;
 
@@ -69,7 +68,6 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		this._treeRenderer = new JobHistoryRenderer();
 		this._treeFilter =  new JobHistoryFilter();
 		this._jobManagementService = bootstrapService.jobManagementService;
-		this._messageService = bootstrapService.messageService;
 		this._agentJobCacheService = bootstrapService.agentJobCacheService;
 		this._notificationService = bootstrapService.notificationService;
 	}
