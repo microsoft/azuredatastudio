@@ -132,3 +132,7 @@ jobhistory-component {
 .vs-dark .jobsview-icon {
 	content: url('./job_inverse.svg');
 }
+
+agentview-component .tabbedPanel .tabList .tab .tabLabel.icon {
+    padding: 20px 15px !important;
+}

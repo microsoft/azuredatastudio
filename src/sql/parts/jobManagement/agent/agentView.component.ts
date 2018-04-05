@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!../common/media/jobs';
-
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Injectable } from '@angular/core';
+import * as nls from 'vs/nls';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { RefreshWidgetAction, EditDashboardAction } from 'sql/parts/dashboard/common/actions';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -14,11 +14,9 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentJobInfo, AgentJobHistoryInfo } from 'sqlops';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
-import * as nls from 'vs/nls';
 
 export const DASHBOARD_SELECTOR: string = 'agentview-component';
 
@@ -40,7 +38,7 @@ export class AgentViewComponent {
 	private _showHistory: boolean = false;
 	private _jobId: string = null;
 	private _agentJobInfo: AgentJobInfo = null;
-	private _agentJobHistoryInfo: AgentJobHistoryInfo[] = null;
+	private _agentJobHistories: AgentJobHistoryInfo[] = null;
 
 	public jobsIconClass: string = 'jobsview-icon';
 
@@ -52,8 +50,8 @@ export class AgentViewComponent {
 	};
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-	){}
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef){
+	}
 
 	/**
 	 * Public Getters
@@ -70,8 +68,8 @@ export class AgentViewComponent {
 		return this._agentJobInfo;
 	}
 
-	public get agentJobHistoryInfo(): AgentJobHistoryInfo[] {
-		return this._agentJobHistoryInfo;
+	public get agentJobHistories(): AgentJobHistoryInfo[] {
+		return this._agentJobHistories;
 	}
 
 	/**
@@ -93,8 +91,8 @@ export class AgentViewComponent {
 		this._cd.detectChanges();
 	}
 
-	public set agentJobHistoryInfo(value: AgentJobHistoryInfo[]) {
-		this._agentJobHistoryInfo = value;
+	public set agentJobHistories(value: AgentJobHistoryInfo[]) {
+		this._agentJobHistories = value;
 		this._cd.detectChanges();
 	}
 }
