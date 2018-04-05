@@ -61,7 +61,10 @@
         "panel.background": "#212121",
         "panel.border": "#515151",
         "panelTitle.activeForeground": "#ffffff",
-        "panelTitle.inactiveForeground": "#888888"
+		"panelTitle.inactiveForeground": "#888888",
+
+		// Workbench: dropdown
+		"dropdown.listBackground":  "#212121"
 	},
 	"tokenColors": [
 		{
