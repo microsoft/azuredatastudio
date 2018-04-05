@@ -47,7 +47,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	let clientOptions: ClientOptions = {
 		documentSelector: ['sql'],
 		synchronize: {
-			configurationSection: 'mssql'
+			configurationSection: Constants.extensionConfigSectionName
 		},
 		providerId: Constants.providerId,
 		errorHandler: new LanguageClientErrorHandler(),
@@ -99,6 +99,13 @@ function generateServerOptions(executablePath: string): ServerOptions {
 	launchArgs.push('--log-dir');
 	let logFileLocation = path.join(Utils.getDefaultLogLocation(), 'mssql');
 	launchArgs.push(logFileLocation);
+	let config = vscode.workspace.getConfiguration(Constants.extensionConfigSectionName);
+	if (config) {
+		let logDebugInfo = config[Constants.configLogDebugInfo];
+		if (logDebugInfo) {
+			launchArgs.push('--enable-logging');
+		}
+	}
 
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
