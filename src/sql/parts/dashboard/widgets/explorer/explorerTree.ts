@@ -28,6 +28,7 @@ import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { generateUuid } from 'vs/base/common/uuid';
 import { $ } from 'vs/base/browser/dom';
+import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export class ObjectMetadataWrapper implements ObjectMetadata {
@@ -385,14 +386,14 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 			actions.push(instantiationService.createInstance(ScriptAlterAction, ScriptAlterAction.ID, ScriptAlterAction.LABEL));
 		}
 	} else {
-		actions.push(instantiationService.createInstance(OEAction, NewQueryAction.ID, NewQueryAction.LABEL));
+		actions.push(instantiationService.createInstance(CustomExecuteCommandAction, NewQueryAction.ID, NewQueryAction.LABEL));
 
-		let action: IAction = instantiationService.createInstance(OEAction, RestoreAction.ID, RestoreAction.LABEL);
+		let action: IAction = instantiationService.createInstance(CustomExecuteCommandAction, RestoreAction.ID, RestoreAction.LABEL);
 		if (capabilitiesService.isFeatureAvailable(action, info)) {
 			actions.push(action);
 		}
 
-		action = instantiationService.createInstance(OEAction, BackupAction.ID, BackupAction.LABEL);
+		action = instantiationService.createInstance(CustomExecuteCommandAction, BackupAction.ID, BackupAction.LABEL);
 		if (capabilitiesService.isFeatureAvailable(action, info)) {
 			actions.push(action);
 		}
@@ -404,4 +405,10 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 	actions.push(instantiationService.createInstance(ScriptCreateAction, ScriptCreateAction.ID, ScriptCreateAction.LABEL));
 
 	return TPromise.as(actions);
+}
+
+class CustomExecuteCommandAction extends ExecuteCommandAction {
+	run(context: ManageActionContext): TPromise<any> {
+		return super.run(context.profile);
+	}
 }
