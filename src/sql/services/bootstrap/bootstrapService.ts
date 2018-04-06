@@ -40,7 +40,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IJobManagementService, IJobCacheService } from 'sql/parts/jobManagement/common/interfaces';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
@@ -95,7 +95,6 @@ export interface IBootstrapService {
 	commandService: ICommandService;
 	dashboardWebviewService: IDashboardWebviewService;
 	jobManagementService: IJobManagementService;
-	jobCacheService: IJobCacheService;
 	environmentService: IEnvironmentService;
 
 	/*

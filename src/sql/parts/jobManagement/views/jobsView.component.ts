@@ -19,7 +19,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { IJobManagementService, IJobCacheService } from '../common/interfaces';
+import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
@@ -31,7 +31,8 @@ import { attachTableStyler } from 'sql/common/theme/styler';
 import { JobHistoryComponent } from './jobHistory.component';
 import { AgentViewComponent } from '../agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
-import { JobCacheService } from 'sql/parts/jobManagement/common/JobCacheService';
+import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
+
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 
@@ -43,7 +44,7 @@ export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export class JobsViewComponent implements AfterContentChecked {
 
 	private _jobManagementService: IJobManagementService;
-	private _jobCacheService: IJobCacheService;
+	private _jobCacheObject: JobCacheObject;
 
 	private _disposables = new Array<vscode.Disposable>();
 
@@ -79,16 +80,24 @@ export class JobsViewComponent implements AfterContentChecked {
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent
 	) {
 		this._jobManagementService = bootstrapService.jobManagementService;
-		this._jobCacheService = bootstrapService.jobCacheService;
+		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
+		let jobCache = jobCacheObjectMap[this._serverName];
+		if (jobCache) {
+			this._jobCacheObject = jobCache;
+		} else {
+			this._jobCacheObject = new JobCacheObject();
+			this._jobCacheObject.serverName = this._serverName;
+			this._jobManagementService.addToCache(this._serverName, this._jobCacheObject);
+		}
 	}
 
 	ngAfterContentChecked() {
 		if (this.isVisible === false && this._gridEl.nativeElement.offsetParent !== null) {
 			this.isVisible = true;
-			if (this._jobCacheService.servers.indexOf(this._serverName) !== -1 && !this.isInitialized) {
-				if (this._jobCacheService.jobs !== undefined) {
-					this.jobs = this._jobCacheService.jobs;
+			if (!this.isInitialized) {
+				if (this._jobCacheObject.serverName === this._serverName && this._jobCacheObject.jobs.length > 0) {
+					this.jobs = this._jobCacheObject.jobs;
 					this.onFirstVisible(true);
 					this.isInitialized = true;
 				} else {
@@ -101,9 +110,6 @@ export class JobsViewComponent implements AfterContentChecked {
 			this._agentViewComponent.agentRefresh = false;
 		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
 			this.isVisible = false;
-		}
-		if (this._jobCacheService.servers.indexOf(this._serverName) === -1) {
-			this._jobCacheService.servers.push(this._serverName);
 		}
 	}
 
@@ -147,14 +153,14 @@ export class JobsViewComponent implements AfterContentChecked {
 			}, 500);
 		});
 		if (cached && !this._agentViewComponent.agentRefresh) {
-			this.onJobsAvailable(this._jobCacheService.jobs);
+			this.onJobsAvailable(this._jobCacheObject.jobs);
 		} else {
 			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 			this._jobManagementService.getJobs(ownerUri).then((result) => {
 				if (result && result.jobs) {
-					this.jobs = result.jobs;
-					this._jobCacheService.jobs = this.jobs;
-					this.onJobsAvailable(result.jobs);
+					self.jobs = result.jobs;
+					self._jobCacheObject.jobs = self.jobs;
+					self.onJobsAvailable(result.jobs);
 				}
 			});
 		}
@@ -214,7 +220,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
 					if (result.jobs) {
 						this.jobHistories[job.jobId] = result.jobs;
-						this._jobCacheService.setJobHistory(job.jobId, result.jobs);
+						this._jobCacheObject.setJobHistory(job.jobId, result.jobs);
 					}
 				});
 			});
