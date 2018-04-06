@@ -6,7 +6,7 @@
 'use strict';
 
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
+import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import * as sqlops from 'sqlops';
 
 import * as UUID from 'vs/base/common/uuid';

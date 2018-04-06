@@ -111,7 +111,7 @@ import { IConnectionManagementService, IConnectionDialogService, IErrorMessageSe
 import { ConnectionManagementService } from 'sql/parts/connection/common/connectionManagementService';
 import { ConnectionDialogService } from 'sql/parts/connection/connectionDialog/connectionDialogService';
 import { ErrorMessageService } from 'sql/workbench/errorMessageDialog/errorMessageService';
-import { ServerGroupController } from 'sql/parts/registeredServer/serverGroupDialog/serverGroupController';
+import { ServerGroupController } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupController';
 
 import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { IAngularEventingService, AngularEventingService } from 'sql/services/angularEventing/angularEventingService';
@@ -120,7 +120,7 @@ import { ICapabilitiesService, CapabilitiesService } from 'sql/services/capabili
 import { ICredentialsService, CredentialsService } from 'sql/services/credentials/credentialsService';
 import { ISerializationService, SerializationService } from 'sql/services/serialization/serializationService';
 import { IMetadataService, MetadataService } from 'sql/services/metadata/metadataService';
-import { IObjectExplorerService, ObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService, ObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { ITaskService, TaskService } from 'sql/parts/taskHistory/common/taskService';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { QueryModelService } from 'sql/parts/query/execution/queryModelService';

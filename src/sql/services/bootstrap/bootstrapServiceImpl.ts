@@ -10,7 +10,7 @@ import { BootstrapParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IConnectionManagementService, IConnectionDialogService, IErrorMessageService }
 	from 'sql/parts/connection/common/connectionManagement';
 import { IMetadataService } from 'sql/services/metadata/metadataService';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';

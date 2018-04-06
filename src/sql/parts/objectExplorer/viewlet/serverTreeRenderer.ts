@@ -13,11 +13,11 @@ import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionPr
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
-import { IConnectionProfileGroupTemplateData, IConnectionTemplateData, IObjectExplorerTemplateData } from 'sql/parts/registeredServer/viewlet/templateData';
+import { IConnectionProfileGroupTemplateData, IConnectionTemplateData, IObjectExplorerTemplateData } from 'sql/parts/objectExplorer/viewlet/templateData';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
+import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 
 /**
  * Renders the tree items.

@@ -11,7 +11,7 @@ import { IConnectionManagementService } from 'sql/parts/connection/common/connec
 import { ITree, IDragAndDrop, IDragAndDropData, IDragOverReaction, DRAG_OVER_ACCEPT_BUBBLE_DOWN, DRAG_OVER_REJECT } from 'vs/base/parts/tree/browser/tree';
 import * as Constants from 'sql/parts/connection/common/constants';
 import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
-import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
+import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 
 /**
  * Implements drag and drop for the server tree

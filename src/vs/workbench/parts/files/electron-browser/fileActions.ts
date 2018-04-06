@@ -57,7 +57,7 @@ import { INotificationService, Severity } from 'vs/platform/notification/common/
 
 // {{SQL CARBON EDIT}}
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 
@@ -494,7 +494,7 @@ export class GlobalNewUntitledFileAction extends Action {
 	) {
 		super(id, label);
 	}
-	
+
 	public run(): TPromise<any> {
 		// {{SQL CARBON EDIT}}
 		TaskUtilities.newQuery(undefined, this.connectionManagementService, this.queryEditorService, this._objectExplorerService, this.editorService);

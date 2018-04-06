@@ -14,18 +14,18 @@ import {
 	DisconnectConnectionAction, AddServerAction,
 	DeleteConnectionAction, RefreshAction, EditServerGroupAction
 }
-	from 'sql/parts/registeredServer/viewlet/connectionTreeAction';
+	from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import {
 	DisconnectAction, ObjectExplorerActionUtilities,
 	ManageConnectionAction,
 	OEAction
-} from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
-import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
-import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
+} from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
+import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
+import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { NewProfilerAction } from 'sql/parts/profiler/contrib/profilerActions';
-import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
+import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { NewQueryAction } from 'sql/workbench/common/actions';
