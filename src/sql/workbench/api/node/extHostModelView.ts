@@ -14,9 +14,11 @@ import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
 class ComponentWrapperBase implements sqlops.Component {
+	protected properties: { [key: string]: any };
+
 	constructor(protected readonly _proxy: MainThreadModelViewShape,
 		protected readonly _handle: number, protected _id: string) {
-
+		this.properties = {};
 	}
 
 	public get id(): string {
@@ -33,6 +35,24 @@ class ComponentWrapperBase implements sqlops.Component {
 	addComponent(component: sqlops.Component, config?: any): sqlops.Container {
 		this._proxy.$addToContainer(this._handle, this.id, component.id, config);
 		return this;
+	}
+
+	withProperties(properties: { [key: string]: any }): sqlops.Component {
+		this.properties = properties;
+		this.notifyPropertyChanged();
+		return this;
+	}
+
+	protected notifyPropertyChanged() {
+		this._proxy.$setProperties(this._handle, this._id, this.properties);
+	}
+
+	protected setProperty(key: string, value: any): void {
+		if (!this.properties[key] || this.properties[key] !== value) {
+			// Only notify the frontend if a value has been updated
+			this.properties[key] = value;
+			this.notifyPropertyChanged();
+		}
 	}
 
 }
@@ -52,7 +72,41 @@ class FlexContainerWrapper extends ComponentWrapperBase implements sqlops.FlexCo
 		this._proxy.$setLayout(this._handle, this._id, layout);
 		return this;
 	}
+}
 
+class CardContainerWrapper extends ComponentWrapperBase implements sqlops.CardComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, id);
+		this.properties = {};
+	}
+
+	public get label(): string {
+		return this.properties['label'];
+	}
+	public set label(l: string) {
+		this.setProperty('label', l);
+	}
+	public get value(): string {
+		return this.properties['value'];
+	}
+	public set value(v: string) {
+		this.setProperty('value', v);
+	}
+	public get actions(): sqlops.ActionDescriptor[] {
+		return this.properties['actions'];
+	}
+	public set actions(a: sqlops.ActionDescriptor[]) {
+		this.setProperty('actions', a);
+	}
+
+	withConfig(label: string, value: string, actions?: sqlops.ActionDescriptor[]) {
+		this.withProperties({
+			label: label,
+			value: value,
+			actions: actions
+		});
+	}
 }
 
 class ModelBuilderImpl implements sqlops.ViewModelBuilder {

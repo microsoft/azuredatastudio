@@ -94,14 +94,21 @@ declare module 'sqlops' {
 	 * and a callback to execute the action
 	 */
 	export interface ActionDescriptor {
+		/**
+		 * User-visible label to display
+		 */
 		label: string;
-		callback: (profile: IConnectionProfile, ...args: any[]) => any;
+		/**
+		 * ID of the task to be called when this is clicked on.
+		 * These should be registered using the {tasks.registerTask} API.
+		 */
+		taskId: string;
 	}
 
 	export interface CardComponent {
 		label: string;
 		value: string;
-		actions: tasks.ITaskHandler[];
+		actions: ActionDescriptor[];
 		withConfig(label: string, value: string, actions?: ActionDescriptor[]);
 	}
 

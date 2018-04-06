@@ -42,17 +42,21 @@ export default class MainController implements vscode.Disposable {
 				}).withComponents([
 					view.modelBuilder.createFlexContainer().withLayout({ flexFlow: 'column'}).withComponents([
 						view.modelBuilder.createCard()
-						.withConfig('label1', 'value1', [{ label: 'action', callback: () => vscode.window.showInformationMessage('Clicked')}])
+						.withConfig('label1', 'value1', [{ label: 'action', taskId: 'sqlservices.clickTask'}])
 					]),
 
 					view.modelBuilder.createFlexContainer().withLayout({ flexFlow: 'column'}).withComponents([
 						view.modelBuilder.createCard()
-						.withConfig('label2', 'value2', [{ label: 'action2', callback: () => vscode.window.showInformationMessage('Clicked')}])
+						.withConfig('label2', 'value2', [{ label: 'action2', taskId: 'sqlservices.clickTask'}])
 					])
 				], {
 					flex: '0 1 50%'
 				});
 			view.model = flexModel;
+		});
+
+		sqlops.tasks.registerTask('sqlservices.clickTask', (profile) => {
+			vscode.window.showInformationMessage(`Clicked from profile ${profile.serverName}.${profile.databaseName}`);
 		});
 
 		return Promise.resolve(true);
