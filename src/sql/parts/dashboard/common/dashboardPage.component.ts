@@ -27,7 +27,6 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
-import { Severity } from 'vs/platform/message/common/message';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -39,6 +38,7 @@ import * as objects from 'vs/base/common/objects';
 import Event, { Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
+import Severity from 'vs/base/common/severity';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
@@ -97,7 +97,10 @@ export abstract class DashboardPage extends AngularDisposable {
 	protected init() {
 		this.dashboardService.dashboardContextKey.set(this.context);
 		if (!this.dashboardService.connectionManagementService.connectionInfo) {
-			this.dashboardService.messageService.show(Severity.Warning, nls.localize('missingConnectionInfo', 'No connection information could be found for this dashboard'));
+			this.dashboardService.notificationService.notify({
+				severity: Severity.Error,
+				message: nls.localize('missingConnectionInfo', 'No connection information could be found for this dashboard')
+			});
 		} else {
 			let tempWidgets = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'));
 			this._widgetConfigLocation = 'default';
@@ -208,7 +211,7 @@ export abstract class DashboardPage extends AngularDisposable {
 						configs = cb.apply(this, [configs, this.dashboardService, this.context]);
 					});
 					this._gridModifiers.forEach(cb => {
-						configs = cb.apply(this, [configs, this._originalConfig]);
+						configs = cb.apply(this, [configs]);
 					});
 					if (key === WIDGETS_CONTAINER) {
 						return { id: v.id, title: v.title, container: { 'widgets-container': configs }, alwaysShow: v.alwaysShow };

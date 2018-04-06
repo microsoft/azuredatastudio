@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
 import { ExtHostConnectionManagementShape, SqlMainContext, MainThreadConnectionManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import * as sqlops from 'sqlops';
 
 export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape  {
@@ -13,10 +13,10 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 	private _proxy: MainThreadConnectionManagementShape;
 
 	constructor(
-		threadService: IThreadService
+		mainContext: IMainContext
 	) {
 		super();
-		this._proxy = threadService.get(SqlMainContext.MainThreadConnectionManagement);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadConnectionManagement);
 	}
 
 	public $getActiveConnections(): Thenable<sqlops.connection.Connection[]> {

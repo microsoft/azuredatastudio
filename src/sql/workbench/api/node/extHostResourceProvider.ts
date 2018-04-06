@@ -7,7 +7,7 @@
 
 import * as sqlops from 'sqlops';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
+import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import {
 	ExtHostResourceProviderShape,
@@ -20,9 +20,9 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 	private _proxy: MainThreadResourceProviderShape;
 	private _providers: { [handle: number]: ResourceProviderWithMetadata } = {};
 
-	constructor(threadService: IThreadService) {
+	constructor(mainContext: IMainContext) {
 		super();
-		this._proxy = threadService.get(SqlMainContext.MainThreadResourceProvider);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadResourceProvider);
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////

@@ -48,6 +48,7 @@ function main() {
 		console.error(e.stack || e);
 	});
 
+  // {{SQL CARBON EDIT}}
 	var loaderConfig = {
 		nodeRequire: require,
 		nodeMain: __filename,
@@ -60,6 +61,7 @@ function main() {
 			'bootstrap': `../${ out }/bootstrap`
 		},
 		catchError: true,
+    // {{SQL CARBON EDIT}}
 		nodeModules: [
 			'@angular/common',
 			'@angular/core',
@@ -83,6 +85,7 @@ function main() {
 		loaderConfig.nodeInstrumenter = function (contents, source) {
 			seenSources[source] = true;
 
+      // {{SQL CARBON EDIT}}
 			if (minimatch(source, SQL_TEST_GLOB)) {
 				return contents;
 			}
@@ -297,12 +300,14 @@ function main() {
 				}
 			});
 		});
+    // {{SQL CARBON EDIT}}
 		*/
 
 		// replace the default unexpected error handler to be useful during tests
 		loader(['vs/base/common/errors'], function(errors) {
 			errors.setUnexpectedErrorHandler(function (err) {
 				let stack = (err && err.stack) || (new Error().stack);
+        // {{SQL CARBON EDIT}}
 				//unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
 			});
 

@@ -7,7 +7,7 @@
 import * as sqlops from 'sqlops';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import { ICapabilitiesService, clientCapabilities, ProviderFeatures } from 'sql/services/capabilities/capabilitiesService';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import Event, { Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
@@ -33,7 +33,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.serverName,
-				valueType: 0
+				valueType: ServiceOptionType.string
 			},
 			{
 				name: 'databaseName',
@@ -45,7 +45,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.databaseName,
-				valueType: 0
+				valueType: ServiceOptionType.string
 			},
 			{
 				name: 'userName',
@@ -57,7 +57,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.userName,
-				valueType: 0
+				valueType: ServiceOptionType.string
 			},
 			{
 				name: 'authenticationType',
@@ -69,7 +69,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.authType,
-				valueType: 0
+				valueType: ServiceOptionType.string
 			},
 			{
 				name: 'password',
@@ -81,7 +81,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.password,
-				valueType: 0
+				valueType: ServiceOptionType.string
 			}
 		];
 		let msSQLCapabilities = {

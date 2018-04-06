@@ -519,7 +519,7 @@ export class RestoreDialog extends Modal {
 			});
 
 			inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
-				selectBox = new SelectBox(options, selectedOption, inputCellContainer.getHTMLElement(), this._contextViewService);
+				selectBox = new SelectBox(options, selectedOption, this._contextViewService, inputCellContainer.getHTMLElement());
 				selectBox.render(inputCellContainer.getHTMLElement());
 			});
 		});

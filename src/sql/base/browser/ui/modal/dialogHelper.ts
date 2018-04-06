@@ -44,7 +44,7 @@ export function appendRowLink(container: Builder, label: string, labelClass: str
 		});
 	});
 
-	return new Builder(rowButton.getElement());
+	return new Builder(rowButton.element);
 }
 
 export function appendInputSelectBox(container: Builder, selectBox: SelectBox): SelectBox {

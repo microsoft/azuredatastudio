@@ -29,7 +29,7 @@ import { escape } from 'vs/base/common/strings';
 import { QUICKOPEN_ACTION_ID } from 'vs/workbench/browser/parts/quickopen/quickopen';
 
 // {{SQL CARBON EDIT}}
-import { OpenConnectionsViewletAction } from 'sql/parts/registeredServer/common/registeredServer.contribution';
+import { OpenConnectionsViewletAction } from 'sql/parts/objectExplorer/common/registeredServer.contribution';
 
 
 interface WatermarkEntry {

@@ -17,7 +17,7 @@ import { IAdminService } from 'sql/parts/admin/common/adminService';
 import * as Constants from 'sql/common/constants';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import { Task } from 'sql/platform/tasks/common/tasks';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 
 import { ObjectMetadata } from 'sqlops';
 
@@ -48,7 +48,11 @@ export class NewQueryAction extends Task {
 	public static ICON = 'new-query';
 
 	constructor() {
-		super({ id: NewQueryAction.ID, title: NewQueryAction.LABEL, iconClass: NewQueryAction.ICON });
+		super({
+			id: NewQueryAction.ID,
+			title: NewQueryAction.LABEL,
+			iconPath: { dark: NewQueryAction.ICON, light: NewQueryAction.ICON }
+		});
 	}
 
 	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
@@ -285,7 +289,11 @@ export class BackupAction extends Task {
 	public static readonly ICON = Constants.BackupFeatureName;
 
 	constructor() {
-		super({ id: BackupAction.ID, title: BackupAction.LABEL, iconClass: BackupAction.ICON });
+		super({
+			id: BackupAction.ID,
+			title: BackupAction.LABEL,
+			iconPath: { dark: BackupAction.ICON, light: BackupAction.ICON }
+		});
 	}
 
 	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
@@ -311,7 +319,11 @@ export class RestoreAction extends Task {
 	public static readonly ICON = Constants.RestoreFeatureName;
 
 	constructor() {
-		super({ id: RestoreAction.ID, title: RestoreAction.LABEL, iconClass: RestoreAction.ICON });
+		super({
+			id: RestoreAction.ID,
+			title: RestoreAction.LABEL,
+			iconPath: { dark: RestoreAction.ICON, light: RestoreAction.ICON }
+		});
 	}
 
 	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
@@ -406,7 +418,11 @@ export class ConfigureDashboardAction extends Task {
 	private static readonly configHelpUri = 'https://aka.ms/sqldashboardconfig';
 
 	constructor() {
-		super({ id: ConfigureDashboardAction.ID, title: ConfigureDashboardAction.LABEL, iconClass: ConfigureDashboardAction.ICON });
+		super({
+			id: ConfigureDashboardAction.ID,
+			title: ConfigureDashboardAction.LABEL,
+			iconPath: { dark: ConfigureDashboardAction.ICON, light: ConfigureDashboardAction.ICON }
+		});
 	}
 
 	runTask(accessor: ServicesAccessor): TPromise<void> {

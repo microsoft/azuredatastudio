@@ -330,13 +330,13 @@ declare module 'sqlops' {
 	}
 
 	export enum ServiceOptionType {
-		string = 0,
-		multistring = 1,
-		password = 2,
-		number = 3,
-		category = 4,
-		boolean = 5,
-		object = 6
+		string = 'string',
+		multistring = 'multistring',
+		password = 'password',
+		number = 'number',
+		category = 'category',
+		boolean = 'boolean',
+		object = 'object'
 	}
 
 	export enum ConnectionOptionSpecialType {

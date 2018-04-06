@@ -10,7 +10,7 @@ import { IProfilerController } from 'sql/parts/profiler/editor/controller/interf
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { BaseActionContext } from 'sql/workbench/common/actions';
 import { Task } from 'sql/platform/tasks/common/tasks';
-import { ObjectExplorerActionsContext } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
+import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/parts/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -235,7 +235,11 @@ export class NewProfilerAction extends Task {
 	private _connectionProfile: ConnectionProfile;
 
 	constructor() {
-		super({ id: NewProfilerAction.ID, title: NewProfilerAction.LABEL, iconClass: NewProfilerAction.ICON });
+		super({
+			id: NewProfilerAction.ID,
+			title: NewProfilerAction.LABEL,
+			iconPath: { dark: NewProfilerAction.ICON, light: NewProfilerAction.ICON }
+		});
 	}
 
 	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {

@@ -15,7 +15,7 @@ import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesServ
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import * as sqlops from 'sqlops';
 import { IMetadataService } from 'sql/services/metadata/metadataService';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
@@ -27,7 +27,6 @@ import { ISerializationService } from 'sql/services/serialization/serializationS
 import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import { IMessageService } from 'vs/platform/message/common/message';
 import severity from 'vs/base/common/severity';
 
 /**
@@ -57,11 +56,10 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@ITaskService private _taskService: ITaskService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
-		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
-		@IMessageService private _messageService: IMessageService
+		@IFileBrowserService private _fileBrowserService: IFileBrowserService
 	) {
 		if (extHostContext) {
-			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostDataProtocol);
+			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostDataProtocol);
 		}
 		if (this._connectionManagementService) {
 			this._connectionManagementService.onLanguageFlavorChanged(e => this._proxy.$languageFlavorChanged(e), this, this._toDispose);

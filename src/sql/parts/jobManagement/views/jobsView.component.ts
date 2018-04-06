@@ -11,16 +11,15 @@ import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!../common/media/jobs';
 import 'vs/css!../common/media/detailview';
 
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Input } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
-import { RefreshWidgetAction, EditDashboardAction } from 'sql/parts/dashboard/common/actions';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as themeColors from 'vs/workbench/common/theme';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { IJobManagementService } from '../common/interfaces';
+import { IJobManagementService, IAgentJobCacheService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
@@ -32,6 +31,7 @@ import { attachTableStyler } from 'sql/common/theme/styler';
 import { JobHistoryComponent } from './jobHistory.component';
 import { AgentViewComponent } from '../agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
+import { AgentJobCacheService } from 'sql/parts/jobManagement/common/agentJobCacheService';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 
@@ -39,9 +39,10 @@ export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 	selector: JOBSVIEW_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./jobsView.component.html'))
 })
-export class JobsViewComponent implements OnInit, OnDestroy {
+export class JobsViewComponent {
 
 	private _jobManagementService: IJobManagementService;
+	private _jobCacheService: IAgentJobCacheService;
 
 	private _disposables = new Array<vscode.Disposable>();
 
@@ -64,11 +65,8 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 	private isVisible: boolean = false;
 	private isInitialized: boolean = false;
-
 	private _table: Table<any>;
-
 	public jobs: sqlops.AgentJobInfo[];
-
 	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
 
 	constructor(
@@ -79,21 +77,28 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent
 	) {
 		this._jobManagementService = bootstrapService.jobManagementService;
+		this._jobCacheService = bootstrapService.agentJobCacheService;
 	}
 
 	ngAfterContentChecked() {
 		if (this.isVisible === false && this._gridEl.nativeElement.offsetParent !== null) {
 			this.isVisible = true;
 			if (!this.isInitialized) {
-				this.onFirstVisible();
-				this.isInitialized = true;
+				if (this._jobCacheService.jobs !== undefined) {
+					this.jobs = this._jobCacheService.jobs;
+					this.onFirstVisible(true);
+					this.isInitialized = true;
+				} else {
+					this.onFirstVisible(false);
+					this.isInitialized = true;
+				}
 			}
 		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
 			this.isVisible = false;
 		}
 	}
 
-	onFirstVisible() {
+	onFirstVisible(cached?: boolean) {
 		let self = this;
 		let columns = this.columns.map((column) => {
 			column.rerenderOnResize = true;
@@ -128,17 +133,26 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 			self._agentViewComponent.jobId = job.jobId;
 			self._agentViewComponent.agentJobInfo = job;
 			self.isVisible = false;
-			self._agentViewComponent.showHistory = true;
+			if (self._jobCacheService.getJobHistory(job.jobId)) {
+				self._agentViewComponent.agentJobHistories = self._jobCacheService.getJobHistory(job.jobId);
+			}
+			setTimeout(() => {
+				self._agentViewComponent.showHistory = true;
+			}, 500);
 		});
 		this._cd.detectChanges();
-
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getJobs(ownerUri).then((result) => {
-			if (result && result.jobs) {
-				this.jobs = result.jobs;
-				this.onJobsAvailable(result.jobs);
-			}
-		});
+		if (cached) {
+			this.onJobsAvailable(this._jobCacheService.jobs);
+		} else {
+			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+			this._jobManagementService.getJobs(ownerUri).then((result) => {
+				if (result && result.jobs) {
+					this.jobs = result.jobs;
+					this._jobCacheService.jobs = this.jobs;
+					this.onJobsAvailable(result.jobs);
+				}
+			});
+		}
 	}
 
 	onJobsAvailable(jobs: sqlops.AgentJobInfo[]) {
@@ -177,12 +191,6 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 		this.loadJobHistories();
 	}
 
-	ngOnInit() {
-	}
-
-	ngOnDestroy() {
-	}
-
 	loadingTemplate() {
 		return '<div class="preload">Loading...</div>';
 	}
@@ -201,6 +209,7 @@ export class JobsViewComponent implements OnInit, OnDestroy {
 				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
 					if (result.jobs) {
 						this.jobHistories[job.jobId] = result.jobs;
+						this._jobCacheService.setJobHistory(job.jobId, result.jobs);
 					}
 				});
 			});

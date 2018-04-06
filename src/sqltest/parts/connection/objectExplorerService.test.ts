@@ -8,16 +8,16 @@ import { ObjectExplorerProviderTestService } from 'sqltest/stubs/objectExplorerP
 import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagementService.test';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { ObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
-import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
-import { TreeNode, TreeItemCollapsibleState, ObjectExplorerCallbacks } from 'sql/parts/registeredServer/common/treeNode';
+import { ObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
+import { TreeNode, TreeItemCollapsibleState, ObjectExplorerCallbacks } from 'sql/parts/objectExplorer/common/treeNode';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as sqlops from 'sqlops';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeView';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
+import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import Event, { Emitter } from 'vs/base/common/event';
 import { CapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
@@ -141,7 +141,7 @@ suite('SQL Object Explorer Service tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.serverName,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'databaseName',
@@ -153,7 +153,7 @@ suite('SQL Object Explorer Service tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.databaseName,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'userName',
@@ -165,7 +165,7 @@ suite('SQL Object Explorer Service tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.userName,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'authenticationType',
@@ -177,7 +177,7 @@ suite('SQL Object Explorer Service tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.authType,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'password',
@@ -189,7 +189,7 @@ suite('SQL Object Explorer Service tests', () => {
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.password,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				},
 				{
 					name: 'encrypt',
@@ -201,7 +201,7 @@ suite('SQL Object Explorer Service tests', () => {
 					isIdentity: false,
 					isRequired: false,
 					specialValueType: undefined,
-					valueType: 0
+					valueType: ServiceOptionType.string
 				}
 			]
 		};

@@ -15,6 +15,7 @@ import {
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import * as Constants from 'sql/parts/connection/common/constants';
+import { OEAction } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 
 import { ObjectMetadata } from 'sqlops';
 
@@ -28,6 +29,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { generateUuid } from 'vs/base/common/uuid';
 import { $ } from 'vs/base/browser/dom';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
+import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export class ObjectMetadataWrapper implements ObjectMetadata {
 	public metadataType: MetadataType;
@@ -163,6 +165,19 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 		this._connectionService.changeDatabase(element.databaseName).then(result => {
 			this._router.navigate(['database-dashboard']);
 		});
+	}
+
+	protected onEnter(tree: tree.ITree, event: IKeyboardEvent): boolean {
+		let result = super.onEnter(tree, event);
+		if (result) {
+			const focus = tree.getFocus();
+			if (focus && !(focus instanceof ObjectMetadataWrapper)) {
+				this._connectionService.changeDatabase(focus.databaseName).then(result => {
+					this._router.navigate(['database-dashboard']);
+				});
+			}
+		}
+		return result;
 	}
 }
 

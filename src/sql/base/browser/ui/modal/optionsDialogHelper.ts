@@ -48,7 +48,7 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 		optionWidget.value = optionValue;
 		inputElement = this.findElement(rowContainer, 'input');
 	} else if (option.valueType === ServiceOptionType.category || option.valueType === ServiceOptionType.boolean) {
-		optionWidget = new SelectBox(possibleInputs, optionValue.toString());
+		optionWidget = new SelectBox(possibleInputs, optionValue.toString(), contextViewService);
 		DialogHelper.appendInputSelectBox(rowContainer, optionWidget);
 		inputElement = this.findElement(rowContainer, 'select-box');
 	} else if (option.valueType === ServiceOptionType.string || option.valueType === ServiceOptionType.password) {

@@ -10,7 +10,7 @@ import { BootstrapParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IConnectionManagementService, IConnectionDialogService, IErrorMessageService }
 	from 'sql/parts/connection/common/connectionManagement';
 import { IMetadataService } from 'sql/services/metadata/metadataService';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
@@ -37,7 +37,6 @@ import { IEditorInput } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from './bootstrapService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IMessageService } from 'vs/platform/message/common/message';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
@@ -45,7 +44,9 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { IJobManagementService, IAgentJobCacheService } from 'sql/parts/jobManagement/common/interfaces';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class BootstrapService implements IBootstrapService {
 
@@ -88,7 +89,7 @@ export class BootstrapService implements IBootstrapService {
 		@IConfigurationService public configurationService: IConfigurationService,
 		@IInsightsDialogService public insightsDialogService: IInsightsDialogService,
 		@IContextViewService public contextViewService: IContextViewService,
-		@IMessageService public messageService: IMessageService,
+		@INotificationService public notificationService: INotificationService,
 		@IWorkspaceContextService public workspaceContextService: IWorkspaceContextService,
 		@IAccountManagementService public accountManagementService: IAccountManagementService,
 		@IWindowsService public windowsService: IWindowsService,
@@ -102,7 +103,9 @@ export class BootstrapService implements IBootstrapService {
 		@ICapabilitiesService public capabilitiesService: ICapabilitiesService,
 		@ICommandService public commandService: ICommandService,
 		@IDashboardWebviewService public dashboardWebviewService: IDashboardWebviewService,
-		@IJobManagementService public jobManagementService: IJobManagementService
+		@IJobManagementService public jobManagementService: IJobManagementService,
+		@IAgentJobCacheService public agentJobCacheService: IAgentJobCacheService,
+		@IEnvironmentService public environmentService: IEnvironmentService
 	) {
 		this.configurationEditorService = this.instantiationService.createInstance(ConfigurationEditingService);
 		this._bootstrapParameterMap = new Map<string, BootstrapParams>();

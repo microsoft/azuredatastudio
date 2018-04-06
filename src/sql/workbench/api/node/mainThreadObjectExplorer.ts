@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { IObjectExplorerService, NodeInfoWithConnection } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService, NodeInfoWithConnection } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -29,7 +29,7 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 		@IWorkbenchEditorService private _workbenchEditorService: IWorkbenchEditorService
 	) {
 		if (extHostContext) {
-			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostObjectExplorer);
+			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostObjectExplorer);
 		}
 		this._toDispose = [];
 	}

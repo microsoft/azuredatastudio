@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as os from 'os';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as uuid from 'vs/base/common/uuid';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -19,9 +18,6 @@ export function resolveWorkbenchCommonProperties(storageService: IStorageService
 		result['common.version.shell'] = process.versions && (<any>process).versions['electron'];
 		// __GDPR__COMMON__ "common.version.renderer" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 		result['common.version.renderer'] = process.versions && (<any>process).versions['chrome'];
-		// __GDPR__COMMON__ "common.osVersion" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-		result['common.osVersion'] = os.release();
-
 		// {{SQL CARBON EDIT}}
 		result['common.application.name'] = product.nameLong;
 		getUserId(storageService).then(value => result['common.userId'] = value);

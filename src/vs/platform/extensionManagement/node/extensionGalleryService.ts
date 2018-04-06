@@ -240,6 +240,13 @@ function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IG
 			return { uri, fallbackUri: uri };
 		}
 
+		if (type === AssetType.Repository) {
+			return {
+				uri: null,
+				fallbackUri: null
+			};
+		}
+
 		return null;
 	}
 
@@ -680,7 +687,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 						"galleryService:requestError" : {
 							"url" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 							"cdn": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-							"message": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+							"message": { "classification": "CallstackOrException", "purpose": "FeatureInsight" }
 						}
 					*/
 					this.telemetryService.publicLog('galleryService:requestError', { url, cdn: true, message });
@@ -703,7 +710,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 							"galleryService:requestError" : {
 								"url" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 								"cdn": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-								"message": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+								"message": { "classification": "CallstackOrException", "purpose": "FeatureInsight" }
 							}
 						*/
 						this.telemetryService.publicLog('galleryService:requestError', { url: fallbackUrl, cdn: false, message });
@@ -746,17 +753,14 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return this.getAsset(asset, { headers })
 			.then(context => asJson<IExtensionManifest>(context))
 			.then(manifest => {
-				if (manifest.engines && !manifest.engines.sqlops) {
-					manifest.engines.sqlops = '*';
-				}
-				const engine = manifest.engines.sqlops;
+				const engine = manifest.engines.vscode;
 
 				if (!this.isEngineValid(engine)) {
 					return this.getLastValidExtensionVersionReccursively(extension, versions.slice(1));
 				}
 
 				version.properties = version.properties || [];
-				version.properties.push({ key: PropertyType.Engine, value: manifest.engines.sqlops });
+				version.properties.push({ key: PropertyType.Engine, value: manifest.engines.vscode });
 				return version;
 			});
 	}

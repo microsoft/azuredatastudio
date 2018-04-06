@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
+import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import Event, { Emitter } from 'vs/base/common/event';
 
 import * as sqlops from 'sqlops';
@@ -20,8 +20,8 @@ export class ExtHostDashboard implements ExtHostDashboardShape {
 
 	private _proxy: MainThreadDashboardShape;
 
-	constructor(threadService: IThreadService) {
-		this._proxy = threadService.get(SqlMainContext.MainThreadDashboard);
+	constructor(mainContext: IMainContext) {
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadDashboard);
 	}
 
 	$onDidOpenDashboard(dashboard: sqlops.DashboardDocument) {

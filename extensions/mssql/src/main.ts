@@ -16,7 +16,7 @@ import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
-import { TelemetryFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature } from './features';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -47,15 +47,17 @@ export async function activate(context: vscode.ExtensionContext) {
 	let clientOptions: ClientOptions = {
 		documentSelector: ['sql'],
 		synchronize: {
-			configurationSection: 'mssql'
+			configurationSection: Constants.extensionConfigSectionName
 		},
 		providerId: Constants.providerId,
 		errorHandler: new LanguageClientErrorHandler(),
 		features: [
 			// we only want to add new features
 			...SqlOpsDataClient.defaultFeatures,
-			TelemetryFeature
-		]
+			TelemetryFeature,
+			AgentServicesFeature
+		],
+		outputChannel: new CustomOutputChannel()
 	};
 
 	const installationStart = Date.now();
@@ -99,6 +101,13 @@ function generateServerOptions(executablePath: string): ServerOptions {
 	launchArgs.push('--log-dir');
 	let logFileLocation = path.join(Utils.getDefaultLogLocation(), 'mssql');
 	launchArgs.push(logFileLocation);
+	let config = vscode.workspace.getConfiguration(Constants.extensionConfigSectionName);
+	if (config) {
+		let logDebugInfo = config[Constants.configLogDebugInfo];
+		if (logDebugInfo) {
+			launchArgs.push('--enable-logging');
+		}
+	}
 
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
@@ -137,4 +146,24 @@ function generateHandleServerProviderEvent() {
 
 // this method is called when your extension is deactivated
 export function deactivate(): void {
+}
+
+class CustomOutputChannel implements vscode.OutputChannel {
+	name: string;
+	append(value: string): void {
+		console.log(value);
+	}
+	appendLine(value: string): void {
+		console.log(value);
+	}
+	clear(): void {
+	}
+	show(preserveFocus?: boolean): void;
+	show(column?: vscode.ViewColumn, preserveFocus?: boolean): void;
+	show(column?: any, preserveFocus?: any) {
+	}
+	hide(): void {
+	}
+	dispose(): void {
+	}
 }

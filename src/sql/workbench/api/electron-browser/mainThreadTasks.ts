@@ -32,7 +32,7 @@ export class MainThreadTasks implements MainThreadTasksShape {
 	constructor(
 		extHostContext: IExtHostContext
 	) {
-		this._proxy = extHostContext.get(SqlExtHostContext.ExtHostTasks);
+		this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostTasks);
 	}
 
 	dispose() {
