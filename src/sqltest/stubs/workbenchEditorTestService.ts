@@ -10,6 +10,7 @@ import { IEditorService, IEditor, IEditorInput, IEditorOptions, ITextEditorOptio
 import { TPromise } from 'vs/base/common/winjs.base';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { EditorInput, EditorOptions, IFileEditorInput, TextEditorOptions, Extensions, SideBySideEditorInput } from 'vs/workbench/common/editor';
+import { ICloseEditorsFilter } from 'vs/workbench/browser/parts/editor/editorPart';
 
 export class WorkbenchEditorTestService implements IWorkbenchEditorService {
 	_serviceBrand: ServiceIdentifier<any>;
@@ -87,7 +88,7 @@ export class WorkbenchEditorTestService implements IWorkbenchEditorService {
 	 * will not be closed. The direction can be used in that case to control if all other editors should get closed,
 	 * or towards a specific direction.
 	 */
-	closeEditors(position: Position, filter?: { except?: IEditorInput, direction?: Direction, unmodifiedOnly?: boolean }): TPromise<void> {
+	closeEditors(p1?: any, p2?: any, p3?: any): TPromise<void> {
 		return undefined;
 	}
 

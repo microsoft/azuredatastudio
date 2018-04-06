@@ -30,7 +30,7 @@ export class MainThreadSerializationProvider implements MainThreadSerializationP
 
 	) {
 		if (extHostContext) {
-			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostSerializationProvider);
+			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostSerializationProvider);
 		}
 	}
 

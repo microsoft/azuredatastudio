@@ -5,7 +5,7 @@
 'use strict';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
+import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { SqlMainContext, MainThreadSerializationProviderShape, ExtHostSerializationProviderShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
@@ -53,10 +53,10 @@ export class ExtHostSerializationProvider extends ExtHostSerializationProviderSh
 	}
 
 	constructor(
-		threadService: IThreadService
+		mainContext: IMainContext
 	) {
 		super();
-		this._proxy = threadService.get(SqlMainContext.MainThreadSerializationProvider);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadSerializationProvider);
 	}
 
 	public $registerSerializationProvider(provider: sqlops.SerializationProvider): vscode.Disposable {

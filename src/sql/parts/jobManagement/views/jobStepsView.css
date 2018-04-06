@@ -10,7 +10,7 @@
 	margin-top: 4px;
 }
 
-.list-row .label {
+.steps-tree .list-row .label {
 	padding-left: 10px;
 	display: flex;
 	text-align: center;
@@ -37,7 +37,7 @@
 	padding-left: 50px;
 }
 
-.step-id-col, .tree-id-col {
+.step-columns .step-id-col, .step-tree .tree-id-col {
 	padding-left: 10px;
 	white-space: normal;
 	text-align: center;
@@ -45,17 +45,16 @@
 
 }
 
-.step-name-col, .tree-name-col  {
+.step-columns .step-name-col, .step-tree .tree-name-col  {
 	padding-right: 10px;
 	white-space: normal;
 	text-align: center;
 	width: 350px;
 }
 
-.step-message-col, .tree-message-col {
+.step-columns .step-message-col, .step-tree .tree-message-col {
 	padding-right: 10px;
 	white-space: normal;
 	text-align: center;
 	width: 680px;
-	height:
 }

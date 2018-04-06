@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -92,7 +92,7 @@ export class ExtHostModalDialogs implements ExtHostModalDialogsShape {
 	constructor(
 		mainContext: IMainContext
 	) {
-		this._proxy = mainContext.get(SqlMainContext.MainThreadModalDialog);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadModalDialog);
 	}
 
 	createDialog(

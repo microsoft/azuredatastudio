@@ -7,7 +7,7 @@ import 'vs/css!./webviewContent';
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef } from '@angular/core';
 
 import Event, { Emitter } from 'vs/base/common/event';
-import Webview from 'vs/workbench/parts/html/browser/webview';
+import { Webview } from 'vs/workbench/parts/html/browser/webview';
 import { Parts } from 'vs/workbench/services/part/common/partService';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
@@ -80,7 +80,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	public setHtml(html: string): void {
 		this._html = html;
 		if (this._webview) {
-			this._webview.contents = [html];
+			this._webview.contents = html;
 			this._webview.layout();
 		}
 	}
@@ -102,21 +102,24 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 
 		this._webview = new Webview(this._el.nativeElement,
 			this._dashboardService.partService.getContainer(Parts.EDITOR_PART),
+			this._dashboardService.themeService,
+			this._dashboardService.environmentService,
 			this._dashboardService.contextViewService,
 			undefined,
 			undefined,
 			{
 				allowScripts: true,
-				enableWrappedPostMessage: true,
-				hideFind: true
+				enableWrappedPostMessage: true
 			}
 		);
+
+
 		this._onMessageDisposable = this._webview.onMessage(e => {
 			this._onMessage.fire(e);
 		});
 		this._webview.style(this._dashboardService.themeService.getTheme());
 		if (this._html) {
-			this._webview.contents = [this._html];
+			this._webview.contents = this._html;
 		}
 		this._webview.layout();
 	}

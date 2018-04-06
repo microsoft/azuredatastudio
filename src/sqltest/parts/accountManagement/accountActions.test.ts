@@ -10,7 +10,7 @@ import * as sqlops from 'sqlops';
 import * as TypeMoq from 'typemoq';
 import { AddAccountAction, RemoveAccountAction } from 'sql/parts/accountManagement/common/accountActions';
 import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
-import { MessageServiceStub } from 'sqltest/stubs/messageServiceStub';
+// import { MessageServiceStub } from 'sqltest/stubs/messageServiceStub';
 import { ErrorMessageServiceStub } from 'sqltest/stubs/errorMessageServiceStub';
 
 let testAccount = <sqlops.Account>{

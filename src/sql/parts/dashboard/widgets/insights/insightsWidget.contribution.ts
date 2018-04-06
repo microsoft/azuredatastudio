@@ -9,7 +9,7 @@ import { Extensions as InsightExtensions, IInsightRegistry } from 'sql/platform/
 import { IInsightsConfig } from './interfaces';
 import { insightsContribution, insightsSchema } from 'sql/parts/dashboard/widgets/insights/insightsWidgetSchemas';
 
-import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/common/extensionsRegistry';
+import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 const insightRegistry = Registry.as<IInsightRegistry>(InsightExtensions.InsightContribution);

@@ -6,8 +6,6 @@
 'use strict';
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
-import { IMessageService } from 'vs/platform/message/common/message';
-import { TestMessageService, TestEditorGroupService } from 'vs/workbench/test/workbenchTestServices';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { IEditorDescriptor } from 'vs/workbench/browser/editor';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -32,12 +30,14 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { INotification, INotificationService } from 'vs/platform/notification/common/notification';
+import { TestNotificationService } from 'vs/workbench/test/workbenchTestServices';
 
 suite('SQL QueryEditor Tests', () => {
 	let queryModelService: QueryModelService;
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
 	let themeService: TestThemeService = new TestThemeService();
-	let messageService: TypeMoq.Mock<IMessageService>;
+	let notificationService: TypeMoq.Mock<INotificationService>;
 	let editorDescriptorService: TypeMoq.Mock<EditorDescriptorService>;
 	let connectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
 	let memento: TypeMoq.Mock<Memento>;
@@ -124,7 +124,7 @@ suite('SQL QueryEditor Tests', () => {
 		queryInput2 = new QueryInput('second', 'second', fileInput2, queryResultsInput2, undefined, undefined, undefined, undefined);
 
 		// Mock IMessageService
-		messageService = TypeMoq.Mock.ofType(TestMessageService, TypeMoq.MockBehavior.Loose);
+		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
 
 		// Mock ConnectionManagementService
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
@@ -134,7 +134,7 @@ suite('SQL QueryEditor Tests', () => {
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAny())).returns(() => false);
 
 		// Create a QueryModelService
-		queryModelService = new QueryModelService(instantiationService.object, messageService.object);
+		queryModelService = new QueryModelService(instantiationService.object, notificationService.object);
 	});
 
 	test('createEditor creates only the taskbar', (done) => {

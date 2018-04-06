@@ -19,7 +19,7 @@ OutputDir={#OutputDir}
 OutputBaseFilename=SqlOpsStudioSetup
 Compression=lzma
 SolidCompression=yes
-AppMutex={#AppMutex}
+AppMutex={code:GetAppMutex}
 SetupMutex={#AppMutex}setup
 WizardImageFile={#RepoDir}\resources\win32\inno-big.bmp
 WizardSmallImageFile={#RepoDir}\resources\win32\inno-small.bmp
@@ -52,7 +52,12 @@ Type: filesandordirs; Name: "{app}\resources\app\out"; Check: IsNotUpdate
 Type: filesandordirs; Name: "{app}\resources\app\plugins"; Check: IsNotUpdate
 Type: filesandordirs; Name: "{app}\resources\app\extensions"; Check: IsNotUpdate
 Type: filesandordirs; Name: "{app}\resources\app\node_modules"; Check: IsNotUpdate
+Type: filesandordirs; Name: "{app}\resources\app\node_modules.asar.unpacked"; Check: IsNotUpdate
+Type: files; Name: "{app}\resources\app\node_modules.asar"; Check: IsNotUpdate
 Type: files; Name: "{app}\resources\app\Credits_45.0.2454.85.html"; Check: IsNotUpdate
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{app}\_"
 
 [Tasks]
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
@@ -136,6 +141,48 @@ begin
     Result := not LockFileExists()
   else
     Result := True;
+end;
+
+function GetAppMutex(Value: string): string;
+begin
+  if IsBackgroundUpdate() then
+    Result := ''
+  else
+    Result := '{#AppMutex}';
+end;
+
+function GetDestDir(Value: string): string;
+begin
+  if IsBackgroundUpdate() then
+    Result := ExpandConstant('{app}\_')
+  else
+    Result := ExpandConstant('{app}');
+end;
+
+function BoolToStr(Value: Boolean): String;
+begin
+  if Value then
+    Result := 'true'
+  else
+    Result := 'false';
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  UpdateResultCode: Integer;
+begin
+  if IsBackgroundUpdate() and (CurStep = ssPostInstall) then
+  begin
+    CreateMutex('{#AppMutex}-ready');
+
+    while (CheckForMutexes('{#AppMutex}')) do
+    begin
+      Log('Application is still running, waiting');
+      Sleep(1000);
+    end;
+
+    Exec(ExpandConstant('{app}\tools\inno_updater.exe'), ExpandConstant('"{app}\{#ExeBasename}.exe" ' + BoolToStr(LockFileExists())), '', SW_SHOW, ewWaitUntilTerminated, UpdateResultCode);
+  end;
 end;
 
 // http://stackoverflow.com/a/23838239/261019

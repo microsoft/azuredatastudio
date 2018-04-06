@@ -28,7 +28,7 @@ import { LIGHT, DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeServic
 
 export class SelectColorThemeAction extends Action {
 
-	static ID = 'workbench.action.selectTheme';
+	static readonly ID = 'workbench.action.selectTheme';
 	static LABEL = localize('selectTheme.label', "Color Theme");
 
 	constructor(
@@ -50,8 +50,9 @@ export class SelectColorThemeAction extends Action {
 			const picks: IPickOpenEntry[] = [].concat(
 				toEntries(themes.filter(t => t.type === LIGHT), localize('themes.category.light', "light themes")),
 				toEntries(themes.filter(t => t.type === DARK), localize('themes.category.dark', "dark themes"), true),
-				toEntries(themes.filter(t => t.type === HIGH_CONTRAST), localize('themes.category.hc', "high contrast themes"), true),
-				configurationEntries(this.extensionGalleryService, this.viewletService, 'category:themes', localize('installColorThemes', "Install Additional Color Themes..."))
+				toEntries(themes.filter(t => t.type === HIGH_CONTRAST), localize('themes.category.hc', "high contrast themes"), true)
+				// {{SQL CARBON EDIT}}
+				//configurationEntries(this.extensionGalleryService, this.viewletService, 'category:themes', localize('installColorThemes', "Install Additional Color Themes..."))
 			);
 
 			const selectTheme = (theme, applyTheme: boolean) => {
@@ -87,7 +88,7 @@ export class SelectColorThemeAction extends Action {
 
 class SelectIconThemeAction extends Action {
 
-	static ID = 'workbench.action.selectIconTheme';
+	static readonly ID = 'workbench.action.selectIconTheme';
 	static LABEL = localize('selectIconTheme.label', "File Icon Theme");
 
 	constructor(
@@ -109,8 +110,9 @@ class SelectIconThemeAction extends Action {
 
 			let picks: IPickOpenEntry[] = [{ id: '', label: localize('noIconThemeLabel', 'None'), description: localize('noIconThemeDesc', 'Disable file icons') }];
 			picks = picks.concat(
-				toEntries(themes),
-				configurationEntries(this.extensionGalleryService, this.viewletService, 'tag:icon-theme', localize('installIconThemes', "Install Additional File Icon Themes..."))
+				toEntries(themes)
+				// {{SQL CARBON EDIT}}
+				// configurationEntries(this.extensionGalleryService, this.viewletService, 'tag:icon-theme', localize('installIconThemes', "Install Additional File Icon Themes..."))
 			);
 
 			const selectTheme = (theme, applyTheme: boolean) => {
@@ -171,7 +173,7 @@ function toEntries(themes: (IColorTheme | IFileIconTheme)[], label?: string, bor
 
 class GenerateColorThemeAction extends Action {
 
-	static ID = 'workbench.action.generateColorTheme';
+	static readonly ID = 'workbench.action.generateColorTheme';
 	static LABEL = localize('generateColorTheme.label', "Generate Color Theme From Current Settings");
 
 	constructor(

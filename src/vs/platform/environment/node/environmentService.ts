@@ -12,8 +12,8 @@ import URI from 'vs/base/common/uri';
 import { memoize } from 'vs/base/common/decorators';
 import pkg from 'vs/platform/node/package';
 import product from 'vs/platform/node/product';
-import { LogLevel } from 'vs/platform/log/common/log';
 import { toLocalISOString } from 'vs/base/common/date';
+import { isWindows, isLinux } from 'vs/base/common/platform';
 
 // Read this before there's any chance it is overwritten
 // Related to https://github.com/Microsoft/vscode/issues/30624
@@ -21,7 +21,8 @@ const xdgRuntimeDir = process.env['XDG_RUNTIME_DIR'];
 
 function getNixIPCHandle(userDataPath: string, type: string): string {
 	if (xdgRuntimeDir) {
-		return path.join(xdgRuntimeDir, `${pkg.name}-${pkg.version}-${type}.sock`);
+		const scope = crypto.createHash('md5').update(userDataPath).digest('hex').substr(0, 8);
+		return path.join(xdgRuntimeDir, `vscode-${scope}-${pkg.version}-${type}.sock`);
 	}
 
 	return path.join(userDataPath, `${pkg.version}-${type}.sock`);
@@ -29,15 +30,44 @@ function getNixIPCHandle(userDataPath: string, type: string): string {
 
 function getWin32IPCHandle(userDataPath: string, type: string): string {
 	const scope = crypto.createHash('md5').update(userDataPath).digest('hex');
+
 	return `\\\\.\\pipe\\${scope}-${pkg.version}-${type}-sock`;
 }
 
 function getIPCHandle(userDataPath: string, type: string): string {
-	if (process.platform === 'win32') {
+	if (isWindows) {
 		return getWin32IPCHandle(userDataPath, type);
-	} else {
-		return getNixIPCHandle(userDataPath, type);
 	}
+
+	return getNixIPCHandle(userDataPath, type);
+}
+
+function getCLIPath(execPath: string, appRoot: string, isBuilt: boolean): string {
+
+	// Windows
+	if (isWindows) {
+		if (isBuilt) {
+			return path.join(path.dirname(execPath), 'bin', `${product.applicationName}.cmd`);
+		}
+
+		return path.join(appRoot, 'scripts', 'code-cli.bat');
+	}
+
+	// Linux
+	if (isLinux) {
+		if (isBuilt) {
+			return path.join(path.dirname(execPath), 'bin', `${product.applicationName}`);
+		}
+
+		return path.join(appRoot, 'scripts', 'code-cli.sh');
+	}
+
+	// macOS
+	if (isBuilt) {
+		return path.join(appRoot, 'bin', 'code');
+	}
+
+	return path.join(appRoot, 'scripts', 'code-cli.sh');
 }
 
 export class EnvironmentService implements IEnvironmentService {
@@ -50,6 +80,9 @@ export class EnvironmentService implements IEnvironmentService {
 	get appRoot(): string { return path.dirname(URI.parse(require.toUrl('')).fsPath); }
 
 	get execPath(): string { return this._execPath; }
+
+	@memoize
+	get cliPath(): string { return getCLIPath(this.execPath, this.appRoot, this.isBuilt); }
 
 	readonly logsPath: string;
 
@@ -106,6 +139,8 @@ export class EnvironmentService implements IEnvironmentService {
 
 	get skipGettingStarted(): boolean { return this._args['skip-getting-started']; }
 
+	get skipReleaseNotes(): boolean { return this._args['skip-release-notes']; }
+
 	get skipAddToRecentlyOpened(): boolean { return this._args['skip-add-to-recently-opened']; }
 
 	@memoize
@@ -116,33 +151,6 @@ export class EnvironmentService implements IEnvironmentService {
 
 	get isBuilt(): boolean { return !process.env['VSCODE_DEV']; }
 	get verbose(): boolean { return this._args.verbose; }
-
-	@memoize
-	get logLevel(): LogLevel {
-		if (this.verbose) {
-			return LogLevel.Trace;
-		}
-		if (typeof this._args.log === 'string') {
-			const logLevel = this._args.log.toLowerCase();
-			switch (logLevel) {
-				case 'trace':
-					return LogLevel.Trace;
-				case 'debug':
-					return LogLevel.Debug;
-				case 'info':
-					return LogLevel.Info;
-				case 'warn':
-					return LogLevel.Warning;
-				case 'error':
-					return LogLevel.Error;
-				case 'critical':
-					return LogLevel.Critical;
-				case 'off':
-					return LogLevel.Off;
-			}
-		}
-		return LogLevel.Info;
-	}
 
 	get wait(): boolean { return this._args.wait; }
 	get logExtensionHostCommunication(): boolean { return this._args.logExtensionHostCommunication; }

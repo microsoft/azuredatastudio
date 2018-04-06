@@ -148,18 +148,18 @@ export class ServerGroupDialog extends Modal {
 			this._colorCheckBoxesMap[this._selectedColorOption].checkbox.focus();
 		} else if (this.isFocusOnColors()) {
 			this._addServerButton.enabled ? this._addServerButton.focus() : this._closeButton.focus();
-		} else if (document.activeElement === this._addServerButton.getElement()) {
+		} else if (document.activeElement === this._addServerButton.element) {
 			this._closeButton.focus();
 		}
-		else if (document.activeElement === this._closeButton.getElement()) {
+		else if (document.activeElement === this._closeButton.element) {
 			this._groupNameInputBox.focus();
 		}
 	}
 
 	private focusPrevious(): void {
-		if (document.activeElement === this._closeButton.getElement()) {
+		if (document.activeElement === this._closeButton.element) {
 			this._addServerButton.enabled ? this._addServerButton.focus() : this._colorCheckBoxesMap[this._selectedColorOption].checkbox.focus();
-		} else if (document.activeElement === this._addServerButton.getElement()) {
+		} else if (document.activeElement === this._addServerButton.element) {
 			this._colorCheckBoxesMap[this._selectedColorOption].checkbox.focus();
 		} else if (this.isFocusOnColors()) {
 			this._groupDescriptionInputBox.focus();

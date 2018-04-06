@@ -29,7 +29,7 @@ export class MainThreadAccountManagement implements MainThreadAccountManagementS
 	) {
 		this._providerMetadata = {};
 		if (extHostContext) {
-			this._proxy = extHostContext.get(SqlExtHostContext.ExtHostAccountManagement);
+			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostAccountManagement);
 		}
 		this._toDispose = [];
 	}

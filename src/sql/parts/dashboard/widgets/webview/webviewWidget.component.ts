@@ -5,7 +5,7 @@
 
 import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ViewChild, ElementRef } from '@angular/core';
 
-import Webview from 'vs/workbench/parts/html/browser/webview';
+import { Webview } from 'vs/workbench/parts/html/browser/webview';
 import { Parts } from 'vs/workbench/services/part/common/partService';
 import Event, { Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -58,7 +58,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	public setHtml(html: string): void {
 		this._html = html;
 		if (this._webview) {
-			this._webview.contents = [html];
+			this._webview.contents = html;
 			this._webview.layout();
 		}
 	}
@@ -96,15 +96,17 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		if (this._onMessageDisposable) {
 			this._onMessageDisposable.dispose();
 		}
-		this._webview = new Webview(this._el.nativeElement,
+		this._webview = new Webview(
+			this._el.nativeElement,
 			this._dashboardService.partService.getContainer(Parts.EDITOR_PART),
+			this._dashboardService.themeService,
+			this._dashboardService.environmentService,
 			this._dashboardService.contextViewService,
 			undefined,
 			undefined,
 			{
 				allowScripts: true,
-				enableWrappedPostMessage: true,
-				hideFind: true
+				enableWrappedPostMessage: true
 			}
 		);
 		this._onMessageDisposable = this._webview.onMessage(e => {
@@ -112,7 +114,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		});
 		this._webview.style(this._dashboardService.themeService.getTheme());
 		if (this._html) {
-			this._webview.contents = [this._html];
+			this._webview.contents = this._html;
 		}
 		this._webview.layout();
 	}

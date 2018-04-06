@@ -17,7 +17,6 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IMessageService } from 'vs/platform/message/common/message';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import Severity from 'vs/base/common/severity';
 import { IConnectionsViewlet, IConnectionManagementService, VIEWLET_ID } from 'sql/parts/connection/common/connectionManagement';
@@ -27,6 +26,8 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ClearSearchAction, AddServerAction, AddServerGroupAction, ActiveConnectionsFilterAction } from 'sql/parts/registeredServer/viewlet/connectionTreeAction';
 import { warn } from 'sql/base/common/log';
 import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IPartService } from 'vs/workbench/services/part/common/partService';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 
@@ -49,10 +50,12 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IViewletService private viewletService: IViewletService,
-		@IMessageService private messageService: IMessageService,
-		@IObjectExplorerService private objectExplorerService: IObjectExplorerService
+		@INotificationService private _notificationService: INotificationService,
+		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
+		@IPartService partService: IPartService
 	) {
-		super(VIEWLET_ID, telemetryService, _themeService);
+
+		super(VIEWLET_ID, partService, telemetryService, _themeService);
 		this._searchDelayer = new ThrottledDelayer(500);
 
 		this._clearSearchAction = this._instantiationService.createInstance(ClearSearchAction, ClearSearchAction.ID, ClearSearchAction.LABEL, this);
@@ -71,7 +74,10 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 		if (isPromiseCanceledError(err)) {
 			return;
 		}
-		this.messageService.show(Severity.Error, err);
+		this._notificationService.notify({
+			severity: Severity.Error,
+			message: err
+		});
 	}
 
 	public create(parent: Builder): TPromise<void> {

@@ -5,7 +5,7 @@
 'use strict';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
+import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { SqlMainContext, MainThreadCredentialManagementShape, ExtHostCredentialManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
@@ -41,12 +41,12 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 	private _registrationPromise: Promise<void>;
 	private _registrationPromiseResolve;
 
-	constructor(threadService: IThreadService) {
+	constructor(mainContext: IMainContext) {
 		super();
 
 		let self = this;
 
-		this._proxy = threadService.get(SqlMainContext.MainThreadCredentialManagement);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadCredentialManagement);
 
 		// Create a promise to resolve when a credential provider has been registered.
 		// HACK: this gives us a deferred promise

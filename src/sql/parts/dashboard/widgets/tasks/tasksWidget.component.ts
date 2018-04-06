@@ -31,6 +31,8 @@ import * as DOM from 'vs/base/browser/dom';
 import { CommandsRegistry, ICommand } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 interface ITask {
 	name: string;
@@ -127,13 +129,23 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		let label = $('div').safeInnerHtml(types.isString(action.title) ? action.title : action.title.value);
 		let tile = $('div.task-tile').style('height', this._size + 'px').style('width', this._size + 'px');
 		let innerTile = $('div');
-		if (action.iconClass) {
-			let icon = $('span.icon').addClass(action.iconClass);
+
+		// @SQLTODO - iconPath shouldn't be used as a CSS class
+		if (action.iconPath && action.iconPath.dark) {
+			let icon = $('span.icon').addClass(action.iconPath.dark);
 			innerTile.append(icon);
 		}
 		innerTile.append(label);
 		tile.append(innerTile);
+		tile.attr('tabindex', '0');
 		tile.on(DOM.EventType.CLICK, () => this.runTask(action));
+		tile.on(DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Enter)) {
+				this.runTask(action);
+				e.stopImmediatePropagation();
+			}
+		});
 		return tile.getHTMLElement();
 	}
 

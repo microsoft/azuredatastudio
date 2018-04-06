@@ -5,7 +5,7 @@
 'use strict';
 
 import Event, { Emitter } from 'vs/base/common/event';
-import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
+import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
@@ -23,10 +23,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	private _adapter = new Map<number, sqlops.DataProvider>();
 
 	constructor(
-		threadService: IThreadService
+		mainContext: IMainContext
 	) {
 		super();
-		this._proxy = threadService.get(SqlMainContext.MainThreadDataProtocol);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadDataProtocol);
 	}
 
 	private _createDisposable(handle: number): Disposable {

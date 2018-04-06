@@ -67,7 +67,7 @@ export class ExtHostDashboardWebviews implements ExtHostDashboardWebviewsShape {
 	constructor(
 		mainContext: IMainContext
 	) {
-		this._proxy = mainContext.get(SqlMainContext.MainThreadDashboardWebview);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadDashboardWebview);
 	}
 
 	$onMessage(handle: number, message: any): void {

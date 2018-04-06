@@ -29,8 +29,8 @@ import { ACTIVITY_BAR_BACKGROUND, ACTIVITY_BAR_BORDER, ACTIVITY_BAR_FOREGROUND, 
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { CompositeBar } from 'vs/workbench/browser/parts/compositebar/compositeBar';
 import { ToggleCompositePinnedAction } from 'vs/workbench/browser/parts/compositebar/compositeBarActions';
-import { ViewletDescriptor } from 'vs/workbench/browser/viewlet';
 // {{SQL CARBON EDIT}}
+import { ViewletDescriptor } from 'vs/workbench/browser/viewlet';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 
 export class ActivitybarPart extends Part {
@@ -103,17 +103,24 @@ export class ActivitybarPart extends Part {
 		// Deactivate viewlet action on close
 		this.toUnbind.push(this.viewletService.onDidViewletClose(viewlet => this.compositeBar.deactivateComposite(viewlet.getId())));
 		this.toUnbind.push(this.compositeBar.onDidContextMenu(e => this.showContextMenu(e)));
+		this.toUnbind.push(this.viewletService.onDidViewletEnablementChange(({ id, enabled }) => {
+			if (enabled) {
+				this.compositeBar.addComposite(this.viewletService.getViewlet(id));
+			} else {
+				this.compositeBar.removeComposite(id);
+			}
+		}));
 	}
 
-	public showActivity(viewletOrActionId: string, badge: IBadge, clazz?: string): IDisposable {
+	public showActivity(viewletOrActionId: string, badge: IBadge, clazz?: string, priority?: number): IDisposable {
 		if (this.viewletService.getViewlet(viewletOrActionId)) {
-			return this.compositeBar.showActivity(viewletOrActionId, badge, clazz);
+			return this.compositeBar.showActivity(viewletOrActionId, badge, clazz, priority);
 		}
 
-		return this.showGlobalActivity(viewletOrActionId, badge);
+		return this.showGlobalActivity(viewletOrActionId, badge, clazz);
 	}
 
-	private showGlobalActivity(globalActivityId: string, badge: IBadge): IDisposable {
+	private showGlobalActivity(globalActivityId: string, badge: IBadge, clazz?: string): IDisposable {
 		if (!badge) {
 			throw illegalArgument('badge');
 		}
@@ -123,7 +130,7 @@ export class ActivitybarPart extends Part {
 			throw illegalArgument('globalActivityId');
 		}
 
-		action.setBadge(badge);
+		action.setBadge(badge, clazz);
 
 		return toDisposable(() => action.setBadge(undefined));
 	}
@@ -187,6 +194,7 @@ export class ActivitybarPart extends Part {
 			ariaLabel: nls.localize('globalActions', "Global Actions"),
 			animated: false
 		});
+		this.toUnbind.push(this.globalActionBar);
 
 		actions.forEach(a => {
 			this.globalActivityIdToActions[a.id] = a;
@@ -233,13 +241,5 @@ export class ActivitybarPart extends Part {
 		}
 
 		super.dispose();
-	}
-
-	public shutdown(): void {
-		// Persist Hidden State
-		this.compositeBar.store();
-
-		// Pass to super
-		super.shutdown();
 	}
 }

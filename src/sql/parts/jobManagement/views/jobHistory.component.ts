@@ -5,17 +5,16 @@
 
 import 'vs/css!./jobHistory';
 
-import { OnInit, OnChanges, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Input, Injectable } from '@angular/core';
+import { OnInit, OnChanges, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Input, Injectable, ChangeDetectionStrategy } from '@angular/core';
 import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
-import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { IJobManagementService } from '../common/interfaces';
+import { IJobManagementService, IAgentJobCacheService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { JobHistoryController, JobHistoryDataSource,
@@ -23,34 +22,38 @@ import { JobHistoryController, JobHistoryDataSource,
 import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
 import { JobStepsViewRow } from './jobStepsViewTree';
 import { localize } from 'vs/nls';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
 @Component({
 	selector: DASHBOARD_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./jobHistory.component.html'))
+	templateUrl: decodeURI(require.toUrl('./jobHistory.component.html')),
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class JobHistoryComponent extends Disposable implements OnInit {
 
 	private _jobManagementService: IJobManagementService;
 	private _tree: Tree;
-	private _treeController = new JobHistoryController();
-	private _treeDataSource = new JobHistoryDataSource();
-	private _treeRenderer = new JobHistoryRenderer();
-	private _treeFilter =  new JobHistoryFilter();
+	private _treeController: JobHistoryController;
+	private _treeDataSource: JobHistoryDataSource;
+	private _treeRenderer: JobHistoryRenderer;
+	private _treeFilter: JobHistoryFilter;
 
 	@ViewChild('table') private _tableContainer: ElementRef;
 
 	@Input() public agentJobInfo: AgentJobInfo = undefined;
 	@Input() public jobId: string = undefined;
-	@Input() public agentJobHistoryInfo: AgentJobHistoryInfo = undefined;
+	@Input() public agentJobHistories: AgentJobHistoryInfo[] = undefined;
+	public agentJobHistoryInfo: AgentJobHistoryInfo = undefined;
 
-	private _prevJobId: string = undefined;
 	private _isVisible: boolean = false;
 	private _stepRows: JobStepsViewRow[] = [];
 	private _showSteps: boolean = false;
 	private _runStatus: string = undefined;
-	private _messageService: IMessageService;
+	private _agentJobCacheService: IAgentJobCacheService;
+	private _notificationService: INotificationService;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -60,8 +63,13 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent
 	) {
 		super();
+		this._treeController = new JobHistoryController();
+		this._treeDataSource = new JobHistoryDataSource();
+		this._treeRenderer = new JobHistoryRenderer();
+		this._treeFilter =  new JobHistoryFilter();
 		this._jobManagementService = bootstrapService.jobManagementService;
-		this._messageService = bootstrapService.messageService;
+		this._agentJobCacheService = bootstrapService.agentJobCacheService;
+		this._notificationService = bootstrapService.notificationService;
 	}
 
 	ngOnInit() {
@@ -114,10 +122,24 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 
 	ngAfterContentChecked() {
 		if (this._isVisible === false && this._tableContainer.nativeElement.offsetParent !== null) {
-			if (this._prevJobId !== this.jobId) {
+			this._isVisible = true;
+			if (this.agentJobHistories && this.agentJobHistories.length > 0) {
+				if (this._agentJobCacheService.prevJobID === this.jobId || this.agentJobHistories[0].jobId === this.jobId) {
+					this.agentJobHistoryInfo = this.agentJobHistories[0];
+					this.agentJobHistoryInfo.runDate = this.formatTime(this.agentJobHistories[0].runDate);
+					this._treeController.jobHistories = this.agentJobHistories;
+					this._agentJobCacheService.setJobHistory(this.jobId, this.agentJobHistories);
+					let jobHistoryRows = this._treeController.jobHistories.map(job => this.convertToJobHistoryRow(job));
+					this._treeDataSource.data = jobHistoryRows;
+					this._tree.setInput(new JobHistoryModel());
+					this._cd.detectChanges();
+				}
+			} else {
 				this.loadHistory();
-				this._prevJobId = this.jobId;
 			}
+			this._agentJobCacheService.prevJobID = this.jobId;
+		} else if (this._isVisible === true && this._tableContainer.nativeElement.offsetParent === null) {
+			this._isVisible = false;
 		}
 	}
 
@@ -127,6 +149,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		this._jobManagementService.getJobHistory(ownerUri, this.jobId).then((result) => {
 			if (result && result.jobs) {
 				self._treeController.jobHistories = result.jobs;
+				self._agentJobCacheService.setJobHistory(self.jobId, result.jobs);
 				let jobHistoryRows = self._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
 				self._treeDataSource.data = jobHistoryRows;
 				self._tree.setInput(new JobHistoryModel());
@@ -157,17 +180,26 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 				switch (action) {
 					case ('run'):
 						var startMsg = localize('jobSuccessfullyStarted', 'The job was successfully started.');
-						this._messageService.show(Severity.Info, startMsg);
+						self._notificationService.notify({
+							severity: Severity.Info,
+							message: startMsg
+						});
 						break;
 					case ('stop'):
 						var stopMsg = localize('jobSuccessfullyStopped', 'The job was successfully stopped.');
-						this._messageService.show(Severity.Info, stopMsg);
+						self._notificationService.notify({
+							severity: Severity.Info,
+							message: stopMsg
+						});
 						break;
 					default:
 						break;
 				}
 			} else {
-				this._messageService.show(Severity.Error, result.errorMessage);
+				self._notificationService.notify({
+					severity: Severity.Error,
+					message: result.errorMessage
+				});
 			}
 		});
 	}

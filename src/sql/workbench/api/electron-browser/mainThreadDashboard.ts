@@ -1,7 +1,7 @@
 
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
@@ -17,7 +17,7 @@ export class MainThreadDashboard implements MainThreadDashboardShape {
 		context: IExtHostContext,
 		@IDashboardService private _dashboardService: IDashboardService
 	) {
-		this._proxy = context.get(SqlExtHostContext.ExtHostDashboard);
+		this._proxy = context.getProxy(SqlExtHostContext.ExtHostDashboard);
 		_dashboardService.onDidChangeToDashboard(e => {
 			this._proxy.$onDidChangeToDashboard(e);
 		});
