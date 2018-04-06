@@ -6,11 +6,11 @@
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/parts/connection/common/connectionManagement';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 
 import { IProgressService, IProgressRunner } from 'vs/platform/progress/common/progress';
-import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
-import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
+import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
+import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 
 export class TreeSelectionHandler {
 	progressRunner: IProgressRunner;

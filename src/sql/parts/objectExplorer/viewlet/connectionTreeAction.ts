@@ -10,17 +10,17 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeView';
-import { ConnectionViewlet } from 'sql/parts/registeredServer/viewlet/connectionViewlet';
+import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
+import { ConnectionViewlet } from 'sql/parts/objectExplorer/viewlet/connectionViewlet';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import * as Constants from 'sql/parts/connection/common/constants';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
-import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';
-import { ObjectExplorerActionsContext, ObjectExplorerActionUtilities } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
+import { ObjectExplorerActionsContext, ObjectExplorerActionUtilities } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export class RefreshAction extends Action {

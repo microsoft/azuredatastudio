@@ -7,10 +7,10 @@
 import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
-import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
+import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import Severity from 'vs/base/common/severity';
 

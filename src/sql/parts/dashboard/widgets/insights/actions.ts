@@ -10,7 +10,7 @@ import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { RunQueryOnConnectionMode, IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { InsightActionContext } from 'sql/workbench/common/actions';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export class RunInsightQueryAction extends Action {

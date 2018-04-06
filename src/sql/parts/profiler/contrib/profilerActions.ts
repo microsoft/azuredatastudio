@@ -10,7 +10,7 @@ import { IProfilerController } from 'sql/parts/profiler/editor/controller/interf
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { BaseActionContext } from 'sql/workbench/common/actions';
 import { Task } from 'sql/platform/tasks/common/tasks';
-import { ObjectExplorerActionsContext } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
+import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/parts/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';

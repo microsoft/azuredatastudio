@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
+import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 
 export interface IConnectionTemplateData {
 	root: HTMLElement;

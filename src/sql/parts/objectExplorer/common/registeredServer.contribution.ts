@@ -15,7 +15,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
 
 import { VIEWLET_ID } from 'sql/parts/connection/common/connectionManagement';
-import { ConnectionViewlet } from 'sql/parts/registeredServer/viewlet/connectionViewlet';
+import { ConnectionViewlet } from 'sql/parts/objectExplorer/viewlet/connectionViewlet';
 
 // Viewlet Action
 export class OpenConnectionsViewletAction extends ToggleViewletAction {

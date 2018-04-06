@@ -9,8 +9,8 @@ import {
 	IServerGroupController, IServerGroupDialogCallbacks
 } from 'sql/parts/connection/common/connectionManagement';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import { ServerGroupDialog } from 'sql/parts/registeredServer/serverGroupDialog/serverGroupDialog';
-import { ServerGroupViewModel } from 'sql/parts/registeredServer/serverGroupDialog/serverGroupViewModel';
+import { ServerGroupDialog } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupDialog';
+import { ServerGroupViewModel } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupViewModel';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import Severity from 'vs/base/common/severity';

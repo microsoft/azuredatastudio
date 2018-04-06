@@ -15,7 +15,7 @@ import {
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import * as Constants from 'sql/parts/connection/common/constants';
-import { OEAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
+import { OEAction } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 
 import { ObjectMetadata } from 'sqlops';
 

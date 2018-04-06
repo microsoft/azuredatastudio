@@ -17,18 +17,18 @@ import { localize } from 'vs/nls';
 import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import * as ConnectionUtils from 'sql/parts/connection/common/utils';
-import { ActiveConnectionsFilterAction } from 'sql/parts/registeredServer/viewlet/connectionTreeAction';
+import { ActiveConnectionsFilterAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
-import { TreeCreationUtils } from 'sql/parts/registeredServer/viewlet/treeCreationUtils';
-import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
-import { TreeSelectionHandler } from 'sql/parts/registeredServer/viewlet/treeSelectionHandler';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { TreeCreationUtils } from 'sql/parts/objectExplorer/viewlet/treeCreationUtils';
+import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
+import { TreeSelectionHandler } from 'sql/parts/objectExplorer/viewlet/treeSelectionHandler';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
 import Event, { Emitter } from 'vs/base/common/event';
-import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/registeredServer/common/treeNode';
+import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
 
 const $ = builder.$;
 
