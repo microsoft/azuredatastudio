@@ -26,7 +26,7 @@
 		// "button.disabledForeground": "#888888",
 
 		//Dropdown Control
-		"dropdown.background": "#EAEAEA00",
+		"dropdown.background":  "#fffffe",
 		"dropdown.foreground": "#4a4a4a",
 		"dropdown.border": "#C8C8C8",
 
@@ -73,10 +73,7 @@
 		"panel.background": "#FFFFFE",
 		"panel.border": "#C8C8C8",
 		"panelTitle.activeForeground": "#212121",
-		"panelTitle.inactiveForeground": "#888888",
-
-		// Workbench: dropdown
-		"dropdown.listBackground":  "#fffffe"
+		"panelTitle.inactiveForeground": "#888888"
 	},
 	"tokenColors": [
 		{
