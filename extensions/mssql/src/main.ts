@@ -16,7 +16,7 @@ import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
-import { TelemetryFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature } from './features';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -47,14 +47,15 @@ export async function activate(context: vscode.ExtensionContext) {
 	let clientOptions: ClientOptions = {
 		documentSelector: ['sql'],
 		synchronize: {
-			configurationSection: 'mssql'
+			configurationSection: Constants.extensionConfigSectionName
 		},
 		providerId: Constants.providerId,
 		errorHandler: new LanguageClientErrorHandler(),
 		features: [
 			// we only want to add new features
 			...SqlOpsDataClient.defaultFeatures,
-			TelemetryFeature
+			TelemetryFeature,
+			AgentServicesFeature
 		],
 		outputChannel: new CustomOutputChannel()
 	};
@@ -100,6 +101,13 @@ function generateServerOptions(executablePath: string): ServerOptions {
 	launchArgs.push('--log-dir');
 	let logFileLocation = path.join(Utils.getDefaultLogLocation(), 'mssql');
 	launchArgs.push(logFileLocation);
+	let config = vscode.workspace.getConfiguration(Constants.extensionConfigSectionName);
+	if (config) {
+		let logDebugInfo = config[Constants.configLogDebugInfo];
+		if (logDebugInfo) {
+			launchArgs.push('--enable-logging');
+		}
+	}
 
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
