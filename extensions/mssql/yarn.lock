@@ -51,6 +51,7 @@ core-util-is@~1.0.0:
 
 "dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#0.1.5":
   version "0.1.5"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/21b0bacfc759689a6c280408528c6029a21b1abf"
   dependencies:
     vscode-languageclient "3.5.0"
 
