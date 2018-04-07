@@ -35,6 +35,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
+import { Emitter } from 'vs/base/common/event';
 
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
@@ -63,11 +64,16 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			return;
 		}
 		this._collapsed = val;
+		if (this.collapsedStateChangedEmitter) {
+			this.collapsedStateChangedEmitter.fire(this._collapsed);
+		}
 		this._changeref.detectChanges();
 		if (!val) {
 			this.loadWidget();
 		}
 	}
+
+	private collapsedStateChangedEmitter: Emitter<boolean>;
 
 	@memoize
 	public get guid(): string {
@@ -108,7 +114,8 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
 		if (this._actions) {
 			if (this.collapsable) {
-				this._actionbar.push(this._bootstrap.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed), { icon: true, label: false });
+				this.collapsedStateChangedEmitter = new Emitter<boolean>();
+				this._actionbar.push(this._bootstrap.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed, this.collapsedStateChangedEmitter.event), { icon: true, label: false });
 			}
 			this._actionbar.push(this._bootstrap.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this._component.actionsContext), { icon: true, label: false });
 		}
