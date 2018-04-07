@@ -37,7 +37,7 @@ const componentRegistry = <IComponentRegistry> Registry.as(Extensions.ComponentC
 	`
 })
 export class ModelComponentWrapper extends AngularDisposable implements OnInit {
-	@Input() private descriptor: IComponentDescriptor;
+	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
 	@memoize
@@ -122,6 +122,8 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		try {
 			componentRef = viewContainerRef.createComponent(componentFactory, 0, injector);
 			this._componentInstance = componentRef.instance;
+			this._componentInstance.descriptor = this.descriptor;
+			this._componentInstance.modelStore = this.modelStore;
 			this._changeref.detectChanges();
 		} catch (e) {
 			error('Error rendering component: {0}', e);

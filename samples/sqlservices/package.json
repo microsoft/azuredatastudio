@@ -25,6 +25,7 @@
                     "nav-section": [
                         {
                             "id": "sqlservices",
+                            "title": "Services",
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1

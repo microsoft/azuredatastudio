@@ -7,8 +7,6 @@
 
 import * as sqlops from 'sqlops';
 import * as Utils from '../utils';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as vscode from 'vscode';
 import { ApiWrapper } from '../apiWrapper';
 

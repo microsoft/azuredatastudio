@@ -9,11 +9,11 @@ import { registerContainerType, registerNavSectionContainerType } from 'sql/plat
 
 export const MODELVIEW_CONTAINER = 'modelview-container';
 
-let webviewSchema: IJSONSchema = {
+let modelviewSchema: IJSONSchema = {
 	type: 'null',
 	description: nls.localize('dashboard.container.modelview', "The model-backed view that will be displayed in this tab."),
 	default: null
 };
 
-registerContainerType(MODELVIEW_CONTAINER, webviewSchema);
-registerNavSectionContainerType(MODELVIEW_CONTAINER, webviewSchema);
+registerContainerType(MODELVIEW_CONTAINER, modelviewSchema);
+registerNavSectionContainerType(MODELVIEW_CONTAINER, modelviewSchema);

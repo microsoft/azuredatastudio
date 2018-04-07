@@ -12,13 +12,31 @@
 	"version": "0.2.0",
     "configurations": [
         {
-            "name": "Extension",
+            "name": "Debug in SqlOps install",
             "type": "sqlopsExtensionHost",
             "request": "launch",
             "runtimeExecutable": "sqlops",
             "args": [
                 "--extensionDevelopmentPath=${workspaceFolder}"
             ]
+        },
+        {
+            "name": "Debug in enlistment",
+            "type": "sqlopsExtensionHost",
+            "request": "launch",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/../../scripts/sql.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/../../scripts/sql.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/../../scripts/sql.sh"
+			},
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}"
+            ],
+            "timeout": 20000
         }
     ]
 }

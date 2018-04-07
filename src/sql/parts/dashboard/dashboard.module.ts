@@ -40,6 +40,7 @@ import { DashboardModelViewContainer } from 'sql/parts/dashboard/containers/dash
 import { DashboardErrorContainer } from 'sql/parts/dashboard/containers/dashboardErrorContainer.component';
 import { DashboardNavSection } from 'sql/parts/dashboard/containers/dashboardNavSection.component';
 import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
+import { ModelComponentWrapper } from 'sql/parts/dashboard/contents/mvvm/modelComponentWrapper.component';
 import { ModelViewContent } from 'sql/parts/dashboard/contents/modelViewContent.component';
 import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
 import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
@@ -51,10 +52,10 @@ import { JobsViewComponent } from 'sql/parts/jobManagement/views/jobsView.compon
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
 
-let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer, DashboardModelViewContainer,
+let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
 					DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
 					ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
-					JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent];
+					JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, DashboardModelViewContainer, ModelComponentWrapper];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';

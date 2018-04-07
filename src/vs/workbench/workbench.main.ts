@@ -176,6 +176,7 @@ import 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 import 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import 'sql/parts/dashboard/containers/dashboardContainer.contribution';
 import 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
+import 'sql/parts/dashboard/containers/dashboardModelViewContainer.contribution';
 import 'sql/parts/dashboard/common/dashboardTab.contribution';
 /* Extension Host */
 import 'sql/workbench/api/electron-browser/sqlExtensionHost.contribution';

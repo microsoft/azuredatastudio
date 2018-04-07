@@ -5,8 +5,10 @@
 
 // This is the place for API experiments and proposal.
 
+import * as core from 'sqlops';
+import * as vscode from 'vscode';
+
 declare module 'sqlops' {
-	import * as vscode from 'vscode';
 
 	export interface ViewModelBuilder {
 
@@ -125,12 +127,12 @@ declare module 'sqlops' {
 		/**
 		 * The connection info for the dashboard the webview exists on
 		 */
-		readonly connection: connection.Connection;
+		readonly connection: core.connection.Connection;
 
 		/**
 		 * The info on the server for the dashboard
 		 */
-		readonly serverInfo: ServerInfo;
+		readonly serverInfo: core.ServerInfo;
 
 		/**
 		 * The model backing the model-based view

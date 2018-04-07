@@ -58,7 +58,9 @@ gulp.task('compile:src', function(done) {
         // TODO: Reinstate localization code
         // .pipe(nls.rewriteLocalizeCalls())
         // .pipe(nls.createAdditionalLanguageFiles(nls.coreLanguages, config.paths.project.root + '/localization/i18n', undefined, false))
-        .pipe(srcmap.write('.', { sourceRoot: function(file) { return file.cwd + '/src'; }}))
+        .pipe(srcmap.write('.'
+            // TODO sourceRoot is disabled as it's conflicting with sources adding a relative path. Add back if we can figure why this is happening
+        ))
         .pipe(gulp.dest('out/src/'));
 });
 
