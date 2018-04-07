@@ -17,7 +17,7 @@ import { IAdminService } from 'sql/parts/admin/common/adminService';
 import * as Constants from 'sql/common/constants';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import { Task } from 'sql/platform/tasks/common/tasks';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 
 import { ObjectMetadata } from 'sqlops';
 

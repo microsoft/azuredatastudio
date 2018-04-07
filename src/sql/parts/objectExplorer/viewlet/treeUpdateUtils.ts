@@ -7,11 +7,11 @@ import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionPr
 import { IConnectionManagementService, IConnectionCompletionOptions, IConnectionCallbacks } from 'sql/parts/connection/common/connectionManagement';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
-import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
+import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import errors = require('vs/base/common/errors');
 
 export class TreeUpdateUtils {

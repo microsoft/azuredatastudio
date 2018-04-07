@@ -7,14 +7,14 @@ import 'vs/css!./media/serverTreeActions';
 import nls = require('vs/nls');
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ServerTreeRenderer } from 'sql/parts/registeredServer/viewlet/serverTreeRenderer';
-import { ServerTreeDataSource } from 'sql/parts/registeredServer/viewlet/serverTreeDataSource';
-import { ServerTreeController } from 'sql/parts/registeredServer/viewlet/serverTreeController';
-import { ServerTreeActionProvider } from 'sql/parts/registeredServer/viewlet/serverTreeActionProvider';
+import { ServerTreeRenderer } from 'sql/parts/objectExplorer/viewlet/serverTreeRenderer';
+import { ServerTreeDataSource } from 'sql/parts/objectExplorer/viewlet/serverTreeDataSource';
+import { ServerTreeController } from 'sql/parts/objectExplorer/viewlet/serverTreeController';
+import { ServerTreeActionProvider } from 'sql/parts/objectExplorer/viewlet/serverTreeActionProvider';
 import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IController } from 'vs/base/parts/tree/browser/tree';
-import { ServerTreeDragAndDrop, RecentConnectionsDragAndDrop } from 'sql/parts/registeredServer/viewlet/dragAndDropController';
-import { RecentConnectionDataSource } from 'sql/parts/registeredServer/viewlet/recentConnectionDataSource';
+import { ServerTreeDragAndDrop, RecentConnectionsDragAndDrop } from 'sql/parts/objectExplorer/viewlet/dragAndDropController';
+import { RecentConnectionDataSource } from 'sql/parts/objectExplorer/viewlet/recentConnectionDataSource';
 
 export class TreeCreationUtils {
 	/**

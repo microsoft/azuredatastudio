@@ -9,19 +9,19 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IConnectionManagementService, IConnectionCompletionOptions, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
-import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
+import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import {
 	NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction,
 	ScriptExecuteAction, ScriptDeleteAction, ScriptAlterAction
 } from 'sql/workbench/common/actions';
-import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
-import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
-import { TreeSelectionHandler } from 'sql/parts/registeredServer/viewlet/treeSelectionHandler';
+import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
+import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
+import { TreeSelectionHandler } from 'sql/parts/objectExplorer/viewlet/treeSelectionHandler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import * as Constants from 'sql/parts/connection/common/constants';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';

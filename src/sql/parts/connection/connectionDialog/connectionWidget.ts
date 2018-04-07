@@ -343,6 +343,12 @@ export class ConnectionWidget {
 	public focusOnOpen(): void {
 		this._serverNameInputBox.focus();
 		this.focusPasswordIfNeeded();
+		this.clearValidationMessages();
+	}
+
+	private clearValidationMessages(): void {
+		this._serverNameInputBox.hideMessage();
+		this._userNameInputBox.hideMessage();
 	}
 
 	private getModelValue(value: string): string {

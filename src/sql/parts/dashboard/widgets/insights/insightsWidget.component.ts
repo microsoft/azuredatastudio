@@ -187,13 +187,14 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	private _updateChild(result: SimpleExecuteResult): void {
+		this.componentHost.viewContainerRef.clear();
+
 		if (result.rowCount === 0) {
 			this.showError(nls.localize('noResults', 'No results to show'));
 			return;
 		}
 
 		let componentFactory = this._componentFactoryResolver.resolveComponentFactory<IInsightsView>(insightRegistry.getCtorFromId(this._typeKey));
-		this.componentHost.viewContainerRef.clear();
 
 		let componentRef = this.componentHost.viewContainerRef.createComponent(componentFactory);
 		let componentInstance = componentRef.instance;
