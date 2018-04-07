@@ -21,7 +21,7 @@ export class DashboardViewService implements IDashboardViewService {
 		this._onRegisteredWebview.fire(widget);
 	}
 
-	registerModelView(widget: IDashboardModelView) {
-		this._onRegisteredModelView.fire(widget);
+	registerModelView(view: IDashboardModelView) {
+		this._onRegisteredModelView.fire(view);
 	}
 }

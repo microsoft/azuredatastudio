@@ -179,7 +179,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 	constructor(
 		mainContext: IMainContext
 	) {
-		this._proxy = mainContext.get(SqlMainContext.MainThreadModelView);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadModelView);
 	}
 
 	$onClosed(handle: number): void {

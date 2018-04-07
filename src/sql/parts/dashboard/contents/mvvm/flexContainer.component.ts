@@ -8,17 +8,16 @@ import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFacto
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList,
 } from '@angular/core';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/dashboard/contents/models/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/dashboard/contents/mvvm/interfaces';
 import { FlexContainerConfig, FlexItemConfig } from 'sqlops';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { ComponentDescriptor } from './modelBuilder';
-import { ModelContainerBase } from './modelComponentBase';
-import { ModelComponentWrapper } from 'sql/parts/dashboard/contents/models/modelComponentWrapper.component';
+import { ContainerBase } from 'sql/parts/dashboard/contents/mvvm/componentBase';
+import { ModelComponentWrapper } from 'sql/parts/dashboard/contents/mvvm/modelComponentWrapper.component';
 
 class FlexItem {
-	constructor(public descriptor: ComponentDescriptor, public flexConfig: FlexItemConfig) {}
+	constructor(public descriptor: IComponentDescriptor, public flexConfig: FlexItemConfig) {}
 }
 @Component({
 	template: `
@@ -30,7 +29,7 @@ class FlexItem {
 		</div>
 	`
 })
-export default class FlexContainer extends ModelContainerBase<FlexItemConfig> implements IComponent, OnDestroy {
+export default class FlexContainer extends ContainerBase<FlexItemConfig> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _flexFlow: string;
@@ -45,7 +44,7 @@ export default class FlexContainer extends ModelContainerBase<FlexItemConfig> im
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => Injector)) injector: Injector
 	) {
-		super(componentFactoryResolver, ref, bootstrap, changeRef, injector);
+		super(componentFactoryResolver, injector, ref, bootstrap, changeRef);
 		this._flexFlow = '';	// default
 		this._justifyContent = '';	// default
 	}

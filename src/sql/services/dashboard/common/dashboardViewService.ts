@@ -29,8 +29,8 @@ export interface IDashboardModelView extends IView {
 	createComponent(type: ModelComponentTypes, args: any): string;
 	clearContainer(componentId: string): void;
 	addToContainer(containerId: string, childComponentid: string, config: any): void;
-	setLayout(containerId: string, layout: any): void;
-	setProperties(containerId: string, properties: { [key: string]: any }): void;
+	setLayout(componentId: string, layout: any): void;
+	setProperties(componentId: string, properties: { [key: string]: any }): void;
 }
 
 export interface IDashboardViewService {

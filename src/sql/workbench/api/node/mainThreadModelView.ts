@@ -23,7 +23,7 @@ export class MainThreadModelView implements MainThreadModelViewShape {
 		context: IExtHostContext,
 		@IDashboardViewService viewService: IDashboardViewService
 	) {
-		this._proxy = context.get(SqlExtHostContext.ExtHostModelView);
+		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModelView);
 		viewService.onRegisteredModelView(view => {
 			if (this.knownWidgets.includes(view.id)) {
 				let handle = MainThreadModelView._handlePool++;

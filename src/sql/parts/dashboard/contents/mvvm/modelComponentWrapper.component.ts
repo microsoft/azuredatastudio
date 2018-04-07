@@ -13,7 +13,8 @@ import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost
 import { error } from 'sql/base/common/log';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { IComponent, IComponentDescriptor, IModelStore } from './interfaces';
+import { IComponent, IComponentConfig, IComponentDescriptor, IModelStore, COMPONENT_CONFIG } from './interfaces';
+import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -25,6 +26,8 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as nls from 'vs/nls';
+
+const componentRegistry = <IComponentRegistry> Registry.as(Extensions.ComponentContribution);
 
 @Component({
 	selector: 'model-component-wrapper',
@@ -66,7 +69,7 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 	ngAfterViewInit() {
 		this.updateTheme(this._bootstrap.themeService.getColorTheme());
 		if (this.componentHost) {
-			this.loadWidget();
+			this.loadComponent();
 		}
 		this._changeref.detectChanges();
 		this.layout();
@@ -88,12 +91,24 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		return this._componentInstance.descriptor.id;
 	}
 
+	private get componentConfig(): IComponentConfig {
+		return {
+			descriptor: this.descriptor,
+			modelStore: this.modelStore
+		};
+	}
 
-	private loadWidget(): void {
-		let key = this.descriptor.type;
-		let selector = this.getOrCreateSelector(key);
+
+	private loadComponent(): void {
+		if (!this.descriptor || !this.descriptor.type) {
+			error('No descriptor or type defined for this comonent');
+			return;
+		}
+
+		let selector = componentRegistry.getCtorFromId(this.descriptor.type);
+
 		if (selector === undefined) {
-			error(nls.localize('selectorNotFound', 'Could not find selector'), key);
+			error('No selector defined for type {0}', this.descriptor.type);
 			return;
 		}
 
@@ -102,72 +117,39 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		let viewContainerRef = this.componentHost.viewContainerRef;
 		viewContainerRef.clear();
 
-		let injector = ReflectiveInjector.resolveAndCreate([{ provide: WIDGET_CONFIG, useValue: this._config }], this._injector);
+		let injector = ReflectiveInjector.resolveAndCreate([{ provide: COMPONENT_CONFIG, useValue: this.componentConfig }], this._injector);
 		let componentRef: ComponentRef<IComponent>;
 		try {
 			componentRef = viewContainerRef.createComponent(componentFactory, 0, injector);
 			this._componentInstance = componentRef.instance;
-			let actions = componentRef.instance.actions;
-			if (componentRef.instance.refresh) {
-				actions.push(new RefreshWidgetAction(componentRef.instance.refresh, componentRef.instance));
-			}
-			if (actions !== undefined && actions.length > 0) {
-				this._actions = actions;
-				this._changeref.detectChanges();
-			}
+			this._changeref.detectChanges();
 		} catch (e) {
-			error('Error rendering widget', key, e);
+			error('Error rendering component: {0}', e);
 			return;
 		}
 		let el = <HTMLElement>componentRef.location.nativeElement;
 
 		// set widget styles to conform to its box
 		el.style.overflow = 'hidden';
-		el.style.flex = '1 1 auto';
+		// el.style.flex = '1 1 auto';
 		el.style.position = 'relative';
 	}
 
-	/**
-	 * Attempts to get the selector for a given key, and if none is defined tries
-	 * to load it from the widget registry and configure as needed
-	 *
-	 * @private
-	 * @param {string} key
-	 * @returns {Type<IDashboardWidget>}
-	 * @memberof DashboardWidgetWrapper
-	 */
-	private getOrCreateSelector(key: string): Type<IDashboardWidget> {
-		let selector = componentMap[key];
-		if (selector === undefined) {
-			// Load the widget from the registry
-			let widgetRegistry = <IInsightRegistry>Registry.as(Extensions.InsightContribution);
-			let insightConfig = widgetRegistry.getRegisteredExtensionInsights(key);
-			if (insightConfig === undefined) {
-				return undefined;
-			}
-			// Save the widget for future use
-			selector = componentMap['insights-widget'];
-			delete this._config.widget[key];
-			this._config.widget['insights-widget'] = insightConfig;
-		}
-		return selector;
-	}
-
 	private updateTheme(theme: IColorTheme): void {
+		// TODO handle theming appropriately
 		let el = <HTMLElement>this._ref.nativeElement;
-		let headerEl: HTMLElement = this.header.nativeElement;
 		let borderColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true);
 		let backgroundColor = theme.getColor(colors.editorBackground, true);
 		let foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
 		let border = theme.getColor(colors.contrastBorder, true);
 
-		if (this._config.background_color) {
-			backgroundColor = theme.getColor(this._config.background_color);
-		}
+		// if (this._config.background_color) {
+		// 	backgroundColor = theme.getColor(this._config.background_color);
+		// }
 
-		if (this._config.border === 'none') {
-			borderColor = undefined;
-		}
+		// if (this._config.border === 'none') {
+		// 	borderColor = undefined;
+		// }
 
 		if (backgroundColor) {
 			el.style.backgroundColor = backgroundColor.toString();
@@ -177,33 +159,5 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 			el.style.color = foregroundColor.toString();
 		}
 
-		let borderString = undefined;
-		if (border) {
-			borderString = border.toString();
-			el.style.borderColor = borderString;
-			el.style.borderWidth = '1px';
-			el.style.borderStyle = 'solid';
-		} else if (borderColor) {
-			borderString = borderColor.toString();
-			el.style.border = '3px solid ' + borderColor.toString();
-		} else {
-			el.style.border = 'none';
-		}
-
-		if (borderString) {
-			headerEl.style.backgroundColor = borderString;
-		} else {
-			headerEl.style.backgroundColor = '';
-		}
-
-		if (this._config.fontSize) {
-			headerEl.style.fontSize = this._config.fontSize;
-		}
-		if (this._config.fontWeight) {
-			headerEl.style.fontWeight = this._config.fontWeight;
-		}
-		if (this._config.padding) {
-			headerEl.style.padding = this._config.padding;
-		}
 	}
 }

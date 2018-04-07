@@ -3,10 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import FlexContainer from './flexContainer.component';
-import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
-import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-
-export const FLEX_CONTAINER = 'flex-container';
-
-registerComponentType(FLEX_CONTAINER, FlexContainer);
+dashboard-modelview-container {
+	height: 100%;
+	width : 100%;
+	display: block;
+}
