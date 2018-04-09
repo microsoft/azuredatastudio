@@ -479,7 +479,7 @@ export abstract class GridParentComponent {
 		const self = this;
 
 		let value = self.getCellValueString(dataContext, colDef);
-		if (value.startsWith('<ShowPlanXML')) {
+		if (value.startsWith('<ShowPlanXML') && colDef.name !== 'XML Showplan') {
 			self.handleQueryPlanLink(cellRef, value);
 		} else {
 			self.handleLink(cellRef, row, dataContext, colDef, 'xml');
