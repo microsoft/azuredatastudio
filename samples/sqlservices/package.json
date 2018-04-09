@@ -11,6 +11,10 @@
     "categories": [
         "Other"
     ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/src/extension",
     "contributes": {
         "dashboard.tabs": [
             {

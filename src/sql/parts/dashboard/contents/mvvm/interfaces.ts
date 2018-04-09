@@ -1,9 +1,10 @@
-import { InjectionToken } from "@angular/core";
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import { InjectionToken } from '@angular/core';
+
+import * as sqlops from 'sqlops';
 
 /**
  * An instance of a model-backed component. This will be a UI element
@@ -68,5 +69,26 @@ export interface IModelStore {
 	 * @param {(component: IComponent) => void} action some action to perform
 	 * @memberof IModelStore
 	 */
-	eventuallyRunOnComponent(componentId: string, action: (component: IComponent) => void): void;
+	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): Promise<T>;
+}
+
+export enum ModelComponentTypes {
+	NavContainer,
+	FlexContainer,
+	Card,
+	DashboardWidget,
+	DashboardWebview
+}
+
+export interface IComponentConfigurationShape {
+	type: ModelComponentTypes;
+	id: string;
+	properties?:  { [key: string]: any };
+	layout?: any;
+	items?: IItemConfig[];
+}
+
+export interface IItemConfig {
+	component: IComponentConfigurationShape;
+	config: any;
 }

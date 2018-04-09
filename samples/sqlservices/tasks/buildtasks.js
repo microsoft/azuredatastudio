@@ -50,17 +50,18 @@ gulp.task('compile:src', function(done) {
         .pipe(srcmap.init())
         .pipe(tsProject())
         .on('error', function() {
-            if(process.env.BUILDMACHINE) {
-                done('Failed to compile extension source, see above.');
+            if (process.env.BUILDMACHINE) {
+                done('Extension Tests failed to build. See Above.');
                 process.exit(1);
             }
         })
-        // TODO: Reinstate localization code
-        // .pipe(nls.rewriteLocalizeCalls())
-        // .pipe(nls.createAdditionalLanguageFiles(nls.coreLanguages, config.paths.project.root + '/localization/i18n', undefined, false))
-        .pipe(srcmap.write('.'
-            // TODO sourceRoot is disabled as it's conflicting with sources adding a relative path. Add back if we can figure why this is happening
-        ))
+        //.pipe(nls.rewriteLocalizeCalls())
+        //.pipe(nls.createAdditionalLanguageFiles(nls.coreLanguages, config.paths.project.root + '/localization/i18n', undefined, false))
+        .pipe(srcmap.write('.', {
+            sourceRoot: function(file) { 
+                return file.cwd + '/src';
+            }
+        }))
         .pipe(gulp.dest('out/src/'));
 });
 

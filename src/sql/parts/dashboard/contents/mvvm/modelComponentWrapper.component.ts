@@ -101,7 +101,7 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 
 	private loadComponent(): void {
 		if (!this.descriptor || !this.descriptor.type) {
-			error('No descriptor or type defined for this comonent');
+			error('No descriptor or type defined for this component');
 			return;
 		}
 

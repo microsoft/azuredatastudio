@@ -33,24 +33,28 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	public activate(): Promise<boolean> {
-		sqlops.dashboard.registerModelViewProvider('sqlservices', view => {
-			let flexModel = view.modelBuilder.createFlexContainer()
-				.withLayout({
-					flexFlow: 'row'
-				}).withComponents([
-					view.modelBuilder.createFlexContainer().withLayout({ flexFlow: 'column'}).withComponents([
-						view.modelBuilder.createCard()
-						.withConfig('label1', 'value1', [{ label: 'action', taskId: 'sqlservices.clickTask'}])
+		sqlops.dashboard.registerModelViewProvider('sqlservices', async view => {
+			let flexModel = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'row'
+			}).withItems([
+				// 1st child panel with N cards
+				view.modelBuilder.flexContainer()
+					.withLayout({ flexFlow: 'column'})
+					.withItems([
+						view.modelBuilder.card().withLabelValue('label1', 'value1')
+						.withActions([{ label: 'action', taskId: 'sqlservices.clickTask'}])
 					]),
-
-					view.modelBuilder.createFlexContainer().withLayout({ flexFlow: 'column'}).withComponents([
-						view.modelBuilder.createCard()
-						.withConfig('label2', 'value2', [{ label: 'action2', taskId: 'sqlservices.clickTask'}])
+				// 2nd child panel with N cards
+				view.modelBuilder.flexContainer()
+					.withLayout({ flexFlow: 'column'})
+					.withItems([
+						view.modelBuilder.card().withLabelValue('label2', 'value2')
+						.withActions([{ label: 'action', taskId: 'sqlservices.clickTask'}])
 					])
-				], {
-					flex: '0 1 50%'
-				});
-			view.model = flexModel;
+			], { flex: '0 1 50%' });
+
+			await view.initializeModel(flexModel);
 		});
 
 		sqlops.tasks.registerTask('sqlservices.clickTask', (profile) => {

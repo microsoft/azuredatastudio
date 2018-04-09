@@ -32,12 +32,8 @@ export default class CardComponent extends ComponentBase implements IComponent, 
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
-	constructor(
-		@Inject(forwardRef(() => ElementRef)) ref: ElementRef,
-		@Inject(forwardRef(() => DashboardServiceInterface)) bootstrap: DashboardServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
-	) {
-		super(ref, bootstrap, changeRef);
+	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
+		super(changeRef);
 	}
 
 	ngOnInit(): void {
@@ -47,7 +43,6 @@ export default class CardComponent extends ComponentBase implements IComponent, 
 	ngOnDestroy(): void {
 		this.baseDestroy();
 	}
-
 
 	/// IComponent implementation
 

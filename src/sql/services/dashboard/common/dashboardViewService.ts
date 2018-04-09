@@ -9,7 +9,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import Event from 'vs/base/common/event';
 
 import * as sqlops from 'sqlops';
-import { ModelComponentTypes } from '../../../workbench/api/node/sqlExtHost.protocol';
+import { IComponentConfigurationShape, IItemConfig } from 'sql/parts/dashboard/contents/mvvm/interfaces';
 
 export const SERVICE_ID = 'dashboardViewService';
 
@@ -25,10 +25,9 @@ export interface IDashboardWebview extends IView {
 }
 
 export interface IDashboardModelView extends IView {
-	setModel(componentId: string): void;
-	createComponent(type: ModelComponentTypes, args: any): string;
+	initializeModel(rootComponent: IComponentConfigurationShape): void;
 	clearContainer(componentId: string): void;
-	addToContainer(containerId: string, childComponentid: string, config: any): void;
+	addToContainer(containerId: string, item: IItemConfig): void;
 	setLayout(componentId: string, layout: any): void;
 	setProperties(componentId: string, properties: { [key: string]: any }): void;
 }

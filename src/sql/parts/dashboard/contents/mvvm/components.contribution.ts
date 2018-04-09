@@ -4,10 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import FlexContainer from './flexContainer.component';
+import CardComponent from './card.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
-import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { ModelComponentTypes } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { ModelComponentTypes } from 'sql/parts/dashboard/contents/mvvm/interfaces';
 
 export const FLEX_CONTAINER = 'flex-container';
-
 registerComponentType(FLEX_CONTAINER, ModelComponentTypes.FlexContainer, FlexContainer);
+
+export const CARD_COMPONENT = 'card-component';
+registerComponentType(CARD_COMPONENT, ModelComponentTypes.Card, CardComponent);

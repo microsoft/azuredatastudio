@@ -169,6 +169,8 @@ import 'sql/parts/dashboard/widgets/explorer/explorerWidget.contribution';
 import 'sql/parts/dashboard/widgets/tasks/tasksWidget.contribution';
 import 'sql/parts/dashboard/widgets/webview/webviewWidget.contribution';
 import 'sql/parts/dashboard/dashboardConfig.contribution';
+/* MVVM */
+import 'sql/parts/dashboard/contents/mvvm/components.contribution';
 /* Containers */
 import 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
 import 'sql/parts/dashboard/containers/dashboardControlHostContainer.contribution';

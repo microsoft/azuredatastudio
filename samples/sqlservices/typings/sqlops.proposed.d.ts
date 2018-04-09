@@ -10,44 +10,96 @@ import * as vscode from 'vscode';
 
 declare module 'sqlops' {
 
-	export interface ViewModelBuilder {
+	/**
+	 * Supports defining a model that can be instantiated as a view in the UI
+	 * @export
+	 * @interface ModelBuilder
+	 */
+	export interface ModelBuilder {
+		component<T extends Component>(componentTypeName: string): ComponentConfiguration<T>;
+		navContainer(): NavContainerConfiguration;
+		flexContainer(): FlexContainerConfiguration;
+		card(): CardConfiguration;
+		dashboardWidget(widgetId: string): ComponentConfiguration<WidgetComponent>;
+		dashboardWebview(webviewId: string): ComponentConfiguration<WebviewComponent>;
+	}
 
-		createNavContainer(): NavContainer;
-		createFlexContainer(): FlexContainer;
-		createCard(): CardComponent;
-		createDashboardWidget(id: string): CardComponent;
-		createDashboardWebview(id: string): CardComponent;
+	export interface ComponentConfiguration<T extends Component> {
+		withProperties<U>(properties: U): ComponentConfiguration<T>;
+	}
+
+	export interface ContainerConfiguration<T extends Component, U, V> extends ComponentConfiguration<T> {
+		withLayout(layout: U): ContainerConfiguration<T,U,V>;
+		addItem(component:ComponentConfiguration<any>, itemLayout ?: V): ContainerConfiguration<T,U,V>;
+		withItems(components: Array<ComponentConfiguration<any>>, itemLayout ?: V): ContainerConfiguration<T,U,V>;
+	}
+
+	export interface NavContainerConfiguration extends ContainerConfiguration<NavContainer, any, any> {
+
+	}
+
+	export interface FlexContainerConfiguration extends ContainerConfiguration<FlexContainer, FlexLayout, FlexItemLayout> {
+
+	}
+
+	export interface CardConfiguration extends ComponentConfiguration<CardComponent> {
+		withLabelValue(label: string, value: string): CardConfiguration;
+		withActions(actions: ActionDescriptor[]): CardConfiguration;
 	}
 
 	export interface Component {
-		id: string;
+		readonly id: string;
+		/**
+		 * Sends any updated properties of the component to the UI
+		 *
+		 * @returns {Thenable<boolean>} Thenable that completes once the update
+		 * has been applied in the UI
+		 * @memberof Component
+		 */
+		updateProperties(): Thenable<boolean>;
 	}
+
 	/**
 	 * A component that contains other components
 	 */
-	export interface Container extends Component {
+	export interface Container<T,U> extends Component {
 		/**
-		 * Adds a collection of components.
+		 * Removes all child items from this container
 		 *
-		 * @param {Component[]} components the components to be added as children
-		 * @param {*} [config] Optional configuration to define how the child items
-		 * should be laid out
-		 * @returns {Container} the original container, to support fluent-style API calls
+		 * @returns {Thenable<void>} completion token resolved when the UI is updated
+		 * @memberof Container
 		 */
-		withComponents(components: Component[], config ?: any): Container;
+		clearItems(): Thenable<void>;
+		/**
+		 * A copy of the child items array. This cannot be added to directly -
+		 * components must be created using the create methods instead
+		 */
+		readonly items: Component[];
+		/**
+		 * Creates a collection of child components and adds them all to this container
+		 *
+		 * @param itemConfigs the definitions
+		 * @param {*} [itemLayout] Optional layout for the child items
+		 */
+		createItems(itemConfigs: Array<ComponentConfiguration<any>>, itemLayout ?: U): Thenable<Array<Component>>;
 
 		/**
-		 * Adds a single component.
+		 * Creates a child component and adds it to this container.
 		 *
 		 * @param {Component} component the component to be added
-		 * @param {*} [config] Optional configuration to define how the child item
-		 * should be laid out
-		 * @returns {Container} the original container,to support fluent-style API calls
+		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
-		addComponent(component: Component, config ?: any): Container;
+		createItem(component: ComponentConfiguration<any>, itemLayout ?: U): Thenable<Component>;
+
+		/**
+		 * Defines the layout for this container
+		 *
+		 * @param {T} layout object
+		 */
+		setLayout(layout: T): Thenable<void>;
 	}
 
-	export interface NavContainer extends Container {
+	export interface NavContainer extends Container<any, any> {
 
 	}
 
@@ -56,7 +108,7 @@ declare module 'sqlops' {
 	 * addition of content to a container with a flexible layout
 	 * and use of space.
 	 */
-	export interface FlexContainerConfig {
+	export interface FlexLayout {
 		/**
 		 * Matches the flex-flow CSS property and its available values.
 		 * To layout as a vertical view use "column", and for horizontal
@@ -69,7 +121,7 @@ declare module 'sqlops' {
 		justifyContent?: string;
 	}
 
-	export interface FlexItemConfig {
+	export interface FlexItemLayout {
 		/**
 		 * Matches the order CSS property and its available values.
 		 */
@@ -81,14 +133,7 @@ declare module 'sqlops' {
 		flex?: string;
 	}
 
-	export interface FlexContainer extends Container {
-		/**
-		 * Defines the layout for this flex container
-		 *
-		 * @param {FlexContainerConfig} layout
-		 * @returns {FlexContainer} the original container, to support fluent-style API calls
-		 */
-		withLayout(layout: FlexContainerConfig): FlexContainer;
+	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
 	}
 
 	/**
@@ -107,11 +152,18 @@ declare module 'sqlops' {
 		taskId: string;
 	}
 
-	export interface CardComponent {
+	export interface CardComponent extends Component {
 		label: string;
 		value: string;
 		actions: ActionDescriptor[];
-		withConfig(label: string, value: string, actions?: ActionDescriptor[]);
+	}
+
+	export interface WidgetComponent extends Component {
+		widgetId: string;
+	}
+
+	export interface WebviewComponent extends Component {
+		webviewId: string;
 	}
 
 	/**
@@ -127,19 +179,29 @@ declare module 'sqlops' {
 		/**
 		 * The connection info for the dashboard the webview exists on
 		 */
-		readonly connection: core.connection.Connection;
+		readonly connection: connection.Connection;
 
 		/**
 		 * The info on the server for the dashboard
 		 */
-		readonly serverInfo: core.ServerInfo;
+		readonly serverInfo: ServerInfo;
 
 		/**
 		 * The model backing the model-based view
 		 */
-		readonly modelBuilder: ViewModelBuilder;
+		readonly modelBuilder: ModelBuilder;
 
-		model: Component;
+		/**
+		 * Initializes the model with a root component definition.
+		 * Once this has been done, the components will be laid out in the UI and
+		 * can be accessed and altered as needed.
+		 *
+		 * @template T
+		 * @param {ComponentConfiguration<T>} root
+		 * @returns {Thenable<T>}
+		 * @memberof DashboardModelView
+		 */
+		initializeModel<T extends Component>(root: ComponentConfiguration<T>): Thenable<T>;
 	}
 
 	export namespace dashboard {

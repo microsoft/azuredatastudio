@@ -10,9 +10,10 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import * as sqlops from 'sqlops';
 import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
+import { Deferred } from 'sql/base/common/promise';
 
 const componentRegistry = <IComponentRegistry> Registry.as(Extensions.ComponentContribution);
-interface IComponentAction { (component: IComponent): void; }
+
 
 class ComponentDescriptor implements IComponentDescriptor {
 	constructor(public readonly id: string, public readonly type: string) {
@@ -27,7 +28,7 @@ export class ModelStore implements IModelStore {
 	private nextComponentId: number;
 	private _descriptorMappings: { [x: string]: IComponentDescriptor } = {};
 	private _componentMappings: { [x: string]: IComponent } = {};
-	private _componentActions: { [x: string]: IComponentAction[] } = {};
+	private _componentActions: { [x: string]: Deferred<IComponent> } = {};
 	constructor() {
 		this.storeId = ModelStore.baseId++;
 		this.nextComponentId = 0;
@@ -57,7 +58,7 @@ export class ModelStore implements IModelStore {
 	unregisterComponent(component: IComponent): void {
 		let id = component.descriptor.id;
 		this._componentMappings[id] = undefined;
-		this._componentActions[id] = [];
+		this._componentActions[id] = undefined;
 		// TODO notify model for cleanup
 	}
 
@@ -65,31 +66,33 @@ export class ModelStore implements IModelStore {
 		return this._componentMappings[componentId];
 	}
 
-	eventuallyRunOnComponent(componentId: string, action: (component: IComponent) => void): void {
+	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): Promise<T> {
 		let component = this.getComponent(componentId);
 		if (component) {
-			action(component);
+			return Promise.resolve(action(component));
 		} else {
-			this.addPendingAction(componentId, action);
+			return this.addPendingAction(componentId, action);
 		}
 	}
 
-	private addPendingAction(componentId: string, action: (component: IComponent) => void) {
-		let actions = this._componentActions[componentId];
-		if (!actions) {
-			actions = [];
+	private addPendingAction<T>(componentId: string, action: (component: IComponent) => T): Promise<T> {
+		// We create a promise and chain it onto a tracking promise whose resolve method
+		// will only be called once the component is created
+		let deferredPromise = this._componentActions[componentId];
+		if (!deferredPromise) {
+			deferredPromise = new Deferred();
+			this._componentActions[componentId] = deferredPromise;
 		}
-		actions.push(action);
-		this._componentActions[componentId] = actions;
+		let promise = deferredPromise.promise.then((component) => {
+			return action(component);
+		});
+		return promise;
 	}
 
 	private runPendingActions(componentId: string, component: IComponent) {
-		let actions = this._componentActions[componentId];
-		if (actions) {
-			for (let action of actions) {
-				action(component);
-			}
+		let promiseTracker = this._componentActions[componentId];
+		if (promiseTracker) {
+			promiseTracker.resolve(component);
 		}
-		this._componentActions[componentId] = [];
 	}
 }

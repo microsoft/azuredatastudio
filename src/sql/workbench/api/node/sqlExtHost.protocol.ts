@@ -16,7 +16,7 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
-
+import { ModelComponentTypes, IComponentConfigurationShape, IItemConfig } from 'sql/parts/dashboard/contents/mvvm/interfaces';
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
 	$clear(handle: number, accountKey: sqlops.AccountKey): Thenable<void> { throw ni(); }
@@ -515,22 +515,13 @@ export interface ExtHostModelViewShape {
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
 }
 
-export enum ModelComponentTypes {
-	NavContainer,
-	FlexContainer,
-	Card,
-	DashboardWidget,
-	DashboardWebview
-}
-
 export interface MainThreadModelViewShape extends IDisposable {
-	$registerProvider(widgetId: string): void;
-	$setModel(handle: number, componentId: string): void;
-	$createComponent(handle: number, type: ModelComponentTypes, args?: any): string;
-	$clearContainer(handle: number, componentId: string): void;
-	$addToContainer(handle: number, containerId: string, childComponentid: string, config: any): void;
-	$setLayout(handle: number, componentId: string, layout: any): void;
-	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): void;
+	$registerProvider(id: string): void;
+	$initializeModel(handle: number, rootComponent: IComponentConfigurationShape): Thenable<void>;
+	$clearContainer(handle: number, componentId: string): Thenable<void>;
+	$addToContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
+	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
+	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {

@@ -3,12 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { Type } from '@angular/core';
-import { IComponent } from 'sql/parts/dashboard/contents/mvvm/interfaces';
+import { IComponent, ModelComponentTypes } from 'sql/parts/dashboard/contents/mvvm/interfaces';
 
 import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
-import { ModelComponentTypes } from '../../../workbench/api/node/sqlExtHost.protocol';
 
 export type ComponentIdentifier = string;
 

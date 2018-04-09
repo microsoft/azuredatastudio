@@ -9,27 +9,26 @@ import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFacto
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/dashboard/contents/mvvm/interfaces';
-import { FlexContainerConfig, FlexItemConfig } from 'sqlops';
-import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
+import { FlexLayout, FlexItemLayout } from 'sqlops';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { ContainerBase } from 'sql/parts/dashboard/contents/mvvm/componentBase';
 import { ModelComponentWrapper } from 'sql/parts/dashboard/contents/mvvm/modelComponentWrapper.component';
 
 class FlexItem {
-	constructor(public descriptor: IComponentDescriptor, public flexConfig: FlexItemConfig) {}
+	constructor(public descriptor: IComponentDescriptor, public flexConfig: FlexItemLayout) {}
 }
 @Component({
 	template: `
-		<div *ngIf="_components" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent">
+		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent">
 			<div *ngFor="let item of items" [style.flex]="item.config.flex" [style.order]="item.config.order" >
-				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
+				<model-component-wrapper [descriptor]="item" [modelStore]="modelStore">
 				</model-component-wrapper>
 			</div>
 		</div>
 	`
 })
-export default class FlexContainer extends ContainerBase<FlexItemConfig> implements IComponent, OnDestroy {
+export default class FlexContainer extends ContainerBase<FlexItemLayout> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _flexFlow: string;
@@ -37,14 +36,8 @@ export default class FlexContainer extends ContainerBase<FlexItemConfig> impleme
 
 	@ViewChildren(ModelComponentWrapper) private _componentWrappers: QueryList<ModelComponentWrapper>;
 
-	constructor(
-		@Inject(forwardRef(() => ComponentFactoryResolver)) componentFactoryResolver: ComponentFactoryResolver,
-		@Inject(forwardRef(() => ElementRef)) ref: ElementRef,
-		@Inject(forwardRef(() => DashboardServiceInterface)) bootstrap: DashboardServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => Injector)) injector: Injector
-	) {
-		super(componentFactoryResolver, injector, ref, bootstrap, changeRef);
+	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
+		super(changeRef);
 		this._flexFlow = '';	// default
 		this._justifyContent = '';	// default
 	}
@@ -68,15 +61,7 @@ export default class FlexContainer extends ContainerBase<FlexItemConfig> impleme
 		}
 	}
 
-	public clearContainer(): void {
-		if (this.componentHost && this.componentHost.viewContainerRef) {
-			this.componentHost.viewContainerRef.clear();
-		}
-		this.items = [];
-
-	}
-
-	public setLayout (layout: FlexContainerConfig): void {
+	public setLayout (layout: FlexLayout): void {
 		this._flexFlow = layout.flexFlow ? layout.flexFlow : '';
 		this._justifyContent= layout.justifyContent ? layout.justifyContent : '';
 		this.layout();

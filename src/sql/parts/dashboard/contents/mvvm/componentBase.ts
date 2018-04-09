@@ -9,21 +9,18 @@ import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFacto
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/dashboard/contents/mvvm/interfaces';
-import { FlexContainerConfig, FlexItemConfig } from 'sqlops';
+import { FlexLayout, FlexItemLayout } from 'sqlops';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 
 export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) {}
-
 }
 
 export abstract class ComponentBase implements IComponent, OnDestroy, OnInit {
 
 	constructor(
-		protected _ref: ElementRef,
-		protected _bootstrap: DashboardServiceInterface,
 		protected _changeRef: ChangeDetectorRef) {
 	}
 
@@ -67,22 +64,22 @@ export abstract class ComponentBase implements IComponent, OnDestroy, OnInit {
 export abstract class ContainerBase<T> extends ComponentBase {
 	protected items: ItemDescriptor<T>[];
 
-	@ViewChild(ComponentHostDirective) componentHost: ComponentHostDirective;
-
 	constructor(
-		protected _componentFactoryResolver: ComponentFactoryResolver,
-		protected _injector: Injector,
-		_ref: ElementRef,
-		_bootstrap: DashboardServiceInterface,
 		_changeRef: ChangeDetectorRef
 	) {
-		super(_ref, _bootstrap, _changeRef);
+		super(_changeRef);
 		this.items = [];
 	}
 
 	/// IComponent container-related implementation
 	public addToContainer(componentDescriptor: IComponentDescriptor, config: any): void {
 		this.items.push(new ItemDescriptor(componentDescriptor, config));
+		this._changeRef.detectChanges();
+	}
+
+	public clearContainer(): void {
+		this.items = [];
+		this._changeRef.detectChanges();
 	}
 
 	abstract setLayout (layout: any): void;

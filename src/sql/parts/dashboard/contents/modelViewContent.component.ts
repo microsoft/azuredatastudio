@@ -18,7 +18,6 @@ import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { IDashboardModelView } from 'sql/services/dashboard/common/dashboardViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
-import { ModelComponentTypes } from 'sql/workbench/api/node/sqlExtHost.protocol';
 
 import * as sqlops from 'sqlops';
 import { ViewBase } from 'sql/parts/dashboard/contents/mvvm/viewBase';
@@ -26,7 +25,7 @@ import { ViewBase } from 'sql/parts/dashboard/contents/mvvm/viewBase';
 @Component({
 	selector: 'modelview-content',
 	template: `
-		<div *ngIf="_modelComponentId">
+		<div *ngIf="rootDescriptor">
 			<model-component-wrapper [descriptor]="rootDescriptor" [modelStore]="modelStore">
 			</model-component-wrapper>
 		</div>
@@ -41,7 +40,6 @@ export class ModelViewContent extends ViewBase implements OnInit, IDashboardMode
 	public readonly onMessage: Event<string> = this._onMessage.event;
 
 	private _onMessageDisposable: IDisposable;
-	private _modelComponentId: string;
 
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
