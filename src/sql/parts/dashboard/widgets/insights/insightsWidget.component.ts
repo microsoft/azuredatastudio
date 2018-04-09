@@ -198,11 +198,11 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 		let componentRef = this.componentHost.viewContainerRef.createComponent(componentFactory);
 		let componentInstance = componentRef.instance;
-		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => item.displayValue)) };
 		// check if the setter is defined
 		if (componentInstance.setConfig) {
 			componentInstance.setConfig(this.insightConfig.type[this._typeKey]);
 		}
+		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => item.displayValue)) };
 
 		if (componentInstance.init) {
 			componentInstance.init();
