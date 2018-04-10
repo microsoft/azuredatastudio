@@ -187,21 +187,22 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	private _updateChild(result: SimpleExecuteResult): void {
+		this.componentHost.viewContainerRef.clear();
+
 		if (result.rowCount === 0) {
 			this.showError(nls.localize('noResults', 'No results to show'));
 			return;
 		}
 
 		let componentFactory = this._componentFactoryResolver.resolveComponentFactory<IInsightsView>(insightRegistry.getCtorFromId(this._typeKey));
-		this.componentHost.viewContainerRef.clear();
 
 		let componentRef = this.componentHost.viewContainerRef.createComponent(componentFactory);
 		let componentInstance = componentRef.instance;
-		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => item.displayValue)) };
 		// check if the setter is defined
 		if (componentInstance.setConfig) {
 			componentInstance.setConfig(this.insightConfig.type[this._typeKey]);
 		}
+		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => item.displayValue)) };
 
 		if (componentInstance.init) {
 			componentInstance.init();

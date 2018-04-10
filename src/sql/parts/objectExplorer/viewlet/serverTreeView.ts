@@ -17,18 +17,20 @@ import { localize } from 'vs/nls';
 import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import * as ConnectionUtils from 'sql/parts/connection/common/utils';
-import { ActiveConnectionsFilterAction } from 'sql/parts/registeredServer/viewlet/connectionTreeAction';
+import { ActiveConnectionsFilterAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
-import { TreeCreationUtils } from 'sql/parts/registeredServer/viewlet/treeCreationUtils';
-import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
-import { TreeSelectionHandler } from 'sql/parts/registeredServer/viewlet/treeSelectionHandler';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { TreeCreationUtils } from 'sql/parts/objectExplorer/viewlet/treeCreationUtils';
+import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
+import { TreeSelectionHandler } from 'sql/parts/objectExplorer/viewlet/treeSelectionHandler';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
 import Event, { Emitter } from 'vs/base/common/event';
-import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/registeredServer/common/treeNode';
+import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { SERVER_GROUP_CONFIG, SERVER_GROUP_AUTOEXPAND_CONFIG } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
 
 const $ = builder.$;
 
@@ -52,6 +54,7 @@ export class ServerTreeView {
 		@IThemeService private _themeService: IThemeService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		this._activeConnectionsFilterAction = this._instantiationService.createInstance(
 			ActiveConnectionsFilterAction,
@@ -109,12 +112,10 @@ export class ServerTreeView {
 		// Refresh Tree when these events are emitted
 		this._toDispose.push(this._connectionManagementService.onAddConnectionProfile((newProfile: IConnectionProfile) => {
 			self.handleAddConnectionProfile(newProfile);
-		})
-		);
+		}));
 		this._toDispose.push(this._connectionManagementService.onDeleteConnectionProfile(() => {
 			self.refreshTree();
-		})
-		);
+		}));
 		this._toDispose.push(this._connectionManagementService.onDisconnect((connectionParams) => {
 			if (self.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
 				self.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile);
@@ -124,7 +125,7 @@ export class ServerTreeView {
 		if (this._objectExplorerService && this._objectExplorerService.onUpdateObjectExplorerNodes) {
 			this._toDispose.push(this._objectExplorerService.onUpdateObjectExplorerNodes(args => {
 				if (args.errorMessage) {
-					this.showError(args.errorMessage);
+					self.showError(args.errorMessage);
 				}
 				if (args.connection) {
 					self.onObjectExplorerSessionCreated(args.connection);
@@ -133,9 +134,15 @@ export class ServerTreeView {
 		}
 		return new Promise<void>((resolve, reject) => {
 			self.refreshTree();
-			let root = <ConnectionProfileGroup>this._tree.getInput();
+			let root = <ConnectionProfileGroup>self._tree.getInput();
+
+			let expandGroups: boolean = self._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
+			if (expandGroups) {
+				 self._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
+			}
+
 			if (root && !root.hasValidConnections) {
-				this._treeSelectionHandler.onTreeActionStateChange(true);
+				self._treeSelectionHandler.onTreeActionStateChange(true);
 				resolve();
 			} else {
 				resolve();

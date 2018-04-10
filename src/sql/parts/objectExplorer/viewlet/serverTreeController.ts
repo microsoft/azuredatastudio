@@ -14,9 +14,10 @@ import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { ServerTreeActionProvider } from 'sql/parts/registeredServer/viewlet/serverTreeActionProvider';
-import { ObjectExplorerActionsContext } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
-import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
+import { ServerTreeActionProvider } from 'sql/parts/objectExplorer/viewlet/serverTreeActionProvider';
+import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
+import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
+import { OpenMode } from 'vs/base/parts/tree/browser/treeDefaults';
 
 /**
  * Extends the tree controller to handle clicks on the tree elements
@@ -29,7 +30,10 @@ export class ServerTreeController extends treedefaults.DefaultController {
 		@ITelemetryService private telemetryService: ITelemetryService,
 		@IKeybindingService private keybindingService: IKeybindingService
 	) {
-		super({ clickBehavior: treedefaults.ClickBehavior.ON_MOUSE_DOWN });
+		super({
+			clickBehavior: treedefaults.ClickBehavior.ON_MOUSE_DOWN,
+			openMode: OpenMode.SINGLE_CLICK
+		});
 	}
 
 	public onClick(tree: ITree, element: any, event: IMouseEvent): boolean {

@@ -346,7 +346,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._connectionDialog.close();
 				this._clipboardService.writeText('kinit\r');
 				this._commandService.executeCommand('workbench.action.terminal.focus').then(resolve => {
-					return this._commandService.executeCommand('workbench.action.terminal.paste');
+					// setTimeout to allow for terminal Instance to load.
+					setTimeout(() => {
+						return this._commandService.executeCommand('workbench.action.terminal.paste');
+					}, 10);
 				}).then(resolve => null, reject => null);
 				return null;
 			}));

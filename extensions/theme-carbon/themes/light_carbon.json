@@ -26,7 +26,7 @@
 		// "button.disabledForeground": "#888888",
 
 		//Dropdown Control
-		"dropdown.background": "#EAEAEA00",
+		"dropdown.background": "#fffffe",
 		"dropdown.foreground": "#4a4a4a",
 		"dropdown.border": "#C8C8C8",
 

@@ -53,7 +53,7 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 
 interface IEditorInputLabel {
 	name: string;
@@ -92,7 +92,7 @@ export class TabsTitleControl extends TitleControl {
 		@IWorkspaceConfigurationService private workspaceConfigurationService: IWorkspaceConfigurationService,
 		@IConnectionManagementService private connectionService: IConnectionManagementService,
 		@IQueryEditorService private queryEditorService: IQueryEditorService,
-		@IObjectExplorerService private objectExplorerService: IObjectExplorerService		
+		@IObjectExplorerService private objectExplorerService: IObjectExplorerService
 	) {
 		super(contextMenuService, instantiationService, editorService, editorGroupService, contextKeyService, keybindingService, telemetryService, notificationService, menuService, quickOpenService, themeService);
 

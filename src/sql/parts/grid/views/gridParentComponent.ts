@@ -477,7 +477,13 @@ export abstract class GridParentComponent {
 	 */
 	xmlLinkHandler = (cellRef: string, row: number, dataContext: JSON, colDef: any) => {
 		const self = this;
-		self.handleLink(cellRef, row, dataContext, colDef, 'xml');
+
+		let value = self.getCellValueString(dataContext, colDef);
+		if (value.startsWith('<ShowPlanXML') && colDef.name !== 'XML Showplan') {
+			self.handleQueryPlanLink(cellRef, value);
+		} else {
+			self.handleLink(cellRef, row, dataContext, colDef, 'xml');
+		}
 	}
 
 	/**
@@ -486,6 +492,13 @@ export abstract class GridParentComponent {
 	jsonLinkHandler = (cellRef: string, row: number, dataContext: JSON, colDef: any) => {
 		const self = this;
 		self.handleLink(cellRef, row, dataContext, colDef, 'json');
+	}
+
+	private handleQueryPlanLink(cellRef: string, value: string): void {
+		const self = this;
+		$(cellRef).children('.xmlLink').click(function (): void {
+			self._bootstrapService.queryEditorService.newQueryPlanEditor(value);
+		});
 	}
 
 	private handleLink(cellRef: string, row: number, dataContext: JSON, colDef: any, linkType: string): void {

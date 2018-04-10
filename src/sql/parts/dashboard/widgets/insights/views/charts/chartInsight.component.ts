@@ -90,7 +90,7 @@ export const defaultChartConfig: IChartConfig = {
 
 @Component({
 	template: `	<div style="display: block; width: 100%; height: 100%; position: relative">
-					<canvas #canvas *ngIf="_isDataAvailable"
+					<canvas #canvas *ngIf="_isDataAvailable && _hasInit"
 							baseChart
 							[datasets]="chartData"
 							[labels]="labels"
@@ -101,6 +101,7 @@ export const defaultChartConfig: IChartConfig = {
 })
 export abstract class ChartInsight extends Disposable implements IInsightsView {
 	private _isDataAvailable: boolean = false;
+	private _hasInit: boolean = false;
 	private _options: any = {};
 
 	@ViewChild(BaseChartDirective) private _chart: BaseChartDirective;
@@ -110,7 +111,6 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	protected _data: IInsightData;
 
 	protected abstract get chartType(): ChartType;
-
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -127,7 +127,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		// This is because chart.js doesn't auto-update anything other than dataset when re-rendering so defaults are used
 		// hence it's easier to not render until ready
 		this.options = mixin(this.options, { maintainAspectRatio: false });
-		this._isDataAvailable = true;
+		this._hasInit = true;
 		this._changeRef.detectChanges();
 		TelemetryUtils.addTelemetry(this._bootstrapService.telemetryService, TelemetryKeys.ChartCreated, { type: this.chartType });
 	}
@@ -162,7 +162,9 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 
 	public refresh() {
 		// cheaper refresh but causes problems when change data for rerender
-		this._chart.ngOnChanges({});
+		if (this._chart) {
+			this._chart.ngOnChanges({});
+		}
 	}
 
 	public getCanvasData(): string {
@@ -178,6 +180,9 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		unmemoize(this, 'chartData');
 		unmemoize(this, 'labels');
 		this._data = data;
+		if (isValidData(data)) {
+			this._isDataAvailable = true;
+		}
 
 		this._changeRef.detectChanges();
 	}
@@ -226,14 +231,14 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 						data: this._data.rows.map(row => Number(row[i])),
 						label: this._data.columns[i]
 					};
-				}).slice(1);
+				});
 			} else {
 				return this._data.rows[0].map((row, i) => {
 					return {
 						data: this._data.rows.map(row => Number(row[i])),
 						label: 'Series' + i
 					};
-				}).slice(1);
+				});
 			}
 		}
 	}
@@ -283,4 +288,20 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		}
 		this.options = mixin(this.options, options);
 	}
+}
+
+function isValidData(data: IInsightData): boolean {
+	if (types.isUndefinedOrNull(data)) {
+		return false;
+	}
+
+	if (types.isUndefinedOrNull(data.columns)) {
+		return false;
+	}
+
+	if (types.isUndefinedOrNull(data.rows)) {
+		return false;
+	}
+
+	return true;
 }

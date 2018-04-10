@@ -11,13 +11,14 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { IConnectionManagementService, INewConnectionParams } from 'sql/parts/connection/common/connectionManagement';
 import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
-import { TreeCreationUtils } from 'sql/parts/registeredServer/viewlet/treeCreationUtils';
-import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
+import { TreeCreationUtils } from 'sql/parts/objectExplorer/viewlet/treeCreationUtils';
+import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/parts/connection/connectionDialog/recentConnectionTreeController';
 import { SavedConnectionTreeController } from 'sql/parts/connection/connectionDialog/savedConnectionTreeController';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { ClearRecentConnectionsAction } from 'sql/parts/connection/common/connectionActions';
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -32,11 +33,11 @@ import { localize } from 'vs/nls';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IConfirmationService, IChoiceService, IConfirmation, IConfirmationResult, Choice } from 'vs/platform/dialogs/common/dialogs';
 import * as styler from 'vs/platform/theme/common/styler';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as DOM from 'vs/base/browser/dom';
 import { DialogService } from 'vs/workbench/services/dialogs/electron-browser/dialogs';
+import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 
 export interface OnShowUIResponse {
 	selectedProviderType: string;
@@ -58,6 +59,7 @@ export class ConnectionDialogWidget extends Modal {
 	private _savedConnectionTree: ITree;
 	private $connectionUIContainer: Builder;
 	private _databaseDropdownExpanded: boolean;
+	private _actionbar: ActionBar;
 
 	private _panel: TabbedPanel;
 	private _recentConnectionTabId: PanelTabIdentifier;
@@ -90,7 +92,6 @@ export class ConnectionDialogWidget extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
-		@IConfirmationService private _confirmationService: IConfirmationService,
 		@IContextViewService private _contextViewService: IContextViewService
 	) {
 		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, contextKeyService, { hasSpinner: true, hasErrors: true });
@@ -257,26 +258,6 @@ export class ConnectionDialogWidget extends Modal {
 		this.hide();
 	}
 
-	private clearRecentConnectionList(): TPromise<boolean> {
-
-		let confirm: IConfirmation = {
-			message: localize('clearRecentConnectionMessage', 'Are you sure you want to delete all the connections from the list?'),
-			primaryButton: localize('connectionDialog.yes', 'Yes'),
-			secondaryButton: localize('connectionDialog.no', 'No'),
-			type: 'question'
-		};
-
-		return new TPromise<boolean>((resolve, reject) => {
-			this._confirmationService.confirm(confirm).then((confirmed) => {
-				if (confirmed) {
-					this._connectionManagementService.clearRecentConnectionsList();
-					this.open(false);
-				}
-				resolve(confirmed);
-			});
-		});
-	}
-
 	private createRecentConnectionList(): void {
 		this._recentConnectionBuilder.div({ class: 'connection-recent-content' }, (recentConnectionContainer) => {
 			let recentHistoryLabel = localize('recentHistory', 'Recent history');
@@ -284,8 +265,12 @@ export class ConnectionDialogWidget extends Modal {
 				container.div({ class: 'connection-history-label' }, (recentTitle) => {
 					recentTitle.innerHtml(recentHistoryLabel);
 				});
-				container.div({ class: 'search-action clear-search-results' }, (clearSearchIcon) => {
-					clearSearchIcon.on('click', () => this.clearRecentConnectionList());
+				container.div({ class: 'connection-history-actions' }, (actionsContainer) => {
+					this._actionbar = this._register(new ActionBar(actionsContainer, { animated: false }));
+					let clearAction = this._instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
+					clearAction.useConfirmationMessage = true;
+					clearAction.onRecentConnectionsRemoved(() => this.open(false));
+					this._actionbar.push(clearAction, { icon: true, label: false });
 				});
 			});
 			recentConnectionContainer.div({ class: 'server-explorer-viewlet' }, (divContainer: Builder) => {

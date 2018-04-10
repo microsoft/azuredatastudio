@@ -140,15 +140,15 @@ import 'vs/workbench/parts/welcome/overlay/browser/welcomeOverlay';
 import 'sql/parts/taskHistory/common/taskHistory.contribution';
 import 'sql/parts/taskHistory/viewlet/taskHistoryViewlet';
 import 'sql/parts/tasks/common/tasks.contribution';
-import 'sql/parts/registeredServer/common/registeredServer.contribution';
-import 'sql/parts/registeredServer/viewlet/connectionViewlet';
+import 'sql/parts/objectExplorer/common/registeredServer.contribution';
+import 'sql/parts/objectExplorer/viewlet/connectionViewlet';
 import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/parts/connection/common/connection.contribution';
 import 'sql/parts/query/common/query.contribution';
 import 'sql/parts/query/editor/resultsGridContribution';
 import 'sql/parts/profiler/contrib/profiler.contribution';
 import 'sql/parts/profiler/contrib/profilerActions.contribution';
-import 'sql/parts/registeredServer/serverGroupDialog/serverGroup.contribution';
+import 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
 import 'sql/parts/accountManagement/common/accountManagement.contribution';
 /* Insights */
 import 'sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
