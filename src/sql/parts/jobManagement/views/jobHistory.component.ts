@@ -51,7 +51,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 
 	private _isVisible: boolean = false;
 	private _stepRows: JobStepsViewRow[] = [];
-	private _showSteps: boolean = false;
+	private _showSteps: boolean = undefined;
 	private _runStatus: string = undefined;
 	private _jobCacheObject: JobCacheObject;
 	private _notificationService: INotificationService;
@@ -115,8 +115,10 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 							stepViewRow.stepID = step.stepId.toString();
 							return stepViewRow;
 						});
+						this._showSteps = true;
+					} else {
+						this._showSteps = false;
 					}
-					this._showSteps = true;
 					self._cd.detectChanges();
 				}
 			}
@@ -243,8 +245,13 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		return time.replace('T', ' ');
 	}
 
-	public showSteps(): boolean {
+	public get showSteps(): boolean {
 		return this._showSteps;
+	}
+
+	public set showSteps(value: boolean) {
+		this._showSteps = value;
+		this._cd.detectChanges();
 	}
 }
 
