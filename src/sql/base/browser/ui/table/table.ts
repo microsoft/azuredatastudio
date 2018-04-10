@@ -256,7 +256,7 @@ export class Table<T extends Slick.SlickData> implements IThemable {
 		}
 
 		if (styles.listSelectionOutline) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-row .selected { outline: 1px dotted ${styles.listSelectionOutline}; outline-offset: -1px; }`);
+			content.push(`.monaco-table .${this._idPrefix} .slick-row .selected.active { outline: 1px dotted ${styles.listSelectionOutline}; outline-offset: -1px; }`);
 		}
 
 		/* Commented out andresse 8/17/2017; keeping for reference as we iterate on the table styling */
