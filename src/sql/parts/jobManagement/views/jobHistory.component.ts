@@ -155,6 +155,9 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 				this.loadHistory();
 			}
 			this._jobCacheObject.prevJobID = this._agentViewComponent.jobId;
+		} else if (this._isVisible === true && this._agentViewComponent.agentRefresh) {
+			this.loadHistory();
+			this._agentViewComponent.agentRefresh = false;
 		} else if (this._isVisible === true && this._tableContainer.nativeElement.offsetParent === null) {
 			this._isVisible = false;
 		}
