@@ -154,7 +154,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				self._agentViewComponent.showHistory = true;
 			}, 500);
 		});
-		if (cached && this._agentViewComponent.agentRefresh === false) {
+		if (cached && this._agentViewComponent.agentRefresh !== true) {
 			this.onJobsAvailable(this._jobCacheObject.jobs);
 		} else {
 			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
