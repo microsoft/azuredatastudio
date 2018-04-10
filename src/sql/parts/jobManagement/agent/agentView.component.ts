@@ -5,7 +5,7 @@
 
 import 'vs/css!../common/media/jobs';
 import * as nls from 'vs/nls';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable, AfterContentChecked, Input, OnChanges } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable} from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { RefreshWidgetAction, EditDashboardAction } from 'sql/parts/dashboard/common/actions';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -17,6 +17,8 @@ import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentJobInfo, AgentJobHistoryInfo } from 'sqlops';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
+import { ControlHostContent } from 'sql/parts/dashboard/contents/controlHostContent.component';
+
 
 export const DASHBOARD_SELECTOR: string = 'agentview-component';
 
@@ -34,8 +36,6 @@ export class AgentViewComponent {
 	private _showHistory: boolean = false;
 	private _jobId: string = null;
 	private _agentJobInfo: AgentJobInfo = null;
-	private _agentJobHistories: AgentJobHistoryInfo[] = null;
-	@Input() private _agentRefresh: boolean;
 
 	public jobsIconClass: string = 'jobsview-icon';
 
@@ -47,7 +47,8 @@ export class AgentViewComponent {
 	};
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef){
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
+		@Inject(forwardRef(() => ControlHostContent)) private _controlHostContent: ControlHostContent){
 	}
 
 	/**
@@ -65,12 +66,8 @@ export class AgentViewComponent {
 		return this._agentJobInfo;
 	}
 
-	public get agentJobHistories(): AgentJobHistoryInfo[] {
-		return this._agentJobHistories;
-	}
-
 	public get agentRefresh(): boolean {
-		return this._agentRefresh;
+		return this._controlHostContent.agentRefresh;
 	}
 
 	/**
@@ -92,13 +89,8 @@ export class AgentViewComponent {
 		this._cd.detectChanges();
 	}
 
-	public set agentJobHistories(value: AgentJobHistoryInfo[]) {
-		this._agentJobHistories = value;
-		this._cd.detectChanges();
-	}
-
 	public set agentRefresh(value: boolean) {
-		this._agentRefresh = value;
+		this._controlHostContent.agentRefresh = value;
 		this._cd.detectChanges();
 	}
 }

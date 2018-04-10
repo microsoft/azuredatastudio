@@ -45,7 +45,6 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	@ViewChild('table') private _tableContainer: ElementRef;
 
 	@Input() public agentJobInfo: AgentJobInfo = undefined;
-	@Input() public jobId: string = undefined;
 	@Input() public agentJobHistories: AgentJobHistoryInfo[] = undefined;
 	@Input() public agentRefresh: boolean;
 	public agentJobHistoryInfo: AgentJobHistoryInfo = undefined;
@@ -56,6 +55,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _runStatus: string = undefined;
 	private _jobCacheObject: JobCacheObject;
 	private _notificationService: INotificationService;
+	private _agentJobInfo: AgentJobInfo;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -71,7 +71,17 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		this._treeFilter =  new JobHistoryFilter();
 		this._jobManagementService = bootstrapService.jobManagementService;
 		this._notificationService = bootstrapService.notificationService;
-		//_dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
+		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
+		let serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
+		let jobCache = jobCacheObjectMap[serverName];
+		if (jobCache) {
+			this._jobCacheObject = jobCache;
+		} else {
+			this._jobCacheObject = new JobCacheObject();
+			this._jobCacheObject.serverName = serverName;
+			this._jobManagementService.addToCache(serverName, this._jobCacheObject);
+		}
+
 	}
 
 	ngOnInit() {
@@ -123,14 +133,19 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	}
 
 	ngAfterContentChecked() {
+		this._agentJobInfo = this._agentViewComponent.agentJobInfo;
+		if (!this.agentJobInfo) {
+			this.agentJobInfo = this._agentJobInfo;
+		}
 		if (this._isVisible === false && this._tableContainer.nativeElement.offsetParent !== null) {
 			this._isVisible = true;
-			if (this.agentJobHistories && this.agentJobHistories.length > 0) {
-				if (this._jobCacheObject.prevJobID === this.jobId || this.agentJobHistories[0].jobId === this.jobId) {
-					this.agentJobHistoryInfo = this.agentJobHistories[0];
-					this.agentJobHistoryInfo.runDate = this.formatTime(this.agentJobHistories[0].runDate);
-					this._treeController.jobHistories = this.agentJobHistories;
-					//this._jobCacheObject.setJobHistory(this.jobId, this.agentJobHistories);
+			let jobHistories = this._jobCacheObject.jobHistories[this._agentViewComponent.jobId];
+			if (jobHistories && jobHistories.length > 0) {
+				if (this._jobCacheObject.prevJobID === this._agentViewComponent.jobId || jobHistories[0].jobId === this._agentViewComponent.jobId) {
+					this.agentJobHistoryInfo = jobHistories[0];
+					this.agentJobHistoryInfo.runDate = this.formatTime(jobHistories[0].runDate);
+					this._treeController.jobHistories = jobHistories;
+					this._jobCacheObject.setJobHistory(this._agentViewComponent.jobId, jobHistories);
 					let jobHistoryRows = this._treeController.jobHistories.map(job => this.convertToJobHistoryRow(job));
 					this._treeDataSource.data = jobHistoryRows;
 					this._tree.setInput(new JobHistoryModel());
@@ -139,7 +154,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			} else {
 				this.loadHistory();
 			}
-			//this._jobCacheObject.prevJobID = this.jobId;
+			this._jobCacheObject.prevJobID = this._agentViewComponent.jobId;
 		} else if (this._isVisible === true && this._tableContainer.nativeElement.offsetParent === null) {
 			this._isVisible = false;
 		}
@@ -148,10 +163,10 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	loadHistory() {
 		const self = this;
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getJobHistory(ownerUri, this.jobId).then((result) => {
+		this._jobManagementService.getJobHistory(ownerUri, this._agentViewComponent.jobId).then((result) => {
 			if (result && result.jobs) {
 				self._treeController.jobHistories = result.jobs;
-				//self._jobCacheObject.setJobHistory(self.jobId, result.jobs);
+				self._jobCacheObject.setJobHistory(this._agentViewComponent.jobId, result.jobs);
 				let jobHistoryRows = self._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
 				self._treeDataSource.data = jobHistoryRows;
 				self._tree.setInput(new JobHistoryModel());

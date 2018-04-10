@@ -106,8 +106,10 @@ export class JobsViewComponent implements AfterContentChecked {
 				}
 			}
 		} else if (this.isVisible === true && this._agentViewComponent.agentRefresh === true) {
-			this.onFirstVisible(true);
+			this.onFirstVisible(false);
 			this._agentViewComponent.agentRefresh = false;
+		} else if (this.isVisible === true && this._agentViewComponent.agentRefresh === false) {
+			this.onFirstVisible(true);
 		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
 			this.isVisible = false;
 		}
@@ -132,10 +134,11 @@ export class JobsViewComponent implements AfterContentChecked {
 			preTemplate: this.loadingTemplate,
 			process: (job) => {
 				(<any>rowDetail).onAsyncResponse.notify({
-					'itemDetail': job
-				}, undefined, this);
+					'itemDetail': job,
+				}, undefined, null);
 			},
-			panelRows: 2
+			panelRows: 2,
+			postTemplate: () => ''
 		});
 
 		this.rowDetail = rowDetail;
@@ -147,12 +150,11 @@ export class JobsViewComponent implements AfterContentChecked {
 			let job = self.getJob(args);
 			self._agentViewComponent.jobId = job.jobId;
 			self._agentViewComponent.agentJobInfo = job;
-			self.isVisible = false;
 			setTimeout(() => {
 				self._agentViewComponent.showHistory = true;
 			}, 500);
 		});
-		if (cached && !this._agentViewComponent.agentRefresh) {
+		if (cached && this._agentViewComponent.agentRefresh === false) {
 			this.onJobsAvailable(this._jobCacheObject.jobs);
 		} else {
 			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;

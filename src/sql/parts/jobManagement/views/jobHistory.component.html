@@ -5,7 +5,7 @@
  *--------------------------------------------------------------------------------------------*/
 -->
 
- <h1 class="job-heading">Jobs | {{agentJobInfo.name}} </h1>
+ <h1 class="job-heading">Jobs | {{this._agentJobInfo?.name}} </h1>
 
  <!-- Back -->
  <div class="all-jobs">
@@ -15,10 +15,10 @@
 <!-- Actions -->
 <ul class="action-buttons">
 	<li>
-		<div class="icon-start" (click)="jobAction('run', agentJobInfo.name)">Run</div>
+		<div class="icon-start" (click)="jobAction('run', this._agentJobInfo.name)">Run</div>
 	</li>
 	<li>
-		<div class="icon-stop" (click)="jobAction('stop', agentJobInfo.name)">Stop</div>
+		<div class="icon-stop" (click)="jobAction('stop', this._.agentJobInfo.name)">Stop</div>
 	</li>
 </ul>
 
@@ -37,13 +37,13 @@
 						Category:
 					</td>
 					<td id='col2'>
-						{{agentJobInfo.category}}
+						{{this._agentJobInfo?.category}}
 					</td>
 					<td id='col3'>
 						Enabled:
 					</td>
 					<td id='col4'>
-						{{agentJobInfo.enabled}}
+						{{this._agentJobInfo?.enabled}}
 					</td>
 				</tr>
 				<tr>
@@ -51,13 +51,13 @@
 						Has Alert:
 					</td>
 					<td id='col2'>
-						{{agentJobInfo.hasTarget}}
+						{{this._agentJobInfo?.hasTarget}}
 					</td>
 					<td id='col3'>
 						Has Schedule:
 					</td>
 					<td id='col4'>
-						{{agentJobInfo.hasSchedule}}
+						{{this._agentJobInfo?.hasSchedule}}
 					</td>
 				</tr>
 				<tr>
@@ -65,13 +65,13 @@
 						Last Run:
 					</td>
 					<td id='col2'>
-						{{agentJobInfo.lastRun}}
+						{{this._agentJobInfo?.lastRun}}
 					</td>
 					<td id='col3'>
 						Next Run:
 					</td>
 					<td id='col4'>
-						{{agentJobInfo.nextRun}}
+						{{this._agentJobInfo?.nextRun}}
 					</td>
 				</tr>
 		</table>
