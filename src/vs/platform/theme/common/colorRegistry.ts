@@ -150,7 +150,9 @@ export const descriptionForeground = registerColor('descriptionForeground', { li
 
 export const focusBorder = registerColor('focusBorder', { dark: Color.fromHex('#0E639C').transparent(0.6), light: Color.fromHex('#007ACC').transparent(0.4), hc: '#F38518' }, nls.localize('focusBorder', "Overall border color for focused elements. This color is only used if not overridden by a component."));
 
-export const contrastBorder = registerColor('contrastBorder', { light: null, dark: null, hc: '#6FC3DF' }, nls.localize('contrastBorder', "An extra border around elements to separate them from others for greater contrast."));
+// {{SQL CARBON EDIT}} -- Update contrastBorder color for HC
+export const contrastBorder = registerColor('contrastBorder', { light: null, dark: null, hc: '#2b56f2' }, nls.localize('contrastBorder', "An extra border around elements to separate them from others for greater contrast."));
+
 export const activeContrastBorder = registerColor('contrastActiveBorder', { light: null, dark: null, hc: focusBorder }, nls.localize('activeContrastBorder', "An extra border around active elements to separate them from others for greater contrast."));
 
 export const selectionBackground = registerColor('selection.background', { light: null, dark: null, hc: null }, nls.localize('selectionBackground', "The background color of text selections in the workbench (e.g. for input fields or text areas). Note that this does not apply to selections within the editor."));
