@@ -16,6 +16,8 @@
 	"darwinBundleIdentifier": "com.sqlopsstudio.oss",
 	"reportIssueUrl": "https://github.com/Microsoft/sqlopsstudio/issues/new?labels=customer%20reported%20issue",
 	"requestFeatureUrl": "https://github.com/Microsoft/sqlopsstudio/issues/new?labels=feature-request",
+	"privacyStatementUrl": "https://privacy.microsoft.com/en-us/privacystatement",
+	"telemetryOptOutUrl": "https://github.com/Microsoft/sqlopsstudio/wiki/How-to-Disable-Telemetry-Reporting",
 	"urlProtocol": "sqlops",
 	"enableTelemetry": true,
 	"aiConfig": {

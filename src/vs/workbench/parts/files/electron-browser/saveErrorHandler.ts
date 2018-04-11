@@ -101,7 +101,7 @@ export class SaveErrorHandler implements ISaveErrorHandler, IWorkbenchContributi
 	private onFileSavedOrReverted(resource: URI): void {
 		const messageHandle = this.messages.get(resource);
 		if (messageHandle) {
-			messageHandle.dispose();
+			messageHandle.close();
 			this.messages.delete(resource);
 		}
 	}
@@ -190,7 +190,7 @@ export class SaveErrorHandler implements ISaveErrorHandler, IWorkbenchContributi
 const pendingResolveSaveConflictMessages: INotificationHandle[] = [];
 function clearPendingResolveSaveConflictMessages(): void {
 	while (pendingResolveSaveConflictMessages.length > 0) {
-		pendingResolveSaveConflictMessages.pop().dispose();
+		pendingResolveSaveConflictMessages.pop().close();
 	}
 }
 

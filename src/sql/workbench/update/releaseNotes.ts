@@ -49,39 +49,3 @@ export class ShowCurrentReleaseNotesAction extends AbstractShowReleaseNotesActio
 		super(id, label, pkg.version, editorService, instantiationService);
 	}
 }
-
-export class ProductContribution implements IWorkbenchContribution {
-
-	private static KEY = 'releaseNotes/carbonLastVersion';
-	getId() { return 'carbon.product'; }
-
-	constructor(
-		@IStorageService storageService: IStorageService,
-		@IInstantiationService instantiationService: IInstantiationService,
-		@INotificationService notificationService: INotificationService,
-		@IWorkbenchEditorService editorService: IWorkbenchEditorService
-	) {
-		const lastVersion = storageService.get(ProductContribution.KEY, StorageScope.GLOBAL, '');
-
-		// was there an update? if so, open release notes
-		if (product.releaseNotesUrl && pkg.version !== lastVersion) {
-			instantiationService.invokeFunction(loadReleaseNotes, pkg.version).then(
-				text => editorService.openEditor(instantiationService.createInstance(ReleaseNotesInput, pkg.version, text), { pinned: true }),
-				() => {
-					const actions: INotificationActions = {
-						primary: [
-							instantiationService.createInstance(OpenGettingStartedInBrowserAction)
-						]
-					};
-
-					notificationService.notify({
-						severity: Severity.Info,
-						message: nls.localize('read the release notes', "Welcome to {0} April Public Preview! Would you like to view the Getting Started Guide?", product.nameLong, pkg.version),
-						actions
-					});
-				});
-		}
-
-		storageService.store(ProductContribution.KEY, pkg.version, StorageScope.GLOBAL);
-	}
-}
