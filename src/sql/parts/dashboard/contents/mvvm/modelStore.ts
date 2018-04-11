@@ -24,22 +24,13 @@ class ComponentDescriptor implements IComponentDescriptor {
 export class ModelStore implements IModelStore {
 	private static baseId = 0;
 
-	private storeId: number;
-	private nextComponentId: number;
 	private _descriptorMappings: { [x: string]: IComponentDescriptor } = {};
 	private _componentMappings: { [x: string]: IComponent } = {};
 	private _componentActions: { [x: string]: Deferred<IComponent> } = {};
 	constructor() {
-		this.storeId = ModelStore.baseId++;
-		this.nextComponentId = 0;
 	}
 
-	private getNextComponentId(): string {
-		return `component${this.storeId}_${this.nextComponentId++}`;
-	}
-
-	public createComponentDescriptor(type: string): IComponentDescriptor {
-		let id = this.getNextComponentId();
+	public createComponentDescriptor(type: string, id: string): IComponentDescriptor {
 		let descriptor = new ComponentDescriptor(id, type);
 		this._descriptorMappings[id] = descriptor;
 		return descriptor;

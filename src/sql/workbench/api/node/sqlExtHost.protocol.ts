@@ -16,7 +16,8 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
-import { ModelComponentTypes, IComponentConfigurationShape, IItemConfig } from 'sql/parts/dashboard/contents/mvvm/interfaces';
+import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
+
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
 	$clear(handle: number, accountKey: sqlops.AccountKey): Thenable<void> { throw ni(); }
@@ -517,7 +518,7 @@ export interface ExtHostModelViewShape {
 
 export interface MainThreadModelViewShape extends IDisposable {
 	$registerProvider(id: string): void;
-	$initializeModel(handle: number, rootComponent: IComponentConfigurationShape): Thenable<void>;
+	$initializeModel(handle: number, rootComponent: IComponentShape): Thenable<void>;
 	$clearContainer(handle: number, componentId: string): Thenable<void>;
 	$addToContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;

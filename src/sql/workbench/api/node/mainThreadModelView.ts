@@ -9,7 +9,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostC
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { IDashboardViewService, IDashboardModelView } from 'sql/services/dashboard/common/dashboardViewService';
 import * as sqlops from 'sqlops';
-import { IComponentConfigurationShape, IItemConfig, ModelComponentTypes } from 'sql/parts/dashboard/contents/mvvm/interfaces';
+import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelView)
 export class MainThreadModelView implements MainThreadModelViewShape {
@@ -42,7 +42,7 @@ export class MainThreadModelView implements MainThreadModelViewShape {
 		this.knownWidgets.push(id);
 	}
 
-	$initializeModel(handle: number, rootComponent: IComponentConfigurationShape): Thenable<void> {
+	$initializeModel(handle: number, rootComponent: IComponentShape): Thenable<void> {
 		return this.execModelViewAction(handle, (modelView) => modelView.initializeModel(rootComponent));
 	}
 

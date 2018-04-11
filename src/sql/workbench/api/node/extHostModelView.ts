@@ -7,51 +7,44 @@
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
-import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
 import * as nls from 'vs/nls';
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { ModelComponentTypes, IComponentConfigurationShape, IItemConfig } from 'sql/parts/dashboard/contents/mvvm/interfaces';
+import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
 
-	constructor(private readonly _handle: number) {
+	constructor(private readonly _proxy: MainThreadModelViewShape, private readonly _handle: number) {
 		this.nextComponentId = 0;
 	}
 
-	component<T extends sqlops.Component>(componentTypeName: string): sqlops.ComponentConfiguration<T> {
-		let id =this.getNextComponentId();
-		switch (componentTypeName) {
-			case ModelComponentTypes[ModelComponentTypes.DashboardWidget]:
-				return new ComponentConfigurationImpl(ModelComponentTypes.DashboardWidget, id);
-			case ModelComponentTypes[ModelComponentTypes.DashboardWebview]:
-				return new ComponentConfigurationImpl(ModelComponentTypes.DashboardWebview, id);
-			default:
-				throw new Error(nls.localize('unknownComponent', 'Component of type {0} is not known', componentTypeName));
-		}
+	navContainer(): sqlops.ContainerBuilder<sqlops.NavContainer, any, any> {
+		let id = this.getNextComponentId();
+		return new ContainerBuilderImpl(this._proxy, this._handle, ModelComponentTypes.NavContainer, id);
 	}
 
-	navContainer(): sqlops.NavContainerConfiguration {
-		return new ContainerConfigImpl(ModelComponentTypes.NavContainer, this.getNextComponentId());
+	flexContainer(): sqlops.FlexBuilder {
+		let id = this.getNextComponentId();
+		return new ContainerBuilderImpl<sqlops.FlexContainer, sqlops.FlexLayout, sqlops.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id);
 	}
 
-	flexContainer(): sqlops.FlexContainerConfiguration {
-		return new ContainerConfigImpl(ModelComponentTypes.FlexContainer, this.getNextComponentId());
+	card(): sqlops.ComponentBuilder<sqlops.CardComponent> {
+		let id = this.getNextComponentId();
+		return new ComponentBuilderImpl(this._proxy, this._handle, ModelComponentTypes.Card, id);
 	}
 
-	card(): sqlops.CardConfiguration {
-		let id =this.getNextComponentId();
-		return new CardConfigurationImpl(id);
+	dashboardWidget(widgetId: string): sqlops.ComponentBuilder<sqlops.WidgetComponent> {
+		let id = this.getNextComponentId();
+		return new ComponentBuilderImpl<sqlops.WidgetComponent>(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id);
 	}
-	dashboardWidget(id: string): sqlops.ComponentConfiguration<sqlops.WidgetComponent> {
-		return this.component<sqlops.CardComponent>(ModelComponentTypes[ModelComponentTypes.DashboardWidget]);
-	}
-	dashboardWebview(id: string): sqlops.ComponentConfiguration<sqlops.WebviewComponent> {
-		return this.component<sqlops.CardComponent>(ModelComponentTypes[ModelComponentTypes.DashboardWebview]);
+
+	dashboardWebview(webviewId: string): sqlops.ComponentBuilder<sqlops.WebviewComponent> {
+		let id = this.getNextComponentId();
+		return new ComponentBuilderImpl(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id);
 	}
 
 	private getNextComponentId(): string {
@@ -59,22 +52,70 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 	}
 }
 
+class ComponentBuilderImpl<T extends sqlops.Component> implements sqlops.ComponentBuilder<T> {
+	protected _component: ComponentWrapper;
 
-class ComponentConfigurationImpl<T extends sqlops.Component> implements sqlops.ComponentConfiguration<T>, IComponentConfigurationShape {
-	public properties: { [key: string]: any } = {};
-	public items: IItemConfig[];
-	public layout: any;
-
-	constructor(private _type: ModelComponentTypes, private _id: string) {
-
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		this._component = new ComponentWrapper(proxy, handle, type, id);
 	}
-	withProperties<U>(properties: U): sqlops.ComponentConfiguration<T> {
-		this.properties = properties;
+
+	component(): T {
+		return <T><any>this._component;
+	}
+
+	withProperties<U>(properties: U): sqlops.ComponentBuilder<T> {
+		this._component.properties = properties;
+		return this;
+	}
+}
+
+class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> extends ComponentBuilderImpl<T> implements sqlops.ContainerBuilder<T, TLayout, TItemLayout> {
+	withLayout<U>(layout: U): sqlops.ContainerBuilder<T, TLayout, TItemLayout> {
+		this._component.layout = layout;
 		return this;
 	}
 
-	protected setProperty(key: string, value: any): void {
-		this.properties[key] = value;
+	withItems<V>(components: sqlops.Component[], itemLayout?: V): sqlops.ComponentBuilder<T> {
+		this._component.itemConfigs = components.map(item => {
+			let componentWrapper = item as ComponentWrapper;
+			return new InternalItemConfig(componentWrapper, itemLayout);
+		});
+		return this;
+	}
+}
+
+
+class InternalItemConfig {
+	constructor(private _component: ComponentWrapper, public config: any) {}
+
+	public toIItemConfig(): IItemConfig {
+		return {
+			config: this.config,
+			componentShape: this._component.toComponentShape()
+		};
+	}
+
+	public get component(): sqlops.Component {
+		return this._component;
+	}
+}
+
+
+class ComponentWrapper implements sqlops.Component {
+	public properties: { [key: string]: any } = {};
+	public layout: any;
+	public itemConfigs: InternalItemConfig[];
+
+	private _onErrorEmitter = new Emitter<Error>();
+	public readonly onError: vscode.Event<Error> = this._onErrorEmitter.event;
+
+	constructor(protected readonly _proxy: MainThreadModelViewShape,
+		protected readonly _handle: number,
+		protected _type: ModelComponentTypes,
+		protected _id: string
+	) {
+		this.properties = {};
+		this.itemConfigs = [];
 	}
 
 	public get id(): string {
@@ -85,123 +126,40 @@ class ComponentConfigurationImpl<T extends sqlops.Component> implements sqlops.C
 		return this._type;
 	}
 
-	public createComponent(proxy: MainThreadModelViewShape, handle: number): T {
-		switch(this.type) {
-			case ModelComponentTypes.Card:
-				return <T><any> new CardWrapper(proxy, handle, this.id);
-			case ModelComponentTypes.FlexContainer:
-				return <T><any> new ContainerWrapper<sqlops.FlexLayout, sqlops.FlexItemLayout>(proxy, handle, this.id);
-			case ModelComponentTypes.DashboardWebview:
-				throw new Error('Not Implemented');
-			case ModelComponentTypes.DashboardWidget:
-				throw new Error('Not Implemented');
-		}
-		throw new Error('Not Implemented');
-	}
-}
-
-class CardConfigurationImpl extends ComponentConfigurationImpl<sqlops.CardComponent> implements sqlops.CardConfiguration, IComponentConfigurationShape {
-
-	constructor(id: string) {
-		super(ModelComponentTypes.Card, id);
+	public get items(): sqlops.Component[] {
+		return this.itemConfigs.map(itemConfig => itemConfig.component);
 	}
 
-	withLabelValue(label: string, value: string): sqlops.CardConfiguration {
-		this.setProperty('label', label);
-		this.setProperty('value', value);
-		return this;
-	}
-	withActions(actions: sqlops.ActionDescriptor[]): sqlops.CardConfiguration {
-		this.setProperty('actions', actions);
-		return this;
-	}
-}
-class ItemConfig implements IItemConfig {
-	constructor(public component: IComponentConfigurationShape, public config: any) {}
-}
-
-class ContainerConfigImpl<T extends sqlops.Component, U, V> extends ComponentConfigurationImpl<T> implements sqlops.ContainerConfiguration<T, U, V> {
-	constructor(type: ModelComponentTypes, id: string) {
-		super(type, id);
+	public toComponentShape(): IComponentShape {
+		return <IComponentShape> {
+			id: this.id,
+			type: this.type,
+			layout: this.layout,
+			properties: this.properties,
+			itemConfigs: this.itemConfigs ? this.itemConfigs.map<IItemConfig>(item => item.toIItemConfig()) : undefined
+		};
 	}
 
-	withItems(items: sqlops.ComponentConfiguration<any>[], itemLayout?: V): sqlops.ContainerConfiguration<T, U, V> {
-		for (let item of items) {
-			this.addItem(item, itemLayout);
-		}
-		return this;
-	}
-
-	addItem(item: sqlops.ComponentConfiguration<any>, itemLayout?: V): sqlops.ContainerConfiguration<T, U, V> {
-		this.ensureItems();
-		let itemImpl = item as ComponentConfigurationImpl<any>;
-		this.items.push(new ItemConfig(itemImpl, itemLayout));
-		return this;
-	}
-
-	private ensureItems() {
-		if (!this.items) {
-			this.items = [];
-		}
-		return this;
-	}
-
-	withLayout(layout: U): sqlops.ContainerConfiguration<T, U, V> {
-		this.layout = layout;
-		return this;
-	}
-}
-
-class ComponentWrapper implements sqlops.Component {
-	protected properties: { [key: string]: any } = {};
-
-	constructor(protected readonly _proxy: MainThreadModelViewShape,
-		protected readonly _handle: number, protected _id: string
-	) {
-		this.properties = {};
-	}
-
-	public get id(): string {
-		return this._id;
-	}
-
-	get items(): sqlops.Component[] {
-		// TODO
-		return undefined;
-	}
 
 	public clearItems(): Thenable<void> {
+		this.itemConfigs = [];
 		return this._proxy.$clearContainer(this._handle, this.id);
 	}
 
-	public createItems(itemConfigs: Array<sqlops.ComponentConfiguration<any>>, itemLayout ?: any): Thenable<Array<sqlops.Component>> {
-		let promises: Thenable<any>[] = [];
-		let items = new Map<number, sqlops.Component>();
-		// Kick off all createComponent requests
-		for(let i = 0; i < itemConfigs.length; i++) {
-			let item = itemConfigs[0];
-			let promise = this.createItem(item, itemLayout).then(component => {
-				items.set(i, component);
-			});
+	public addItems(items: Array<sqlops.Component>, itemLayout ?: any): void {
+		for(let item of items) {
+			this.addItem(item, itemLayout);
 		}
-		// On finishing the creation, return a single object with component references
-		return Promise.all(promises).then(success => {
-			let components: sqlops.Component[] = [];
-			for (let i = 0; i < itemConfigs.length; i++) {
-				components.push(items[i]);
-			}
-			return components;
-		}, error => Promise.reject(error));
 	}
 
-	public createItem(item: sqlops.ComponentConfiguration<any>, itemLayout ?: any): Thenable<sqlops.Component> {
-		let itemImpl = item as ComponentConfigurationImpl<any>;
-		return this._proxy.$addToContainer(this._handle, this.id, {
-			component: itemImpl,
-			config: itemLayout
-		}).then(() => {
-			return new ComponentWrapper(this._proxy, this._handle, itemImpl.id);
-		});
+	public addItem(item: sqlops.Component, itemLayout ?: any): void {
+		let itemImpl = item as ComponentWrapper;
+		if (!itemImpl) {
+			throw new Error(nls.localize('unknownComponentType', 'Unkown component type. Must use ModelBuilder to create objects'));
+		}
+		let config = new InternalItemConfig(itemImpl, itemLayout);
+		this.itemConfigs.push(config);
+		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig()).then(undefined, this.handleError);
 	}
 
 	public setLayout(layout: any): Thenable<void> {
@@ -218,27 +176,30 @@ class ComponentWrapper implements sqlops.Component {
 
 	protected setProperty(key: string, value: any): Thenable<boolean> {
 		if (!this.properties[key] || this.properties[key] !== value) {
-			// Only notify the frontend if a value has been updated
+			// Only notify the front end if a value has been updated
 			this.properties[key] = value;
 			return this.notifyPropertyChanged();
 		}
 		return Promise.resolve(true);
 	}
+
+	private handleError(err: Error): void {
+		this._onErrorEmitter.fire(err);
+	}
 }
 
 class ContainerWrapper<T, U> extends ComponentWrapper implements sqlops.Container<T, U> {
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, id);
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(proxy, handle, type, id);
 	}
 
 }
 
-
 class CardWrapper extends ComponentWrapper implements sqlops.CardComponent {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, id);
+		super(proxy, handle, ModelComponentTypes.Card, id);
 		this.properties = {};
 	}
 
@@ -274,7 +235,7 @@ class ModelViewImpl implements sqlops.DashboardModelView {
 		private readonly _connection: sqlops.connection.Connection,
 		private readonly _serverInfo: sqlops.ServerInfo
 	) {
-		this._modelBuilder = undefined; // new ModelBuilderImpl(this._handle);
+		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle);
 	}
 
 	public get onClosed(): vscode.Event<any> {
@@ -293,18 +254,13 @@ class ModelViewImpl implements sqlops.DashboardModelView {
 		return this._modelBuilder;
 	}
 
-	public initializeModel<T extends sqlops.Component>(config: sqlops.ComponentConfiguration<T>): Thenable<T> {
-		// let configImpl = config as ComponentConfigurationImpl<T>;
-		// if (!configImpl) {
-		// 	return Promise.reject<T>(nls.localize('unknownConfig', 'Unkown component configuration, must use ModelBuilder to create a configuration object'));
-		// }
-		// return this._proxy.$initializeModel(this._handle, configImpl).then(() => {
-		// 	// TODO convert back into a set of components by walking the tree
-		// 	return configImpl.createComponent(this._proxy, this._handle);
-		// });
-		return undefined;
+	public initializeModel<T extends sqlops.Component>(component: T): Thenable<void> {
+		let componentImpl = <any>component as ComponentWrapper;
+		if (!componentImpl) {
+			return Promise.reject(nls.localize('unknownConfig', 'Unkown component configuration, must use ModelBuilder to create a configuration object'));
+		}
+		return this._proxy.$initializeModel(this._handle, componentImpl.toComponentShape());
 	}
-
 }
 
 export class ExtHostModelView implements ExtHostModelViewShape {

@@ -6,7 +6,7 @@
 import FlexContainer from './flexContainer.component';
 import CardComponent from './card.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
-import { ModelComponentTypes } from 'sql/parts/dashboard/contents/mvvm/interfaces';
+import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const FLEX_CONTAINER = 'flex-container';
 registerComponentType(FLEX_CONTAINER, ModelComponentTypes.FlexContainer, FlexContainer);

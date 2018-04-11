@@ -10,7 +10,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import nls = require('vs/nls');
 
 import * as sqlops from 'sqlops';
-import { IModelStore, IComponentDescriptor, IComponent, IItemConfig, ModelComponentTypes, IComponentConfigurationShape } from './interfaces';
+import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
+import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IDashboardModelView } from 'sql/services/dashboard/common/dashboardViewService';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
@@ -35,34 +36,24 @@ export abstract class ViewBase extends AngularDisposable implements IDashboardMo
 	abstract connection: sqlops.connection.Connection;
 	abstract serverInfo: sqlops.ServerInfo;
 
-	setModel(componentId: string): void {
-		let descriptor = this.modelStore.getComponentDescriptor(componentId);
-		if (!descriptor) {
-			throw new Error(nls.localize('componentNotRegistered', 'Component {0} must be registered before setting as the model', componentId));
-		}
+	initializeModel(rootComponent: IComponentShape): void {
+		let descriptor = this.defineComponent(rootComponent);
 		this.rootDescriptor = descriptor;
 		// Kick off the build by detecting changes to the model
 		this.changeRef.detectChanges();
 	}
 
-	initializeModel(rootComponent: IComponentConfigurationShape): void {
-		let descriptor = this.createComponent(rootComponent);
-		this.rootDescriptor = descriptor;
-		// Kick off the build by detecting changes to the model
-		this.changeRef.detectChanges();
-	}
-
-	private createComponent(component: IComponentConfigurationShape): IComponentDescriptor {
+	private defineComponent(component: IComponentShape): IComponentDescriptor {
 		let typeId = componentRegistry.getIdForTypeMapping(component.type);
-		if (typeId) {
+		if (!typeId) {
 			// failure case
-			throw new Error(nls.localize('componentTypeNotRegistered', 'Could not find component for type {0}', ModelComponentTypes[component.type]));
+			throw new Error(nls.localize('componentTypeNotRegistered', "Could not find component for type {0}", ModelComponentTypes[component.type]));
 		}
-		let descriptor = this.modelStore.createComponentDescriptor(typeId);
+		let descriptor = this.modelStore.createComponentDescriptor(typeId, component.id);
 		this.setProperties(component.id, component.properties);
 		this.setLayout(component.id, component.layout);
-		if (component.items) {
-			for(let item of component.items) {
+		if (component.itemConfigs) {
+			for(let item of component.itemConfigs) {
 				this.addToContainer(component.id, item);
 			}
 		}
@@ -76,7 +67,7 @@ export abstract class ViewBase extends AngularDisposable implements IDashboardMo
 	addToContainer(containerId: string, itemConfig: IItemConfig): void {
 		// Do not return the promise as this should be non-blocking
 		this.queueAction(containerId, (component)  => {
-			let childDescriptor = this.createComponent(itemConfig.component);
+			let childDescriptor = this.defineComponent(itemConfig.componentShape);
 			component.addToContainer(childDescriptor, itemConfig.config);
 		});
 	}

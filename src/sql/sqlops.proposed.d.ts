@@ -16,39 +16,29 @@ declare module 'sqlops' {
 	 * @interface ModelBuilder
 	 */
 	export interface ModelBuilder {
-		component<T extends Component>(componentTypeName: string): ComponentConfiguration<T>;
-		navContainer(): NavContainerConfiguration;
-		flexContainer(): FlexContainerConfiguration;
-		card(): CardConfiguration;
-		dashboardWidget(widgetId: string): ComponentConfiguration<WidgetComponent>;
-		dashboardWebview(webviewId: string): ComponentConfiguration<WebviewComponent>;
+		navContainer(): ContainerBuilder<NavContainer, any, any>;
+		flexContainer(): FlexBuilder;
+		card(): ComponentBuilder<CardComponent>;
+		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
+		dashboardWebview(webviewId: string): ComponentBuilder<WebviewComponent>;
 	}
 
-	export interface ComponentConfiguration<T extends Component> {
-		withProperties<U>(properties: U): ComponentConfiguration<T>;
+	export interface ComponentBuilder<T extends Component> {
+		component(): T;
+		withProperties<U>(properties: U): ComponentBuilder<T>;
+	}
+	export interface ContainerBuilder<T extends Component, TLayout,TItemLayout> extends ComponentBuilder<T> {
+		withLayout<U>(layout: U): ContainerBuilder<T, TLayout, TItemLayout>;
+		withItems<V>(components: Array<Component>, itemLayout ?: V): ComponentBuilder<T>;
 	}
 
-	export interface ContainerConfiguration<T extends Component, U, V> extends ComponentConfiguration<T> {
-		withLayout(layout: U): ContainerConfiguration<T,U,V>;
-		addItem(component:ComponentConfiguration<any>, itemLayout ?: V): ContainerConfiguration<T,U,V>;
-		withItems(components: Array<ComponentConfiguration<any>>, itemLayout ?: V): ContainerConfiguration<T,U,V>;
-	}
+	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout> {
 
-	export interface NavContainerConfiguration extends ContainerConfiguration<NavContainer, any, any> {
-
-	}
-
-	export interface FlexContainerConfiguration extends ContainerConfiguration<FlexContainer, FlexLayout, FlexItemLayout> {
-
-	}
-
-	export interface CardConfiguration extends ComponentConfiguration<CardComponent> {
-		withLabelValue(label: string, value: string): CardConfiguration;
-		withActions(actions: ActionDescriptor[]): CardConfiguration;
 	}
 
 	export interface Component {
 		readonly id: string;
+
 		/**
 		 * Sends any updated properties of the component to the UI
 		 *
@@ -56,32 +46,30 @@ declare module 'sqlops' {
 		 * has been applied in the UI
 		 * @memberof Component
 		 */
-		updateProperties(): Thenable<boolean>;
+		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
 	}
 
 	/**
 	 * A component that contains other components
 	 */
-	export interface Container<T,U> extends Component {
-		/**
-		 * Removes all child items from this container
-		 *
-		 * @returns {Thenable<void>} completion token resolved when the UI is updated
-		 * @memberof Container
-		 */
-		clearItems(): Thenable<void>;
+	export interface Container<TLayout,TItemLayout> extends Component {
 		/**
 		 * A copy of the child items array. This cannot be added to directly -
 		 * components must be created using the create methods instead
 		 */
 		readonly items: Component[];
+
+		/**
+		 * Removes all child items from this container
+		 */
+		clearItems(): void;
 		/**
 		 * Creates a collection of child components and adds them all to this container
 		 *
 		 * @param itemConfigs the definitions
 		 * @param {*} [itemLayout] Optional layout for the child items
 		 */
-		createItems(itemConfigs: Array<ComponentConfiguration<any>>, itemLayout ?: U): Thenable<Array<Component>>;
+		addItems(itemConfigs: Array<Component>, itemLayout ?: TItemLayout): void;
 
 		/**
 		 * Creates a child component and adds it to this container.
@@ -89,14 +77,14 @@ declare module 'sqlops' {
 		 * @param {Component} component the component to be added
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
-		createItem(component: ComponentConfiguration<any>, itemLayout ?: U): Thenable<Component>;
+		addItem(component: Component, itemLayout ?: TItemLayout): void;
 
 		/**
 		 * Defines the layout for this container
 		 *
-		 * @param {T} layout object
+		 * @param {TLayout} layout object
 		 */
-		setLayout(layout: T): Thenable<void>;
+		setLayout(layout: TLayout): void;
 	}
 
 	export interface NavContainer extends Container<any, any> {
@@ -152,10 +140,13 @@ declare module 'sqlops' {
 		taskId: string;
 	}
 
-	export interface CardComponent extends Component {
+	export interface CardProperties  {
 		label: string;
-		value: string;
-		actions: ActionDescriptor[];
+		value?: string;
+		actions?: ActionDescriptor[];
+
+	}
+	export interface CardComponent extends Component {
 	}
 
 	export interface WidgetComponent extends Component {
@@ -198,10 +189,9 @@ declare module 'sqlops' {
 		 *
 		 * @template T
 		 * @param {ComponentConfiguration<T>} root
-		 * @returns {Thenable<T>}
 		 * @memberof DashboardModelView
 		 */
-		initializeModel<T extends Component>(root: ComponentConfiguration<T>): Thenable<T>;
+		initializeModel<T extends Component>(root: T): Thenable<void>;
 	}
 
 	export namespace dashboard {

@@ -16,13 +16,14 @@ import { ContainerBase } from 'sql/parts/dashboard/contents/mvvm/componentBase';
 import { ModelComponentWrapper } from 'sql/parts/dashboard/contents/mvvm/modelComponentWrapper.component';
 
 class FlexItem {
-	constructor(public descriptor: IComponentDescriptor, public flexConfig: FlexItemLayout) {}
+	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) {}
 }
+
 @Component({
 	template: `
 		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent">
 			<div *ngFor="let item of items" [style.flex]="item.config.flex" [style.order]="item.config.order" >
-				<model-component-wrapper [descriptor]="item" [modelStore]="modelStore">
+				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
 			</div>
 		</div>

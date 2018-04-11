@@ -42,17 +42,28 @@ export default class MainController implements vscode.Disposable {
 				view.modelBuilder.flexContainer()
 					.withLayout({ flexFlow: 'column'})
 					.withItems([
-						view.modelBuilder.card().withLabelValue('label1', 'value1')
-						.withActions([{ label: 'action', taskId: 'sqlservices.clickTask'}])
-					]),
+						view.modelBuilder.card()
+						.withProperties<sqlops.CardProperties>({
+							label: 'label1',
+							value: 'value1',
+							actions: [{ label: 'action', taskId: 'sqlservices.clickTask'}]
+						})
+						.component()
+					]).component(),
 				// 2nd child panel with N cards
 				view.modelBuilder.flexContainer()
 					.withLayout({ flexFlow: 'column'})
 					.withItems([
-						view.modelBuilder.card().withLabelValue('label2', 'value2')
-						.withActions([{ label: 'action', taskId: 'sqlservices.clickTask'}])
-					])
-			], { flex: '0 1 50%' });
+						view.modelBuilder.card()
+						.withProperties<sqlops.CardProperties>({
+							label: 'label2',
+							value: 'value2',
+							actions: [{ label: 'action', taskId: 'sqlservices.clickTask'}]
+						})
+						.component()
+					]).component()
+			], { flex: '0 1 50%' })
+			.component();
 
 			await view.initializeModel(flexModel);
 		});

@@ -53,7 +53,7 @@ export interface IModelStore {
 	 * Creates and saves the reference of a component descriptor.
 	 * This can be used during creation of a component later
 	 */
-	createComponentDescriptor(type: string): IComponentDescriptor;
+	createComponentDescriptor(type: string, createComponentDescriptor): IComponentDescriptor;
 	/**
 	 * gets the descriptor for a previously created component ID
 	 */
@@ -70,25 +70,4 @@ export interface IModelStore {
 	 * @memberof IModelStore
 	 */
 	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): Promise<T>;
-}
-
-export enum ModelComponentTypes {
-	NavContainer,
-	FlexContainer,
-	Card,
-	DashboardWidget,
-	DashboardWebview
-}
-
-export interface IComponentConfigurationShape {
-	type: ModelComponentTypes;
-	id: string;
-	properties?:  { [key: string]: any };
-	layout?: any;
-	items?: IItemConfig[];
-}
-
-export interface IItemConfig {
-	component: IComponentConfigurationShape;
-	config: any;
 }
