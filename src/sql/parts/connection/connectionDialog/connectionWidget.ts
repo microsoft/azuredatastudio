@@ -160,7 +160,7 @@ export class ConnectionWidget {
 
 		this._databaseNameInputBox = new Dropdown(databaseNameBuilder.getHTMLElement(), this._contextViewService, this._themeService, {
 			values: [this._defaultDatabaseName, this._loadingDatabaseName],
-			strictSelection : false,
+			strictSelection: false,
 			placeholder: this._defaultDatabaseName,
 			maxHeight: 125,
 			ariaLabel: databaseOption.displayName
