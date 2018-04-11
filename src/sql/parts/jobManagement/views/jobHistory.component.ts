@@ -52,6 +52,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _isVisible: boolean = false;
 	private _stepRows: JobStepsViewRow[] = [];
 	private _showSteps: boolean = undefined;
+	private _showPreviousRuns: boolean = undefined;
 	private _runStatus: string = undefined;
 	private _jobCacheObject: JobCacheObject;
 	private _notificationService: INotificationService;
@@ -153,8 +154,10 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 					this._tree.setInput(new JobHistoryModel());
 					this._cd.detectChanges();
 				}
-			} else {
-				this.loadHistory();
+			} else if (jobHistories && jobHistories.length === 0 ){
+				this._showPreviousRuns = false;
+				this._showSteps = false;
+				this._cd.detectChanges();
 			}
 			this._jobCacheObject.prevJobID = this._agentViewComponent.jobId;
 		} else if (this._isVisible === true && this._agentViewComponent.agentRefresh) {
@@ -170,18 +173,28 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getJobHistory(ownerUri, this._agentViewComponent.jobId).then((result) => {
 			if (result && result.jobs) {
-				self._treeController.jobHistories = result.jobs;
-				self._jobCacheObject.setJobHistory(this._agentViewComponent.jobId, result.jobs);
-				let jobHistoryRows = self._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
-				self._treeDataSource.data = jobHistoryRows;
-				self._tree.setInput(new JobHistoryModel());
-				self.agentJobHistoryInfo =  self._treeController.jobHistories[0];
-				if (this.agentJobHistoryInfo) {
-					self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
+				if (result.jobs.length > 0) {
+					self._showPreviousRuns = true;
+					self._treeController.jobHistories = result.jobs;
+					self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, result.jobs);
+					let jobHistoryRows = self._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
+					self._treeDataSource.data = jobHistoryRows;
+					self._tree.setInput(new JobHistoryModel());
+					self.agentJobHistoryInfo =  self._treeController.jobHistories[0];
+					if (self.agentJobHistoryInfo) {
+						self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
+					}
+					if (self._agentViewComponent.showHistory) {
+						self._cd.detectChanges();
+					}
+				} else {
+					self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, result.jobs);
+					self._showPreviousRuns = false;
 				}
-				if (this._agentViewComponent.showHistory) {
-					self._cd.detectChanges();
-				}
+			} else {
+				self._showPreviousRuns = false;
+				self._showSteps = false;
+				this._cd.detectChanges();
 			}
 		});
 	}
