@@ -17,7 +17,6 @@ import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentJobInfo, AgentJobHistoryInfo } from 'sqlops';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
-import { ControlHostContent } from 'sql/parts/dashboard/contents/controlHostContent.component';
 
 
 export const DASHBOARD_SELECTOR: string = 'agentview-component';
@@ -36,6 +35,7 @@ export class AgentViewComponent {
 	private _showHistory: boolean = false;
 	private _jobId: string = null;
 	private _agentJobInfo: AgentJobInfo = null;
+	private _refresh: boolean = undefined;
 
 	public jobsIconClass: string = 'jobsview-icon';
 
@@ -47,8 +47,7 @@ export class AgentViewComponent {
 	};
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => ControlHostContent)) private _controlHostContent: ControlHostContent){
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef){
 	}
 
 	/**
@@ -66,8 +65,8 @@ export class AgentViewComponent {
 		return this._agentJobInfo;
 	}
 
-	public get agentRefresh(): boolean {
-		return this._controlHostContent.agentRefresh;
+	public get refresh(): boolean {
+		return this._refresh;
 	}
 
 	/**
@@ -89,8 +88,8 @@ export class AgentViewComponent {
 		this._cd.detectChanges();
 	}
 
-	public set agentRefresh(value: boolean) {
-		this._controlHostContent.agentRefresh = value;
+	public set refresh(value: boolean) {
+		this._refresh = value;
 		this._cd.detectChanges();
 	}
 }

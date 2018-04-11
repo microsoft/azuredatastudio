@@ -54,6 +54,6 @@ export class DashboardControlHostContainer extends DashboardTab implements After
 	}
 
 	public refresh(): void {
-		this._hostContent.agentRefresh = true;
+		this._hostContent.refresh();
 	}
 }

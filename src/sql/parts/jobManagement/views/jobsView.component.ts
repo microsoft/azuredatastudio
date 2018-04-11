@@ -11,7 +11,7 @@ import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!../common/media/jobs';
 import 'vs/css!../common/media/detailview';
 
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Input, AfterContentChecked, OnChanges } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -105,10 +105,10 @@ export class JobsViewComponent implements AfterContentChecked {
 					this.isInitialized = true;
 				}
 			}
-		} else if (this.isVisible === true && this._agentViewComponent.agentRefresh === true) {
+		} else if (this.isVisible === true && this._agentViewComponent.refresh === true) {
 			this.onFirstVisible(false);
-			this._agentViewComponent.agentRefresh = false;
-		} else if (this.isVisible === true && this._agentViewComponent.agentRefresh === false) {
+			this._agentViewComponent.refresh = false;
+		} else if (this.isVisible === true && this._agentViewComponent.refresh === false) {
 			this.onFirstVisible(true);
 		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
 			this.isVisible = false;
@@ -154,7 +154,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				self._agentViewComponent.showHistory = true;
 			}, 500);
 		});
-		if (cached && this._agentViewComponent.agentRefresh !== true) {
+		if (cached && this._agentViewComponent.refresh !== true) {
 			this.onJobsAvailable(this._jobCacheObject.jobs);
 		} else {
 			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;

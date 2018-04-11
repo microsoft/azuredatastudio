@@ -46,7 +46,6 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 
 	@Input() public agentJobInfo: AgentJobInfo = undefined;
 	@Input() public agentJobHistories: AgentJobHistoryInfo[] = undefined;
-	@Input() public agentRefresh: boolean;
 	public agentJobHistoryInfo: AgentJobHistoryInfo = undefined;
 
 	private _isVisible: boolean = false;
@@ -160,9 +159,9 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 				this._cd.detectChanges();
 			}
 			this._jobCacheObject.prevJobID = this._agentViewComponent.jobId;
-		} else if (this._isVisible === true && this._agentViewComponent.agentRefresh) {
+		} else if (this._isVisible === true && this._agentViewComponent.refresh) {
 			this.loadHistory();
-			this._agentViewComponent.agentRefresh = false;
+			this._agentViewComponent.refresh = false;
 		} else if (this._isVisible === true && this._tableContainer.nativeElement.offsetParent === null) {
 			this._isVisible = false;
 		}
