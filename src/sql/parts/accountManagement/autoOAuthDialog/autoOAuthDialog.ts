@@ -104,7 +104,9 @@ export class AutoOAuthDialog extends Modal {
 			});
 
 			inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
-				inputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService);
+				inputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService, {
+					ariaLabel: label
+				});
 			});
 		});
 		return inputBox;

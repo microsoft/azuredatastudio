@@ -207,7 +207,10 @@ export class BackupComponent {
 		let self = this;
 		this.addFooterButtons();
 
-		this.recoveryBox = new InputBox(this.recoveryModelElement.nativeElement, this._bootstrapService.contextViewService, { placeholder: this.recoveryModel });
+		this.recoveryBox = new InputBox(this.recoveryModelElement.nativeElement, this._bootstrapService.contextViewService, {
+			placeholder: this.recoveryModel,
+			ariaLabel: this.recoveryModelLabel
+		});
 		// Set backup type
 		this.backupTypeSelectBox = new SelectBox([], '', this._bootstrapService.contextViewService);
 		this.backupTypeSelectBox.render(this.backupTypeElement.nativeElement);
@@ -216,39 +219,46 @@ export class BackupComponent {
 		this.copyOnlyCheckBox = new Checkbox(this.copyOnlyElement.nativeElement, {
 			label: this.copyOnlyLabel,
 			checked: false,
-			onChange: (viaKeyboard) => { }
+			onChange: (viaKeyboard) => { },
+			ariaLabel: this.copyOnlyLabel
 		});
 
 		// Encryption checkbox
 		this.encryptCheckBox = new Checkbox(this.encryptElement.nativeElement, {
 			label: this.encryptionLabel,
 			checked: false,
-			onChange: (viaKeyboard) => self.onChangeEncrypt()
+			onChange: (viaKeyboard) => self.onChangeEncrypt(),
+			ariaLabel: this.encryptionLabel
 		});
 
 		// Verify backup checkbox
 		this.verifyCheckBox = new Checkbox(this.verifyElement.nativeElement, {
 			label: this.verifyContainerLabel,
 			checked: false,
-			onChange: (viaKeyboard) => { }
+			onChange: (viaKeyboard) => { },
+			ariaLabel: this.verifyContainerLabel
 		});
 
 		// Perform checksum checkbox
 		this.checksumCheckBox = new Checkbox(this.checksumElement.nativeElement, {
 			label: this.checksumContainerLabel,
 			checked: false,
-			onChange: (viaKeyboard) => { }
+			onChange: (viaKeyboard) => { },
+			ariaLabel: this.checksumContainerLabel
 		});
 
 		// Continue on error checkbox
 		this.continueOnErrorCheckBox = new Checkbox(this.continueOnErrorElement.nativeElement, {
 			label: this.continueOnErrorContainerLabel,
 			checked: false,
-			onChange: (viaKeyboard) => { }
+			onChange: (viaKeyboard) => { },
+			ariaLabel: this.continueOnErrorContainerLabel
 		});
 
 		// Set backup name
-		this.backupNameBox = new InputBox(this.backupNameElement.nativeElement, this._bootstrapService.contextViewService);
+		this.backupNameBox = new InputBox(this.backupNameElement.nativeElement, this._bootstrapService.contextViewService, {
+			ariaLabel: this.backupNameLabel
+		});
 
 		// Set backup path list
 		this.pathListBox = new ListBox([], '', this._bootstrapService.contextViewService, this._bootstrapService.clipboardService);
@@ -279,10 +289,14 @@ export class BackupComponent {
 			{
 				validationOptions: {
 					validation: (value: string) => !value ? ({ type: MessageType.ERROR, content: this.mediaNameRequiredError }) : null
-				}
-			});
+				},
+				ariaLabel: this.newMediaSetNameLabel
+			}
+		);
 
-		this.mediaDescriptionBox = new InputBox(this.mediaDescriptionElement.nativeElement, this._bootstrapService.contextViewService);
+		this.mediaDescriptionBox = new InputBox(this.mediaDescriptionElement.nativeElement, this._bootstrapService.contextViewService, {
+			ariaLabel: this.newMediaSetDescriptionLabel
+		});
 
 		// Set backup retain days
 		let invalidInputMessage = localize('backupComponent.invalidInput', 'Invalid input. Value must be greater than or equal 0.');
@@ -300,7 +314,8 @@ export class BackupComponent {
 							return null;
 						}
 					}
-				}
+				},
+				ariaLabel: this.setBackupRetainDaysLabel
 			});
 
 		// Disable elements

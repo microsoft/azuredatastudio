@@ -43,7 +43,8 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 						return null;
 					}
 				}
-			}
+			},
+			ariaLabel: option.displayName
 		});
 		optionWidget.value = optionValue;
 		inputElement = this.findElement(rowContainer, 'input');
@@ -55,7 +56,8 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 		optionWidget = new InputBox(rowContainer.getHTMLElement(), contextViewService, {
 			validationOptions: {
 				validation: (value: string) => (!value && option.isRequired) ? ({ type: MessageType.ERROR, content: option.displayName + missingErrorMessage }) : null
-			}
+			},
+			ariaLabel: option.displayName
 		});
 		optionWidget.value = optionValue;
 		if (option.valueType === ServiceOptionType.password) {
