@@ -128,6 +128,7 @@ export class ConnectionWidget {
 			validationOptions: {
 				validation: (value: string) => !value ? ({ type: MessageType.ERROR, content: serverNameOption.displayName + errorMessage }) : null
 			},
+			ariaLabel: serverNameOption.displayName
 		});
 
 		if (this._optionsMaps[ConnectionOptionSpecialType.authType]) {
@@ -141,12 +142,13 @@ export class ConnectionWidget {
 		this._userNameInputBox = new InputBox(userNameBuilder.getHTMLElement(), this._contextViewService, {
 			validationOptions: {
 				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: userNameOption.displayName + errorMessage }) : null
-			}
+			},
+			ariaLabel: userNameOption.displayName
 		});
 
 		let passwordOption = this._optionsMaps[ConnectionOptionSpecialType.password];
 		let passwordBuilder = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input');
-		this._passwordInputBox = new InputBox(passwordBuilder.getHTMLElement(), this._contextViewService);
+		this._passwordInputBox = new InputBox(passwordBuilder.getHTMLElement(), this._contextViewService, { ariaLabel: passwordOption.displayName });
 		this._passwordInputBox.inputElement.type = 'password';
 		this._password = '';
 
@@ -160,7 +162,8 @@ export class ConnectionWidget {
 			values: [this._defaultDatabaseName, this._loadingDatabaseName],
 			strictSelection : false,
 			placeholder: this._defaultDatabaseName,
-			maxHeight: 125
+			maxHeight: 125,
+			ariaLabel: databaseOption.displayName
 		});
 
 		let serverGroupLabel = localize('serverGroup', 'Server group');
