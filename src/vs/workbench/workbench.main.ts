@@ -112,8 +112,7 @@ import 'vs/workbench/parts/themes/electron-browser/themes.contribution';
 
 import 'vs/workbench/parts/feedback/electron-browser/feedback.contribution';
 
-// {{SQL CARBON EDIT}}
-// import 'vs/workbench/parts/welcome/gettingStarted/electron-browser/gettingStarted.contribution';
+import 'vs/workbench/parts/welcome/gettingStarted/electron-browser/gettingStarted.contribution';
 
 import 'vs/workbench/parts/update/electron-browser/update.contribution';
 

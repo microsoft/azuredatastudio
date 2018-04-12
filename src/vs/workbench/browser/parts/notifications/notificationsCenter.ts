@@ -282,7 +282,7 @@ export class NotificationsCenter extends Themable {
 
 		// Dispose all
 		while (this.model.notifications.length) {
-			this.model.notifications[0].dispose();
+			this.model.notifications[0].close();
 		}
 	}
 }

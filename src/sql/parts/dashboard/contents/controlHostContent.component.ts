@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./controlHostContent';
 
-import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 
 import Event, { Emitter } from 'vs/base/common/event';
 import { Parts } from 'vs/workbench/services/part/common/partService';
@@ -16,12 +16,13 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 
 import * as sqlops from 'sqlops';
 import { memoize } from 'vs/base/common/decorators';
+import { AgentViewComponent } from '../../jobManagement/agent/agentView.component';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/contents/controlHostContent.component.html')),
 	selector: 'controlhost-content'
 })
-export class ControlHostContent implements OnInit {
+export class ControlHostContent {
 	@Input() private webviewId: string;
 
 	private _onResize = new Emitter<void>();
@@ -32,14 +33,14 @@ export class ControlHostContent implements OnInit {
 	private _onMessageDisposable: IDisposable;
 	private _type: string;
 
+	/* Children components */
+	@ViewChild('agent') private _agentViewComponent: AgentViewComponent;
+
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
 	) {
-	}
-
-	ngOnInit() {
 	}
 
 	public layout(): void {
@@ -72,5 +73,9 @@ export class ControlHostContent implements OnInit {
 
 	public get controlType(): string {
 		return this._type;
+	}
+
+	public refresh() {
+		this._agentViewComponent.refresh = true;
 	}
 }

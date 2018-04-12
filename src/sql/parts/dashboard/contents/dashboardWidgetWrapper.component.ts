@@ -53,6 +53,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	@Input() private _config: WidgetConfig;
 	@Input() private collapsable = false;
 
+	private _collapseAction: CollapseWidgetAction;
 	private _collapsed = false;
 
 	public get collapsed(): boolean {
@@ -64,16 +65,12 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			return;
 		}
 		this._collapsed = val;
-		if (this.collapsedStateChangedEmitter) {
-			this.collapsedStateChangedEmitter.fire(this._collapsed);
-		}
+		this._collapseAction.state = val;
 		this._changeref.detectChanges();
 		if (!val) {
 			this.loadWidget();
 		}
 	}
-
-	private collapsedStateChangedEmitter: Emitter<boolean>;
 
 	@memoize
 	public get guid(): string {
@@ -114,8 +111,8 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
 		if (this._actions) {
 			if (this.collapsable) {
-				this.collapsedStateChangedEmitter = new Emitter<boolean>();
-				this._actionbar.push(this._bootstrap.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed, this.collapsedStateChangedEmitter.event), { icon: true, label: false });
+				this._collapseAction = this._bootstrap.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed);
+				this._actionbar.push(this._collapseAction, { icon: true, label: false });
 			}
 			this._actionbar.push(this._bootstrap.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this._component.actionsContext), { icon: true, label: false });
 		}
@@ -123,13 +120,13 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	}
 
 	public refresh(): void {
-		if (this._component && this._component.refresh) {
+		if (!this.collapsed && this._component && this._component.refresh) {
 			this._component.refresh();
 		}
 	}
 
 	public layout(): void {
-		if (this._component && this._component.layout) {
+		if (!this.collapsed && this._component && this._component.layout) {
 			this._component.layout();
 		}
 	}
@@ -170,7 +167,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			this._component = componentRef.instance;
 			let actions = componentRef.instance.actions;
 			if (componentRef.instance.refresh) {
-				actions.push(new RefreshWidgetAction(componentRef.instance.refresh, componentRef.instance));
+				actions.push(new RefreshWidgetAction(this.refresh, this));
 			}
 			if (actions !== undefined && actions.length > 0) {
 				this._actions = actions;

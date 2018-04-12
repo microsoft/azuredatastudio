@@ -26,10 +26,12 @@ import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/
 import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { error } from 'sql/base/common/log';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { clone } from 'sql/base/common/objects';
 
 import * as strings from 'vs/base/common/strings';
-import { clone } from 'sql/base/common/objects';
 import * as DOM from 'vs/base/browser/dom';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const QUERY_SELECTOR: string = 'query-component';
 
@@ -150,7 +152,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
 	// tslint:disable-next-line:no-unused-variable
 	@ViewChild('resultsPane', { read: ElementRef }) private _resultsPane: ElementRef;
-
+	@ViewChild('queryLink', { read: ElementRef }) private _queryLinkElement: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
@@ -402,6 +404,16 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 
 	onSelectionLinkClicked(index: number): void {
 		this.dataService.setEditorSelection(index);
+	}
+
+	onKey(e: Event, index: number) {
+		if (DOM.isAncestor(<HTMLElement>e.target, this._queryLinkElement.nativeElement) && e instanceof KeyboardEvent) {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Enter)) {
+				this.onSelectionLinkClicked(index);
+				e.stopPropagation();
+			}
+		}
 	}
 
 	/**
