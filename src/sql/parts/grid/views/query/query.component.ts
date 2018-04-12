@@ -153,6 +153,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	// tslint:disable-next-line:no-unused-variable
 	@ViewChild('resultsPane', { read: ElementRef }) private _resultsPane: ElementRef;
 	@ViewChild('queryLink', { read: ElementRef }) private _queryLinkElement: ElementRef;
+	@ViewChild('messagesContainer', { read: ElementRef }) private _messagesContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
@@ -524,7 +525,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	 */
 	navigateToGrid(targetIndex: number): boolean {
 		// check if the target index is valid
-		if (targetIndex >= this.renderedDataSets.length || targetIndex < 0 || !this.hasFocus()) {
+		if (targetIndex >= this.renderedDataSets.length || targetIndex < 0) {
 			return false;
 		}
 
@@ -577,16 +578,32 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		}
 	}
 
+	protected toggleResultPane(): void {
+		this.resultActive = !this.resultActive;
+		this._cd.detectChanges();
+		if (this.resultActive) {
+			this.resizeGrids();
+			this.slickgrids.toArray()[this.activeGrid].setActive();
+		}
+	}
+
+	protected toggleMessagePane(): void {
+		this.messageActive = !this.messageActive;
+		this._cd.detectChanges();
+		if (this.messageActive && this._messagesContainer) {
+			let header = <HTMLElement>this._messagesContainer.nativeElement;
+			header.focus();
+		}
+	}
+
 	/* Helper function to toggle messages and results panes */
 	// tslint:disable-next-line:no-unused-variable
 	private togglePane(pane: PaneType): void {
 		if (pane === 'messages') {
-			this._messageActive = !this._messageActive;
+			this.toggleMessagePane();
 		} else if (pane === 'results') {
-			this.resultActive = !this.resultActive;
+			this.toggleResultPane();
 		}
-		this._cd.detectChanges();
-		this.resizeGrids();
 	}
 
 	layout() {
