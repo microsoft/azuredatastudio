@@ -1030,7 +1030,7 @@ export class CodeMenu {
 					}
 				}
 			}) : null,
-		    (product.licenseUrl || product.privacyStatementUrl) ? __separator__() : null,
+			(product.licenseUrl || product.privacyStatementUrl) ? __separator__() : null,
 			toggleDevToolsItem,
 			isWindows && product.quality !== 'stable' ? showAccessibilityOptions : null
 		]).forEach(item => helpMenu.append(item));
