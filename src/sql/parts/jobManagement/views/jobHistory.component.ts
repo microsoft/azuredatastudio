@@ -143,14 +143,9 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			this._isVisible = true;
 			let jobHistories = this._jobCacheObject.jobHistories[this._agentViewComponent.jobId];
 			if (jobHistories && jobHistories.length > 0) {
+				const self = this;
 				if (this._jobCacheObject.prevJobID === this._agentViewComponent.jobId || jobHistories[0].jobId === this._agentViewComponent.jobId) {
-					this.agentJobHistoryInfo = jobHistories[0];
-					this.agentJobHistoryInfo.runDate = this.formatTime(jobHistories[0].runDate);
-					this._treeController.jobHistories = jobHistories;
-					this._jobCacheObject.setJobHistory(this._agentViewComponent.jobId, jobHistories);
-					let jobHistoryRows = this._treeController.jobHistories.map(job => this.convertToJobHistoryRow(job));
-					this._treeDataSource.data = jobHistoryRows;
-					this._tree.setInput(new JobHistoryModel());
+					this.buildHistoryTree(self, jobHistories);
 					this._cd.detectChanges();
 				}
 			} else if (jobHistories && jobHistories.length === 0 ){
@@ -174,15 +169,6 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			if (result && result.jobs) {
 				if (result.jobs.length > 0) {
 					self._showPreviousRuns = true;
-					self._treeController.jobHistories = result.jobs;
-					self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, result.jobs);
-					let jobHistoryRows = self._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
-					self._treeDataSource.data = jobHistoryRows;
-					self._tree.setInput(new JobHistoryModel());
-					self.agentJobHistoryInfo =  self._treeController.jobHistories[0];
-					if (self.agentJobHistoryInfo) {
-						self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
-					}
 					if (self._agentViewComponent.showHistory) {
 						self._cd.detectChanges();
 					}
@@ -196,6 +182,18 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 				this._cd.detectChanges();
 			}
 		});
+	}
+
+	private buildHistoryTree(self: any, jobHistories: AgentJobHistoryInfo[]) {
+		self._treeController.jobHistories = jobHistories;
+		self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, jobHistories);
+		let jobHistoryRows = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
+		self._treeDataSource.data = jobHistoryRows;
+		self._tree.setInput(new JobHistoryModel());
+		self.agentJobHistoryInfo = self._treeController.jobHistories[0];
+		if (self.agentJobHistoryInfo) {
+			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
+		}
 	}
 
 	private toggleCollapse(): void {
