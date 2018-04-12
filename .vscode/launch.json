@@ -94,31 +94,6 @@
 
 		},
 		{
-			"type": "chrome",
-			"request": "launch",
-			"name": "Launch with extension",
-			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
-			},
-			"osx": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
-			},
-			"linux": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
-			},
-			"urlFilter": "*index.html*",
-			"runtimeArgs": [
-				"--inspect=5875",
-				"--extensionDevelopmentPath=${workspaceFolder}/samples/sqlservices"
-			],
-			"skipFiles": [
-				"**/winjs*.js"
-			],
-			"webRoot": "${workspaceFolder}",
-			"timeout": 15000
-
-		},
-		{
 			"type": "node",
 			"request": "launch",
 			"name": "Unit Tests",

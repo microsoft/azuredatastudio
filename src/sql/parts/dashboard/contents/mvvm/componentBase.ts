@@ -8,10 +8,11 @@ import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFacto
 	ViewChild, ElementRef, Injector, OnDestroy, OnInit
 } from '@angular/core';
 
+import * as types from 'vs/base/common/types';
+
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/dashboard/contents/mvvm/interfaces';
 import { FlexLayout, FlexItemLayout } from 'sqlops';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
-
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 
 export class ItemDescriptor<T> {
@@ -19,7 +20,7 @@ export class ItemDescriptor<T> {
 }
 
 export abstract class ComponentBase implements IComponent, OnDestroy, OnInit {
-
+	protected properties: { [key: string]: any; } = {};
 	constructor(
 		protected _changeRef: ChangeDetectorRef) {
 	}
@@ -52,12 +53,20 @@ export abstract class ComponentBase implements IComponent, OnDestroy, OnInit {
 	abstract setLayout (layout: any): void;
 
 	public setProperties(properties: { [key: string]: any; }): void {
-		for (let propName in properties) {
-			if (this.hasOwnProperty(propName)) {
-				this[propName] = properties[propName];
-			}
+		if (!properties) {
+			this.properties = {};
 		}
+		this.properties = properties;
 		this.layout();
+	}
+
+	protected getProperties<TPropertyBag>(): TPropertyBag {
+		return this.properties as TPropertyBag;
+	}
+
+	protected getPropertyOrDefault<TPropertyBag, TValue>(propertyGetter: (TPropertyBag) => TValue, defaultVal: TValue) {
+		let property = propertyGetter(this.getProperties<TPropertyBag>());
+		return types.isUndefinedOrNull(property) ? defaultVal : property;
 	}
 }
 

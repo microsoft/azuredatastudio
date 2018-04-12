@@ -22,7 +22,7 @@ class FlexItem {
 @Component({
 	template: `
 		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent">
-			<div *ngFor="let item of items" [style.flex]="item.config.flex" [style.order]="item.config.order" >
+			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.order]="getItemOrder(item)" >
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
 			</div>
@@ -68,10 +68,6 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
-		// Do nothing for now, no special properties supported
-	}
-
 	// CSS-bound properties
 	public get flexFlow(): string {
 		return this._flexFlow;
@@ -79,5 +75,12 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 	public get justifyContent(): string {
 		return this._justifyContent;
+	}
+
+	private getItemFlex(item: FlexItem): string {
+		return item.config ? item.config.flex : '';
+	}
+	private getItemOrder(item: FlexItem): number {
+		return item.config ? item.config.order : 0;
 	}
 }

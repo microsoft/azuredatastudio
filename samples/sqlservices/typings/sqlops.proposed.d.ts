@@ -28,8 +28,8 @@ declare module 'sqlops' {
 		withProperties<U>(properties: U): ComponentBuilder<T>;
 	}
 	export interface ContainerBuilder<T extends Component, TLayout,TItemLayout> extends ComponentBuilder<T> {
-		withLayout<U>(layout: U): ContainerBuilder<T, TLayout, TItemLayout>;
-		withItems<V>(components: Array<Component>, itemLayout ?: V): ComponentBuilder<T>;
+		withLayout(layout: TLayout): ContainerBuilder<T, TLayout, TItemLayout>;
+		withItems(components: Array<Component>, itemLayout ?: TItemLayout): ContainerBuilder<T, TLayout, TItemLayout>;
 	}
 
 	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout> {

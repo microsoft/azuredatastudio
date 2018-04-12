@@ -37,6 +37,17 @@
                             "container": {
                                 "modelview-container": null
                             }
+                        },
+                        {
+                            "id": "splitPanel",
+                            "title": "SplitPanel",
+                            "gridItemConfig": {
+                                "sizex": 2,
+                                "sizey": 1
+                            },
+                            "container": {
+                                "modelview-container": null
+                            }
                         }
                     ]
                 }

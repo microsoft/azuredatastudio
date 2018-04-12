@@ -25,10 +25,6 @@ import { ComponentBase } from 'sql/parts/dashboard/contents/mvvm/componentBase';
 	`
 })
 export default class CardComponent extends ComponentBase implements IComponent, OnDestroy {
-	private label: string;
-	private value: string;
-	private actions: sqlops.ActionDescriptor[];
-
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -56,4 +52,17 @@ export default class CardComponent extends ComponentBase implements IComponent, 
 	}
 
 	// CSS-bound properties
+
+	public get label(): string {
+		return this.getPropertyOrDefault<sqlops.CardProperties, string>((props) => props.label, '');
+	}
+
+	public get value(): string {
+		return this.getPropertyOrDefault<sqlops.CardProperties, string>((props) => props.value, '');
+	}
+
+	public get actions(): sqlops.ActionDescriptor[] {
+		return this.getPropertyOrDefault<sqlops.CardProperties, sqlops.ActionDescriptor[]>((props) => props.actions, []);
+	}
+
 }

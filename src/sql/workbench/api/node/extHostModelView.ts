@@ -70,12 +70,12 @@ class ComponentBuilderImpl<T extends sqlops.Component> implements sqlops.Compone
 }
 
 class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> extends ComponentBuilderImpl<T> implements sqlops.ContainerBuilder<T, TLayout, TItemLayout> {
-	withLayout<U>(layout: U): sqlops.ContainerBuilder<T, TLayout, TItemLayout> {
+	withLayout(layout: TLayout): sqlops.ContainerBuilder<T, TLayout, TItemLayout> {
 		this._component.layout = layout;
 		return this;
 	}
 
-	withItems<V>(components: sqlops.Component[], itemLayout?: V): sqlops.ComponentBuilder<T> {
+	withItems(components: sqlops.Component[], itemLayout?: TItemLayout): sqlops.ContainerBuilder<T, TLayout, TItemLayout> {
 		this._component.itemConfigs = components.map(item => {
 			let componentWrapper = item as ComponentWrapper;
 			return new InternalItemConfig(componentWrapper, itemLayout);
