@@ -6633,7 +6633,7 @@ export class ResolvedReflectiveFactory {
         /**
          * Factory function which can return an instance of an object represented by a key.
          */
-        factory: Function, 
+        factory: Function,
         /**
          * Arguments (dependencies) to the `factory` function.
          */

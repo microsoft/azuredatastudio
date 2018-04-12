@@ -73,8 +73,5 @@ export class JobStepsViewComponent extends Disposable implements OnInit, OnChang
 			this._tree.setInput(new JobStepsViewModel());
 		}
 	}
-
-	ngAfterContentChecked() {
-	}
 }
 

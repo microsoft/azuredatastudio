@@ -11,7 +11,7 @@ import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!../common/media/jobs';
 import 'vs/css!../common/media/detailview';
 
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Input } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -19,7 +19,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { IJobManagementService, IAgentJobCacheService } from '../common/interfaces';
+import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
@@ -31,7 +31,8 @@ import { attachTableStyler } from 'sql/common/theme/styler';
 import { JobHistoryComponent } from './jobHistory.component';
 import { AgentViewComponent } from '../agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
-import { AgentJobCacheService } from 'sql/parts/jobManagement/common/agentJobCacheService';
+import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
+
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 
@@ -39,10 +40,11 @@ export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 	selector: JOBSVIEW_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./jobsView.component.html'))
 })
-export class JobsViewComponent {
+
+export class JobsViewComponent implements AfterContentChecked {
 
 	private _jobManagementService: IJobManagementService;
-	private _jobCacheService: IAgentJobCacheService;
+	private _jobCacheObject: JobCacheObject;
 
 	private _disposables = new Array<vscode.Disposable>();
 
@@ -68,6 +70,7 @@ export class JobsViewComponent {
 	private _table: Table<any>;
 	public jobs: sqlops.AgentJobInfo[];
 	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
+	private _serverName: string;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -77,15 +80,24 @@ export class JobsViewComponent {
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent
 	) {
 		this._jobManagementService = bootstrapService.jobManagementService;
-		this._jobCacheService = bootstrapService.agentJobCacheService;
+		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
+		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
+		let jobCache = jobCacheObjectMap[this._serverName];
+		if (jobCache) {
+			this._jobCacheObject = jobCache;
+		} else {
+			this._jobCacheObject = new JobCacheObject();
+			this._jobCacheObject.serverName = this._serverName;
+			this._jobManagementService.addToCache(this._serverName, this._jobCacheObject);
+		}
 	}
 
 	ngAfterContentChecked() {
 		if (this.isVisible === false && this._gridEl.nativeElement.offsetParent !== null) {
 			this.isVisible = true;
 			if (!this.isInitialized) {
-				if (this._jobCacheService.jobs !== undefined) {
-					this.jobs = this._jobCacheService.jobs;
+				if (this._jobCacheObject.serverName === this._serverName && this._jobCacheObject.jobs.length > 0) {
+					this.jobs = this._jobCacheObject.jobs;
 					this.onFirstVisible(true);
 					this.isInitialized = true;
 				} else {
@@ -93,6 +105,11 @@ export class JobsViewComponent {
 					this.isInitialized = true;
 				}
 			}
+		} else if (this.isVisible === true && this._agentViewComponent.refresh === true) {
+			this.onFirstVisible(false);
+			this._agentViewComponent.refresh = false;
+		} else if (this.isVisible === true && this._agentViewComponent.refresh === false) {
+			this.onFirstVisible(true);
 		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
 			this.isVisible = false;
 		}
@@ -117,10 +134,11 @@ export class JobsViewComponent {
 			preTemplate: this.loadingTemplate,
 			process: (job) => {
 				(<any>rowDetail).onAsyncResponse.notify({
-					'itemDetail': job
-				}, undefined, this);
+					'itemDetail': job,
+				}, undefined, null);
 			},
-			panelRows: 2
+			panelRows: 2,
+			postTemplate: () => ''
 		});
 
 		this.rowDetail = rowDetail;
@@ -132,24 +150,19 @@ export class JobsViewComponent {
 			let job = self.getJob(args);
 			self._agentViewComponent.jobId = job.jobId;
 			self._agentViewComponent.agentJobInfo = job;
-			self.isVisible = false;
-			if (self._jobCacheService.getJobHistory(job.jobId)) {
-				self._agentViewComponent.agentJobHistories = self._jobCacheService.getJobHistory(job.jobId);
-			}
 			setTimeout(() => {
 				self._agentViewComponent.showHistory = true;
 			}, 500);
 		});
-		this._cd.detectChanges();
-		if (cached) {
-			this.onJobsAvailable(this._jobCacheService.jobs);
+		if (cached && this._agentViewComponent.refresh !== true) {
+			this.onJobsAvailable(this._jobCacheObject.jobs);
 		} else {
 			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 			this._jobManagementService.getJobs(ownerUri).then((result) => {
 				if (result && result.jobs) {
-					this.jobs = result.jobs;
-					this._jobCacheService.jobs = this.jobs;
-					this.onJobsAvailable(result.jobs);
+					self.jobs = result.jobs;
+					self._jobCacheObject.jobs = self.jobs;
+					self.onJobsAvailable(result.jobs);
 				}
 			});
 		}
@@ -209,7 +222,7 @@ export class JobsViewComponent {
 				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
 					if (result.jobs) {
 						this.jobHistories[job.jobId] = result.jobs;
-						this._jobCacheService.setJobHistory(job.jobId, result.jobs);
+						this._jobCacheObject.setJobHistory(job.jobId, result.jobs);
 					}
 				});
 			});

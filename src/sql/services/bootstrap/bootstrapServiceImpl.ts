@@ -44,7 +44,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IJobManagementService, IAgentJobCacheService } from 'sql/parts/jobManagement/common/interfaces';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
@@ -104,7 +104,6 @@ export class BootstrapService implements IBootstrapService {
 		@ICommandService public commandService: ICommandService,
 		@IDashboardWebviewService public dashboardWebviewService: IDashboardWebviewService,
 		@IJobManagementService public jobManagementService: IJobManagementService,
-		@IAgentJobCacheService public agentJobCacheService: IAgentJobCacheService,
 		@IEnvironmentService public environmentService: IEnvironmentService
 	) {
 		this.configurationEditorService = this.instantiationService.createInstance(ConfigurationEditingService);

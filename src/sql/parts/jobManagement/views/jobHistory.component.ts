@@ -5,25 +5,26 @@
 
 import 'vs/css!./jobHistory';
 
-import { OnInit, OnChanges, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Input, Injectable, ChangeDetectionStrategy } from '@angular/core';
+import { OnInit, OnChanges, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { localize } from 'vs/nls';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { IJobManagementService, IAgentJobCacheService } from '../common/interfaces';
+import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
 import { JobStepsViewRow } from './jobStepsViewTree';
-import { localize } from 'vs/nls';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import Severity from 'vs/base/common/severity';
+import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -44,16 +45,17 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	@ViewChild('table') private _tableContainer: ElementRef;
 
 	@Input() public agentJobInfo: AgentJobInfo = undefined;
-	@Input() public jobId: string = undefined;
 	@Input() public agentJobHistories: AgentJobHistoryInfo[] = undefined;
 	public agentJobHistoryInfo: AgentJobHistoryInfo = undefined;
 
 	private _isVisible: boolean = false;
 	private _stepRows: JobStepsViewRow[] = [];
-	private _showSteps: boolean = false;
+	private _showSteps: boolean = undefined;
+	private _showPreviousRuns: boolean = undefined;
 	private _runStatus: string = undefined;
-	private _agentJobCacheService: IAgentJobCacheService;
+	private _jobCacheObject: JobCacheObject;
 	private _notificationService: INotificationService;
+	private _agentJobInfo: AgentJobInfo;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -68,8 +70,18 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		this._treeRenderer = new JobHistoryRenderer();
 		this._treeFilter =  new JobHistoryFilter();
 		this._jobManagementService = bootstrapService.jobManagementService;
-		this._agentJobCacheService = bootstrapService.agentJobCacheService;
 		this._notificationService = bootstrapService.notificationService;
+		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
+		let serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
+		let jobCache = jobCacheObjectMap[serverName];
+		if (jobCache) {
+			this._jobCacheObject = jobCache;
+		} else {
+			this._jobCacheObject = new JobCacheObject();
+			this._jobCacheObject.serverName = serverName;
+			this._jobManagementService.addToCache(serverName, this._jobCacheObject);
+		}
+
 	}
 
 	ngOnInit() {
@@ -103,8 +115,10 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 							stepViewRow.stepID = step.stepId.toString();
 							return stepViewRow;
 						});
+						this._showSteps = true;
+					} else {
+						this._showSteps = false;
 					}
-					this._showSteps = true;
 					self._cd.detectChanges();
 				}
 			}
@@ -121,23 +135,28 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	}
 
 	ngAfterContentChecked() {
+		this._agentJobInfo = this._agentViewComponent.agentJobInfo;
+		if (!this.agentJobInfo) {
+			this.agentJobInfo = this._agentJobInfo;
+		}
 		if (this._isVisible === false && this._tableContainer.nativeElement.offsetParent !== null) {
 			this._isVisible = true;
-			if (this.agentJobHistories && this.agentJobHistories.length > 0) {
-				if (this._agentJobCacheService.prevJobID === this.jobId || this.agentJobHistories[0].jobId === this.jobId) {
-					this.agentJobHistoryInfo = this.agentJobHistories[0];
-					this.agentJobHistoryInfo.runDate = this.formatTime(this.agentJobHistories[0].runDate);
-					this._treeController.jobHistories = this.agentJobHistories;
-					this._agentJobCacheService.setJobHistory(this.jobId, this.agentJobHistories);
-					let jobHistoryRows = this._treeController.jobHistories.map(job => this.convertToJobHistoryRow(job));
-					this._treeDataSource.data = jobHistoryRows;
-					this._tree.setInput(new JobHistoryModel());
+			let jobHistories = this._jobCacheObject.jobHistories[this._agentViewComponent.jobId];
+			if (jobHistories && jobHistories.length > 0) {
+				const self = this;
+				if (this._jobCacheObject.prevJobID === this._agentViewComponent.jobId || jobHistories[0].jobId === this._agentViewComponent.jobId) {
+					this.buildHistoryTree(self, jobHistories);
 					this._cd.detectChanges();
 				}
-			} else {
-				this.loadHistory();
+			} else if (jobHistories && jobHistories.length === 0 ){
+				this._showPreviousRuns = false;
+				this._showSteps = false;
+				this._cd.detectChanges();
 			}
-			this._agentJobCacheService.prevJobID = this.jobId;
+			this._jobCacheObject.prevJobID = this._agentViewComponent.jobId;
+		} else if (this._isVisible === true && this._agentViewComponent.refresh) {
+			this.loadHistory();
+			this._agentViewComponent.refresh = false;
 		} else if (this._isVisible === true && this._tableContainer.nativeElement.offsetParent === null) {
 			this._isVisible = false;
 		}
@@ -146,20 +165,36 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	loadHistory() {
 		const self = this;
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getJobHistory(ownerUri, this.jobId).then((result) => {
+		this._jobManagementService.getJobHistory(ownerUri, this._agentViewComponent.jobId).then((result) => {
 			if (result && result.jobs) {
-				self._treeController.jobHistories = result.jobs;
-				self._agentJobCacheService.setJobHistory(self.jobId, result.jobs);
-				let jobHistoryRows = self._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
-				self._treeDataSource.data = jobHistoryRows;
-				self._tree.setInput(new JobHistoryModel());
-				self.agentJobHistoryInfo =  self._treeController.jobHistories[0];
-				if (this.agentJobHistoryInfo) {
-					self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
+				if (result.jobs.length > 0) {
+					self._showPreviousRuns = true;
+					self.buildHistoryTree(self, result.jobs);
+					if (self._agentViewComponent.showHistory) {
+						self._cd.detectChanges();
+					}
+				} else {
+					self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, result.jobs);
+					self._showPreviousRuns = false;
 				}
-				self._cd.detectChanges();
+			} else {
+				self._showPreviousRuns = false;
+				self._showSteps = false;
+				this._cd.detectChanges();
 			}
 		});
+	}
+
+	private buildHistoryTree(self: any, jobHistories: AgentJobHistoryInfo[]) {
+		self._treeController.jobHistories = jobHistories;
+		self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, jobHistories);
+		let jobHistoryRows = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
+		self._treeDataSource.data = jobHistoryRows;
+		self._tree.setInput(new JobHistoryModel());
+		self.agentJobHistoryInfo = self._treeController.jobHistories[0];
+		if (self.agentJobHistoryInfo) {
+			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
+		}
 	}
 
 	private toggleCollapse(): void {
@@ -221,8 +256,13 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		return time.replace('T', ' ');
 	}
 
-	public showSteps(): boolean {
+	public get showSteps(): boolean {
 		return this._showSteps;
+	}
+
+	public set showSteps(value: boolean) {
+		this._showSteps = value;
+		this._cd.detectChanges();
 	}
 }
 
