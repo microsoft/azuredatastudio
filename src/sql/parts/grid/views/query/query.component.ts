@@ -525,7 +525,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	 */
 	navigateToGrid(targetIndex: number): boolean {
 		// check if the target index is valid
-		if (targetIndex >= this.renderedDataSets.length || targetIndex < 0) {
+		if (targetIndex >= this.renderedDataSets.length || !this.hasFocus()) {
 			return false;
 		}
 
