@@ -49,6 +49,10 @@ export interface IDropdownOptions extends IDropdownStyles {
 	 * Error Message to show if input is not part of the supplied list, only used if strictSelection = false
 	 */
 	errorMessage?: string;
+	/**
+	 * Value to use as aria-label for the input box
+	 */
+	ariaLabel?: string;
 }
 
 export interface IDropdownStyles {
@@ -124,7 +128,8 @@ export class Dropdown extends Disposable {
 				validation: v => this._inputValidator(v)
 			},
 			placeholder: this._options.placeholder,
-			actions: [this._toggleAction]
+			actions: [this._toggleAction],
+			ariaLabel: this._options.ariaLabel
 		});
 
 		this._register(DOM.addDisposableListener(this._input.inputElement, DOM.EventType.FOCUS, () => {
