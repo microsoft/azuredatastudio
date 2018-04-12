@@ -169,6 +169,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			if (result && result.jobs) {
 				if (result.jobs.length > 0) {
 					self._showPreviousRuns = true;
+					self.buildHistoryTree(self, result.jobs);
 					if (self._agentViewComponent.showHistory) {
 						self._cd.detectChanges();
 					}
