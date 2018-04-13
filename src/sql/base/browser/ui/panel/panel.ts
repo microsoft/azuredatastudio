@@ -58,6 +58,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this.$parent.appendTo(container);
 		this.$header = $('.composite.title');
 		this.$tabList = $('.tabList');
+		this.$tabList.attr('role', 'tablist');
 		this.$tabList.style('height', this.headersize + 'px');
 		this.$header.append(this.$tabList);
 		let actionbarcontainer = $('.title-actions');
@@ -89,6 +90,9 @@ export class TabbedPanel extends Disposable implements IThemable {
 	private _createTab(tab: IInternalPanelTab): void {
 		let tabHeaderElement = $('.tab-header');
 		tabHeaderElement.attr('tabindex', '0');
+		tabHeaderElement.attr('role', 'tab');
+		tabHeaderElement.attr('aria-selected', 'false');
+		tabHeaderElement.attr('aria-label', tab.title);
 		let tabElement = $('.tab');
 		tabHeaderElement.append(tabElement);
 		let tabLabel = $('a.tabLabel');
@@ -114,7 +118,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 
 		if (this._shownTab) {
 			this._tabMap.get(this._shownTab).label.removeClass('active');
-			this._tabMap.get(this._shownTab).header.removeClass('active');
+			this._tabMap.get(this._shownTab).header.removeClass('active').attr('aria-selected', 'false');
 		}
 
 		this._shownTab = id;
@@ -122,6 +126,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 		let tab = this._tabMap.get(this._shownTab);
 		tab.label.addClass('active');
 		tab.header.addClass('active');
+		tab.header.attr('aria-selected', 'true');
 		tab.view.render(this.$body.getHTMLElement());
 		this._onTabChange.fire(id);
 		if (this._currentDimensions) {

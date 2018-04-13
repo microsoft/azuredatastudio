@@ -49,7 +49,7 @@ let idPool = 0;
 
 		<div class="tabbedPanel fullsize" #tabbedPanel>
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title" #titleContainer>
-				<div class="tabList" #tabList>
+				<div class="tabList" #tabList role="tablist">
 					<div *ngFor="let tab of _tabs">
 						<tab-header [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'> </tab-header>
 					</div>
