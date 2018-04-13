@@ -34,6 +34,7 @@
 
 .step-columns {
 	padding-left: 50px;
+	padding-top: 10px;
 }
 
 .step-columns .step-id-col, .steps-tree .tree-id-col {
@@ -57,3 +58,19 @@
 	text-align: center;
 	width: 680px;
 }
+
+.steps-header > .steps-icon {
+	height: 25px;
+	padding-right: 10px;
+	display: inline;
+}
+
+.vs-dark .steps-header > .steps-icon,
+.hc-black .steps-header > .steps-icon {
+	content: url("../common/media/step_inverse.svg");
+}
+
+.steps-header > .steps-icon {
+	content: url("../common/media/step.svg");
+}
+

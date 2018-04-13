@@ -186,6 +186,10 @@ table.step-list tr.step-row td {
 	height: 100%;
 }
 
+.history-details > .job-steps > .step-list {
+	padding-bottom: 10px;
+}
+
 .vs-dark .step-table .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
 	background-image: none;
 }
