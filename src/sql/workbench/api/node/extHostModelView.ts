@@ -34,17 +34,17 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	card(): sqlops.ComponentBuilder<sqlops.CardComponent> {
 		let id = this.getNextComponentId();
-		return new ComponentBuilderImpl(this._proxy, this._handle, ModelComponentTypes.Card, id);
+		return new ComponentBuilderImpl(new CardWrapper(this._proxy, this._handle, id));
 	}
 
 	dashboardWidget(widgetId: string): sqlops.ComponentBuilder<sqlops.WidgetComponent> {
 		let id = this.getNextComponentId();
-		return new ComponentBuilderImpl<sqlops.WidgetComponent>(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id);
+		return new ComponentBuilderImpl<sqlops.WidgetComponent>(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id));
 	}
 
 	dashboardWebview(webviewId: string): sqlops.ComponentBuilder<sqlops.WebviewComponent> {
 		let id = this.getNextComponentId();
-		return new ComponentBuilderImpl(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id);
+		return new ComponentBuilderImpl(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id));
 	}
 
 	private getNextComponentId(): string {
@@ -53,10 +53,8 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 }
 
 class ComponentBuilderImpl<T extends sqlops.Component> implements sqlops.ComponentBuilder<T> {
-	protected _component: ComponentWrapper;
 
-	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
-		this._component = new ComponentWrapper(proxy, handle, type, id);
+	constructor(protected _component: ComponentWrapper) {
 	}
 
 	component(): T {
@@ -69,7 +67,19 @@ class ComponentBuilderImpl<T extends sqlops.Component> implements sqlops.Compone
 	}
 }
 
+class GenericComponentBuilder<T extends sqlops.Component> extends ComponentBuilderImpl<T> {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(new ComponentWrapper(proxy, handle, type, id));
+	}
+
+}
+
+
 class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> extends ComponentBuilderImpl<T> implements sqlops.ContainerBuilder<T, TLayout, TItemLayout> {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(new ComponentWrapper(proxy, handle, type, id));
+	}
+
 	withLayout(layout: TLayout): sqlops.ContainerBuilder<T, TLayout, TItemLayout> {
 		this._component.layout = layout;
 		return this;

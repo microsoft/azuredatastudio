@@ -96,7 +96,7 @@ export default class MainController implements vscode.Disposable {
 					splitPanel.addItem(card, panel);
 				}
 
-			}, 5000);
+			}, 0);
 
 		});
 	}
