@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 .steps-tree .list-row .status-icon.step-passed {
-	content: url("success_complete.svg");
+	content: url("../common/media/success_complete.svg");
 	height: 100%;
 }
 
 .steps-tree .list-row .status-icon.step-failed {
-	content: url("failed.svg");
+	content: url("../common/media/failed.svg");
 	height: 100%;
 }
 
