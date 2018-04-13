@@ -228,5 +228,5 @@ table.step-list tr.step-row td {
 
 .steps-tree .monaco-tree .monaco-tree-row {
 	white-space: normal;
-	height: 40px !important;
+	min-height: 40px !important;
 }

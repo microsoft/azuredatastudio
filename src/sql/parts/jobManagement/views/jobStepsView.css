@@ -3,11 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.steps-tree .list-row .status-icon {
-	height: 10px;
-	width: 10px;
-	display: inline-block;
-	margin-top: 4px;
+.steps-tree .list-row .status-icon.step-passed {
+	content: url("success_complete.svg");
+	height: 100%;
+}
+
+.steps-tree .list-row .status-icon.step-failed {
+	content: url("failed.svg");
+	height: 100%;
 }
 
 .steps-tree .list-row .label {
@@ -16,15 +19,11 @@
 	text-align: center;
 }
 
-.step-passed {
-	background: green;
-}
-
-.step-failed {
-	background: red;
-}
-
-.step-unknown {
+.steps-tree .list-row .status-icon.step-unknown {
+	height: 10px;
+	width: 10px;
+	display: inline-block;
+	margin-top: 4px;
 	background: yellow;
 }
 

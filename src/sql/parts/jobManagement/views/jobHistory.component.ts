@@ -5,7 +5,7 @@
 
 import 'vs/css!./jobHistory';
 
-import { OnInit, OnChanges, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { OnInit, OnChanges, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
 import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -33,6 +33,7 @@ export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 	templateUrl: decodeURI(require.toUrl('./jobHistory.component.html')),
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
+@Injectable()
 export class JobHistoryComponent extends Disposable implements OnInit {
 
 	private _jobManagementService: IJobManagementService;
@@ -145,6 +146,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			if (jobHistories && jobHistories.length > 0) {
 				const self = this;
 				if (this._jobCacheObject.prevJobID === this._agentViewComponent.jobId || jobHistories[0].jobId === this._agentViewComponent.jobId) {
+					this._showPreviousRuns = true;
 					this.buildHistoryTree(self, jobHistories);
 					this._cd.detectChanges();
 				}
@@ -263,6 +265,10 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	public set showSteps(value: boolean) {
 		this._showSteps = value;
 		this._cd.detectChanges();
+	}
+
+	public get stepRows() {
+		return this._stepRows;
 	}
 }
 

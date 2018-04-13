@@ -129,20 +129,8 @@ export class JobsViewComponent implements AfterContentChecked {
 		};
 
 		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
-		let rowDetail = new RowDetailView({
-			cssClass: 'detailView-toggle',
-			preTemplate: this.loadingTemplate,
-			process: (job) => {
-				(<any>rowDetail).onAsyncResponse.notify({
-					'itemDetail': job,
-				}, undefined, null);
-			},
-			panelRows: 2,
-			postTemplate: () => ''
-		});
 
-		this.rowDetail = rowDetail;
-
+		this.rowDetail = new RowDetailView({});
 		columns.unshift(this.rowDetail.getColumnDefinition());
 		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
 		this._table.grid.setData(this.dataView, true);
@@ -184,15 +172,6 @@ export class JobsViewComponent implements AfterContentChecked {
 				categoryId: job.categoryId,
 				lastRunOutcome: job.lastRunOutcome
 			};
-		});
-
-		this._table.registerPlugin(<any>this.rowDetail);
-
-		this.rowDetail.onBeforeRowDetailToggle.subscribe(function(e, args) {
-		});
-		this.rowDetail.onAfterRowDetailToggle.subscribe(function(e, args) {
-		});
-		this.rowDetail.onAsyncEndUpdate.subscribe(function(e, args) {
 		});
 
 		this.dataView.beginUpdate();
