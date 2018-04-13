@@ -76,9 +76,9 @@ interface MssqlBackupInfo {
 	encryptorName: string;
 }
 
-const LocalizeStrings = {
+const LocalizedStrings = {
 	BACKUP_NAME: localize('backup.backupName', 'Backup name'),
-	RECOVERY_MODE: localize('backup.recoveryModel', 'Recovery model'),
+	RECOVERY_MODEL: localize('backup.recoveryModel', 'Recovery model'),
 	BACKUP_TYPE: localize('backup.backupType', 'Backup type'),
 	BACKUP_DEVICE: localize('backup.backupDevice', 'Backup files'),
 	ALGORITHM: localize('backup.algorithm', 'Algorithm'),
@@ -141,7 +141,7 @@ export class BackupComponent {
 	@ViewChild('advancedOptionContainer', { read: ElementRef }) advancedOptionElement;
 	@ViewChild('advancedOptionBodyContainer', { read: ElementRef }) advancedOptionBodyElement;
 
-	private localizedStrings = LocalizeStrings;
+	private localizedStrings = LocalizedStrings;
 
 	private _backupService: IBackupService;
 	private _backupUiService: IBackupUiService;
@@ -210,48 +210,58 @@ export class BackupComponent {
 		let self = this;
 		this.addFooterButtons();
 
-		this.recoveryBox = new InputBox(this.recoveryModelElement.nativeElement, this._bootstrapService.contextViewService, { placeholder: this.recoveryModel });
+		this.recoveryBox = new InputBox(this.recoveryModelElement.nativeElement, this._bootstrapService.contextViewService, {
+			placeholder: this.recoveryModel,
+			ariaLabel: LocalizedStrings.RECOVERY_MODEL
+		});
 		// Set backup type
 		this.backupTypeSelectBox = new SelectBox([], '', this._bootstrapService.contextViewService);
 		this.backupTypeSelectBox.render(this.backupTypeElement.nativeElement);
 
 		// Set copy-only check box
 		this.copyOnlyCheckBox = new Checkbox(this.copyOnlyElement.nativeElement, {
-			label: LocalizeStrings.COPY_ONLY,
+			label: LocalizedStrings.COPY_ONLY,
 			checked: false,
-			onChange: (viaKeyboard) => { }
+			onChange: (viaKeyboard) => { },
+			ariaLabel: LocalizedStrings.COPY_ONLY
 		});
 
 		// Encryption checkbox
 		this.encryptCheckBox = new Checkbox(this.encryptElement.nativeElement, {
-			label: LocalizeStrings.ENCRYPTION,
+			label: LocalizedStrings.ENCRYPTION,
 			checked: false,
-			onChange: (viaKeyboard) => self.onChangeEncrypt()
+			onChange: (viaKeyboard) => self.onChangeEncrypt(),
+			ariaLabel: LocalizedStrings.ENCRYPTION
 		});
 
 		// Verify backup checkbox
 		this.verifyCheckBox = new Checkbox(this.verifyElement.nativeElement, {
-			label: LocalizeStrings.VERIFY_CONTAINER,
+			label: LocalizedStrings.VERIFY_CONTAINER,
 			checked: false,
-			onChange: (viaKeyboard) => { }
+			onChange: (viaKeyboard) => { },
+			ariaLabel: LocalizedStrings.VERIFY_CONTAINER
 		});
 
 		// Perform checksum checkbox
 		this.checksumCheckBox = new Checkbox(this.checksumElement.nativeElement, {
-			label: LocalizeStrings.CHECKSUM_CONTAINER,
+			label: LocalizedStrings.CHECKSUM_CONTAINER,
 			checked: false,
-			onChange: (viaKeyboard) => { }
+			onChange: (viaKeyboard) => { },
+			ariaLabel: LocalizedStrings.CHECKSUM_CONTAINER
 		});
 
 		// Continue on error checkbox
 		this.continueOnErrorCheckBox = new Checkbox(this.continueOnErrorElement.nativeElement, {
-			label: LocalizeStrings.CONTINUE_ON_ERROR_CONTAINER,
+			label: LocalizedStrings.CONTINUE_ON_ERROR_CONTAINER,
 			checked: false,
-			onChange: (viaKeyboard) => { }
+			onChange: (viaKeyboard) => { },
+			ariaLabel: LocalizedStrings.CONTINUE_ON_ERROR_CONTAINER
 		});
 
 		// Set backup name
-		this.backupNameBox = new InputBox(this.backupNameElement.nativeElement, this._bootstrapService.contextViewService);
+		this.backupNameBox = new InputBox(this.backupNameElement.nativeElement, this._bootstrapService.contextViewService, {
+			ariaLabel: LocalizedStrings.BACKUP_NAME
+		});
 
 		// Set backup path list
 		this.pathListBox = new ListBox([], '', this._bootstrapService.contextViewService, this._bootstrapService.clipboardService);
@@ -281,11 +291,15 @@ export class BackupComponent {
 			this._bootstrapService.contextViewService,
 			{
 				validationOptions: {
-					validation: (value: string) => !value ? ({ type: MessageType.ERROR, content: LocalizeStrings.MEDIA_NAME_REQUIRED_ERROR }) : null
-				}
-			});
+					validation: (value: string) => !value ? ({ type: MessageType.ERROR, content: LocalizedStrings.MEDIA_NAME_REQUIRED_ERROR }) : null
+				},
+				ariaLabel: LocalizedStrings.NEW_MEDIA_SET_NAME
+			}
+		);
 
-		this.mediaDescriptionBox = new InputBox(this.mediaDescriptionElement.nativeElement, this._bootstrapService.contextViewService);
+		this.mediaDescriptionBox = new InputBox(this.mediaDescriptionElement.nativeElement, this._bootstrapService.contextViewService, {
+			ariaLabel: LocalizedStrings.NEW_MEDIA_SET_DESCRIPTION
+		});
 
 		// Set backup retain days
 		let invalidInputMessage = localize('backupComponent.invalidInput', 'Invalid input. Value must be greater than or equal 0.');
@@ -303,7 +317,8 @@ export class BackupComponent {
 							return null;
 						}
 					}
-				}
+				},
+				ariaLabel: LocalizedStrings.SET_BACKUP_RETAIN_DAYS
 			});
 
 		// Disable elements
@@ -319,7 +334,7 @@ export class BackupComponent {
 		// Set category view for advanced options. This should be defined in ngAfterViewInit so that it correctly calculates the text height after data binding.
 		var splitview = new SplitView(this.advancedOptionElement.nativeElement);
 		var advancedBodySize = DOM.getTotalHeight(this.advancedOptionBodyElement.nativeElement);
-		var categoryView = new CategoryView(LocalizeStrings.ADVANCED_CONFIGURATION, this.advancedOptionBodyElement.nativeElement, true, advancedBodySize, this._advancedHeaderSize);
+		var categoryView = new CategoryView(LocalizedStrings.ADVANCED_CONFIGURATION, this.advancedOptionBodyElement.nativeElement, true, advancedBodySize, this._advancedHeaderSize);
 		splitview.addView(categoryView);
 		splitview.layout(advancedBodySize + this._advancedHeaderSize);
 
@@ -587,7 +602,7 @@ export class BackupComponent {
 			if (strings.isFalsyOrWhitespace(this.mediaNameBox.value)) {
 				this.backupEnabled = false;
 				this.backupButton.enabled = false;
-				this.mediaNameBox.showMessage({ type: MessageType.ERROR, content: LocalizeStrings.MEDIA_NAME_REQUIRED_ERROR });
+				this.mediaNameBox.showMessage({ type: MessageType.ERROR, content: LocalizedStrings.MEDIA_NAME_REQUIRED_ERROR });
 			}
 		} else {
 			this.enableBackupButton();

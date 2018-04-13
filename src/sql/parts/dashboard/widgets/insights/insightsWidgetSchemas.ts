@@ -93,15 +93,15 @@ export const insightsSchema: IJSONSchema = {
 						},
 						database: {
 							type: 'string',
-							description: nls.localize('actionDatabaseDescription', 'Target database for the action; can use the format "${columnName} to use a data driven column name.')
+							description: nls.localize('actionDatabaseDescription', 'Target database for the action; can use the format "${columnName}" to use a data driven column name.')
 						},
 						server: {
 							type: 'string',
-							description: nls.localize('actionServerDescription', 'Target server for the action; can use the format "${columnName} to use a data driven column name.')
+							description: nls.localize('actionServerDescription', 'Target server for the action; can use the format "${columnName}" to use a data driven column name.')
 						},
 						user: {
 							type: 'string',
-							description: nls.localize('actionUserDescription', 'Target user for the action; can use the format "${columnName} to use a data driven column name.')
+							description: nls.localize('actionUserDescription', 'Target user for the action; can use the format "${columnName}" to use a data driven column name.')
 						}
 					}
 				}

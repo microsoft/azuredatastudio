@@ -34,6 +34,11 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 // in case that other non-Azure sign in is to be used
 const firewallHelpUri = 'https://aka.ms/sqlopsfirewallhelp';
 
+const LocalizedStrings = {
+	FROM: localize('from', 'From'),
+	TO: localize('to', 'To')
+};
+
 export class FirewallRuleDialog extends Modal {
 	public viewModel: FirewallRuleViewModel;
 	private _createButton: Button;
@@ -140,19 +145,23 @@ export class FirewallRuleDialog extends Modal {
 			subnetIPRangeSection = subnetIPRangeContainer.getHTMLElement();
 			subnetIPRangeContainer.div({ 'class': 'dialog-input-section' }, (inputContainer) => {
 				inputContainer.div({ 'class': 'dialog-label' }, (labelContainer) => {
-					labelContainer.innerHtml(localize('from', 'From'));
+					labelContainer.innerHtml(LocalizedStrings.FROM);
 				});
 
 				inputContainer.div({ 'class': 'dialog-input' }, (inputCellContainer) => {
-					this._fromRangeinputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService);
+					this._fromRangeinputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService, {
+						ariaLabel: LocalizedStrings.FROM
+					});
 				});
 
 				inputContainer.div({ 'class': 'dialog-label' }, (labelContainer) => {
-					labelContainer.innerHtml(localize('to', 'To'));
+					labelContainer.innerHtml(LocalizedStrings.TO);
 				});
 
 				inputContainer.div({ 'class': 'dialog-input' }, (inputCellContainer) => {
-					this._toRangeinputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService);
+					this._toRangeinputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService, {
+						ariaLabel: LocalizedStrings.TO
+					});
 				});
 			});
 		});

@@ -40,6 +40,7 @@ import * as DOM from 'vs/base/browser/dom';
 import * as sqlops from 'sqlops';
 import * as strings from 'vs/base/common/strings';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { mixin } from 'vs/base/common/objects';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -47,6 +48,11 @@ interface FileListElement {
 	originalFileName: string;
 	restoreAs: string;
 }
+
+const LocalizedStrings = {
+	BACKFILEPATH: localize('backupFilePath', "Backup file path"),
+	TARGETDATABASE: localize('targetDatabase', 'Target database')
+};
 
 export class RestoreDialog extends Modal {
 	public viewModel: RestoreViewModel;
@@ -176,12 +182,13 @@ export class RestoreDialog extends Modal {
 				validationOptions: {
 					validation: (value: string) => !value ? ({ type: MessageType.ERROR, content: errorMessage }) : null
 				},
-				placeholder: localize('multipleBackupFilePath', 'Please enter one or more file paths separated by commas')
+				placeholder: localize('multipleBackupFilePath', 'Please enter one or more file paths separated by commas'),
+				ariaLabel: LocalizedStrings.BACKFILEPATH
 			};
 
 			filePathContainer.div({ class: 'dialog-input-section' }, (inputContainer) => {
 				inputContainer.div({ class: 'dialog-label' }, (labelContainer) => {
-					labelContainer.innerHtml(localize('backupFilePath', "Backup file path"));
+					labelContainer.safeInnerHtml(LocalizedStrings.BACKFILEPATH);
 				});
 
 				inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
@@ -218,7 +225,7 @@ export class RestoreDialog extends Modal {
 
 			destinationContainer.div({ class: 'dialog-input-section' }, (inputContainer) => {
 				inputContainer.div({ class: 'dialog-label' }, (labelContainer) => {
-					labelContainer.innerHtml(localize('targetDatabase', 'Target database'));
+					labelContainer.innerHtml(LocalizedStrings.TARGETDATABASE);
 				});
 
 				inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
@@ -226,7 +233,8 @@ export class RestoreDialog extends Modal {
 					inputCellContainer.style('width', '100%');
 					this._databaseDropdown = new Dropdown(inputCellContainer.getHTMLElement(), this._contextViewService, this._themeService,
 						{
-							strictSelection: false
+							strictSelection: false,
+							ariaLabel: LocalizedStrings.TARGETDATABASE
 						}
 					);
 					this._databaseDropdown.onValueChange(s => {
@@ -514,7 +522,8 @@ export class RestoreDialog extends Modal {
 			checkbox = new Checkbox(inputCellContainer.getHTMLElement(), {
 				label: label,
 				checked: isChecked,
-				onChange: onCheck
+				onChange: onCheck,
+				ariaLabel: label
 			});
 		});
 		return checkbox;
@@ -537,13 +546,16 @@ export class RestoreDialog extends Modal {
 
 	private createInputBoxHelper(container: Builder, label: string, options?: IInputOptions): InputBox {
 		let inputBox: InputBox;
+		let ariaOptions = {
+			ariaLabel: label
+		};
 		container.div({ class: 'dialog-input-section' }, (inputContainer) => {
 			inputContainer.div({ class: 'dialog-label' }, (labelContainer) => {
-				labelContainer.innerHtml(label);
+				labelContainer.safeInnerHtml(label);
 			});
 
 			inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
-				inputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService, options);
+				inputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService, mixin(ariaOptions, options));
 			});
 		});
 		return inputBox;

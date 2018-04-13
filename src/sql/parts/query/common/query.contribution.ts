@@ -25,7 +25,7 @@ import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
-	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction
+	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction
 } from 'sql/parts/query/execution/keyboardQueryActions';
 import * as gridActions from 'sql/parts/grid/views/gridActions';
 import * as gridCommands from 'sql/parts/grid/views/gridCommands';
@@ -132,6 +132,16 @@ actionRegistry.registerWorkbenchAction(
 	RefreshIntellisenseKeyboardAction.LABEL
 );
 
+actionRegistry.registerWorkbenchAction(
+	new SyncActionDescriptor(
+		FocusOnCurrentQueryKeyboardAction,
+		FocusOnCurrentQueryKeyboardAction.ID,
+		FocusOnCurrentQueryKeyboardAction.LABEL,
+		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_Q }
+	),
+	FocusOnCurrentQueryKeyboardAction.LABEL
+);
+
 // Grid actions
 
 actionRegistry.registerWorkbenchAction(
@@ -215,6 +225,14 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: QueryEditorVisibleCondition,
 	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_Y,
 	handler: gridCommands.toggleMessagePane
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GOTONEXTQUERYOUTPUTTAB_ID,
+	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	when: QueryEditorVisibleCondition,
+	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_P,
+	handler: gridCommands.goToNextQueryOutputTab
 });
 
 // Intellisense and other configuration options

@@ -207,7 +207,7 @@ export class ConnectionWidget {
 		container.element('tr', {}, (rowContainer) => {
 			rowContainer.element('td');
 			rowContainer.element('td', { class: cellContainerClass }, (inputCellContainer) => {
-				checkbox = new Checkbox(inputCellContainer.getHTMLElement(), { label, checked: isChecked });
+				checkbox = new Checkbox(inputCellContainer.getHTMLElement(), { label, checked: isChecked, ariaLabel: label });
 			});
 		});
 		return checkbox;
