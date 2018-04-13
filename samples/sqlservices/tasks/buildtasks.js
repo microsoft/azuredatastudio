@@ -55,8 +55,6 @@ gulp.task('compile:src', function(done) {
                 process.exit(1);
             }
         })
-        //.pipe(nls.rewriteLocalizeCalls())
-        //.pipe(nls.createAdditionalLanguageFiles(nls.coreLanguages, config.paths.project.root + '/localization/i18n', undefined, false))
         .pipe(srcmap.write('.', {
             sourceRoot: function(file) { 
                 return file.cwd + '/src';

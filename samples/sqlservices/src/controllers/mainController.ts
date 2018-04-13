@@ -8,7 +8,6 @@
 import * as sqlops from 'sqlops';
 import * as Utils from '../utils';
 import * as vscode from 'vscode';
-import { ApiWrapper } from '../apiWrapper';
 import SplitPropertiesPanel from './splitPropertiesPanel';
 
 /**
@@ -16,7 +15,7 @@ import SplitPropertiesPanel from './splitPropertiesPanel';
  */
 export default class MainController implements vscode.Disposable {
 
-	constructor(protected context: vscode.ExtensionContext, protected apiWrapper?: ApiWrapper) {
+	constructor(protected context: vscode.ExtensionContext) {
 
 	}
 
