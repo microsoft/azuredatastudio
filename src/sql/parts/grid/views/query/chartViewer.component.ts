@@ -118,14 +118,16 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		// Note: must use 'self' for callback
 		this.labelFirstColumnCheckBox = new Checkbox(this.labelFirstColumnElement.nativeElement, {
 			label: this.labelFirstColumnLabel,
-			onChange: () => this.onLabelFirstColumnChanged()
+			onChange: () => this.onLabelFirstColumnChanged(),
+			ariaLabel: this.labelFirstColumnLabel
 		});
 
 		// Init label first column checkbox
 		// Note: must use 'self' for callback
 		this.columnsAsLabelsCheckBox = new Checkbox(this.columnsAsLabelsElement.nativeElement, {
 			label: this.columnsAsLabelsLabel,
-			onChange: () => this.columnsAsLabelsChanged()
+			onChange: () => this.columnsAsLabelsChanged(),
+			ariaLabel: this.columnsAsLabelsLabel
 		});
 
 		// Init legend dropdown

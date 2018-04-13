@@ -28,6 +28,7 @@ import { warn } from 'sql/base/common/log';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { localize } from 'vs/nls';
 
 export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 
@@ -88,12 +89,14 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 				this._viewletContainer = viewletContainer;
 				viewletContainer.div({ class: 'search-box' }, (searchBoxContainer) => {
 					this._searchBoxContainer = searchBoxContainer;
+					let searchServerString = localize('Search server names', 'Search server names');
 					this._searchBox = new InputBox(
 						searchBoxContainer.getHTMLElement(),
 						null,
 						{
-							placeholder: 'Search server names',
-							actions: [this._clearSearchAction]
+							placeholder: searchServerString,
+							actions: [this._clearSearchAction],
+							ariaLabel: searchServerString
 						}
 					);
 					this._searchTerm = '';
