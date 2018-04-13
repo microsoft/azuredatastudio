@@ -17,7 +17,7 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { AgentJobHistoryInfo } from 'sqlops';
 import { JobStepsViewController, JobStepsViewDataSource, JobStepsViewFilter,
 	JobStepsViewRenderer, JobStepsViewRow, JobStepsViewModel} from 'sql/parts/jobManagement/views/jobStepsViewTree';
-import { JobHistoryComponent } from './jobHistory.component';
+import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
