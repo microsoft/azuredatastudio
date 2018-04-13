@@ -223,7 +223,7 @@ class CardWrapper extends ComponentWrapper implements sqlops.CardComponent {
 	}
 }
 
-class ModelViewImpl implements sqlops.DashboardModelView {
+class ModelViewImpl implements sqlops.ModelView {
 
 	public onClosedEmitter = new Emitter<any>();
 
@@ -267,7 +267,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 	private readonly _proxy: MainThreadModelViewShape;
 
 	private readonly _modelViews = new Map<number, ModelViewImpl>();
-	private readonly _handlers = new Map<string, (view: sqlops.DashboardModelView) => void>();
+	private readonly _handlers = new Map<string, (view: sqlops.ModelView) => void>();
 
 	constructor(
 		mainContext: IMainContext
@@ -281,7 +281,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 		this._modelViews.delete(handle);
 	}
 
-	$registerProvider(widgetId: string, handler: (webview: sqlops.DashboardModelView) => void): void {
+	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void): void {
 		this._handlers.set(widgetId, handler);
 		this._proxy.$registerProvider(widgetId);
 	}

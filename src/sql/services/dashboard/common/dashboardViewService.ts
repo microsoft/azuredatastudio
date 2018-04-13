@@ -24,7 +24,7 @@ export interface IDashboardWebview extends IView {
 	sendMessage(message: string);
 }
 
-export interface IDashboardModelView extends IView {
+export interface IModelView extends IView {
 	initializeModel(rootComponent: IComponentShape): void;
 	clearContainer(componentId: string): void;
 	addToContainer(containerId: string, item: IItemConfig): void;
@@ -36,8 +36,8 @@ export interface IDashboardViewService {
 	_serviceBrand: any;
 	onRegisteredWebview: Event<IDashboardWebview>;
 	registerWebview(widget: IDashboardWebview);
-	onRegisteredModelView: Event<IDashboardModelView>;
-	registerModelView(widget: IDashboardModelView);
+	onRegisteredModelView: Event<IModelView>;
+	registerModelView(widget: IModelView);
 }
 
 export const IDashboardViewService = createDecorator<IDashboardViewService>(SERVICE_ID);

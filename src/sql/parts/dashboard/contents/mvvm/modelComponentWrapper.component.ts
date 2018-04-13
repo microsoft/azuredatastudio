@@ -75,12 +75,6 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		this.layout();
 	}
 
-	// public refresh(): void {
-	// 	if (this._componentInstance && this._componentInstance.refresh) {
-	// 		this._componentInstance.refresh();
-	// 	}
-	// }
-
 	public layout(): void {
 		if (this._componentInstance && this._componentInstance.layout) {
 			this._componentInstance.layout();
@@ -133,7 +127,6 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 
 		// set widget styles to conform to its box
 		el.style.overflow = 'hidden';
-		// el.style.flex = '1 1 auto';
 		el.style.position = 'relative';
 	}
 
@@ -144,14 +137,6 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		let backgroundColor = theme.getColor(colors.editorBackground, true);
 		let foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
 		let border = theme.getColor(colors.contrastBorder, true);
-
-		// if (this._config.background_color) {
-		// 	backgroundColor = theme.getColor(this._config.background_color);
-		// }
-
-		// if (this._config.border === 'none') {
-		// 	borderColor = undefined;
-		// }
 
 		if (backgroundColor) {
 			el.style.backgroundColor = backgroundColor.toString();

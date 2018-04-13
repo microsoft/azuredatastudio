@@ -301,7 +301,7 @@ export function createApiFactory(
 				registerWebviewProvider(widgetId: string, handler: (webview: sqlops.DashboardWebview) => void) {
 					extHostWebviewWidgets.$registerProvider(widgetId, handler);
 				},
-				registerModelViewProvider(widgetId: string, handler: (view: sqlops.DashboardModelView) => void): void {
+				registerModelViewProvider(widgetId: string, handler: (view: sqlops.ModelView) => void): void {
 					extHostModelView.$registerProvider(widgetId, handler);
 				}
 			};

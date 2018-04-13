@@ -90,12 +90,8 @@ export default class MainController implements vscode.Disposable {
 
 				for (let i = 0; i < 10; i++) {
 					let panel = i % numPanels;
-					let card = view.modelBuilder.card()
-						.withProperties<sqlops.CardProperties>({
-							label: `label${i.toString()}`,
-							value: `value${i.toString()}`
-						})
-						.component();
+					let card = view.modelBuilder.card().component();
+					card.label = `label${i.toString()}`;
 
 					splitPanel.addItem(card, panel);
 				}

@@ -306,12 +306,12 @@ export class RowDetailView {
 	public detailSelectionFormatter(row, cell, value, columnDef, dataContext) {
 
 		if (dataContext._collapsed === undefined) {
-			dataContext._collapsed = true,
-				dataContext._sizePadding = 0,     //the required number of pading rows
-				dataContext._height = 0,     //the actual height in pixels of the detail field
-				dataContext._isPadding = false,
-				dataContext._parent = undefined,
-				dataContext._offset = 0
+			dataContext._collapsed = true;
+			dataContext._sizePadding = 0;	//the required number of pading rows
+			dataContext._height = 0;	//the actual height in pixels of the detail field
+			dataContext._isPadding = false;
+			dataContext._parent = undefined;
+			dataContext._offset = 0;
 		}
 
 		if (dataContext._isPadding === true) {

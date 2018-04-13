@@ -13,7 +13,7 @@ import * as sqlops from 'sqlops';
 export default class SplitPropertiesPanel {
 	private panels: sqlops.FlexContainer[];
 	private _modelBase: sqlops.FlexContainer;
-	constructor(view: sqlops.DashboardModelView, numPanels: number) {
+	constructor(view: sqlops.ModelView, numPanels: number) {
 		this.panels = [];
 		let ratio = Math.round(100 / numPanels);
 		for (let i = 0; i < numPanels; i++) {

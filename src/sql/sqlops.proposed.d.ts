@@ -140,13 +140,20 @@ declare module 'sqlops' {
 		taskId: string;
 	}
 
+	/**
+	 * Properties representing the card component, can be used
+	 * when using ModelBuilder to create the comopnent
+	 */
 	export interface CardProperties  {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
-
 	}
+
 	export interface CardComponent extends Component {
+		label: string;
+		value: string;
+		actions?: ActionDescriptor[];
 	}
 
 	export interface WidgetComponent extends Component {
@@ -158,10 +165,10 @@ declare module 'sqlops' {
 	}
 
 	/**
-	 * A dashboard view backed by a model provided by an extension.
+	 * A view backed by a model provided by an extension.
 	 * This model contains enough information to lay out the view
 	 */
-	export interface DashboardModelView {
+	export interface ModelView {
 		/**
 		 * Raised when the view closed.
 		 */
@@ -186,10 +193,6 @@ declare module 'sqlops' {
 		 * Initializes the model with a root component definition.
 		 * Once this has been done, the components will be laid out in the UI and
 		 * can be accessed and altered as needed.
-		 *
-		 * @template T
-		 * @param {ComponentConfiguration<T>} root
-		 * @memberof DashboardModelView
 		 */
 		initializeModel<T extends Component>(root: T): Thenable<void>;
 	}
@@ -198,6 +201,6 @@ declare module 'sqlops' {
 		/**
 		 * Register a provider for a model-view widget
 		 */
-		export function registerModelViewProvider(widgetId: string, handler: (view: DashboardModelView) => void): void;
+		export function registerModelViewProvider(widgetId: string, handler: (view: ModelView) => void): void;
 	}
 }

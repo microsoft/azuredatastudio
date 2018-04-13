@@ -16,7 +16,7 @@ import nls = require('vs/nls');
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { IDashboardModelView } from 'sql/services/dashboard/common/dashboardViewService';
+import { IModelView } from 'sql/services/dashboard/common/dashboardViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import * as sqlops from 'sqlops';
@@ -31,7 +31,7 @@ import { ViewBase } from 'sql/parts/dashboard/contents/mvvm/viewBase';
 		</div>
 	`
 })
-export class ModelViewContent extends ViewBase implements OnInit, IDashboardModelView {
+export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 	@Input() private modelViewId: string;
 
 	private _onResize = new Emitter<void>();
