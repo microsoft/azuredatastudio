@@ -62,3 +62,24 @@ export enum ScriptOperation {
 	Execute = 5,
 	Alter = 6
 }
+
+export enum ModelComponentTypes {
+	NavContainer,
+	FlexContainer,
+	Card,
+	DashboardWidget,
+	DashboardWebview
+}
+
+export interface IComponentShape {
+	type: ModelComponentTypes;
+	id: string;
+	properties?:  { [key: string]: any };
+	layout?: any;
+	itemConfigs?: IItemConfig[];
+}
+
+export interface IItemConfig {
+	componentShape: IComponentShape;
+	config: any;
+}

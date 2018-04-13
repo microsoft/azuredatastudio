@@ -2,31 +2,37 @@
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./webviewContent';
+// import 'vs/css!./modelViewContent';
 
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef } from '@angular/core';
 
 import Event, { Emitter } from 'vs/base/common/event';
-import { Webview } from 'vs/workbench/parts/html/browser/webview';
 import { Parts } from 'vs/workbench/services/part/common/partService';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
+import nls = require('vs/nls');
 
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { IDashboardWebview } from 'sql/services/dashboard/common/dashboardViewService';
+import { IModelView } from 'sql/services/model/modelViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import * as sqlops from 'sqlops';
+import { ViewBase } from 'sql/parts/modelComponents/viewBase';
 
 @Component({
-	template: '',
-	selector: 'webview-content'
+	selector: 'modelview-content',
+	template: `
+		<div *ngIf="rootDescriptor">
+			<model-component-wrapper [descriptor]="rootDescriptor" [modelStore]="modelStore">
+			</model-component-wrapper>
+		</div>
+	`
 })
-export class WebviewContent extends AngularDisposable implements OnInit, IDashboardWebview {
-	@Input() private webviewId: string;
+export class ModelViewContent extends ViewBase implements OnInit, IModelView {
+	@Input() private modelViewId: string;
 
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
@@ -34,31 +40,26 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	public readonly onMessage: Event<string> = this._onMessage.event;
 
 	private _onMessageDisposable: IDisposable;
-	private _webview: Webview;
-	private _html: string;
 
 	constructor(
 		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
-		super();
+		super(changeRef);
 	}
 
 	ngOnInit() {
-		this._dashboardService.dashboardViewService.registerWebview(this);
-		this._createWebview();
+		this._dashboardService.dashboardViewService.registerModelView(this);
 		this._register(addDisposableListener(window, EventType.RESIZE, e => {
 			this.layout();
 		}));
 	}
 
 	public layout(): void {
-		this._webview.layout();
 	}
 
 	public get id(): string {
-		return this.webviewId;
+		return this.modelViewId;
 	}
 
 	@memoize
@@ -75,52 +76,5 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	@memoize
 	public get serverInfo(): sqlops.ServerInfo {
 		return this._dashboardService.connectionManagementService.connectionInfo.serverInfo;
-	}
-
-	public setHtml(html: string): void {
-		this._html = html;
-		if (this._webview) {
-			this._webview.contents = html;
-			this._webview.layout();
-		}
-	}
-
-	public sendMessage(message: string): void {
-		if (this._webview) {
-			this._webview.sendMessage(message);
-		}
-	}
-
-	private _createWebview(): void {
-		if (this._webview) {
-			this._webview.dispose();
-		}
-
-		if (this._onMessageDisposable) {
-			this._onMessageDisposable.dispose();
-		}
-
-		this._webview = new Webview(this._el.nativeElement,
-			this._dashboardService.partService.getContainer(Parts.EDITOR_PART),
-			this._dashboardService.themeService,
-			this._dashboardService.environmentService,
-			this._dashboardService.contextViewService,
-			undefined,
-			undefined,
-			{
-				allowScripts: true,
-				enableWrappedPostMessage: true
-			}
-		);
-
-
-		this._onMessageDisposable = this._webview.onMessage(e => {
-			this._onMessage.fire(e);
-		});
-		this._webview.style(this._dashboardService.themeService.getTheme());
-		if (this._html) {
-			this._webview.contents = this._html;
-		}
-		this._webview.layout();
 	}
 }

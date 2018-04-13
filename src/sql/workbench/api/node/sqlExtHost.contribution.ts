@@ -19,6 +19,7 @@ import 'sql/workbench/api/node/mainThreadResourceProvider';
 import 'sql/workbench/api/electron-browser/mainThreadTasks';
 import 'sql/workbench/api/electron-browser/mainThreadDashboard';
 import 'sql/workbench/api/node/mainThreadDashboardWebview';
+import 'sql/workbench/api/node/mainThreadModelView';
 import './mainThreadAccountManagement';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 

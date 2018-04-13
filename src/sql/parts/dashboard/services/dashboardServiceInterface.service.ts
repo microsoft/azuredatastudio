@@ -23,7 +23,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { TabSettingConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
+import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
 
@@ -138,7 +138,7 @@ export class DashboardServiceInterface extends AngularDisposable {
 	private _capabilitiesService = this._bootstrapService.capabilitiesService;
 	private _configurationEditingService = this._bootstrapService.configurationEditorService;
 	private _commandService = this._bootstrapService.commandService;
-	private _dashboardWebviewService = this._bootstrapService.dashboardWebviewService;
+	private _dashboardViewService = this._bootstrapService.dashboardViewService;
 	private _partService = this._bootstrapService.partService;
 	private _angularEventingService = this._bootstrapService.angularEventingService;
 	private _environmentService = this._bootstrapService.environmentService;
@@ -211,8 +211,8 @@ export class DashboardServiceInterface extends AngularDisposable {
 		return this._instantiationService;
 	}
 
-	public get dashboardWebviewService(): IDashboardWebviewService {
-		return this._dashboardWebviewService;
+	public get dashboardViewService(): IDashboardViewService {
+		return this._dashboardViewService;
 	}
 
 	public get partService(): IPartService {
