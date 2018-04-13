@@ -46,7 +46,7 @@
 		<span> {{LocalizedConstants.messagePaneLabel}} </span>
 		<span class="queryResultsShortCut"> {{messageShortcut}} </span>
 	</div>
-	<div id="messages" class="scrollable messages" [class.hidden]="!messageActive && dataSets.length !== 0"
+	<div #messagesContainer id="messages" class="scrollable messages" [class.hidden]="!messageActive && dataSets.length !== 0"
 		(contextmenu)="openMessagesContextMenu($event)" (focusin)="onMessagesFocus()" (focusout)="onMessagesFocusout()"
 		tabindex=0>
 		<div class="messagesTopSpacing"></div>
