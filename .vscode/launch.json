@@ -91,7 +91,6 @@
 			],
 			"webRoot": "${workspaceFolder}",
 			"timeout": 15000
-
 		},
 		{
 			"type": "node",

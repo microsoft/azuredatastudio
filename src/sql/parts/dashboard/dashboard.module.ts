@@ -40,8 +40,8 @@ import { DashboardModelViewContainer } from 'sql/parts/dashboard/containers/dash
 import { DashboardErrorContainer } from 'sql/parts/dashboard/containers/dashboardErrorContainer.component';
 import { DashboardNavSection } from 'sql/parts/dashboard/containers/dashboardNavSection.component';
 import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
-import { ModelComponentWrapper } from 'sql/parts/dashboard/contents/mvvm/modelComponentWrapper.component';
-import { ModelViewContent } from 'sql/parts/dashboard/contents/modelViewContent.component';
+import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
+import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
 import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';

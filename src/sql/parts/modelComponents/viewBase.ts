@@ -12,10 +12,10 @@ import nls = require('vs/nls');
 import * as sqlops from 'sqlops';
 import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IModelView } from 'sql/services/dashboard/common/dashboardViewService';
+import { IModelView } from 'sql/services/model/modelViewService';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
-import { ModelStore } from 'sql/parts/dashboard/contents/mvvm/modelStore';
+import { ModelStore } from 'sql/parts/modelComponents/modelStore';
 
 const componentRegistry = <IComponentRegistry> Registry.as(Extensions.ComponentContribution);
 

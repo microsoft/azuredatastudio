@@ -2,7 +2,7 @@
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./webviewContent';
+// import 'vs/css!./modelViewContent';
 
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef } from '@angular/core';
 
@@ -16,11 +16,11 @@ import nls = require('vs/nls');
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { IModelView } from 'sql/services/dashboard/common/dashboardViewService';
+import { IModelView } from 'sql/services/model/modelViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import * as sqlops from 'sqlops';
-import { ViewBase } from 'sql/parts/dashboard/contents/mvvm/viewBase';
+import { ViewBase } from 'sql/parts/modelComponents/viewBase';
 
 @Component({
 	selector: 'modelview-content',

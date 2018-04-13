@@ -10,26 +10,14 @@ import Event from 'vs/base/common/event';
 
 import * as sqlops from 'sqlops';
 import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IView, IModelView } from 'sql/services/model/modelViewService';
 
 export const SERVICE_ID = 'dashboardViewService';
 
-export interface IView {
-	readonly id: string;
-	readonly connection: sqlops.connection.Connection;
-	readonly serverInfo: sqlops.ServerInfo;
-}
 export interface IDashboardWebview extends IView {
 	setHtml(html: string): void;
 	onMessage: Event<string>;
 	sendMessage(message: string);
-}
-
-export interface IModelView extends IView {
-	initializeModel(rootComponent: IComponentShape): void;
-	clearContainer(componentId: string): void;
-	addToContainer(containerId: string, item: IItemConfig): void;
-	setLayout(componentId: string, layout: any): void;
-	setProperties(componentId: string, properties: { [key: string]: any }): void;
 }
 
 export interface IDashboardViewService {

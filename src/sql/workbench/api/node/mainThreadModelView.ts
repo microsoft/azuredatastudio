@@ -7,9 +7,13 @@
 import { MainThreadModelViewShape, SqlMainContext, ExtHostModelViewShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { IDashboardViewService, IModelView } from 'sql/services/dashboard/common/dashboardViewService';
+
 import * as sqlops from 'sqlops';
+
+import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IModelView } from 'sql/services/model/modelViewService';
+
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelView)
 export class MainThreadModelView implements MainThreadModelViewShape {

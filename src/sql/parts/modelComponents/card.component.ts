@@ -8,11 +8,11 @@ import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFacto
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList,
 } from '@angular/core';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/dashboard/contents/mvvm/interfaces';
 import * as sqlops from 'sqlops';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { ComponentBase } from 'sql/parts/dashboard/contents/mvvm/componentBase';
+import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
 
 @Component({
 	template: `

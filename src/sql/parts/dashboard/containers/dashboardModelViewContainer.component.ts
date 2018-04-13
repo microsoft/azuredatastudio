@@ -10,7 +10,7 @@ import Event, { Emitter } from 'vs/base/common/event';
 
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { ModelViewContent } from 'sql/parts/dashboard/contents/modelViewContent.component';
+import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
 
 @Component({
 	selector: 'dashboard-modelview-container',

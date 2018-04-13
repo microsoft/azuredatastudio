@@ -10,7 +10,7 @@ import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFacto
 
 import * as types from 'vs/base/common/types';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/dashboard/contents/mvvm/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
 import { FlexLayout, FlexItemLayout } from 'sqlops';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';

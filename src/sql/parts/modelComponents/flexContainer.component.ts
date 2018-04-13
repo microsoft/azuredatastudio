@@ -8,12 +8,12 @@ import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFacto
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList,
 } from '@angular/core';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/dashboard/contents/mvvm/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
 import { FlexLayout, FlexItemLayout } from 'sqlops';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { ContainerBase } from 'sql/parts/dashboard/contents/mvvm/componentBase';
-import { ModelComponentWrapper } from 'sql/parts/dashboard/contents/mvvm/modelComponentWrapper.component';
+import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
+import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 
 class FlexItem {
 	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) {}
