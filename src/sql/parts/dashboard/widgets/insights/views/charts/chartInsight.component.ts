@@ -79,13 +79,14 @@ export interface IChartConfig {
 	legendPosition?: LegendPosition;
 	dataDirection?: DataDirection;
 	columnsAsLabels?: boolean;
+	showTopNData?: number;
 }
 
 export const defaultChartConfig: IChartConfig = {
 	labelFirstColumn: false,
 	columnsAsLabels: false,
 	legendPosition: LegendPosition.Top,
-	dataDirection: DataDirection.Vertical
+	dataDirection: DataDirection.Vertical,
 };
 
 @Component({
@@ -212,14 +213,14 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 			if (this._config.labelFirstColumn) {
 				return this._data.rows.map((row) => {
 					return {
-						data: row.map(item => Number(item)).slice(1),
+						data: this.getTopNData(row.map(item => Number(item)).slice(1)),
 						label: row[0]
 					};
 				});
 			} else {
 				return this._data.rows.map((row, i) => {
 					return {
-						data: row.map(item => Number(item)),
+						data: this.getTopNData(row.map(item => Number(item))),
 						label: 'Series' + i
 					};
 				});
@@ -228,18 +229,26 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 			if (this._config.columnsAsLabels) {
 				return this._data.rows[0].map((row, i) => {
 					return {
-						data: this._data.rows.map(row => Number(row[i])),
+						data: this.getTopNData(this._data.rows.map(row => Number(row[i]))),
 						label: this._data.columns[i]
 					};
 				});
 			} else {
 				return this._data.rows[0].map((row, i) => {
 					return {
-						data: this._data.rows.map(row => Number(row[i])),
+						data: this.getTopNData(this._data.rows.map(row => Number(row[i]))),
 						label: 'Series' + i
 					};
 				});
 			}
+		}
+	}
+
+	private getTopNData(data: any[]): any[] {
+		if (this._config.showTopNData) {
+			return data.slice(0, this._config.showTopNData);
+		} else {
+			return data;
 		}
 	}
 
@@ -250,9 +259,9 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	@memoize
 	public getLabels(): Array<string> {
 		if (this._config.dataDirection === 'horizontal') {
-			return this._data.columns;
+			return this.getTopNData(this._data.columns);
 		} else {
-			return this._data.rows.map(row => row[0]);
+			return this.getTopNData(this._data.rows.map(row => row[0]));
 		}
 	}
 
