@@ -165,6 +165,9 @@ export abstract class GridParentComponent {
 				case GridContentEvents.SaveAsExcel:
 					self.sendSaveRequest(SaveFormat.EXCEL);
 					break;
+				case GridContentEvents.GoToNextQueryOutputTab:
+					self.goToNextQueryOutputTab();
+					break;
 				default:
 					error('Unexpected grid content event type "' + type + '" sent');
 					break;
@@ -272,6 +275,9 @@ export abstract class GridParentComponent {
 		return '';
 	}
 
+	protected goToNextQueryOutputTab(): void {
+	}
+
 	private initShortcutsBase(): void {
 		let shortcuts = {
 			'ToggleResultPane': () => {
@@ -297,6 +303,9 @@ export abstract class GridParentComponent {
 			},
 			'SaveAsExcel': () => {
 				this.sendSaveRequest(SaveFormat.EXCEL);
+			},
+			'GoToNextQueryOutputTab': () => {
+				this.goToNextQueryOutputTab();
 			}
 		};
 

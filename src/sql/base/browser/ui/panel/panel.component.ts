@@ -182,7 +182,7 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 			if (input instanceof TabComponent) {
 				tab = input;
 			} else if (types.isNumber(input)) {
-				tab = this._tabs[input];
+				tab = this._tabs.toArray()[input];
 			} else if (types.isString(input)) {
 				tab = this._tabs.find(i => i.identifier === input);
 			}
@@ -224,6 +224,18 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 	 */
 	public get getActiveTab(): string {
 		return this._activeTab.identifier;
+	}
+
+	/**
+	 * Select on the next tab
+	 */
+	public selectOnNextTab(): void {
+		let activeIndex = this._tabs.toArray().findIndex(i => i === this._activeTab);
+		let nextTabIndex = activeIndex + 1;
+		if (nextTabIndex === this._tabs.length) {
+			nextTabIndex = 0;
+		}
+		this.selectTab(nextTabIndex);
 	}
 
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {
