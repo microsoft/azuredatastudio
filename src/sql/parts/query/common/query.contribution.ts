@@ -217,6 +217,14 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	handler: gridCommands.toggleMessagePane
 });
 
+KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GOTONEXTQUERYOUTPUTTAB_ID,
+	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	when: QueryEditorVisibleCondition,
+	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_P,
+	handler: gridCommands.goToNextQueryOutputTab
+});
+
 // Intellisense and other configuration options
 let registryProperties = {
 	'sql.messagesDefaultOpen': {

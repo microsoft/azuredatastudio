@@ -146,6 +146,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	public queryExecutionStatus: EventEmitter<string> = new EventEmitter<string>();
 	public queryPlanAvailable: EventEmitter<string> = new EventEmitter<string>();
 	public showChartRequested: EventEmitter<IGridDataSet> = new EventEmitter<IGridDataSet>();
+	public goToNextQueryOutputTabRequested: EventEmitter<void> = new EventEmitter<void>();
 
 	@Input() public queryParameters: QueryComponentParams;
 
@@ -575,6 +576,10 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		if (this.renderedDataSets.length > index) {
 			this.showChartRequested.emit(this.renderedDataSets[index]);
 		}
+	}
+
+	protected goToNextQueryOutputTab(): void {
+		this.goToNextQueryOutputTabRequested.emit();
 	}
 
 	/* Helper function to toggle messages and results panes */
