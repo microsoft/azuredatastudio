@@ -1009,28 +1009,28 @@ export class CodeMenu {
 			// product.twitterUrl ? new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miTwitter', comment: ['&& denotes a mnemonic'] }, "&&Join us on Twitter")), click: () => this.openUrl(product.twitterUrl, 'openTwitterUrl') }) : null,
 			// product.requestFeatureUrl ? new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miUserVoice', comment: ['&& denotes a mnemonic'] }, "&&Search Feature Requests")), click: () => this.openUrl(product.requestFeatureUrl, 'openUserVoiceUrl') }) : null,
 			reportIssuesItem,
-			// (product.twitterUrl || product.requestFeatureUrl || product.reportIssueUrl) ? __separator__() : null,
-			// product.licenseUrl ? new MenuItem({
-			// 	label: mnemonicLabel(nls.localize({ key: 'miLicense', comment: ['&& denotes a mnemonic'] }, "View &&License")), click: () => {
-			// 		if (language) {
-			// 			const queryArgChar = product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
-			// 			this.openUrl(`${product.licenseUrl}${queryArgChar}lang=${language}`, 'openLicenseUrl');
-			// 		} else {
-			// 			this.openUrl(product.licenseUrl, 'openLicenseUrl');
-			// 		}
-			// 	}
-			// }) : null,
-			// product.privacyStatementUrl ? new MenuItem({
-			// 	label: mnemonicLabel(nls.localize({ key: 'miPrivacyStatement', comment: ['&& denotes a mnemonic'] }, "&&Privacy Statement")), click: () => {
-			// 		if (language) {
-			// 			const queryArgChar = product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
-			// 			this.openUrl(`${product.privacyStatementUrl}${queryArgChar}lang=${language}`, 'openPrivacyStatement');
-			// 		} else {
-			// 			this.openUrl(product.privacyStatementUrl, 'openPrivacyStatement');
-			// 		}
-			// 	}
-			// }) : null,
-			// (product.licenseUrl || product.privacyStatementUrl) ? __separator__() : null,
+			(product.twitterUrl || product.requestFeatureUrl || product.reportIssueUrl) ? __separator__() : null,
+			product.licenseUrl ? new MenuItem({
+				label: this.mnemonicLabel(nls.localize({ key: 'miLicense', comment: ['&& denotes a mnemonic'] }, "View &&License")), click: () => {
+					if (language) {
+						const queryArgChar = product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
+						this.openUrl(`${product.licenseUrl}${queryArgChar}lang=${language}`, 'openLicenseUrl');
+					} else {
+						this.openUrl(product.licenseUrl, 'openLicenseUrl');
+					}
+				}
+			}) : null,
+			product.privacyStatementUrl ? new MenuItem({
+				label: this.mnemonicLabel(nls.localize({ key: 'miPrivacyStatement', comment: ['&& denotes a mnemonic'] }, "&&Privacy Statement")), click: () => {
+					if (language) {
+						const queryArgChar = product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
+						this.openUrl(`${product.privacyStatementUrl}${queryArgChar}lang=${language}`, 'openPrivacyStatement');
+					} else {
+						this.openUrl(product.privacyStatementUrl, 'openPrivacyStatement');
+					}
+				}
+			}) : null,
+			(product.licenseUrl || product.privacyStatementUrl) ? __separator__() : null,
 			toggleDevToolsItem,
 			isWindows && product.quality !== 'stable' ? showAccessibilityOptions : null
 		]).forEach(item => helpMenu.append(item));
