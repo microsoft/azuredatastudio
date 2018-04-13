@@ -227,7 +227,7 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 	}
 
 	/**
-	 * Select on next tab
+	 * Select on the next tab
 	 */
 	public selectOnNextTab(): void {
 		let activeIndex = this._tabs.toArray().findIndex(i => i === this._activeTab);
