@@ -172,8 +172,8 @@
 						"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 							{
-								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-								"source": "https://github.com/kevcunnane/ssmskeymap/releases/download/0.2.0/ssmskeymap-0.2.0.vsix"
+								"assetType": "Microsoft.SQLOps.DownloadPage",
+								"source": "https://github.com/kevcunnane/ssmskeymap/releases/tag/0.2.0"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Links.Source",
