@@ -32,6 +32,7 @@ import { JobHistoryComponent } from './jobHistory.component';
 import { AgentViewComponent } from '../agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
+import { AgentJobUtilities } from '../common/agentJobUtilities';
 
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
@@ -49,7 +50,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: 'Name', field: 'name', formatter: this.renderName, width: 200, },
+		{ name: 'Name', field: 'name', formatter: this.renderName, width: 200 },
 		{ name: 'Last Run', field: 'lastRun' },
 		{ name: 'Next Run', field: 'nextRun' },
 		{ name: 'Enabled', field: 'enabled' },
@@ -165,12 +166,12 @@ export class JobsViewComponent implements AfterContentChecked {
 				lastRun: job.lastRun,
 				nextRun: job.nextRun,
 				enabled: job.enabled,
-				currentExecutionStatus: job.currentExecutionStatus,
+				currentExecutionStatus: AgentJobUtilities.convertToExecutionStatusString(job.currentExecutionStatus),
 				category: job.category,
 				runnable: job.runnable,
 				hasSchedule: job.hasSchedule,
 				categoryId: job.categoryId,
-				lastRunOutcome: job.lastRunOutcome
+				lastRunOutcome: AgentJobUtilities.convertToStatusString(job.lastRunOutcome)
 			};
 		});
 

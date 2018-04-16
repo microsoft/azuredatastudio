@@ -25,6 +25,7 @@ import { JobHistoryController, JobHistoryDataSource,
 import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
 import { JobStepsViewRow } from './jobStepsViewTree';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
+import { AgentJobUtilities } from '../common/agentJobUtilities';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -110,8 +111,8 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 						self._stepRows = self.agentJobHistoryInfo.steps.map(step => {
 							let stepViewRow = new JobStepsViewRow();
 							stepViewRow.message = step.message;
-							stepViewRow.runStatus = JobHistoryRow.convertToStatusString(self.agentJobHistoryInfo.runStatus);
-							self._runStatus = stepViewRow.runStatus;
+							stepViewRow.runStatus = AgentJobUtilities.convertToStatusString(step.runStatus);
+							self._runStatus = AgentJobUtilities.convertToStatusString(self.agentJobHistoryInfo.runStatus);
 							stepViewRow.stepName = step.stepName;
 							stepViewRow.stepID = step.stepId.toString();
 							return stepViewRow;
@@ -249,7 +250,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private convertToJobHistoryRow(historyInfo: AgentJobHistoryInfo): JobHistoryRow {
 		let jobHistoryRow = new JobHistoryRow();
 		jobHistoryRow.runDate = historyInfo.runDate;
-		jobHistoryRow.runStatus = JobHistoryRow.convertToStatusString(historyInfo.runStatus);
+		jobHistoryRow.runStatus = AgentJobUtilities.convertToStatusString(historyInfo.runStatus);
 		jobHistoryRow.instanceID = historyInfo.instanceId;
 		return jobHistoryRow;
 	}

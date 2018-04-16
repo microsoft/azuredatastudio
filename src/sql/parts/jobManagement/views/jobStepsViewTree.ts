@@ -46,6 +46,7 @@ export class JobStepsViewController extends TreeDefaults.DefaultController {
 	private _jobHistories: AgentJobHistoryInfo[];
 
 	protected onLeftClick(tree: tree.ITree, element: JobStepsViewRow, event: IMouseEvent, origin: string = 'mouse'): boolean {
+		//tree.expand(element);
 		return true;
 	}
 

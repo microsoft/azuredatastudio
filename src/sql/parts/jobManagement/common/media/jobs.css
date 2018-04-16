@@ -24,7 +24,7 @@ jobhistory-component {
 #jobsDiv .jobview-grid {
     height: 100%;
 	width : 100%;
-	display: block;
+    display: block;
 }
 
 .vs-dark #jobsDiv .slick-header-column {
@@ -135,4 +135,9 @@ jobhistory-component {
 
 agentview-component .tabbedPanel .tabList .tab .tabLabel.icon {
     padding: 20px 15px !important;
+}
+
+agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.even > .slick-cell,
+agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.odd > .slick-cell {
+    cursor: pointer;
 }

@@ -34,14 +34,6 @@ export class JobHistoryRow {
 	runStatus: string;
 	instanceID: number;
 	rowID: string = generateUuid();
-
-	public static convertToStatusString(status: number): string {
-		switch(status) {
-			case(1): return 'Succeeded';
-			case(0): return 'Failed';
-			default: return 'Unknown';
-		}
-	}
 }
 
 // Empty class just for tree input

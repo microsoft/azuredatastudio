@@ -1065,6 +1065,7 @@ declare module 'sqlops' {
 		stepName: string;
 		message: string;
 		runDate: string;
+		runStatus: number;
 	}
 
 	export interface AgentJobHistoryInfo {
