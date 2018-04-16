@@ -51,14 +51,14 @@ export class JobsViewComponent implements AfterContentChecked {
 
 	private columns: Array<Slick.Column<any>> = [
 		{ name: 'Name', field: 'name', formatter: this.renderName, width: 200 },
-		{ name: 'Last Run', field: 'lastRun' },
-		{ name: 'Next Run', field: 'nextRun' },
-		{ name: 'Enabled', field: 'enabled' },
-		{ name: 'Status', field: 'currentExecutionStatus' },
-		{ name: 'Category', field: 'category' },
-		{ name: 'Runnable', field: 'runnable' },
-		{ name: 'Schedule', field: 'hasSchedule' },
-		{ name: 'Last Run Outcome', field: 'lastRunOutcome' },
+		{ name: 'Last Run', field: 'lastRun', minWidth: 150 },
+		{ name: 'Next Run', field: 'nextRun', minWidth: 150 },
+		{ name: 'Enabled', field: 'enabled', minWidth: 70 },
+		{ name: 'Status', field: 'currentExecutionStatus', minWidth: 60 },
+		{ name: 'Category', field: 'category', minWidth: 150 },
+		{ name: 'Runnable', field: 'runnable', minWidth: 50 },
+		{ name: 'Schedule', field: 'hasSchedule', minWidth: 50 },
+		{ name: 'Last Run Outcome', field: 'lastRunOutcome', minWidth: 150 },
 	];
 
 	private rowDetail: any;
