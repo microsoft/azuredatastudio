@@ -86,7 +86,7 @@ export const defaultChartConfig: IChartConfig = {
 	labelFirstColumn: false,
 	columnsAsLabels: false,
 	legendPosition: LegendPosition.Top,
-	dataDirection: DataDirection.Vertical,
+	dataDirection: DataDirection.Vertical
 };
 
 @Component({
@@ -180,12 +180,40 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		// unmemoize chart data as the data needs to be recalced
 		unmemoize(this, 'chartData');
 		unmemoize(this, 'labels');
-		this._data = data;
+		this._data = this.filterToTopNData(data);
 		if (isValidData(data)) {
 			this._isDataAvailable = true;
 		}
 
 		this._changeRef.detectChanges();
+	}
+
+	private filterToTopNData(data: IInsightData): IInsightData {
+		if (this._config.dataDirection === 'horizontal') {
+			return {
+				columns: this.getTopNData(data.columns),
+				rows: data.rows.map((row) => {
+					return this.getTopNData(row);
+				})
+			};
+		} else {
+			return {
+				columns: data.columns,
+				rows: data.rows.slice(0, this._config.showTopNData)
+			};
+		}
+	}
+
+	private getTopNData(data: any[]): any[] {
+		if (this._config.showTopNData) {
+			if (this._config.dataDirection === 'horizontal' && this._config.labelFirstColumn) {
+				return data.slice(0, this._config.showTopNData + 1);
+			} else {
+				return data.slice(0, this._config.showTopNData);
+			}
+		} else {
+			return data;
+		}
 	}
 
 	protected clearMemoize(): void {
@@ -213,14 +241,14 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 			if (this._config.labelFirstColumn) {
 				return this._data.rows.map((row) => {
 					return {
-						data: this.getTopNData(row.map(item => Number(item)).slice(1)),
+						data: row.map(item => Number(item)).slice(1),
 						label: row[0]
 					};
 				});
 			} else {
 				return this._data.rows.map((row, i) => {
 					return {
-						data: this.getTopNData(row.map(item => Number(item))),
+						data: row.map(item => Number(item)),
 						label: 'Series' + i
 					};
 				});
@@ -229,26 +257,18 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 			if (this._config.columnsAsLabels) {
 				return this._data.rows[0].map((row, i) => {
 					return {
-						data: this.getTopNData(this._data.rows.map(row => Number(row[i]))),
+						data: this._data.rows.map(row => Number(row[i])),
 						label: this._data.columns[i]
 					};
 				});
 			} else {
 				return this._data.rows[0].map((row, i) => {
 					return {
-						data: this.getTopNData(this._data.rows.map(row => Number(row[i]))),
+						data: this._data.rows.map(row => Number(row[i])),
 						label: 'Series' + i
 					};
 				});
 			}
-		}
-	}
-
-	private getTopNData(data: any[]): any[] {
-		if (this._config.showTopNData) {
-			return data.slice(0, this._config.showTopNData);
-		} else {
-			return data;
 		}
 	}
 
@@ -259,9 +279,9 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	@memoize
 	public getLabels(): Array<string> {
 		if (this._config.dataDirection === 'horizontal') {
-			return this.getTopNData(this._data.columns);
+			return this._data.columns;
 		} else {
-			return this.getTopNData(this._data.rows.map(row => row[0]));
+			return this._data.rows.map(row => row[0]);
 		}
 	}
 
