@@ -5,7 +5,7 @@
 
 'use strict';
 
-import 'vs/css!./media/wizardModal';
+import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions, IModalDialogStyles } from 'sql/base/browser/ui/modal/modal';
 import { Builder } from 'vs/base/browser/builder';
 import { IPartService, Dimension } from 'vs/workbench/services/part/common/partService';
@@ -52,6 +52,7 @@ export class DialogPane extends Disposable implements IThemable {
 						view: {
 							render: (container) => {
 								// TODO: Do something with the content
+								this._body.innerHTML = '<flex-container></flex-container>';
 							},
 							layout: (dimension) => {
 
@@ -61,6 +62,7 @@ export class DialogPane extends Disposable implements IThemable {
 				});
 			} else {
 				// TODO: Do something with the content
+				this._body.innerHTML = '<flex-container></flex-container>';
 			}
 		});
 

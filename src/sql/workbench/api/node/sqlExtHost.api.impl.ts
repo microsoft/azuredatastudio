@@ -280,10 +280,17 @@ export function createApiFactory(
 				}
 			};
 
+			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
+				createDialog(title: string): sqlops.window.modelviewdialog.Dialog { return undefined; },
+				createPage(title: string): sqlops.window.modelviewdialog.DialogPage { return undefined; }
+			};
+
 			const window: typeof sqlops.window = {
 				createDialog(name: string) {
 					return extHostModalDialogs.createDialog(name);
-				}
+				},
+
+				modelviewdialog: modelViewDialog
 			};
 
 			const tasks: typeof sqlops.tasks = {

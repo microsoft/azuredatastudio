@@ -203,4 +203,104 @@ declare module 'sqlops' {
 		 */
 		export function registerModelViewProvider(widgetId: string, handler: (view: ModelView) => void): void;
 	}
+
+	export namespace window {
+		export namespace modelviewdialog {
+			/**
+			 * Create a dialog with the given title
+			 * @param title The title of the dialog, displayed at the top
+			 */
+			export function createDialog(title: string): Dialog;
+
+			/**
+			 * Create a dialog page which can be included as part of the content of a dialog
+			 * @param title The title of the page, displayed on the tab to select the page
+			 */
+			export function createPage(title: string): DialogPage;
+
+			// Model view dialog classes
+			export interface Dialog {
+				/**
+				 * The title of the dialog
+				 */
+				title: string,
+
+				/**
+				 * The content of the dialog. If multiple pages are given they will be displayed with tabs
+				 * TODO: Use a model view content type instead of ServiceOption
+				 */
+				content: ServiceOption[] | DialogPage[],
+
+				/**
+				 * The caption of the OK button
+				 */
+				okTitle: string;
+
+				/**
+				 * The caption of the Cancel button
+				 */
+				cancelTitle: string;
+
+				/**
+				 * Any additional buttons that should be displayed
+				 */
+				customButtons: Button[];
+
+				/**
+				 * Opens the dialog
+				 */
+				open(): void;
+
+				/**
+				 * Closes the dialog
+				 */
+				close(): void;
+
+				/**
+				 * Updates the dialog on screen to reflect changes to the buttons or content
+				 */
+				updateContent(): void;
+
+				/**
+				 * Raised when dialog's ok button is pressed
+				 */
+				readonly onOk: vscode.Event<void>;
+
+				/**
+				 * Raised when dialog is canceled
+				 */
+				readonly onCancel: vscode.Event<void>;
+			}
+
+			export interface DialogPage {
+				/**
+				 * The title of the tab
+				 */
+				title: string,
+
+				/**
+				 * The tab's content
+				 * TODO: use a model view content type
+				 */
+				content: ServiceOption[];
+
+				/**
+				 * Updates the dialog on screen to reflect changes to the content
+				 */
+				updateContent(): void;
+			}
+
+			export interface Button {
+				/**
+				 * The label displayed on the button
+				 */
+				label: string,
+
+				/**
+				 * A function that will be called when the button is clicked
+				 */
+				onClick: () => void;
+			}
+		}
+	}
 }
