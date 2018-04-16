@@ -210,7 +210,6 @@ export class CollapseWidgetAction extends Action {
 		private _uri: string,
 		private _widgetUuid: string,
 		private collpasedState: boolean,
-		private collapsedStateChangedEvent: Event<boolean>,
 		@IAngularEventingService private _angularEventService: IAngularEventingService
 	) {
 		super(
@@ -218,7 +217,6 @@ export class CollapseWidgetAction extends Action {
 			collpasedState ? CollapseWidgetAction.EXPAND_LABEL : CollapseWidgetAction.COLLPASE_LABEL,
 			collpasedState ? CollapseWidgetAction.EXPAND_ICON : CollapseWidgetAction.COLLAPSE_ICON
 		);
-		this.collapsedStateChangedEvent(collapsed => this._updateState(collapsed));
 	}
 
 	run(): TPromise<boolean> {
@@ -232,8 +230,15 @@ export class CollapseWidgetAction extends Action {
 	}
 
 	private _updateState(collapsed: boolean): void {
+		if (collapsed === this.collpasedState) {
+			return;
+		}
 		this.collpasedState = collapsed;
 		this._setClass(this.collpasedState ? CollapseWidgetAction.EXPAND_ICON : CollapseWidgetAction.COLLAPSE_ICON);
 		this._setLabel(this.collpasedState ? CollapseWidgetAction.EXPAND_LABEL : CollapseWidgetAction.COLLPASE_LABEL);
+	}
+
+	public set state(collapsed: boolean) {
+		this._updateState(collapsed);
 	}
 }

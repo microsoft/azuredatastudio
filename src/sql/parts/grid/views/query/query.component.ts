@@ -26,10 +26,12 @@ import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/
 import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { error } from 'sql/base/common/log';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { clone } from 'sql/base/common/objects';
 
 import * as strings from 'vs/base/common/strings';
-import { clone } from 'sql/base/common/objects';
 import * as DOM from 'vs/base/browser/dom';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const QUERY_SELECTOR: string = 'query-component';
 
@@ -144,13 +146,15 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	public queryExecutionStatus: EventEmitter<string> = new EventEmitter<string>();
 	public queryPlanAvailable: EventEmitter<string> = new EventEmitter<string>();
 	public showChartRequested: EventEmitter<IGridDataSet> = new EventEmitter<IGridDataSet>();
+	public goToNextQueryOutputTabRequested: EventEmitter<void> = new EventEmitter<void>();
 
 	@Input() public queryParameters: QueryComponentParams;
 
 	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
 	// tslint:disable-next-line:no-unused-variable
 	@ViewChild('resultsPane', { read: ElementRef }) private _resultsPane: ElementRef;
-
+	@ViewChild('queryLink', { read: ElementRef }) private _queryLinkElement: ElementRef;
+	@ViewChild('messagesContainer', { read: ElementRef }) private _messagesContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
@@ -404,6 +408,16 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		this.dataService.setEditorSelection(index);
 	}
 
+	onKey(e: Event, index: number) {
+		if (DOM.isAncestor(<HTMLElement>e.target, this._queryLinkElement.nativeElement) && e instanceof KeyboardEvent) {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Enter)) {
+				this.onSelectionLinkClicked(index);
+				e.stopPropagation();
+			}
+		}
+	}
+
 	/**
 	 * Sets up the resize for the messages/results panes bar
 	 */
@@ -512,7 +526,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	 */
 	navigateToGrid(targetIndex: number): boolean {
 		// check if the target index is valid
-		if (targetIndex >= this.renderedDataSets.length || targetIndex < 0 || !this.hasFocus()) {
+		if (targetIndex >= this.renderedDataSets.length || !this.hasFocus()) {
 			return false;
 		}
 
@@ -565,16 +579,36 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		}
 	}
 
+	protected goToNextQueryOutputTab(): void {
+		this.goToNextQueryOutputTabRequested.emit();
+	}
+
+	protected toggleResultPane(): void {
+		this.resultActive = !this.resultActive;
+		this._cd.detectChanges();
+		if (this.resultActive) {
+			this.resizeGrids();
+			this.slickgrids.toArray()[this.activeGrid].setActive();
+		}
+	}
+
+	protected toggleMessagePane(): void {
+		this.messageActive = !this.messageActive;
+		this._cd.detectChanges();
+		if (this.messageActive && this._messagesContainer) {
+			let header = <HTMLElement>this._messagesContainer.nativeElement;
+			header.focus();
+		}
+	}
+
 	/* Helper function to toggle messages and results panes */
 	// tslint:disable-next-line:no-unused-variable
 	private togglePane(pane: PaneType): void {
 		if (pane === 'messages') {
-			this._messageActive = !this._messageActive;
+			this.toggleMessagePane();
 		} else if (pane === 'results') {
-			this.resultActive = !this.resultActive;
+			this.toggleResultPane();
 		}
-		this._cd.detectChanges();
-		this.resizeGrids();
 	}
 
 	layout() {

@@ -102,6 +102,11 @@ export class QueryOutputComponent implements OnInit, OnDestroy {
 				this._cd.detectChanges();
 			}
 		})));
+
+		this._disposables.push(toDisposableSubscription(this.queryComponent.goToNextQueryOutputTabRequested.subscribe(() => {
+			let activeTab = this._panel.getActiveTab;
+			this._panel.selectOnNextTab();
+		})));
 	}
 
 	public ngOnDestroy(): void {

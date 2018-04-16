@@ -5,7 +5,7 @@
 
 .empty-task-message {
 	padding: 10px 22px 0 22px;
-	opacity: 0.5;
+	opacity: 0.8;
 }
 
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group {

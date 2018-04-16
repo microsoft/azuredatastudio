@@ -114,7 +114,7 @@ class Extension implements IExtension {
 			return null;
 		}
 
-		return `${product.extensionsGallery.itemUrl}?itemName=${this.publisher}.${this.name}`;
+		return product.extensionsGallery.itemUrl && `${product.extensionsGallery.itemUrl}?itemName=${this.publisher}.${this.name}`;
 	}
 
 	get downloadUrl(): string {
@@ -122,7 +122,9 @@ class Extension implements IExtension {
 			return null;
 		}
 
-		return `${product.extensionsGallery.serviceUrl}/publishers/${this.publisher}/vsextensions/${this.name}/${this.latestVersion}/vspackage`;
+		// {{SQL CARBON EDIT}}
+		return this.gallery && this.gallery.assets && this.gallery.assets.download && this.gallery.assets.download.uri;
+		//return `${product.extensionsGallery.serviceUrl}/publishers/${this.publisher}/vsextensions/${this.name}/${this.latestVersion}/vspackage`;
 	}
 
 	get iconUrl(): string {
@@ -612,7 +614,18 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 			location: ProgressLocation.Extensions,
 			title: nls.localize('installingMarketPlaceExtension', 'Installing extension from Marketplace....'),
 			tooltip: `${extension.id}`
-		}, () => this.extensionService.installFromGallery(gallery));
+			// {{SQL CARBON EDIT}}
+		}, () => this.downloadOrBrowse(ext));
+	}
+
+	// {{SQL CARBON EDIT}}
+	private downloadOrBrowse(ext: Extension): TPromise<void> {
+		if (ext.gallery.assets.downloadPage && ext.gallery.assets.downloadPage.uri) {
+			window.open(ext.gallery.assets.downloadPage.uri);
+			return TPromise.wrap<void>(void 0);
+		} else {
+			return this.extensionService.installFromGallery(ext.gallery);
+		}
 	}
 
 	setEnablement(extension: IExtension, enablementState: EnablementState): TPromise<void> {

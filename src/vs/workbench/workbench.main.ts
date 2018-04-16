@@ -112,8 +112,7 @@ import 'vs/workbench/parts/themes/electron-browser/themes.contribution';
 
 import 'vs/workbench/parts/feedback/electron-browser/feedback.contribution';
 
-// {{SQL CARBON EDIT}}
-// import 'vs/workbench/parts/welcome/gettingStarted/electron-browser/gettingStarted.contribution';
+import 'vs/workbench/parts/welcome/gettingStarted/electron-browser/gettingStarted.contribution';
 
 import 'vs/workbench/parts/update/electron-browser/update.contribution';
 
@@ -169,6 +168,8 @@ import 'sql/parts/dashboard/widgets/explorer/explorerWidget.contribution';
 import 'sql/parts/dashboard/widgets/tasks/tasksWidget.contribution';
 import 'sql/parts/dashboard/widgets/webview/webviewWidget.contribution';
 import 'sql/parts/dashboard/dashboardConfig.contribution';
+/* Model-based Views */
+import 'sql/parts/modelComponents/components.contribution';
 /* Containers */
 import 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
 import 'sql/parts/dashboard/containers/dashboardControlHostContainer.contribution';
@@ -176,6 +177,7 @@ import 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 import 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import 'sql/parts/dashboard/containers/dashboardContainer.contribution';
 import 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
+import 'sql/parts/dashboard/containers/dashboardModelViewContainer.contribution';
 import 'sql/parts/dashboard/common/dashboardTab.contribution';
 /* Extension Host */
 import 'sql/workbench/api/electron-browser/sqlExtensionHost.contribution';

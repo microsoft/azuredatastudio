@@ -145,23 +145,26 @@ export class BackupUiService implements IBackupUiService {
 
 		let backupOptions = this.getOptions(this._currentProvider);
 		return new TPromise<void>(() => {
+			let uri = this._connectionManagementService.getConnectionId(connection)
+			+ ProviderConnectionInfo.idSeparator
+			+ ConnectionUtils.ConnectionUriBackupIdAttributeName
+			+ ProviderConnectionInfo.nameValueSeparator
+			+ BackupUiService._connectionUniqueId;
+
+			this._connectionUri = uri;
+
+			BackupUiService._connectionUniqueId++;
+
+			// Create connection if needed
+			if (!this._connectionManagementService.isConnected(uri)) {
+				this._connectionManagementService.connect(connection, uri).then(() => {
+					this._onShowBackupEvent.fire({ connection: connection, ownerUri: uri });
+				});
+			}
+
 			if (backupOptions) {
 				(backupDialog as OptionsDialog).open(backupOptions, self._optionValues);
 			} else {
-				let uri = this._connectionManagementService.getConnectionId(connection)
-					+ ProviderConnectionInfo.idSeparator
-					+ ConnectionUtils.ConnectionUriBackupIdAttributeName
-					+ ProviderConnectionInfo.nameValueSeparator
-					+ BackupUiService._connectionUniqueId;
-
-				BackupUiService._connectionUniqueId++;
-
-				// Create connection if needed
-				if (!this._connectionManagementService.isConnected(uri)) {
-					this._connectionManagementService.connect(connection, uri).then(() => {
-						this._onShowBackupEvent.fire({ connection: connection, ownerUri: uri });
-					});
-				}
 				(backupDialog as BackupDialog).open(connection);
 			}
 		});

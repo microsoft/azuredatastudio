@@ -5,13 +5,13 @@
 import 'vs/css!./media/panel';
 
 import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { PANEL_ACTIVE_TITLE_FOREGROUND, PANEL_INACTIVE_TITLE_FOREGROUND, PANEL_ACTIVE_TITLE_BORDER } from 'vs/workbench/common/theme';
+import { TAB_ACTIVE_FOREGROUND, TAB_INACTIVE_FOREGROUND, PANEL_ACTIVE_TITLE_BORDER } from 'vs/workbench/common/theme';
 import { activeContrastBorder, focusBorder } from 'vs/platform/theme/common/colorRegistry';
 
 registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 
 	// Title Active
-	const titleActive = theme.getColor(PANEL_ACTIVE_TITLE_FOREGROUND);
+	const titleActive = theme.getColor(TAB_ACTIVE_FOREGROUND);
 	const titleActiveBorder = theme.getColor(PANEL_ACTIVE_TITLE_BORDER);
 	if (titleActive || titleActiveBorder) {
 		collector.addRule(`
@@ -28,7 +28,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	}
 
 	// Title Inactive
-	const titleInactive = theme.getColor(PANEL_INACTIVE_TITLE_FOREGROUND);
+	const titleInactive = theme.getColor(TAB_INACTIVE_FOREGROUND);
 	if (titleInactive) {
 		collector.addRule(`
 			.tabbedPanel > .title > .tabList .tab .tabLabel {

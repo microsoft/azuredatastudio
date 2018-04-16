@@ -204,6 +204,8 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		}
 		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => item.displayValue)) };
 
+		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => item.displayValue)) };
+
 		if (componentInstance.init) {
 			componentInstance.init();
 		}

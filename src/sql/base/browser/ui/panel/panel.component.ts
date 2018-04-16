@@ -49,7 +49,7 @@ let idPool = 0;
 
 		<div class="tabbedPanel fullsize" #tabbedPanel>
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title" #titleContainer>
-				<div class="tabList" #tabList>
+				<div class="tabList" #tabList role="tablist">
 					<div *ngFor="let tab of _tabs">
 						<tab-header [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'> </tab-header>
 					</div>
@@ -182,7 +182,7 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 			if (input instanceof TabComponent) {
 				tab = input;
 			} else if (types.isNumber(input)) {
-				tab = this._tabs[input];
+				tab = this._tabs.toArray()[input];
 			} else if (types.isString(input)) {
 				tab = this._tabs.find(i => i.identifier === input);
 			}
@@ -224,6 +224,18 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 	 */
 	public get getActiveTab(): string {
 		return this._activeTab.identifier;
+	}
+
+	/**
+	 * Select on the next tab
+	 */
+	public selectOnNextTab(): void {
+		let activeIndex = this._tabs.toArray().findIndex(i => i === this._activeTab);
+		let nextTabIndex = activeIndex + 1;
+		if (nextTabIndex === this._tabs.length) {
+			nextTabIndex = 0;
+		}
+		this.selectTab(nextTabIndex);
 	}
 
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {

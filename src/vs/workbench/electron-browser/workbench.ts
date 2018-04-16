@@ -130,9 +130,8 @@ import { IQueryManagementService, QueryManagementService } from 'sql/parts/query
 import { IEditorDescriptorService, EditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
 import { IScriptingService, ScriptingService } from 'sql/services/scripting/scriptingService';
 import { IAdminService, AdminService } from 'sql/parts/admin/common/adminService';
-import { IJobManagementService, IAgentJobCacheService } from 'sql/parts/jobManagement/common/interfaces';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { JobManagementService } from 'sql/parts/jobManagement/common/jobManagementService';
-import { AgentJobCacheService } from 'sql/parts/jobManagement/common/agentJobCacheService';
 import { IBackupService, IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
 import { BackupService, BackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupServiceImp';
 import { IRestoreDialogController, IRestoreService } from 'sql/parts/disasterRecovery/restore/common/restoreService';
@@ -155,8 +154,8 @@ import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/
 import { IResourceProviderService, IAccountPickerService } from 'sql/parts/accountManagement/common/interfaces';
 import { ResourceProviderService } from 'sql/parts/accountManagement/common/resourceProviderService';
 import { AccountPickerService } from 'sql/parts/accountManagement/accountPicker/accountPickerService';
-import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
-import { DashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewServiceImpl';
+import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
+import { DashboardViewService } from 'sql/services/dashboard/common/dashboardViewServiceImpl';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { DashboardService } from 'sql/services/dashboard/common/dashboardServiceImpl';
 
@@ -678,7 +677,7 @@ export class Workbench implements IPartService {
 		// {{SQL CARBON EDIT}}
 		// SQL Tools services
 		serviceCollection.set(IDashboardService, this.instantiationService.createInstance(DashboardService));
-		serviceCollection.set(IDashboardWebviewService, this.instantiationService.createInstance(DashboardWebviewService));
+		serviceCollection.set(IDashboardViewService, this.instantiationService.createInstance(DashboardViewService));
 		serviceCollection.set(IAngularEventingService, this.instantiationService.createInstance(AngularEventingService));
 		serviceCollection.set(INewDashboardTabDialogService, this.instantiationService.createInstance(NewDashboardTabDialogService));
 		serviceCollection.set(ISqlOAuthService, this.instantiationService.createInstance(SqlOAuthService));
@@ -703,7 +702,6 @@ export class Workbench implements IPartService {
 		serviceCollection.set(IScriptingService, this.instantiationService.createInstance(ScriptingService));
 		serviceCollection.set(IAdminService, this.instantiationService.createInstance(AdminService));
 		serviceCollection.set(IJobManagementService, this.instantiationService.createInstance(JobManagementService));
-		serviceCollection.set(IAgentJobCacheService, this.instantiationService.createInstance(AgentJobCacheService));
 		serviceCollection.set(IBackupService, this.instantiationService.createInstance(BackupService));
 		serviceCollection.set(IBackupUiService, this.instantiationService.createInstance(BackupUiService));
 		serviceCollection.set(IRestoreService, this.instantiationService.createInstance(RestoreService));

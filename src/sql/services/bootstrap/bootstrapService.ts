@@ -22,7 +22,7 @@ import { ISqlOAuthService } from 'sql/common/sqlOAuthService';
 import { IFileBrowserService, IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
+import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
 
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -40,7 +40,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IJobManagementService, IAgentJobCacheService } from 'sql/parts/jobManagement/common/interfaces';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
@@ -93,9 +93,8 @@ export interface IBootstrapService {
 	capabilitiesService: ICapabilitiesService;
 	configurationEditorService: ConfigurationEditingService;
 	commandService: ICommandService;
-	dashboardWebviewService: IDashboardWebviewService;
+	dashboardViewService: IDashboardViewService;
 	jobManagementService: IJobManagementService;
-	agentJobCacheService: IAgentJobCacheService;
 	environmentService: IEnvironmentService;
 
 	/*
