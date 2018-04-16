@@ -64,9 +64,7 @@ export class DialogPane extends Disposable implements IThemable {
 			}
 		});
 
-		// this._body.classList.add('customDialog-hidden');
 		this._activeTabIndex = 0;
-
 		return this._body;
 	}
 

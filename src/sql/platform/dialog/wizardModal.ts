@@ -5,7 +5,7 @@
 
 'use strict';
 
-import 'vs/css!./media/wizardModal';
+import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions } from 'sql/base/browser/ui/modal/modal';
 import { Builder } from 'vs/base/browser/builder';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
@@ -18,6 +18,7 @@ import { attachModalDialogStyler } from '../../common/theme/styler';
 import { Wizard, DialogPage, Dialog, OptionsDialogButton } from './dialogTypes';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { DialogPane } from './dialogPane';
+import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 
 export class WizardModal extends Modal {
 	private _currentPage: number;
@@ -55,6 +56,11 @@ export class WizardModal extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
+		if (this.backButton) {
+			this.backButton.onDidClick(() => this.cancel());
+			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
+		}
+
 		this._previousButton = this.addFooterButton('Last', () => this.showPage(this._currentPage - 1));
 		this._nextButton = this.addFooterButton('Next', () => this.showPage(this._currentPage + 1));
 		attachButtonStyler(this._previousButton, this._themeService);
@@ -62,7 +68,7 @@ export class WizardModal extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement): void {
-		new Builder(container).div({ class: 'wizardModal-body' }, (bodyBuilder) => {
+		new Builder(container).div({ class: 'dialogModal-body' }, (bodyBuilder) => {
 			this._body = bodyBuilder.getHTMLElement();
 		});
 
@@ -74,19 +80,6 @@ export class WizardModal extends Modal {
 			let dialogPane = new DialogPane(new Dialog(page.title, [page]));
 			dialogPane.createBody(this._body);
 			this._pages.push(dialogPane);
-
-			// builder.div({ class: 'wizardModal-page' }, (pageBuilder) => {
-			// 	let pageElement = pageBuilder.getHTMLElement();
-			// 	pageElement.style.display = 'none';
-			// 	this._pages.push(pageElement);
-			// 	pageBuilder.div({ class: 'wizardModal-page-header' }, (pageHeaderBuilder) => {
-			// 		this._pageHeader = pageHeaderBuilder.getHTMLElement();
-			// 		this._pageHeader.textContent = page.title;
-			// 	});
-			// 	pageBuilder.div({ class: 'wizardModal-page-content' }, (pageContentBuilder) => {
-			// 		this._pageContent = pageContentBuilder.getHTMLElement();
-			// 	});
-			// });
 		});
 	}
 
@@ -121,6 +114,11 @@ export class WizardModal extends Modal {
 	}
 
 	public ok(): void {
+		this.dispose();
+		this.hide();
+	}
+
+	public cancel(): void {
 		this.dispose();
 		this.hide();
 	}
