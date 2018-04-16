@@ -29,4 +29,14 @@ export class AgentJobUtilities {
 			default: return 'Status Unknown';
 		}
 	}
+
+	public static convertToResponse(bool: boolean) {
+		return bool ? 'Yes' : 'No';
+	}
+
+	public static convertToNextRun(date: string) {
+		if (date.includes('1/1/0001')) {
+			return 'Not Scheduled';
+		}
+	}
 }

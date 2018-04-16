@@ -59,6 +59,7 @@ export class JobStepsViewComponent extends Disposable implements OnInit, AfterCo
 					filter: this._treeFilter,
 					renderer: this._treeRenderer
 				});
+				this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 			}
 			this._tree.layout(JobStepsViewComponent._pageSize);
 			this._tree.setInput(new JobStepsViewModel());
@@ -73,6 +74,7 @@ export class JobStepsViewComponent extends Disposable implements OnInit, AfterCo
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
 		});
+		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 	}
 }
 

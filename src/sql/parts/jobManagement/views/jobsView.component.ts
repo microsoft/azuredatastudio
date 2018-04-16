@@ -58,7 +58,6 @@ export class JobsViewComponent implements AfterContentChecked {
 		{ name: 'Category', field: 'category' },
 		{ name: 'Runnable', field: 'runnable' },
 		{ name: 'Schedule', field: 'hasSchedule' },
-		{ name: 'Category ID', field: 'categoryId' },
 		{ name: 'Last Run Outcome', field: 'lastRunOutcome' },
 	];
 
@@ -165,12 +164,11 @@ export class JobsViewComponent implements AfterContentChecked {
 				name: job.name,
 				lastRun: job.lastRun,
 				nextRun: job.nextRun,
-				enabled: job.enabled,
+				enabled: AgentJobUtilities.convertToResponse(job.enabled),
 				currentExecutionStatus: AgentJobUtilities.convertToExecutionStatusString(job.currentExecutionStatus),
 				category: job.category,
-				runnable: job.runnable,
-				hasSchedule: job.hasSchedule,
-				categoryId: job.categoryId,
+				runnable: AgentJobUtilities.convertToResponse(job.runnable),
+				hasSchedule: AgentJobUtilities.convertToResponse(job.hasSchedule),
 				lastRunOutcome: AgentJobUtilities.convertToStatusString(job.lastRunOutcome)
 			};
 		});
