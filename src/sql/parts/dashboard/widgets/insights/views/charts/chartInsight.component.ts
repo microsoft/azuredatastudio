@@ -279,7 +279,11 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	@memoize
 	public getLabels(): Array<string> {
 		if (this._config.dataDirection === 'horizontal') {
-			return this._data.columns;
+			if (this._config.labelFirstColumn) {
+				return this._data.columns.slice(1);
+			} else {
+				return this._data.columns;
+			}
 		} else {
 			return this._data.rows.map(row => row[0]);
 		}
