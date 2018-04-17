@@ -17,6 +17,8 @@
 	padding-left: 10px;
 	display: flex;
 	text-align: center;
+	vertical-align: middle;
+	user-select: initial;
 }
 
 .steps-tree .list-row .status-icon.step-unknown {
@@ -63,6 +65,7 @@
 	height: 25px;
 	padding-right: 10px;
 	display: inline;
+	vertical-align: middle;
 }
 
 .vs-dark .steps-header > .steps-icon,
