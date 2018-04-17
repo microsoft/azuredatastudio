@@ -1030,6 +1030,16 @@ export class CodeMenu {
 					}
 				}
 			}) : null,
+			product.telemetryOptOutUrl ? new MenuItem({
+				label: this.mnemonicLabel(nls.localize({ key: 'mTelemetryOptOut', comment: ['&& denotes a mnemonic'] }, "Telemetry &&Opt-Out")), click: () => {
+					if (language) {
+						const queryArgChar = product.telemetryOptOutUrl.indexOf('?') > 0 ? '&' : '?';
+						this.openUrl(`${product.telemetryOptOutUrl}${queryArgChar}lang=${language}`, 'openTelemetryOptOut');
+					} else {
+						this.openUrl(product.telemetryOptOutUrl, 'openTelemetryOptOut');
+					}
+				}
+			}) : null,
 			(product.licenseUrl || product.privacyStatementUrl) ? __separator__() : null,
 			toggleDevToolsItem,
 			isWindows && product.quality !== 'stable' ? showAccessibilityOptions : null
