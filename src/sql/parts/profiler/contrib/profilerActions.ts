@@ -238,7 +238,8 @@ export class NewProfilerAction extends Task {
 		super({
 			id: NewProfilerAction.ID,
 			title: NewProfilerAction.LABEL,
-			iconPath: { dark: NewProfilerAction.ICON, light: NewProfilerAction.ICON }
+			iconPath: { dark: NewProfilerAction.ICON, light: NewProfilerAction.ICON },
+			iconClass: NewProfilerAction.ICON
 		});
 	}
 
