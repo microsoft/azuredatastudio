@@ -181,19 +181,19 @@
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-								"source": "https://github.com/kevcunnane/ssmskeymap/blob/master/visualstudio-keyboard.png"
+								"source": "https://raw.githubusercontent.com/kevcunnane/ssmskeymap/master/visualstudio-keyboard.png"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-								"source": "https://github.com/kevcunnane/ssmskeymap/blob/master/README.md"
+								"source": "https://raw.githubusercontent.com/kevcunnane/ssmskeymap/master/README.md"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Code.Manifest",
-								"source": "https://github.com/kevcunnane/ssmskeymap/blob/master/package.json"
+								"source": "https://raw.githubusercontent.com/kevcunnane/ssmskeymap/master/package.json"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.License",
-								"source": "https://github.com/kevcunnane/ssmskeymap/blob/master/LICENSE.txt"
+								"source": "https://raw.githubusercontent.com/kevcunnane/ssmskeymap/master/LICENSE.txt"
 							}
 						],
 						"properties": [
