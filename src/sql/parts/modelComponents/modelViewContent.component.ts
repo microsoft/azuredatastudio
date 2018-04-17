@@ -21,6 +21,7 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import * as sqlops from 'sqlops';
 import { ViewBase } from 'sql/parts/modelComponents/viewBase';
+import { ConnectionManagementService } from '../connection/common/connectionManagementService';
 
 @Component({
 	selector: 'modelview-content',
@@ -64,17 +65,19 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 
 	@memoize
 	public get connection(): sqlops.connection.Connection {
-		let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
-		let connection: sqlops.connection.Connection = {
-			providerName: currentConnection.providerName,
-			connectionId: currentConnection.id,
-			options: currentConnection.options
-		};
-		return connection;
+		// let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
+		// let connection: sqlops.connection.Connection = {
+		// 	providerName: currentConnection.providerName,
+		// 	connectionId: currentConnection.id,
+		// 	options: currentConnection.options
+		// };
+		// return connection;
+		return undefined;
 	}
 
 	@memoize
 	public get serverInfo(): sqlops.ServerInfo {
-		return this._dashboardService.connectionManagementService.connectionInfo.serverInfo;
+		// return this._dashboardService.connectionManagementService.connectionInfo.serverInfo;
+		return undefined;
 	}
 }

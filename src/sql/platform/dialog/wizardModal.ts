@@ -19,6 +19,7 @@ import { Wizard, DialogPage, Dialog, OptionsDialogButton } from './dialogTypes';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { DialogPane } from './dialogPane';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { IBootstrapService } from '../../services/bootstrap/bootstrapService';
 
 export class WizardModal extends Modal {
 	private _currentPage: number;
@@ -42,7 +43,8 @@ export class WizardModal extends Modal {
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IBootstrapService private _bootstrapService: IBootstrapService
 	) {
 		super(_wizard.title, name, partService, telemetryService, contextKeyService, options);
 		this._pages = [];
@@ -77,7 +79,7 @@ export class WizardModal extends Modal {
 			this._progressBar = progressBarBuilder.getHTMLElement();
 		});
 		this._wizard.pages.forEach(page => {
-			let dialogPane = new DialogPane(new Dialog(page.title, [page]));
+			let dialogPane = new DialogPane(new Dialog(page.title, [page]), this._bootstrapService);
 			dialogPane.createBody(this._body);
 			this._pages.push(dialogPane);
 		});

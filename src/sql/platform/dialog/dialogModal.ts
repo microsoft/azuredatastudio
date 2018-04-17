@@ -19,6 +19,7 @@ import { Wizard, DialogPage, Dialog, OptionsDialogButton } from './dialogTypes';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { DialogPane } from './dialogPane';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { IBootstrapService } from '../../services/bootstrap/bootstrapService';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -39,7 +40,8 @@ export class DialogModal extends Modal {
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IBootstrapService private _bootstrapService: IBootstrapService
 	) {
 		super(_dialog.title, name, partService, telemetryService, contextKeyService, options);
 
@@ -78,7 +80,7 @@ export class DialogModal extends Modal {
 			}
 		});
 
-		this._dialogPane = new DialogPane(this._dialog);
+		this._dialogPane = new DialogPane(this._dialog, this._bootstrapService);
 		this._dialogPane.createBody(this._body);
 	}
 

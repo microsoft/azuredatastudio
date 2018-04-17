@@ -636,7 +636,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let dialog2 = new DialogPage('Test dialog 2');
 		dialog2.content = serviceOptions2;
 		let dialogModal = new Dialog('Test Dialog', [dialog, dialog2]);
-		dialogService.showDialog(dialogModal, { hasBackButton: true, isWide: false });
+
+		try {
+			dialogService.showDialog(dialogModal, { hasBackButton: true, isWide: false });
+		} catch (e) {
+			console.log(e);
+		}
 		// let wizard = new Wizard('Test Wizard');
 		// wizard.pages = [dialog, dialog2];
 		// let customButton = new DialogButton('custom', true);
