@@ -1,7 +1,7 @@
 {
 	"results": [{
 		"extensions": [
-		{
+			{
 				"extensionId": "10",
 				"extensionName": "agent",
 				"displayName": "SQL Server Agent",
@@ -138,11 +138,62 @@
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Code.Manifest",
-								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/serverReports/package.jsonn"
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/serverReports/package.json"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.License",
 								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/serverReports/LICENSE.txt"
+							}
+						],
+						"properties": [
+						{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+						{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"}
+						]
+					}
+				],
+				"statistics": [],
+				"flags": "preview"
+			},
+			{
+				"extensionId": "13",
+				"extensionName": "ssmskeymap",
+				"displayName": "SSMS Keymap",
+				"shortDescription": "This extension ports popular SSMS keyboard shortcuts to SQL Operations Studio",
+				"publisher": {
+					"displayName":"Kevin Cunnane",
+					"publisherId": "kevcunnane",
+					"publisherName":"kevcunnane"
+				},
+				"versions": [
+					{
+						"version": "0.2.0",
+						"lastUpdated": "4/16/2018",
+						"assetUri": "",
+						"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+							{
+								"assetType": "Microsoft.SQLOps.DownloadPage",
+								"source": "https://github.com/kevcunnane/ssmskeymap/releases/tag/0.2.0"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Links.Source",
+								"source": "https://github.com/kevcunnane/ssmskeymap"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+								"source": "https://raw.githubusercontent.com/kevcunnane/ssmskeymap/master/visualstudio-keyboard.png"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+								"source": "https://raw.githubusercontent.com/kevcunnane/ssmskeymap/master/README.md"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Code.Manifest",
+								"source": "https://raw.githubusercontent.com/kevcunnane/ssmskeymap/master/package.json"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Content.License",
+								"source": "https://raw.githubusercontent.com/kevcunnane/ssmskeymap/master/LICENSE.txt"
 							}
 						],
 						"properties": [
@@ -163,4 +214,4 @@
 			}]
 		}]
 	}]
-	}
+}
