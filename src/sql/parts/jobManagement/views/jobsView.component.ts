@@ -187,8 +187,27 @@ export class JobsViewComponent implements AfterContentChecked {
 	}
 
 	renderName(row, cell, value, columnDef, dataContext) {
+		let resultIndicatorClass: string;
+		switch (dataContext.lastRunOutcome) {
+			case ('Succeeded'):
+				resultIndicatorClass = 'jobview-jobnameindicatorsuccess';
+				break;
+			case ('Failed'):
+				resultIndicatorClass = 'jobview-jobnameindicatorfailure';
+				break;
+			case ('Canceled'):
+				resultIndicatorClass = 'jobview-jobnameindicatorcancel';
+				break;
+			case ('Status Unknown'):
+				resultIndicatorClass = 'jobview-jobnameindicatorunknown';
+				break;
+			default:
+				resultIndicatorClass = 'jobview-jobnameindicatorunknown';
+				break;
+		}
+
 		return '<table class="jobview-jobnametable"><tr class="jobview-jobnamerow">' +
-			'<td nowrap class="jobview-jobnameindicatorsuccess"></td>' +
+			'<td nowrap class=' + resultIndicatorClass + '></td>' +
 			'<td nowrap class="jobview-jobnametext">' + dataContext.name + '</td>' +
 			'</tr></table>';
 	}

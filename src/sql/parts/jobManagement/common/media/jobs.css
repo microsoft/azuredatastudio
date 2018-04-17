@@ -67,6 +67,21 @@ jobhistory-component {
     background: green;
 }
 
+#jobsDiv .jobview-jobnameindicatorfailure {
+    width: 5px;
+    background: red;
+}
+
+#jobsDiv .jobview-jobnameindicatorcancel {
+    width: 5px;
+    background: orange;
+}
+
+#jobsDiv .jobview-jobnameindicatorunknown {
+    width: 5px;
+    background: yellow;
+}
+
 #jobsDiv .jobview-jobnametext {
     width: 100%;
 }
