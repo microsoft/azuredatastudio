@@ -56,4 +56,5 @@ export interface IInsightsConfig {
 	query?: string | Array<string>;
 	queryFile?: string;
 	details?: IInsightsConfigDetails;
+	autoRefreshInterval?: number;
 }

@@ -32,6 +32,10 @@ export const insightsSchema: IJSONSchema = {
 			type: 'string',
 			description: nls.localize('insightQueryFileDescription', '[Optional] path to a file that contains a query. Use if "query" is not set')
 		},
+		autoRefreshInterval: {
+			type: 'number',
+			description: nls.localize('insightAutoRefreshIntervalDescription', '[Optional] Auto refresh interval in minutes, if not set, there will be no auto refresh')
+		},
 		details: {
 			type: 'object',
 			properties: {
