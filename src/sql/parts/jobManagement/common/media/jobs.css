@@ -21,6 +21,11 @@ jobhistory-component {
 	display: block;
 }
 
+.vs-dark h1.job-heading {
+    padding-bottom: 35px;
+    border-bottom: 3px solid #444444;
+}
+
 #jobsDiv .jobview-grid {
     height: 100%;
 	width : 100%;
@@ -138,18 +143,12 @@ jobhistory-component {
     background: #faf5f8 !important;
 }
 
-
 .jobsview-icon {
-    content: url('./job.svg');
-    width: 25px;
+    background-image: url('./job.svg');
 }
 
 .vs-dark .jobsview-icon {
-	content: url('./job_inverse.svg');
-}
-
-agentview-component .tabbedPanel .tabList .tab .tabLabel.icon {
-    padding: 20px 15px !important;
+	background-image: url('./job_inverse.svg');
 }
 
 agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.even > .slick-cell,
