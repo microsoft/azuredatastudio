@@ -94,7 +94,9 @@ export class FileBrowserDialog extends Modal {
 			tableWrapper.element('table', { class: 'file-table-content' }, (tableContainer) => {
 				let pathLabel = localize('filebrowser.filepath', 'Selected path');
 				let pathBuilder = DialogHelper.appendRow(tableContainer, pathLabel, 'file-input-label', 'file-input-box');
-				this._filePathInputBox = new InputBox(pathBuilder.getHTMLElement(), this._contextViewService);
+				this._filePathInputBox = new InputBox(pathBuilder.getHTMLElement(), this._contextViewService, {
+					ariaLabel: pathLabel
+				});
 
 				this._fileFilterSelectBox = new SelectBox(['*'], '*', this._contextViewService);
 				let filterLabel = localize('fileFilter', 'Files of type');

@@ -444,9 +444,11 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 		super();
 		this._toDispose = [];
 		this.$databaseListDropdown = $('.databaseListDropdown');
+		let selectString = nls.localize("selectDatabase", "Select Database");
 		this._dropdown = new Dropdown(this.$databaseListDropdown.getHTMLElement(), contextViewProvider, themeService, {
 			strictSelection: true,
-			placeholder: nls.localize("selectDatabase", "Select Database")
+			placeholder: selectString,
+			ariaLabel: selectString
 		});
 		this._dropdown.onValueChange(s => this.databaseSelected(s));
 

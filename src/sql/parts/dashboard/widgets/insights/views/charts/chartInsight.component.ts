@@ -79,6 +79,7 @@ export interface IChartConfig {
 	legendPosition?: LegendPosition;
 	dataDirection?: DataDirection;
 	columnsAsLabels?: boolean;
+	showTopNData?: number;
 }
 
 export const defaultChartConfig: IChartConfig = {
@@ -179,12 +180,40 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		// unmemoize chart data as the data needs to be recalced
 		unmemoize(this, 'chartData');
 		unmemoize(this, 'labels');
-		this._data = data;
+		this._data = this.filterToTopNData(data);
 		if (isValidData(data)) {
 			this._isDataAvailable = true;
 		}
 
 		this._changeRef.detectChanges();
+	}
+
+	private filterToTopNData(data: IInsightData): IInsightData {
+		if (this._config.dataDirection === 'horizontal') {
+			return {
+				columns: this.getTopNData(data.columns),
+				rows: data.rows.map((row) => {
+					return this.getTopNData(row);
+				})
+			};
+		} else {
+			return {
+				columns: data.columns,
+				rows: data.rows.slice(0, this._config.showTopNData)
+			};
+		}
+	}
+
+	private getTopNData(data: any[]): any[] {
+		if (this._config.showTopNData) {
+			if (this._config.dataDirection === 'horizontal' && this._config.labelFirstColumn) {
+				return data.slice(0, this._config.showTopNData + 1);
+			} else {
+				return data.slice(0, this._config.showTopNData);
+			}
+		} else {
+			return data;
+		}
 	}
 
 	protected clearMemoize(): void {
@@ -250,7 +279,11 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	@memoize
 	public getLabels(): Array<string> {
 		if (this._config.dataDirection === 'horizontal') {
-			return this._data.columns;
+			if (this._config.labelFirstColumn) {
+				return this._data.columns.slice(1);
+			} else {
+				return this._data.columns;
+			}
 		} else {
 			return this._data.rows.map(row => row[0]);
 		}

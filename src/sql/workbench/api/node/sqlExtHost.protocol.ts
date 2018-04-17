@@ -16,6 +16,7 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
+import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -444,6 +445,7 @@ export const SqlMainContext = {
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
 	MainThreadTasks: createMainId<MainThreadTasksShape>('MainThreadTasks'),
 	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview'),
+	MainThreadModelView: createMainId<MainThreadModelViewShape>('MainThreadModelView'),
 	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard')
 };
 
@@ -458,6 +460,7 @@ export const SqlExtHostContext = {
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
 	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks'),
 	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
+	ExtHostModelView: createExtId<ExtHostModelViewShape>('ExtHostModelView'),
 	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard')
 };
 
@@ -505,6 +508,21 @@ export interface MainThreadDashboardWebviewShape extends IDisposable {
 	$sendMessage(handle: number, message: string);
 	$registerProvider(widgetId: string);
 	$setHtml(handle: number, value: string);
+}
+
+export interface ExtHostModelViewShape {
+	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void): void;
+	$onClosed(handle: number): void;
+	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
+}
+
+export interface MainThreadModelViewShape extends IDisposable {
+	$registerProvider(id: string): void;
+	$initializeModel(handle: number, rootComponent: IComponentShape): Thenable<void>;
+	$clearContainer(handle: number, componentId: string): Thenable<void>;
+	$addToContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
+	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
+	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {

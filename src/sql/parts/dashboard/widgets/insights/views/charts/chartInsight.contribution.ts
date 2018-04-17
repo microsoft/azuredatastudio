@@ -35,6 +35,10 @@ export const chartInsightSchema: IJSONSchema = {
 			default: 'vertical',
 			enum: ['vertical', 'horizontal'],
 			enumDescriptions: ['When vertical, the first column is used to define the x-axis labels, with other columns expected to be numerical.', 'When horizontal, the column names are used as the x-axis labels.']
+		},
+		showTopNData: {
+			type: 'number',
+			description: nls.localize('showTopNData', 'If showTopNData is set, showing only top N data in the chart.')
 		}
 	}
 };

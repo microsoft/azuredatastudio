@@ -14,6 +14,7 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 import CustomUrlSerializer from 'sql/common/urlSerializer';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
+import { Extensions as ComponentExtensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 
@@ -35,9 +36,12 @@ import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWi
 import { DashboardWidgetContainer } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.component';
 import { DashboardGridContainer } from 'sql/parts/dashboard/containers/dashboardGridContainer.component';
 import { DashboardWebviewContainer } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.component';
+import { DashboardModelViewContainer } from 'sql/parts/dashboard/containers/dashboardModelViewContainer.component';
 import { DashboardErrorContainer } from 'sql/parts/dashboard/containers/dashboardErrorContainer.component';
 import { DashboardNavSection } from 'sql/parts/dashboard/containers/dashboardNavSection.component';
 import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
+import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
+import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
 import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
@@ -49,9 +53,9 @@ import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.comp
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
 
 let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
-					DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, WebviewContent, WidgetContent,
+					DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
 					ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
-					JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent];
+					JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, DashboardModelViewContainer, ModelComponentWrapper];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
@@ -81,6 +85,9 @@ let widgetComponents = [
 /* Insights */
 let insightComponents = Registry.as<IInsightRegistry>(Extensions.InsightContribution).getAllCtors();
 
+/* Model-backed components */
+let extensionComponents = Registry.as<IComponentRegistry>(ComponentExtensions.ComponentContribution).getAllCtors();
+
 // Setup routes for various child components
 const appRoutes: Routes = [
 	{ path: 'database-dashboard', component: DatabaseDashboardPage },
@@ -99,13 +106,15 @@ const appRoutes: Routes = [
 		...baseComponents,
 		...pageComponents,
 		...widgetComponents,
-		...insightComponents
+		...insightComponents,
+		...extensionComponents
 	],
 	// also for widgets
 	entryComponents: [
 		DashboardComponent,
 		...widgetComponents,
-		...insightComponents
+		...insightComponents,
+		...extensionComponents
 	],
 	imports: [
 		CommonModule,

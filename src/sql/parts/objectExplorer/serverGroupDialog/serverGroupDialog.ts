@@ -77,8 +77,8 @@ export class ServerGroupDialog extends Modal {
 			this._bodyBuilder = builder;
 		});
 		// Connection Group Name
+		let serverGroupNameLabel = localize('connectionGroupName', 'Server group name');
 		this._bodyBuilder.div({ class: 'dialog-label' }, (labelContainer) => {
-			let serverGroupNameLabel = localize('connectionGroupName', 'Server group name');
 			labelContainer.innerHtml(serverGroupNameLabel);
 		});
 		this._bodyBuilder.div({ class: 'input-divider' }, (inputCellContainer) => {
@@ -86,17 +86,20 @@ export class ServerGroupDialog extends Modal {
 			this._groupNameInputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService, {
 				validationOptions: {
 					validation: (value: string) => !value && !this._skipGroupNameValidation ? ({ type: MessageType.ERROR, content: errorMessage }) : null
-				}
+				},
+				ariaLabel: serverGroupNameLabel
 			});
 		});
 
 		// Connection Group Description
+		let groupDescriptionLabel = localize('groupDescription', 'Group description');
 		this._bodyBuilder.div({ class: 'dialog-label' }, (labelContainer) => {
-			let groupDescriptionLabel = localize('groupDescription', 'Group description');
 			labelContainer.innerHtml(groupDescriptionLabel);
 		});
 		this._bodyBuilder.div({ class: 'input-divider' }, (inputCellContainer) => {
-			this._groupDescriptionInputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService);
+			this._groupDescriptionInputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService, {
+				ariaLabel: groupDescriptionLabel
+			});
 		});
 
 		// Connection Group Color

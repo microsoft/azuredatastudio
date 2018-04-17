@@ -13,6 +13,8 @@
 			</dashboard-webview-container>
 			<dashboard-widget-container *ngIf="getContentType(tab) === 'widgets-container'" [tab]="tab">
 			</dashboard-widget-container>
+			<dashboard-modelview-container *ngIf="getContentType(tab) === 'modelview-container'" [tab]="tab">
+			</dashboard-modelview-container>
 			<dashboard-controlhost-container *ngIf="getContentType(tab) === 'controlhost-container'" [tab]="tab">
 			</dashboard-controlhost-container>
 			<dashboard-nav-section *ngIf="getContentType(tab) === 'nav-section'" [tab]="tab">
