@@ -5,15 +5,15 @@
 
 'use strict';
 
-import * as fs from 'fs-extra';
-import * as handlebars from 'handlebars';
-import * as path from 'path';
+// import * as fs from 'fs-extra';
+// import * as handlebars from 'handlebars';
+// import * as path from 'path';
 import * as vscode from 'vscode';
 
 import * as Constants from './constants';
-import * as nls from 'vscode-nls';
+// import * as nls from 'vscode-nls';
 
-const localize = nls.loadMessageBundle();
+// const localize = nls.loadMessageBundle();
 
 /**
  * Helper to log messages to the developer console if enabled
@@ -28,7 +28,7 @@ export function logDebug(msg: any): void {
 		console.log(outputMsg);
 	}
 }
-
+/*
 export function renderTemplateHtml(extensionPath: string, templateName: string, templateValues: object): Thenable<string> {
 	let templatePath = path.join(extensionPath, 'resources', templateName);
 
@@ -48,5 +48,5 @@ export function renderTemplateHtml(extensionPath: string, templateName: string, 
 			}
 		);
 }
-
+*/
 

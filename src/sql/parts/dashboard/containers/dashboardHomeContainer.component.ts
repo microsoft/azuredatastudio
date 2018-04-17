@@ -11,6 +11,7 @@ import { DashboardWidgetContainer } from 'sql/parts/dashboard/containers/dashboa
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularEventType } from '../../../services/angularEventing/angularEventingService';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
@@ -32,7 +33,7 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: DashboardServiceInterface,
 
 	) {
 		super(_cd);

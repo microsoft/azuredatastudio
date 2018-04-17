@@ -14,6 +14,7 @@ import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AgentJobHistoryInfo } from 'sqlops';
 import { JobStepsViewController, JobStepsViewDataSource, JobStepsViewFilter,
 	JobStepsViewRenderer, JobStepsViewRow, JobStepsViewModel} from 'sql/parts/jobManagement/views/jobStepsViewTree';
@@ -42,7 +43,7 @@ export class JobStepsViewComponent extends Disposable implements OnInit, OnChang
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface
+		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface
 	) {
 		super();
 		this._jobManagementService = bootstrapService.jobManagementService;

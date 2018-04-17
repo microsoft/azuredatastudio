@@ -13,6 +13,7 @@ import { memoize } from 'vs/base/common/decorators';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IDashboardWebview } from 'sql/services/dashboard/common/dashboardViewService';
 
 import * as sqlops from 'sqlops';
@@ -37,7 +38,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	private _onMessageDisposable: IDisposable;
 
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef

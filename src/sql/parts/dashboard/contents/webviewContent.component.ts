@@ -16,6 +16,7 @@ import { memoize } from 'vs/base/common/decorators';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IDashboardWebview } from 'sql/services/dashboard/common/dashboardViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 
@@ -38,7 +39,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	private _html: string;
 
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
 	) {
