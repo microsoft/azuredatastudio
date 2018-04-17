@@ -37,7 +37,7 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 
 	constructor(
 		@Inject(forwardRef(() => IBreadcrumbService)) private breadcrumbService: IBreadcrumbService,
-		@Inject(forwardRef(() => CommonServiceInterface)) dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {

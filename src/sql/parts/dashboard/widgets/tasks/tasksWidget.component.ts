@@ -58,7 +58,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => DomSanitizer)) private _sanitizer: DomSanitizer,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig

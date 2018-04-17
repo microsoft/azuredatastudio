@@ -31,12 +31,15 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@Input() private properties: WidgetConfig;
 	@ViewChild('propertiesClass') private _propertiesClass: DashboardWidgetWrapper;
 
+	private dashboardService: DashboardServiceInterface;
+
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) protected commonService: CommonServiceInterface,
 
 	) {
 		super(_cd);
+		this.dashboardService = commonService as DashboardServiceInterface;
 	}
 
 	ngAfterContentInit() {

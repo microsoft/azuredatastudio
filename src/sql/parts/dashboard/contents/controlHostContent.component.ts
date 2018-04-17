@@ -38,7 +38,7 @@ export class ControlHostContent {
 	@ViewChild('agent') private _agentViewComponent: AgentViewComponent;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
 	) {

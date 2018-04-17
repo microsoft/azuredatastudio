@@ -75,7 +75,7 @@ export class JobsViewComponent implements AfterContentChecked {
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent

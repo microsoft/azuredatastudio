@@ -58,7 +58,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
-		@Inject(forwardRef(() => CommonServiceInterface)) private dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private dashboardService: CommonServiceInterface,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(forwardRef(() => ViewContainerRef)) private viewContainerRef: ViewContainerRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef

@@ -109,8 +109,8 @@ export class SingleQueryManagementService {
 }
 
 /*
-	Providers a interface between a dashboard interface and the rest of carbon.
-	Stores the uri and unique selector of a dashboard instance and uses that
+	Providers a interface between a UI interface and the rest of carbon.
+	Stores the uri and unique selector of a UI instance and uses that
 	whenever a call to a carbon service needs this information, so that the widgets
 	don't need to be aware of the uri or selector. Simplifies the initialization and
 	usage of a widget.
@@ -231,7 +231,7 @@ export class CommonServiceInterface extends AngularDisposable {
 	}
 
 	/**
-	 * Set the selector for this dashboard instance, should only be set once
+	 * Set the selector for this instance, should only be set once
 	 */
 	public set selector(selector: string) {
 		this._uniqueSelector = selector;
@@ -254,7 +254,7 @@ export class CommonServiceInterface extends AngularDisposable {
 	}
 
 	/**
-	 * Set the uri for this dashboard instance, should only be set once
+	 * Set the uri for this instance, should only be set once
 	 * Inits all the services that depend on knowing a uri
 	 */
 	protected set uri(uri: string) {
@@ -266,8 +266,8 @@ export class CommonServiceInterface extends AngularDisposable {
 	}
 
 	/**
-	 * Gets the underlying Uri for dashboard
-	 * In general don't use this, use specific services instances exposed publically
+	 * Gets the underlying Uri
+	 * In general don't use this, use specific services instances exposed publicly
 	 */
 	public getUnderlyingUri(): string {
 		return this._uri;

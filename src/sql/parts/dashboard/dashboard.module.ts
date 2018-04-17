@@ -54,9 +54,9 @@ import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.comp
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
 
 let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
-	DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
-	ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
-	JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, DashboardModelViewContainer, ModelComponentWrapper];
+		DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
+		ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
+		JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, DashboardModelViewContainer, ModelComponentWrapper];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
@@ -134,13 +134,14 @@ const appRoutes: Routes = [
 	]
 })
 export class DashboardModule {
-
+	private _bootstrap: DashboardServiceInterface;
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private _router: Router
 	) {
+		this._bootstrap = bootstrap as DashboardServiceInterface;
 	}
 
 	ngDoBootstrap(appRef: ApplicationRef) {

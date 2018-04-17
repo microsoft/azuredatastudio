@@ -37,13 +37,15 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	private _onMessageDisposable: IDisposable;
 	private _webview: Webview;
 	private _html: string;
+	private _dashboardService: DashboardServiceInterface;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
 	) {
 		super();
+		this._dashboardService = commonService as DashboardServiceInterface;
 	}
 
 	ngOnInit() {

@@ -112,11 +112,14 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 	@ViewChildren(NgGridItem) private _items: QueryList<NgGridItem>;
 	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
 	@ViewChild('scrollContainer', { read: ElementRef }) private _scrollContainer: ElementRef;
+
+	protected dashboardService: DashboardServiceInterface;
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) protected commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {
 		super();
+		this.dashboardService = commonService as DashboardServiceInterface;
 	}
 
 	ngAfterViewInit() {

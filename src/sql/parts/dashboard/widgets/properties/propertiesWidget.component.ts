@@ -69,7 +69,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	@ViewChild('parent', { read: ElementRef }) private _parent: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,

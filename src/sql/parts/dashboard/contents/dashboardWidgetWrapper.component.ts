@@ -89,7 +89,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
 		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(forwardRef(() => Injector)) private _injector: Injector
 	) {

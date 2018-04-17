@@ -24,9 +24,11 @@ export class BreadcrumbService implements IBreadcrumbService {
 	public breadcrumbItem: Subject<MenuItem[]>;
 	private itemBreadcrums: MenuItem[];
 	private _currentPage: BreadcrumbClass;
+	private _bootstrap: DashboardServiceInterface;
 
-	constructor( @Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: DashboardServiceInterface) {
-		_bootstrap.onUpdatePage(() => {
+	constructor( @Inject(forwardRef(() => CommonServiceInterface)) private commonService: CommonServiceInterface) {
+		this._bootstrap = commonService as DashboardServiceInterface;
+		this._bootstrap.onUpdatePage(() => {
 			this.setBreadcrumbs(this._currentPage);
 		});
 		this.breadcrumbItem = new Subject<MenuItem[]>();

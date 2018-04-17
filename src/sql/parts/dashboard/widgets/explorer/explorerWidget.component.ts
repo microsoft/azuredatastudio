@@ -50,7 +50,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	@ViewChild('table') private _tableContainer: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private _router: Router,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,

@@ -37,7 +37,7 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 	private editDisposable: IDisposable;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private _router: Router,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
 	) {

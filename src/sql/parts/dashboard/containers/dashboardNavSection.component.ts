@@ -54,7 +54,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	@ViewChildren(DashboardTab) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {
 		super();

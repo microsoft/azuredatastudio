@@ -43,7 +43,7 @@ export class JobStepsViewComponent extends Disposable implements OnInit, OnChang
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface
+		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface
 	) {
 		super();
 		this._jobManagementService = bootstrapService.jobManagementService;

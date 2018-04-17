@@ -86,13 +86,15 @@ export abstract class DashboardPage extends AngularDisposable {
 
 	protected abstract propertiesWidget: WidgetConfig;
 	protected abstract get context(): string;
+	protected dashboardService: DashboardServiceInterface;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) protected commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {
 		super();
+		this.dashboardService = commonService as DashboardServiceInterface;
 	}
 
 	protected init() {
