@@ -21,12 +21,13 @@ jobhistory-component {
 	display: block;
 }
 
-.vs-dark h1.job-heading {
-    padding-bottom: 35px;
+.vs-dark .job-heading-container {
+    height: 32px;
     border-bottom: 3px solid #444444;
 }
 
 #jobsDiv .jobview-grid {
+    padding-top: 15px;
     height: 100%;
 	width : 100%;
     display: block;
