@@ -50,15 +50,15 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: 'Name', field: 'name', formatter: this.renderName, width: 200 },
-		{ name: 'Last Run', field: 'lastRun', minWidth: 150 },
-		{ name: 'Next Run', field: 'nextRun', minWidth: 150 },
-		{ name: 'Enabled', field: 'enabled', minWidth: 70 },
-		{ name: 'Status', field: 'currentExecutionStatus', minWidth: 60 },
-		{ name: 'Category', field: 'category', minWidth: 150 },
-		{ name: 'Runnable', field: 'runnable', minWidth: 50 },
-		{ name: 'Schedule', field: 'hasSchedule', minWidth: 50 },
-		{ name: 'Last Run Outcome', field: 'lastRunOutcome', minWidth: 150 },
+		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200 },
+		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', minWidth: 150 },
+		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', minWidth: 150 },
+		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', minWidth: 70 },
+		{ name: nls.localize('jobColumns.status','Status'), field: 'currentExecutionStatus', minWidth: 60 },
+		{ name: nls.localize('jobColumns.category','Category'), field: 'category', minWidth: 150 },
+		{ name: nls.localize('jobColumns.runnable','Runnable'), field: 'runnable', minWidth: 50 },
+		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', minWidth: 50 },
+		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', minWidth: 150 },
 	];
 
 	private rowDetail: any;

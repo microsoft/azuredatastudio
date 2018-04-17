@@ -77,3 +77,6 @@
 	content: url("../common/media/step.svg");
 }
 
+jobstepsview-component {
+	padding-top: 10px;
+}

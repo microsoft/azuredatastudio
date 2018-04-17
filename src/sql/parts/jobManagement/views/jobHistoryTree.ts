@@ -28,6 +28,8 @@ import { OEAction } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions
 import { Builder, $, withElementById } from 'vs/base/browser/builder';
 import { AgentJobHistoryInfo } from 'sqlops';
 import { Agent } from 'vs/base/node/request';
+import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { JobHistoryComponent } from './jobHistory.component';
 
 export class JobHistoryRow {
 	runDate: string;
@@ -48,10 +50,6 @@ export class JobHistoryController extends TreeDefaults.DefaultController {
 		return true;
 	}
 
-	public onContextMenu(tree: tree.ITree, element: JobHistoryRow, event: tree.ContextMenuEvent): boolean {
-		return true;
-	}
-
 	public set jobHistories(value: AgentJobHistoryInfo[]) {
 		this._jobHistories = value;
 	}
@@ -60,6 +58,17 @@ export class JobHistoryController extends TreeDefaults.DefaultController {
 		return this._jobHistories;
 	}
 
+	public onKeyDownWrapper(tree: tree.ITree, event: IKeyboardEvent): boolean {
+		if (event.code === 'ArrowDown' || event.keyCode === 40) {
+			return super.onDown(tree, event);
+		} else if (event.code === 'ArrowUp' || event.keyCode === 38) {
+			return super.onUp(tree, event);
+		} else {
+			event.preventDefault();
+			event.stopPropagation();
+			return true;
+		}
+	}
 }
 
 export class JobHistoryDataSource implements tree.IDataSource {

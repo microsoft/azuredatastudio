@@ -104,28 +104,16 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			} else {
 				tree.setFocus(element, payload);
 				tree.setSelection([element], payload);
-				self.agentJobHistoryInfo = self._treeController.jobHistories.filter(history => history.instanceId === element.instanceID)[0];
-				if (self.agentJobHistoryInfo) {
-					self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
-					if (self.agentJobHistoryInfo.steps) {
-						self._stepRows = self.agentJobHistoryInfo.steps.map(step => {
-							let stepViewRow = new JobStepsViewRow();
-							stepViewRow.message = step.message;
-							stepViewRow.runStatus = AgentJobUtilities.convertToStatusString(step.runStatus);
-							self._runStatus = AgentJobUtilities.convertToStatusString(self.agentJobHistoryInfo.runStatus);
-							stepViewRow.stepName = step.stepName;
-							stepViewRow.stepID = step.stepId.toString();
-							return stepViewRow;
-						});
-						this._showSteps = true;
-					} else {
-						this._showSteps = false;
-					}
-					self._cd.detectChanges();
-				}
+				self.setStepsTree(element);
 			}
 			return true;
 		};
+		this._treeController.onKeyDown = (tree, event) => {
+			this._treeController.onKeyDownWrapper(tree, event);
+			let element = tree.getFocus();
+			self.setStepsTree(element);
+			return true;
+		}
 		this._tree = new Tree(this._tableContainer.nativeElement, {
 			controller: this._treeController,
 			dataSource: this._treeDataSource,
@@ -186,6 +174,29 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 				this._cd.detectChanges();
 			}
 		});
+	}
+
+	private setStepsTree(element: any) {
+		const self = this;
+		self.agentJobHistoryInfo = self._treeController.jobHistories.filter(history => history.instanceId === element.instanceID)[0];
+		if (self.agentJobHistoryInfo) {
+			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
+			if (self.agentJobHistoryInfo.steps) {
+				self._stepRows = self.agentJobHistoryInfo.steps.map(step => {
+					let stepViewRow = new JobStepsViewRow();
+					stepViewRow.message = step.message;
+					stepViewRow.runStatus = AgentJobUtilities.convertToStatusString(step.runStatus);
+					self._runStatus = AgentJobUtilities.convertToStatusString(self.agentJobHistoryInfo.runStatus);
+					stepViewRow.stepName = step.stepName;
+					stepViewRow.stepID = step.stepId.toString();
+					return stepViewRow;
+				});
+				this._showSteps = true;
+			} else {
+				this._showSteps = false;
+			}
+			self._cd.detectChanges();
+		}
 	}
 
 	private buildHistoryTree(self: any, jobHistories: AgentJobHistoryInfo[]) {
