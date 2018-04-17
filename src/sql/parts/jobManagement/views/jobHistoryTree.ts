@@ -111,7 +111,7 @@ export class JobHistoryRenderer implements tree.IRenderer {
 	private _statusIcon: HTMLElement;
 
 	public getHeight(tree: tree.ITree, element: JobHistoryRow): number {
-		return 22;
+		return 30;
 	}
 
 	public getTemplateId(tree: tree.ITree, element: JobHistoryRow | JobHistoryModel): string {

@@ -206,11 +206,13 @@ table.step-list tr.step-row td {
 	height: 10px;
 	width: 10px;
 	display: inline-block;
+	vertical-align: middle;
 }
 
 .step-table .list-row .label {
 	padding-left: 10px;
 	display: inline-block;
+	vertical-align: middle;
 }
 
 .job-passed {
