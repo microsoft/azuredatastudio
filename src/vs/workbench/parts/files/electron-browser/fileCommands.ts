@@ -11,7 +11,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import * as labels from 'vs/base/common/labels';
 import URI from 'vs/base/common/uri';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { toResource, IEditorCommandsContext } from 'vs/workbench/common/editor';
+import { toResource, IEditorCommandsContext, EditorInput } from 'vs/workbench/common/editor';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
@@ -89,6 +89,11 @@ function save(resource: URI, isSaveAs: boolean, editorService: IWorkbenchEditorS
 	textFileService: ITextFileService, editorGroupService: IEditorGroupService, queryEditorService: IQueryEditorService,): TPromise<any> {
 
 	if (resource && (fileService.canHandleResource(resource) || resource.scheme === Schemas.untitled)) {
+		// {{SQL CARBON EDIT}}
+		let editorInput = editorService.getActiveEditorInput();
+		if (editorInput instanceof EditorInput && !(<EditorInput>editorInput).savingSupported) {
+			return TPromise.as(false);
+		}
 
 		// Save As (or Save untitled with associated path)
 		if (isSaveAs || resource.scheme === Schemas.untitled) {
