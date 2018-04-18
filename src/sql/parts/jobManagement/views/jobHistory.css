@@ -177,6 +177,7 @@ table.step-list tr.step-row td {
 	padding-left: 10px;
 	height: 100%;
 	width: 90%;
+	overflow-y: scroll;
 }
 
 .history-details > .job-steps {
