@@ -164,7 +164,7 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 
 	private createStatusIcon(): HTMLElement {
 		let statusIcon: HTMLElement = DOM.$('div');
-		statusIcon.className += ' status-icon';
+		statusIcon.className += 'status-icon';
 		return statusIcon;
 	}
 }

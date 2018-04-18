@@ -12,7 +12,7 @@ import { chartInsightSchema } from 'sql/parts/dashboard/widgets/insights/views/c
 
 import BarChart from './barChart.component';
 
-export const properties: IJSONSchema = {
+const properties: IJSONSchema = {
 	properties: {
 		yAxisMin: {
 			type: 'number',
@@ -41,6 +41,6 @@ export const properties: IJSONSchema = {
 	}
 };
 
-const barSchema = mixin(clone(chartInsightSchema), properties) as IJSONSchema;
+export const barChartSchema = mixin(clone(chartInsightSchema), properties) as IJSONSchema;
 
-registerInsight('bar', '', barSchema, BarChart);
+registerInsight('bar', '', barChartSchema, BarChart);
