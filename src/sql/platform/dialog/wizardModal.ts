@@ -7,6 +7,12 @@
 
 import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions } from 'sql/base/browser/ui/modal/modal';
+import { attachModalDialogStyler } from 'sql/common/theme/styler';
+import { Wizard, Dialog } from 'sql/platform/dialog/dialogTypes';
+import { DialogPane } from 'sql/platform/dialog/dialogPane';
+import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import { Button } from 'vs/base/browser/ui/button/button';
+import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { Builder } from 'vs/base/browser/builder';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -14,12 +20,6 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
-import { attachModalDialogStyler } from '../../common/theme/styler';
-import { Wizard, DialogPage, Dialog, OptionsDialogButton } from './dialogTypes';
-import { Button } from 'vs/base/browser/ui/button/button';
-import { DialogPane } from './dialogPane';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { IBootstrapService } from '../../services/bootstrap/bootstrapService';
 
 export class WizardModal extends Modal {
 	private _currentPage: number;
@@ -41,7 +41,6 @@ export class WizardModal extends Modal {
 		options: IModalOptions,
 		@IPartService partService: IPartService,
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
-		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IBootstrapService private _bootstrapService: IBootstrapService

@@ -6,35 +6,15 @@
 'use strict';
 
 import 'vs/css!./media/dialogModal';
-import { Modal, IModalOptions, IModalDialogStyles } from 'sql/base/browser/ui/modal/modal';
+import { NgModuleRef } from '@angular/core';
+import { IModalDialogStyles } from 'sql/base/browser/ui/modal/modal';
+import { Dialog } from 'sql/platform/dialog/dialogTypes';
+import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
+import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import { DialogModule } from 'sql/platform/dialog/dialog.module';
 import { Builder } from 'vs/base/browser/builder';
-import { IPartService, Dimension } from 'vs/workbench/services/part/common/partService';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { attachButtonStyler, IThemable } from 'vs/platform/theme/common/styler';
-import { attachModalDialogStyler } from '../../common/theme/styler';
-import { Wizard, DialogPage, Dialog, OptionsDialogButton } from './dialogTypes';
-import { Button } from 'vs/base/browser/ui/button/button';
+import { IThemable } from 'vs/platform/theme/common/styler';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { TabbedPanel, IPanelTab, IPanelView } from '../../base/browser/ui/panel/panel';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from '../../services/bootstrap/bootstrapService';
-import { NgModule, Inject, forwardRef, ComponentFactoryResolver, ApplicationRef, NgModuleRef, Component, AfterContentInit, ViewChild } from '@angular/core';
-import { APP_BASE_HREF, CommonModule } from '@angular/common';
-import { DashboardModelViewContainer } from '../../parts/dashboard/containers/dashboardModelViewContainer.component';
-import { FormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
-import { ModelViewContent } from '../../parts/modelComponents/modelViewContent.component';
-import { ModelComponentWrapper } from '../../parts/modelComponents/modelComponentWrapper.component';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { Router, RouterModule, Routes } from '@angular/router';
-import Event, { Emitter } from 'vs/base/common/event';
-import { ComponentHostDirective } from '../../parts/dashboard/common/componentHost.directive';
-import FlexContainer from '../../parts/modelComponents/flexContainer.component';
-import { Registry } from 'vs/platform/registry/common/platform';
-import { Extensions as ComponentExtensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
-
 
 export class DialogPane extends Disposable implements IThemable {
 	private _activeTabIndex: number;
@@ -114,83 +94,5 @@ export class DialogPane extends Disposable implements IThemable {
 	public style(styles: IModalDialogStyles): void {
 		this._body.style.backgroundColor = styles.dialogBodyBackground ? styles.dialogBodyBackground.toString() : undefined;
 		this._body.style.color = styles.dialogForeground ? styles.dialogForeground.toString() : undefined;
-	}
-}
-
-@Component({
-	selector: 'dialog-modelview-container',
-	providers: [],
-	template: `
-		<modelview-content [modelViewId]="id">
-		</modelview-content>
-		<router-outlet></router-outlet>
-	`
-})
-export class DialogModelViewContainer implements AfterContentInit {
-	private _onResize = new Emitter<void>();
-	public readonly onResize: Event<void> = this._onResize.event;
-
-	@ViewChild(ModelViewContent) private _modelViewContent: ModelViewContent;
-	constructor() {
-	}
-
-	ngAfterContentInit(): void {
-	}
-
-	public layout(): void {
-		this._modelViewContent.layout();
-	}
-
-	public get id(): string {
-		return 'sqlservices';
-	}
-
-	public get editable(): boolean {
-		return false;
-	}
-
-	public refresh(): void {
-		// no op
-	}
-}
-
-const appRoutes: Routes = [
-	{ path: '**', component: DialogModelViewContainer }
-];
-
-/* Model-backed components */
-let extensionComponents = Registry.as<IComponentRegistry>(ComponentExtensions.ComponentContribution).getAllCtors();
-
-// Backup wizard main angular module
-@NgModule({
-	declarations: [
-		DialogModelViewContainer,
-		ModelViewContent,
-		ModelComponentWrapper,
-		ComponentHostDirective,
-		...extensionComponents
-	],
-	entryComponents: [DialogModelViewContainer, ...extensionComponents],
-	imports: [
-		FormsModule,
-		CommonModule,
-		BrowserModule,
-		RouterModule.forRoot(appRoutes),
-	],
-	providers: [{ provide: APP_BASE_HREF, useValue: '/' }, DashboardServiceInterface]
-})
-export class DialogModule {
-
-	constructor(
-		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService
-	) {
-	}
-
-	ngDoBootstrap(appRef: ApplicationRef) {
-		const factory = this._resolver.resolveComponentFactory(DialogModelViewContainer);
-		const uniqueSelector: string = this._bootstrapService.getUniqueSelector('dialog-modelview-container');
-		(<any>factory).factory.selector = uniqueSelector;
-		appRef.bootstrap(factory);
 	}
 }

@@ -8,16 +8,12 @@
 	flex-direction: row;
 	height: 100%;
 	width: 100%;
-	min-width: 800px;
+	min-width: 500px;
 	min-height: 600px;
 }
 
 .dialogModal-width-wide {
 	min-width: 800px;
-}
-
-.dialogModal-width-normal {
-	min-width: 500px;
 }
 
 .dialogModal-pane {

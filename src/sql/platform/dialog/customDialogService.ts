@@ -5,15 +5,13 @@
 
 'use strict';
 
-import { Event } from 'vscode';
 import * as sqlops from 'sqlops';
 import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
+import { DialogModal } from 'sql/platform/dialog/dialogModal';
+import { WizardModal } from 'sql/platform/dialog/wizardModal';
+import { Dialog, Wizard } from 'sql/platform/dialog/dialogTypes';
+import { IModalOptions } from 'sql/base/browser/ui/modal/modal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Emitter } from 'vs/base/common/event';
-import { DialogModal } from './dialogModal';
-import { WizardModal } from './wizardModal';
-import { Dialog, Wizard, OptionsDialogButton } from './dialogTypes';
-import { IModalOptions } from '../../base/browser/ui/modal/modal';
 
 const defaultOptions: IModalOptions = { hasBackButton: true, isWide: true };
 

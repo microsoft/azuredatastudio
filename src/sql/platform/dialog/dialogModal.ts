@@ -7,6 +7,10 @@
 
 import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions } from 'sql/base/browser/ui/modal/modal';
+import { attachModalDialogStyler } from 'sql/common/theme/styler';
+import { Dialog } from 'sql/platform/dialog/dialogTypes';
+import { DialogPane } from 'sql/platform/dialog/dialogPane';
+import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { Builder } from 'vs/base/browser/builder';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -14,12 +18,8 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
-import { attachModalDialogStyler } from '../../common/theme/styler';
-import { Wizard, DialogPage, Dialog, OptionsDialogButton } from './dialogTypes';
 import { Button } from 'vs/base/browser/ui/button/button';
-import { DialogPane } from './dialogPane';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { IBootstrapService } from '../../services/bootstrap/bootstrapService';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -38,7 +38,6 @@ export class DialogModal extends Modal {
 		options: IModalOptions,
 		@IPartService partService: IPartService,
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
-		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IBootstrapService private _bootstrapService: IBootstrapService
@@ -75,8 +74,6 @@ export class DialogModal extends Modal {
 
 			if (this._isWide) {
 				bodyBuilder.addClass('dialogModal-width-wide');
-			} else {
-				bodyBuilder.addClass('dialogModal-width-normal');
 			}
 		});
 
@@ -100,12 +97,10 @@ export class DialogModal extends Modal {
 
 	protected hide(): void {
 		super.hide();
-		// this._dialogPane.hide();
 	}
 
 	protected show(): void {
 		super.show();
-		// this._dialogPane.show();
 	}
 
 	public dispose(): void {

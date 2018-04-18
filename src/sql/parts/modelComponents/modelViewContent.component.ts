@@ -65,6 +65,10 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 
 	@memoize
 	public get connection(): sqlops.connection.Connection {
+		if (!this._commonService.connectionManagementService) {
+			return undefined;
+		}
+
 		let currentConnection = this._commonService.connectionManagementService.connectionInfo.connectionProfile;
 		let connection: sqlops.connection.Connection = {
 			providerName: currentConnection.providerName,
@@ -76,6 +80,10 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 
 	@memoize
 	public get serverInfo(): sqlops.ServerInfo {
+		if (!this._commonService.connectionManagementService) {
+			return undefined;
+		}
+
 		return this._commonService.connectionManagementService.connectionInfo.serverInfo;
 	}
 }

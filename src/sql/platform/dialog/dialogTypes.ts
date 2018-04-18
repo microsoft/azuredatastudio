@@ -6,8 +6,7 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import { Event } from 'vscode';
-import { Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 
 export class OptionsDialogButton {
 	constructor(public label: string, public callback: () => void) { }
