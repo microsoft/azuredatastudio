@@ -106,7 +106,7 @@ export class RefreshTableAction extends EditDataAction {
 	private IsQueryStringValid(queryString: string, tableName: string): boolean {
 		if (queryString) {
 			let lowerCaseStr = queryString.toLocaleLowerCase();
-			let fromIndex = lowerCaseStr.indexOf('from'.toLocaleLowerCase());
+			let fromIndex = lowerCaseStr.indexOf('from '.toLocaleLowerCase());
 
 			if (fromIndex === -1) {
 				this._notificationService.notify({
@@ -117,7 +117,7 @@ export class RefreshTableAction extends EditDataAction {
 			}
 
 			let afterFromStr = lowerCaseStr.substring(fromIndex + 4);
-			if (afterFromStr.includes('group by'.toLocaleLowerCase()) || afterFromStr.includes('having'.toLocaleLowerCase())) {
+			if (afterFromStr.includes('group by '.toLocaleLowerCase()) || afterFromStr.includes('having '.toLocaleLowerCase())) {
 				this._notificationService.notify({
 					severity: Severity.Error,
 					message: nls.localize('aggregateNotSupportedFailure', 'EditData queries do not support aggregated results.')
@@ -125,10 +125,10 @@ export class RefreshTableAction extends EditDataAction {
 				return false;
 			}
 
-			let whereIndex = afterFromStr.indexOf('where'.toLocaleLowerCase());
-			let orderByIndex = afterFromStr.indexOf('order by'.toLocaleLowerCase());
-			let optionIndex = afterFromStr.indexOf('option'.toLocaleLowerCase());
-			let end = Math.min.apply([ whereIndex, orderByIndex, optionIndex ].filter(index => index > 0));
+			let whereIndex = afterFromStr.indexOf('where '.toLocaleLowerCase());
+			let orderByIndex = afterFromStr.indexOf('order by '.toLocaleLowerCase());
+			let optionIndex = afterFromStr.indexOf('option '.toLocaleLowerCase());
+			let end = Math.min.apply(null, [ whereIndex, orderByIndex, optionIndex ].filter(index => index > 0));
 			let queryTablesStr = afterFromStr.substring(0, end !== NaN ? end : undefined);
 
 			let errorMsg: string = undefined;
