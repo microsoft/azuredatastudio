@@ -238,7 +238,7 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 	}
 
 	public isEnabled(): boolean {
-		return true;
+		return !this.selectBox.disabled();
 	}
 
 	public enable(): void {
