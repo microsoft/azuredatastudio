@@ -26,6 +26,8 @@ import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsVie
 import { JobStepsViewRow } from './jobStepsViewTree';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { AgentJobUtilities } from '../common/agentJobUtilities';
+import { ITreeOptions } from 'vs/base/parts/tree/browser/tree';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -119,7 +121,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
-		});
+		}, {verticalScrollMode: ScrollbarVisibility.Visible});
 		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 		this._tree.layout(1024);
 	}

@@ -18,6 +18,7 @@ import { AgentJobHistoryInfo } from 'sqlops';
 import { JobStepsViewController, JobStepsViewDataSource, JobStepsViewFilter,
 	JobStepsViewRenderer, JobStepsViewRow, JobStepsViewModel} from 'sql/parts/jobManagement/views/jobStepsViewTree';
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
@@ -58,7 +59,7 @@ export class JobStepsViewComponent extends Disposable implements OnInit, AfterCo
 					dataSource: this._treeDataSource,
 					filter: this._treeFilter,
 					renderer: this._treeRenderer
-				});
+				}, {verticalScrollMode: ScrollbarVisibility.Visible});
 				this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 			}
 			this._tree.layout(JobStepsViewComponent._pageSize);
@@ -73,7 +74,7 @@ export class JobStepsViewComponent extends Disposable implements OnInit, AfterCo
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
-		});
+		}, {verticalScrollMode: ScrollbarVisibility.Visible});
 		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 	}
 }

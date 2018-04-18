@@ -126,7 +126,6 @@ export class JobsViewComponent implements AfterContentChecked {
 			enableColumnReorder: false,
 			rowHeight: 45,
 			enableCellNavigation: true,
-			autoHeight: false,
 			forceFitColumns: false
 		};
 
