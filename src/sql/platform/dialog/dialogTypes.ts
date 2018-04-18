@@ -8,29 +8,6 @@
 import * as sqlops from 'sqlops';
 import Event, { Emitter } from 'vs/base/common/event';
 
-export class OptionsDialogButton {
-	constructor(public label: string, public callback: () => void) { }
-}
-
-export class Wizard {
-	public pages: DialogTab[];
-	public nextButton: DialogButton;
-	public backButton: DialogButton;
-	public customButtons: DialogButton[];
-
-	public onCompleted: Event<{ [name: string]: string }[]>;
-	private _onCompleted: Emitter<{ [name: string]: string }[]>;
-
-	constructor(public title: string) {
-		this._onCompleted = new Emitter();
-		this.onCompleted = this._onCompleted.event;
-	}
-
-	public complete(values: { [name: string]: string }[]): void {
-		this._onCompleted.fire(values);
-	}
-}
-
 export class DialogTab implements sqlops.window.modelviewdialog.DialogTab {
 	public content: string;
 

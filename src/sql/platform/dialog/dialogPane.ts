@@ -42,7 +42,7 @@ export class DialogPane extends Disposable implements IThemable {
 			this._body = bodyBuilder.getHTMLElement();
 			if (typeof this._dialog.content === 'string' || this._dialog.content.length < 2) {
 				let modelViewId = typeof this._dialog.content === 'string' ? this._dialog.content : this._dialog.content[0].content;
-				this.bootstrapAngular(this._body, modelViewId);
+				this.initializeModelViewContainer(this._body, modelViewId);
 			} else {
 				this._tabbedPanel = new TabbedPanel(this._body);
 				this._dialog.content.forEach((tab, tabIndex) => {
@@ -51,7 +51,7 @@ export class DialogPane extends Disposable implements IThemable {
 						identifier: 'dialogPane.' + this._dialog.title + '.' + tabIndex,
 						view: {
 							render: (container) => {
-								this.bootstrapAngular(container, tab.content);
+								this.initializeModelViewContainer(container, tab.content);
 							},
 							layout: (dimension) => { }
 						} as IPanelView
@@ -65,9 +65,9 @@ export class DialogPane extends Disposable implements IThemable {
 	}
 
 	/**
-	 * Get the bootstrap params and perform the bootstrap
+	 * Bootstrap angular for the dialog's model view controller with the given model view ID
 	 */
-	private bootstrapAngular(bodyContainer: HTMLElement, modelViewId: string) {
+	private initializeModelViewContainer(bodyContainer: HTMLElement, modelViewId: string) {
 		this._bootstrapService.bootstrap(
 			DialogModule,
 			bodyContainer,

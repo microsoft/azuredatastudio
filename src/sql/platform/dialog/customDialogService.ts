@@ -8,7 +8,7 @@
 import * as sqlops from 'sqlops';
 import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
 import { DialogModal } from 'sql/platform/dialog/dialogModal';
-import { Dialog, Wizard } from 'sql/platform/dialog/dialogTypes';
+import { Dialog } from 'sql/platform/dialog/dialogTypes';
 import { IModalOptions } from 'sql/base/browser/ui/modal/modal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
