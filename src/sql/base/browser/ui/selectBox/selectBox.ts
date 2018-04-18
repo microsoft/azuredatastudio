@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles, defaultStyles } from 'vs/base/browser/ui/selectBox/selectBox';
+import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import * as dom from 'vs/base/browser/dom';
@@ -59,9 +59,6 @@ export class SelectBox extends vsSelectBox {
 			this._selectedOption = newInput.selected;
 		}));
 
-		this.selectBackground = defaultStyles.selectBackground;
-		this.selectForeground = defaultStyles.selectForeground;
-		this.selectBorder = defaultStyles.selectBorder;
 		this.enabledSelectBackground = this.selectBackground;
 		this.enabledSelectForeground = this.selectForeground;
 		this.enabledSelectBorder = this.selectBorder;
@@ -76,9 +73,6 @@ export class SelectBox extends vsSelectBox {
 
 	public style(styles: ISelectBoxStyles): void {
 		super.style(styles);
-		this.selectBackground = styles.selectBackground;
-		this.selectForeground = styles.selectForeground;
-		this.selectBorder = styles.selectBorder;
 		this.enabledSelectBackground = this.selectBackground;
 		this.enabledSelectForeground = this.selectForeground;
 		this.enabledSelectBorder = this.selectBorder;
@@ -90,19 +84,6 @@ export class SelectBox extends vsSelectBox {
 		this.inputValidationWarningBackground = styles.inputValidationWarningBackground;
 		this.inputValidationErrorBorder = styles.inputValidationErrorBorder;
 		this.inputValidationErrorBackground = styles.inputValidationErrorBackground;
-	}
-
-	public applyStyles(): void {
-		super.applyStyles();
-		if (this.selectElement) {
-			const background = this.selectBackground ? this.selectBackground.toString() : null;
-			const foreground = this.selectForeground ? this.selectForeground.toString() : null;
-			const border = this.selectBorder ? this.selectBorder.toString() : null;
-
-			this.selectElement.style.backgroundColor = background;
-			this.selectElement.style.color = foreground;
-			this.selectElement.style.borderColor = border;
-		}
 	}
 
 	public selectWithOptionName(optionName: string): void {
@@ -133,12 +114,9 @@ export class SelectBox extends vsSelectBox {
 		return this._selectedOption;
 	}
 
-	public disabled(): boolean {
-		return this.selectElement.disabled;
-	}
-
 	public enable(): void {
-		this.selectElement.disabled = false;
+		//@SQLTODO
+		//this.selectElement.disabled = false;
 		this.selectBackground = this.enabledSelectBackground;
 		this.selectForeground = this.enabledSelectForeground;
 		this.selectBorder = this.enabledSelectBorder;
@@ -146,7 +124,8 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public disable(): void {
-		this.selectElement.disabled = true;
+		//@SQLTODO
+		//this.selectElement.disabled = true;
 		this.selectBackground = this.disabledSelectBackground;
 		this.selectForeground = this.disabledSelectForeground;
 		this.selectBorder = this.disabledSelectBorder;
