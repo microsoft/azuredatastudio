@@ -204,6 +204,57 @@
 				],
 				"statistics": [],
 				"flags": "preview"
+			},
+			{
+				"extensionId": "14",
+				"extensionName": "sql-search",
+				"displayName": "Redgate SQL Search",
+				"shortDescription": "Search across multiple databases",
+				"publisher": {
+					"displayName": "Redgate",
+					"publisherId": "Redgate",
+					"publisherName": "Redgate"
+				},
+				"versions": [
+					{
+						"version": "0.1.0",
+						"lastUpdated": "4/18/2018",
+						"assetUri": "",
+						"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+							{
+								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+								"source": "https://foundrylabssqlsearch.blob.core.windows.net/sqlops-sql-search-insiders/sql-search-0.1.0.vsix"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Links.Source",
+								"source": "https://www.redgatefoundry.com/"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+								"source": "https://foundrylabssqlsearch.blob.core.windows.net/sqlops-sql-search-insiders/metadata/gatebase.png"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+								"source": "https://foundrylabssqlsearch.blob.core.windows.net/sqlops-sql-search-insiders/metadata/README.md"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Code.Manifest",
+								"source": "https://foundrylabssqlsearch.blob.core.windows.net/sqlops-sql-search-insiders/metadata/package.json"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Content.License",
+								"source": "https://www.red-gate.com/support/license/"
+							}
+						],
+						"properties": [
+							{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value": "" },
+							{ "key": "Microsoft.VisualStudio.Code.Engine", "value": "*" }
+						]
+					}
+				],
+				"statistics": [],
+				"flags": "preview"
 			}
 		],
 		"resultMetadata": [{
