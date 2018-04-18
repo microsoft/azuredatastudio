@@ -26,6 +26,8 @@ import { TabSettingConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
+import { SingleConnectionMetadataService, SingleConnectionManagementService, SingleAdminService, SingleQueryManagementService, CommonServiceInterface }
+from 'sql/services/common/commonServiceInterface.service';
 
 import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'sqlops';
 
@@ -50,68 +52,6 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 
 const DASHBOARD_SETTINGS = 'dashboard';
 
-/* Wrapper for a metadata service that contains the uri string to use on each request */
-export class SingleConnectionMetadataService {
-
-	constructor(
-		private _metadataService: IMetadataService,
-		private _uri: string
-	) { }
-
-	get metadata(): Observable<ProviderMetadata> {
-		return Observable.fromPromise(this._metadataService.getMetadata(this._uri));
-	}
-
-	get databaseNames(): Observable<string[]> {
-		return Observable.fromPromise(this._metadataService.getDatabaseNames(this._uri));
-	}
-}
-
-/* Wrapper for a connection service that contains the uri string to use on each request */
-export class SingleConnectionManagementService {
-
-	constructor(
-		private _connectionService: IConnectionManagementService,
-		private _uri: string,
-		private _contextKey: ConnectionContextkey
-	) { }
-
-	public changeDatabase(name: string): Thenable<boolean> {
-		return this._connectionService.changeDatabase(this._uri, name).then(e => {
-			// we need to update our context
-			this._contextKey.set(this.connectionInfo.connectionProfile);
-			return e;
-		});
-	}
-
-	public get connectionInfo(): ConnectionManagementInfo {
-		return this._connectionService.getConnectionInfo(this._uri);
-	}
-}
-
-export class SingleAdminService {
-
-	constructor(
-		private _adminService: IAdminService,
-		private _uri: string
-	) { }
-
-	public get databaseInfo(): Observable<DatabaseInfo> {
-		return Observable.fromPromise(this._adminService.getDatabaseInfo(this._uri));
-	}
-}
-
-export class SingleQueryManagementService {
-	constructor(
-		private _queryManagementService: IQueryManagementService,
-		private _uri: string
-	) { }
-
-	public runQueryAndReturn(queryString: string): Thenable<SimpleExecuteResult> {
-		return this._queryManagementService.runQueryAndReturn(this._uri, queryString);
-	}
-}
-
 /*
 	Providers a interface between a dashboard interface and the rest of carbon.
 	Stores the uri and unique selector of a dashboard instance and uses that
@@ -120,35 +60,12 @@ export class SingleQueryManagementService {
 	usage of a widget.
 */
 @Injectable()
-export class DashboardServiceInterface extends AngularDisposable {
-	private _uniqueSelector: string;
-	private _uri: string;
-	private _bootstrapParams: DashboardComponentParams;
+export class DashboardServiceInterface extends CommonServiceInterface {
 
 	/* Static Services */
-	private _themeService = this._bootstrapService.themeService;
-	private _contextMenuService = this._bootstrapService.contextMenuService;
-	private _instantiationService = this._bootstrapService.instantiationService;
-	private _configService = this._bootstrapService.configurationService;
-	private _insightsDialogService = this._bootstrapService.insightsDialogService;
-	private _contextViewService = this._bootstrapService.contextViewService;
-	private _notificationService = this._bootstrapService.notificationService;
-	private _workspaceContextService = this._bootstrapService.workspaceContextService;
-	private _storageService = this._bootstrapService.storageService;
-	private _capabilitiesService = this._bootstrapService.capabilitiesService;
-	private _configurationEditingService = this._bootstrapService.configurationEditorService;
-	private _commandService = this._bootstrapService.commandService;
-	private _dashboardViewService = this._bootstrapService.dashboardViewService;
-	private _partService = this._bootstrapService.partService;
-	private _angularEventingService = this._bootstrapService.angularEventingService;
-	private _environmentService = this._bootstrapService.environmentService;
 
-	/* Special Services */
-	private _metadataService: SingleConnectionMetadataService;
-	private _connectionManagementService: SingleConnectionManagementService;
-	private _adminService: SingleAdminService;
-	private _queryManagementService: SingleQueryManagementService;
-	private _contextKeyService: IContextKeyService;
+	private _dashboardViewService = this._bootstrapService.dashboardViewService;
+
 
 	private _updatePage = new Emitter<void>();
 	public readonly onUpdatePage: Event<void> = this._updatePage.event;
@@ -168,91 +85,17 @@ export class DashboardServiceInterface extends AngularDisposable {
 	private _dashboardContextKey = new RawContextKey<string>('dashboardContext', undefined);
 	public dashboardContextKey: IContextKey<string>;
 
-	private _connectionContextKey: ConnectionContextkey;
-
 	private _numberOfPageNavigations = 0;
 
 	constructor(
-		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
+		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => Router)) private _router: Router,
 	) {
-		super();
-	}
-
-	public get notificationService(): INotificationService {
-		return this._notificationService;
-	}
-
-	public get configurationEditingService(): ConfigurationEditingService {
-		return this._configurationEditingService;
-	}
-
-	public get metadataService(): SingleConnectionMetadataService {
-		return this._metadataService;
-	}
-
-	public get connectionManagementService(): SingleConnectionManagementService {
-		return this._connectionManagementService;
-	}
-
-	public get commandService(): ICommandService {
-		return this._commandService;
-	}
-
-	public get themeService(): IWorkbenchThemeService {
-		return this._themeService;
-	}
-
-	public get contextMenuService(): IContextMenuService {
-		return this._contextMenuService;
-	}
-
-	public get instantiationService(): IInstantiationService {
-		return this._instantiationService;
+		super(bootstrapService);
 	}
 
 	public get dashboardViewService(): IDashboardViewService {
 		return this._dashboardViewService;
-	}
-
-	public get partService(): IPartService {
-		return this._partService;
-	}
-
-	public get contextKeyService(): IContextKeyService {
-		return this._contextKeyService;
-	}
-
-	public get adminService(): SingleAdminService {
-		return this._adminService;
-	}
-
-	public get queryManagementService(): SingleQueryManagementService {
-		return this._queryManagementService;
-	}
-
-	public get environmentService(): IEnvironmentService {
-		return this._environmentService;
-	}
-
-	public get contextViewService(): IContextViewService {
-		return this._contextViewService;
-	}
-
-	public get workspaceContextService(): IWorkspaceContextService {
-		return this._workspaceContextService;
-	}
-
-	public get storageService(): IStorageService {
-		return this._storageService;
-	}
-
-	public get capabilitiesService(): ICapabilitiesService {
-		return this._capabilitiesService;
-	}
-
-	public get angularEventingService(): IAngularEventingService {
-		return this._angularEventingService;
 	}
 
 	/**
@@ -263,7 +106,7 @@ export class DashboardServiceInterface extends AngularDisposable {
 		this._getbootstrapParams();
 	}
 
-	private _getbootstrapParams(): void {
+	protected _getbootstrapParams(): void {
 		this._bootstrapParams = this._bootstrapService.getBootstrapParams<DashboardComponentParams>(this._uniqueSelector);
 		this._contextKeyService = this._bootstrapParams.scopedContextService;
 		this._connectionContextKey = this._bootstrapParams.connectionContextKey;
@@ -275,25 +118,9 @@ export class DashboardServiceInterface extends AngularDisposable {
 	 * Set the uri for this dashboard instance, should only be set once
 	 * Inits all the services that depend on knowing a uri
 	 */
-	private set uri(uri: string) {
-		this._uri = uri;
-		this._metadataService = new SingleConnectionMetadataService(this._bootstrapService.metadataService, this._uri);
-		this._connectionManagementService = new SingleConnectionManagementService(this._bootstrapService.connectionManagementService, this._uri, this._connectionContextKey);
-		this._adminService = new SingleAdminService(this._bootstrapService.adminService, this._uri);
-		this._queryManagementService = new SingleQueryManagementService(this._bootstrapService.queryManagementService, this._uri);
+	protected set uri(uri: string) {
+		super.setUri(uri);
 		this._register(toDisposableSubscription(this._bootstrapService.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
-	}
-
-	/**
-	 * Gets the underlying Uri for dashboard
-	 * In general don't use this, use specific services instances exposed publically
-	 */
-	public getUnderlyingUri(): string {
-		return this._uri;
-	}
-
-	public getOriginalConnectionProfile(): IConnectionProfile {
-		return this._bootstrapParams.connection;
 	}
 
 	/**

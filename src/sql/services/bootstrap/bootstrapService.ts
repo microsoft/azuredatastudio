@@ -43,6 +43,7 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
 
 export const BOOTSTRAP_SERVICE_ID = 'bootstrapService';
 export const IBootstrapService = createDecorator<IBootstrapService>(BOOTSTRAP_SERVICE_ID);
@@ -94,6 +95,7 @@ export interface IBootstrapService {
 	configurationEditorService: ConfigurationEditingService;
 	commandService: ICommandService;
 	dashboardViewService: IDashboardViewService;
+	modelViewService: IModelViewService;
 	jobManagementService: IJobManagementService;
 	environmentService: IEnvironmentService;
 

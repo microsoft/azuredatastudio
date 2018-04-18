@@ -7,6 +7,7 @@ import { Injectable, forwardRef, Inject, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
 import { DashboardServiceInterface } from './dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { MenuItem, IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 
@@ -23,9 +24,11 @@ export class BreadcrumbService implements IBreadcrumbService {
 	public breadcrumbItem: Subject<MenuItem[]>;
 	private itemBreadcrums: MenuItem[];
 	private _currentPage: BreadcrumbClass;
+	private _bootstrap: DashboardServiceInterface;
 
-	constructor( @Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrap: DashboardServiceInterface) {
-		_bootstrap.onUpdatePage(() => {
+	constructor( @Inject(forwardRef(() => CommonServiceInterface)) private commonService: CommonServiceInterface) {
+		this._bootstrap = commonService as DashboardServiceInterface;
+		this._bootstrap.onUpdatePage(() => {
 			this.setBreadcrumbs(this._currentPage);
 		});
 		this.breadcrumbItem = new Subject<MenuItem[]>();

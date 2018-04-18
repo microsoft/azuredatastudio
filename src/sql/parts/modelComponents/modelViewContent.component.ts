@@ -15,7 +15,7 @@ import nls = require('vs/nls');
 
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IModelView } from 'sql/services/model/modelViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 
@@ -42,14 +42,14 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 	private _onMessageDisposable: IDisposable;
 
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
 		super(changeRef);
 	}
 
 	ngOnInit() {
-		this._dashboardService.dashboardViewService.registerModelView(this);
+		this._commonService.modelViewService.registerModelView(this);
 		this._register(addDisposableListener(window, EventType.RESIZE, e => {
 			this.layout();
 		}));
@@ -64,7 +64,7 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 
 	@memoize
 	public get connection(): sqlops.connection.Connection {
-		let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
+		let currentConnection = this._commonService.connectionManagementService.connectionInfo.connectionProfile;
 		let connection: sqlops.connection.Connection = {
 			providerName: currentConnection.providerName,
 			connectionId: currentConnection.id,
@@ -75,6 +75,6 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 
 	@memoize
 	public get serverInfo(): sqlops.ServerInfo {
-		return this._dashboardService.connectionManagementService.connectionInfo.serverInfo;
+		return this._commonService.connectionManagementService.connectionInfo.serverInfo;
 	}
 }

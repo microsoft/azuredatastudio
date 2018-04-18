@@ -25,6 +25,7 @@ import { IFileBrowserService, IFileBrowserDialogController } from 'sql/parts/fil
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
+import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
 
 import { $ } from 'vs/base/browser/dom';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -103,6 +104,7 @@ export class BootstrapService implements IBootstrapService {
 		@ICapabilitiesService public capabilitiesService: ICapabilitiesService,
 		@ICommandService public commandService: ICommandService,
 		@IDashboardViewService public dashboardViewService: IDashboardViewService,
+		@IModelViewService public modelViewService: IModelViewService,
 		@IJobManagementService public jobManagementService: IJobManagementService,
 		@IEnvironmentService public environmentService: IEnvironmentService
 	) {

@@ -11,6 +11,7 @@ import { DashboardWidgetContainer } from 'sql/parts/dashboard/containers/dashboa
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularEventType } from '../../../services/angularEventing/angularEventingService';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
@@ -30,12 +31,15 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@Input() private properties: WidgetConfig;
 	@ViewChild('propertiesClass') private _propertiesClass: DashboardWidgetWrapper;
 
+	private dashboardService: DashboardServiceInterface;
+
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) protected commonService: CommonServiceInterface,
 
 	) {
 		super(_cd);
+		this.dashboardService = commonService as DashboardServiceInterface;
 	}
 
 	ngAfterContentInit() {

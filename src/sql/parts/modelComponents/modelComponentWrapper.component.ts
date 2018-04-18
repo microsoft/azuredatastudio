@@ -13,6 +13,7 @@ import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost
 import { error } from 'sql/base/common/log';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IComponent, IComponentConfig, IComponentDescriptor, IModelStore, COMPONENT_CONFIG } from './interfaces';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 
@@ -27,7 +28,7 @@ import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as nls from 'vs/nls';
 
-const componentRegistry = <IComponentRegistry> Registry.as(Extensions.ComponentContribution);
+const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
 
 @Component({
 	selector: 'model-component-wrapper',
@@ -52,7 +53,7 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
 		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrap: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(forwardRef(() => Injector)) private _injector: Injector
 	) {

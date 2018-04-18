@@ -155,7 +155,9 @@ import { IResourceProviderService, IAccountPickerService } from 'sql/parts/accou
 import { ResourceProviderService } from 'sql/parts/accountManagement/common/resourceProviderService';
 import { AccountPickerService } from 'sql/parts/accountManagement/accountPicker/accountPickerService';
 import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
+import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
 import { DashboardViewService } from 'sql/services/dashboard/common/dashboardViewServiceImpl';
+import { ModelViewService } from 'sql/services/modelComponents/modelViewServiceImpl';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { DashboardService } from 'sql/services/dashboard/common/dashboardServiceImpl';
 
@@ -678,6 +680,7 @@ export class Workbench implements IPartService {
 		// SQL Tools services
 		serviceCollection.set(IDashboardService, this.instantiationService.createInstance(DashboardService));
 		serviceCollection.set(IDashboardViewService, this.instantiationService.createInstance(DashboardViewService));
+		serviceCollection.set(IModelViewService, this.instantiationService.createInstance(ModelViewService));
 		serviceCollection.set(IAngularEventingService, this.instantiationService.createInstance(AngularEventingService));
 		serviceCollection.set(INewDashboardTabDialogService, this.instantiationService.createInstance(NewDashboardTabDialogService));
 		serviceCollection.set(ISqlOAuthService, this.instantiationService.createInstance(SqlOAuthService));
