@@ -216,7 +216,7 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 
 	constructor(
 		private _editor: EditDataEditor,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
+		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@IContextViewService contextViewService: IContextViewService) {
 		super();
 		this._options = ['200', '1000', '10000'];
@@ -226,6 +226,8 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 		this._registerListeners();
 		this._refreshOptions();
 		this.defaultRowCount = Number(this._options[this._currentOptionsIndex]);
+
+		this.toDispose.push(styler.attachSelectBoxStyler(this.selectBox, themeService));
 	}
 
 	public render(container: HTMLElement): void {
@@ -271,7 +273,6 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 	}
 
 	private _registerListeners(): void {
-		this.toDispose.push(styler.attachSelectBoxStyler(this.selectBox, this._themeService));
 		this.toDispose.push(this.selectBox.onDidSelect(selection => {
 			this._currentOptionsIndex = this._options.findIndex(x => x === selection.selected);
 			this._editor.editDataInput.onRowDropDownSet(Number(selection.selected));
