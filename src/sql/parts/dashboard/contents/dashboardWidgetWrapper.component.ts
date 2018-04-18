@@ -25,6 +25,7 @@ import { InsightsWidget } from 'sql/parts/dashboard/widgets/insights/insightsWid
 import { WebviewWidget } from 'sql/parts/dashboard/widgets/webview/webviewWidget.component';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -88,7 +89,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
 		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrap: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(forwardRef(() => Injector)) private _injector: Injector
 	) {

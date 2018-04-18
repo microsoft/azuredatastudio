@@ -10,6 +10,7 @@ import { Observable } from 'rxjs/Observable';
 
 import { DashboardWidget, IDashboardWidget, WIDGET_CONFIG, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { InsightAction, InsightActionContext } from 'sql/workbench/common/actions';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
@@ -57,7 +58,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
-		@Inject(forwardRef(() => DashboardServiceInterface)) private dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private dashboardService: CommonServiceInterface,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(forwardRef(() => ViewContainerRef)) private viewContainerRef: ViewContainerRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef
@@ -202,8 +203,6 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		if (componentInstance.setConfig) {
 			componentInstance.setConfig(this.insightConfig.type[this._typeKey]);
 		}
-		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => item.displayValue)) };
-
 		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => item.displayValue)) };
 
 		if (componentInstance.init) {

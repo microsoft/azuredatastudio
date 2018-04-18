@@ -21,6 +21,7 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import * as nls from 'vs/nls';
@@ -32,6 +33,7 @@ import { JobHistoryComponent } from './jobHistory.component';
 import { AgentViewComponent } from '../agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
+import { AgentJobUtilities } from '../common/agentJobUtilities';
 
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
@@ -49,16 +51,15 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: 'Name', field: 'name', formatter: this.renderName, width: 200, },
-		{ name: 'Last Run', field: 'lastRun' },
-		{ name: 'Next Run', field: 'nextRun' },
-		{ name: 'Enabled', field: 'enabled' },
-		{ name: 'Status', field: 'currentExecutionStatus' },
-		{ name: 'Category', field: 'category' },
-		{ name: 'Runnable', field: 'runnable' },
-		{ name: 'Schedule', field: 'hasSchedule' },
-		{ name: 'Category ID', field: 'categoryId' },
-		{ name: 'Last Run Outcome', field: 'lastRunOutcome' },
+		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200 },
+		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', minWidth: 150 },
+		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', minWidth: 150 },
+		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', minWidth: 70 },
+		{ name: nls.localize('jobColumns.status','Status'), field: 'currentExecutionStatus', minWidth: 60 },
+		{ name: nls.localize('jobColumns.category','Category'), field: 'category', minWidth: 150 },
+		{ name: nls.localize('jobColumns.runnable','Runnable'), field: 'runnable', minWidth: 50 },
+		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', minWidth: 50 },
+		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', minWidth: 150 },
 	];
 
 	private rowDetail: any;
@@ -74,7 +75,7 @@ export class JobsViewComponent implements AfterContentChecked {
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent
@@ -125,24 +126,14 @@ export class JobsViewComponent implements AfterContentChecked {
 			syncColumnCellResize: true,
 			enableColumnReorder: false,
 			rowHeight: 45,
-			enableCellNavigation: true
+			enableCellNavigation: true,
+			autoHeight: false,
+			forceFitColumns: false
 		};
 
 		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
-		let rowDetail = new RowDetailView({
-			cssClass: 'detailView-toggle',
-			preTemplate: this.loadingTemplate,
-			process: (job) => {
-				(<any>rowDetail).onAsyncResponse.notify({
-					'itemDetail': job,
-				}, undefined, null);
-			},
-			panelRows: 2,
-			postTemplate: () => ''
-		});
 
-		this.rowDetail = rowDetail;
-
+		this.rowDetail = new RowDetailView({});
 		columns.unshift(this.rowDetail.getColumnDefinition());
 		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
 		this._table.grid.setData(this.dataView, true);
@@ -174,25 +165,15 @@ export class JobsViewComponent implements AfterContentChecked {
 				id: job.jobId,
 				jobId: job.jobId,
 				name: job.name,
-				lastRun: job.lastRun,
-				nextRun: job.nextRun,
-				enabled: job.enabled,
-				currentExecutionStatus: job.currentExecutionStatus,
+				lastRun: AgentJobUtilities.convertToLastRun(job.lastRun),
+				nextRun: AgentJobUtilities.convertToNextRun(job.nextRun),
+				enabled: AgentJobUtilities.convertToResponse(job.enabled),
+				currentExecutionStatus: AgentJobUtilities.convertToExecutionStatusString(job.currentExecutionStatus),
 				category: job.category,
-				runnable: job.runnable,
-				hasSchedule: job.hasSchedule,
-				categoryId: job.categoryId,
-				lastRunOutcome: job.lastRunOutcome
+				runnable: AgentJobUtilities.convertToResponse(job.runnable),
+				hasSchedule: AgentJobUtilities.convertToResponse(job.hasSchedule),
+				lastRunOutcome: AgentJobUtilities.convertToStatusString(job.lastRunOutcome)
 			};
-		});
-
-		this._table.registerPlugin(<any>this.rowDetail);
-
-		this.rowDetail.onBeforeRowDetailToggle.subscribe(function(e, args) {
-		});
-		this.rowDetail.onAfterRowDetailToggle.subscribe(function(e, args) {
-		});
-		this.rowDetail.onAsyncEndUpdate.subscribe(function(e, args) {
 		});
 
 		this.dataView.beginUpdate();
@@ -209,8 +190,27 @@ export class JobsViewComponent implements AfterContentChecked {
 	}
 
 	renderName(row, cell, value, columnDef, dataContext) {
+		let resultIndicatorClass: string;
+		switch (dataContext.lastRunOutcome) {
+			case ('Succeeded'):
+				resultIndicatorClass = 'jobview-jobnameindicatorsuccess';
+				break;
+			case ('Failed'):
+				resultIndicatorClass = 'jobview-jobnameindicatorfailure';
+				break;
+			case ('Canceled'):
+				resultIndicatorClass = 'jobview-jobnameindicatorcancel';
+				break;
+			case ('Status Unknown'):
+				resultIndicatorClass = 'jobview-jobnameindicatorunknown';
+				break;
+			default:
+				resultIndicatorClass = 'jobview-jobnameindicatorunknown';
+				break;
+		}
+
 		return '<table class="jobview-jobnametable"><tr class="jobview-jobnamerow">' +
-			'<td nowrap class="jobview-jobnameindicatorsuccess"></td>' +
+			'<td nowrap class=' + resultIndicatorClass + '></td>' +
 			'<td nowrap class="jobview-jobnametext">' + dataContext.name + '</td>' +
 			'</tr></table>';
 	}

@@ -59,7 +59,7 @@
         "compile": "gulp compile",
         "watch": "gulp watch",
         "typings": "gulp copytypings",
-        "postinstall": "node ./node_modules/vscode/bin/install && node ./node_modules/sqlops/bin/install"
+        "postinstall": "node ./node_modules/vscode/bin/install && node ./node_modules/sqlops/bin/install && gulp copytypings"
     },
     "dependencies": {
         "vscode-nls": "^3.2.2"

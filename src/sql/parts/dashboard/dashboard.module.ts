@@ -26,6 +26,7 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 /* Services */
 import { BreadcrumbService } from 'sql/parts/dashboard/services/breadcrumb.service';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 /* Directives */
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
@@ -53,9 +54,9 @@ import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.comp
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
 
 let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
-					DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
-					ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
-					JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, DashboardModelViewContainer, ModelComponentWrapper];
+		DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
+		ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
+		JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, DashboardModelViewContainer, ModelComponentWrapper];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
@@ -128,18 +129,19 @@ const appRoutes: Routes = [
 	providers: [
 		{ provide: APP_BASE_HREF, useValue: '/' },
 		{ provide: IBreadcrumbService, useClass: BreadcrumbService },
-		DashboardServiceInterface,
+		{ provide: CommonServiceInterface, useClass: DashboardServiceInterface },
 		{ provide: UrlSerializer, useClass: CustomUrlSerializer }
 	]
 })
 export class DashboardModule {
-
+	private _bootstrap: DashboardServiceInterface;
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrap: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private _router: Router
 	) {
+		this._bootstrap = bootstrap as DashboardServiceInterface;
 	}
 
 	ngDoBootstrap(appRef: ApplicationRef) {

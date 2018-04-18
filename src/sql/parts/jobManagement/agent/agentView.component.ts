@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!../common/media/jobs';
+import 'sql/parts/dashboard/common/dashboardPanelStyles';
+
 import * as nls from 'vs/nls';
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable} from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';

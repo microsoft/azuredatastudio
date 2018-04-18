@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { MetadataType } from 'sql/parts/connection/common/connectionManagement';
-import { SingleConnectionManagementService } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
 import {
 	NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction, ScriptExecuteAction, ScriptAlterAction,
 	BackupAction, ManageActionContext, BaseActionContext, ManageAction, RestoreAction
@@ -164,7 +164,7 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 
 	private createStatusIcon(): HTMLElement {
 		let statusIcon: HTMLElement = DOM.$('div');
-		statusIcon.className += ' status-icon';
+		statusIcon.className += 'status-icon';
 		return statusIcon;
 	}
 }

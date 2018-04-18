@@ -7,13 +7,13 @@ import { clone } from 'sql/base/common/objects';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 
 import { registerInsight } from 'sql/platform/dashboard/common/insightRegistry';
-import { properties as BarChartSchema } from 'sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
+import { barChartSchema } from 'sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
 
 import ScatterChart from './scatterChart.component';
 
 const properties: IJSONSchema = {
 };
 
-const scatterSchema = mixin(clone(BarChartSchema), properties) as IJSONSchema;
+const scatterSchema = mixin(clone(barChartSchema), properties) as IJSONSchema;
 
 registerInsight('scatter', '', scatterSchema, ScatterChart);
