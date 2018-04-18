@@ -282,7 +282,8 @@ export function createApiFactory(
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
 				createDialog(title: string): sqlops.window.modelviewdialog.Dialog { return undefined; },
-				createTab(title: string): sqlops.window.modelviewdialog.DialogTab { return undefined; }
+				createTab(title: string): sqlops.window.modelviewdialog.DialogTab { return undefined; },
+				createButton(label: string): sqlops.window.modelviewdialog.Button { return undefined; }
 			};
 
 			const window: typeof sqlops.window = {

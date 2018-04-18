@@ -8,7 +8,6 @@
 import * as sqlops from 'sqlops';
 import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
 import { DialogModal } from 'sql/platform/dialog/dialogModal';
-import { WizardModal } from 'sql/platform/dialog/wizardModal';
 import { Dialog, Wizard } from 'sql/platform/dialog/dialogTypes';
 import { IModalOptions } from 'sql/base/browser/ui/modal/modal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -22,11 +21,5 @@ export class CustomDialogService {
 		let optionsDialog = this._instantiationService.createInstance(DialogModal, dialog, 'CustomDialog', options || defaultOptions);
 		optionsDialog.render();
 		optionsDialog.open();
-	}
-
-	public showWizard(wizard: Wizard, options?: IModalOptions): void {
-		let wizardModal = this._instantiationService.createInstance(WizardModal, wizard, 'WizardPage', options || defaultOptions);
-		wizardModal.render();
-		wizardModal.open();
 	}
 }
