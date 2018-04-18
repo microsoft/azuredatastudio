@@ -20,8 +20,13 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { localize } from 'vs/nls';
 
 export class WizardModal extends Modal {
+	private static readonly NEXT_BUTTON_LABEL = localize('wizardModalNextButtonLabel', 'Next');
+	private static readonly DONE_BUTTON_LABEL = localize('wizardModalDoneButtonLabel', 'Done');
+	private static readonly BACK_BUTTON_LABEL = localize('wizardModalBackButtonLabel', 'Last');
+
 	private _currentPage: number;
 	private _pages: DialogPane[];
 
@@ -62,8 +67,8 @@ export class WizardModal extends Modal {
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 
-		this._previousButton = this.addFooterButton('Last', () => this.showPage(this._currentPage - 1));
-		this._nextButton = this.addFooterButton('Next', () => this.showPage(this._currentPage + 1));
+		this._previousButton = this.addFooterButton(WizardModal.BACK_BUTTON_LABEL, () => this.showPage(this._currentPage - 1));
+		this._nextButton = this.addFooterButton(WizardModal.NEXT_BUTTON_LABEL, () => this.showPage(this._currentPage + 1));
 		attachButtonStyler(this._previousButton, this._themeService);
 		attachButtonStyler(this._nextButton, this._themeService);
 	}
@@ -103,9 +108,9 @@ export class WizardModal extends Modal {
 		}
 
 		if (this._pages[index + 1]) {
-			this._nextButton.label = 'Next';
+			this._nextButton.label = WizardModal.NEXT_BUTTON_LABEL;
 		} else {
-			this._nextButton.label = 'Done';
+			this._nextButton.label = WizardModal.DONE_BUTTON_LABEL;
 		}
 	}
 

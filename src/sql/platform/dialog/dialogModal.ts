@@ -20,8 +20,12 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { localize } from 'vs/nls';
 
 export class DialogModal extends Modal {
+	private static readonly DONE_BUTTON_LABEL = localize('dialogModalDoneButtonLabel', 'Done');
+	private static readonly CANCEL_BUTTON_LABEL = localize('dialogModalCancelButtonLabel', 'Cancel');
+
 	private _dialogPane: DialogPane;
 	private _isWide: boolean;
 
@@ -62,8 +66,8 @@ export class DialogModal extends Modal {
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 
-		this._cancelButton = this.addFooterButton('Cancel', () => this.cancel());
-		this._doneButton = this.addFooterButton('Done', () => this.done());
+		this._cancelButton = this.addFooterButton(DialogModal.CANCEL_BUTTON_LABEL, () => this.cancel());
+		this._doneButton = this.addFooterButton(DialogModal.DONE_BUTTON_LABEL, () => this.done());
 		attachButtonStyler(this._cancelButton, this._themeService);
 		attachButtonStyler(this._doneButton, this._themeService);
 	}

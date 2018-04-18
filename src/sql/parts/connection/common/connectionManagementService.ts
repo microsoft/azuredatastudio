@@ -60,7 +60,7 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { CustomDialogService } from 'sql/platform/dialog/customDialogService';
-import { DialogPage, Wizard, DialogButton, Dialog } from 'sql/platform/dialog/dialogTypes';
+import { DialogTab, Wizard, DialogButton, Dialog } from 'sql/platform/dialog/dialogTypes';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -555,86 +555,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 
 		let dialogService = this._instantiationService.createInstance(CustomDialogService);
-		let serviceOptions: sqlops.ServiceOption[] = [
-			{
-				name: 'option1',
-				displayName: 'option1',
-				description: 'the first option',
-				groupName: 'group1',
-				valueType: <any>'string',
-				categoryValues: null,
-				defaultValue: null,
-				isRequired: false,
-				objectType: undefined,
-				isArray: undefined
-			},
-			{
-				name: 'option2',
-				displayName: 'option2',
-				description: 'the second option',
-				groupName: 'group1',
-				valueType: <any>'string',
-				categoryValues: null,
-				defaultValue: null,
-				isRequired: false,
-				objectType: undefined,
-				isArray: undefined
-			},
-			{
-				name: 'option3',
-				displayName: 'option3',
-				description: 'the third option',
-				groupName: 'group2',
-				valueType: <any>'string',
-				categoryValues: null,
-				defaultValue: null,
-				isRequired: false,
-				objectType: undefined,
-				isArray: undefined
-			},
-			{
-				name: 'option4',
-				displayName: 'option4',
-				description: 'the fourth option',
-				groupName: 'group4',
-				valueType: <any>'string',
-				categoryValues: null,
-				defaultValue: null,
-				isRequired: false,
-				objectType: undefined,
-				isArray: undefined
-			}
-		];
-		let dialog = new DialogPage('Test dialog 1');
-		dialog.content = serviceOptions;
-		let serviceOptions2: sqlops.ServiceOption[] = [
-			{
-				name: 'option1p2',
-				displayName: 'option1p2',
-				description: 'the first option',
-				groupName: 'group1',
-				valueType: <any>'string',
-				categoryValues: null,
-				defaultValue: null,
-				isRequired: false,
-				objectType: undefined,
-				isArray: undefined
-			},
-			{
-				name: 'option2p2',
-				displayName: 'option2p2',
-				description: 'the second option',
-				groupName: 'group1',
-				valueType: <any>'string',
-				categoryValues: null,
-				defaultValue: null,
-				isRequired: false,
-				objectType: undefined,
-				isArray: undefined
-			}
-		];
-		let dialog2 = new DialogPage('Test dialog 2');
-		dialog2.content = serviceOptions2;
+		let dialog = new DialogTab('Test dialog 1');
+		dialog.content = 'sqlservices';
+		let dialog2 = new DialogTab('Test dialog 2');
+		dialog2.content = 'sqlservices';
 		let dialogModal = new Dialog('Test Dialog', [dialog, dialog2]);
 
 		try {
