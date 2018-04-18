@@ -9,7 +9,6 @@ import 'vs/css!sql/parts/grid/media/styles';
 import 'vs/css!sql/parts/grid/media/slick.grid';
 import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!../common/media/jobs';
-import 'vs/css!../common/media/detailview';
 
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
@@ -157,7 +156,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		}
 	}
 
-	onJobsAvailable(jobs: sqlops.AgentJobInfo[]) {
+	private onJobsAvailable(jobs: sqlops.AgentJobInfo[]) {
 		let jobViews = jobs.map((job) => {
 			return {
 				id: job.jobId,
@@ -180,14 +179,18 @@ export class JobsViewComponent implements AfterContentChecked {
 
 		this._table.resizeCanvas();
 		this._table.autosizeColumns();
+		$('.jobview-jobnamerow').hover(e => {
+			let currentTarget = e.currentTarget;
+			currentTarget.title = currentTarget.innerText;
+		})
 		this.loadJobHistories();
 	}
 
-	loadingTemplate() {
+	private loadingTemplate() {
 		return '<div class="preload">Loading...</div>';
 	}
 
-	renderName(row, cell, value, columnDef, dataContext) {
+	private renderName(row, cell, value, columnDef, dataContext) {
 		let resultIndicatorClass: string;
 		switch (dataContext.lastRunOutcome) {
 			case ('Succeeded'):
@@ -213,7 +216,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			'</tr></table>';
 	}
 
-	loadJobHistories() {
+	private loadJobHistories() {
 		if (this.jobs) {
 			this.jobs.forEach((job) => {
 				let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
@@ -233,4 +236,6 @@ export class JobsViewComponent implements AfterContentChecked {
 		let job = this.jobs.filter(job => job.name === jobName)[0];
 		return job;
 	}
+
+
 }
