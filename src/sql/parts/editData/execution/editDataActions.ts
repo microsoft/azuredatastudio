@@ -288,7 +288,7 @@ export class ShowQueryPaneAction extends EditDataAction {
 
 	private static EnabledClass = 'filterLabel';
 	public static ID = 'showQueryPaneAction';
-	private readonly showSqlLabel = nls.localize('editData.editSql', 'Show SQL Pane');
+	private readonly showSqlLabel = nls.localize('editData.showSql', 'Show SQL Pane');
 	private readonly closeSqlLabel = nls.localize('editData.closeSql', 'Close SQL Pane');
 
 	constructor(editor: EditDataEditor,
@@ -299,14 +299,21 @@ export class ShowQueryPaneAction extends EditDataAction {
 		this.label = this.showSqlLabel;
 	}
 
-	public run(): TPromise<void> {
-		this.editor.toggleQueryPane();
-		if (this.editor.queryPaneEnabled()) {
+	public set queryPaneEnabled(value: boolean) {
+		this.updateLabel(value);
+	}
+
+	private updateLabel(queryPaneEnabled: boolean): void {
+		if (queryPaneEnabled) {
 			this.label = this.closeSqlLabel;
 		} else {
 			this.label = this.showSqlLabel;
 		}
+	}
 
+	public run(): TPromise<void> {
+		this.editor.toggleQueryPane();
+		this.updateLabel(this.editor.queryPaneEnabled());
 		return TPromise.as(null);
 	}
 }
