@@ -72,7 +72,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
 	public loadDataFunction: (offset: number, count: number) => Promise<IGridDataRow[]>;
 
-	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
 	// tslint:disable-next-line:no-unused-variable
 	@ViewChild('resultsPane', { read: ElementRef }) private _resultsPane: ElementRef;
 
