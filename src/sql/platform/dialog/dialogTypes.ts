@@ -11,7 +11,11 @@ import Event, { Emitter } from 'vs/base/common/event';
 export class DialogTab implements sqlops.window.modelviewdialog.DialogTab {
 	public content: string;
 
-	constructor(public title: string) { }
+	constructor(public title: string, content?: string) {
+		if (content) {
+			this.content = content;
+		}
+	}
 
 	public updateContent(): void { }
 }
