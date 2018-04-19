@@ -13,6 +13,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 import * as sqlops from 'sqlops';
 import { memoize } from 'vs/base/common/decorators';
@@ -37,7 +38,7 @@ export class ControlHostContent {
 	@ViewChild('agent') private _agentViewComponent: AgentViewComponent;
 
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
 	) {

@@ -19,11 +19,14 @@ export interface EditDataComponentParams extends BootstrapParams {
 	dataService: DataService;
 }
 
-export interface DashboardComponentParams extends BootstrapParams {
+export interface DefaultComponentParams extends BootstrapParams {
 	connection: IConnectionProfile;
 	ownerUri: string;
 	scopedContextService: IContextKeyService;
 	connectionContextKey: ConnectionContextkey;
+}
+
+export interface DashboardComponentParams extends DefaultComponentParams {
 }
 
 export interface TaskDialogComponentParams extends BootstrapParams {

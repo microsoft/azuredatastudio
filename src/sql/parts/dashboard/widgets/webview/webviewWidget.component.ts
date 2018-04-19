@@ -13,6 +13,7 @@ import { memoize } from 'vs/base/common/decorators';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IDashboardWebview } from 'sql/services/dashboard/common/dashboardViewService';
 
 import * as sqlops from 'sqlops';
@@ -35,15 +36,17 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	private _onMessage = new Emitter<string>();
 	public readonly onMessage: Event<string> = this._onMessage.event;
 	private _onMessageDisposable: IDisposable;
+	private _dashboardService: DashboardServiceInterface;
 
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
 	) {
 		super();
 		this._id = (_config.widget[selector] as IWebviewWidgetConfig).id;
+		this._dashboardService = commonService as DashboardServiceInterface;
 	}
 
 	ngOnInit() {

@@ -9,6 +9,7 @@ import { Component, Inject, Input, forwardRef, ViewChild, ViewChildren, QueryLis
 import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { subscriptionToDisposable, AngularDisposable } from 'sql/base/common/lifecycle';
@@ -111,11 +112,14 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 	@ViewChildren(NgGridItem) private _items: QueryList<NgGridItem>;
 	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
 	@ViewChild('scrollContainer', { read: ElementRef }) private _scrollContainer: ElementRef;
+
+	protected dashboardService: DashboardServiceInterface;
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) protected commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {
 		super();
+		this.dashboardService = commonService as DashboardServiceInterface;
 	}
 
 	ngAfterViewInit() {

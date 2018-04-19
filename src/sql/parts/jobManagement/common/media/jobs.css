@@ -21,10 +21,16 @@ jobhistory-component {
 	display: block;
 }
 
+.vs-dark .job-heading-container {
+    height: 32px;
+    border-bottom: 3px solid #444444;
+}
+
 #jobsDiv .jobview-grid {
+    padding-top: 15px;
     height: 100%;
 	width : 100%;
-	display: block;
+    display: block;
 }
 
 .vs-dark #jobsDiv .slick-header-column {
@@ -65,6 +71,21 @@ jobhistory-component {
 #jobsDiv .jobview-jobnameindicatorsuccess {
     width: 5px;
     background: green;
+}
+
+#jobsDiv .jobview-jobnameindicatorfailure {
+    width: 5px;
+    background: red;
+}
+
+#jobsDiv .jobview-jobnameindicatorcancel {
+    width: 5px;
+    background: orange;
+}
+
+#jobsDiv .jobview-jobnameindicatorunknown {
+    width: 5px;
+    background: yellow;
 }
 
 #jobsDiv .jobview-jobnametext {
@@ -123,16 +144,15 @@ jobhistory-component {
     background: #faf5f8 !important;
 }
 
-
 .jobsview-icon {
-    content: url('./job.svg');
-    width: 25px;
+    background-image: url('./job.svg');
 }
 
 .vs-dark .jobsview-icon {
-	content: url('./job_inverse.svg');
+	background-image: url('./job_inverse.svg');
 }
 
-agentview-component .tabbedPanel .tabList .tab .tabLabel.icon {
-    padding: 20px 15px !important;
+agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.even > .slick-cell,
+agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.odd > .slick-cell {
+    cursor: pointer;
 }
