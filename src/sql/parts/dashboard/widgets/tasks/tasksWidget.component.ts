@@ -12,6 +12,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 /* SQL imports */
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { BaseActionContext } from 'sql/workbench/common/actions';
@@ -51,13 +52,14 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	private _profile: IConnectionProfile;
 	private _scrollableElement: ScrollableElement;
 	private $container: Builder;
+	static readonly ICON_PATH_TO_CSS_RULES: Map<string /* path*/, string /* CSS rule */> = new Map<string, string>();
 
 	private _inited = false;
 
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrap: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => DomSanitizer)) private _sanitizer: DomSanitizer,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig
@@ -130,9 +132,9 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		let tile = $('div.task-tile').style('height', this._size + 'px').style('width', this._size + 'px');
 		let innerTile = $('div');
 
-		// @SQLTODO - iconPath shouldn't be used as a CSS class
-		if (action.iconPath && action.iconPath.dark) {
-			let icon = $('span.icon').addClass(action.iconPath.dark);
+		let iconClassName = TaskRegistry.getOrCreateTaskIconClassName(action);
+		if (iconClassName) {
+			let icon = $('span.icon').addClass(iconClassName);
 			innerTile.append(icon);
 		}
 		innerTile.append(label);

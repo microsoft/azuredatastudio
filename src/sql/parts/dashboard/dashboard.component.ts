@@ -9,6 +9,7 @@ import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, O
 import { Router } from '@angular/router';
 
 import { DashboardServiceInterface } from './services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { RefreshWidgetAction, EditDashboardAction } from 'sql/parts/dashboard/common/actions';
@@ -36,7 +37,7 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 	private editDisposable: IDisposable;
 
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrapService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private _router: Router,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
 	) {

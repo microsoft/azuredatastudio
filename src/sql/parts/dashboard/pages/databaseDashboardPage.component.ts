@@ -14,6 +14,7 @@ import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as nls from 'vs/nls';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -35,7 +36,7 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 
 	constructor(
 		@Inject(forwardRef(() => IBreadcrumbService)) private _breadcrumbService: IBreadcrumbService,
-		@Inject(forwardRef(() => DashboardServiceInterface)) dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {

@@ -42,6 +42,20 @@ import * as pfs from 'vs/base/node/pfs';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
+const LocalizedStrings = {
+	CHART_TYPE: nls.localize('chartTypeLabel', 'Chart Type'),
+	DATA_DIRECTION: nls.localize('dataDirectionLabel', 'Data Direction'),
+	VERTICAL: nls.localize('verticalLabel', 'Vertical'),
+	HORIZONTAL: nls.localize('horizontalLabel', 'Horizontal'),
+	DATA_TYPE: nls.localize('dataTypeLabel', 'Data Type'),
+	NUMBER: nls.localize('numberLabel', 'Number'),
+	POINT: nls.localize('pointLabel', 'Point'),
+	LABEL_FIRST_COLUMN: nls.localize('labelFirstColumnLabel', 'Use First Column as row label?'),
+	COLUMNS_AS_LABELS: nls.localize('columnsAsLabelsLabel', 'Use Column names as labels?'),
+	LEGEND: nls.localize('legendLabel', 'Legend Position'),
+	CHART_NOT_FOUND: nls.localize('chartNotFound', 'Could not find chart to save')
+};
+
 @Component({
 	selector: 'chart-viewer',
 	templateUrl: decodeURI(require.toUrl('sql/parts/grid/views/query/chartViewer.component.html'))
@@ -54,19 +68,6 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	private columnsAsLabelsCheckBox: Checkbox;
 
 	/* UI */
-	/* tslint:disable:no-unused-variable */
-	private chartTypeLabel: string = nls.localize('chartTypeLabel', 'Chart Type');
-	private dataDirectionLabel: string = nls.localize('dataDirectionLabel', 'Data Direction');
-	private verticalLabel: string = nls.localize('verticalLabel', 'Vertical');
-	private horizontalLabel: string = nls.localize('horizontalLabel', 'Horizontal');
-	private dataTypeLabel: string = nls.localize('dataTypeLabel', 'Data Type');
-	private numberLabel: string = nls.localize('numberLabel', 'Number');
-	private pointLabel: string = nls.localize('pointLabel', 'Point');
-	private labelFirstColumnLabel: string = nls.localize('labelFirstColumnLabel', 'Use First Column as row label?');
-	private columnsAsLabelsLabel: string = nls.localize('columnsAsLabelsLabel', 'Use Column names as labels?');
-	private legendLabel: string = nls.localize('legendLabel', 'Legend Position');
-	private chartNotFoundError: string = nls.localize('chartNotFound', 'Could not find chart to save');
-	/* tslint:enable:no-unused-variable */
 
 	private _actionBar: Taskbar;
 	private _createInsightAction: CreateInsightAction;
@@ -77,6 +78,8 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	private _dataSet: IGridDataSet;
 	private _executeResult: IInsightData;
 	private _chartComponent: ChartInsight;
+
+	private localizedStrings = LocalizedStrings;
 
 	@ViewChild(ComponentHostDirective) private componentHost: ComponentHostDirective;
 	@ViewChild('taskbarContainer', { read: ElementRef }) private taskbarContainer;
@@ -117,17 +120,17 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		// Init label first column checkbox
 		// Note: must use 'self' for callback
 		this.labelFirstColumnCheckBox = new Checkbox(this.labelFirstColumnElement.nativeElement, {
-			label: this.labelFirstColumnLabel,
+			label: LocalizedStrings.LABEL_FIRST_COLUMN,
 			onChange: () => this.onLabelFirstColumnChanged(),
-			ariaLabel: this.labelFirstColumnLabel
+			ariaLabel: LocalizedStrings.LABEL_FIRST_COLUMN
 		});
 
 		// Init label first column checkbox
 		// Note: must use 'self' for callback
 		this.columnsAsLabelsCheckBox = new Checkbox(this.columnsAsLabelsElement.nativeElement, {
-			label: this.columnsAsLabelsLabel,
+			label: LocalizedStrings.COLUMNS_AS_LABELS,
 			onChange: () => this.columnsAsLabelsChanged(),
-			ariaLabel: this.columnsAsLabelsLabel
+			ariaLabel: LocalizedStrings.COLUMNS_AS_LABELS
 		});
 
 		// Init legend dropdown
@@ -203,7 +206,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	public copyChart(): void {
 		let data = this._chartComponent.getCanvasData();
 		if (!data) {
-			this.showError(this.chartNotFoundError);
+			this.showError(LocalizedStrings.CHART_NOT_FOUND);
 			return;
 		}
 
@@ -214,7 +217,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		this.promptForFilepath().then(filePath => {
 			let data = this._chartComponent.getCanvasData();
 			if (!data) {
-				this.showError(this.chartNotFoundError);
+				this.showError(LocalizedStrings.CHART_NOT_FOUND);
 				return;
 			}
 			if (filePath) {

@@ -8,6 +8,7 @@ import 'vs/css!./dashboardNavSection';
 import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter, OnChanges, AfterContentInit } from '@angular/core';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, NavSectionConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
@@ -53,7 +54,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	@ViewChildren(DashboardTab) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {
 		super();

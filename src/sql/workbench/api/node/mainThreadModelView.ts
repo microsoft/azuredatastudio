@@ -10,7 +10,7 @@ import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 
 import * as sqlops from 'sqlops';
 
-import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
+import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IModelView } from 'sql/services/model/modelViewService';
 
@@ -26,7 +26,7 @@ export class MainThreadModelView implements MainThreadModelViewShape {
 
 	constructor(
 		context: IExtHostContext,
-		@IDashboardViewService viewService: IDashboardViewService
+		@IModelViewService viewService: IModelViewService
 	) {
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModelView);
 		viewService.onRegisteredModelView(view => {

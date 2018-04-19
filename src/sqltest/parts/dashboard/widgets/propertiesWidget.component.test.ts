@@ -8,7 +8,8 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { DashboardServiceInterface, SingleAdminService, SingleConnectionManagementService } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { SingleAdminService, SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
 import { PropertiesWidgetComponent } from 'sql/parts/dashboard/widgets/properties/propertiesWidget.component';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 
