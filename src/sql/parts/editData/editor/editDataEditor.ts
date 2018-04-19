@@ -692,6 +692,7 @@ export class EditDataEditor extends BaseEditor {
 			this._refreshTableAction.enabled = owner.refreshButtonEnabled;
 			this._stopRefreshTableAction.enabled = owner.stopButtonEnabled;
 			this._changeMaxRowsActionItem.setCurrentOptionIndex = owner.rowLimit;
+			this._showQueryPaneAction.queryPaneEnabled = owner.queryPaneEnabled;
 		}
 	}
 
