@@ -12,7 +12,7 @@
 	min-height: 600px;
 }
 
-.dialogModal-width-wide {
+.modal.wide .dialogModal-body {
 	min-width: 800px;
 }
 
