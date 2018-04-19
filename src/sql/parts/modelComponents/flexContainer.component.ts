@@ -78,7 +78,7 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	}
 
 	private getItemFlex(item: FlexItem): string {
-		return item.config ? item.config.flex : '';
+		return item.config ? item.config.flex : '1 1 auto';
 	}
 	private getItemOrder(item: FlexItem): number {
 		return item.config ? item.config.order : 0;

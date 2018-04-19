@@ -116,7 +116,7 @@ declare module 'sqlops' {
 		order?: number;
 		/**
 		 * Matches the flex CSS property and its available values.
-		 * Default is "0 1 auto".
+		 * Default is "1 1 auto".
 		 */
 		flex?: string;
 	}
