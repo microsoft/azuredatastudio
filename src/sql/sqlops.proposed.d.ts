@@ -309,7 +309,7 @@ declare module 'sqlops' {
 				enabled: boolean,
 
 				/**
-				 * A function that will be called when the button is clicked
+				 * Raised when the button is clicked
 				 */
 				readonly onClick: vscode.Event<void>;
 			}
