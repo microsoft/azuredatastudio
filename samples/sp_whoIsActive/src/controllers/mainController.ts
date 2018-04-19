@@ -47,7 +47,7 @@ export default class MainController extends ControllerBase {
     }
 
     private openSQLFileWithContent(content: string): void {
-        vscode.workspace.openTextDocument({language: 'sql', content: content}).then(doc => {
+        vscode.workspace.openTextDocument({ language: 'sql', content: content }).then(doc => {
             vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, false);
         });
     }
