@@ -7,6 +7,10 @@
 
 import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions } from 'sql/base/browser/ui/modal/modal';
+import { attachModalDialogStyler } from 'sql/common/theme/styler';
+import { Dialog } from 'sql/platform/dialog/dialogTypes';
+import { DialogPane } from 'sql/platform/dialog/dialogPane';
+import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { Builder } from 'vs/base/browser/builder';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -14,15 +18,15 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
-import { attachModalDialogStyler } from '../../common/theme/styler';
-import { Wizard, DialogPage, Dialog, OptionsDialogButton } from './dialogTypes';
 import { Button } from 'vs/base/browser/ui/button/button';
-import { DialogPane } from './dialogPane';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { localize } from 'vs/nls';
 
 export class DialogModal extends Modal {
+	private static readonly DONE_BUTTON_LABEL = localize('dialogModalDoneButtonLabel', 'Done');
+	private static readonly CANCEL_BUTTON_LABEL = localize('dialogModalCancelButtonLabel', 'Cancel');
+
 	private _dialogPane: DialogPane;
-	private _isWide: boolean;
 
 	// Wizard HTML elements
 	private _body: HTMLElement;
@@ -37,15 +41,11 @@ export class DialogModal extends Modal {
 		options: IModalOptions,
 		@IPartService partService: IPartService,
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
-		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IBootstrapService private _bootstrapService: IBootstrapService
 	) {
 		super(_dialog.title, name, partService, telemetryService, contextKeyService, options);
-
-		if (options && options.isWide) {
-			this._isWide = true;
-		}
 	}
 
 	public layout(): void {
@@ -61,8 +61,8 @@ export class DialogModal extends Modal {
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 
-		this._cancelButton = this.addFooterButton('Cancel', () => this.cancel());
-		this._doneButton = this.addFooterButton('Done', () => this.done());
+		this._cancelButton = this.addFooterButton(DialogModal.CANCEL_BUTTON_LABEL, () => this.cancel());
+		this._doneButton = this.addFooterButton(DialogModal.DONE_BUTTON_LABEL, () => this.done());
 		attachButtonStyler(this._cancelButton, this._themeService);
 		attachButtonStyler(this._doneButton, this._themeService);
 	}
@@ -70,15 +70,9 @@ export class DialogModal extends Modal {
 	protected renderBody(container: HTMLElement): void {
 		new Builder(container).div({ class: 'dialogModal-body' }, (bodyBuilder) => {
 			this._body = bodyBuilder.getHTMLElement();
-
-			if (this._isWide) {
-				bodyBuilder.addClass('dialogModal-width-wide');
-			} else {
-				bodyBuilder.addClass('dialogModal-width-normal');
-			}
 		});
 
-		this._dialogPane = new DialogPane(this._dialog);
+		this._dialogPane = new DialogPane(this._dialog, this._bootstrapService);
 		this._dialogPane.createBody(this._body);
 	}
 
@@ -98,12 +92,10 @@ export class DialogModal extends Modal {
 
 	protected hide(): void {
 		super.hide();
-		// this._dialogPane.hide();
 	}
 
 	protected show(): void {
 		super.show();
-		// this._dialogPane.show();
 	}
 
 	public dispose(): void {

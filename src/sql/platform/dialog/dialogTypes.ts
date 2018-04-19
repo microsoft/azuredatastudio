@@ -6,54 +6,50 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import { Event } from 'vscode';
-import { Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 
-export class OptionsDialogButton {
-	constructor(public label: string, public callback: () => void) { }
+export class DialogTab implements sqlops.window.modelviewdialog.DialogTab {
+	public content: string;
+
+	constructor(public title: string, content?: string) {
+		if (content) {
+			this.content = content;
+		}
+	}
+
+	public updateContent(): void { }
 }
 
-export class Wizard {
-	public pages: DialogPage[];
-	public nextButton: DialogButton;
-	public backButton: DialogButton;
+export class Dialog implements sqlops.window.modelviewdialog.Dialog {
+	public content: string | DialogTab[];
+	public okTitle: string;
+	public cancelTitle: string;
 	public customButtons: DialogButton[];
 
-	public onCompleted: Event<{ [name: string]: string }[]>;
-	private _onCompleted: Emitter<{ [name: string]: string }[]>;
+	private _onOk: Emitter<void> = new Emitter<void>();
+	public readonly onOk: Event<void> = this._onOk.event;
+	private _onCancel: Emitter<void> = new Emitter<void>();
+	public readonly onCancel: Event<void> = this._onCancel.event;
 
-	constructor(public title: string) {
-		this._onCompleted = new Emitter();
-		this.onCompleted = this._onCompleted.event;
+	constructor(public title: string, content?: string | DialogTab[]) {
+		if (content) {
+			this.content = content;
+		}
 	}
 
-	public complete(values: { [name: string]: string }[]): void {
-		this._onCompleted.fire(values);
-	}
+	public open(): void { }
+	public close(): void { }
+	public updateContent(): void { }
 }
 
-export class DialogPage {
-	public content: sqlops.ServiceOption[];
-
-	constructor(public title: string) { }
-}
-
-export class Dialog {
-	constructor(public title: string, public tabs: DialogPage[]) { }
-}
-
-export class DialogButton {
+export class DialogButton implements sqlops.window.modelviewdialog.Button {
 	public label: string;
 	public enabled: boolean;
-	public onClicked: Event<void>;
-	private _onClicked: Emitter<void>;
+	private _onClick: Emitter<void> = new Emitter<void>();
+	public readonly onClick: Event<void> = this._onClick.event;
+
 	constructor(label: string, enabled: boolean) {
 		this.label = label;
 		this.enabled = enabled;
-		this._onClicked = new Emitter<void>();
-		this.onClicked = this._onClicked.event;
-	}
-	public toOptionsDialogButton(): OptionsDialogButton {
-		return new OptionsDialogButton(this.label, () => this._onClicked.fire());
 	}
 }

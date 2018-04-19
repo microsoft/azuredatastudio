@@ -281,8 +281,10 @@ export function createApiFactory(
 			};
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
+				// TODO mairvine 4/18/18: Implement the extension layer for custom dialogs
 				createDialog(title: string): sqlops.window.modelviewdialog.Dialog { return undefined; },
-				createPage(title: string): sqlops.window.modelviewdialog.DialogPage { return undefined; }
+				createTab(title: string): sqlops.window.modelviewdialog.DialogTab { return undefined; },
+				createButton(label: string): sqlops.window.modelviewdialog.Button { return undefined; }
 			};
 
 			const window: typeof sqlops.window = {

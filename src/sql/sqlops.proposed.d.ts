@@ -223,10 +223,16 @@ declare module 'sqlops' {
 			export function createDialog(title: string): Dialog;
 
 			/**
-			 * Create a dialog page which can be included as part of the content of a dialog
+			 * Create a dialog tab which can be included as part of the content of a dialog
 			 * @param title The title of the page, displayed on the tab to select the page
 			 */
-			export function createPage(title: string): DialogPage;
+			export function createTab(title: string): DialogTab;
+
+			/**
+			 * Create a button which can be included in a dialog
+			 * @param label The label of the button
+			 */
+			export function createButton(label: string): Button;
 
 			// Model view dialog classes
 			export interface Dialog {
@@ -236,10 +242,11 @@ declare module 'sqlops' {
 				title: string,
 
 				/**
-				 * The content of the dialog. If multiple pages are given they will be displayed with tabs
-				 * TODO: Use a model view content type instead of ServiceOption
+				 * The content of the dialog. If multiple tabs are given they will be displayed with tabs
+				 * If a string is given, it should be the ID of the dialog's model view content
+				 * TODO mairvine 4/18/18: use a model view content type
 				 */
-				content: ServiceOption[] | DialogPage[],
+				content: string | DialogTab[],
 
 				/**
 				 * The caption of the OK button
@@ -282,17 +289,17 @@ declare module 'sqlops' {
 				readonly onCancel: vscode.Event<void>;
 			}
 
-			export interface DialogPage {
+			export interface DialogTab {
 				/**
 				 * The title of the tab
 				 */
 				title: string,
 
 				/**
-				 * The tab's content
-				 * TODO: use a model view content type
+				 * A string giving the ID of the tab's model view content
+				 * TODO mairvine 4/18/18: use a model view content type
 				 */
-				content: ServiceOption[];
+				content: string;
 
 				/**
 				 * Updates the dialog on screen to reflect changes to the content
@@ -307,9 +314,14 @@ declare module 'sqlops' {
 				label: string,
 
 				/**
-				 * A function that will be called when the button is clicked
+				 * Whether the button is enabled
 				 */
-				onClick: () => void;
+				enabled: boolean,
+
+				/**
+				 * Raised when the button is clicked
+				 */
+				readonly onClick: vscode.Event<void>;
 			}
 		}
 	}
