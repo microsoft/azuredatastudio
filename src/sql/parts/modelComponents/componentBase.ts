@@ -10,25 +10,29 @@ import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFacto
 
 import * as types from 'vs/base/common/types';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { FlexLayout, FlexItemLayout } from 'sqlops';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import Event, { Emitter } from 'vs/base/common/event';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 
 export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) {}
 }
 
-export abstract class ComponentBase implements IComponent, OnDestroy, OnInit {
+export abstract class ComponentBase extends Disposable implements IComponent, OnDestroy, OnInit {
 	protected properties: { [key: string]: any; } = {};
-	constructor(
+	constructor (
 		protected _changeRef: ChangeDetectorRef) {
+			super();
 	}
 
 	/// IComponent implementation
 
 	abstract descriptor: IComponentDescriptor;
 	abstract modelStore: IModelStore;
+	protected _onEventEmitter = new Emitter<IComponentEventArgs>();
 
 	public layout(): void {
 		this._changeRef.detectChanges();
@@ -48,7 +52,9 @@ export abstract class ComponentBase implements IComponent, OnDestroy, OnInit {
 		}
 	}
 
-	abstract ngOnDestroy(): void;
+	ngOnDestroy(): void {
+		this.dispose();
+	}
 
 	abstract setLayout (layout: any): void;
 
@@ -67,6 +73,18 @@ export abstract class ComponentBase implements IComponent, OnDestroy, OnInit {
 	protected getPropertyOrDefault<TPropertyBag, TValue>(propertyGetter: (TPropertyBag) => TValue, defaultVal: TValue) {
 		let property = propertyGetter(this.getProperties<TPropertyBag>());
 		return types.isUndefinedOrNull(property) ? defaultVal : property;
+	}
+
+	protected setProperty<TPropertyBag, TValue>(propertySetter: (TPropertyBag, TValue) => void, value: TValue) {
+		propertySetter(this.getProperties<TPropertyBag>(), value);
+		this._onEventEmitter.fire({
+			eventType: ComponentEventType.PropertiesChanged,
+			args: this.getProperties()
+		});
+	}
+
+	public get onEvent(): Event<IComponentEventArgs> {
+		return this._onEventEmitter.event;
 	}
 }
 
