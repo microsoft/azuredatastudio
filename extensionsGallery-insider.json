@@ -223,8 +223,8 @@
 						"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 							{
-								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-								"source": "https://foundrylabssqlsearch.blob.core.windows.net/sqlops-sql-search-insiders/sql-search-0.1.0.vsix"
+								"assetType": "Microsoft.SQLOps.DownloadPage",
+								"source": "https://www.redgatefoundry.com/SQLSearch"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Links.Source",
