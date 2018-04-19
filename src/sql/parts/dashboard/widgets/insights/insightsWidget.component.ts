@@ -27,6 +27,7 @@ import * as pfs from 'vs/base/node/pfs';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { WorkbenchState } from 'vs/platform/workspace/common/workspace';
+import { IntervalTimer } from 'vs/base/common/async';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -52,6 +53,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	private _typeKey: string;
 	private _init: boolean = false;
+	private _intervalTimer: IntervalTimer;
 
 	public error: string;
 	public lastUpdated: string;
@@ -76,6 +78,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 					result => {
 						if (this._init) {
 							this._updateChild(result);
+							this.setupInterval();
 						} else {
 							this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(result));
 						}
@@ -100,11 +103,20 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			this._register(toDisposableSubscription(this.queryObv.subscribe(
 				result => {
 					this._updateChild(result);
+					this.setupInterval();
 				},
 				error => {
 					this.showError(error);
 				}
 			)));
+		}
+	}
+
+	private setupInterval(): void {
+		if (this.insightConfig.autoRefreshInterval) {
+			this._intervalTimer = new IntervalTimer();
+			this._register(this._intervalTimer);
+			this._intervalTimer.cancelAndSet(() => this.refresh(), this.insightConfig.autoRefreshInterval * 60 * 1000);
 		}
 	}
 
@@ -152,6 +164,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", date.toLocaleTimeString(), date.toLocaleDateString());
 				if (this._init) {
 					this._updateChild(storedResult.results);
+					this.setupInterval();
 					this._cd.detectChanges();
 				} else {
 					this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(JSON.parse(storage)));
@@ -229,6 +242,10 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 		if (!this.insightConfig.query && !this.insightConfig.queryFile) {
 			throw new Error('No query was specified for this insight');
+		}
+
+		if (this.insightConfig.autoRefreshInterval && !types.isNumber(this.insightConfig.autoRefreshInterval)) {
+			throw new Error('Auto Refresh Interval must be a number if specified');
 		}
 
 		if (!types.isStringArray(this.insightConfig.query)
