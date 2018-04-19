@@ -203,4 +203,116 @@ declare module 'sqlops' {
 		 */
 		export function registerModelViewProvider(widgetId: string, handler: (view: ModelView) => void): void;
 	}
+
+	export namespace window {
+		export namespace modelviewdialog {
+			/**
+			 * Create a dialog with the given title
+			 * @param title The title of the dialog, displayed at the top
+			 */
+			export function createDialog(title: string): Dialog;
+
+			/**
+			 * Create a dialog tab which can be included as part of the content of a dialog
+			 * @param title The title of the page, displayed on the tab to select the page
+			 */
+			export function createTab(title: string): DialogTab;
+
+			/**
+			 * Create a button which can be included in a dialog
+			 * @param label The label of the button
+			 */
+			export function createButton(label: string): Button;
+
+			// Model view dialog classes
+			export interface Dialog {
+				/**
+				 * The title of the dialog
+				 */
+				title: string,
+
+				/**
+				 * The content of the dialog. If multiple tabs are given they will be displayed with tabs
+				 * If a string is given, it should be the ID of the dialog's model view content
+				 * TODO mairvine 4/18/18: use a model view content type
+				 */
+				content: string | DialogTab[],
+
+				/**
+				 * The caption of the OK button
+				 */
+				okTitle: string;
+
+				/**
+				 * The caption of the Cancel button
+				 */
+				cancelTitle: string;
+
+				/**
+				 * Any additional buttons that should be displayed
+				 */
+				customButtons: Button[];
+
+				/**
+				 * Opens the dialog
+				 */
+				open(): void;
+
+				/**
+				 * Closes the dialog
+				 */
+				close(): void;
+
+				/**
+				 * Updates the dialog on screen to reflect changes to the buttons or content
+				 */
+				updateContent(): void;
+
+				/**
+				 * Raised when dialog's ok button is pressed
+				 */
+				readonly onOk: vscode.Event<void>;
+
+				/**
+				 * Raised when dialog is canceled
+				 */
+				readonly onCancel: vscode.Event<void>;
+			}
+
+			export interface DialogTab {
+				/**
+				 * The title of the tab
+				 */
+				title: string,
+
+				/**
+				 * A string giving the ID of the tab's model view content
+				 * TODO mairvine 4/18/18: use a model view content type
+				 */
+				content: string;
+
+				/**
+				 * Updates the dialog on screen to reflect changes to the content
+				 */
+				updateContent(): void;
+			}
+
+			export interface Button {
+				/**
+				 * The label displayed on the button
+				 */
+				label: string,
+
+				/**
+				 * Whether the button is enabled
+				 */
+				enabled: boolean,
+
+				/**
+				 * Raised when the button is clicked
+				 */
+				readonly onClick: vscode.Event<void>;
+			}
+		}
+	}
 }
