@@ -59,8 +59,6 @@ import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { CustomDialogService } from 'sql/platform/dialog/customDialogService';
-import { DialogButton, Dialog } from 'sql/platform/dialog/dialogTypes';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 

@@ -17,7 +17,7 @@ import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs,
 
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
-	private readonly _eventHandlers = new Map<string, WithEventHandler>();
+	private readonly _eventHandlers = new Map<string, IWithEventHandler>();
 
 	constructor(private readonly _proxy: MainThreadModelViewShape, private readonly _handle: number) {
 		this.nextComponentId = 0;
@@ -59,7 +59,7 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return componentBuilder;
 	}
 
-	handlerEvent(id: string, eventArgs: IComponentEventArgs): void {
+	handleEvent(id: string, eventArgs: IComponentEventArgs): void {
 		let eventHandler = this._eventHandlers.get(id);
 		if (eventHandler) {
 			eventHandler.handleEvent(eventArgs);
@@ -71,11 +71,11 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 	}
 }
 
-interface WithEventHandler {
+interface IWithEventHandler {
 	handleEvent(eventArgs: IComponentEventArgs): void;
 }
 
-class ComponentBuilderImpl<T extends sqlops.Component> implements sqlops.ComponentBuilder<T>, WithEventHandler {
+class ComponentBuilderImpl<T extends sqlops.Component> implements sqlops.ComponentBuilder<T>, IWithEventHandler {
 
 	constructor(protected _component: ComponentWrapper) {
 		_component.registerEvent();
@@ -289,7 +289,6 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 	}
 
 	public get onTextChanged(): vscode.Event<any> {
-		//this.properties['value'] =
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
@@ -337,7 +336,7 @@ class ModelViewImpl implements sqlops.ModelView {
 	}
 
 	public handleEvent(id: string, eventArgs: IComponentEventArgs): void {
-		this._modelBuilder.handlerEvent(id, eventArgs);
+		this._modelBuilder.handleEvent(id, eventArgs);
 	}
 
 	public initializeModel<T extends sqlops.Component>(component: T): Thenable<void> {
