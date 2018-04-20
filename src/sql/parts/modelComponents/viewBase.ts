@@ -55,7 +55,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		let descriptor = this.modelStore.createComponentDescriptor(typeId, component.id);
 		this.setProperties(component.id, component.properties);
 		this.setLayout(component.id, component.layout);
-		this.registerEvent(component.id, component.layout);
+		this.registerEvent(component.id);
 		if (component.itemConfigs) {
 			for(let item of component.itemConfigs) {
 				this.addToContainer(component.id, item);
@@ -97,7 +97,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		});
 	}
 
-	registerEvent(componentId: string, eventName: string) {
+	registerEvent(componentId: string) {
 		this.queueAction(componentId, (component)  => {
 			if (component.onEvent) {
 				this._register(component.onEvent(e => {

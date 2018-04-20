@@ -59,8 +59,8 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return componentBuilder;
 	}
 
-	handleEvent(id: string, eventArgs: IComponentEventArgs): void {
-		let eventHandler = this._eventHandlers.get(id);
+	handleEvent(componentId: string, eventArgs: IComponentEventArgs): void {
+		let eventHandler = this._eventHandlers.get(componentId);
 		if (eventHandler) {
 			eventHandler.handleEvent(eventArgs);
 		}
@@ -335,8 +335,8 @@ class ModelViewImpl implements sqlops.ModelView {
 		return this._modelBuilder;
 	}
 
-	public handleEvent(id: string, eventArgs: IComponentEventArgs): void {
-		this._modelBuilder.handleEvent(id, eventArgs);
+	public handleEvent(componentId: string, eventArgs: IComponentEventArgs): void {
+		this._modelBuilder.handleEvent(componentId, eventArgs);
 	}
 
 	public initializeModel<T extends sqlops.Component>(component: T): Thenable<void> {
@@ -377,10 +377,10 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 		this._handlers.get(id)(view);
 	}
 
-	$handleEvent(handle: number, id: string, eventArgs: IComponentEventArgs): void {
+	$handleEvent(handle: number, componentId: string, eventArgs: IComponentEventArgs): void {
 		const view = this._modelViews.get(handle);
 		if (view) {
-			view.handleEvent(id, eventArgs);
+			view.handleEvent(componentId, eventArgs);
 		}
 	}
 }
