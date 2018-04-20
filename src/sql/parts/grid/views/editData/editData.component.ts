@@ -23,6 +23,8 @@ import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDa
 import { error } from 'sql/base/common/log';
 import { clone } from 'sql/base/common/objects';
 import * as strings from 'vs/base/common/strings';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
@@ -61,6 +63,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private removingNewRow: boolean;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 
+	private notificationService: INotificationService;
+
 	// Edit Data functions
 	public onActiveCellChanged: (event: { row: number, column: number }) => void;
 	public onCellEditEnd: (event: { row: number, column: number, newValue: any }) => void;
@@ -96,6 +100,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				this.resizeGrids();
 			}
 		});
+		this.notificationService = bootstrapService.notificationService;
 	}
 
 	/**
@@ -330,7 +335,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	handleMessage(self: EditDataComponent, event: any): void {
-		// Ignore messages for EditData
+		if (event.data && event.data.isError) {
+			self.notificationService.notify({
+				severity: Severity.Error,
+				message: event.data.message
+			});
+		}
 	}
 
 	handleResultSet(self: EditDataComponent, event: any): void {
