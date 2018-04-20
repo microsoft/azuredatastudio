@@ -27,7 +27,6 @@ export class DialogModal extends Modal {
 	private static readonly CANCEL_BUTTON_LABEL = localize('dialogModalCancelButtonLabel', 'Cancel');
 
 	private _dialogPane: DialogPane;
-	private _isWide: boolean;
 
 	// Wizard HTML elements
 	private _body: HTMLElement;
@@ -47,10 +46,6 @@ export class DialogModal extends Modal {
 		@IBootstrapService private _bootstrapService: IBootstrapService
 	) {
 		super(_dialog.title, name, partService, telemetryService, contextKeyService, options);
-
-		if (options && options.isWide) {
-			this._isWide = true;
-		}
 	}
 
 	public layout(): void {
@@ -75,10 +70,6 @@ export class DialogModal extends Modal {
 	protected renderBody(container: HTMLElement): void {
 		new Builder(container).div({ class: 'dialogModal-body' }, (bodyBuilder) => {
 			this._body = bodyBuilder.getHTMLElement();
-
-			if (this._isWide) {
-				bodyBuilder.addClass('dialogModal-width-wide');
-			}
 		});
 
 		this._dialogPane = new DialogPane(this._dialog, this._bootstrapService);

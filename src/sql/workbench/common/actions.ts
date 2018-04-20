@@ -51,7 +51,8 @@ export class NewQueryAction extends Task {
 		super({
 			id: NewQueryAction.ID,
 			title: NewQueryAction.LABEL,
-			iconPath: { dark: NewQueryAction.ICON, light: NewQueryAction.ICON }
+			iconPath: { dark: NewQueryAction.ICON, light: NewQueryAction.ICON },
+			iconClass: NewQueryAction.ICON
 		});
 	}
 
@@ -292,7 +293,8 @@ export class BackupAction extends Task {
 		super({
 			id: BackupAction.ID,
 			title: BackupAction.LABEL,
-			iconPath: { dark: BackupAction.ICON, light: BackupAction.ICON }
+			iconPath: { dark: BackupAction.ICON, light: BackupAction.ICON },
+			iconClass: BackupAction.ICON
 		});
 	}
 
@@ -322,7 +324,8 @@ export class RestoreAction extends Task {
 		super({
 			id: RestoreAction.ID,
 			title: RestoreAction.LABEL,
-			iconPath: { dark: RestoreAction.ICON, light: RestoreAction.ICON }
+			iconPath: { dark: RestoreAction.ICON, light: RestoreAction.ICON },
+			iconClass: RestoreAction.ICON
 		});
 	}
 
@@ -421,7 +424,8 @@ export class ConfigureDashboardAction extends Task {
 		super({
 			id: ConfigureDashboardAction.ID,
 			title: ConfigureDashboardAction.LABEL,
-			iconPath: { dark: ConfigureDashboardAction.ICON, light: ConfigureDashboardAction.ICON }
+			iconPath: { dark: ConfigureDashboardAction.ICON, light: ConfigureDashboardAction.ICON },
+			iconClass: ConfigureDashboardAction.ICON
 		});
 	}
 

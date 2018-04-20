@@ -8,28 +8,28 @@
 	</div>
 	<div class="angular-modal-body-content chart-viewer" style="flex:1 1 auto; border-left: 1px solid; margin: 5px;">
 		<div style="position: relative; width: 100%">
-			<div class="dialog-label">{{chartTypeLabel}}</div>
-			<div class="input-divider" #chartTypesContainer></div>
+			<div class="dialog-label" id="chartTypeLabel">{{localizedStrings.CHART_TYPE}}</div>
+			<div class="input-divider" aria-labelledby="chartTypeLabel" #chartTypesContainer></div>
 			<div [hidden]="chartTypesSelectBox.value === 'count' || chartTypesSelectBox.value === 'image'">
 				<div [hidden]="!showDataType">
-					<div class="dialog-label">{{dataTypeLabel}}</div>
-					<div class="radio-indent">
+					<div class="dialog-label" id="dataTypeLabel">{{localizedStrings.DATA_TYPE}}</div>
+					<div class="radio-indent" role="radiogroup" aria-labelledby="dataTypeLabel">
 						<div class="option">
-							<input type="radio" name=data-type value="number" [(ngModel)]="dataType">{{numberLabel}}
+							<input type="radio" role="radio" name="data-type" value="number" [(ngModel)]="dataType" aria-labelledby="numberLabel"><span id="numberLabel">{{localizedStrings.NUMBER}}</span>
 						</div>
 						<div class="option">
-							<input type="radio" name=data-type value="point" [(ngModel)]="dataType">{{pointLabel}}
+							<input type="radio" role="radio" name="data-type" value="point" [(ngModel)]="dataType" aria-labelledby="pointLabel"><span id="pointLabel">{{localizedStrings.POINT}}</span>
 						</div>
 					</div>
 				</div>
 				<div [hidden]="!showDataDirection">
-					<div class="dialog-label">{{dataDirectionLabel}}</div>
-					<div class="radio-indent">
+					<div class="dialog-label" id="dataDirectionLabel">{{localizedStrings.DATA_DIRECTION}}</div>
+					<div class="radio-indent" role="radiogroup" aria-labelledby="dataDirectionLabel">
 						<div class="option">
-							<input type="radio" name=data-direction value="vertical" [(ngModel)]="dataDirection">{{verticalLabel}}
+							<input type="radio" role="radio" name="data-direction" value="vertical" [(ngModel)]="dataDirection" aria-labelledby="verticalLabel"><span id="verticalLabel">{{localizedStrings.VERTICAL}}</span>
 						</div>
 						<div class="option">
-							<input type="radio" name=data-direction value="horizontal" [(ngModel)]="dataDirection">{{horizontalLabel}}
+							<input type="radio" role="radio" name="data-direction" value="horizontal" [(ngModel)]="dataDirection" aria-labelledby="horizontalLabel"><span id="horizontalLabel">{{localizedStrings.HORIZONTAL}}</span>
 						</div>
 					</div>
 				</div>
@@ -41,8 +41,8 @@
 					<div class="input-divider" #columnsAsLabelsContainer></div>
 				</div>
 
-				<div class="dialog-label">{{legendLabel}}</div>
-				<div class="input-divider" #legendContainer></div>
+				<div class="dialog-label" id="legendLabel">{{localizedStrings.LEGEND}}</div>
+				<div class="input-divider" #legendContainer aria-labelledby="legendLabel"></div>
 
 				<div class="footer">
 					<div class="right-footer">

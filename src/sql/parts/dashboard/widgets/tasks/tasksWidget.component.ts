@@ -52,6 +52,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	private _profile: IConnectionProfile;
 	private _scrollableElement: ScrollableElement;
 	private $container: Builder;
+	static readonly ICON_PATH_TO_CSS_RULES: Map<string /* path*/, string /* CSS rule */> = new Map<string, string>();
 
 	private _inited = false;
 
@@ -131,9 +132,9 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		let tile = $('div.task-tile').style('height', this._size + 'px').style('width', this._size + 'px');
 		let innerTile = $('div');
 
-		// @SQLTODO - iconPath shouldn't be used as a CSS class
-		if (action.iconPath && action.iconPath.dark) {
-			let icon = $('span.icon').addClass(action.iconPath.dark);
+		let iconClassName = TaskRegistry.getOrCreateTaskIconClassName(action);
+		if (iconClassName) {
+			let icon = $('span.icon').addClass(iconClassName);
 			innerTile.append(icon);
 		}
 		innerTile.append(label);

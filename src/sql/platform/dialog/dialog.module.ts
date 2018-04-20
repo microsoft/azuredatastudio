@@ -49,9 +49,9 @@ export class DialogModule {
 	}
 
 	ngDoBootstrap(appRef: ApplicationRef) {
-		const factory = this._resolver.resolveComponentFactory(DialogContainer);
+		const factoryWrapper: any = this._resolver.resolveComponentFactory(DialogContainer);
 		const uniqueSelector: string = this._bootstrapService.getUniqueSelector('dialog-modelview-container');
-		(<any>factory).factory.selector = uniqueSelector;
-		appRef.bootstrap(factory);
+		factoryWrapper.factory.selector = uniqueSelector;
+		appRef.bootstrap(factoryWrapper);
 	}
 }

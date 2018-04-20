@@ -8,10 +8,6 @@
 import * as sqlops from 'sqlops';
 import Event, { Emitter } from 'vs/base/common/event';
 
-export class OptionsDialogButton {
-	constructor(public label: string, public callback: () => void) { }
-}
-
 export class Wizard {
 	public pages: DialogTab[];
 	public nextButton: DialogButton;
@@ -34,7 +30,11 @@ export class Wizard {
 export class DialogTab implements sqlops.window.modelviewdialog.DialogTab {
 	public content: string;
 
-	constructor(public title: string) { }
+	constructor(public title: string, content?: string) {
+		if (content) {
+			this.content = content;
+		}
+	}
 
 	public updateContent(): void { }
 }
