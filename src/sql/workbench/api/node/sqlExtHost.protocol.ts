@@ -447,7 +447,8 @@ export const SqlMainContext = {
 	MainThreadTasks: createMainId<MainThreadTasksShape>('MainThreadTasks'),
 	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview'),
 	MainThreadModelView: createMainId<MainThreadModelViewShape>('MainThreadModelView'),
-	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard')
+	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard'),
+	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
 };
 
 export const SqlExtHostContext = {
@@ -462,7 +463,8 @@ export const SqlExtHostContext = {
 	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks'),
 	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
 	ExtHostModelView: createExtId<ExtHostModelViewShape>('ExtHostModelView'),
-	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard')
+	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
+	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -539,4 +541,13 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 	$getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]>;
 	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
 	$findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
+}
+
+export interface ExtHostQueryEditorShape {
+}
+
+export interface MainThreadQueryEditorShape extends IDisposable {
+	$newQueryEditor(queryContent?: string): Thenable<string>;
+	$connect(fileUri: string, connectionId: string): Thenable<void>;
+	$runCurrentQuery(): void;
 }

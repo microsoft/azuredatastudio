@@ -49,15 +49,9 @@ export default class MainController extends ControllerBase {
     }
 
     private onExecute(connection: sqlops.IConnectionProfile, fileName: string): void {
-        let sqlFile = fs.readFileSync(path.join(__dirname, '..', 'sql', fileName)).toString();
-        this.openSQLFileWithContent(sqlFile);
-    }
-
-    private openSQLFileWithContent(content: string): void {
-        vscode.workspace.openTextDocument({language: 'sql', content: content}).then(doc => {
-            vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, false);
+        let sqlContent = fs.readFileSync(path.join(__dirname, '..', 'sql', fileName)).toString();
+        sqlops.queryEditor.newQueryEditor(sqlContent).then((uri) => {
+            sqlops.queryEditor.connect(uri, connection.id).then(() => sqlops.queryEditor.runCurrentQuery());
         });
     }
-
 }
-
