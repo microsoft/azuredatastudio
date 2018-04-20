@@ -116,8 +116,17 @@ export class RefreshTableAction extends EditDataAction {
 				return false;
 			}
 
+			let selectStr = lowerCaseStr.substring(0, fromIndex);
+			if (selectStr.search(/\s(as)\s/) >= 0) {
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: nls.localize('aliasNotSupportedFailure', 'Edit Data queries do not support aliased columns.')
+				});
+				return false;
+			}
+
 			let afterFromStr = lowerCaseStr.substring(fromIndex + 5);
-			if (afterFromStr.search(/\s(group by)\s/) >= 0 || afterFromStr.search(/\s(having)\s/) >= 0) {
+			if (afterFromStr.search(/\s(group by|having)\s/) >= 0) {
 				this._notificationService.notify({
 					severity: Severity.Error,
 					message: nls.localize('aggregateNotSupportedFailure', 'Edit Data queries do not support aggregated results.')
