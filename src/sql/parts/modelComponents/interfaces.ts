@@ -5,6 +5,7 @@
 import { InjectionToken } from '@angular/core';
 
 import * as sqlops from 'sqlops';
+import Event, { Emitter } from 'vs/base/common/event';
 
 /**
  * An instance of a model-backed component. This will be a UI element
@@ -20,6 +21,7 @@ export interface IComponent {
 	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any) => void;
 	setLayout?: (layout: any) => void;
 	setProperties?: (properties: { [key: string]: any; }) => void;
+	onEvent?: Event<IComponentEventArgs>;
 }
 
 export const COMPONENT_CONFIG = new InjectionToken<IComponentConfig>('component_config');
@@ -46,6 +48,16 @@ export interface IComponentDescriptor {
 	 * A unique ID for this component
 	 */
 	id: string;
+}
+
+export interface IComponentEventArgs {
+	eventType: ComponentEventType;
+	args: any;
+}
+
+export enum ComponentEventType {
+	PropertiesChanged,
+	onDidChange
 }
 
 export interface IModelStore {
