@@ -16,11 +16,11 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelCo
 
 @Component({
 	template: `
-		<div *ngIf="label" class="cardComponent" >
-			<!--<span style="margin-left: 10px; display: inline-block;">-->
+		<div *ngIf="label" class="model-card" >
+			<div class="card-box">
 				<h4 class="card-label">{{label}}</h4>
 				<p class="card-value">{{value}}</p>
-				<!--</span>-->
+			</div>
 		</div>
 	`
 })

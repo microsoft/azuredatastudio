@@ -1,10 +1,15 @@
 
-.cardComponent {
+.model-card {
 	position: relative;
+	display: flex;
+	align-items: flex-start;
+}
+
+.model-card .card-box {
 	height: auto;
 	width: auto;
 	margin: 15px;
-	padding: 10px 10px 20px 45px;
+	padding: 10px 45px 20px 45px;
 	min-height: 30px;
 	min-width: 30px;
 	border-width: 1px;
@@ -15,12 +20,12 @@
     box-shadow: rgba(120, 120, 120, 0.75) 0px 0px 6px;
 }
 
-.cardComponent .card-label {
+.model-card .card-label {
 	font-size: 12px;
 	font-weight: bold;
 }
 
-.cardComponent .card-value {
+.model-card .card-value {
 	font-size: 12px;
 	line-height: 18px;
 }

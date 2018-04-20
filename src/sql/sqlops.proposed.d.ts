@@ -107,6 +107,14 @@ declare module 'sqlops' {
 		 * Matches the justify-content CSS property.
 		 */
 		justifyContent?: string;
+		/**
+		 * Matches the align-items CSS property.
+		 */
+		alignItems?: string;
+		/**
+		 * Matches the align-content CSS property.
+		 */
+		alignContent?: string;
 	}
 
 	export interface FlexItemLayout {
