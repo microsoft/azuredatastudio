@@ -17,10 +17,8 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelCo
 @Component({
 	template: `
 		<div *ngIf="label" class="model-card" >
-			<div class="card-box">
-				<h4 class="card-label">{{label}}</h4>
-				<p class="card-value">{{value}}</p>
-			</div>
+			<h4 class="card-label">{{label}}</h4>
+			<p class="card-value">{{value}}</p>
 		</div>
 	`
 })

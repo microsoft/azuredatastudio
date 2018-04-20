@@ -1,11 +1,7 @@
 
 .model-card {
 	position: relative;
-	display: flex;
-	align-items: flex-start;
-}
-
-.model-card .card-box {
+	display: inline-block;
 	height: auto;
 	width: auto;
 	margin: 15px;
