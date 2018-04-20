@@ -19,6 +19,7 @@ import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as ConnectionConstants from 'sql/parts/connection/common/constants';
+import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 
 const singleQuote = '\'';
 
@@ -98,8 +99,8 @@ export class RunQueryKeyboardAction extends Action {
 
 	public run(): TPromise<void> {
 		let editor = this._editorService.getActiveEditor();
-		if (editor && editor instanceof QueryEditor) {
-			let queryEditor: QueryEditor = editor;
+		if (editor && (editor instanceof QueryEditor || editor instanceof EditDataEditor)) {
+			let queryEditor: QueryEditor | EditDataEditor = editor;
 			queryEditor.runQuery();
 		}
 		return TPromise.as(null);
@@ -174,8 +175,8 @@ export class CancelQueryKeyboardAction extends Action {
 
 	public run(): TPromise<void> {
 		let editor = this._editorService.getActiveEditor();
-		if (editor && editor instanceof QueryEditor) {
-			let queryEditor: QueryEditor = editor;
+		if (editor && (editor instanceof QueryEditor || editor instanceof EditDataEditor)) {
+			let queryEditor: QueryEditor | EditDataEditor = editor;
 			queryEditor.cancelQuery();
 		}
 		return TPromise.as(null);

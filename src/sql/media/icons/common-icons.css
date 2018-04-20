@@ -131,6 +131,14 @@
 	background: url("filter_inverse.svg") center center no-repeat !important;
 }
 
+.vs .icon.filterLabel {
+	background-image: url("filter.svg");
+}
+
+.vs-dark .icon.filterLabel,
+.hc-black .icon.filterLabel {
+	background-image: url("filter_inverse.svg");
+}
 
 .vs .icon.warning-badge,
 .vs-dark .icon.warning-badge,

@@ -187,19 +187,20 @@ export class EditDataAction extends Action {
 	constructor(
 		id: string, label: string,
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
+		@IScriptingService protected _scriptingService: IScriptingService
 	) {
 		super(id, label);
 	}
 
 	public run(actionContext: BaseActionContext): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
-			TaskUtilities.editData(
+			TaskUtilities.scriptEditSelect(
 				actionContext.profile,
-				actionContext.object.name,
-				actionContext.object.schema,
+				actionContext.object,
 				this._connectionManagementService,
-				this._queryEditorService
+				this._queryEditorService,
+				this._scriptingService
 			).then(
 				result => {
 					resolve(true);

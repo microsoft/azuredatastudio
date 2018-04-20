@@ -57,7 +57,7 @@ export interface IQueryModelService {
 
 
 	// Edit Data Functions
-	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): void;
+	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): void;
 	disposeEdit(ownerUri: string): Thenable<void>;
 	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<EditUpdateCellResult>;
 	commitEdit(ownerUri): Thenable<void>;
