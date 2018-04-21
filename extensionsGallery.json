@@ -87,7 +87,7 @@
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Code.Manifest",
-								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/serverReports/package.jsonn"
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/serverReports/package.json"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Content.License",
