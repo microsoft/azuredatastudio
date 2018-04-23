@@ -354,9 +354,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	}
 
 	public initChart() {
-		// try {
-			this._cd.detectChanges();
-		// } catch (err) {}
+		this._cd.detectChanges();
 		if (this._executeResult) {
 			// Reinitialize the chart component
 			let componentFactory = this._componentFactoryResolver.resolveComponentFactory<IInsightsView>(insightRegistry.getCtorFromId(this.chartTypesSelectBox.value));
