@@ -34,7 +34,8 @@
 	"recommendedExtensions": [
 		"Microsoft.agent",
 		"Microsoft.whoisactive",
-		"Microsoft.server-report"
+		"Microsoft.server-report",
+		"Redgate.sql-search"
 	],
 	"extensionsGallery": {
 		"serviceUrl": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/release/extensions/extensionsGallery.json"
