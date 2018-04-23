@@ -28,9 +28,9 @@ import Event, { Emitter } from 'vs/base/common/event';
 		</widget-content>
 	`
 })
-export class DashboardWidgetContainer extends DashboardTab implements OnDestroy, OnChanges, AfterContentInit {
-	@Input() private tab: TabConfig;
-	private widgets: WidgetConfig[];
+export class DashboardWidgetContainer extends DashboardTab implements OnDestroy, AfterContentInit {
+	@Input() protected tab: TabConfig;
+	protected widgets: WidgetConfig[];
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
 
@@ -42,7 +42,7 @@ export class DashboardWidgetContainer extends DashboardTab implements OnDestroy,
 		super();
 	}
 
-	ngOnChanges() {
+	ngOnInit() {
 		if (this.tab.container) {
 			this.widgets = Object.values(this.tab.container)[0];
 			this._cd.detectChanges();
