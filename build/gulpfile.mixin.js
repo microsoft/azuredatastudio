@@ -37,9 +37,9 @@ gulp.task('mixin', function () {
 	}
 
 	// {{SQL CARBON EDIT}}
-	let serviceUrl = 'https://raw.githubusercontent.com/Microsoft/sqlopsstudio/release/extensions/extensionsGallery.json';
+	let serviceUrl = 'https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json';
 	if (quality === 'insider') {
-		serviceUrl = `https://raw.githubusercontent.com/Microsoft/sqlopsstudio/release/extensions/extensionsGallery-${quality}.json`;
+		serviceUrl = `https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery-${quality}.json`;
 	}
 	let newValues = {
 		"updateUrl": updateUrl,
