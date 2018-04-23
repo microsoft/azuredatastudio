@@ -97,14 +97,18 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	}
 
 	ngOnInit() {
+		this.setDefaultChartConfig();
+		this.legendOptions = Object.values(LegendPosition);
+		this.initializeUI();
+	}
+
+	private setDefaultChartConfig() {
 		this._chartConfig = <ILineConfig>{
 			dataDirection: 'vertical',
 			dataType: 'number',
 			legendPosition: 'none',
 			labelFirstColumn: false
 		};
-		this.legendOptions = Object.values(LegendPosition);
-		this.initializeUI();
 	}
 
 	private initializeUI() {
@@ -112,7 +116,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		this._initActionBar();
 
 		// Init chart type dropdown
-		this.chartTypesSelectBox = new SelectBox(insightRegistry.getAllIds(), this.getDefaultChartType(), this._bootstrapService.contextViewService);
+		this.chartTypesSelectBox = new SelectBox(insightRegistry.getAllIds(true), this.getDefaultChartType(), this._bootstrapService.contextViewService);
 		this.chartTypesSelectBox.render(this.chartTypesElement.nativeElement);
 		this.chartTypesSelectBox.onDidSelect(selected => this.onChartChanged());
 		this._disposables.push(attachSelectBoxStyler(this.chartTypesSelectBox, this._bootstrapService.themeService));
@@ -169,6 +173,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 
 
 	public onChartChanged(): void {
+		this.setDefaultChartConfig();
 		if ([Constants.chartTypeScatter, Constants.chartTypeTimeSeries].some(item => item === this.chartTypesSelectBox.value)) {
 			this.dataType = DataType.Point;
 			this.dataDirection = DataDirection.Horizontal;
@@ -349,7 +354,9 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	}
 
 	public initChart() {
-		this._cd.detectChanges();
+		// try {
+			this._cd.detectChanges();
+		// } catch (err) {}
 		if (this._executeResult) {
 			// Reinitialize the chart component
 			let componentFactory = this._componentFactoryResolver.resolveComponentFactory<IInsightsView>(insightRegistry.getCtorFromId(this.chartTypesSelectBox.value));
