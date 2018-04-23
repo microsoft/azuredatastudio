@@ -40,7 +40,7 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 	}
 
 	public $connect(fileUri: string, connectionId: string): Thenable<void> {
-		return new Promise<void>((resolve) => {
+		return new Promise<void>((resolve, reject) => {
 			let options: IConnectionCompletionOptions = {
 				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none },
 				saveTheConnection: false,
@@ -53,6 +53,8 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 				if (connection && connection.length > 0) {
 					this._connectionManagementService.connect(connection[0], fileUri, options).then(() => {
 						resolve();
+					}).catch(error => {
+						reject();
 					});
 				} else {
 					resolve();
