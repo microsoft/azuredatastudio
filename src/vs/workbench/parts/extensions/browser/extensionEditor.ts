@@ -54,6 +54,9 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { assign } from 'vs/base/common/objects';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
+// {{SQL CARBON EDIT}}
+import { renderDashboardContributions } from 'sql/parts/extensions/sqlExtensionsHelper';
+
 /**  A context key that is set when an extension editor webview has focus. */
 export const KEYBINDING_CONTEXT_EXTENSIONEDITOR_WEBVIEW_FOCUS = new RawContextKey<boolean>('extensionEditorWebviewFocus', undefined);
 /**  A context key that is set when the find widget find input in extension editor webview is focused. */
@@ -474,7 +477,9 @@ export class ExtensionEditor extends BaseEditor {
 					this.renderJSONValidation(content, manifest, layout),
 					this.renderDebuggers(content, manifest, layout),
 					this.renderViews(content, manifest, layout),
-					this.renderLocalizations(content, manifest, layout)
+					this.renderLocalizations(content, manifest, layout),
+					// {{SQL CARBON EDIT}}
+					renderDashboardContributions(content, manifest, layout)
 				];
 
 				const isEmpty = !renders.reduce((v, r) => r || v, false);
