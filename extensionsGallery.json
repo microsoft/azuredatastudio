@@ -155,7 +155,7 @@
 				"flags": "preview"
             },
             {
-                "extensionId": "15",
+                "extensionId": "14",
                 "extensionName": "alwayson-insights",
                 "displayName": "AlwaysOn Insights",
                 "shortDescription": "Sql Server AlwaysOn insights",
@@ -206,7 +206,7 @@
                 "flags": "preview"
             },
             {
-                "extensionId": "16",
+                "extensionId": "15",
                 "extensionName": "mssql-instance-insights",
                 "displayName": "MSSQL Instance Insights",
                 "shortDescription": "Sql Server Instance insights",
@@ -257,7 +257,7 @@
                 "flags": "preview"
               },
               {
-                "extensionId": "17",
+                "extensionId": "16",
                 "extensionName": "mssql-db-insights",
                 "displayName": "MSSQL Db Insights",
                 "shortDescription": "Sql Server Database insights",
@@ -312,7 +312,7 @@
 			"metadataType": "ResultCount",
 			"metadataItems": [{
 				"name": "TotalCount",
-				"count": 6
+				"count": 3
 			}]
 		}]
 	}]
