@@ -59,7 +59,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 	private _fileBasedRecommendations: { [id: string]: number; } = Object.create(null);
 	// {{SQL CARBON EDIT}}
-	private _recommendations: string[] = Object.create(null);
+	private _recommendations: string[] = [];
 	private _exeBasedRecommendations: { [id: string]: string; } = Object.create(null);
 	private _availableRecommendations: { [pattern: string]: string[] } = Object.create(null);
 	private _allWorkspaceRecommendedExtensions: string[] = [];

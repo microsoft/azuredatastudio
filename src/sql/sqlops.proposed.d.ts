@@ -19,6 +19,7 @@ declare module 'sqlops' {
 		navContainer(): ContainerBuilder<NavContainer, any, any>;
 		flexContainer(): FlexBuilder;
 		card(): ComponentBuilder<CardComponent>;
+		inputBox(): ComponentBuilder<InputBoxComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<WebviewComponent>;
 	}
@@ -107,6 +108,14 @@ declare module 'sqlops' {
 		 * Matches the justify-content CSS property.
 		 */
 		justifyContent?: string;
+		/**
+		 * Matches the align-items CSS property.
+		 */
+		alignItems?: string;
+		/**
+		 * Matches the align-content CSS property.
+		 */
+		alignContent?: string;
 	}
 
 	export interface FlexItemLayout {
@@ -116,7 +125,7 @@ declare module 'sqlops' {
 		order?: number;
 		/**
 		 * Matches the flex CSS property and its available values.
-		 * Default is "0 1 auto".
+		 * Default is "1 1 auto".
 		 */
 		flex?: string;
 	}
@@ -142,7 +151,7 @@ declare module 'sqlops' {
 
 	/**
 	 * Properties representing the card component, can be used
-	 * when using ModelBuilder to create the comopnent
+	 * when using ModelBuilder to create the component
 	 */
 	export interface CardProperties  {
 		label: string;
@@ -150,10 +159,19 @@ declare module 'sqlops' {
 		actions?: ActionDescriptor[];
 	}
 
+	export interface InputBoxProperties  {
+		value?: string;
+	}
+
 	export interface CardComponent extends Component {
 		label: string;
 		value: string;
 		actions?: ActionDescriptor[];
+	}
+
+	export interface InputBoxComponent extends Component {
+		value: string;
+		onTextChanged: vscode.Event<any>;
 	}
 
 	export interface WidgetComponent extends Component {
@@ -202,5 +220,136 @@ declare module 'sqlops' {
 		 * Register a provider for a model-view widget
 		 */
 		export function registerModelViewProvider(widgetId: string, handler: (view: ModelView) => void): void;
+	}
+
+	export namespace window {
+		export namespace modelviewdialog {
+			/**
+			 * Create a dialog with the given title
+			 * @param title The title of the dialog, displayed at the top
+			 */
+			export function createDialog(title: string): Dialog;
+
+			/**
+			 * Create a dialog tab which can be included as part of the content of a dialog
+			 * @param title The title of the page, displayed on the tab to select the page
+			 */
+			export function createTab(title: string): DialogTab;
+
+			/**
+			 * Create a button which can be included in a dialog
+			 * @param label The label of the button
+			 */
+			export function createButton(label: string): Button;
+
+			// Model view dialog classes
+			export interface Dialog {
+				/**
+				 * The title of the dialog
+				 */
+				title: string,
+
+				/**
+				 * The content of the dialog. If multiple tabs are given they will be displayed with tabs
+				 * If a string is given, it should be the ID of the dialog's model view content
+				 * TODO mairvine 4/18/18: use a model view content type
+				 */
+				content: string | DialogTab[],
+
+				/**
+				 * The caption of the OK button
+				 */
+				okTitle: string;
+
+				/**
+				 * The caption of the Cancel button
+				 */
+				cancelTitle: string;
+
+				/**
+				 * Any additional buttons that should be displayed
+				 */
+				customButtons: Button[];
+
+				/**
+				 * Opens the dialog
+				 */
+				open(): void;
+
+				/**
+				 * Closes the dialog
+				 */
+				close(): void;
+
+				/**
+				 * Updates the dialog on screen to reflect changes to the buttons or content
+				 */
+				updateContent(): void;
+
+				/**
+				 * Raised when dialog's ok button is pressed
+				 */
+				readonly onOk: vscode.Event<void>;
+
+				/**
+				 * Raised when dialog is canceled
+				 */
+				readonly onCancel: vscode.Event<void>;
+			}
+
+			export interface DialogTab {
+				/**
+				 * The title of the tab
+				 */
+				title: string,
+
+				/**
+				 * A string giving the ID of the tab's model view content
+				 * TODO mairvine 4/18/18: use a model view content type
+				 */
+				content: string;
+
+				/**
+				 * Updates the dialog on screen to reflect changes to the content
+				 */
+				updateContent(): void;
+			}
+
+			export interface Button {
+				/**
+				 * The label displayed on the button
+				 */
+				label: string,
+
+				/**
+				 * Whether the button is enabled
+				 */
+				enabled: boolean,
+
+				/**
+				 * Raised when the button is clicked
+				 */
+				readonly onClick: vscode.Event<void>;
+			}
+		}
+	}
+
+	/**
+	 * Namespace for interacting with query editor
+	*/
+	export namespace queryeditor {
+
+		/**
+		 * Make connection for the query editor
+		 * @param {string} fileUri file URI for the query editor
+		 * @param {string} connectionId connection ID
+		 */
+		export function connect(fileUri: string, connectionId: string): Thenable<void>;
+
+		/**
+		 * Run query if it is a query editor and it is already opened.
+		 * @param {string} fileUri file URI for the query editor
+		 */
+		export function runQuery(fileUri: string): void;
 	}
 }

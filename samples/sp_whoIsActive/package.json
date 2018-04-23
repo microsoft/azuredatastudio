@@ -215,11 +215,11 @@
         "snippets": []
     },
     "scripts": {
-        "prepare": "node ./node_modules/sqlops/bin/install",
         "build": "gulp build",
         "compile": "gulp compile",
         "watch": "gulp watch",
-        "postinstall": "node ./node_modules/vscode/bin/install"
+        "typings": "gulp copytypings",
+        "postinstall": "node ./node_modules/vscode/bin/install && node ./node_modules/sqlops/bin/install && gulp copytypings"
     },
     "dependencies": {
         "fs-extra": "^5.0.0",
