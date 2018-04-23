@@ -67,6 +67,7 @@ export enum ModelComponentTypes {
 	NavContainer,
 	FlexContainer,
 	Card,
+	InputBox,
 	DashboardWidget,
 	DashboardWebview
 }
@@ -82,6 +83,16 @@ export interface IComponentShape {
 export interface IItemConfig {
 	componentShape: IComponentShape;
 	config: any;
+}
+
+export enum ComponentEventType {
+	PropertiesChanged,
+	onDidChange
+}
+
+export interface IComponentEventArgs {
+	eventType: ComponentEventType;
+	args: any;
 }
 
 export interface IModelViewDialogDetails {

@@ -6,6 +6,7 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
+import Event, { Emitter } from 'vs/base/common/event';
 
 export interface IView {
 	readonly id: string;
@@ -19,4 +20,6 @@ export interface IModelView extends IView {
 	addToContainer(containerId: string, item: IItemConfig): void;
 	setLayout(componentId: string, layout: any): void;
 	setProperties(componentId: string, properties: { [key: string]: any }): void;
+	registerEvent(componentId: string);
+	onEvent: Event<any>;
 }

@@ -17,6 +17,7 @@ import * as vscode from 'vscode';
 
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import { IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import Event, { Emitter } from 'vs/base/common/event';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -516,6 +517,7 @@ export interface ExtHostModelViewShape {
 	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void): void;
 	$onClosed(handle: number): void;
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
+	$handleEvent(handle: number, id: string, eventArgs: any);
 }
 
 export interface MainThreadModelViewShape extends IDisposable {
@@ -525,6 +527,7 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$addToContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
+	$registerEvent(handle: number, componentId: string):  Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {

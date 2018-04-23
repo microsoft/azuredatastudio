@@ -16,6 +16,7 @@ import { IModelView } from 'sql/services/model/modelViewService';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { ModelStore } from 'sql/parts/modelComponents/modelStore';
+import Event, { Emitter } from 'vs/base/common/event';
 
 const componentRegistry = <IComponentRegistry> Registry.as(Extensions.ComponentContribution);
 
@@ -35,6 +36,8 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	abstract id: string;
 	abstract connection: sqlops.connection.Connection;
 	abstract serverInfo: sqlops.ServerInfo;
+	private _onEventEmitter = new Emitter<any>();
+
 
 	initializeModel(rootComponent: IComponentShape): void {
 		let descriptor = this.defineComponent(rootComponent);
@@ -52,11 +55,13 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		let descriptor = this.modelStore.createComponentDescriptor(typeId, component.id);
 		this.setProperties(component.id, component.properties);
 		this.setLayout(component.id, component.layout);
+		this.registerEvent(component.id);
 		if (component.itemConfigs) {
 			for(let item of component.itemConfigs) {
 				this.addToContainer(component.id, item);
 			}
 		}
+
 		return descriptor;
 	}
 
@@ -90,5 +95,19 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.modelStore.eventuallyRunOnComponent(componentId, action).catch(err => {
 			// TODO add error handling
 		});
+	}
+
+	registerEvent(componentId: string) {
+		this.queueAction(componentId, (component)  => {
+			if (component.onEvent) {
+				this._register(component.onEvent(e => {
+					this._onEventEmitter.fire(e);
+				}));
+			}
+		});
+	}
+
+	public get onEvent(): Event<any> {
+		return this._onEventEmitter.event;
 	}
 }

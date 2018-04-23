@@ -58,3 +58,7 @@ export interface IInsightsConfig {
 	details?: IInsightsConfigDetails;
 	autoRefreshInterval?: number;
 }
+export interface IInsightTypeContrib {
+	id: string;
+	contrib: IInsightsConfig;
+}

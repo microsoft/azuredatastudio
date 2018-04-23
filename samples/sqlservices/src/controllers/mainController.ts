@@ -47,11 +47,16 @@ export default class MainController implements vscode.Disposable {
 		sqlops.dashboard.registerModelViewProvider('sqlservices', async (view) => {
 			let flexModel = view.modelBuilder.flexContainer()
 				.withLayout({
-					flexFlow: 'row'
+					flexFlow: 'row',
+					alignItems: 'center'
 				}).withItems([
 					// 1st child panel with N cards
 					view.modelBuilder.flexContainer()
-						.withLayout({ flexFlow: 'column' })
+						.withLayout({
+							flexFlow: 'column',
+							alignItems: 'center',
+							justifyContent: 'center'
+						})
 						.withItems([
 							view.modelBuilder.card()
 								.withProperties<sqlops.CardProperties>({
@@ -73,7 +78,7 @@ export default class MainController implements vscode.Disposable {
 								})
 								.component()
 						]).component()
-				], { flex: '0 1 50%' })
+				], { flex: '1 1 50%' })
 				.component();
 			await view.initializeModel(flexModel);
 		});
