@@ -67,7 +67,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			dialog.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
 
-		// TODO: Update the dialog if it is displayed
+		dialog.updateContent();
 		return Promise.resolve();
 	}
 
@@ -81,7 +81,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		tab.title = details.title;
 		tab.content = details.content;
 
-		// TODO: Update the tab if it is displayed
+		tab.updateContent();
 		return Promise.resolve();
 	}
 
@@ -96,7 +96,6 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			button.enabled = details.enabled;
 		}
 
-		// TODO: Update the button if it is displayed
 		return Promise.resolve();
 	}
 
