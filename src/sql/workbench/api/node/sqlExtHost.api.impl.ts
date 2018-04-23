@@ -32,6 +32,7 @@ import { ExtHostConnectionManagement } from 'sql/workbench/api/node/extHostConne
 import { ExtHostDashboard } from 'sql/workbench/api/node/extHostDashboard';
 import { ExtHostObjectExplorer } from 'sql/workbench/api/node/extHostObjectExplorer';
 import { ExtHostLogService } from 'vs/workbench/api/node/extHostLogService';
+import { ExtHostModelViewDialog } from './extHostModelViewDialog';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -64,6 +65,7 @@ export function createApiFactory(
 	const extHostWebviewWidgets = rpcProtocol.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(rpcProtocol));
 	const extHostModelView = rpcProtocol.set(SqlExtHostContext.ExtHostModelView, new ExtHostModelView(rpcProtocol));
 	const extHostDashboard = rpcProtocol.set(SqlExtHostContext.ExtHostDashboard, new ExtHostDashboard(rpcProtocol));
+	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol));
 
 
 	return {
@@ -281,10 +283,15 @@ export function createApiFactory(
 			};
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
-				// TODO mairvine 4/18/18: Implement the extension layer for custom dialogs
-				createDialog(title: string): sqlops.window.modelviewdialog.Dialog { return undefined; },
-				createTab(title: string): sqlops.window.modelviewdialog.DialogTab { return undefined; },
-				createButton(label: string): sqlops.window.modelviewdialog.Button { return undefined; }
+				createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
+					return extHostModelViewDialog.createDialog(title);
+				},
+				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
+					return extHostModelViewDialog.createTab(title);
+				},
+				createButton(label: string): sqlops.window.modelviewdialog.Button {
+					return extHostModelViewDialog.createButton(label);
+				}
 			};
 
 			const window: typeof sqlops.window = {

@@ -83,3 +83,21 @@ export interface IItemConfig {
 	componentShape: IComponentShape;
 	config: any;
 }
+
+export interface IModelViewDialogDetails {
+	title: string;
+	content: string | number[];
+	okTitle: string;
+	cancelTitle: string;
+	customButtons: number[];
+}
+
+export interface IModelViewTabDetails {
+	title: string;
+	content: string;
+}
+
+export interface IModelViewButtonDetails {
+	label: string;
+	enabled: boolean;
+}

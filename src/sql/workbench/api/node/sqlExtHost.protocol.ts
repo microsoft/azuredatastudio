@@ -16,7 +16,7 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
-import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -446,7 +446,8 @@ export const SqlMainContext = {
 	MainThreadTasks: createMainId<MainThreadTasksShape>('MainThreadTasks'),
 	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview'),
 	MainThreadModelView: createMainId<MainThreadModelViewShape>('MainThreadModelView'),
-	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard')
+	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard'),
+	MainThreadModelViewDialog: createMainId<MainThreadModelViewDialogShape>('MainThreadModelViewDialog')
 };
 
 export const SqlExtHostContext = {
@@ -461,7 +462,8 @@ export const SqlExtHostContext = {
 	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks'),
 	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
 	ExtHostModelView: createExtId<ExtHostModelViewShape>('ExtHostModelView'),
-	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard')
+	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
+	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -536,4 +538,18 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 	$getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]>;
 	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
 	$findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
+}
+
+export interface ExtHostModelViewDialogShape {
+	$onOk(handle: number): void;
+	$onCancel(handle: number): void;
+	$onButtonClick(handle: number): void;
+}
+
+export interface MainThreadModelViewDialogShape extends IDisposable {
+	$open(handle: number): Thenable<void>;
+	$close(handle: number): Thenable<void>;
+	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
+	$setTabDetails(handle: number, details: IModelViewTabDetails): Thenable<void>;
+	$setButtonDetails(handle: number, details: IModelViewButtonDetails): Thenable<void>;
 }
