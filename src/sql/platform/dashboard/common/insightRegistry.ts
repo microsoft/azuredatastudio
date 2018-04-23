@@ -17,19 +17,18 @@ export const Extensions = {
 
 export interface IInsightRegistry {
 	insightSchema: IJSONSchema;
-	registerInsight(id: string, description: string, schema: IJSONSchema, ctor: Type<IInsightsView>, validAsQueryChart: boolean): InsightIdentifier;
+	registerInsight(id: string, description: string, schema: IJSONSchema, ctor: Type<IInsightsView>): InsightIdentifier;
 	registerExtensionInsight(id: string, val: IInsightsConfig): void;
 	getRegisteredExtensionInsights(id: string): IInsightsConfig;
 	getCtorFromId(id: string): Type<IInsightsView>;
 	getAllCtors(): Array<Type<IInsightsView>>;
-	getAllIds(validAsQueryChartOnly?: boolean): Array<string>;
+	getAllIds(): Array<string>;
 }
 
 class InsightRegistry implements IInsightRegistry {
 	private _insightSchema: IJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.InsightsRegistry', 'Widget used in the dashboards'), properties: {}, additionalProperties: false };
 	private _extensionInsights: { [x: string]: IInsightsConfig } = {};
 	private _idToCtor: { [x: string]: Type<IInsightsView> } = {};
-	private _idsValidAsQueryChart = new Set<string>();
 
 	/**
 	 * Register a dashboard widget
@@ -37,12 +36,9 @@ class InsightRegistry implements IInsightRegistry {
 	 * @param description description of the widget
 	 * @param schema config schema of the widget
 	 */
-	public registerInsight(id: string, description: string, schema: IJSONSchema, ctor: Type<IInsightsView>, validAsQueryChart: boolean): InsightIdentifier {
+	public registerInsight(id: string, description: string, schema: IJSONSchema, ctor: Type<IInsightsView>): InsightIdentifier {
 		this._insightSchema.properties[id] = schema;
 		this._idToCtor[id] = ctor;
-		if (validAsQueryChart) {
-			this._idsValidAsQueryChart.add(id);
-		}
 		return id;
 	}
 
@@ -62,12 +58,8 @@ class InsightRegistry implements IInsightRegistry {
 		return Object.values(this._idToCtor);
 	}
 
-	public getAllIds(validAsQueryChartOnly: boolean = false): Array<string> {
-		let allIds = Object.keys(this._idToCtor);
-		if (validAsQueryChartOnly) {
-			allIds = allIds.filter(id => this._idsValidAsQueryChart.has(id));
-		}
-		return allIds;
+	public getAllIds(): Array<string> {
+		return Object.keys(this._idToCtor);
 	}
 
 	public get insightSchema(): IJSONSchema {
@@ -78,6 +70,6 @@ class InsightRegistry implements IInsightRegistry {
 const insightRegistry = new InsightRegistry();
 platform.Registry.add(Extensions.InsightContribution, insightRegistry);
 
-export function registerInsight(id: string, description: string, schema: IJSONSchema, ctor: Type<IInsightsView>, validAsQueryChart: boolean = true): InsightIdentifier {
-	return insightRegistry.registerInsight(id, description, schema, ctor, validAsQueryChart);
+export function registerInsight(id: string, description: string, schema: IJSONSchema, ctor: Type<IInsightsView>): InsightIdentifier {
+	return insightRegistry.registerInsight(id, description, schema, ctor);
 }

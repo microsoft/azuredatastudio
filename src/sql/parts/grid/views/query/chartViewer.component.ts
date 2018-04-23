@@ -116,7 +116,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		this._initActionBar();
 
 		// Init chart type dropdown
-		this.chartTypesSelectBox = new SelectBox(insightRegistry.getAllIds(true), this.getDefaultChartType(), this._bootstrapService.contextViewService);
+		this.chartTypesSelectBox = new SelectBox(insightRegistry.getAllIds(), this.getDefaultChartType(), this._bootstrapService.contextViewService);
 		this.chartTypesSelectBox.render(this.chartTypesElement.nativeElement);
 		this.chartTypesSelectBox.onDidSelect(selected => this.onChartChanged());
 		this._disposables.push(attachSelectBoxStyler(this.chartTypesSelectBox, this._bootstrapService.themeService));

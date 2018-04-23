@@ -28,4 +28,4 @@ let imageInsightSchema: IJSONSchema = {
 	}
 };
 
-registerInsight('image', '', imageInsightSchema, ImageInsight, false);
+registerInsight('image', '', imageInsightSchema, ImageInsight);
