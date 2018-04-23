@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./flexContainer';
+import 'vs/css!./card';
 
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList,
@@ -16,11 +16,9 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelCo
 
 @Component({
 	template: `
-		<div *ngIf="label" class="cardComponent" style="position: absolute; height: 100%; width: 100%; margin: 10px 0px 10px 0px;">
-			<span style="margin-left: 10px; display: inline-block;">
-				<div style="font-size: 11px; font-weight: lighter">{{label}}</div>
-				<div>{{value}}</div>
-			</span>
+		<div *ngIf="label" class="model-card" >
+			<h4 class="card-label">{{label}}</h4>
+			<p class="card-value">{{value}}</p>
 		</div>
 	`
 })
