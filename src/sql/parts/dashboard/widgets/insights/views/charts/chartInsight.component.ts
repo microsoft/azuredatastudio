@@ -20,6 +20,7 @@ import { Color } from 'vs/base/common/color';
 import * as types from 'vs/base/common/types';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import * as nls from 'vs/nls';
 
 export enum ChartType {
 	Bar = 'bar',
@@ -98,11 +99,13 @@ export const defaultChartConfig: IChartConfig = {
 							[chartType]="chartType"
 							[colors]="colors"
 							[options]="_options"></canvas>
+					<div *ngIf="_hasError">{{CHART_ERROR_MESSAGE}}</div>
 				</div>`
 })
 export abstract class ChartInsight extends Disposable implements IInsightsView {
 	private _isDataAvailable: boolean = false;
 	private _hasInit: boolean = false;
+	private _hasError: boolean = false;
 	private _options: any = {};
 
 	@ViewChild(BaseChartDirective) private _chart: BaseChartDirective;
@@ -110,6 +113,8 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	protected _defaultConfig = defaultChartConfig;
 	protected _config: IChartConfig;
 	protected _data: IInsightData;
+
+	private readonly CHART_ERROR_MESSAGE = nls.localize('chartErrorMessage', 'Chart cannot be displayed with the given data');
 
 	protected abstract get chartType(): ChartType;
 
@@ -129,7 +134,14 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		// hence it's easier to not render until ready
 		this.options = mixin(this.options, { maintainAspectRatio: false });
 		this._hasInit = true;
-		this._changeRef.detectChanges();
+		this._hasError = false;
+		try {
+			this._changeRef.detectChanges();
+		} catch (err) {
+			this._hasInit = false;
+			this._hasError = true;
+			this._changeRef.detectChanges();
+		}
 		TelemetryUtils.addTelemetry(this._bootstrapService.telemetryService, TelemetryKeys.ChartCreated, { type: this.chartType });
 	}
 
