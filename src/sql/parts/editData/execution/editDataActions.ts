@@ -16,6 +16,8 @@ import * as dom from 'vs/base/browser/dom';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService, INotificationActions } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
+import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 const $ = dom.$;
 
 /**
@@ -154,7 +156,8 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 
 	constructor(
 		private _editor: EditDataEditor,
-		@IContextViewService contextViewService: IContextViewService) {
+		@IContextViewService contextViewService: IContextViewService,
+		@IThemeService private _themeService: IThemeService) {
 		super();
 		this._options = ['200', '1000', '10000'];
 		this._currentOptionsIndex = 0;
@@ -204,5 +207,6 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 			this._currentOptionsIndex = this._options.findIndex(x => x === selection.selected);
 			this._editor.editDataInput.onRowDropDownSet(Number(selection.selected));
 		}));
+		this.toDispose.push(attachSelectBoxStyler(this.selectBox, this._themeService));
 	}
 }
