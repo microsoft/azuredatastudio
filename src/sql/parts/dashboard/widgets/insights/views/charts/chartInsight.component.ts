@@ -255,17 +255,17 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 			}
 		} else {
 			if (this._config.columnsAsLabels) {
-				return this._data.rows[0].map((row, i) => {
+				return this._data.rows[0].slice(1).map((row, i) => {
 					return {
-						data: this._data.rows.map(row => Number(row[i])),
-						label: this._data.columns[i]
+						data: this._data.rows.map(row => Number(row[i + 1])),
+						label: this._data.columns[i + 1]
 					};
 				});
 			} else {
-				return this._data.rows[0].map((row, i) => {
+				return this._data.rows[0].slice(1).map((row, i) => {
 					return {
-						data: this._data.rows.map(row => Number(row[i])),
-						label: 'Series' + i
+						data: this._data.rows.map(row => Number(row[i + 1])),
+						label: 'Series' + (i + 1)
 					};
 				});
 			}
