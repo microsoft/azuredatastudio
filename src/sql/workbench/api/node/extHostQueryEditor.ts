@@ -19,15 +19,11 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadQueryEditor);
 	}
 
-	public $newQueryEditor(queryContent?: string): Thenable<string> {
-		return this._proxy.$newQueryEditor(queryContent);
-	}
-
 	public $connect(fileUri: string, connectionId: string): Thenable<void> {
 		return this._proxy.$connect(fileUri, connectionId);
 	}
 
-	public $runCurrentQuery(): void {
-		return this._proxy.$runCurrentQuery();
+	public $runQuery(fileUri: string): void {
+		return this._proxy.$runQuery(fileUri);
 	}
 }

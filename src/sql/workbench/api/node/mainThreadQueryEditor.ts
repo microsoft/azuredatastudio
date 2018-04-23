@@ -6,6 +6,7 @@
 
 import { SqlExtHostContext, SqlMainContext, ExtHostQueryEditorShape, MainThreadQueryEditorShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as sqlops from 'sqlops';
+import * as vscode from 'vscode';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IConnectableInput, IConnectionManagementService, IConnectionCompletionOptions,
@@ -38,14 +39,6 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 		this._toDispose = dispose(this._toDispose);
 	}
 
-	public $newQueryEditor(queryContent?: string): Thenable<string> {
-		return new Promise<string>((resolve) => {
-			this._queryEditorService.newSqlEditor(queryContent).then((owner: IConnectableInput) => {
-				resolve(owner.uri);
-			});
-		});
-	}
-
 	public $connect(fileUri: string, connectionId: string): Thenable<void> {
 		return new Promise<void>((resolve) => {
 			let options: IConnectionCompletionOptions = {
@@ -70,11 +63,14 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 		});
 	}
 
-	public $runCurrentQuery(): void {
-		let editor = this._editorService.getActiveEditor();
-		if (editor && editor instanceof QueryEditor) {
-			let queryEditor: QueryEditor = editor;
-			queryEditor.runCurrentQuery();
+	public $runQuery(fileUri: string): void {
+		let filteredEditors = this._editorService.getVisibleEditors().filter(editor => editor.input.getResource().toString() === fileUri);
+		if (filteredEditors && filteredEditors.length > 0) {
+			let editor = filteredEditors[0];
+			if (editor instanceof QueryEditor) {
+				let queryEditor: QueryEditor = editor;
+				queryEditor.runCurrentQuery();
+			}
 		}
 	}
 }

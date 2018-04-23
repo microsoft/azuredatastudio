@@ -547,7 +547,6 @@ export interface ExtHostQueryEditorShape {
 }
 
 export interface MainThreadQueryEditorShape extends IDisposable {
-	$newQueryEditor(queryContent?: string): Thenable<string>;
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
-	$runCurrentQuery(): void;
+	$runQuery(fileUri: string): void;
 }

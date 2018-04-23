@@ -329,13 +329,7 @@ declare module 'sqlops' {
 	/**
 	 * Namespace for interacting with query editor
 	*/
-	export namespace queryEditor {
-		/**
-		 * Create new query editor
-		 * @param {string} queryContent The content of query editor
-		 * @returns {string} The file URI of the new query editor
-		*/
-		export function newQueryEditor(queryContent?: string): Thenable<string>;
+	export namespace queryeditor {
 
 		/**
 		 * Make connection for the query editor
@@ -345,8 +339,9 @@ declare module 'sqlops' {
 		export function connect(fileUri: string, connectionId: string): Thenable<void>;
 
 		/**
-		 * Locates the active editor and run query if it is a query editor.
+		 * Run query if it is a query editor and it is already opened.
+		 * @param {string} fileUri file URI for the query editor
 		 */
-		export function runCurrentQuery(): void;
+		export function runQuery(fileUri: string): void;
 	}
 }

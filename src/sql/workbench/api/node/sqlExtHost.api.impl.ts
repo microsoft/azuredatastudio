@@ -317,18 +317,15 @@ export function createApiFactory(
 				}
 			};
 
-			// namespace: queryEditor
-			const queryEditor: typeof sqlops.queryEditor = {
-				newQueryEditor(queryContent?: string): Thenable<string> {
-					return extHostQueryEditor.$newQueryEditor(queryContent);
-				},
+			// namespace: queryeditor
+			const queryEditor: typeof sqlops.queryeditor = {
 
 				connect(fileUri: string, connectionId: string): Thenable<void> {
 					return extHostQueryEditor.$connect(fileUri, connectionId);
 				},
 
-				runCurrentQuery(): void {
-					extHostQueryEditor.$runCurrentQuery();
+				runQuery(fileUri: string): void {
+					extHostQueryEditor.$runQuery(fileUri);
 				}
 			};
 
@@ -351,7 +348,7 @@ export function createApiFactory(
 				tasks,
 				dashboard,
 				workspace,
-				queryEditor
+				queryeditor: queryEditor
 			};
 		}
 	};
