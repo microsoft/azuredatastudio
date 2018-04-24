@@ -38,6 +38,6 @@
 		"Redgate.sql-search"
 	],
 	"extensionsGallery": {
-		"serviceUrl": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/release/extensions/extensionsGallery.json"
+		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	}
 }

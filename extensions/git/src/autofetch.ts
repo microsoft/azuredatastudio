@@ -56,7 +56,8 @@ export class AutoFetcher {
 		const yes: MessageItem = { title: localize('yes', "Yes") };
 		const no: MessageItem = { isCloseAffordance: true, title: localize('no', "No") };
 		const askLater: MessageItem = { title: localize('not now', "Ask Me Later") };
-		const result = await window.showInformationMessage(localize('suggest auto fetch', "Would you like Code to [periodically run 'git fetch']({0})?", 'https://go.microsoft.com/fwlink/?linkid=865294'), yes, no, askLater);
+		// {{SQL CARBON EDIT}}
+		const result = await window.showInformationMessage(localize('suggest auto fetch', "Would you like SQL Operations Studio to [periodically run 'git fetch']({0})?", 'https://go.microsoft.com/fwlink/?linkid=865294'), yes, no, askLater);
 
 		if (result === askLater) {
 			return;
