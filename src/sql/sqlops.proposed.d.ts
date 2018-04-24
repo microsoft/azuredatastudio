@@ -333,4 +333,23 @@ declare module 'sqlops' {
 			}
 		}
 	}
+
+	/**
+	 * Namespace for interacting with query editor
+	*/
+	export namespace queryeditor {
+
+		/**
+		 * Make connection for the query editor
+		 * @param {string} fileUri file URI for the query editor
+		 * @param {string} connectionId connection ID
+		 */
+		export function connect(fileUri: string, connectionId: string): Thenable<void>;
+
+		/**
+		 * Run query if it is a query editor and it is already opened.
+		 * @param {string} fileUri file URI for the query editor
+		 */
+		export function runQuery(fileUri: string): void;
+	}
 }
