@@ -10,7 +10,7 @@ import { Dialog, DialogTab, DialogButton } from 'sql/platform/dialog/dialogTypes
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { CustomDialogService } from 'sql/platform/dialog/customDialogService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails } from '../common/sqlExtHostTypes';
+import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape {

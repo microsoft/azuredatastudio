@@ -448,7 +448,7 @@ export const SqlMainContext = {
 	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview'),
 	MainThreadModelView: createMainId<MainThreadModelViewShape>('MainThreadModelView'),
 	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard'),
-	MainThreadModelViewDialog: createMainId<MainThreadModelViewDialogShape>('MainThreadModelViewDialog')
+	MainThreadModelViewDialog: createMainId<MainThreadModelViewDialogShape>('MainThreadModelViewDialog'),
 	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
 };
 
@@ -465,7 +465,7 @@ export const SqlExtHostContext = {
 	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
 	ExtHostModelView: createExtId<ExtHostModelViewShape>('ExtHostModelView'),
 	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
-	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog')
+	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
 	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor')
 };
 

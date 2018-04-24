@@ -32,7 +32,7 @@ import { ExtHostConnectionManagement } from 'sql/workbench/api/node/extHostConne
 import { ExtHostDashboard } from 'sql/workbench/api/node/extHostDashboard';
 import { ExtHostObjectExplorer } from 'sql/workbench/api/node/extHostObjectExplorer';
 import { ExtHostLogService } from 'vs/workbench/api/node/extHostLogService';
-import { ExtHostModelViewDialog } from './extHostModelViewDialog';
+import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
 import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 
 export interface ISqlExtensionApiFactory {
