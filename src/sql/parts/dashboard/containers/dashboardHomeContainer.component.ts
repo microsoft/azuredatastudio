@@ -20,26 +20,24 @@ import { ConfigurationTarget } from 'vs/platform/configuration/common/configurat
 	selector: 'dashboard-home-container',
 	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardHomeContainer) }],
 	template: `
-		<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [_config]="properties"
-			style="padding-left: 10px; padding-right: 10px; display: block" [style.height.px]="_propertiesClass?.collapsed ? '30' : '90'">
-		</dashboard-widget-wrapper>
-		<widget-content [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
-		</widget-content>
+		<div class="fullsize" style="display: flex; flex-direction: column">
+			<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [_config]="properties"
+				style="padding-left: 10px; padding-right: 10px; display: block; flex: 0" [style.height.px]="_propertiesClass?.collapsed ? '30' : '90'">
+			</dashboard-widget-wrapper>
+			<widget-content style="flex: 1" [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
+			</widget-content>
+		</div>
 	`
 })
 export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@Input() private properties: WidgetConfig;
 	@ViewChild('propertiesClass') private _propertiesClass: DashboardWidgetWrapper;
 
-	private dashboardService: DashboardServiceInterface;
-
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => CommonServiceInterface)) protected commonService: CommonServiceInterface,
-
+		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: DashboardServiceInterface
 	) {
 		super(_cd);
-		this.dashboardService = commonService as DashboardServiceInterface;
 	}
 
 	ngAfterContentInit() {
