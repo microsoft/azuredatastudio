@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./jobHistory';
-
 import { OnInit, OnChanges, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
 import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -85,7 +84,9 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			this._jobCacheObject.serverName = serverName;
 			this._jobManagementService.addToCache(serverName, this._jobCacheObject);
 		}
-
+		$('#accordion').keypress(e => {
+			let meme = e;
+		});
 	}
 
 	ngOnInit() {
@@ -106,16 +107,18 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			} else {
 				tree.setFocus(element, payload);
 				tree.setSelection([element], payload);
-				self.setStepsTree(element);
+					self.setStepsTree(element);
 			}
 			return true;
 		};
 		this._treeController.onKeyDown = (tree, event) => {
 			this._treeController.onKeyDownWrapper(tree, event);
 			let element = tree.getFocus();
-			self.setStepsTree(element);
+			if (element) {
+				self.setStepsTree(element);
+			}
 			return true;
-		}
+		};
 		this._tree = new Tree(this._tableContainer.nativeElement, {
 			controller: this._treeController,
 			dataSource: this._treeDataSource,
@@ -155,7 +158,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		}
 	}
 
-	loadHistory() {
+	private loadHistory() {
 		const self = this;
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getJobHistory(ownerUri, this._agentViewComponent.jobId).then((result) => {
@@ -173,7 +176,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			} else {
 				self._showPreviousRuns = false;
 				self._showSteps = false;
-				this._cd.detectChanges();
+				self._cd.detectChanges();
 			}
 		});
 	}

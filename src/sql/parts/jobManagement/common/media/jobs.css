@@ -27,7 +27,7 @@ jobhistory-component {
 }
 
 #jobsDiv .jobview-grid {
-    height: 100%;
+    height: 96%;
 	width : 100%;
     display: block;
 }
@@ -94,6 +94,25 @@ jobhistory-component {
     width: 100%;
 }
 
+#jobsDiv .job-with-error {
+    border-bottom: none;
+}
+
+#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.l1.r1.error-row {
+    width: 100%;
+    opacity: 1;
+    font-weight: 700;
+    color: orangered;
+}
+
+#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.error-row {
+    opacity: 0;
+}
+
+#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row {
+    opacity: 1;
+}
+
 #jobsDiv .jobview-splitter {
     height: 1px;
     width: 100%;
@@ -157,4 +176,10 @@ jobhistory-component {
 agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.even > .slick-cell,
 agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.odd > .slick-cell {
     cursor: pointer;
+}
+
+jobsview-component .jobview-grid > .monaco-table .slick-viewport > .grid-canvas
+
+.vs-dark .jobview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted white;
 }
