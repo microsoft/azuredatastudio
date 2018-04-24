@@ -61,12 +61,15 @@ export class DialogModal extends Modal {
 		if (this._dialog.customButtons) {
 			this._dialog.customButtons.forEach(button => {
 				let buttonElement = this.addDialogButton(button);
+				buttonElement.enabled = button.enabled;
 				attachButtonStyler(buttonElement, this._themeService);
 			});
 		}
 
 		this._cancelButton = this.addDialogButton(this._dialog.cancelButton, () => this.cancel());
+		this._cancelButton.enabled = this._dialog.cancelButton.enabled;
 		this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done());
+		this._doneButton.enabled = this._dialog.okButton.enabled;
 		attachButtonStyler(this._cancelButton, this._themeService);
 		attachButtonStyler(this._doneButton, this._themeService);
 	}

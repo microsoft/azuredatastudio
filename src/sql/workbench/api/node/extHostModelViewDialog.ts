@@ -58,7 +58,9 @@ class ButtonImpl implements sqlops.window.modelviewdialog.Button {
 	private _onClick = new Emitter<void>();
 	public onClick = this._onClick.event;
 
-	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) { }
+	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) {
+		this._enabled = true;
+	}
 
 	public get label(): string {
 		return this._label;
