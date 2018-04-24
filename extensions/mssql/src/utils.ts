@@ -48,6 +48,7 @@ export function getPackageInfo(packageJson: any): IPackageInfo {
 }
 
 export function generateUserId(): Promise<string> {
+	let today = formatDate(new Date());
 	return new Promise<string>(resolve => {
 		try {
 			let interfaces = os.networkInterfaces();
@@ -60,17 +61,17 @@ export function generateUserId(): Promise<string> {
 				}
 			}
 			if (mac) {
-				resolve(crypto.createHash('sha256').update(mac + os.homedir(), 'utf8').digest('hex'));
+				resolve(crypto.createHash('sha256').update(mac + os.homedir() + today, 'utf8').digest('hex'));
 			} else {
-				resolve(generateGuid());
+				resolve(generateGuid(today));
 			}
 		} catch (err) {
-			resolve(generateGuid()); // fallback
+			resolve(generateGuid(today)); // fallback
 		}
 	});
 }
 
-export function generateGuid(): string {
+export function generateGuid(date: string): string {
 	let hexValues: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
 	// c.f. rfc4122 (UUID version 4 = xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx)
 	let oct: string = '';
@@ -90,7 +91,8 @@ export function generateGuid(): string {
 
 	// 'Set the two most significant bits (bits 6 and 7) of the clock_seq_hi_and_reserved to zero and one, respectively'
 	let clockSequenceHi: string = hexValues[8 + (Math.random() * 4) | 0];
-	return oct.substr(0, 8) + '-' + oct.substr(9, 4) + '-4' + oct.substr(13, 3) + '-' + clockSequenceHi + oct.substr(16, 3) + '-' + oct.substr(19, 12);
+	let value = oct.substr(0, 8) + '-' + oct.substr(9, 4) + '-4' + oct.substr(13, 3) + '-' + clockSequenceHi + oct.substr(16, 3) + '-' + oct.substr(19, 12);
+	return value + '-' + date;
 	/* tslint:enable:no-bitwise */
 }
 
@@ -100,4 +102,11 @@ export function verifyPlatform(): Thenable<boolean> {
 	} else {
 		return Promise.resolve(true);
 	}
+}
+
+function formatDate(date: Date): string {
+	let day = date.getDate();
+	let month = date.getMonth();
+	let year = date.getFullYear();
+	return `${month}/${day}/${year}`;
 }
