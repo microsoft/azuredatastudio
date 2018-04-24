@@ -29,23 +29,16 @@ export default class MainController extends ControllerBase {
     }
 
     public activate(): Promise<boolean> {
-        sqlops.dashboard.registerWebviewProvider('sp_whoisactive_documentation', webview => {
-            let templateValues = {url: 'http://whoisactive.com/docs/'};
-            Utils.renderTemplateHtml(path.join(__dirname, '..'), 'templateTab.html', templateValues)
-            .then(html => {
-                webview.html = html;
-            });
-        });
-
-        sqlops.tasks.registerTask('sp_whoisactive.install', e => this.onInstall(e));
+        sqlops.tasks.registerTask('sp_whoisactive.install', e => this.openurl('http://whoisactive.com/downloads/'));
+        sqlops.tasks.registerTask('sp_whoisactive.documentation', e => this.openurl('http://whoisactive.com/docs/'));
         sqlops.tasks.registerTask('sp_whoisactive.findBlockLeaders', e => this.onExecute(e, 'findBlockLeaders.sql'));
         sqlops.tasks.registerTask('sp_whoisactive.getPlans', e => this.onExecute(e, 'getPlans.sql'));
 
         return Promise.resolve(true);
     }
 
-    private onInstall(connection: sqlops.IConnectionProfile): void {
-        openurl.open('http://whoisactive.com/downloads/');
+    private openurl(link: string): void {
+        openurl.open(link);
     }
 
     private onExecute(connection: sqlops.IConnectionProfile, fileName: string): void {
