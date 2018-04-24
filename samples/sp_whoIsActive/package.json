@@ -24,7 +24,7 @@
         "commands": [
             {
                 "command": "sp_whoisactive.install",
-                "title": "Install sp_whoisactive",
+                "title": "Whoisactive: Install sp_whoisactive",
                 "icon": {
                     "light": "./out/src/media/download.svg",
                     "dark": "./out/src/media/download_inverse.svg"
@@ -32,7 +32,7 @@
             },
             {
                 "command": "sp_whoisactive.findBlockLeaders",
-                "title": "Find leader of block",
+                "title": "Whoisactive: Find leader of block",
                 "icon": {
                     "light": "./out/src/media/blocker.svg",
                     "dark": "./out/src/media/blocker_inverse.svg"
@@ -40,7 +40,7 @@
             },
             {
                 "command": "sp_whoisactive.getPlans",
-                "title": "Get plans",
+                "title": "Whoisactive: Get plans",
                 "icon": {
                     "light": "./out/src/media/monitor.svg",
                     "dark": "./out/src/media/monitor_inverse.svg"
@@ -48,7 +48,7 @@
             },
             {
                 "command": "sp_whoisactive.documentation",
-                "title": "Documentation",
+                "title": "Whoisactive: Documentation",
                 "icon": {
                     "light": "./out/src/media/documentation.svg",
                     "dark": "./out/src/media/documentation_inverse.svg"
