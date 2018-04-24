@@ -207,7 +207,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
 				this.expandJobRowDetails(i+expandedJobs.size);
 				this.addToStyleHash(i+expandedJobs.size);
-				this._agentViewComponent.setExpanded(job.jobId, 'temp');
+				this._agentViewComponent.setExpanded(job.jobId, 'Loading Error...');
 			} else if (job.lastRunOutcome === 0 && expandedJobs.get(job.jobId)) {
 				this.expandJobRowDetails(i+expansions);
 				this.addToStyleHash(i+expansions);
@@ -298,7 +298,7 @@ export class JobsViewComponent implements AfterContentChecked {
 							let item = self.dataView.getItemById(job.jobId + '.error');
 							let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
 							let errorMessage = jobHistory ? jobHistory.message: noStepsMessage;
-							item['name'] = item['name'] + ': ' + errorMessage;
+							item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
 							self._agentViewComponent.setExpanded(job.jobId, errorMessage);
 							self.dataView.updateItem(job.jobId + '.error', item);
 

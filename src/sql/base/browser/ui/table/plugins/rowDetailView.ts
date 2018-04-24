@@ -1,6 +1,7 @@
 // Adopted and converted to typescript from https://github.com/6pac/SlickGrid/blob/master/plugins/slick.rowdetailview.js
 // heavily modified
 import { mixin } from 'vs/base/common/objects';
+import * as nls from 'vs/nls';
 
 export class RowDetailView {
 
@@ -277,7 +278,7 @@ export class RowDetailView {
 		item._parent = parent;
 		item._offset = offset;
 		item.jobId = parent.jobId;
-		item.name = parent.message ? parent.message : 'Error';
+		item.name = parent.message ? parent.message : nls.localize('rowDetailView.loadError','Loading Error...');
 		return item;
 	}
 
