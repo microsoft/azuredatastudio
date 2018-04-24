@@ -22,17 +22,21 @@ See the [Server Reports Extension Project] in the SQL Operations Studio reposito
 
 
 ## Contributions and "thank you"
-Special thanks to Paul Randal, Aaron Bertrand, and Glenn Berry for providing useful queries.
+Special thanks to our Microsoft MVPs for providing useful queries.
+*	Paul Randal:
+https://www.sqlskills.com/blogs/paul/wait-statistics-or-please-tell-me-where-it-hurts/
+
+See [Paul Randal's wait types library] for more information about each wait type in the Wait Counts widget.
+
+[Paul Randal's wait types library]:https://www.sqlskills.com/help/waits
+
+*	Glenn Berry: https://gallery.technet.microsoft.com/scriptcenter/All-Databases-Data-log-a36da95d
+
+*	Aaron Bertrand: https://www.mssqltips.com/sqlservertip/2393/determine-sql-server-memory-use-by-database-and-object/
+
 
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 *	flyfishingdba for Add square brackets for ms_foreachdb call (#1023)
-
-
-## Documentation
-See [Paul Randal's wait types library] for more information about each wait type in the Wait Counts widget.
-
-
-[Paul Randal's wait types library]:https://www.sqlskills.com/help/waits
 
 ## What's new in Server Reports v1.1?
 * Fixed DB Space Usage where it threw an error when database names contain special characters
