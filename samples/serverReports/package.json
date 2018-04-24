@@ -2,7 +2,7 @@
     "name": "server-report",
     "displayName": "Server Reports",
     "description": "Server Reports",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "publisher": "Microsoft",
     "preview": true,
     "engines": {
@@ -126,13 +126,23 @@
                 "container": {
                     "widgets-container": [
                         {
-                            "name": "DB Space Usage",
+                            "name": "Top 10 DB Space Usage",
                             "gridItemConfig": {
                                 "sizex": 2,
-                                "sizey": 1
+                                "sizey": 2
                             },
                             "widget": {
                                 "extension-dbspace-usage": {}
+                            }
+                        },
+                        {
+                            "name": "Top 10 DB Buffer Usage",
+                            "gridItemConfig": {
+                                "sizex": 2,
+                                "sizey": 2
+                            },
+                            "widget": {
+                                "extension-dbbuffer-usage": {}
                             }
                         },
                         {
@@ -163,16 +173,6 @@
                             },
                             "widget": {
                                 "extension-wait-counts-by-Paul-Randal": {}
-                            }
-                        },
-                        {
-                            "name": "DB Buffer Usage",
-                            "gridItemConfig": {
-                                "sizex": 2,
-                                "sizey": 2
-                            },
-                            "widget": {
-                                "extension-dbbuffer-usage": {}
                             }
                         }
                     ]
