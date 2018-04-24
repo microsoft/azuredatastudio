@@ -269,10 +269,22 @@ export class RowDetailView {
 		return item;
 	}
 
+	public getErrorItem(parent, offset) {
+		let item: any = {};
+		item.id = parent.id + '.' + offset;
+		item._collapsed = true;
+		item._isPadding = false;
+		item._parent = parent;
+		item._offset = offset;
+		item.jobId = parent.jobId;
+		item.name = parent.message ? parent.message : 'Error';
+		return item;
+	}
+
 	//////////////////////////////////////////////////////////////
 	//create the detail ctr node. this belongs to the dev & can be custom-styled as per
 	//////////////////////////////////////////////////////////////
-	public applyTemplateNewLineHeight(item) {
+	public applyTemplateNewLineHeight(item, showError = false) {
 		// the height seems to be calculated by the template row count (how many line of items does the template have)
 		let rowCount = this._options.panelRows;
 
@@ -284,10 +296,13 @@ export class RowDetailView {
 
 		let idxParent = this._dataView.getIdxById(item.id);
 		for (let idx = 1; idx <= item._sizePadding; idx++) {
-			this._dataView.insertItem(idxParent + idx, this.getPaddingItem(item, idx));
+			if (showError) {
+				this._dataView.insertItem(idxParent + idx, this.getErrorItem(item, 'error'));
+			} else {
+				this._dataView.insertItem(idxParent + idx, this.getPaddingItem(item, idx));
+			}
 		}
 	}
-
 
 	public getColumnDefinition() {
 		return {
