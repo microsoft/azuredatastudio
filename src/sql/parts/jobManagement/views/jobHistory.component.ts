@@ -85,9 +85,6 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			this._jobCacheObject.serverName = serverName;
 			this._jobManagementService.addToCache(serverName, this._jobCacheObject);
 		}
-		$('#accordion').keypress(e => {
-			let meme = e;
-		});
 	}
 
 	ngOnInit() {
