@@ -51,4 +51,41 @@ export class AgentJobUtilities {
 			return date;
 		}
 	}
+
+	public static setRunnable(icon: HTMLElement, index: number) {
+		if (icon.className.includes('non-runnable')) {
+			icon.className = icon.className.slice(0, index);
+		}
+	}
+
+	public static getActionIconClassName(startIcon: HTMLElement, stopIcon: HTMLElement, executionStatus: number) {
+		this.setRunnable(startIcon, 9);
+		this.setRunnable(stopIcon, 8);
+		switch (executionStatus) {
+			case(1): // executing
+				startIcon.className += ' non-runnable';
+				return;
+			case(2): // Waiting for thread
+				startIcon.className += ' non-runnable';
+				return;
+			case(3): // Between retries
+				startIcon.className += ' non-runnable';
+				return;
+			case(4): //Idle
+				stopIcon.className += ' non-runnable';
+				return;
+			case(5): // Suspended
+				stopIcon.className += ' non-runnable';
+				return;
+			case(6): //obsolete
+				startIcon.className += ' non-runnable';
+				stopIcon.className += ' non-runnable';
+				return;
+			case(7): //Performing Completion Actions
+				startIcon.className += ' non-runnable';
+				return;
+			default:
+				return;
+		}
+	}
 }

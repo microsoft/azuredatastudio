@@ -131,6 +131,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		this._agentJobInfo = this._agentViewComponent.agentJobInfo;
 		if (!this.agentJobInfo) {
 			this.agentJobInfo = this._agentJobInfo;
+			this.setActions();
 		}
 		if (this._isVisible === false && this._tableContainer.nativeElement.offsetParent !== null) {
 			this._isVisible = true;
@@ -271,6 +272,12 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 
 	private formatTime(time: string): string {
 		return time.replace('T', ' ');
+	}
+
+	private setActions(): void {
+		let startIcon: HTMLElement = $('.icon-start').get(0);
+		let stopIcon: HTMLElement = $('.icon-stop').get(0);
+		AgentJobUtilities.getActionIconClassName(startIcon, stopIcon, this.agentJobInfo.currentExecutionStatus);
 	}
 
 	public get showSteps(): boolean {
