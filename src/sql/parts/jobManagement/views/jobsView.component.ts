@@ -207,7 +207,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
 				this.expandJobRowDetails(i+expandedJobs.size);
 				this.addToStyleHash(i+expandedJobs.size);
-				this._agentViewComponent.setExpanded(job.jobId, 'Error');
+				this._agentViewComponent.setExpanded(job.jobId, 'Loading Error...');
 			} else if (job.lastRunOutcome === 0 && expandedJobs.get(job.jobId)) {
 				this.expandJobRowDetails(i+expansions);
 				this.addToStyleHash(i+expansions);
