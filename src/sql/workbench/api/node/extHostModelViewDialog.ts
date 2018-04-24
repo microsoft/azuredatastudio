@@ -17,31 +17,26 @@ import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench
 
 class DialogImpl implements sqlops.window.modelviewdialog.Dialog {
 	public title: string;
-	public content: string | TabImpl[];
-	public okTitle: string;
-	public cancelTitle: string;
-	public customButtons: ButtonImpl[];
+	public content: string | sqlops.window.modelviewdialog.DialogTab[];
+	public okButton: sqlops.window.modelviewdialog.Button;
+	public cancelButton: sqlops.window.modelviewdialog.Button;
+	public customButtons: sqlops.window.modelviewdialog.Button[];
 
-	private readonly _onOk = new Emitter<void>();
-	public readonly onOk = this._onOk.event;
-	private readonly _onCancel = new Emitter<void>();
-	public readonly onCancel = this._onCancel.event;
-
-	constructor(private _handle: number, private _extHostModelViewDialog: ExtHostModelViewDialog) {
-		this._extHostModelViewDialog.registerOnOkCallback(this._handle, () => this._onOk.fire());
-		this._extHostModelViewDialog.registerOnCancelCallback(this._handle, () => this._onCancel.fire());
+	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) {
+		this.okButton = this._extHostModelViewDialog.createButton(nls.localize('dialogOkLabel', 'Done'));
+		this.cancelButton = this._extHostModelViewDialog.createButton(nls.localize('dialogCancelLabel', 'Cancel'));
 	}
 
 	public open(): void {
-		this._extHostModelViewDialog.open(this._handle);
+		this._extHostModelViewDialog.open(this);
 	}
 
 	public close(): void {
-		this._extHostModelViewDialog.close(this._handle);
+		this._extHostModelViewDialog.close(this);
 	}
 
 	public updateContent(): void {
-		this._extHostModelViewDialog.updateDialogContent(this._handle);
+		this._extHostModelViewDialog.updateDialogContent(this);
 	}
 }
 
@@ -49,10 +44,10 @@ class TabImpl implements sqlops.window.modelviewdialog.DialogTab {
 	public title: string;
 	public content: string;
 
-	constructor(private _handle: number, private _extHostModelViewDialog: ExtHostModelViewDialog) { }
+	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) { }
 
 	public updateContent(): void {
-		this._extHostModelViewDialog.updateTabContent(this._handle);
+		this._extHostModelViewDialog.updateTabContent(this);
 	}
 }
 
@@ -63,9 +58,7 @@ class ButtonImpl implements sqlops.window.modelviewdialog.Button {
 	private _onClick = new Emitter<void>();
 	public onClick = this._onClick.event;
 
-	constructor(private _handle: number, private _extHostModelViewDialog: ExtHostModelViewDialog) {
-		this._extHostModelViewDialog.registerOnClickCallback(this._handle, () => this._onClick.fire());
-	}
+	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) { }
 
 	public get label(): string {
 		return this._label;
@@ -73,7 +66,7 @@ class ButtonImpl implements sqlops.window.modelviewdialog.Button {
 
 	public set label(label: string) {
 		this._label = label;
-		this._extHostModelViewDialog.updateButton(this._handle);
+		this._extHostModelViewDialog.updateButton(this);
 	}
 
 	public get enabled(): boolean {
@@ -82,7 +75,11 @@ class ButtonImpl implements sqlops.window.modelviewdialog.Button {
 
 	public set enabled(enabled: boolean) {
 		this._enabled = enabled;
-		this._extHostModelViewDialog.updateButton(this._handle);
+		this._extHostModelViewDialog.updateButton(this);
+	}
+
+	public getOnClickCallback(): () => void {
+		return () => this._onClick.fire();
 	}
 }
 
@@ -91,12 +88,10 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 
 	private readonly _proxy: MainThreadModelViewDialogShape;
 
-	private readonly _dialogs = new Map<number, DialogImpl>();
-	private readonly _tabs = new Map<number, TabImpl>();
-	private readonly _buttons = new Map<number, ButtonImpl>();
+	private readonly _dialogHandles = new Map<sqlops.window.modelviewdialog.Dialog, number>();
+	private readonly _tabHandles = new Map<sqlops.window.modelviewdialog.DialogTab, number>();
+	private readonly _buttonHandles = new Map<sqlops.window.modelviewdialog.Button, number>();
 
-	private readonly _onOkCallbacks = new Map<number, () => void>();
-	private readonly _onCancelCallbacks = new Map<number, () => void>();
 	private readonly _onClickCallbacks = new Map<number, () => void>();
 
 	constructor(
@@ -105,100 +100,117 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadModelViewDialog);
 	}
 
-	public $onOk(handle: number): void {
-		this._onOkCallbacks.get(handle)();
+	private static getNewHandle() {
+		let handle = ExtHostModelViewDialog._currentHandle;
+		ExtHostModelViewDialog._currentHandle += 1;
+		return handle;
 	}
 
-	public $onCancel(handle: number): void {
-		this._onCancelCallbacks.get(handle)();
+	private getDialogHandle(dialog: sqlops.window.modelviewdialog.Dialog) {
+		let handle = this._dialogHandles.get(dialog);
+		if (handle === undefined) {
+			handle = ExtHostModelViewDialog.getNewHandle();
+			this._dialogHandles.set(dialog, handle);
+		}
+		return handle;
+	}
+
+	private getTabHandle(tab: sqlops.window.modelviewdialog.DialogTab) {
+		let handle = this._tabHandles.get(tab);
+		if (handle === undefined) {
+			handle = ExtHostModelViewDialog.getNewHandle();
+			this._tabHandles.set(tab, handle);
+		}
+		return handle;
+	}
+
+	private getButtonHandle(button: sqlops.window.modelviewdialog.Button) {
+		let handle = this._buttonHandles.get(button);
+		if (handle === undefined) {
+			handle = ExtHostModelViewDialog.getNewHandle();
+			this._buttonHandles.set(button, handle);
+		}
+		return handle;
 	}
 
 	public $onButtonClick(handle: number): void {
 		this._onClickCallbacks.get(handle)();
 	}
 
-	public open(handle: number): void {
-		this.updateDialogContent(handle);
+	public open(dialog: sqlops.window.modelviewdialog.Dialog): void {
+		let handle = this.getDialogHandle(dialog);
+		this.updateDialogContent(dialog);
 		this._proxy.$open(handle);
 	}
 
-	public close(handle: number): void {
+	public close(dialog: sqlops.window.modelviewdialog.Dialog): void {
+		let handle = this.getDialogHandle(dialog);
 		this._proxy.$close(handle);
 	}
 
-	public updateDialogContent(handle: number): void {
-		let dialog = this._dialogs.get(handle);
+	public updateDialogContent(dialog: sqlops.window.modelviewdialog.Dialog): void {
+		let handle = this.getDialogHandle(dialog);
 		let tabs = dialog.content;
 		if (tabs && typeof tabs !== 'string') {
-			tabs.forEach(tab => this._proxy.$setTabDetails((tab as any)._handle, {
-				title: tab.title,
-				content: tab.content
-			}));
+			tabs.forEach(tab => tab.updateContent());
 		}
 		if (dialog.customButtons) {
-			dialog.customButtons.forEach(button => this._proxy.$setButtonDetails((button as any)._handle, {
-				label: button.label,
-				enabled: button.enabled
-			}));
+			dialog.customButtons.forEach(button => this.updateButton(button));
 		}
+		this.updateButton(dialog.okButton);
+		this.updateButton(dialog.cancelButton);
 		this._proxy.$setDialogDetails(handle, {
 			title: dialog.title,
-			okTitle: dialog.okTitle,
-			cancelTitle: dialog.cancelTitle,
-			content: dialog.content && typeof dialog.content !== 'string' ? dialog.content.map(tab => (tab as any)._handle) : dialog.content as string,
-			customButtons: dialog.customButtons ? dialog.customButtons.map(button => (button as any)._handle) : undefined
+			okButton: this.getButtonHandle(dialog.okButton),
+			cancelButton: this.getButtonHandle(dialog.cancelButton),
+			content: dialog.content && typeof dialog.content !== 'string' ? dialog.content.map(tab => this.getTabHandle(tab)) : dialog.content as string,
+			customButtons: dialog.customButtons ? dialog.customButtons.map(button => this.getButtonHandle(button)) : undefined
 		});
 	}
 
-	public updateTabContent(handle: number): void {
-		let tab = this._tabs.get(handle);
+	public updateTabContent(tab: sqlops.window.modelviewdialog.DialogTab): void {
+		let handle = this.getTabHandle(tab);
 		this._proxy.$setTabDetails(handle, {
 			title: tab.title,
 			content: tab.content
 		});
 	}
 
-	public updateButton(handle: number): void {
-		let button = this._buttons.get(handle);
+	public updateButton(button: sqlops.window.modelviewdialog.Button): void {
+		let handle = this.getButtonHandle(button);
 		this._proxy.$setButtonDetails(handle, {
 			label: button.label,
 			enabled: button.enabled
 		});
 	}
 
-	public registerOnOkCallback(handle: number, callback: () => void) {
-		this._onOkCallbacks.set(handle, callback);
-	}
-
-	public registerOnCancelCallback(handle: number, callback: () => void) {
-		this._onCancelCallbacks.set(handle, callback);
-	}
-
-	public registerOnClickCallback(handle: number, callback: () => void) {
+	public registerOnClickCallback(button: sqlops.window.modelviewdialog.Button, callback: () => void) {
+		let handle = this.getButtonHandle(button);
 		this._onClickCallbacks.set(handle, callback);
 	}
 
 	public createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
-		let dialog = new DialogImpl(ExtHostModelViewDialog._currentHandle, this);
+		let dialog = new DialogImpl(this);
 		dialog.title = title;
-		this._dialogs.set(ExtHostModelViewDialog._currentHandle, dialog);
-		ExtHostModelViewDialog._currentHandle += 1;
+		let handle = ExtHostModelViewDialog.getNewHandle();
+		this._dialogHandles.set(dialog, handle);
 		return dialog;
 	}
 
 	public createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
-		let tab = new TabImpl(ExtHostModelViewDialog._currentHandle, this);
+		let tab = new TabImpl(this);
 		tab.title = title;
-		this._tabs.set(ExtHostModelViewDialog._currentHandle, tab);
-		ExtHostModelViewDialog._currentHandle += 1;
+		let handle = ExtHostModelViewDialog.getNewHandle();
+		this._tabHandles.set(tab, handle);
 		return tab;
 	}
 
 	public createButton(label: string): sqlops.window.modelviewdialog.Button {
-		let button = new ButtonImpl(ExtHostModelViewDialog._currentHandle, this);
+		let button = new ButtonImpl(this);
 		button.label = label;
-		this._buttons.set(ExtHostModelViewDialog._currentHandle, button);
-		ExtHostModelViewDialog._currentHandle += 1;
+		let handle = ExtHostModelViewDialog.getNewHandle();
+		this._buttonHandles.set(button, handle);
+		this.registerOnClickCallback(button, button.getOnClickCallback());
 		return button;
 	}
 }

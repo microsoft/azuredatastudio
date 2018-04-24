@@ -98,8 +98,8 @@ export interface IComponentEventArgs {
 export interface IModelViewDialogDetails {
 	title: string;
 	content: string | number[];
-	okTitle: string;
-	cancelTitle: string;
+	okButton: number;
+	cancelButton: number;
 	customButtons: number[];
 }
 

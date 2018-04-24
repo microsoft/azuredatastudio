@@ -48,15 +48,14 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		let dialog = this._dialogs.get(handle);
 		if (!dialog) {
 			dialog = new Dialog(details.title);
-			dialog.onOk(() => this.onOk(handle));
-			dialog.onCancel(() => this.onCancel(handle));
+			let okButton = this.getButton(details.okButton);
+			let cancelButton = this.getButton(details.cancelButton);
+			dialog.okButton = okButton;
+			dialog.cancelButton = cancelButton;
 			this._dialogs.set(handle, dialog);
 		}
 
 		dialog.title = details.title;
-		dialog.okTitle = details.okTitle;
-		dialog.cancelTitle = details.cancelTitle;
-
 		if (details.content && typeof details.content !== 'string') {
 			dialog.content = details.content.map(tabHandle => this.getTab(tabHandle));
 		} else {
@@ -128,13 +127,5 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	private onButtonClick(handle: number): void {
 		this._proxy.$onButtonClick(handle);
-	}
-
-	private onOk(handle: number): void {
-		this._proxy.$onOk(handle);
-	}
-
-	private onCancel(handle: number): void {
-		this._proxy.$onCancel(handle);
 	}
 }

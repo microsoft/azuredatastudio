@@ -546,8 +546,6 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 }
 
 export interface ExtHostModelViewDialogShape {
-	$onOk(handle: number): void;
-	$onCancel(handle: number): void;
 	$onButtonClick(handle: number): void;
 }
 

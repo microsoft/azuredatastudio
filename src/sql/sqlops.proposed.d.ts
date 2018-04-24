@@ -257,14 +257,14 @@ declare module 'sqlops' {
 				content: string | DialogTab[],
 
 				/**
-				 * The caption of the OK button
+				 * The ok button
 				 */
-				okTitle: string;
+				okButton: Button;
 
 				/**
-				 * The caption of the Cancel button
+				 * The cancel button
 				 */
-				cancelTitle: string;
+				cancelButton: Button;
 
 				/**
 				 * Any additional buttons that should be displayed
@@ -285,16 +285,6 @@ declare module 'sqlops' {
 				 * Updates the dialog on screen to reflect changes to the buttons or content
 				 */
 				updateContent(): void;
-
-				/**
-				 * Raised when dialog's ok button is pressed
-				 */
-				readonly onOk: vscode.Event<void>;
-
-				/**
-				 * Raised when dialog is canceled
-				 */
-				readonly onCancel: vscode.Event<void>;
 			}
 
 			export interface DialogTab {

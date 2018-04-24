@@ -8,7 +8,7 @@
 import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions } from 'sql/base/browser/ui/modal/modal';
 import { attachModalDialogStyler } from 'sql/common/theme/styler';
-import { Dialog } from 'sql/platform/dialog/dialogTypes';
+import { Dialog, DialogButton } from 'sql/platform/dialog/dialogTypes';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { Builder } from 'vs/base/browser/builder';
@@ -23,9 +23,6 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { localize } from 'vs/nls';
 
 export class DialogModal extends Modal {
-	private static readonly DONE_BUTTON_LABEL = localize('dialogModalDoneButtonLabel', 'Done');
-	private static readonly CANCEL_BUTTON_LABEL = localize('dialogModalCancelButtonLabel', 'Cancel');
-
 	private _dialogPane: DialogPane;
 
 	// Wizard HTML elements
@@ -61,10 +58,23 @@ export class DialogModal extends Modal {
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 
-		this._cancelButton = this.addFooterButton(DialogModal.CANCEL_BUTTON_LABEL, () => this.cancel());
-		this._doneButton = this.addFooterButton(DialogModal.DONE_BUTTON_LABEL, () => this.done());
+		if (this._dialog.customButtons) {
+			this._dialog.customButtons.forEach(button => {
+				let buttonElement = this.addDialogButton(button);
+				attachButtonStyler(buttonElement, this._themeService);
+			});
+		}
+
+		this._cancelButton = this.addDialogButton(this._dialog.cancelButton, () => this.cancel());
+		this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done());
 		attachButtonStyler(this._cancelButton, this._themeService);
 		attachButtonStyler(this._doneButton, this._themeService);
+	}
+
+	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined): Button {
+		let buttonElement = this.addFooterButton(button.label, onSelect);
+		button.registerClickEvent(buttonElement.onDidClick);
+		return buttonElement;
 	}
 
 	protected renderBody(container: HTMLElement): void {
