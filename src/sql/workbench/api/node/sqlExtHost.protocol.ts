@@ -449,6 +449,7 @@ export const SqlMainContext = {
 	MainThreadModelView: createMainId<MainThreadModelViewShape>('MainThreadModelView'),
 	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard'),
 	MainThreadModelViewDialog: createMainId<MainThreadModelViewDialogShape>('MainThreadModelViewDialog')
+	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
 };
 
 export const SqlExtHostContext = {
@@ -465,6 +466,7 @@ export const SqlExtHostContext = {
 	ExtHostModelView: createExtId<ExtHostModelViewShape>('ExtHostModelView'),
 	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
 	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog')
+	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -555,4 +557,11 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
 	$setTabDetails(handle: number, details: IModelViewTabDetails): Thenable<void>;
 	$setButtonDetails(handle: number, details: IModelViewButtonDetails): Thenable<void>;
+}
+export interface ExtHostQueryEditorShape {
+}
+
+export interface MainThreadQueryEditorShape extends IDisposable {
+	$connect(fileUri: string, connectionId: string): Thenable<void>;
+	$runQuery(fileUri: string): void;
 }

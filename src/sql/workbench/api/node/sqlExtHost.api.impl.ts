@@ -33,6 +33,7 @@ import { ExtHostDashboard } from 'sql/workbench/api/node/extHostDashboard';
 import { ExtHostObjectExplorer } from 'sql/workbench/api/node/extHostObjectExplorer';
 import { ExtHostLogService } from 'vs/workbench/api/node/extHostLogService';
 import { ExtHostModelViewDialog } from './extHostModelViewDialog';
+import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -66,6 +67,7 @@ export function createApiFactory(
 	const extHostModelView = rpcProtocol.set(SqlExtHostContext.ExtHostModelView, new ExtHostModelView(rpcProtocol));
 	const extHostDashboard = rpcProtocol.set(SqlExtHostContext.ExtHostDashboard, new ExtHostDashboard(rpcProtocol));
 	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol));
+	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
 
 
 	return {
@@ -322,6 +324,18 @@ export function createApiFactory(
 				}
 			};
 
+			// namespace: queryeditor
+			const queryEditor: typeof sqlops.queryeditor = {
+
+				connect(fileUri: string, connectionId: string): Thenable<void> {
+					return extHostQueryEditor.$connect(fileUri, connectionId);
+				},
+
+				runQuery(fileUri: string): void {
+					extHostQueryEditor.$runQuery(fileUri);
+				}
+			};
+
 			return {
 				accounts,
 				connection,
@@ -340,7 +354,8 @@ export function createApiFactory(
 				window,
 				tasks,
 				dashboard,
-				workspace
+				workspace,
+				queryeditor: queryEditor
 			};
 		}
 	};

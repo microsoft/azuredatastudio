@@ -97,14 +97,18 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	}
 
 	ngOnInit() {
+		this.setDefaultChartConfig();
+		this.legendOptions = Object.values(LegendPosition);
+		this.initializeUI();
+	}
+
+	private setDefaultChartConfig() {
 		this._chartConfig = <ILineConfig>{
 			dataDirection: 'vertical',
 			dataType: 'number',
 			legendPosition: 'none',
 			labelFirstColumn: false
 		};
-		this.legendOptions = Object.values(LegendPosition);
-		this.initializeUI();
 	}
 
 	private initializeUI() {
@@ -169,6 +173,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 
 
 	public onChartChanged(): void {
+		this.setDefaultChartConfig();
 		if ([Constants.chartTypeScatter, Constants.chartTypeTimeSeries].some(item => item === this.chartTypesSelectBox.value)) {
 			this.dataType = DataType.Point;
 			this.dataDirection = DataDirection.Horizontal;

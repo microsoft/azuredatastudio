@@ -9,7 +9,6 @@ import 'vs/css!sql/parts/grid/media/styles';
 import 'vs/css!sql/parts/grid/media/slick.grid';
 import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!../common/media/jobs';
-import 'vs/css!../common/media/detailview';
 
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
@@ -51,19 +50,19 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200 },
-		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', minWidth: 150 },
-		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', minWidth: 150 },
-		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', minWidth: 70 },
-		{ name: nls.localize('jobColumns.status','Status'), field: 'currentExecutionStatus', minWidth: 60 },
-		{ name: nls.localize('jobColumns.category','Category'), field: 'category', minWidth: 150 },
-		{ name: nls.localize('jobColumns.runnable','Runnable'), field: 'runnable', minWidth: 50 },
-		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', minWidth: 50 },
-		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', minWidth: 150 },
+		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200, id: 'name' },
+		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', minWidth: 150, id: 'lastRun' },
+		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', minWidth: 150, id: 'nextRun' },
+		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', minWidth: 70, id: 'enabled' },
+		{ name: nls.localize('jobColumns.status','Status'), field: 'currentExecutionStatus', minWidth: 60, id: 'currentExecutionStatus' },
+		{ name: nls.localize('jobColumns.category','Category'), field: 'category', minWidth: 150, id: 'category' },
+		{ name: nls.localize('jobColumns.runnable','Runnable'), field: 'runnable', minWidth: 50, id: 'runnable' },
+		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', minWidth: 50, id: 'hasSchedule' },
+		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', minWidth: 150, id: 'lastRunOutcome' },
 	];
 
-	private rowDetail: any;
-	private dataView: any;
+	private rowDetail: RowDetailView;
+	private dataView: Slick.Data.DataView<any>;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 	private isVisible: boolean = false;
@@ -72,6 +71,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	public jobs: sqlops.AgentJobInfo[];
 	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
 	private _serverName: string;
+	private _isCloud: boolean;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -91,6 +91,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			this._jobCacheObject.serverName = this._serverName;
 			this._jobManagementService.addToCache(this._serverName, this._jobCacheObject);
 		}
+		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
 	ngAfterContentChecked() {
@@ -126,14 +127,23 @@ export class JobsViewComponent implements AfterContentChecked {
 			syncColumnCellResize: true,
 			enableColumnReorder: false,
 			rowHeight: 45,
-			enableCellNavigation: true,
-			autoHeight: false,
-			forceFitColumns: false
+			enableCellNavigation: true
 		};
 
 		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
 
-		this.rowDetail = new RowDetailView({});
+		let rowDetail = new RowDetailView({
+			cssClass: '_detail_selector',
+			process: (job) => {
+				(<any>rowDetail).onAsyncResponse.notify({
+					'itemDetail': job
+				}, undefined, this);
+			},
+			useRowClick: false,
+			panelRows: 1
+		});
+		this.rowDetail = rowDetail;
+
 		columns.unshift(this.rowDetail.getColumnDefinition());
 		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
 		this._table.grid.setData(this.dataView, true);
@@ -159,7 +169,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		}
 	}
 
-	onJobsAvailable(jobs: sqlops.AgentJobInfo[]) {
+	private onJobsAvailable(jobs: sqlops.AgentJobInfo[]) {
 		let jobViews = jobs.map((job) => {
 			return {
 				id: job.jobId,
@@ -175,6 +185,14 @@ export class JobsViewComponent implements AfterContentChecked {
 				lastRunOutcome: AgentJobUtilities.convertToStatusString(job.lastRunOutcome)
 			};
 		});
+		this._table.registerPlugin(<any>this.rowDetail);
+
+		this.rowDetail.onBeforeRowDetailToggle.subscribe(function(e, args) {
+		});
+		this.rowDetail.onAfterRowDetailToggle.subscribe(function(e, args) {
+		});
+		this.rowDetail.onAsyncEndUpdate.subscribe(function(e, args) {
+		});
 
 		this.dataView.beginUpdate();
 		this.dataView.setItems(jobViews);
@@ -182,14 +200,57 @@ export class JobsViewComponent implements AfterContentChecked {
 
 		this._table.resizeCanvas();
 		this._table.autosizeColumns();
+		let expandedJobs = this._agentViewComponent.expanded;
+		let expansions = 0;
+		for (let i = 0; i < jobs.length; i++){
+			let job = jobs[i];
+			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
+				this.expandJobRowDetails(i+expandedJobs.size);
+				this.addToStyleHash(i+expandedJobs.size);
+				this._agentViewComponent.setExpanded(job.jobId, 'temp');
+			} else if (job.lastRunOutcome === 0 && expandedJobs.get(job.jobId)) {
+				this.expandJobRowDetails(i+expansions);
+				this.addToStyleHash(i+expansions);
+				expansions++;
+			}
+		}
+
+		$('.jobview-jobnamerow').hover(e => {
+			let currentTarget = e.currentTarget;
+			currentTarget.title = currentTarget.innerText;
+		});
 		this.loadJobHistories();
 	}
 
-	loadingTemplate() {
-		return '<div class="preload">Loading...</div>';
+	private setRowWithErrorClass(hash: {[index: number]: {[id: string]: string;}}, row: number, errorClass: string) {
+		hash[row] = {
+			'_detail_selector': errorClass,
+			'id': errorClass,
+			'jobId': errorClass,
+			'name': errorClass,
+			'lastRun': errorClass,
+			'nextRun': errorClass,
+			'enabled': errorClass,
+			'currentExecutionStatus': errorClass,
+			'category': errorClass,
+			'runnable': errorClass,
+			'hasSchedule': errorClass,
+			'lastRunOutcome': errorClass
+		};
+		return hash;
 	}
 
-	renderName(row, cell, value, columnDef, dataContext) {
+	private addToStyleHash(row: number) {
+		let hash : {
+			[index: number]: {
+			[id: string]: string;
+		}} = {};
+		hash = this.setRowWithErrorClass(hash, row, 'job-with-error');
+		hash = this.setRowWithErrorClass(hash, row+1,  'error-row');
+		this._table.grid.setCellCssStyles('error-row'+row.toString(), hash);
+	}
+
+	private renderName(row, cell, value, columnDef, dataContext) {
 		let resultIndicatorClass: string;
 		switch (dataContext.lastRunOutcome) {
 			case ('Succeeded'):
@@ -205,7 +266,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				resultIndicatorClass = 'jobview-jobnameindicatorunknown';
 				break;
 			default:
-				resultIndicatorClass = 'jobview-jobnameindicatorunknown';
+				resultIndicatorClass = 'jobview-jobnameindicatorfailure';
 				break;
 		}
 
@@ -215,23 +276,49 @@ export class JobsViewComponent implements AfterContentChecked {
 			'</tr></table>';
 	}
 
-	loadJobHistories() {
+	private expandJobRowDetails(rowIdx: number, message?: string): void {
+		let item = this.dataView.getItemByIdx(rowIdx);
+		item.message = this._agentViewComponent.expanded.get(item.jobId);
+		this.rowDetail.applyTemplateNewLineHeight(item, true);
+	}
+
+	private loadJobHistories() {
+		const self = this;
 		if (this.jobs) {
-			this.jobs.forEach((job) => {
+			let erroredJobs = 0;
+			for (let i = 0; i < this.jobs.length; i++) {
+				let job = this.jobs[i];
 				let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
 					if (result.jobs) {
-						this.jobHistories[job.jobId] = result.jobs;
-						this._jobCacheObject.setJobHistory(job.jobId, result.jobs);
+						self.jobHistories[job.jobId] = result.jobs;
+						self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
+						if (self._agentViewComponent.expanded.has(job.jobId)) {
+							let jobHistory = self._jobCacheObject.getJobHistory(job.jobId)[0];
+							let item = self.dataView.getItemById(job.jobId + '.error');
+							let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
+							let errorMessage = jobHistory ? jobHistory.message: noStepsMessage;
+							item['name'] = item['name'] + ': ' + errorMessage;
+							self._agentViewComponent.setExpanded(job.jobId, errorMessage);
+							self.dataView.updateItem(job.jobId + '.error', item);
+
+						}
 					}
 				});
-			});
+			}
 		}
+	}
+
+	private isErrorRow(jobName: string) {
+		return jobName.includes('Error');
 	}
 
 	private getJob(args: Slick.OnClickEventArgs<any>): sqlops.AgentJobInfo {
 		let row = args.row;
 		let jobName = args.grid.getCellNode(row, 1).innerText.trim();
+		if (this.isErrorRow(jobName)) {
+			jobName = args.grid.getCellNode(row-1, 1).innerText.trim();
+		}
 		let job = this.jobs.filter(job => job.name === jobName)[0];
 		return job;
 	}

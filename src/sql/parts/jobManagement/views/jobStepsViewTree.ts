@@ -19,7 +19,6 @@ import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { generateUuid } from 'vs/base/common/uuid';
