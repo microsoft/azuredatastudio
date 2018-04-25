@@ -171,7 +171,7 @@ export class TableView extends HeightMap {
 
 	private onFocus(): void {
 		// if (!this.context.options.alwaysFocused) {
-			DOM.addClass(this.domNode, 'focused');
+		DOM.addClass(this.domNode, 'focused');
 		// }
 
 		this._onDOMFocus.fire();
@@ -179,7 +179,7 @@ export class TableView extends HeightMap {
 
 	private onBlur(): void {
 		// if (!this.context.options.alwaysFocused) {
-			DOM.removeClass(this.domNode, 'focused');
+		DOM.removeClass(this.domNode, 'focused');
 		// }
 
 		// this.domNode.removeAttribute('aria-activedescendant'); // ARIA
