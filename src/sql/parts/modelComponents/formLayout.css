@@ -1,0 +1,14 @@
+
+.model-table {
+	width:300px;
+	display:table;
+}
+
+.model-row {
+	display: table-row;
+}
+
+.model-cell {
+	padding: 5px;
+	display: table-cell;
+}

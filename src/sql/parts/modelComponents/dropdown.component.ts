@@ -13,9 +13,10 @@ import Event, { Emitter } from 'vs/base/common/event';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { InputBox, IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox';
+import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
 
 @Component({
 	selector: 'inputBox',
@@ -23,10 +24,10 @@ import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common
 		<div #input style="width: 100%"></div>
 	`
 })
-export default class InputBoxComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class DropDownComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
-	private _input: InputBox;
+	private _dropdown: Dropdown;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -42,17 +43,21 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			let inputOptions: IInputOptions = {
+			let dropdownOptions: IDropdownOptions = {
+				values: [],
+				strictSelection: false,
 				placeholder: '',
+				maxHeight: 125,
 				ariaLabel: ''
 			};
 
-			this._input = new InputBox(this._inputContainer.nativeElement, this._commonService.contextViewService, inputOptions);
+			this._dropdown = new Dropdown(this._inputContainer.nativeElement, this._commonService.contextViewService, this._commonService.themeService,
+				dropdownOptions);
 
-			this._register(this._input);
-			this._register(attachInputBoxStyler(this._input, this._commonService.themeService));
-			this._register(this._input.onDidChange(e => {
-				this.value = this._input.value;
+			this._register(this._dropdown);
+			this._register(attachEditableDropdownStyler(this._dropdown, this._commonService.themeService));
+			this._register(this._dropdown.onValueChange(e => {
+				this.value = this._dropdown.value;
 				this._onEventEmitter.fire({
 					eventType: ComponentEventType.onDidChange,
 					args: e
@@ -78,20 +83,35 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._input.value = this.value;
+		this._dropdown.values = this.values ? this.values : [];
+		if (this.value) {
+			this._dropdown.value = this.value;
+		}
 	}
 
 	// CSS-bound properties
 
-	public get value(): string {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, string>((props) => props.value, '');
+	private get value(): string {
+		return this.getPropertyOrDefault<sqlops.DropDownProperties, string>((props) => props.value, '');
 	}
 
-	public set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, string>(this.setInputBoxProperties, newValue);
+	private set value(newValue: string) {
+		this.setPropertyFromUI<sqlops.DropDownProperties, string>(this.setValueProperties, newValue);
 	}
 
-	private setInputBoxProperties(properties: sqlops.InputBoxProperties, value: string): void {
+	private get values(): string[] {
+		return this.getPropertyOrDefault<sqlops.DropDownProperties, string[]>((props) => props.values, undefined);
+	}
+
+	private set values(newValue: string[]) {
+		this.setPropertyFromUI<sqlops.DropDownProperties, string[]>(this.setValuesProperties, newValue);
+	}
+
+	private setValueProperties(properties: sqlops.DropDownProperties, value: string): void {
 		properties.value = value;
+	}
+
+	private setValuesProperties(properties: sqlops.DropDownProperties, values: string[]): void {
+		properties.values = values;
 	}
 }

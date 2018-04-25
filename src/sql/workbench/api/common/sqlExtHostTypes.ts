@@ -68,14 +68,16 @@ export enum ModelComponentTypes {
 	FlexContainer,
 	Card,
 	InputBox,
+	DropDown,
 	DashboardWidget,
-	DashboardWebview
+	DashboardWebview,
+	Form
 }
 
 export interface IComponentShape {
 	type: ModelComponentTypes;
 	id: string;
-	properties?:  { [key: string]: any };
+	properties?: { [key: string]: any };
 	layout?: any;
 	itemConfigs?: IItemConfig[];
 }

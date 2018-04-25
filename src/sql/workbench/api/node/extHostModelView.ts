@@ -33,6 +33,11 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return new ContainerBuilderImpl<sqlops.FlexContainer, sqlops.FlexLayout, sqlops.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id);
 	}
 
+	formContainer(): sqlops.ContainerBuilder<any, any, any> {
+		let id = this.getNextComponentId();
+		return new ContainerBuilderImpl<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout>(this._proxy, this._handle, ModelComponentTypes.Form, id);
+	}
+
 	card(): sqlops.ComponentBuilder<sqlops.CardComponent> {
 		let id = this.getNextComponentId();
 		return this.withEventHandler(new CardWrapper(this._proxy, this._handle, id), id);
@@ -40,7 +45,14 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	inputBox(): sqlops.ComponentBuilder<sqlops.InputBoxComponent> {
 		let id = this.getNextComponentId();
+		console.info('input box ' + id);
 		return this.withEventHandler(new InputBoxWrapper(this._proxy, this._handle, id), id);
+	}
+
+	dropDown(): sqlops.ComponentBuilder<sqlops.DropDownComponent> {
+		let id = this.getNextComponentId();
+		console.info('dropdown ' + id);
+		return this.withEventHandler(new DropDownWrapper(this._proxy, this._handle, id), id);
 	}
 
 	dashboardWidget(widgetId: string): sqlops.ComponentBuilder<sqlops.WidgetComponent> {
@@ -90,6 +102,11 @@ class ComponentBuilderImpl<T extends sqlops.Component> implements sqlops.Compone
 		return this;
 	}
 
+	withTitle(title: string): sqlops.ComponentBuilder<T> {
+		this._component.title = title;
+		return this;
+	}
+
 	handleEvent(eventArgs: IComponentEventArgs) {
 		this._component.onEvent(eventArgs);
 	}
@@ -124,7 +141,7 @@ class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> ext
 
 
 class InternalItemConfig {
-	constructor(private _component: ComponentWrapper, public config: any) {}
+	constructor(private _component: ComponentWrapper, public config: any) { }
 
 	public toIItemConfig(): IItemConfig {
 		return {
@@ -168,8 +185,16 @@ class ComponentWrapper implements sqlops.Component {
 		return this.itemConfigs.map(itemConfig => itemConfig.component);
 	}
 
+	public get title(): string {
+		return this.properties['title'];
+	}
+
+	public set title(v: string) {
+		this.setProperty('title', v);
+	}
+
 	public toComponentShape(): IComponentShape {
-		return <IComponentShape> {
+		return <IComponentShape>{
 			id: this.id,
 			type: this.type,
 			layout: this.layout,
@@ -183,13 +208,13 @@ class ComponentWrapper implements sqlops.Component {
 		return this._proxy.$clearContainer(this._handle, this.id);
 	}
 
-	public addItems(items: Array<sqlops.Component>, itemLayout ?: any): void {
-		for(let item of items) {
+	public addItems(items: Array<sqlops.Component>, itemLayout?: any): void {
+		for (let item of items) {
 			this.addItem(item, itemLayout);
 		}
 	}
 
-	public addItem(item: sqlops.Component, itemLayout ?: any): void {
+	public addItem(item: sqlops.Component, itemLayout?: any): void {
 		let itemImpl = item as ComponentWrapper;
 		if (!itemImpl) {
 			throw new Error(nls.localize('unknownComponentType', 'Unkown component type. Must use ModelBuilder to create objects'));
@@ -289,6 +314,47 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 	}
 
 	public get onTextChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+
+	public onEvent(eventArgs: IComponentEventArgs) {
+		super.onEvent(eventArgs);
+		if (eventArgs) {
+			let emitter = this._emitterMap.get(eventArgs.eventType);
+			if (emitter) {
+				emitter.fire();
+			}
+		}
+	}
+}
+
+class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.DropDown, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+	}
+
+	private _onTextChangedEmitter = new Emitter<any>();
+	private _emitterMap = new Map<ComponentEventType, Emitter<any>>();
+
+	public get value(): string {
+		return this.properties['value'];
+	}
+	public set value(v: string) {
+		this.setProperty('value', v);
+	}
+
+	public get values(): string[] {
+		return this.properties['values'];
+	}
+	public set values(v: string[]) {
+		this.setProperty('values', v);
+	}
+
+	public get onValueChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
