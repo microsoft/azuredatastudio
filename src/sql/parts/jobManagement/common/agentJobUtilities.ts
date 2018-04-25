@@ -9,6 +9,9 @@ import * as nls from 'vs/nls';
 
 export class AgentJobUtilities {
 
+	public static startIconClass: string = 'icon-start';
+	public static stopIconClass: string = 'icon-stop';
+
 	public static convertToStatusString(status: number): string {
 		switch(status) {
 			case(0): return nls.localize('agentUtilities.failed','Failed');
@@ -59,8 +62,8 @@ export class AgentJobUtilities {
 	}
 
 	public static getActionIconClassName(startIcon: HTMLElement, stopIcon: HTMLElement, executionStatus: number) {
-		this.setRunnable(startIcon, 9);
-		this.setRunnable(stopIcon, 8);
+		this.setRunnable(startIcon, AgentJobUtilities.startIconClass.length);
+		this.setRunnable(stopIcon, AgentJobUtilities.stopIconClass.length);
 		switch (executionStatus) {
 			case(1): // executing
 				startIcon.className += ' non-runnable';
