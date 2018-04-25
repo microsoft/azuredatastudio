@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
- import { Dialog, DialogTab } from 'sql/platform/dialog/dialogTypes';
+import { Dialog, DialogTab } from 'sql/platform/dialog/dialogTypes';
 import { Mock, It, Times } from 'typemoq';
 import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
