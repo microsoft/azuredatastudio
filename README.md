@@ -8,26 +8,18 @@ SQL Operations Studio is a data management tool that enables you to work with SQ
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=870837
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=870838
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=870839
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=870840
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=870842
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=870841
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=872717
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=872718
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=872719
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=872720
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=872722
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=872721
 
 Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instructions.
 
 Try out the latest insiders build from `master` at https://github.com/Microsoft/sqlopsstudio/releases.
 
 See the [change log](https://github.com/Microsoft/sqlopsstudio/blob/master/CHANGELOG.md) for additional details of what's in this release.
-
-**Design Discussions**
-
-The SQL Operations Studio team would like to incorporate community feedback earlier in the development process.  To facilitate this, we'd like to share our designs while features are actively being built.
-
-We're currently collecting input on the **SQL Agent** experience and enhancements to the Manage Dashboard that we're calling **"Command Center"**.  We'll add additional design feedback requests below as we start work in new feature areas.  Please leave comments on these issues to help us understand your requirements and shape feature development.
-
-* [#750 Seeking community feedback on SQL Agent UX prototype](https://github.com/Microsoft/sqlopsstudio/issues/750)
 
 **Feature Highlights**
 
