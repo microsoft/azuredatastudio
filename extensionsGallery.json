@@ -1,6 +1,57 @@
 {
 	"results": [{
 		"extensions": [
+      {
+				"extensionId": "10",
+				"extensionName": "agent",
+				"displayName": "SQL Server Agent",
+				"shortDescription": "Manage and troubleshoot SQL Agent jobs (early preview)",
+				"publisher": {
+					"displayName":"Microsoft",
+					"publisherId": "Microsoft",
+					"publisherName":"Microsoft"
+				},
+				"versions": [
+					{
+						"version": "0.28.6",
+						"lastUpdated": "4/25/2018",
+						"assetUri": "",
+						"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+							{
+								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+								"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.28.6.vsix"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Links.Source",
+								"source": "https://github.com/Microsoft/sqlopsstudio"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+								"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/agent/README.md"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Code.Manifest",
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/agent/package.json"
+							},
+							{
+								"assetType": "Microsoft.VisualStudio.Services.Content.License",
+								"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt"
+							}
+						],
+						"properties": [
+						{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+						{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"}
+						]
+					}
+				],
+				"statistics": [],
+				"flags": "preview"
+			},
 			{
 				"extensionId": "11",
 				"extensionName": "whoisactive",
