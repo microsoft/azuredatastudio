@@ -83,9 +83,6 @@ export class RefreshTableAction extends EditDataAction {
 			let queryString: string = undefined;
 			if (input.queryPaneEnabled) {
 				queryString = input.queryString = this.editor.getEditorText();
-				if (!this.IsQueryStringValid(input.queryString, input.tableName)) {
-					return TPromise.as(null);
-				}
 			} else {
 				rowLimit = input.rowLimit;
 			}
@@ -101,62 +98,6 @@ export class RefreshTableAction extends EditDataAction {
 			});
 		}
 		return TPromise.as(null);
-	}
-
-	private IsQueryStringValid(queryString: string, tableName: string): boolean {
-		if (queryString) {
-			let lowerCaseStr = queryString.toLocaleLowerCase();
-			let fromIndex = lowerCaseStr.search(/\s(from)\s/);
-
-			if (fromIndex === -1) {
-				this._notificationService.notify({
-					severity: Severity.Error,
-					message: nls.localize('noFromClauseFailure', 'Edit Data query has no FROM clause.')
-				});
-				return false;
-			}
-
-			let selectStr = lowerCaseStr.substring(0, fromIndex);
-			if (selectStr.search(/\s(as)\s/) >= 0) {
-				this._notificationService.notify({
-					severity: Severity.Error,
-					message: nls.localize('aliasNotSupportedFailure', 'Edit Data queries do not support aliased columns.')
-				});
-				return false;
-			}
-
-			let afterFromStr = lowerCaseStr.substring(fromIndex + 5);
-			if (afterFromStr.search(/\s(group by|having)\s/) >= 0) {
-				this._notificationService.notify({
-					severity: Severity.Error,
-					message: nls.localize('aggregateNotSupportedFailure', 'Edit Data queries do not support aggregated results.')
-				});
-				return false;
-			}
-
-			let whereIndex = afterFromStr.search(/\s(where)\s/);
-			let orderByIndex = afterFromStr.search(/\s(order by)\s/);
-			let optionIndex = afterFromStr.search(/\s(option)\s/);
-			let end = Math.min.apply(null, [ whereIndex, orderByIndex, optionIndex ].filter(index => index > 0));
-			let queryTablesStr = afterFromStr.substring(0, end !== NaN ? end : undefined);
-
-			let errorMsg: string = undefined;
-			if (!queryTablesStr.includes(tableName.toLocaleLowerCase())) {
-				errorMsg = nls.localize('wrongTableNameFailure', 'Edit Data query did not contain original table name.');
-			} else if ((queryTablesStr.match(/,/g) || []).length > 0) {
-				errorMsg = nls.localize('multipleTableNamesFailure', 'Edit Data queries do not support querying from multiple tables.');
-			}
-
-			if (errorMsg) {
-				this._notificationService.notify({
-					severity: Severity.Error,
-					message: errorMsg
-				});
-				return false;
-			}
-		}
-
-		return true;
 	}
 }
 
