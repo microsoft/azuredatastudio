@@ -194,25 +194,22 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	public createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
 		let dialog = new DialogImpl(this);
 		dialog.title = title;
-		let handle = ExtHostModelViewDialog.getNewHandle();
-		this._dialogHandles.set(dialog, handle);
+		this.getDialogHandle(dialog);
 		return dialog;
 	}
 
 	public createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
 		let tab = new TabImpl(this);
 		tab.title = title;
-		let handle = ExtHostModelViewDialog.getNewHandle();
-		this._tabHandles.set(tab, handle);
+		this.getTabHandle(tab);
 		return tab;
 	}
 
 	public createButton(label: string): sqlops.window.modelviewdialog.Button {
 		let button = new ButtonImpl(this);
-		button.label = label;
-		let handle = ExtHostModelViewDialog.getNewHandle();
-		this._buttonHandles.set(button, handle);
+		this.getButtonHandle(button);
 		this.registerOnClickCallback(button, button.getOnClickCallback());
+		button.label = label;
 		return button;
 	}
 }
