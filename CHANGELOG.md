@@ -1,5 +1,20 @@
 # Change Log
 
+## Version 0.28.6
+* Release date: April 25, 2018
+* Release status: Public Preview
+
+## What's new in this version
+The April Public Preview release contains some of the following highlights.
+
+* Improvements to SQL Agent *Preview* extension
+* Accessibility improvements for keyboard navigation, screen reader support and high-contrast mode.
+* Improved large and protected file support for saving Admin protected and >256M files within SQL Ops Studio
+* Integrated Terminal splitting to work with multiple open terminals at once
+* Reduced installation on-disk file count foot print for faster installs and startup times
+* Improvements to Server Reports extension
+* Continue to fix GitHub issues
+
 ## Version 0.27.3
 * Release date: March 28, 2017
 * Release status: Public Preview
