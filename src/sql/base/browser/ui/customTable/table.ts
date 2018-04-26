@@ -226,8 +226,8 @@ export interface ITableConfiguration {
 
 export interface ITableOptions extends ITableStyles {
 	// alwaysFocused?: boolean;
-	// useShadows?: boolean;
-	// ariaLabel?: string;
+	useShadows?: boolean;
+	ariaLabel?: string;
 	keyboardSupport?: boolean;
 }
 

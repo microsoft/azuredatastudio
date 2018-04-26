@@ -14,30 +14,160 @@ import * as Mouse from 'vs/base/browser/mouseEvent';
 import * as Platform from 'vs/base/common/platform';
 import * as Model from './tableModel';
 import Event, { Emitter } from 'vs/base/common/event';
-import { HeightMap, IViewRow } from './tableViewModel';
+import { HeightMap, IViewRow, IViewCell } from './tableViewModel';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
-export interface IRow {
+export interface ICell {
+	element: HTMLElement;
+	templateId: string;
+	templateData: any;
 }
 
-export class RowCache implements Lifecycle.IDisposable {
-	private _cache: { [templateId: string]: IRow[]; };
+function removeFromParent(element: HTMLElement): void {
+	try {
+		element.parentElement.removeChild(element);
+	} catch (e) {
+		// this will throw if this happens due to a blur event, nasty business
+	}
+}
+
+export class CellCache implements Lifecycle.IDisposable {
+	private _cache: { [templateId: string]: ICell[]; };
 
 	constructor(private context: _.ITableContext) {
 		this._cache = { '': [] };
 	}
 
+	public alloc(templateId: string): ICell {
+		var result = this.cache(templateId).pop();
+
+		if (!result) {
+			var content = document.createElement('div');
+			content.className = 'content';
+
+			var cell = document.createElement('td');
+			cell.appendChild(content);
+
+			result = {
+				element: cell,
+				templateId: templateId,
+				templateData: this.context.renderer.renderTemplate(this.context.table, templateId, content)
+			};
+		}
+
+		return result;
+	}
+
+	public release(templateId: string, row: ICell): void {
+		removeFromParent(row.element);
+		this.cache(templateId).push(row);
+	}
+
+	private cache(templateId: string): ICell[] {
+		return this._cache[templateId] || (this._cache[templateId] = []);
+	}
+
+	public garbageCollect(): void {
+		if (this._cache) {
+			Object.keys(this._cache).forEach(templateId => {
+				this._cache[templateId].forEach(cachedRow => {
+					this.context.renderer.disposeTemplate(this.context.table, templateId, cachedRow.templateData);
+					cachedRow.element = null;
+					cachedRow.templateData = null;
+				});
+
+				delete this._cache[templateId];
+			});
+		}
+	}
+
 	public dispose(): void {
+		this.garbageCollect();
+		this._cache = null;
+		this.context = null;
 	}
 }
 
 export interface IViewContext extends _.ITableContext {
-	cache: RowCache;
+	cache: CellCache;
 }
 
 export class ViewRow implements IViewRow {
 	public model: Model.Row;
+	public id: string;
+	protected row: IRow;
+
+	public top: number;
+	public height: number;
+
+	public _styles: any;
+
+	private _templateId: string;
+	private get templateId(): string {
+		return this._templateId || (this._templateId = (this.context.renderer.getTemplateId && this.context.renderer.getTemplateId(this.context.table, this.model.getElement())));
+	}
+
+	constructor(private context: IViewContext, privatemodel: Model.Row) {
+		this.id = this.model.id;
+		this.row = null;
+
+		this.top = 0;
+		this.height = this.model.getHeight();
+
+		this._styles = {};
+		this.model.getAllTraits().forEach(t => this._styles[t] = true);
+	}
+
+	public get element(): HTMLElement {
+		return this.row && this.row.element;
+	}
+
+	public insertInDOM(container: HTMLElement, afterElement: HTMLElement): void {
+		if (!this.row) {
+			this.row = this.context.cache.alloc(this.templateId);
+
+			// used in reverse lookup from HTMLElement to Item
+			(<any>this.element)[TableView.BINDING] = this;
+		}
+
+		if (this.element.parentElement) {
+			return;
+		}
+
+		if (afterElement === null) {
+			container.appendChild(this.element);
+		} else {
+			try {
+				container.insertBefore(this.element, afterElement);
+			} catch (e) {
+				console.warn('Failed to locate previous tree element');
+				container.appendChild(this.element);
+			}
+		}
+
+		this.render();
+	}
+
+	public removeFromDOM(): void {
+		if (!this.row) {
+			return;
+		}
+
+		(<any>this.element)[TableView.BINDING] = null;
+		this.context.cache.release(this.templateId, this.row);
+		this.row = null;
+	}
+
+	public dispose(): void {
+		this.row = null;
+		this.model = null;
+	}
+}
+
+export class ViewCell implements IViewCell {
+	public model: Model.Cell;
 	public top: number;
 	public height: number;
 }
@@ -49,18 +179,32 @@ interface IThrottledGestureEvent {
 
 export class TableView extends HeightMap {
 
+	static BINDING = 'monaco-table-row';
+
+	private static counter: number = 0;
+	private instance: number;
+
 	private context: IViewContext;
 	private model: Model.TableModel;
 
 	private viewListeners: Lifecycle.IDisposable[];
 	private domNode: HTMLElement;
 	private wrapper: HTMLElement;
+	private styleElement: HTMLStyleElement;
 	private scrollableElement: ScrollableElement;
+	private rowsContainer: HTMLElement;
 	private msGesture: MSGesture;
 	private lastPointerType: string;
 	private lastClickTimeStamp: number = 0;
 
+	private lastRenderTop: number;
+	private lastRenderHeight: number;
+
+	private isRefreshing = false;
+
 	private didJustPressContextMenuKey: boolean;
+
+	private onHiddenScrollTop: number;
 
 	private _onDOMFocus: Emitter<void> = new Emitter<void>();
 	get onDOMFocus(): Event<void> { return this._onDOMFocus.event; }
@@ -71,6 +215,9 @@ export class TableView extends HeightMap {
 	constructor(context: _.ITableContext, container: HTMLElement) {
 		super();
 
+		TableView.counter++;
+		this.instance = TableView.counter;
+
 		this.context = {
 			dataSource: context.dataSource,
 			renderer: context.renderer,
@@ -80,12 +227,43 @@ export class TableView extends HeightMap {
 			table: context.table,
 			// accessibilityProvider: context.accessibilityProvider,
 			options: context.options,
-			cache: new RowCache(context)
+			cache: new CellCache(context)
 		};
 
 		this.viewListeners = [];
 
-		var focusTracker = DOM.trackFocus(this.domNode);
+		this.domNode = document.createElement('table');
+		this.domNode.className = `monaco-table no-focused-item monaco-table-instance-${this.instance}`;
+
+		this.styleElement = DOM.createStyleSheet(this.domNode);
+
+		if (this.context.options.ariaLabel) {
+			this.domNode.setAttribute('aria-label', this.context.options.ariaLabel);
+		}
+
+		this.wrapper = document.createElement('div');
+		this.wrapper.className = 'monaco-table-wrapper';
+		this.scrollableElement = new ScrollableElement(this.wrapper, {
+			alwaysConsumeMouseWheel: true,
+			horizontal: ScrollbarVisibility.Hidden,
+			vertical: /* (typeof context.options.verticalScrollMode !== 'undefined' ? context.options.verticalScrollMode : */ ScrollbarVisibility.Auto,
+			useShadows: context.options.useShadows
+		});
+		this.scrollableElement.onScroll((e) => {
+			this.render(e.scrollTop, e.height);
+		});
+
+		if (Browser.isIE) {
+			this.wrapper.style.msTouchAction = 'none';
+			this.wrapper.style.msContentZooming = 'none';
+		} else {
+			Touch.Gesture.addTarget(this.wrapper);
+		}
+
+		this.rowsContainer = document.createElement('tbody');
+		this.rowsContainer.className = 'monaco-table-rows';
+
+		let focusTracker = DOM.trackFocus(this.domNode);
 		this.viewListeners.push(focusTracker.onDidFocus(() => this.onFocus()));
 		this.viewListeners.push(focusTracker.onDidBlur(() => this.onBlur()));
 		this.viewListeners.push(focusTracker);
@@ -120,7 +298,145 @@ export class TableView extends HeightMap {
 			}));
 		}
 
+		this.wrapper.appendChild(this.rowsContainer);
+		this.domNode.appendChild(this.scrollableElement.getDomNode());
+		container.appendChild(this.domNode);
+
+		this.lastRenderTop = 0;
+		this.lastRenderHeight = 0;
+
+		this.didJustPressContextMenuKey = false;
+
+
+		this.onHiddenScrollTop = null;
+
+		this.onRowsChanged();
+		this.layout();
+
+		this.setupMSGesture();
+
+		this.applyStyles(context.options);
+
 	}
+
+	public applyStyles(styles: _.ITableStyles): void {
+		const content: string[] = [];
+
+		if (styles.listFocusBackground) {
+			content.push(`.monaco-tree.monaco-tree-instance-${this.instance}.focused .monaco-tree-rows > .monaco-tree-row.focused:not(.highlighted) { background-color: ${styles.listFocusBackground}; }`);
+		}
+
+		if (styles.listFocusForeground) {
+			content.push(`.monaco-tree.monaco-tree-instance-${this.instance}.focused .monaco-tree-rows > .monaco-tree-row.focused:not(.highlighted) { color: ${styles.listFocusForeground}; }`);
+		}
+
+		if (styles.listActiveSelectionBackground) {
+			content.push(`.monaco-tree.monaco-tree-instance-${this.instance}.focused .monaco-tree-rows > .monaco-tree-row.selected:not(.highlighted) { background-color: ${styles.listActiveSelectionBackground}; }`);
+		}
+
+		if (styles.listActiveSelectionForeground) {
+			content.push(`.monaco-tree.monaco-tree-instance-${this.instance}.focused .monaco-tree-rows > .monaco-tree-row.selected:not(.highlighted) { color: ${styles.listActiveSelectionForeground}; }`);
+		}
+
+		if (styles.listFocusAndSelectionBackground) {
+			content.push(`
+				.monaco-tree-drag-image,
+				.monaco-tree.monaco-tree-instance-${this.instance}.focused .monaco-tree-rows > .monaco-tree-row.focused.selected:not(.highlighted) { background-color: ${styles.listFocusAndSelectionBackground}; }
+			`);
+		}
+
+		if (styles.listFocusAndSelectionForeground) {
+			content.push(`
+				.monaco-tree-drag-image,
+				.monaco-tree.monaco-tree-instance-${this.instance}.focused .monaco-tree-rows > .monaco-tree-row.focused.selected:not(.highlighted) { color: ${styles.listFocusAndSelectionForeground}; }
+			`);
+		}
+
+		if (styles.listInactiveSelectionBackground) {
+			content.push(`.monaco-tree.monaco-tree-instance-${this.instance} .monaco-tree-rows > .monaco-tree-row.selected:not(.highlighted) { background-color: ${styles.listInactiveSelectionBackground}; }`);
+		}
+
+		if (styles.listInactiveSelectionForeground) {
+			content.push(`.monaco-tree.monaco-tree-instance-${this.instance} .monaco-tree-rows > .monaco-tree-row.selected:not(.highlighted) { color: ${styles.listInactiveSelectionForeground}; }`);
+		}
+
+		if (styles.listHoverBackground) {
+			content.push(`.monaco-tree.monaco-tree-instance-${this.instance} .monaco-tree-rows > .monaco-tree-row:hover:not(.highlighted):not(.selected):not(.focused) { background-color: ${styles.listHoverBackground}; }`);
+		}
+
+		if (styles.listHoverForeground) {
+			content.push(`.monaco-tree.monaco-tree-instance-${this.instance} .monaco-tree-rows > .monaco-tree-row:hover:not(.highlighted):not(.selected):not(.focused) { color: ${styles.listHoverForeground}; }`);
+		}
+
+		if (styles.listDropBackground) {
+			content.push(`
+				.monaco-tree.monaco-tree-instance-${this.instance} .monaco-tree-wrapper.drop-target,
+				.monaco-tree.monaco-tree-instance-${this.instance} .monaco-tree-rows > .monaco-tree-row.drop-target { background-color: ${styles.listDropBackground} !important; color: inherit !important; }
+			`);
+		}
+
+		if (styles.listFocusOutline) {
+			content.push(`
+				.monaco-tree-drag-image																															{ border: 1px solid ${styles.listFocusOutline}; background: #000; }
+				.monaco-tree.monaco-tree-instance-${this.instance} .monaco-tree-rows > .monaco-tree-row 														{ border: 1px solid transparent; }
+				.monaco-tree.monaco-tree-instance-${this.instance}.focused .monaco-tree-rows > .monaco-tree-row.focused:not(.highlighted) 						{ border: 1px dotted ${styles.listFocusOutline}; }
+				.monaco-tree.monaco-tree-instance-${this.instance}.focused .monaco-tree-rows > .monaco-tree-row.selected:not(.highlighted) 						{ border: 1px solid ${styles.listFocusOutline}; }
+				.monaco-tree.monaco-tree-instance-${this.instance} .monaco-tree-rows > .monaco-tree-row.selected:not(.highlighted)  							{ border: 1px solid ${styles.listFocusOutline}; }
+				.monaco-tree.monaco-tree-instance-${this.instance} .monaco-tree-rows > .monaco-tree-row:hover:not(.highlighted):not(.selected):not(.focused)  	{ border: 1px dashed ${styles.listFocusOutline}; }
+				.monaco-tree.monaco-tree-instance-${this.instance} .monaco-tree-wrapper.drop-target,
+				.monaco-tree.monaco-tree-instance-${this.instance} .monaco-tree-rows > .monaco-tree-row.drop-target												{ border: 1px dashed ${styles.listFocusOutline}; }
+			`);
+		}
+
+		this.styleElement.innerHTML = content.join('\n');
+	}
+
+	private render(scrollTop: number, viewHeight: number): void {
+		var i: number;
+		var stop: number;
+
+		var renderTop = scrollTop;
+		var renderBottom = scrollTop + viewHeight;
+		var thisRenderBottom = this.lastRenderTop + this.lastRenderHeight;
+
+		// when view scrolls down, start rendering from the renderBottom
+		for (i = this.indexAfter(renderBottom) - 1, stop = this.indexAt(Math.max(thisRenderBottom, renderTop)); i >= stop; i--) {
+			this.insertItemInDOM(<ViewRow>this.itemAtIndex(i));
+		}
+
+		// when view scrolls up, start rendering from either this.renderTop or renderBottom
+		for (i = Math.min(this.indexAt(this.lastRenderTop), this.indexAfter(renderBottom)) - 1, stop = this.indexAt(renderTop); i >= stop; i--) {
+			this.insertItemInDOM(<ViewRow>this.itemAtIndex(i));
+		}
+
+		// when view scrolls down, start unrendering from renderTop
+		for (i = this.indexAt(this.lastRenderTop), stop = Math.min(this.indexAt(renderTop), this.indexAfter(thisRenderBottom)); i < stop; i++) {
+			this.removeItemFromDOM(<ViewRow>this.itemAtIndex(i));
+		}
+
+		// when view scrolls up, start unrendering from either renderBottom this.renderTop
+		for (i = Math.max(this.indexAfter(renderBottom), this.indexAt(this.lastRenderTop)), stop = this.indexAfter(thisRenderBottom); i < stop; i++) {
+			this.removeItemFromDOM(<ViewRow>this.itemAtIndex(i));
+		}
+
+		var topItem = this.itemAtIndex(this.indexAt(renderTop));
+
+		if (topItem) {
+			this.rowsContainer.style.top = (topItem.top - renderTop) + 'px';
+		}
+
+		this.lastRenderTop = renderTop;
+		this.lastRenderHeight = renderBottom - renderTop;
+	}
+
+	private onRowsChanged(scrollTop: number = this.scrollTop): void {
+		if (this.isRefreshing) {
+			return;
+		}
+
+		this.scrollTop = scrollTop;
+	}
+
 
 	private getCellAround(element: HTMLElement): ViewCell {
 		return undefined;
@@ -168,6 +484,46 @@ export class TableView extends HeightMap {
 			setTimeout(() => this.msGesture.target = this.wrapper, 100); // TODO@joh, TODO@IETeam
 		}
 	}
+
+	// DOM changes
+
+	private insertItemInDOM(item: ViewRow): void {
+		var elementAfter: HTMLElement = null;
+		var itemAfter = <ViewRow>this.itemAfter(item);
+
+		if (itemAfter && itemAfter.element) {
+			elementAfter = itemAfter.element;
+		}
+
+		item.insertInDOM(this.rowsContainer, elementAfter);
+	}
+
+	private removeItemFromDOM(item: ViewRow): void {
+		if (!item) {
+			return;
+		}
+
+		item.removeFromDOM();
+	}
+
+
+
+	public onHidden(): void {
+		this.onHiddenScrollTop = this.scrollTop;
+	}
+
+	private isTreeVisible(): boolean {
+		return this.onHiddenScrollTop === null;
+	}
+
+	public layout(height?: number): void {
+		if (!this.isTreeVisible()) {
+			return;
+		}
+
+		this.viewHeight = height || DOM.getContentHeight(this.wrapper); // render
+	}
+
 
 	private onFocus(): void {
 		// if (!this.context.options.alwaysFocused) {
@@ -230,7 +586,7 @@ export class TableView extends HeightMap {
 			return;
 		}
 
-		var item = this.getItemAround(event.target);
+		var item = this.getCellAround(event.target);
 
 		if (!item) {
 			return;
@@ -254,7 +610,7 @@ export class TableView extends HeightMap {
 			return;
 		}
 
-		var item = this.getItemAround(event.target);
+		var item = this.getCellAround(event.target);
 
 		if (!item) {
 			return;
@@ -269,7 +625,7 @@ export class TableView extends HeightMap {
 		}
 
 		var event = new Mouse.StandardMouseEvent(e);
-		var item = this.getItemAround(event.target);
+		var item = this.getCellAround(event.target);
 
 		if (!item) {
 			return;
@@ -314,7 +670,7 @@ export class TableView extends HeightMap {
 
 		} else {
 			var mouseEvent = new Mouse.StandardMouseEvent(<MouseEvent>event);
-			var item = this.getItemAround(mouseEvent.target);
+			var item = this.getCellAround(mouseEvent.target);
 
 			if (!item) {
 				return;
@@ -328,7 +684,7 @@ export class TableView extends HeightMap {
 	}
 
 	private onTap(e: Touch.GestureEvent): void {
-		var item = this.getItemAround(<HTMLElement>e.initialTarget);
+		var item = this.getCellAround(<HTMLElement>e.initialTarget);
 
 		if (!item) {
 			return;
