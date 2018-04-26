@@ -252,3 +252,14 @@ table.step-list tr.step-row td {
 jobhistory-component .history-details .step-table.prev-run-list .monaco-scrollable-element {
 	overflow-y: scroll !important;
 }
+
+jobhistory-component .jobhistory-heading-container {
+	display: -webkit-box;
+}
+
+jobhistory-component > .jobhistory-heading-container > .icon.in-progress {
+	width: 20px;
+	height: 20px;
+	padding-top: 16px;
+	padding-left: 20px;
+}

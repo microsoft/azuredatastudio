@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./jobHistory';
+import 'vs/css!sql/media/icons/common-icons';
 import { OnInit, OnChanges, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
 import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -60,6 +61,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _jobCacheObject: JobCacheObject;
 	private _notificationService: INotificationService;
 	private _agentJobInfo: AgentJobInfo;
+	private _noJobsAvailable: boolean = false;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -146,7 +148,10 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			} else if (jobHistories && jobHistories.length === 0 ){
 				this._showPreviousRuns = false;
 				this._showSteps = false;
+				this._noJobsAvailable = true;
 				this._cd.detectChanges();
+			} else {
+				this.loadHistory();
 			}
 			this._jobCacheObject.prevJobID = this._agentViewComponent.jobId;
 		} else if (this._isVisible === true && this._agentViewComponent.refresh) {
@@ -272,6 +277,10 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 
 	private formatTime(time: string): string {
 		return time.replace('T', ' ');
+	}
+
+	private showProgressWheel(): boolean {
+		return this._showPreviousRuns !== true && this._noJobsAvailable === false;
 	}
 
 	private setActions(): void {

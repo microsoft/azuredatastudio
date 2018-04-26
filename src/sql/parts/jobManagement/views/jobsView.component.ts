@@ -9,6 +9,7 @@ import 'vs/css!sql/parts/grid/media/styles';
 import 'vs/css!sql/parts/grid/media/slick.grid';
 import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!../common/media/jobs';
+import 'vs/css!sql/media/icons/common-icons';
 
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
@@ -72,6 +73,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
 	private _serverName: string;
 	private _isCloud: boolean;
+	private _showProgressWheel: boolean;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -99,18 +101,22 @@ export class JobsViewComponent implements AfterContentChecked {
 			this.isVisible = true;
 			if (!this.isInitialized) {
 				if (this._jobCacheObject.serverName === this._serverName && this._jobCacheObject.jobs.length > 0) {
+					this._showProgressWheel = true;
 					this.jobs = this._jobCacheObject.jobs;
 					this.onFirstVisible(true);
 					this.isInitialized = true;
 				} else {
+					this._showProgressWheel = true;
 					this.onFirstVisible(false);
 					this.isInitialized = true;
 				}
 			}
 		} else if (this.isVisible === true && this._agentViewComponent.refresh === true) {
+			this._showProgressWheel = true;
 			this.onFirstVisible(false);
 			this._agentViewComponent.refresh = false;
 		} else if (this.isVisible === true && this._agentViewComponent.refresh === false) {
+			this._showProgressWheel = true;
 			this.onFirstVisible(true);
 		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
 			this.isVisible = false;
@@ -219,6 +225,8 @@ export class JobsViewComponent implements AfterContentChecked {
 			let currentTarget = e.currentTarget;
 			currentTarget.title = currentTarget.innerText;
 		});
+		this._showProgressWheel = false;
+		this._cd.detectChanges();
 		this.loadJobHistories();
 	}
 

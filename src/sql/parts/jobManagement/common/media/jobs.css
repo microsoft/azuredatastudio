@@ -22,8 +22,9 @@ jobhistory-component {
 }
 
 .vs-dark .job-heading-container {
-    height: 32px;
+    height: 49px;
     border-bottom: 3px solid #444444;
+    display: -webkit-box;
 }
 
 #jobsDiv .jobview-grid {
@@ -182,4 +183,11 @@ jobsview-component .jobview-grid > .monaco-table .slick-viewport > .grid-canvas
 
 .vs-dark .jobview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
     border-left: 1px dotted white;
+}
+
+.job-heading-container > .icon.in-progress {
+    height: 20px;
+    width: 20px;
+    padding-top: 16px;
+    padding-left: 15px;
 }
