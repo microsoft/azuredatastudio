@@ -435,7 +435,9 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 
 		return this.queryGallery(query).then(({ galleryExtensions, total }) => {
 			const extensions = galleryExtensions.map((e, index) => toExtension(e, this.extensionsGalleryUrl, index, query, options.source));
-			const pageSize = query.pageSize;
+
+			// {{SQL CARBON EDIT}}
+			const pageSize = extensions.length;
 			const getPage = (pageIndex: number) => {
 				const nextPageQuery = query.withPage(pageIndex + 1);
 				return this.queryGallery(nextPageQuery)
