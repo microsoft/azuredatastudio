@@ -235,8 +235,8 @@ export class ExtensionsListView extends ViewsViewletPanel {
 		} else if (ExtensionsListView.isRecommendedExtensionsQuery(query.value)) {
 			return this.getRecommendationsModel(query, options);
 		// {{SQL CARBON EDIT}}
-		} else if (ExtensionsListView.isAllUninstalledExtensionsQuery(query.value)) {
-			return this.getAllUninstalledModel(query, options);
+		} else if (ExtensionsListView.isAllMarketplaceExtensionsQuery(query.value)) {
+			return this.getAllMarketplaceModel(query, options);
 		}
 
 		let text = query.value;
@@ -367,7 +367,7 @@ export class ExtensionsListView extends ViewsViewletPanel {
 	}
 
 	// {{SQL CARBON EDIT}}
-	private getAllUninstalledModel(query: Query, options: IQueryOptions): TPromise<IPagedModel<IExtension>> {
+	private getAllMarketplaceModel(query: Query, options: IQueryOptions): TPromise<IPagedModel<IExtension>> {
 		const value = query.value.trim().toLowerCase();
 		return this.extensionsWorkbenchService.queryLocal()
 			.then(result => result.filter(e => e.type === LocalExtensionType.User))
@@ -567,8 +567,8 @@ export class ExtensionsListView extends ViewsViewletPanel {
 	}
 
 	// {{SQL CARBON EDIT}}
-	static isAllUninstalledExtensionsQuery(query: string): boolean {
-		return /@alluninstalled/i.test(query);
+	static isAllMarketplaceExtensionsQuery(query: string): boolean {
+		return /@allmarketplace/i.test(query);
 	}
 }
 
@@ -607,7 +607,7 @@ export class RecommendedExtensionsView extends ExtensionsListView {
 
 	async show(query: string): TPromise<IPagedModel<IExtension>> {
 		// {{SQL CARBON EDIT}}
-		return super.show('@alluninstalled');
+		return super.show('@allmarketplace');
 	}
 }
 
