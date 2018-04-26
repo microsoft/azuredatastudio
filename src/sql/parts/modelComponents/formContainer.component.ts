@@ -52,7 +52,6 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
-	private _justifyContent: string;
 	private _alignItems: string;
 	private _alignContent: string;
 
@@ -63,7 +62,6 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 			@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		 	@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
 		super(changeRef);
-		this._justifyContent = '';	// default
 	}
 
 	ngOnInit(): void {
@@ -85,10 +83,6 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 				wrapper.layout();
 			});
 		}
-	}
-
-	public get justifyContent(): string {
-		return this._justifyContent;
 	}
 
 	public get alignItems(): string {
