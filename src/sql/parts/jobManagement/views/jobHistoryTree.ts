@@ -60,9 +60,11 @@ export class JobHistoryController extends TreeDefaults.DefaultController {
 
 	public onKeyDownWrapper(tree: tree.ITree, event: IKeyboardEvent): boolean {
 		if (event.code === 'ArrowDown' || event.keyCode === 40) {
-			return super.onDown(tree, event);
+			super.onDown(tree, event);
+			return super.onEnter(tree, event);
 		} else if (event.code === 'ArrowUp' || event.keyCode === 38) {
-			return super.onUp(tree, event);
+			super.onUp(tree, event);
+			return super.onEnter(tree, event);
 		} else {
 			event.preventDefault();
 			event.stopPropagation();

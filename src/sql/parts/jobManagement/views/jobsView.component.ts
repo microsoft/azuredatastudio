@@ -151,9 +151,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			let job = self.getJob(args);
 			self._agentViewComponent.jobId = job.jobId;
 			self._agentViewComponent.agentJobInfo = job;
-			setTimeout(() => {
-				self._agentViewComponent.showHistory = true;
-			}, 500);
+			self._agentViewComponent.showHistory = true;
 		});
 		if (cached && this._agentViewComponent.refresh !== true) {
 			this.onJobsAvailable(this._jobCacheObject.jobs);
@@ -290,11 +288,11 @@ export class JobsViewComponent implements AfterContentChecked {
 				let job = this.jobs[i];
 				let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
-					if (result.jobs) {
+					if (result && result.jobs) {
 						self.jobHistories[job.jobId] = result.jobs;
 						self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
 						if (self._agentViewComponent.expanded.has(job.jobId)) {
-							let jobHistory = self._jobCacheObject.getJobHistory(job.jobId)[0];
+							let jobHistory = self._jobCacheObject.getJobHistory(job.jobId)[result.jobs.length-1];
 							let item = self.dataView.getItemById(job.jobId + '.error');
 							let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
 							let errorMessage = jobHistory ? jobHistory.message: noStepsMessage;
@@ -309,15 +307,18 @@ export class JobsViewComponent implements AfterContentChecked {
 		}
 	}
 
-	private isErrorRow(jobName: string) {
-		return jobName.includes('Error');
+	private isErrorRow(cell: HTMLElement) {
+		return cell.classList.contains('error-row');
 	}
 
 	private getJob(args: Slick.OnClickEventArgs<any>): sqlops.AgentJobInfo {
 		let row = args.row;
-		let jobName = args.grid.getCellNode(row, 1).innerText.trim();
-		if (this.isErrorRow(jobName)) {
+		let jobName: string;
+		let cell = args.grid.getCellNode(row, 1);
+		if (this.isErrorRow(cell)) {
 			jobName = args.grid.getCellNode(row-1, 1).innerText.trim();
+		} else {
+			jobName = cell.innerText.trim();
 		}
 		let job = this.jobs.filter(job => job.name === jobName)[0];
 		return job;
