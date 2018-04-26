@@ -10,14 +10,26 @@ import Event, { Emitter, once, EventMultiplexer, Relay } from 'vs/base/common/ev
 import { combinedDisposable, IDisposable } from 'vs/base/common/lifecycle';
 
 export interface IBaseRowEvent {
-	item: Row;
+	row: Row;
+}
+
+export interface IBaseCellEvent {
+	cell: Cell;
 }
 
 export interface IRowTraitEvent extends IBaseRowEvent {
 	trait: string;
 }
 
+export interface ICellTraitEvent extends IBaseCellEvent {
+	trait: string;
+}
+
 export interface IRowRevealEvent extends IBaseRowEvent {
+	relativeTop: number;
+}
+
+export interface ICellRevealEvent extends IBaseCellEvent {
 	relativeTop: number;
 }
 
@@ -78,9 +90,65 @@ export class RowRegistry {
 }
 
 export class Cell {
-	private element: any;
-
 	private row: Row;
+
+	private traits: { [trait: string]: boolean; };
+
+	private _isDisposed: boolean;
+
+	private _onDidCreate = new Emitter<Cell>();
+	readonly onDidCreate: Event<Cell> = this._onDidCreate.event;
+	private _onDidReveal = new Emitter<ICellRevealEvent>();
+	readonly onDidReveal: Event<ICellRevealEvent> = this._onDidReveal.event;
+	private _onDidAddTrait = new Emitter<ICellTraitEvent>();
+	readonly onDidAddTrait: Event<ICellTraitEvent> = this._onDidAddTrait.event;
+	private _onDidRemoveTrait = new Emitter<ICellTraitEvent>();
+	readonly onDidRemoveTrait: Event<ICellTraitEvent> = this._onDidRemoveTrait.event;
+	private _onDidDispose = new Emitter<Cell>();
+	readonly onDidDispose: Event<Cell> = this._onDidDispose.event;
+	private _onDidRefresh = new Emitter<Cell>();
+	readonly onDidRefresh: Event<Cell> = this._onDidRefresh.event;
+
+	constructor(public id: string, /* private registry: RowRegistry, */ private context: _.ITableContext, private element: any) {
+		// this.registry.register(this);
+
+		// this.previous = null;
+		// this.next = null;
+
+		this.traits = {};
+
+		this._onDidCreate.fire(this);
+
+		this._isDisposed = false;
+	}
+
+
+	public addTrait(trait: string): void {
+		var eventData: ICellTraitEvent = { cell: this, trait: trait };
+		this.traits[trait] = true;
+		this._onDidAddTrait.fire(eventData);
+	}
+
+	public removeTrait(trait: string): void {
+		var eventData: ICellTraitEvent = { cell: this, trait: trait };
+		delete this.traits[trait];
+		this._onDidRemoveTrait.fire(eventData);
+	}
+
+	public hasTrait(trait: string): boolean {
+		return this.traits[trait] || false;
+	}
+
+	public getAllTraits(): string[] {
+		var result: string[] = [];
+		var trait: string;
+		for (trait in this.traits) {
+			if (this.traits.hasOwnProperty(trait) && this.traits[trait]) {
+				result.push(trait);
+			}
+		}
+		return result;
+	}
 
 	public getElement(): any {
 		return this.element;
@@ -122,8 +190,8 @@ export class Row {
 	constructor(public id: string, private registry: RowRegistry, private context: _.ITableContext, private element: any) {
 		this.registry.register(this);
 
-		this.previous = null;
-		this.next = null;
+		// this.previous = null;
+		// this.next = null;
 
 		this.traits = {};
 
@@ -136,13 +204,13 @@ export class Row {
 	}
 
 	public addTrait(trait: string): void {
-		var eventData: IRowTraitEvent = { item: this, trait: trait };
+		var eventData: IRowTraitEvent = { row: this, trait: trait };
 		this.traits[trait] = true;
 		this._onDidAddTrait.fire(eventData);
 	}
 
 	public removeTrait(trait: string): void {
-		var eventData: IRowTraitEvent = { item: this, trait: trait };
+		var eventData: IRowTraitEvent = { row: this, trait: trait };
 		delete this.traits[trait];
 		this._onDidRemoveTrait.fire(eventData);
 	}
@@ -179,7 +247,7 @@ export class Row {
 	}
 
 	/* protected */ public _getHeight(): number {
-		return this.context.renderer.getHeight(this.context.tree, this.element);
+		return this.context.renderer.getHeight(this.context.table, this.element);
 	}
 
 	// /* protected */ public _isVisible(): boolean {
@@ -187,8 +255,8 @@ export class Row {
 	// }
 
 	public dispose(): void {
-		this.previous = null;
-		this.next = null;
+		// this.previous = null;
+		// this.next = null;
 
 		this._onDidDispose.fire(this);
 

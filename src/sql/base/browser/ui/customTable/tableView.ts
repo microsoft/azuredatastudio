@@ -13,6 +13,7 @@ import * as Keyboard from 'vs/base/browser/keyboardEvent';
 import * as Mouse from 'vs/base/browser/mouseEvent';
 import * as Platform from 'vs/base/common/platform';
 import * as Model from './tableModel';
+import * as strings from 'vs/base/common/strings';
 import Event, { Emitter } from 'vs/base/common/event';
 import { HeightMap, IViewRow, IViewCell } from './tableViewModel';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
@@ -24,6 +25,11 @@ export interface ICell {
 	templateId: string;
 	templateData: any;
 }
+
+export interface IRow {
+	element: HTMLElement;
+}
+
 
 function removeFromParent(element: HTMLElement): void {
 	try {
@@ -41,13 +47,13 @@ export class CellCache implements Lifecycle.IDisposable {
 	}
 
 	public alloc(templateId: string): ICell {
-		var result = this.cache(templateId).pop();
+		let result = this.cache(templateId).pop();
 
 		if (!result) {
-			var content = document.createElement('div');
+			let content = document.createElement('div');
 			content.className = 'content';
 
-			var cell = document.createElement('td');
+			let cell = document.createElement('td');
 			cell.appendChild(content);
 
 			result = {
@@ -95,21 +101,17 @@ export interface IViewContext extends _.ITableContext {
 }
 
 export class ViewRow implements IViewRow {
-	public model: Model.Row;
 	public id: string;
 	protected row: IRow;
+
+	protected cells: ViewCell[];
 
 	public top: number;
 	public height: number;
 
 	public _styles: any;
 
-	private _templateId: string;
-	private get templateId(): string {
-		return this._templateId || (this._templateId = (this.context.renderer.getTemplateId && this.context.renderer.getTemplateId(this.context.table, this.model.getElement())));
-	}
-
-	constructor(private context: IViewContext, privatemodel: Model.Row) {
+	constructor(private context: IViewContext, public model: Model.Row) {
 		this.id = this.model.id;
 		this.row = null;
 
@@ -122,6 +124,43 @@ export class ViewRow implements IViewRow {
 
 	public get element(): HTMLElement {
 		return this.row && this.row.element;
+	}
+
+	public render(skipUserRender = false): void {
+		if (!this.model || !this.element) {
+			return;
+		}
+
+		let classes = ['monaco-table-row'];
+		classes.push.apply(classes, Object.keys(this._styles));
+
+		this.element.className = classes.join(' ');
+		this.element.style.height = this.height + 'px';
+
+		// ARIA
+		// this.element.setAttribute('role', 'treeitem');
+		// const accessibility = this.context.accessibilityProvider;
+		// const ariaLabel = accessibility.getAriaLabel(this.context.table, this.model.getElement());
+		// if (ariaLabel) {
+		// 	this.element.setAttribute('aria-label', ariaLabel);
+		// }
+		// if (accessibility.getPosInSet && accessibility.getSetSize) {
+		// 	this.element.setAttribute('aria-setsize', accessibility.getSetSize());
+		// 	this.element.setAttribute('aria-posinset', accessibility.getPosInSet(this.context.tree, this.model.getElement()));
+		// }
+		if (this.model.hasTrait('focused')) {
+			const base64Id = strings.safeBtoa(this.model.id);
+
+			this.element.setAttribute('aria-selected', 'true');
+			this.element.setAttribute('id', base64Id);
+		} else {
+			this.element.setAttribute('aria-selected', 'false');
+			this.element.removeAttribute('id');
+		}
+
+		if (!skipUserRender) {
+			this.context.renderer.renderElement(this.context.table, this.model.getElement(), this.templateId, this.row.templateData);
+		}
 	}
 
 	public insertInDOM(container: HTMLElement, afterElement: HTMLElement): void {
@@ -167,9 +206,91 @@ export class ViewRow implements IViewRow {
 }
 
 export class ViewCell implements IViewCell {
-	public model: Model.Cell;
 	public top: number;
 	public height: number;
+	public id: string;
+	protected cell: ICell;
+
+	public _styles: any;
+
+	private _templateId: string;
+	private get templateId(): string {
+		return this._templateId || (this._templateId = (this.context.renderer.getTemplateId && this.context.renderer.getTemplateId(this.context.table, this.model.getElement())));
+	}
+
+	constructor(private context: IViewContext, public model: Model.Cell, private row: ViewRow) {
+		this.id = this.model.id;
+
+		this._styles = {};
+		this.model.getAllTraits().forEach(t => this._styles[t] = true);
+	}
+
+	public get element(): HTMLElement {
+		return this.cell && this.cell.element;
+	}
+
+	public render(skipUserRender = false): void {
+		if (!this.model || !this.element) {
+			return;
+		}
+
+		let classes = ['monaco-table-row'];
+		classes.push.apply(classes, Object.keys(this._styles));
+
+		this.element.className = classes.join(' ');
+		this.element.style.height = this.height + 'px';
+
+		// ARIA
+		// this.element.setAttribute('role', 'treeitem');
+		// const accessibility = this.context.accessibilityProvider;
+		// const ariaLabel = accessibility.getAriaLabel(this.context.table, this.model.getElement());
+		// if (ariaLabel) {
+		// 	this.element.setAttribute('aria-label', ariaLabel);
+		// }
+		// if (accessibility.getPosInSet && accessibility.getSetSize) {
+		// 	this.element.setAttribute('aria-setsize', accessibility.getSetSize());
+		// 	this.element.setAttribute('aria-posinset', accessibility.getPosInSet(this.context.tree, this.model.getElement()));
+		// }
+		if (this.model.hasTrait('focused')) {
+			const base64Id = strings.safeBtoa(this.model.id);
+
+			this.element.setAttribute('aria-selected', 'true');
+			this.element.setAttribute('id', base64Id);
+		} else {
+			this.element.setAttribute('aria-selected', 'false');
+			this.element.removeAttribute('id');
+		}
+
+		if (!skipUserRender) {
+			this.context.renderer.renderElement(this.context.table, this.model.getElement(), this.templateId, this.cell.templateData);
+		}
+	}
+
+	public insertInDOM(container: HTMLElement, afterElement: HTMLElement): void {
+		if (!this.cell) {
+			this.cell = this.context.cache.alloc(this.templateId);
+
+			// used in reverse lookup from HTMLElement to Item
+			(<any>this.element)[TableView.BINDING] = this;
+		}
+
+		if (this.element.parentElement) {
+			return;
+		}
+
+		if (afterElement === null) {
+			container.appendChild(this.element);
+		} else {
+			try {
+				container.insertBefore(this.element, afterElement);
+			} catch (e) {
+				console.warn('Failed to locate previous tree element');
+				container.appendChild(this.element);
+			}
+		}
+
+		this.render();
+	}
 }
 
 interface IThrottledGestureEvent {
@@ -189,9 +310,13 @@ export class TableView extends HeightMap {
 
 	private viewListeners: Lifecycle.IDisposable[];
 	private domNode: HTMLElement;
-	private wrapper: HTMLElement;
+	private rowWrapper: HTMLElement;
+	private headerWrapper: HTMLElement;
+	private tableNode: HTMLTableElement;
+	private tableHeaderNode: HTMLElement;
 	private styleElement: HTMLStyleElement;
 	private scrollableElement: ScrollableElement;
+	private headerScrollable: ScrollableElement;
 	private rowsContainer: HTMLElement;
 	private msGesture: MSGesture;
 	private lastPointerType: string;
@@ -232,18 +357,24 @@ export class TableView extends HeightMap {
 
 		this.viewListeners = [];
 
-		this.domNode = document.createElement('table');
+		this.domNode = document.createElement('div');
 		this.domNode.className = `monaco-table no-focused-item monaco-table-instance-${this.instance}`;
 
 		this.styleElement = DOM.createStyleSheet(this.domNode);
+
+		this.tableNode = document.createElement('table');
+		this.domNode.appendChild(this.tableNode);
+
+		this.tableHeaderNode = document.createElement('theader');
+		this.tableNode.appendChild(this.tableHeaderNode);
 
 		if (this.context.options.ariaLabel) {
 			this.domNode.setAttribute('aria-label', this.context.options.ariaLabel);
 		}
 
-		this.wrapper = document.createElement('div');
-		this.wrapper.className = 'monaco-table-wrapper';
-		this.scrollableElement = new ScrollableElement(this.wrapper, {
+		this.rowWrapper = document.createElement('div');
+		this.rowWrapper.className = 'monaco-table-wrapper';
+		this.scrollableElement = new ScrollableElement(this.rowWrapper, {
 			alwaysConsumeMouseWheel: true,
 			horizontal: ScrollbarVisibility.Hidden,
 			vertical: /* (typeof context.options.verticalScrollMode !== 'undefined' ? context.options.verticalScrollMode : */ ScrollbarVisibility.Auto,
@@ -254,10 +385,10 @@ export class TableView extends HeightMap {
 		});
 
 		if (Browser.isIE) {
-			this.wrapper.style.msTouchAction = 'none';
-			this.wrapper.style.msContentZooming = 'none';
+			this.rowWrapper.style.msTouchAction = 'none';
+			this.rowWrapper.style.msContentZooming = 'none';
 		} else {
-			Touch.Gesture.addTarget(this.wrapper);
+			Touch.Gesture.addTarget(this.rowWrapper);
 		}
 
 		this.rowsContainer = document.createElement('tbody');
@@ -272,22 +403,22 @@ export class TableView extends HeightMap {
 		this.viewListeners.push(DOM.addDisposableListener(this.domNode, 'keyup', (e) => this.onKeyUp(e)));
 		this.viewListeners.push(DOM.addDisposableListener(this.domNode, 'mousedown', (e) => this.onMouseDown(e)));
 		this.viewListeners.push(DOM.addDisposableListener(this.domNode, 'mouseup', (e) => this.onMouseUp(e)));
-		this.viewListeners.push(DOM.addDisposableListener(this.wrapper, 'click', (e) => this.onClick(e)));
-		this.viewListeners.push(DOM.addDisposableListener(this.wrapper, 'auxclick', (e) => this.onClick(e))); // >= Chrome 56
+		this.viewListeners.push(DOM.addDisposableListener(this.rowWrapper, 'click', (e) => this.onClick(e)));
+		this.viewListeners.push(DOM.addDisposableListener(this.rowWrapper, 'auxclick', (e) => this.onClick(e))); // >= Chrome 56
 		this.viewListeners.push(DOM.addDisposableListener(this.domNode, 'contextmenu', (e) => this.onContextMenu(e)));
-		this.viewListeners.push(DOM.addDisposableListener(this.wrapper, Touch.EventType.Tap, (e) => this.onTap(e)));
-		this.viewListeners.push(DOM.addDisposableListener(this.wrapper, Touch.EventType.Change, (e) => this.onTouchChange(e)));
+		this.viewListeners.push(DOM.addDisposableListener(this.rowWrapper, Touch.EventType.Tap, (e) => this.onTap(e)));
+		this.viewListeners.push(DOM.addDisposableListener(this.rowWrapper, Touch.EventType.Change, (e) => this.onTouchChange(e)));
 
 		if (Browser.isIE) {
-			this.viewListeners.push(DOM.addDisposableListener(this.wrapper, 'MSPointerDown', (e) => this.onMsPointerDown(e)));
-			this.viewListeners.push(DOM.addDisposableListener(this.wrapper, 'MSGestureTap', (e) => this.onMsGestureTap(e)));
+			this.viewListeners.push(DOM.addDisposableListener(this.rowWrapper, 'MSPointerDown', (e) => this.onMsPointerDown(e)));
+			this.viewListeners.push(DOM.addDisposableListener(this.rowWrapper, 'MSGestureTap', (e) => this.onMsGestureTap(e)));
 
 			// these events come too fast, we throttle them
-			this.viewListeners.push(DOM.addDisposableThrottledListener<IThrottledGestureEvent>(this.wrapper, 'MSGestureChange', (e) => this.onThrottledMsGestureChange(e), (lastEvent: IThrottledGestureEvent, event: MSGestureEvent): IThrottledGestureEvent => {
+			this.viewListeners.push(DOM.addDisposableThrottledListener<IThrottledGestureEvent>(this.rowWrapper, 'MSGestureChange', (e) => this.onThrottledMsGestureChange(e), (lastEvent: IThrottledGestureEvent, event: MSGestureEvent): IThrottledGestureEvent => {
 				event.stopPropagation();
 				event.preventDefault();
 
-				var result = { translationY: event.translationY, translationX: event.translationX };
+				let result = { translationY: event.translationY, translationX: event.translationX };
 
 				if (lastEvent) {
 					result.translationY += lastEvent.translationY;
@@ -298,8 +429,8 @@ export class TableView extends HeightMap {
 			}));
 		}
 
-		this.wrapper.appendChild(this.rowsContainer);
-		this.domNode.appendChild(this.scrollableElement.getDomNode());
+		this.rowWrapper.appendChild(this.rowsContainer);
+		this.tableNode.appendChild(this.scrollableElement.getDomNode());
 		container.appendChild(this.domNode);
 
 		this.lastRenderTop = 0;
@@ -392,12 +523,12 @@ export class TableView extends HeightMap {
 	}
 
 	private render(scrollTop: number, viewHeight: number): void {
-		var i: number;
-		var stop: number;
+		let i: number;
+		let stop: number;
 
-		var renderTop = scrollTop;
-		var renderBottom = scrollTop + viewHeight;
-		var thisRenderBottom = this.lastRenderTop + this.lastRenderHeight;
+		let renderTop = scrollTop;
+		let renderBottom = scrollTop + viewHeight;
+		let thisRenderBottom = this.lastRenderTop + this.lastRenderHeight;
 
 		// when view scrolls down, start rendering from the renderBottom
 		for (i = this.indexAfter(renderBottom) - 1, stop = this.indexAt(Math.max(thisRenderBottom, renderTop)); i >= stop; i--) {
@@ -419,7 +550,7 @@ export class TableView extends HeightMap {
 			this.removeItemFromDOM(<ViewRow>this.itemAtIndex(i));
 		}
 
-		var topItem = this.itemAtIndex(this.indexAt(renderTop));
+		let topItem = this.itemAtIndex(this.indexAt(renderTop));
 
 		if (topItem) {
 			this.rowsContainer.style.top = (topItem.top - renderTop) + 'px';
@@ -481,15 +612,15 @@ export class TableView extends HeightMap {
 	private setupMSGesture(): void {
 		if ((<any>window).MSGesture) {
 			this.msGesture = new MSGesture();
-			setTimeout(() => this.msGesture.target = this.wrapper, 100); // TODO@joh, TODO@IETeam
+			setTimeout(() => this.msGesture.target = this.rowWrapper, 100); // TODO@joh, TODO@IETeam
 		}
 	}
 
 	// DOM changes
 
 	private insertItemInDOM(item: ViewRow): void {
-		var elementAfter: HTMLElement = null;
-		var itemAfter = <ViewRow>this.itemAfter(item);
+		let elementAfter: HTMLElement = null;
+		let itemAfter = <ViewRow>this.itemAfter(item);
 
 		if (itemAfter && itemAfter.element) {
 			elementAfter = itemAfter.element;
@@ -521,7 +652,7 @@ export class TableView extends HeightMap {
 			return;
 		}
 
-		this.viewHeight = height || DOM.getContentHeight(this.wrapper); // render
+		this.viewHeight = height || DOM.getContentHeight(this.rowWrapper); // render
 	}
 
 
@@ -544,7 +675,7 @@ export class TableView extends HeightMap {
 	}
 
 	private onKeyDown(e: KeyboardEvent): void {
-		var event = new Keyboard.StandardKeyboardEvent(e);
+		let event = new Keyboard.StandardKeyboardEvent(e);
 
 		this.didJustPressContextMenuKey = event.keyCode === KeyCode.ContextMenu || (event.shiftKey && event.keyCode === KeyCode.F10);
 
@@ -580,13 +711,13 @@ export class TableView extends HeightMap {
 			return;
 		}
 
-		var event = new Mouse.StandardMouseEvent(e);
+		let event = new Mouse.StandardMouseEvent(e);
 
 		if (event.ctrlKey && Platform.isNative && Platform.isMacintosh) {
 			return;
 		}
 
-		var item = this.getCellAround(event.target);
+		let item = this.getCellAround(event.target);
 
 		if (!item) {
 			return;
@@ -604,13 +735,13 @@ export class TableView extends HeightMap {
 			return;
 		}
 
-		var event = new Mouse.StandardMouseEvent(e);
+		let event = new Mouse.StandardMouseEvent(e);
 
 		if (event.ctrlKey && Platform.isNative && Platform.isMacintosh) {
 			return;
 		}
 
-		var item = this.getCellAround(event.target);
+		let item = this.getCellAround(event.target);
 
 		if (!item) {
 			return;
@@ -624,8 +755,8 @@ export class TableView extends HeightMap {
 			return;
 		}
 
-		var event = new Mouse.StandardMouseEvent(e);
-		var item = this.getCellAround(event.target);
+		let event = new Mouse.StandardMouseEvent(e);
+		let item = this.getCellAround(event.target);
 
 		if (!item) {
 			return;
@@ -646,31 +777,31 @@ export class TableView extends HeightMap {
 	private onContextMenu(keyboardEvent: KeyboardEvent): void;
 	private onContextMenu(mouseEvent: MouseEvent): void;
 	private onContextMenu(event: KeyboardEvent | MouseEvent): void {
-		var resultEvent: _.ContextMenuEvent;
-		var element: any;
+		let resultEvent: _.ContextMenuEvent;
+		let element: any;
 
 		if (event instanceof KeyboardEvent || this.didJustPressContextMenuKey) {
 			this.didJustPressContextMenuKey = false;
 
-			var keyboardEvent = new Keyboard.StandardKeyboardEvent(<KeyboardEvent>event);
+			let keyboardEvent = new Keyboard.StandardKeyboardEvent(<KeyboardEvent>event);
 			element = this.model.getFocus();
 
-			var position: DOM.IDomNodePagePosition;
+			let position: DOM.IDomNodePagePosition;
 
 			// if (!element) {
 			// 	element = this.model.getInput();
 			// 	position = DOM.getDomNodePagePosition(this.inputItem.element);
 			// } else {
-			// 	var id = this.context.dataSource.getId(this.context.table, element);
-			// 	var viewItem = this.items[id];
+			// 	let id = this.context.dataSource.getId(this.context.table, element);
+			// 	let viewItem = this.items[id];
 			// 	position = DOM.getDomNodePagePosition(viewItem.element);
 			// }
 
 			resultEvent = new _.KeyboardContextMenuEvent(position.left + position.width, position.top, keyboardEvent);
 
 		} else {
-			var mouseEvent = new Mouse.StandardMouseEvent(<MouseEvent>event);
-			var item = this.getCellAround(mouseEvent.target);
+			let mouseEvent = new Mouse.StandardMouseEvent(<MouseEvent>event);
+			let item = this.getCellAround(mouseEvent.target);
 
 			if (!item) {
 				return;
@@ -684,7 +815,7 @@ export class TableView extends HeightMap {
 	}
 
 	private onTap(e: Touch.GestureEvent): void {
-		var item = this.getCellAround(<HTMLElement>e.initialTarget);
+		let item = this.getCellAround(<HTMLElement>e.initialTarget);
 
 		if (!item) {
 			return;
@@ -706,7 +837,7 @@ export class TableView extends HeightMap {
 		}
 
 		// Circumvent IE11 breaking change in e.pointerType & TypeScript's stale definitions
-		var pointerType = event.pointerType;
+		let pointerType = event.pointerType;
 		if (pointerType === ((<any>event).MSPOINTER_TYPE_MOUSE || 'mouse')) {
 			this.lastPointerType = 'mouse';
 			return;
