@@ -234,6 +234,9 @@ export class ExtensionsListView extends ViewsViewletPanel {
 			return this.getAllRecommendationsModel(query, options);
 		} else if (ExtensionsListView.isRecommendedExtensionsQuery(query.value)) {
 			return this.getRecommendationsModel(query, options);
+		// {{SQL CARBON EDIT}}
+		} else if (ExtensionsListView.isAllUninstalledExtensionsQuery(query.value)) {
+			return this.getAllUninstalledModel(query, options);
 		}
 
 		let text = query.value;
@@ -360,6 +363,44 @@ export class ExtensionsListView extends ViewsViewletPanel {
 								return new PagedModel(pager || []);
 							});
 					});
+			});
+	}
+
+	// {{SQL CARBON EDIT}}
+	private getAllUninstalledModel(query: Query, options: IQueryOptions): TPromise<IPagedModel<IExtension>> {
+		const value = query.value.trim().toLowerCase();
+		return this.extensionsWorkbenchService.queryLocal()
+			.then(result => result.filter(e => e.type === LocalExtensionType.User))
+			.then(local => {
+				return this.tipsService.getOtherRecommendations().then((recommmended) => {
+					const installedExtensions = local.map(x => `${x.publisher}.${x.name}`);
+					options = assign(options, { text: value, source: 'searchText' });
+					return TPromise.as(this.extensionsWorkbenchService.queryGallery(options).then((pager) => {
+						// filter out installed extensions
+						pager.firstPage = pager.firstPage.filter((p) => {
+							return installedExtensions.indexOf(`${p.publisher}.${p.name}`) === -1;
+						});
+
+						// sort the marketplace extensions
+						pager.firstPage.sort((a, b) => {
+							let extNameA: string = `${a.publisher}.${a.name}`;
+							let extNameB: string = `${b.publisher}.${b.name}`;
+							let isRecommendedA: boolean = recommmended.indexOf(extNameA) > -1;
+							let isRecommendedB: boolean = recommmended.indexOf(extNameB) > -1;
+
+							// sort recommeded extensions before other extensions
+							if (isRecommendedA !== isRecommendedB) {
+								return (isRecommendedA && !isRecommendedB) ? -1 : 1;
+							}
+
+							// otherwise sort by name
+							return a.displayName.toLowerCase() < b.displayName.toLowerCase() ? -1 : 1;
+						});
+						pager.total = pager.firstPage.length;
+						pager.pageSize = pager.firstPage.length;
+						return new PagedModel(pager || []);
+					}));
+				});
 			});
 	}
 
@@ -524,6 +565,11 @@ export class ExtensionsListView extends ViewsViewletPanel {
 	static isKeymapsRecommendedExtensionsQuery(query: string): boolean {
 		return /@recommended:keymaps/i.test(query);
 	}
+
+	// {{SQL CARBON EDIT}}
+	static isAllUninstalledExtensionsQuery(query: string): boolean {
+		return /@alluninstalled/i.test(query);
+	}
 }
 
 export class InstalledExtensionsView extends ExtensionsListView {
@@ -560,7 +606,8 @@ export class BuiltInExtensionsView extends ExtensionsListView {
 export class RecommendedExtensionsView extends ExtensionsListView {
 
 	async show(query: string): TPromise<IPagedModel<IExtension>> {
-		return super.show(!query.trim() ? '@recommended:all' : '@recommended');
+		// {{SQL CARBON EDIT}}
+		return super.show('@alluninstalled');
 	}
 }
 
