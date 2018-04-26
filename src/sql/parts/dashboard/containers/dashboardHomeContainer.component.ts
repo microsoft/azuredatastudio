@@ -12,10 +12,10 @@ import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { AngularEventType } from '../../../services/angularEventing/angularEventingService';
+import { AngularEventType } from 'sql/services/angularEventing/angularEventingService';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { ScrollableDirective } from '../../../base/browser/ui/scrollable/scrollable.directive';
+import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
 
 @Component({
 	selector: 'dashboard-home-container',
