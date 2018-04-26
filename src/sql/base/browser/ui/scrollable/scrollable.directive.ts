@@ -39,7 +39,7 @@ export class ScrollableDirective extends AngularDisposable {
 		});
 
 		this.parent.appendChild(this.scrollableElement.getDomNode());
-		const initalHeight = getContentHeight(this.scrolled);
+		const initialHeight = getContentHeight(this.scrolled);
 		this.scrollableElement.setScrollDimensions({
 			scrollHeight: getContentHeight(this.scrolled),
 			height: getContentHeight(this.parent)
@@ -52,7 +52,7 @@ export class ScrollableDirective extends AngularDisposable {
 		// unforunately because of angular rendering behavior we need to do a double check to make sure nothing changed after this point
 		setTimeout(() => {
 			let currentheight = getContentHeight(this.scrolled);
-			if (initalHeight !== currentheight) {
+			if (initialHeight !== currentheight) {
 				this.scrollableElement.setScrollDimensions({
 					scrollHeight: currentheight,
 					height: getContentHeight(this.parent)
