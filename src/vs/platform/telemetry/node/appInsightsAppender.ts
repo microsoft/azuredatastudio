@@ -31,7 +31,19 @@ function getClient(aiKey: string): typeof appInsights.client {
 
 	const client = appInsights.getClient(aiKey);
 	client.channel.setOfflineMode(true);
+
+	// {{SQL CARBON EDIT}}
 	client.context.tags[client.context.keys.deviceMachineName] = ''; //prevent App Insights from reporting machine name
+	client.context.tags[client.context.keys.cloudRoleInstance] = ''; //prevent App Insights from reporting machine name
+
+	// overwrite getEnvelope to suppress Vortex ingest header
+	client.origGetEnvelope = client.getEnvelope;
+	client.getEnvelope = (data, tagOverrides) => {
+		let envelope = client.origGetEnvelope(data, tagOverrides);
+		envelope.flags = 0x200000;
+		return envelope;
+	};
+
 	if (aiKey.indexOf('AIF-') === 0) {
 		client.config.endpointUrl = 'https://vortex.data.microsoft.com/collect/v1';
 	}
@@ -110,6 +122,7 @@ export class AppInsightsAppender implements ITelemetryAppender {
 			const index = prefix ? prefix + item : item;
 
 			if (Array.isArray(value)) {
+				result[index] = safeStringify(value);
 				result[index] = safeStringify(value);
 
 			} else if (value instanceof Date) {
