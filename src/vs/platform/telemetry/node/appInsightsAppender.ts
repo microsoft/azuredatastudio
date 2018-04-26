@@ -36,13 +36,11 @@ function getClient(aiKey: string): typeof appInsights.client {
 	client.context.tags[client.context.keys.deviceMachineName] = ''; //prevent App Insights from reporting machine name
 	client.context.tags[client.context.keys.cloudRoleInstance] = ''; //prevent App Insights from reporting machine name
 
-	// overwrite getEnvelope to suppress Vortex ingest header
-	client.origGetEnvelope = client.getEnvelope;
-	client.getEnvelope = (data, tagOverrides) => {
-		let envelope = client.origGetEnvelope(data, tagOverrides);
+	// set envelope flags to suppress Vortex ingest header
+	client.addTelemetryProcessor((envelope, contextObjects) => {
 		envelope.flags = 0x200000;
-		return envelope;
-	};
+		return true;
+	});
 
 	if (aiKey.indexOf('AIF-') === 0) {
 		client.config.endpointUrl = 'https://vortex.data.microsoft.com/collect/v1';
