@@ -3,7 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
+
 import { Row, Cell } from './tableModel';
+import { INextIterator, ArrayIterator } from 'vs/base/common/iterator';
 
 export interface IViewRow {
 	model: Row;
@@ -17,7 +19,7 @@ export interface IViewCell {
 	height: number;
 }
 
-export class HeightMap {
+export abstract class HeightMap {
 	private heightMap: IViewRow[];
 	private indexes: { [item: string]: number; };
 
@@ -27,15 +29,69 @@ export class HeightMap {
 	}
 
 	public getTotalHeight(): number {
-		var last = this.heightMap[this.heightMap.length - 1];
+		let last = this.heightMap[this.heightMap.length - 1];
 		return !last ? 0 : last.top + last.height;
 	}
 
+	public onInsertRows(iterator: INextIterator<Row>, afterRowId: string = null): number {
+		let row: Row;
+		let viewRow: IViewRow;
+		let i: number, j: number;
+		let totalSize: number;
+		let sizeDiff = 0;
+
+		if (afterRowId === null) {
+			i = 0;
+			totalSize = 0;
+		} else {
+			i = this.indexes[afterRowId] + 1;
+			viewRow = this.heightMap[i - 1];
+
+			if (!viewRow) {
+				console.error('view item doesnt exist');
+				return undefined;
+			}
+
+			totalSize = viewRow.top + viewRow.height;
+		}
+
+		let boundSplice = this.heightMap.splice.bind(this.heightMap, i, 0);
+
+		let rowsToInsert: IViewRow[] = [];
+
+		while (row = iterator.next()) {
+			viewRow = this.createViewRow(row);
+			viewRow.top = totalSize + sizeDiff;
+
+			this.indexes[row.id] = i++;
+			rowsToInsert.push(viewRow);
+			sizeDiff += viewRow.height;
+		}
+
+		boundSplice.apply(this.heightMap, rowsToInsert);
+
+		for (j = i; j < this.heightMap.length; j++) {
+			viewRow = this.heightMap[j];
+			viewRow.top += sizeDiff;
+			this.indexes[viewRow.model.id] = j;
+		}
+
+		for (j = rowsToInsert.length - 1; j >= 0; j--) {
+			this.onInsertRow(rowsToInsert[j]);
+		}
+
+		for (j = this.heightMap.length - 1; j >= i; j--) {
+			this.onRefreshRow(this.heightMap[j]);
+		}
+
+		return sizeDiff;
+	}
+
 	public indexAt(position: number): number {
-		var left = 0;
-		var right = this.heightMap.length;
-		var center: number;
-		var item: IViewRow;
+		let left = 0;
+		let right = this.heightMap.length;
+		let center: number;
+		let item: IViewRow;
 
 		// Binary search
 		while (left < right) {
@@ -61,12 +117,17 @@ export class HeightMap {
 		return Math.min(this.indexAt(position) + 1, this.heightMap.length);
 	}
 
-	public itemAtIndex(index: number): IViewRow {
+	public rowAtIndex(index: number): IViewRow {
 		return this.heightMap[index];
 	}
 
-	public itemAfter(item: IViewRow): IViewRow {
+	public rowAfter(item: IViewRow): IViewRow {
 		return this.heightMap[this.indexes[item.model.id] + 1] || null;
 	}
 
+	protected abstract createViewRow(item: Row): IViewRow;
+
+	public abstract onRefreshRow(item: IViewRow, needsRender?: boolean): void;
+
+	public abstract onInsertRow(item: IViewRow): void;
 }

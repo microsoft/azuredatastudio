@@ -109,6 +109,8 @@ export class ViewRow implements IViewRow {
 	public top: number;
 	public height: number;
 
+	public needsRender: boolean;
+
 	public _styles: any;
 
 	constructor(private context: IViewContext, public model: Model.Row) {
@@ -120,6 +122,8 @@ export class ViewRow implements IViewRow {
 
 		this._styles = {};
 		this.model.getAllTraits().forEach(t => this._styles[t] = true);
+
+		this.cells = this.model.cells.map(e => new ViewCell(context, e, this));
 	}
 
 	public get element(): HTMLElement {
@@ -158,14 +162,14 @@ export class ViewRow implements IViewRow {
 			this.element.removeAttribute('id');
 		}
 
-		if (!skipUserRender) {
-			this.context.renderer.renderElement(this.context.table, this.model.getElement(), this.templateId, this.row.templateData);
-		}
+		this.cells.forEach(c => c.render(skipUserRender));
 	}
 
 	public insertInDOM(container: HTMLElement, afterElement: HTMLElement): void {
 		if (!this.row) {
-			this.row = this.context.cache.alloc(this.templateId);
+			const rowNode = document.createElement('tr');
+			this.row = { element: rowNode };
+			this.cells.forEach(c => c.insertInDOM(rowNode, undefined));
 
 			// used in reverse lookup from HTMLElement to Item
 			(<any>this.element)[TableView.BINDING] = this;
@@ -193,10 +197,12 @@ export class ViewRow implements IViewRow {
 		if (!this.row) {
 			return;
 		}
-
 		(<any>this.element)[TableView.BINDING] = null;
-		this.context.cache.release(this.templateId, this.row);
 		this.row = null;
+
+		if (this.cells) {
+			this.cells.forEach(c => c.removeFromDOM());
+		}
 	}
 
 	public dispose(): void {
@@ -269,9 +275,6 @@ export class ViewCell implements IViewCell {
 	public insertInDOM(container: HTMLElement, afterElement: HTMLElement): void {
 		if (!this.cell) {
 			this.cell = this.context.cache.alloc(this.templateId);
-
-			// used in reverse lookup from HTMLElement to Item
-			(<any>this.element)[TableView.BINDING] = this;
 		}
 
 		if (this.element.parentElement) {
@@ -290,6 +293,15 @@ export class ViewCell implements IViewCell {
 		}
 
 		this.render();
+	}
+
+	public removeFromDOM(): void {
+		if (!this.cell) {
+			return;
+		}
+
+		this.context.cache.release(this.templateId, this.cell);
+		this.cell = null;
 	}
 }
 
@@ -324,6 +336,8 @@ export class TableView extends HeightMap {
 
 	private lastRenderTop: number;
 	private lastRenderHeight: number;
+
+	private rows: { [id: string]: ViewRow; };
 
 	private isRefreshing = false;
 
@@ -522,6 +536,10 @@ export class TableView extends HeightMap {
 		this.styleElement.innerHTML = content.join('\n');
 	}
 
+	protected createViewRow(row: Model.Row): IViewRow {
+		return new ViewRow(this.context, row);
+	}
+
 	private render(scrollTop: number, viewHeight: number): void {
 		let i: number;
 		let stop: number;
@@ -532,28 +550,28 @@ export class TableView extends HeightMap {
 
 		// when view scrolls down, start rendering from the renderBottom
 		for (i = this.indexAfter(renderBottom) - 1, stop = this.indexAt(Math.max(thisRenderBottom, renderTop)); i >= stop; i--) {
-			this.insertItemInDOM(<ViewRow>this.itemAtIndex(i));
+			this.insertRowInDOM(<ViewRow>this.rowAtIndex(i));
 		}
 
 		// when view scrolls up, start rendering from either this.renderTop or renderBottom
 		for (i = Math.min(this.indexAt(this.lastRenderTop), this.indexAfter(renderBottom)) - 1, stop = this.indexAt(renderTop); i >= stop; i--) {
-			this.insertItemInDOM(<ViewRow>this.itemAtIndex(i));
+			this.insertRowInDOM(<ViewRow>this.rowAtIndex(i));
 		}
 
 		// when view scrolls down, start unrendering from renderTop
 		for (i = this.indexAt(this.lastRenderTop), stop = Math.min(this.indexAt(renderTop), this.indexAfter(thisRenderBottom)); i < stop; i++) {
-			this.removeItemFromDOM(<ViewRow>this.itemAtIndex(i));
+			this.removeRowFromDOM(<ViewRow>this.rowAtIndex(i));
 		}
 
 		// when view scrolls up, start unrendering from either renderBottom this.renderTop
 		for (i = Math.max(this.indexAfter(renderBottom), this.indexAt(this.lastRenderTop)), stop = this.indexAfter(thisRenderBottom); i < stop; i++) {
-			this.removeItemFromDOM(<ViewRow>this.itemAtIndex(i));
+			this.removeRowFromDOM(<ViewRow>this.rowAtIndex(i));
 		}
 
-		let topItem = this.itemAtIndex(this.indexAt(renderTop));
+		let topRow = this.rowAtIndex(this.indexAt(renderTop));
 
-		if (topItem) {
-			this.rowsContainer.style.top = (topItem.top - renderTop) + 'px';
+		if (topRow) {
+			this.rowsContainer.style.top = (topRow.top - renderTop) + 'px';
 		}
 
 		this.lastRenderTop = renderTop;
@@ -616,28 +634,57 @@ export class TableView extends HeightMap {
 		}
 	}
 
-	// DOM changes
+	// HeightMap "events"
 
-	private insertItemInDOM(item: ViewRow): void {
-		let elementAfter: HTMLElement = null;
-		let itemAfter = <ViewRow>this.itemAfter(item);
-
-		if (itemAfter && itemAfter.element) {
-			elementAfter = itemAfter.element;
-		}
-
-		item.insertInDOM(this.rowsContainer, elementAfter);
+	public onInsertRow(row: ViewRow): void {
+		row.needsRender = true;
+		this.refreshViewRow(row);
+		this.rows[row.id] = row;
 	}
 
-	private removeItemFromDOM(item: ViewRow): void {
-		if (!item) {
+	public onRefreshRow(row: ViewRow, needsRender = false): void {
+		row.needsRender = row.needsRender || needsRender;
+		this.refreshViewRow(row);
+	}
+
+	public onRemoveRow(row: ViewRow): void {
+		this.removeRowFromDOM(row);
+		row.dispose();
+		delete this.rows[row.id];
+	}
+
+	// ViewRow refresh
+
+	private refreshViewRow(row: ViewRow): void {
+		row.render();
+
+		if (this.shouldBeRendered(row)) {
+			this.insertRowInDOM(row);
+		} else {
+			this.removeRowFromDOM(row);
+		}
+	}
+
+	// DOM changes
+
+	private insertRowInDOM(row: ViewRow): void {
+		let elementAfter: HTMLElement = null;
+		let rowAfter = <ViewRow>this.rowAfter(row);
+
+		if (rowAfter && rowAfter.element) {
+			elementAfter = rowAfter.element;
+		}
+
+		row.insertInDOM(this.rowsContainer, elementAfter);
+	}
+
+	private removeRowFromDOM(row: ViewRow): void {
+		if (!row) {
 			return;
 		}
 
-		item.removeFromDOM();
+		row.removeFromDOM();
 	}
-
-
 
 	public onHidden(): void {
 		this.onHiddenScrollTop = this.scrollTop;
@@ -654,7 +701,6 @@ export class TableView extends HeightMap {
 
 		this.viewHeight = height || DOM.getContentHeight(this.rowWrapper); // render
 	}
-
 
 	private onFocus(): void {
 		// if (!this.context.options.alwaysFocused) {
@@ -717,13 +763,13 @@ export class TableView extends HeightMap {
 			return;
 		}
 
-		let item = this.getCellAround(event.target);
+		let row = this.getCellAround(event.target);
 
-		if (!item) {
+		if (!row) {
 			return;
 		}
 
-		this.context.controller.onMouseDown(this.context.table, item.model.getElement(), event);
+		this.context.controller.onMouseDown(this.context.table, row.model.getElement(), event);
 	}
 
 	private onMouseUp(e: MouseEvent): void {
@@ -741,13 +787,13 @@ export class TableView extends HeightMap {
 			return;
 		}
 
-		let item = this.getCellAround(event.target);
+		let row = this.getCellAround(event.target);
 
-		if (!item) {
+		if (!row) {
 			return;
 		}
 
-		this.context.controller.onMouseUp(this.context.table, item.model.getElement(), event);
+		this.context.controller.onMouseUp(this.context.table, row.model.getElement(), event);
 	}
 
 	private onClick(e: MouseEvent): void {
@@ -756,9 +802,9 @@ export class TableView extends HeightMap {
 		}
 
 		let event = new Mouse.StandardMouseEvent(e);
-		let item = this.getCellAround(event.target);
+		let row = this.getCellAround(event.target);
 
-		if (!item) {
+		if (!row) {
 			return;
 		}
 
@@ -771,7 +817,7 @@ export class TableView extends HeightMap {
 		}
 		this.lastClickTimeStamp = Date.now();
 
-		this.context.controller.onClick(this.context.table, item.model.getElement(), event);
+		this.context.controller.onClick(this.context.table, row.model.getElement(), event);
 	}
 
 	private onContextMenu(keyboardEvent: KeyboardEvent): void;
@@ -801,13 +847,13 @@ export class TableView extends HeightMap {
 
 		} else {
 			let mouseEvent = new Mouse.StandardMouseEvent(<MouseEvent>event);
-			let item = this.getCellAround(mouseEvent.target);
+			let row = this.getCellAround(mouseEvent.target);
 
-			if (!item) {
+			if (!row) {
 				return;
 			}
 
-			element = item.model.getElement();
+			element = row.model.getElement();
 			resultEvent = new _.MouseContextMenuEvent(mouseEvent);
 		}
 
@@ -815,13 +861,13 @@ export class TableView extends HeightMap {
 	}
 
 	private onTap(e: Touch.GestureEvent): void {
-		let item = this.getCellAround(<HTMLElement>e.initialTarget);
+		let row = this.getCellAround(<HTMLElement>e.initialTarget);
 
-		if (!item) {
+		if (!row) {
 			return;
 		}
 
-		this.context.controller.onTap(this.context.table, item.model.getElement(), e);
+		this.context.controller.onTap(this.context.table, row.model.getElement(), e);
 	}
 
 	private onTouchChange(event: Touch.GestureEvent): void {
@@ -861,4 +907,11 @@ export class TableView extends HeightMap {
 	private onThrottledMsGestureChange(event: IThrottledGestureEvent): void {
 		this.scrollTop -= event.translationY;
 	}
+
+	// Helpers
+
+	private shouldBeRendered(row: ViewRow): boolean {
+		return row.top < this.lastRenderTop + this.lastRenderHeight && row.top + row.height > this.lastRenderTop;
+	}
+
 }

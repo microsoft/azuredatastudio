@@ -124,13 +124,13 @@ export class Cell {
 
 
 	public addTrait(trait: string): void {
-		var eventData: ICellTraitEvent = { cell: this, trait: trait };
+		let eventData: ICellTraitEvent = { cell: this, trait: trait };
 		this.traits[trait] = true;
 		this._onDidAddTrait.fire(eventData);
 	}
 
 	public removeTrait(trait: string): void {
-		var eventData: ICellTraitEvent = { cell: this, trait: trait };
+		let eventData: ICellTraitEvent = { cell: this, trait: trait };
 		delete this.traits[trait];
 		this._onDidRemoveTrait.fire(eventData);
 	}
@@ -140,8 +140,8 @@ export class Cell {
 	}
 
 	public getAllTraits(): string[] {
-		var result: string[] = [];
-		var trait: string;
+		let result: string[] = [];
+		let trait: string;
 		for (trait in this.traits) {
 			if (this.traits.hasOwnProperty(trait) && this.traits[trait]) {
 				result.push(trait);
@@ -164,7 +164,7 @@ export class Cell {
 }
 
 export class Row {
-	private cells: Cell[];
+	public cells: Cell[];
 
 	private height: number;
 
@@ -204,13 +204,13 @@ export class Row {
 	}
 
 	public addTrait(trait: string): void {
-		var eventData: IRowTraitEvent = { row: this, trait: trait };
+		let eventData: IRowTraitEvent = { row: this, trait: trait };
 		this.traits[trait] = true;
 		this._onDidAddTrait.fire(eventData);
 	}
 
 	public removeTrait(trait: string): void {
-		var eventData: IRowTraitEvent = { row: this, trait: trait };
+		let eventData: IRowTraitEvent = { row: this, trait: trait };
 		delete this.traits[trait];
 		this._onDidRemoveTrait.fire(eventData);
 	}
@@ -220,8 +220,8 @@ export class Row {
 	}
 
 	public getAllTraits(): string[] {
-		var result: string[] = [];
-		var trait: string;
+		let result: string[] = [];
+		let trait: string;
 		for (trait in this.traits) {
 			if (this.traits.hasOwnProperty(trait) && this.traits[trait]) {
 				result.push(trait);
@@ -290,14 +290,14 @@ export class TableModel {
 	}
 
 	public getFocus(includeHidden?: boolean): any {
-		var result = this.getElementsWithTrait('focused', includeHidden);
+		let result = this.getElementsWithTrait('focused', includeHidden);
 		return result.length === 0 ? null : result[0];
 	}
 
 	private getElementsWithTrait(trait: string, includeHidden: boolean): any[] {
-		var elements = [];
-		var items = this.traitsToItems[trait] || {};
-		var id: string;
+		let elements = [];
+		let items = this.traitsToItems[trait] || {};
+		let id: string;
 		for (id in items) {
 			if (items.hasOwnProperty(id) && (items[id].isVisible() || includeHidden)) {
 				elements.push(items[id].getElement());
