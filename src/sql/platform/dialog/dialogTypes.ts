@@ -6,6 +6,7 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
+import { localize } from 'vs/nls';
 import Event, { Emitter } from 'vs/base/common/event';
 
 export class Wizard {
@@ -40,15 +41,13 @@ export class DialogTab implements sqlops.window.modelviewdialog.DialogTab {
 }
 
 export class Dialog implements sqlops.window.modelviewdialog.Dialog {
-	public content: string | DialogTab[];
-	public okTitle: string;
-	public cancelTitle: string;
-	public customButtons: DialogButton[];
+	private static readonly DONE_BUTTON_LABEL = localize('dialogModalDoneButtonLabel', 'Done');
+	private static readonly CANCEL_BUTTON_LABEL = localize('dialogModalCancelButtonLabel', 'Cancel');
 
-	private _onOk: Emitter<void> = new Emitter<void>();
-	public readonly onOk: Event<void> = this._onOk.event;
-	private _onCancel: Emitter<void> = new Emitter<void>();
-	public readonly onCancel: Event<void> = this._onCancel.event;
+	public content: string | DialogTab[];
+	public okButton: DialogButton = new DialogButton(Dialog.DONE_BUTTON_LABEL, true);
+	public cancelButton: DialogButton = new DialogButton(Dialog.CANCEL_BUTTON_LABEL, true);
+	public customButtons: DialogButton[];
 
 	constructor(public title: string, content?: string | DialogTab[]) {
 		if (content) {
@@ -70,5 +69,12 @@ export class DialogButton implements sqlops.window.modelviewdialog.Button {
 	constructor(label: string, enabled: boolean) {
 		this.label = label;
 		this.enabled = enabled;
+	}
+
+	/**
+	 * Register an event that notifies the button that it has been clicked
+	 */
+	public registerClickEvent(clickEvent: Event<void>): void {
+		clickEvent(() => this._onClick.fire());
 	}
 }

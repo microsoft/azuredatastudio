@@ -13,7 +13,7 @@ import { Dialog, Wizard } from 'sql/platform/dialog/dialogTypes';
 import { IModalOptions } from 'sql/base/browser/ui/modal/modal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-const defaultOptions: IModalOptions = { hasBackButton: true, isWide: true };
+const defaultOptions: IModalOptions = { hasBackButton: true, isWide: false };
 
 export class CustomDialogService {
 	constructor( @IInstantiationService private _instantiationService: IInstantiationService) { }

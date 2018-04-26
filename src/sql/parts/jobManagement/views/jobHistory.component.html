@@ -4,8 +4,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-
+<div class="jobhistory-heading-container">
  <h1 class="job-heading">Jobs | {{this._agentJobInfo?.name}} </h1>
+ <div class="icon in-progress" *ngIf="showProgressWheel()"></div>
+</div>
 
  <!-- Back -->
  <div class="all-jobs">
@@ -82,7 +84,7 @@
 <!-- Job History details -->
 <div class='history-details'>
 	<!-- Previous run list -->
-	<div style="width: 20%; overflow-y: scroll">
+	<div style="min-width: 275px">
 		<table *ngIf="_showPreviousRuns === true">
 			<tr>
 				<td class="date-column">
@@ -93,11 +95,11 @@
 				</td>
 			</tr>
 		</table>
-		<h3 *ngIf="_showPreviousRuns === false">No Previous Runs Available</h3>
+		<h3 *ngIf="_showPreviousRuns === false" style="text-align: center">No Previous Runs Available</h3>
 		<div #table class="step-table prev-run-list" style="position: relative; height: 100%; width: 100%"></div>
 	</div>
 	<!-- Job Steps -->
-	<div class="job-steps">
+	<div class="job-steps" id="job-steps">
 		<h1 class="job-heading">
 			{{agentJobHistoryInfo?.runDate}}
 		</h1>

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./jobHistory';
-
+import 'vs/css!sql/media/icons/common-icons';
 import { OnInit, OnChanges, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
 import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -27,6 +27,8 @@ import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsVie
 import { JobStepsViewRow } from './jobStepsViewTree';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { AgentJobUtilities } from '../common/agentJobUtilities';
+import { ITreeOptions } from 'vs/base/parts/tree/browser/tree';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -59,6 +61,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _jobCacheObject: JobCacheObject;
 	private _notificationService: INotificationService;
 	private _agentJobInfo: AgentJobInfo;
+	private _noJobsAvailable: boolean = false;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -84,7 +87,6 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			this._jobCacheObject.serverName = serverName;
 			this._jobManagementService.addToCache(serverName, this._jobCacheObject);
 		}
-
 	}
 
 	ngOnInit() {
@@ -105,22 +107,24 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			} else {
 				tree.setFocus(element, payload);
 				tree.setSelection([element], payload);
-				self.setStepsTree(element);
+					self.setStepsTree(element);
 			}
 			return true;
 		};
 		this._treeController.onKeyDown = (tree, event) => {
 			this._treeController.onKeyDownWrapper(tree, event);
 			let element = tree.getFocus();
-			self.setStepsTree(element);
+			if (element) {
+				self.setStepsTree(element);
+			}
 			return true;
-		}
+		};
 		this._tree = new Tree(this._tableContainer.nativeElement, {
 			controller: this._treeController,
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
-		});
+		}, {verticalScrollMode: ScrollbarVisibility.Visible});
 		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 		this._tree.layout(1024);
 	}
@@ -129,6 +133,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		this._agentJobInfo = this._agentViewComponent.agentJobInfo;
 		if (!this.agentJobInfo) {
 			this.agentJobInfo = this._agentJobInfo;
+			this.setActions();
 		}
 		if (this._isVisible === false && this._tableContainer.nativeElement.offsetParent !== null) {
 			this._isVisible = true;
@@ -143,7 +148,10 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			} else if (jobHistories && jobHistories.length === 0 ){
 				this._showPreviousRuns = false;
 				this._showSteps = false;
+				this._noJobsAvailable = true;
 				this._cd.detectChanges();
+			} else {
+				this.loadHistory();
 			}
 			this._jobCacheObject.prevJobID = this._agentViewComponent.jobId;
 		} else if (this._isVisible === true && this._agentViewComponent.refresh) {
@@ -154,7 +162,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		}
 	}
 
-	loadHistory() {
+	private loadHistory() {
 		const self = this;
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getJobHistory(ownerUri, this._agentViewComponent.jobId).then((result) => {
@@ -172,7 +180,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			} else {
 				self._showPreviousRuns = false;
 				self._showSteps = false;
-				this._cd.detectChanges();
+				self._cd.detectChanges();
 			}
 		});
 	}
@@ -269,6 +277,16 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 
 	private formatTime(time: string): string {
 		return time.replace('T', ' ');
+	}
+
+	private showProgressWheel(): boolean {
+		return this._showPreviousRuns !== true && this._noJobsAvailable === false;
+	}
+
+	private setActions(): void {
+		let startIcon: HTMLElement = $('.icon-start').get(0);
+		let stopIcon: HTMLElement = $('.icon-stop').get(0);
+		AgentJobUtilities.getActionIconClassName(startIcon, stopIcon, this.agentJobInfo.currentExecutionStatus);
 	}
 
 	public get showSteps(): boolean {

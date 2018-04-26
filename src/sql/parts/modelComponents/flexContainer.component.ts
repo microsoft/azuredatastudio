@@ -21,7 +21,8 @@ class FlexItem {
 
 @Component({
 	template: `
-		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent">
+		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent"
+				[style.alignItems]="alignItems" [style.alignContent]="alignContent">
 			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.order]="getItemOrder(item)" >
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
@@ -34,6 +35,8 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	@Input() modelStore: IModelStore;
 	private _flexFlow: string;
 	private _justifyContent: string;
+	private _alignItems: string;
+	private _alignContent: string;
 
 	@ViewChildren(ModelComponentWrapper) private _componentWrappers: QueryList<ModelComponentWrapper>;
 
@@ -65,6 +68,8 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	public setLayout (layout: FlexLayout): void {
 		this._flexFlow = layout.flexFlow ? layout.flexFlow : '';
 		this._justifyContent= layout.justifyContent ? layout.justifyContent : '';
+		this._alignItems= layout.alignItems ? layout.alignItems : '';
+		this._alignContent= layout.alignContent ? layout.alignContent : '';
 		this.layout();
 	}
 
@@ -77,8 +82,16 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		return this._justifyContent;
 	}
 
+	public get alignItems(): string {
+		return this._alignItems;
+	}
+
+	public get alignContent(): string {
+		return this._alignContent;
+	}
+
 	private getItemFlex(item: FlexItem): string {
-		return item.config ? item.config.flex : '';
+		return item.config ? item.config.flex : '1 1 auto';
 	}
 	private getItemOrder(item: FlexItem): number {
 		return item.config ? item.config.order : 0;

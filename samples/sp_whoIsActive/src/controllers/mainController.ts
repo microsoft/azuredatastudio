@@ -29,35 +29,25 @@ export default class MainController extends ControllerBase {
     }
 
     public activate(): Promise<boolean> {
-        sqlops.dashboard.registerWebviewProvider('sp_whoisactive_documentation', webview => {
-            let templateValues = {url: 'http://whoisactive.com/docs/'};
-            Utils.renderTemplateHtml(path.join(__dirname, '..'), 'templateTab.html', templateValues)
-            .then(html => {
-                webview.html = html;
-            });
-        });
-
-        sqlops.tasks.registerTask('sp_whoisactive.install', e => this.onInstall(e));
+        sqlops.tasks.registerTask('sp_whoisactive.install', e => this.openurl('http://whoisactive.com/downloads/'));
+        sqlops.tasks.registerTask('sp_whoisactive.documentation', e => this.openurl('http://whoisactive.com/docs/'));
         sqlops.tasks.registerTask('sp_whoisactive.findBlockLeaders', e => this.onExecute(e, 'findBlockLeaders.sql'));
         sqlops.tasks.registerTask('sp_whoisactive.getPlans', e => this.onExecute(e, 'getPlans.sql'));
 
         return Promise.resolve(true);
     }
 
-    private onInstall(connection: sqlops.IConnectionProfile): void {
-        openurl.open('http://whoisactive.com/downloads/');
+    private openurl(link: string): void {
+        openurl.open(link);
     }
 
     private onExecute(connection: sqlops.IConnectionProfile, fileName: string): void {
-        let sqlFile = fs.readFileSync(path.join(__dirname, '..', 'sql', fileName)).toString();
-        this.openSQLFileWithContent(sqlFile);
-    }
-
-    private openSQLFileWithContent(content: string): void {
-        vscode.workspace.openTextDocument({language: 'sql', content: content}).then(doc => {
-            vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, false);
+        let sqlContent = fs.readFileSync(path.join(__dirname, '..', 'sql', fileName)).toString();
+        vscode.workspace.openTextDocument({language: 'sql', content: sqlContent}).then(doc => {
+            vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, false).then(() => {
+                let filePath = doc.uri.toString();
+                sqlops.queryeditor.connect(filePath, connection.id).then(() => sqlops.queryeditor.runQuery(filePath));
+            });
         });
     }
-
 }
-

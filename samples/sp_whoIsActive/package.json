@@ -2,7 +2,7 @@
     "name": "whoisactive",
     "displayName": "whoisactive",
     "description": "sp_whoisactive for SQL Operations Studio",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "publisher": "Microsoft",
     "preview": true,
     "engines": {
@@ -24,7 +24,7 @@
         "commands": [
             {
                 "command": "sp_whoisactive.install",
-                "title": "Install sp_whoisactive",
+                "title": "Whoisactive: Install sp_whoisactive",
                 "icon": {
                     "light": "./out/src/media/download.svg",
                     "dark": "./out/src/media/download_inverse.svg"
@@ -32,7 +32,7 @@
             },
             {
                 "command": "sp_whoisactive.findBlockLeaders",
-                "title": "Find leader of block",
+                "title": "Whoisactive: Find leader of block",
                 "icon": {
                     "light": "./out/src/media/blocker.svg",
                     "dark": "./out/src/media/blocker_inverse.svg"
@@ -40,10 +40,18 @@
             },
             {
                 "command": "sp_whoisactive.getPlans",
-                "title": "Get plans",
+                "title": "Whoisactive: Get plans",
                 "icon": {
                     "light": "./out/src/media/monitor.svg",
                     "dark": "./out/src/media/monitor_inverse.svg"
+                }
+            },
+            {
+                "command": "sp_whoisactive.documentation",
+                "title": "Whoisactive: Documentation",
+                "icon": {
+                    "light": "./out/src/media/documentation.svg",
+                    "dark": "./out/src/media/documentation_inverse.svg"
                 }
             }
         ],
@@ -55,30 +63,7 @@
                 "title": "sp_whoisactive",
                 "description": "Extension for checking who is active.",
                 "container": {
-                    "nav-section": [
-                        {
-                            "id": "sp_whoisactive_insights",
-                            "title": "Insights",
-                            "icon": {
-                                "light": "./out/src/media/insights.svg",
-                                "dark": "./out/src/media/insights_inverse.svg"
-                            },
-                            "container": {
-                                "sp_whoisactive-insights": {}
-                            }
-                        },
-                        {
-                            "id": "sp_whoisactive_documentation",
-                            "title": "Documentation",
-                            "icon": {
-                                "light": "./out/src/media/documentation.svg",
-                                "dark": "./out/src/media/documentation_inverse.svg"
-                            },
-                            "container": {
-                                "webview-container": null
-                            }
-                        }
-                    ]
+                    "sp_whoisactive-insights": {}
                 }
             }
         ],
@@ -92,7 +77,8 @@
                             "dataType": "number",
                             "legendPosition": "none",
                             "labelFirstColumn": false,
-                            "columnsAsLabels": true
+                            "columnsAsLabels": true,
+                            "showTopNData": 5
                         }
                     },
                     "queryFile": "./out/src/sql/cpuUsage.sql"
@@ -107,7 +93,8 @@
                             "dataType": "number",
                             "legendPosition": "none",
                             "labelFirstColumn": false,
-                            "columnsAsLabels": true
+                            "columnsAsLabels": true,
+                            "showTopNData": 5
                         }
                     },
                     "queryFile": "./out/src/sql/cpuDelta.sql"
@@ -122,7 +109,8 @@
                             "dataType": "number",
                             "legendPosition": "none",
                             "labelFirstColumn": false,
-                            "columnsAsLabels": true
+                            "columnsAsLabels": true,
+                            "showTopNData": 5
                         }
                     },
                     "queryFile": "./out/src/sql/memoryUsage.sql"
@@ -137,10 +125,20 @@
                             "dataType": "number",
                             "legendPosition": "none",
                             "labelFirstColumn": false,
-                            "columnsAsLabels": true
+                            "columnsAsLabels": true,
+                            "showTopNData": 5
                         }
                     },
                     "queryFile": "./out/src/sql/memoryDelta.sql"
+                }
+            },
+            {
+                "id": "sp_whoisactive-blocking_sessions",
+                "contrib": {
+                    "type": {
+                        "table": null
+                    },
+                    "queryFile": "./out/src/sql/blockingSessions.sql"
                 }
             }
         ],
@@ -155,12 +153,13 @@
                                 "tasks-widget": [
                                     "sp_whoisactive.getPlans",
                                     "sp_whoisactive.findBlockLeaders",
+                                    "sp_whoisactive.documentation",
                                     "sp_whoisactive.install"
                                 ]
                             }
                         },
                         {
-                            "name": "CPU Usage",
+                            "name": "Top 5 CPU Usage",
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1
@@ -170,7 +169,7 @@
                             }
                         },
                         {
-                            "name": "CPU Delta",
+                            "name": "Top 5 CPU Delta",
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1
@@ -180,7 +179,7 @@
                             }
                         },
                         {
-                            "name": "Memory Usage",
+                            "name": "Top 5 Memory Usage",
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1
@@ -190,13 +189,23 @@
                             }
                         },
                         {
-                            "name": "Memory Delta",
+                            "name": "Top 5 Memory Delta",
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1
                             },
                             "widget": {
                                 "sp_whoisactive-memory-delta": {}
+                            }
+                        },
+                        {
+                            "name": "Blocking Sessions",
+                            "gridItemConfig": {
+                                "sizex": 2,
+                                "sizey": 1
+                            },
+                            "widget": {
+                                "sp_whoisactive-blocking_sessions": {}
                             }
                         }
                     ]
@@ -206,11 +215,11 @@
         "snippets": []
     },
     "scripts": {
-        "prepare": "node ./node_modules/sqlops/bin/install",
         "build": "gulp build",
         "compile": "gulp compile",
         "watch": "gulp watch",
-        "postinstall": "node ./node_modules/vscode/bin/install"
+        "typings": "gulp copytypings",
+        "postinstall": "node ./node_modules/vscode/bin/install && node ./node_modules/sqlops/bin/install && gulp copytypings"
     },
     "dependencies": {
         "fs-extra": "^5.0.0",

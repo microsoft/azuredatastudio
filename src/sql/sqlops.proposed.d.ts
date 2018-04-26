@@ -19,6 +19,7 @@ declare module 'sqlops' {
 		navContainer(): ContainerBuilder<NavContainer, any, any>;
 		flexContainer(): FlexBuilder;
 		card(): ComponentBuilder<CardComponent>;
+		inputBox(): ComponentBuilder<InputBoxComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<WebviewComponent>;
 	}
@@ -107,6 +108,14 @@ declare module 'sqlops' {
 		 * Matches the justify-content CSS property.
 		 */
 		justifyContent?: string;
+		/**
+		 * Matches the align-items CSS property.
+		 */
+		alignItems?: string;
+		/**
+		 * Matches the align-content CSS property.
+		 */
+		alignContent?: string;
 	}
 
 	export interface FlexItemLayout {
@@ -116,7 +125,7 @@ declare module 'sqlops' {
 		order?: number;
 		/**
 		 * Matches the flex CSS property and its available values.
-		 * Default is "0 1 auto".
+		 * Default is "1 1 auto".
 		 */
 		flex?: string;
 	}
@@ -142,7 +151,7 @@ declare module 'sqlops' {
 
 	/**
 	 * Properties representing the card component, can be used
-	 * when using ModelBuilder to create the comopnent
+	 * when using ModelBuilder to create the component
 	 */
 	export interface CardProperties  {
 		label: string;
@@ -150,10 +159,19 @@ declare module 'sqlops' {
 		actions?: ActionDescriptor[];
 	}
 
+	export interface InputBoxProperties  {
+		value?: string;
+	}
+
 	export interface CardComponent extends Component {
 		label: string;
 		value: string;
 		actions?: ActionDescriptor[];
+	}
+
+	export interface InputBoxComponent extends Component {
+		value: string;
+		onTextChanged: vscode.Event<any>;
 	}
 
 	export interface WidgetComponent extends Component {
@@ -239,14 +257,14 @@ declare module 'sqlops' {
 				content: string | DialogTab[],
 
 				/**
-				 * The caption of the OK button
+				 * The ok button
 				 */
-				okTitle: string;
+				okButton: Button;
 
 				/**
-				 * The caption of the Cancel button
+				 * The cancel button
 				 */
-				cancelTitle: string;
+				cancelButton: Button;
 
 				/**
 				 * Any additional buttons that should be displayed
@@ -267,16 +285,6 @@ declare module 'sqlops' {
 				 * Updates the dialog on screen to reflect changes to the buttons or content
 				 */
 				updateContent(): void;
-
-				/**
-				 * Raised when dialog's ok button is pressed
-				 */
-				readonly onOk: vscode.Event<void>;
-
-				/**
-				 * Raised when dialog is canceled
-				 */
-				readonly onCancel: vscode.Event<void>;
 			}
 
 			export interface DialogTab {
@@ -314,5 +322,24 @@ declare module 'sqlops' {
 				readonly onClick: vscode.Event<void>;
 			}
 		}
+	}
+
+	/**
+	 * Namespace for interacting with query editor
+	*/
+	export namespace queryeditor {
+
+		/**
+		 * Make connection for the query editor
+		 * @param {string} fileUri file URI for the query editor
+		 * @param {string} connectionId connection ID
+		 */
+		export function connect(fileUri: string, connectionId: string): Thenable<void>;
+
+		/**
+		 * Run query if it is a query editor and it is already opened.
+		 * @param {string} fileUri file URI for the query editor
+		 */
+		export function runQuery(fileUri: string): void;
 	}
 }

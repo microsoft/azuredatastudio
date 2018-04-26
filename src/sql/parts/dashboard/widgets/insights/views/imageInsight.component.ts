@@ -27,7 +27,7 @@ const defaultConfig: IConfig = {
 })
 export default class ImageInsight implements IInsightsView, OnInit {
 	private _rawSource: string;
-	private _config: IConfig;
+	private _config: IConfig = defaultConfig;
 
 	@ViewChild('image') private image: ElementRef;
 	@ViewChild('container') private container: ElementRef;

@@ -137,7 +137,7 @@ actionRegistry.registerWorkbenchAction(
 		FocusOnCurrentQueryKeyboardAction,
 		FocusOnCurrentQueryKeyboardAction.ID,
 		FocusOnCurrentQueryKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_Q }
+		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_O }
 	),
 	FocusOnCurrentQueryKeyboardAction.LABEL
 );

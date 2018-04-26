@@ -5,6 +5,7 @@
 
 import FlexContainer from './flexContainer.component';
 import CardComponent from './card.component';
+import InputBoxComponent from './inputbox.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -13,3 +14,6 @@ registerComponentType(FLEX_CONTAINER, ModelComponentTypes.FlexContainer, FlexCon
 
 export const CARD_COMPONENT = 'card-component';
 registerComponentType(CARD_COMPONENT, ModelComponentTypes.Card, CardComponent);
+
+export const INPUTBOX_COMPONENT = 'inputbox-component';
+registerComponentType(INPUTBOX_COMPONENT, ModelComponentTypes.InputBox, InputBoxComponent);

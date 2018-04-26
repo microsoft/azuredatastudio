@@ -29,7 +29,6 @@ ul.action-buttons li {
 	padding-right: 25px;
 	display: inline-block;
 	width: 50px;
-	cursor: pointer;
 }
 
 .overview-container .overview-tab .resultsViewCollapsible {
@@ -134,6 +133,7 @@ input#accordion:checked ~ .accordion-content {
 	width: 20px;
 	background-image: url('../common/media/start.svg');
 	background-repeat: no-repeat;
+	cursor: pointer;
 }
 
 .vs ul.action-buttons .icon-stop,
@@ -144,6 +144,17 @@ input#accordion:checked ~ .accordion-content {
 	background-repeat: no-repeat;
 	height: 20px;
 	width: 20px;
+	cursor: pointer;
+}
+
+ul.action-buttons div.icon-start.non-runnable {
+	opacity: 0.4;
+	cursor: default;
+}
+
+ul.action-buttons div.icon-stop.non-runnable {
+	opacity: 0.4;
+	cursor: default;
 }
 
 .accordion-content #col1,
@@ -177,6 +188,7 @@ table.step-list tr.step-row td {
 	padding-left: 10px;
 	height: 100%;
 	width: 90%;
+	overflow-y: scroll;
 }
 
 .history-details > .job-steps {
@@ -235,4 +247,19 @@ table.step-list tr.step-row td {
 .steps-tree .monaco-tree .monaco-tree-row {
 	white-space: normal;
 	min-height: 40px !important;
+}
+
+jobhistory-component .history-details .step-table.prev-run-list .monaco-scrollable-element {
+	overflow-y: scroll !important;
+}
+
+jobhistory-component .jobhistory-heading-container {
+	display: -webkit-box;
+}
+
+jobhistory-component > .jobhistory-heading-container > .icon.in-progress {
+	width: 20px;
+	height: 20px;
+	padding-top: 16px;
+	padding-left: 20px;
 }
