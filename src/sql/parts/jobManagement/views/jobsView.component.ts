@@ -297,7 +297,7 @@ export class JobsViewComponent implements AfterContentChecked {
 							let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
 							let errorMessage = jobHistory ? jobHistory.message: noStepsMessage;
 							item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
-							self._agentViewComponent.setExpanded(job.jobId, errorMessage);
+							self._agentViewComponent.setExpanded(job.jobId, item['name']);
 							self.dataView.updateItem(job.jobId + '.error', item);
 
 						}
