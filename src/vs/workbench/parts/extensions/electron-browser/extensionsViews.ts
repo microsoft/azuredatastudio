@@ -383,10 +383,8 @@ export class ExtensionsListView extends ViewsViewletPanel {
 
 						// sort the marketplace extensions
 						pager.firstPage.sort((a, b) => {
-							let extNameA: string = `${a.publisher}.${a.name}`;
-							let extNameB: string = `${b.publisher}.${b.name}`;
-							let isRecommendedA: boolean = recommmended.indexOf(extNameA) > -1;
-							let isRecommendedB: boolean = recommmended.indexOf(extNameB) > -1;
+							let isRecommendedA: boolean = recommmended.indexOf(`${a.publisher}.${a.name}`) > -1;
+							let isRecommendedB: boolean = recommmended.indexOf(`${b.publisher}.${b.name}`) > -1;
 
 							// sort recommeded extensions before other extensions
 							if (isRecommendedA !== isRecommendedB) {
