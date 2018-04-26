@@ -123,7 +123,6 @@ export class AppInsightsAppender implements ITelemetryAppender {
 
 			if (Array.isArray(value)) {
 				result[index] = safeStringify(value);
-				result[index] = safeStringify(value);
 
 			} else if (value instanceof Date) {
 				// TODO unsure why this is here and not in _getData
