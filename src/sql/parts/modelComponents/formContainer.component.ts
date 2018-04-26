@@ -16,8 +16,12 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 
+export interface TitledFormItemLayout {
+	title: string;
+
+}
 class FormItem {
-	constructor(public descriptor: IComponentDescriptor, public config: FormItemLayout) { }
+	constructor(public descriptor: IComponentDescriptor, public config: TitledFormItemLayout) { }
 }
 
 @Component({
@@ -81,9 +85,8 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	}
 
 	private getItemTitle(item: FormItem): string {
-
-		let component = this.modelStore.getComponent(item.descriptor.id);
-		return component ? component.title : '';
+		let itemConfig = item.config;
+		return itemConfig ? itemConfig.title : '';
 	}
 
 	public setLayout(layout: any): void {

@@ -23,13 +23,12 @@ declare module 'sqlops' {
 		dropDown(): ComponentBuilder<DropDownComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<WebviewComponent>;
-		formContainer(): ContainerBuilder<any, any, any>;
+		formContainer(): FormBuilder;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
 		component(): T;
 		withProperties<U>(properties: U): ComponentBuilder<T>;
-		withTitle(title: string): ComponentBuilder<T>;
 	}
 	export interface ContainerBuilder<T extends Component, TLayout, TItemLayout> extends ComponentBuilder<T> {
 		withLayout(layout: TLayout): ContainerBuilder<T, TLayout, TItemLayout>;
@@ -38,6 +37,10 @@ declare module 'sqlops' {
 
 	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout> {
 
+	}
+
+	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
+		withTitledItems(components: TitledComponent[], itemLayout?: FormItemLayout): ContainerBuilder<FormContainer, FormLayout, FormItemLayout>;
 	}
 
 	export interface Component {
@@ -51,6 +54,11 @@ declare module 'sqlops' {
 		 * @memberof Component
 		 */
 		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
+	}
+
+	export interface TitledComponent {
+		component: Component,
+		title: string;
 	}
 
 	/**

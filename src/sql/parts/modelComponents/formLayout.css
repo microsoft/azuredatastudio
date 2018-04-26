@@ -1,11 +1,13 @@
 
 .model-table {
-	width:300px;
+	width:400px;
 	display:table;
+	padding: 30px;
 }
 
 .model-row {
 	display: table-row;
+	width: 100px;
 }
 
 .model-cell {

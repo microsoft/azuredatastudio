@@ -33,9 +33,9 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return new ContainerBuilderImpl<sqlops.FlexContainer, sqlops.FlexLayout, sqlops.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id);
 	}
 
-	formContainer(): sqlops.ContainerBuilder<any, any, any> {
+	formContainer(): sqlops.FormBuilder {
 		let id = this.getNextComponentId();
-		return new ContainerBuilderImpl<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout>(this._proxy, this._handle, ModelComponentTypes.Form, id);
+		return new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id);
 	}
 
 	card(): sqlops.ComponentBuilder<sqlops.CardComponent> {
@@ -102,11 +102,6 @@ class ComponentBuilderImpl<T extends sqlops.Component> implements sqlops.Compone
 		return this;
 	}
 
-	withTitle(title: string): sqlops.ComponentBuilder<T> {
-		this._component.title = title;
-		return this;
-	}
-
 	handleEvent(eventArgs: IComponentEventArgs) {
 		this._component.onEvent(eventArgs);
 	}
@@ -139,6 +134,15 @@ class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> ext
 	}
 }
 
+class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> {
+	withTitledItems(components: sqlops.TitledComponent[], itemLayout?: sqlops.FormItemLayout): sqlops.ContainerBuilder<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> {
+		this._component.itemConfigs = components.map(item => {
+			let componentWrapper = item.component as ComponentWrapper;
+			return new InternalItemConfig(componentWrapper, Object.assign({}, itemLayout, {title: item.title}));
+		});
+		return this;
+	}
+}
 
 class InternalItemConfig {
 	constructor(private _component: ComponentWrapper, public config: any) { }
@@ -183,14 +187,6 @@ class ComponentWrapper implements sqlops.Component {
 
 	public get items(): sqlops.Component[] {
 		return this.itemConfigs.map(itemConfig => itemConfig.component);
-	}
-
-	public get title(): string {
-		return this.properties['title'];
-	}
-
-	public set title(v: string) {
-		this.setProperty('title', v);
 	}
 
 	public toComponentShape(): IComponentShape {
