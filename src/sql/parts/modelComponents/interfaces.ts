@@ -59,7 +59,8 @@ export interface IComponentEventArgs {
 
 export enum ComponentEventType {
 	PropertiesChanged,
-	onDidChange
+	onDidChange,
+	onDidClick
 }
 
 export interface IModelStore {

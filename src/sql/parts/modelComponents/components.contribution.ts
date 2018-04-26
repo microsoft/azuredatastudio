@@ -8,6 +8,7 @@ import FormContainer from './formContainer.component';
 import CardComponent from './card.component';
 import InputBoxComponent from './inputbox.component';
 import DropDownComponent from './dropdown.component';
+import ButtonComponent from './button.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -25,3 +26,6 @@ registerComponentType(INPUTBOX_COMPONENT, ModelComponentTypes.InputBox, InputBox
 
 export const DROPDOWN_COMPONENT = 'dropdown-component';
 registerComponentType(DROPDOWN_COMPONENT, ModelComponentTypes.DropDown, DropDownComponent);
+
+export const BUTTON_COMPONENT = 'button-component';
+registerComponentType(BUTTON_COMPONENT, ModelComponentTypes.Button, ButtonComponent);

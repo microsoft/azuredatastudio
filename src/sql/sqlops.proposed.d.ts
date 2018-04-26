@@ -20,6 +20,7 @@ declare module 'sqlops' {
 		flexContainer(): FlexBuilder;
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
+		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<WebviewComponent>;
@@ -40,7 +41,7 @@ declare module 'sqlops' {
 	}
 
 	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
-		withTitledItems(components: TitledComponent[], itemLayout?: FormItemLayout): ContainerBuilder<FormContainer, FormLayout, FormItemLayout>;
+		withFormItems(components: FormComponent[], itemLayout?: FormItemLayout): ContainerBuilder<FormContainer, FormLayout, FormItemLayout>;
 	}
 
 	export interface Component {
@@ -56,9 +57,10 @@ declare module 'sqlops' {
 		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
 	}
 
-	export interface TitledComponent {
-		component: Component,
+	export interface FormComponent {
+		component: Component;
 		title: string;
+		actions?: Component[];
 	}
 
 	/**
@@ -191,6 +193,10 @@ declare module 'sqlops' {
 		values?: string[];
 	}
 
+	export interface ButtonProperties {
+		label?: string;
+	}
+
 	export interface CardComponent extends Component {
 		label: string;
 		value: string;
@@ -206,6 +212,11 @@ declare module 'sqlops' {
 		value: string;
 		values: string[];
 		onValueChanged: vscode.Event<any>;
+	}
+
+	export interface ButtonComponent extends Component {
+		label: string;
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface WidgetComponent extends Component {

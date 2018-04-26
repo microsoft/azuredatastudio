@@ -69,6 +69,7 @@ export enum ModelComponentTypes {
 	Card,
 	InputBox,
 	DropDown,
+	Button,
 	DashboardWidget,
 	DashboardWebview,
 	Form
@@ -89,7 +90,8 @@ export interface IItemConfig {
 
 export enum ComponentEventType {
 	PropertiesChanged,
-	onDidChange
+	onDidChange,
+	onDidClick
 }
 
 export interface IComponentEventArgs {

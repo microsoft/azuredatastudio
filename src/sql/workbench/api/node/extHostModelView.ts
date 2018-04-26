@@ -45,13 +45,16 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	inputBox(): sqlops.ComponentBuilder<sqlops.InputBoxComponent> {
 		let id = this.getNextComponentId();
-		console.info('input box ' + id);
 		return this.withEventHandler(new InputBoxWrapper(this._proxy, this._handle, id), id);
+	}
+
+	button(): sqlops.ComponentBuilder<sqlops.ButtonComponent> {
+		let id = this.getNextComponentId();
+		return this.withEventHandler(new ButtonWrapper(this._proxy, this._handle, id), id);
 	}
 
 	dropDown(): sqlops.ComponentBuilder<sqlops.DropDownComponent> {
 		let id = this.getNextComponentId();
-		console.info('dropdown ' + id);
 		return this.withEventHandler(new DropDownWrapper(this._proxy, this._handle, id), id);
 	}
 
@@ -135,10 +138,32 @@ class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> ext
 }
 
 class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> {
-	withTitledItems(components: sqlops.TitledComponent[], itemLayout?: sqlops.FormItemLayout): sqlops.ContainerBuilder<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> {
+
+	withFormItems(components: sqlops.FormComponent[], itemLayout?: sqlops.FormItemLayout): sqlops.ContainerBuilder<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> {
+
 		this._component.itemConfigs = components.map(item => {
 			let componentWrapper = item.component as ComponentWrapper;
-			return new InternalItemConfig(componentWrapper, Object.assign({}, itemLayout, {title: item.title}));
+			let actions: string[] = undefined;
+			if (item.actions) {
+				actions = item.actions.map(action => {
+					let actionComponentWrapper = action as ComponentWrapper;
+					return actionComponentWrapper.id;
+				});
+			}
+			return new InternalItemConfig(componentWrapper, Object.assign({}, itemLayout, {
+				title: item.title,
+				actions: actions,
+				isFormComponent: true
+			}));
+		});
+
+		components.forEach(formItem => {
+			if (formItem.actions) {
+				formItem.actions.forEach(component => {
+					let componentWrapper = component as ComponentWrapper;
+					this._component.itemConfigs.push(new InternalItemConfig(componentWrapper, itemLayout));
+				});
+			}
 		});
 		return this;
 	}
@@ -167,6 +192,7 @@ class ComponentWrapper implements sqlops.Component {
 
 	private _onErrorEmitter = new Emitter<Error>();
 	public readonly onError: vscode.Event<Error> = this._onErrorEmitter.event;
+	protected _emitterMap = new Map<ComponentEventType, Emitter<any>>();
 
 	constructor(protected readonly _proxy: MainThreadModelViewShape,
 		protected readonly _handle: number,
@@ -239,7 +265,12 @@ class ComponentWrapper implements sqlops.Component {
 	public onEvent(eventArgs: IComponentEventArgs) {
 		if (eventArgs && eventArgs.eventType === ComponentEventType.PropertiesChanged) {
 			this.properties = eventArgs.args;
-		}
+		} else if (eventArgs) {
+				let emitter = this._emitterMap.get(eventArgs.eventType);
+				if (emitter) {
+					emitter.fire();
+				}
+			}
 	}
 
 	protected setProperty(key: string, value: any): Thenable<boolean> {
@@ -299,9 +330,6 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
 	}
 
-	private _onTextChangedEmitter = new Emitter<any>();
-	private _emitterMap = new Map<ComponentEventType, Emitter<any>>();
-
 	public get value(): string {
 		return this.properties['value'];
 	}
@@ -313,16 +341,6 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
-
-	public onEvent(eventArgs: IComponentEventArgs) {
-		super.onEvent(eventArgs);
-		if (eventArgs) {
-			let emitter = this._emitterMap.get(eventArgs.eventType);
-			if (emitter) {
-				emitter.fire();
-			}
-		}
-	}
 }
 
 class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownComponent {
@@ -332,9 +350,6 @@ class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownCompone
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
 	}
-
-	private _onTextChangedEmitter = new Emitter<any>();
-	private _emitterMap = new Map<ComponentEventType, Emitter<any>>();
 
 	public get value(): string {
 		return this.properties['value'];
@@ -354,15 +369,26 @@ class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownCompone
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
+}
 
-	public onEvent(eventArgs: IComponentEventArgs) {
-		super.onEvent(eventArgs);
-		if (eventArgs) {
-			let emitter = this._emitterMap.get(eventArgs.eventType);
-			if (emitter) {
-				emitter.fire();
-			}
-		}
+class ButtonWrapper extends ComponentWrapper implements sqlops.ButtonComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Button, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+	}
+
+	public get label(): string {
+		return this.properties['label'];
+	}
+	public set label(v: string) {
+		this.setProperty('label', v);
+	}
+
+	public get onDidClick(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
 	}
 }
 
