@@ -28,9 +28,9 @@ declare module 'sqlops' {
 		component(): T;
 		withProperties<U>(properties: U): ComponentBuilder<T>;
 	}
-	export interface ContainerBuilder<T extends Component, TLayout,TItemLayout> extends ComponentBuilder<T> {
+	export interface ContainerBuilder<T extends Component, TLayout, TItemLayout> extends ComponentBuilder<T> {
 		withLayout(layout: TLayout): ContainerBuilder<T, TLayout, TItemLayout>;
-		withItems(components: Array<Component>, itemLayout ?: TItemLayout): ContainerBuilder<T, TLayout, TItemLayout>;
+		withItems(components: Array<Component>, itemLayout?: TItemLayout): ContainerBuilder<T, TLayout, TItemLayout>;
 	}
 
 	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout> {
@@ -53,7 +53,7 @@ declare module 'sqlops' {
 	/**
 	 * A component that contains other components
 	 */
-	export interface Container<TLayout,TItemLayout> extends Component {
+	export interface Container<TLayout, TItemLayout> extends Component {
 		/**
 		 * A copy of the child items array. This cannot be added to directly -
 		 * components must be created using the create methods instead
@@ -70,7 +70,7 @@ declare module 'sqlops' {
 		 * @param itemConfigs the definitions
 		 * @param {*} [itemLayout] Optional layout for the child items
 		 */
-		addItems(itemConfigs: Array<Component>, itemLayout ?: TItemLayout): void;
+		addItems(itemConfigs: Array<Component>, itemLayout?: TItemLayout): void;
 
 		/**
 		 * Creates a child component and adds it to this container.
@@ -78,7 +78,7 @@ declare module 'sqlops' {
 		 * @param {Component} component the component to be added
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
-		addItem(component: Component, itemLayout ?: TItemLayout): void;
+		addItem(component: Component, itemLayout?: TItemLayout): void;
 
 		/**
 		 * Defines the layout for this container
@@ -153,13 +153,13 @@ declare module 'sqlops' {
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
 	 */
-	export interface CardProperties  {
+	export interface CardProperties {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
 	}
 
-	export interface InputBoxProperties  {
+	export interface InputBoxProperties {
 		value?: string;
 	}
 

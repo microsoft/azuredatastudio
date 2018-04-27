@@ -75,7 +75,7 @@ export enum ModelComponentTypes {
 export interface IComponentShape {
 	type: ModelComponentTypes;
 	id: string;
-	properties?:  { [key: string]: any };
+	properties?: { [key: string]: any };
 	layout?: any;
 	itemConfigs?: IItemConfig[];
 }
