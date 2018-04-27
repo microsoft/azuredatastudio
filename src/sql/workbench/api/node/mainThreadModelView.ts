@@ -45,7 +45,7 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 	}
 
 	$initializeModel(handle: number, rootComponent: IComponentShape): Thenable<void> {
-		return this.execModelViewAction(handle, (modelView) =>  {
+		return this.execModelViewAction(handle, (modelView) => {
 			modelView.initializeModel(rootComponent);
 		});
 	}
@@ -67,11 +67,13 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 		this._proxy.$handleEvent(handle, componentId, eventArgs);
 	}
 
-	$registerEvent(handle: number, componentId: string):  Thenable<void> {
+	$registerEvent(handle: number, componentId: string): Thenable<void> {
 		let properties: { [key: string]: any; } = { eventName: this.onEvent };
 		return this.execModelViewAction(handle, (modelView) => {
-			this._register(modelView.onEvent (e => {
-				this.onEvent(handle, componentId, e);
+			this._register(modelView.onEvent(e => {
+				if (e.componentId && e.componentId === componentId) {
+					this.onEvent(handle, componentId, e);
+				}
 			}));
 		});
 	}

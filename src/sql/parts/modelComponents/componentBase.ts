@@ -75,7 +75,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		return types.isUndefinedOrNull(property) ? defaultVal : property;
 	}
 
-	protected setProperty<TPropertyBag, TValue>(propertySetter: (TPropertyBag, TValue) => void, value: TValue) {
+	protected setPropertyFromUI<TPropertyBag, TValue>(propertySetter: (TPropertyBag, TValue) => void, value: TValue) {
 		propertySetter(this.getProperties<TPropertyBag>(), value);
 		this._onEventEmitter.fire({
 			eventType: ComponentEventType.PropertiesChanged,
@@ -85,6 +85,12 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 
 	public get onEvent(): Event<IComponentEventArgs> {
 		return this._onEventEmitter.event;
+	}
+
+	public get title(): string {
+		let properties = this.getProperties();
+		let title = properties['title'];
+		return title ? <string>title : '';
 	}
 }
 

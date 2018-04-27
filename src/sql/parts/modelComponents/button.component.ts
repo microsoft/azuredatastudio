@@ -13,20 +13,22 @@ import Event, { Emitter } from 'vs/base/common/event';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { InputBox, IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/common/theme/styler';
+import { Button } from 'sql/base/browser/ui/button/button';
+import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 
 @Component({
-	selector: 'inputBox',
+	selector: 'button',
 	template: `
 		<div #input style="width: 100%"></div>
 	`
 })
-export default class InputBoxComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class ButtonComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
-	private _input: InputBox;
+	private _button: Button;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -42,19 +44,17 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			let inputOptions: IInputOptions = {
-				placeholder: '',
-				ariaLabel: ''
-			};
 
-			this._input = new InputBox(this._inputContainer.nativeElement, this._commonService.contextViewService, inputOptions);
 
-			this._register(this._input);
-			this._register(attachInputBoxStyler(this._input, this._commonService.themeService));
-			this._register(this._input.onDidChange(e => {
-				this.value = this._input.value;
+			this._button = new Button(this._inputContainer.nativeElement);
+
+			this._register(this._button);
+			this._register(attachButtonStyler(this._button, this._commonService.themeService, {
+				buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND
+			}));
+			this._register(this._button.onDidClick(e => {
 				this._onEventEmitter.fire({
-					eventType: ComponentEventType.onDidChange,
+					eventType: ComponentEventType.onDidClick,
 					args: e
 				});
 			}));
@@ -78,20 +78,20 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._input.value = this.value;
+		this._button.label = this.label;
 	}
 
 	// CSS-bound properties
 
-	public get value(): string {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, string>((props) => props.value, '');
+	private get label(): string {
+		return this.getPropertyOrDefault<sqlops.ButtonProperties, string>((props) => props.label, '');
 	}
 
-	public set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, string>(this.setInputBoxProperties, newValue);
+	private set label(newValue: string) {
+		this.setPropertyFromUI<sqlops.ButtonProperties, string>(this.setValueProperties, newValue);
 	}
 
-	private setInputBoxProperties(properties: sqlops.InputBoxProperties, value: string): void {
-		properties.value = value;
+	private setValueProperties(properties: sqlops.ButtonProperties, label: string): void {
+		properties.label = label;
 	}
 }

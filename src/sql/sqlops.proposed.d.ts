@@ -20,8 +20,11 @@ declare module 'sqlops' {
 		flexContainer(): FlexBuilder;
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
+		button(): ComponentBuilder<ButtonComponent>;
+		dropDown(): ComponentBuilder<DropDownComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<WebviewComponent>;
+		formContainer(): FormBuilder;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -37,6 +40,10 @@ declare module 'sqlops' {
 
 	}
 
+	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
+		withFormItems(components: FormComponent[], itemLayout?: FormItemLayout): ContainerBuilder<FormContainer, FormLayout, FormItemLayout>;
+	}
+
 	export interface Component {
 		readonly id: string;
 
@@ -48,6 +55,12 @@ declare module 'sqlops' {
 		 * @memberof Component
 		 */
 		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
+	}
+
+	export interface FormComponent {
+		component: Component;
+		title: string;
+		actions?: Component[];
 	}
 
 	/**
@@ -130,8 +143,20 @@ declare module 'sqlops' {
 		flex?: string;
 	}
 
+	export interface FormItemLayout {
+
+	}
+
+	export interface FormLayout {
+
+	}
+
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
 	}
+
+	export interface FormContainer extends Container<FormLayout, FormItemLayout> {
+	}
+
 
 	/**
 	 * Describes an action to be shown in the UI, with a user-readable label
@@ -163,6 +188,15 @@ declare module 'sqlops' {
 		value?: string;
 	}
 
+	export interface DropDownProperties {
+		value?: string;
+		values?: string[];
+	}
+
+	export interface ButtonProperties {
+		label?: string;
+	}
+
 	export interface CardComponent extends Component {
 		label: string;
 		value: string;
@@ -172,6 +206,17 @@ declare module 'sqlops' {
 	export interface InputBoxComponent extends Component {
 		value: string;
 		onTextChanged: vscode.Event<any>;
+	}
+
+	export interface DropDownComponent extends Component {
+		value: string;
+		values: string[];
+		onValueChanged: vscode.Event<any>;
+	}
+
+	export interface ButtonComponent extends Component {
+		label: string;
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface WidgetComponent extends Component {

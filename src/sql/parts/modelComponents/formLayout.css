@@ -1,0 +1,20 @@
+
+.form-table {
+	width:400px;
+	display:table;
+	padding: 30px;
+}
+
+.form-row {
+	display: table-row;
+	width: 100px;
+}
+
+.form-cell {
+	padding: 5px;
+	display: table-cell;
+}
+
+.form-action {
+	width: 20px;
+}
