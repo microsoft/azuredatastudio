@@ -17,8 +17,6 @@ export class DialogTab implements sqlops.window.modelviewdialog.DialogTab {
 			this.content = content;
 		}
 	}
-
-	public updateContent(): void { }
 }
 
 export class Dialog implements sqlops.window.modelviewdialog.Dialog {
@@ -35,15 +33,12 @@ export class Dialog implements sqlops.window.modelviewdialog.Dialog {
 			this.content = content;
 		}
 	}
-
-	public open(): void { }
-	public close(): void { }
-	public updateContent(): void { }
 }
 
 export class DialogButton implements sqlops.window.modelviewdialog.Button {
 	private _label: string;
 	private _enabled: boolean;
+	private _hidden: boolean;
 	private _onClick: Emitter<void> = new Emitter<void>();
 	public readonly onClick: Event<void> = this._onClick.event;
 	private _onUpdate: Emitter<void> = new Emitter<void>();
@@ -52,6 +47,7 @@ export class DialogButton implements sqlops.window.modelviewdialog.Button {
 	constructor(label: string, enabled: boolean) {
 		this._label = label;
 		this._enabled = enabled;
+		this._hidden = false;
 	}
 
 	public get label(): string {
@@ -69,6 +65,15 @@ export class DialogButton implements sqlops.window.modelviewdialog.Button {
 
 	public set enabled(enabled: boolean) {
 		this._enabled = enabled;
+		this._onUpdate.fire();
+	}
+
+	public get hidden(): boolean {
+		return this._hidden;
+	}
+
+	public set hidden(hidden: boolean) {
+		this._hidden = hidden;
 		this._onUpdate.fire();
 	}
 

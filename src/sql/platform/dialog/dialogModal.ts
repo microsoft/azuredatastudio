@@ -61,11 +61,14 @@ export class DialogModal extends Modal {
 		if (this._dialog.customButtons) {
 			this._dialog.customButtons.forEach(button => {
 				let buttonElement = this.addDialogButton(button);
+				this.updateButtonElement(buttonElement, button);
 			});
 		}
 
 		this._cancelButton = this.addDialogButton(this._dialog.cancelButton, () => this.cancel());
+		this.updateButtonElement(this._cancelButton, this._dialog.cancelButton);
 		this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done());
+		this.updateButtonElement(this._doneButton, this._dialog.okButton);
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined): Button {
@@ -73,11 +76,16 @@ export class DialogModal extends Modal {
 		buttonElement.enabled = button.enabled;
 		button.registerClickEvent(buttonElement.onDidClick);
 		button.onUpdate(() => {
-			buttonElement.label = button.label;
-			buttonElement.enabled = button.enabled;
+			this.updateButtonElement(buttonElement, button);
 		});
 		attachButtonStyler(buttonElement, this._themeService);
 		return buttonElement;
+	}
+
+	private updateButtonElement(buttonElement: Button, dialogButton: DialogButton) {
+		buttonElement.label = dialogButton.label;
+		buttonElement.enabled = dialogButton.enabled;
+		dialogButton.hidden ? buttonElement.element.classList.add('dialogModal-hidden') : buttonElement.element.classList.remove('dialogModal-hidden');
 	}
 
 	protected renderBody(container: HTMLElement): void {
