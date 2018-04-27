@@ -68,14 +68,17 @@ export enum ModelComponentTypes {
 	FlexContainer,
 	Card,
 	InputBox,
+	DropDown,
+	Button,
 	DashboardWidget,
-	DashboardWebview
+	DashboardWebview,
+	Form
 }
 
 export interface IComponentShape {
 	type: ModelComponentTypes;
 	id: string;
-	properties?:  { [key: string]: any };
+	properties?: { [key: string]: any };
 	layout?: any;
 	itemConfigs?: IItemConfig[];
 }
@@ -87,7 +90,8 @@ export interface IItemConfig {
 
 export enum ComponentEventType {
 	PropertiesChanged,
-	onDidChange
+	onDidChange,
+	onDidClick
 }
 
 export interface IComponentEventArgs {
