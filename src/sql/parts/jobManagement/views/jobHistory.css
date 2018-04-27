@@ -122,12 +122,12 @@ input#accordion:checked ~ .accordion-content {
 	background-image: url('../common/media/stop.svg');
 }
 
-ul.action-buttons div.icon-start.non-runnable {
+a.action-label.icon.runJob.non-runnable {
 	opacity: 0.4;
 	cursor: default;
 }
 
-ul.action-buttons div.icon-stop.non-runnable {
+a.action-label.icon.stopJob.non-runnable {
 	opacity: 0.4;
 	cursor: default;
 }
