@@ -287,6 +287,16 @@ declare module 'sqlops' {
 			 */
 			export function createButton(label: string): Button;
 
+			/**
+			 * Opens the given dialog if it is not already open
+			 */
+			export function openDialog(dialog: Dialog): void;
+
+			/**
+			 * Closes the given dialog if it is open
+			 */
+			export function closeDialog(dialog: Dialog): void;
+
 			// Model view dialog classes
 			export interface Dialog {
 				/**
@@ -297,7 +307,6 @@ declare module 'sqlops' {
 				/**
 				 * The content of the dialog. If multiple tabs are given they will be displayed with tabs
 				 * If a string is given, it should be the ID of the dialog's model view content
-				 * TODO mairvine 4/18/18: use a model view content type
 				 */
 				content: string | DialogTab[],
 
@@ -315,51 +324,35 @@ declare module 'sqlops' {
 				 * Any additional buttons that should be displayed
 				 */
 				customButtons: Button[];
-
-				/**
-				 * Opens the dialog
-				 */
-				open(): void;
-
-				/**
-				 * Closes the dialog
-				 */
-				close(): void;
-
-				/**
-				 * Updates the dialog on screen to reflect changes to the buttons or content
-				 */
-				updateContent(): void;
 			}
 
 			export interface DialogTab {
 				/**
 				 * The title of the tab
 				 */
-				title: string,
+				title: string;
 
 				/**
 				 * A string giving the ID of the tab's model view content
-				 * TODO mairvine 4/18/18: use a model view content type
 				 */
 				content: string;
-
-				/**
-				 * Updates the dialog on screen to reflect changes to the content
-				 */
-				updateContent(): void;
 			}
 
 			export interface Button {
 				/**
 				 * The label displayed on the button
 				 */
-				label: string,
+				label: string;
 
 				/**
 				 * Whether the button is enabled
 				 */
-				enabled: boolean,
+				enabled: boolean;
+
+				/**
+				 * Whether the button is hidden
+				 */
+				hidden: boolean;
 
 				/**
 				 * Raised when the button is clicked

@@ -115,4 +115,5 @@ export interface IModelViewTabDetails {
 export interface IModelViewButtonDetails {
 	label: string;
 	enabled: boolean;
+	hidden: boolean;
 }

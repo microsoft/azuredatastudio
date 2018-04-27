@@ -55,19 +55,23 @@ suite('MainThreadModelViewDialog Tests', () => {
 		// Set up the dialog details
 		button1Details = {
 			label: 'button1',
-			enabled: false
+			enabled: false,
+			hidden: false
 		};
 		button2Details = {
 			label: 'button2',
-			enabled: true
+			enabled: true,
+			hidden: false
 		};
 		okButtonDetails = {
 			label: 'ok_label',
-			enabled: true
+			enabled: true,
+			hidden: false
 		};
 		cancelButtonDetails = {
 			label: 'cancel_label',
-			enabled: true
+			enabled: true,
+			hidden: false
 		};
 		tab1Details = {
 			title: 'tab1',
