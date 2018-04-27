@@ -19,6 +19,12 @@ export interface IViewCell {
 	height: number;
 }
 
+export interface IViewColumn {
+	model: Cell;
+	left: number;
+	width: number;
+}
+
 export abstract class HeightMap {
 	private heightMap: IViewRow[];
 	private indexes: { [item: string]: number; };

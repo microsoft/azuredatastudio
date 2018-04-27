@@ -9,6 +9,7 @@ import * as _ from './table';
 import * as View from './tableView';
 import * as Model from './tableModel';
 import * as TableDefaults from './tableDefaults';
+import * as WinJS from 'vs/base/common/winjs.base';
 import Event, { Emitter, Relay } from 'vs/base/common/event';
 import { mixin } from 'vs/base/common/objects';
 import { Color } from 'vs/base/common/color';
@@ -95,5 +96,9 @@ export class Table implements _.ITable {
 
 	get onDidBlur(): Event<void> {
 		return this.view && this.view.onDOMBlur;
+	}
+
+	public setInput(input: _.ITableInput): WinJS.Promise {
+		return this.model.setInput(input);
 	}
 }

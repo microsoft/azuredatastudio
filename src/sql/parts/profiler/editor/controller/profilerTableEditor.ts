@@ -30,6 +30,9 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 class DefaultRenderer implements IRenderer {
+	getWidth(tree: ITable, element: any): number {
+		throw new Error("Method not implemented.");
+	}
 	getHeight(tree: ITable, element: any): number {
 		throw new Error("Method not implemented.");
 	}

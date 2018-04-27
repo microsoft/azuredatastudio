@@ -26,6 +26,12 @@ export interface ICell {
 	templateData: any;
 }
 
+export interface IColumn {
+	element: HTMLElement;
+	templateId: string;
+	templateData: any;
+}
+
 export interface IRow {
 	element: HTMLElement;
 }
@@ -308,6 +314,104 @@ export class ViewCell implements IViewCell {
 	}
 }
 
+class ViewColumn {
+	public left: number;
+	public width: number;
+	public id: string;
+	protected column: IColumn;
+
+	public _styles: any;
+
+	private _templateId: string;
+	private get templateId(): string {
+		return this._templateId || (this._templateId = (this.context.renderer.getTemplateId && this.context.renderer.getTemplateId(this.context.table, this.model.getElement())));
+	}
+
+	constructor(private context: IViewContext, public model: Model.Column) {
+		this.id = this.model.id;
+
+		this._styles = {};
+		this.model.getAllTraits().forEach(t => this._styles[t] = true);
+	}
+
+	public get element(): HTMLElement {
+		return this.column && this.column.element;
+	}
+
+	public render(skipUserRender = false): void {
+		if (!this.model || !this.element) {
+			return;
+		}
+
+		let classes = ['monaco-table-row'];
+		classes.push.apply(classes, Object.keys(this._styles));
+
+		this.element.className = classes.join(' ');
+		this.element.style.width = this.width + 'px';
+
+		// ARIA
+		// this.element.setAttribute('role', 'treeitem');
+		// const accessibility = this.context.accessibilityProvider;
+		// const ariaLabel = accessibility.getAriaLabel(this.context.table, this.model.getElement());
+		// if (ariaLabel) {
+		// 	this.element.setAttribute('aria-label', ariaLabel);
+		// }
+		// if (accessibility.getPosInSet && accessibility.getSetSize) {
+		// 	this.element.setAttribute('aria-setsize', accessibility.getSetSize());
+		// 	this.element.setAttribute('aria-posinset', accessibility.getPosInSet(this.context.tree, this.model.getElement()));
+		// }
+		if (this.model.hasTrait('focused')) {
+			const base64Id = strings.safeBtoa(this.model.id);
+
+			this.element.setAttribute('aria-selected', 'true');
+			this.element.setAttribute('id', base64Id);
+		} else {
+			this.element.setAttribute('aria-selected', 'false');
+			this.element.removeAttribute('id');
+		}
+
+		if (!skipUserRender) {
+			this.context.renderer.renderElement(this.context.table, this.model.getElement(), this.templateId, this.column.templateData);
+		}
+	}
+
+	public insertInDOM(container: HTMLElement, afterElement: HTMLElement): void {
+		if (!this.column) {
+			this.column = this.context.cache.alloc(this.templateId);
+
+			// used in reverse lookup from HTMLElement to Item
+			(<any>this.element)[TableView.BINDING] = this;
+		}
+
+		if (this.element.parentElement) {
+			return;
+		}
+
+		if (afterElement === null) {
+			container.appendChild(this.element);
+		} else {
+			try {
+				container.insertBefore(this.element, afterElement);
+			} catch (e) {
+				console.warn('Failed to locate previous tree element');
+				container.appendChild(this.element);
+			}
+		}
+
+		this.render();
+	}
+
+	public removeFromDOM(): void {
+		if (!this.column) {
+			return;
+		}
+
+		this.context.cache.release(this.templateId, this.column);
+		this.column = null;
+	}
+
+}
+
 interface IThrottledGestureEvent {
 	translationX: number;
 	translationY: number;
@@ -339,6 +443,8 @@ export class TableView extends HeightMap {
 
 	private lastRenderTop: number;
 	private lastRenderHeight: number;
+	private lastRenderLeft: number;
+	private lastRenderWidth: number;
 
 	private rows: { [id: string]: ViewRow; };
 

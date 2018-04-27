@@ -12,20 +12,28 @@ import * as Keyboard from 'vs/base/browser/keyboardEvent';
 import { Color } from 'vs/base/common/color';
 
 export interface ITable {
-
 	onDidFocus: Event<void>;
 	onDidBlur: Event<void>;
 	onDidChangeFocus: Event<IFocusEvent>;
 	onDidChangeSelection: Event<ISelectionEvent>;
 	onDidChangeHighlight: Event<IHighlightEvent>;
 	onDidDispose: Event<void>;
-
 }
 
 // Events
 export interface ISelectionEvent {
 	selection: any[];
 	payload?: any;
+}
+
+export interface IRowRange {
+	startRow: number;
+	endRow: number;
+}
+
+export interface ITableInput {
+	columns: string[];
+	numberOfRows: number;
 }
 
 export interface IFocusEvent {
@@ -44,6 +52,11 @@ export interface IRenderer {
 	 * Returns the element's height in the tree, in pixels.
 	 */
 	getHeight(tree: ITable, element: any): number;
+
+	/**
+	 * Returns the element's width in the tree, in pixels.
+	 */
+	getWidth(tree: ITable, element: any): number;
 
 	/**
 	 * Returns a template ID for a given element. This will be used as an identifier
