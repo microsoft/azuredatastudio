@@ -92,4 +92,9 @@ export class DialogPane extends Disposable implements IThemable {
 		this._body.style.backgroundColor = styles.dialogBodyBackground ? styles.dialogBodyBackground.toString() : undefined;
 		this._body.style.color = styles.dialogForeground ? styles.dialogForeground.toString() : undefined;
 	}
+
+	public dispose() {
+		super.dispose();
+		this._moduleRef.destroy();
+	}
 }
