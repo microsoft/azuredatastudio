@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
@@ -94,6 +95,120 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(credentialsStore);
 	context.subscriptions.push(resourceProvider);
 	context.subscriptions.push({ dispose: () => languageClient.stop() });
+
+	sqlops.dashboard.registerModelViewProvider('tab1content', async (view) => {
+		let flexModel = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'row',
+				alignItems: 'center'
+			}).withItems([
+				// 1st child panel with N cards
+				view.modelBuilder.flexContainer()
+					.withLayout({
+						flexFlow: 'column',
+						alignItems: 'center',
+						justifyContent: 'center'
+					})
+					.withItems([
+						view.modelBuilder.card()
+							.withProperties<sqlops.CardProperties>({
+								label: 'label1',
+								value: 'value1',
+								actions: [{ label: 'action', taskId: 'sqlservices.clickTask' }]
+							})
+							.component()
+					]).component(),
+				// 2nd child panel with N cards
+				view.modelBuilder.flexContainer()
+					.withLayout({ flexFlow: 'column' })
+					.withItems([
+						view.modelBuilder.inputBox()
+							.withProperties<sqlops.InputBoxProperties>({
+								value: 'value2'
+							})
+							.component()
+					]).component()
+			], { flex: '1 1 50%' })
+			.component();
+		await view.initializeModel(flexModel);
+	});
+
+	let modelView: sqlops.ModelView;
+	let tab2FirstContainer: sqlops.FlexContainer;
+
+	sqlops.dashboard.registerModelViewProvider('tab2content', async (view) => {
+		modelView = view;
+		tab2FirstContainer = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'column',
+				alignItems: 'center',
+				justifyContent: 'center'
+			})
+			.withItems([
+				view.modelBuilder.inputBox()
+					.withProperties<sqlops.InputBoxProperties>({
+						value: 'value1'
+					})
+					.component()
+			]).component();
+		let flexModel = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'row',
+				alignItems: 'center'
+			}).withItems([
+				// 1st child panel with N cards
+				tab2FirstContainer,
+				// 2nd child panel with N cards
+				view.modelBuilder.flexContainer()
+					.withLayout({ flexFlow: 'column' })
+					.withItems([
+						view.modelBuilder.card()
+							.withProperties<sqlops.CardProperties>({
+								label: 'label2',
+								value: 'value2',
+								actions: [{ label: 'action', taskId: 'sqlservices.clickTask' }]
+							})
+							.component()
+					]).component()
+			], { flex: '1 1 50%' })
+			.component();
+		await view.initializeModel(flexModel);
+	});
+
+	vscode.commands.registerCommand('mssql.openTestDialog', () => {
+		let dialog = sqlops.window.modelviewdialog.createDialog('Test dialog');
+		let tab1 = sqlops.window.modelviewdialog.createTab('Test tab 1');
+		tab1.content = 'tab1content';
+		let tab2 = sqlops.window.modelviewdialog.createTab('Test tab 2');
+		tab2.content = 'tab2content';
+		dialog.content = [tab1, tab2];
+		dialog.okButton.onClick(() => console.log('ok clicked!'));
+		dialog.cancelButton.onClick(() => console.log('cancel clicked!'));
+		dialog.cancelButton.enabled = false;
+		dialog.okButton.label = 'ok';
+		dialog.cancelButton.label = 'no';
+		let customButton1 = sqlops.window.modelviewdialog.createButton('Test button 1');
+		customButton1.onClick(() => console.log('button 1 clicked!'));
+		customButton1.enabled = false;
+		let customButton2 = sqlops.window.modelviewdialog.createButton('Test button 2');
+		customButton2.onClick(() => console.log('button 2 clicked!'));
+		dialog.customButtons = [customButton1, customButton2];
+		dialog.open();
+		setTimeout(() => {
+			dialog.okButton.label = 'done';
+			dialog.cancelButton.enabled = true;
+			customButton1.enabled = true;
+			customButton2.enabled = false;
+			customButton2.label = 'disabled button 2';
+			tab2FirstContainer.addItem(modelView.modelBuilder.card()
+				.withProperties<sqlops.CardProperties>({
+					label: 'newCard',
+					value: 'newValue',
+					actions: [{ label: 'action', taskId: 'sqlservices.clickTask' }]
+				})
+				.component());
+		}, 5000);
+	});
 }
 
 function generateServerOptions(executablePath: string): ServerOptions {

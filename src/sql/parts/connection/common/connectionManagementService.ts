@@ -566,22 +566,22 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		// } catch (e) {
 		// 	console.log(e);
 		// }
-		let wizard = new Wizard('Test Wizard');
-		wizard.pages = [dialog, dialog2];
-		let customButton = new DialogButton('custom', true);
-		customButton.onClick(() => console.log('click!'));
-		wizard.customButtons = [customButton];
-		wizard.onCompleted(pages => {
-			pages.forEach((pageValues, index) => {
-				Object.keys(pageValues).forEach(key => {
-					let value = pageValues[key];
-					if (value) {
-						console.log('page: ' + (index + 1) + ', key: ' + key + ', value: ' + value);
-					}
-				});
-			});
-		});
-		dialogService.showWizard(wizard);
+		// let wizard = new Wizard('Test Wizard');
+		// wizard.pages = [dialog, dialog2];
+		// let customButton = new DialogButton('custom', true);
+		// customButton.onClick(() => console.log('click!'));
+		// wizard.customButtons = [customButton];
+		// wizard.onCompleted(pages => {
+		// 	pages.forEach((pageValues, index) => {
+		// 		Object.keys(pageValues).forEach(key => {
+		// 			let value = pageValues[key];
+		// 			if (value) {
+		// 				console.log('page: ' + (index + 1) + ', key: ' + key + ', value: ' + value);
+		// 			}
+		// 		});
+		// 	});
+		// });
+		// dialogService.showWizard(wizard);
 	}
 
 	public showDashboard(connection: ConnectionProfile): Thenable<boolean> {

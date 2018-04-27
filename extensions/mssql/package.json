@@ -18,6 +18,13 @@
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
   "contributes": {
+    "commands": [
+      {
+        "command": "mssql.openTestDialog",
+        "category": "MS SQL",
+        "title": "Open test dialog"
+      }
+    ],
     "languages": [
       {
         "id": "sql",
