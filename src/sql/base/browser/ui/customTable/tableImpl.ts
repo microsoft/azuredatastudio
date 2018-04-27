@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import 'vs/css!./table';
+// import 'vs/css!./table';
 import * as _ from './table';
 import * as View from './tableView';
 import * as Model from './tableModel';

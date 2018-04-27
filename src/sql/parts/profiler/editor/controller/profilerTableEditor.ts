@@ -5,7 +5,9 @@
 
 import { IProfilerController } from './interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
-import { Table } from 'sql/base/browser/ui/table/table';
+import { Table } from 'sql/base/browser/ui/customTable/tableImpl';
+import { DefaultController } from 'sql/base/browser/ui/customTable/tableDefaults';
+import { IDataSource, ITable, IRenderer } from 'sql/base/browser/ui/customTable/table';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { IProfilerStateChangedEvent } from 'sql/parts/profiler/editor/profilerState';
@@ -27,11 +29,47 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import Event, { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
+class DefaultRenderer implements IRenderer {
+	getHeight(tree: ITable, element: any): number {
+		throw new Error("Method not implemented.");
+	}
+	getTemplateId(tree: ITable, element: any): string {
+		throw new Error("Method not implemented.");
+	}
+	renderTemplate(tree: ITable, templateId: string, container: HTMLElement) {
+		throw new Error("Method not implemented.");
+	}
+	renderElement(tree: ITable, element: any, templateId: string, templateData: any): void {
+		throw new Error("Method not implemented.");
+	}
+	disposeTemplate(tree: ITable, templateId: string, templateData: any): void {
+		throw new Error("Method not implemented.");
+	}
+}
+
+class DefaultDataSource implements IDataSource {
+	getId(tree: ITable, element: any): string {
+		throw new Error("Method not implemented.");
+	}
+	hasChildren(tree: ITable, element: any): boolean {
+		throw new Error("Method not implemented.");
+	}
+	getChildren(tree: ITable, element: any): TPromise<any, any> {
+		throw new Error("Method not implemented.");
+	}
+	getParent(tree: ITable, element: any): TPromise<any, any> {
+		throw new Error("Method not implemented.");
+	}
+	shouldAutoexpand?(tree: ITable, element: any): boolean {
+		throw new Error("Method not implemented.");
+	}
+}
+
 export class ProfilerTableEditor extends BaseEditor implements IProfilerController, ITableController {
 
 	public static ID: string = 'workbench.editor.profiler.table';
 	protected _input: ProfilerInput;
-	private _profilerTable: Table<Slick.SlickData>;
+	private _profilerTable: Table;
 	private _columnListener: IDisposable;
 	private _stateListener: IDisposable;
 	private _findCountChangeListener: IDisposable;
@@ -65,9 +103,13 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		this._overlay.style.zIndex = '4';
 		parent.getHTMLElement().appendChild(this._overlay);
 
-		this._profilerTable = new Table(parent.getHTMLElement());
-		this._profilerTable.setSelectionModel(new RowSelectionModel());
-		attachTableStyler(this._profilerTable, this._themeService);
+		this._profilerTable = new Table(parent.getHTMLElement(), {
+			controller: new DefaultController(),
+			dataSource: new DefaultDataSource(),
+			renderer: new DefaultRenderer()
+		});
+		// this._profilerTable.setSelectionModel(new RowSelectionModel());
+		// attachTableStyler(this._profilerTable, this._themeService);
 
 		this._findState = new FindReplaceState();
 		this._findState.onFindReplaceStateChange(e => this._onFindStateChange(e));
@@ -83,31 +125,31 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 	}
 
 	public setInput(input: ProfilerInput): TPromise<void> {
-		this._input = input;
-		if (this._columnListener) {
-			this._columnListener.dispose();
-		}
-		this._columnListener = input.onColumnsChanged(e => {
-			this._profilerTable.columns = e;
-			this._profilerTable.autosizeColumns();
-		});
-		if (this._stateListener) {
-			this._stateListener.dispose();
-		}
-		this._stateListener = input.state.addChangeListener(e => this._onStateChange(e));
+		// this._input = input;
+		// if (this._columnListener) {
+		// 	this._columnListener.dispose();
+		// }
+		// this._columnListener = input.onColumnsChanged(e => {
+		// 	this._profilerTable.columns = e;
+		// 	this._profilerTable.autosizeColumns();
+		// });
+		// if (this._stateListener) {
+		// 	this._stateListener.dispose();
+		// }
+		// this._stateListener = input.state.addChangeListener(e => this._onStateChange(e));
 
-		if (this._findCountChangeListener) {
-			this._findCountChangeListener.dispose();
-		}
-		this._findCountChangeListener = input.data.onFindCountChange(() => this._updateFinderMatchState());
+		// if (this._findCountChangeListener) {
+		// 	this._findCountChangeListener.dispose();
+		// }
+		// this._findCountChangeListener = input.data.onFindCountChange(() => this._updateFinderMatchState());
 
-		this._profilerTable.setData(input.data);
-		this._profilerTable.columns = input.columns;
-		this._profilerTable.autosizeColumns();
-		this._input.data.currentFindPosition.then(val => {
-			this._profilerTable.setActiveCell(val.row, val.col);
-			this._updateFinderMatchState();
-		}, er => { });
+		// this._profilerTable.setData(input.data);
+		// this._profilerTable.columns = input.columns;
+		// this._profilerTable.autosizeColumns();
+		// this._input.data.currentFindPosition.then(val => {
+		// 	this._profilerTable.setActiveCell(val.row, val.col);
+		// 	this._updateFinderMatchState();
+		// }, er => { });
 		return TPromise.as(null);
 	}
 
@@ -119,17 +161,17 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 	}
 
 	public findNext(): void {
-		this._input.data.findNext().then(p => {
-			this._profilerTable.setActiveCell(p.row, p.col);
-			this._updateFinderMatchState();
-		}, er => { });
+		// this._input.data.findNext().then(p => {
+		// 	this._profilerTable.setActiveCell(p.row, p.col);
+		// 	this._updateFinderMatchState();
+		// }, er => { });
 	}
 
 	public findPrevious(): void {
-		this._input.data.findPrevious().then(p => {
-			this._profilerTable.setActiveCell(p.row, p.col);
-			this._updateFinderMatchState();
-		}, er => { });
+		// this._input.data.findPrevious().then(p => {
+		// 	this._profilerTable.setActiveCell(p.row, p.col);
+		// 	this._updateFinderMatchState();
+		// }, er => { });
 	}
 
 	public getConfiguration() {
@@ -156,24 +198,24 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 	}
 
 	public focus(): void {
-		this._profilerTable.focus();
+		// this._profilerTable.focus();
 	}
 
 	public layout(dimension: Dimension): void {
 		this._currentDimensions = dimension;
-		this._profilerTable.layout(dimension);
+		// this._profilerTable.layout(dimension);
 		this._onDidChangeConfiguration.fire({ layoutInfo: true });
 	}
 
 	public onSelectedRowsChanged(fn: (e: Slick.EventData, args: Slick.OnSelectedRowsChangedEventArgs<Slick.SlickData>) => any): void {
 		if (this._profilerTable) {
-			this._profilerTable.onSelectedRowsChanged(fn);
+			// this._profilerTable.onSelectedRowsChanged(fn);
 		}
 	}
 
 	private _onStateChange(e: IProfilerStateChangedEvent): void {
 		if (e.autoscroll) {
-			this._profilerTable.autoScroll = this._input.state.autoscroll;
+			// this._profilerTable.autoScroll = this._input.state.autoscroll;
 		}
 	}
 
@@ -196,7 +238,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 				if (this._findState.searchString) {
 					this._input.data.find(this._findState.searchString).then(p => {
 						if (p) {
-							this._profilerTable.setActiveCell(p.row, p.col);
+							// this._profilerTable.setActiveCell(p.row, p.col);
 							this._updateFinderMatchState();
 						}
 					});

@@ -275,6 +275,9 @@ export class ViewCell implements IViewCell {
 	public insertInDOM(container: HTMLElement, afterElement: HTMLElement): void {
 		if (!this.cell) {
 			this.cell = this.context.cache.alloc(this.templateId);
+
+			// used in reverse lookup from HTMLElement to Item
+			(<any>this.element)[TableView.BINDING] = this;
 		}
 
 		if (this.element.parentElement) {
@@ -325,7 +328,7 @@ export class TableView extends HeightMap {
 	private rowWrapper: HTMLElement;
 	private headerWrapper: HTMLElement;
 	private tableNode: HTMLTableElement;
-	private tableHeaderNode: HTMLElement;
+	private headerContainer: HTMLElement;
 	private styleElement: HTMLStyleElement;
 	private scrollableElement: ScrollableElement;
 	private headerScrollable: ScrollableElement;
@@ -379,18 +382,27 @@ export class TableView extends HeightMap {
 		this.tableNode = document.createElement('table');
 		this.domNode.appendChild(this.tableNode);
 
-		this.tableHeaderNode = document.createElement('theader');
-		this.tableNode.appendChild(this.tableHeaderNode);
-
 		if (this.context.options.ariaLabel) {
 			this.domNode.setAttribute('aria-label', this.context.options.ariaLabel);
 		}
+
+		this.headerWrapper = document.createElement('div');
+		this.headerWrapper.className = 'monaco-table-header-wrapper';
+		this.headerScrollable = new ScrollableElement(this.headerWrapper, {
+			alwaysConsumeMouseWheel: true,
+			horizontal: ScrollbarVisibility.Auto,
+			vertical: ScrollbarVisibility.Hidden,
+			useShadows: context.options.useShadows
+		});
+		this.headerScrollable.onScroll((e) => {
+			this.headerRender(e.scrollLeft, e.width);
+		});
 
 		this.rowWrapper = document.createElement('div');
 		this.rowWrapper.className = 'monaco-table-wrapper';
 		this.scrollableElement = new ScrollableElement(this.rowWrapper, {
 			alwaysConsumeMouseWheel: true,
-			horizontal: ScrollbarVisibility.Hidden,
+			horizontal: ScrollbarVisibility.Auto,
 			vertical: /* (typeof context.options.verticalScrollMode !== 'undefined' ? context.options.verticalScrollMode : */ ScrollbarVisibility.Auto,
 			useShadows: context.options.useShadows
 		});
@@ -399,11 +411,16 @@ export class TableView extends HeightMap {
 		});
 
 		if (Browser.isIE) {
+			this.headerWrapper.style.msTouchAction = 'none';
+			this.headerWrapper.style.msContentZooming = 'none';
 			this.rowWrapper.style.msTouchAction = 'none';
 			this.rowWrapper.style.msContentZooming = 'none';
 		} else {
+			Touch.Gesture.addTarget(this.headerWrapper);
 			Touch.Gesture.addTarget(this.rowWrapper);
 		}
+
+		this.headerContainer = document.createElement('theader');
 
 		this.rowsContainer = document.createElement('tbody');
 		this.rowsContainer.className = 'monaco-table-rows';
@@ -442,6 +459,9 @@ export class TableView extends HeightMap {
 				return result;
 			}));
 		}
+
+		this.headerWrapper.appendChild(this.headerContainer);
+		this.tableNode.appendChild(this.headerScrollable.getDomNode());
 
 		this.rowWrapper.appendChild(this.rowsContainer);
 		this.tableNode.appendChild(this.scrollableElement.getDomNode());
@@ -540,6 +560,9 @@ export class TableView extends HeightMap {
 		return new ViewRow(this.context, row);
 	}
 
+	private headerRender(scrollLeft: number, viewWidth: number): void {
+	}
+
 	private render(scrollTop: number, viewHeight: number): void {
 		let i: number;
 		let stop: number;
@@ -586,8 +609,21 @@ export class TableView extends HeightMap {
 		this.scrollTop = scrollTop;
 	}
 
-
 	private getCellAround(element: HTMLElement): ViewCell {
+		let candidate: ViewCell;/* = this.inputItem;*/
+		do {
+			if ((<any>element)[TableView.BINDING]) {
+				candidate = (<any>element)[TableView.BINDING];
+			}
+
+			if (element === this.rowWrapper || element === this.domNode) {
+				return candidate;
+			}
+
+			if (element === document.body) {
+				return null;
+			}
+		} while (element = element.parentElement);
 		return undefined;
 	}
 
