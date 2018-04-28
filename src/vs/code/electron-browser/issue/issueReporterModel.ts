@@ -59,13 +59,14 @@ export class IssueReporterModel {
 		assign(this._data, newData);
 	}
 
+	// {{SQL CARBON EDIT}}
 	serialize(): string {
 		return `
 Issue Type: <b>${this.getIssueTypeTitle()}</b>
 
 ${this._data.issueDescription}
 
-VS Code version: ${this._data.versionInfo && this._data.versionInfo.vscodeVersion}
+SQL Operations Studio version: ${this._data.versionInfo && this._data.versionInfo.vscodeVersion}
 OS version: ${this._data.versionInfo && this._data.versionInfo.os}
 
 ${this.getInfos()}

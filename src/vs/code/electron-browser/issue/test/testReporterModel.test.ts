@@ -23,6 +23,7 @@ suite('IssueReporter', () => {
 		});
 	});
 
+	// {{SQL CARBON EDIT}}
 	test('serializes model skeleton when no data is provided', () => {
 		const issueReporterModel = new IssueReporterModel();
 		assert.equal(issueReporterModel.serialize(),
@@ -31,7 +32,7 @@ Issue Type: <b>Feature Request</b>
 
 undefined
 
-VS Code version: undefined
+SQL Operations Studio version: undefined
 OS version: undefined
 
 
