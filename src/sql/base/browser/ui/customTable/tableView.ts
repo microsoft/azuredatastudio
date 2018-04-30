@@ -102,8 +102,66 @@ export class CellCache implements Lifecycle.IDisposable {
 	}
 }
 
+export class ColumnCache implements Lifecycle.IDisposable {
+	private _cache: { [templateId: string]: IColumn[]; };
+
+	constructor(private context: _.ITableContext) {
+		this._cache = { '': [] };
+	}
+
+	public alloc(templateId: string): IColumn {
+		let result = this.cache(templateId).pop();
+
+		if (!result) {
+			let content = document.createElement('div');
+			content.className = 'content';
+
+			let cell = document.createElement('th');
+			cell.appendChild(content);
+
+			result = {
+				element: cell,
+				templateId: templateId,
+				templateData: this.context.renderer.renderColumnTemplate(this.context.table, templateId, content)
+			};
+		}
+
+		return result;
+	}
+
+	public release(templateId: string, row: ICell): void {
+		removeFromParent(row.element);
+		this.cache(templateId).push(row);
+	}
+
+	private cache(templateId: string): ICell[] {
+		return this._cache[templateId] || (this._cache[templateId] = []);
+	}
+
+	public garbageCollect(): void {
+		if (this._cache) {
+			Object.keys(this._cache).forEach(templateId => {
+				this._cache[templateId].forEach(cachedRow => {
+					this.context.renderer.disposeTemplate(this.context.table, templateId, cachedRow.templateData);
+					cachedRow.element = null;
+					cachedRow.templateData = null;
+				});
+
+				delete this._cache[templateId];
+			});
+		}
+	}
+
+	public dispose(): void {
+		this.garbageCollect();
+		this._cache = null;
+		this.context = null;
+	}
+}
+
 export interface IViewContext extends _.ITableContext {
-	cache: CellCache;
+	cellCache: CellCache;
+	columnCache: ColumnCache;
 }
 
 export class ViewRow implements IViewRow {
@@ -225,9 +283,8 @@ export class ViewCell implements IViewCell {
 
 	public _styles: any;
 
-	private _templateId: string;
-	private get templateId(): string {
-		return this._templateId || (this._templateId = (this.context.renderer.getTemplateId && this.context.renderer.getTemplateId(this.context.table, this.model.getElement())));
+	private get columnId(): string {
+		return this.model.columnId;
 	}
 
 	constructor(private context: IViewContext, public model: Model.Cell, private row: ViewRow) {
@@ -274,13 +331,13 @@ export class ViewCell implements IViewCell {
 		}
 
 		if (!skipUserRender) {
-			this.context.renderer.renderElement(this.context.table, this.model.getElement(), this.templateId, this.cell.templateData);
+			this.context.renderer.renderElement(this.context.table, this.model.getElement(), this.columnId, this.cell.templateData);
 		}
 	}
 
 	public insertInDOM(container: HTMLElement, afterElement: HTMLElement): void {
 		if (!this.cell) {
-			this.cell = this.context.cache.alloc(this.templateId);
+			this.cell = this.context.cellCache.alloc(this.columnId);
 
 			// used in reverse lookup from HTMLElement to Item
 			(<any>this.element)[TableView.BINDING] = this;
@@ -309,7 +366,7 @@ export class ViewCell implements IViewCell {
 			return;
 		}
 
-		this.context.cache.release(this.templateId, this.cell);
+		this.context.cellCache.release(this.columnId, this.cell);
 		this.cell = null;
 	}
 }
@@ -321,11 +378,6 @@ class ViewColumn {
 	protected column: IColumn;
 
 	public _styles: any;
-
-	private _templateId: string;
-	private get templateId(): string {
-		return this._templateId || (this._templateId = (this.context.renderer.getTemplateId && this.context.renderer.getTemplateId(this.context.table, this.model.getElement())));
-	}
 
 	constructor(private context: IViewContext, public model: Model.Column) {
 		this.id = this.model.id;
@@ -343,7 +395,7 @@ class ViewColumn {
 			return;
 		}
 
-		let classes = ['monaco-table-row'];
+		let classes = ['monaco-table-column-header'];
 		classes.push.apply(classes, Object.keys(this._styles));
 
 		this.element.className = classes.join(' ');
@@ -371,13 +423,13 @@ class ViewColumn {
 		}
 
 		if (!skipUserRender) {
-			this.context.renderer.renderElement(this.context.table, this.model.getElement(), this.templateId, this.column.templateData);
+			this.context.renderer.renderElement(this.context.table, this.model.getElement(), this.id, this.column.templateData);
 		}
 	}
 
 	public insertInDOM(container: HTMLElement, afterElement: HTMLElement): void {
 		if (!this.column) {
-			this.column = this.context.cache.alloc(this.templateId);
+			this.column = this.context.columnCache.alloc(this.id);
 
 			// used in reverse lookup from HTMLElement to Item
 			(<any>this.element)[TableView.BINDING] = this;
@@ -406,7 +458,7 @@ class ViewColumn {
 			return;
 		}
 
-		this.context.cache.release(this.templateId, this.column);
+		this.context.columnCache.release(this.id, this.column);
 		this.column = null;
 	}
 
@@ -475,7 +527,8 @@ export class TableView extends HeightMap {
 			table: context.table,
 			// accessibilityProvider: context.accessibilityProvider,
 			options: context.options,
-			cache: new CellCache(context)
+			cellCache: new CellCache(context),
+			columnCache: new ColumnCache(context)
 		};
 
 		this.viewListeners = [];

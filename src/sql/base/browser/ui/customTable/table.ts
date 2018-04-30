@@ -49,20 +49,16 @@ export interface IHighlightEvent {
 export interface IRenderer {
 
 	/**
-	 * Returns the element's height in the tree, in pixels.
+	 * Returns the element's height in the table, in pixels.
 	 */
-	getHeight(tree: ITable, element: any): number;
+	getHeight(table: ITable, element: any): number;
 
 	/**
-	 * Returns the element's width in the tree, in pixels.
+	 * Returns the element's width in the table, in pixels.
 	 */
-	getWidth(tree: ITable, element: any): number;
+	getColumnWidth(table: ITable, element: any): number;
 
-	/**
-	 * Returns a template ID for a given element. This will be used as an identifier
-	 * for the next 3 methods.
-	 */
-	getTemplateId(tree: ITable, element: any): string;
+	renderColumnTemplate(table: ITable, templateId: string, container: HTMLElement): any;
 
 	/**
 	 * Renders the template in a DOM element. This method should render all the DOM
@@ -73,7 +69,7 @@ export interface IRenderer {
 	 * You should do all DOM creating and object allocation in this method. It
 	 * will be called only a few times.
 	 */
-	renderTemplate(tree: ITable, templateId: string, container: HTMLElement): any;
+	renderTemplate(table: ITable, templateId: string, container: HTMLElement): any;
 
 	/**
 	 * Renders an element, given an object bag returned by `renderTemplate`.
@@ -83,41 +79,20 @@ export interface IRenderer {
 	 * Try to make this method do as little possible, since it will be called very
 	 * often.
 	 */
-	renderElement(tree: ITable, element: any, templateId: string, templateData: any): void;
+	renderElement(table: ITable, element: any, templateId: string, templateData: any): void;
 
 	/**
 	 * Disposes a template that was once rendered.
 	 */
-	disposeTemplate(tree: ITable, templateId: string, templateData: any): void;
+	disposeTemplate(table: ITable, templateId: string, templateData: any): void;
 }
 
 export interface IDataSource {
-
 	/**
-	 * Returns the unique identifier of the given element.
-	 * No more than one element may use a given identifier.
+	 *
+	 * @param rowRange
 	 */
-	getId(tree: ITable, element: any): string;
-
-	/**
-	 * Returns a boolean value indicating whether the element has children.
-	 */
-	hasChildren(tree: ITable, element: any): boolean;
-
-	/**
-	 * Returns the element's children as an array in a promise.
-	 */
-	getChildren(tree: ITable, element: any): WinJS.Promise;
-
-	/**
-	 * Returns the element's parent in a promise.
-	 */
-	getParent(tree: ITable, element: any): WinJS.Promise;
-
-	/**
-	 * Returns whether an element should be expanded when first added to the tree.
-	 */
-	shouldAutoexpand?(tree: ITable, element: any): boolean;
+	getRows(rowRange: IRowRange): Thenable<any>;
 }
 
 export interface IController {
@@ -125,37 +100,37 @@ export interface IController {
 	/**
 	 * Called when an element is clicked.
 	 */
-	onClick(tree: ITable, element: any, event: Mouse.IMouseEvent): boolean;
+	onClick(table: ITable, element: any, event: Mouse.IMouseEvent): boolean;
 
 	/**
 	 * Called when an element is requested for a context menu.
 	 */
-	onContextMenu(tree: ITable, element: any, event: ContextMenuEvent): boolean;
+	onContextMenu(table: ITable, element: any, event: ContextMenuEvent): boolean;
 
 	/**
 	 * Called when an element is tapped.
 	 */
-	onTap(tree: ITable, element: any, event: Touch.GestureEvent): boolean;
+	onTap(table: ITable, element: any, event: Touch.GestureEvent): boolean;
 
 	/**
 	 * Called when a key is pressed down while selecting elements.
 	 */
-	onKeyDown(tree: ITable, event: Keyboard.IKeyboardEvent): boolean;
+	onKeyDown(table: ITable, event: Keyboard.IKeyboardEvent): boolean;
 
 	/**
 	 * Called when a key is released while selecting elements.
 	 */
-	onKeyUp(tree: ITable, event: Keyboard.IKeyboardEvent): boolean;
+	onKeyUp(table: ITable, event: Keyboard.IKeyboardEvent): boolean;
 
 	/**
 	 * Called when a mouse button is pressed down on an element.
 	 */
-	onMouseDown?(tree: ITable, element: any, event: Mouse.IMouseEvent): boolean;
+	onMouseDown?(table: ITable, element: any, event: Mouse.IMouseEvent): boolean;
 
 	/**
 	 * Called when a mouse button goes up on an element.
 	 */
-	onMouseUp?(tree: ITable, element: any, event: Mouse.IMouseEvent): boolean;
+	onMouseUp?(table: ITable, element: any, event: Mouse.IMouseEvent): boolean;
 }
 
 export /* abstract */ class ContextMenuEvent {

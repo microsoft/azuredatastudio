@@ -132,7 +132,7 @@ export class Cell {
 	private _onDidRefresh = new Emitter<Cell>();
 	readonly onDidRefresh: Event<Cell> = this._onDidRefresh.event;
 
-	constructor(public id: string, /* private registry: RowRegistry, */ private context: _.ITableContext, private element: any) {
+	constructor(public id: string, /* private registry: RowRegistry, */ public columnId: string, private context: _.ITableContext, private element: any) {
 		// this.registry.register(this);
 
 		// this.previous = null;
@@ -215,7 +215,7 @@ export class Column {
 	}
 
 	/* protected */ public _getWidth(): number {
-		return this.context.renderer.getWidth(this.context.table, this.element);
+		return this.context.renderer.getColumnWidth(this.context.table, this.element);
 	}
 
 	public addTrait(trait: string): void {
