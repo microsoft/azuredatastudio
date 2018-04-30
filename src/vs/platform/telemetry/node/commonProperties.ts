@@ -14,10 +14,15 @@ import product from 'vs/platform/node/product';
 
 export function resolveCommonProperties(commit: string, version: string, machineId: string, installSourcePath: string): TPromise<{ [name: string]: string; }> {
 	const result: { [name: string]: string; } = Object.create(null);
+
+	// {{SQL CARBON EDIT}}
 	// __GDPR__COMMON__ "common.machineId" : { "endPoint": "MacAddressHash", "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }
-	result['common.machineId'] = machineId;
-	// __GDPR__COMMON__ "sessionID" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-	result['sessionID'] = uuid.generateUuid() + Date.now();
+	// result['common.machineId'] = machineId;
+	result['common.machineId'] = '';
+	// // __GDPR__COMMON__ "sessionID" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+	// result['sessionID'] = uuid.generateUuid() + Date.now();
+	result['sessionID'] = '';
+
 	// __GDPR__COMMON__ "commitHash" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	result['commitHash'] = commit;
 	// __GDPR__COMMON__ "version" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
@@ -32,7 +37,7 @@ export function resolveCommonProperties(commit: string, version: string, machine
 	result['common.nodePlatform'] = process.platform;
 	// __GDPR__COMMON__ "common.nodeArch" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	result['common.nodeArch'] = process.arch;
-	
+
 	// {{SQL CARBON EDIT}}
 	result['common.application.name'] = product.nameLong;
 

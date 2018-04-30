@@ -33,8 +33,9 @@ function getClient(aiKey: string): typeof appInsights.client {
 	client.channel.setOfflineMode(true);
 
 	// {{SQL CARBON EDIT}}
-	client.context.tags[client.context.keys.deviceMachineName] = ''; //prevent App Insights from reporting machine name
-	client.context.tags[client.context.keys.cloudRoleInstance] = ''; //prevent App Insights from reporting machine name
+	// clear all ID fields from telemetry
+	client.context.tags[client.context.keys.deviceMachineName] = '';
+	client.context.tags[client.context.keys.cloudRoleInstance] = '';
 
 	// set envelope flags to suppress Vortex ingest header
 	client.addTelemetryProcessor((envelope, contextObjects) => {
