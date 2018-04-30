@@ -31,6 +31,7 @@ export interface IInputOptions extends IInputBoxStyles {
 
 	// {{SQL CARBON EDIT}} Candidate for addition to vscode
 	min?: string;
+	max?: string;
 }
 
 export interface IInputBoxStyles {
@@ -166,6 +167,11 @@ export class InputBox extends Widget {
 		// {{SQL CARBON EDIT}} Canidate for addition to vscode
 		if (this.options.min) {
 			this.input.min = this.options.min;
+		}
+
+		// {{SQL CARBON EDIT}} Canidate for addition to vscode
+		if (this.options.max) {
+			this.input.max = this.options.max;
 		}
 
 		if (this.ariaLabel) {

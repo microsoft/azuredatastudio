@@ -1,4 +1,3 @@
-
 <div #taskbarContainer></div>
 <div style="display: flex; flex-flow: row; overflow: hidden; height: 100%; width: 100%">
 	<div style="flex:3 3 auto; margin: 5px; overflow: scroll">
@@ -9,49 +8,124 @@
 	<div class="angular-modal-body-content chart-viewer" style="flex:1 1 auto; border-left: 1px solid; margin: 5px;">
 		<div style="position: relative; width: 100%">
 			<div class="dialog-label" id="chartTypeLabel">{{localizedStrings.CHART_TYPE}}</div>
-			<div class="input-divider" aria-labelledby="chartTypeLabel" #chartTypesContainer></div>
-			<div [hidden]="chartTypesSelectBox.value === 'count' || chartTypesSelectBox.value === 'image'">
-				<div [hidden]="!showDataType">
-					<div class="dialog-label" id="dataTypeLabel">{{localizedStrings.DATA_TYPE}}</div>
-					<div class="radio-indent" role="radiogroup" aria-labelledby="dataTypeLabel">
-						<div class="option">
-							<input type="radio" role="radio" name="data-type" value="number" [(ngModel)]="dataType" aria-labelledby="numberLabel"><span id="numberLabel">{{localizedStrings.NUMBER}}</span>
+			<select #chartTypeSelect class="input-divider"
+				aria-labelledby="chartTypeLabel"
+				[options]="insightRegistry.getAllIds()"
+				[selectedOption]="getDefaultChartType()"
+				[contextViewProvider]="_bootstrapService.contextViewService"
+				[themeService]="_bootstrapService.themeService"
+				(onDidSelect)="onChartChanged($event)"></select>
+			<ng-container [ngSwitch]="chartTypesSelectBox.value">
+				<ng-container *ngSwitchCase="line">
+					<ng-container *ngTemplateOutlet="lineGraph"></ng-container>
+				</ng-container>
+				<ng-container *ngSwitchDefault>
+					<div [hidden]="chartTypesSelectBox.value === 'count' || chartTypesSelectBox.value === 'image'">
+							<div *ngIf="showDataType">
+								<ng-container *ngTemplateOutlet="dataTypeInput"></ng-container>
+							</div>
+							<div *ngIf="showDataDirection">
+								<ng-container *ngTemplateOutlet="dataDirectionInput"></ng-container>
+							</div>
+							<div *ngIf="showLabelFirstColumn">
+								<ng-container *ngTemplateOutlet="labelFirstColumnInput"></ng-container>
+							</div>
+							<div *ngIf="showColumnsAsLabels">
+								<ng-container *ngTemplateOutlet="columnsAsLabelsInput"></ng-container>
+							</div>
 						</div>
-						<div class="option">
-							<input type="radio" role="radio" name="data-type" value="point" [(ngModel)]="dataType" aria-labelledby="pointLabel"><span id="pointLabel">{{localizedStrings.POINT}}</span>
-						</div>
-					</div>
-				</div>
-				<div [hidden]="!showDataDirection">
-					<div class="dialog-label" id="dataDirectionLabel">{{localizedStrings.DATA_DIRECTION}}</div>
-					<div class="radio-indent" role="radiogroup" aria-labelledby="dataDirectionLabel">
-						<div class="option">
-							<input type="radio" role="radio" name="data-direction" value="vertical" [(ngModel)]="dataDirection" aria-labelledby="verticalLabel"><span id="verticalLabel">{{localizedStrings.VERTICAL}}</span>
-						</div>
-						<div class="option">
-							<input type="radio" role="radio" name="data-direction" value="horizontal" [(ngModel)]="dataDirection" aria-labelledby="horizontalLabel"><span id="horizontalLabel">{{localizedStrings.HORIZONTAL}}</span>
-						</div>
-					</div>
-				</div>
-				<div [hidden]="!showLabelFirstColumn">
-					<div class="input-divider" #labelFirstColumnContainer></div>
-				</div>
-
-				<div [hidden]="!showColumnsAsLabels">
-					<div class="input-divider" #columnsAsLabelsContainer></div>
-				</div>
-
-				<div class="dialog-label" id="legendLabel">{{localizedStrings.LEGEND}}</div>
-				<div class="input-divider" #legendContainer aria-labelledby="legendLabel"></div>
-
-				<div class="footer">
-					<div class="right-footer">
-						<div class="footer-button" #createInsightButtonContainer></div>
-						<div class="footer-button" #saveChartButtonContainer></div>
-						<div class="footer-button" #copyChartButtonContainer></div>
-					</div>
-				</div>
-			</div>
+				</ng-container>
+			</ng-container>
 		</div>
 	</div>
 </div>
+
+<!--
+	Line graph control interface
+-->
+<ng-template #lineGraph>
+	<ng-container *ngTemplateOutlet="dataTypeInput"></ng-container>
+	<ng-template [ngIf]="showDataDirection">
+		<ng-container *ngTemplateOutlet="dataDirectionInput"></ng-container>
+	</ng-template>
+	<ng-template [ngIf]="showColumnsAsLabels">
+		<ng-container *ngTemplateOutlet="columnsAsLabelsInput"></ng-container>
+	</ng-template>
+	<ng-template [ngIf]="showLabelFirstColumn">
+		<ng-container *ngTemplateOutlet="labelFirstColumnInput"></ng-container>
+	</ng-template>
+	<ng-container *ngTemplateOutlet="legendInput"></ng-container>
+	<ng-container *ngTemplateOutlet="yaxisInput"></ng-container>
+</ng-template>
+
+<!--
+	Legend Input Control interface
+	Valid for any charting type, i.e not image/count
+-->
+<ng-template #legendInput>
+	<div class="dialog-label" id="legendLabel">{{localizedStrings.LEGEND}}</div>
+	<select class="input-divider" aria-labelledby="legendLabel"
+		[options]="legendOptions"
+		[selectedOption]="_chartConfig.legendPosition"
+		[contextViewProvider]="_bootstrapService.contextViewService"
+		[themeService]="_bootstrapService.themeService"
+		(onDidSelect)="onLegendChanged($event)"></select>
+</ng-template>
+
+<!--
+	Data type input control interface
+	point vs number data type, only valid for the line chart type
+-->
+<ng-template #dataTypeInput>
+	<div class="dialog-label" id="dataTypeLabel">{{localizedStrings.DATA_TYPE}}</div>
+	<div class="radio-indent" role="radiogroup" aria-labelledby="dataTypeLabel">
+		<div class="option">
+			<input type="radio" role="radio" name="data-type" value="number" [(ngModel)]="dataType" aria-labelledby="numberLabel"><span id="numberLabel">{{localizedStrings.NUMBER}}</span>
+		</div>
+		<div class="option">
+			<input type="radio" role="radio" name="data-type" value="point" [(ngModel)]="dataType" aria-labelledby="pointLabel"><span id="pointLabel">{{localizedStrings.POINT}}</span>
+		</div>
+	</div>
+</ng-template>
+
+<!--
+	Data direction input control
+	vertical vs horizontal, change which direction is considered a "series" of data
+	only valid for pie, bar, doughnut charts and line is numbr is the data type
+	otherwise the direction is assumed for each other type
+-->
+<ng-template #dataDirectionInput>
+	<div class="dialog-label" id="dataDirectionLabel">{{localizedStrings.DATA_DIRECTION}}</div>
+	<div class="radio-indent" role="radiogroup" aria-labelledby="dataDirectionLabel">
+		<div class="option">
+			<input type="radio" role="radio" name="data-direction" value="vertical" [(ngModel)]="dataDirection" aria-labelledby="verticalLabel"><span id="verticalLabel">{{localizedStrings.VERTICAL}}</span>
+		</div>
+		<div class="option">
+			<input type="radio" role="radio" name="data-direction" value="horizontal" [(ngModel)]="dataDirection" aria-labelledby="horizontalLabel"><span id="horizontalLabel">{{localizedStrings.HORIZONTAL}}</span>
+		</div>
+	</div>
+</ng-template>
+
+<!--
+	Control for specifing if the first column should be used to label the series
+	Only valid for data direction = horizontal
+-->
+<ng-template #labelFirstColumnInput>
+	<checkbox class="input-divider" [label]="localizedStrings.LABEL_FIRST_COLUMN" (onChange)="onLabelFirstColumnChanged($event)"></checkbox>
+</ng-template>
+
+<!--
+	Control whether to use column names as series labels
+	Only valid for data direction = vertical
+-->
+<ng-template #columnsAsLabelsInput>
+	<checkbox class="input-divider" [label]="localizedStrings.COLUMNS_AS_LABELS" (onChange)="columnsAsLabelsChanged($event)"></checkbox>
+</ng-template>
+
+<!--
+	Y-Axis options controls
+	valid for any charting value
+-->
+<ng-template #yaxisInput>
+	<input [type]="number" (onDidChange)="yAxisMinChange($event)" [contextViewProvider]="_bootstrapService.contextViewService" [themeService]="_bootstrapService.themeService">
+</ng-template>
