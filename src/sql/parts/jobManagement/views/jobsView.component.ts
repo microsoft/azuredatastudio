@@ -281,30 +281,30 @@ export class JobsViewComponent implements AfterContentChecked {
 	}
 
 	private loadJobHistories() {
-		const self = this;
 		if (this.jobs) {
 			let erroredJobs = 0;
-			for (let i = 0; i < this.jobs.length; i++) {
-				let job = this.jobs[i];
-				let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
-					if (result && result.jobs) {
-						self.jobHistories[job.jobId] = result.jobs;
-						self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
-						if (self._agentViewComponent.expanded.has(job.jobId)) {
-							let jobHistory = self._jobCacheObject.getJobHistory(job.jobId)[result.jobs.length-1];
-							let item = self.dataView.getItemById(job.jobId + '.error');
-							let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
-							let errorMessage = jobHistory ? jobHistory.message: noStepsMessage;
-							item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
-							self._agentViewComponent.setExpanded(job.jobId, item['name']);
-							self.dataView.updateItem(job.jobId + '.error', item);
+			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+			let separatedJobs = this.separateFailingJobs();
+			// grab histories of the failing jobs first
+			// so they can be expanded quicker
+			let failing = separatedJobs[0];
+			this.curateJobHistory(failing, ownerUri);
+			let passing = separatedJobs[1];
+			this.curateJobHistory(passing, ownerUri);
+		}
+	}
 
-						}
-					}
-				});
+	private separateFailingJobs(): any {
+		let failing = [];
+		let nonFailing = [];
+		for (let i = 0; i < this.jobs.length; i++) {
+			if (this.jobs[i].lastRunOutcome === 0) {
+				failing.push(this.jobs[i]);
+			} else {
+				nonFailing.push(this.jobs[i]);
 			}
 		}
+		return [failing, nonFailing];
 	}
 
 	private isErrorRow(cell: HTMLElement) {
@@ -322,5 +322,27 @@ export class JobsViewComponent implements AfterContentChecked {
 		}
 		let job = this.jobs.filter(job => job.name === jobName)[0];
 		return job;
+	}
+
+	private curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
+		const self = this;
+		for (let i = 0; i < jobs.length; i++) {
+			let job = jobs[i];
+			this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
+				if (result && result.jobs) {
+					self.jobHistories[job.jobId] = result.jobs;
+					self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
+					if (self._agentViewComponent.expanded.has(job.jobId)) {
+						let jobHistory = self._jobCacheObject.getJobHistory(job.jobId)[result.jobs.length-1];
+						let item = self.dataView.getItemById(job.jobId + '.error');
+						let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
+						let errorMessage = jobHistory ? jobHistory.message: noStepsMessage;
+						item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
+						self._agentViewComponent.setExpanded(job.jobId, item['name']);
+						self.dataView.updateItem(job.jobId + '.error', item);
+					}
+				}
+			});
+		}
 	}
 }
