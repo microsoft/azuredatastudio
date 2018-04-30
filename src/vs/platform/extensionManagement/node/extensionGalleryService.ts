@@ -24,6 +24,7 @@ import { readFile } from 'vs/base/node/pfs';
 import { writeFileAndFlushSync } from 'vs/base/node/extfs';
 import { generateUuid, isUUID } from 'vs/base/common/uuid';
 import { values } from 'vs/base/common/map';
+import { forEach } from '../../../base/common/event';
 
 interface IRawGalleryExtensionFile {
 	assetType: string;
@@ -456,6 +457,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	 * @param galleryExtensions
 	 */
 	private createQueryResult(query: Query, galleryExtensions: IRawGalleryExtension[]): { galleryExtensions: IRawGalleryExtension[], total: number; } {
+
+		// Filtering
 		let filteredExtensions = galleryExtensions;
 		if (query.criteria) {
 			const ids = query.criteria.filter(x => x.filterType === FilterType.ExtensionId).map(v => v.value.toLocaleLowerCase());
@@ -466,6 +469,43 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (names && names.length > 0) {
 				filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && names.includes(`${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
 			}
+			const searchTexts = query.criteria.filter(x => x.filterType === FilterType.SearchText).map(v => v.value.toLocaleLowerCase());
+			if (searchTexts && searchTexts.length > 0) {
+				searchTexts.forEach(searchText => {
+					if (searchText !== '@allmarketplace') {
+						filteredExtensions = filteredExtensions.filter(
+							e => 	e.extensionName && e.extensionName.includes(searchText) ||
+									e.publisher && e.publisher.publisherName && e.publisher.publisherName.includes(searchText) ||
+									e.publisher && e.publisher.displayName && e.publisher.displayName.includes(searchText) ||
+									e.displayName && e.displayName.includes(searchText) ||
+									e.shortDescription && e.shortDescription.includes(searchText) ||
+									e.extensionId && e.extensionId.includes(searchText)
+						);
+					}
+				});
+			}
+		}
+
+		// Sorting
+		switch (query.sortBy) {
+			case SortBy.PublisherName:
+				filteredExtensions.sort((a: IRawGalleryExtension, b: IRawGalleryExtension) => {
+					if (a && b && a.publisher && a.publisher.publisherName && b.publisher && b.publisher.publisherName) {
+						return a.publisher.publisherName < b.publisher.publisherName ? -1 : 1;
+					}
+					return 0;
+				});
+				break;
+			case SortBy.Title:
+				filteredExtensions.sort((a: IRawGalleryExtension, b: IRawGalleryExtension) => {
+					if (a && b && a.displayName && b.displayName) {
+						return a.displayName < b.displayName ? -1 : 1;
+					}
+					return 0;
+				});
+				break;
+			default:
+				break;
 		}
 
 		let actualTotal = filteredExtensions.length;
