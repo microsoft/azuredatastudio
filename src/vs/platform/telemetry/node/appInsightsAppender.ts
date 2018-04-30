@@ -36,12 +36,6 @@ function getClient(aiKey: string): typeof appInsights.client {
 	// clear all ID fields from telemetry
 	client.context.tags[client.context.keys.deviceMachineName] = '';
 	client.context.tags[client.context.keys.cloudRoleInstance] = '';
-	client.context.tags['common.machineId'] = '';
-	client.context.tags['sessionID'] = '';
-	client.context.tags['common.instanceId'] = '';
-	client.context.tags['common.userId'] = '';
-	client.context.tags['common.firstSessionDate'] = '';
-	client.context.tags['common.lastSessionDate'] = '';
 
 	// set envelope flags to suppress Vortex ingest header
 	client.addTelemetryProcessor((envelope, contextObjects) => {

@@ -34,16 +34,18 @@ export function resolveWorkbenchCommonProperties(storageService: IStorageService
 		// // __GDPR__COMMON__ "common.isNewSession" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 		// result['common.isNewSession'] = !lastSessionDate ? '1' : '0';
 
+		// {{SQL CARBON EDIT}}
 		// __GDPR__COMMON__ "common.instanceId" : { "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }
 		// result['common.instanceId'] = getOrCreateInstanceId(storageService);
+		result['common.instanceId'] = '';
 
 		return result;
 	});
 }
 
-function getOrCreateInstanceId(storageService: IStorageService): string {
-	const result = storageService.get('telemetry.instanceId') || uuid.generateUuid();
-	storageService.store('telemetry.instanceId', result);
-
-	return result;
-}
+// {{SQL CARBON EDIT}}
+// function getOrCreateInstanceId(storageService: IStorageService): string {
+// 	const result = storageService.get('telemetry.instanceId') || uuid.generateUuid();
+// 	storageService.store('telemetry.instanceId', result);
+// 	return result;
+// }
