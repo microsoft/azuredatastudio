@@ -225,6 +225,10 @@ export class EditorGroup implements IEditorGroup {
 	}
 
 	public openEditor(editor: EditorInput, options?: IEditorOpenOptions): void {
+		// {{SQL CARBON EDIT}}
+		// Convert input into custom type if it's one of the ones we support
+		editor = CustomInputConverter.convertEditorInput(editor, options, this.instantiationService);
+
 		const index = this.indexOf(editor);
 
 		const makePinned = options && options.pinned;
