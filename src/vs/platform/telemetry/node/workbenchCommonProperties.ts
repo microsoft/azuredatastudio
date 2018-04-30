@@ -20,6 +20,8 @@ export function resolveWorkbenchCommonProperties(storageService: IStorageService
 		result['common.version.renderer'] = process.versions && (<any>process).versions['chrome'];
 		// {{SQL CARBON EDIT}}
 		result['common.application.name'] = product.nameLong;
+		// {{SQL CARBON EDIT}}
+		result['common.userId'] = '';
 
 		// {{SQL CARBON EDIT}}
 		// const lastSessionDate = storageService.get('telemetry.lastSessionDate');
