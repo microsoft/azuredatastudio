@@ -5,8 +5,10 @@
 
 'use strict';
 
-import { Component, Inject, forwardRef, ElementRef, OnInit, Input,
-	Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
+import {
+	Component, Inject, forwardRef, ElementRef, OnInit, Input,
+	Output, OnChanges, SimpleChanges, EventEmitter
+} from '@angular/core';
 
 import { SelectBox as vsSelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { AngularDisposable } from 'sql/base/common/lifecycle';

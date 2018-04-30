@@ -5,8 +5,10 @@
 
 'use strict';
 
-import { Component, Inject, forwardRef, ElementRef, OnInit, Input,
-	Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
+import {
+	Component, Inject, forwardRef, ElementRef, OnInit, Input,
+	Output, OnChanges, SimpleChanges, EventEmitter
+} from '@angular/core';
 
 import { Checkbox as vsCheckbox } from 'sql/base/browser/ui/checkbox/checkbox';
 

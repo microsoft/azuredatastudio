@@ -5,8 +5,10 @@
 
 'use strict';
 
-import { Component, Inject, forwardRef, ElementRef, OnInit, Input,
-	Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
+import {
+	Component, Inject, forwardRef, ElementRef, OnInit, Input,
+	Output, OnChanges, SimpleChanges, EventEmitter
+} from '@angular/core';
 
 import { InputBox as vsInputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
