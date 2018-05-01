@@ -88,19 +88,6 @@ export function parseNumAsTimeString(value: number): string {
 	return tempVal > 0 ? rs + '.' + mss : rs;
 }
 
-/**
- * Converts <, >, &, ", ', and any characters that are outside \u00A0 to numeric HTML entity values
- * like &#123;
- * (Adapted from http://stackoverflow.com/a/18750001)
- * @param str String to convert
- * @return String with characters replaced.
- */
-export function htmlEntities(str: string): string {
-	return typeof (str) === 'string'
-		? str.replace(/[\u00A0-\u9999<>\&"']/gim, (i) => { return `&#${i.charCodeAt(0)};`; })
-		: undefined;
-}
-
 export function generateUri(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): string {
 	let prefix = purpose ? uriPrefixes[purpose] : uriPrefixes.default;
 	let uri = generateUriWithPrefix(connection, prefix);
