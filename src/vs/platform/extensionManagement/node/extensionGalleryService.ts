@@ -24,7 +24,6 @@ import { readFile } from 'vs/base/node/pfs';
 import { writeFileAndFlushSync } from 'vs/base/node/extfs';
 import { generateUuid, isUUID } from 'vs/base/common/uuid';
 import { values } from 'vs/base/common/map';
-import { forEach } from '../../../base/common/event';
 
 interface IRawGalleryExtensionFile {
 	assetType: string;
@@ -489,27 +488,38 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		// Sorting
 		switch (query.sortBy) {
 			case SortBy.PublisherName:
-				filteredExtensions.sort((a: IRawGalleryExtension, b: IRawGalleryExtension) => {
-					if (a && b && a.publisher && a.publisher.publisherName && b.publisher && b.publisher.publisherName) {
-						return a.publisher.publisherName < b.publisher.publisherName ? -1 : 1;
-					}
-					return 0;
-				});
+				filteredExtensions.sort( (a, b) => ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'));
 				break;
 			case SortBy.Title:
-				filteredExtensions.sort((a: IRawGalleryExtension, b: IRawGalleryExtension) => {
-					if (a && b && a.displayName && b.displayName) {
-						return a.displayName < b.displayName ? -1 : 1;
-					}
-					return 0;
-				});
-				break;
 			default:
+				filteredExtensions.sort( (a, b) => ExtensionGalleryService.compareByField(a, b, 'displayName'));
 				break;
 		}
 
 		let actualTotal = filteredExtensions.length;
 		return { galleryExtensions: filteredExtensions, total: actualTotal };
+	}
+
+	public static compareByField(a: any, b: any, fieldName: string): number {
+		if (a && !b) {
+			return 1;
+		}
+		if (b && !a) {
+			return -1;
+		}
+		if (a && a[fieldName] && (!b || !b[fieldName])) {
+			return 1;
+		}
+		if (b && b[fieldName] && (!a || !a[fieldName])) {
+			return -1;
+		}
+		if (!b || !b[fieldName] && (!a || !a[fieldName])) {
+			return 0;
+		}
+		if (a[fieldName] ===  b[fieldName]) {
+			return 0;
+		}
+		return a[fieldName] < b[fieldName] ? -1 : 1;
 	}
 
 	private queryGallery(query: Query): TPromise<{ galleryExtensions: IRawGalleryExtension[], total: number; }> {
