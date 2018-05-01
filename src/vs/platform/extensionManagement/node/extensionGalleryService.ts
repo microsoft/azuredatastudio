@@ -456,6 +456,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	 * @param galleryExtensions
 	 */
 	private createQueryResult(query: Query, galleryExtensions: IRawGalleryExtension[]): { galleryExtensions: IRawGalleryExtension[], total: number; } {
+
+		// Filtering
 		let filteredExtensions = galleryExtensions;
 		if (query.criteria) {
 			const ids = query.criteria.filter(x => x.filterType === FilterType.ExtensionId).map(v => v.value.toLocaleLowerCase());
@@ -466,10 +468,58 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (names && names.length > 0) {
 				filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && names.includes(`${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
 			}
+			const searchTexts = query.criteria.filter(x => x.filterType === FilterType.SearchText).map(v => v.value.toLocaleLowerCase());
+			if (searchTexts && searchTexts.length > 0) {
+				searchTexts.forEach(searchText => {
+					if (searchText !== '@allmarketplace') {
+						filteredExtensions = filteredExtensions.filter(
+							e => 	e.extensionName && e.extensionName.includes(searchText) ||
+									e.publisher && e.publisher.publisherName && e.publisher.publisherName.includes(searchText) ||
+									e.publisher && e.publisher.displayName && e.publisher.displayName.includes(searchText) ||
+									e.displayName && e.displayName.includes(searchText) ||
+									e.shortDescription && e.shortDescription.includes(searchText) ||
+									e.extensionId && e.extensionId.includes(searchText)
+						);
+					}
+				});
+			}
+		}
+
+		// Sorting
+		switch (query.sortBy) {
+			case SortBy.PublisherName:
+				filteredExtensions.sort( (a, b) => ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'));
+				break;
+			case SortBy.Title:
+			default:
+				filteredExtensions.sort( (a, b) => ExtensionGalleryService.compareByField(a, b, 'displayName'));
+				break;
 		}
 
 		let actualTotal = filteredExtensions.length;
 		return { galleryExtensions: filteredExtensions, total: actualTotal };
+	}
+
+	public static compareByField(a: any, b: any, fieldName: string): number {
+		if (a && !b) {
+			return 1;
+		}
+		if (b && !a) {
+			return -1;
+		}
+		if (a && a[fieldName] && (!b || !b[fieldName])) {
+			return 1;
+		}
+		if (b && b[fieldName] && (!a || !a[fieldName])) {
+			return -1;
+		}
+		if (!b || !b[fieldName] && (!a || !a[fieldName])) {
+			return 0;
+		}
+		if (a[fieldName] ===  b[fieldName]) {
+			return 0;
+		}
+		return a[fieldName] < b[fieldName] ? -1 : 1;
 	}
 
 	private queryGallery(query: Query): TPromise<{ galleryExtensions: IRawGalleryExtension[], total: number; }> {
