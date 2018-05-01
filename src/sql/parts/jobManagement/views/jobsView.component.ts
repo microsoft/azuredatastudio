@@ -280,7 +280,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		this.rowDetail.applyTemplateNewLineHeight(item, true);
 	}
 
-	private loadJobHistories() {
+	private loadJobHistories(): void {
 		if (this.jobs) {
 			let erroredJobs = 0;
 			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
@@ -294,7 +294,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		}
 	}
 
-	private separateFailingJobs(): any {
+	private separateFailingJobs(): sqlops.AgentJobInfo[][] {
 		let failing = [];
 		let nonFailing = [];
 		for (let i = 0; i < this.jobs.length; i++) {
