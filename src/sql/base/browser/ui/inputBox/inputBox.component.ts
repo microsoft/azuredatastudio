@@ -33,8 +33,6 @@ export class InputBox extends AngularDisposable implements OnInit, OnChanges {
 
 	@Output() onDidChange = new EventEmitter<string | number>();
 
-	private themed = false;
-
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IThemeService) private themeService: IThemeService,
