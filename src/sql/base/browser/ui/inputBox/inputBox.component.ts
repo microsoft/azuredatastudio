@@ -16,9 +16,10 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 
 @Component({
-	selector: 'input',
+	selector: 'input-box',
 	template: ''
 })
 export class InputBox extends AngularDisposable implements OnInit, OnChanges {
@@ -30,40 +31,54 @@ export class InputBox extends AngularDisposable implements OnInit, OnChanges {
 	@Input() placeholder: string;
 	@Input() ariaLabel: string;
 
-	@Output() onDidChange = new EventEmitter<string>();
-
-	@Input() themeService: IThemeService;
-	@Input() contextViewProvider: IContextViewProvider;
+	@Output() onDidChange = new EventEmitter<string | number>();
 
 	private themed = false;
 
 	constructor(
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(IThemeService) private themeService: IThemeService,
+		@Inject(IContextViewService) private contextViewService: IContextViewService
 	) {
 		super();
 	}
 
 	ngOnInit(): void {
-		this._inputbox = new vsInputBox(this._el.nativeElement, this.contextViewProvider, {
+		this._inputbox = new vsInputBox(this._el.nativeElement, this.contextViewService, {
 			min: this.min,
 			max: this.max,
 			type: this.type,
 			placeholder: this.placeholder,
 			ariaLabel: this.ariaLabel
 		});
-		// unforunately there is no gaurentee the themeService will be here on init
-		// eventually this should be fixed by manually injecting the theme service rather
-		// than depending on inputs
-		if (this.themeService) {
-			this.themed = true;
-			this._register(attachInputBoxStyler(this._inputbox, this.themeService));
-		}
+		this._inputbox.onDidChange(e => {
+			switch (this.type) {
+				case 'number':
+					if (e) {
+						this.onDidChange.emit(Number(e));
+						break;
+					}
+				default:
+					this.onDidChange.emit(e);
+			}
+		});
+		this._register(attachInputBoxStyler(this._inputbox, this.themeService));
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['themeService'] && changes['themeService'].currentValue && !this.themed) {
-			this.themed = true;
-			this._register(attachInputBoxStyler(this._inputbox, this.themeService));
+		if (this._inputbox) {
+			if (changes['min']) {
+				this._inputbox.inputElement.min = this.min;
+			}
+			if (changes['max']) {
+				this._inputbox.inputElement.max = this.max;
+			}
+			if (changes['type']) {
+				this._inputbox.inputElement.type = this.type;
+			}
+			if (changes['placeholder']) {
+				this._inputbox.inputElement.placeholder = this.placeholder;
+			}
 		}
 	}
 }

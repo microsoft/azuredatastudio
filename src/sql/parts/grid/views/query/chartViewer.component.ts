@@ -54,7 +54,13 @@ const LocalizedStrings = {
 	LABEL_FIRST_COLUMN: nls.localize('labelFirstColumnLabel', 'Use First Column as row label?'),
 	COLUMNS_AS_LABELS: nls.localize('columnsAsLabelsLabel', 'Use Column names as labels?'),
 	LEGEND: nls.localize('legendLabel', 'Legend Position'),
-	CHART_NOT_FOUND: nls.localize('chartNotFound', 'Could not find chart to save')
+	CHART_NOT_FOUND: nls.localize('chartNotFound', 'Could not find chart to save'),
+	X_AXIS_LABEL: nls.localize('xAxisLabel', 'X Axis Label'),
+	X_AXIS_MIN_VAL: nls.localize('xAxisMinVal', 'X Axis Minimum Value'),
+	X_AXIS_MAX_VAL: nls.localize('xAxisMaxVal', 'X Axis Maximum Value'),
+	Y_AXIS_LABEL: nls.localize('yAxisLabel', 'Y Axis Label'),
+	Y_AXIS_MIN_VAL: nls.localize('yAxisMinVal', 'Y Axis Minimum Value'),
+	Y_AXIS_MAX_VAL: nls.localize('yAxisMaxVal', 'Y Axis Maximum Value')
 };
 
 @Component({
@@ -63,7 +69,6 @@ const LocalizedStrings = {
 })
 export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewActionContext {
 	public legendOptions: string[];
-	@ViewChild('chartTypeSelect') private legendSelectBox: AngularSelectBox;
 	@ViewChild('chartTypeSelect') private chartTypesSelectBox: AngularSelectBox;
 
 	/* UI */
@@ -150,29 +155,16 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		this.initChart();
 	}
 
-	public onLabelFirstColumnChanged(val: boolean): void {
-		this._chartConfig.labelFirstColumn = val;
-		this.initChart();
-	}
-
-	public columnsAsLabelsChanged(val: boolean): void {
-		this._chartConfig.columnsAsLabels = val;
-		this.initChart();
-	}
-
-	public onLegendChanged(e: ISelectData): void {
-		this._chartConfig.legendPosition = <LegendPosition>e.selected;
-		this.initChart();
+	setConfigValue(key: string, value: any, refresh = true): void {
+		this._chartConfig[key] = value;
+		if (refresh) {
+			this.initChart();
+		}
 	}
 
 	public set dataType(type: DataType) {
 		this._chartConfig.dataType = type;
 		// Requires full chart refresh
-		this.initChart();
-	}
-
-	public yAxisMinChange(val: string): void {
-		this._chartConfig.yAxisMin = Number(val);
 		this.initChart();
 	}
 
