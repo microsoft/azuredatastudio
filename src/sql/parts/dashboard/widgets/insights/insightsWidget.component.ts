@@ -125,13 +125,6 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		this._cd.detectChanges();
 	}
 
-	private hideError(): void {
-		if (this.error) {
-			this.error = undefined;
-			this._cd.detectChanges();
-		}
-	}
-
 	get actions(): Array<Action> {
 		let actions: Array<Action> = [];
 		if (this.insightConfig.details && (this.insightConfig.details.query || this.insightConfig.details.queryFile)) {
@@ -209,9 +202,8 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	private _updateChild(result: SimpleExecuteResult): void {
 		this.componentHost.viewContainerRef.clear();
-
-		// Clear previous error
-		this.hideError();
+		this.error = undefined;
+		this._cd.detectChanges();
 
 		if (result.rowCount === 0) {
 			this.showError(nls.localize('noResults', 'No results to show'));
