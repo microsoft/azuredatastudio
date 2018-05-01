@@ -109,6 +109,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				}
 				profile = result.connection;
 
+				profile.serverName = trim(profile.serverName);
+
 				// append the port to the server name for SQL Server connections
 				if (this.getCurrentProviderName() === Constants.mssqlProviderName) {
 					let portPropertyName: string = 'port';
@@ -126,6 +128,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 				this.handleDefaultOnConnect(params, profile);
 			} else {
+				profile.serverName = trim(profile.serverName);
 				this._connectionManagementService.addSavedPassword(profile).then(connectionWithPassword => {
 					this.handleDefaultOnConnect(params, connectionWithPassword);
 				});
@@ -152,7 +155,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): Thenable<void> {
-		connection.serverName = trim(connection.serverName);
 		let fromEditor = params && params.connectionType === ConnectionType.editor;
 		let uri: string = undefined;
 		if (fromEditor && params.input) {
