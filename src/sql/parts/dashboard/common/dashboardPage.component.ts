@@ -142,7 +142,6 @@ export abstract class DashboardPage extends AngularDisposable {
 			actions: []
 		};
 		this.addNewTab(homeTab);
-		this._panel.selectTab(homeTab.id);
 
 		let allTabs = dashboardHelper.filterConfigs(dashboardRegistry.tabs, this.dashboardService);
 
@@ -253,7 +252,6 @@ export abstract class DashboardPage extends AngularDisposable {
 			}
 		}
 	}
-
 
 	private getContentType(tab: TabConfig): string {
 		return tab.container ? Object.keys(tab.container)[0] : '';

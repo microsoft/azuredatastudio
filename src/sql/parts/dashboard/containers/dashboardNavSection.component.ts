@@ -124,11 +124,6 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 				this.addNewTab(config);
 				return config;
 			});
-
-			// put this immediately on the stack so that is ran *after* the tab is rendered
-			setTimeout(() => {
-				this._panel.selectTab(selectedTabs[0].id);
-			});
 		}
 	}
 
