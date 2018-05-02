@@ -177,7 +177,7 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 		this._refreshOptions();
 		this.defaultRowCount = Number(this._options[this._currentOptionsIndex]);
 
-		this.toDispose.push(styler.attachSelectBoxStyler(this.selectBox, themeService));
+		this.toDispose.push(attachSelectBoxStyler(this.selectBox, _themeService));
 	}
 
 	public render(container: HTMLElement): void {
