@@ -47,10 +47,10 @@ let idPool = 0;
 	selector: 'panel',
 	template: `
 		<div class="tabbedPanel fullsize" #tabbedPanel>
-			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title" #titleContainer>
-				<div class="tabList" #tabList role="tablist">
+			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
+				<div class="tabList" role="tablist" scrollable [horizontalScroll]="ScrollbarVisibility.Auto" [verticalScroll]="ScrollbarVisibility.Hidden">
 					<div *ngFor="let tab of _tabs">
-						<tab-header [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'> </tab-header>
+						<tab-header [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'> </tab-header>
 					</div>
 				</div>
 				<div class="title-actions">
@@ -66,7 +66,7 @@ let idPool = 0;
 		</div>
 	`
 })
-export class PanelComponent extends Disposable implements OnInit, OnChanges, OnDestroy, AfterViewInit {
+export class PanelComponent extends Disposable implements OnInit, OnChanges, OnDestroy {
 	@Input() public options: IPanelOptions;
 	@Input() public actions: Array<Action>;
 	@ContentChildren(TabComponent) private _tabs: QueryList<TabComponent>;
@@ -80,10 +80,9 @@ export class PanelComponent extends Disposable implements OnInit, OnChanges, OnD
 	private _mru: TabComponent[];
 	private _scrollableElement: ScrollableElement;
 
+	private ScrollbarVisibility = ScrollbarVisibility;
+
 	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
-	@ViewChild('tabbedPanel', { read: ElementRef }) private _tabbedPanelRef: ElementRef;
-	@ViewChild('titleContainer', { read: ElementRef }) private _titleContainer: ElementRef;
-	@ViewChild('tabList', { read: ElementRef }) private _tabList: ElementRef;
 	constructor( @Inject(forwardRef(() => NgZone)) private _zone: NgZone) {
 		super();
 	}
@@ -93,47 +92,7 @@ export class PanelComponent extends Disposable implements OnInit, OnChanges, OnD
 		this._mru = [];
 	}
 
-	ngAfterViewInit(): void {
-		if (!this.options.showTabsWhenOne ? this._tabs.length !== 1 : true) {
-			let container = this._titleContainer.nativeElement as HTMLElement;
-			let tabList = this._tabList.nativeElement as HTMLElement;
-			container.removeChild(tabList);
-
-			this._scrollableElement = new ScrollableElement(tabList, {
-				horizontal: ScrollbarVisibility.Auto,
-				vertical: ScrollbarVisibility.Hidden,
-				scrollYToX: true,
-				useShadows: false,
-				horizontalScrollbarSize: 3
-			});
-
-			this._scrollableElement.onScroll(e => {
-				tabList.scrollLeft = e.scrollLeft;
-			});
-
-			container.insertBefore(this._scrollableElement.getDomNode(), container.firstChild);
-
-			this._scrollableElement.setScrollDimensions({
-				width: tabList.offsetWidth,
-				scrollWidth: tabList.scrollWidth
-			});
-
-			this._register(addDisposableListener(window, EventType.RESIZE, () => {
-				// Todo: Need to set timeout because we have to make sure that the grids have already rearraged before the getContentHeight gets called.
-				setTimeout(() => {
-					this._scrollableElement.setScrollDimensions({
-						width: tabList.offsetWidth,
-						scrollWidth: tabList.scrollWidth
-					});
-				}, 100);
-			}));
-
-			if (this.options.layout === NavigationBarLayout.horizontal) {
-				(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(horizontalLayout);
-			} else {
-				(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(verticalLayout);
-			}
-		}
+	ngAfterContentInit(): void {
 		if (this._tabs && this._tabs.length > 0) {
 			this.selectTab(this._tabs.first);
 		} else {
@@ -211,12 +170,6 @@ export class PanelComponent extends Disposable implements OnInit, OnChanges, OnD
 				this._activeTab = tab;
 				this.setMostRecentlyUsed(tab);
 				this._activeTab.active = true;
-
-				// Make the tab header focus on the new selected tab
-				let activeTabHeader = this._headerTabs.find(i => i.tab === this._activeTab);
-				if (activeTabHeader) {
-					activeTabHeader.focusOnTabHeader();
-				}
 
 				this.onTabChange.emit(tab);
 			});

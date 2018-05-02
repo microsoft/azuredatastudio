@@ -18,13 +18,14 @@ import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.d
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 @Component({
 	selector: 'dashboard-home-container',
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardHomeContainer) }],
 	template: `
 		<div class="fullsize" style="display: flex; flex-direction: column">
-			<div scrollable>
+			<div scrollable [horizontalScroll]="ScrollbarVisibility.Hidden" [verticalScroll]="ScrollbarVisibility.Auto">
 				<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [_config]="properties"
 					style="padding-left: 10px; padding-right: 10px; display: block; flex: 0" [style.height.px]="_propertiesClass?.collapsed ? '30' : '90'">
 				</dashboard-widget-wrapper>
@@ -38,6 +39,8 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@Input() private properties: WidgetConfig;
 	@ViewChild('propertiesClass') private _propertiesClass: DashboardWidgetWrapper;
 	@ContentChild(ScrollableDirective) private _scrollable;
+
+	private ScrollbarVisibility = ScrollbarVisibility;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
