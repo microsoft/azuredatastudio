@@ -52,8 +52,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private currentEditCellValue: string;
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
-	private revertingRow: boolean;
-	private rowIdMappings: {[gridRowId: number]: number} = {};
+	private rowIdMappings: { [gridRowId: number]: number } = {};
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: { row: number, column: number }) => void;
@@ -204,16 +203,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		return (index: number): void => {
 			// Force focus to the first cell (completing any active edit operation)
 			self.focusCell(index, 0, false);
-
+			this.currentEditCellValue = null;
 			// Perform a revert row operation
 			self.dataService.revertRow(index)
 				.then(() => {
-					this.currentEditCellValue = null;
 					self.refreshResultsets();
-					setTimeout(() => {
-
-						this.revertingRow = false;
-					}, this.scrollTimeOutTime);
 				});
 		};
 	}
@@ -236,7 +230,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		let cellSelectTasks: Promise<void> = Promise.resolve();
 
-		if (this.currentCell.isEditable && this.currentEditCellValue !== null && !this.removingNewRow && !this.revertingRow) {
+		if (this.currentCell.isEditable && this.currentEditCellValue !== null && !this.removingNewRow) {
 			// We're exiting a read/write cell after having changed the value, update the cell value in the service
 			cellSelectTasks = cellSelectTasks.then(() => {
 				// Use the mapped row ID if we're on that row
@@ -246,18 +240,18 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, self.currentEditCellValue)
 					.then(
-						result => {
-							// Cell update was successful, update the flags
-							self.currentEditCellValue = null;
-							self.setCellDirtyState(row, self.currentCell.column, result.cell.isDirty);
-							self.setRowDirtyState(row, result.isRowDirty);
-							return Promise.resolve();
-						},
-						error => {
-							// Cell update failed, jump back to the last cell we were on
-							self.focusCell(self.currentCell.row, self.currentCell.column, true);
-							return Promise.reject(null);
-						}
+					result => {
+						// Cell update was successful, update the flags
+						self.currentEditCellValue = null;
+						self.setCellDirtyState(row, self.currentCell.column, result.cell.isDirty);
+						self.setRowDirtyState(row, result.isRowDirty);
+						return Promise.resolve();
+					},
+					error => {
+						// Cell update failed, jump back to the last cell we were on
+						self.focusCell(self.currentCell.row, self.currentCell.column, true);
+						return Promise.reject(null);
+					}
 					);
 			});
 		}
@@ -267,18 +261,18 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			cellSelectTasks = cellSelectTasks.then(() => {
 				return self.dataService.commitEdit()
 					.then(
-						result => {
-							// Committing was successful, clean the grid
-							self.setGridClean();
-							self.rowIdMappings = {};
-							self.newRowVisible = false;
-							return Promise.resolve();
-						},
-						error => {
-							// Committing failed, jump back to the last selected cell
-							self.focusCell(self.currentCell.row, self.currentCell.column);
-							return Promise.reject(null);
-						}
+					result => {
+						// Committing was successful, clean the grid
+						self.setGridClean();
+						self.rowIdMappings = {};
+						self.newRowVisible = false;
+						return Promise.resolve();
+					},
+					error => {
+						// Committing failed, jump back to the last selected cell
+						self.focusCell(self.currentCell.row, self.currentCell.column);
+						return Promise.reject(null);
+					}
 					);
 			});
 		}
@@ -302,7 +296,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		});
 
 		// Cap off any failed promises, since they'll be handled
-		cellSelectTasks.catch(() => {});
+		cellSelectTasks.catch(() => { });
 	}
 
 	handleComplete(self: EditDataComponent, event: any): void {
@@ -424,7 +418,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				});
 			handled = true;
 		} else if (e.keyCode === jQuery.ui.keyCode.ESCAPE) {
-			this. revertingRow= true;
+			this.currentEditCellValue = null;
 			this.onRevertRow()(this.currentCell.row);
 			handled = true;
 		}
@@ -527,7 +521,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		}, this.scrollTimeOutTime);
 	}
 
-	private focusCell(row: number, column: number, forceEdit: boolean=true): void {
+	private focusCell(row: number, column: number, forceEdit: boolean = true): void {
 		let slick: any = this.slickgrids.toArray()[0];
 		let grid = slick._grid;
 		grid.gotoCell(row, column, forceEdit);
