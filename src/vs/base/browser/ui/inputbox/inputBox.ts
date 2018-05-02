@@ -364,7 +364,8 @@ export class InputBox extends Widget {
 			}
 		}
 
-		return !result;
+		// {{SQL CARBON EDIT}} Canidate for addition to vscode
+		return result ? result.type !== MessageType.ERROR : true;
 	}
 
 	private stylesForType(type: MessageType): { border: Color; background: Color } {
