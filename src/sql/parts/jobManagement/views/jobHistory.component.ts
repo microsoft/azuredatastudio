@@ -302,4 +302,3 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		return this._stepRows;
 	}
 }
-

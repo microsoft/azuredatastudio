@@ -10,6 +10,7 @@ import 'vs/css!sql/parts/grid/media/slick.grid';
 import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
+import 'vs/css!sql/base/browser/ui/table/media/table';
 
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
@@ -34,6 +35,7 @@ import { AgentViewComponent } from '../agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { AgentJobUtilities } from '../common/agentJobUtilities';
+import { HeaderFilter } from '../../../base/browser/ui/table/plugins/headerFilter.plugin';
 
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
@@ -59,10 +61,11 @@ export class JobsViewComponent implements AfterContentChecked {
 		{ name: nls.localize('jobColumns.category','Category'), field: 'category', minWidth: 150, id: 'category' },
 		{ name: nls.localize('jobColumns.runnable','Runnable'), field: 'runnable', minWidth: 50, id: 'runnable' },
 		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', minWidth: 50, id: 'hasSchedule' },
-		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', minWidth: 150, id: 'lastRunOutcome' },
+		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', minWidth: 150, id: 'lastRunOutcome'},
 	];
 
 	private rowDetail: RowDetailView;
+	private filterPlugin: any;
 	private dataView: Slick.Data.DataView<any>;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
@@ -133,10 +136,11 @@ export class JobsViewComponent implements AfterContentChecked {
 			syncColumnCellResize: true,
 			enableColumnReorder: false,
 			rowHeight: 45,
-			enableCellNavigation: true
+			enableCellNavigation: true,
+			editable: true
 		};
 
-		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
+		this.dataView = new Slick.Data.DataView();
 
 		let rowDetail = new RowDetailView({
 			cssClass: '_detail_selector',
@@ -149,8 +153,9 @@ export class JobsViewComponent implements AfterContentChecked {
 			panelRows: 1
 		});
 		this.rowDetail = rowDetail;
-
 		columns.unshift(this.rowDetail.getColumnDefinition());
+		let filterPlugin = new HeaderFilter({}, this.bootstrapService.themeService);
+		this.filterPlugin = filterPlugin;
 		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
@@ -199,9 +204,25 @@ export class JobsViewComponent implements AfterContentChecked {
 		});
 		this.rowDetail.onAsyncEndUpdate.subscribe(function(e, args) {
 		});
+		this.filterPlugin.onFilterApplied.subscribe((e, args) => {
+			this.dataView.refresh();
+			this._table.grid.resetActiveCell();
+			let status;
+			if (this.dataView.getLength() ===  this.dataView.getItems().length) {
+				status = "";
+			} else {
+				status = this.dataView.getLength() + ' OF ' + this.dataView.getItems().length + ' RECORDS FOUND';
+			}
+			$('#status-label').text(status);
+		});
+		this.filterPlugin.onCommand.subscribe(function (e, args: any) {
+			this.dataView.fastSort(args.column.field, args.command === "sort-asc");
+		});
+		this._table.registerPlugin(<HeaderFilter>this.filterPlugin);
 
 		this.dataView.beginUpdate();
 		this.dataView.setItems(jobViews);
+		this.dataView.setFilter((e, args) => this.filter(e, args));
 		this.dataView.endUpdate();
 
 		this._table.resizeCanvas();
@@ -329,5 +350,40 @@ export class JobsViewComponent implements AfterContentChecked {
 		}
 		let job = this.jobs.filter(job => job.name === jobName)[0];
 		return job;
+	}
+
+	private curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
+		const self = this;
+		for (let i = 0; i < jobs.length; i++) {
+			let job = jobs[i];
+			this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
+				if (result && result.jobs) {
+					self.jobHistories[job.jobId] = result.jobs;
+					self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
+					if (self._agentViewComponent.expanded.has(job.jobId)) {
+						let jobHistory = self._jobCacheObject.getJobHistory(job.jobId)[result.jobs.length-1];
+						let item = self.dataView.getItemById(job.jobId + '.error');
+						let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
+						let errorMessage = jobHistory ? jobHistory.message: noStepsMessage;
+						item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
+						self._agentViewComponent.setExpanded(job.jobId, item['name']);
+						self.dataView.updateItem(job.jobId + '.error', item);
+					}
+				}
+			});
+		}
+	}
+
+	private filter(item: any, args: any) {
+		let columns = this._table.grid.getColumns();
+		let value = true;
+		for (let i = 0; i < columns.length; i++) {
+			let col: any = columns[i];
+			let filterValues = col.filterValues;
+			if (filterValues && filterValues.length > 0) {
+				value = value && _.contains(filterValues, item[col.field]);
+			}
+		}
+		return value;
 	}
 }

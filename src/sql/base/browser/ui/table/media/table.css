@@ -32,3 +32,113 @@
 	margin-left: 4px;
 	margin-top: 6px;
 }
+
+.slick-header-menubutton {
+    background-position: center center;
+    background-repeat: no-repeat;
+    bottom: 0;
+    cursor: pointer;
+    display: inline-block;
+    position: absolute;
+    right: 10px;
+    top: 0;
+    width: 18px;
+    background-image: url('down.svg');
+}
+
+.vs-dark .slick-header-menubutton {
+    background-image: url('down-inverse.svg');
+}
+
+.slick-header-menubutton.filtered {
+    background-image: url('filter.svg');
+}
+
+.vs-dark .slick-header-menubutton.filtered {
+    background-image: url('filter_inverse.svg');
+}
+
+.slick-header-menu {
+    background: none repeat scroll 0 0 white;
+    border: 1px solid #BFBDBD;
+    min-width: 175px;
+    padding: 4px;
+    z-index: 100000;
+    cursor: default;
+    display: inline-block;
+    margin: 0;
+    position: absolute;
+}
+
+.vs-dark .slick-header-menu {
+    background: none repeat scroll 0 0 #333333;
+}
+
+.slick-header-menu a.monaco-button.monaco-text-button {
+    width: 60px;
+    margin: 6px 6px 6px 6px;
+    padding: 4px;
+}
+
+.slick-header-menu .filter
+{
+    border: 1px solid #BFBDBD;
+    font-size: 8pt;
+    height: 400px;
+    margin-top: 6px;
+    overflow: scroll;
+    padding: 4px;
+    white-space: nowrap;
+    width: 200px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.slick-header-menuitem
+{
+    border: 1px solid transparent;
+    padding: 2px 4px;
+    cursor: pointer;
+    list-style: none outside none;
+    margin: 0;
+}
+
+.slick-header-menuicon
+{
+    display: inline-block;
+    height: 16px;
+    margin-right: 4px;
+    vertical-align: middle;
+    width: 16px;
+}
+
+.slick-header-menuicon.ascending {
+    background: url('sort-asc.gif');
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.slick-header-menuicon.descending {
+    background: url('sort-desc.gif');
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.slick-header-menucontent {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.slick-header-menuitem:hover {
+    border-color: #BFBDBD;
+}
+
+.header-overlay, .cell-overlay, .selection-cell-overlay {
+    display: block;
+    position: absolute;
+    z-index: 999;
+}
+
