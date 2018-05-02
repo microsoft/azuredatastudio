@@ -31,7 +31,6 @@ import { $ } from 'vs/base/browser/dom';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IEditorInput } from 'vs/platform/editor/common/editor';
@@ -48,6 +47,8 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 export class BootstrapService implements IBootstrapService {
 
@@ -127,7 +128,11 @@ export class BootstrapService implements IBootstrapService {
 		this._bootstrapParameterMap.set(uniqueSelectorString, params);
 
 		// Perform the bootsrap
-		let providers = [{ provide: BOOTSTRAP_SERVICE_ID, useValue: this }];
+		let providers = [
+			{ provide: BOOTSTRAP_SERVICE_ID, useValue: this },
+			{ provide: IWorkbenchThemeService, useValue: this.themeService },
+			{ provide: IContextViewService, useValue: this.contextViewService }
+		];
 
 		platformBrowserDynamic(providers).bootstrapModule(moduleType).then(moduleRef => {
 			if (input) {
