@@ -11,7 +11,7 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, NavSectionConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
-import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
+import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
@@ -23,7 +23,7 @@ import * as nls from 'vs/nls';
 
 @Component({
 	selector: 'dashboard-nav-section',
-	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardNavSection) }],
+	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardNavSection) }],
 	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/containers/dashboardNavSection.component.html'))
 })
 export class DashboardNavSection extends DashboardTab implements OnDestroy, OnChanges, AfterContentInit {
@@ -51,7 +51,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		dashboardHelper.validateGridConfig
 	];
 
-	@ViewChildren(DashboardTab) private _tabs: QueryList<DashboardTab>;
+	@ViewChildren(TabChild) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: CommonServiceInterface,
@@ -123,11 +123,6 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 				config.canClose = false;
 				this.addNewTab(config);
 				return config;
-			});
-
-			// put this immediately on the stack so that is ran *after* the tab is rendered
-			setTimeout(() => {
-				this._panel.selectTab(selectedTabs[0].id);
 			});
 		}
 	}

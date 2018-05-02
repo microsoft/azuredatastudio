@@ -10,7 +10,7 @@ import { Dimension } from 'vs/base/browser/builder';
 import { IInsightsView, IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { DragCellSelectionModel } from '../../../../../base/browser/ui/table/plugins/dragCellSelectionModel.plugin';
+import { DragCellSelectionModel } from 'sql/base/browser/ui/table/plugins/dragCellSelectionModel.plugin';
 
 @Component({
 	template: '<span></span>'
@@ -62,9 +62,9 @@ export default class TableInsight implements IInsightsView, OnInit {
 	}
 }
 
-function transformData(rows: string[][], columns: string[]): {[key: string]: string}[] {
+function transformData(rows: string[][], columns: string[]): { [key: string]: string }[] {
 	return rows.map(row => {
-		let object: {[key: string]: string} = {};
+		let object: { [key: string]: string } = {};
 		row.forEach((val, index) => {
 			object[columns[index]] = val;
 		});
