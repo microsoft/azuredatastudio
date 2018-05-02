@@ -111,7 +111,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			} else {
 				tree.setFocus(element, payload);
 				tree.setSelection([element], payload);
-					self.setStepsTree(element);
+				self.setStepsTree(element);
 			}
 			return true;
 		};
@@ -192,7 +192,8 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 
 	private setStepsTree(element: any) {
 		const self = this;
-		self.agentJobHistoryInfo = self._treeController.jobHistories.filter(history => history.instanceId === element.instanceID)[0];
+		self.agentJobHistoryInfo = self._treeController.jobHistories.find(
+			history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
 		if (self.agentJobHistoryInfo) {
 			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
 			if (self.agentJobHistoryInfo.steps) {
@@ -242,7 +243,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 
 	private convertToJobHistoryRow(historyInfo: AgentJobHistoryInfo): JobHistoryRow {
 		let jobHistoryRow = new JobHistoryRow();
-		jobHistoryRow.runDate = historyInfo.runDate;
+		jobHistoryRow.runDate = this.formatTime(historyInfo.runDate);
 		jobHistoryRow.runStatus = AgentJobUtilities.convertToStatusString(historyInfo.runStatus);
 		jobHistoryRow.instanceID = historyInfo.instanceId;
 		return jobHistoryRow;
