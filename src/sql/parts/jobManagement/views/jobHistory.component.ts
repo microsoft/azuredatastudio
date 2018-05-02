@@ -129,6 +129,18 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
 		}, {verticalScrollMode: ScrollbarVisibility.Visible});
+		let overview: HTMLElement = $('.overview-tab').get(0);
+		let monacoShell: HTMLElement = $('.monaco-shell').get(0);
+		overview.onkeydown = (e) => {
+			e.preventDefault();
+			e.stopPropagation();
+		};
+		monacoShell.onkeydown = (e) => {
+			if (e.code === 'Tab' || e.keyCode === 9) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		};
 		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 		this._tree.layout(1024);
 		this._initActionBar();
