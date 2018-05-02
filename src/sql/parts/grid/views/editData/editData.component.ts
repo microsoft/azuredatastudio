@@ -52,6 +52,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private currentEditCellValue: string;
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
+	private revertingRow: boolean;
 	private rowIdMappings: {[gridRowId: number]: number} = {};
 
 	// Edit Data functions
@@ -206,7 +207,14 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 			// Perform a revert row operation
 			self.dataService.revertRow(index)
-				.then(() => self.refreshResultsets());
+				.then(() => {
+					this.currentEditCellValue = null;
+					self.refreshResultsets();
+					setTimeout(() => {
+
+						this.revertingRow = false;
+					}, this.scrollTimeOutTime);
+				});
 		};
 	}
 
@@ -228,7 +236,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		let cellSelectTasks: Promise<void> = Promise.resolve();
 
-		if (this.currentCell.isEditable && this.currentEditCellValue !== null && !this.removingNewRow) {
+		if (this.currentCell.isEditable && this.currentEditCellValue !== null && !this.removingNewRow && !this.revertingRow) {
 			// We're exiting a read/write cell after having changed the value, update the cell value in the service
 			cellSelectTasks = cellSelectTasks.then(() => {
 				// Use the mapped row ID if we're on that row
@@ -414,6 +422,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					this.removeRow(currentNewRowIndex);
 					this.newRowVisible = false;
 				});
+			handled = true;
+		} else if (e.keyCode === jQuery.ui.keyCode.ESCAPE) {
+			this. revertingRow= true;
+			this.onRevertRow()(this.currentCell.row);
 			handled = true;
 		}
 		return handled;
