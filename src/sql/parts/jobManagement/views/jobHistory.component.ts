@@ -29,6 +29,8 @@ import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementServ
 import { AgentJobUtilities } from '../common/agentJobUtilities';
 import { ITreeOptions } from 'vs/base/parts/tree/browser/tree';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
+import { RunJobAction, StopJobAction } from 'sql/parts/jobManagement/views/jobHistoryActions';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -46,8 +48,10 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _treeDataSource: JobHistoryDataSource;
 	private _treeRenderer: JobHistoryRenderer;
 	private _treeFilter: JobHistoryFilter;
+	private _actionBar: Taskbar;
 
 	@ViewChild('table') private _tableContainer: ElementRef;
+	@ViewChild('actionbarContainer') private _actionbarContainer: ElementRef;
 
 	@Input() public agentJobInfo: AgentJobInfo = undefined;
 	@Input() public agentJobHistories: AgentJobHistoryInfo[] = undefined;
@@ -127,6 +131,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		}, {verticalScrollMode: ScrollbarVisibility.Visible});
 		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 		this._tree.layout(1024);
+		this._initActionBar();
 	}
 
 	ngAfterContentChecked() {
@@ -200,7 +205,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 					stepViewRow.stepID = step.stepId.toString();
 					return stepViewRow;
 				});
-				this._showSteps = true;
+				this._showSteps = self._stepRows.length > 0;
 			} else {
 				this._showSteps = false;
 			}
@@ -230,38 +235,6 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		}
 	}
 
-	private jobAction(action: string, jobName: string): void {
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		const self = this;
-		this._jobManagementService.jobAction(ownerUri, jobName, action).then(result => {
-			if (result.succeeded) {
-				switch (action) {
-					case ('run'):
-						var startMsg = localize('jobSuccessfullyStarted', 'The job was successfully started.');
-						self._notificationService.notify({
-							severity: Severity.Info,
-							message: startMsg
-						});
-						break;
-					case ('stop'):
-						var stopMsg = localize('jobSuccessfullyStopped', 'The job was successfully stopped.');
-						self._notificationService.notify({
-							severity: Severity.Info,
-							message: stopMsg
-						});
-						break;
-					default:
-						break;
-				}
-			} else {
-				self._notificationService.notify({
-					severity: Severity.Error,
-					message: result.errorMessage
-				});
-			}
-		});
-	}
-
 	private goToJobs(): void {
 		this._isVisible = false;
 		this._agentViewComponent.showHistory = false;
@@ -284,22 +257,45 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	}
 
 	private setActions(): void {
-		let startIcon: HTMLElement = $('.icon-start').get(0);
-		let stopIcon: HTMLElement = $('.icon-stop').get(0);
+		let startIcon: HTMLElement = $('.action-label.icon.runJobIcon').get(0);
+		let stopIcon: HTMLElement = $('.action-label.icon.stopJobIcon').get(0);
 		AgentJobUtilities.getActionIconClassName(startIcon, stopIcon, this.agentJobInfo.currentExecutionStatus);
 	}
+
+
+	private _initActionBar() {
+		let runJobAction = this.bootstrapService.instantiationService.createInstance(RunJobAction);
+		let stopJobAction = this.bootstrapService.instantiationService.createInstance(StopJobAction);
+		let taskbar = <HTMLElement>this._actionbarContainer.nativeElement;
+		this._actionBar = new Taskbar(taskbar, this.bootstrapService.contextMenuService);
+		this._actionBar.context = this;
+		this._actionBar.setContent([
+			{ action: runJobAction },
+			{ action: stopJobAction }
+		]);
+	}
+
+	/** GETTERS  */
 
 	public get showSteps(): boolean {
 		return this._showSteps;
 	}
+
+	public get stepRows() {
+		return this._stepRows;
+	}
+
+	public get ownerUri(): string {
+		return this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+	}
+
+	/** SETTERS */
 
 	public set showSteps(value: boolean) {
 		this._showSteps = value;
 		this._cd.detectChanges();
 	}
 
-	public get stepRows() {
-		return this._stepRows;
-	}
+
 }
 

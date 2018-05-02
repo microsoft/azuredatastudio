@@ -15,14 +15,7 @@
  </div>
 
 <!-- Actions -->
-<ul class="action-buttons">
-	<li>
-		<div class="icon-start" (click)="jobAction('run', this._agentJobInfo.name)">Run</div>
-	</li>
-	<li>
-		<div class="icon-stop" (click)="jobAction('stop', this._.agentJobInfo.name)">Stop</div>
-	</li>
-</ul>
+<div #actionbarContainer class="actionbar-container"></div>
 
 <!-- Overview  -->
  <div class="overview-container">
