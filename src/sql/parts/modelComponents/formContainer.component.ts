@@ -21,6 +21,7 @@ export interface TitledFormItemLayout {
 	title: string;
 	actions?: string[];
 	isFormComponent: Boolean;
+	horizontal: boolean;
 }
 class FormItem {
 	constructor(public descriptor: IComponentDescriptor, public config: TitledFormItemLayout) { }
@@ -32,17 +33,36 @@ class FormItem {
 				[style.alignItems]="alignItems" [style.alignContent]="alignContent">
 			<div *ngFor="let item of items" class="form-row">
 				<ng-container *ngIf="isFormComponent(item)">
-					<div class="form-cell">{{getItemTitle(item)}}</div>
-					<div class="form-cell">
-						<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
-						</model-component-wrapper>
-					</div>
-					<div *ngIf="itemHasActions(item)" class="form-cell">
-						<div *ngFor="let actionItem of getActionComponents(item)" >
-							<model-component-wrapper  [descriptor]="actionItem.descriptor" [modelStore]="modelStore">
+					<ng-container *ngIf="isHorizontal(item)">
+						<div class="form-cell">{{getItemTitle(item)}}</div>
+						<div class="form-cell">
+							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 							</model-component-wrapper>
 						</div>
-					</div>
+						<div *ngIf="itemHasActions(item)" class="form-cell">
+							<div class="form-actions-table">
+								<div *ngFor="let actionItem of getActionComponents(item)" class="form-cell" >
+									<model-component-wrapper  [descriptor]="actionItem.descriptor" [modelStore]="modelStore">
+									</model-component-wrapper>
+								</div>
+							</div>
+						</div>
+					</ng-container>
+					<ng-container *ngIf="isVertical(item)">
+						<div class="form-item-row form-item-title">{{getItemTitle(item)}}</div>
+						<div class="form-item-row">
+							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
+							</model-component-wrapper>
+						</div>
+						<div *ngIf="itemHasActions(item)" class="form-actions-table">
+
+							<div *ngFor="let actionItem of getActionComponents(item)" class="form-actions-cell" >
+								<model-component-wrapper  [descriptor]="actionItem.descriptor" [modelStore]="modelStore">
+								</model-component-wrapper>
+							</div>
+
+						</div>
+					</ng-container>
 				</ng-container>
 			</div>
 		</div>
@@ -58,9 +78,9 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	@ViewChildren(ModelComponentWrapper) private _componentWrappers: QueryList<ModelComponentWrapper>;
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
-	constructor (
-			@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
-		 	@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
+	constructor(
+		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
 		super(changeRef);
 	}
 
@@ -98,7 +118,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		return itemConfig ? itemConfig.title : '';
 	}
 
-	private getActionComponents(item: FormItem): FormItem[]{
+	private getActionComponents(item: FormItem): FormItem[] {
 		let items = this.items;
 		let itemConfig = item.config;
 		if (itemConfig && itemConfig.actions) {
@@ -124,5 +144,13 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 
 	public setLayout(layout: any): void {
 		this.layout();
+	}
+
+	private isHorizontal(item: FormItem): boolean {
+		return item && item.config && item.config.horizontal;
+	}
+
+	private isVertical(item: FormItem): boolean {
+		return item && item.config && !item.config.horizontal;
 	}
 }
