@@ -25,7 +25,7 @@ export class RunJobAction extends Action {
 		@INotificationService private notificationService: INotificationService,
 		@IJobManagementService private jobManagementService: IJobManagementService
 	) {
-		super(RunJobAction.ID, RunJobAction.LABEL, 'runJob');
+		super(RunJobAction.ID, RunJobAction.LABEL, 'runJobIcon');
 	}
 
 	public run(context: JobHistoryComponent): TPromise<boolean> {
@@ -60,7 +60,7 @@ export class StopJobAction extends Action {
 		@INotificationService private notificationService: INotificationService,
 		@IJobManagementService private jobManagementService: IJobManagementService
 	) {
-		super(StopJobAction.ID, StopJobAction.LABEL, 'stopJob');
+		super(StopJobAction.ID, StopJobAction.LABEL, 'stopJobIcon');
 	}
 
 	public run(context: JobHistoryComponent): TPromise<boolean> {

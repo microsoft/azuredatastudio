@@ -257,8 +257,8 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	}
 
 	private setActions(): void {
-		let startIcon: HTMLElement = $('.runJob').get(0);
-		let stopIcon: HTMLElement = $('.stopJob').get(0);
+		let startIcon: HTMLElement = $('.action-label.icon.runJobIcon').get(0);
+		let stopIcon: HTMLElement = $('.action-label.icon.stopJobIcon').get(0);
 		AgentJobUtilities.getActionIconClassName(startIcon, stopIcon, this.agentJobInfo.currentExecutionStatus);
 	}
 

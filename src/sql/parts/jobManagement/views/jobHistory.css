@@ -109,25 +109,25 @@ input#accordion:checked ~ .accordion-content {
 	content: url('../common/media/back_inverse.svg');
 }
 
-.vs .action-label.icon.runJob,
-.vs-dark .action-label.icon.runJob,
-.hc-black .action-label.icon.runJob {
+.vs .action-label.icon.runJobIcon,
+.vs-dark .action-label.icon.runJobIcon,
+.hc-black .action-label.icon.runJobIcon {
 	background-image: url('../common/media/start.svg');
 	padding-right: 5px;
 }
 
-.vs .action-label.icon.stopJob,
-.vs-dark .action-label.icon.stopJob,
-.hc-black .action-label.icon.stopJob {
+.vs .action-label.icon.stopJobIcon,
+.vs-dark .action-label.icon.stopJobIcon,
+.hc-black .action-label.icon.stopJobIcon {
 	background-image: url('../common/media/stop.svg');
 }
 
-a.action-label.icon.runJob.non-runnable {
+a.action-label.icon.runJobIcon.non-runnable {
 	opacity: 0.4;
 	cursor: default;
 }
 
-a.action-label.icon.stopJob.non-runnable {
+a.action-label.icon.stopJobIcon.non-runnable {
 	opacity: 0.4;
 	cursor: default;
 }

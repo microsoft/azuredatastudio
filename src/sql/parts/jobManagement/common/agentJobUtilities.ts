@@ -9,8 +9,8 @@ import * as nls from 'vs/nls';
 
 export class AgentJobUtilities {
 
-	public static startIconClass: string = 'icon-start';
-	public static stopIconClass: string = 'icon-stop';
+	public static startIconClass: string = 'action-label icon runJobIcon';
+	public static stopIconClass: string = 'action-label icon stopJobIcon';
 
 	public static convertToStatusString(status: number): string {
 		switch(status) {
