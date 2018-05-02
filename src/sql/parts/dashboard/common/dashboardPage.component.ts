@@ -17,7 +17,7 @@ import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
-import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
+import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { AngularEventType } from 'sql/services/angularEventing/angularEventingService';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
@@ -61,7 +61,7 @@ export abstract class DashboardPage extends AngularDisposable {
 	private _tabsDispose: Array<IDisposable> = [];
 	private _tabSettingConfigs: Array<TabSettingConfig> = [];
 
-	@ViewChildren(DashboardTab) private _tabs: QueryList<DashboardTab>;
+	@ViewChildren(TabChild) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 
 	private _editEnabled = new Emitter<boolean>();
@@ -310,10 +310,10 @@ export abstract class DashboardPage extends AngularDisposable {
 	}
 
 	public handleTabChange(tab: TabComponent): void {
+		this._cd.detectChanges();
 		let localtab = this._tabs.find(i => i.id === tab.identifier);
 		this._editEnabled.fire(localtab.editable);
 		this._cd.detectChanges();
-		localtab.layout();
 	}
 
 	public handleTabClose(tab: TabComponent): void {

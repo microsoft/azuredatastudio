@@ -14,12 +14,14 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularEventType } from 'sql/services/angularEventing/angularEventingService';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
-import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
+import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+
+import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
 @Component({
 	selector: 'dashboard-home-container',
-	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardHomeContainer) }],
+	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardHomeContainer) }],
 	template: `
 		<div class="fullsize" style="display: flex; flex-direction: column">
 			<div scrollable>
@@ -63,6 +65,8 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 
 	public layout() {
 		super.layout();
-		this._scrollable.layout();
+		if (this._scrollable) {
+			this._scrollable.layout();
+		}
 	}
 }

@@ -46,7 +46,6 @@ let idPool = 0;
 @Component({
 	selector: 'panel',
 	template: `
-
 		<div class="tabbedPanel fullsize" #tabbedPanel>
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title" #titleContainer>
 				<div class="tabList" #tabList role="tablist">
@@ -67,7 +66,7 @@ let idPool = 0;
 		</div>
 	`
 })
-export class PanelComponent extends Disposable implements AfterContentInit, OnInit, OnChanges, OnDestroy, AfterViewInit {
+export class PanelComponent extends Disposable implements OnInit, OnChanges, OnDestroy, AfterViewInit {
 	@Input() public options: IPanelOptions;
 	@Input() public actions: Array<Action>;
 	@ContentChildren(TabComponent) private _tabs: QueryList<TabComponent>;
@@ -92,13 +91,6 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 	ngOnInit(): void {
 		this.options = mixin(this.options || {}, defaultOptions, false);
 		this._mru = [];
-	}
-
-	ngAfterContentInit(): void {
-		if (this._tabs && this._tabs.length > 0) {
-			this._activeTab = this._tabs.first;
-			this._activeTab.active = true;
-		}
 	}
 
 	ngAfterViewInit(): void {
@@ -141,6 +133,16 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 			} else {
 				(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(verticalLayout);
 			}
+		}
+		if (this._tabs && this._tabs.length > 0) {
+			this.selectTab(this._tabs.first);
+		} else {
+			const sub = this._tabs.changes.subscribe(() => {
+				if (this._tabs && this._tabs.length > 0) {
+					this.selectTab(this._tabs.first);
+					sub.unsubscribe();
+				}
+			});
 		}
 	}
 
