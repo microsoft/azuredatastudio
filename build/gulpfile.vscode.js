@@ -540,9 +540,11 @@ gulp.task('vscode-translations-import', function () {
 		gulp.src(`../vscode-localization/${language.id}/build/*/*.xlf`)
 			.pipe(i18n.prepareI18nFiles())
 			.pipe(vfs.dest(`./i18n/${language.folderName}`));
-		gulp.src(`../vscode-localization/${language.id}/setup/*/*.xlf`)
-			.pipe(i18n.prepareIslFiles(language, innoSetupConfig[language.id]))
-			.pipe(vfs.dest(`./build/win32/i18n`));
+
+		// {{SQL CARBON EDIT}}
+		// gulp.src(`../vscode-localization/${language.id}/setup/*/*.xlf`)
+		// 	.pipe(i18n.prepareIslFiles(language, innoSetupConfig[language.id]))
+		// 	.pipe(vfs.dest(`./build/win32/i18n`));
 	});
 });
 

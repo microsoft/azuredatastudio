@@ -20,11 +20,12 @@ export class ConfigureLocaleAction extends Action {
 	public static readonly ID = 'workbench.action.configureLocale';
 	public static readonly LABEL = localize('configureLocale', "Configure Language");
 
+	// {{SQL CARBON EDIT}}
 	private static DEFAULT_CONTENT: string = [
 		'{',
-		`\t// ${localize('displayLanguage', 'Defines VSCode\'s display language.')}`,
+		`\t// ${localize('displayLanguage', 'Defines SQL Operations Studio\'s display language.')}`,
 		`\t// ${localize('doc', 'See {0} for a list of supported languages.', 'https://go.microsoft.com/fwlink/?LinkId=761051')}`,
-		`\t// ${localize('restart', 'Changing the value requires restarting VSCode.')}`,
+		`\t// ${localize('restart', 'Changing the value requires restarting SQL Operations Studio.')}`,
 		`\t"locale":"${language}"`,
 		'}'
 	].join('\n');

@@ -332,6 +332,10 @@ export class InsightsDialogView extends Modal {
 		this._taskButtonDisposables = [];
 	}
 
+	protected onClose(e: StandardKeyboardEvent) {
+		this.close();
+	}
+
 	private hasActions(): boolean {
 		return !!(this._insight && this._insight.actions && this._insight.actions.types
 			&& this._insight.actions.types.length > 0);
