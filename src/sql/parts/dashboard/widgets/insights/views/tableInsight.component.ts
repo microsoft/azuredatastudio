@@ -62,9 +62,9 @@ export default class TableInsight implements IInsightsView, OnInit {
 	}
 }
 
-function transformData(rows: string[][], columns: string[]): {[key: string]: string}[] {
+function transformData(rows: string[][], columns: string[]): { [key: string]: string }[] {
 	return rows.map(row => {
-		let object: {[key: string]: string} = {};
+		let object: { [key: string]: string } = {};
 		row.forEach((val, index) => {
 			object[columns[index]] = val;
 		});
