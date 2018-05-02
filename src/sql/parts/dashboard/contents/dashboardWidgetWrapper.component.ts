@@ -156,6 +156,14 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			return;
 		}
 
+		// If _config.name is not set, set it to _config.widget.name
+		if (!this._config.name) {
+			let widget = Object.values(this._config.widget)[0];
+			if (widget.name) {
+				this._config.name = widget.name;
+			}
+		}
+
 		let componentFactory = this._componentFactoryResolver.resolveComponentFactory(selector);
 
 		let viewContainerRef = this.componentHost.viewContainerRef;
