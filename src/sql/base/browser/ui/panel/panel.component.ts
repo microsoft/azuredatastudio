@@ -7,13 +7,13 @@ import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwar
 
 import { TabComponent } from './tab.component';
 import { TabHeaderComponent } from './tabHeader.component';
+import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
 import './panelStyles';
 
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';
 import { mixin } from 'vs/base/common/objects';
-import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -46,11 +46,13 @@ let idPool = 0;
 @Component({
 	selector: 'panel',
 	template: `
-		<div class="tabbedPanel fullsize" #tabbedPanel>
+		<div class="tabbedPanel fullsize" [ngClass]="options.layout === NavigationBarLayout.vertical ? 'vertical' : 'horizontal'">
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
-				<div class="tabList" role="tablist" scrollable [horizontalScroll]="ScrollbarVisibility.Auto" [verticalScroll]="ScrollbarVisibility.Hidden">
-					<div *ngFor="let tab of _tabs">
-						<tab-header [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'> </tab-header>
+				<div class="tabContainer">
+					<div class="tabList" role="tablist" scrollable [horizontalScroll]="ScrollbarVisibility.Auto" [verticalScroll]="ScrollbarVisibility.Hidden" [scrollYToX]="true">
+						<div *ngFor="let tab of _tabs">
+							<tab-header [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'> </tab-header>
+						</div>
 					</div>
 				</div>
 				<div class="title-actions">
@@ -66,11 +68,12 @@ let idPool = 0;
 		</div>
 	`
 })
-export class PanelComponent extends Disposable implements OnInit, OnChanges, OnDestroy {
+export class PanelComponent extends Disposable {
 	@Input() public options: IPanelOptions;
 	@Input() public actions: Array<Action>;
 	@ContentChildren(TabComponent) private _tabs: QueryList<TabComponent>;
 	@ViewChildren(TabHeaderComponent) private _headerTabs: QueryList<TabHeaderComponent>;
+	@ViewChild(ScrollableDirective) private scrollable: ScrollableDirective;
 
 	@Output() public onTabChange = new EventEmitter<TabComponent>();
 	@Output() public onTabClose = new EventEmitter<TabComponent>();
@@ -78,9 +81,9 @@ export class PanelComponent extends Disposable implements OnInit, OnChanges, OnD
 	private _activeTab: TabComponent;
 	private _actionbar: ActionBar;
 	private _mru: TabComponent[];
-	private _scrollableElement: ScrollableElement;
 
 	private ScrollbarVisibility = ScrollbarVisibility;
+	private NavigationBarLayout = NavigationBarLayout;
 
 	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 	constructor( @Inject(forwardRef(() => NgZone)) private _zone: NgZone) {
@@ -112,6 +115,17 @@ export class PanelComponent extends Disposable implements OnInit, OnChanges, OnD
 		if (this.actions && this._actionbar) {
 			this._actionbar.clear();
 			this._actionbar.push(this.actions, { icon: true, label: false });
+		}
+	}
+
+	ngAfterViewInit(): void {
+		this._tabs.changes.subscribe(() => {
+			if (this.scrollable) {
+				this.scrollable.layout();
+			}
+		});
+		if (this.scrollable) {
+			this.scrollable.layout();
 		}
 	}
 

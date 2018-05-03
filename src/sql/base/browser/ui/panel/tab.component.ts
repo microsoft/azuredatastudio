@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Component, Input, ContentChild, OnDestroy, TemplateRef } from '@angular/core';
+import { Component, Input, ContentChild, OnDestroy, TemplateRef, ChangeDetectorRef, forwardRef, Inject } from '@angular/core';
 
 import { Action } from 'vs/base/common/actions';
 
@@ -30,11 +30,16 @@ export class TabComponent implements OnDestroy {
 	@Input() private visibilityType: 'if' | 'visibility' = 'if';
 	private rendered = false;
 
+	constructor(
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef
+	) { }
+
 	public set active(val: boolean) {
 		this._active = val;
 		if (this.active) {
 			this.rendered = true;
 		}
+		this._cd.detectChanges();
 		if (this.active && this._child) {
 			this._child.layout();
 		}

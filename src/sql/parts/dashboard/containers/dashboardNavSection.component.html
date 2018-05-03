@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<panel [options]="panelOpt" style="flex: 1 1 auto;" class="dashboard-panel" (onTabChange)="handleTabChange($event)">
+<panel [options]="panelOpt" style="flex: 1 1 auto;" class="dashboard-panel">
 	<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
 	[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions" [iconClass]="tab.iconClass">
 		<ng-template>

@@ -150,6 +150,10 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		this.initChart();
 	}
 
+	ngAfterViewInit() {
+		this.initChart();
+	}
+
 	setConfigValue(key: string, value: any, refresh = true): void {
 		this._chartConfig[key] = value;
 		if (refresh) {

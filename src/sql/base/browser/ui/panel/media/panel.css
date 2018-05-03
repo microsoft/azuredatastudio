@@ -21,6 +21,12 @@ panel {
 .tabbedPanel .composite.title {
 	display: flex;
 	flex: 0 0 auto;
+	position: relative;
+}
+
+.tabbedPanel .tabContainer {
+	flex: 1 1 auto;
+	overflow: hidden;
 }
 
 .tabbedPanel .tabList {
@@ -31,6 +37,7 @@ panel {
 	line-height: 35px;
 	white-space: nowrap;
 	flex: 1;
+	height: 100%;
 }
 
 .tabbedPanel .tabList .tab {
@@ -97,16 +104,16 @@ panel {
 }
 
 .composite.title .title-actions {
-	flex: 1 1 auto;
+	flex: 0 0 auto;
 }
 
 .tab > .tabLabel.active {
 	border-bottom: 1px solid;
 }
 
-.composite.title ~ tab.fullsize > :first-child {
+/* .composite.title ~ tab.fullsize > :first-child {
 	height: calc(100% - 38px);
-}
+} */
 
 .tabbedPanel .title-actions .panel-actions .actions-container {
 	justify-content: flex-start;
