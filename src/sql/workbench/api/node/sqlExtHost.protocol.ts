@@ -7,21 +7,25 @@
 import {
 	createMainContextProxyIdentifier as createMainId,
 	createExtHostContextProxyIdentifier as createExtId,
-	ProxyIdentifier, IThreadService
-} from 'vs/workbench/services/thread/common/threadService';
-
-import * as data from 'data';
+	ProxyIdentifier, IRPCProtocol } from 'vs/workbench/services/extensions/node/proxyIdentifier';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
+import * as sqlops from 'sqlops';
+import * as vscode from 'vscode';
+
+import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import Event, { Emitter } from 'vs/base/common/event';
+
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
-	$clear(handle: number, accountKey: data.AccountKey): Thenable<void> { throw ni(); }
-	$getSecurityToken(handle: number, account: data.Account): Thenable<{}> { throw ni(); }
-	$initialize(handle: number, restoredAccounts: data.Account[]): Thenable<data.Account[]> { throw ni(); }
-	$prompt(handle: number): Thenable<data.Account> { throw ni(); }
-	$refresh(handle: number, account: data.Account): Thenable<data.Account> { throw ni(); }
+	$clear(handle: number, accountKey: sqlops.AccountKey): Thenable<void> { throw ni(); }
+	$getSecurityToken(handle: number, account: sqlops.Account): Thenable<{}> { throw ni(); }
+	$initialize(handle: number, restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> { throw ni(); }
+	$prompt(handle: number): Thenable<sqlops.Account> { throw ni(); }
+	$refresh(handle: number, account: sqlops.Account): Thenable<sqlops.Account> { throw ni(); }
 }
 
 export abstract class ExtHostConnectionManagementShape { }
@@ -31,7 +35,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Establish a connection to a data source using the provided ConnectionInfo instance.
 	 */
-	$connect(handle: number, connectionUri: string, connection: data.ConnectionInfo): Thenable<boolean> { throw ni(); }
+	$connect(handle: number, connectionUri: string, connection: sqlops.ConnectionInfo): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Disconnect from a data source using the provided connectionUri string.
@@ -53,7 +57,7 @@ export abstract class ExtHostDataProtocolShape {
 	 * @param handle the handle to use when looking up a provider
 	 * @param connectionUri URI identifying a connected resource
 	 */
-	$listDatabases(handle: number, connectionUri: string): Thenable<data.ListDatabasesResult> { throw ni(); }
+	$listDatabases(handle: number, connectionUri: string): Thenable<sqlops.ListDatabasesResult> { throw ni(); }
 
 	/**
 	 * Notifies all listeners on the Extension Host side that a language change occurred
@@ -61,63 +65,65 @@ export abstract class ExtHostDataProtocolShape {
 	 * and other events
 	 * @param params information on what URI was changed and the new language
 	 */
-	$languageFlavorChanged(params: data.DidChangeLanguageFlavorParams): void { throw ni(); }
+	$languageFlavorChanged(params: sqlops.DidChangeLanguageFlavorParams): void { throw ni(); }
 
 	/**
 	 * Callback when a connection request has completed
 	 */
-	$onConnectComplete(handle: number, connectionInfoSummary: data.ConnectionInfoSummary): void { throw ni(); }
+	$onConnectComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void { throw ni(); }
 
 	/**
 	 * Callback when a IntelliSense cache has been built
 	 */
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void { throw ni(); }
 
-	$getServerCapabilities(handle: number, client: data.DataProtocolClientCapabilities): Thenable<data.DataProtocolServerCapabilities> { throw ni(); }
+	$getServerCapabilities(handle: number, client: sqlops.DataProtocolClientCapabilities): Thenable<sqlops.DataProtocolServerCapabilities> { throw ni(); }
 
 	/**
 	 * Metadata service methods
 	 *
 	 */
-	$getMetadata(handle: number, connectionUri: string): Thenable<data.ProviderMetadata> { throw ni(); }
+	$getMetadata(handle: number, connectionUri: string): Thenable<sqlops.ProviderMetadata> { throw ni(); }
 
 	$getDatabases(handle: number, connectionUri: string): Thenable<string[]> { throw ni(); }
 
-	$getTableInfo(handle: number, connectionUri: string, metadata: data.ObjectMetadata): Thenable<data.ColumnMetadata[]> { throw ni(); }
+	$getTableInfo(handle: number, connectionUri: string, metadata: sqlops.ObjectMetadata): Thenable<sqlops.ColumnMetadata[]> { throw ni(); }
 
-	$getViewInfo(handle: number, connectionUri: string, metadata: data.ObjectMetadata): Thenable<data.ColumnMetadata[]> { throw ni(); }
+	$getViewInfo(handle: number, connectionUri: string, metadata: sqlops.ObjectMetadata): Thenable<sqlops.ColumnMetadata[]> { throw ni(); }
 
 	/**
 	 * Object Explorer
 	 */
-	$createObjectExplorerSession(handle: number, connInfo: data.ConnectionInfo): Thenable<data.ObjectExplorerSessionResponse> { throw ni(); }
+	$createObjectExplorerSession(handle: number, connInfo: sqlops.ConnectionInfo): Thenable<sqlops.ObjectExplorerSessionResponse> { throw ni(); }
 
-	$expandObjectExplorerNode(handle: number, nodeInfo: data.ExpandNodeInfo): Thenable<boolean> { throw ni(); }
+	$expandObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> { throw ni(); }
 
-	$refreshObjectExplorerNode(handle: number, nodeInfo: data.ExpandNodeInfo): Thenable<boolean> { throw ni(); }
+	$refreshObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> { throw ni(); }
 
-	$closeObjectExplorerSession(handle: number, closeSessionInfo: data.ObjectExplorerCloseSessionInfo): Thenable<data.ObjectExplorerCloseSessionResponse> { throw ni(); }
+	$closeObjectExplorerSession(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> { throw ni(); }
+
+	$findNodes(handle: number, findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> { throw ni(); }
 
 	/**
 	 * Tasks
 	 */
-	$getAllTasks(handle: number, listTasksParams: data.ListTasksParams): Thenable<data.ListTasksResponse> { throw ni(); }
-	$cancelTask(handle: number, cancelTaskParams: data.CancelTaskParams): Thenable<boolean> { throw ni(); }
+	$getAllTasks(handle: number, listTasksParams: sqlops.ListTasksParams): Thenable<sqlops.ListTasksResponse> { throw ni(); }
+	$cancelTask(handle: number, cancelTaskParams: sqlops.CancelTaskParams): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Scripting methods
 	 */
-	$scriptAsOperation(handle: number, connectionUri: string, operation: data.ScriptOperation, metadata: data.ObjectMetadata, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> { throw ni(); }
+	$scriptAsOperation(handle: number, connectionUri: string, operation: sqlops.ScriptOperation, metadata: sqlops.ObjectMetadata, paramDetails: sqlops.ScriptingParamDetails): Thenable<sqlops.ScriptingResult> { throw ni(); }
 
 	/**
 	 * Cancels the currently running query for a URI
 	 */
-	$cancelQuery(handle: number, ownerUri: string): Thenable<data.QueryCancelResult> { throw ni(); }
+	$cancelQuery(handle: number, ownerUri: string): Thenable<sqlops.QueryCancelResult> { throw ni(); }
 
 	/**
 	 * Runs a query for a text selection inside a document
 	 */
-	$runQuery(handle: number, ownerUri: string, selection: data.ISelectionData, runOptions?: data.ExecutionPlanOptions): Thenable<void> { throw ni(); }
+	$runQuery(handle: number, ownerUri: string, selection: sqlops.ISelectionData, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void> { throw ni(); }
 	/**
 	 * Runs the current SQL statement query for a text document
 	 */
@@ -129,11 +135,11 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Runs a query for a provided query and returns result
 	 */
-	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Thenable<data.SimpleExecuteResult> { throw ni(); }
+	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> { throw ni(); }
 	/**
 	 * Gets a subset of rows in a result set in order to display in the UI
 	 */
-	$getQueryRows(handle: number, rowData: data.QueryExecuteSubsetParams): Thenable<data.QueryExecuteSubsetResult> { throw ni(); }
+	$getQueryRows(handle: number, rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> { throw ni(); }
 
 	/**
 	 * Disposes the cached information regarding a query
@@ -148,29 +154,29 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Callback when a query has completed
 	 */
-	$onQueryComplete(handle: number, result: data.QueryExecuteCompleteNotificationResult): void { throw ni(); }
+	$onQueryComplete(handle: number, result: sqlops.QueryExecuteCompleteNotificationResult): void { throw ni(); }
 	/**
 	 * Callback when a batch has started. This enables the UI to display when batch execution has started
 	 */
-	$onBatchStart(handle: number, batchInfo: data.QueryExecuteBatchNotificationParams): void { throw ni(); }
+	$onBatchStart(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void { throw ni(); }
 	/**
 	 * Callback when a batch is complete. This includes updated information on result sets, time to execute, and
 	 * other relevant batch information
 	 */
-	$onBatchComplete(handle: number, batchInfo: data.QueryExecuteBatchNotificationParams): void { throw ni(); }
+	$onBatchComplete(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void { throw ni(); }
 	/**
 	 * Callback when a result set has been returned from query execution and can be displayed
 	 */
-	$onResultSetComplete(handle: number, resultSetInfo: data.QueryExecuteResultSetCompleteNotificationParams): void { throw ni(); }
+	$onResultSetComplete(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void { throw ni(); }
 	/**
 	 * Callback when a message generated during query execution is issued
 	 */
-	$onQueryMessage(handle: number, message: data.QueryExecuteMessageParams): void { throw ni(); }
+	$onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void { throw ni(); }
 
 	/**
 	 * Requests saving of the results from a result set into a specific format (CSV, JSON, Excel)
 	 */
-	$saveResults(handle: number, requestParams: data.SaveResultsRequestParams): Thenable<data.SaveResultRequestResult> { throw ni(); }
+	$saveResults(handle: number, requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult> { throw ni(); }
 
 	/**
 	 * Commits all pending edits in an edit session
@@ -180,7 +186,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Creates a new row in the edit session
 	 */
-	$createRow(handle: number, ownerUri: string): Thenable<data.EditCreateRowResult> { throw ni(); }
+	$createRow(handle: number, ownerUri: string): Thenable<sqlops.EditCreateRowResult> { throw ni(); }
 
 	/**
 	 * Marks the selected row for deletion in the edit session
@@ -195,7 +201,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Reverts any pending changes for the requested cell and returns the original value
 	 */
-	$revertCell(handle: number, ownerUri: string, rowId: number, columnId: number): Thenable<data.EditRevertCellResult> { throw ni(); }
+	$revertCell(handle: number, ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult> { throw ni(); }
 
 	/**
 	 * Reverts any pending changes for the requested row
@@ -205,12 +211,12 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Updates a cell value in the requested row. Returns if there are any corrections to the value
 	 */
-	$updateCell(handle: number, ownerUri: string, rowId: number, columId: number, newValue: string): Thenable<data.EditUpdateCellResult> { throw ni(); }
+	$updateCell(handle: number, ownerUri: string, rowId: number, columId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult> { throw ni(); }
 
 	/**
 	 * Gets a subset of rows in a result set, merging pending edit changes in order to display in the UI
 	 */
-	$getEditRows(handle: number, rowData: data.EditSubsetParams): Thenable<data.EditSubsetResult> { throw ni(); }
+	$getEditRows(handle: number, rowData: sqlops.EditSubsetParams): Thenable<sqlops.EditSubsetResult> { throw ni(); }
 
 	/**
 	 * Diposes an initialized edit session and cleans up pending edits
@@ -220,52 +226,52 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Create a new database on the provided connection
 	 */
-	$createDatabase(handle: number, connectionUri: string, database: data.DatabaseInfo): Thenable<data.CreateDatabaseResponse> { throw ni(); }
+	$createDatabase(handle: number, connectionUri: string, database: sqlops.DatabaseInfo): Thenable<sqlops.CreateDatabaseResponse> { throw ni(); }
 
 	/**
 	 * Get the default database prototype
 	 */
-	$getDefaultDatabaseInfo(handle: number, connectionUri: string): Thenable<data.DatabaseInfo> { throw ni(); }
+	$getDefaultDatabaseInfo(handle: number, connectionUri: string): Thenable<sqlops.DatabaseInfo> { throw ni(); }
 
 	/**
 	 * Get the database info
 	 */
-	$getDatabaseInfo(handle: number, connectionUri: string): Thenable<data.DatabaseInfo> { throw ni(); }
+	$getDatabaseInfo(handle: number, connectionUri: string): Thenable<sqlops.DatabaseInfo> { throw ni(); }
 
 	/**
 	 * Create a new login on the provided connection
 	 */
-	$createLogin(handle: number, connectionUri: string, login: data.LoginInfo): Thenable<data.CreateLoginResponse> { throw ni(); }
+	$createLogin(handle: number, connectionUri: string, login: sqlops.LoginInfo): Thenable<sqlops.CreateLoginResponse> { throw ni(); }
 
 	/**
 	 * Backup a database
 	 */
-	$backup(handle: number, connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: data.TaskExecutionMode): Thenable<data.BackupResponse> { throw ni(); }
+	$backup(handle: number, connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.BackupResponse> { throw ni(); }
 
 	/**
 	 * Get the extended database prototype
 	 */
-	$getBackupConfigInfo(handle: number, connectionUri: string): Thenable<data.BackupConfigInfo> { throw ni(); }
+	$getBackupConfigInfo(handle: number, connectionUri: string): Thenable<sqlops.BackupConfigInfo> { throw ni(); }
 
 	/**
 	 * Restores a database
 	 */
-	$restore(handle: number, connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestoreResponse> { throw ni(); }
+	$restore(handle: number, connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<sqlops.RestoreResponse> { throw ni(); }
 
 	/**
 	 * Gets a plan for restoring a database
 	 */
-	$getRestorePlan(handle: number, connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<data.RestorePlanResponse> { throw ni(); }
+	$getRestorePlan(handle: number, connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<sqlops.RestorePlanResponse> { throw ni(); }
 
 	/**
 	 * Cancels a plan
 	 */
-	$cancelRestorePlan(handle: number, connectionUri: string, restoreInfo: data.RestoreInfo): Thenable<boolean> { throw ni(); }
+	$cancelRestorePlan(handle: number, connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Gets restore config Info
 	 */
-	$getRestoreConfigInfo(handle: number, connectionUri: string): Thenable<data.RestoreConfigInfo> { throw ni(); }
+	$getRestoreConfigInfo(handle: number, connectionUri: string): Thenable<sqlops.RestoreConfigInfo> { throw ni(); }
 
 
 	/**
@@ -287,7 +293,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Close file browser
 	 */
-	$closeFileBrowser(handle: number, ownerUri: string): Thenable<data.FileBrowserCloseResponse> { throw ni(); }
+	$closeFileBrowser(handle: number, ownerUri: string): Thenable<sqlops.FileBrowserCloseResponse> { throw ni(); }
 
 	/**
 	 * Profiler Provider methods
@@ -302,8 +308,23 @@ export abstract class ExtHostDataProtocolShape {
 	 * Stop a profiler session
 	 */
 	$stopSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
-}
 
+
+	/**
+	 * Get Agent Job list
+	 */
+	$getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult>{ throw ni(); }
+
+	/**
+	 * Get a Agent Job's history
+	 */
+	$getJobHistory(handle: number, ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>{ throw ni(); }
+
+	/**
+	 * Run an action on a Job
+	 */
+	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult>{ throw ni(); }
+}
 
 /**
  * ResourceProvider extension host class.
@@ -312,12 +333,12 @@ export abstract class ExtHostResourceProviderShape {
 	/**
 	 * Create a firewall rule
 	 */
-	$createFirewallRule(handle: number, account: data.Account, firewallRuleInfo: data.FirewallRuleInfo): Thenable<data.CreateFirewallRuleResponse> { throw ni(); }
+	$createFirewallRule(handle: number, account: sqlops.Account, firewallRuleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> { throw ni(); }
 
 	/**
 	 * Handle firewall rule
 	 */
-	$handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<data.HandleFirewallRuleResponse> { throw ni(); }
+	$handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> { throw ni(); }
 
 }
 
@@ -327,7 +348,7 @@ export abstract class ExtHostResourceProviderShape {
 export abstract class ExtHostCredentialManagementShape {
 	$saveCredential(credentialId: string, password: string): Thenable<boolean> { throw ni(); }
 
-	$readCredential(credentialId: string): Thenable<data.Credential> { throw ni(); }
+	$readCredential(credentialId: string): Thenable<sqlops.Credential> { throw ni(); }
 
 	$deleteCredential(credentialId: string): Thenable<boolean> { throw ni(); }
 }
@@ -336,21 +357,21 @@ export abstract class ExtHostCredentialManagementShape {
  * Serialization provider extension host class.
  */
 export abstract class ExtHostSerializationProviderShape {
-	$saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<data.SaveResultRequestResult> { throw ni(); }
+	$saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> { throw ni(); }
 }
 
 export interface MainThreadAccountManagementShape extends IDisposable {
-	$registerAccountProvider(providerMetadata: data.AccountProviderMetadata, handle: number): Thenable<any>;
+	$registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, handle: number): Thenable<any>;
 	$unregisterAccountProvider(handle: number): Thenable<any>;
 
 	$beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void>;
 	$endAutoOAuthDeviceCode(): void;
 
-	$accountUpdated(updatedAccount: data.Account): void;
+	$accountUpdated(updatedAccount: sqlops.Account): void;
 }
 
 export interface MainThreadResourceProviderShape extends IDisposable {
-	$registerResourceProvider(providerMetadata: data.ResourceProviderMetadata, handle: number): Thenable<any>;
+	$registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, handle: number): Thenable<any>;
 	$unregisterResourceProvider(handle: number): Thenable<any>;
 }
 
@@ -367,24 +388,25 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerFileBrowserProvider(providerId: string, handle: number): TPromise<any>;
 	$registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any>;
 	$registerAdminServicesProvider(providerId: string, handle: number): TPromise<any>;
+	$registerAgentServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$unregisterProvider(handle: number): TPromise<any>;
-	$onConnectionComplete(handle: number, connectionInfoSummary: data.ConnectionInfoSummary): void;
+	$onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
-	$onConnectionChangeNotification(handle: number, changedConnInfo: data.ChangedConnectionInfo): void;
-	$onQueryComplete(handle: number, result: data.QueryExecuteCompleteNotificationResult): void;
-	$onBatchStart(handle: number, batchInfo: data.QueryExecuteBatchNotificationParams): void;
-	$onBatchComplete(handle: number, batchInfo: data.QueryExecuteBatchNotificationParams): void;
-	$onResultSetComplete(handle: number, resultSetInfo: data.QueryExecuteResultSetCompleteNotificationParams): void;
-	$onQueryMessage(handle: number, message: data.QueryExecuteMessageParams): void;
-	$onObjectExplorerSessionCreated(handle: number, message: data.ObjectExplorerSession): void;
-	$onObjectExplorerNodeExpanded(handle: number, message: data.ObjectExplorerExpandInfo): void;
-	$onTaskCreated(handle: number, sessionResponse: data.TaskInfo): void;
-	$onTaskStatusChanged(handle: number, sessionResponse: data.TaskProgressInfo): void;
-	$onFileBrowserOpened(handle: number, response: data.FileBrowserOpenedParams): void;
-	$onFolderNodeExpanded(handle: number, response: data.FileBrowserExpandedParams): void;
-	$onFilePathsValidated(handle: number, response: data.FileBrowserValidatedParams): void;
-	$onScriptingComplete(handle: number, message: data.ScriptingCompleteResult): void;
-	$onSessionEventsAvailable(handle: number, response: data.ProfilerSessionEvents): void;
+	$onConnectionChangeNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo): void;
+	$onQueryComplete(handle: number, result: sqlops.QueryExecuteCompleteNotificationResult): void;
+	$onBatchStart(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
+	$onBatchComplete(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
+	$onResultSetComplete(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void;
+	$onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void;
+	$onObjectExplorerSessionCreated(handle: number, message: sqlops.ObjectExplorerSession): void;
+	$onObjectExplorerNodeExpanded(handle: number, message: sqlops.ObjectExplorerExpandInfo): void;
+	$onTaskCreated(handle: number, sessionResponse: sqlops.TaskInfo): void;
+	$onTaskStatusChanged(handle: number, sessionResponse: sqlops.TaskProgressInfo): void;
+	$onFileBrowserOpened(handle: number, response: sqlops.FileBrowserOpenedParams): void;
+	$onFolderNodeExpanded(handle: number, response: sqlops.FileBrowserExpandedParams): void;
+	$onFilePathsValidated(handle: number, response: sqlops.FileBrowserValidatedParams): void;
+	$onScriptingComplete(handle: number, message: sqlops.ScriptingCompleteResult): void;
+	$onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void;
 
 	/**
 	 * Callback when a session has completed initialization
@@ -393,8 +415,8 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 }
 
 export interface MainThreadConnectionManagementShape extends IDisposable {
-	$getActiveConnections(): Thenable<data.connection.Connection[]>;
-	$getCurrentConnection(): Thenable<data.connection.Connection>;
+	$getActiveConnections(): Thenable<sqlops.connection.Connection[]>;
+	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 }
 
@@ -418,10 +440,16 @@ export const SqlMainContext = {
 	MainThreadConnectionManagement: createMainId<MainThreadConnectionManagementShape>('MainThreadConnectionManagement'),
 	MainThreadCredentialManagement: createMainId<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
 	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
+	MainThreadObjectExplorer: createMainId<MainThreadObjectExplorerShape>('MainThreadObjectExplorer'),
 	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
 	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
-	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview')
+	MainThreadTasks: createMainId<MainThreadTasksShape>('MainThreadTasks'),
+	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview'),
+	MainThreadModelView: createMainId<MainThreadModelViewShape>('MainThreadModelView'),
+	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard'),
+	MainThreadModelViewDialog: createMainId<MainThreadModelViewDialogShape>('MainThreadModelViewDialog'),
+	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
 };
 
 export const SqlExtHostContext = {
@@ -429,11 +457,26 @@ export const SqlExtHostContext = {
 	ExtHostConnectionManagement: createExtId<ExtHostConnectionManagementShape>('ExtHostConnectionManagement'),
 	ExtHostCredentialManagement: createExtId<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
 	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
+	ExtHostObjectExplorer: createExtId<ExtHostObjectExplorerShape>('ExtHostObjectExplorer'),
 	ExtHostSerializationProvider: createExtId<ExtHostSerializationProviderShape>('ExtHostSerializationProvider'),
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
-	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews')
+	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks'),
+	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
+	ExtHostModelView: createExtId<ExtHostModelViewShape>('ExtHostModelView'),
+	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
+	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
+	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor')
 };
+
+export interface MainThreadDashboardShape extends IDisposable {
+
+}
+
+export interface ExtHostDashboardShape {
+	$onDidOpenDashboard(dashboard: sqlops.DashboardDocument): void;
+	$onDidChangeToDashboard(dashboard: sqlops.DashboardDocument): void;
+}
 
 export interface MainThreadModalDialogShape extends IDisposable {
 	$createDialog(handle: number): void;
@@ -449,15 +492,74 @@ export interface ExtHostModalDialogsShape {
 	$onClosed(handle: number): void;
 }
 
+export interface ExtHostTasksShape {
+	$executeContributedTask<T>(id: string, ...args: any[]): Thenable<T>;
+	$getContributedTaskHandlerDescriptions(): TPromise<{ [id: string]: string | ITaskHandlerDescription }>;
+}
+
+export interface MainThreadTasksShape extends IDisposable {
+	$registerTask(id: string): TPromise<any>;
+	$unregisterTask(id: string): TPromise<any>;
+}
+
 export interface ExtHostDashboardWebviewsShape {
-	$registerProvider(widgetId: string, handler: (webview: data.DashboardWebview) => void): void;
+	$registerProvider(widgetId: string, handler: (webview: sqlops.DashboardWebview) => void): void;
 	$onMessage(handle: number, message: any): void;
 	$onClosed(handle: number): void;
-	$registerWidget(handle: number, id: string, connection: data.connection.Connection, serverInfo: data.ServerInfo): void;
+	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
 }
 
 export interface MainThreadDashboardWebviewShape extends IDisposable {
 	$sendMessage(handle: number, message: string);
 	$registerProvider(widgetId: string);
 	$setHtml(handle: number, value: string);
+}
+
+export interface ExtHostModelViewShape {
+	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void): void;
+	$onClosed(handle: number): void;
+	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
+	$handleEvent(handle: number, id: string, eventArgs: any);
+}
+
+export interface MainThreadModelViewShape extends IDisposable {
+	$registerProvider(id: string): void;
+	$initializeModel(handle: number, rootComponent: IComponentShape): Thenable<void>;
+	$clearContainer(handle: number, componentId: string): Thenable<void>;
+	$addToContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
+	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
+	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
+	$registerEvent(handle: number, componentId: string):  Thenable<void>;
+}
+
+export interface ExtHostObjectExplorerShape {
+}
+
+export interface MainThreadObjectExplorerShape extends IDisposable {
+	$getNode(connectionId: string, nodePath?: string): Thenable<sqlops.NodeInfo>;
+	$getActiveConnectionNodes(): Thenable<{ nodeInfo: sqlops.NodeInfo, connectionId: string}[]>;
+	$setExpandedState(connectionId: string, nodePath: string, expandedState: vscode.TreeItemCollapsibleState): Thenable<void>;
+	$setSelected(connectionId: string, nodePath: string, selected: boolean, clearOtherSelections?: boolean): Thenable<void>;
+	$getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]>;
+	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
+	$findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
+}
+
+export interface ExtHostModelViewDialogShape {
+	$onButtonClick(handle: number): void;
+}
+
+export interface MainThreadModelViewDialogShape extends IDisposable {
+	$open(handle: number): Thenable<void>;
+	$close(handle: number): Thenable<void>;
+	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
+	$setTabDetails(handle: number, details: IModelViewTabDetails): Thenable<void>;
+	$setButtonDetails(handle: number, details: IModelViewButtonDetails): Thenable<void>;
+}
+export interface ExtHostQueryEditorShape {
+}
+
+export interface MainThreadQueryEditorShape extends IDisposable {
+	$connect(fileUri: string, connectionId: string): Thenable<void>;
+	$runQuery(fileUri: string): void;
 }

@@ -23,9 +23,8 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { IPartService, Parts, Position as PartPosition, Dimension } from 'vs/workbench/services/part/common/partService';
 import { TextModelResolverService } from 'vs/workbench/services/textmodelResolver/common/textModelResolverService';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
-import { IEditorInput, IEditorOptions, Position, Direction, IEditor, IResourceInput } from 'vs/platform/editor/common/editor';
+import { IEditorInput, IEditorOptions, Position, IEditor, IResourceInput } from 'vs/platform/editor/common/editor';
 import { IUntitledEditorService, UntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
-import { IMessageService, IConfirmation, IConfirmationResult, IChoiceService } from 'vs/platform/message/common/message';
 import { IWorkspaceContextService, IWorkspace as IWorkbenchWorkspace, WorkbenchState, IWorkspaceFolder, IWorkspaceFoldersChangeEvent } from 'vs/platform/workspace/common/workspace';
 import { ILifecycleService, ShutdownEvent, ShutdownReason, StartupKind, LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { EditorStacksModel } from 'vs/workbench/common/editor/editorStacksModel';
@@ -33,7 +32,7 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { IEditorGroupService, GroupArrangement, GroupOrientation, IEditorTabOptions, IMoveOptions } from 'vs/workbench/services/group/common/groupService';
 import { TextFileService } from 'vs/workbench/services/textfile/common/textFileService';
-import { FileOperationEvent, IFileService, IResolveContentOptions, FileOperationError, IFileStat, IResolveFileResult, IImportResult, FileChangesEvent, IResolveFileOptions, IContent, IUpdateContentOptions, IStreamContent, ICreateFileOptions } from 'vs/platform/files/common/files';
+import { FileOperationEvent, IFileService, IResolveContentOptions, FileOperationError, IFileStat, IResolveFileResult, IImportResult, FileChangesEvent, IResolveFileOptions, IContent, IUpdateContentOptions, IStreamContent, ICreateFileOptions, ITextSnapshot } from 'vs/platform/files/common/files';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { ModeServiceImpl } from 'vs/editor/common/services/modeServiceImpl';
 import { ModelServiceImpl } from 'vs/editor/common/services/modelServiceImpl';
@@ -41,13 +40,13 @@ import { IRawTextContent, ITextFileService } from 'vs/workbench/services/textfil
 import { parseArgs } from 'vs/platform/environment/node/argv';
 import { EnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { IModeService } from 'vs/editor/common/services/modeService';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IWorkbenchEditorService, ICloseEditorsFilter } from 'vs/workbench/services/editor/common/editorService';
 import { IHistoryService } from 'vs/workbench/services/history/common/history';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { IWindowsService, IWindowService, INativeOpenDialogOptions, IEnterWorkspaceResult, IMessageBoxResult, IWindowConfiguration } from 'vs/platform/windows/common/windows';
 import { TestWorkspace } from 'vs/platform/workspace/test/common/testWorkspace';
-import { RawTextSource, IRawTextSource } from 'vs/editor/common/model/textSource';
+import { createTextBufferFactory } from 'vs/editor/common/model/textModel';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isLinux } from 'vs/base/common/platform';
@@ -59,6 +58,12 @@ import { ITextResourceConfigurationService } from 'vs/editor/common/services/res
 import { IPosition, Position as EditorPosition } from 'vs/editor/common/core/position';
 import { ICommandAction } from 'vs/platform/actions/common/actions';
 import { IHashService } from 'vs/workbench/services/hash/common/hashService';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { ITextBufferFactory, DefaultEndOfLine, EndOfLinePreference } from 'vs/editor/common/model';
+import { Range } from 'vs/editor/common/core/range';
+import { IChoiceService, IConfirmation, IConfirmationResult, IConfirmationService } from 'vs/platform/dialogs/common/dialogs';
+import { INotificationService, INotificationHandle, INotification, NoOpNotification, IPromptChoice } from 'vs/platform/notification/common/notification';
 
 export function createFileInput(instantiationService: IInstantiationService, resource: URI): FileEditorInput {
 	return instantiationService.createInstance(FileEditorInput, resource, void 0);
@@ -172,12 +177,14 @@ export class TestTextFileService extends TextFileService {
 		@IFileService fileService: IFileService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IMessageService messageService: IMessageService,
+		@INotificationService notificationService: INotificationService,
 		@IBackupFileService backupFileService: IBackupFileService,
 		@IWindowsService windowsService: IWindowsService,
-		@IHistoryService historyService: IHistoryService
+		@IHistoryService historyService: IHistoryService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IModelService modelService: IModelService
 	) {
-		super(lifecycleService, contextService, configurationService, fileService, untitledEditorService, instantiationService, messageService, TestEnvironmentService, backupFileService, windowsService, historyService);
+		super(lifecycleService, contextService, configurationService, fileService, untitledEditorService, instantiationService, notificationService, TestEnvironmentService, backupFileService, windowsService, historyService, contextKeyService, modelService);
 	}
 
 	public setPromptPath(path: string): void {
@@ -200,26 +207,24 @@ export class TestTextFileService extends TextFileService {
 			return TPromise.wrapError<IRawTextContent>(error);
 		}
 
-		return this.fileService.resolveContent(resource, options).then((content) => {
-			const textSource = RawTextSource.fromString(content.value);
-			return <IRawTextContent>{
+		return this.fileService.resolveContent(resource, options).then((content): IRawTextContent => {
+			return {
 				resource: content.resource,
 				name: content.name,
 				mtime: content.mtime,
 				etag: content.etag,
 				encoding: content.encoding,
-				value: textSource,
-				valueLogicalHash: null
+				value: createTextBufferFactory(content.value)
 			};
 		});
 	}
 
-	public promptForPath(defaultPath: string): string {
-		return this.promptPath;
+	public promptForPath(defaultPath: string): TPromise<string> {
+		return TPromise.wrap(this.promptPath);
 	}
 
-	public confirmSave(resources?: URI[]): ConfirmResult {
-		return this.confirmResult;
+	public confirmSave(resources?: URI[]): TPromise<ConfirmResult> {
+		return TPromise.wrap(this.confirmResult);
 	}
 
 	public onFilesConfigurationChange(configuration: any): void {
@@ -234,6 +239,7 @@ export class TestTextFileService extends TextFileService {
 
 export function workbenchInstantiationService(): IInstantiationService {
 	let instantiationService = new TestInstantiationService(new ServiceCollection([ILifecycleService, new TestLifecycleService()]));
+	instantiationService.stub(IContextKeyService, <IContextKeyService>instantiationService.createInstance(MockContextKeyService));
 	instantiationService.stub(IWorkspaceContextService, new TestContextService(TestWorkspace));
 	const configService = new TestConfigurationService();
 	instantiationService.stub(IConfigurationService, configService);
@@ -249,7 +255,7 @@ export function workbenchInstantiationService(): IInstantiationService {
 	instantiationService.stub(IFileService, new TestFileService());
 	instantiationService.stub(IBackupFileService, new TestBackupFileService());
 	instantiationService.stub(ITelemetryService, NullTelemetryService);
-	instantiationService.stub(IMessageService, new TestMessageService());
+	instantiationService.stub(INotificationService, new TestNotificationService());
 	instantiationService.stub(IUntitledEditorService, instantiationService.createInstance(UntitledEditorService));
 	instantiationService.stub(IWindowsService, new TestWindowsService());
 	instantiationService.stub(ITextFileService, <ITextFileService>instantiationService.createInstance(TestTextFileService));
@@ -304,32 +310,39 @@ export class TestHistoryService implements IHistoryService {
 	}
 }
 
-export class TestMessageService implements IMessageService {
+export class TestNotificationService implements INotificationService {
 
 	public _serviceBrand: any;
 
-	private counter: number;
+	private static readonly NO_OP: INotificationHandle = new NoOpNotification();
 
-	constructor() {
-		this.counter = 0;
+	public info(message: string): INotificationHandle {
+		return this.notify({ severity: Severity.Info, message });
 	}
 
-	public show(sev: Severity, message: any): () => void {
-		this.counter++;
-
-		return null;
+	public warn(message: string): INotificationHandle {
+		return this.notify({ severity: Severity.Warning, message });
 	}
 
-	public getCounter() {
-		return this.counter;
+	public error(error: string | Error): INotificationHandle {
+		return this.notify({ severity: Severity.Error, message: error });
 	}
 
-	public hideAll(): void {
-		// No-op
+	public notify(notification: INotification): INotificationHandle {
+		return TestNotificationService.NO_OP;
 	}
 
-	public confirm(confirmation: IConfirmation): boolean {
-		return false;
+	public prompt(severity: Severity, message: string, choices: IPromptChoice[], onCancel?: () => void): INotificationHandle {
+		return TestNotificationService.NO_OP;
+	}
+}
+
+export class TestConfirmationService implements IConfirmationService {
+
+	public _serviceBrand: any;
+
+	public confirm(confirmation: IConfirmation): TPromise<boolean> {
+		return TPromise.wrap(false);
 	}
 
 	public confirmWithCheckbox(confirmation: IConfirmation): Promise<IConfirmationResult> {
@@ -423,6 +436,10 @@ export class TestPartService implements IPartService {
 	public getWorkbenchElementId(): string { return ''; }
 
 	public toggleZenMode(): void { }
+
+	public isEditorLayoutCentered(): boolean { return false; }
+	public toggleCenteredEditorLayout(): void { }
+
 
 	public resizePart(part: Parts, sizeChange: number): void { }
 }
@@ -584,12 +601,14 @@ export class TestEditorService implements IWorkbenchEditorService {
 	public activeEditorOptions: IEditorOptions;
 	public activeEditorPosition: Position;
 	public mockLineNumber: number;
+	public mockSelectedText: string;
 
 	private callback: (method: string) => void;
 
 	constructor(callback?: (method: string) => void) {
 		this.callback = callback || ((s: string) => { });
 		this.mockLineNumber = 15;
+		this.mockSelectedText = 'selected text';
 	}
 
 	public openEditors(inputs: any[]): Promise {
@@ -600,11 +619,12 @@ export class TestEditorService implements IWorkbenchEditorService {
 		return TPromise.as([]);
 	}
 
-	public closeEditors(position: Position, filter?: { except?: IEditorInput, direction?: Direction, unmodifiedOnly?: boolean }): TPromise<void> {
-		return TPromise.as(null);
-	}
-
-	public closeAllEditors(except?: Position): TPromise<void> {
+	public closeEditors(positions?: Position[]): TPromise<void>;
+	public closeEditors(position: Position, filter?: ICloseEditorsFilter): TPromise<void>;
+	public closeEditors(position: Position, editors: IEditorInput[]): TPromise<void>;
+	public closeEditors(editors: { positionOne?: ICloseEditorsFilter, positionTwo?: ICloseEditorsFilter, positionThree?: ICloseEditorsFilter }): TPromise<void>;
+	public closeEditors(editors: { positionOne?: IEditorInput[], positionTwo?: IEditorInput[], positionThree?: IEditorInput[] }): TPromise<void>;
+	public closeEditors(positionOrEditors: any, filterOrEditors?: any): TPromise<void> {
 		return TPromise.as(null);
 	}
 
@@ -618,7 +638,8 @@ export class TestEditorService implements IWorkbenchEditorService {
 			getId: () => { return null; },
 			getControl: () => {
 				return {
-					getSelection: () => { return { positionLineNumber: this.mockLineNumber }; }
+					getSelection: () => { return { positionLineNumber: this.mockLineNumber }; },
+					getModel: () => { return { getValueInRange: () => this.mockSelectedText }; }
 				};
 			},
 			focus: () => { },
@@ -704,7 +725,6 @@ export class TestFileService implements IFileService {
 			encoding: 'utf8',
 			mtime: Date.now(),
 			isDirectory: false,
-			hasChildren: false,
 			name: paths.basename(resource.fsPath)
 		});
 	}
@@ -748,7 +768,7 @@ export class TestFileService implements IFileService {
 		});
 	}
 
-	updateContent(resource: URI, value: string, options?: IUpdateContentOptions): TPromise<IFileStat> {
+	updateContent(resource: URI, value: string | ITextSnapshot, options?: IUpdateContentOptions): TPromise<IFileStat> {
 		return TPromise.timeout(1).then(() => {
 			return {
 				resource,
@@ -756,7 +776,6 @@ export class TestFileService implements IFileService {
 				encoding: 'utf8',
 				mtime: Date.now(),
 				isDirectory: false,
-				hasChildren: false,
 				name: paths.basename(resource.fsPath)
 			};
 		});
@@ -831,7 +850,7 @@ export class TestBackupFileService implements IBackupFileService {
 	public loadBackupResource(resource: URI): TPromise<URI> {
 		return this.hasBackup(resource).then(hasBackup => {
 			if (hasBackup) {
-				return this.getBackupResource(resource);
+				return this.toBackupResource(resource);
 			}
 
 			return void 0;
@@ -846,11 +865,11 @@ export class TestBackupFileService implements IBackupFileService {
 		return TPromise.as(void 0);
 	}
 
-	public getBackupResource(resource: URI): URI {
+	public toBackupResource(resource: URI): URI {
 		return null;
 	}
 
-	public backupResource(resource: URI, content: string): TPromise<void> {
+	public backupResource(resource: URI, content: ITextSnapshot): TPromise<void> {
 		return TPromise.as(void 0);
 	}
 
@@ -858,8 +877,15 @@ export class TestBackupFileService implements IBackupFileService {
 		return TPromise.as([]);
 	}
 
-	public parseBackupContent(rawText: IRawTextSource): string {
-		return rawText.lines.join('\n');
+	public parseBackupContent(textBufferFactory: ITextBufferFactory): string {
+		const textBuffer = textBufferFactory.create(DefaultEndOfLine.LF);
+		const lineCount = textBuffer.getLineCount();
+		const range = new Range(1, 1, lineCount, textBuffer.getLineLength(lineCount) + 1);
+		return textBuffer.getValueInRange(range, EndOfLinePreference.TextDefined);
+	}
+
+	public resolveBackupContent(backup: URI): TPromise<ITextBufferFactory> {
+		return TPromise.as(null);
 	}
 
 	public discardResourceBackup(resource: URI): TPromise<void> {
@@ -961,20 +987,16 @@ export class TestWindowService implements IWindowService {
 		return TPromise.as(void 0);
 	}
 
-	showMessageBox(options: Electron.MessageBoxOptions): number {
-		return 0;
+	showMessageBox(options: Electron.MessageBoxOptions): TPromise<IMessageBoxResult> {
+		return TPromise.wrap({ button: 0 });
 	}
 
-	showMessageBoxWithCheckbox(options: Electron.MessageBoxOptions): Promise<IMessageBoxResult> {
-		return TPromise.as(void 0);
+	showSaveDialog(options: Electron.SaveDialogOptions): TPromise<string> {
+		return TPromise.wrap(void 0);
 	}
 
-	showSaveDialog(options: Electron.SaveDialogOptions): string {
-		return void 0;
-	}
-
-	showOpenDialog(options: Electron.OpenDialogOptions): string[] {
-		return void 0;
+	showOpenDialog(options: Electron.OpenDialogOptions): TPromise<string[]> {
+		return TPromise.wrap(void 0);
 	}
 
 	updateTouchBar(items: ICommandAction[][]): Promise<void> {
@@ -1196,6 +1218,22 @@ export class TestWindowsService implements IWindowsService {
 
 	// TODO: this is a bit backwards
 	startCrashReporter(config: Electron.CrashReporterStartOptions): TPromise<void> {
+		return TPromise.as(void 0);
+	}
+
+	showMessageBox(windowId: number, options: Electron.MessageBoxOptions): TPromise<IMessageBoxResult> {
+		return TPromise.as(void 0);
+	}
+
+	showSaveDialog(windowId: number, options: Electron.SaveDialogOptions): TPromise<string> {
+		return TPromise.as(void 0);
+	}
+
+	showOpenDialog(windowId: number, options: Electron.OpenDialogOptions): TPromise<string[]> {
+		return TPromise.as(void 0);
+	}
+
+	openAboutDialog(): TPromise<void> {
 		return TPromise.as(void 0);
 	}
 }

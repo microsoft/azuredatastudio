@@ -176,8 +176,14 @@ class Renderer implements IRenderer<ICompletionItem, ISuggestionTemplateData> {
 	}
 
 	disposeTemplate(templateData: ISuggestionTemplateData): void {
-		templateData.highlightedLabel.dispose();
-		templateData.disposables = dispose(templateData.disposables);
+		// {{SQL CARBON EDIT}}
+		if (templateData.highlightedLabel) {
+			templateData.highlightedLabel.dispose();
+		}
+		// {{SQL CARBON EDIT}}
+		if (templateData.disposables) {
+			templateData.disposables = dispose(templateData.disposables);
+		}
 	}
 }
 
@@ -335,9 +341,15 @@ class SuggestionDetails {
 	}
 }
 
+export interface ISelectedSuggestion {
+	item: ICompletionItem;
+	index: number;
+	model: CompletionModel;
+}
+
 export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>, IDisposable {
 
-	private static ID: string = 'editor.widget.suggestWidget';
+	private static readonly ID: string = 'editor.widget.suggestWidget';
 
 	static LOADING_MESSAGE: string = nls.localize('suggestWidget.loading', "Loading...");
 	static NO_SUGGESTIONS_MESSAGE: string = nls.localize('suggestWidget.noSuggestions', "No suggestions.");
@@ -359,6 +371,7 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 	private listElement: HTMLElement;
 	private details: SuggestionDetails;
 	private list: List<ICompletionItem>;
+	private listHeight: number;
 
 	private suggestWidgetVisible: IContextKey<boolean>;
 	private suggestWidgetMultipleSuggestions: IContextKey<boolean>;
@@ -368,14 +381,14 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 	private showTimeout: TPromise<void>;
 	private toDispose: IDisposable[];
 
-	private onDidSelectEmitter = new Emitter<ICompletionItem>();
-	private onDidFocusEmitter = new Emitter<ICompletionItem>();
+	private onDidSelectEmitter = new Emitter<ISelectedSuggestion>();
+	private onDidFocusEmitter = new Emitter<ISelectedSuggestion>();
 	private onDidHideEmitter = new Emitter<this>();
 	private onDidShowEmitter = new Emitter<this>();
 
 
-	readonly onDidSelect: Event<ICompletionItem> = this.onDidSelectEmitter.event;
-	readonly onDidFocus: Event<ICompletionItem> = this.onDidFocusEmitter.event;
+	readonly onDidSelect: Event<ISelectedSuggestion> = this.onDidSelectEmitter.event;
+	readonly onDidFocus: Event<ISelectedSuggestion> = this.onDidFocusEmitter.event;
 	readonly onDidHide: Event<this> = this.onDidHideEmitter.event;
 	readonly onDidShow: Event<this> = this.onDidShowEmitter.event;
 
@@ -499,13 +512,12 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 		}
 
 		const item = e.elements[0];
+		const index = e.indexes[0];
 		item.resolve().then(() => {
-			this.onDidSelectEmitter.fire(item);
+			this.onDidSelectEmitter.fire({ item, index, model: this.completionModel });
+			alert(nls.localize('suggestionAriaAccepted', "{0}, accepted", item.suggestion.label));
+			this.editor.focus();
 		});
-
-		alert(nls.localize('suggestionAriaAccepted', "{0}, accepted", item.suggestion.label));
-
-		this.editor.focus();
 	}
 
 	private _getSuggestionAriaAlertLabel(item: ICompletionItem): string {
@@ -591,7 +603,6 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 			this.ignoreFocusEvents = false;
 		}
 
-		this.updateListHeight();
 		this.list.reveal(index);
 
 		this.currentSuggestionDetails = item.resolve()
@@ -613,7 +624,7 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 			.then(() => this.currentSuggestionDetails = null);
 
 		// emit an event
-		this.onDidFocusEmitter.fire(item);
+		this.onDidFocusEmitter.fire({ item, index, model: this.completionModel });
 	}
 
 	private setState(state: State): void {
@@ -628,8 +639,7 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 
 		switch (state) {
 			case State.Hidden:
-				hide(this.messageElement, this.details.element);
-				show(this.listElement);
+				hide(this.messageElement, this.details.element, this.listElement);
 				this.hide();
 				if (stateChanged) {
 					this.list.splice(0, this.list.length);
@@ -650,19 +660,12 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 				this.show();
 				break;
 			case State.Open:
-				hide(this.messageElement);
+				hide(this.messageElement, this.details.element);
 				show(this.listElement);
-				if (this.expandDocsSettingFromStorage()
-					&& canExpandCompletionItem(this.list.getFocusedElements()[0])) {
-					show(this.details.element);
-					this.expandSideOrBelow();
-				} else {
-					hide(this.details.element);
-				}
 				this.show();
 				break;
 			case State.Frozen:
-				hide(this.messageElement, this.details.element);
+				hide(this.messageElement);
 				show(this.listElement);
 				this.show();
 				break;
@@ -672,10 +675,6 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 				this.show();
 				this._ariaAlert(this.details.getAriaLabel());
 				break;
-		}
-
-		if (stateChanged) {
-			this.editor.layoutContentWidget(this);
 		}
 	}
 
@@ -738,14 +737,15 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 			this.focusedItem = null;
 			this.focusedItemIndex = null;
 			this.list.splice(0, this.list.length, this.completionModel.items);
-			this.list.setFocus([selectionIndex]);
-			this.list.reveal(selectionIndex, selectionIndex);
 
 			if (isFrozen) {
 				this.setState(State.Frozen);
 			} else {
 				this.setState(State.Open);
 			}
+
+			this.list.reveal(selectionIndex, selectionIndex);
+			this.list.setFocus([selectionIndex]);
 
 			// Reset focus border
 			if (this.detailsBorderColor) {
@@ -838,12 +838,16 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 		}
 	}
 
-	getFocusedItem(): ICompletionItem {
+	getFocusedItem(): ISelectedSuggestion {
 		if (this.state !== State.Hidden
 			&& this.state !== State.Empty
 			&& this.state !== State.Loading) {
 
-			return this.list.getFocusedElements()[0];
+			return {
+				item: this.list.getFocusedElements()[0],
+				index: this.list.getFocus()[0],
+				model: this.completionModel
+			};
 		}
 		return undefined;
 	}
@@ -929,7 +933,12 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 	}
 
 	private show(): void {
-		this.updateListHeight();
+		const newHeight = this.updateListHeight();
+		if (newHeight !== this.listHeight) {
+			this.editor.layoutContentWidget(this);
+			this.listHeight = newHeight;
+		}
+
 		this.suggestWidgetVisible.set(true);
 
 		this.showTimeout = TPromise.timeout(100).then(() => {
@@ -982,9 +991,6 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 		this.element.style.lineHeight = `${this.unfocusedHeight}px`;
 		this.listElement.style.height = `${height}px`;
 		this.list.layout(height);
-
-		this.editor.layoutContentWidget(this);
-
 		return height;
 	}
 

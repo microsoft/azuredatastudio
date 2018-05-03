@@ -146,9 +146,9 @@ export function attachTableStyler(widget: IThemable, themeService: IThemeService
 	return attachStyler(themeService, {
 		listFocusBackground: (style && style.listFocusBackground) || cr.listFocusBackground,
 		listFocusForeground: (style && style.listFocusForeground) || cr.listFocusForeground,
-		listActiveSelectionBackground: (style && style.listActiveSelectionBackground) || cr.lighten(cr.listActiveSelectionBackground, 0.1),
+		listActiveSelectionBackground: (style && style.listActiveSelectionBackground) || cr.listActiveSelectionBackground,
 		listActiveSelectionForeground: (style && style.listActiveSelectionForeground) || cr.listActiveSelectionForeground,
-		listFocusAndSelectionBackground: style && style.listFocusAndSelectionBackground || cr.listActiveSelectionBackground,
+		listFocusAndSelectionBackground: style && style.listFocusAndSelectionBackground || sqlcolors.listFocusAndSelectionBackground,
 		listFocusAndSelectionForeground: (style && style.listFocusAndSelectionForeground) || cr.listActiveSelectionForeground,
 		listInactiveFocusBackground: (style && style.listInactiveFocusBackground),
 		listInactiveSelectionBackground: (style && style.listInactiveSelectionBackground) || cr.listInactiveSelectionBackground,

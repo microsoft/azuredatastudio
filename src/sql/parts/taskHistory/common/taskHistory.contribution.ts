@@ -107,8 +107,8 @@ registry.registerWorkbenchAction(
 		TaskHistoryViewletAction.ID,
 		TaskHistoryViewletAction.LABEL,
 		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_T }),
-	'View: Show Task Histry',
-	localize('view', "View")
+	'View: Show Task History',
+	localize('taskHistory.view', "View")
 );
 
 let configurationRegistry = <IConfigurationRegistry>Registry.as(Extensions.Configuration);

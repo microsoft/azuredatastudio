@@ -1,0 +1,17 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+/* Overwrite close editor action icon */
+.monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab > .tab-close .action-label.close-editor-action {
+	background-size: 10px;
+}
+
+.vs .monaco-workbench .tab > .tab-close .action-label.close-editor-action {
+	background: url('icons/close.svg') center center no-repeat;
+}
+
+.vs-dark .monaco-workbench .tab > .tab-close .action-label.close-editor-action,
+.hc-black .monaco-workbench .tab > .tab-close .action-label.close-editor-action {
+	background: url('icons/close_inverse.svg') center center no-repeat;
+}

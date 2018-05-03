@@ -16,10 +16,13 @@ import 'vs/workbench/services/configuration/common/configurationExtensionPoint';
 import 'vs/editor/editor.all';
 
 // Menus/Actions
-import 'vs/platform/actions/electron-browser/menusExtensionPoint';
+import 'vs/workbench/services/actions/electron-browser/menusExtensionPoint';
 
 // Views
 import 'vs/workbench/api/browser/viewsExtensionPoint';
+
+// Localizations
+import 'vs/workbench/parts/localizations/browser/localizations.contribution';
 
 // Workbench
 import 'vs/workbench/browser/actions/toggleActivityBarVisibility';
@@ -28,9 +31,11 @@ import 'vs/workbench/browser/actions/toggleSidebarVisibility';
 import 'vs/workbench/browser/actions/toggleSidebarPosition';
 import 'vs/workbench/browser/actions/toggleEditorLayout';
 import 'vs/workbench/browser/actions/toggleZenMode';
+import 'vs/workbench/browser/actions/toggleCenteredLayout';
 import 'vs/workbench/browser/actions/toggleTabsVisibility';
 import 'vs/workbench/parts/preferences/electron-browser/preferences.contribution';
 import 'vs/workbench/parts/preferences/browser/keybindingsEditorContribution';
+import 'vs/workbench/parts/logs/electron-browser/logs.contribution';
 
 import 'vs/workbench/browser/parts/quickopen/quickopen.contribution';
 import 'vs/workbench/parts/quickopen/browser/quickopen.contribution';
@@ -46,7 +51,7 @@ import 'vs/workbench/parts/stats/node/stats.contribution';
 import 'vs/workbench/parts/cache/node/cache.contribution';
 
 import 'vs/workbench/parts/search/electron-browser/search.contribution';
-import 'vs/workbench/parts/search/browser/searchViewlet'; // can be packaged separately
+import 'vs/workbench/parts/search/browser/searchView'; // can be packaged separately
 import 'vs/workbench/parts/search/browser/openAnythingHandler'; // can be packaged separately
 
 import 'vs/workbench/parts/scm/electron-browser/scm.contribution';
@@ -73,7 +78,7 @@ import 'vs/workbench/parts/extensions/electron-browser/extensionsViewlet'; // ca
 
 // import 'vs/workbench/parts/welcome/page/electron-browser/welcomePage.contribution';
 
-import 'vs/workbench/parts/output/browser/output.contribution';
+import 'vs/workbench/parts/output/electron-browser/output.contribution';
 import 'vs/workbench/parts/output/browser/outputPanel'; // can be packaged separately
 
 import 'vs/workbench/parts/terminal/electron-browser/terminal.contribution';
@@ -100,14 +105,14 @@ import 'vs/workbench/parts/execution/electron-browser/execution.contribution';
 import 'vs/workbench/parts/snippets/electron-browser/snippets.contribution';
 import 'vs/workbench/parts/snippets/electron-browser/snippetsService';
 import 'vs/workbench/parts/snippets/electron-browser/insertSnippet';
+import 'vs/workbench/parts/snippets/electron-browser/configureSnippets';
 import 'vs/workbench/parts/snippets/electron-browser/tabCompletion';
 
 import 'vs/workbench/parts/themes/electron-browser/themes.contribution';
 
 import 'vs/workbench/parts/feedback/electron-browser/feedback.contribution';
 
-// {{SQL CARBON EDIT}}
-// import 'vs/workbench/parts/welcome/gettingStarted/electron-browser/gettingStarted.contribution';
+import 'vs/workbench/parts/welcome/gettingStarted/electron-browser/gettingStarted.contribution';
 
 import 'vs/workbench/parts/update/electron-browser/update.contribution';
 
@@ -134,14 +139,15 @@ import 'vs/workbench/parts/welcome/overlay/browser/welcomeOverlay';
 import 'sql/parts/taskHistory/common/taskHistory.contribution';
 import 'sql/parts/taskHistory/viewlet/taskHistoryViewlet';
 import 'sql/parts/tasks/common/tasks.contribution';
-import 'sql/parts/registeredServer/common/registeredServer.contribution';
-import 'sql/parts/registeredServer/viewlet/connectionViewlet';
+import 'sql/parts/objectExplorer/common/registeredServer.contribution';
+import 'sql/parts/objectExplorer/viewlet/connectionViewlet';
 import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/parts/connection/common/connection.contribution';
 import 'sql/parts/query/common/query.contribution';
+import 'sql/parts/query/editor/resultsGridContribution';
 import 'sql/parts/profiler/contrib/profiler.contribution';
 import 'sql/parts/profiler/contrib/profilerActions.contribution';
-import 'sql/parts/registeredServer/serverGroupDialog/serverGroup.contribution';
+import 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
 import 'sql/parts/accountManagement/common/accountManagement.contribution';
 /* Insights */
 import 'sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
@@ -153,17 +159,25 @@ import 'sql/parts/dashboard/widgets/insights/views/charts/types/scatterChart.con
 import 'sql/parts/dashboard/widgets/insights/views/charts/types/timeSeriesChart.contribution';
 import 'sql/parts/dashboard/widgets/insights/views/countInsight.contribution';
 import 'sql/parts/dashboard/widgets/insights/views/imageInsight.contribution';
+import 'sql/parts/dashboard/widgets/insights/views/tableInsight.contribution';
+/* Tasks */
+import 'sql/workbench/common/actions.contribution';
 /* Widgets */
 import 'sql/parts/dashboard/widgets/insights/insightsWidget.contribution';
 import 'sql/parts/dashboard/widgets/explorer/explorerWidget.contribution';
 import 'sql/parts/dashboard/widgets/tasks/tasksWidget.contribution';
 import 'sql/parts/dashboard/widgets/webview/webviewWidget.contribution';
 import 'sql/parts/dashboard/dashboardConfig.contribution';
-/* Tabs */
-import 'sql/parts/dashboard/tabs/dashboardWebviewTab.contribution';
-import 'sql/parts/dashboard/tabs/dashboardWidgetTab.contribution';
+/* Model-based Views */
+import 'sql/parts/modelComponents/components.contribution';
+/* Containers */
+import 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
+import 'sql/parts/dashboard/containers/dashboardControlHostContainer.contribution';
+import 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
+import 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
+import 'sql/parts/dashboard/containers/dashboardContainer.contribution';
+import 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
+import 'sql/parts/dashboard/containers/dashboardModelViewContainer.contribution';
 import 'sql/parts/dashboard/common/dashboardTab.contribution';
-/* Tasks */
-import 'sql/workbench/common/actions.contribution';
 /* Extension Host */
 import 'sql/workbench/api/electron-browser/sqlExtensionHost.contribution';

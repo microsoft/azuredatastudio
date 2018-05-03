@@ -11,6 +11,7 @@
 		"declaration": true,
 		"noImplicitReturns": true,
 		"baseUrl": ".",
+		"outDir": "../out",
 		"typeRoots": [
 			"typings"
 		]

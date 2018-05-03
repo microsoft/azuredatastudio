@@ -51,10 +51,14 @@ export interface IInsightsConfig {
 	cacheId?: string;
 	type: any;
 	name?: string;
-	provider?: string;
-	edition?: number | Array<number>;
+	when?: string;
 	gridItemConfig?: ISize;
 	query?: string | Array<string>;
 	queryFile?: string;
 	details?: IInsightsConfigDetails;
+	autoRefreshInterval?: number;
+}
+export interface IInsightTypeContrib {
+	id: string;
+	contrib: IInsightsConfig;
 }

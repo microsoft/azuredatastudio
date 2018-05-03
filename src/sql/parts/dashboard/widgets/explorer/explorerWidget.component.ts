@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
 import { ExplorerFilter, ExplorerRenderer, ExplorerDataSource, ExplorerController, ObjectMetadataWrapper, ExplorerModel } from './explorerTree';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
@@ -43,11 +44,13 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	private _treeDataSource = new ExplorerDataSource();
 	private _treeFilter = new ExplorerFilter();
 
+	private _inited = false;
+
 	@ViewChild('input') private _inputContainer: ElementRef;
 	@ViewChild('table') private _tableContainer: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrap: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private _router: Router,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
@@ -58,8 +61,13 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	ngOnInit() {
+		this._inited = true;
+
+		let placeholderLabel = this._config.context === 'database' ? nls.localize('seachObjects', 'Search by name of type (a:, t:, v:, f:, or sp:)') : nls.localize('searchDatabases', 'Search databases');
+
 		let inputOptions: IInputOptions = {
-			placeholder: this._config.context === 'database' ? nls.localize('seachObjects', 'Search by name of type (a:, t:, v:, f:, or sp:)') : nls.localize('searchDatabases', 'Search databases')
+			placeholder: placeholderLabel,
+			ariaLabel: placeholderLabel
 		};
 		this._input = new InputBox(this._inputContainer.nativeElement, this._bootstrap.contextViewService, inputOptions);
 		this._register(this._input.onDidChange(e => {
@@ -101,7 +109,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			this._register(toDisposableSubscription(this._bootstrap.metadataService.databaseNames.subscribe(
 				data => {
 					let profileData = data.map(d => {
-						let profile = new ConnectionProfile(currentProfile.serverCapabilities, currentProfile);
+						let profile = new ConnectionProfile(this._bootstrap.capabilitiesService, currentProfile);
 						profile.databaseName = d;
 						return profile;
 					});
@@ -120,6 +128,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	public layout(): void {
-		this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
+		if (this._inited) {
+			this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
+		}
 	}
 }

@@ -26,7 +26,7 @@
 		// "button.disabledForeground": "#888888",
 
 		//Dropdown Control
-		"dropdown.background": "#EAEAEA00",
+		"dropdown.background": "#fffffe",
 		"dropdown.foreground": "#4a4a4a",
 		"dropdown.border": "#C8C8C8",
 
@@ -66,7 +66,7 @@
 		"tab.activeBackground": "#FFFFFE",
 		"tab.activeForeground": "#4A4A4A",
 		"tab.inactiveBackground": "#f4f4f4",
-		"tab.inactiveForeground": "#888888",
+		"tab.inactiveForeground": "#707070",
 		"tab.border": "#EAEAEA",
 		"tab.unfocusedInactiveForeground": "#888888",
 		"tab.unfocusedActiveForeground": "#212121",

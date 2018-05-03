@@ -11,7 +11,7 @@
                 "id": "query-data-store-db-insight",
                 "contrib": {
                     "name": "Top 5 Slowest Queries",
-                    "provider": "MSSQL",
+                    "when": "connectionProvider == 'MSSQL'",
                     "gridItemConfig": {
                         "x": 2,
                         "y": 1
@@ -41,7 +41,7 @@
                 "id": "table-space-db-insight",
                 "contrib": {
                     "name": "Space used per table",
-                    "provider": "MSSQL",
+                    "when": "connectionProvider == 'MSSQL'",
                     "gridItemConfig": {
                         "x": 2,
                         "y": 1
@@ -62,8 +62,7 @@
                 "id": "all-database-size-server-insight",
                 "contrib": {
                     "name": "Database Size (MB)",
-                    "provider": "MSSQL",
-                    "edition": [0,1,2,3,4],
+                    "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
                     "gridItemConfig": {
                         "x": 2,
                         "y": 2
@@ -84,8 +83,7 @@
                 "contrib": {
                     "cacheId": "backup-history-server-insight",
                     "name": "Backup Status",
-                    "provider": "MSSQL",
-                    "edition": [0,1,2,3,4],
+                    "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
                     "gridItemConfig": {
                         "x": 1,
                         "y": 1

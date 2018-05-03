@@ -10,7 +10,7 @@ import { IEditorGroupService } from 'vs/workbench/services/group/common/groupSer
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 
 // Connection status bar showing the current global connection

@@ -8,6 +8,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import Event from 'vs/base/common/event';
 
 import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
 import { INewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
@@ -153,7 +154,7 @@ export class PinUnpinTabAction extends Action {
 
 export class AddFeatureTabAction extends Action {
 	private static readonly ID = 'openInstalledFeatures';
-	private static readonly LABEL = nls.localize('openInstalledFeatures', "Open installed features");
+	private static readonly LABEL = nls.localize('addFeatureAction.openInstalledFeatures', "Open installed features");
 	private static readonly ICON = 'new';
 
 	private _disposables: IDisposable[] = [];
@@ -195,5 +196,49 @@ export class AddFeatureTabAction extends Action {
 				this._openedTabs.splice(index, 1);
 				break;
 		}
+	}
+}
+
+export class CollapseWidgetAction extends Action {
+	private static readonly ID = 'collapseWidget';
+	private static readonly COLLPASE_LABEL = nls.localize('collapseWidget', "Collapse");
+	private static readonly EXPAND_LABEL = nls.localize('expandWidget', "Expand");
+	private static readonly COLLAPSE_ICON = 'maximize-panel-action';
+	private static readonly EXPAND_ICON = 'minimize-panel-action';
+
+	constructor(
+		private _uri: string,
+		private _widgetUuid: string,
+		private collpasedState: boolean,
+		@IAngularEventingService private _angularEventService: IAngularEventingService
+	) {
+		super(
+			CollapseWidgetAction.ID,
+			collpasedState ? CollapseWidgetAction.EXPAND_LABEL : CollapseWidgetAction.COLLPASE_LABEL,
+			collpasedState ? CollapseWidgetAction.EXPAND_ICON : CollapseWidgetAction.COLLAPSE_ICON
+		);
+	}
+
+	run(): TPromise<boolean> {
+		this._toggleState();
+		this._angularEventService.sendAngularEvent(this._uri, AngularEventType.COLLAPSE_WIDGET, this._widgetUuid);
+		return TPromise.as(true);
+	}
+
+	private _toggleState(): void {
+		this._updateState(!this.collpasedState);
+	}
+
+	private _updateState(collapsed: boolean): void {
+		if (collapsed === this.collpasedState) {
+			return;
+		}
+		this.collpasedState = collapsed;
+		this._setClass(this.collpasedState ? CollapseWidgetAction.EXPAND_ICON : CollapseWidgetAction.COLLAPSE_ICON);
+		this._setLabel(this.collpasedState ? CollapseWidgetAction.EXPAND_LABEL : CollapseWidgetAction.COLLPASE_LABEL);
+	}
+
+	public set state(collapsed: boolean) {
+		this._updateState(collapsed);
 	}
 }

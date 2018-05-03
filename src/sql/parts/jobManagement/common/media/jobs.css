@@ -1,0 +1,195 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+ agentview-component {
+	height: 100%;
+	width : 100%;
+	display: block;
+}
+
+jobsview-component {
+	height: 100%;
+	width : 100%;
+	display: block;
+}
+
+jobhistory-component {
+	height: 100%;
+	width : 100%;
+	display: block;
+}
+
+.job-heading-container {
+    height: 49px;
+    border-bottom: 3px solid #f4f4f4;
+    display: -webkit-box;
+}
+
+.vs-dark .job-heading-container {
+    border-bottom: 3px solid #444444;
+}
+
+#jobsDiv .jobview-grid {
+    height: 96%;
+	width : 100%;
+    display: block;
+}
+
+.vs-dark #jobsDiv .slick-header-column {
+	background: #333333 !important;
+}
+
+#jobsDiv .slick-header-column {
+	background-color: transparent !important;
+	background: white !important;
+    border: 0px !important;
+    font-weight: bold;
+    font-size: larger;
+}
+
+.vs-dark #jobsDiv .slick-cell {
+	background:#333333 !important;
+}
+
+#jobsDiv .slick-cell {
+    background: white !important;
+    border-right: transparent !important;
+    border-left: transparent !important;
+    line-height: 33px !important;
+}
+
+#jobsDiv .jobview-joblist {
+    height: 100%;
+    width: 100%;
+}
+
+#jobsDiv .jobview-jobnametable {
+    border: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+#jobsDiv .jobview-jobnameindicatorsuccess {
+    width: 5px;
+    background: green;
+}
+
+#jobsDiv .jobview-jobnameindicatorfailure {
+    width: 5px;
+    background: red;
+}
+
+#jobsDiv .jobview-jobnameindicatorcancel {
+    width: 5px;
+    background: orange;
+}
+
+#jobsDiv .jobview-jobnameindicatorunknown {
+    width: 5px;
+    background: yellow;
+}
+
+#jobsDiv .jobview-jobnametext {
+    width: 100%;
+}
+
+#jobsDiv .job-with-error {
+    border-bottom: none;
+}
+
+#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.l1.r1.error-row {
+    width: 100%;
+    opacity: 1;
+    font-weight: 700;
+    color: orangered;
+}
+
+#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.error-row {
+    opacity: 0;
+}
+
+#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row {
+    opacity: 1;
+}
+
+#jobsDiv .jobview-splitter {
+    height: 1px;
+    width: 100%;
+    background-color: gray;
+}
+
+#jobsDiv .jobview-jobitem {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    flex-flow: row wrap;
+    white-space: nowrap;
+}
+
+#jobsDiv .jobview-label {
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+#jobsDiv .jobview-highlight-none {
+    width: 5px;
+    margin-right: 10px;
+}
+
+#jobsDiv .detail-container {
+    max-height: 100px !important;
+    line-height: 20px;
+}
+
+#jobsDiv .detail {
+    padding: 5px
+}
+
+#jobsDiv .preload {
+  font-size: 18px;
+}
+
+#jobsDiv .dynamic-cell-detail > :first-child {
+    vertical-align:     middle;
+    line-height:        13px;
+    padding:            10px;
+    margin-left:		20px;
+}
+
+.vs-dark #jobsDiv .dynamic-cell-detail {
+    background: black !important;
+}
+
+#jobsDiv .dynamic-cell-detail {
+    background: #faf5f8 !important;
+}
+
+.jobsview-icon {
+    background-image: url('./job.svg');
+}
+
+.vs-dark .jobsview-icon {
+	background-image: url('./job_inverse.svg');
+}
+
+agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.even > .slick-cell,
+agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.odd > .slick-cell {
+    cursor: pointer;
+}
+
+.vs-dark .jobview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted white;
+}
+
+.jobview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted #444444;
+}
+
+.job-heading-container > .icon.in-progress {
+    height: 20px;
+    width: 20px;
+    padding-top: 16px;
+    padding-left: 15px;
+}

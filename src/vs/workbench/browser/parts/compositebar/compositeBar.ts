@@ -81,8 +81,29 @@ export class CompositeBar implements ICompositeBar {
 		return this._onDidContextMenu.event;
 	}
 
+	public addComposite(compositeData: { id: string; name: string }): void {
+		if (this.options.composites.filter(c => c.id === compositeData.id).length) {
+			return;
+		}
+
+		this.options.composites.push(compositeData);
+		this.pin(compositeData.id);
+	}
+
+	public removeComposite(id: string): void {
+		if (this.options.composites.filter(c => c.id === id).length === 0) {
+			return;
+		}
+
+		this.options.composites = this.options.composites.filter(c => c.id !== id);
+		this.unpin(id);
+	}
+
 	public activateComposite(id: string): void {
 		if (this.compositeIdToActions[id]) {
+			if (this.compositeIdToActions[this.activeCompositeId]) {
+				this.compositeIdToActions[this.activeCompositeId].deactivate();
+			}
 			this.compositeIdToActions[id].activate();
 		}
 		this.activeCompositeId = id;
@@ -100,14 +121,27 @@ export class CompositeBar implements ICompositeBar {
 		}
 	}
 
-	public showActivity(compositeId: string, badge: IBadge, clazz?: string): IDisposable {
+	public showActivity(compositeId: string, badge: IBadge, clazz?: string, priority?: number): IDisposable {
 		if (!badge) {
 			throw illegalArgument('badge');
 		}
 
-		const activity = <ICompositeActivity>{ badge, clazz };
+		if (typeof priority !== 'number') {
+			priority = 0;
+		}
+
+		const activity: ICompositeActivity = { badge, clazz, priority };
 		const stack = this.compositeIdToActivityStack[compositeId] || (this.compositeIdToActivityStack[compositeId] = []);
-		stack.unshift(activity);
+
+		for (let i = 0; i <= stack.length; i++) {
+			if (i === stack.length) {
+				stack.push(activity);
+				break;
+			} else if (stack[i].priority <= priority) {
+				stack.splice(i, 0, activity);
+				break;
+			}
+		}
 
 		this.updateActivity(compositeId);
 
@@ -164,6 +198,7 @@ export class CompositeBar implements ICompositeBar {
 			ariaLabel: nls.localize('activityBarAriaLabel', "Active View Switcher"),
 			animated: false,
 		});
+		this.toDispose.push(this.compositeSwitcherBar);
 
 		// Contextmenu for composites
 		this.toDispose.push(dom.addDisposableListener(parent, dom.EventType.CONTEXT_MENU, (e: MouseEvent) => {
@@ -355,6 +390,7 @@ export class CompositeBar implements ICompositeBar {
 		const visibleComposites = this.getVisibleComposites();
 
 		let unpinPromise: TPromise<any>;
+
 		// remove from pinned
 		const index = this.pinnedComposites.indexOf(compositeId);
 		this.pinnedComposites.splice(index, 1);
@@ -386,6 +422,9 @@ export class CompositeBar implements ICompositeBar {
 		unpinPromise.then(() => {
 			this.updateCompositeSwitcher();
 		});
+
+		// Persist
+		this.savePinnedComposites();
 	}
 
 	public isPinned(compositeId: string): boolean {
@@ -404,6 +443,9 @@ export class CompositeBar implements ICompositeBar {
 			if (update) {
 				this.updateCompositeSwitcher();
 			}
+
+			// Persist
+			this.savePinnedComposites();
 		});
 	}
 
@@ -433,6 +475,9 @@ export class CompositeBar implements ICompositeBar {
 		setTimeout(() => {
 			this.updateCompositeSwitcher();
 		}, 0);
+
+		// Persist
+		this.savePinnedComposites();
 	}
 
 	public layout(dimension: Dimension): void {
@@ -456,7 +501,7 @@ export class CompositeBar implements ICompositeBar {
 		this.updateCompositeSwitcher();
 	}
 
-	public store(): void {
+	private savePinnedComposites(): void {
 		this.storageService.store(this.options.storageId, JSON.stringify(this.pinnedComposites), StorageScope.GLOBAL);
 	}
 

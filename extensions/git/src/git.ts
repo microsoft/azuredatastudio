@@ -16,7 +16,7 @@ import * as filetype from 'file-type';
 import { assign, uniqBy, groupBy, denodeify, IDisposable, toDisposable, dispose, mkdirp, readBytes, detectUnicodeEncoding, Encoding, onceEvent } from './util';
 import { CancellationToken } from 'vscode';
 
-const readfile = denodeify<string>(fs.readFile);
+const readfile = denodeify<string, string | null, string>(fs.readFile);
 
 export interface IGit {
 	path: string;
@@ -267,6 +267,7 @@ export class GitError {
 			this.message = data.error.message;
 		} else {
 			this.error = void 0;
+			this.message = '';
 		}
 
 		this.message = this.message || data.message || 'Git error';
@@ -325,7 +326,9 @@ export const GitErrorCodes = {
 	BranchAlreadyExists: 'BranchAlreadyExists',
 	NoLocalChanges: 'NoLocalChanges',
 	NoStashFound: 'NoStashFound',
-	LocalChangesOverwritten: 'LocalChangesOverwritten'
+	LocalChangesOverwritten: 'LocalChangesOverwritten',
+	NoUpstreamBranch: 'NoUpstreamBranch',
+	IsInSubmodule: 'IsInSubmodule'
 };
 
 function getGitErrorCode(stderr: string): string | undefined {
@@ -359,7 +362,6 @@ function getGitErrorCode(stderr: string): string | undefined {
 export class Git {
 
 	private gitPath: string;
-	private version: string;
 	private env: any;
 
 	private _onOutput = new EventEmitter();
@@ -367,7 +369,6 @@ export class Git {
 
 	constructor(options: IGitOptions) {
 		this.gitPath = options.gitPath;
-		this.version = options.version;
 		this.env = options.env || {};
 	}
 
@@ -460,7 +461,7 @@ export class Git {
 		});
 
 		if (options.log !== false) {
-			this.log(`git ${args.join(' ')}\n`);
+			this.log(`> git ${args.join(' ')}\n`);
 		}
 
 		return cp.spawn(this.gitPath, args, options);
@@ -542,6 +543,72 @@ export class GitStatusParser {
 	}
 }
 
+export interface Submodule {
+	name: string;
+	path: string;
+	url: string;
+}
+
+export function parseGitmodules(raw: string): Submodule[] {
+	const regex = /\r?\n/g;
+	let position = 0;
+	let match: RegExpExecArray | null = null;
+
+	const result: Submodule[] = [];
+	let submodule: Partial<Submodule> = {};
+
+	function parseLine(line: string): void {
+		const sectionMatch = /^\s*\[submodule "([^"]+)"\]\s*$/.exec(line);
+
+		if (sectionMatch) {
+			if (submodule.name && submodule.path && submodule.url) {
+				result.push(submodule as Submodule);
+			}
+
+			const name = sectionMatch[1];
+
+			if (name) {
+				submodule = { name };
+				return;
+			}
+		}
+
+		if (!submodule) {
+			return;
+		}
+
+		const propertyMatch = /^\s*(\w+) = (.*)$/.exec(line);
+
+		if (!propertyMatch) {
+			return;
+		}
+
+		const [, key, value] = propertyMatch;
+
+		switch (key) {
+			case 'path': submodule.path = value; break;
+			case 'url': submodule.url = value; break;
+		}
+	}
+
+	while (match = regex.exec(raw)) {
+		parseLine(raw.substring(position, match.index));
+		position = match.index + match[0].length;
+	}
+
+	parseLine(raw.substring(position));
+
+	if (submodule.name && submodule.path && submodule.url) {
+		result.push(submodule as Submodule);
+	}
+
+	return result;
+}
+
+export interface DiffOptions {
+	cached?: boolean;
+}
+
 export class Repository {
 
 	constructor(
@@ -611,7 +678,7 @@ export class Repository {
 		return stdout;
 	}
 
-	async lstree(treeish: string, path: string): Promise<{ mode: number, object: string, size: number }> {
+	async lstree(treeish: string, path: string): Promise<{ mode: string, object: string, size: number }> {
 		if (!treeish) { // index
 			const { stdout } = await this.run(['ls-files', '--stage', '--', path]);
 
@@ -625,7 +692,7 @@ export class Repository {
 			const catFile = await this.run(['cat-file', '-s', object]);
 			const size = parseInt(catFile.stdout);
 
-			return { mode: parseInt(mode), object, size };
+			return { mode, object, size };
 		}
 
 		const { stdout } = await this.run(['ls-tree', '-l', treeish, '--', path]);
@@ -637,7 +704,7 @@ export class Repository {
 		}
 
 		const [, mode, , object, size] = match;
-		return { mode: parseInt(mode), object, size: parseInt(size) };
+		return { mode, object, size: parseInt(size) };
 	}
 
 	async detectObjectType(object: string): Promise<{ mimetype: string, encoding?: string }> {
@@ -680,6 +747,19 @@ export class Repository {
 		}
 	}
 
+	async diff(path: string, options: DiffOptions = {}): Promise<string> {
+		const args = ['diff'];
+
+		if (options.cached) {
+			args.push('--cached');
+		}
+
+		args.push('--', path);
+
+		const result = await this.run(args);
+		return result.stdout;
+	}
+
 	async add(paths: string[]): Promise<void> {
 		const args = ['add', '-A', '--'];
 
@@ -706,7 +786,16 @@ export class Repository {
 			});
 		}
 
-		await this.run(['update-index', '--cacheinfo', '100644', hash, path]);
+		let mode: string;
+
+		try {
+			const details = await this.lstree('HEAD', path);
+			mode = details.mode;
+		} catch (err) {
+			mode = '100644';
+		}
+
+		await this.run(['update-index', '--cacheinfo', mode, hash, path]);
 	}
 
 	async checkout(treeish: string, paths: string[]): Promise<void> {
@@ -953,6 +1042,8 @@ export class Repository {
 				err.gitErrorCode = GitErrorCodes.PushRejected;
 			} else if (/Could not read from remote repository/.test(err.stderr || '')) {
 				err.gitErrorCode = GitErrorCodes.RemoteConnectionError;
+			} else if (/^fatal: The current branch .* has no upstream branch/.test(err.stderr || '')) {
+				err.gitErrorCode = GitErrorCodes.NoUpstreamBranch;
 			}
 
 			throw err;
@@ -1067,7 +1158,7 @@ export class Repository {
 	}
 
 	async getRefs(): Promise<Ref[]> {
-		const result = await this.run(['for-each-ref', '--format', '%(refname) %(objectname)']);
+		const result = await this.run(['for-each-ref', '--format', '%(refname) %(objectname)', '--sort', '-committerdate']);
 
 		const fn = (line: string): Ref | null => {
 			let match: RegExpExecArray | null;
@@ -1185,5 +1276,25 @@ export class Repository {
 		}
 
 		return { hash: match[1], message: match[2] };
+	}
+
+	async updateSubmodules(paths: string[]): Promise<void> {
+		const args = ['submodule', 'update', '--', ...paths];
+		await this.run(args);
+	}
+
+	async getSubmodules(): Promise<Submodule[]> {
+		const gitmodulesPath = path.join(this.root, '.gitmodules');
+
+		try {
+			const gitmodulesRaw = await readfile(gitmodulesPath, 'utf8');
+			return parseGitmodules(gitmodulesRaw);
+		} catch (err) {
+			if (/ENOENT/.test(err.message)) {
+				return [];
+			}
+
+			throw err;
+		}
 	}
 }

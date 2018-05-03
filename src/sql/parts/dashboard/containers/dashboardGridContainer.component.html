@@ -1,0 +1,25 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div >
+	<table class="grid-table">
+		<tr *ngFor="let row of rows" class="grid-table-row">
+			<ng-container *ngFor="let col of cols">
+					<ng-container *ngIf="getContent(row,col) !== undefined">
+							      <td class="table-cell" [colSpan]=getColspan(row,col) [rowSpan]=getRowspan(row,col) [width]="getWidgetWidth(row,col)" [height]="getWidgetHeight(row,col)">
+
+									<dashboard-widget-wrapper  *ngIf="isWidget(row,col)" [_config]="getWidgetContent(row,col)" style="position:absolute;" [style.width]="getWidgetWidth(row,col)" [style.height]="getWidgetHeight(row,col)">
+									</dashboard-widget-wrapper>
+
+									<webview-content *ngIf="isWebview(row,col)" [webviewId]="getWebviewId(row,col)">
+									</webview-content>
+
+								</td>
+					</ng-container>
+			</ng-container>
+		</tr>
+	</table>
+</div>

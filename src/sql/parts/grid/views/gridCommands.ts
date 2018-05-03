@@ -53,6 +53,10 @@ export const toggleResultsPane = (accessor: ServicesAccessor) => {
 	runActionOnActiveResultsEditor(accessor, GridContentEvents.ToggleResultPane);
 };
 
+export const goToNextQueryOutputTab = (accessor: ServicesAccessor) => {
+	runActionOnActiveResultsEditor(accessor, GridContentEvents.GoToNextQueryOutputTab);
+};
+
 export const saveAsCsv = (accessor: ServicesAccessor) => {
 	runActionOnActiveResultsEditor(accessor, GridContentEvents.SaveAsCsv);
 };

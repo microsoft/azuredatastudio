@@ -3,11 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!vs/workbench/parts/debug/browser/media/debugActionsWidget';
+import 'vs/css!./media/debugActionsWidget';
 import * as errors from 'vs/base/common/errors';
 import * as strings from 'vs/base/common/strings';
 import * as browser from 'vs/base/browser/browser';
-import severity from 'vs/base/common/severity';
 import * as builder from 'vs/base/browser/builder';
 import * as dom from 'vs/base/browser/dom';
 import * as arrays from 'vs/base/common/arrays';
@@ -21,7 +20,6 @@ import { AbstractDebugAction, PauseAction, ContinueAction, StepBackAction, Rever
 import { FocusProcessActionItem } from 'vs/workbench/parts/debug/browser/debugActionItems';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { IMessageService } from 'vs/platform/message/common/message';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Themable } from 'vs/workbench/common/theme';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -29,6 +27,8 @@ import { registerColor, contrastBorder, widgetShadow } from 'vs/platform/theme/c
 import { localize } from 'vs/nls';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 const $ = builder.$;
 const DEBUG_ACTIONS_WIDGET_POSITION_KEY = 'debug.actionswidgetposition';
@@ -38,6 +38,11 @@ export const debugToolBarBackground = registerColor('debugToolBar.background', {
 	light: '#F3F3F3',
 	hc: '#000000'
 }, localize('debugToolBarBackground', "Debug toolbar background color."));
+export const debugToolBarBorder = registerColor('debugToolBar.border', {
+	dark: null,
+	light: null,
+	hc: null
+}, localize('debugToolBarBorder', "Debug toolbar border color."));
 
 export class DebugActionsWidget extends Themable implements IWorkbenchContribution {
 
@@ -51,7 +56,7 @@ export class DebugActionsWidget extends Themable implements IWorkbenchContributi
 	private isBuilt: boolean;
 
 	constructor(
-		@IMessageService private messageService: IMessageService,
+		@INotificationService private notificationService: INotificationService,
 		@ITelemetryService private telemetryService: ITelemetryService,
 		@IDebugService private debugService: IDebugService,
 		@IPartService private partService: IPartService,
@@ -59,7 +64,8 @@ export class DebugActionsWidget extends Themable implements IWorkbenchContributi
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IThemeService themeService: IThemeService,
 		@IKeybindingService private keybindingService: IKeybindingService,
-		@IWorkbenchEditorService private editorService: IWorkbenchEditorService
+		@IWorkbenchEditorService private editorService: IWorkbenchEditorService,
+		@IContextViewService contextViewService: IContextViewService
 	) {
 		super(themeService);
 
@@ -75,7 +81,7 @@ export class DebugActionsWidget extends Themable implements IWorkbenchContributi
 			orientation: ActionsOrientation.HORIZONTAL,
 			actionItemProvider: (action: IAction) => {
 				if (action.id === FocusProcessAction.ID) {
-					return new FocusProcessActionItem(action, this.debugService, this.themeService);
+					return new FocusProcessActionItem(action, this.debugService, this.themeService, contextViewService);
 				}
 
 				return null;
@@ -97,7 +103,7 @@ export class DebugActionsWidget extends Themable implements IWorkbenchContributi
 		this.toUnbind.push(this.actionBar.actionRunner.onDidRun((e: IRunEvent) => {
 			// check for error
 			if (e.error && !errors.isPromiseCanceledError(e.error)) {
-				this.messageService.show(severity.Error, e.error);
+				this.notificationService.error(e.error);
 			}
 
 			// log in telemetry
@@ -159,9 +165,16 @@ export class DebugActionsWidget extends Themable implements IWorkbenchContributi
 			this.$el.style('box-shadow', widgetShadowColor ? `0 5px 8px ${widgetShadowColor}` : null);
 
 			const contrastBorderColor = this.getColor(contrastBorder);
-			this.$el.style('border-style', contrastBorderColor ? 'solid' : null);
-			this.$el.style('border-width', contrastBorderColor ? '1px' : null);
-			this.$el.style('border-color', contrastBorderColor);
+			const borderColor = this.getColor(debugToolBarBorder);
+
+			if (contrastBorderColor) {
+				this.$el.style('border', `1px solid ${contrastBorderColor}`);
+			} else {
+				this.$el.style({
+					'border': borderColor ? `solid ${borderColor}` : 'none',
+					'border-width': '1px 0'
+				});
+			}
 		}
 	}
 

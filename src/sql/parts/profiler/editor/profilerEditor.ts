@@ -28,11 +28,11 @@ import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiati
 import { ProfilerResourceEditor } from './profilerResourceEditor';
 import { SplitView, View, Orientation, IViewOptions } from 'sql/base/browser/ui/splitview/splitview';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IModel } from 'vs/editor/common/editorCommon';
+import { ITextModel } from 'vs/editor/common/model';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import URI from 'vs/base/common/uri';
-import { UNTITLED_SCHEMA } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { Schemas } from 'vs/base/common/network';
 import * as nls from 'vs/nls';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -97,7 +97,7 @@ export interface IDetailData {
 export class ProfilerEditor extends BaseEditor {
 	public static ID: string = 'workbench.editor.profiler';
 	private _editor: ProfilerResourceEditor;
-	private _editorModel: IModel;
+	private _editorModel: ITextModel;
 	private _editorInput: UntitledEditorInput;
 	private _splitView: SplitView;
 	private _container: HTMLElement;
@@ -189,7 +189,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._autoscrollAction = this._instantiationService.createInstance(Actions.ProfilerAutoScroll, Actions.ProfilerAutoScroll.ID, Actions.ProfilerAutoScroll.LABEL);
 
 		this._sessionTemplates = this._profilerService.getSessionTemplates();
-		this._sessionTemplateSelector = new SelectBox(this._sessionTemplates.map(i => i.name), 'Standard');
+		this._sessionTemplateSelector = new SelectBox(this._sessionTemplates.map(i => i.name), 'Standard', this._contextViewService);
 		this._register(this._sessionTemplateSelector.onDidSelect(e => {
 			if (this.input) {
 				this.input.sessionTemplate = this._sessionTemplates.find(i => i.name === e.selected);
@@ -275,7 +275,7 @@ export class ProfilerEditor extends BaseEditor {
 			},
 			{
 				id: 'value',
-				name: nls.localize('value', "Value"),
+				name: nls.localize('profilerEditor.value', "Value"),
 				field: 'value'
 			}
 		], { forceFitColumns: true });
@@ -304,7 +304,7 @@ export class ProfilerEditor extends BaseEditor {
 		editorContainer.className = 'profiler-editor';
 		this._editor.create(new Builder(editorContainer));
 		this._editor.setVisible(true);
-		this._editorInput = this._instantiationService.createInstance(UntitledEditorInput, URI.from({ scheme: UNTITLED_SCHEMA }), false, 'sql', '', '');
+		this._editorInput = this._instantiationService.createInstance(UntitledEditorInput, URI.from({ scheme: Schemas.untitled }), false, 'sql', '', '');
 		this._editor.setInput(this._editorInput, undefined);
 		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
 		return editorContainer;

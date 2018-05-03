@@ -6,13 +6,13 @@
 
 // SQL added extension host types
 export enum ServiceOptionType {
-	string = 0,
-	multistring = 1,
-	password = 2,
-	number = 3,
-	category = 4,
-	boolean = 5,
-	object = 6
+	string = 'string',
+	multistring = 'multistring',
+	password = 'password',
+	number = 'number',
+	category = 'category',
+	boolean = 'boolean',
+	object = 'object'
 }
 
 export enum ConnectionOptionSpecialType {
@@ -61,4 +61,59 @@ export enum ScriptOperation {
 	Delete = 4,
 	Execute = 5,
 	Alter = 6
+}
+
+export enum ModelComponentTypes {
+	NavContainer,
+	FlexContainer,
+	Card,
+	InputBox,
+	DropDown,
+	Button,
+	DashboardWidget,
+	DashboardWebview,
+	Form
+}
+
+export interface IComponentShape {
+	type: ModelComponentTypes;
+	id: string;
+	properties?: { [key: string]: any };
+	layout?: any;
+	itemConfigs?: IItemConfig[];
+}
+
+export interface IItemConfig {
+	componentShape: IComponentShape;
+	config: any;
+}
+
+export enum ComponentEventType {
+	PropertiesChanged,
+	onDidChange,
+	onDidClick
+}
+
+export interface IComponentEventArgs {
+	eventType: ComponentEventType;
+	args: any;
+}
+
+export interface IModelViewDialogDetails {
+	title: string;
+	content: string | number[];
+	okButton: number;
+	cancelButton: number;
+	customButtons: number[];
+}
+
+export interface IModelViewTabDetails {
+	title: string;
+	content: string;
+}
+
+export interface IModelViewButtonDetails {
+	label: string;
+	enabled: boolean;
+	hidden: boolean;
 }

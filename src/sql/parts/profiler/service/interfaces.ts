@@ -7,7 +7,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 const PROFILER_SERVICE_ID = 'profilerService';
 export const IProfilerService = createDecorator<IProfilerService>(PROFILER_SERVICE_ID);
@@ -24,7 +24,7 @@ export interface IProfilerSession {
 	/**
 	 * Called by the service when more rows are available to render
 	 */
-	onMoreRows(events: data.ProfilerSessionEvents);
+	onMoreRows(events: sqlops.ProfilerSessionEvents);
 }
 
 /**
@@ -35,7 +35,7 @@ export interface IProfilerService {
 	/**
 	 * Registers a backend provider for profiler session. ex: mssql
 	 */
-	registerProvider(providerId: string, provider: data.ProfilerProvider): void;
+	registerProvider(providerId: string, provider: sqlops.ProfilerProvider): void;
 	/**
 	 * Registers a session with the service that acts as the UI for a profiler session
 	 * @returns An unique id that should be used to make subsequent calls to this service
@@ -64,7 +64,7 @@ export interface IProfilerService {
 	/**
 	 * The method called by the service provider for when more rows are available to render
 	 */
-	onMoreRows(params: data.ProfilerSessionEvents): void;
+	onMoreRows(params: sqlops.ProfilerSessionEvents): void;
 	/**
 	 * Gets a list of the session templates that are specified in the settings
 	 * @param provider An optional string to limit the session template to a specific

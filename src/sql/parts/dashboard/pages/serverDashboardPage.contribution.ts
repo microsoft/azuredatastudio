@@ -21,6 +21,10 @@ export const serverDashboardPropertiesSchema: IJSONSchema = {
 	oneOf: [
 		{ type: 'boolean' },
 		{
+			type: 'string',
+			enum: ['collapsed']
+		},
+		{
 			type: 'object',
 			properties: {
 				provider: {
@@ -73,7 +77,7 @@ let defaultVal = [
 	{
 		name: 'Tasks',
 		widget: {
-			'tasks-widget': {}
+			'tasks-widget': [{ name: 'restore', when: '!mssql:iscloud' }, 'configureDashboard', 'newQuery']
 		},
 		gridItemConfig: {
 			sizex: 1,
@@ -81,6 +85,7 @@ let defaultVal = [
 		}
 	},
 	{
+		name: 'Search',
 		gridItemConfig: {
 			sizex: 1,
 			sizey: 2

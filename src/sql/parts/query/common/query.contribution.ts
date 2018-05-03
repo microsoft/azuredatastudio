@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
+import 'vs/css!sql/media/overwriteVsIcons';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
@@ -25,7 +25,7 @@ import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
-	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction
+	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction
 } from 'sql/parts/query/execution/keyboardQueryActions';
 import * as gridActions from 'sql/parts/grid/views/gridActions';
 import * as gridCommands from 'sql/parts/grid/views/gridCommands';
@@ -85,24 +85,24 @@ let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchA
 
 // Query Actions
 actionRegistry.registerWorkbenchAction(
-		new SyncActionDescriptor(
-			RunQueryKeyboardAction,
-			RunQueryKeyboardAction.ID,
-			RunQueryKeyboardAction.LABEL,
-			{ primary: KeyCode.F5 }
-		),
-		RunQueryKeyboardAction.LABEL
-	);
+	new SyncActionDescriptor(
+		RunQueryKeyboardAction,
+		RunQueryKeyboardAction.ID,
+		RunQueryKeyboardAction.LABEL,
+		{ primary: KeyCode.F5 }
+	),
+	RunQueryKeyboardAction.LABEL
+);
 
 actionRegistry.registerWorkbenchAction(
-		new SyncActionDescriptor(
-			RunCurrentQueryKeyboardAction,
-			RunCurrentQueryKeyboardAction.ID,
-			RunCurrentQueryKeyboardAction.LABEL,
-			{ primary:KeyMod.CtrlCmd | KeyCode.F5 }
-		),
-		RunCurrentQueryKeyboardAction.LABEL
-	);
+	new SyncActionDescriptor(
+		RunCurrentQueryKeyboardAction,
+		RunCurrentQueryKeyboardAction.ID,
+		RunCurrentQueryKeyboardAction.LABEL,
+		{ primary: KeyMod.CtrlCmd | KeyCode.F5 }
+	),
+	RunCurrentQueryKeyboardAction.LABEL
+);
 
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
@@ -114,33 +114,46 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-		new SyncActionDescriptor(
-			CancelQueryKeyboardAction,
-			CancelQueryKeyboardAction.ID,
-			CancelQueryKeyboardAction.LABEL,
-			{ primary: KeyMod.Alt | KeyCode.PauseBreak }
-		),
-		CancelQueryKeyboardAction.LABEL
-	);
+	new SyncActionDescriptor(
+		CancelQueryKeyboardAction,
+		CancelQueryKeyboardAction.ID,
+		CancelQueryKeyboardAction.LABEL,
+		{ primary: KeyMod.Alt | KeyCode.PauseBreak }
+	),
+	CancelQueryKeyboardAction.LABEL
+);
 
 actionRegistry.registerWorkbenchAction(
-		new SyncActionDescriptor(
-			RefreshIntellisenseKeyboardAction,
-			RefreshIntellisenseKeyboardAction.ID,
-			RefreshIntellisenseKeyboardAction.LABEL
-		),
+	new SyncActionDescriptor(
+		RefreshIntellisenseKeyboardAction,
+		RefreshIntellisenseKeyboardAction.ID,
 		RefreshIntellisenseKeyboardAction.LABEL
-	);
+	),
+	RefreshIntellisenseKeyboardAction.LABEL
+);
 
 actionRegistry.registerWorkbenchAction(
-		new SyncActionDescriptor(
-			ToggleQueryResultsKeyboardAction,
-			ToggleQueryResultsKeyboardAction.ID,
-			ToggleQueryResultsKeyboardAction.LABEL
-		),
-		ToggleQueryResultsKeyboardAction.LABEL
-	);
+	new SyncActionDescriptor(
+		FocusOnCurrentQueryKeyboardAction,
+		FocusOnCurrentQueryKeyboardAction.ID,
+		FocusOnCurrentQueryKeyboardAction.LABEL,
+		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_O }
+	),
+	FocusOnCurrentQueryKeyboardAction.LABEL
+);
+
 // Grid actions
+
+actionRegistry.registerWorkbenchAction(
+	new SyncActionDescriptor(
+		ToggleQueryResultsKeyboardAction,
+		ToggleQueryResultsKeyboardAction.ID,
+		ToggleQueryResultsKeyboardAction.LABEL,
+		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_R },
+		QueryEditorVisibleCondition
+	),
+	ToggleQueryResultsKeyboardAction.LABEL
+);
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_COPY_ID,
@@ -212,6 +225,14 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: QueryEditorVisibleCondition,
 	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_Y,
 	handler: gridCommands.toggleMessagePane
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GOTONEXTQUERYOUTPUTTAB_ID,
+	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	when: QueryEditorVisibleCondition,
+	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_P,
+	handler: gridCommands.goToNextQueryOutputTab
 });
 
 // Intellisense and other configuration options
@@ -296,7 +317,7 @@ for (let i = 0; i < 9; i++) {
 	const queryIndex = i + 1;
 	let settingKey = `sql.query.shortcut${queryIndex}`;
 	let defaultVal = i < initialShortcuts.length ? initialShortcuts[i].name : '';
-	let defaultPrimary =  i < initialShortcuts.length ? initialShortcuts[i].primary : null;
+	let defaultPrimary = i < initialShortcuts.length ? initialShortcuts[i].primary : null;
 
 	KeybindingsRegistry.registerCommandAndKeybindingRule({
 		id: `workbench.action.query.shortcut${queryIndex}`,

@@ -20,14 +20,16 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IDelegate, IRenderer } from 'vs/base/browser/ui/list/list';
+import { IDelegate, IRenderer, IListMouseEvent } from 'vs/base/browser/ui/list/list';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/styler';
 import { FixedListView } from 'sql/platform/views/fixedListView';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import { SplitView } from 'sql/base/browser/ui/splitview/splitview';
+import { Orientation } from 'sql/base/browser/ui/splitview/splitview';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabViewModel';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 
@@ -98,8 +100,9 @@ export class NewDashboardTabDialog extends Modal {
 	private _cancelButton: Button;
 	private _extensionList: List<IDashboardUITab>;
 	private _extensionTabView: FixedListView<IDashboardUITab>;
-	private _splitView: SplitView;
 	private _container: HTMLElement;
+	private _extensionViewContainer: HTMLElement;
+	private _noExtensionViewContainer: HTMLElement;
 
 	private _viewModel: NewDashboardTabViewModel;
 
@@ -121,7 +124,7 @@ export class NewDashboardTabDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super(
-			localize('openInstalledFeatures', 'Open installed features'),
+			localize('newDashboardTab.openDashboardExtensions', 'Open dashboard extensions'),
 			TelemetryKeys.AddNewDashboardTab,
 			partService,
 			telemetryService,
@@ -139,26 +142,34 @@ export class NewDashboardTabDialog extends Modal {
 
 	// MODAL OVERRIDE METHODS //////////////////////////////////////////////
 	protected layout(height?: number): void {
-		// Ignore height as it's a subcomponent being laid out
-		this._splitView.layout(DOM.getContentHeight(this._container));
+		// Nothing currently laid out in this class
 	}
 
 	public render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
-		this._addNewTabButton = this.addFooterButton(localize('ok', 'OK'), () => this.addNewTabs());
-		this._cancelButton = this.addFooterButton(localize('cancel', 'Cancel'), () => this.cancel());
+		this._addNewTabButton = this.addFooterButton(localize('newDashboardTab.ok', 'OK'), () => this.addNewTabs());
+		this._cancelButton = this.addFooterButton(localize('newDashboardTab.cancel', 'Cancel'), () => this.cancel());
 		this.registerListeners();
 	}
 
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
-		let viewBody = DOM.$('div.extension-view');
-		DOM.append(container, viewBody);
-		this._splitView = new SplitView(viewBody);
+		this._extensionViewContainer = DOM.$('div.extension-view');
+		DOM.append(container, this._extensionViewContainer);
 
-		// Create a fixed list view for the account provider
+		this.createExtensionList(this._extensionViewContainer);
+		this._noExtensionViewContainer = DOM.$('.no-extension-view');
+		let noExtensionTitle = DOM.append(this._noExtensionViewContainer, DOM.$('.no-extensionTab-label'));
+		let noExtensionLabel = localize('newdashboardTabDialog.noExtensionLabel', 'No dashboard extensions are installed at this time. Go to Extension Manager to explore recommended extensions.');
+		noExtensionTitle.innerHTML = noExtensionLabel;
+
+		DOM.append(container, this._noExtensionViewContainer);
+	}
+
+	private createExtensionList(container: HTMLElement) {
+		// Create a fixed list view for the extensions
 		let extensionTabViewContainer = DOM.$('.extensionTab-view');
 		let delegate = new ExtensionListDelegate(NewDashboardTabDialog.EXTENSIONLIST_HEIGHT);
 		let extensionTabRenderer = new ExtensionListRenderer();
@@ -177,13 +188,23 @@ export class NewDashboardTabDialog extends Modal {
 			this._themeService
 		);
 
-		// Append the list view to the split view
-		this._splitView.addView(this._extensionTabView);
+		this._extensionList.onMouseDblClick(e => this.onAccept());
+		this._extensionList.onKeyDown(e => {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Enter)) {
+				this.onAccept();
+			} else if (event.equals(KeyCode.Escape)) {
+				this.onClose();
+			}
+		});
+
+		this._extensionTabView.render(container, Orientation.VERTICAL);
+		this._extensionTabView.hideHeader();
+
 		this._register(attachListStyler(this._extensionList, this._themeService));
 
 		let listService = <ListService>this._listService;
 		this._register(listService.register(this._extensionList));
-		this._splitView.layout(DOM.getContentHeight(this._container));
 	}
 
 	private registerListeners(): void {
@@ -226,10 +247,14 @@ export class NewDashboardTabDialog extends Modal {
 		this._extensionTabView.updateList(tabs);
 		this.layout();
 		if (this._extensionList.length > 0) {
+			this._extensionViewContainer.hidden = false;
+			this._noExtensionViewContainer.hidden = true;
 			this._extensionList.setSelection([0]);
+			this._extensionList.domFocus();
 			this._addNewTabButton.enabled = true;
-			this._addNewTabButton.focus();
 		} else {
+			this._extensionViewContainer.hidden = true;
+			this._noExtensionViewContainer.hidden = false;
 			this._addNewTabButton.enabled = false;
 			this._cancelButton.focus();
 		}

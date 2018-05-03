@@ -25,14 +25,15 @@ import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ConnectionProviderStub } from 'sqltest/stubs/connectionProviderStub';
 import { ResourceProviderStub } from 'sqltest/stubs/resourceProviderServiceStub';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfigurationTestService';
 
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
-import { IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
+import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -86,6 +87,8 @@ suite('SQL ConnectionManagementService tests', () => {
 		mssqlConnectionProvider = TypeMoq.Mock.ofType(ConnectionProviderStub);
 		let resourceProviderStub = new ResourceProviderStub();
 		resourceProviderStubMock = TypeMoq.Mock.ofInstance(resourceProviderStub);
+		let root = new ConnectionProfileGroup(ConnectionProfileGroup.RootGroupName, undefined, ConnectionProfileGroup.RootGroupName, undefined, undefined);
+		root.connections = [ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile)];
 
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined)).returns(() => TPromise.as(none));
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined)).returns(() => TPromise.as(none));
@@ -105,6 +108,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			c => c.serverName === connectionProfileWithEmptyUnsavedPassword.serverName))).returns(
 			() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
 		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns(() => true);
+		connectionStore.setup(x => x.getConnectionProfileGroups()).returns(() => [root]);
 
 		mssqlConnectionProvider.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => undefined);
 
@@ -213,7 +217,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			let id = connectionToUse.getOptionsKey();
 			let defaultUri = 'connection://' + (id ? id : connectionToUse.serverName + ':' + connectionToUse.databaseName);
 			connectionManagementService.onConnectionRequestSent(() => {
-				let info: data.ConnectionInfoSummary = {
+				let info: sqlops.ConnectionInfoSummary = {
 					connectionId: error ? undefined : 'id',
 					connectionSummary: {
 						databaseName: connectionToUse.databaseName,
@@ -702,7 +706,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		// when I call doChangeLanguageFlavor
 		try {
 			let called = false;
-			connectionManagementService.onLanguageFlavorChanged((changeParams: data.DidChangeLanguageFlavorParams) => {
+			connectionManagementService.onLanguageFlavorChanged((changeParams: sqlops.DidChangeLanguageFlavorParams) => {
 				called = true;
 				assert.equal(changeParams.uri, uri);
 				assert.equal(changeParams.language, language);
@@ -727,7 +731,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		};
 		let connectionManagementService = createConnectionManagementService();
 		let called = false;
-		connectionManagementService.onLanguageFlavorChanged((changeParams: data.DidChangeLanguageFlavorParams) => {
+		connectionManagementService.onLanguageFlavorChanged((changeParams: sqlops.DidChangeLanguageFlavorParams) => {
 			called = true;
 		});
 		connect(uri, options).then(() => {
@@ -776,7 +780,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		// Set up the connection store to give back a group for the expected connection profile
 		configResult['tabColorMode'] = 'border';
 		let expectedColor = 'red';
-		connectionStore.setup(x => x.getGroupFromId(connectionProfile.groupId)).returns(() => <IConnectionProfileGroup> {
+		connectionStore.setup(x => x.getGroupFromId(connectionProfile.groupId)).returns(() => <IConnectionProfileGroup>{
 			color: expectedColor
 		});
 		let uri = 'testUri';

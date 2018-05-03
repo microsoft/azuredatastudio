@@ -6,18 +6,14 @@ import { join } from 'path';
 
 import { registerDashboardWidget, registerNonCustomDashboardWidget } from 'sql/platform/dashboard/common/widgetRegistry';
 import { Extensions as InsightExtensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
-import { IInsightsConfig } from './interfaces';
+import { IInsightsConfig, IInsightTypeContrib } from './interfaces';
 import { insightsContribution, insightsSchema } from 'sql/parts/dashboard/widgets/insights/insightsWidgetSchemas';
 
-import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/common/extensionsRegistry';
+import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 const insightRegistry = Registry.as<IInsightRegistry>(InsightExtensions.InsightContribution);
 
-interface IInsightTypeContrib {
-	id: string;
-	contrib: IInsightsConfig;
-}
 
 registerDashboardWidget('insights-widget', '', insightsSchema);
 

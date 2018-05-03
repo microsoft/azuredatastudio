@@ -87,7 +87,7 @@ export default class BarChart extends ChartInsight {
 					yAxes: [{
 						display: true,
 						ticks: {
-							max: config.yAxisMin
+							min: config.yAxisMin
 						}
 					}]
 				}

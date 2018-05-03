@@ -20,7 +20,7 @@ export const msgStatusRunQueryInProgress = localize('msgStatusRunQueryInProgress
 
 // /** Results Pane Labels */
 export const maximizeLabel = localize('maximizeLabel', 'Maximize');
-export const restoreLabel = localize('restoreLabel', 'Restore');
+export const restoreLabel = localize('resultsPane.restoreLabel', 'Restore');
 export const saveCSVLabel = localize('saveCSVLabel', 'Save as CSV');
 export const saveJSONLabel = localize('saveJSONLabel', 'Save as JSON');
 export const saveExcelLabel = localize('saveExcelLabel', 'Save as Excel');

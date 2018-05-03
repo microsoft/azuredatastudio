@@ -24,6 +24,7 @@ export interface WidgetConfig {
 	context: string;
 	provider: string | Array<string>;
 	edition: number | Array<number>;
+	when?: string;
 	gridItemConfig?: NgGridItemConfig;
 	widget: Object;
 	background_color?: string;
@@ -39,11 +40,22 @@ export interface TabConfig extends IDashboardTab {
 	editable: boolean;
 	canClose: boolean;
 	actions?: Array<Action>;
+	iconClass?: string;
 }
 
-export interface PinConfig {
+export type IUserFriendlyIcon = string | { light: string; dark: string; };
+
+export interface NavSectionConfig {
+	id: string;
+	title: string;
+	iconClass?: string;
+	icon?: IUserFriendlyIcon;
+	container: object;
+}
+
+export interface TabSettingConfig {
 	tabId: string;
-	isPinned?: boolean;
+	isPinned: boolean;
 }
 
 export abstract class DashboardWidget extends Disposable implements OnDestroy {

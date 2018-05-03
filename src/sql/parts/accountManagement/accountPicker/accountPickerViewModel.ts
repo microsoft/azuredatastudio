@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import Event, { Emitter } from 'vs/base/common/event';
 
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
@@ -18,7 +18,7 @@ export class AccountPickerViewModel {
 	private _updateAccountListEmitter: Emitter<UpdateAccountListEventParams>;
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return this._updateAccountListEmitter.event; }
 
-	public selectedAccount: data.Account;
+	public selectedAccount: sqlops.Account;
 
 	constructor(
 		private _providerId: string,
@@ -38,7 +38,7 @@ export class AccountPickerViewModel {
 	 * Loads an initial list of accounts from the account management service
 	 * @return {Thenable<Account[]>} Promise to return the list of accounts
 	 */
-	public initialize(): Thenable<data.Account[]> {
+	public initialize(): Thenable<sqlops.Account[]> {
 		// Load a baseline of the accounts for the provider
 		return this._accountManagementService.getAccountsForProvider(this._providerId)
 			.then(null, () => {

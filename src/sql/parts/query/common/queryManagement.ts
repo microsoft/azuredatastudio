@@ -7,7 +7,7 @@ import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
@@ -23,21 +23,21 @@ export interface IQueryManagementService {
 	addQueryRequestHandler(queryType: string, runner: IQueryRequestHandler): IDisposable;
 	registerRunner(runner: QueryRunner, uri: string): void;
 
-	cancelQuery(ownerUri: string): Thenable<data.QueryCancelResult>;
-	runQuery(ownerUri: string, selection: data.ISelectionData, runOptions?: data.ExecutionPlanOptions): Thenable<void>;
+	cancelQuery(ownerUri: string): Thenable<sqlops.QueryCancelResult>;
+	runQuery(ownerUri: string, selection: sqlops.ISelectionData, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 	runQueryString(ownerUri: string, queryString: string): Thenable<void>;
-	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<data.SimpleExecuteResult>;
-	getQueryRows(rowData: data.QueryExecuteSubsetParams): Thenable<data.QueryExecuteSubsetResult>;
+	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult>;
+	getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult>;
 	disposeQuery(ownerUri: string): Thenable<void>;
-	saveResults(requestParams: data.SaveResultsRequestParams): Thenable<data.SaveResultRequestResult>;
+	saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult>;
 
 	// Callbacks
-	onQueryComplete(result: data.QueryExecuteCompleteNotificationResult): void;
-	onBatchStart(batchInfo: data.QueryExecuteBatchNotificationParams): void;
-	onBatchComplete(batchInfo: data.QueryExecuteBatchNotificationParams): void;
-	onResultSetComplete(resultSetInfo: data.QueryExecuteResultSetCompleteNotificationParams): void;
-	onMessage(message: data.QueryExecuteMessageParams): void;
+	onQueryComplete(result: sqlops.QueryExecuteCompleteNotificationResult): void;
+	onBatchStart(batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
+	onBatchComplete(batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
+	onResultSetComplete(resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void;
+	onMessage(message: sqlops.QueryExecuteMessageParams): void;
 
 	// Edit Data Callbacks
 	onEditSessionReady(ownerUri: string, success: boolean, message: string): void;
@@ -45,38 +45,38 @@ export interface IQueryManagementService {
 	// Edit Data Functions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void>;
 	disposeEdit(ownerUri: string): Thenable<void>;
-	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<data.EditUpdateCellResult>;
+	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult>;
 	commitEdit(ownerUri): Thenable<void>;
-	createRow(ownerUri: string): Thenable<data.EditCreateRowResult>;
+	createRow(ownerUri: string): Thenable<sqlops.EditCreateRowResult>;
 	deleteRow(ownerUri: string, rowId: number): Thenable<void>;
-	revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<data.EditRevertCellResult>;
+	revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult>;
 	revertRow(ownerUri: string, rowId: number): Thenable<void>;
-	getEditRows(rowData: data.EditSubsetParams): Thenable<data.EditSubsetResult>;
+	getEditRows(rowData: sqlops.EditSubsetParams): Thenable<sqlops.EditSubsetResult>;
 }
 
 /*
  * An object that can handle basic request-response actions related to queries
  */
 export interface IQueryRequestHandler {
-	cancelQuery(ownerUri: string): Thenable<data.QueryCancelResult>;
-	runQuery(ownerUri: string, selection: data.ISelectionData, runOptions?: data.ExecutionPlanOptions): Thenable<void>;
+	cancelQuery(ownerUri: string): Thenable<sqlops.QueryCancelResult>;
+	runQuery(ownerUri: string, selection: sqlops.ISelectionData, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 	runQueryString(ownerUri: string, queryString: string): Thenable<void>;
-	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<data.SimpleExecuteResult>;
-	getQueryRows(rowData: data.QueryExecuteSubsetParams): Thenable<data.QueryExecuteSubsetResult>;
+	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult>;
+	getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult>;
 	disposeQuery(ownerUri: string): Thenable<void>;
-	saveResults(requestParams: data.SaveResultsRequestParams): Thenable<data.SaveResultRequestResult>;
+	saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult>;
 
 	// Edit Data actions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void>;
 	disposeEdit(ownerUri: string): Thenable<void>;
-	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<data.EditUpdateCellResult>;
+	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult>;
 	commitEdit(ownerUri): Thenable<void>;
-	createRow(ownerUri: string): Thenable<data.EditCreateRowResult>;
+	createRow(ownerUri: string): Thenable<sqlops.EditCreateRowResult>;
 	deleteRow(ownerUri: string, rowId: number): Thenable<void>;
-	revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<data.EditRevertCellResult>;
+	revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult>;
 	revertRow(ownerUri: string, rowId: number): Thenable<void>;
-	getEditRows(rowData: data.EditSubsetParams): Thenable<data.EditSubsetResult>;
+	getEditRows(rowData: sqlops.EditSubsetParams): Thenable<sqlops.EditSubsetResult>;
 }
 
 export class QueryManagementService implements IQueryManagementService {
@@ -141,7 +141,7 @@ export class QueryManagementService implements IQueryManagementService {
 		};
 	}
 
-	private addTelemetry(eventName: string, ownerUri: string, runOptions?: data.ExecutionPlanOptions): void {
+	private addTelemetry(eventName: string, ownerUri: string, runOptions?: sqlops.ExecutionPlanOptions): void {
 		let providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
 		let data: TelemetryUtils.IConnectionTelemetryData = {
 			provider: providerId,
@@ -169,13 +169,13 @@ export class QueryManagementService implements IQueryManagementService {
 		}
 	}
 
-	public cancelQuery(ownerUri: string): Thenable<data.QueryCancelResult> {
+	public cancelQuery(ownerUri: string): Thenable<sqlops.QueryCancelResult> {
 		this.addTelemetry(TelemetryKeys.CancelQuery, ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.cancelQuery(ownerUri);
 		});
 	}
-	public runQuery(ownerUri: string, selection: data.ISelectionData, runOptions?: data.ExecutionPlanOptions): Thenable<void> {
+	public runQuery(ownerUri: string, selection: sqlops.ISelectionData, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void> {
 		this.addTelemetry(TelemetryKeys.RunQuery, ownerUri, runOptions);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQuery(ownerUri, selection, runOptions);
@@ -192,12 +192,12 @@ export class QueryManagementService implements IQueryManagementService {
 			return runner.runQueryString(ownerUri, queryString);
 		});
 	}
-	public runQueryAndReturn(ownerUri: string, queryString: string): Thenable<data.SimpleExecuteResult> {
+	public runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQueryAndReturn(ownerUri, queryString);
 		});
 	}
-	public getQueryRows(rowData: data.QueryExecuteSubsetParams): Thenable<data.QueryExecuteSubsetResult> {
+	public getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> {
 		return this._runAction(rowData.ownerUri, (runner) => {
 			return runner.getQueryRows(rowData);
 		});
@@ -208,36 +208,36 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public saveResults(requestParams: data.SaveResultsRequestParams): Thenable<data.SaveResultRequestResult> {
+	public saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult> {
 		return this._runAction(requestParams.ownerUri, (runner) => {
 			return runner.saveResults(requestParams);
 		});
 	}
 
-	public onQueryComplete(result: data.QueryExecuteCompleteNotificationResult): void {
+	public onQueryComplete(result: sqlops.QueryExecuteCompleteNotificationResult): void {
 		this._notify(result.ownerUri, (runner: QueryRunner) => {
 			runner.handleQueryComplete(result);
 		});
 	}
-	public onBatchStart(batchInfo: data.QueryExecuteBatchNotificationParams): void {
+	public onBatchStart(batchInfo: sqlops.QueryExecuteBatchNotificationParams): void {
 		this._notify(batchInfo.ownerUri, (runner: QueryRunner) => {
 			runner.handleBatchStart(batchInfo);
 		});
 	}
 
-	public onBatchComplete(batchInfo: data.QueryExecuteBatchNotificationParams): void {
+	public onBatchComplete(batchInfo: sqlops.QueryExecuteBatchNotificationParams): void {
 		this._notify(batchInfo.ownerUri, (runner: QueryRunner) => {
 			runner.handleBatchComplete(batchInfo);
 		});
 	}
 
-	public onResultSetComplete(resultSetInfo: data.QueryExecuteResultSetCompleteNotificationParams): void {
+	public onResultSetComplete(resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
 		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
 			runner.handleResultSetComplete(resultSetInfo);
 		});
 	}
 
-	public onMessage(message: data.QueryExecuteMessageParams): void {
+	public onMessage(message: sqlops.QueryExecuteMessageParams): void {
 		this._notify(message.ownerUri, (runner: QueryRunner) => {
 			runner.handleMessage(message);
 		});
@@ -256,7 +256,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<data.EditUpdateCellResult> {
+	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.updateCell(ownerUri, rowId, columnId, newValue);
 		});
@@ -268,7 +268,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public createRow(ownerUri: string): Thenable<data.EditCreateRowResult> {
+	public createRow(ownerUri: string): Thenable<sqlops.EditCreateRowResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.createRow(ownerUri);
 		});
@@ -286,7 +286,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<data.EditRevertCellResult> {
+	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.revertCell(ownerUri, rowId, columnId);
 		});
@@ -298,7 +298,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public getEditRows(rowData: data.EditSubsetParams): Thenable<data.EditSubsetResult> {
+	public getEditRows(rowData: sqlops.EditSubsetParams): Thenable<sqlops.EditSubsetResult> {
 		return this._runAction(rowData.ownerUri, (runner) => {
 			return runner.getEditRows(rowData);
 		});

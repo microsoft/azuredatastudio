@@ -13,6 +13,10 @@ export const databaseDashboardPropertiesSchema: IJSONSchema = {
 	oneOf: <IJSONSchema[]>[
 		{ type: 'boolean' },
 		{
+			type: 'string',
+			enum: ['collapsed']
+		},
+		{
 			type: 'array',
 			items: {
 				type: 'object',
@@ -91,10 +95,11 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 				sizey: 1
 			},
 			widget: {
-				'tasks-widget': {}
+				'tasks-widget': [{ name: 'backup', when: '!mssql:iscloud' }, { name: 'restore', when: '!mssql:iscloud' }, 'configureDashboard', 'newQuery']
 			}
 		},
 		{
+			name: 'Search',
 			gridItemConfig: {
 				sizex: 1,
 				sizey: 2

@@ -1,0 +1,272 @@
+{
+    "name": "whoisactive",
+    "displayName": "whoisactive",
+    "description": "sp_whoisactive for SQL Operations Studio",
+    "version": "0.1.1",
+    "publisher": "Microsoft",
+    "preview": true,
+    "engines": {
+        "vscode": "^1.17.0",
+        "sqlops": "*"
+    },
+    "icon": "images/sqlserver.png",
+    "license": "SEE LICENSE IN LICENSE.txt",
+    "repository": "https://github.com/Microsoft/sqlopsstudio",
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "configuration": [],
+        "commands": [
+            {
+                "command": "sp_whoisactive.install",
+                "title": "Whoisactive: Install sp_whoisactive",
+                "icon": {
+                    "light": "./out/src/media/download.svg",
+                    "dark": "./out/src/media/download_inverse.svg"
+                }
+            },
+            {
+                "command": "sp_whoisactive.findBlockLeaders",
+                "title": "Whoisactive: Find leader of block",
+                "icon": {
+                    "light": "./out/src/media/blocker.svg",
+                    "dark": "./out/src/media/blocker_inverse.svg"
+                }
+            },
+            {
+                "command": "sp_whoisactive.getPlans",
+                "title": "Whoisactive: Get plans",
+                "icon": {
+                    "light": "./out/src/media/monitor.svg",
+                    "dark": "./out/src/media/monitor_inverse.svg"
+                }
+            },
+            {
+                "command": "sp_whoisactive.documentation",
+                "title": "Whoisactive: Documentation",
+                "icon": {
+                    "light": "./out/src/media/documentation.svg",
+                    "dark": "./out/src/media/documentation_inverse.svg"
+                }
+            }
+        ],
+        "views": {},
+        "menus": {},
+        "dashboard.tabs": [
+            {
+                "id": "sp_whoisactive",
+                "title": "sp_whoisactive",
+                "description": "Extension for checking who is active.",
+                "container": {
+                    "sp_whoisactive-insights": {}
+                }
+            }
+        ],
+        "dashboard.insights": [
+            {
+                "id": "sp_whoisactive-CPU-usage",
+                "contrib": {
+                    "type": {
+                        "bar": {
+                            "dataDirection": "vertical",
+                            "dataType": "number",
+                            "legendPosition": "none",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": true,
+                            "showTopNData": 10
+                        }
+                    },
+                    "queryFile": "./out/src/sql/cpuUsage.sql",
+                    "details": {
+                        "queryFile": "./out/src/sql/cpuUsage_details.sql",
+                        "label": {
+                            "column": "session_id",
+                            "state": []
+                        },
+                        "value": "CPU"
+                    }
+                }
+            },
+            {
+                "id": "sp_whoisactive-CPU-delta",
+                "contrib": {
+                    "type": {
+                        "bar": {
+                            "dataDirection": "vertical",
+                            "dataType": "number",
+                            "legendPosition": "none",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": true,
+                            "showTopNData": 10
+                        }
+                    },
+                    "queryFile": "./out/src/sql/cpuDelta.sql",
+                    "details": {
+                        "queryFile": "./out/src/sql/cpuDelta_details.sql",
+                        "label": {
+                            "column": "session_id",
+                            "state": []
+                        },
+                        "value": "CPU_delta"
+                    }
+                }
+            },
+            {
+                "id": "sp_whoisactive-memory-usage",
+                "contrib": {
+                    "type": {
+                        "bar": {
+                            "dataDirection": "vertical",
+                            "dataType": "number",
+                            "legendPosition": "none",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": true,
+                            "showTopNData": 10
+                        }
+                    },
+                    "queryFile": "./out/src/sql/memoryUsage.sql",
+                    "details": {
+                        "queryFile": "./out/src/sql/memoryUsage_details.sql",
+                        "label": {
+                            "column": "session_id",
+                            "state": []
+                        },
+                        "value": "used_memory"
+                    }
+                }
+            },
+            {
+                "id": "sp_whoisactive-memory-delta",
+                "contrib": {
+                    "type": {
+                        "bar": {
+                            "dataDirection": "vertical",
+                            "dataType": "number",
+                            "legendPosition": "none",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": true,
+                            "showTopNData": 10
+                        }
+                    },
+                    "queryFile": "./out/src/sql/memoryDelta.sql",
+                    "details": {
+                        "queryFile": "./out/src/sql/memoryDelta_details.sql",
+                        "label": {
+                            "column": "session_id",
+                            "state": []
+                        },
+                        "value": "used_memory_delta"
+                    }
+                }
+            },
+            {
+                "id": "sp_whoisactive-blocking_sessions",
+                "contrib": {
+                    "type": {
+                        "table": null
+                    },
+                    "queryFile": "./out/src/sql/blockingSessions.sql"
+                }
+            }
+        ],
+        "dashboard.containers": [
+            {
+                "id": "sp_whoisactive-insights",
+                "container": {
+                    "widgets-container": [
+                        {
+                            "name": "Tasks",
+                            "widget": {
+                                "tasks-widget": [
+                                    "sp_whoisactive.getPlans",
+                                    "sp_whoisactive.findBlockLeaders",
+                                    "sp_whoisactive.documentation",
+                                    "sp_whoisactive.install"
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Top 10 CPU Usage",
+                            "gridItemConfig": {
+                                "sizex": 2,
+                                "sizey": 1
+                            },
+                            "widget": {
+                                "sp_whoisactive-CPU-usage": {}
+                            }
+                        },
+                        {
+                            "name": "Top 10 CPU Delta",
+                            "gridItemConfig": {
+                                "sizex": 2,
+                                "sizey": 1
+                            },
+                            "widget": {
+                                "sp_whoisactive-CPU-delta": {}
+                            }
+                        },
+                        {
+                            "name": "Top 10 Memory Usage",
+                            "gridItemConfig": {
+                                "sizex": 2,
+                                "sizey": 1
+                            },
+                            "widget": {
+                                "sp_whoisactive-memory-usage": {}
+                            }
+                        },
+                        {
+                            "name": "Top 10 Memory Delta",
+                            "gridItemConfig": {
+                                "sizex": 2,
+                                "sizey": 1
+                            },
+                            "widget": {
+                                "sp_whoisactive-memory-delta": {}
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "snippets": []
+    },
+    "scripts": {
+        "build": "gulp build",
+        "compile": "gulp compile",
+        "watch": "gulp watch",
+        "typings": "gulp copytypings",
+        "postinstall": "node ./node_modules/vscode/bin/install && node ./node_modules/sqlops/bin/install && gulp copytypings"
+    },
+    "dependencies": {
+        "fs-extra": "^5.0.0",
+        "handlebars": "^4.0.11",
+        "openurl": "^1.1.1",
+        "vscode-nls": "2.0.2",
+        "sqlops": "github:anthonydresser/sqlops-extension-sqlops"
+    },
+    "devDependencies": {
+        "@types/handlebars": "^4.0.11",
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^7.0.43",
+        "child-process-promise": "^2.2.1",
+        "del": "^3.0.0",
+        "gulp": "^4.0.0",
+        "gulp-color": "0.0.1",
+        "gulp-sourcemaps": "^2.6.4",
+        "gulp-tslint": "^6.0.2",
+        "gulp-typescript": "^3.2.4",
+        "should": "^13.2.1",
+        "temp-write": "^3.4.0",
+        "tslint": "^3.14.0",
+        "typemoq": "^2.1.0",
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "vsce": "1.36.2"
+    }
+}

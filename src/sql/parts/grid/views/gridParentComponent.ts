@@ -23,7 +23,7 @@ import { DataService } from 'sql/parts/grid/services/dataService';
 import * as actions from 'sql/parts/grid/views/gridActions';
 import * as Services from 'sql/parts/grid/services/sharedServices';
 import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
-import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext } from 'sql/parts/query/common/queryContext';
+import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/parts/query/common/queryContext';
 import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { error } from 'sql/base/common/log';
 
@@ -74,6 +74,7 @@ export abstract class GridParentComponent {
 	private resultsVisibleContextKey: IContextKey<boolean>;
 	private gridFocussedContextKey: IContextKey<boolean>;
 	private messagesFocussedContextKey: IContextKey<boolean>;
+	private queryEditorVisible: IContextKey<boolean>;
 
 	// All datasets
 	// Place holder data sets to buffer between data sets and rendered data sets
@@ -102,6 +103,7 @@ export abstract class GridParentComponent {
 		if (this.resultActive) {
 			this.resizeGrids();
 		}
+		this._cd.detectChanges();
 	}
 
 	get messageActive(): boolean {
@@ -163,6 +165,9 @@ export abstract class GridParentComponent {
 				case GridContentEvents.SaveAsExcel:
 					self.sendSaveRequest(SaveFormat.EXCEL);
 					break;
+				case GridContentEvents.GoToNextQueryOutputTab:
+					self.goToNextQueryOutputTab();
+					break;
 				default:
 					error('Unexpected grid content event type "' + type + '" sent');
 					break;
@@ -186,6 +191,9 @@ export abstract class GridParentComponent {
 
 	private bindKeys(contextKeyService: IContextKeyService): void {
 		if (contextKeyService) {
+			this.queryEditorVisible = QueryEditorVisibleContext.bindTo(contextKeyService);
+			this.queryEditorVisible.set(true);
+
 			let gridContextKeyService = this._bootstrapService.contextKeyService.createScoped(this._el.nativeElement);
 			this.toDispose.push(gridContextKeyService);
 			this.resultsVisibleContextKey = ResultsVisibleContext.bindTo(gridContextKeyService);
@@ -200,11 +208,15 @@ export abstract class GridParentComponent {
 		this.toDispose = dispose(this.toDispose);
 	}
 
-	private toggleResultPane(): void {
+	protected toggleResultPane(): void {
 		this.resultActive = !this.resultActive;
+		if (this.resultActive) {
+			this.resizeGrids();
+		}
+		this._cd.detectChanges();
 	}
 
-	private toggleMessagePane(): void {
+	protected toggleMessagePane(): void {
 		this.messageActive = !this.messageActive;
 	}
 
@@ -263,6 +275,9 @@ export abstract class GridParentComponent {
 		return '';
 	}
 
+	protected goToNextQueryOutputTab(): void {
+	}
+
 	private initShortcutsBase(): void {
 		let shortcuts = {
 			'ToggleResultPane': () => {
@@ -288,6 +303,9 @@ export abstract class GridParentComponent {
 			},
 			'SaveAsExcel': () => {
 				this.sendSaveRequest(SaveFormat.EXCEL);
+			},
+			'GoToNextQueryOutputTab': () => {
+				this.goToNextQueryOutputTab();
 			}
 		};
 
@@ -472,7 +490,13 @@ export abstract class GridParentComponent {
 	 */
 	xmlLinkHandler = (cellRef: string, row: number, dataContext: JSON, colDef: any) => {
 		const self = this;
-		self.handleLink(cellRef, row, dataContext, colDef, 'xml');
+
+		let value = self.getCellValueString(dataContext, colDef);
+		if (value.startsWith('<ShowPlanXML') && colDef.name !== 'XML Showplan') {
+			self.handleQueryPlanLink(cellRef, value);
+		} else {
+			self.handleLink(cellRef, row, dataContext, colDef, 'xml');
+		}
 	}
 
 	/**
@@ -481,6 +505,13 @@ export abstract class GridParentComponent {
 	jsonLinkHandler = (cellRef: string, row: number, dataContext: JSON, colDef: any) => {
 		const self = this;
 		self.handleLink(cellRef, row, dataContext, colDef, 'json');
+	}
+
+	private handleQueryPlanLink(cellRef: string, value: string): void {
+		const self = this;
+		$(cellRef).children('.xmlLink').click(function (): void {
+			self._bootstrapService.queryEditorService.newQueryPlanEditor(value);
+		});
 	}
 
 	private handleLink(cellRef: string, row: number, dataContext: JSON, colDef: any, linkType: string): void {

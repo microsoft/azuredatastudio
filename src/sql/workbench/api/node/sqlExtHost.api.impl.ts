@@ -7,13 +7,13 @@
 import * as extHostApi from 'vs/workbench/api/node/extHost.api.impl';
 import { TrieMap } from 'sql/base/common/map';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IInitData } from 'vs/workbench/api/node/extHost.protocol';
+import { IInitData, IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
-import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { realpath } from 'fs';
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ExtHostAccountManagement } from 'sql/workbench/api/node/extHostAccountManagement';
@@ -21,19 +21,23 @@ import { ExtHostCredentialManagement } from 'sql/workbench/api/node/extHostCrede
 import { ExtHostDataProtocol } from 'sql/workbench/api/node/extHostDataProtocol';
 import { ExtHostSerializationProvider } from 'sql/workbench/api/node/extHostSerializationProvider';
 import { ExtHostResourceProvider } from 'sql/workbench/api/node/extHostResourceProvider';
-import { ExtHostThreadService } from 'vs/workbench/services/thread/node/extHostThreadService';
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
 import { ExtHostModalDialogs } from 'sql/workbench/api/node/extHostModalDialog';
-import { ILogService } from 'vs/platform/log/common/log';
-import { IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
+import { ExtHostTasks } from 'sql/workbench/api/node/extHostTasks';
 import { ExtHostDashboardWebviews } from 'sql/workbench/api/node/extHostDashboardWebview';
+import { ExtHostModelView } from 'sql/workbench/api/node/extHostModelView';
 import { ExtHostConnectionManagement } from 'sql/workbench/api/node/extHostConnectionManagement';
+import { ExtHostDashboard } from 'sql/workbench/api/node/extHostDashboard';
+import { ExtHostObjectExplorer } from 'sql/workbench/api/node/extHostObjectExplorer';
+import { ExtHostLogService } from 'vs/workbench/api/node/extHostLogService';
+import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
+import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
-	dataFactory(extension: IExtensionDescription): typeof data;
+	sqlopsFactory(extension: IExtensionDescription): typeof sqlops;
 }
 
 /**
@@ -41,30 +45,37 @@ export interface ISqlExtensionApiFactory {
  */
 export function createApiFactory(
 	initData: IInitData,
-	threadService: ExtHostThreadService,
+	rpcProtocol: IExtHostContext,
 	extHostWorkspace: ExtHostWorkspace,
 	extHostConfiguration: ExtHostConfiguration,
 	extensionService: ExtHostExtensionService,
-	logService: ILogService
+	logService: ExtHostLogService
 ): ISqlExtensionApiFactory {
-	let vsCodeFactory = extHostApi.createApiFactory(initData, threadService, extHostWorkspace, extHostConfiguration, extensionService, logService);
+	let vsCodeFactory = extHostApi.createApiFactory(initData, rpcProtocol, extHostWorkspace, extHostConfiguration, extensionService, logService);
 
 	// Addressable instances
-	const extHostAccountManagement = threadService.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(threadService));
-	const extHostConnectionManagement = threadService.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(threadService));
-	const extHostCredentialManagement = threadService.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(threadService));
-	const extHostDataProvider = threadService.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(threadService));
-	const extHostSerializationProvider = threadService.set(SqlExtHostContext.ExtHostSerializationProvider, new ExtHostSerializationProvider(threadService));
-	const extHostResourceProvider = threadService.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(threadService));
-	const extHostModalDialogs = threadService.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(threadService));
-	const extHostWebviewWidgets = threadService.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(threadService));
+	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
+	const extHostConnectionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(rpcProtocol));
+	const extHostCredentialManagement = rpcProtocol.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(rpcProtocol));
+	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol));
+	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol));
+	const extHostSerializationProvider = rpcProtocol.set(SqlExtHostContext.ExtHostSerializationProvider, new ExtHostSerializationProvider(rpcProtocol));
+	const extHostResourceProvider = rpcProtocol.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(rpcProtocol));
+	const extHostModalDialogs = rpcProtocol.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(rpcProtocol));
+	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, logService));
+	const extHostWebviewWidgets = rpcProtocol.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(rpcProtocol));
+	const extHostModelView = rpcProtocol.set(SqlExtHostContext.ExtHostModelView, new ExtHostModelView(rpcProtocol));
+	const extHostDashboard = rpcProtocol.set(SqlExtHostContext.ExtHostDashboard, new ExtHostDashboard(rpcProtocol));
+	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol));
+	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
+
 
 	return {
 		vsCodeFactory: vsCodeFactory,
-		dataFactory: function (extension: IExtensionDescription): typeof data {
+		sqlopsFactory: function (extension: IExtensionDescription): typeof sqlops {
 			// namespace: accounts
-			const accounts: typeof data.accounts = {
-				registerAccountProvider(providerMetadata: data.AccountProviderMetadata, provider: data.AccountProvider): vscode.Disposable {
+			const accounts: typeof sqlops.accounts = {
+				registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): vscode.Disposable {
 					return extHostAccountManagement.$registerAccountProvider(providerMetadata, provider);
 				},
 				beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
@@ -73,17 +84,17 @@ export function createApiFactory(
 				endAutoOAuthDeviceCode(): void {
 					return extHostAccountManagement.$endAutoOAuthDeviceCode();
 				},
-				accountUpdated(updatedAccount: data.Account): void {
+				accountUpdated(updatedAccount: sqlops.Account): void {
 					return extHostAccountManagement.$accountUpdated(updatedAccount);
 				}
 			};
 
 			// namespace: connection
-			const connection: typeof data.connection = {
-				getActiveConnections(): Thenable<data.connection.Connection[]> {
+			const connection: typeof sqlops.connection = {
+				getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
 					return extHostConnectionManagement.$getActiveConnections();
 				},
-				getCurrentConnection(): Thenable<data.connection.Connection> {
+				getCurrentConnection(): Thenable<sqlops.connection.Connection> {
 					return extHostConnectionManagement.$getCurrentConnection();
 				},
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
@@ -92,32 +103,45 @@ export function createApiFactory(
 			};
 
 			// namespace: credentials
-			const credentials: typeof data.credentials = {
-				registerProvider(provider: data.CredentialProvider): vscode.Disposable {
+			const credentials: typeof sqlops.credentials = {
+				registerProvider(provider: sqlops.CredentialProvider): vscode.Disposable {
 					return extHostCredentialManagement.$registerCredentialProvider(provider);
 				},
-				getProvider(namespaceId: string): Thenable<data.CredentialProvider> {
+				getProvider(namespaceId: string): Thenable<sqlops.CredentialProvider> {
 					return extHostCredentialManagement.$getCredentialProvider(namespaceId);
 				}
 			};
 
+			// namespace: objectexplorer
+			const objectExplorer: typeof sqlops.objectexplorer = {
+				getNode(connectionId: string, nodePath?: string): Thenable<sqlops.objectexplorer.ObjectExplorerNode> {
+					return extHostObjectExplorer.$getNode(connectionId, nodePath);
+				},
+				getActiveConnectionNodes(): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
+					return extHostObjectExplorer.$getActiveConnectionNodes();
+				},
+				findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
+					return extHostObjectExplorer.$findNodes(connectionId, type, schema, name, database, parentObjectNames);
+				}
+			};
+
 			// namespace: serialization
-			const serialization: typeof data.serialization = {
-				registerProvider(provider: data.SerializationProvider): vscode.Disposable {
+			const serialization: typeof sqlops.serialization = {
+				registerProvider(provider: sqlops.SerializationProvider): vscode.Disposable {
 					return extHostSerializationProvider.$registerSerializationProvider(provider);
 				},
 			};
 
 			// namespace: serialization
-			const resources: typeof data.resources = {
-				registerResourceProvider(providerMetadata: data.ResourceProviderMetadata, provider: data.ResourceProvider): vscode.Disposable {
+			const resources: typeof sqlops.resources = {
+				registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, provider: sqlops.ResourceProvider): vscode.Disposable {
 					return extHostResourceProvider.$registerResourceProvider(providerMetadata, provider);
 				}
 			};
 
-			let registerConnectionProvider = (provider: data.ConnectionProvider): vscode.Disposable => {
+			let registerConnectionProvider = (provider: sqlops.ConnectionProvider): vscode.Disposable => {
 				// Connection callbacks
-				provider.registerOnConnectionComplete((connSummary: data.ConnectionInfoSummary) => {
+				provider.registerOnConnectionComplete((connSummary: sqlops.ConnectionInfoSummary) => {
 					extHostDataProvider.$onConnectComplete(provider.handle, connSummary);
 				});
 
@@ -125,31 +149,31 @@ export function createApiFactory(
 					extHostDataProvider.$onIntelliSenseCacheComplete(provider.handle, connectionUri);
 				});
 
-				provider.registerOnConnectionChanged((changedConnInfo: data.ChangedConnectionInfo) => {
+				provider.registerOnConnectionChanged((changedConnInfo: sqlops.ChangedConnectionInfo) => {
 					extHostDataProvider.$onConnectionChanged(provider.handle, changedConnInfo);
 				});
 
 				return extHostDataProvider.$registerConnectionProvider(provider);
 			};
 
-			let registerQueryProvider = (provider: data.QueryProvider): vscode.Disposable => {
-				provider.registerOnQueryComplete((result: data.QueryExecuteCompleteNotificationResult) => {
+			let registerQueryProvider = (provider: sqlops.QueryProvider): vscode.Disposable => {
+				provider.registerOnQueryComplete((result: sqlops.QueryExecuteCompleteNotificationResult) => {
 					extHostDataProvider.$onQueryComplete(provider.handle, result);
 				});
 
-				provider.registerOnBatchStart((batchInfo: data.QueryExecuteBatchNotificationParams) => {
+				provider.registerOnBatchStart((batchInfo: sqlops.QueryExecuteBatchNotificationParams) => {
 					extHostDataProvider.$onBatchStart(provider.handle, batchInfo);
 				});
 
-				provider.registerOnBatchComplete((batchInfo: data.QueryExecuteBatchNotificationParams) => {
+				provider.registerOnBatchComplete((batchInfo: sqlops.QueryExecuteBatchNotificationParams) => {
 					extHostDataProvider.$onBatchComplete(provider.handle, batchInfo);
 				});
 
-				provider.registerOnResultSetComplete((resultSetInfo: data.QueryExecuteResultSetCompleteNotificationParams) => {
+				provider.registerOnResultSetComplete((resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams) => {
 					extHostDataProvider.$onResultSetComplete(provider.handle, resultSetInfo);
 				});
 
-				provider.registerOnMessage((message: data.QueryExecuteMessageParams) => {
+				provider.registerOnMessage((message: sqlops.QueryExecuteMessageParams) => {
 					extHostDataProvider.$onQueryMessage(provider.handle, message);
 				});
 
@@ -160,84 +184,88 @@ export function createApiFactory(
 				return extHostDataProvider.$registerQueryProvider(provider);
 			};
 
-			let registerObjectExplorerProvider = (provider: data.ObjectExplorerProvider): vscode.Disposable => {
-				provider.registerOnSessionCreated((response: data.ObjectExplorerSession) => {
+			let registerObjectExplorerProvider = (provider: sqlops.ObjectExplorerProvider): vscode.Disposable => {
+				provider.registerOnSessionCreated((response: sqlops.ObjectExplorerSession) => {
 					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
 				});
 
-				provider.registerOnExpandCompleted((response: data.ObjectExplorerExpandInfo) => {
+				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
 					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
 				});
 
 				return extHostDataProvider.$registerObjectExplorerProvider(provider);
 			};
 
-			let registerTaskServicesProvider = (provider: data.TaskServicesProvider): vscode.Disposable => {
-				provider.registerOnTaskCreated((response: data.TaskInfo) => {
+			let registerTaskServicesProvider = (provider: sqlops.TaskServicesProvider): vscode.Disposable => {
+				provider.registerOnTaskCreated((response: sqlops.TaskInfo) => {
 					extHostDataProvider.$onTaskCreated(provider.handle, response);
 				});
 
-				provider.registerOnTaskStatusChanged((response: data.TaskProgressInfo) => {
+				provider.registerOnTaskStatusChanged((response: sqlops.TaskProgressInfo) => {
 					extHostDataProvider.$onTaskStatusChanged(provider.handle, response);
 				});
 
 				return extHostDataProvider.$registerTaskServicesProvider(provider);
 			};
 
-			let registerFileBrowserProvider = (provider: data.FileBrowserProvider): vscode.Disposable => {
-				provider.registerOnFileBrowserOpened((response: data.FileBrowserOpenedParams) => {
+			let registerFileBrowserProvider = (provider: sqlops.FileBrowserProvider): vscode.Disposable => {
+				provider.registerOnFileBrowserOpened((response: sqlops.FileBrowserOpenedParams) => {
 					extHostDataProvider.$onFileBrowserOpened(provider.handle, response);
 				});
 
-				provider.registerOnFolderNodeExpanded((response: data.FileBrowserExpandedParams) => {
+				provider.registerOnFolderNodeExpanded((response: sqlops.FileBrowserExpandedParams) => {
 					extHostDataProvider.$onFolderNodeExpanded(provider.handle, response);
 				});
 
-				provider.registerOnFilePathsValidated((response: data.FileBrowserValidatedParams) => {
+				provider.registerOnFilePathsValidated((response: sqlops.FileBrowserValidatedParams) => {
 					extHostDataProvider.$onFilePathsValidated(provider.handle, response);
 				});
 
 				return extHostDataProvider.$registerFileBrowserProvider(provider);
 			};
 
-			let registerScriptingProvider = (provider: data.ScriptingProvider): vscode.Disposable => {
-				provider.registerOnScriptingComplete((response: data.ScriptingCompleteResult) => {
+			let registerScriptingProvider = (provider: sqlops.ScriptingProvider): vscode.Disposable => {
+				provider.registerOnScriptingComplete((response: sqlops.ScriptingCompleteResult) => {
 					extHostDataProvider.$onScriptingComplete(provider.handle, response);
 				});
 
 				return extHostDataProvider.$registerScriptingProvider(provider);
 			};
 
-			let registerProfilerProvider = (provider: data.ProfilerProvider): vscode.Disposable => {
-				provider.registerOnSessionEventsAvailable((response: data.ProfilerSessionEvents) => {
+			let registerProfilerProvider = (provider: sqlops.ProfilerProvider): vscode.Disposable => {
+				provider.registerOnSessionEventsAvailable((response: sqlops.ProfilerSessionEvents) => {
 					extHostDataProvider.$onSessionEventsAvailable(provider.handle, response);
 				});
 
 				return extHostDataProvider.$registerProfilerProvider(provider);
 			};
 
-			let registerBackupProvider = (provider: data.BackupProvider): vscode.Disposable => {
+			let registerBackupProvider = (provider: sqlops.BackupProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerBackupProvider(provider);
 			};
 
-			let registerRestoreProvider = (provider: data.RestoreProvider): vscode.Disposable => {
+			let registerRestoreProvider = (provider: sqlops.RestoreProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerRestoreProvider(provider);
 			};
 
-			let registerMetadataProvider = (provider: data.MetadataProvider): vscode.Disposable => {
+			let registerMetadataProvider = (provider: sqlops.MetadataProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerMetadataProvider(provider);
 			};
 
-			let registerCapabilitiesServiceProvider = (provider: data.CapabilitiesProvider): vscode.Disposable => {
+			let registerCapabilitiesServiceProvider = (provider: sqlops.CapabilitiesProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerCapabilitiesServiceProvider(provider);
 			};
 
-			let registerAdminServicesProvider = (provider: data.AdminServicesProvider): vscode.Disposable => {
+			let registerAdminServicesProvider = (provider: sqlops.AdminServicesProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerAdminServicesProvider(provider);
 			};
 
+			let registerAgentServicesProvider = (provider: sqlops.AgentServicesProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerAgentServiceProvider(provider);
+			};
+
 			// namespace: dataprotocol
-			const dataprotocol: typeof data.dataprotocol = {
+			const dataprotocol: typeof sqlops.dataprotocol = {
 				registerBackupProvider,
 				registerConnectionProvider,
 				registerFileBrowserProvider,
@@ -249,21 +277,68 @@ export function createApiFactory(
 				registerTaskServicesProvider,
 				registerQueryProvider,
 				registerAdminServicesProvider,
+				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
-				onDidChangeLanguageFlavor(listener: (e: data.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
+				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				}
 			};
 
-			const window = {
-				createDialog(name: string) {
-					return extHostModalDialogs.createDialog(name);
+			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
+				createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
+					return extHostModelViewDialog.createDialog(title);
+				},
+				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
+					return extHostModelViewDialog.createTab(title);
+				},
+				createButton(label: string): sqlops.window.modelviewdialog.Button {
+					return extHostModelViewDialog.createButton(label);
+				},
+				openDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
+					return extHostModelViewDialog.open(dialog);
+				},
+				closeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
+					return extHostModelViewDialog.close(dialog);
 				}
 			};
 
+			const window: typeof sqlops.window = {
+				createDialog(name: string) {
+					return extHostModalDialogs.createDialog(name);
+				},
+
+				modelviewdialog: modelViewDialog
+			};
+
+			const tasks: typeof sqlops.tasks = {
+				registerTask(id: string, task: (...args: any[]) => any, thisArgs?: any): vscode.Disposable {
+					return extHostTasks.registerTask(id, task, thisArgs);
+				}
+			};
+
+			const workspace: typeof sqlops.workspace = {
+				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
+				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard
+			};
+
 			const dashboard = {
-				registerWebviewProvider(widgetId: string, handler: (webview: data.DashboardWebview) => void) {
+				registerWebviewProvider(widgetId: string, handler: (webview: sqlops.DashboardWebview) => void) {
 					extHostWebviewWidgets.$registerProvider(widgetId, handler);
+				},
+				registerModelViewProvider(widgetId: string, handler: (view: sqlops.ModelView) => void): void {
+					extHostModelView.$registerProvider(widgetId, handler);
+				}
+			};
+
+			// namespace: queryeditor
+			const queryEditor: typeof sqlops.queryeditor = {
+
+				connect(fileUri: string, connectionId: string): Thenable<void> {
+					return extHostQueryEditor.$connect(fileUri, connectionId);
+				},
+
+				runQuery(fileUri: string): void {
+					extHostQueryEditor.$runQuery(fileUri);
 				}
 			};
 
@@ -271,6 +346,7 @@ export function createApiFactory(
 				accounts,
 				connection,
 				credentials,
+				objectexplorer: objectExplorer,
 				resources,
 				serialization,
 				dataprotocol,
@@ -282,7 +358,10 @@ export function createApiFactory(
 				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode,
 				ScriptOperation: sqlExtHostTypes.ScriptOperation,
 				window,
-				dashboard
+				tasks,
+				dashboard,
+				workspace,
+				queryeditor: queryEditor
 			};
 		}
 	};
@@ -316,13 +395,13 @@ function createExtensionPathIndex(extensionService: ExtHostExtensionService): TP
 }
 
 function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IExtensionDescription>): void {
-	type ApiImpl = typeof vscode | typeof data;
+	type ApiImpl = typeof vscode | typeof sqlops;
 
 	// each extension is meant to get its own api implementation
 	const extApiImpl = new Map<string, typeof vscode>();
-	const dataExtApiImpl = new Map<string, typeof data>();
+	const dataExtApiImpl = new Map<string, typeof sqlops>();
 	let defaultApiImpl: typeof vscode;
-	let defaultDataApiImpl: typeof data;
+	let defaultDataApiImpl: typeof sqlops;
 
 	// The module factory looks for an entry in the API map for an extension. If found, it reuses this.
 	// If not, it loads it & saves it in the map
@@ -360,11 +439,11 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 				defaultApiImpl,
 				(impl) => defaultApiImpl = <typeof vscode>impl,
 				parent);
-		} else if (request === 'data') {
+		} else if (request === 'sqlops') {
 			return getModuleFactory(dataExtApiImpl,
-				(ext) => factory.dataFactory(ext),
+				(ext) => factory.sqlopsFactory(ext),
 				defaultDataApiImpl,
-				(impl) => defaultDataApiImpl = <typeof data>impl,
+				(impl) => defaultDataApiImpl = <typeof sqlops>impl,
 				parent);
 		} else {
 			// Allow standard node_module load to occur

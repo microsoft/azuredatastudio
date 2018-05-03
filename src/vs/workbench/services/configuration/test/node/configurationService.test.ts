@@ -24,7 +24,7 @@ import { ConfigurationEditingErrorCode } from 'vs/workbench/services/configurati
 import { FileChangeType, FileChangesEvent, IFileService } from 'vs/platform/files/common/files';
 import { IWorkspaceContextService, WorkbenchState, IWorkspaceFoldersChangeEvent } from 'vs/platform/workspace/common/workspace';
 import { ConfigurationTarget, IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
-import { workbenchInstantiationService, TestTextResourceConfigurationService, TestTextFileService, TestLifecycleService } from 'vs/workbench/test/workbenchTestServices';
+import { workbenchInstantiationService, TestTextResourceConfigurationService, TestTextFileService, TestLifecycleService, TestEnvironmentService } from 'vs/workbench/test/workbenchTestServices';
 import { FileService } from 'vs/workbench/services/files/node/fileService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
@@ -55,9 +55,7 @@ function setUpFolder(folderName: string, parentDir: string): TPromise<string> {
 	const folderDir = path.join(parentDir, folderName);
 	// {{SQL CARBON EDIT}}
 	const workspaceSettingsDir = path.join(folderDir, '.sqlops');
-	return new TPromise((c, e) => {
-		extfs.mkdirp(workspaceSettingsDir, 493);
-	});
+	return mkdirp(workspaceSettingsDir, 493).then(() => folderDir);
 }
 
 function setUpWorkspace(folders: string[]): TPromise<{ parentDir: string, configPath: string }> {
@@ -79,7 +77,6 @@ function setUpWorkspace(folders: string[]): TPromise<{ parentDir: string, config
 
 
 suite('WorkspaceContextService - Folder', () => {
-
 	test('getWorkspace()', () => {
 		assert.equal(0, 0);
 	});

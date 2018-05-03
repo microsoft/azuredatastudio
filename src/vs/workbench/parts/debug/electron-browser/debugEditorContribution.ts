@@ -19,7 +19,8 @@ import { StandardTokenType } from 'vs/editor/common/modes';
 import { DEFAULT_WORD_REGEXP } from 'vs/editor/common/model/wordHelper';
 import { ICodeEditor, IEditorMouseEvent, MouseTargetType } from 'vs/editor/browser/editorBrowser';
 import { registerEditorContribution } from 'vs/editor/browser/editorExtensions';
-import { IDecorationOptions, IModelDecorationOptions, IModelDeltaDecoration, TrackedRangeStickiness } from 'vs/editor/common/editorCommon';
+import { IDecorationOptions } from 'vs/editor/common/editorCommon';
+import { IModelDecorationOptions, IModelDeltaDecoration, TrackedRangeStickiness } from 'vs/editor/common/model';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { Range } from 'vs/editor/common/core/range';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -27,7 +28,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IContextMenuService, ContextSubMenu } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { DebugHoverWidget } from 'vs/workbench/parts/debug/electron-browser/debugHover';
 import { RemoveBreakpointAction, EditConditionalBreakpointAction, EnableBreakpointAction, DisableBreakpointAction, AddConditionalBreakpointAction } from 'vs/workbench/parts/debug/browser/debugActions';
 import { IDebugEditorContribution, IDebugService, State, IBreakpoint, EDITOR_CONTRIBUTION_ID, CONTEXT_BREAKPOINT_WIDGET_VISIBLE, IStackFrame, IDebugConfiguration, IExpression, IExceptionInfo } from 'vs/workbench/parts/debug/common/debug';
@@ -40,7 +41,7 @@ import { CoreEditingCommands } from 'vs/editor/browser/controller/coreCommands';
 import { first } from 'vs/base/common/arrays';
 import { IMarginData } from 'vs/editor/browser/controller/mouseTarget';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { IListService } from 'vs/platform/list/browser/listService';
+import { ContextSubMenu } from 'vs/base/browser/contextmenu';
 
 const HOVER_DELAY = 300;
 const LAUNCH_JSON_REGEX = /launch\.json$/;
@@ -77,13 +78,12 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 		@ICommandService private commandService: ICommandService,
 		@ICodeEditorService private codeEditorService: ICodeEditorService,
 		@ITelemetryService private telemetryService: ITelemetryService,
-		@IListService listService: IListService,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IThemeService themeService: IThemeService,
 		@IKeybindingService private keybindingService: IKeybindingService
 	) {
 		this.breakpointHintDecoration = [];
-		this.hoverWidget = new DebugHoverWidget(this.editor, this.debugService, this.instantiationService, themeService, contextKeyService, listService);
+		this.hoverWidget = new DebugHoverWidget(this.editor, this.debugService, this.instantiationService, themeService);
 		this.toDispose = [];
 		this.showHoverScheduler = new RunOnceScheduler(() => this.showHover(this.hoverRange, false), HOVER_DELAY);
 		this.hideHoverScheduler = new RunOnceScheduler(() => this.hoverWidget.hide(), HOVER_DELAY);
@@ -409,12 +409,13 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 	// configuration widget
 	private updateConfigurationWidgetVisibility(): void {
 		const model = this.editor.getModel();
+		if (this.configurationWidget) {
+			this.configurationWidget.dispose();
+		}
 		if (model && LAUNCH_JSON_REGEX.test(model.uri.toString())) {
 			this.configurationWidget = this.instantiationService.createInstance(FloatingClickWidget, this.editor, nls.localize('addConfiguration', "Add Configuration..."), null);
 			this.configurationWidget.render();
 			this.toDispose.push(this.configurationWidget.onClick(() => this.addLaunchConfiguration().done(undefined, errors.onUnexpectedError)));
-		} else if (this.configurationWidget) {
-			this.configurationWidget.dispose();
 		}
 	}
 
@@ -468,7 +469,7 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 	}
 
 	private static BREAKPOINT_HELPER_DECORATION: IModelDecorationOptions = {
-		glyphMarginClassName: 'debug-breakpoint-hint-glyph',
+		glyphMarginClassName: 'debug-breakpoint-hint',
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
 	};
 
@@ -581,6 +582,10 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 		if (!this.wordToLineNumbersMap) {
 			this.wordToLineNumbersMap = new Map<string, Position[]>();
 			const model = this.editor.getModel();
+			if (!model) {
+				return this.wordToLineNumbersMap;
+			}
+
 			// For every word in every line, map its ranges for fast lookup
 			for (let lineNumber = 1, len = model.getLineCount(); lineNumber <= len; ++lineNumber) {
 				const lineContent = model.getLineContent(lineNumber);
@@ -592,11 +597,14 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 
 				model.forceTokenization(lineNumber);
 				const lineTokens = model.getLineTokens(lineNumber);
-				for (let token = lineTokens.firstToken(); !!token; token = token.next()) {
-					const tokenStr = lineContent.substring(token.startOffset, token.endOffset);
+				for (let tokenIndex = 0, tokenCount = lineTokens.getCount(); tokenIndex < tokenCount; tokenIndex++) {
+					const tokenStartOffset = lineTokens.getStartOffset(tokenIndex);
+					const tokenEndOffset = lineTokens.getEndOffset(tokenIndex);
+					const tokenType = lineTokens.getStandardTokenType(tokenIndex);
+					const tokenStr = lineContent.substring(tokenStartOffset, tokenEndOffset);
 
 					// Token is a word and not a comment
-					if (token.tokenType === StandardTokenType.Other) {
+					if (tokenType === StandardTokenType.Other) {
 						DEFAULT_WORD_REGEXP.lastIndex = 0; // We assume tokens will usually map 1:1 to words if they match
 						const wordMatch = DEFAULT_WORD_REGEXP.exec(tokenStr);
 
@@ -606,7 +614,7 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 								this.wordToLineNumbersMap.set(word, []);
 							}
 
-							this.wordToLineNumbersMap.get(word).push(new Position(lineNumber, token.startOffset));
+							this.wordToLineNumbersMap.get(word).push(new Position(lineNumber, tokenStartOffset));
 						}
 					}
 				}

@@ -6,13 +6,14 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/parts/connection/common/connectionManagement';
-import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import Event, { Emitter } from 'vs/base/common/event';
-import { EditSessionReadyParams } from 'data';
+import { EditSessionReadyParams } from 'sqlops';
 import URI from 'vs/base/common/uri';
 import nls = require('vs/nls');
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 
 /**
  * Input for the EditDataEditor. This input is simply a wrapper around a QueryResultsInput for the QueryResultsEditor
@@ -35,7 +36,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	constructor(private _uri: URI, private _schemaName, private _tableName,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IMessageService private _messageService: IMessageService
+		@INotificationService private notificationService: INotificationService
 	) {
 		super();
 		this._visible = false;
@@ -116,7 +117,11 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		} else {
 			this._refreshButtonEnabled = false;
 			this._stopButtonEnabled = false;
-			this._messageService.show(Severity.Error, result.message);
+
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: result.message
+			});
 		}
 		this._editorInitializing.fire(false);
 		this._updateTaskbar.fire(this);
@@ -128,7 +133,11 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 	public onConnectReject(error?: string): void {
 		if (error) {
-			this._messageService.show(Severity.Error, nls.localize('connectionFailure', 'Edit Data Session Failed To Connect'));
+
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: nls.localize('connectionFailure', 'Edit Data Session Failed To Connect')
+			});
 		}
 	}
 

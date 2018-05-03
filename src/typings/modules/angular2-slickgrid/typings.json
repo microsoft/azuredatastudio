@@ -1,6 +1,9 @@
 {
   "resolution": "main",
   "tree": {
-    "src": "npm:angular2-slickgrid/index.d.ts"
+	"raw": "npm:angular2-slickgrid",
+	"main": "out/index.js",
+	"version": "1.3.9",
+	"name": "angular2-slickgrid"
   }
 }

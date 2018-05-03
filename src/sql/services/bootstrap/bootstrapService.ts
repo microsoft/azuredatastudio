@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NgModuleRef } from '@angular/core';
+import { NgModuleRef, InjectionToken } from '@angular/core';
 import { BootstrapParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IConnectionManagementService, IConnectionDialogService, IErrorMessageService }
 	from 'sql/parts/connection/common/connectionManagement';
 import { IMetadataService } from 'sql/services/metadata/metadataService';
-import { IObjectExplorerService } from 'sql/parts/registeredServer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
@@ -22,7 +22,8 @@ import { ISqlOAuthService } from 'sql/common/sqlOAuthService';
 import { IFileBrowserService, IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { IDashboardWebviewService } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
+import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
+import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
 
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -33,13 +34,16 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IMessageService } from 'vs/platform/message/common/message';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export const BOOTSTRAP_SERVICE_ID = 'bootstrapService';
 export const IBootstrapService = createDecorator<IBootstrapService>(BOOTSTRAP_SERVICE_ID);
@@ -76,7 +80,7 @@ export interface IBootstrapService {
 	insightsDialogService: IInsightsDialogService;
 	contextViewService: IContextViewService;
 	restoreDialogService: IRestoreDialogController;
-	messageService: IMessageService;
+	notificationService: INotificationService;
 	workspaceContextService: IWorkspaceContextService;
 	accountManagementService: IAccountManagementService;
 	windowsService: IWindowsService;
@@ -89,7 +93,11 @@ export interface IBootstrapService {
 	clipboardService: IClipboardService;
 	capabilitiesService: ICapabilitiesService;
 	configurationEditorService: ConfigurationEditingService;
-	dashboardWebviewService: IDashboardWebviewService;
+	commandService: ICommandService;
+	dashboardViewService: IDashboardViewService;
+	modelViewService: IModelViewService;
+	jobManagementService: IJobManagementService;
+	environmentService: IEnvironmentService;
 
 	/*
 	* Bootstraps the Angular module described. Components that need singleton services should inject the
@@ -110,7 +118,7 @@ export interface IBootstrapService {
 	* Gets the "params" entry associated with the given id and unassociates the id/entry pair.
 	* Returns undefined if no entry is found.
 	*/
-	getBootstrapParams(id: string): any;
+	getBootstrapParams<T extends BootstrapParams>(id: string): T;
 
 	/*
 	* Gets the next unique selector given the baseSelectorString. A unique selector is the baseSelectorString with a

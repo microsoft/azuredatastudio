@@ -70,6 +70,7 @@ interface Asset {
 	hash: string;
 	sha256hash: string;
 	size: number;
+	supportsFastUpdate?: boolean;
 }
 
 function createOrUpdate(commit: string, quality: string, platform: string, type: string, release: NewDocument, asset: Asset, isUpdate: boolean): Promise<void> {
@@ -203,16 +204,29 @@ async function publish(commit: string, quality: string, platform: string, type: 
 		// mooncake is fussy and far away, this is needed!
 		mooncakeBlobService.defaultClientRequestTimeoutInMs = 10 * 60 * 1000;
 
-		await assertContainer(mooncakeBlobService, quality);
+		await Promise.all([
+			assertContainer(blobService, quality),
+			assertContainer(mooncakeBlobService, quality)
+		]);
 
-		const mooncakeBlobExists = await doesAssetExist(mooncakeBlobService, quality, blobName);
+		const [blobExists, moooncakeBlobExists] = await Promise.all([
+			doesAssetExist(blobService, quality, blobName),
+			doesAssetExist(mooncakeBlobService, quality, blobName)
+		]);
 
-		if (!mooncakeBlobExists) {
+		const promises = [];
+
+		if (!blobExists) {
+			promises.push(uploadBlob(blobService, quality, blobName, file));
+		}
+
+		if (!moooncakeBlobExists) {
 			promises.push(uploadBlob(mooncakeBlobService, quality, blobName, file));
 		}
 	} else {
 		console.log('Skipping Mooncake publishing.');
 	}
+
 
 	if (promises.length === 0) {
 		console.log(`Blob ${quality}, ${blobName} already exists, not publishing again.`);
@@ -239,6 +253,13 @@ async function publish(commit: string, quality: string, platform: string, type: 
 		sha256hash,
 		size
 	};
+
+	// Remove this if we ever need to rollback fast updates for windows
+	if (/win32/.test(platform)) {
+		asset.supportsFastUpdate = true;
+	}
+
+	console.log('Asset:', JSON.stringify(asset, null, '  '));
 
 	const release = {
 		id: commit,

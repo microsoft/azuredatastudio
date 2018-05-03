@@ -5,16 +5,18 @@
 
 'use strict';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import Event, { Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
-import { IMessageService, IConfirmation, Severity } from 'vs/platform/message/common/message';
 
 import { error } from 'sql/base/common/log';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IConfirmationService, IConfirmation } from 'vs/platform/dialogs/common/dialogs';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 
 /**
  * Actions to add a new account
@@ -55,16 +57,16 @@ export class AddAccountAction extends Action {
 		return new TPromise((resolve, reject) => {
 			self._accountManagementService.addAccount(self._providerId)
 				.then(
-					() => {
-						self._addAccountCompleteEmitter.fire();
-						resolve(true);
-					},
-					err => {
-						error(`Error while adding account: ${err}`);
-						self._addAccountErrorEmitter.fire(err);
-						self._addAccountCompleteEmitter.fire();
-						reject(err);
-					}
+				() => {
+					self._addAccountCompleteEmitter.fire();
+					resolve(true);
+				},
+				err => {
+					error(`Error while adding account: ${err}`);
+					self._addAccountErrorEmitter.fire(err);
+					self._addAccountCompleteEmitter.fire();
+					reject(err);
+				}
 				);
 		});
 	}
@@ -78,8 +80,9 @@ export class RemoveAccountAction extends Action {
 	public static LABEL = localize('removeAccount', 'Remove account');
 
 	constructor(
-		private _account: data.Account,
-		@IMessageService private _messageService: IMessageService,
+		private _account: sqlops.Account,
+		@IConfirmationService private _confirmationService: IConfirmationService,
+		@INotificationService private _notificationService: INotificationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
@@ -92,28 +95,31 @@ export class RemoveAccountAction extends Action {
 		// Ask for Confirm
 		let confirm: IConfirmation = {
 			message: localize('confirmRemoveUserAccountMessage', "Are you sure you want to remove '{0}'?", this._account.displayInfo.displayName),
-			primaryButton: localize('yes', 'Yes'),
-			secondaryButton: localize('no', 'No'),
+			primaryButton: localize('accountActions.yes', 'Yes'),
+			secondaryButton: localize('accountActions.no', 'No'),
 			type: 'question'
 		};
 
-		let confirmPromise: boolean = this._messageService.confirm(confirm);
-		if (!confirmPromise) {
-			return TPromise.as(false);
-		} else {
-			return new TPromise((resolve, reject) => {
-				self._accountManagementService.removeAccount(self._account.key)
-					.then(
-						(result) => { resolve(result); },
-						(err) => {
-							// Must handle here as this is an independent action
-							self._errorMessageService.showDialog(Severity.Error,
-								localize('removeAccountFailed', 'Failed to remove account'), err);
-							resolve(false);
-						}
-					);
-			});
-		}
+		return this._confirmationService.confirm(confirm).then(result => {
+			if (!result) {
+				return TPromise.as(false);
+			} else {
+				return new TPromise((resolve, reject) => {
+					self._accountManagementService.removeAccount(self._account.key)
+						.then(
+							(result) => { resolve(result); },
+							(err) => {
+								// Must handle here as this is an independent action
+								self._notificationService.notify({
+									severity: Severity.Error,
+									message: localize('removeAccountFailed', 'Failed to remove account')
+								});
+								resolve(false);
+							}
+						);
+				});
+			}
+		});
 	}
 }
 
@@ -143,7 +149,7 @@ export class ApplyFilterAction extends Action {
 export class RefreshAccountAction extends Action {
 	public static ID = 'account.refresh';
 	public static LABEL = localize('refreshAccount', 'Reenter your credentials');
-	public account: data.Account;
+	public account: sqlops.Account;
 
 	constructor(
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
@@ -156,14 +162,14 @@ export class RefreshAccountAction extends Action {
 			if (self.account) {
 				self._accountManagementService.refreshAccount(self.account)
 					.then(
-						() => {
-							resolve(true);
-						},
-						err => {
-							error(`Error while refreshing account: ${err}`);
-							reject(err);
-						}
-				);
+					() => {
+						resolve(true);
+					},
+					err => {
+						error(`Error while refreshing account: ${err}`);
+						reject(err);
+					}
+					);
 			} else {
 				let errorMessage = localize('NoAccountToRefresh', 'There is no account to refresh');
 				reject(errorMessage);

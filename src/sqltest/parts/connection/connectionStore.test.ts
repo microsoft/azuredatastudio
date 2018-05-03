@@ -15,11 +15,13 @@ import { CredentialsService } from 'sql/services/credentials/credentialsService'
 import * as assert from 'assert';
 import { Memento } from 'vs/workbench/common/memento';
 import { CapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { Emitter } from 'vs/base/common/event';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { CapabilitiesTestService } from '../../stubs/capabilitiesTestService';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 suite('SQL ConnectionStore tests', () => {
 	let defaultNamedProfile: IConnectionProfile;
@@ -29,13 +31,11 @@ suite('SQL ConnectionStore tests', () => {
 	let connectionConfig: TypeMoq.Mock<ConnectionConfig>;
 	let workspaceConfigurationServiceMock: TypeMoq.Mock<WorkspaceConfigurationTestService>;
 	let storageServiceMock: TypeMoq.Mock<StorageTestService>;
-	let capabilitiesService: TypeMoq.Mock<CapabilitiesService>;
+	let capabilitiesService: CapabilitiesTestService;
 	let mementoArray: any = [];
 	let maxRecent = 5;
-	let msSQLCapabilities: data.DataProtocolServerCapabilities;
+	let msSQLCapabilities: ConnectionProviderProperties;
 	let defaultNamedConnectionProfile: ConnectionProfile;
-	let onProviderRegistered = new Emitter<data.DataProtocolServerCapabilities>();
-
 
 	setup(() => {
 		defaultNamedProfile = Object.assign({}, {
@@ -96,84 +96,75 @@ suite('SQL ConnectionStore tests', () => {
 			}
 		};
 
-		capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesService, TypeMoq.MockBehavior.Loose, extensionManagementServiceMock, {});
-		let capabilities: data.DataProtocolServerCapabilities[] = [];
-		let connectionProvider: data.ConnectionProviderOptions = {
-			options: [
-				{
-					name: 'serverName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.serverName,
-					valueType: 0
-				},
-				{
-					name: 'databaseName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.databaseName,
-					valueType: 0
-				},
-				{
-					name: 'userName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.userName,
-					valueType: 0
-				},
-				{
-					name: 'authenticationType',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.authType,
-					valueType: 0
-				},
-				{
-					name: 'password',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.password,
-					valueType: 0
-				}
-			]
-		};
+		capabilitiesService = new CapabilitiesTestService();
+		let connectionProvider: sqlops.ConnectionOption[] = [
+			{
+				name: 'serverName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.serverName,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'databaseName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.databaseName,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'userName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.userName,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'authenticationType',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.authType,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'password',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.password,
+				valueType: ServiceOptionType.string
+			}
+		];
 		msSQLCapabilities = {
-			protocolVersion: '1',
-			providerName: 'MSSQL',
-			providerDisplayName: 'MSSQL',
-			connectionProvider: connectionProvider,
-			adminServicesProvider: undefined,
-			features: undefined
+			providerId: 'MSSQL',
+			displayName: 'MSSQL',
+			connectionOptions: connectionProvider
 		};
-		capabilities.push(msSQLCapabilities);
-		capabilitiesService.setup(x => x.getCapabilities()).returns(() => capabilities);
-		capabilitiesService.setup(x => x.onProviderRegisteredEvent).returns(() => onProviderRegistered.event);
-		connectionConfig.setup(x => x.getCapabilities('MSSQL')).returns(() => msSQLCapabilities);
+		capabilitiesService.capabilities['MSSQL'] = { connection: msSQLCapabilities };
 		let groups: IConnectionProfileGroup[] = [
 			{
 				id: 'root',
@@ -192,7 +183,7 @@ suite('SQL ConnectionStore tests', () => {
 		];
 		connectionConfig.setup(x => x.getAllGroups()).returns(() => groups);
 
-		defaultNamedConnectionProfile = new ConnectionProfile(msSQLCapabilities, defaultNamedProfile);
+		defaultNamedConnectionProfile = new ConnectionProfile(capabilitiesService, defaultNamedProfile);
 	});
 
 	test('addActiveConnection should limit recent connection saves to the MaxRecentConnections amount', (done) => {
@@ -206,11 +197,11 @@ suite('SQL ConnectionStore tests', () => {
 		// When saving 4 connections
 		// Expect all of them to be saved even if size is limited to 3
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService.object, connectionConfig.object);
+			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let promise = Promise.resolve();
 		for (let i = 0; i < numCreds; i++) {
 			let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
-			let connectionProfile = new ConnectionProfile(msSQLCapabilities, cred);
+			let connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 			promise = promise.then(() => {
 				return connectionStore.addActiveConnection(connectionProfile);
 			}).then(() => {
@@ -243,12 +234,12 @@ suite('SQL ConnectionStore tests', () => {
 		// Given we save the same connection twice
 		// Then expect the only 1 instance of that connection to be listed in the MRU
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService.object, connectionConfig.object);
+			credentialStore.object, capabilitiesService, connectionConfig.object);
 		connectionStore.clearActiveConnections();
 		connectionStore.clearRecentlyUsed();
 		let promise = Promise.resolve();
 		let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + 1 });
-		let connectionProfile = new ConnectionProfile(msSQLCapabilities, cred);
+		let connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 		promise = promise.then(() => {
 			return connectionStore.addActiveConnection(defaultNamedConnectionProfile);
 		}).then(() => {
@@ -278,7 +269,7 @@ suite('SQL ConnectionStore tests', () => {
 
 		// Given we save 1 connection with password and multiple other connections without
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService.object, connectionConfig.object);
+			credentialStore.object, capabilitiesService, connectionConfig.object);
 		connectionStore.clearActiveConnections();
 		connectionStore.clearRecentlyUsed();
 		let integratedCred = Object.assign({}, defaultNamedProfile, {
@@ -291,7 +282,7 @@ suite('SQL ConnectionStore tests', () => {
 			serverName: defaultNamedProfile.serverName + 'NoPwd',
 			password: ''
 		});
-		let connectionProfile = new ConnectionProfile(msSQLCapabilities, defaultNamedProfile);
+		let connectionProfile = new ConnectionProfile(capabilitiesService, defaultNamedProfile);
 
 		let expectedCredCount = 0;
 		let promise = Promise.resolve();
@@ -309,7 +300,7 @@ suite('SQL ConnectionStore tests', () => {
 		}).then(() => {
 			// When add integrated auth connection
 			expectedCredCount++;
-			let integratedCredConnectionProfile = new ConnectionProfile(msSQLCapabilities, integratedCred);
+			let integratedCredConnectionProfile = new ConnectionProfile(capabilitiesService, integratedCred);
 			return connectionStore.addActiveConnection(integratedCredConnectionProfile);
 		}).then(() => {
 			let current = connectionStore.getRecentlyUsedConnections();
@@ -319,7 +310,7 @@ suite('SQL ConnectionStore tests', () => {
 		}).then(() => {
 			// When add connection without password
 			expectedCredCount++;
-			let noPwdCredConnectionProfile = new ConnectionProfile(msSQLCapabilities, noPwdCred);
+			let noPwdCredConnectionProfile = new ConnectionProfile(capabilitiesService, noPwdCred);
 			return connectionStore.addActiveConnection(noPwdCredConnectionProfile);
 		}).then(() => {
 			let current = connectionStore.getRecentlyUsedConnections();
@@ -333,7 +324,7 @@ suite('SQL ConnectionStore tests', () => {
 		connectionConfig.setup(x => x.getConnections(TypeMoq.It.isAny())).returns(() => []);
 
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService.object, connectionConfig.object);
+			credentialStore.object, capabilitiesService, connectionConfig.object);
 
 		// When we clear the connections list and get the list of available connection items
 		connectionStore.clearActiveConnections();
@@ -351,7 +342,7 @@ suite('SQL ConnectionStore tests', () => {
 	test('isPasswordRequired should return true for MSSQL SqlLogin', () => {
 
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService.object, connectionConfig.object);
+			credentialStore.object, capabilitiesService, connectionConfig.object);
 
 		let expected: boolean = true;
 		let actual = connectionStore.isPasswordRequired(defaultNamedProfile);
@@ -361,8 +352,8 @@ suite('SQL ConnectionStore tests', () => {
 
 	test('isPasswordRequired should return true for MSSQL SqlLogin for connection profile object', () => {
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService.object, connectionConfig.object);
-		let connectionProfile = new ConnectionProfile(msSQLCapabilities, defaultNamedProfile);
+			credentialStore.object, capabilitiesService, connectionConfig.object);
+		let connectionProfile = new ConnectionProfile(capabilitiesService, defaultNamedProfile);
 		let expected: boolean = true;
 		let actual = connectionStore.isPasswordRequired(connectionProfile);
 
@@ -371,26 +362,22 @@ suite('SQL ConnectionStore tests', () => {
 
 	test('isPasswordRequired should return false if the password is not required in capabilities', () => {
 		let providerName: string = 'providername';
-		let connectionProvider: data.ConnectionProviderOptions = {
-			options: msSQLCapabilities.connectionProvider.options.map(o => {
-				if (o.name === 'password') {
-					o.isRequired = false;
-				}
-				return o;
-			})
-		};
+		let connectionProvider = msSQLCapabilities.connectionOptions.map(o => {
+			if (o.name === 'password') {
+				o.isRequired = false;
+			}
+			return o;
+		});
 		let providerCapabilities = {
-			protocolVersion: '1',
-			providerName: providerName,
-			providerDisplayName: providerName,
-			connectionProvider: connectionProvider,
-			adminServicesProvider: undefined,
-			features: undefined
+			providerId: providerName,
+			displayName: providerName,
+			connectionOptions: connectionProvider
 		};
-		connectionConfig.setup(x => x.getCapabilities(providerName)).returns(() => providerCapabilities);
+
+		capabilitiesService.capabilities[providerName] = { connection: providerCapabilities };
 
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService.object, connectionConfig.object);
+			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let connectionProfile: IConnectionProfile = Object.assign({}, defaultNamedProfile, { providerName: providerName });
 		let expected: boolean = false;
 		let actual = connectionStore.isPasswordRequired(connectionProfile);
@@ -407,7 +394,7 @@ suite('SQL ConnectionStore tests', () => {
 		credentialStore.setup(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService.object, connectionConfig.object);
+			credentialStore.object, capabilitiesService, connectionConfig.object);
 
 		connectionStore.saveProfile(connectionProfile).then(profile => {
 			// add connection should be called with a profile without password
@@ -424,7 +411,7 @@ suite('SQL ConnectionStore tests', () => {
 
 	test('addConnectionToMemento should not add duplicate items', () => {
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService.object, connectionConfig.object);
+			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let mementoKey = 'RECENT_CONNECTIONS2';
 		connectionStore.clearFromMemento(mementoKey);
 		let connectionProfile: IConnectionProfile = Object.assign({}, defaultNamedProfile);
@@ -466,7 +453,7 @@ suite('SQL ConnectionStore tests', () => {
 
 	test('getGroupFromId returns undefined when there is no group with the given ID', () => {
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService.object, connectionConfig.object);
+			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let group = connectionStore.getGroupFromId('invalidId');
 		assert.equal(group, undefined, 'Returned group was not undefined when there was no group with the given ID');
 	});
@@ -482,7 +469,7 @@ suite('SQL ConnectionStore tests', () => {
 		let newConnectionConfig = TypeMoq.Mock.ofType(ConnectionConfig);
 		newConnectionConfig.setup(x => x.getAllGroups()).returns(() => groups);
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService.object, newConnectionConfig.object);
+			credentialStore.object, capabilitiesService, newConnectionConfig.object);
 
 		// If I look up the parent group using its ID, then I get back the correct group
 		let actualGroup = connectionStore.getGroupFromId(parentGroupId);
@@ -495,14 +482,14 @@ suite('SQL ConnectionStore tests', () => {
 
 	test('getProfileWithoutPassword can return the profile without credentials in the password property or options dictionary', () => {
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService.object, connectionConfig.object);
+			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let profile = Object.assign({}, defaultNamedProfile);
 		profile.options['password'] = profile.password;
 		profile.id = 'testId';
 		let expectedProfile = Object.assign({}, profile);
 		expectedProfile.password = '';
 		expectedProfile.options['password'] = '';
-		expectedProfile = ConnectionProfile.convertToConnectionProfile(msSQLCapabilities, expectedProfile).toIConnectionProfile();
+		expectedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, expectedProfile).toIConnectionProfile();
 		let profileWithoutCredentials = connectionStore.getProfileWithoutPassword(profile);
 		assert.deepEqual(profileWithoutCredentials.toIConnectionProfile(), expectedProfile);
 	});

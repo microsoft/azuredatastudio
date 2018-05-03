@@ -11,12 +11,18 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { DashboardInput } from './dashboardInput';
 import { DashboardModule } from './dashboard.module';
 import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { DASHBOARD_SELECTOR } from 'sql/parts/dashboard/dashboard.component';
+import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
+import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 
 export class DashboardEditor extends BaseEditor {
 
@@ -28,7 +34,10 @@ export class DashboardEditor extends BaseEditor {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IBootstrapService private _bootstrapService: IBootstrapService
+		@IBootstrapService private _bootstrapService: IBootstrapService,
+		@IContextKeyService private _contextKeyService: IContextKeyService,
+		@IDashboardService private _dashboardService: IDashboardService,
+		@IConnectionManagementService private _connMan: IConnectionManagementService
 	) {
 		super(DashboardEditor.ID, telemetryService, themeService);
 	}
@@ -47,6 +56,15 @@ export class DashboardEditor extends BaseEditor {
 	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
 	 */
 	public focus(): void {
+
+		let profile: IConnectionProfile;
+		if (this.input.connectionProfile instanceof ConnectionProfile) {
+			profile = this.input.connectionProfile.toIConnectionProfile();
+		} else {
+			profile = this.input.connectionProfile;
+		}
+		let serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
+		this._dashboardService.changeToDashboard({ profile, serverInfo });
 	}
 
 	/**
@@ -84,9 +102,23 @@ export class DashboardEditor extends BaseEditor {
 	 */
 	private bootstrapAngular(input: DashboardInput): void {
 		// Get the bootstrap params and perform the bootstrap
+		let profile: IConnectionProfile;
+		if (input.connectionProfile instanceof ConnectionProfile) {
+			profile = input.connectionProfile.toIConnectionProfile();
+		} else {
+			profile = this.input.connectionProfile;
+		}
+		let serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
+		this._dashboardService.changeToDashboard({ profile, serverInfo });
+		let scopedContextService = this._contextKeyService.createScoped(input.container);
+		let connectionContextKey = new ConnectionContextkey(scopedContextService);
+		connectionContextKey.set(input.connectionProfile);
+
 		let params: DashboardComponentParams = {
 			connection: input.connectionProfile,
-			ownerUri: input.uri
+			ownerUri: input.uri,
+			scopedContextService,
+			connectionContextKey
 		};
 
 		input.hasBootstrapped = true;

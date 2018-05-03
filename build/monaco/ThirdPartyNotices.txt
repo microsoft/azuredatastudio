@@ -32,7 +32,7 @@ END OF winjs NOTICES AND INFORMATION
 
 %% string_scorer version 0.1.20 (https://github.com/joshaven/string_score)
 =========================================
-This software is released under the MIT license:
+This software is released under the Source EULA:
 
 Copyright (c) Joshaven Potter
 
@@ -60,7 +60,7 @@ END OF string_scorer NOTICES AND INFORMATION
 
 %% chjj-marked NOTICES AND INFORMATION BEGIN HERE
 =========================================
-The MIT License (MIT)
+The Source EULA
 
 Copyright (c) 2011-2014, Christopher Jeffrey (https://github.com/chjj/)
 

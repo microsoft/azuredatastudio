@@ -7,7 +7,7 @@
 
 import URI from 'vs/base/common/uri';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IUntitledEditorService, UNTITLED_SCHEMA } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import errors = require('vs/base/common/errors');
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
@@ -17,6 +17,7 @@ import { Position, IResourceInput, IUntitledResourceInput } from 'vs/platform/ed
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { Schemas } from 'vs/base/common/network';
 import { ILifecycleService, LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { IFileService } from 'vs/platform/files/common/files';
 
 export class BackupRestorer implements IWorkbenchContribution {
 
@@ -30,7 +31,8 @@ export class BackupRestorer implements IWorkbenchContribution {
 		@IBackupFileService private backupFileService: IBackupFileService,
 		@ITextFileService private textFileService: ITextFileService,
 		@IEditorGroupService private groupService: IEditorGroupService,
-		@ILifecycleService private lifecycleService: ILifecycleService
+		@ILifecycleService private lifecycleService: ILifecycleService,
+		@IFileService private fileService: IFileService
 	) {
 		this.restoreBackups();
 	}
@@ -69,9 +71,9 @@ export class BackupRestorer implements IWorkbenchContribution {
 
 		backups.forEach(backup => {
 			if (stacks.isOpen(backup)) {
-				if (backup.scheme === Schemas.file) {
+				if (this.fileService.canHandleResource(backup)) {
 					restorePromises.push(this.textFileService.models.loadOrCreate(backup).then(null, () => unresolved.push(backup)));
-				} else if (backup.scheme === UNTITLED_SCHEMA) {
+				} else if (backup.scheme === Schemas.untitled) {
 					restorePromises.push(this.untitledEditorService.loadOrCreate({ resource: backup }).then(null, () => unresolved.push(backup)));
 				}
 			} else {
@@ -95,11 +97,9 @@ export class BackupRestorer implements IWorkbenchContribution {
 		const options = { pinned: true, preserveFocus: true, inactive: index > 0 || hasOpenedEditors };
 
 		// {{SQL CARBON EDIT}}
-		if (resource.scheme === UNTITLED_SCHEMA
+		if (resource.scheme === Schemas.untitled
 			&& !BackupRestorer.UNTITLED_REGEX.test(resource.fsPath)
 			&& !BackupRestorer.SQLQUERY_REGEX.test(resource.fsPath)) {
-			// TODO@Ben debt: instead of guessing if an untitled file has an associated file path or not
-			// this information should be provided by the backup service and stored as meta data within
 			return { filePath: resource.fsPath, options };
 		}
 

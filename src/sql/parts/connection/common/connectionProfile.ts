@@ -6,12 +6,14 @@
 'use strict';
 
 import { ConnectionProfileGroup } from './connectionProfileGroup';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
 import * as interfaces from 'sql/parts/connection/common/interfaces';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as objects from 'sql/base/common/objects';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { isString } from 'vs/base/common/types';
 
 // Concrete implementation of the IConnectionProfile interface
 
@@ -28,9 +30,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	public saveProfile: boolean;
 
 	public isDisconnecting: boolean = false;
-	public constructor(serverCapabilities?: data.DataProtocolServerCapabilities, model?: interfaces.IConnectionProfile) {
-		super(serverCapabilities, model);
-		if (model) {
+
+	public constructor(
+		capabilitiesService: ICapabilitiesService,
+		model: string | interfaces.IConnectionProfile
+	) {
+		super(capabilitiesService, model);
+		if (model && !isString(model)) {
 			this.groupId = model.groupId;
 			this.groupFullName = model.groupFullName;
 			this.savePassword = model.savePassword;
@@ -91,7 +97,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	}
 
 	public clone(): ConnectionProfile {
-		let instance = new ConnectionProfile(this._serverCapabilities, this);
+		let instance = new ConnectionProfile(this.capabilitiesService, this);
 		return instance;
 	}
 
@@ -137,12 +143,6 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		return super.getOptionsKey();
 	}
 
-	public onProviderRegistered(serverCapabilities: data.DataProtocolServerCapabilities): void {
-		if (serverCapabilities.providerName === this.providerName) {
-			this.setServerCapabilities(serverCapabilities);
-		}
-	}
-
 	public toIConnectionProfile(): interfaces.IConnectionProfile {
 		let result: interfaces.IConnectionProfile = {
 			serverName: this.serverName,
@@ -164,14 +164,25 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		return result;
 	}
 
-	public toConnectionInfo(): data.ConnectionInfo {
+	public toConnectionInfo(): sqlops.ConnectionInfo {
 		return {
 			options: this.options
 		};
 	}
 
-	public static createFromStoredProfile(profile: interfaces.IConnectionProfileStore, serverCapabilities: data.DataProtocolServerCapabilities): ConnectionProfile {
-		let connectionInfo = new ConnectionProfile(serverCapabilities, undefined);
+	public static fromIConnectionProfile(capabilitiesService: ICapabilitiesService, profile: interfaces.IConnectionProfile) {
+		if (profile) {
+			if (profile instanceof ConnectionProfile) {
+				return profile;
+			} else {
+				return new ConnectionProfile(capabilitiesService, profile);
+			}
+		}
+		return undefined;
+	}
+
+	public static createFromStoredProfile(profile: interfaces.IConnectionProfileStore, capabilitiesService: ICapabilitiesService): ConnectionProfile {
+		let connectionInfo = new ConnectionProfile(capabilitiesService, profile.providerName);
 		connectionInfo.options = profile.options;
 
 		// append group ID and original display name to build unique OE session ID
@@ -187,28 +198,11 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		return connectionInfo;
 	}
 
-	public static convertToConnectionProfile(serverCapabilities: data.DataProtocolServerCapabilities, conn: interfaces.IConnectionProfile): ConnectionProfile {
-		if (conn) {
-			let connectionProfile: ConnectionProfile = undefined;
-			let connectionProfileInstance = conn as ConnectionProfile;
-			if (connectionProfileInstance && conn instanceof ConnectionProfile) {
-				connectionProfile = connectionProfileInstance;
-				connectionProfile.setServerCapabilities(serverCapabilities);
-			} else {
-				connectionProfile = new ConnectionProfile(serverCapabilities, conn);
-			}
-
-			return connectionProfile;
-		} else {
-			return undefined;
-		}
-	}
-
 	public static convertToProfileStore(
-		serverCapabilities: data.DataProtocolServerCapabilities,
+		capabilitiesService: ICapabilitiesService,
 		connectionProfile: interfaces.IConnectionProfile): interfaces.IConnectionProfileStore {
 		if (connectionProfile) {
-			let connectionInfo = ConnectionProfile.convertToConnectionProfile(serverCapabilities, connectionProfile);
+			let connectionInfo = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
 			let profile: interfaces.IConnectionProfileStore = {
 				options: {},
 				groupId: connectionProfile.groupId,
@@ -224,5 +218,4 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			return undefined;
 		}
 	}
-
 }

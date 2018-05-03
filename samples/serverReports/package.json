@@ -1,0 +1,216 @@
+{
+    "name": "server-report",
+    "displayName": "Server Reports",
+    "description": "Server Reports",
+    "version": "0.1.1",
+    "publisher": "Microsoft",
+    "preview": true,
+    "engines": {
+        "vscode": "^1.17.0",
+        "sqlops": "*"
+    },
+    "icon": "images/sqlserver.png",
+    "license": "SEE LICENSE IN LICENSE.txt",
+    "repository": "https://github.com/Microsoft/sqlopsstudio",
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "configuration": [],
+        "commands": [],
+        "views": {},
+        "menus": {},
+        "dashboard.tabs": [
+            {
+                "id": "Server-Reports",
+                "title": "Server Reports",
+                "description": "This extension shows useful reports for a server.",
+                "container": {
+                    "server-insights1": null
+                }
+            }
+        ],
+        "dashboard.insights": [
+            {
+                "id": "extension-dbspace-usage",
+                "contrib": {
+                    "type": {
+                        "horizontalBar": {
+                            "dataDirection": "vertical",
+                            "dataType": "number",
+                            "legendPosition": "top",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": true
+                        }
+                    },
+                    "queryFile": "./out/src/sql/all_db_space_used.sql"
+                }
+            },
+            {
+                "id": "extension-cpu-utilization",
+                "contrib": {
+                    "type": {
+                        "timeSeries": {
+                            "dataDirection": "horizontal",
+                            "dataType": "point",
+                            "legendPosition": "top",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": false
+                        }
+                    },
+                    "queryFile": "./out/src/sql/cpumetric.sql"
+                }
+            },
+            {
+                "id": "extension-backup-growth-trend",
+                "details": "Abbie wants it",
+                "contrib": {
+                    "type": {
+                        "timeSeries": {
+                            "dataDirection": "horizontal",
+                            "dataType": "point",
+                            "legendPosition": "none",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": false
+                        }
+                    },
+                    "queryFile": "./out/src/sql/backup_size_trend.sql"
+                }
+            },
+            {
+                "id": "extension-wait-counts-by-Paul-Randal",
+                "contrib": {
+                    "type": {
+                        "horizontalBar": {
+                            "dataDirection": "vertical",
+                            "dataType": "number",
+                            "legendPosition": "none",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": true
+                        }
+                    },
+                    "queryFile": "./out/src/sql/waits_paul_randal.sql",
+                    "details": {
+                        "queryFile": "./out/src/sql/waits_detail_paul_randal.sql",
+                        "label": {
+                            "column": "WaitType",
+                            "state": []
+                        },
+                        "value": "Percentage"
+                    }
+                }
+            },
+            {
+                "id": "extension-dbbuffer-usage",
+                "contrib": {
+                    "type": {
+                        "horizontalBar": {
+                            "dataDirection": "vertical",
+                            "dataType": "number",
+                            "legendPosition": "top",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": true
+                        }
+                    },
+                    "queryFile": "./out/src/sql/memorybydb.sql"
+                }
+            }
+        ],
+        "dashboard.containers": [
+            {
+                "id": "server-insights1",
+                "container": {
+                    "widgets-container": [
+                        {
+                            "name": "Top 10 DB Space Usage",
+                            "gridItemConfig": {
+                                "sizex": 2,
+                                "sizey": 2
+                            },
+                            "widget": {
+                                "extension-dbspace-usage": {}
+                            }
+                        },
+                        {
+                            "name": "Top 10 DB Buffer Usage",
+                            "gridItemConfig": {
+                                "sizex": 2,
+                                "sizey": 2
+                            },
+                            "widget": {
+                                "extension-dbbuffer-usage": {}
+                            }
+                        },
+                        {
+                            "name": "CPU Utilization",
+                            "gridItemConfig": {
+                                "sizex": 2,
+                                "sizey": 1
+                            },
+                            "widget": {
+                                "extension-cpu-utilization": {}
+                            }
+                        },
+                        {
+                            "name": "Backup Growth Trend",
+                            "gridItemConfig": {
+                                "sizex": 2,
+                                "sizey": 1
+                            },
+                            "widget": {
+                                "extension-backup-growth-trend": {}
+                            }
+                        },
+                        {
+                            "name": "Wait Counts by Paul Randal",
+                            "gridItemConfig": {
+                                "sizex": 2,
+                                "sizey": 2
+                            },
+                            "widget": {
+                                "extension-wait-counts-by-Paul-Randal": {}
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "snippets": []
+    },
+    "scripts": {
+        "prepare": "node ./node_modules/sqlops/bin/install",
+        "build": "gulp build",
+        "compile": "gulp compile",
+        "watch": "gulp watch",
+        "postinstall": "node ./node_modules/vscode/bin/install"
+    },
+    "dependencies": {
+        "fs-extra": "^5.0.0",
+        "handlebars": "^4.0.11",
+        "vscode-nls": "2.0.2",
+        "sqlops": "github:anthonydresser/sqlops-extension-sqlops"
+    },
+    "devDependencies": {
+        "@types/handlebars": "^4.0.11",
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^7.0.43",
+        "child-process-promise": "^2.2.1",
+        "del": "^3.0.0",
+        "gulp": "^4.0.0",
+        "gulp-color": "0.0.1",
+        "gulp-sourcemaps": "^2.6.4",
+        "gulp-tslint": "^6.0.2",
+        "gulp-typescript": "^3.2.4",
+        "should": "^13.2.1",
+        "temp-write": "^3.4.0",
+        "tslint": "^3.14.0",
+        "typemoq": "^2.1.0",
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "vsce": "1.36.2"
+    }
+}

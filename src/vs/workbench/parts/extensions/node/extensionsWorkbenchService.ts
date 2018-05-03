@@ -20,13 +20,12 @@ import { IPager, mapPager, singlePagePager } from 'vs/base/common/paging';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import {
 	IExtensionManagementService, IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions, IExtensionManifest,
-	InstallExtensionEvent, DidInstallExtensionEvent, LocalExtensionType, DidUninstallExtensionEvent, IExtensionEnablementService, IExtensionIdentifier, EnablementState
+	InstallExtensionEvent, DidInstallExtensionEvent, LocalExtensionType, DidUninstallExtensionEvent, IExtensionEnablementService, IExtensionIdentifier, EnablementState, IExtensionTipsService
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionIdFromLocal, getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWindowService } from 'vs/platform/windows/common/windows';
-import { IChoiceService, IMessageService } from 'vs/platform/message/common/message';
 import Severity from 'vs/base/common/severity';
 import URI from 'vs/base/common/uri';
 import { IExtension, IExtensionDependencies, ExtensionState, IExtensionsWorkbenchService, AutoUpdateConfigurationKey } from 'vs/workbench/parts/extensions/common/extensions';
@@ -34,6 +33,10 @@ import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/edi
 import { IURLService } from 'vs/platform/url/common/url';
 import { ExtensionsInput } from 'vs/workbench/parts/extensions/common/extensionsInput';
 import product from 'vs/platform/node/product';
+import { ILogService } from 'vs/platform/log/common/log';
+import { IProgressService2, ProgressLocation } from 'vs/platform/progress/common/progress';
+import { IChoiceService } from 'vs/platform/dialogs/common/dialogs';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;
@@ -107,11 +110,31 @@ class Extension implements IExtension {
 	}
 
 	get url(): string {
+		if (!product.extensionsGallery || !this.gallery) {
+			return null;
+		}
+
+		return product.extensionsGallery.itemUrl && `${product.extensionsGallery.itemUrl}?itemName=${this.publisher}.${this.name}`;
+	}
+
+	get downloadUrl(): string {
 		if (!product.extensionsGallery) {
 			return null;
 		}
 
-		return `${product.extensionsGallery.itemUrl}?itemName=${this.publisher}.${this.name}`;
+		// {{SQL CARBON EDIT}}
+		return this.gallery && this.gallery.assets && this.gallery.assets.download && this.gallery.assets.download.uri;
+		//return `${product.extensionsGallery.serviceUrl}/publishers/${this.publisher}/vsextensions/${this.name}/${this.latestVersion}/vspackage`;
+	}
+
+	// {{SQL CARBON EDIT}}
+	get downloadPage(): string {
+		if (!product.extensionsGallery) {
+			return null;
+		}
+
+		// {{SQL CARBON EDIT}}
+		return this.gallery && this.gallery.assets && this.gallery.assets.downloadPage && this.gallery.assets.downloadPage.uri;
 	}
 
 	get iconUrl(): string {
@@ -136,6 +159,16 @@ class Extension implements IExtension {
 	}
 
 	private get defaultIconUrl(): string {
+		if (this.type === LocalExtensionType.System) {
+			if (this.local.manifest && this.local.manifest.contributes) {
+				if (Array.isArray(this.local.manifest.contributes.themes) && this.local.manifest.contributes.themes.length) {
+					return require.toUrl('../browser/media/theme-icon.png');
+				}
+				if (Array.isArray(this.local.manifest.contributes.languages) && this.local.manifest.contributes.languages.length) {
+					return require.toUrl('../browser/media/language-icon.png');
+				}
+			}
+		}
 		return require.toUrl('../browser/media/defaultIcon.png');
 	}
 
@@ -210,6 +243,14 @@ class Extension implements IExtension {
 		if (this.local && this.local.readmeUrl) {
 			const uri = URI.parse(this.local.readmeUrl);
 			return readFile(uri.fsPath, 'utf8');
+		}
+
+		if (this.type === LocalExtensionType.System) {
+			return TPromise.as(`# ${this.displayName || this.name}
+**Notice** This is a an extension that is bundled with Visual Studio Code.
+
+${this.description}
+`);
 		}
 
 		return TPromise.wrapError<string>(new Error('not available'));
@@ -341,11 +382,14 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 		@IExtensionGalleryService private galleryService: IExtensionGalleryService,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@ITelemetryService private telemetryService: ITelemetryService,
-		@IMessageService private messageService: IMessageService,
+		@INotificationService private notificationService: INotificationService,
 		@IChoiceService private choiceService: IChoiceService,
 		@IURLService urlService: IURLService,
 		@IExtensionEnablementService private extensionEnablementService: IExtensionEnablementService,
-		@IWindowService private windowService: IWindowService
+		@IWindowService private windowService: IWindowService,
+		@ILogService private logService: ILogService,
+		@IProgressService2 private progressService: IProgressService2,
+		@IExtensionTipsService private extensionTipsService: IExtensionTipsService
 	) {
 		this.stateProvider = ext => this.getExtensionState(ext);
 
@@ -536,7 +580,8 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 			return TPromise.as(null);
 		}
 
-		const toUpdate = this.local.filter(e => e.outdated && (e.state !== ExtensionState.Installing));
+		// {{SQL CARBON EDIT}}
+		const toUpdate = this.local.filter(e => e.outdated && (e.state !== ExtensionState.Installing) && !e.downloadPage);
 		return TPromise.join(toUpdate.map(e => this.install(e)));
 	}
 
@@ -554,7 +599,11 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 
 	install(extension: string | IExtension): TPromise<void> {
 		if (typeof extension === 'string') {
-			return this.extensionService.install(extension);
+			return this.progressService.withProgress({
+				location: ProgressLocation.Extensions,
+				title: nls.localize('installingVSIXExtension', 'Installing extension from VSIX...'),
+				tooltip: `${extension}`
+			}, () => this.extensionService.install(extension));
 		}
 
 		if (!(extension instanceof Extension)) {
@@ -562,7 +611,7 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 		}
 
 		if (extension.isMalicious) {
-			return TPromise.wrapError<void>(new Error(nls.localize('malicious', "This extension is reported to be malicious.")));
+			return TPromise.wrapError<void>(new Error(nls.localize('malicious', "This extension is reported to be problematic.")));
 		}
 
 		const ext = extension as Extension;
@@ -571,19 +620,26 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 		if (!gallery) {
 			return TPromise.wrapError<void>(new Error('Missing gallery'));
 		}
+
+		return this.progressService.withProgress({
+			location: ProgressLocation.Extensions,
+			title: nls.localize('installingMarketPlaceExtension', 'Installing extension from Marketplace....'),
+			tooltip: `${extension.id}`
+			// {{SQL CARBON EDIT}}
+		}, () => this.downloadOrBrowse(ext));
+	}
+
+	// {{SQL CARBON EDIT}}
+	private downloadOrBrowse(ext: Extension): TPromise<void> {
 		if (ext.gallery.assets.downloadPage && ext.gallery.assets.downloadPage.uri) {
 			window.open(ext.gallery.assets.downloadPage.uri);
 			return TPromise.wrap<void>(void 0);
 		} else {
-			return this.extensionService.installFromGallery(gallery);
+			return this.extensionService.installFromGallery(ext.gallery);
 		}
 	}
 
 	setEnablement(extension: IExtension, enablementState: EnablementState): TPromise<void> {
-		if (extension.type === LocalExtensionType.System) {
-			return TPromise.wrap<void>(void 0);
-		}
-
 		const enable = enablementState === EnablementState.Enabled || enablementState === EnablementState.WorkspaceEnabled;
 		return this.promptAndSetEnablement(extension, enablementState, enable).then(reload => {
 			/* __GDPR__
@@ -616,8 +672,30 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 			return TPromise.wrapError<void>(new Error('Missing local'));
 		}
 
-		return this.extensionService.uninstall(local);
+		this.logService.info(`Requested uninstalling the extension ${extension.id} from window ${this.windowService.getCurrentWindowId()}`);
+		return this.progressService.withProgress({
+			location: ProgressLocation.Extensions,
+			title: nls.localize('uninstallingExtension', 'Uninstalling extension....'),
+			tooltip: `${local.identifier.id}`
+		}, () => this.extensionService.uninstall(local));
+	}
 
+	reinstall(extension: IExtension): TPromise<void> {
+		if (!(extension instanceof Extension)) {
+			return undefined;
+		}
+
+		const ext = extension as Extension;
+		const local = ext.local || this.installed.filter(e => e.id === extension.id)[0].local;
+
+		if (!local) {
+			return TPromise.wrapError<void>(new Error('Missing local'));
+		}
+
+		return this.progressService.withProgress({
+			location: ProgressLocation.Extensions,
+			tooltip: `${local.identifier.id}`
+		}, () => this.extensionService.reinstall(local));
 	}
 
 	private promptAndSetEnablement(extension: IExtension, enablementState: EnablementState, enable: boolean): TPromise<any> {
@@ -633,7 +711,7 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 	}
 
 	private promptForDependenciesAndEnable(extension: IExtension, dependencies: IExtension[], enablementState: EnablementState, enable: boolean): TPromise<any> {
-		const message = nls.localize('enableDependeciesConfirmation', "Enabling '{0}' also enable its dependencies. Would you like to continue?", extension.displayName);
+		const message = nls.localize('enableDependeciesConfirmation', "Enabling '{0}' also enables its dependencies. Would you like to continue?", extension.displayName);
 		const options = [
 			nls.localize('enable', "Yes"),
 			nls.localize('doNotEnable', "No")
@@ -734,7 +812,7 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 	}
 
 	private doSetEnablement(extension: IExtension, enablementState: EnablementState): TPromise<boolean> {
-		return this.extensionEnablementService.setEnablement(extension, enablementState);
+		return this.extensionEnablementService.setEnablement(extension.local, enablementState);
 	}
 
 	get allowedBadgeProviders(): string[] {
@@ -768,25 +846,25 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 
 	private onDidInstallExtension(event: DidInstallExtensionEvent): void {
 		const { local, zipPath, error, gallery } = event;
-		const installing = gallery ? this.installing.filter(e => areSameExtensions(e.extension, gallery.identifier))[0] : null;
-		const extension: Extension = installing ? installing.extension : zipPath ? new Extension(this.galleryService, this.stateProvider, null, null, this.telemetryService) : null;
+		const installingExtension = gallery ? this.installing.filter(e => areSameExtensions(e.extension, gallery.identifier))[0] : null;
+		const extension: Extension = installingExtension ? installingExtension.extension : zipPath ? new Extension(this.galleryService, this.stateProvider, null, null, this.telemetryService) : null;
 		if (extension) {
-			this.installing = installing ? this.installing.filter(e => e !== installing) : this.installing;
+			this.installing = installingExtension ? this.installing.filter(e => e !== installingExtension) : this.installing;
 
 			if (error) {
 				if (extension.gallery) {
 					// Updating extension can be only a gallery extension
 					const installed = this.installed.filter(e => e.id === extension.id)[0];
-					if (installed && installing) {
-						installing.operation = Operation.Updating;
+					if (installed && installingExtension) {
+						installingExtension.operation = Operation.Updating;
 					}
 				}
 			} else {
 				extension.local = local;
 				const installed = this.installed.filter(e => e.id === extension.id)[0];
 				if (installed) {
-					if (installing) {
-						installing.operation = Operation.Updating;
+					if (installingExtension) {
+						installingExtension.operation = Operation.Updating;
 					}
 					installed.local = local;
 				} else {
@@ -795,13 +873,14 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 			}
 			if (extension.gallery) {
 				// Report telemetry only for gallery extensions
-				this.reportTelemetry(installing, error);
+				this.reportTelemetry(installingExtension, error);
 			}
 		}
 		this._onChange.fire();
 	}
 
 	private onUninstallExtension({ id }: IExtensionIdentifier): void {
+		this.logService.info(`Uninstalling the extension ${id} from window ${this.windowService.getCurrentWindowId()}`);
 		const extension = this.installed.filter(e => e.local.identifier.id === id)[0];
 		const newLength = this.installed.filter(e => e.local.identifier.id !== id).length;
 		// TODO: Ask @Joao why is this?
@@ -864,12 +943,14 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 		const data = active.extension.telemetryData;
 		const duration = new Date().getTime() - active.start.getTime();
 		const eventName = toTelemetryEventName(active.operation);
-
+		const extRecommendations = this.extensionTipsService.getAllRecommendationsWithReason() || {};
+		const recommendationsData = extRecommendations[active.extension.id.toLowerCase()] ? { recommendationReason: extRecommendations[active.extension.id.toLowerCase()].reasonId } : {};
 		/* __GDPR__
 			"extensionGallery:install" : {
 				"success": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
 				"duration" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
-				"errorcode": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
+				"errorcode": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
+				"recommendationReason": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 				"${include}": [
 					"${GalleryExtensionTelemetryData}"
 				]
@@ -879,7 +960,8 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 			"extensionGallery:update" : {
 				"success": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
 				"duration" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
-				"errorcode": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
+				"errorcode": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
+				"recommendationReason": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 				"${include}": [
 					"${GalleryExtensionTelemetryData}"
 				]
@@ -889,13 +971,14 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 			"extensionGallery:uninstall" : {
 				"success": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
 				"duration" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
-				"errorcode": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
+				"errorcode": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
+				"recommendationReason": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 				"${include}": [
 					"${GalleryExtensionTelemetryData}"
 				]
 			}
 		*/
-		this.telemetryService.publicLog(eventName, assign(data, { success: !errorcode, duration, errorcode }));
+		this.telemetryService.publicLog(eventName, assign(data, { success: !errorcode, duration, errorcode }, recommendationsData));
 	}
 
 	private onError(err: any): void {
@@ -909,7 +992,7 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 			return;
 		}
 
-		this.messageService.show(Severity.Error, err);
+		this.notificationService.error(err);
 	}
 
 	private onOpenExtensionUrl(uri: URI): void {
@@ -922,8 +1005,11 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 		const extensionId = match[1];
 
 		this.queryLocal().then(local => {
-			if (local.some(local => local.id === extensionId)) {
-				return TPromise.as(null);
+			const extension = local.filter(local => local.id === extensionId)[0];
+
+			if (extension) {
+				return this.windowService.show()
+					.then(() => this.open(extension));
 			}
 
 			return this.queryGallery({ names: [extensionId], source: 'uri' }).then(result => {
@@ -937,15 +1023,14 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 					return this.open(extension).then(() => {
 						const message = nls.localize('installConfirmation', "Would you like to install the '{0}' extension?", extension.displayName, extension.publisher);
 						const options = [
-							nls.localize('install', "Install"),
-							nls.localize('cancel', "Cancel")
+							nls.localize('install', "Install")
 						];
-						return this.choiceService.choose(Severity.Info, message, options, 2, false).then(value => {
-							if (value !== 0) {
-								return TPromise.as(null);
+						return this.choiceService.choose(Severity.Info, message, options).then(value => {
+							if (value === 0) {
+								return this.install(extension);
 							}
 
-							return this.install(extension);
+							return TPromise.as(null);
 						});
 					});
 				});

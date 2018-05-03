@@ -49,8 +49,8 @@ export class ErrorMessageDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super('', TelemetryKeys.ErrorMessage, partService, telemetryService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
-		this._okLabel = localize('OK', 'OK');
-		this._closeLabel = localize('close', 'Close');
+		this._okLabel = localize('errorMessageDialog.ok', 'OK');
+		this._closeLabel = localize('errorMessageDialog.close', 'Close');
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -75,7 +75,7 @@ export class ErrorMessageDialog extends Modal {
 		let copyButtonLabel = localize('copyDetails', 'Copy details');
 		this._copyButton = this.addFooterButton(copyButtonLabel, () => this._clipboardService.writeText(this._messageDetails), 'left');
 		this._copyButton.icon = 'icon scriptToClipboard';
-		this._copyButton.getElement().title = copyButtonLabel;
+		this._copyButton.element.title = copyButtonLabel;
 		this._register(attachButtonStyler(this._copyButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
 	}
 
@@ -144,9 +144,9 @@ export class ErrorMessageDialog extends Modal {
 		this.title = headerTitle;
 		this._messageDetails = messageDetails;
 		if (this._messageDetails) {
-			this._copyButton.getElement().style.visibility = 'visible';
+			this._copyButton.element.style.visibility = 'visible';
 		} else {
-			this._copyButton.getElement().style.visibility = 'hidden';
+			this._copyButton.element.style.visibility = 'hidden';
 		}
 		this.resetActions();
 		if (actions && actions.length > 0) {
@@ -154,7 +154,7 @@ export class ErrorMessageDialog extends Modal {
 				this._actions.push(actions[i]);
 				let button = this._actionButtons[i];
 				button.label = actions[i].label;
-				button.getElement().style.visibility = 'visible';
+				button.element.style.visibility = 'visible';
 			}
 			this._okButton.label = this._closeLabel;
 		} else {
@@ -169,7 +169,7 @@ export class ErrorMessageDialog extends Modal {
 	private resetActions(): void {
 		this._actions = [];
 		for(let actionButton of this._actionButtons) {
-			actionButton.getElement().style.visibility = 'hidden';
+			actionButton.element.style.visibility = 'hidden';
 		}
 	}
 

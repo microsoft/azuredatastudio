@@ -19,10 +19,9 @@ import { CloseTabAction } from './tabActions';
 @Component({
 	selector: 'tab-header',
 	template: `
-		<div #actionHeader class="tab-header" style="display: flex; flex: 0 0; flex-direction: row;" [class.active]="tab.active" tabindex="0" (keyup)="onKey($event)">
-			<span class="tab" (click)="selectTab(tab)">
-				<a class="tabLabel" [class.active]="tab.active">
-					{{tab.title}}
+		<div #actionHeader class="tab-header" style="flex: 0 0; flex-direction: row;" [class.active]="tab.active" tabindex="0" (keyup)="onKey($event)">
+			<span class="tab" (click)="selectTab(tab)" role="tab" [attr.aria-selected]="tab.active" [attr.aria-label]="tab.title">
+				<a class="tabLabel" [class.active]="tab.active" #tabLabel>
 				</a>
 			</span>
 			<span #actionbar style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" ></span>
@@ -31,6 +30,7 @@ import { CloseTabAction } from './tabActions';
 })
 export class TabHeaderComponent extends Disposable implements AfterContentInit, OnDestroy {
 	@Input() public tab: TabComponent;
+	@Input() public showIcon: boolean;
 	@Output() public onSelectTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
 	@Output() public onCloseTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
 
@@ -38,19 +38,32 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 
 	@ViewChild('actionHeader', { read: ElementRef }) private _actionHeaderRef: ElementRef;
 	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
+	@ViewChild('tabLabel', { read: ElementRef }) private _tabLabelRef: ElementRef;
 	constructor() {
 		super();
 	}
 
 	ngAfterContentInit(): void {
-		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
-		if (this.tab.actions) {
-			this._actionbar.push(this.tab.actions, { icon: true, label: false });
+		if (this.tab.canClose || this.tab.actions) {
+			this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
+			if (this.tab.actions) {
+				this._actionbar.push(this.tab.actions, { icon: true, label: false });
+			}
+			if (this.tab.canClose) {
+				let closeAction = this._register(new CloseTabAction(this.closeTab, this));
+				this._actionbar.push(closeAction, { icon: true, label: false });
+			}
 		}
-		if (this.tab.canClose) {
-			let closeAction = this._register(new CloseTabAction(this.closeTab, this));
-			this._actionbar.push(closeAction, { icon: true, label: false });
+
+		let tabLabelcontainer = this._tabLabelRef.nativeElement as HTMLElement;
+		if (this.showIcon && this.tab.iconClass) {
+			tabLabelcontainer.className = 'tabLabel icon';
+			tabLabelcontainer.classList.add(this.tab.iconClass);
+		} else {
+			tabLabelcontainer.className = 'tabLabel';
+			tabLabelcontainer.innerHTML = this.tab.title;
 		}
+		tabLabelcontainer.title = this.tab.title;
 	}
 
 	ngOnDestroy() {

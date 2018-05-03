@@ -7,7 +7,7 @@
 import { Emitter } from 'vs/base/common/event';
 import { TPromise } from 'vs/base/common/winjs.base';
 
-import { ISelectionData } from 'data';
+import { ISelectionData } from 'sqlops';
 
 import {
 	IConnectionManagementService,

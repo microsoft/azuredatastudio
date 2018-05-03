@@ -20,6 +20,7 @@ import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/cont
 import { Button } from 'sql/base/browser/ui/button/button';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { localize } from 'vs/nls';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -155,6 +156,7 @@ export abstract class Modal extends Disposable implements IThemable {
 					modalHeader.div({ class: 'modal-go-back' }, (cellContainer) => {
 						this._backButton = new Button(cellContainer);
 						this._backButton.icon = 'backButtonIcon';
+						this._backButton.title = localize('modalBack', "Back");
 					});
 				}
 				if (this._modalOptions.hasTitleIcon) {

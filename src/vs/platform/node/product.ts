@@ -26,8 +26,11 @@ export interface IProductConfiguration {
 		serviceUrl: string;
 		itemUrl: string;
 		controlUrl: string;
+		recommendationsUrl: string;
 	};
 	extensionTips: { [id: string]: string; };
+	// {{SQL CARBON EDIT}}
+	recommendedExtensions: string[];
 	extensionImportantTips: { [id: string]: { name: string; pattern: string; }; };
 	exeBasedExtensionTips: { [id: string]: any; };
 	extensionKeywords: { [extension: string]: string[]; };
@@ -59,6 +62,7 @@ export interface IProductConfiguration {
 	reportIssueUrl: string;
 	licenseUrl: string;
 	privacyStatementUrl: string;
+	telemetryOptOutUrl: string;
 	npsSurveyUrl: string;
 	surveys: ISurveyData[];
 	checksums: { [path: string]: string; };
@@ -70,6 +74,7 @@ export interface IProductConfiguration {
 		'linux-x64': string;
 		'darwin': string;
 	};
+	logUploaderUrl: string;
 }
 
 export interface ISurveyData {

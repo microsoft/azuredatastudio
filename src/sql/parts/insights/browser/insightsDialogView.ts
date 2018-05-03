@@ -9,7 +9,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { attachButtonStyler, attachModalDialogStyler, attachTableStyler } from 'sql/common/theme/styler';
-import { ITaskRegistry, Extensions as TaskExtensions } from 'sql/platform/tasks/taskRegistry';
+import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/parts/insights/common/interfaces';
@@ -29,7 +29,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IListService } from 'vs/platform/list/browser/listService';
 import * as nls from 'vs/nls';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { Registry } from 'vs/platform/registry/common/platform';
 import { IAction } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -37,9 +36,12 @@ import * as types from 'vs/base/common/types';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { MenuRegistry, ExecuteCommandAction } from 'vs/platform/actions/common/actions';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 
-const labelDisplay = nls.localize("item", "Item");
-const valueDisplay = nls.localize("value", "Value");
+const labelDisplay = nls.localize("insights.item", "Item");
+const valueDisplay = nls.localize("insights.value", "Value");
 
 function stateFormatter(row: number, cell: number, value: any, columnDef: Slick.Column<ListResource>, resource: ListResource): string {
 	// template
@@ -127,7 +129,9 @@ export class InsightsDialogView extends Modal {
 		@IPartService partService: IPartService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@ICommandService private _commandService: ICommandService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, partService, telemetryService, contextKeyService);
 		this._model.onDataChange(e => this.build());
@@ -194,7 +198,7 @@ export class InsightsDialogView extends Modal {
 				this._contextMenuService.showContextMenu({
 					getAnchor: () => e.target as HTMLElement,
 					getActions: () => this.insightActions,
-					getActionsContext: () => this.topInsightContext(this._topTableData.getItem(this._topTable.getCellFromEvent(e).row), this._topTable.getCellFromEvent(e))
+					getActionsContext: () => this.topInsightContext(this._topTableData.getItem(this._topTable.getCellFromEvent(e).row))
 				});
 			}
 		}));
@@ -284,12 +288,12 @@ export class InsightsDialogView extends Modal {
 		this._topTableData.clear();
 		this._topTableData.push(inputArray);
 		if (this._insight.actions && this._insight.actions.types) {
-			const taskRegistry = Registry.as<ITaskRegistry>(TaskExtensions.TaskContribution);
-			let tasks = taskRegistry.idToCtorMap;
+			let tasks = TaskRegistry.getTasks();
 			for (let action of this._insight.actions.types) {
-				let ctor = tasks[action];
-				if (ctor) {
-					let button = this.addFooterButton(ctor.LABEL, () => {
+				let task = tasks.includes(action);
+				let commandAction = MenuRegistry.getCommand(action);
+				if (task) {
+					let button = this.addFooterButton(types.isString(commandAction.title) ? commandAction.title : commandAction.title.value, () => {
 						let element = this._topTable.getSelectedRows();
 						let resource: ListResource;
 						if (element && element.length > 0) {
@@ -297,7 +301,8 @@ export class InsightsDialogView extends Modal {
 						} else {
 							return;
 						}
-						this._instantiationService.createInstance(ctor, ctor.ID, ctor.LABEL, ctor.ICON).run(this.topInsightContext(resource));
+						let context = this.topInsightContext(resource);
+						this._commandService.executeCommand(action, context);
 					}, 'left');
 					button.enabled = false;
 					this._taskButtonDisposables.push(button);
@@ -327,20 +332,24 @@ export class InsightsDialogView extends Modal {
 		this._taskButtonDisposables = [];
 	}
 
+	protected onClose(e: StandardKeyboardEvent) {
+		this.close();
+	}
+
 	private hasActions(): boolean {
 		return !!(this._insight && this._insight.actions && this._insight.actions.types
 			&& this._insight.actions.types.length > 0);
 	}
 
 	private get insightActions(): TPromise<IAction[]> {
-		const taskRegistry = Registry.as<ITaskRegistry>(TaskExtensions.TaskContribution);
-		let tasks = taskRegistry.idToCtorMap;
+		let tasks = TaskRegistry.getTasks();
 		let actions = this._insight.actions.types;
 		let returnActions: IAction[] = [];
 		for (let action of actions) {
-			let ctor = tasks[action];
-			if (ctor) {
-				returnActions.push(this._instantiationService.createInstance(ctor, ctor.ID, ctor.LABEL, ctor.ICON));
+			let task = tasks.includes(action);
+			let commandAction = MenuRegistry.getCommand(action);
+			if (task) {
+				returnActions.push(this._instantiationService.createInstance(ExecuteCommandAction, commandAction.id, commandAction.title));
 			}
 		}
 		return TPromise.as(returnActions);
@@ -350,7 +359,7 @@ export class InsightsDialogView extends Modal {
 	 * Creates the context that should be passed to the action passed on the selected element for the top table
 	 * @param element
 	 */
-	private topInsightContext(element: ListResource, cell?: Slick.Cell): IInsightDialogActionContext {
+	private topInsightContext(element: ListResource): IConnectionProfile {
 		let database = this._insight.actions.database || this._connectionProfile.databaseName;
 		let server = this._insight.actions.server || this._connectionProfile.serverName;
 		let user = this._insight.actions.user || this._connectionProfile.userName;
@@ -386,12 +395,12 @@ export class InsightsDialogView extends Modal {
 		}
 
 		let currentProfile = this._connectionProfile as ConnectionProfile;
-		let profile = new ConnectionProfile(currentProfile.serverCapabilities, currentProfile);
+		let profile = new ConnectionProfile(this._capabilitiesService, currentProfile);
 		profile.databaseName = database;
 		profile.serverName = server;
 		profile.userName = user;
 
-		return { profile, cellData: undefined };
+		return profile;
 	}
 
 	/**

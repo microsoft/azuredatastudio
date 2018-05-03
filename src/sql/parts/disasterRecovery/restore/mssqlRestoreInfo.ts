@@ -5,12 +5,12 @@
 
 'use strict';
 
-import data = require('data');
+import * as sqlops from 'sqlops';
 
-export class MssqlRestoreInfo implements data.RestoreInfo {
+export class MssqlRestoreInfo implements sqlops.RestoreInfo {
 
 	options: { [name: string]: any };
-	taskExecutionMode: data.TaskExecutionMode;
+	taskExecutionMode: sqlops.TaskExecutionMode;
 
 	public constructor() {
 		this.options = {};

@@ -32,57 +32,59 @@ suite('Telemetry - common properties', function () {
 		del(parentDir, os.tmpdir(), done);
 	});
 
-	test('default', function () {
-		return mkdirp(parentDir).then(() => {
-			fs.writeFileSync(installSource, 'my.install.source');
+	// {{SQL CARBON EDIT}}
+	// test('default', function () {
+	// 	return mkdirp(parentDir).then(() => {
+	// 		fs.writeFileSync(installSource, 'my.install.source');
 
-			return resolveWorkbenchCommonProperties(storageService, commit, version, 'someMachineId', installSource).then(props => {
-				assert.ok('commitHash' in props);
-				assert.ok('sessionID' in props);
-				assert.ok('timestamp' in props);
-				assert.ok('common.platform' in props);
-				assert.ok('common.nodePlatform' in props);
-				assert.ok('common.nodeArch' in props);
-				assert.ok('common.timesincesessionstart' in props);
-				assert.ok('common.sequence' in props);
+	// 		return resolveWorkbenchCommonProperties(storageService, commit, version, 'someMachineId', installSource).then(props => {
+	// 			assert.ok('commitHash' in props);
+	// 			assert.ok('sessionID' in props);
+	// 			assert.ok('timestamp' in props);
+	// 			assert.ok('common.platform' in props);
+	// 			assert.ok('common.nodePlatform' in props);
+	// 			assert.ok('common.nodeArch' in props);
+	// 			assert.ok('common.timesincesessionstart' in props);
+	// 			assert.ok('common.sequence' in props);
 
-				// assert.ok('common.version.shell' in first.data); // only when running on electron
-				// assert.ok('common.version.renderer' in first.data);
-				assert.ok('common.osVersion' in props, 'osVersion');
-				assert.ok('version' in props);
-				assert.equal(props['common.source'], 'my.install.source');
+	// 			// assert.ok('common.version.shell' in first.data); // only when running on electron
+	// 			// assert.ok('common.version.renderer' in first.data);
+	// 			assert.ok('common.osVersion' in props, 'osVersion');
+	// 			assert.ok('common.platformVersion' in props, 'platformVersion');
+	// 			assert.ok('version' in props);
+	// 			assert.equal(props['common.source'], 'my.install.source');
 
-			// {{SQL CARBON EDIT}}
-			assert.ok('common.application.name' in props);
+	// 		// {{SQL CARBON EDIT}}
+	// 		assert.ok('common.application.name' in props);
 
-			assert.ok('common.firstSessionDate' in props, 'firstSessionDate');
-			assert.ok('common.lastSessionDate' in props, 'lastSessionDate'); // conditional, see below, 'lastSessionDate'ow
-			assert.ok('common.isNewSession' in props, 'isNewSession');
+	// 			assert.ok('common.firstSessionDate' in props, 'firstSessionDate');
+	// 			assert.ok('common.lastSessionDate' in props, 'lastSessionDate'); // conditional, see below, 'lastSessionDate'ow
+	// 			assert.ok('common.isNewSession' in props, 'isNewSession');
 
-				// machine id et al
-				assert.ok('common.instanceId' in props, 'instanceId');
-				assert.ok('common.machineId' in props, 'machineId');
+	// 			// machine id et al
+	// 			assert.ok('common.instanceId' in props, 'instanceId');
+	// 			assert.ok('common.machineId' in props, 'machineId');
 
-				fs.unlinkSync(installSource);
+	// 			fs.unlinkSync(installSource);
 
-				return resolveWorkbenchCommonProperties(storageService, commit, version, 'someMachineId', installSource).then(props => {
-					assert.ok(!('common.source' in props));
-				});
-			});
-		});
-	});
+	// 			return resolveWorkbenchCommonProperties(storageService, commit, version, 'someMachineId', installSource).then(props => {
+	// 				assert.ok(!('common.source' in props));
+	// 			});
+	// 		});
+	// 	});
+	// });
 
-	test('lastSessionDate when aviablale', function () {
+	// test('lastSessionDate when aviablale', function () {
 
-		storageService.store('telemetry.lastSessionDate', new Date().toUTCString());
+	// 	storageService.store('telemetry.lastSessionDate', new Date().toUTCString());
 
-		return resolveWorkbenchCommonProperties(storageService, commit, version, 'someMachineId', installSource).then(props => {
+	// 	return resolveWorkbenchCommonProperties(storageService, commit, version, 'someMachineId', installSource).then(props => {
 
-			assert.ok('common.lastSessionDate' in props); // conditional, see below
-			assert.ok('common.isNewSession' in props);
-			assert.equal(props['common.isNewSession'], 0);
-		});
-	});
+	// 		assert.ok('common.lastSessionDate' in props); // conditional, see below
+	// 		assert.ok('common.isNewSession' in props);
+	// 		assert.equal(props['common.isNewSession'], 0);
+	// 	});
+	// });
 
 	test('values chance on ask', function () {
 		return resolveWorkbenchCommonProperties(storageService, commit, version, 'someMachineId', installSource).then(props => {

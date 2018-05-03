@@ -33,6 +33,10 @@ import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost
 import { MouseDownDirective } from 'sql/parts/grid/directives/mousedown.directive';
 import { ScrollDirective } from 'sql/parts/grid/directives/scroll.directive';
 
+import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
+import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
+
 let baseComponents = [QueryComponent, ComponentHostDirective, QueryOutputComponent, QueryPlanComponent, TopOperationsComponent, ChartViewerComponent];
 /* Insights */
 let insightComponents = Registry.as<IInsightRegistry>(Extensions.InsightContribution).getAllCtors();
@@ -51,7 +55,10 @@ let insightComponents = Registry.as<IInsightRegistry>(Extensions.InsightContribu
 		...insightComponents,
 		SlickGrid,
 		ScrollDirective,
-		MouseDownDirective
+		MouseDownDirective,
+		Checkbox,
+		SelectBox,
+		InputBox
 	],
 	entryComponents: [
 		QueryOutputComponent,

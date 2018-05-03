@@ -128,6 +128,7 @@ export class ContextView {
 
 	public setContainer(container: HTMLElement): void {
 		if (this.$container) {
+			this.$container.getHTMLElement().removeChild(this.$view.getHTMLElement());
 			this.$container.off(ContextView.BUBBLE_UP_EVENTS);
 			this.$container.off(ContextView.BUBBLE_DOWN_EVENTS, true);
 			this.$container = null;
@@ -230,7 +231,7 @@ export class ContextView {
 		this.$view.removeClass('top', 'bottom', 'left', 'right');
 		this.$view.addClass(anchorPosition === AnchorPosition.BELOW ? 'bottom' : 'top');
 		this.$view.addClass(anchorAlignment === AnchorAlignment.LEFT ? 'left' : 'right');
-		this.$view.style({ top: result.top + 'px', left: result.left + 1 + 'px', width: 'initial' });
+		this.$view.style({ top: result.top + 'px', left: result.left + 'px', width: 'initial' });
 	}
 
 	public hide(data?: any): void {

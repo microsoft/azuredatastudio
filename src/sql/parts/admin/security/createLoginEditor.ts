@@ -18,7 +18,7 @@ import { IMetadataService } from 'sql/services/metadata/metadataService';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
-import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { BootstrapParams } from 'sql/services/bootstrap/bootstrapParams';
 import { CREATELOGIN_SELECTOR } from 'sql/parts/admin/security/createLogin.component';
 
 export class CreateLoginEditor extends BaseEditor {
@@ -96,7 +96,7 @@ export class CreateLoginEditor extends BaseEditor {
 	private bootstrapAngular(input: CreateLoginInput): void {
 
 		// Get the bootstrap params and perform the bootstrap
-		let params: DashboardComponentParams = {
+		let params: BootstrapParams = {
 			connection: input.getConnectionProfile(),
 			ownerUri: input.getUri()
 		};

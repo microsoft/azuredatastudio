@@ -14,6 +14,7 @@ import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as nls from 'vs/nls';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -35,17 +36,15 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 
 	constructor(
 		@Inject(forwardRef(() => IBreadcrumbService)) private _breadcrumbService: IBreadcrumbService,
-		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService,
-		@Inject(forwardRef(() => DashboardServiceInterface)) dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
-		super(dashboardService, bootstrapService, el, _cd);
+		super(dashboardService, el, _cd);
 		this._register(dashboardService.onUpdatePage(() => {
 			this.refresh(true);
 			this._cd.detectChanges();
 		}));
-
 	}
 
 	ngOnInit() {

@@ -26,7 +26,7 @@
         // "button.disabledForeground": "#888888" ,
 
         //Dropdown Control
-        "dropdown.background": "#333333",
+        "dropdown.background": "#212121",
         "dropdown.foreground": "#fffffe",
         "dropdown.border": "#888888",
 
@@ -56,12 +56,12 @@
 		"tab.activeBackground": "#212121",
         "tab.activeForeground": "#ffffff",
         "tab.inactiveBackground": "#444444",
-        "tab.inactiveForeground": "#888888",
+        "tab.inactiveForeground": "#b6b6b6",
 		"tab.border": "#3c3c3c",
         "panel.background": "#212121",
         "panel.border": "#515151",
         "panelTitle.activeForeground": "#ffffff",
-        "panelTitle.inactiveForeground": "#888888"
+		"panelTitle.inactiveForeground": "#888888"
 	},
 	"tokenColors": [
 		{

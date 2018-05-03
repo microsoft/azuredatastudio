@@ -11,7 +11,6 @@ import { IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
 import { IQuickOpenService, IPickOpenEntry } from 'vs/platform/quickOpen/common/quickOpen';
-import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Action } from 'vs/base/common/actions';
 import errors = require('vs/base/common/errors');
@@ -22,7 +21,9 @@ import nls = require('vs/nls');
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 
-import { DidChangeLanguageFlavorParams } from 'data';
+import { DidChangeLanguageFlavorParams } from 'sqlops';
+import Severity from 'vs/base/common/severity';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export interface ISqlProviderEntry extends IPickOpenEntry {
 	providerId: string;
@@ -173,7 +174,7 @@ export class ChangeFlavorAction extends Action {
 		actionLabel: string,
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
 		@IQuickOpenService private _quickOpenService: IQuickOpenService,
-		@IMessageService private _messageService: IMessageService,
+		@INotificationService private _notificationService: INotificationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super(actionId, actionLabel);
@@ -213,7 +214,11 @@ export class ChangeFlavorAction extends Action {
 	}
 
 	private _showMessage(sev: Severity, message: string): TPromise<any> {
-		this._messageService.show(sev, message);
+		this._notificationService.notify({
+			severity: sev,
+			message: message
+		});
+
 		return TPromise.as(undefined);
 	}
 }

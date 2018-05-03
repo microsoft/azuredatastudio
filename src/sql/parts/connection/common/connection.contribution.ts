@@ -12,7 +12,7 @@ import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { DashboardEditor } from 'sql/parts/dashboard/dashboardEditor';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
-import { AddServerGroupAction, AddServerAction } from 'sql/parts/registeredServer/viewlet/connectionTreeAction';
+import { AddServerGroupAction, AddServerAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import { ClearRecentConnectionsAction } from 'sql/parts/connection/common/connectionActions';
 
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/node/extensionGalleryService';
