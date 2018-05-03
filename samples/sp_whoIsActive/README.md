@@ -39,6 +39,5 @@ Special thank to Adam Machanic for partnering with us and make this sp_whoisacti
 
 ## What's new in Server Reports v1.1?
 * Changed CPU usage, CPU delta, memory usage, memory delta to show only top 10 data
-* Added details option on each chart to display the detail of each data entry
-* "Get plans" and "Find leader of block" tasks are now opened new editor, configured current dashboard connection, and ran the query.
-
+* Added details option on each chart to display details of data entries
+* Improved "Get plans" and "Find leader of block" tasks. The tasks will open new editor, configure current dashboard connection, and run the query.
