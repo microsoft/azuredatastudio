@@ -6,6 +6,11 @@ Welcome to **sp_whoisactive** for SQL Operations Studio! Sp_whoisactive is a pro
 
 <img src="https://github.com/Microsoft/sqlopsstudio/raw/master/samples/sp_whoIsActive/images/insights_section.png" alt="insights" style="width:480px;"/>
 
+Details:
+
+<img src="https://github.com/Microsoft/sqlopsstudio/raw/master/samples/sp_whoIsActive/images/insights_details_section.png" alt="insights" style="width:240px;"/>
+
+
 ## Why use sp_whoisactive?
 Here are some quick facts on Who is Active from [Adam Machanic’s blog]:
 
@@ -15,9 +20,6 @@ Here are some quick facts on Who is Active from [Adam Machanic’s blog]:
   * Who is Active is **compatible with all versions of SQL Server after SQL Server 2005 RTM**. It does require that the host database (generally master) is not set for SQL Server 2000 compatibility mode
 
 ## Documentation: 
-
-<img src="https://github.com/Microsoft/sqlopsstudio/raw/master/samples/sp_whoIsActive/images/documentation_section.png" alt="documentation" style="width:480px;"/>
-
 If you haven't installed sp_whoisactive in your server, you can use the "Install sp_whoisactive" task to create the procedure. 
 
 See [sp_whoisactive Documentation] for more infomation.
@@ -34,3 +36,9 @@ See [sp_whoisactive extension project] in the SQL Operations Studio for the exte
 
 ## Contributions and "thank you"
 Special thank to Adam Machanic for partnering with us and make this sp_whoisactive extension possible.  
+
+## What's new in Server Reports v1.1?
+* Changed CPU usage, CPU delta, memory usage, memory delta to show only top 10 data
+* Added details option on each chart to display the detail of each data entry
+* "Get plans" and "Find leader of block" tasks are now opened new editor, configured current dashboard connection, and ran the query.
+
