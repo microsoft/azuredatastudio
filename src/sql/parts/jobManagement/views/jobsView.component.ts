@@ -51,7 +51,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200, id: 'name' },
+		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200 , id: 'name' },
 		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', minWidth: 150, id: 'lastRun' },
 		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', minWidth: 150, id: 'nextRun' },
 		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', minWidth: 70, id: 'enabled' },
@@ -133,7 +133,8 @@ export class JobsViewComponent implements AfterContentChecked {
 			syncColumnCellResize: true,
 			enableColumnReorder: false,
 			rowHeight: 45,
-			enableCellNavigation: true
+			enableCellNavigation: true,
+			forceFitColumns: true
 		};
 
 		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
@@ -225,6 +226,9 @@ export class JobsViewComponent implements AfterContentChecked {
 		});
 		this._showProgressWheel = false;
 		this._cd.detectChanges();
+		$(window).resize(() => {
+			this._table.resizeCanvas();
+		});
 		this.loadJobHistories();
 	}
 
