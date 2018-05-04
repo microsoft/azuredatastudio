@@ -357,4 +357,12 @@ export class JobsViewComponent implements AfterContentChecked {
 			});
 		}
 	}
+
+	private showLoadingIcon(): boolean {
+		if (this._showProgressWheel) {
+			return this._isCloud ? false : true;
+		} else {
+			return this._isCloud;
+		}
+	}
 }
