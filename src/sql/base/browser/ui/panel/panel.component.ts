@@ -102,43 +102,45 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 	}
 
 	ngAfterViewInit(): void {
-		let container = this._titleContainer.nativeElement as HTMLElement;
-		let tabList = this._tabList.nativeElement as HTMLElement;
-		container.removeChild(tabList);
+		if (!this.options.showTabsWhenOne ? this._tabs.length !== 1 : true) {
+			let container = this._titleContainer.nativeElement as HTMLElement;
+			let tabList = this._tabList.nativeElement as HTMLElement;
+			container.removeChild(tabList);
 
-		this._scrollableElement = new ScrollableElement(tabList, {
-			horizontal: ScrollbarVisibility.Auto,
-			vertical: ScrollbarVisibility.Hidden,
-			scrollYToX: true,
-			useShadows: false,
-			horizontalScrollbarSize: 3
-		});
+			this._scrollableElement = new ScrollableElement(tabList, {
+				horizontal: ScrollbarVisibility.Auto,
+				vertical: ScrollbarVisibility.Hidden,
+				scrollYToX: true,
+				useShadows: false,
+				horizontalScrollbarSize: 3
+			});
 
-		this._scrollableElement.onScroll(e => {
-			tabList.scrollLeft = e.scrollLeft;
-		});
+			this._scrollableElement.onScroll(e => {
+				tabList.scrollLeft = e.scrollLeft;
+			});
 
-		container.insertBefore(this._scrollableElement.getDomNode(), container.firstChild);
+			container.insertBefore(this._scrollableElement.getDomNode(), container.firstChild);
 
-		this._scrollableElement.setScrollDimensions({
-			width: tabList.offsetWidth,
-			scrollWidth: tabList.scrollWidth
-		});
+			this._scrollableElement.setScrollDimensions({
+				width: tabList.offsetWidth,
+				scrollWidth: tabList.scrollWidth
+			});
 
-		this._register(addDisposableListener(window, EventType.RESIZE, () => {
-			// Todo: Need to set timeout because we have to make sure that the grids have already rearraged before the getContentHeight gets called.
-			setTimeout(() => {
-				this._scrollableElement.setScrollDimensions({
-					width: tabList.offsetWidth,
-					scrollWidth: tabList.scrollWidth
-				});
-			}, 100);
-		}));
+			this._register(addDisposableListener(window, EventType.RESIZE, () => {
+				// Todo: Need to set timeout because we have to make sure that the grids have already rearraged before the getContentHeight gets called.
+				setTimeout(() => {
+					this._scrollableElement.setScrollDimensions({
+						width: tabList.offsetWidth,
+						scrollWidth: tabList.scrollWidth
+					});
+				}, 100);
+			}));
 
-		if (this.options.layout === NavigationBarLayout.horizontal) {
-			(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(horizontalLayout);
-		} else {
-			(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(verticalLayout);
+			if (this.options.layout === NavigationBarLayout.horizontal) {
+				(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(horizontalLayout);
+			} else {
+				(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(verticalLayout);
+			}
 		}
 	}
 

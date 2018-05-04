@@ -22,7 +22,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	constructor(
 		context: IExtHostContext,
-		@IInstantiationService instatiationService: IInstantiationService
+		@IInstantiationService instatiationService: IInstantiationService,
 	) {
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModelViewDialog);
 		this._dialogService = new CustomDialogService(instatiationService);
@@ -40,7 +40,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public $close(handle: number): Thenable<void> {
 		let dialog = this.getDialog(handle);
-		dialog.close();
+		this._dialogService.closeDialog(dialog);
 		return Promise.resolve();
 	}
 
@@ -66,7 +66,6 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			dialog.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
 
-		dialog.updateContent();
 		return Promise.resolve();
 	}
 
@@ -79,8 +78,6 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 		tab.title = details.title;
 		tab.content = details.content;
-
-		tab.updateContent();
 		return Promise.resolve();
 	}
 
@@ -88,11 +85,13 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		let button = this._buttons.get(handle);
 		if (!button) {
 			button = new DialogButton(details.label, details.enabled);
+			button.hidden = details.hidden;
 			button.onClick(() => this.onButtonClick(handle));
 			this._buttons.set(handle, button);
 		} else {
 			button.label = details.label;
 			button.enabled = details.enabled;
+			button.hidden = details.hidden;
 		}
 
 		return Promise.resolve();

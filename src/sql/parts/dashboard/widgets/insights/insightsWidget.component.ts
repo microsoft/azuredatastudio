@@ -202,6 +202,8 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	private _updateChild(result: SimpleExecuteResult): void {
 		this.componentHost.viewContainerRef.clear();
+		this.error = undefined;
+		this._cd.detectChanges();
 
 		if (result.rowCount === 0) {
 			this.showError(nls.localize('noResults', 'No results to show'));

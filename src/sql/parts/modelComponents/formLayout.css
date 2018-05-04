@@ -1,0 +1,42 @@
+
+.form-table {
+	width:400px;
+	display:table;
+	padding: 30px;
+}
+
+.form-actions-table {
+	display:table;
+}
+
+.form-row {
+	display: table-row;
+	width: 100px;
+	padding-bottom: 10px;
+}
+
+.form-item-row {
+	padding-bottom: 5px;
+	width: 300px;
+}
+
+.form-item-title {
+
+	padding-top: 20px;
+}
+
+.form-cell {
+	padding-top: 20px;
+	padding-right: 5px;
+	display: table-cell;
+}
+
+.form-actions-cell {
+	padding-top: 5px;
+	padding-right: 5px;
+	display: table-cell;
+}
+
+.form-action {
+	width: 20px;
+}

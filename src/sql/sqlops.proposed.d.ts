@@ -20,21 +20,29 @@ declare module 'sqlops' {
 		flexContainer(): FlexBuilder;
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
+		checkBox(): ComponentBuilder<CheckBoxComponent>;
+		button(): ComponentBuilder<ButtonComponent>;
+		dropDown(): ComponentBuilder<DropDownComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<WebviewComponent>;
+		formContainer(): FormBuilder;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
 		component(): T;
 		withProperties<U>(properties: U): ComponentBuilder<T>;
 	}
-	export interface ContainerBuilder<T extends Component, TLayout,TItemLayout> extends ComponentBuilder<T> {
+	export interface ContainerBuilder<T extends Component, TLayout, TItemLayout> extends ComponentBuilder<T> {
 		withLayout(layout: TLayout): ContainerBuilder<T, TLayout, TItemLayout>;
-		withItems(components: Array<Component>, itemLayout ?: TItemLayout): ContainerBuilder<T, TLayout, TItemLayout>;
+		withItems(components: Array<Component>, itemLayout?: TItemLayout): ContainerBuilder<T, TLayout, TItemLayout>;
 	}
 
 	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout> {
 
+	}
+
+	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
+		withFormItems(components: FormComponent[], itemLayout?: FormItemLayout): ContainerBuilder<FormContainer, FormLayout, FormItemLayout>;
 	}
 
 	export interface Component {
@@ -50,10 +58,16 @@ declare module 'sqlops' {
 		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
 	}
 
+	export interface FormComponent {
+		component: Component;
+		title: string;
+		actions?: Component[];
+	}
+
 	/**
 	 * A component that contains other components
 	 */
-	export interface Container<TLayout,TItemLayout> extends Component {
+	export interface Container<TLayout, TItemLayout> extends Component {
 		/**
 		 * A copy of the child items array. This cannot be added to directly -
 		 * components must be created using the create methods instead
@@ -70,7 +84,7 @@ declare module 'sqlops' {
 		 * @param itemConfigs the definitions
 		 * @param {*} [itemLayout] Optional layout for the child items
 		 */
-		addItems(itemConfigs: Array<Component>, itemLayout ?: TItemLayout): void;
+		addItems(itemConfigs: Array<Component>, itemLayout?: TItemLayout): void;
 
 		/**
 		 * Creates a child component and adds it to this container.
@@ -78,7 +92,7 @@ declare module 'sqlops' {
 		 * @param {Component} component the component to be added
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
-		addItem(component: Component, itemLayout ?: TItemLayout): void;
+		addItem(component: Component, itemLayout?: TItemLayout): void;
 
 		/**
 		 * Defines the layout for this container
@@ -130,8 +144,20 @@ declare module 'sqlops' {
 		flex?: string;
 	}
 
+	export interface FormItemLayout {
+		horizontal: boolean;
+	}
+
+	export interface FormLayout {
+
+	}
+
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
 	}
+
+	export interface FormContainer extends Container<FormLayout, FormItemLayout> {
+	}
+
 
 	/**
 	 * Describes an action to be shown in the UI, with a user-readable label
@@ -153,14 +179,28 @@ declare module 'sqlops' {
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
 	 */
-	export interface CardProperties  {
+	export interface CardProperties {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
 	}
 
-	export interface InputBoxProperties  {
+	export interface InputBoxProperties {
 		value?: string;
+	}
+
+	export interface CheckBoxProperties {
+		checked?: boolean;
+		label?: string;
+	}
+
+	export interface DropDownProperties {
+		value?: string;
+		values?: string[];
+	}
+
+	export interface ButtonProperties {
+		label?: string;
 	}
 
 	export interface CardComponent extends Component {
@@ -172,6 +212,23 @@ declare module 'sqlops' {
 	export interface InputBoxComponent extends Component {
 		value: string;
 		onTextChanged: vscode.Event<any>;
+	}
+
+	export interface CheckBoxComponent extends Component {
+		checked: boolean;
+		label: string;
+		onChanged: vscode.Event<any>;
+	}
+
+	export interface DropDownComponent extends Component {
+		value: string;
+		values: string[];
+		onValueChanged: vscode.Event<any>;
+	}
+
+	export interface ButtonComponent extends Component {
+		label: string;
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface WidgetComponent extends Component {
@@ -242,6 +299,16 @@ declare module 'sqlops' {
 			 */
 			export function createButton(label: string): Button;
 
+			/**
+			 * Opens the given dialog if it is not already open
+			 */
+			export function openDialog(dialog: Dialog): void;
+
+			/**
+			 * Closes the given dialog if it is open
+			 */
+			export function closeDialog(dialog: Dialog): void;
+
 			// Model view dialog classes
 			export interface Dialog {
 				/**
@@ -252,7 +319,6 @@ declare module 'sqlops' {
 				/**
 				 * The content of the dialog. If multiple tabs are given they will be displayed with tabs
 				 * If a string is given, it should be the ID of the dialog's model view content
-				 * TODO mairvine 4/18/18: use a model view content type
 				 */
 				content: string | DialogTab[],
 
@@ -270,51 +336,35 @@ declare module 'sqlops' {
 				 * Any additional buttons that should be displayed
 				 */
 				customButtons: Button[];
-
-				/**
-				 * Opens the dialog
-				 */
-				open(): void;
-
-				/**
-				 * Closes the dialog
-				 */
-				close(): void;
-
-				/**
-				 * Updates the dialog on screen to reflect changes to the buttons or content
-				 */
-				updateContent(): void;
 			}
 
 			export interface DialogTab {
 				/**
 				 * The title of the tab
 				 */
-				title: string,
+				title: string;
 
 				/**
 				 * A string giving the ID of the tab's model view content
-				 * TODO mairvine 4/18/18: use a model view content type
 				 */
 				content: string;
-
-				/**
-				 * Updates the dialog on screen to reflect changes to the content
-				 */
-				updateContent(): void;
 			}
 
 			export interface Button {
 				/**
 				 * The label displayed on the button
 				 */
-				label: string,
+				label: string;
 
 				/**
 				 * Whether the button is enabled
 				 */
-				enabled: boolean,
+				enabled: boolean;
+
+				/**
+				 * Whether the button is hidden
+				 */
+				hidden: boolean;
 
 				/**
 				 * Raised when the button is clicked

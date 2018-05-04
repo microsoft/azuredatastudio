@@ -13,7 +13,8 @@ import { parseArgs } from 'vs/platform/environment/node/argv';
 import { getRandomTestPath } from 'vs/workbench/test/workbenchTestServices';
 import { join } from 'path';
 import { mkdirp } from 'vs/base/node/pfs';
-import { resolveMarketplaceHeaders } from 'vs/platform/extensionManagement/node/extensionGalleryService';
+// {{SQL CARBON EDIT}}
+import { resolveMarketplaceHeaders, ExtensionGalleryService } from 'vs/platform/extensionManagement/node/extensionGalleryService';
 import { isUUID } from 'vs/base/common/uuid';
 
 suite('Extension Gallery Service', () => {
@@ -47,5 +48,50 @@ suite('Extension Gallery Service', () => {
 				done();
 			});
 		});
+	});
+
+	// {{SQL CARBON EDIT}}
+	test('sortByField', () => {
+		let a = {
+			extensionId: undefined,
+			extensionName: undefined,
+			displayName: undefined,
+			shortDescription: undefined,
+			publisher: undefined
+		};
+		let b = {
+			extensionId: undefined,
+			extensionName: undefined,
+			displayName: undefined,
+			shortDescription: undefined,
+			publisher: undefined
+		};
+
+
+		assert.equal(ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'), 0);
+
+		a.publisher = { displayName: undefined, publisherId: undefined, publisherName: undefined};
+		assert.equal(ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'), 1);
+
+		b.publisher = { displayName: undefined, publisherId: undefined, publisherName: undefined};
+		assert.equal(ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'), 0);
+
+		a.publisher.publisherName = 'a';
+		assert.equal(ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'), 1);
+
+		b.publisher.publisherName = 'b';
+		assert.equal(ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'), -1);
+
+		b.publisher.publisherName = 'a';
+		assert.equal(ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'), 0);
+
+		a.displayName = 'test1';
+		assert.equal(ExtensionGalleryService.compareByField(a, b, 'displayName'), 1);
+
+		b.displayName = 'test2';
+		assert.equal(ExtensionGalleryService.compareByField(a, b, 'displayName'), -1);
+
+		b.displayName = 'test1';
+		assert.equal(ExtensionGalleryService.compareByField(a, b, 'displayName'), 0);
 	});
 });

@@ -127,6 +127,16 @@ class Extension implements IExtension {
 		//return `${product.extensionsGallery.serviceUrl}/publishers/${this.publisher}/vsextensions/${this.name}/${this.latestVersion}/vspackage`;
 	}
 
+	// {{SQL CARBON EDIT}}
+	get downloadPage(): string {
+		if (!product.extensionsGallery) {
+			return null;
+		}
+
+		// {{SQL CARBON EDIT}}
+		return this.gallery && this.gallery.assets && this.gallery.assets.downloadPage && this.gallery.assets.downloadPage.uri;
+	}
+
 	get iconUrl(): string {
 		return this.galleryIconUrl || this.localIconUrl || this.defaultIconUrl;
 	}
@@ -570,7 +580,8 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService {
 			return TPromise.as(null);
 		}
 
-		const toUpdate = this.local.filter(e => e.outdated && (e.state !== ExtensionState.Installing));
+		// {{SQL CARBON EDIT}}
+		const toUpdate = this.local.filter(e => e.outdated && (e.state !== ExtensionState.Installing) && !e.downloadPage);
 		return TPromise.join(toUpdate.map(e => this.install(e)));
 	}
 

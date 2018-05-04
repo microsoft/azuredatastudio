@@ -462,11 +462,12 @@ export class IssueReporter extends Disposable {
 			response.json().then(result => {
 				this.clearSearchResults();
 
-				if (result && result.candidates) {
-					this.displaySearchResults(result.candidates);
-				} else {
-					throw new Error('Unexpected response, no candidates property');
-				}
+				// {{SQL CARBON EDIT}}
+				// if (result && result.candidates) {
+				// 	this.displaySearchResults(result.candidates);
+				// } else {
+				// 	throw new Error('Unexpected response, no candidates property');
+				// }
 			}).catch((error) => {
 				this.logSearchError(error);
 			});

@@ -5,33 +5,37 @@
 
 import 'vs/css!./dashboardHomeContainer';
 
-import { Component, forwardRef, Input, ChangeDetectorRef, Inject, ViewChild } from '@angular/core';
+import { Component, forwardRef, Input, ChangeDetectorRef, Inject, ViewChild, ContentChild } from '@angular/core';
 
 import { DashboardWidgetContainer } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.component';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { AngularEventType } from '../../../services/angularEventing/angularEventingService';
+import { AngularEventType } from 'sql/services/angularEventing/angularEventingService';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
+import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
 
 @Component({
 	selector: 'dashboard-home-container',
 	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardHomeContainer) }],
 	template: `
 		<div class="fullsize" style="display: flex; flex-direction: column">
-			<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [_config]="properties"
-				style="padding-left: 10px; padding-right: 10px; display: block; flex: 0" [style.height.px]="_propertiesClass?.collapsed ? '30' : '90'">
-			</dashboard-widget-wrapper>
-			<widget-content style="flex: 1" [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
-			</widget-content>
+			<div scrollable>
+				<dashboard-widget-wrapper #propertiesClass *ngIf="properties" [collapsable]="true" [_config]="properties"
+					style="padding-left: 10px; padding-right: 10px; display: block; flex: 0" [style.height.px]="_propertiesClass?.collapsed ? '30' : '90'">
+				</dashboard-widget-wrapper>
+				<widget-content style="flex: 1" [scrollContent]="false" [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
+				</widget-content>
+			</div>
 		</div>
 	`
 })
 export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@Input() private properties: WidgetConfig;
 	@ViewChild('propertiesClass') private _propertiesClass: DashboardWidgetWrapper;
+	@ContentChild(ScrollableDirective) private _scrollable;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
@@ -55,5 +59,12 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 				});
 			}
 		});
+	}
+
+	public layout() {
+		super.layout();
+		if (this._scrollable) {
+			this._scrollable.layout();
+		}
 	}
 }

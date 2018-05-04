@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NgModuleRef } from '@angular/core';
+import { NgModuleRef, InjectionToken } from '@angular/core';
 import { BootstrapParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IConnectionManagementService, IConnectionDialogService, IErrorMessageService }
 	from 'sql/parts/connection/common/connectionManagement';
@@ -23,6 +23,7 @@ import { IFileBrowserService, IFileBrowserDialogController } from 'sql/parts/fil
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
+import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
 
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -43,7 +44,6 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
 
 export const BOOTSTRAP_SERVICE_ID = 'bootstrapService';
 export const IBootstrapService = createDecorator<IBootstrapService>(BOOTSTRAP_SERVICE_ID);

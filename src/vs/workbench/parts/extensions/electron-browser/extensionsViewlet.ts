@@ -177,7 +177,8 @@ export class ExtensionsViewlet extends PersistentViewsViewlet implements IExtens
 	private createDefaultRecommendedExtensionsListViewDescriptor(): IViewDescriptor {
 		return {
 			id: 'extensions.recommendedList',
-			name: localize('recommendedExtensions', "Recommended"),
+			// {{ SQL CARBON EDIT}}
+			name: localize('recommendedExtensions', "Marketplace"),
 			location: ViewLocation.Extensions,
 			ctor: RecommendedExtensionsView,
 			when: ContextKeyExpr.and(ContextKeyExpr.not('searchExtensions'), ContextKeyExpr.has('defaultRecommendedExtensions')),

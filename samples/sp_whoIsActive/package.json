@@ -78,10 +78,18 @@
                             "legendPosition": "none",
                             "labelFirstColumn": false,
                             "columnsAsLabels": true,
-                            "showTopNData": 5
+                            "showTopNData": 10
                         }
                     },
-                    "queryFile": "./out/src/sql/cpuUsage.sql"
+                    "queryFile": "./out/src/sql/cpuUsage.sql",
+                    "details": {
+                        "queryFile": "./out/src/sql/cpuUsage_details.sql",
+                        "label": {
+                            "column": "session_id",
+                            "state": []
+                        },
+                        "value": "CPU"
+                    }
                 }
             },
             {
@@ -94,10 +102,18 @@
                             "legendPosition": "none",
                             "labelFirstColumn": false,
                             "columnsAsLabels": true,
-                            "showTopNData": 5
+                            "showTopNData": 10
                         }
                     },
-                    "queryFile": "./out/src/sql/cpuDelta.sql"
+                    "queryFile": "./out/src/sql/cpuDelta.sql",
+                    "details": {
+                        "queryFile": "./out/src/sql/cpuDelta_details.sql",
+                        "label": {
+                            "column": "session_id",
+                            "state": []
+                        },
+                        "value": "CPU_delta"
+                    }
                 }
             },
             {
@@ -110,10 +126,18 @@
                             "legendPosition": "none",
                             "labelFirstColumn": false,
                             "columnsAsLabels": true,
-                            "showTopNData": 5
+                            "showTopNData": 10
                         }
                     },
-                    "queryFile": "./out/src/sql/memoryUsage.sql"
+                    "queryFile": "./out/src/sql/memoryUsage.sql",
+                    "details": {
+                        "queryFile": "./out/src/sql/memoryUsage_details.sql",
+                        "label": {
+                            "column": "session_id",
+                            "state": []
+                        },
+                        "value": "used_memory"
+                    }
                 }
             },
             {
@@ -126,10 +150,18 @@
                             "legendPosition": "none",
                             "labelFirstColumn": false,
                             "columnsAsLabels": true,
-                            "showTopNData": 5
+                            "showTopNData": 10
                         }
                     },
-                    "queryFile": "./out/src/sql/memoryDelta.sql"
+                    "queryFile": "./out/src/sql/memoryDelta.sql",
+                    "details": {
+                        "queryFile": "./out/src/sql/memoryDelta_details.sql",
+                        "label": {
+                            "column": "session_id",
+                            "state": []
+                        },
+                        "value": "used_memory_delta"
+                    }
                 }
             },
             {
@@ -159,7 +191,7 @@
                             }
                         },
                         {
-                            "name": "Top 5 CPU Usage",
+                            "name": "Top 10 CPU Usage",
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1
@@ -169,7 +201,7 @@
                             }
                         },
                         {
-                            "name": "Top 5 CPU Delta",
+                            "name": "Top 10 CPU Delta",
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1
@@ -179,7 +211,7 @@
                             }
                         },
                         {
-                            "name": "Top 5 Memory Usage",
+                            "name": "Top 10 Memory Usage",
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1
@@ -189,23 +221,13 @@
                             }
                         },
                         {
-                            "name": "Top 5 Memory Delta",
+                            "name": "Top 10 Memory Delta",
                             "gridItemConfig": {
                                 "sizex": 2,
                                 "sizey": 1
                             },
                             "widget": {
                                 "sp_whoisactive-memory-delta": {}
-                            }
-                        },
-                        {
-                            "name": "Blocking Sessions",
-                            "gridItemConfig": {
-                                "sizex": 2,
-                                "sizey": 1
-                            },
-                            "widget": {
-                                "sp_whoisactive-blocking_sessions": {}
                             }
                         }
                     ]

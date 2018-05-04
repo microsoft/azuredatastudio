@@ -9,6 +9,9 @@ import * as nls from 'vs/nls';
 
 export class AgentJobUtilities {
 
+	public static startIconClass: string = 'action-label icon runJobIcon';
+	public static stopIconClass: string = 'action-label icon stopJobIcon';
+
 	public static convertToStatusString(status: number): string {
 		switch(status) {
 			case(0): return nls.localize('agentUtilities.failed','Failed');
@@ -49,6 +52,43 @@ export class AgentJobUtilities {
 			return nls.localize('agentUtilities.neverRun', 'Never Run');
 		} else {
 			return date;
+		}
+	}
+
+	public static setRunnable(icon: HTMLElement, index: number) {
+		if (icon.className.includes('non-runnable')) {
+			icon.className = icon.className.slice(0, index);
+		}
+	}
+
+	public static getActionIconClassName(startIcon: HTMLElement, stopIcon: HTMLElement, executionStatus: number) {
+		this.setRunnable(startIcon, AgentJobUtilities.startIconClass.length);
+		this.setRunnable(stopIcon, AgentJobUtilities.stopIconClass.length);
+		switch (executionStatus) {
+			case(1): // executing
+				startIcon.className += ' non-runnable';
+				return;
+			case(2): // Waiting for thread
+				startIcon.className += ' non-runnable';
+				return;
+			case(3): // Between retries
+				startIcon.className += ' non-runnable';
+				return;
+			case(4): //Idle
+				stopIcon.className += ' non-runnable';
+				return;
+			case(5): // Suspended
+				stopIcon.className += ' non-runnable';
+				return;
+			case(6): //obsolete
+				startIcon.className += ' non-runnable';
+				stopIcon.className += ' non-runnable';
+				return;
+			case(7): //Performing Completion Actions
+				startIcon.className += ' non-runnable';
+				return;
+			default:
+				return;
 		}
 	}
 }

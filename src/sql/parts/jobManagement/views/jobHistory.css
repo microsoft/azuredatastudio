@@ -10,28 +10,6 @@
 	padding-bottom: 15px;
 }
 
-.vs-dark ul.action-buttons {
-	border-top: 3px solid #444444;
-}
-
-.action-buttons {
-	padding-top: 15px;
-	padding-left: 10px;
-	border-top: 3px solid #f4f4f4;
-	list-style-type: none;
-}
-
-ul.action-buttons .icon-start, .icon-stop {
-	padding-left: 25px;
-}
-
-ul.action-buttons li {
-	padding-right: 25px;
-	display: inline-block;
-	width: 50px;
-	cursor: pointer;
-}
-
 .overview-container .overview-tab .resultsViewCollapsible {
 	padding: 15px;
 	display: inline;
@@ -40,6 +18,10 @@ ul.action-buttons li {
 .job-heading {
 	text-align: left;
 	padding-left: 13px;
+}
+
+.overview-container {
+	padding-top: 10px;
 }
 
 .vs-dark .overview-container .overview-tab {
@@ -120,30 +102,34 @@ input#accordion:checked ~ .accordion-content {
 	float: left;
 	cursor: pointer;
 	padding-left: 13px;
+	padding-bottom: 10px;
 }
 
 .vs-dark.monaco-shell .all-jobs >.back-button-icon {
 	content: url('../common/media/back_inverse.svg');
 }
 
-.vs ul.action-buttons div.icon-start,
-.vs-dark ul.action-buttons div.icon-start,
-.hc-black ul.action-buttons div.icon-start {
-	display: inline-block;
-	height: 20px;
-	width: 20px;
+.vs .action-label.icon.runJobIcon,
+.vs-dark .action-label.icon.runJobIcon,
+.hc-black .action-label.icon.runJobIcon {
 	background-image: url('../common/media/start.svg');
-	background-repeat: no-repeat;
+	padding-right: 5px;
 }
 
-.vs ul.action-buttons .icon-stop,
-.vs-dark ul.action-buttons .icon-stop,
-.hc-black ul.action-buttons .icon-stop {
-	display: inline-block;
+.vs .action-label.icon.stopJobIcon,
+.vs-dark .action-label.icon.stopJobIcon,
+.hc-black .action-label.icon.stopJobIcon {
 	background-image: url('../common/media/stop.svg');
-	background-repeat: no-repeat;
-	height: 20px;
-	width: 20px;
+}
+
+a.action-label.icon.runJobIcon.non-runnable {
+	opacity: 0.4;
+	cursor: default;
+}
+
+a.action-label.icon.stopJobIcon.non-runnable {
+	opacity: 0.4;
+	cursor: default;
 }
 
 .accordion-content #col1,
@@ -191,12 +177,9 @@ table.step-list tr.step-row td {
 	padding-bottom: 10px;
 }
 
-.vs-dark .step-table .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
-	background-image: none;
-}
-
 .step-table .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
 	background: none;
+	background-image: none;
 }
 
 .step-table .monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected:not(.loading) > .content:before {
@@ -241,3 +224,27 @@ table.step-list tr.step-row td {
 jobhistory-component .history-details .step-table.prev-run-list .monaco-scrollable-element {
 	overflow-y: scroll !important;
 }
+
+jobhistory-component .jobhistory-heading-container {
+	display: -webkit-box;
+}
+
+jobhistory-component > .jobhistory-heading-container > .icon.in-progress {
+	width: 20px;
+	height: 20px;
+	padding-top: 16px;
+	padding-left: 20px;
+}
+
+jobhistory-component > .actionbar-container .monaco-action-bar > ul.actions-container {
+	border-top: 3px solid #f4f4f4;
+	padding-top: 10px;
+}
+
+.vs-dark jobhistory-component > .actionbar-container .monaco-action-bar > ul.actions-container {
+	border-top: 3px solid #444444;
+}
+
+
+
+

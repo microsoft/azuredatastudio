@@ -54,9 +54,10 @@ import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.comp
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
 
 let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
-		DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
-		ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
-		JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, DashboardModelViewContainer, ModelComponentWrapper];
+	DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
+	ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
+	JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, DashboardModelViewContainer, ModelComponentWrapper,
+	ScrollableDirective];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
@@ -74,6 +75,7 @@ import { TasksWidget } from 'sql/parts/dashboard/widgets/tasks/tasksWidget.compo
 import { InsightsWidget } from 'sql/parts/dashboard/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/parts/dashboard/widgets/webview/webviewWidget.component';
 import { JobStepsViewComponent } from '../jobManagement/views/jobStepsView.component';
+import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
 
 let widgetComponents = [
 	PropertiesWidgetComponent,

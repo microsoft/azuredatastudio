@@ -293,6 +293,12 @@ export function createApiFactory(
 				},
 				createButton(label: string): sqlops.window.modelviewdialog.Button {
 					return extHostModelViewDialog.createButton(label);
+				},
+				openDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
+					return extHostModelViewDialog.open(dialog);
+				},
+				closeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
+					return extHostModelViewDialog.close(dialog);
 				}
 			};
 

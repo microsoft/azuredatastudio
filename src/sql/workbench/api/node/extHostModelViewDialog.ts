@@ -26,18 +26,6 @@ class DialogImpl implements sqlops.window.modelviewdialog.Dialog {
 		this.okButton = this._extHostModelViewDialog.createButton(nls.localize('dialogOkLabel', 'Done'));
 		this.cancelButton = this._extHostModelViewDialog.createButton(nls.localize('dialogCancelLabel', 'Cancel'));
 	}
-
-	public open(): void {
-		this._extHostModelViewDialog.open(this);
-	}
-
-	public close(): void {
-		this._extHostModelViewDialog.close(this);
-	}
-
-	public updateContent(): void {
-		this._extHostModelViewDialog.updateDialogContent(this);
-	}
 }
 
 class TabImpl implements sqlops.window.modelviewdialog.DialogTab {
@@ -45,21 +33,19 @@ class TabImpl implements sqlops.window.modelviewdialog.DialogTab {
 	public content: string;
 
 	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) { }
-
-	public updateContent(): void {
-		this._extHostModelViewDialog.updateTabContent(this);
-	}
 }
 
 class ButtonImpl implements sqlops.window.modelviewdialog.Button {
 	private _label: string;
 	private _enabled: boolean;
+	private _hidden: boolean;
 
 	private _onClick = new Emitter<void>();
 	public onClick = this._onClick.event;
 
 	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) {
 		this._enabled = true;
+		this._hidden = false;
 	}
 
 	public get label(): string {
@@ -77,6 +63,15 @@ class ButtonImpl implements sqlops.window.modelviewdialog.Button {
 
 	public set enabled(enabled: boolean) {
 		this._enabled = enabled;
+		this._extHostModelViewDialog.updateButton(this);
+	}
+
+	public get hidden(): boolean {
+		return this._hidden;
+	}
+
+	public set hidden(hidden: boolean) {
+		this._hidden = hidden;
 		this._extHostModelViewDialog.updateButton(this);
 	}
 
@@ -154,7 +149,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		let handle = this.getDialogHandle(dialog);
 		let tabs = dialog.content;
 		if (tabs && typeof tabs !== 'string') {
-			tabs.forEach(tab => tab.updateContent());
+			tabs.forEach(tab => this.updateTabContent(tab));
 		}
 		if (dialog.customButtons) {
 			dialog.customButtons.forEach(button => this.updateButton(button));
@@ -182,7 +177,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		let handle = this.getButtonHandle(button);
 		this._proxy.$setButtonDetails(handle, {
 			label: button.label,
-			enabled: button.enabled
+			enabled: button.enabled,
+			hidden: button.hidden
 		});
 	}
 
@@ -194,25 +190,22 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	public createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
 		let dialog = new DialogImpl(this);
 		dialog.title = title;
-		let handle = ExtHostModelViewDialog.getNewHandle();
-		this._dialogHandles.set(dialog, handle);
+		this.getDialogHandle(dialog);
 		return dialog;
 	}
 
 	public createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
 		let tab = new TabImpl(this);
 		tab.title = title;
-		let handle = ExtHostModelViewDialog.getNewHandle();
-		this._tabHandles.set(tab, handle);
+		this.getTabHandle(tab);
 		return tab;
 	}
 
 	public createButton(label: string): sqlops.window.modelviewdialog.Button {
 		let button = new ButtonImpl(this);
-		button.label = label;
-		let handle = ExtHostModelViewDialog.getNewHandle();
-		this._buttonHandles.set(button, handle);
+		this.getButtonHandle(button);
 		this.registerOnClickCallback(button, button.getOnClickCallback());
+		button.label = label;
 		return button;
 	}
 }

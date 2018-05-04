@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
+import {
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
 } from '@angular/core';
 
@@ -70,7 +71,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		this._changeRef.detectChanges();
 	}
 
-	public setLayout (layout: any): void {
+	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel
 		this.layout();
 	}
@@ -87,7 +88,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	}
 
 	public set value(newValue: string) {
-		 this.setProperty<sqlops.InputBoxProperties, string>(this.setInputBoxProperties, newValue);
+		this.setPropertyFromUI<sqlops.InputBoxProperties, string>(this.setInputBoxProperties, newValue);
 	}
 
 	private setInputBoxProperties(properties: sqlops.InputBoxProperties, value: string): void {

@@ -4,8 +4,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-
+<div class="jobhistory-heading-container">
  <h1 class="job-heading">Jobs | {{this._agentJobInfo?.name}} </h1>
+ <div class="icon in-progress" *ngIf="showProgressWheel()"></div>
+</div>
 
  <!-- Back -->
  <div class="all-jobs">
@@ -13,14 +15,7 @@
  </div>
 
 <!-- Actions -->
-<ul class="action-buttons">
-	<li>
-		<div class="icon-start" (click)="jobAction('run', this._agentJobInfo.name)">Run</div>
-	</li>
-	<li>
-		<div class="icon-stop" (click)="jobAction('stop', this._.agentJobInfo.name)">Stop</div>
-	</li>
-</ul>
+<div #actionbarContainer class="actionbar-container"></div>
 
 <!-- Overview  -->
  <div class="overview-container">
