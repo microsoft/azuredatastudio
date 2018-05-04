@@ -2,7 +2,7 @@
     "name": "server-report",
     "displayName": "Server Reports",
     "description": "Server Reports",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "publisher": "Microsoft",
     "preview": true,
     "engines": {
@@ -30,7 +30,30 @@
                 "title": "Server Reports",
                 "description": "This extension shows useful reports for a server.",
                 "container": {
-                    "server-insights1": null
+                    "nav-section": [
+                        {
+                            "id": "server-reports-monitoring",
+                            "title": "Monitor",
+                            "icon": {
+                                "light": "./out/src/media/monitor.svg",
+                                "dark": "./out/src/media/monitor_inverse.svg"
+                            },
+                            "container": {
+                                "server-reports-monitoring-container": {}
+                            }
+                        },
+                        {
+                            "id": "server-reports-performance",
+                            "title": "Performance",
+                            "icon": {
+                                "light": "./out/src/media/performance.svg",
+                                "dark": "./out/src/media/performance_inverse.svg"
+                            },
+                            "container": {
+                                "server-reports-performance-container": {}
+                            }
+                        }
+                    ]
                 }
             }
         ],
@@ -122,7 +145,7 @@
         ],
         "dashboard.containers": [
             {
-                "id": "server-insights1",
+                "id": "server-reports-monitoring-container",
                 "container": {
                     "widgets-container": [
                         {
@@ -164,7 +187,14 @@
                             "widget": {
                                 "extension-backup-growth-trend": {}
                             }
-                        },
+                        }
+                    ]
+                }
+            },
+            {
+                "id": "server-reports-performance-container",
+                "container": {
+                    "widgets-container": [
                         {
                             "name": "Wait Counts by Paul Randal",
                             "gridItemConfig": {
