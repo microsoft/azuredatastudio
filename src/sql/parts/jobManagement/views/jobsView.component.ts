@@ -74,6 +74,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _serverName: string;
 	private _isCloud: boolean;
 	private _showProgressWheel: boolean;
+	private _tabHeight: number;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -202,9 +203,8 @@ export class JobsViewComponent implements AfterContentChecked {
 		this.dataView.beginUpdate();
 		this.dataView.setItems(jobViews);
 		this.dataView.endUpdate();
-
-		this._table.resizeCanvas();
 		this._table.autosizeColumns();
+		this._table.resizeCanvas();
 		let expandedJobs = this._agentViewComponent.expanded;
 		let expansions = 0;
 		for (let i = 0; i < jobs.length; i++){
@@ -226,8 +226,18 @@ export class JobsViewComponent implements AfterContentChecked {
 		});
 		this._showProgressWheel = false;
 		this._cd.detectChanges();
-		$(window).resize(() => {
-			this._table.resizeCanvas();
+		const self = this;
+		this._tabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
+		$(window).resize((e) => {
+			let currentTabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
+			if (currentTabHeight < self._tabHeight) {
+				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
+				self._table.resizeCanvas();
+			} else {
+				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
+				self._table.resizeCanvas();
+			}
+			self._tabHeight = currentTabHeight;
 		});
 		this.loadJobHistories();
 	}
