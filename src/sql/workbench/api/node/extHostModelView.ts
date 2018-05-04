@@ -290,9 +290,6 @@ class ComponentWrapper implements sqlops.Component {
 		if (eventArgs && eventArgs.eventType === ComponentEventType.PropertiesChanged) {
 			this.properties = eventArgs.args;
 			this.validate();
-		} else if (eventArgs && eventArgs.eventType === ComponentEventType.validityChanged) {
-			this._valid = eventArgs.args;
-			this._onValidityChangedEmitter.fire(this.valid);
 		} else if (eventArgs) {
 			let emitter = this._emitterMap.get(eventArgs.eventType);
 			if (emitter) {
@@ -305,6 +302,7 @@ class ComponentWrapper implements sqlops.Component {
 		if (!this.properties[key] || this.properties[key] !== value) {
 			// Only notify the front end if a value has been updated
 			this.properties[key] = value;
+			this.validate();
 			return this.notifyPropertyChanged();
 		}
 		return Promise.resolve(true);
@@ -325,8 +323,12 @@ class ComponentWrapper implements sqlops.Component {
 		} catch (e) {
 			isValid = false;
 		}
-		this._valid = isValid;
-		this._proxy.$notifyValidation(this._handle, this._id, isValid);
+		let oldValid = this._valid;
+		if (this._valid !== isValid) {
+			this._valid = isValid;
+			this._proxy.$notifyValidation(this._handle, this._id, isValid);
+			this._onValidityChangedEmitter.fire(this._valid);
+		}
 	}
 
 	public get valid(): boolean {
@@ -375,9 +377,6 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 		super(proxy, handle, ModelComponentTypes.InputBox, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
-		this.validations.push((component: this) => {
-			return !(new RegExp('[0-9]*\.[0-9][0-9]')).test(component.value);
-		});
 	}
 
 	public get value(): string {
@@ -446,7 +445,7 @@ class ModelViewImpl implements sqlops.ModelView {
 
 	public onClosedEmitter = new Emitter<any>();
 	private _onValidityChangedEmitter = new Emitter<boolean>();
-	public onValidityChanged = this._onValidityChangedEmitter.event;
+	public readonly onValidityChanged = this._onValidityChangedEmitter.event;
 
 	private _modelBuilder: ModelBuilderImpl;
 	private _component: sqlops.Component;

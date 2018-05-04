@@ -66,15 +66,6 @@ export class ModelStore implements IModelStore {
 		}
 	}
 
-	tryRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): T {
-		let component = this.getComponent(componentId);
-		if (component) {
-			return action(component);
-		} else {
-			return undefined;
-		}
-	}
-
 	private addPendingAction<T>(componentId: string, action: (component: IComponent) => T): Promise<T> {
 		// We create a promise and chain it onto a tracking promise whose resolve method
 		// will only be called once the component is created

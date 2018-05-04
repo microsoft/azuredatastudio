@@ -62,8 +62,7 @@ export interface IComponentEventArgs {
 export enum ComponentEventType {
 	PropertiesChanged,
 	onDidChange,
-	onDidClick,
-	validityChanged
+	onDidClick
 }
 
 export interface IModelStore {
@@ -88,11 +87,4 @@ export interface IModelStore {
 	 * @memberof IModelStore
 	 */
 	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): Promise<T>;
-	/**
-	 * Run on a component immediately if it exists, otherwise return undefined
-	 * @param {string} componentId unique identifier of the component
-	 * @param {(component: IComponent) => void} action some action to perform
-	 * @memberof IModelStore 
-	 */
-	tryRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): T;
 }

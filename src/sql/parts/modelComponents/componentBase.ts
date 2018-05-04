@@ -99,13 +99,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	}
 
 	public setValid(valid: boolean): void {
-		if (this._valid !== valid) {
-			this._valid = valid;
-			this._onEventEmitter.fire({
-				eventType: ComponentEventType.validityChanged,
-				args: this.valid
-			});
-		}
+		this._valid = valid;
 	}
 }
 
