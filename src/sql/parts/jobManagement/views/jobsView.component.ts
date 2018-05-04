@@ -134,7 +134,8 @@ export class JobsViewComponent implements AfterContentChecked {
 			syncColumnCellResize: true,
 			enableColumnReorder: false,
 			rowHeight: 45,
-			enableCellNavigation: true
+			enableCellNavigation: true,
+			forceFitColumns: true
 		};
 
 		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
