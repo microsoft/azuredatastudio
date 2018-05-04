@@ -68,9 +68,9 @@ declare module 'sqlops' {
 		readonly valid: boolean;
 
 		/**
-		 * Manually run the component's validations. Otherwise they will run whenever the properties are updated
+		 * Run the component's validations
 		 */
-		validate(): void
+		validate(): void;
 	}
 
 	export interface FormComponent {
@@ -277,6 +277,11 @@ declare module 'sqlops' {
 		 * Raised when the model view's valid property changes
 		 */
 		readonly onValidityChanged: vscode.Event<boolean>;
+
+		/**
+		 * Run the model view root component's validations
+		 */
+		validate(): void;
 
 		/**
 		 * Initializes the model with a root component definition.

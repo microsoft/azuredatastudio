@@ -375,6 +375,9 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 		super(proxy, handle, ModelComponentTypes.InputBox, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this.validations.push((component: this) => {
+			return !(new RegExp('[0-9]*\.[0-9][0-9]')).test(component.value);
+		});
 	}
 
 	public get value(): string {
@@ -490,6 +493,10 @@ class ModelViewImpl implements sqlops.ModelView {
 		}
 		componentImpl.validate();
 		return this._proxy.$initializeModel(this._handle, componentImpl.toComponentShape());
+	}
+
+	public validate(): void {
+		this._component.validate();
 	}
 }
 
