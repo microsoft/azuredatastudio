@@ -20,6 +20,7 @@ declare module 'sqlops' {
 		flexContainer(): FlexBuilder;
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
+		checkBox(): ComponentBuilder<CheckBoxComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
@@ -144,7 +145,7 @@ declare module 'sqlops' {
 	}
 
 	export interface FormItemLayout {
-
+		horizontal: boolean;
 	}
 
 	export interface FormLayout {
@@ -188,6 +189,11 @@ declare module 'sqlops' {
 		value?: string;
 	}
 
+	export interface CheckBoxProperties {
+		checked?: boolean;
+		label?: string;
+	}
+
 	export interface DropDownProperties {
 		value?: string;
 		values?: string[];
@@ -206,6 +212,12 @@ declare module 'sqlops' {
 	export interface InputBoxComponent extends Component {
 		value: string;
 		onTextChanged: vscode.Event<any>;
+	}
+
+	export interface CheckBoxComponent extends Component {
+		checked: boolean;
+		label: string;
+		onChanged: vscode.Event<any>;
 	}
 
 	export interface DropDownComponent extends Component {
