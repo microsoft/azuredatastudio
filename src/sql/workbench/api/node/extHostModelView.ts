@@ -39,7 +39,7 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	formContainer(): sqlops.FormBuilder {
 		let id = this.getNextComponentId();
-		let container  = new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id);
+		let container = new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id);
 		this._eventHandlers.set(id, container);
 		return container;
 	}

@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./flexContainer';
 
-import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
+import {
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
 	ViewChild, ElementRef, Injector, OnDestroy, OnInit
 } from '@angular/core';
 
@@ -18,15 +19,15 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 
 export class ItemDescriptor<T> {
-	constructor(public descriptor: IComponentDescriptor, public config: T) {}
+	constructor(public descriptor: IComponentDescriptor, public config: T) { }
 }
 
 export abstract class ComponentBase extends Disposable implements IComponent, OnDestroy, OnInit {
 	protected properties: { [key: string]: any; } = {};
 	protected _valid: boolean = true;
-	constructor (
+	constructor(
 		protected _changeRef: ChangeDetectorRef) {
-			super();
+		super();
 	}
 
 	/// IComponent implementation
@@ -57,7 +58,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		this.dispose();
 	}
 
-	abstract setLayout (layout: any): void;
+	abstract setLayout(layout: any): void;
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		if (!properties) {
@@ -124,5 +125,5 @@ export abstract class ContainerBase<T> extends ComponentBase {
 		this._changeRef.detectChanges();
 	}
 
-	abstract setLayout (layout: any): void;
+	abstract setLayout(layout: any): void;
 }
