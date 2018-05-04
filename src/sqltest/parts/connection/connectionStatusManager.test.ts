@@ -6,7 +6,7 @@
 'use strict';
 
 import * as assert from 'assert';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import { ConnectionStatusManager } from 'sql/parts/connection/common/connectionStatusManager';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -72,8 +72,7 @@ let connection3Id: string;
 suite('SQL ConnectionStatusManager tests', () => {
 	setup(() => {
 		capabilitiesService = new CapabilitiesTestService();
-		connectionProfileObject = new ConnectionProfile(capabilitiesService.getCapabilities().find(x => x.providerName === 'MSSQL')
-			, connectionProfile);
+		connectionProfileObject = new ConnectionProfile(capabilitiesService, connectionProfile);
 		connections = new ConnectionStatusManager(capabilitiesService);
 		connection1Id = Utils.generateUri(connectionProfile);
 		connection2Id = 'connection2Id';
@@ -94,7 +93,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 		let id: string = connection1Id;
 		let expected = connectionProfileObject;
 		let actual = connections.findConnection(id);
-		assert.deepEqual(actual.connectionProfile, expected);
+		assert.equal(connectionProfileObject.matches(actual.connectionProfile), true);
 	});
 
 	test('getConnectionProfile should return undefined given invalid id', () => {
@@ -108,7 +107,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 		let id: string = connection1Id;
 		let expected = connectionProfileObject;
 		let actual = connections.getConnectionProfile(id);
-		assert.deepEqual(actual, expected);
+		assert.equal(connectionProfileObject.matches(actual), true);
 	});
 
 	test('hasConnection should return false given invalid id', () => {
@@ -127,7 +126,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 
 	test('addConnection should set connecting to true', () => {
 		let expected = true;
-		let summary: data.ConnectionInfoSummary = {
+		let summary: sqlops.ConnectionInfoSummary = {
 			ownerUri: connection1Id,
 			connectionId: connection1Id,
 			messages: undefined,
@@ -143,7 +142,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 
 	test('onConnectionComplete should set connecting to false', () => {
 		let expected = false;
-		let summary: data.ConnectionInfoSummary = {
+		let summary: sqlops.ConnectionInfoSummary = {
 			ownerUri: connection1Id,
 			connectionId: connection1Id,
 			messages: undefined,
@@ -177,7 +176,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 
 	test('updateDatabaseName should update the database name in connection', () => {
 		let dbName: string = 'db name';
-		let summary: data.ConnectionInfoSummary = {
+		let summary: sqlops.ConnectionInfoSummary = {
 			connectionSummary: {
 				databaseName: dbName,
 				serverName: undefined,
@@ -203,7 +202,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 
 	test('getOriginalOwnerUri should return the original uri given uri with db name', () => {
 		let dbName: string = 'db name';
-		let summary: data.ConnectionInfoSummary = {
+		let summary: sqlops.ConnectionInfoSummary = {
 			connectionSummary: {
 				databaseName: dbName,
 				serverName: undefined,

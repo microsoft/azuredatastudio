@@ -11,10 +11,9 @@ import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
-import { ISelectionData } from 'data';
+import { ISelectionData } from 'sqlops';
 import {
 	IConnectionManagementService,
 	IConnectionParams,
@@ -24,6 +23,8 @@ import {
 } from 'sql/parts/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -436,16 +437,18 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 		private _editor: QueryEditor,
 		private _action: ListDatabasesAction,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IMessageService private _messageService: IMessageService,
+		@INotificationService private _notificationService: INotificationService,
 		@IContextViewService contextViewProvider: IContextViewService,
 		@IThemeService themeService: IThemeService
 	) {
 		super();
 		this._toDispose = [];
 		this.$databaseListDropdown = $('.databaseListDropdown');
+		let selectString = nls.localize("selectDatabase", "Select Database");
 		this._dropdown = new Dropdown(this.$databaseListDropdown.getHTMLElement(), contextViewProvider, themeService, {
 			strictSelection: true,
-			placeholder: nls.localize("selectDatabase", "Select Database")
+			placeholder: selectString,
+			ariaLabel: selectString
 		});
 		this._dropdown.onValueChange(s => this.databaseSelected(s));
 
@@ -514,14 +517,19 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 			result => {
 				if (!result) {
 					this.resetDatabaseName();
-					this._messageService.show(Severity.Error, nls.localize('changeDatabase.failed', "Failed to change database"));
+					this._notificationService.notify({
+						severity: Severity.Error,
+						message: nls.localize('changeDatabase.failed', "Failed to change database")
+					});
 				}
 			},
 			error => {
 				this.resetDatabaseName();
-				this._messageService.show(Severity.Error, nls.localize('changeDatabase.failedWithError', "Failed to change database {0}", error));
-			}
-			);
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: nls.localize('changeDatabase.failedWithError', "Failed to change database {0}", error)
+				});
+			});
 	}
 
 	private getCurrentDatabaseName() {

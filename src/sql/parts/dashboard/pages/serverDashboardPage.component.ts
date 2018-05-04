@@ -10,6 +10,7 @@ import { BreadcrumbClass } from 'sql/parts/dashboard/services/breadcrumb.service
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
@@ -36,12 +37,11 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 
 	constructor(
 		@Inject(forwardRef(() => IBreadcrumbService)) private breadcrumbService: IBreadcrumbService,
-		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService,
-		@Inject(forwardRef(() => DashboardServiceInterface)) dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
-		super(dashboardService, bootstrapService, el, _cd);
+		super(dashboardService, el, _cd);
 		// revert back to default database
 		this._letDashboardPromise = this.dashboardService.connectionManagementService.changeDatabase('master');
 	}

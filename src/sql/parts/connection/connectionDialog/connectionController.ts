@@ -12,10 +12,11 @@ import { AdvancedPropertiesController } from 'sql/parts/connection/connectionDia
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import * as Constants from 'sql/parts/connection/common/constants';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 export class ConnectionController implements IConnectionComponentController {
 	private _container: HTMLElement;
@@ -24,21 +25,21 @@ export class ConnectionController implements IConnectionComponentController {
 	private _connectionWidget: ConnectionWidget;
 	private _advancedController: AdvancedPropertiesController;
 	private _model: IConnectionProfile;
-	private _providerOptions: data.ConnectionOption[];
+	private _providerOptions: sqlops.ConnectionOption[];
 	private _providerName: string;
 	/* key: uri, value : list of databases */
 	private _databaseCache = new Map<string, string[]>();
 
 	constructor(container: HTMLElement,
 		connectionManagementService: IConnectionManagementService,
-		sqlCapabilities: data.DataProtocolServerCapabilities,
+		connectionProperties: ConnectionProviderProperties,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
-		@IInstantiationService private _instantiationService: IInstantiationService ) {
+		@IInstantiationService private _instantiationService: IInstantiationService) {
 		this._container = container;
 		this._connectionManagementService = connectionManagementService;
 		this._callback = callback;
-		this._providerOptions = sqlCapabilities.connectionProvider.options;
+		this._providerOptions = connectionProperties.connectionOptions;
 		var specialOptions = this._providerOptions.filter(
 			(property) => (property.specialValueType !== null && property.specialValueType !== undefined));
 		this._connectionWidget = this._instantiationService.createInstance(ConnectionWidget, specialOptions, {
@@ -48,8 +49,8 @@ export class ConnectionController implements IConnectionComponentController {
 			onSetAzureTimeOut: () => this.handleonSetAzureTimeOut(),
 			onFetchDatabases: (serverName: string, authenticationType: string, userName?: string, password?: string) => this.onFetchDatabases(
 				serverName, authenticationType, userName, password).then(result => {
-				return result;
-			})
+					return result;
+				})
 		}, providerName);
 		this._providerName = providerName;
 	}
@@ -65,7 +66,7 @@ export class ConnectionController implements IConnectionComponentController {
 		let uri = this._connectionManagementService.getConnectionId(tempProfile);
 		return new Promise<string[]>((resolve, reject) => {
 			if (this._databaseCache.has(uri)) {
-				let cachedDatabases : string[] = this._databaseCache.get(uri);
+				let cachedDatabases: string[] = this._databaseCache.get(uri);
 				if (cachedDatabases !== null) {
 					resolve(cachedDatabases);
 				} else {

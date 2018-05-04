@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 /**
  * View model for firewall rule dialog
  */
 export class FirewallRuleViewModel {
 	public isIPAddressSelected: boolean;
-	public selectedAccount: data.Account;
+	public selectedAccount: sqlops.Account;
 
 	private _defaultIPAddress: string;
 	private _defaultFromSubnetIPRange: string;

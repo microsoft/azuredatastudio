@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { FileBrowserTree } from 'sql/parts/fileBrowser/common/fileBrowserTree';
 import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
 import Event from 'vs/base/common/event';
@@ -19,7 +19,7 @@ export interface IFileBrowserDialogController {
 	 */
 	showDialog(ownerUri: string,
 		expandPath: string,
-		fileFilters: [{label: string, filters: string[]}],
+		fileFilters: [{ label: string, filters: string[] }],
 		fileValidationServiceType: string,
 		isWide: boolean,
 		handleOnOk: (path: string) => void): void;
@@ -30,12 +30,12 @@ export interface IFileBrowserService {
 	_serviceBrand: any;
 	onAddFileTree: Event<FileBrowserTree>;
 	onExpandFolder: Event<FileNode>;
-	onPathValidate: Event<data.FileBrowserValidatedParams>;
+	onPathValidate: Event<sqlops.FileBrowserValidatedParams>;
 
 	/**
 	 * Register file browser provider
 	 */
-	registerProvider(providerId: string, provider: data.FileBrowserProvider): void;
+	registerProvider(providerId: string, provider: sqlops.FileBrowserProvider): void;
 
 	/**
 	 * Open file browser
@@ -45,7 +45,7 @@ export interface IFileBrowserService {
 	/**
 	 * Event called when file browser is opened
 	 */
-	onFileBrowserOpened(handle: number, fileBrowserOpenedParams: data.FileBrowserOpenedParams);
+	onFileBrowserOpened(handle: number, fileBrowserOpenedParams: sqlops.FileBrowserOpenedParams);
 
 	/**
 	 * Expand folder node
@@ -55,7 +55,7 @@ export interface IFileBrowserService {
 	/**
 	 * Event called when children nodes are retrieved
 	 */
-	onFolderNodeExpanded(handle: number, fileBrowserExpandedParams: data.FileBrowserExpandedParams);
+	onFolderNodeExpanded(handle: number, fileBrowserExpandedParams: sqlops.FileBrowserExpandedParams);
 
 	/**
 	 * Validate selected file paths
@@ -65,10 +65,10 @@ export interface IFileBrowserService {
 	/**
 	 * Event called when the validation is complete
 	 */
-	onFilePathsValidated(handle: number, fileBrowserValidatedParams: data.FileBrowserValidatedParams);
+	onFilePathsValidated(handle: number, fileBrowserValidatedParams: sqlops.FileBrowserValidatedParams);
 
 	/**
 	 * Close file browser
 	 */
-	closeFileBrowser(ownerUri: string): Thenable<data.FileBrowserCloseResponse>;
+	closeFileBrowser(ownerUri: string): Thenable<sqlops.FileBrowserCloseResponse>;
 }

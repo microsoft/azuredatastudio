@@ -7,6 +7,7 @@
 
 import { spawn, exec } from 'child_process';
 import * as path from 'path';
+import * as nls from 'vs/nls';
 import URI from 'vs/base/common/uri';
 
 export interface ProcessItem {
@@ -61,12 +62,30 @@ export function listProcesses(rootPid: number): Promise<ProcessItem> {
 		function findName(cmd: string): string {
 
 			const RENDERER_PROCESS_HINT = /--disable-blink-features=Auxclick/;
-			const WINDOWS_WATCHER_HINT = /\\watcher\\win32\\CodeHelper.exe/;
+			const WINDOWS_WATCHER_HINT = /\\watcher\\win32\\CodeHelper\.exe/;
+			const WINDOWS_CRASH_REPORTER = /--crashes-directory/;
+			const WINDOWS_PTY = /\\pipe\\winpty-control/;
+			const WINDOWS_CONSOLE_HOST = /conhost\.exe/;
 			const TYPE = /--type=([a-zA-Z-]+)/;
 
 			// find windows file watcher
 			if (WINDOWS_WATCHER_HINT.exec(cmd)) {
-				return 'watcherService';
+				return 'watcherService ';
+			}
+
+			// find windows crash reporter
+			if (WINDOWS_CRASH_REPORTER.exec(cmd)) {
+				return 'electron-crash-reporter';
+			}
+
+			// find windows pty process
+			if (WINDOWS_PTY.exec(cmd)) {
+				return 'winpty-process';
+			}
+
+			//find windows console host process
+			if (WINDOWS_CONSOLE_HOST.exec(cmd)) {
+				return 'console-window-host (Windows internal process)';
 			}
 
 			// find "--type=xxxx"
@@ -101,6 +120,8 @@ export function listProcesses(rootPid: number): Promise<ProcessItem> {
 		}
 
 		if (process.platform === 'win32') {
+
+			console.log(nls.localize('collecting', 'Collecting CPU and memory information. This might take a couple of seconds.'));
 
 			interface ProcessInfo {
 				type: 'processInfo';
@@ -157,7 +178,8 @@ export function listProcesses(rootPid: number): Promise<ProcessItem> {
 
 			cmd.on('exit', () => {
 				if (stderr.length > 0) {
-					reject(stderr);
+					reject(new Error(stderr));
+					return;
 				}
 				let processItems: Map<number, ProcessItem> = new Map();
 				try {
@@ -205,12 +227,13 @@ export function listProcesses(rootPid: number): Promise<ProcessItem> {
 						reject(new Error(`Root process ${rootPid} not found`));
 					}
 				} catch (error) {
+					console.log(stdout);
 					reject(error);
 				}
 			});
 		} else {	// OS X & Linux
 
-			const CMD = 'ps -ax -o pid=,ppid=,pcpu=,pmem=,command=';
+			const CMD = '/bin/ps -ax -o pid=,ppid=,pcpu=,pmem=,command=';
 			const PID_CMD = /^\s*([0-9]+)\s+([0-9]+)\s+([0-9]+\.[0-9]+)\s+([0-9]+\.[0-9]+)\s+(.+)$/;
 
 			exec(CMD, { maxBuffer: 1000 * 1024 }, (err, stdout, stderr) => {

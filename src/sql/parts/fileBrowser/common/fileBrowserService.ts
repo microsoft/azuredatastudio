@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { FileBrowserTree } from 'sql/parts/fileBrowser/common/fileBrowserTree';
 import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
@@ -20,10 +20,10 @@ import * as strings from 'vs/base/common/strings';
 
 export class FileBrowserService implements IFileBrowserService {
 	public _serviceBrand: any;
-	private _providers: { [handle: string]: data.FileBrowserProvider; } = Object.create(null);
+	private _providers: { [handle: string]: sqlops.FileBrowserProvider; } = Object.create(null);
 	private _onAddFileTree = new Emitter<FileBrowserTree>();
 	private _onExpandFolder = new Emitter<FileNode>();
-	private _onPathValidate = new Emitter<data.FileBrowserValidatedParams>();
+	private _onPathValidate = new Emitter<sqlops.FileBrowserValidatedParams>();
 	private _pathToFileNodeMap: { [path: string]: FileNode } = {};
 	private _expandResolveMap: { [key: string]: any } = {};
 	static fileNodeId: number = 0;
@@ -33,7 +33,7 @@ export class FileBrowserService implements IFileBrowserService {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService) {
 	}
 
-	public registerProvider(providerId: string, provider: data.FileBrowserProvider): void {
+	public registerProvider(providerId: string, provider: sqlops.FileBrowserProvider): void {
 		this._providers[providerId] = provider;
 	}
 
@@ -45,7 +45,7 @@ export class FileBrowserService implements IFileBrowserService {
 		return this._onExpandFolder.event;
 	}
 
-	public get onPathValidate(): Event<data.FileBrowserValidatedParams> {
+	public get onPathValidate(): Event<sqlops.FileBrowserValidatedParams> {
 		return this._onPathValidate.event;
 	}
 
@@ -64,7 +64,7 @@ export class FileBrowserService implements IFileBrowserService {
 		});
 	}
 
-	public onFileBrowserOpened(handle: number, fileBrowserOpenedParams: data.FileBrowserOpenedParams) {
+	public onFileBrowserOpened(handle: number, fileBrowserOpenedParams: sqlops.FileBrowserOpenedParams) {
 		if (fileBrowserOpenedParams.succeeded === true
 			&& fileBrowserOpenedParams.fileTree
 			&& fileBrowserOpenedParams.fileTree.rootNode
@@ -98,7 +98,7 @@ export class FileBrowserService implements IFileBrowserService {
 		});
 	}
 
-	public onFolderNodeExpanded(handle: number, fileBrowserExpandedParams: data.FileBrowserExpandedParams) {
+	public onFolderNodeExpanded(handle: number, fileBrowserExpandedParams: sqlops.FileBrowserExpandedParams) {
 		var mapKey = this.generateResolveMapKey(fileBrowserExpandedParams.ownerUri, fileBrowserExpandedParams.expandPath);
 		var expandResolve = this._expandResolveMap[mapKey];
 		if (expandResolve) {
@@ -135,11 +135,11 @@ export class FileBrowserService implements IFileBrowserService {
 		});
 	}
 
-	public onFilePathsValidated(handle: number, fileBrowserValidatedParams: data.FileBrowserValidatedParams) {
+	public onFilePathsValidated(handle: number, fileBrowserValidatedParams: sqlops.FileBrowserValidatedParams) {
 		this._onPathValidate.fire(fileBrowserValidatedParams);
 	}
 
-	public closeFileBrowser(ownerUri: string): Thenable<data.FileBrowserCloseResponse> {
+	public closeFileBrowser(ownerUri: string): Thenable<sqlops.FileBrowserCloseResponse> {
 		let provider = this.getProvider(ownerUri);
 		if (provider) {
 			return provider.closeFileBrowser(ownerUri);
@@ -150,7 +150,7 @@ export class FileBrowserService implements IFileBrowserService {
 	private generateResolveMapKey(ownerUri: string, expandPath: string): string {
 		return ownerUri + ':' + expandPath;
 	}
-	private getProvider(connectionUri: string): data.FileBrowserProvider {
+	private getProvider(connectionUri: string): sqlops.FileBrowserProvider {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			return this._providers[providerId];
@@ -159,7 +159,7 @@ export class FileBrowserService implements IFileBrowserService {
 		}
 	}
 
-	private convertFileTree(parentNode: FileNode, fileTreeNode: data.FileTreeNode, expandPath: string, ownerUri: string): FileBrowserTree {
+	private convertFileTree(parentNode: FileNode, fileTreeNode: sqlops.FileTreeNode, expandPath: string, ownerUri: string): FileBrowserTree {
 		FileBrowserService.fileNodeId += 1;
 		var expandedNodes: FileNode[] = [];
 		var selectedNode: FileNode;
@@ -208,7 +208,7 @@ export class FileBrowserService implements IFileBrowserService {
 		return { rootNode: fileNode, selectedNode: selectedNode, expandedNodes: expandedNodes };
 	}
 
-	private convertChildren(expandedNode: FileNode, childrenToConvert: data.FileTreeNode[], ownerUri: string): FileNode[] {
+	private convertChildren(expandedNode: FileNode, childrenToConvert: sqlops.FileTreeNode[], ownerUri: string): FileNode[] {
 		var childrenNodes = [];
 
 		for (var i = 0; i < childrenToConvert.length; i++) {

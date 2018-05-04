@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as Utils from 'sql/parts/connection/common/utils';
+import * as Strings from 'vs/base/common/strings';
 
 export class DBCellValue {
 	displayValue: string;
 	isNull: boolean;
 
 	public static isDBCellValue(object: any): boolean {
-    	return (object !== undefined && object.displayValue !== undefined && object.isNull !== undefined);
+		return (object !== undefined && object.displayValue !== undefined && object.isNull !== undefined);
 	}
 }
 
@@ -25,7 +25,7 @@ export function hyperLinkFormatter(row: number, cell: any, value: any, columnDef
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
 			cellClasses += ' xmlLink';
-			valueToDisplay = Utils.htmlEntities(value.displayValue);
+			valueToDisplay = Strings.escape(value.displayValue);
 			return `<a class="${cellClasses}" href="#" >${valueToDisplay}</a>`;
 		} else {
 			cellClasses += ' missing-value';
@@ -44,13 +44,12 @@ export function textFormatter(row: number, cell: any, value: any, columnDef: any
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
-			valueToDisplay = Utils.htmlEntities(value.displayValue.replace(/(\r\n|\n|\r)/g, ' '));
+			valueToDisplay = Strings.escape(value.displayValue.replace(/(\r\n|\n|\r)/g, ' '));
 		} else {
 			cellClasses += ' missing-value';
 		}
-	} else if (typeof value === 'string'){
-		valueToDisplay = value;
-
+	} else if (typeof value === 'string') {
+		valueToDisplay = Strings.escape(value);
 	}
 
 	return `<span title="${valueToDisplay}" class="${cellClasses}">${valueToDisplay}</span>`;

@@ -10,12 +10,12 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { setUnexpectedErrorHandler, errorHandler } from 'vs/base/common/errors';
 import URI from 'vs/base/common/uri';
 import * as EditorCommon from 'vs/editor/common/editorCommon';
-import { Model as EditorModel } from 'vs/editor/common/model/model';
-import { TestThreadService } from 'vs/workbench/test/electron-browser/api/testThreadService';
+import { TextModel as EditorModel } from 'vs/editor/common/model/textModel';
+import { TestRPCProtocol } from 'vs/workbench/test/electron-browser/api/testRPCProtocol';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IMarkerService } from 'vs/platform/markers/common/markers';
 import { MarkerService } from 'vs/platform/markers/common/markerService';
-import { IThreadService } from 'vs/workbench/services/thread/common/threadService';
+import { IRPCProtocol } from 'vs/workbench/services/extensions/node/proxyIdentifier';
 import { ExtHostCommands } from 'vs/workbench/api/node/extHostCommands';
 import { MainThreadCommands } from 'vs/workbench/api/electron-browser/mainThreadCommands';
 import { IHeapService } from 'vs/workbench/api/electron-browser/mainThreadHeapService';
@@ -27,13 +27,13 @@ import { ExtHostDiagnostics } from 'vs/workbench/api/node/extHostDiagnostics';
 import { ExtHostHeapService } from 'vs/workbench/api/node/extHostHeapService';
 import * as vscode from 'vscode';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { ExtHostDataProtocol } from 'sql/workbench/api/node/extHostDataProtocol';
 import { SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 
-const IThreadService = createDecorator<IThreadService>('threadService');
+const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 
-const model: EditorCommon.IModel = EditorModel.createFromString(
+const model = EditorModel.createFromString(
 	[
 		'This is the first line',
 		'This is the second line',
@@ -45,7 +45,7 @@ const model: EditorCommon.IModel = EditorModel.createFromString(
 
 let extHost: ExtHostDataProtocol;
 let disposables: vscode.Disposable[] = [];
-let threadService: TestThreadService;
+let threadService: TestRPCProtocol;
 let originalErrorHandler: (e: any) => any;
 
 suite('ExtHostDataProtocol', function () {

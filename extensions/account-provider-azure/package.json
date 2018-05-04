@@ -11,7 +11,7 @@
   "dependencies": {
     "adal-node": "0.1.25",
     "request": "2.63.0",
-    "vscode-nls": "2.0.2"
+    "vscode-nls": "^3.2.1"
   },
   "devDependencies": {
     "@types/node": "^8.0.24"
@@ -19,8 +19,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.clearTokenCache",
-        "title": "%extension.clearTokenCache%",
+        "command": "accounts.clearTokenCache",
+        "title": "%accounts.clearTokenCache%",
         "category": "Azure Accounts"
       }
     ],

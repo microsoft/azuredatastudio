@@ -5,7 +5,7 @@
 
 'use strict';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import * as Constants from 'sql/common/constants';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
@@ -22,11 +22,12 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as ConnectionUtils from 'sql/parts/connection/common/utils';
 import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
+import { ServiceOption } from 'sqlops';
 
 export class BackupService implements IBackupService {
 
 	public _serviceBrand: any;
-	private _providers: { [handle: string]: data.BackupProvider; } = Object.create(null);
+	private _providers: { [handle: string]: sqlops.BackupProvider; } = Object.create(null);
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
@@ -37,7 +38,7 @@ export class BackupService implements IBackupService {
 	/**
 	 * Get database metadata needed to populate backup UI
 	 */
-	public getBackupConfigInfo(connectionUri: string): Thenable<data.BackupConfigInfo> {
+	public getBackupConfigInfo(connectionUri: string): Thenable<sqlops.BackupConfigInfo> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -51,8 +52,8 @@ export class BackupService implements IBackupService {
 	/**
 	 * Backup a data source using the provided connection
 	 */
-	public backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<data.BackupResponse> {
-		return new Promise<data.BackupResponse>((resolve, reject) => {
+	public backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<sqlops.BackupResponse> {
+		return new Promise<sqlops.BackupResponse>((resolve, reject) => {
 			let providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
 				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.BackupCreated, { provider: providerResult.providerName });
@@ -67,7 +68,7 @@ export class BackupService implements IBackupService {
 		});
 	}
 
-	private getProvider(connectionUri: string): { provider: data.BackupProvider, providerName: string } {
+	private getProvider(connectionUri: string): { provider: sqlops.BackupProvider, providerName: string } {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			return { provider: this._providers[providerId], providerName: providerId };
@@ -79,7 +80,7 @@ export class BackupService implements IBackupService {
 	/**
 	 * Register a disaster recovery provider
 	 */
-	public registerProvider(providerId: string, provider: data.BackupProvider): void {
+	public registerProvider(providerId: string, provider: sqlops.BackupProvider): void {
 		this._providers[providerId] = provider;
 	}
 }
@@ -88,20 +89,19 @@ export class BackupUiService implements IBackupUiService {
 	public _serviceBrand: any;
 	private _backupDialogs: { [providerName: string]: BackupDialog | OptionsDialog } = {};
 	private _currentProvider: string;
-	private _optionsMap: { [providerName: string]: data.ServiceOption[] } = {};
 	private _optionValues: { [optionName: string]: any } = {};
 	private _connectionUri: string;
 	private static _connectionUniqueId: number = 0;
 
-	private _onShowBackupEvent: Emitter<DashboardComponentParams>;
-	public get onShowBackupEvent(): Event<DashboardComponentParams> { return this._onShowBackupEvent.event; }
+	private _onShowBackupEvent: Emitter<{ connection: IConnectionProfile, ownerUri: string }>;
+	public get onShowBackupEvent(): Event<{ connection: IConnectionProfile, ownerUri: string }> { return this._onShowBackupEvent.event; }
 
 	constructor( @IInstantiationService private _instantiationService: IInstantiationService,
 		@IPartService private _partService: IPartService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IBackupService private _disasterRecoveryService: IBackupService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService) {
-		this._onShowBackupEvent = new Emitter<DashboardComponentParams>();
+		this._onShowBackupEvent = new Emitter<{ connection: IConnectionProfile, ownerUri: string }>();
 	}
 
 	public showBackup(connection: IConnectionProfile): Promise<any> {
@@ -115,20 +115,22 @@ export class BackupUiService implements IBackupUiService {
 		});
 	}
 
+	private getOptions(provider: string): ServiceOption[] {
+		let feature = this._capabilitiesService.getLegacyCapabilities(this._currentProvider).features.find(f => f.featureName === 'backup');
+		if (feature) {
+			return feature.optionsMetadata;
+		} else {
+			return undefined;
+		}
+	}
+
 	public showBackupDialog(connection: IConnectionProfile): TPromise<void> {
 		let self = this;
 		self._connectionUri = ConnectionUtils.generateUri(connection);
 		self._currentProvider = connection.providerName;
 		let backupDialog = self._backupDialogs[self._currentProvider];
 		if (!backupDialog) {
-			let capabilitiesList = this._capabilitiesService.getCapabilities();
-			capabilitiesList.forEach(providerCapabilities => {
-				let backupFeature = providerCapabilities.features.find(feature => feature.featureName === 'backup');
-				if (backupFeature && backupFeature.optionsMetadata) {
-					this._optionsMap[providerCapabilities.providerName] = backupFeature.optionsMetadata;
-				}
-			});
-			let backupOptions = self._optionsMap[self._currentProvider];
+			let backupOptions = this.getOptions(this._currentProvider);
 			if (backupOptions) {
 				backupDialog = self._instantiationService ? self._instantiationService.createInstance(
 					OptionsDialog, 'Backup database - ' + connection.serverName + ':' + connection.databaseName, 'BackupOptions', undefined) : undefined;
@@ -141,25 +143,28 @@ export class BackupUiService implements IBackupUiService {
 			self._backupDialogs[self._currentProvider] = backupDialog;
 		}
 
-		let backupOptions = this._optionsMap[self._currentProvider];
+		let backupOptions = this.getOptions(this._currentProvider);
 		return new TPromise<void>(() => {
+			let uri = this._connectionManagementService.getConnectionId(connection)
+			+ ProviderConnectionInfo.idSeparator
+			+ ConnectionUtils.ConnectionUriBackupIdAttributeName
+			+ ProviderConnectionInfo.nameValueSeparator
+			+ BackupUiService._connectionUniqueId;
+
+			this._connectionUri = uri;
+
+			BackupUiService._connectionUniqueId++;
+
+			// Create connection if needed
+			if (!this._connectionManagementService.isConnected(uri)) {
+				this._connectionManagementService.connect(connection, uri).then(() => {
+					this._onShowBackupEvent.fire({ connection: connection, ownerUri: uri });
+				});
+			}
+
 			if (backupOptions) {
 				(backupDialog as OptionsDialog).open(backupOptions, self._optionValues);
 			} else {
-				let uri = this._connectionManagementService.getConnectionId(connection)
-					+ ProviderConnectionInfo.idSeparator
-					+ ConnectionUtils.ConnectionUriBackupIdAttributeName
-					+ ProviderConnectionInfo.nameValueSeparator
-					+ BackupUiService._connectionUniqueId;
-
-				BackupUiService._connectionUniqueId++;
-
-				// Create connection if needed
-				if (!this._connectionManagementService.isConnected(uri)) {
-					this._connectionManagementService.connect(connection, uri).then(() => {
-						this._onShowBackupEvent.fire({ connection: connection, ownerUri: uri });
-					});
-				}
 				(backupDialog as BackupDialog).open(connection);
 			}
 		});

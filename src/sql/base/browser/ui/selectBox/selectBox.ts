@@ -16,8 +16,8 @@ import nls = require('vs/nls');
 const $ = dom.$;
 
 export interface ISelectBoxStyles extends vsISelectBoxStyles {
-	disabledSelectBackground?: Color,
-	disabledSelectForeground?: Color,
+	disabledSelectBackground?: Color;
+	disabledSelectForeground?: Color;
 	inputValidationInfoBorder?: Color;
 	inputValidationInfoBackground?: Color;
 	inputValidationWarningBorder?: Color;
@@ -46,8 +46,8 @@ export class SelectBox extends vsSelectBox {
 	private inputValidationErrorBackground: Color;
 	private element: HTMLElement;
 
-	constructor(options: string[], selectedOption: string, container?: HTMLElement, contextViewProvider?: IContextViewProvider) {
-		super(options, 0);
+	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement) {
+		super(options, 0, contextViewProvider);
 		this._optionsDictionary = new Array();
 		for (var i = 0; i < options.length; i++) {
 			this._optionsDictionary[options[i]] = i;
@@ -115,7 +115,8 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public enable(): void {
-		this.selectElement.disabled = false;
+		//@SQLTODO
+		//this.selectElement.disabled = false;
 		this.selectBackground = this.enabledSelectBackground;
 		this.selectForeground = this.enabledSelectForeground;
 		this.selectBorder = this.enabledSelectBorder;
@@ -123,7 +124,8 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public disable(): void {
-		this.selectElement.disabled = true;
+		//@SQLTODO
+		//this.selectElement.disabled = true;
 		this.selectBackground = this.disabledSelectBackground;
 		this.selectForeground = this.disabledSelectForeground;
 		this.selectBorder = this.disabledSelectBorder;

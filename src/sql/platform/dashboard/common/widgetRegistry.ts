@@ -6,8 +6,10 @@ import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces
 
 import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
+import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import * as nls from 'vs/nls';
-import { deepClone } from 'vs/base/common/objects';
+
+const contributionRegistry = platform.Registry.as<IJSONContributionRegistry>(JSONExtensions.JSONContribution);
 
 export type WidgetIdentifier = string;
 
@@ -32,9 +34,9 @@ export interface IDashboardWidgetRegistry {
 }
 
 class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
-	private _allSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets', 'Widget used in the dashboards'), properties: {}, extensionProperties: {}, additionalProperties: false };
-	private _dashboardWidgetSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets', 'Widget used in the dashboards'), properties: {}, extensionProperties: {}, additionalProperties: false };
-	private _serverWidgetSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets', 'Widget used in the dashboards'), properties: {}, extensionProperties: {}, additionalProperties: false };
+	private _allSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.all', 'Widget used in the dashboards'), properties: {}, extensionProperties: {}, additionalProperties: false };
+	private _dashboardWidgetSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.database', 'Widget used in the dashboards'), properties: {}, extensionProperties: {}, additionalProperties: false };
+	private _serverWidgetSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.server', 'Widget used in the dashboards'), properties: {}, extensionProperties: {}, additionalProperties: false };
 
 	/**
 	 * Register a dashboard widget
@@ -76,7 +78,7 @@ class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
 	 * @param val cal for default
 	 * @param context either 'database' or 'server' for what page to register for; if not specified, will register for both
 	 */
-	registerNonCustomDashboardWidget(id: string, description: string, val: IInsightsConfig, context?: 'database' | 'server'): WidgetIdentifier {
+	public registerNonCustomDashboardWidget(id: string, description: string, val: IInsightsConfig, context?: 'database' | 'server'): WidgetIdentifier {
 		if (context === undefined || context === 'database') {
 			this._dashboardWidgetSchema.properties[id] = { type: 'null', default: null };
 		}
@@ -89,15 +91,15 @@ class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
 	}
 
 	public get databaseWidgetSchema(): CustomIJSONSchema {
-		return deepClone(this._dashboardWidgetSchema);
+		return this._dashboardWidgetSchema;
 	}
 
 	public get serverWidgetSchema(): CustomIJSONSchema {
-		return deepClone(this._serverWidgetSchema);
+		return this._serverWidgetSchema;
 	}
 
 	public get allSchema(): CustomIJSONSchema {
-		return deepClone(this._allSchema);
+		return this._allSchema;
 	}
 }
 

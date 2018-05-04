@@ -32,6 +32,10 @@ export const insightsSchema: IJSONSchema = {
 			type: 'string',
 			description: nls.localize('insightQueryFileDescription', '[Optional] path to a file that contains a query. Use if "query" is not set')
 		},
+		autoRefreshInterval: {
+			type: 'number',
+			description: nls.localize('insightAutoRefreshIntervalDescription', '[Optional] Auto refresh interval in minutes, if not set, there will be no auto refresh')
+		},
 		details: {
 			type: 'object',
 			properties: {
@@ -93,15 +97,15 @@ export const insightsSchema: IJSONSchema = {
 						},
 						database: {
 							type: 'string',
-							description: nls.localize('actionDatabaseDescription', 'Target database for the action; can use the format "${columnName} to use a data driven column name.')
+							description: nls.localize('actionDatabaseDescription', 'Target database for the action; can use the format "${columnName}" to use a data driven column name.')
 						},
 						server: {
 							type: 'string',
-							description: nls.localize('actionServerDescription', 'Target server for the action; can use the format "${columnName} to use a data driven column name.')
+							description: nls.localize('actionServerDescription', 'Target server for the action; can use the format "${columnName}" to use a data driven column name.')
 						},
 						user: {
 							type: 'string',
-							description: nls.localize('actionUserDescription', 'Target user for the action; can use the format "${columnName} to use a data driven column name.')
+							description: nls.localize('actionUserDescription', 'Target user for the action; can use the format "${columnName}" to use a data driven column name.')
 						}
 					}
 				}

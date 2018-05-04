@@ -29,8 +29,9 @@ export interface IInputOptions extends IInputBoxStyles {
 	flexibleHeight?: boolean;
 	actions?: IAction[];
 
-	// {{SQL CARBON EDIT}} Canidate for addition to vscode
+	// {{SQL CARBON EDIT}} Candidate for addition to vscode
 	min?: string;
+	max?: string;
 }
 
 export interface IInputBoxStyles {
@@ -139,7 +140,7 @@ export class InputBox extends Widget {
 
 		if (this.options.validationOptions) {
 			this.validation = this.options.validationOptions.validation;
-			// {{SQL CARBON EDIT}} Canidate for addition to vscode
+			// {{SQL CARBON EDIT}} Candidate for addition to vscode
 			this.showValidationMessage = true;
 		}
 
@@ -168,13 +169,17 @@ export class InputBox extends Widget {
 			this.input.min = this.options.min;
 		}
 
+		// {{SQL CARBON EDIT}} Canidate for addition to vscode
+		if (this.options.max) {
+			this.input.max = this.options.max;
+		}
+
 		if (this.ariaLabel) {
 			this.input.setAttribute('aria-label', this.ariaLabel);
 		}
 
 		if (this.placeholder) {
-			this.input.setAttribute('placeholder', this.placeholder);
-			this.input.title = this.placeholder;
+			this.setPlaceHolder(this.placeholder);
 		}
 
 		this.oninput(this.input, () => this.onValueChange());
@@ -201,7 +206,7 @@ export class InputBox extends Widget {
 		if (this.options.actions) {
 			this.actionbar = this._register(new ActionBar(this.element));
 			this.actionbar.push(this.options.actions, { icon: true, label: false });
-			// {{SQL CARBON EDIT}} Canidate for addition to vscode
+			// {{SQL CARBON EDIT}} Candidate for addition to vscode
 			this.input.style.paddingRight = (this.options.actions.length * 22) + 'px';
 		}
 
@@ -219,6 +224,7 @@ export class InputBox extends Widget {
 	public setPlaceHolder(placeHolder: string): void {
 		if (this.input) {
 			this.input.setAttribute('placeholder', placeHolder);
+			this.input.title = placeHolder;
 		}
 	}
 
@@ -358,7 +364,8 @@ export class InputBox extends Widget {
 			}
 		}
 
-		return !result;
+		// {{SQL CARBON EDIT}} Canidate for addition to vscode
+		return result ? result.type !== MessageType.ERROR : true;
 	}
 
 	private stylesForType(type: MessageType): { border: Color; background: Color } {
@@ -378,7 +385,7 @@ export class InputBox extends Widget {
 	}
 
 	private _showMessage(): void {
-		// {{SQL CARBON EDIT}} Canidate for addition to vscode
+		// {{SQL CARBON EDIT}} Candidate for addition to vscode
 		if (!this.contextViewProvider || !this.message || !this.showValidationMessage) {
 			return;
 		}

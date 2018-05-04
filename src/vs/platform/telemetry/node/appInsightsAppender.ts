@@ -31,7 +31,18 @@ function getClient(aiKey: string): typeof appInsights.client {
 
 	const client = appInsights.getClient(aiKey);
 	client.channel.setOfflineMode(true);
-	client.context.tags[client.context.keys.deviceMachineName] = ''; //prevent App Insights from reporting machine name
+
+	// {{SQL CARBON EDIT}}
+	// clear all ID fields from telemetry
+	client.context.tags[client.context.keys.deviceMachineName] = '';
+	client.context.tags[client.context.keys.cloudRoleInstance] = '';
+
+	// set envelope flags to suppress Vortex ingest header
+	client.addTelemetryProcessor((envelope, contextObjects) => {
+		envelope.flags = 0x200000;
+		return true;
+	});
+
 	if (aiKey.indexOf('AIF-') === 0) {
 		client.config.endpointUrl = 'https://vortex.data.microsoft.com/collect/v1';
 	}

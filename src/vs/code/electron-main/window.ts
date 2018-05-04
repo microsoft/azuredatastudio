@@ -198,7 +198,7 @@ export class CodeWindow implements ICodeWindow {
 		this._win = new BrowserWindow(options);
 		this._id = this._win.id;
 
-		// TODO@Ben Bug in Electron (https://github.com/electron/electron/issues/10862). On multi-monitor setups,
+		// Bug in Electron (https://github.com/electron/electron/issues/10862). On multi-monitor setups,
 		// it can happen that the position we set to the window is not the correct one on the display.
 		// To workaround, we ask the window for its position and set it again if not matching.
 		// This only applies if the window is not fullscreen or maximized and multiple monitors are used.
@@ -559,6 +559,10 @@ export class CodeWindow implements ICodeWindow {
 			configuration['extensions-dir'] = cli['extensions-dir'];
 		}
 
+		if (cli) {
+			configuration['disable-extensions'] = cli['disable-extensions'];
+		}
+
 		configuration.isInitialStartup = false; // since this is a reload
 
 		// Load config
@@ -566,6 +570,10 @@ export class CodeWindow implements ICodeWindow {
 	}
 
 	private getUrl(windowConfiguration: IWindowConfiguration): string {
+
+		// Set window ID
+		windowConfiguration.windowId = this._win.id;
+		windowConfiguration.logLevel = this.logService.getLevel();
 
 		// Set zoomlevel
 		const windowConfig = this.configurationService.getValue<IWindowSettings>('window');
@@ -578,7 +586,11 @@ export class CodeWindow implements ICodeWindow {
 		windowConfiguration.fullscreen = this._win.isFullScreen();
 
 		// Set Accessibility Config
-		windowConfiguration.highContrast = isWindows && systemPreferences.isInvertedColorScheme() && (!windowConfig || windowConfig.autoDetectHighContrast);
+		let autoDetectHighContrast = true;
+		if (windowConfig && windowConfig.autoDetectHighContrast === false) {
+			autoDetectHighContrast = false;
+		}
+		windowConfiguration.highContrast = isWindows && autoDetectHighContrast && systemPreferences.isInvertedColorScheme();
 		windowConfiguration.accessibilitySupport = app.isAccessibilitySupportEnabled();
 
 		// Theme
@@ -588,14 +600,13 @@ export class CodeWindow implements ICodeWindow {
 		// Perf Counters
 		windowConfiguration.perfEntries = exportEntries();
 		windowConfiguration.perfStartTime = global.perfStartTime;
-		windowConfiguration.perfAppReady = global.perfAppReady;
 		windowConfiguration.perfWindowLoadTime = Date.now();
 
 		// Config (combination of process.argv and window configuration)
 		const environment = parseArgs(process.argv);
 		const config = objects.assign(environment, windowConfiguration);
 		for (let key in config) {
-			if (!config[key]) {
+			if (config[key] === void 0 || config[key] === null || config[key] === '') {
 				delete config[key]; // only send over properties that have a true value
 			}
 		}
@@ -838,7 +849,7 @@ export class CodeWindow implements ICodeWindow {
 				this._win.setAutoHideMenuBar(true);
 
 				if (notify) {
-					this.send('vscode:showInfoMessage', nls.localize('hiddenMenuBar', "You can still access the menu bar by pressing the **Alt** key."));
+					this.send('vscode:showInfoMessage', nls.localize('hiddenMenuBar', "You can still access the menu bar by pressing the Alt-key."));
 				}
 				break;
 
@@ -955,7 +966,7 @@ export class CodeWindow implements ICodeWindow {
 		const segments: ITouchBarSegment[] = items.map(item => {
 			let icon: Electron.NativeImage;
 			if (item.iconPath) {
-				icon = nativeImage.createFromPath(item.iconPath);
+				icon = nativeImage.createFromPath(item.iconPath.dark);
 				if (icon.isEmpty()) {
 					icon = void 0;
 				}

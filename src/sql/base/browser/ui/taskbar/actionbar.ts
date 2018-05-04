@@ -153,11 +153,17 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 	}
 
 	private updateFocusedItem(): void {
+		let actionIndex = 0;
 		for (let i = 0; i < this._actionsList.children.length; i++) {
 			let elem = this._actionsList.children[i];
+
 			if (DOM.isAncestor(document.activeElement, elem)) {
-				this._focusedItem = i;
+				this._focusedItem = actionIndex;
 				break;
+			}
+
+			if (elem.classList.contains('action-item')) {
+				actionIndex++;
 			}
 		}
 	}

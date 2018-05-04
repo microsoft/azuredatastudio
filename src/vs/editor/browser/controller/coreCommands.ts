@@ -455,10 +455,7 @@ export namespace CoreNavigationCommands {
 			cursors.setStates(
 				source,
 				CursorChangeReason.Explicit,
-				CursorState.ensureInEditableRange(
-					cursors.context,
-					CursorMoveCommands.move(cursors.context, cursors.getAll(), args)
-				)
+				CursorMoveCommands.move(cursors.context, cursors.getAll(), args)
 			);
 			cursors.reveal(true, RevealTarget.Primary, editorCommon.ScrollType.Smooth);
 		}
@@ -707,7 +704,7 @@ export namespace CoreNavigationCommands {
 		public runCoreEditorCommand(cursors: ICursors, args: any): void {
 			const context = cursors.context;
 
-			if (context.config.readOnly || context.model.hasEditableRange()) {
+			if (context.config.readOnly) {
 				return;
 			}
 
@@ -772,7 +769,7 @@ export namespace CoreNavigationCommands {
 		public runCoreEditorCommand(cursors: ICursors, args: any): void {
 			const context = cursors.context;
 
-			if (context.config.readOnly || context.model.hasEditableRange()) {
+			if (context.config.readOnly) {
 				return;
 			}
 
@@ -804,10 +801,7 @@ export namespace CoreNavigationCommands {
 			cursors.setStates(
 				args.source,
 				CursorChangeReason.Explicit,
-				CursorState.ensureInEditableRange(
-					cursors.context,
-					CursorMoveCommands.moveToBeginningOfLine(cursors.context, cursors.getAll(), this._inSelectionMode)
-				)
+				CursorMoveCommands.moveToBeginningOfLine(cursors.context, cursors.getAll(), this._inSelectionMode)
 			);
 			cursors.reveal(true, RevealTarget.Primary, editorCommon.ScrollType.Smooth);
 		}
@@ -856,10 +850,7 @@ export namespace CoreNavigationCommands {
 			cursors.setStates(
 				args.source,
 				CursorChangeReason.Explicit,
-				CursorState.ensureInEditableRange(
-					cursors.context,
-					this._exec(cursors.context, cursors.getAll())
-				)
+				this._exec(cursors.context, cursors.getAll())
 			);
 			cursors.reveal(true, RevealTarget.Primary, editorCommon.ScrollType.Smooth);
 		}
@@ -889,10 +880,7 @@ export namespace CoreNavigationCommands {
 			cursors.setStates(
 				args.source,
 				CursorChangeReason.Explicit,
-				CursorState.ensureInEditableRange(
-					cursors.context,
-					CursorMoveCommands.moveToEndOfLine(cursors.context, cursors.getAll(), this._inSelectionMode)
-				)
+				CursorMoveCommands.moveToEndOfLine(cursors.context, cursors.getAll(), this._inSelectionMode)
 			);
 			cursors.reveal(true, RevealTarget.Primary, editorCommon.ScrollType.Smooth);
 		}
@@ -941,10 +929,7 @@ export namespace CoreNavigationCommands {
 			cursors.setStates(
 				args.source,
 				CursorChangeReason.Explicit,
-				CursorState.ensureInEditableRange(
-					cursors.context,
-					this._exec(cursors.context, cursors.getAll())
-				)
+				this._exec(cursors.context, cursors.getAll())
 			);
 			cursors.reveal(true, RevealTarget.Primary, editorCommon.ScrollType.Smooth);
 		}
@@ -975,10 +960,7 @@ export namespace CoreNavigationCommands {
 			cursors.setStates(
 				args.source,
 				CursorChangeReason.Explicit,
-				CursorState.ensureInEditableRange(
-					cursors.context,
-					CursorMoveCommands.moveToBeginningOfBuffer(cursors.context, cursors.getAll(), this._inSelectionMode)
-				)
+				CursorMoveCommands.moveToBeginningOfBuffer(cursors.context, cursors.getAll(), this._inSelectionMode)
 			);
 			cursors.reveal(true, RevealTarget.Primary, editorCommon.ScrollType.Smooth);
 		}
@@ -1022,10 +1004,7 @@ export namespace CoreNavigationCommands {
 			cursors.setStates(
 				args.source,
 				CursorChangeReason.Explicit,
-				CursorState.ensureInEditableRange(
-					cursors.context,
-					CursorMoveCommands.moveToEndOfBuffer(cursors.context, cursors.getAll(), this._inSelectionMode)
-				)
+				CursorMoveCommands.moveToEndOfBuffer(cursors.context, cursors.getAll(), this._inSelectionMode)
 			);
 			cursors.reveal(true, RevealTarget.Primary, editorCommon.ScrollType.Smooth);
 		}
@@ -1272,7 +1251,7 @@ export namespace CoreNavigationCommands {
 
 		public runCoreEditorCommand(cursors: ICursors, args: any): void {
 			const context = cursors.context;
-			if (context.config.readOnly || context.model.hasEditableRange()) {
+			if (context.config.readOnly) {
 				return;
 			}
 
@@ -1335,7 +1314,7 @@ export namespace CoreNavigationCommands {
 		public runCoreEditorCommand(cursors: ICursors, args: any): void {
 			const context = cursors.context;
 
-			if (context.config.readOnly || context.model.hasEditableRange()) {
+			if (context.config.readOnly) {
 				return;
 			}
 
@@ -1383,10 +1362,7 @@ export namespace CoreNavigationCommands {
 			cursors.setStates(
 				args.source,
 				CursorChangeReason.Explicit,
-				CursorState.ensureInEditableRange(
-					cursors.context,
-					CursorMoveCommands.expandLineSelection(cursors.context, cursors.getAll())
-				)
+				CursorMoveCommands.expandLineSelection(cursors.context, cursors.getAll())
 			);
 			cursors.reveal(true, RevealTarget.Primary, editorCommon.ScrollType.Smooth);
 		}
@@ -1723,44 +1699,6 @@ class EditorOrNativeTextInputCommand extends Command {
 	}
 }
 
-registerCommand(new EditorOrNativeTextInputCommand({
-	editorHandler: CoreNavigationCommands.SelectAll,
-	inputHandler: 'selectAll',
-	id: 'editor.action.selectAll',
-	precondition: null,
-	kbOpts: {
-		weight: CORE_WEIGHT,
-		kbExpr: null,
-		primary: KeyMod.CtrlCmd | KeyCode.KEY_A
-	}
-}));
-
-registerCommand(new EditorOrNativeTextInputCommand({
-	editorHandler: H.Undo,
-	inputHandler: 'undo',
-	id: H.Undo,
-	precondition: EditorContextKeys.writable,
-	kbOpts: {
-		weight: CORE_WEIGHT,
-		kbExpr: EditorContextKeys.textFocus,
-		primary: KeyMod.CtrlCmd | KeyCode.KEY_Z
-	}
-}));
-
-registerCommand(new EditorOrNativeTextInputCommand({
-	editorHandler: H.Redo,
-	inputHandler: 'redo',
-	id: H.Redo,
-	precondition: EditorContextKeys.writable,
-	kbOpts: {
-		weight: CORE_WEIGHT,
-		kbExpr: EditorContextKeys.textFocus,
-		primary: KeyMod.CtrlCmd | KeyCode.KEY_Y,
-		secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_Z],
-		mac: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_Z }
-	}
-}));
-
 /**
  * A command that will invoke a command on the focused editor.
  */
@@ -1785,6 +1723,46 @@ class EditorHandlerCommand extends Command {
 		editor.trigger('keyboard', this._handlerId, args);
 	}
 }
+
+registerCommand(new EditorOrNativeTextInputCommand({
+	editorHandler: CoreNavigationCommands.SelectAll,
+	inputHandler: 'selectAll',
+	id: 'editor.action.selectAll',
+	precondition: null,
+	kbOpts: {
+		weight: CORE_WEIGHT,
+		kbExpr: null,
+		primary: KeyMod.CtrlCmd | KeyCode.KEY_A
+	}
+}));
+
+registerCommand(new EditorOrNativeTextInputCommand({
+	editorHandler: H.Undo,
+	inputHandler: 'undo',
+	id: H.Undo,
+	precondition: EditorContextKeys.writable,
+	kbOpts: {
+		weight: CORE_WEIGHT,
+		kbExpr: EditorContextKeys.textFocus,
+		primary: KeyMod.CtrlCmd | KeyCode.KEY_Z
+	}
+}));
+registerCommand(new EditorHandlerCommand('default:' + H.Undo, H.Undo));
+
+registerCommand(new EditorOrNativeTextInputCommand({
+	editorHandler: H.Redo,
+	inputHandler: 'redo',
+	id: H.Redo,
+	precondition: EditorContextKeys.writable,
+	kbOpts: {
+		weight: CORE_WEIGHT,
+		kbExpr: EditorContextKeys.textFocus,
+		primary: KeyMod.CtrlCmd | KeyCode.KEY_Y,
+		secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_Z],
+		mac: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_Z }
+	}
+}));
+registerCommand(new EditorHandlerCommand('default:' + H.Redo, H.Redo));
 
 function registerOverwritableCommand(handlerId: string): void {
 	registerCommand(new EditorHandlerCommand('default:' + handlerId, handlerId));

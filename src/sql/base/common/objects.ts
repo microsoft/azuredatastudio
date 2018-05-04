@@ -38,7 +38,7 @@ export function mixin(destination: any, source: any, overwrite: boolean = true, 
 				if (overwrite) {
 					if (Types.isObject(destination[key]) && Types.isObject(source[key])) {
 						mixin(destination[key], source[key], overwrite, fn);
-					} else if(fn) {
+					} else if (fn) {
 						destination[key] = fn(destination[key], source[key], overwrite);
 					} else {
 						destination[key] = source[key];
@@ -50,4 +50,12 @@ export function mixin(destination: any, source: any, overwrite: boolean = true, 
 		});
 	}
 	return destination;
+}
+
+export function entries<T>(o: { [key: string]: T }): [string, T][] {
+	return Object.entries(o);
+}
+
+export function values<T>(o: { [key: string]: T }): T[] {
+	return Object.values(o);
 }

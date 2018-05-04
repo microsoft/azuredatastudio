@@ -14,25 +14,26 @@ import {
 	RefreshAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
 	ActiveConnectionsFilterAction, RecentConnectionsFilterAction
 }
-	from 'sql/parts/registeredServer/viewlet/connectionTreeAction';
+	from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagementService.test';
 import { ErrorMessageServiceStub } from 'sqltest/stubs/errorMessageServiceStub';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
-import { ServerTreeView } from 'sql/parts/registeredServer/viewlet/serverTreeView';
+import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import * as Constants from 'sql/parts/connection/common/constants';
 import * as  LocalizedConstants from 'sql/parts/connection/common/localizedConstants';
-import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/parts/registeredServer/common/objectExplorerService';
-import { TreeNode } from 'sql/parts/registeredServer/common/treeNode';
-import { NodeType } from 'sql/parts/registeredServer/common/nodeType';
+import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
+import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { ServerTreeDataSource } from 'sql/parts/registeredServer/viewlet/serverTreeDataSource';
+import { ServerTreeDataSource } from 'sql/parts/objectExplorer/viewlet/serverTreeDataSource';
 import { Builder, $ } from 'vs/base/browser/builder';
 import WinJS = require('vs/base/common/winjs.base');
 import { Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
-import { ObjectExplorerActionsContext, ManageConnectionAction } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
+import { ObjectExplorerActionsContext, ManageConnectionAction } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 import { IConnectionResult, IConnectionParams } from 'sql/parts/connection/common/connectionManagement';
-import { TreeSelectionHandler } from 'sql/parts/registeredServer/viewlet/treeSelectionHandler';
+import { TreeSelectionHandler } from 'sql/parts/objectExplorer/viewlet/treeSelectionHandler';
+import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<ErrorMessageServiceStub>;
@@ -42,6 +43,7 @@ suite('SQL Connection Tree Action tests', () => {
 		errorCode: undefined,
 		callStack: undefined
 	};
+	let capabilitiesService = new CapabilitiesTestService();
 	setup(() => {
 		errorMessageService = TypeMoq.Mock.ofType(ErrorMessageServiceStub, TypeMoq.MockBehavior.Loose);
 		let nothing: void;
@@ -70,8 +72,8 @@ suite('SQL Connection Tree Action tests', () => {
 	function createObjectExplorerService(connectionManagementService: TestConnectionManagementService): TypeMoq.Mock<ObjectExplorerService> {
 		let objectExplorerService = TypeMoq.Mock.ofType(ObjectExplorerService, TypeMoq.MockBehavior.Strict, connectionManagementService);
 		objectExplorerService.callBase = true;
-		objectExplorerService.setup(x => x.getObjectExplorerNode(TypeMoq.It.isAny())).returns(() => new TreeNode('', '', false, '', '', '', undefined, undefined));
-		objectExplorerService.setup(x => x.getObjectExplorerNode(undefined)).returns(() => new TreeNode('', '', false, '', '', '', undefined, undefined));
+		objectExplorerService.setup(x => x.getObjectExplorerNode(TypeMoq.It.isAny())).returns(() => new TreeNode('', '', false, '', '', '', undefined, undefined, undefined));
+		objectExplorerService.setup(x => x.getObjectExplorerNode(undefined)).returns(() => new TreeNode('', '', false, '', '', '', undefined, undefined, undefined));
 		objectExplorerService.setup(x => x.onUpdateObjectExplorerNodes).returns(() => new Emitter<ObjectExplorerNodeEventArgs>().event);
 
 		objectExplorerService.setup(x => x.onUpdateObjectExplorerNodes).returns(() => new Emitter<ObjectExplorerNodeEventArgs>().event);
@@ -91,7 +93,7 @@ suite('SQL Connection Tree Action tests', () => {
 
 		let manageConnectionAction: ManageConnectionAction = new ManageConnectionAction(ManageConnectionAction.ID,
 			ManageConnectionAction.LABEL, connectionManagementService.object, instantiationService.object, objectExplorerService.object);
-		let connection: ConnectionProfile = new ConnectionProfile(undefined, {
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -126,7 +128,7 @@ suite('SQL Connection Tree Action tests', () => {
 
 		let manageConnectionAction: ManageConnectionAction = new ManageConnectionAction(ManageConnectionAction.ID,
 			ManageConnectionAction.LABEL, connectionManagementService.object, instantiationService.object, objectExplorerService.object);
-		let connection: ConnectionProfile = new ConnectionProfile(undefined, {
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -142,7 +144,7 @@ suite('SQL Connection Tree Action tests', () => {
 			saveProfile: true,
 			id: 'testId'
 		});
-		let treeNode = new TreeNode(NodeType.Database, 'db node', false, '', '', '', undefined, undefined);
+		let treeNode = new TreeNode(NodeType.Database, 'db node', false, '', '', '', undefined, undefined, undefined);
 		treeNode.connection = connection;
 		var actionContext = new ObjectExplorerActionsContext();
 		actionContext.treeNode = treeNode;
@@ -158,7 +160,7 @@ suite('SQL Connection Tree Action tests', () => {
 		let objectExplorerService = createObjectExplorerService(connectionManagementService.object);
 
 		let changeConnectionAction: DisconnectConnectionAction = new DisconnectConnectionAction(DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL, connectionManagementService.object, objectExplorerService.object, errorMessageService.object);
-		let connection: ConnectionProfile = new ConnectionProfile(undefined, {
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -265,7 +267,7 @@ suite('SQL Connection Tree Action tests', () => {
 	test('DeleteConnectionAction - test delete connection', (done) => {
 		let connectionManagementService = createConnectionManagementService(true);
 
-		let connection: ConnectionProfile = new ConnectionProfile(undefined, {
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -311,7 +313,7 @@ suite('SQL Connection Tree Action tests', () => {
 		let isConnectedReturnValue: boolean = false;
 		let connectionManagementService = createConnectionManagementService(isConnectedReturnValue);
 
-		let connection: ConnectionProfile = new ConnectionProfile(undefined, {
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -340,15 +342,14 @@ suite('SQL Connection Tree Action tests', () => {
 	test('RefreshConnectionAction - refresh should be called if connection status is connect', (done) => {
 		let isConnectedReturnValue: boolean = true;
 		let sqlProvider = {
-			protocolVersion: '1',
-			providerName: 'MSSQL',
-			providerDisplayName: 'MSSQL',
-			connectionProvider: { options: [] },
-			adminServicesProvider: { databaseInfoOptions: [], databaseFileInfoOptions: [], fileGroupInfoOptions: [] },
-			features: undefined
+			providerId: 'MSSQL',
+			displayName: 'MSSQL',
+			connectionOptions: [],
 		};
 
-		var connection = new ConnectionProfile(sqlProvider, {
+		capabilitiesService.capabilities['MSSQL'] = { connection: sqlProvider };
+
+		var connection = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -391,11 +392,11 @@ suite('SQL Connection Tree Action tests', () => {
 			errorMessage: ''
 		};
 
-		var tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\Db1\tables', '', '', null, null);
+		var tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\Db1\tables', '', '', null, null, undefined);
 		tablesNode.connection = connection;
 		tablesNode.session = objectExplorerSession;
-		var table1Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\tables\dbo.Table1', '', '', tablesNode, null);
-		var table2Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\tables\dbo.Table1', '', '', tablesNode, null);
+		var table1Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\tables\dbo.Table1', '', '', tablesNode, null, undefined);
+		var table2Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\tables\dbo.Table1', '', '', tablesNode, null, undefined);
 		tablesNode.children = [table1Node, table2Node];
 		let objectExplorerService = TypeMoq.Mock.ofType(ObjectExplorerService, TypeMoq.MockBehavior.Loose, connectionManagementService.object);
 		objectExplorerService.callBase = true;
@@ -429,15 +430,14 @@ suite('SQL Connection Tree Action tests', () => {
 	test('RefreshConnectionAction - refresh should not be called if connection status is not connect', (done) => {
 		let isConnectedReturnValue: boolean = false;
 		let sqlProvider = {
-			protocolVersion: '1',
-			providerName: 'MSSQL',
-			providerDisplayName: 'MSSQL',
-			connectionProvider: { options: [] },
-			adminServicesProvider: { databaseInfoOptions: [], databaseFileInfoOptions: [], fileGroupInfoOptions: [] },
-			features: undefined
+			providerId: 'MSSQL',
+			displayName: 'MSSQL',
+			connectionOptions: []
 		};
 
-		var connection = new ConnectionProfile(sqlProvider, {
+		capabilitiesService.capabilities['MSSQL'] = { connection: sqlProvider };
+
+		var connection = new ConnectionProfile(capabilitiesService, {
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -480,11 +480,11 @@ suite('SQL Connection Tree Action tests', () => {
 			errorMessage: ''
 		};
 
-		var tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\Db1\tables', '', '', null, null);
+		var tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\Db1\tables', '', '', null, null, undefined);
 		tablesNode.connection = connection;
 		tablesNode.session = objectExplorerSession;
-		var table1Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\tables\dbo.Table1', '', '', tablesNode, null);
-		var table2Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\tables\dbo.Table1', '', '', tablesNode, null);
+		var table1Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\tables\dbo.Table1', '', '', tablesNode, null, undefined);
+		var table2Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\tables\dbo.Table1', '', '', tablesNode, null, undefined);
 		tablesNode.children = [table1Node, table2Node];
 		let objectExplorerService = TypeMoq.Mock.ofType(ObjectExplorerService, TypeMoq.MockBehavior.Loose, connectionManagementService.object);
 		objectExplorerService.callBase = true;

@@ -21,6 +21,7 @@
 .connection-dialog .tabbedPanel {
 	border-top-color: transparent;
 	height: calc(100% - 350px);
+	display: block;
 }
 
 .connection-recent, .connection-saved {
@@ -68,15 +69,21 @@
 	overflow-y: hidden;
 }
 
+.connection-dialog .connection-history-actions .action-label.icon {
+	display: block;
+	height: 20px;
+	line-height: 20px;
+	min-width: 20px;
+	background-size: 16px;
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
 .search-action.clear-search-results {
-	background: url('clear-search-results.svg') center right no-repeat;
-	width: 10%;
-	cursor: pointer;
+	background: url('clear-search-results.svg');
 }
 
 .vs-dark .search-action.clear-search-results,
 .hc-black .search-action.clear-search-results {
-	background: url('clear-search-results-dark.svg') center right no-repeat;
-	width: 10%;
-	cursor: pointer;
+	background: url('clear-search-results-dark.svg');
 }

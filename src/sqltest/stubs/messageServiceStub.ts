@@ -5,11 +5,12 @@
 
 'use strict';
 
+/*
 import Severity from 'vs/base/common/severity';
 import { IConfirmation, IMessageService, IMessageWithAction, IConfirmationResult } from 'vs/platform/message/common/message';
 import { TPromise } from 'vs/base/common/winjs.base';
 
-export class MessageServiceStub implements IMessageService{
+export class MessageServiceStub implements IMessageService {
 	_serviceBrand: any;
 
 	show(sev: Severity, message: string): () => void;
@@ -29,17 +30,13 @@ export class MessageServiceStub implements IMessageService{
 		return true;
 	}
 
-	/**
-	 * Ask the user for confirmation.
-	 */
 	confirmSync(confirmation: IConfirmation): boolean {
 		return undefined;
 	}
 
-	/**
-	 * Ask the user for confirmation with a checkbox.
-	 */
+
 	confirmWithCheckbox(confirmation: IConfirmation): TPromise<IConfirmationResult> {
 		return undefined;
 	}
 }
+*/

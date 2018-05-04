@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import * as assert from 'assert';
 import { RestoreViewModel } from 'sql/parts/disasterRecovery/restore/restoreViewModel';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -14,14 +14,14 @@ suite('Restore Dialog view model tests', () => {
 	let option2Category = 'option2';
 	let option3Boolean = 'option3';
 	let options: { [name: string]: any };
-	let stringServiceOption: data.ServiceOption;
-	let categoryServiceOption: data.ServiceOption;
-	let booleanServiceOption: data.ServiceOption;
+	let stringServiceOption: sqlops.ServiceOption;
+	let categoryServiceOption: sqlops.ServiceOption;
+	let booleanServiceOption: sqlops.ServiceOption;
 
 	let viewModel: RestoreViewModel;
 
-	let planDetails: { [key: string]: data.RestorePlanDetailInfo };
-	let backupSets: data.DatabaseFileInfo[];
+	let planDetails: { [key: string]: sqlops.RestorePlanDetailInfo };
+	let backupSets: sqlops.DatabaseFileInfo[];
 
 	setup(() => {
 		options = {};
@@ -168,7 +168,7 @@ suite('Restore Dialog view model tests', () => {
 	});
 
 	test('on restore plan response should update all options from restore plan response correctly', () => {
-		let restorePlanResponse: data.RestorePlanResponse = {
+		let restorePlanResponse: sqlops.RestorePlanResponse = {
 			sessionId: '123',
 			backupSetsToRestore: backupSets,
 			canRestore: true,
@@ -198,7 +198,7 @@ suite('Restore Dialog view model tests', () => {
 
 
 	test('on reset restore options should reset all options', () => {
-		let restorePlanResponse: data.RestorePlanResponse = {
+		let restorePlanResponse: sqlops.RestorePlanResponse = {
 			sessionId: '123',
 			backupSetsToRestore: backupSets,
 			canRestore: true,

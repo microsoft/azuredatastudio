@@ -2,17 +2,29 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-.extension-view .monaco-split-view .split-view-view .header {
+.extension-view .header {
+	position: relative;
+	line-height: 22px;
+	font-size: 11px;
+	font-weight: bold;
+	text-transform: uppercase;
+	padding-left: 20px;
 	padding-right: 12px;
+	overflow: hidden;
+	display: flex;
 }
 
-.extension-view .split-view-view .header .title {
+.extension-view .header.collapsible.hide {
+	display: none;
+}
+
+.extension-view .header .title {
 	display: flex;
 	justify-content: flex-start;
 	flex: 1 1 auto;
 }
 
-.extension-view .split-view-view .header .count-badge-wrapper {
+.extension-view .header .count-badge-wrapper {
 	justify-content: flex-end;
 }
 
@@ -54,4 +66,9 @@
 	padding-right: 6px;
 	opacity: .6;
 	font-weight: 600;
+}
+
+.no-extensionTab-label {
+	font-size: 12px;
+	padding: 15px;
 }

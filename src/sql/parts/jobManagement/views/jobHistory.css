@@ -1,0 +1,250 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+
+.all-jobs {
+	display: inline;
+	font-size: 15px;
+	padding-bottom: 15px;
+}
+
+.overview-container .overview-tab .resultsViewCollapsible {
+	padding: 15px;
+	display: inline;
+}
+
+.job-heading {
+	text-align: left;
+	padding-left: 13px;
+}
+
+.overview-container {
+	padding-top: 10px;
+}
+
+.vs-dark .overview-container .overview-tab {
+	color: #fff;
+}
+
+.overview-container > .overview-tab {
+	position: relative;
+	margin-bottom: 1px;
+	width: 100%;
+	color: #4a4a4a;
+	overflow: hidden;
+}
+
+input#accordion {
+	position: absolute;
+	opacity: 0;
+	z-index: -1;
+}
+
+.vs-dark .overview-container .overview-tab label {
+	background: #444444;
+}
+
+.overview-container .overview-tab label {
+	position: relative;
+	display: block;
+	padding: 0 0 0 1em;
+	background: #f4f4f4;
+	font-weight: bold;
+	line-height: 3;
+	cursor: pointer;
+	width: 100%;
+}
+
+.vs-dark .overview-tab .accordion-content {
+	background: #333333;
+}
+
+.overview-tab .accordion-content {
+	max-height: 0;
+	overflow: hidden;
+	background: #eaeaea;
+	-webkit-transition: max-height .35s;
+	-o-transition: max-height .35s;
+	transition: max-height .35s;
+	width: 100%;
+}
+
+.overview-tab .accordion-content p {
+	margin: 1em;
+}
+
+/* :checked */
+input#accordion:checked ~ .accordion-content {
+	max-height: 10em;
+}
+
+/* Icon */
+.overview-container .overview-tab label::after {
+	position: absolute;
+	right: 0;
+	top: 0;
+	display: block;
+	width: 3em;
+	height: 3em;
+	line-height: 3;
+	text-align: center;
+	-webkit-transition: all .3s;
+	-o-transition: all .3s;
+	transition: all .3s;
+}
+
+.all-jobs > .back-button-icon {
+	content: url('../common/media/back.svg');
+	width: 20px;
+	margin-right: 10px;
+	float: left;
+	cursor: pointer;
+	padding-left: 13px;
+	padding-bottom: 10px;
+}
+
+.vs-dark.monaco-shell .all-jobs >.back-button-icon {
+	content: url('../common/media/back_inverse.svg');
+}
+
+.vs .action-label.icon.runJobIcon,
+.vs-dark .action-label.icon.runJobIcon,
+.hc-black .action-label.icon.runJobIcon {
+	background-image: url('../common/media/start.svg');
+	padding-right: 5px;
+}
+
+.vs .action-label.icon.stopJobIcon,
+.vs-dark .action-label.icon.stopJobIcon,
+.hc-black .action-label.icon.stopJobIcon {
+	background-image: url('../common/media/stop.svg');
+}
+
+a.action-label.icon.runJobIcon.non-runnable {
+	opacity: 0.4;
+	cursor: default;
+}
+
+a.action-label.icon.stopJobIcon.non-runnable {
+	opacity: 0.4;
+	cursor: default;
+}
+
+.accordion-content #col1,
+.accordion-content #col2,
+.accordion-content #col3,
+.accordion-content #col4 {
+	padding: 10px;
+}
+
+.accordion-content #col1,
+.accordion-content #col3 {
+	font-weight: bold;
+}
+
+.accordion-content #col2 {
+	padding-right: 300px;
+}
+
+table.step-list tr.step-row td {
+	padding-right: 10px;
+}
+
+.history-details {
+	height: 100%;
+	display: flex;
+}
+
+.vs-dark .history-details > .job-steps {
+	display: inline-block;
+	border-left: 3px solid #444444;
+	padding-left: 10px;
+	height: 100%;
+	width: 90%;
+	overflow-y: scroll;
+}
+
+.history-details > .job-steps {
+	display: inline-block;
+	border-left: 3px solid #f4f4f4;
+	padding-left: 10px;
+	height: 100%;
+}
+
+.history-details > .job-steps > .step-list {
+	padding-bottom: 10px;
+}
+
+.step-table .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
+	background: none;
+	background-image: none;
+}
+
+.step-table .monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected:not(.loading) > .content:before {
+	background-image: none;
+}
+
+.step-table .list-row .status-icon {
+	height: 10px;
+	width: 10px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.step-table .list-row .label {
+	padding-left: 10px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.job-passed {
+	background: green;
+}
+
+.job-failed {
+	background: red;
+}
+
+.job-unknown {
+	background: yellow;
+}
+
+.date-column {
+	padding-left: 50px;
+	width: 140px;
+}
+
+.steps-tree .monaco-tree .monaco-tree-row {
+	white-space: normal;
+	min-height: 40px !important;
+}
+
+jobhistory-component .history-details .step-table.prev-run-list .monaco-scrollable-element {
+	overflow-y: scroll !important;
+}
+
+jobhistory-component .jobhistory-heading-container {
+	display: -webkit-box;
+}
+
+jobhistory-component > .jobhistory-heading-container > .icon.in-progress {
+	width: 20px;
+	height: 20px;
+	padding-top: 16px;
+	padding-left: 20px;
+}
+
+jobhistory-component > .actionbar-container .monaco-action-bar > ul.actions-container {
+	border-top: 3px solid #f4f4f4;
+	padding-top: 10px;
+}
+
+.vs-dark jobhistory-component > .actionbar-container .monaco-action-bar > ul.actions-container {
+	border-top: 3px solid #444444;
+}
+
+
+
+

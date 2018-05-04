@@ -1,5 +1,42 @@
 # Change Log
 
+## Version 0.28.6
+* Release date: April 25, 2018
+* Release status: Public Preview
+
+## What's new in this version
+The April Public Preview release contains some of the following highlights.
+
+* Improvements to SQL Agent *Preview* extension
+* Accessibility improvements for keyboard navigation, screen reader support and high-contrast mode.
+* Improved large and protected file support for saving Admin protected and >256M files within SQL Ops Studio
+* Integrated Terminal splitting to work with multiple open terminals at once
+* Reduced installation on-disk file count foot print for faster installs and startup times
+* Improvements to Server Reports extension
+* Continue to fix GitHub issues
+
+## Version 0.27.3
+* Release date: March 28, 2017
+* Release status: Public Preview
+
+## What's new in this version
+The March Public Preview release enables some key aspects of the SQL Operations
+Studio extensibility story.  Here are some highlights in this release.
+
+* Enhance the Manage Dashboard extensibility model to support tabbed Insights and Configuration panes
+* Dashboard Insights extensions for `sp_whoisactive` from [whoisactive.com](http://whoisactive.com)
+* Extension Manager enables simple acquisition of 1st-party and 3rd-party extensions
+* Add additional Extensibility APIs for `connection` and `objectexplorer` management
+* Community Localization open for 10 languages
+* Continue to fix important customer impacting GitHub issues
+
+## Version 0.26.7
+* Release date: February 16, 2017
+* Release status: Public Preview Hotfix 1
+
+## What's new in this version
+* Bug fix for `#717 Selecting partial query and hitting Cmd or Ctrl+C opens terminal with Error message`
+
 ## Version 0.26.6
 * Release date: February 15, 2017
 * Release status: Public Preview
@@ -11,15 +48,15 @@ Here's some of the highlights in the February release.
 
 * Support Auto-Update installation on Windows and macOS
 * Publish RPM and DEB packages to offical Microsoft repos
-* Fix #6 Keep connection and selected database when opening new query tabs
-* Fix #22 'Server Name' and 'Database Name' - Can these be drop downs instead of text boxes?
+* Fix `#6 Keep connection and selected database when opening new query tabs`
+* Fix `#22 'Server Name' and 'Database Name' - Can these be drop downs instead of text` boxes?
 * Fix #481 Add "Check for updates" option.
 * SQL Editor colorization and auto-completion fixes
-  * #584 Keyword "FULL" not highlighted by IntelliSense
-  * #345 Colorize SQL functions within the editor
-  * #300 [#tempData] latest "]" will display green color
-  * #225 Keyword color mismatch
-  * #60 invalid sql syntax color highlighting when using temporary table in from clause
+  * `#584 Keyword "FULL" not highlighted by IntelliSense`
+  * `#345 Colorize SQL functions within the editor`
+  * `#300 [#tempData] latest "]" will display green color`
+  * `#225 Keyword color mismatch`
+  * `#60 invalid sql syntax color highlighting when using temporary table in from clause`
 * Introduce Connection extensibility API
 * VS Code Editor 1.19 integration
 * Update JustinPealing/html-query-plan component to pick-up several Query Plan viewer improvements

@@ -9,8 +9,8 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
-import data = require('data');
-import { warn, error } from 'sql/base/common/log';
+import * as sqlops from 'sqlops';
+import { error } from 'sql/base/common/log';
 export const SERVICE_ID = 'scriptingService';
 
 export const IScriptingService = createDecorator<IScriptingService>(SERVICE_ID);
@@ -18,22 +18,22 @@ export const IScriptingService = createDecorator<IScriptingService>(SERVICE_ID);
 export interface IScriptingService {
 	_serviceBrand: any;
 
-	script(connectionUri: string, metadata: data.ObjectMetadata, operation: ScriptOperation, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult>;
+	script(connectionUri: string, metadata: sqlops.ObjectMetadata, operation: ScriptOperation, paramDetails: sqlops.ScriptingParamDetails): Thenable<sqlops.ScriptingResult>;
 
 	/**
 	 * Register a scripting provider
 	 */
-	registerProvider(providerId: string, provider: data.ScriptingProvider): void;
+	registerProvider(providerId: string, provider: sqlops.ScriptingProvider): void;
 
 	/**
 	 * Callback method for when scripting is complete
 	 */
-	onScriptingComplete(handle: number, scriptingCompleteResult: data.ScriptingCompleteResult): void;
+	onScriptingComplete(handle: number, scriptingCompleteResult: sqlops.ScriptingCompleteResult): void;
 
 	/**
 	 * Returns the result for an operation if the operation failed
 	 */
-	getOperationFailedResult(operationId: string): data.ScriptingCompleteResult;
+	getOperationFailedResult(operationId: string): sqlops.ScriptingCompleteResult;
 }
 
 export class ScriptingService implements IScriptingService {
@@ -42,9 +42,9 @@ export class ScriptingService implements IScriptingService {
 
 	private disposables: IDisposable[] = [];
 
-	private _providers: { [handle: string]: data.ScriptingProvider; } = Object.create(null);
+	private _providers: { [handle: string]: sqlops.ScriptingProvider; } = Object.create(null);
 
-	private failedScriptingOperations: { [operationId: string]: data.ScriptingCompleteResult } = {};
+	private failedScriptingOperations: { [operationId: string]: sqlops.ScriptingCompleteResult } = {};
 	constructor( @IConnectionManagementService private _connectionService: IConnectionManagementService) { }
 
 	/**
@@ -54,13 +54,13 @@ export class ScriptingService implements IScriptingService {
 	 * @param operation
 	 * @param paramDetails
 	 */
-	public script(connectionUri: string, metadata: data.ObjectMetadata, operation: ScriptOperation, paramDetails: data.ScriptingParamDetails): Thenable<data.ScriptingResult> {
+	public script(connectionUri: string, metadata: sqlops.ObjectMetadata, operation: ScriptOperation, paramDetails: sqlops.ScriptingParamDetails): Thenable<sqlops.ScriptingResult> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 
 		if (providerId) {
 			let provider = this._providers[providerId];
 			if (provider) {
-				return provider.scriptAsOperation(connectionUri, operation, metadata, paramDetails)
+				return provider.scriptAsOperation(connectionUri, operation, metadata, paramDetails);
 			}
 		}
 		return Promise.resolve(undefined);
@@ -71,7 +71,7 @@ export class ScriptingService implements IScriptingService {
 	 * @param handle
 	 * @param scriptingCompleteResult
 	 */
-	public onScriptingComplete(handle: number, scriptingCompleteResult: data.ScriptingCompleteResult): void {
+	public onScriptingComplete(handle: number, scriptingCompleteResult: sqlops.ScriptingCompleteResult): void {
 		if (scriptingCompleteResult && scriptingCompleteResult.hasError && scriptingCompleteResult.errorMessage) {
 			error(`Scripting failed. error: ${scriptingCompleteResult.errorMessage}`);
 			if (scriptingCompleteResult.operationId) {
@@ -84,7 +84,7 @@ export class ScriptingService implements IScriptingService {
 	 * Returns the result for an operation if the operation failed
 	 * @param operationId Operation Id
 	 */
-	public getOperationFailedResult(operationId: string): data.ScriptingCompleteResult {
+	public getOperationFailedResult(operationId: string): sqlops.ScriptingCompleteResult {
 		if (operationId && operationId in this.failedScriptingOperations) {
 			return this.failedScriptingOperations[operationId];
 		} else {
@@ -95,7 +95,7 @@ export class ScriptingService implements IScriptingService {
 	/**
 	 * Register a scripting provider
 	 */
-	public registerProvider(providerId: string, provider: data.ScriptingProvider): void {
+	public registerProvider(providerId: string, provider: sqlops.ScriptingProvider): void {
 		this._providers[providerId] = provider;
 	}
 

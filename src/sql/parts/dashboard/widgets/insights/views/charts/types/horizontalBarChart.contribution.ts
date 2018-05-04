@@ -7,7 +7,7 @@ import { mixin } from 'vs/base/common/objects';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 
 import { registerInsight } from 'sql/platform/dashboard/common/insightRegistry';
-import { properties as BarChartSchema } from 'sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
+import { barChartSchema } from 'sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
 
 import HorizontalBarChart from './horizontalBarChart.component';
 
@@ -15,6 +15,6 @@ const properties: IJSONSchema = {
 
 };
 
-const horizontalBarSchema = mixin(clone(BarChartSchema), properties) as IJSONSchema;
+const horizontalBarSchema = mixin(clone(barChartSchema), properties) as IJSONSchema;
 
 registerInsight('horizontalBar', '', horizontalBarSchema, HorizontalBarChart);

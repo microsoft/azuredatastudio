@@ -19,7 +19,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { DropdownList } from 'sql/base/browser/ui/dropdownList/dropdownList';
 import { attachDropdownStyler } from 'sql/common/theme/styler';
 import { AddAccountAction, RefreshAccountAction } from 'sql/parts/accountManagement/common/accountActions';
@@ -29,7 +29,7 @@ import { AccountPickerViewModel } from 'sql/parts/accountManagement/accountPicke
 export class AccountPicker extends Disposable {
 	public static ACCOUNTPICKERLIST_HEIGHT = 47;
 	public viewModel: AccountPickerViewModel;
-	private _accountList: List<data.Account>;
+	private _accountList: List<sqlops.Account>;
 	private _rootElement: HTMLElement;
 	private _refreshContainer: HTMLElement;
 	private _listContainer: HTMLElement;
@@ -46,8 +46,8 @@ export class AccountPicker extends Disposable {
 	private _addAccountStartEmitter: Emitter<void>;
 	public get addAccountStartEvent(): Event<void> { return this._addAccountStartEmitter.event; }
 
-	private _onAccountSelectionChangeEvent: Emitter<data.Account>;
-	public get onAccountSelectionChangeEvent(): Event<data.Account> { return this._onAccountSelectionChangeEvent.event; }
+	private _onAccountSelectionChangeEvent: Emitter<sqlops.Account>;
+	public get onAccountSelectionChangeEvent(): Event<sqlops.Account> { return this._onAccountSelectionChangeEvent.event; }
 
 	constructor(
 		private _providerId: string,
@@ -61,7 +61,7 @@ export class AccountPicker extends Disposable {
 		this._addAccountCompleteEmitter = new Emitter<void>();
 		this._addAccountErrorEmitter = new Emitter<string>();
 		this._addAccountStartEmitter = new Emitter<void>();
-		this._onAccountSelectionChangeEvent = new Emitter<data.Account>();
+		this._onAccountSelectionChangeEvent = new Emitter<sqlops.Account>();
 
 		// Create the view model, wire up the events, and initialize with baseline data
 		this.viewModel = this._instantiationService.createInstance(AccountPickerViewModel, this._providerId);
@@ -89,7 +89,7 @@ export class AccountPicker extends Disposable {
 		let delegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
 		let accountRenderer = new AccountPickerListRenderer();
 		this._listContainer = DOM.$('div.account-list-container');
-		this._accountList = new List<data.Account>(this._listContainer, delegate, [accountRenderer]);
+		this._accountList = new List<sqlops.Account>(this._listContainer, delegate, [accountRenderer]);
 		this._register(attachListStyler(this._accountList, this._themeService));
 
 		this._rootElement = DOM.$('div.account-picker-container');
@@ -108,7 +108,7 @@ export class AccountPicker extends Disposable {
 
 		this._dropdown = this._register(new DropdownList(this._rootElement, option, this._listContainer, this._accountList, this._themeService, addAccountAction));
 		this._register(attachDropdownStyler(this._dropdown, this._themeService));
-		this._register(this._accountList.onSelectionChange((e: IListEvent<data.Account>) => {
+		this._register(this._accountList.onSelectionChange((e: IListEvent<sqlops.Account>) => {
 			if (e.elements.length === 1) {
 				this._dropdown.renderLabel();
 				this.onAccountSelectionChange(e.elements[0]);
@@ -134,7 +134,7 @@ export class AccountPicker extends Disposable {
 
 		// Load the initial contents of the view model
 		this.viewModel.initialize()
-			.then((accounts: data.Account[]) => {
+			.then((accounts: sqlops.Account[]) => {
 				this.updateAccountList(accounts);
 			});
 	}
@@ -147,7 +147,7 @@ export class AccountPicker extends Disposable {
 	}
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
-	private onAccountSelectionChange(account: data.Account) {
+	private onAccountSelectionChange(account: sqlops.Account) {
 		this.viewModel.selectedAccount = account;
 		if (account && account.isStale) {
 			this._refreshAccountAction.account = account;
@@ -194,7 +194,7 @@ export class AccountPicker extends Disposable {
 		return null;
 	}
 
-	private updateAccountList(accounts: data.Account[]): void {
+	private updateAccountList(accounts: sqlops.Account[]): void {
 		// keep the selection to the current one
 		let selectedElements = this._accountList.getSelectedElements();
 

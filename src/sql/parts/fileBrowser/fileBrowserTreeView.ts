@@ -79,7 +79,7 @@ export class FileBrowserTreeView {
 		}, {
 				indentPixels: 10,
 				twistiePixels: 12,
-				ariaLabel: nls.localize({ key: 'regTreeAriaLabel', comment: ['FileBrowserTree'] }, 'File browser tree')
+				ariaLabel: nls.localize({ key: 'fileBrowser.regTreeAriaLabel', comment: ['FileBrowserTree'] }, 'File browser tree')
 			});
 	}
 

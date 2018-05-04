@@ -156,6 +156,8 @@ class Query {
 	get sortBy(): number { return this.state.sortBy; }
 	get sortOrder(): number { return this.state.sortOrder; }
 	get flags(): number { return this.state.flags; }
+	// {{SQL CARBON EDIT}}
+	get criteria(): ICriterium[] { return this.state.criteria ? this.state.criteria : []; }
 
 	withPage(pageNumber: number, pageSize: number = this.state.pageSize): Query {
 		return new Query(assign({}, this.state, { pageNumber, pageSize }));
@@ -238,6 +240,13 @@ function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IG
 			return { uri, fallbackUri: uri };
 		}
 
+		if (type === AssetType.Repository) {
+			return {
+				uri: null,
+				fallbackUri: null
+			};
+		}
+
 		return null;
 	}
 
@@ -261,8 +270,6 @@ function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IG
 			fallbackUri: `${version.fallbackAssetUri}/${type}`
 		};
 	}
-
-
 }
 
 function getDependencies(version: IRawGalleryExtensionVersion): string[] {
@@ -428,7 +435,9 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 
 		return this.queryGallery(query).then(({ galleryExtensions, total }) => {
 			const extensions = galleryExtensions.map((e, index) => toExtension(e, this.extensionsGalleryUrl, index, query, options.source));
-			const pageSize = query.pageSize;
+
+			// {{SQL CARBON EDIT}}
+			const pageSize = extensions.length;
 			const getPage = (pageIndex: number) => {
 				const nextPageQuery = query.withPage(pageIndex + 1);
 				return this.queryGallery(nextPageQuery)
@@ -437,6 +446,80 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 
 			return { firstPage: extensions, total, pageSize, getPage };
 		});
+	}
+
+	// {{SQL CARBON EDIT}}
+	/**
+	 * The result of querying the gallery returns all the extensions because it's only reading a static file.
+	 * So this method should apply all the filters and return the actual result
+	 * @param query
+	 * @param galleryExtensions
+	 */
+	private createQueryResult(query: Query, galleryExtensions: IRawGalleryExtension[]): { galleryExtensions: IRawGalleryExtension[], total: number; } {
+
+		// Filtering
+		let filteredExtensions = galleryExtensions;
+		if (query.criteria) {
+			const ids = query.criteria.filter(x => x.filterType === FilterType.ExtensionId).map(v => v.value.toLocaleLowerCase());
+			if (ids && ids.length > 0) {
+				filteredExtensions = filteredExtensions.filter(e => e.extensionId && ids.includes(e.extensionId.toLocaleLowerCase()));
+			}
+			const names = query.criteria.filter(x => x.filterType === FilterType.ExtensionName).map(v => v.value.toLocaleLowerCase());
+			if (names && names.length > 0) {
+				filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && names.includes(`${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
+			}
+			const searchTexts = query.criteria.filter(x => x.filterType === FilterType.SearchText).map(v => v.value.toLocaleLowerCase());
+			if (searchTexts && searchTexts.length > 0) {
+				searchTexts.forEach(searchText => {
+					if (searchText !== '@allmarketplace') {
+						filteredExtensions = filteredExtensions.filter(
+							e => 	e.extensionName && e.extensionName.includes(searchText) ||
+									e.publisher && e.publisher.publisherName && e.publisher.publisherName.includes(searchText) ||
+									e.publisher && e.publisher.displayName && e.publisher.displayName.includes(searchText) ||
+									e.displayName && e.displayName.includes(searchText) ||
+									e.shortDescription && e.shortDescription.includes(searchText) ||
+									e.extensionId && e.extensionId.includes(searchText)
+						);
+					}
+				});
+			}
+		}
+
+		// Sorting
+		switch (query.sortBy) {
+			case SortBy.PublisherName:
+				filteredExtensions.sort( (a, b) => ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'));
+				break;
+			case SortBy.Title:
+			default:
+				filteredExtensions.sort( (a, b) => ExtensionGalleryService.compareByField(a, b, 'displayName'));
+				break;
+		}
+
+		let actualTotal = filteredExtensions.length;
+		return { galleryExtensions: filteredExtensions, total: actualTotal };
+	}
+
+	public static compareByField(a: any, b: any, fieldName: string): number {
+		if (a && !b) {
+			return 1;
+		}
+		if (b && !a) {
+			return -1;
+		}
+		if (a && a[fieldName] && (!b || !b[fieldName])) {
+			return 1;
+		}
+		if (b && b[fieldName] && (!a || !a[fieldName])) {
+			return -1;
+		}
+		if (!b || !b[fieldName] && (!a || !a[fieldName])) {
+			return 0;
+		}
+		if (a[fieldName] ===  b[fieldName]) {
+			return 0;
+		}
+		return a[fieldName] < b[fieldName] ? -1 : 1;
 	}
 
 	private queryGallery(query: Query): TPromise<{ galleryExtensions: IRawGalleryExtension[], total: number; }> {
@@ -467,7 +550,10 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0];
 					const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0;
 
-					return { galleryExtensions, total };
+					// {{SQL CARBON EDIT}}
+					let filteredExtensionsResult = this.createQueryResult(query, galleryExtensions);
+
+					return { galleryExtensions: filteredExtensionsResult.galleryExtensions, total: filteredExtensionsResult.total };
 				});
 			});
 		});
@@ -653,7 +739,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 						"galleryService:requestError" : {
 							"url" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 							"cdn": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-							"message": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+							"message": { "classification": "CallstackOrException", "purpose": "FeatureInsight" }
 						}
 					*/
 					this.telemetryService.publicLog('galleryService:requestError', { url, cdn: true, message });
@@ -676,7 +762,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 							"galleryService:requestError" : {
 								"url" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 								"cdn": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-								"message": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+								"message": { "classification": "CallstackOrException", "purpose": "FeatureInsight" }
 							}
 						*/
 						this.telemetryService.publicLog('galleryService:requestError', { url: fallbackUrl, cdn: false, message });

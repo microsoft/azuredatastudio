@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as data from 'data';
 import Event, { Emitter } from 'vs/base/common/event';
 
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';

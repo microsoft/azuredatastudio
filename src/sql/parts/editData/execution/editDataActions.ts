@@ -11,9 +11,13 @@ import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
-import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import nls = require('vs/nls');
 import * as dom from 'vs/base/browser/dom';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { INotificationService, INotificationActions } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
+import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 const $ = dom.$;
 
 /**
@@ -65,10 +69,10 @@ export class RefreshTableAction extends EditDataAction {
 	constructor(editor: EditDataEditor,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService,
-		@IMessageService private _messageService: IMessageService
+		@INotificationService private _notificationService: INotificationService,
 	) {
 		super(editor, RefreshTableAction.ID, RefreshTableAction.EnabledClass, _connectionManagementService);
-		this.label = nls.localize('refresh', 'Refresh');
+		this.label = nls.localize('editData.refresh', 'Refresh');
 	}
 
 	public run(): TPromise<void> {
@@ -77,7 +81,10 @@ export class RefreshTableAction extends EditDataAction {
 			this._queryModelService.disposeEdit(input.uri).then((result) => {
 				this._queryModelService.initializeEdit(input.uri, input.schemaName, input.tableName, input.objectType, input.rowLimit);
 			}, error => {
-				this._messageService.show(Severity.Error, nls.localize('disposeEditFailure', 'Dispose Edit Failed With Error: ') + error);
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: nls.localize('disposeEditFailure', 'Dispose Edit Failed With Error: ') + error
+				});
 			});
 		}
 		return TPromise.as(null);
@@ -98,7 +105,7 @@ export class StopRefreshTableAction extends EditDataAction {
 	) {
 		super(editor, StopRefreshTableAction.ID, StopRefreshTableAction.EnabledClass, _connectionManagementService);
 		this.enabled = false;
-		this.label = nls.localize('stop', 'Stop');
+		this.label = nls.localize('editData.stop', 'Stop');
 	}
 
 	public run(): TPromise<void> {
@@ -147,12 +154,15 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 	private _options: string[];
 	private _currentOptionsIndex: number;
 
-	constructor(private _editor: EditDataEditor) {
+	constructor(
+		private _editor: EditDataEditor,
+		@IContextViewService contextViewService: IContextViewService,
+		@IThemeService private _themeService: IThemeService) {
 		super();
 		this._options = ['200', '1000', '10000'];
 		this._currentOptionsIndex = 0;
 		this.toDispose = [];
-		this.selectBox = new SelectBox([], -1);
+		this.selectBox = new SelectBox([], -1, contextViewService);
 		this._registerListeners();
 		this._refreshOptions();
 		this.defaultRowCount = Number(this._options[this._currentOptionsIndex]);
@@ -197,5 +207,6 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 			this._currentOptionsIndex = this._options.findIndex(x => x === selection.selected);
 			this._editor.editDataInput.onRowDropDownSet(Number(selection.selected));
 		}));
+		this.toDispose.push(attachSelectBoxStyler(this.selectBox, this._themeService));
 	}
 }

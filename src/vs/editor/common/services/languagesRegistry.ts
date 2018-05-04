@@ -14,7 +14,7 @@ import { LanguageId, LanguageIdentifier } from 'vs/editor/common/modes';
 import { NULL_MODE_ID, NULL_LANGUAGE_IDENTIFIER } from 'vs/editor/common/modes/nullMode';
 import { IConfigurationRegistry, Extensions } from 'vs/platform/configuration/common/configurationRegistry';
 
-var hasOwnProperty = Object.prototype.hasOwnProperty;
+const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 export interface IResolvedLanguage {
 	identifier: LanguageIdentifier;
@@ -128,7 +128,10 @@ export class LanguagesRegistry {
 		if (Array.isArray(lang.extensions)) {
 			for (let extension of lang.extensions) {
 				mime.registerTextMime({ id: langId, mime: primaryMime, extension: extension }, this._warnOnOverwrite);
-				resolvedLanguage.extensions.push(extension);
+				// {{SQL CARBON EDIT}}
+				if (!resolvedLanguage.extensions.includes(extension)) {
+					resolvedLanguage.extensions.push(extension);
+				}
 			}
 		}
 
@@ -299,7 +302,7 @@ export class LanguagesRegistry {
 		if (!filename && !firstLine) {
 			return [];
 		}
-		var mimeTypes = mime.guessMimeTypes(filename, firstLine);
+		let mimeTypes = mime.guessMimeTypes(filename, firstLine);
 		return this.extractModeIds(mimeTypes.join(','));
 	}
 

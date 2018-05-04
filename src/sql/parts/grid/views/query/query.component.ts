@@ -26,10 +26,12 @@ import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/
 import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { error } from 'sql/base/common/log';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { clone } from 'sql/base/common/objects';
 
 import * as strings from 'vs/base/common/strings';
-import { clone } from 'sql/base/common/objects';
 import * as DOM from 'vs/base/browser/dom';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const QUERY_SELECTOR: string = 'query-component';
 
@@ -129,10 +131,12 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	private messages: IMessage[] = [];
 	private messageStore: IMessage[] = [];
 	private messageTimeout: number;
+	private lastMessageHandleTime: number = 0;
 	private scrollTimeOut: number;
 	private resizing = false;
 	private resizeHandleTop: string = '0';
 	private scrollEnabled = true;
+	private rowHeight: number;
 	// tslint:disable-next-line:no-unused-variable
 	private firstRender = true;
 	private totalElapsedTimeSpan: number;
@@ -143,13 +147,15 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	public queryExecutionStatus: EventEmitter<string> = new EventEmitter<string>();
 	public queryPlanAvailable: EventEmitter<string> = new EventEmitter<string>();
 	public showChartRequested: EventEmitter<IGridDataSet> = new EventEmitter<IGridDataSet>();
+	public goToNextQueryOutputTabRequested: EventEmitter<void> = new EventEmitter<void>();
 
 	@Input() public queryParameters: QueryComponentParams;
 
 	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
 	// tslint:disable-next-line:no-unused-variable
 	@ViewChild('resultsPane', { read: ElementRef }) private _resultsPane: ElementRef;
-
+	@ViewChild('queryLink', { read: ElementRef }) private _queryLinkElement: ElementRef;
+	@ViewChild('messagesContainer', { read: ElementRef }) private _messagesContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
@@ -157,6 +163,16 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	) {
 		super(el, cd, bootstrapService);
 		this._el.nativeElement.className = 'slickgridContainer';
+		this.rowHeight = bootstrapService.configurationService.getValue<any>('resultsGrid').rowHeight;
+		bootstrapService.configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('resultsGrid')) {
+				this.rowHeight = bootstrapService.configurationService.getValue<any>('resultsGrid').rowHeight;
+				this.slickgrids.forEach(i => {
+					i.rowHeight = this.rowHeight;
+				});
+				this.resizeGrids();
+			}
+		});
 	}
 
 	/**
@@ -233,13 +249,28 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 
 	handleMessage(self: QueryComponent, event: any): void {
 		self.messageStore.push(event.data);
-		clearTimeout(self.messageTimeout);
+		// Ensure that messages are updated at least every 10 seconds during long-running queries
+		if (self.messageTimeout !== undefined && Date.now() - self.lastMessageHandleTime < 10000) {
+			clearTimeout(self.messageTimeout);
+		} else {
+			self.lastMessageHandleTime = Date.now();
+		}
 		self.messageTimeout = setTimeout(() => {
-			self.messages = self.messages.concat(self.messageStore);
-			self.messageStore = [];
+			while (self.messageStore.length > 0) {
+				let lastMessage = self.messages.length > 0 ? self.messages[self.messages.length - 1] : undefined;
+				let nextMessage = self.messageStore[0];
+				// If the next message has the same metadata as the previous one, just append its text to avoid rendering an entirely new message
+				if (lastMessage !== undefined && lastMessage.batchId === nextMessage.batchId && lastMessage.isError === nextMessage.isError
+					&& lastMessage.link === nextMessage.link && lastMessage.link === undefined) {
+					lastMessage.message += '\n' + nextMessage.message;
+				} else {
+					self.messages.push(nextMessage);
+				}
+				self.messageStore = self.messageStore.slice(1);
+			}
 			self._cd.detectChanges();
 			self.scrollMessages();
-		}, 10);
+		}, 100);
 	}
 
 	handleResultSet(self: QueryComponent, event: any): void {
@@ -393,6 +424,16 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		this.dataService.setEditorSelection(index);
 	}
 
+	onKey(e: Event, index: number) {
+		if (DOM.isAncestor(<HTMLElement>e.target, this._queryLinkElement.nativeElement) && e instanceof KeyboardEvent) {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Enter)) {
+				this.onSelectionLinkClicked(index);
+				e.stopPropagation();
+			}
+		}
+	}
+
 	/**
 	 * Sets up the resize for the messages/results panes bar
 	 */
@@ -501,7 +542,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	 */
 	navigateToGrid(targetIndex: number): boolean {
 		// check if the target index is valid
-		if (targetIndex >= this.renderedDataSets.length || targetIndex < 0 || !this.hasFocus()) {
+		if (targetIndex >= this.renderedDataSets.length || !this.hasFocus()) {
 			return false;
 		}
 
@@ -554,16 +595,36 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		}
 	}
 
+	protected goToNextQueryOutputTab(): void {
+		this.goToNextQueryOutputTabRequested.emit();
+	}
+
+	protected toggleResultPane(): void {
+		this.resultActive = !this.resultActive;
+		this._cd.detectChanges();
+		if (this.resultActive) {
+			this.resizeGrids();
+			this.slickgrids.toArray()[this.activeGrid].setActive();
+		}
+	}
+
+	protected toggleMessagePane(): void {
+		this.messageActive = !this.messageActive;
+		this._cd.detectChanges();
+		if (this.messageActive && this._messagesContainer) {
+			let header = <HTMLElement>this._messagesContainer.nativeElement;
+			header.focus();
+		}
+	}
+
 	/* Helper function to toggle messages and results panes */
 	// tslint:disable-next-line:no-unused-variable
 	private togglePane(pane: PaneType): void {
 		if (pane === 'messages') {
-			this._messageActive = !this._messageActive;
+			this.toggleMessagePane();
 		} else if (pane === 'results') {
-			this.resultActive = !this.resultActive;
+			this.toggleResultPane();
 		}
-		this._cd.detectChanges();
-		this.resizeGrids();
 	}
 
 	layout() {

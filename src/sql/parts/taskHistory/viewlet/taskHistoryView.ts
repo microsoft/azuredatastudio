@@ -94,7 +94,7 @@ export class TaskHistoryView {
 		}, {
 				indentPixels: 10,
 				twistiePixels: 20,
-				ariaLabel: nls.localize({ key: 'regTreeAriaLabel', comment: ['TaskHistory'] }, 'Task history')
+				ariaLabel: nls.localize({ key: 'taskHistory.regTreeAriaLabel', comment: ['TaskHistory'] }, 'Task history')
 			});
 	}
 

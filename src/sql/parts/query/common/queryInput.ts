@@ -12,7 +12,7 @@ import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import Event, { Emitter } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
-import { ISelectionData, ExecutionPlanOptions } from 'data';
+import { ISelectionData, ExecutionPlanOptions } from 'sqlops';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 
 /**
@@ -136,7 +136,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public resolve(refresh?: boolean): TPromise<EditorModel> { return this._sql.resolve(); }
 	public save(): TPromise<boolean> { return this._sql.save(); }
 	public isDirty(): boolean { return this._sql.isDirty(); }
-	public confirmSave(): ConfirmResult { return this._sql.confirmSave(); }
+	public confirmSave(): TPromise<ConfirmResult>  { return this._sql.confirmSave(); }
 	public getResource(): URI { return this._sql.getResource(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }
 	public suggestFileName(): string { return this._sql.suggestFileName(); }

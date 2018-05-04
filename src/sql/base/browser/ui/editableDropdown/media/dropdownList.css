@@ -23,7 +23,19 @@
 }
 
 .dropdown-tree .list-row {
-	margin-left: -33px;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.dropdown-tree .content {
+	width: 100%;
+}
+
+.dropdown-tree .list-row .label {
+	width: 100%;
+	display: inline-block;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .connection-input .dropdown .monaco-action-bar .action-label.icon.dropdown-arrow {

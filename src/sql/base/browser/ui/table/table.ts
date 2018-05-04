@@ -14,6 +14,7 @@ import { mixin } from 'vs/base/common/objects';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { Dimension } from 'vs/base/browser/builder';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
+import { Widget } from 'vs/base/browser/ui/widget';
 
 export interface ITableStyles extends IListStyles {
 	tableHeaderBackground?: Color;
@@ -27,18 +28,22 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	};
 }
 
-export class Table<T extends Slick.SlickData> implements IThemable {
+export class Table<T extends Slick.SlickData> extends Widget implements IThemable {
+	private styleElement: HTMLStyleElement;
+	private idPrefix: string;
+
 	private _grid: Slick.Grid<T>;
 	private _columns: Slick.Column<T>[];
 	private _data: TableDataView<T>;
-	private _styleElement: HTMLStyleElement;
-	private _idPrefix: string;
 	private _autoscroll: boolean;
 	private _onRowCountChangeListener: IDisposable;
 	private _container: HTMLElement;
 	private _tableContainer: HTMLElement;
 
+	private _classChangeTimeout: number;
+
 	constructor(parent: HTMLElement, data?: Array<T> | TableDataView<T>, columns?: Slick.Column<T>[], options?: Slick.GridOptions<T>) {
+		super();
 		if (data instanceof TableDataView) {
 			this._data = data;
 		} else {
@@ -55,13 +60,28 @@ export class Table<T extends Slick.SlickData> implements IThemable {
 
 		this._container = document.createElement('div');
 		this._container.className = 'monaco-table';
+		this._register(DOM.addDisposableListener(this._container, DOM.EventType.FOCUS, () => {
+			clearTimeout(this._classChangeTimeout);
+			this._classChangeTimeout = setTimeout(() => {
+				DOM.addClass(this._container, 'focused');
+			}, 100);
+		}, true));
+
+		this._register(DOM.addDisposableListener(this._container, DOM.EventType.BLUR, () => {
+			clearTimeout(this._classChangeTimeout);
+			this._classChangeTimeout = setTimeout(() => {
+				DOM.removeClass(this._container, 'focused');
+			}, 100);
+		}, true));
+
 		parent.appendChild(this._container);
-		this._styleElement = DOM.createStyleSheet(this._container);
+		this.styleElement = DOM.createStyleSheet(this._container);
 		this._tableContainer = document.createElement('div');
 		this._container.appendChild(this._tableContainer);
-		this._styleElement = DOM.createStyleSheet(this._container);
+		this.styleElement = DOM.createStyleSheet(this._container);
 		this._grid = new Slick.Grid<T>(this._tableContainer, this._data, this._columns, newOptions);
-		this._idPrefix = this._tableContainer.classList[0];
+		this.idPrefix = this._tableContainer.classList[0];
+		DOM.addClass(this._container, this.idPrefix);
 		this._onRowCountChangeListener = this._data.onRowCountChange(() => this._handleRowCountChange());
 		this._grid.onSort.subscribe((e, args) => {
 			this._data.sort(args);
@@ -111,8 +131,8 @@ export class Table<T extends Slick.SlickData> implements IThemable {
 		return this._grid.getSelectedRows();
 	}
 
-	onSelectedRowsChanged(fn: (e: Slick.EventData, data: Slick.OnSelectedRowsChangedEventArgs<T>) => any): IDisposable
-	onSelectedRowsChanged(fn: (e: DOMEvent, data: Slick.OnSelectedRowsChangedEventArgs<T>) => any): IDisposable
+	onSelectedRowsChanged(fn: (e: Slick.EventData, data: Slick.OnSelectedRowsChangedEventArgs<T>) => any): IDisposable;
+	onSelectedRowsChanged(fn: (e: DOMEvent, data: Slick.OnSelectedRowsChangedEventArgs<T>) => any): IDisposable;
 	onSelectedRowsChanged(fn: any): IDisposable {
 		this._grid.onSelectedRowsChanged.subscribe(fn);
 		return {
@@ -164,8 +184,8 @@ export class Table<T extends Slick.SlickData> implements IThemable {
 		this._grid.resizeCanvas();
 	}
 
-	layout(dimension: Dimension): void
-	layout(size: number, orientation: Orientation): void
+	layout(dimension: Dimension): void;
+	layout(size: number, orientation: Orientation): void;
 	layout(sizing: number | Dimension, orientation?: Orientation): void {
 		if (sizing instanceof Dimension) {
 			this._container.style.width = sizing.width + 'px';
@@ -200,78 +220,77 @@ export class Table<T extends Slick.SlickData> implements IThemable {
 		const content: string[] = [];
 
 		if (styles.tableHeaderBackground) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-header .slick-header-column { background-color: ${styles.tableHeaderBackground}; }`);
+			content.push(`.monaco-table .${this.idPrefix} .slick-header .slick-header-column { background-color: ${styles.tableHeaderBackground}; }`);
 		}
 
 		if (styles.tableHeaderForeground) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-header .slick-header-column { color: ${styles.tableHeaderForeground}; }`);
+			content.push(`.monaco-table .${this.idPrefix} .slick-header .slick-header-column { color: ${styles.tableHeaderForeground}; }`);
 		}
 
 		if (styles.listFocusBackground) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-row .active { background-color: ${styles.listFocusBackground}; }`);
+			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .active { background-color: ${styles.listFocusBackground}; }`);
+			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .active:hover { background-color: ${styles.listFocusBackground}; }`); // overwrite :hover style in this case!
 		}
 
 		if (styles.listFocusForeground) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-row .active { color: ${styles.listFocusForeground}; }`);
+			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .active { color: ${styles.listFocusForeground}; }`);
 		}
 
 		if (styles.listActiveSelectionBackground) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-row .selected { background-color: ${styles.listActiveSelectionBackground}; }`);
-			content.push(`.monaco-table .${this._idPrefix} .slick-row .selected:hover { background-color: ${styles.listActiveSelectionBackground}; }`); // overwrite :hover style in this case!
+			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .selected { background-color: ${styles.listActiveSelectionBackground}; }`);
+			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .selected:hover { background-color: ${styles.listActiveSelectionBackground}; }`); // overwrite :hover style in this case!
 		}
 
 		if (styles.listActiveSelectionForeground) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-row .selected { color: ${styles.listActiveSelectionForeground}; }`);
+			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .selected { color: ${styles.listActiveSelectionForeground}; }`);
 		}
 
 		if (styles.listFocusAndSelectionBackground) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-row .selected.active { background-color: ${styles.listFocusAndSelectionBackground}; }`);
+			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .selected.active { background-color: ${styles.listFocusAndSelectionBackground}; }`);
 		}
 
 		if (styles.listFocusAndSelectionForeground) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-row .selected.active { color: ${styles.listFocusAndSelectionForeground}; }`);
+			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .selected.active { color: ${styles.listFocusAndSelectionForeground}; }`);
 		}
 
-		/* Commented out andresse 8/17/2017; keeping for reference as we iterate on the table styling */
-		// if (styles.listInactiveFocusBackground) {
-		// 	content.push(`.monaco-table .${this._idPrefix} .slick-row.focused { background-color:  ${styles.listInactiveFocusBackground}; }`);
-		// 	content.push(`.monaco-table .${this._idPrefix} .slick-row.focused:hover { background-color:  ${styles.listInactiveFocusBackground}; }`); // overwrite :hover style in this case!
-		// }
+		if (styles.listInactiveFocusBackground) {
+			content.push(`.monaco-table.${this.idPrefix} .slick-row .selected.active { background-color:  ${styles.listInactiveFocusBackground}; }`);
+			content.push(`.monaco-table.${this.idPrefix} .slick-row .selected.active:hover { background-color:  ${styles.listInactiveFocusBackground}; }`); // overwrite :hover style in this case!
+		}
 
-		// if (styles.listInactiveSelectionBackground) {
-		// 	content.push(`.monaco-table .${this._idPrefix} .slick-row .selected { background-color:  ${styles.listInactiveSelectionBackground}; }`);
-		// 	content.push(`.monaco-table .${this._idPrefix} .slick-row .selected:hover { background-color:  ${styles.listInactiveSelectionBackground}; }`); // overwrite :hover style in this case!
-		// }
+		if (styles.listInactiveSelectionBackground) {
+			content.push(`.monaco-table.${this.idPrefix} .slick-row .selected { background-color:  ${styles.listInactiveSelectionBackground}; }`);
+			content.push(`.monaco-table.${this.idPrefix} .slick-row .selected:hover { background-color:  ${styles.listInactiveSelectionBackground}; }`); // overwrite :hover style in this case!
+		}
 
-		// if (styles.listInactiveSelectionForeground) {
-		// 	content.push(`.monaco-table .${this._idPrefix} .slick-row .selected { color: ${styles.listInactiveSelectionForeground}; }`);
-		// }
+		if (styles.listInactiveSelectionForeground) {
+			content.push(`.monaco-table.${this.idPrefix} .slick-row .selected { color: ${styles.listInactiveSelectionForeground}; }`);
+		}
 
 		if (styles.listHoverBackground) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-row:hover { background-color:  ${styles.listHoverBackground}; }`);
+			content.push(`.monaco-table.${this.idPrefix} .slick-row:hover { background-color:  ${styles.listHoverBackground}; }`);
 		}
 
 		if (styles.listHoverForeground) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-row:hover { color:  ${styles.listHoverForeground}; }`);
+			content.push(`.monaco-table.${this.idPrefix} .slick-row:hover { color:  ${styles.listHoverForeground}; }`);
 		}
 
 		if (styles.listSelectionOutline) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-row .selected { outline: 1px dotted ${styles.listSelectionOutline}; outline-offset: -1px; }`);
+			content.push(`.monaco-table.${this.idPrefix} .slick-row .selected.active { outline: 1px dotted ${styles.listSelectionOutline}; outline-offset: -1px; }`);
 		}
 
-		/* Commented out andresse 8/17/2017; keeping for reference as we iterate on the table styling */
-		// if (styles.listFocusOutline) {
-		// 	content.push(`.monaco-table .${this._idPrefix}:focus .slick-row.focused { outline: 1px solid ${styles.listFocusOutline}; outline-offset: -1px; }`);
-		// }
+		if (styles.listFocusOutline) {
+			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .selected { outline: 1px solid ${styles.listFocusOutline}; outline-offset: -1px; }`);
+		}
 
-		// if (styles.listInactiveFocusOutline) {
-		// 	content.push(`.monaco-table .${this._idPrefix} .slick-row.focused { outline: 1px dotted ${styles.listInactiveFocusOutline}; outline-offset: -1px; }`);
-		// }
+		if (styles.listInactiveFocusOutline) {
+			content.push(`.monaco-table.${this.idPrefix} .slick-row .selected .active { outline: 1px dotted ${styles.listInactiveFocusOutline}; outline-offset: -1px; }`);
+		}
 
 		if (styles.listHoverOutline) {
-			content.push(`.monaco-table .${this._idPrefix} .slick-row:hover { outline: 1px dashed ${styles.listHoverOutline}; outline-offset: -1px; }`);
+			content.push(`.monaco-table.${this.idPrefix} .slick-row:hover { outline: 1px dashed ${styles.listHoverOutline}; outline-offset: -1px; }`);
 		}
 
-		this._styleElement.innerHTML = content.join('\n');
+		this.styleElement.innerHTML = content.join('\n');
 	}
 }

@@ -14,23 +14,30 @@ import product from 'vs/platform/node/product';
 
 export function resolveCommonProperties(commit: string, version: string, machineId: string, installSourcePath: string): TPromise<{ [name: string]: string; }> {
 	const result: { [name: string]: string; } = Object.create(null);
-	// __GDPR__COMMON__ "common.machineId" : { "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }
-	result['common.machineId'] = machineId;
-	// __GDPR__COMMON__ "sessionID" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-	result['sessionID'] = uuid.generateUuid() + Date.now();
+
+	// {{SQL CARBON EDIT}}
+	// __GDPR__COMMON__ "common.machineId" : { "endPoint": "MacAddressHash", "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }
+	// result['common.machineId'] = machineId;
+	result['common.machineId'] = '';
+	// // __GDPR__COMMON__ "sessionID" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+	// result['sessionID'] = uuid.generateUuid() + Date.now();
+	result['sessionID'] = '';
+
 	// __GDPR__COMMON__ "commitHash" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	result['commitHash'] = commit;
 	// __GDPR__COMMON__ "version" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	result['version'] = version;
-	// __GDPR__COMMON__ "common.osVersion" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-	result['common.osVersion'] = os.release();
+	// __GDPR__COMMON__ "common.platformVersion" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+	result['common.platformVersion'] = (os.release() || '').replace(/^(\d+)(\.\d+)?(\.\d+)?(.*)/, '$1$2$3');
+	// __GDPR__COMMON__ "common.osVersion" : { "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }
+	result['common.osVersion'] = result['common.platformVersion']; // TODO: Drop this after the move to Nova
 	// __GDPR__COMMON__ "common.platform" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	result['common.platform'] = Platform.Platform[Platform.platform];
 	// __GDPR__COMMON__ "common.nodePlatform" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	result['common.nodePlatform'] = process.platform;
 	// __GDPR__COMMON__ "common.nodeArch" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	result['common.nodeArch'] = process.arch;
-	
+
 	// {{SQL CARBON EDIT}}
 	result['common.application.name'] = product.nameLong;
 

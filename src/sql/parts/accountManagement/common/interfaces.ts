@@ -7,7 +7,7 @@
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import Event from 'vs/base/common/event';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
@@ -26,7 +26,7 @@ export interface IResourceProviderService {
 	/**
 	 * Register a resource provider
 	 */
-	registerProvider(providerId: string, provider: data.ResourceProvider): void;
+	registerProvider(providerId: string, provider: sqlops.ResourceProvider): void;
 
 	/**
 	 * Unregister a resource provider
@@ -36,7 +36,7 @@ export interface IResourceProviderService {
 	/**
 	 * Create a firewall rule
 	 */
-	createFirewallRule(selectedAccount: data.Account, firewallruleInfo: data.FirewallRuleInfo, resourceProviderId: string): Promise<data.CreateFirewallRuleResponse>;
+	createFirewallRule(selectedAccount: sqlops.Account, firewallruleInfo: sqlops.FirewallRuleInfo, resourceProviderId: string): Promise<sqlops.CreateFirewallRuleResponse>;
 
 	/**
 	 * handle a firewall rule
@@ -56,6 +56,6 @@ export interface IAccountPickerService {
 	addAccountCompleteEvent: Event<void>;
 	addAccountErrorEvent: Event<string>;
 	addAccountStartEvent: Event<void>;
-	onAccountSelectionChangeEvent: Event<data.Account>;
-	selectedAccount: data.Account;
+	onAccountSelectionChangeEvent: Event<sqlops.Account>;
+	selectedAccount: sqlops.Account;
 }

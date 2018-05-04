@@ -8,12 +8,15 @@
 
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile, IConnectionProfileStore } from 'sql/parts/connection/common/interfaces';
-import data = require('data');
+import * as sqlops from 'sqlops';
 import * as assert from 'assert';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 suite('SQL ConnectionProfileInfo tests', () => {
-	let msSQLCapabilities: data.DataProtocolServerCapabilities;
+	let msSQLCapabilities: ConnectionProviderProperties;
+	let capabilitiesService: CapabilitiesTestService;
 
 	let connectionProfile: IConnectionProfile = {
 		serverName: 'new server',
@@ -47,84 +50,79 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	};
 
 	setup(() => {
-		let capabilities: data.DataProtocolServerCapabilities[] = [];
-		let connectionProvider: data.ConnectionProviderOptions = {
-			options: [
-				{
-					name: 'serverName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.serverName,
-					valueType: 0
-				},
-				{
-					name: 'databaseName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.databaseName,
-					valueType: 0
-				},
-				{
-					name: 'userName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.userName,
-					valueType: 0
-				},
-				{
-					name: 'authenticationType',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.authType,
-					valueType: 0
-				},
-				{
-					name: 'password',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
-					isIdentity: true,
-					isRequired: true,
-					specialValueType: ConnectionOptionSpecialType.password,
-					valueType: 0
-				}
-			]
-		};
+		let connectionProvider: sqlops.ConnectionOption[] = [
+			{
+				name: 'serverName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.serverName,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'databaseName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.databaseName,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'userName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.userName,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'authenticationType',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.authType,
+				valueType: ServiceOptionType.string
+			},
+			{
+				name: 'password',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.password,
+				valueType: ServiceOptionType.string
+			}
+		];
 		msSQLCapabilities = {
-			protocolVersion: '1',
-			providerName: 'MSSQL',
-			providerDisplayName: 'MSSQL',
-			connectionProvider: connectionProvider,
-			adminServicesProvider: undefined,
-			features: undefined
+			providerId: 'MSSQL',
+			displayName: 'MSSQL',
+			connectionOptions: connectionProvider
 		};
-		capabilities.push(msSQLCapabilities);
+		capabilitiesService = new CapabilitiesTestService();
+		capabilitiesService.capabilities['MSSQL'] = { connection: msSQLCapabilities };
 	});
 
 	test('set properties should set the values correctly', () => {
-		let conn = new ConnectionProfile(msSQLCapabilities, undefined);
+		let conn = new ConnectionProfile(capabilitiesService, undefined);
 		assert.equal(conn.serverName, undefined);
 		conn.serverName = connectionProfile.serverName;
 		conn.databaseName = connectionProfile.databaseName;
@@ -145,7 +143,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	});
 
 	test('constructor should initialize the options given a valid model', () => {
-		let conn = new ConnectionProfile(msSQLCapabilities, connectionProfile);
+		let conn = new ConnectionProfile(capabilitiesService, connectionProfile);
 
 		assert.equal(conn.serverName, connectionProfile.serverName);
 		assert.equal(conn.databaseName, connectionProfile.databaseName);
@@ -158,7 +156,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	});
 
 	test('getOptionsKey should create a valid unique id', () => {
-		let conn = new ConnectionProfile(msSQLCapabilities, connectionProfile);
+		let conn = new ConnectionProfile(capabilitiesService, connectionProfile);
 		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user|databaseDisplayName:database|group:group id';
 		let id = conn.getOptionsKey();
 		assert.equal(id, expectedId);
@@ -166,7 +164,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 
 	test('createFromStoredProfile should create connection profile from stored profile', () => {
 		let savedProfile = storedProfile;
-		let connectionProfile = ConnectionProfile.createFromStoredProfile(savedProfile, msSQLCapabilities);
+		let connectionProfile = ConnectionProfile.createFromStoredProfile(savedProfile, capabilitiesService);
 		assert.equal(savedProfile.groupId, connectionProfile.groupId);
 		assert.deepEqual(savedProfile.providerName, connectionProfile.providerName);
 		assert.deepEqual(savedProfile.savePassword, connectionProfile.savePassword);
@@ -175,7 +173,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 
 	test('createFromStoredProfile should set the id to new guid if not set in stored profile', () => {
 		let savedProfile = Object.assign({}, storedProfile, { id: undefined });
-		let connectionProfile = ConnectionProfile.createFromStoredProfile(savedProfile, msSQLCapabilities);
+		let connectionProfile = ConnectionProfile.createFromStoredProfile(savedProfile, capabilitiesService);
 		assert.equal(savedProfile.groupId, connectionProfile.groupId);
 		assert.deepEqual(savedProfile.providerName, connectionProfile.providerName);
 		assert.equal(savedProfile.savePassword, connectionProfile.savePassword);
@@ -184,20 +182,20 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	});
 
 	test('withoutPassword should create a new instance without password', () => {
-		let conn = new ConnectionProfile(msSQLCapabilities, connectionProfile);
+		let conn = new ConnectionProfile(capabilitiesService, connectionProfile);
 		assert.notEqual(conn.password, '');
 		let withoutPassword = conn.withoutPassword();
 		assert.equal(withoutPassword.password, '');
 	});
 
 	test('unique id should not include password', () => {
-		let conn = new ConnectionProfile(msSQLCapabilities, connectionProfile);
+		let conn = new ConnectionProfile(capabilitiesService, connectionProfile);
 		let withoutPassword = conn.withoutPassword();
 		assert.equal(withoutPassword.getOptionsKey(), conn.getOptionsKey());
 	});
 
 	test('cloneWithDatabase should create new profile with new id', () => {
-		let conn = new ConnectionProfile(msSQLCapabilities, connectionProfile);
+		let conn = new ConnectionProfile(capabilitiesService, connectionProfile);
 		let newProfile = conn.cloneWithDatabase('new db');
 		assert.notEqual(newProfile.id, conn.id);
 		assert.equal(newProfile.databaseName, 'new db');

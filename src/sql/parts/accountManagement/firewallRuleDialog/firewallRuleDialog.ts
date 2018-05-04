@@ -21,7 +21,7 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { FirewallRuleViewModel } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleViewModel';
@@ -33,6 +33,11 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 // TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/sqlopsstudio/issues/450)
 // in case that other non-Azure sign in is to be used
 const firewallHelpUri = 'https://aka.ms/sqlopsfirewallhelp';
+
+const LocalizedStrings = {
+	FROM: localize('from', 'From'),
+	TO: localize('to', 'To')
+};
 
 export class FirewallRuleDialog extends Modal {
 	public viewModel: FirewallRuleViewModel;
@@ -92,8 +97,8 @@ export class FirewallRuleDialog extends Modal {
 		attachModalDialogStyler(this, this._themeService);
 		this.backButton.onDidClick(() => this.cancel());
 		this._register(attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
-		this._createButton = this.addFooterButton(localize('ok', 'OK'), () => this.createFirewallRule());
-		this._closeButton = this.addFooterButton(localize('cancel', 'Cancel'), () => this.cancel());
+		this._createButton = this.addFooterButton(localize('firewall.ok', 'OK'), () => this.createFirewallRule());
+		this._closeButton = this.addFooterButton(localize('firewall.cancel', 'Cancel'), () => this.cancel());
 		this.registerListeners();
 	}
 
@@ -140,19 +145,23 @@ export class FirewallRuleDialog extends Modal {
 			subnetIPRangeSection = subnetIPRangeContainer.getHTMLElement();
 			subnetIPRangeContainer.div({ 'class': 'dialog-input-section' }, (inputContainer) => {
 				inputContainer.div({ 'class': 'dialog-label' }, (labelContainer) => {
-					labelContainer.innerHtml(localize('from', 'From'));
+					labelContainer.innerHtml(LocalizedStrings.FROM);
 				});
 
 				inputContainer.div({ 'class': 'dialog-input' }, (inputCellContainer) => {
-					this._fromRangeinputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService);
+					this._fromRangeinputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService, {
+						ariaLabel: LocalizedStrings.FROM
+					});
 				});
 
 				inputContainer.div({ 'class': 'dialog-label' }, (labelContainer) => {
-					labelContainer.innerHtml(localize('to', 'To'));
+					labelContainer.innerHtml(LocalizedStrings.TO);
 				});
 
 				inputContainer.div({ 'class': 'dialog-input' }, (inputCellContainer) => {
-					this._toRangeinputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService);
+					this._toRangeinputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService, {
+						ariaLabel: LocalizedStrings.TO
+					});
 				});
 			});
 		});
@@ -291,7 +300,7 @@ export class FirewallRuleDialog extends Modal {
 		}
 	}
 
-	public onAccountSelectionChange(account: data.Account): void {
+	public onAccountSelectionChange(account: sqlops.Account): void {
 		this.viewModel.selectedAccount = account;
 		if (account && !account.isStale) {
 			this._createButton.enabled = true;

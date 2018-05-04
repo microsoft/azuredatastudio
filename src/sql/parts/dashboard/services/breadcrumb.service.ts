@@ -7,6 +7,7 @@ import { Injectable, forwardRef, Inject, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
 import { DashboardServiceInterface } from './dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { MenuItem, IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 
@@ -19,14 +20,15 @@ export enum BreadcrumbClass {
 };
 
 @Injectable()
-export class BreadcrumbService implements IBreadcrumbService, OnDestroy {
+export class BreadcrumbService implements IBreadcrumbService {
 	public breadcrumbItem: Subject<MenuItem[]>;
 	private itemBreadcrums: MenuItem[];
-	private _disposables: IDisposable[] = [];
 	private _currentPage: BreadcrumbClass;
+	private _bootstrap: DashboardServiceInterface;
 
-	constructor( @Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrap: DashboardServiceInterface) {
-		_bootstrap.onUpdatePage(() => {
+	constructor( @Inject(forwardRef(() => CommonServiceInterface)) private commonService: CommonServiceInterface) {
+		this._bootstrap = commonService as DashboardServiceInterface;
+		this._bootstrap.onUpdatePage(() => {
 			this.setBreadcrumbs(this._currentPage);
 		});
 		this.breadcrumbItem = new Subject<MenuItem[]>();
@@ -42,7 +44,7 @@ export class BreadcrumbService implements IBreadcrumbService, OnDestroy {
 	private getBreadcrumbsLink(page: BreadcrumbClass): MenuItem[] {
 		this.itemBreadcrums = [];
 		let profile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
-		this.itemBreadcrums.push({ label: nls.localize('homeCrumb', 'Home')});
+		this.itemBreadcrums.push({ label: nls.localize('homeCrumb', 'Home') });
 		switch (page) {
 			case BreadcrumbClass.DatabasePage:
 				this.itemBreadcrums.push(this.getServerBreadcrumb(profile));
@@ -66,9 +68,5 @@ export class BreadcrumbService implements IBreadcrumbService, OnDestroy {
 			label: profile.databaseName ? profile.databaseName : 'database-name',
 			routerLink: ['database-dashboard']
 		};
-	}
-
-	ngOnDestroy() {
-		this._disposables = dispose(this._disposables);
 	}
 }

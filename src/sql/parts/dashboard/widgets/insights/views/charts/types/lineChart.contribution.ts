@@ -8,7 +8,7 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 
 import { registerInsight } from 'sql/platform/dashboard/common/insightRegistry';
-import { properties as BarChartSchema } from 'sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
+import { barChartSchema } from 'sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
 
 import LineChart from './lineChart.component';
 
@@ -24,6 +24,6 @@ const properties: IJSONSchema = {
 	}
 };
 
-export const lineSchema = mixin(clone(BarChartSchema), properties) as IJSONSchema;
+export const lineSchema = mixin(clone(barChartSchema), properties) as IJSONSchema;
 
 registerInsight('line', '', lineSchema, LineChart);

@@ -8,7 +8,6 @@
 import nls = require('vs/nls');
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
-import { IMessageService, CloseAction, Severity } from 'vs/platform/message/common/message';
 import pkg from 'vs/platform/node/package';
 import product from 'vs/platform/node/product';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -19,6 +18,8 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import URI from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { AbstractShowReleaseNotesAction, loadReleaseNotes } from 'vs/workbench/parts/update/electron-browser/update';
+import { INotification, INotificationService, INotificationActions } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 
 export class OpenGettingStartedInBrowserAction extends Action {
 
@@ -46,37 +47,5 @@ export class ShowCurrentReleaseNotesAction extends AbstractShowReleaseNotesActio
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
 		super(id, label, pkg.version, editorService, instantiationService);
-	}
-}
-
-export class ProductContribution implements IWorkbenchContribution {
-
-	private static KEY = 'releaseNotes/carbonLastVersion';
-	getId() { return 'carbon.product'; }
-
-	constructor(
-		@IStorageService storageService: IStorageService,
-		@IInstantiationService instantiationService: IInstantiationService,
-		@IMessageService messageService: IMessageService,
-		@IWorkbenchEditorService editorService: IWorkbenchEditorService
-	) {
-		const lastVersion = storageService.get(ProductContribution.KEY, StorageScope.GLOBAL, '');
-
-		// was there an update? if so, open release notes
-		if (product.releaseNotesUrl && pkg.version !== lastVersion) {
-			instantiationService.invokeFunction(loadReleaseNotes, pkg.version).then(
-				text => editorService.openEditor(instantiationService.createInstance(ReleaseNotesInput, pkg.version, text), { pinned: true }),
-				() => {
-					messageService.show(Severity.Info, {
-						message: nls.localize('read the release notes', "Welcome to {0} February Public Preview! Would you like to view the Getting Started Guide?", product.nameLong, pkg.version),
-						actions: [
-							instantiationService.createInstance(OpenGettingStartedInBrowserAction),
-							CloseAction
-						]
-					});
-				});
-		}
-
-		storageService.store(ProductContribution.KEY, pkg.version, StorageScope.GLOBAL);
 	}
 }

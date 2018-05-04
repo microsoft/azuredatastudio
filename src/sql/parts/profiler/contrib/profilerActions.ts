@@ -9,21 +9,22 @@ import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
 import { IProfilerController } from 'sql/parts/profiler/editor/controller/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { BaseActionContext } from 'sql/workbench/common/actions';
-import { TaskAction } from 'sql/platform/tasks/taskRegistry';
+import { Task } from 'sql/platform/tasks/common/tasks';
+import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ObjectExplorerActionsContext } from 'sql/parts/registeredServer/viewlet/objectExplorerActions';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/parts/connection/common/connectionManagement';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 export class ProfilerConnect extends Action {
 	public static ID = 'profiler.connect';
-	public static LABEL = nls.localize('connect', "Connect");
+	public static LABEL = nls.localize('profiler.connect', "Connect");
 
 	private _connected: boolean = false;
 
@@ -56,7 +57,7 @@ export class ProfilerConnect extends Action {
 	public set connected(value: boolean) {
 		this._connected = value;
 		this._setClass(value ? 'disconnect' : 'connect');
-		this._setLabel(value ? nls.localize('disconnect', 'Disconnected') : nls.localize('connect', "Connect"));
+		this._setLabel(value ? nls.localize('profilerAction.disconnect', 'Disconnected') : nls.localize('profilerAction.connect', "Connect"));
 	}
 
 	public get connected(): boolean {
@@ -107,7 +108,7 @@ export class ProfilerPause extends Action {
 
 export class ProfilerStop extends Action {
 	public static ID = 'profiler.stop';
-	public static LABEL = nls.localize('stop', "Stop");
+	public static LABEL = nls.localize('profilerStop.stop', "Stop");
 
 	constructor(
 		id: string, label: string,
@@ -226,29 +227,25 @@ export class ProfilerFindPrevious implements IEditorAction {
 	}
 }
 
-export class NewProfilerAction extends TaskAction {
-	public static ID = 'newProfiler';
-	public static LABEL = nls.localize('newProfiler', 'New Profiler');
-	public static ICON = 'profile';
+export class NewProfilerAction extends Task {
+	public static readonly ID = 'newProfiler';
+	public static readonly LABEL = nls.localize('profilerAction.newProfiler', 'New Profiler');
+	public static readonly ICON = 'profile';
 
 	private _connectionProfile: ConnectionProfile;
 
-	constructor(
-		id: string, label: string, icon: string,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
-		@IConnectionManagementService private _connectionService: IConnectionManagementService,
-		@IInstantiationService private _instantiationService: IInstantiationService
-	) {
-		super(id, label, icon);
+	constructor() {
+		super({
+			id: NewProfilerAction.ID,
+			title: NewProfilerAction.LABEL,
+			iconPath: { dark: NewProfilerAction.ICON, light: NewProfilerAction.ICON },
+			iconClass: NewProfilerAction.ICON
+		});
 	}
 
-	run(actionContext: BaseActionContext): TPromise<boolean> {
-		if (actionContext instanceof ObjectExplorerActionsContext) {
-			this._connectionProfile = actionContext.connectionProfile;
-		}
-
-		let profilerInput = this._instantiationService.createInstance(ProfilerInput, actionContext.profile);
-		return this._editorService.openEditor(profilerInput, { pinned: true }, false).then(() => {
+	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
+		let profilerInput = accessor.get<IInstantiationService>(IInstantiationService).createInstance(ProfilerInput, profile);
+		return accessor.get<IWorkbenchEditorService>(IWorkbenchEditorService).openEditor(profilerInput, { pinned: true }, false).then(() => {
 			let options: IConnectionCompletionOptions = {
 				params: undefined,
 				saveTheConnection: false,
@@ -256,11 +253,9 @@ export class NewProfilerAction extends TaskAction {
 				showDashboard: false,
 				showFirewallRuleOnError: true
 			};
-			this._connectionService.connect(this._connectionProfile, profilerInput.id, options).then(() => {
-				TPromise.as(true);
-			});
+			accessor.get<IConnectionManagementService>(IConnectionManagementService).connect(this._connectionProfile, profilerInput.id, options);
 
-			return TPromise.as(true);
+			return TPromise.as(void 0);
 		});
 	}
 }

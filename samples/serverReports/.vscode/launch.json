@@ -1,0 +1,57 @@
+// A launch configuration that launches the extension inside a new window
+// Use IntelliSense to learn about possible attributes.
+// Hover to view descriptions of existing attributes.
+// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+
+// To debug the extension:
+// 1. please install the "SQL Operations Studio Debug" extension into VSCode
+// 2. Ensure sqlops is added to your path:
+//    - open SQL Operations Studio
+//    - run the command "Install 'sqlops' command in PATH"
+{
+	"version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Debug in SqlOps install",
+            "type": "sqlopsExtensionHost",
+            "request": "launch",
+            "runtimeExecutable": "sqlops",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}"
+            ]
+        },
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Ops Studio",
+			"protocol": "inspector",
+			"port": 5870,
+			"restart": true,
+            "sourceMaps": true,
+			"outFiles": [
+				"${workspaceRoot}/out/**/*.js"
+			],
+            "preLaunchTask": "",
+            "timeout": 25000
+		},
+        {
+            "name": "Debug in enlistment",
+            "type": "sqlopsExtensionHost",
+            "request": "launch",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/../../scripts/sql.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/../../scripts/sql.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/../../scripts/sql.sh"
+			},
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}"
+            ],
+            "timeout": 20000
+        }
+    ]
+}

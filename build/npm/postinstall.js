@@ -21,21 +21,21 @@ function yarnInstall(location, opts) {
 }
 
 // {{SQL CARBON EDIT}}
-yarnInstall('dataprotocol-client');
-yarnInstall('extensions-modules');
 yarnInstall('extensions'); // node modules shared by all extensions
 
 const extensions = [
 	'vscode-colorize-tests',
 	'json',
-    'mssql',
+  'mssql',
 	'configuration-editing',
 	'extension-editing',
 	'markdown',
+	'markdown-basics',
 	'git',
 	'merge-conflict',
 	'insights-default',
-	'account-provider-azure'
+	'account-provider-azure',
+	'agent'
 ];
 
 extensions.forEach(extension => yarnInstall(`extensions/${extension}`));
@@ -43,6 +43,7 @@ extensions.forEach(extension => yarnInstall(`extensions/${extension}`));
 function yarnInstallBuildDependencies() {
 	// make sure we install the deps of build/lib/watch for the system installed
 	// node, since that is the driver of gulp
+	//@ts-ignore
 	const env = Object.assign({}, process.env);
 	const watchPath = path.join(path.dirname(__dirname), 'lib', 'watch');
 	const yarnrcPath = path.join(watchPath, '.yarnrc');
@@ -60,4 +61,5 @@ runtime "${runtime}"`;
 }
 
 yarnInstall(`build`); // node modules required for build
+yarnInstall('test/smoke'); // node modules required for smoketest
 yarnInstallBuildDependencies(); // node modules for watching, specific to host node version, not electron

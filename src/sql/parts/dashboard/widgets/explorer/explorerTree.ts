@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { MetadataType } from 'sql/parts/connection/common/connectionManagement';
-import { SingleConnectionManagementService } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
 import {
 	NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction, ScriptExecuteAction, ScriptAlterAction,
 	BackupAction, ManageActionContext, BaseActionContext, ManageAction, RestoreAction
@@ -15,8 +15,9 @@ import {
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import * as Constants from 'sql/parts/connection/common/constants';
+import { OEAction } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 
-import { ObjectMetadata } from 'data';
+import { ObjectMetadata } from 'sqlops';
 
 import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
@@ -27,6 +28,8 @@ import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { generateUuid } from 'vs/base/common/uuid';
 import { $ } from 'vs/base/browser/dom';
+import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
+import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export class ObjectMetadataWrapper implements ObjectMetadata {
 	public metadataType: MetadataType;
@@ -162,6 +165,19 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 		this._connectionService.changeDatabase(element.databaseName).then(result => {
 			this._router.navigate(['database-dashboard']);
 		});
+	}
+
+	protected onEnter(tree: tree.ITree, event: IKeyboardEvent): boolean {
+		let result = super.onEnter(tree, event);
+		if (result) {
+			const focus = tree.getFocus();
+			if (focus && !(focus instanceof ObjectMetadataWrapper)) {
+				this._connectionService.changeDatabase(focus.databaseName).then(result => {
+					this._router.navigate(['database-dashboard']);
+				});
+			}
+		}
+		return result;
 	}
 }
 
@@ -370,14 +386,14 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 			actions.push(instantiationService.createInstance(ScriptAlterAction, ScriptAlterAction.ID, ScriptAlterAction.LABEL));
 		}
 	} else {
-		actions.push(instantiationService.createInstance(NewQueryAction, NewQueryAction.ID, NewQueryAction.LABEL, NewQueryAction.ICON));
+		actions.push(instantiationService.createInstance(CustomExecuteCommandAction, NewQueryAction.ID, NewQueryAction.LABEL));
 
-		let action: IAction = instantiationService.createInstance(RestoreAction, RestoreAction.ID, RestoreAction.LABEL, RestoreAction.ICON);
+		let action: IAction = instantiationService.createInstance(CustomExecuteCommandAction, RestoreAction.ID, RestoreAction.LABEL);
 		if (capabilitiesService.isFeatureAvailable(action, info)) {
 			actions.push(action);
 		}
 
-		action = instantiationService.createInstance(BackupAction, BackupAction.ID, BackupAction.LABEL, BackupAction.ICON);
+		action = instantiationService.createInstance(CustomExecuteCommandAction, BackupAction.ID, BackupAction.LABEL);
 		if (capabilitiesService.isFeatureAvailable(action, info)) {
 			actions.push(action);
 		}
@@ -389,4 +405,10 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 	actions.push(instantiationService.createInstance(ScriptCreateAction, ScriptCreateAction.ID, ScriptCreateAction.LABEL));
 
 	return TPromise.as(actions);
+}
+
+class CustomExecuteCommandAction extends ExecuteCommandAction {
+	run(context: ManageActionContext): TPromise<any> {
+		return super.run(context.profile);
+	}
 }

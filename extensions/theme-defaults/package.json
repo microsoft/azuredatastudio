@@ -3,7 +3,7 @@
 	"displayName": "High Contrast Theme",
 	"description": "High Contrast theme",
 	"categories": [ "Themes" ],
-	"version": "0.1.10",
+	"version": "1.0.0",
 	"publisher": "vscode",
 	"engines": { "vscode": "*" },
 	"contributes": {

@@ -1,0 +1,50 @@
+{
+  "name": "agent",
+  "displayName": "SQL Server Agent",
+  "description": "Manage and troubleshoot SQL Server Agent jobs (early preview)",
+  "version": "0.29.0",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt",
+  "icon": "images/sqlserver.png",
+  "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+  "engines": {
+    "vscode": "0.10.x"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./client/out/main",
+  "scripts": {
+    "compile": "gulp compile-extension:agent-client"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/sqlopsstudio.git"
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql"
+  ],
+  "contributes": {
+    "outputChannels": [
+      "sqlagent"
+    ],
+    "dashboard.tabs": [
+        {
+            "id": "data-management-agent",
+            "description": "Manage and troubleshoot SQL Agent jobs",
+            "provider": "MSSQL",
+            "title": "SQL Agent",
+            "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
+            "container": {
+                "controlhost-container": {
+                  "type": "agent"
+                }
+            }
+        }
+    ]
+  },
+  "devDependencies": {
+    "vscode": "1.0.1"
+  }
+}

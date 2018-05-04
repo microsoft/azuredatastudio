@@ -2,19 +2,23 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { IExtensionPointUser, ExtensionsRegistry } from 'vs/platform/extensions/common/extensionsRegistry';
+import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
+import * as types from 'vs/base/common/types';
 
-import { registerTab, generateTabContentSchemaProperties } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { registerTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
+import { NAV_SECTION, validateNavSectionContributionAndRegisterIcon } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
+import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
+import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 
 export interface IDashboardTabContrib {
 	id: string;
 	title: string;
-	content: object;
+	container: object;
+	when?: string;
 	description?: string;
-	provider?: string | string[];
-	edition?: number | number[];
 	alwaysShow?: boolean;
 }
 
@@ -33,38 +37,14 @@ const tabSchema: IJSONSchema = {
 			description: localize('sqlops.extension.contributes.dashboard.tab.description', "Description of this tab that will be shown to the user."),
 			type: 'string'
 		},
-		provider: {
-			description: localize('sqlops.extension.contributes.dashboard.tab.provider', "Providers for which this tab should be allowed for."),
-			anyOf: [
-				{
-					type: 'string'
-				},
-				{
-					type: 'array',
-					items: {
-						type: 'string'
-					}
-				}
-			]
+		when: {
+			description: localize('sqlops.extension.contributes.tab.when', 'Condition which must be true to show this item'),
+			type: 'string'
 		},
-		edition: {
-			description: localize('sqlops.extension.contributes.dashboard.tab.edition', "Editions for which this tab should be allowed for."),
-			anyOf: [
-				{
-					type: 'number'
-				},
-				{
-					type: 'array',
-					items: {
-						type: 'number'
-					}
-				}
-			]
-		},
-		content: {
-			description: localize('sqlops.extension.contributes.dashboard.tab.content', "The content that will be displayed in this tab."),
+		container: {
+			description: localize('sqlops.extension.contributes.dashboard.tab.container', "The container that will be displayed in this tab."),
 			type: 'object',
-			properties: generateTabContentSchemaProperties()
+			properties: generateContainerTypeSchemaProperties()
 		},
 		alwaysShow: {
 			description: localize('sqlops.extension.contributes.dashboard.tab.alwaysShow', "Whether or not this tab should always be shown or only when the user adds it."),
@@ -87,20 +67,51 @@ const tabContributionSchema: IJSONSchema = {
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>('dashboard.tabs', [], tabContributionSchema).setHandler(extensions => {
 
 	function handleCommand(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
-		let { description, content, title, edition, provider, id, alwaysShow } = tab;
-		alwaysShow = alwaysShow || false;
+		let { description, container, title, when, id, alwaysShow } = tab;
+
+		// If always show is not specified, set it to true by default.
+		if (!types.isBoolean(alwaysShow)) {
+			alwaysShow = true;
+		}
 		let publisher = extension.description.publisher;
 		if (!title) {
-			extension.collector.error('No title specified for extension.');
+			extension.collector.error(localize('dashboardTab.contribution.noTitleError', 'No title specified for extension.'));
 			return;
 		}
+
 		if (!description) {
-			extension.collector.warn('No description specified to show.');
+			extension.collector.warn(localize('dashboardTab.contribution.noDescriptionWarning', 'No description specified to show.'));
 		}
-		if (!content) {
-			extension.collector.warn('No content specified to show.');
+
+		if (!container) {
+			extension.collector.error(localize('dashboardTab.contribution.noContainerError', 'No container specified for extension.'));
+			return;
 		}
-		registerTab({ description, title, content, edition, provider, id, alwaysShow, publisher });
+
+		if (Object.keys(container).length !== 1) {
+			extension.collector.error(localize('dashboardTab.contribution.moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space'));
+			return;
+		}
+
+		let result = true;
+		let containerkey = Object.keys(container)[0];
+		let containerValue = Object.values(container)[0];
+
+		switch (containerkey) {
+			case WIDGETS_CONTAINER:
+				result = validateWidgetContainerContribution(extension, containerValue);
+				break;
+			case GRID_CONTAINER:
+				result = validateGridContainerContribution(extension, containerValue);
+				break;
+			case NAV_SECTION:
+				result = validateNavSectionContributionAndRegisterIcon(extension, containerValue);
+				break;
+		}
+
+		if (result) {
+			registerTab({ description, title, container, when, id, alwaysShow, publisher });
+		}
 	}
 
 	for (let extension of extensions) {

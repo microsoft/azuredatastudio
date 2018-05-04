@@ -13,7 +13,6 @@ import { StorageScope } from 'vs/platform/storage/common/storage';
 import { startsWith } from 'vs/base/common/strings';
 
 suite('Storage Migration', () => {
-
 	test('Parse Storage (Global)', () => {
 	});
 });

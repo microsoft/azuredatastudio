@@ -4,19 +4,25 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div  #scrollContainer style="height: 100%">
-	<div #scrollable style="position: relative; display: flex; flex-direction: column; height: 100%">
-		<div style="flex: 0 0 auto" #propertiesContainer>
-			<dashboard-widget-wrapper #properties *ngIf="propertiesWidget" [_config]="propertiesWidget" style="padding-left: 10px; padding-right: 10px; height: 90px; display: block">
-			</dashboard-widget-wrapper>
-		</div>
-		<panel style="flex: 1 1 auto; position: relative" class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)" [actions]="panelActions">
-			<tab *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
-				<dashboard-webview-tab *ngIf="getContentType(tab) === 'webview-tab'" [tab]="tab">
-				</dashboard-webview-tab>
-				<dashboard-widget-tab *ngIf="getContentType(tab) === 'widgets-tab'" [tab]="tab">
-				</dashboard-widget-tab>
-			</tab>
-		</panel>
-	</div>
-</div>
+<panel class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)" [actions]="panelActions">
+	<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
+		<dashboard-home-container *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget" [tab]="tab">
+		</dashboard-home-container>
+		<ng-template #not_home>
+			<dashboard-webview-container *ngIf="getContentType(tab) === 'webview-container'" [tab]="tab">
+			</dashboard-webview-container>
+			<dashboard-widget-container *ngIf="getContentType(tab) === 'widgets-container'" [tab]="tab">
+			</dashboard-widget-container>
+			<dashboard-modelview-container *ngIf="getContentType(tab) === 'modelview-container'" [tab]="tab">
+			</dashboard-modelview-container>
+			<dashboard-controlhost-container *ngIf="getContentType(tab) === 'controlhost-container'" [tab]="tab">
+			</dashboard-controlhost-container>
+			<dashboard-nav-section *ngIf="getContentType(tab) === 'nav-section'" [tab]="tab">
+			</dashboard-nav-section>
+			<dashboard-grid-container *ngIf="getContentType(tab) === 'grid-container'" [tab]="tab">
+			</dashboard-grid-container>
+			<dashboard-error-container *ngIf="getContentType(tab) === 'error-container'" [tab]="tab">
+			</dashboard-error-container>
+		</ng-template>
+	</tab>
+</panel>

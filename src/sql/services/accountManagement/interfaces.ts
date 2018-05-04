@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import Event from 'vs/base/common/event';
 import { AccountAdditionResult, AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -18,13 +18,13 @@ export interface IAccountManagementService {
 	_serviceBrand: any;
 
 	// ACCOUNT MANAGEMENT METHODS //////////////////////////////////////////
-	accountUpdated(account: data.Account): Thenable<void>;
+	accountUpdated(account: sqlops.Account): Thenable<void>;
 	addAccount(providerId: string): Thenable<void>;
-	getAccountProviderMetadata(): Thenable<data.AccountProviderMetadata[]>;
-	getAccountsForProvider(providerId: string): Thenable<data.Account[]>;
-	getSecurityToken(account: data.Account): Thenable<{}>;
-	removeAccount(accountKey: data.AccountKey): Thenable<boolean>;
-	refreshAccount(account: data.Account): Thenable<data.Account>;
+	getAccountProviderMetadata(): Thenable<sqlops.AccountProviderMetadata[]>;
+	getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]>;
+	getSecurityToken(account: sqlops.Account): Thenable<{}>;
+	removeAccount(accountKey: sqlops.AccountKey): Thenable<boolean>;
+	refreshAccount(account: sqlops.Account): Thenable<sqlops.Account>;
 
 	// UI METHODS //////////////////////////////////////////////////////////
 	openAccountListDialog(): Thenable<void>;
@@ -34,13 +34,13 @@ export interface IAccountManagementService {
 	copyUserCodeAndOpenBrowser(userCode: string, uri: string): void;
 
 	// SERVICE MANAGEMENT METHODS /////////////////////////////////////////
-	registerProvider(providerMetadata: data.AccountProviderMetadata, provider: data.AccountProvider): void;
+	registerProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): void;
 	shutdown(): void;
-	unregisterProvider(providerMetadata: data.AccountProviderMetadata): void;
+	unregisterProvider(providerMetadata: sqlops.AccountProviderMetadata): void;
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	readonly addAccountProviderEvent: Event<AccountProviderAddedEventParams>;
-	readonly removeAccountProviderEvent: Event<data.AccountProviderMetadata>;
+	readonly removeAccountProviderEvent: Event<sqlops.AccountProviderMetadata>;
 	readonly updateAccountListEvent: Event<UpdateAccountListEventParams>;
 }
 
@@ -50,20 +50,20 @@ export interface IAccountStore {
 	 * @param {Account} account Account to add/update
 	 * @return {Thenable<AccountAdditionResult>} Results of the add/update operation
 	 */
-	addOrUpdate(account: data.Account): Thenable<AccountAdditionResult>;
+	addOrUpdate(account: sqlops.Account): Thenable<AccountAdditionResult>;
 
 	/**
 	 * Retrieves all accounts, filtered by provider ID
 	 * @param {string} providerId ID of the provider to filter by
 	 * @return {Thenable<Account[]>} Promise to return all accounts that belong to the provided provider
 	 */
-	getAccountsByProvider(providerId: string): Thenable<data.Account[]>;
+	getAccountsByProvider(providerId: string): Thenable<sqlops.Account[]>;
 
 	/**
 	 * Retrieves all accounts in the store. Returns empty array if store is not initialized
 	 * @return {Thenable<Account[]>} Promise to return all accounts
 	 */
-	getAllAccounts(): Thenable<data.Account[]>;
+	getAllAccounts(): Thenable<sqlops.Account[]>;
 
 	/**
 	 * Removes an account.
@@ -72,7 +72,7 @@ export interface IAccountStore {
 	 * @param key - The key of an account.
 	 * @returns	True if the account was removed, false if the account doesn't exist
 	 */
-	remove(key: data.AccountKey): Thenable<boolean>;
+	remove(key: sqlops.AccountKey): Thenable<boolean>;
 
 	/**
 	 * Updates the custom properties stored with an account.
@@ -82,5 +82,5 @@ export interface IAccountStore {
 	 * @param updateOperation - Operation to perform on the matching account
 	 * @returns True if the account was modified, false if the account doesn't exist
 	 */
-	update(key: data.AccountKey, updateOperation: (account: data.Account) => void): Thenable<boolean>;
+	update(key: sqlops.AccountKey, updateOperation: (account: sqlops.Account) => void): Thenable<boolean>;
 }

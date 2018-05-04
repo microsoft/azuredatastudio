@@ -9,36 +9,17 @@ import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesServ
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile } from './interfaces';
 import * as Utils from './utils';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import { StopWatch } from 'vs/base/common/stopwatch';
 
 export class ConnectionStatusManager {
 
 	private _connections: { [id: string]: ConnectionManagementInfo };
-	private _providerCapabilitiesMap: { [providerName: string]: data.DataProtocolServerCapabilities };
+	private _providerCapabilitiesMap: { [providerName: string]: sqlops.DataProtocolServerCapabilities };
 
 	constructor( @ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
 		this._connections = {};
 		this._providerCapabilitiesMap = {};
-	}
-
-	public getCapabilities(providerName: string): data.DataProtocolServerCapabilities {
-		let result: data.DataProtocolServerCapabilities;
-
-		if (providerName in this._providerCapabilitiesMap) {
-			result = this._providerCapabilitiesMap[providerName];
-		} else {
-			let capabilities = this._capabilitiesService.getCapabilities();
-			if (capabilities) {
-				let providerCapabilities = capabilities.find(c => c.providerName === providerName);
-				if (providerCapabilities) {
-					this._providerCapabilitiesMap[providerName] = providerCapabilities;
-					result = providerCapabilities;
-				}
-			}
-		}
-
-		return result;
 	}
 
 	public findConnection(id: string): ConnectionManagementInfo {
@@ -80,15 +61,14 @@ export class ConnectionStatusManager {
 
 	public addConnection(connection: IConnectionProfile, id: string): ConnectionManagementInfo {
 		// Always create a copy and save that in the list
-		let connectionProfile = new ConnectionProfile(this.getCapabilities(connection.providerName), connection);
-		const self = this;
+		let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
 		let connectionInfo: ConnectionManagementInfo = new ConnectionManagementInfo();
 		connectionInfo.providerId = connection.providerName;
 		connectionInfo.extensionTimer = StopWatch.create();
 		connectionInfo.intelliSenseTimer = StopWatch.create();
 		connectionInfo.connectionProfile = connectionProfile;
 		connectionInfo.connecting = true;
-		self._connections[id] = connectionInfo;
+		this._connections[id] = connectionInfo;
 		connectionInfo.serviceTimer = StopWatch.create();
 		connectionInfo.ownerUri = id;
 
@@ -126,7 +106,7 @@ export class ConnectionStatusManager {
 		return newId;
 	}
 
-	public onConnectionComplete(summary: data.ConnectionInfoSummary): ConnectionManagementInfo {
+	public onConnectionComplete(summary: sqlops.ConnectionInfoSummary): ConnectionManagementInfo {
 		let connection = this._connections[summary.ownerUri];
 		connection.serviceTimer.stop();
 		connection.connecting = false;
@@ -139,7 +119,7 @@ export class ConnectionStatusManager {
 	 * Updates database name after connection is complete
 	 * @param summary connection summary
 	 */
-	public updateDatabaseName(summary: data.ConnectionInfoSummary): void {
+	public updateDatabaseName(summary: sqlops.ConnectionInfoSummary): void {
 		let connection = this._connections[summary.ownerUri];
 
 		//Check if the existing connection database name is different the one in the summary
@@ -174,7 +154,7 @@ export class ConnectionStatusManager {
 		return ownerUriToReturn;
 	}
 
-	public onConnectionChanged(changedConnInfo: data.ChangedConnectionInfo): IConnectionProfile {
+	public onConnectionChanged(changedConnInfo: sqlops.ChangedConnectionInfo): IConnectionProfile {
 		let connection = this._connections[changedConnInfo.connectionUri];
 		if (connection && connection.connectionProfile) {
 			connection.connectionProfile.serverName = changedConnInfo.connection.serverName;

@@ -8,13 +8,14 @@ import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
 import { AdvancedPropertiesController } from 'sql/parts/connection/connectionDialog/advancedPropertiesController';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { ContextKeyServiceStub } from 'sqltest/stubs/contextKeyServiceStub';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('Advanced properties dialog tests', () => {
 	var advancedController: AdvancedPropertiesController;
-	var providerOptions: data.ConnectionOption[];
+	var providerOptions: sqlops.ConnectionOption[];
 
 	setup(() => {
 		advancedController = new AdvancedPropertiesController(() => { }, null);
@@ -29,7 +30,7 @@ suite('Advanced properties dialog tests', () => {
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: null,
-				valueType: 0
+				valueType: ServiceOptionType.string
 			},
 			{
 				name: 'b1',
@@ -41,7 +42,7 @@ suite('Advanced properties dialog tests', () => {
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: null,
-				valueType: 0
+				valueType: ServiceOptionType.string
 			},
 			{
 				name: 'noType',
@@ -53,7 +54,7 @@ suite('Advanced properties dialog tests', () => {
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: null,
-				valueType: 0
+				valueType: ServiceOptionType.string
 			},
 			{
 				name: 'a2',
@@ -65,7 +66,7 @@ suite('Advanced properties dialog tests', () => {
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: null,
-				valueType: 0
+				valueType: ServiceOptionType.string
 			},
 			{
 				name: 'b2',
@@ -77,7 +78,7 @@ suite('Advanced properties dialog tests', () => {
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: null,
-				valueType: 0
+				valueType: ServiceOptionType.string
 			}
 		];
 	});

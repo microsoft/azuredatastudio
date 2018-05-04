@@ -11,13 +11,14 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { IConnectionManagementService, INewConnectionParams } from 'sql/parts/connection/common/connectionManagement';
 import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
-import { TreeCreationUtils } from 'sql/parts/registeredServer/viewlet/treeCreationUtils';
-import { TreeUpdateUtils } from 'sql/parts/registeredServer/viewlet/treeUpdateUtils';
+import { TreeCreationUtils } from 'sql/parts/objectExplorer/viewlet/treeCreationUtils';
+import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/parts/connection/connectionDialog/recentConnectionTreeController';
 import { SavedConnectionTreeController } from 'sql/parts/connection/connectionDialog/savedConnectionTreeController';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { ClearRecentConnectionsAction } from 'sql/parts/connection/common/connectionActions';
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -30,12 +31,13 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { localize } from 'vs/nls';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IMessageService, IConfirmation } from 'vs/platform/message/common/message';
 import * as styler from 'vs/platform/theme/common/styler';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as DOM from 'vs/base/browser/dom';
+import { DialogService } from 'vs/workbench/services/dialogs/electron-browser/dialogs';
+import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 
 export interface OnShowUIResponse {
 	selectedProviderType: string;
@@ -57,6 +59,7 @@ export class ConnectionDialogWidget extends Modal {
 	private _savedConnectionTree: ITree;
 	private $connectionUIContainer: Builder;
 	private _databaseDropdownExpanded: boolean;
+	private _actionbar: ActionBar;
 
 	private _panel: TabbedPanel;
 	private _recentConnectionTabId: PanelTabIdentifier;
@@ -89,7 +92,7 @@ export class ConnectionDialogWidget extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
-		@IMessageService private _messageService: IMessageService
+		@IContextViewService private _contextViewService: IContextViewService
 	) {
 		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
@@ -99,7 +102,7 @@ export class ConnectionDialogWidget extends Modal {
 		container.appendChild(connectionContainer.getHTMLElement());
 
 		this._bodyBuilder = new Builder(connectionContainer.getHTMLElement());
-		this._providerTypeSelectBox = new SelectBox(this.providerTypeOptions, this.selectedProviderType);
+		this._providerTypeSelectBox = new SelectBox(this.providerTypeOptions, this.selectedProviderType, this._contextViewService);
 
 		// Recent connection tab
 		let recentConnectionTab = $('.connection-recent-tab');
@@ -184,8 +187,8 @@ export class ConnectionDialogWidget extends Modal {
 	public render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		let connectLabel = localize('connect', 'Connect');
-		let cancelLabel = localize('cancel', 'Cancel');
+		let connectLabel = localize('connectionDialog.connect', 'Connect');
+		let cancelLabel = localize('connectionDialog.cancel', 'Cancel');
 		this._connectButton = this.addFooterButton(connectLabel, () => this.connect());
 		this._connectButton.enabled = false;
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
@@ -255,46 +258,6 @@ export class ConnectionDialogWidget extends Modal {
 		this.hide();
 	}
 
-	private clearRecentConnectionList(): TPromise<boolean> {
-
-		let confirm: IConfirmation = {
-			message: localize('clearRecentConnectionMessage', 'Are you sure you want to delete all the connections from the list?'),
-			primaryButton: localize('yes', 'Yes'),
-			secondaryButton: localize('no', 'No'),
-			type: 'question'
-		};
-
-		// @SQLTODO
-		return new TPromise<boolean>((resolve, reject) => {
-			let confirmed: boolean = this._messageService.confirm(confirm);
-			if (confirmed) {
-				this._connectionManagementService.clearRecentConnectionsList();
-				this.open(false);
-			}
-			resolve(confirmed);
-		});
-
-			//this._messageService.confirm(confirm).then(confirmation => {
-		// 	if (!confirmation.confirmed) {
-		// 		return TPromise.as(false);
-		// 	} else {
-		// 		this._connectionManagementService.clearRecentConnectionsList();
-		// 		this.open(false);
-		// 		return TPromise.as(true);
-		// 	}
-		// });
-
-		// return this._messageService.confirm(confirm).then(confirmation => {
-		// 	if (!confirmation.confirmed) {
-		// 		return TPromise.as(false);
-		// 	} else {
-		// 		this._connectionManagementService.clearRecentConnectionsList();
-		// 		this.open(false);
-		// 		return TPromise.as(true);
-		// 	}
-		// });
-	}
-
 	private createRecentConnectionList(): void {
 		this._recentConnectionBuilder.div({ class: 'connection-recent-content' }, (recentConnectionContainer) => {
 			let recentHistoryLabel = localize('recentHistory', 'Recent history');
@@ -302,8 +265,12 @@ export class ConnectionDialogWidget extends Modal {
 				container.div({ class: 'connection-history-label' }, (recentTitle) => {
 					recentTitle.innerHtml(recentHistoryLabel);
 				});
-				container.div({ class: 'search-action clear-search-results' }, (clearSearchIcon) => {
-					clearSearchIcon.on('click', () => this.clearRecentConnectionList());
+				container.div({ class: 'connection-history-actions' }, (actionsContainer) => {
+					this._actionbar = this._register(new ActionBar(actionsContainer, { animated: false }));
+					let clearAction = this._instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
+					clearAction.useConfirmationMessage = true;
+					clearAction.onRecentConnectionsRemoved(() => this.open(false));
+					this._actionbar.push(clearAction, { icon: true, label: false });
 				});
 			});
 			recentConnectionContainer.div({ class: 'server-explorer-viewlet' }, (divContainer: Builder) => {
@@ -453,6 +420,7 @@ export class ConnectionDialogWidget extends Modal {
 
 	public updateProvider(displayName: string) {
 		this._providerTypeSelectBox.selectWithOptionName(displayName);
+
 		this.onProviderTypeSelected(displayName);
 	}
 

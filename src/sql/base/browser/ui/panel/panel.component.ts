@@ -13,6 +13,10 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';
 import { mixin } from 'vs/base/common/objects';
+import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { addDisposableListener, EventType } from 'vs/base/browser/dom';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IPanelOptions {
 	/**
@@ -20,6 +24,7 @@ export interface IPanelOptions {
 	 */
 	showTabsWhenOne?: boolean;
 	layout?: NavigationBarLayout;
+	showIcon?: boolean;
 }
 
 export enum NavigationBarLayout {
@@ -29,7 +34,8 @@ export enum NavigationBarLayout {
 
 const defaultOptions: IPanelOptions = {
 	showTabsWhenOne: true,
-	layout: NavigationBarLayout.horizontal
+	layout: NavigationBarLayout.horizontal,
+	showIcon: false
 };
 
 const verticalLayout = 'vertical';
@@ -40,11 +46,12 @@ let idPool = 0;
 @Component({
 	selector: 'panel',
 	template: `
-		<div class="tabbedPanel fullsize" #tabbedPanel style="position: absolute">
-			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
-				<div class="tabList">
+
+		<div class="tabbedPanel fullsize" #tabbedPanel>
+			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title" #titleContainer>
+				<div class="tabList" #tabList role="tablist">
 					<div *ngFor="let tab of _tabs">
-						<tab-header [tab]="tab" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'> </tab-header>
+						<tab-header [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'> </tab-header>
 					</div>
 				</div>
 				<div class="title-actions">
@@ -52,13 +59,15 @@ let idPool = 0;
 					</div>
 				</div>
 			</div>
-			<div class="tab-content fullsize">
-				<ng-content class="fullsize"></ng-content>
+			<div class="tab-content">
+				<div class="fullsize" style="position: absolute">
+					<ng-content></ng-content>
+				</div>
 			</div>
 		</div>
 	`
 })
-export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDestroy, AfterViewInit {
+export class PanelComponent extends Disposable implements AfterContentInit, OnInit, OnChanges, OnDestroy, AfterViewInit {
 	@Input() public options: IPanelOptions;
 	@Input() public actions: Array<Action>;
 	@ContentChildren(TabComponent) private _tabs: QueryList<TabComponent>;
@@ -70,10 +79,15 @@ export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDe
 	private _activeTab: TabComponent;
 	private _actionbar: ActionBar;
 	private _mru: TabComponent[];
+	private _scrollableElement: ScrollableElement;
 
 	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 	@ViewChild('tabbedPanel', { read: ElementRef }) private _tabbedPanelRef: ElementRef;
-	constructor( @Inject(forwardRef(() => NgZone)) private _zone: NgZone) { }
+	@ViewChild('titleContainer', { read: ElementRef }) private _titleContainer: ElementRef;
+	@ViewChild('tabList', { read: ElementRef }) private _tabList: ElementRef;
+	constructor( @Inject(forwardRef(() => NgZone)) private _zone: NgZone) {
+		super();
+	}
 
 	ngOnInit(): void {
 		this.options = mixin(this.options || {}, defaultOptions, false);
@@ -88,10 +102,45 @@ export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDe
 	}
 
 	ngAfterViewInit(): void {
-		if (this.options.layout === NavigationBarLayout.horizontal) {
-			(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(horizontalLayout);
-		} else {
-			(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(verticalLayout);
+		if (!this.options.showTabsWhenOne ? this._tabs.length !== 1 : true) {
+			let container = this._titleContainer.nativeElement as HTMLElement;
+			let tabList = this._tabList.nativeElement as HTMLElement;
+			container.removeChild(tabList);
+
+			this._scrollableElement = new ScrollableElement(tabList, {
+				horizontal: ScrollbarVisibility.Auto,
+				vertical: ScrollbarVisibility.Hidden,
+				scrollYToX: true,
+				useShadows: false,
+				horizontalScrollbarSize: 3
+			});
+
+			this._scrollableElement.onScroll(e => {
+				tabList.scrollLeft = e.scrollLeft;
+			});
+
+			container.insertBefore(this._scrollableElement.getDomNode(), container.firstChild);
+
+			this._scrollableElement.setScrollDimensions({
+				width: tabList.offsetWidth,
+				scrollWidth: tabList.scrollWidth
+			});
+
+			this._register(addDisposableListener(window, EventType.RESIZE, () => {
+				// Todo: Need to set timeout because we have to make sure that the grids have already rearraged before the getContentHeight gets called.
+				setTimeout(() => {
+					this._scrollableElement.setScrollDimensions({
+						width: tabList.offsetWidth,
+						scrollWidth: tabList.scrollWidth
+					});
+				}, 100);
+			}));
+
+			if (this.options.layout === NavigationBarLayout.horizontal) {
+				(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(horizontalLayout);
+			} else {
+				(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(verticalLayout);
+			}
 		}
 	}
 
@@ -135,7 +184,7 @@ export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDe
 			if (input instanceof TabComponent) {
 				tab = input;
 			} else if (types.isNumber(input)) {
-				tab = this._tabs[input];
+				tab = this._tabs.toArray()[input];
 			} else if (types.isString(input)) {
 				tab = this._tabs.find(i => i.identifier === input);
 			}
@@ -170,6 +219,25 @@ export class PanelComponent implements AfterContentInit, OnInit, OnChanges, OnDe
 				this.onTabChange.emit(tab);
 			});
 		}
+	}
+
+	/**
+	 * Get the id of the active tab
+	 */
+	public get getActiveTab(): string {
+		return this._activeTab.identifier;
+	}
+
+	/**
+	 * Select on the next tab
+	 */
+	public selectOnNextTab(): void {
+		let activeIndex = this._tabs.toArray().findIndex(i => i === this._activeTab);
+		let nextTabIndex = activeIndex + 1;
+		if (nextTabIndex === this._tabs.length) {
+			nextTabIndex = 0;
+		}
+		this.selectTab(nextTabIndex);
 	}
 
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {

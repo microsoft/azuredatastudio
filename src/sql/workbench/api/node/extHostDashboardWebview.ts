@@ -11,9 +11,9 @@ import { Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 
 import * as vscode from 'vscode';
-import * as data from 'data';
+import * as sqlops from 'sqlops';
 
-class ExtHostDashboardWebview implements data.DashboardWebview {
+class ExtHostDashboardWebview implements sqlops.DashboardWebview {
 
 	private _html: string;
 	public onMessageEmitter = new Emitter<any>();
@@ -22,8 +22,8 @@ class ExtHostDashboardWebview implements data.DashboardWebview {
 	constructor(
 		private readonly _proxy: MainThreadDashboardWebviewShape,
 		private readonly _handle: number,
-		private readonly _connection: data.connection.Connection,
-		private readonly _serverInfo: data.ServerInfo
+		private readonly _connection: sqlops.connection.Connection,
+		private readonly _serverInfo: sqlops.ServerInfo
 	) { }
 
 	public postMessage(message: any): Thenable<any> {
@@ -38,11 +38,11 @@ class ExtHostDashboardWebview implements data.DashboardWebview {
 		return this.onClosedEmitter.event;
 	}
 
-	public get connection(): data.connection.Connection {
+	public get connection(): sqlops.connection.Connection {
 		return deepClone(this._connection);
 	}
 
-	public get serverInfo(): data.ServerInfo {
+	public get serverInfo(): sqlops.ServerInfo {
 		return deepClone(this._serverInfo);
 	}
 
@@ -62,12 +62,12 @@ export class ExtHostDashboardWebviews implements ExtHostDashboardWebviewsShape {
 	private readonly _proxy: MainThreadDashboardWebviewShape;
 
 	private readonly _webviews = new Map<number, ExtHostDashboardWebview>();
-	private readonly _handlers = new Map<string, (webview: data.DashboardWebview) => void>();
+	private readonly _handlers = new Map<string, (webview: sqlops.DashboardWebview) => void>();
 
 	constructor(
 		mainContext: IMainContext
 	) {
-		this._proxy = mainContext.get(SqlMainContext.MainThreadDashboardWebview);
+		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadDashboardWebview);
 	}
 
 	$onMessage(handle: number, message: any): void {
@@ -81,12 +81,12 @@ export class ExtHostDashboardWebviews implements ExtHostDashboardWebviewsShape {
 		this._webviews.delete(handle);
 	}
 
-	$registerProvider(widgetId: string, handler: (webview: data.DashboardWebview) => void): void {
+	$registerProvider(widgetId: string, handler: (webview: sqlops.DashboardWebview) => void): void {
 		this._handlers.set(widgetId, handler);
 		this._proxy.$registerProvider(widgetId);
 	}
 
-	$registerWidget(handle: number, id: string, connection: data.connection.Connection, serverInfo: data.ServerInfo): void {
+	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void {
 		let webview = new ExtHostDashboardWebview(this._proxy, handle, connection, serverInfo);
 		this._webviews.set(handle, webview);
 		this._handlers.get(id)(webview);

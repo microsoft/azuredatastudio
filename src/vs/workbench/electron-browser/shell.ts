@@ -7,8 +7,8 @@
 
 import 'vs/css!./media/shell';
 
-import * as nls from 'vs/nls';
 import * as platform from 'vs/base/common/platform';
+import * as perf from 'vs/base/common/performance';
 import { Dimension, Builder, $ } from 'vs/base/browser/builder';
 import dom = require('vs/base/browser/dom');
 import aria = require('vs/base/browser/ui/aria/aria');
@@ -30,12 +30,11 @@ import { ElectronWindow } from 'vs/workbench/electron-browser/window';
 import { resolveWorkbenchCommonProperties } from 'vs/platform/telemetry/node/workbenchCommonProperties';
 import { IWindowsService, IWindowService, IWindowConfiguration } from 'vs/platform/windows/common/windows';
 import { WindowService } from 'vs/platform/windows/electron-browser/windowService';
-import { MessageService } from 'vs/workbench/services/message/electron-browser/messageService';
 import { IRequestService } from 'vs/platform/request/node/request';
 import { RequestService } from 'vs/platform/request/electron-browser/requestService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SearchService } from 'vs/workbench/services/search/node/searchService';
-import { LifecycleService } from 'vs/workbench/services/lifecycle/electron-browser/lifecycleService';
+import { LifecycleService } from 'vs/platform/lifecycle/electron-browser/lifecycleService';
 import { MarkerService } from 'vs/platform/markers/common/markerService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { ModelServiceImpl } from 'vs/editor/common/services/modelServiceImpl';
@@ -51,16 +50,14 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { ILifecycleService, LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { ILifecycleService, LifecyclePhase, ShutdownReason, StartupKind } from 'vs/platform/lifecycle/common/lifecycle';
 import { IMarkerService } from 'vs/platform/markers/common/markers';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { IMessageService, IChoiceService, Severity } from 'vs/platform/message/common/message';
-import { ChoiceChannel } from 'vs/platform/message/common/messageIpc';
 import { ISearchService } from 'vs/platform/search/common/search';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { CommandService } from 'vs/platform/commands/common/commandService';
+import { CommandService } from 'vs/workbench/services/commands/common/commandService';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
-import { IExtensionService } from 'vs/platform/extensions/common/extensions';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { WorkbenchModeServiceImpl } from 'vs/workbench/services/mode/common/workbenchModeService';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IUntitledEditorService, UntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
@@ -71,7 +68,6 @@ import { IExtensionManagementChannel, ExtensionManagementChannelClient } from 'v
 import { IExtensionManagementService, IExtensionEnablementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { ExtensionEnablementService } from 'vs/platform/extensionManagement/common/extensionEnablementService';
 import { ITimerService } from 'vs/workbench/services/timer/common/timerService';
-import { remote } from 'electron';
 import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
 import { restoreFontInfo, readFontInfo, saveFontInfo } from 'vs/editor/browser/config/configuration';
 import * as browser from 'vs/base/browser/browser';
@@ -88,6 +84,21 @@ import { IBroadcastService, BroadcastService } from 'vs/platform/broadcast/elect
 import { HashService } from 'vs/workbench/services/hash/node/hashService';
 import { IHashService } from 'vs/workbench/services/hash/common/hashService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { WORKBENCH_BACKGROUND } from 'vs/workbench/common/theme';
+import { stat } from 'fs';
+import { join } from 'path';
+import { ILocalizationsChannel, LocalizationsChannelClient } from 'vs/platform/localizations/common/localizationsIpc';
+import { ILocalizationsService } from 'vs/platform/localizations/common/localizations';
+import { IWorkbenchIssueService } from 'vs/workbench/services/issue/common/issue';
+import { WorkbenchIssueService } from 'vs/workbench/services/issue/electron-browser/workbenchIssueService';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { NotificationService } from 'vs/workbench/services/notification/common/notificationService';
+import { ChoiceChannel } from 'vs/platform/dialogs/common/choiceIpc';
+import { IChoiceService, IConfirmationService } from 'vs/platform/dialogs/common/dialogs';
+import { DialogService } from 'vs/workbench/services/dialogs/electron-browser/dialogs';
+
+// {{SQL CARBON EDIT}}
+import { FileTelemetryService } from 'sql/platform/telemetry/fileTelemetryService';
 
 /**
  * Services that we require for the Shell
@@ -101,15 +112,12 @@ export interface ICoreServices {
 	storageService: IStorageService;
 }
 
-const currentWindow = remote.getCurrentWindow();
-
 /**
  * The workbench shell contains the workbench with a rich header containing navigation and the activity bar.
  * With the Shell being the top level element in the page, it is also responsible for driving the layouting.
  */
 export class WorkbenchShell {
 	private storageService: IStorageService;
-	private messageService: MessageService;
 	private environmentService: IEnvironmentService;
 	private logService: ILogService;
 	private contextViewService: ContextViewService;
@@ -123,6 +131,7 @@ export class WorkbenchShell {
 	private themeService: WorkbenchThemeService;
 	private lifecycleService: LifecycleService;
 	private mainProcessServices: ServiceCollection;
+	private notificationService: INotificationService;
 
 	private container: HTMLElement;
 	private toUnbind: IDisposable[];
@@ -164,17 +173,7 @@ export class WorkbenchShell {
 		const [instantiationService, serviceCollection] = this.initServiceCollection(parent.getHTMLElement());
 
 		// Workbench
-		this.workbench = instantiationService.createInstance(Workbench, parent.getHTMLElement(), workbenchContainer.getHTMLElement(), this.configuration, serviceCollection, this.lifecycleService);
-		try {
-			this.workbench.startup().done(startupInfos => this.onWorkbenchStarted(startupInfos, instantiationService));
-		} catch (error) {
-
-			// Log it
-			this.logService.error(toErrorMessage(error, true));
-
-			// Rethrow
-			throw error;
-		}
+		this.workbench = this.createWorkbench(instantiationService, serviceCollection, parent.getHTMLElement(), workbenchContainer.getHTMLElement());
 
 		// Window
 		this.workbench.getInstantiationService().createInstance(ElectronWindow, this.container);
@@ -191,32 +190,50 @@ export class WorkbenchShell {
 		return workbenchContainer;
 	}
 
-	private onWorkbenchStarted(info: IWorkbenchStartedInfo, instantiationService: IInstantiationService): void {
+	private createWorkbench(instantiationService: IInstantiationService, serviceCollection: ServiceCollection, parent: HTMLElement, workbenchContainer: HTMLElement): Workbench {
+		try {
+			const workbench = instantiationService.createInstance(Workbench, parent, workbenchContainer, this.configuration, serviceCollection, this.lifecycleService);
 
-		// Startup Telemetry
-		this.logStartupTelemetry(info);
+			// Set lifecycle phase to `Restoring`
+			this.lifecycleService.phase = LifecyclePhase.Restoring;
 
-		// Root Warning
-		if ((platform.isLinux || platform.isMacintosh) && process.getuid() === 0) {
-			// {{SQL CARBON EDIT}}
-			this.messageService.show(Severity.Warning, nls.localize('runningAsRoot', "It is recommended not to run SQL Operations Studio as 'root'."));
-		}
+			// Startup Workbench
+			workbench.startup().done(startupInfos => {
 
-		// Set lifecycle phase to `Runnning` so that other contributions can now do something
-		this.lifecycleService.phase = LifecyclePhase.Running;
+				// Set lifecycle phase to `Runnning` so that other contributions can now do something
+				this.lifecycleService.phase = LifecyclePhase.Running;
 
-		// Set lifecycle phase to `Runnning For A Bit` after a short delay
-		let timeoutHandle = setTimeout(() => {
-			timeoutHandle = void 0;
-			this.lifecycleService.phase = LifecyclePhase.Eventually;
-		}, 3000);
-		this.toUnbind.push({
-			dispose: () => {
-				if (timeoutHandle) {
-					clearTimeout(timeoutHandle);
+				// Startup Telemetry
+				this.logStartupTelemetry(startupInfos);
+
+				// Set lifecycle phase to `Runnning For A Bit` after a short delay
+				let eventuallPhaseTimeoutHandle = setTimeout(() => {
+					eventuallPhaseTimeoutHandle = void 0;
+					this.lifecycleService.phase = LifecyclePhase.Eventually;
+				}, 3000);
+				this.toUnbind.push({
+					dispose: () => {
+						if (eventuallPhaseTimeoutHandle) {
+							clearTimeout(eventuallPhaseTimeoutHandle);
+						}
+					}
+				});
+
+				// localStorage metrics (TODO@Ben remove me later)
+				if (!this.environmentService.extensionTestsPath && this.contextService.getWorkbenchState() === WorkbenchState.FOLDER) {
+					this.logLocalStorageMetrics();
 				}
-			}
-		});
+			});
+
+			return workbench;
+		} catch (error) {
+
+			// Log it
+			this.logService.error(toErrorMessage(error, true));
+
+			// Rethrow
+			throw error;
+		}
 	}
 
 	private logStartupTelemetry(info: IWorkbenchStartedInfo): void {
@@ -261,9 +278,7 @@ export class WorkbenchShell {
 		});
 
 		// Telemetry: startup metrics
-		this.timerService.workbenchStarted = Date.now();
-		this.timerService.restoreEditorsDuration = info.restoreEditorsDuration;
-		this.timerService.restoreViewletDuration = info.restoreViewletDuration;
+		perf.mark('didStartWorkbench');
 		this.extensionService.whenInstalledExtensionsRegistered().done(() => {
 			/* __GDPR__
 				"startupTime" : {
@@ -276,15 +291,60 @@ export class WorkbenchShell {
 		});
 	}
 
-	private initServiceCollection(container: HTMLElement): [IInstantiationService, ServiceCollection] {
-		const disposables: IDisposable[] = [];
+	private logLocalStorageMetrics(): void {
+		if (this.lifecycleService.startupKind === StartupKind.ReloadedWindow || this.lifecycleService.startupKind === StartupKind.ReopenedWindow) {
+			return; // avoid logging localStorage metrics for reload/reopen, we prefer cold startup numbers
+		}
 
+		perf.mark('willReadLocalStorage');
+		const readyToSend = this.storageService.getBoolean('localStorageMetricsReadyToSend2');
+		perf.mark('didReadLocalStorage');
+
+		if (!readyToSend) {
+			this.storageService.store('localStorageMetricsReadyToSend2', true);
+			return; // avoid logging localStorage metrics directly after the update, we prefer cold startup numbers
+		}
+
+		if (!this.storageService.getBoolean('localStorageMetricsSent2')) {
+			perf.mark('willWriteLocalStorage');
+			this.storageService.store('localStorageMetricsSent2', true);
+			perf.mark('didWriteLocalStorage');
+
+			perf.mark('willStatLocalStorage');
+			stat(join(this.environmentService.userDataPath, 'Local Storage', 'file__0.localstorage'), (error, stat) => {
+				perf.mark('didStatLocalStorage');
+
+				/* __GDPR__
+					"localStorageTimers" : {
+						"statTime" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+						"accessTime" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+						"firstReadTime" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+						"subsequentReadTime" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+						"writeTime" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+						"keys" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+						"size": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+					}
+				*/
+				this.telemetryService.publicLog('localStorageTimers2', {
+					'statTime': perf.getDuration('willStatLocalStorage', 'didStatLocalStorage'),
+					'accessTime': perf.getDuration('willAccessLocalStorage', 'didAccessLocalStorage'),
+					'firstReadTime': perf.getDuration('willReadWorkspaceIdentifier', 'didReadWorkspaceIdentifier'),
+					'subsequentReadTime': perf.getDuration('willReadLocalStorage', 'didReadLocalStorage'),
+					'writeTime': perf.getDuration('willWriteLocalStorage', 'didWriteLocalStorage'),
+					'keys': window.localStorage.length,
+					'size': stat ? stat.size : -1
+				});
+			});
+		}
+	}
+
+	private initServiceCollection(container: HTMLElement): [IInstantiationService, ServiceCollection] {
 		const serviceCollection = new ServiceCollection();
 		serviceCollection.set(IWorkspaceContextService, this.contextService);
 		serviceCollection.set(IConfigurationService, this.configurationService);
 		serviceCollection.set(IEnvironmentService, this.environmentService);
 		serviceCollection.set(ILogService, this.logService);
-		disposables.push(this.logService);
+		this.toUnbind.push(this.logService);
 
 		serviceCollection.set(ITimerService, this.timerService);
 		serviceCollection.set(IStorageService, this.storageService);
@@ -294,13 +354,16 @@ export class WorkbenchShell {
 
 		const instantiationService: IInstantiationService = new InstantiationService(serviceCollection, true);
 
-		this.broadcastService = new BroadcastService(currentWindow.id);
+		this.notificationService = new NotificationService();
+		serviceCollection.set(INotificationService, this.notificationService);
+
+		this.broadcastService = instantiationService.createInstance(BroadcastService, this.configuration.windowId);
 		serviceCollection.set(IBroadcastService, this.broadcastService);
 
-		serviceCollection.set(IWindowService, new SyncDescriptor(WindowService, currentWindow.id, this.configuration));
+		serviceCollection.set(IWindowService, new SyncDescriptor(WindowService, this.configuration.windowId, this.configuration));
 
 		const sharedProcess = (<IWindowsService>serviceCollection.get(IWindowsService)).whenSharedProcessReady()
-			.then(() => connectNet(this.environmentService.sharedIPCHandle, `window:${currentWindow.id}`));
+			.then(() => connectNet(this.environmentService.sharedIPCHandle, `window:${this.configuration.windowId}`));
 
 		sharedProcess
 			.done(client => client.registerChannel('choice', instantiationService.createInstance(ChoiceChannel)));
@@ -315,9 +378,12 @@ export class WorkbenchShell {
 		// Experiments
 		this.experimentService = instantiationService.createInstance(ExperimentService);
 		serviceCollection.set(IExperimentService, this.experimentService);
-
+		// {{SQL CARBON EDIT}}
+		if (this.environmentService.args['perf-test']) {
+			let telemetryOutput = this.environmentService.args['telemetry-output'];
+			this.telemetryService = new FileTelemetryService(telemetryOutput);
 		// Telemetry
-		if (this.environmentService.isBuilt && !this.environmentService.isExtensionDevelopment && !this.environmentService.args['disable-telemetry'] && !!product.enableTelemetry) {
+		} else if (this.environmentService.isBuilt && !this.environmentService.isExtensionDevelopment && !this.environmentService.args['disable-telemetry'] && !!product.enableTelemetry) {
 			const channel = getDelayedChannel<ITelemetryAppenderChannel>(sharedProcess.then(c => c.getChannel('telemetryAppender')));
 			const commit = product.commit;
 			const version = pkg.version;
@@ -333,13 +399,13 @@ export class WorkbenchShell {
 
 			const errorTelemetry = new ErrorTelemetry(telemetryService);
 
-			disposables.push(telemetryService, errorTelemetry);
+			this.toUnbind.push(telemetryService, errorTelemetry);
 		} else {
 			this.telemetryService = NullTelemetryService;
 		}
 
 		serviceCollection.set(ITelemetryService, this.telemetryService);
-		disposables.push(configurationTelemetry(this.telemetryService, this.configurationService));
+		this.toUnbind.push(configurationTelemetry(this.telemetryService, this.configurationService));
 
 		let crashReporterService = NullCrashReporterService;
 		if (!this.environmentService.disableCrashReporter && product.crashReporter && product.hockeyApp) {
@@ -347,13 +413,12 @@ export class WorkbenchShell {
 		}
 		serviceCollection.set(ICrashReporterService, crashReporterService);
 
-		this.messageService = instantiationService.createInstance(MessageService, container);
-		serviceCollection.set(IMessageService, this.messageService);
-		serviceCollection.set(IChoiceService, this.messageService);
+		const dialog = instantiationService.createInstance(DialogService);
+		serviceCollection.set(IChoiceService, dialog);
+		serviceCollection.set(IConfirmationService, dialog);
 
 		const lifecycleService = instantiationService.createInstance(LifecycleService);
-		this.toUnbind.push(lifecycleService.onShutdown(reason => dispose(disposables)));
-		this.toUnbind.push(lifecycleService.onShutdown(reason => saveFontInfo(this.storageService)));
+		this.toUnbind.push(lifecycleService.onShutdown(reason => this.dispose(reason)));
 		serviceCollection.set(ILifecycleService, lifecycleService);
 		this.lifecycleService = lifecycleService;
 
@@ -362,14 +427,14 @@ export class WorkbenchShell {
 
 		const extensionEnablementService = instantiationService.createInstance(ExtensionEnablementService);
 		serviceCollection.set(IExtensionEnablementService, extensionEnablementService);
-		disposables.push(extensionEnablementService);
+		this.toUnbind.push(extensionEnablementService);
 
 		this.extensionService = instantiationService.createInstance(ExtensionService);
 		serviceCollection.set(IExtensionService, this.extensionService);
 
-		this.timerService.beforeExtensionLoad = Date.now();
+		perf.mark('willLoadExtensions');
 		this.extensionService.whenInstalledExtensionsRegistered().done(() => {
-			this.timerService.afterExtensionLoad = Date.now();
+			perf.mark('didLoadExtensions');
 		});
 
 		this.themeService = instantiationService.createInstance(WorkbenchThemeService, document.body);
@@ -398,9 +463,14 @@ export class WorkbenchShell {
 
 		serviceCollection.set(ISearchService, new SyncDescriptor(SearchService));
 
+		serviceCollection.set(IWorkbenchIssueService, new SyncDescriptor(WorkbenchIssueService));
+
 		serviceCollection.set(ICodeEditorService, new SyncDescriptor(CodeEditorServiceImpl));
 
 		serviceCollection.set(IIntegrityService, new SyncDescriptor(IntegrityServiceImpl));
+
+		const localizationsChannel = getDelayedChannel<ILocalizationsChannel>(sharedProcess.then(c => c.getChannel('localizations')));
+		serviceCollection.set(ILocalizationsService, new SyncDescriptor(LocalizationsChannelClient, localizationsChannel));
 
 		return [instantiationService, serviceCollection];
 	}
@@ -452,8 +522,8 @@ export class WorkbenchShell {
 		this.logService.error(errorMsg);
 
 		// Show to user if friendly message provided
-		if (error && error.friendlyMessage && this.messageService) {
-			this.messageService.show(Severity.Error, error.friendlyMessage);
+		if (error && error.friendlyMessage && this.notificationService) {
+			this.notificationService.error(error.friendlyMessage);
 		}
 	}
 
@@ -467,20 +537,18 @@ export class WorkbenchShell {
 		this.workbench.layout();
 	}
 
-	public dispose(): void {
+	public dispose(reason = ShutdownReason.QUIT): void {
 
-		// Workbench
-		if (this.workbench) {
-			this.workbench.dispose();
-		}
-
-		this.contextViewService.dispose();
-
-		// Listeners
+		// Dispose bindings
 		this.toUnbind = dispose(this.toUnbind);
 
-		// Container
-		$(this.container).empty();
+		// Keep font info for next startup around
+		saveFontInfo(this.storageService);
+
+		// Dispose Workbench
+		if (this.workbench) {
+			this.workbench.dispose(reason);
+		}
 	}
 }
 
@@ -517,17 +585,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	}
 
 	// We need to set the workbench background color so that on Windows we get subpixel-antialiasing.
-	let workbenchBackground: string;
-	switch (theme.type) {
-		case 'dark':
-			workbenchBackground = '#252526';
-			break;
-		case 'light':
-			workbenchBackground = '#F3F3F3';
-			break;
-		default:
-			workbenchBackground = '#000000';
-	}
+	const workbenchBackground = WORKBENCH_BACKGROUND(theme);
 	collector.addRule(`.monaco-workbench { background-color: ${workbenchBackground}; }`);
 
 	// Scrollbars
@@ -579,18 +637,19 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const focusOutline = theme.getColor(focusBorder);
 	if (focusOutline) {
 		collector.addRule(`
-			.monaco-shell [tabindex="0"]:focus,
-			.monaco-shell .synthetic-focus,
-			.monaco-shell select:focus,
-			.monaco-shell .monaco-tree.focused.no-focused-item:focus:before,
-			.monaco-shell input[type="button"]:focus,
-			.monaco-shell input[type="text"]:focus,
-			.monaco-shell button:focus,
-			.monaco-shell textarea:focus,
-			.monaco-shell input[type="search"]:focus,
-			.monaco-shell input[type="checkbox"]:focus {
-				outline-color: ${focusOutline};
-			}
+		.monaco-shell [tabindex="0"]:focus,
+		.monaco-shell .synthetic-focus,
+		.monaco-shell select:focus,
+		.monaco-shell .monaco-tree.focused.no-focused-item:focus:before,
+		.monaco-shell .monaco-list:not(.element-focused):focus:before,
+		.monaco-shell input[type="button"]:focus,
+		.monaco-shell input[type="text"]:focus,
+		.monaco-shell button:focus,
+		.monaco-shell textarea:focus,
+		.monaco-shell input[type="search"]:focus,
+		.monaco-shell input[type="checkbox"]:focus {
+			outline-color: ${focusOutline};
+		}
 		`);
 	}
 });

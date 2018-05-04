@@ -10,6 +10,7 @@ import { Observable } from 'rxjs/Observable';
 
 import { DashboardWidget, IDashboardWidget, WIDGET_CONFIG, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { InsightAction, InsightActionContext } from 'sql/workbench/common/actions';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
@@ -18,7 +19,7 @@ import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insi
 import { insertValueRegex } from 'sql/parts/insights/common/interfaces';
 import { RunInsightQueryAction } from './actions';
 
-import { SimpleExecuteResult } from 'data';
+import { SimpleExecuteResult } from 'sqlops';
 
 import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';
@@ -26,6 +27,7 @@ import * as pfs from 'vs/base/node/pfs';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { WorkbenchState } from 'vs/platform/workspace/common/workspace';
+import { IntervalTimer } from 'vs/base/common/async';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -51,13 +53,14 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	private _typeKey: string;
 	private _init: boolean = false;
+	private _intervalTimer: IntervalTimer;
 
 	public error: string;
 	public lastUpdated: string;
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
-		@Inject(forwardRef(() => DashboardServiceInterface)) private dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private dashboardService: CommonServiceInterface,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(forwardRef(() => ViewContainerRef)) private viewContainerRef: ViewContainerRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef
@@ -75,6 +78,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 					result => {
 						if (this._init) {
 							this._updateChild(result);
+							this.setupInterval();
 						} else {
 							this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(result));
 						}
@@ -99,11 +103,20 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			this._register(toDisposableSubscription(this.queryObv.subscribe(
 				result => {
 					this._updateChild(result);
+					this.setupInterval();
 				},
 				error => {
 					this.showError(error);
 				}
 			)));
+		}
+	}
+
+	private setupInterval(): void {
+		if (this.insightConfig.autoRefreshInterval) {
+			this._intervalTimer = new IntervalTimer();
+			this._register(this._intervalTimer);
+			this._intervalTimer.cancelAndSet(() => this.refresh(), this.insightConfig.autoRefreshInterval * 60 * 1000);
 		}
 	}
 
@@ -130,10 +143,13 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	private _storeResult(result: SimpleExecuteResult): SimpleExecuteResult {
 		if (this.insightConfig.cacheId) {
+			let currentTime = new Date();
 			let store: IStorageResult = {
-				date: new Date().toString(),
+				date: currentTime.toString(),
 				results: result
 			};
+			this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", currentTime.toLocaleTimeString(), currentTime.toLocaleDateString());
+			this._cd.detectChanges();
 			this.dashboardService.storageService.store(this._getStorageKey(), JSON.stringify(store));
 		}
 		return result;
@@ -148,6 +164,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", date.toLocaleTimeString(), date.toLocaleDateString());
 				if (this._init) {
 					this._updateChild(storedResult.results);
+					this.setupInterval();
 					this._cd.detectChanges();
 				} else {
 					this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(JSON.parse(storage)));
@@ -184,21 +201,24 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	private _updateChild(result: SimpleExecuteResult): void {
+		this.componentHost.viewContainerRef.clear();
+		this.error = undefined;
+		this._cd.detectChanges();
+
 		if (result.rowCount === 0) {
 			this.showError(nls.localize('noResults', 'No results to show'));
 			return;
 		}
 
 		let componentFactory = this._componentFactoryResolver.resolveComponentFactory<IInsightsView>(insightRegistry.getCtorFromId(this._typeKey));
-		this.componentHost.viewContainerRef.clear();
 
 		let componentRef = this.componentHost.viewContainerRef.createComponent(componentFactory);
 		let componentInstance = componentRef.instance;
-		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => item.displayValue)) };
 		// check if the setter is defined
 		if (componentInstance.setConfig) {
 			componentInstance.setConfig(this.insightConfig.type[this._typeKey]);
 		}
+		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => item.displayValue)) };
 
 		if (componentInstance.init) {
 			componentInstance.init();
@@ -224,6 +244,10 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 		if (!this.insightConfig.query && !this.insightConfig.queryFile) {
 			throw new Error('No query was specified for this insight');
+		}
+
+		if (this.insightConfig.autoRefreshInterval && !types.isNumber(this.insightConfig.autoRefreshInterval)) {
+			throw new Error('Auto Refresh Interval must be a number if specified');
 		}
 
 		if (!types.isStringArray(this.insightConfig.query)

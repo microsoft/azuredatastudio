@@ -17,6 +17,97 @@ import { isWindows } from 'vs/base/common/platform';
 import { app } from 'electron';
 import { basename } from 'path';
 
+export interface VersionInfo {
+	vscodeVersion: string;
+	os: string;
+}
+
+export interface SystemInfo {
+	CPUs?: string;
+	'Memory (System)': string;
+	'Load (avg)'?: string;
+	VM: string;
+	'Screen Reader': string;
+	'Process Argv': string;
+}
+
+export interface ProcessInfo {
+	cpu: number;
+	memory: number;
+	pid: number;
+	name: string;
+}
+
+export interface PerformanceInfo {
+	processInfo?: string;
+	workspaceInfo?: string;
+}
+
+export function getPerformanceInfo(info: IMainProcessInfo): Promise<PerformanceInfo> {
+	return listProcesses(info.mainPID).then(rootProcess => {
+		const workspaceInfoMessages = [];
+
+		// Workspace Stats
+		if (info.windows.some(window => window.folders && window.folders.length > 0)) {
+			info.windows.forEach(window => {
+				if (window.folders.length === 0) {
+					return;
+				}
+
+				workspaceInfoMessages.push(`|  Window (${window.title})`);
+
+				window.folders.forEach(folder => {
+					try {
+						const stats = collectWorkspaceStats(folder, ['node_modules', '.git']);
+						let countMessage = `${stats.fileCount} files`;
+						if (stats.maxFilesReached) {
+							countMessage = `more than ${countMessage}`;
+						}
+						workspaceInfoMessages.push(`|    Folder (${basename(folder)}): ${countMessage}`);
+						workspaceInfoMessages.push(formatWorkspaceStats(stats));
+
+						const launchConfigs = collectLaunchConfigs(folder);
+						if (launchConfigs.length > 0) {
+							workspaceInfoMessages.push(formatLaunchConfigs(launchConfigs));
+						}
+					} catch (error) {
+						workspaceInfoMessages.push(`|      Error: Unable to collect workpsace stats for folder ${folder} (${error.toString()})`);
+					}
+				});
+			});
+		}
+
+		return {
+			processInfo: formatProcessList(info, rootProcess),
+			workspaceInfo: workspaceInfoMessages.join('\n')
+		};
+	});
+}
+
+export function getSystemInfo(info: IMainProcessInfo): SystemInfo {
+	const MB = 1024 * 1024;
+	const GB = 1024 * MB;
+
+	const systemInfo: SystemInfo = {
+		'Memory (System)': `${(os.totalmem() / GB).toFixed(2)}GB (${(os.freemem() / GB).toFixed(2)}GB free)`,
+		VM: `${Math.round((virtualMachineHint.value() * 100))}%`,
+		'Screen Reader': `${app.isAccessibilitySupportEnabled() ? 'yes' : 'no'}`,
+		'Process Argv': `${info.mainArguments.join(' ')}`
+	};
+
+	const cpus = os.cpus();
+	if (cpus && cpus.length > 0) {
+		systemInfo.CPUs = `${cpus[0].model} (${cpus.length} x ${cpus[0].speed})`;
+	}
+
+	if (!isWindows) {
+		systemInfo['Load (avg)'] = `${os.loadavg().map(l => Math.round(l)).join(', ')}`;
+	}
+
+
+	return systemInfo;
+}
+
 export function printDiagnostics(info: IMainProcessInfo): Promise<any> {
 	return listProcesses(info.mainPID).then(rootProcess => {
 
@@ -83,7 +174,6 @@ function formatWorkspaceStats(workspaceStats: WorkspaceStats): string {
 		line += item;
 	};
 
-
 	// File Types
 	let line = '|      File types:';
 	const maxShown = 10;
@@ -124,7 +214,7 @@ function formatEnvironment(info: IMainProcessInfo): string {
 
 	const output: string[] = [];
 	output.push(`Version:          ${pkg.name} ${pkg.version} (${product.commit || 'Commit unknown'}, ${product.date || 'Date unknown'})`);
-	output.push(`OS Version:       ${os.type()} ${os.arch()} ${os.release()})`);
+	output.push(`OS Version:       ${os.type()} ${os.arch()} ${os.release()}`);
 	const cpus = os.cpus();
 	if (cpus && cpus.length > 0) {
 		output.push(`CPUs:             ${cpus[0].model} (${cpus.length} x ${cpus[0].speed})`);
@@ -135,6 +225,7 @@ function formatEnvironment(info: IMainProcessInfo): string {
 	}
 	output.push(`VM:               ${Math.round((virtualMachineHint.value() * 100))}%`);
 	output.push(`Screen Reader:    ${app.isAccessibilitySupportEnabled() ? 'yes' : 'no'}`);
+	output.push(`Process Argv:     ${info.mainArguments.join(' ')}`);
 
 	return output.join('\n');
 }
@@ -145,9 +236,11 @@ function formatProcessList(info: IMainProcessInfo, rootProcess: ProcessItem): st
 
 	const output: string[] = [];
 
-	output.push('CPU %\tMem MB\tProcess');
+	output.push('CPU %\tMem MB\t   PID\tProcess');
 
-	formatProcessItem(mapPidToWindowTitle, output, rootProcess, 0);
+	if (rootProcess) {
+		formatProcessItem(mapPidToWindowTitle, output, rootProcess, 0);
+	}
 
 	return output.join('\n');
 }
@@ -169,7 +262,7 @@ function formatProcessItem(mapPidToWindowTitle: Map<number, string>, output: str
 		}
 	}
 	const memory = process.platform === 'win32' ? item.mem : (os.totalmem() * (item.mem / 100));
-	output.push(`${pad(Number(item.load.toFixed(0)), 5, ' ')}\t${pad(Number((memory / MB).toFixed(0)), 6, ' ')}\t${name}`);
+	output.push(`${pad(Number(item.load.toFixed(0)), 5, ' ')}\t${pad(Number((memory / MB).toFixed(0)), 6, ' ')}\t${pad(Number((item.pid).toFixed(0)), 6, ' ')}\t${name}`);
 
 	// Recurse into children if any
 	if (Array.isArray(item.children)) {

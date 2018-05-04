@@ -76,6 +76,38 @@ interface MssqlBackupInfo {
 	encryptorName: string;
 }
 
+const LocalizedStrings = {
+	BACKUP_NAME: localize('backup.backupName', 'Backup name'),
+	RECOVERY_MODEL: localize('backup.recoveryModel', 'Recovery model'),
+	BACKUP_TYPE: localize('backup.backupType', 'Backup type'),
+	BACKUP_DEVICE: localize('backup.backupDevice', 'Backup files'),
+	ALGORITHM: localize('backup.algorithm', 'Algorithm'),
+	CERTIFICATE_OR_ASYMMETRIC_KEY: localize('backup.certificateOrAsymmetricKey', 'Certificate or Asymmetric key'),
+	MEDIA: localize('backup.media', 'Media'),
+	MEDIA_OPTION: localize('backup.mediaOption', 'Backup to the existing media set'),
+	MEDIA_OPTION_FORMAT: localize('backup.mediaOptionFormat', 'Backup to a new media set'),
+	EXISTING_MEDIA_APPEND: localize('backup.existingMediaAppend', 'Append to the existing backup set'),
+	EXISTING_MEDIA_OVERWRITE: localize('backup.existingMediaOverwrite', 'Overwrite all existing backup sets'),
+	NEW_MEDIA_SET_NAME: localize('backup.newMediaSetName', 'New media set name'),
+	NEW_MEDIA_SET_DESCRIPTION: localize('backup.newMediaSetDescription', 'New media set description'),
+	CHECKSUM_CONTAINER: localize('backup.checksumContainer', 'Perform checksum before writing to media'),
+	VERIFY_CONTAINER: localize('backup.verifyContainer', 'Verify backup when finished'),
+	CONTINUE_ON_ERROR_CONTAINER: localize('backup.continueOnErrorContainer', 'Continue on error'),
+	EXPIRATION: localize('backup.expiration', 'Expiration'),
+	SET_BACKUP_RETAIN_DAYS: localize('backup.setBackupRetainDays', 'Set backup retain days'),
+	COPY_ONLY: localize('backup.copyOnly', 'Copy-only backup'),
+	ADVANCED_CONFIGURATION: localize('backup.advancedConfiguration', 'Advanced Configuration'),
+	COMPRESSION: localize('backup.compression', 'Compression'),
+	SET_BACKUP_COMPRESSION: localize('backup.setBackupCompression', 'Set backup compression'),
+	ENCRYPTION: localize('backup.encryption', 'Encryption'),
+	TRANSACTION_LOG: localize('backup.transactionLog', 'Transaction log'),
+	TRUNCATE_TRANSACTION_LOG: localize('backup.truncateTransactionLog', 'Truncate the transaction log'),
+	BACKUP_TAIL: localize('backup.backupTail', 'Backup the tail of the log'),
+	RELIABILITY: localize('backup.reliability', 'Reliability'),
+	MEDIA_NAME_REQUIRED_ERROR: localize('backup.mediaNameRequired', 'Media name is required'),
+	NO_ENCRYPTOR_WARNING: localize('backup.noEncryptorWarning', "No certificate or asymmetric key is available")
+};
+
 @Component({
 	selector: BACKUP_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('sql/parts/disasterRecovery/backup/backup.component.html'))
@@ -109,36 +141,7 @@ export class BackupComponent {
 	@ViewChild('advancedOptionContainer', { read: ElementRef }) advancedOptionElement;
 	@ViewChild('advancedOptionBodyContainer', { read: ElementRef }) advancedOptionBodyElement;
 
-	// tslint:disable:no-unused-variable
-	private readonly backupNameLabel: string = localize('backup.backupName', 'Backup name');
-	private readonly recoveryModelLabel: string = localize('backup.recoveryModel', 'Recovery model');
-	private readonly backupTypeLabel: string = localize('backup.backupType', 'Backup type');
-	private readonly backupDeviceLabel: string = localize('backup.backupDevice', 'Backup files');
-	private readonly algorithmLabel: string = localize('backup.algorithm', 'Algorithm');
-	private readonly certificateOrAsymmetricKeyLabel: string = localize('backup.certificateOrAsymmetricKey', 'Certificate or Asymmetric key');
-	private readonly mediaLabel: string = localize('backup.media', 'Media');
-	private readonly mediaOptionLabel: string = localize('backup.mediaOption', 'Backup to the existing media set');
-	private readonly mediaOptionFormatLabel: string = localize('backup.mediaOptionFormat', 'Backup to a new media set');
-	private readonly existingMediaAppendLabel: string = localize('backup.existingMediaAppend', 'Append to the existing backup set');
-	private readonly existingMediaOverwriteLabel: string = localize('backup.existingMediaOverwrite', 'Overwrite all existing backup sets');
-	private readonly newMediaSetNameLabel: string = localize('backup.newMediaSetName', 'New media set name');
-	private readonly newMediaSetDescriptionLabel: string = localize('backup.newMediaSetDescription', 'New media set description');
-	private readonly checksumContainerLabel: string = localize('backup.checksumContainer', 'Perform checksum before writing to media');
-	private readonly verifyContainerLabel: string = localize('backup.verifyContainer', 'Verify backup when finished');
-	private readonly continueOnErrorContainerLabel: string = localize('backup.continueOnErrorContainer', 'Continue on error');
-	private readonly expirationLabel: string = localize('backup.expiration', 'Expiration');
-	private readonly setBackupRetainDaysLabel: string = localize('backup.setBackupRetainDays', 'Set backup retain days');
-	private readonly copyOnlyLabel: string = localize('backup.copyOnly', 'Copy-only backup');
-	private readonly advancedConfigurationLabel: string = localize('backup.advancedConfiguration', 'Advanced Configuration');
-	private readonly compressionLabel: string = localize('backup.compression', 'Compression');
-	private readonly setBackupCompressionLabel: string = localize('backup.setBackupCompression', 'Set backup compression');
-	private readonly encryptionLabel: string = localize('backup.encryption', 'Encryption');
-	private readonly transactionLogLabel: string = localize('backup.transactionLog', 'Transaction log');
-	private readonly reliabilityLabel: string = localize('backup.reliability', 'Reliability');
-	private readonly mediaNameRequiredError: string = localize('backup.mediaNameRequired', 'Media name is required');
-	private readonly noEncryptorWarning: string = localize('backup.noEncryptorWarning', "No certificate or asymmetric key is available");
-
-	// tslint:enable:no-unused-variable
+	private localizedStrings = LocalizedStrings;
 
 	private _backupService: IBackupService;
 	private _backupUiService: IBackupUiService;
@@ -207,48 +210,58 @@ export class BackupComponent {
 		let self = this;
 		this.addFooterButtons();
 
-		this.recoveryBox = new InputBox(this.recoveryModelElement.nativeElement, this._bootstrapService.contextViewService, { placeholder: this.recoveryModel });
+		this.recoveryBox = new InputBox(this.recoveryModelElement.nativeElement, this._bootstrapService.contextViewService, {
+			placeholder: this.recoveryModel,
+			ariaLabel: LocalizedStrings.RECOVERY_MODEL
+		});
 		// Set backup type
-		this.backupTypeSelectBox = new SelectBox([], '');
+		this.backupTypeSelectBox = new SelectBox([], '', this._bootstrapService.contextViewService);
 		this.backupTypeSelectBox.render(this.backupTypeElement.nativeElement);
 
 		// Set copy-only check box
 		this.copyOnlyCheckBox = new Checkbox(this.copyOnlyElement.nativeElement, {
-			label: this.copyOnlyLabel,
+			label: LocalizedStrings.COPY_ONLY,
 			checked: false,
-			onChange: (viaKeyboard) => { }
+			onChange: (viaKeyboard) => { },
+			ariaLabel: LocalizedStrings.COPY_ONLY
 		});
 
 		// Encryption checkbox
 		this.encryptCheckBox = new Checkbox(this.encryptElement.nativeElement, {
-			label: this.encryptionLabel,
+			label: LocalizedStrings.ENCRYPTION,
 			checked: false,
-			onChange: (viaKeyboard) => self.onChangeEncrypt()
+			onChange: (viaKeyboard) => self.onChangeEncrypt(),
+			ariaLabel: LocalizedStrings.ENCRYPTION
 		});
 
 		// Verify backup checkbox
 		this.verifyCheckBox = new Checkbox(this.verifyElement.nativeElement, {
-			label: this.verifyContainerLabel,
+			label: LocalizedStrings.VERIFY_CONTAINER,
 			checked: false,
-			onChange: (viaKeyboard) => { }
+			onChange: (viaKeyboard) => { },
+			ariaLabel: LocalizedStrings.VERIFY_CONTAINER
 		});
 
 		// Perform checksum checkbox
 		this.checksumCheckBox = new Checkbox(this.checksumElement.nativeElement, {
-			label: this.checksumContainerLabel,
+			label: LocalizedStrings.CHECKSUM_CONTAINER,
 			checked: false,
-			onChange: (viaKeyboard) => { }
+			onChange: (viaKeyboard) => { },
+			ariaLabel: LocalizedStrings.CHECKSUM_CONTAINER
 		});
 
 		// Continue on error checkbox
 		this.continueOnErrorCheckBox = new Checkbox(this.continueOnErrorElement.nativeElement, {
-			label: this.continueOnErrorContainerLabel,
+			label: LocalizedStrings.CONTINUE_ON_ERROR_CONTAINER,
 			checked: false,
-			onChange: (viaKeyboard) => { }
+			onChange: (viaKeyboard) => { },
+			ariaLabel: LocalizedStrings.CONTINUE_ON_ERROR_CONTAINER
 		});
 
 		// Set backup name
-		this.backupNameBox = new InputBox(this.backupNameElement.nativeElement, this._bootstrapService.contextViewService);
+		this.backupNameBox = new InputBox(this.backupNameElement.nativeElement, this._bootstrapService.contextViewService, {
+			ariaLabel: LocalizedStrings.BACKUP_NAME
+		});
 
 		// Set backup path list
 		this.pathListBox = new ListBox([], '', this._bootstrapService.contextViewService, this._bootstrapService.clipboardService);
@@ -264,13 +277,13 @@ export class BackupComponent {
 		this.removePathButton.title = localize('removeFile', 'Remove files');
 
 		// Set compression
-		this.compressionSelectBox = new SelectBox(this.compressionOptions, this.compressionOptions[0]);
+		this.compressionSelectBox = new SelectBox(this.compressionOptions, this.compressionOptions[0], this._bootstrapService.contextViewService);
 		this.compressionSelectBox.render(this.compressionElement.nativeElement);
 
 		// Set encryption
-		this.algorithmSelectBox = new SelectBox(this.encryptionAlgorithms, this.encryptionAlgorithms[0]);
+		this.algorithmSelectBox = new SelectBox(this.encryptionAlgorithms, this.encryptionAlgorithms[0], this._bootstrapService.contextViewService);
 		this.algorithmSelectBox.render(this.encryptionAlgorithmElement.nativeElement);
-		this.encryptorSelectBox = new SelectBox([], '');
+		this.encryptorSelectBox = new SelectBox([], '', this._bootstrapService.contextViewService);
 		this.encryptorSelectBox.render(this.encryptorElement.nativeElement);
 
 		// Set media
@@ -278,14 +291,18 @@ export class BackupComponent {
 			this._bootstrapService.contextViewService,
 			{
 				validationOptions: {
-					validation: (value: string) => !value ? ({ type: MessageType.ERROR, content: this.mediaNameRequiredError }) : null
-				}
-			});
+					validation: (value: string) => !value ? ({ type: MessageType.ERROR, content: LocalizedStrings.MEDIA_NAME_REQUIRED_ERROR }) : null
+				},
+				ariaLabel: LocalizedStrings.NEW_MEDIA_SET_NAME
+			}
+		);
 
-		this.mediaDescriptionBox = new InputBox(this.mediaDescriptionElement.nativeElement, this._bootstrapService.contextViewService);
+		this.mediaDescriptionBox = new InputBox(this.mediaDescriptionElement.nativeElement, this._bootstrapService.contextViewService, {
+			ariaLabel: LocalizedStrings.NEW_MEDIA_SET_DESCRIPTION
+		});
 
 		// Set backup retain days
-		let invalidInputMessage = localize('invalidInput', 'Invalid input. Value must be greater than or equal 0.');
+		let invalidInputMessage = localize('backupComponent.invalidInput', 'Invalid input. Value must be greater than or equal 0.');
 		this.backupRetainDaysBox = new InputBox(this.backupDaysElement.nativeElement,
 			this._bootstrapService.contextViewService,
 			{
@@ -300,7 +317,8 @@ export class BackupComponent {
 							return null;
 						}
 					}
-				}
+				},
+				ariaLabel: LocalizedStrings.SET_BACKUP_RETAIN_DAYS
 			});
 
 		// Disable elements
@@ -316,14 +334,14 @@ export class BackupComponent {
 		// Set category view for advanced options. This should be defined in ngAfterViewInit so that it correctly calculates the text height after data binding.
 		var splitview = new SplitView(this.advancedOptionElement.nativeElement);
 		var advancedBodySize = DOM.getTotalHeight(this.advancedOptionBodyElement.nativeElement);
-		var categoryView = new CategoryView(this.advancedConfigurationLabel, this.advancedOptionBodyElement.nativeElement, true, advancedBodySize, this._advancedHeaderSize);
+		var categoryView = new CategoryView(LocalizedStrings.ADVANCED_CONFIGURATION, this.advancedOptionBodyElement.nativeElement, true, advancedBodySize, this._advancedHeaderSize);
 		splitview.addView(categoryView);
 		splitview.layout(advancedBodySize + this._advancedHeaderSize);
 
 		this._backupUiService.onShowBackupDialog();
 	}
 
-	private onGetBackupConfigInfo(param: DashboardComponentParams) {
+	private onGetBackupConfigInfo(param: { connection: IConnectionProfile, ownerUri: string }) {
 		// Show spinner
 		this.showSpinner();
 		this.backupEnabled = false;
@@ -367,21 +385,21 @@ export class BackupComponent {
 	private addFooterButtons(): void {
 		// Set script footer button
 		this.scriptButton = new Button(this.scriptButtonElement.nativeElement);
-		this.scriptButton.label = localize('script', 'Script');
+		this.scriptButton.label = localize('backupComponent.script', 'Script');
 		this.addButtonClickHandler(this.scriptButton, () => this.onScript());
 		this._toDispose.push(attachButtonStyler(this.scriptButton, this._bootstrapService.themeService));
 		this.scriptButton.enabled = false;
 
 		// Set backup footer button
 		this.backupButton = new Button(this.backupButtonElement.nativeElement);
-		this.backupButton.label = localize('backup', 'Backup');
+		this.backupButton.label = localize('backupComponent.backup', 'Backup');
 		this.addButtonClickHandler(this.backupButton, () => this.onOk());
 		this._toDispose.push(attachButtonStyler(this.backupButton, this._bootstrapService.themeService));
 		this.backupEnabled = false;
 
 		// Set cancel footer button
 		this.cancelButton = new Button(this.cancelButtonElement.nativeElement);
-		this.cancelButton.label = localize('cancel', 'Cancel');
+		this.cancelButton.label = localize('backupComponent.cancel', 'Cancel');
 		this.addButtonClickHandler(this.cancelButton, () => this.onCancel());
 		this._toDispose.push(attachButtonStyler(this.cancelButton, this._bootstrapService.themeService));
 	}
@@ -584,7 +602,7 @@ export class BackupComponent {
 			if (strings.isFalsyOrWhitespace(this.mediaNameBox.value)) {
 				this.backupEnabled = false;
 				this.backupButton.enabled = false;
-				this.mediaNameBox.showMessage({ type: MessageType.ERROR, content: this.mediaNameRequiredError });
+				this.mediaNameBox.showMessage({ type: MessageType.ERROR, content: LocalizedStrings.MEDIA_NAME_REQUIRED_ERROR });
 			}
 		} else {
 			this.enableBackupButton();

@@ -2,21 +2,36 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { registerDashboardWidget } from 'sql/platform/dashboard/common/widgetRegistry';
-import { Extensions as TaskExtensions, ITaskRegistry } from 'sql/platform/tasks/taskRegistry';
-import { Registry } from 'vs/platform/registry/common/platform';
+import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 
-let taskRegistry = <ITaskRegistry>Registry.as(TaskExtensions.TaskContribution);
+import { IJSONSchema } from 'vs/base/common/jsonSchema';
 
-let tasksSchema: IJSONSchema = {
-	type: 'object',
-	properties: {
-		tasks: {
-			type: 'object',
-			properties: taskRegistry.taskSchemas
-		}
+const singleTaskSchema: IJSONSchema = {
+	type: 'string',
+	enum: TaskRegistry.getTasks()
+};
+
+const tasksSchema: IJSONSchema = {
+	type: 'array',
+	items: {
+		anyOf: [
+			singleTaskSchema,
+			{
+				type: 'object',
+				properties: {
+					name: singleTaskSchema,
+					when: {
+						type: 'string'
+					}
+				}
+			}
+		]
 	}
 };
+
+TaskRegistry.onTaskRegistered(e => {
+	singleTaskSchema.enum.push(e);
+});
 
 registerDashboardWidget('tasks-widget', '', tasksSchema);

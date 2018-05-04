@@ -9,11 +9,16 @@ panel.dashboard-panel > .tabbedPanel {
 	box-sizing: border-box;
 }
 
-panel.dashboard-panel > .tabbedPanel > .title > .tabList .tab-header .tab > .tabLabel.active {
+panel.dashboard-panel > .tabbedPanel > .title > .monaco-scrollable-element > .tabList .tab-header .tab > .tabLabel.active {
 	border-bottom: 0px solid;
 }
 
-panel.dashboard-panel > .tabbedPanel > .title > .tabList .tab-header {
+panel.dashboard-panel > .tabbedPanel .tabList .tab .tabLabel {
+	opacity: 1;
+}
+
+panel.dashboard-panel > .tabbedPanel > .title > .title-actions,
+panel.dashboard-panel > .tabbedPanel > .title > .monaco-scrollable-element > .tabList .tab-header {
 	box-sizing: border-box;
 	border: 1px solid transparent;
 }

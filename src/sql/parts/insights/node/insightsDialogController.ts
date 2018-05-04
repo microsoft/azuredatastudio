@@ -11,15 +11,15 @@ import * as Utils from 'sql/parts/connection/common/utils';
 import { IInsightsDialogModel, insertValueRegex } from 'sql/parts/insights/common/interfaces';
 import { error } from 'sql/base/common/log';
 
-import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'data';
+import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'sqlops';
 
 import Severity from 'vs/base/common/severity';
 import * as types from 'vs/base/common/types';
 import * as pfs from 'vs/base/node/pfs';
 import * as nls from 'vs/nls';
-import { IMessageService } from 'vs/platform/message/common/message';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class InsightsDialogController {
 	private _queryRunner: QueryRunner;
@@ -30,7 +30,7 @@ export class InsightsDialogController {
 
 	constructor(
 		private _model: IInsightsDialogModel,
-		@IMessageService private _messageService: IMessageService,
+		@INotificationService private _notificationService: INotificationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -41,7 +41,10 @@ export class InsightsDialogController {
 		// execute string
 		if (typeof input === 'object') {
 			if (connectionProfile === undefined) {
-				this._messageService.show(Severity.Error, nls.localize("insightsInputError", "No Connection Profile was passed to insights flyout"));
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: nls.localize("insightsInputError", "No Connection Profile was passed to insights flyout")
+				});
 				return Promise.resolve();
 			}
 			if (types.isStringArray(input.query)) {
@@ -88,14 +91,20 @@ export class InsightsDialogController {
 							}).then(() => resolve());
 						},
 						error => {
-							this._messageService.show(Severity.Error, nls.localize("insightsFileError", "There was an error reading the query file: ") + error);
+							this._notificationService.notify({
+								severity: Severity.Error,
+								message: nls.localize("insightsFileError", "There was an error reading the query file: ") + error
+							});
 							resolve();
 						}
 					);
 				});
 			} else {
 				error('Error reading details Query: ', input);
-				this._messageService.show(Severity.Error, nls.localize("insightsConfigError", "There was an error parsing the insight config; could not find query array/string or queryfile"));
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: nls.localize("insightsConfigError", "There was an error parsing the insight config; could not find query array/string or queryfile")
+				});
 				return Promise.resolve();
 			}
 		}

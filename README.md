@@ -1,17 +1,19 @@
 # SQL Operations Studio
 
+[![Join the chat at https://gitter.im/Microsoft/sqlopsstudio](https://badges.gitter.im/Microsoft/sqlopsstudio.svg)](https://gitter.im/Microsoft/sqlopsstudio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 SQL Operations Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download SQL Operations Studio February Public Preview**
+**Download SQL Operations Studio March Public Preview**
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=867998
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=867997
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=867999
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=868000
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=868002
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=868001
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=872717
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=872718
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=872719
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=872720
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=872722
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=872721
 
 Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instructions.
 
@@ -48,23 +50,33 @@ please see the document [How to Contribute](https://github.com/Microsoft/sqlopss
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
+## Localization
+SQL Operations Studio localization is now open for community contributions. You can contribute to localization for both software and docs. https://aka.ms/SQLOpsStudioLoc
+
+Localization is now opened for 10 languages: French, Italian, German, Spanish, Simplified Chinese, Traditional Chinese, Japanese, Korean, Russian, and Portuguese (Brazil). Help us make SQL Operations Studio available in your language!
+
 ## Privacy Statement
 The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement) describes the privacy statement of this software.
 
 ## Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* westerncj for `Removed duplicate contribution from README.md (#753)`
+* ntovas for `Fix for duplicate extensions shown in "Save File" dialog. (#779)`
 * SebastianPfliegel for `Add cursor snippet (#475)`
 * mikaoelitiana for fix: `revert README and CONTRIBUTING after last VSCode merge (#574)`
 * alextercete for `Reinstate menu item to install from VSIX (#682)`
 * alextercete for `Fix "No extension gallery service configured" error (#427)`
-* SebastianPfliegel for `Add cursor snippet (#475)`
 * mwiedemeyer for `Fix #58: Default sort order for DB size widget (#111)`
 * AlexTroshkin for `Show disconnect in context menu only when connectionProfile connected (#150)`
 * AlexTroshkin for `Fix #138: Invalid syntax color highlighting (identity not highlighting) (#140))`
 * stebet for `Fix #153: Fixing sql snippets that failed on a DB with case-sensitive collation. (#152)`
 * SebastianPfliegel `Remove sqlExtensionHelp (#312)`
 * olljanat for `Implemented npm version check (#314)`
+* Adam Mechanic for helping with the `whoisactive` extension
+* All community localization contributors *(will get list of individuals next month)*
+
+And of course we'd like to thank the authors of all upstream dependencies.  Please see a full list in the [ThirdPartyNotices.txt](https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/ThirdPartyNotices.txt)
 
 ## License
 

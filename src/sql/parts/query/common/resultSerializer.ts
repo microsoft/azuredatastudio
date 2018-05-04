@@ -7,13 +7,12 @@ import * as ConnectionConstants from 'sql/parts/connection/common/constants';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import { SaveResultsRequestParams } from 'data';
+import { SaveResultsRequestParams } from 'sqlops';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { ISaveRequest, SaveFormat } from 'sql/parts/grid/common/interfaces';
 import * as PathUtilities from 'sql/common/pathUtilities';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IMessageService, Severity } from 'vs/platform/message/common/message';
 import { IOutputService, IOutputChannel, IOutputChannelRegistry, Extensions as OutputExtensions } from 'vs/workbench/parts/output/common/output';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -21,13 +20,18 @@ import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
 import URI from 'vs/base/common/uri';
-import { IUntitledEditorService, UNTITLED_SCHEMA } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { Schemas } from 'vs/base/common/network';
 import * as paths from 'vs/base/common/paths';
 import * as nls from 'vs/nls';
 import * as pretty from 'pretty-data';
 
 import { ISlickRange } from 'angular2-slickgrid';
 import * as path from 'path';
+import Severity from 'vs/base/common/severity';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+
+let prevSavePath: string;
 
 /**
  *  Handles save results request from the context menu of slickGrid
@@ -41,7 +45,6 @@ export class ResultSerializer {
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IMessageService private _messageService: IMessageService,
 		@IOutputService private _outputService: IOutputService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
@@ -49,7 +52,8 @@ export class ResultSerializer {
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IWindowsService private _windowsService: IWindowsService,
 		@IWindowService private _windowService: IWindowService,
-		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService
+		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
+		@INotificationService private _notificationService: INotificationService
 	) { }
 
 	/**
@@ -60,11 +64,12 @@ export class ResultSerializer {
 		this._uri = uri;
 
 		// prompt for filepath
-		let filePath = self.promptForFilepath(saveRequest);
-		if (filePath) {
-			return self.sendRequestToService(filePath, saveRequest.batchIndex, saveRequest.resultSetNumber, saveRequest.format, saveRequest.selection ? saveRequest.selection[0] : undefined);
-		}
-		return Promise.resolve(undefined);
+		return self.promptForFilepath(saveRequest).then(filePath => {
+			if (filePath) {
+				return self.sendRequestToService(filePath, saveRequest.batchIndex, saveRequest.resultSetNumber, saveRequest.format, saveRequest.selection ? saveRequest.selection[0] : undefined);
+			}
+			return Promise.resolve(undefined);
+		});
 	}
 
 	/**
@@ -101,7 +106,7 @@ export class ResultSerializer {
 	private getUntitledFileUri(columnName: string): URI {
 		let fileName = columnName;
 
-		let uri: URI = URI.from({ scheme: UNTITLED_SCHEMA, path: fileName });
+		let uri: URI = URI.from({ scheme: Schemas.untitled, path: fileName });
 
 		// If the current filename is taken, try another up to a max number
 		if (this._untitledEditorService.exists(uri)) {
@@ -109,7 +114,7 @@ export class ResultSerializer {
 			while (i < ResultSerializer.MAX_FILENAMES
 				&& this._untitledEditorService.exists(uri)) {
 				fileName = [columnName, i.toString()].join('-');
-				uri = URI.from({ scheme: UNTITLED_SCHEMA, path: fileName });
+				uri = URI.from({ scheme: Schemas.untitled, path: fileName });
 				i++;
 			}
 			if (this._untitledEditorService.exists(uri)) {
@@ -138,15 +143,16 @@ export class ResultSerializer {
 		this.outputChannel.append(message);
 	}
 
-	private promptForFilepath(saveRequest: ISaveRequest): string {
-		let filepathPlaceHolder = PathUtilities.resolveCurrentDirectory(this._uri, this.rootPath);
+	private promptForFilepath(saveRequest: ISaveRequest): Thenable<string> {
+		let filepathPlaceHolder = (prevSavePath) ? prevSavePath : PathUtilities.resolveCurrentDirectory(this._uri, this.rootPath);
 		filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
-
-		let filePath: string = this._windowService.showSaveDialog({
-			title: nls.localize('saveAsFileTitle', 'Choose Results File'),
+		return this._windowService.showSaveDialog({
+			title: nls.localize('resultsSerializer.saveAsFileTitle', 'Choose Results File'),
 			defaultPath: paths.normalize(filepathPlaceHolder, true)
+		}).then(filePath => {
+			prevSavePath = filePath;
+			return Promise.resolve(filePath);
 		});
-		return filePath;
 	}
 
 	private getResultsDefaultFilename(saveRequest: ISaveRequest): string {
@@ -246,10 +252,16 @@ export class ResultSerializer {
 		// send message to the sqlserverclient for converting results to the requested format and saving to filepath
 		return this._queryManagementService.saveResults(saveResultsParams).then(result => {
 			if (result.messages) {
-				this._messageService.show(Severity.Error, LocalizedConstants.msgSaveFailed + result.messages);
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: LocalizedConstants.msgSaveFailed + result.messages
+				});
 				this.logToOutputChannel(LocalizedConstants.msgSaveFailed + result.messages);
 			} else {
-				this._messageService.show(Severity.Info, LocalizedConstants.msgSaveSucceeded + this._filePath);
+				this._notificationService.notify({
+					severity: Severity.Info,
+					message: LocalizedConstants.msgSaveSucceeded + this._filePath
+				});
 				this.logToOutputChannel(LocalizedConstants.msgSaveSucceeded + filePath);
 				this.openSavedFile(this._filePath, format);
 			}
@@ -257,7 +269,10 @@ export class ResultSerializer {
 			// Telemetry.sendTelemetryEvent('SavedResults', { 'type': format });
 
 		}, error => {
-			this._messageService.show(Severity.Error, LocalizedConstants.msgSaveFailed + error);
+			this._notificationService.notify({
+				severity: Severity.Error,
+				message: LocalizedConstants.msgSaveFailed + error
+			});
 			this.logToOutputChannel(LocalizedConstants.msgSaveFailed + error);
 		});
 	}
@@ -277,7 +292,10 @@ export class ResultSerializer {
 			this._editorService.openEditor({ resource: uri }).then((result) => {
 
 			}, (error: any) => {
-				this._messageService.show(Severity.Error, error);
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: error
+				});
 			});
 		}
 	}
@@ -293,7 +311,10 @@ export class ResultSerializer {
 			(success) => {
 			},
 			(error: any) => {
-				this._messageService.show(Severity.Error, error);
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: error
+				});
 			}
 			);
 	}

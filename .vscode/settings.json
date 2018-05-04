@@ -10,6 +10,9 @@
 			"when": "$(basename).ts"
 		}
 	},
+	"files.associations": {
+		"OSSREADME.json": "jsonc"
+	},
 	"search.exclude": {
 		"**/node_modules": true,
 		"**/bower_components": true,
@@ -35,6 +38,5 @@
 			}
 		}
 	],
-	"typescript.tsdk": "node_modules/typescript/lib",
-	"git.ignoreLimitWarning": true
+	"typescript.tsdk": "node_modules/typescript/lib"
 }

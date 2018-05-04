@@ -6,12 +6,15 @@
 
 // {{SQL CARBON EDIT}}
 /*
-import URI from 'vs/base/common/uri';
+
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { IDebugService, IConfig, IDebugConfigurationProvider } from 'vs/workbench/parts/debug/common/debug';
+import uri from 'vs/base/common/uri';
+import { IDebugService, IConfig, IDebugConfigurationProvider, IBreakpoint, IFunctionBreakpoint, IBreakpointData } from 'vs/workbench/parts/debug/common/debug';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { ExtHostContext, ExtHostDebugServiceShape, MainThreadDebugServiceShape, DebugSessionUUID, MainContext, IExtHostContext, IBreakpointsDelta, ISourceBreakpointData, IFunctionBreakpointData } from '../node/extHost.protocol';
+import {
+	ExtHostContext, ExtHostDebugServiceShape, MainThreadDebugServiceShape, DebugSessionUUID, MainContext,
+	IExtHostContext, IBreakpointsDeltaDto, ISourceMultiBreakpointDto, ISourceBreakpointDto, IFunctionBreakpointDto
+} from '../node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import severity from 'vs/base/common/severity';
 
@@ -24,10 +27,9 @@ export class MainThreadDebugService implements MainThreadDebugServiceShape {
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@IDebugService private debugService: IDebugService,
-		@IWorkspaceContextService private contextService: IWorkspaceContextService,
+		@IDebugService private debugService: IDebugService
 	) {
-		this._proxy = extHostContext.get(ExtHostContext.ExtHostDebugService);
+		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostDebugService);
 		this._toDispose = [];
 		this._toDispose.push(debugService.onDidNewProcess(proc => this._proxy.$acceptDebugSessionStarted(<DebugSessionUUID>proc.getId(), proc.configuration.type, proc.getName(false))));
 		this._toDispose.push(debugService.onDidEndProcess(proc => this._proxy.$acceptDebugSessionTerminated(<DebugSessionUUID>proc.getId(), proc.configuration.type, proc.getName(false))));
@@ -61,15 +63,15 @@ export class MainThreadDebugService implements MainThreadDebugServiceShape {
 			// set up a handler to send more
 			this._toDispose.push(this.debugService.getModel().onDidChangeBreakpoints(e => {
 				if (e) {
-					const delta: IBreakpointsDelta = {};
+					const delta: IBreakpointsDeltaDto = {};
 					if (e.added) {
-						delta.added = this.toWire(e.added);
+						delta.added = this.convertToDto(e.added);
 					}
 					if (e.removed) {
 						delta.removed = e.removed.map(x => x.getId());
 					}
 					if (e.changed) {
-						delta.changed = this.toWire(e.changed);
+						delta.changed = this.convertToDto(e.changed);
 					}
 
 					if (delta.added || delta.removed || delta.changed) {
@@ -83,7 +85,7 @@ export class MainThreadDebugService implements MainThreadDebugServiceShape {
 			const fbps = this.debugService.getModel().getFunctionBreakpoints();
 			if (bps.length > 0 || fbps.length > 0) {
 				this._proxy.$acceptBreakpointsDelta({
-					added: this.toWire(bps).concat(this.toWire(fbps))
+					added: this.convertToDto(bps).concat(this.convertToDto(fbps))
 				});
 			}
 		}
@@ -91,15 +93,42 @@ export class MainThreadDebugService implements MainThreadDebugServiceShape {
 		return TPromise.wrap<void>(undefined);
 	}
 
-	private toWire(bps: (IBreakpoint | IFunctionBreakpoint)[]): (ISourceBreakpointData | IFunctionBreakpointData)[] {
+	public $registerBreakpoints(DTOs: (ISourceMultiBreakpointDto | IFunctionBreakpointDto)[]): TPromise<void> {
 
+		for (let dto of DTOs) {
+			if (dto.type === 'sourceMulti') {
+				const rawbps = dto.lines.map(l =>
+					<IBreakpointData>{
+						id: l.id,
+						enabled: l.enabled,
+						lineNumber: l.line + 1,
+						column: l.character > 0 ? l.character + 1 : 0,
+						condition: l.condition,
+						hitCondition: l.hitCondition
+					}
+				);
+				this.debugService.addBreakpoints(uri.revive(dto.uri), rawbps);
+			} else if (dto.type === 'function') {
+				this.debugService.addFunctionBreakpoint(dto.functionName, dto.id);
+			}
+		}
+		return void 0;
+	}
+
+	public $unregisterBreakpoints(breakpointIds: string[], functionBreakpointIds: string[]): TPromise<void> {
+		breakpointIds.forEach(id => this.debugService.removeBreakpoints(id));
+		functionBreakpointIds.forEach(id => this.debugService.removeFunctionBreakpoints(id));
+		return void 0;
+	}
+
+	private convertToDto(bps: (IBreakpoint | IFunctionBreakpoint)[]): (ISourceBreakpointDto | IFunctionBreakpointDto)[] {
 		return bps.map(bp => {
 			if ('name' in bp) {
 				const fbp = <IFunctionBreakpoint>bp;
-				return <IFunctionBreakpointData>{
+				return <IFunctionBreakpointDto>{
 					type: 'function',
-					id: bp.getId(),
-					enabled: bp.enabled,
+					id: fbp.getId(),
+					enabled: fbp.enabled,
 					functionName: fbp.name,
 					hitCondition: bp.hitCondition,
 					// {{SQL CARBON EDIT}}
@@ -107,21 +136,21 @@ export class MainThreadDebugService implements MainThreadDebugServiceShape {
 				};
 			} else {
 				const sbp = <IBreakpoint>bp;
-				return <ISourceBreakpointData>{
+				return <ISourceBreakpointDto>{
 					type: 'source',
-					id: bp.getId(),
-					enabled: bp.enabled,
+					id: sbp.getId(),
+					enabled: sbp.enabled,
 					condition: sbp.condition,
-					hitCondition: bp.hitCondition,
+					hitCondition: sbp.hitCondition,
 					uri: sbp.uri,
 					line: sbp.lineNumber > 0 ? sbp.lineNumber - 1 : 0,
-					character: (typeof sbp.column === 'number' && sbp.column > 0) ? sbp.column - 1 : 0
+					character: (typeof sbp.column === 'number' && sbp.column > 0) ? sbp.column - 1 : 0,
 				};
 			}
 		});
 	}
 
-	public $registerDebugConfigurationProvider(debugType: string, hasProvide: boolean, hasResolve: boolean, handle: number): TPromise<void> {
+	public $registerDebugConfigurationProvider(debugType: string, hasProvide: boolean, hasResolve: boolean, hasDebugAdapterExecutable: boolean, handle: number): TPromise<void> {
 
 		const provider = <IDebugConfigurationProvider>{
 			type: debugType
@@ -136,6 +165,11 @@ export class MainThreadDebugService implements MainThreadDebugServiceShape {
 				return this._proxy.$resolveDebugConfiguration(handle, folder, debugConfiguration);
 			};
 		}
+		if (hasDebugAdapterExecutable) {
+			provider.debugAdapterExecutable = (folder) => {
+				return this._proxy.$debugAdapterExecutable(handle, folder);
+			};
+		}
 		this.debugService.getConfigurationManager().registerDebugConfigurationProvider(handle, provider);
 
 		return TPromise.wrap<void>(undefined);
@@ -146,9 +180,10 @@ export class MainThreadDebugService implements MainThreadDebugServiceShape {
 		return TPromise.wrap<void>(undefined);
 	}
 
-	public $startDebugging(folderUri: uri | undefined, nameOrConfiguration: string | IConfig): TPromise<boolean> {
-		const folder = folderUri ? this.contextService.getWorkspace().folders.filter(wf => wf.uri.toString() === folderUri.toString()).pop() : undefined;
-		return this.debugService.startDebugging(folder, nameOrConfiguration).then(x => {
+	public $startDebugging(_folderUri: uri | undefined, nameOrConfiguration: string | IConfig): TPromise<boolean> {
+		const folderUri = _folderUri ? uri.revive(_folderUri) : undefined;
+		const launch = this.debugService.getConfigurationManager().getLaunch(folderUri);
+		return this.debugService.startDebugging(launch, nameOrConfiguration).then(x => {
 			return true;
 		}, err => {
 			return TPromise.wrapError(err && err.message ? err.message : 'cannot start debugging');
@@ -159,10 +194,10 @@ export class MainThreadDebugService implements MainThreadDebugServiceShape {
 		const process = this.debugService.getModel().getProcesses().filter(p => p.getId() === sessionId).pop();
 		if (process) {
 			return process.session.custom(request, args).then(response => {
-				if (response.success) {
+				if (response && response.success) {
 					return response.body;
 				} else {
-					return TPromise.wrapError(new Error(response.message));
+					return TPromise.wrapError(new Error(response ? response.message : 'custom request failed'));
 				}
 			});
 		}

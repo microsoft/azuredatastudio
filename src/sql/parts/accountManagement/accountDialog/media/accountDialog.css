@@ -46,6 +46,10 @@
 	background-repeat: no-repeat;
 }
 
+.account-view .provider-view .list-row .actions-container .action-item .action-label.icon.remove {
+	background-size: 14px !important;
+}
+
 .account-view .provider-view .list-row .actions-container {
 	display: none;
 }
