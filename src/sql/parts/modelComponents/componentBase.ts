@@ -23,6 +23,7 @@ export class ItemDescriptor<T> {
 
 export abstract class ComponentBase extends Disposable implements IComponent, OnDestroy, OnInit {
 	protected properties: { [key: string]: any; } = {};
+	protected _valid: boolean = true;
 	constructor (
 		protected _changeRef: ChangeDetectorRef) {
 			super();
@@ -92,10 +93,26 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		let title = properties['title'];
 		return title ? <string>title : '';
 	}
+
+	public get valid(): boolean {
+		return this._valid;
+	}
+
+	public setValid(valid: boolean): void {
+		if (this._valid !== valid) {
+			this._valid = valid;
+			this._onEventEmitter.fire({
+				eventType: ComponentEventType.validityChanged,
+				args: this.valid
+			});
+		}
+	}
 }
 
 export abstract class ContainerBase<T> extends ComponentBase {
 	protected items: ItemDescriptor<T>[];
+	private _childrenValid: boolean = true;
+	private _containerValid: boolean = true;
 
 	constructor(
 		_changeRef: ChangeDetectorRef
@@ -107,6 +124,11 @@ export abstract class ContainerBase<T> extends ComponentBase {
 	/// IComponent container-related implementation
 	public addToContainer(componentDescriptor: IComponentDescriptor, config: any): void {
 		this.items.push(new ItemDescriptor(componentDescriptor, config));
+		// this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.onEvent(event => {
+		// 	if (event.eventType === ComponentEventType.validityChanged) {
+		// 		this.recomputeValidity();
+		// 	}
+		// }));
 		this._changeRef.detectChanges();
 	}
 
@@ -114,6 +136,19 @@ export abstract class ContainerBase<T> extends ComponentBase {
 		this.items = [];
 		this._changeRef.detectChanges();
 	}
+
+	// private recomputeValidity(): void {
+	// 	this._childrenValid = this.items.every(item => {
+	// 		let itemIsValid = this.modelStore.tryRunOnComponent(item.descriptor.id, component => component.valid);
+	// 		return itemIsValid === true || itemIsValid === undefined;
+	// 	});
+	// 	super.setValid(this._childrenValid && this._containerValid);
+	// }
+
+	// public setValid(valid: boolean) {
+	// 	this._containerValid = valid;
+	// 	super.setValid(this._childrenValid && this._containerValid);
+	// }
 
 	abstract setLayout (layout: any): void;
 }

@@ -21,6 +21,8 @@ export interface IComponent {
 	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any) => void;
 	setLayout?: (layout: any) => void;
 	setProperties?: (properties: { [key: string]: any; }) => void;
+	readonly valid?: boolean;
+	setValid(valid: boolean): void;
 	title?: string;
 	onEvent?: Event<IComponentEventArgs>;
 }
@@ -60,7 +62,8 @@ export interface IComponentEventArgs {
 export enum ComponentEventType {
 	PropertiesChanged,
 	onDidChange,
-	onDidClick
+	onDidClick,
+	validityChanged
 }
 
 export interface IModelStore {
@@ -85,4 +88,11 @@ export interface IModelStore {
 	 * @memberof IModelStore
 	 */
 	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): Promise<T>;
+	/**
+	 * Run on a component immediately if it exists, otherwise return undefined
+	 * @param {string} componentId unique identifier of the component
+	 * @param {(component: IComponent) => void} action some action to perform
+	 * @memberof IModelStore 
+	 */
+	tryRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): T;
 }

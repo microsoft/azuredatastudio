@@ -30,6 +30,7 @@ declare module 'sqlops' {
 	export interface ComponentBuilder<T extends Component> {
 		component(): T;
 		withProperties<U>(properties: U): ComponentBuilder<T>;
+		withValidation(validation: (component: T) => boolean): ComponentBuilder<T>;
 	}
 	export interface ContainerBuilder<T extends Component, TLayout, TItemLayout> extends ComponentBuilder<T> {
 		withLayout(layout: TLayout): ContainerBuilder<T, TLayout, TItemLayout>;
@@ -55,6 +56,21 @@ declare module 'sqlops' {
 		 * @memberof Component
 		 */
 		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
+
+		/**
+		 * Event fired to notify that the component's validity has changed
+		 */
+		readonly onValidityChanged: vscode.Event<boolean>;
+
+		/**
+		 * Whether the component is valid or not
+		 */
+		readonly valid: boolean;
+
+		/**
+		 * Manually run the component's validations. Otherwise they will run whenever the properties are updated
+		 */
+		validate(): void
 	}
 
 	export interface FormComponent {
@@ -251,6 +267,16 @@ declare module 'sqlops' {
 		 * The model backing the model-based view
 		 */
 		readonly modelBuilder: ModelBuilder;
+
+		/**
+		 * Whether or not the model view's root component is valid
+		 */
+		readonly valid: boolean;
+
+		/**
+		 * Raised when the model view's valid property changes
+		 */
+		readonly onValidityChanged: vscode.Event<boolean>;
 
 		/**
 		 * Initializes the model with a root component definition.
