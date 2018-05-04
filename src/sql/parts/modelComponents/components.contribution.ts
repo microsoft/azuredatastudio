@@ -9,6 +9,7 @@ import CardComponent from './card.component';
 import InputBoxComponent from './inputbox.component';
 import DropDownComponent from './dropdown.component';
 import ButtonComponent from './button.component';
+import CheckBoxComponent from './checkbox.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -29,3 +30,7 @@ registerComponentType(DROPDOWN_COMPONENT, ModelComponentTypes.DropDown, DropDown
 
 export const BUTTON_COMPONENT = 'button-component';
 registerComponentType(BUTTON_COMPONENT, ModelComponentTypes.Button, ButtonComponent);
+
+
+export const CHECKBOX_COMPONENT = 'checkbox-component';
+registerComponentType(CHECKBOX_COMPONENT, ModelComponentTypes.CheckBox, CheckBoxComponent);

@@ -32,13 +32,9 @@ jobhistory-component {
 }
 
 #jobsDiv .jobview-grid {
-    height: 96%;
+    height: 94.7%;
 	width : 100%;
     display: block;
-}
-
-#jobsDiv .jobview-grid > .monaco-table > div[class^="slickgrid_"] {
-    overflow: scroll !important;
 }
 
 .vs-dark #jobsDiv .slick-header-column {

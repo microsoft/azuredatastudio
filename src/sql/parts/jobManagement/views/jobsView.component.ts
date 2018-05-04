@@ -51,7 +51,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200, id: 'name' },
+		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200 , id: 'name' },
 		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', minWidth: 150, id: 'lastRun' },
 		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', minWidth: 150, id: 'nextRun' },
 		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', minWidth: 70, id: 'enabled' },
@@ -74,6 +74,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _serverName: string;
 	private _isCloud: boolean;
 	private _showProgressWheel: boolean;
+	private _tabHeight: number;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -133,7 +134,8 @@ export class JobsViewComponent implements AfterContentChecked {
 			syncColumnCellResize: true,
 			enableColumnReorder: false,
 			rowHeight: 45,
-			enableCellNavigation: true
+			enableCellNavigation: true,
+			forceFitColumns: true
 		};
 
 		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
@@ -201,9 +203,8 @@ export class JobsViewComponent implements AfterContentChecked {
 		this.dataView.beginUpdate();
 		this.dataView.setItems(jobViews);
 		this.dataView.endUpdate();
-
-		this._table.resizeCanvas();
 		this._table.autosizeColumns();
+		this._table.resizeCanvas();
 		let expandedJobs = this._agentViewComponent.expanded;
 		let expansions = 0;
 		for (let i = 0; i < jobs.length; i++){
@@ -225,6 +226,19 @@ export class JobsViewComponent implements AfterContentChecked {
 		});
 		this._showProgressWheel = false;
 		this._cd.detectChanges();
+		const self = this;
+		this._tabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
+		$(window).resize((e) => {
+			let currentTabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
+			if (currentTabHeight < self._tabHeight) {
+				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
+				self._table.resizeCanvas();
+			} else {
+				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
+				self._table.resizeCanvas();
+			}
+			self._tabHeight = currentTabHeight;
+		});
 		this.loadJobHistories();
 	}
 

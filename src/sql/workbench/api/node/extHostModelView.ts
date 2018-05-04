@@ -54,6 +54,11 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return this.withEventHandler(new InputBoxWrapper(this._proxy, this._handle, id), id);
 	}
 
+	checkBox(): sqlops.ComponentBuilder<sqlops.CheckBoxComponent> {
+		let id = this.getNextComponentId();
+		return this.withEventHandler(new CheckBoxWrapper(this._proxy, this._handle, id), id);
+	}
+
 	button(): sqlops.ComponentBuilder<sqlops.ButtonComponent> {
 		let id = this.getNextComponentId();
 		return this.withEventHandler(new ButtonWrapper(this._proxy, this._handle, id), id);
@@ -387,6 +392,34 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 	}
 
 	public get onTextChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+}
+
+class CheckBoxWrapper extends ComponentWrapper implements sqlops.CheckBoxComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.CheckBox, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+	}
+
+	public get checked(): boolean {
+		return this.properties['checked'];
+	}
+	public set checked(v: boolean) {
+		this.setProperty('checked', v);
+	}
+
+	public get label(): string {
+		return this.properties['label'];
+	}
+	public set label(v: string) {
+		this.setProperty('label', v);
+	}
+
+	public get onChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
