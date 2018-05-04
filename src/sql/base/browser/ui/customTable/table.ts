@@ -51,7 +51,7 @@ export interface IRenderer {
 	/**
 	 * Returns the element's height in the table, in pixels.
 	 */
-	getHeight(table: ITable, element: any): number;
+	getHeight(table: ITable /*, element: any */): number;
 
 	/**
 	 * Returns the element's width in the table, in pixels.

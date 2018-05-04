@@ -7,7 +7,7 @@ import { IProfilerController } from './interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { Table } from 'sql/base/browser/ui/customTable/tableImpl';
 import { DefaultController } from 'sql/base/browser/ui/customTable/tableDefaults';
-import { IDataSource, ITable, IRenderer } from 'sql/base/browser/ui/customTable/table';
+import { IDataSource, ITable, IRenderer, IRowRange } from 'sql/base/browser/ui/customTable/table';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { IProfilerStateChangedEvent } from 'sql/parts/profiler/editor/profilerState';
@@ -36,8 +36,8 @@ class DefaultRenderer implements IRenderer {
 	renderColumnTemplate(table: ITable, templateId: string, container: HTMLElement) {
 		throw new Error("Method not implemented.");
 	}
-	getHeight(tree: ITable, element: any): number {
-		throw new Error("Method not implemented.");
+	getHeight(tree: ITable, /*element: any */): number {
+		return 22;
 	}
 	getTemplateId(tree: ITable, element: any): string {
 		throw new Error("Method not implemented.");
@@ -54,19 +54,7 @@ class DefaultRenderer implements IRenderer {
 }
 
 class DefaultDataSource implements IDataSource {
-	getId(tree: ITable, element: any): string {
-		throw new Error("Method not implemented.");
-	}
-	hasChildren(tree: ITable, element: any): boolean {
-		throw new Error("Method not implemented.");
-	}
-	getChildren(tree: ITable, element: any): TPromise<any, any> {
-		throw new Error("Method not implemented.");
-	}
-	getParent(tree: ITable, element: any): TPromise<any, any> {
-		throw new Error("Method not implemented.");
-	}
-	shouldAutoexpand?(tree: ITable, element: any): boolean {
+	getRows(rowRange: IRowRange): Thenable<any> {
 		throw new Error("Method not implemented.");
 	}
 }
@@ -156,6 +144,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		// 	this._profilerTable.setActiveCell(val.row, val.col);
 		// 	this._updateFinderMatchState();
 		// }, er => { });
+		this._profilerTable.setInput({ columns: ['1', '2', '3'], numberOfRows: 50 });
 		return TPromise.as(null);
 	}
 
@@ -209,7 +198,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 
 	public layout(dimension: Dimension): void {
 		this._currentDimensions = dimension;
-		// this._profilerTable.layout(dimension);
+		this._profilerTable.layout(dimension.height);
 		this._onDidChangeConfiguration.fire({ layoutInfo: true });
 	}
 

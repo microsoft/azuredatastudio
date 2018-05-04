@@ -85,6 +85,8 @@ export class Table implements _.ITable {
 		this.model = new Model.TableModel(this.context);
 		this.view = new View.TableView(this.context, this.container);
 
+		this.view.setModel(this.model);
+
 		this._onDidChangeFocus.input = this.model.onDidFocus;
 		this._onDidChangeSelection.input = this.model.onDidSelect;
 		this._onHighlightChange.input = this.model.onDidHighlight;
@@ -100,5 +102,9 @@ export class Table implements _.ITable {
 
 	public setInput(input: _.ITableInput): WinJS.Promise {
 		return this.model.setInput(input);
+	}
+
+	public layout(height?: number): void {
+		this.view.layout(height);
 	}
 }

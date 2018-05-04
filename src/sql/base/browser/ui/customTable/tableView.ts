@@ -19,6 +19,7 @@ import { HeightMap, IViewRow, IViewCell } from './tableViewModel';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { ArrayIterator } from 'vs/base/common/iterator';
 
 export interface ICell {
 	element: HTMLElement;
@@ -165,7 +166,7 @@ export interface IViewContext extends _.ITableContext {
 }
 
 export class ViewRow implements IViewRow {
-	public id: string;
+	public id: number;
 	protected row: IRow;
 
 	protected cells: ViewCell[];
@@ -217,7 +218,7 @@ export class ViewRow implements IViewRow {
 		// 	this.element.setAttribute('aria-posinset', accessibility.getPosInSet(this.context.tree, this.model.getElement()));
 		// }
 		if (this.model.hasTrait('focused')) {
-			const base64Id = strings.safeBtoa(this.model.id);
+			const base64Id = strings.safeBtoa(String(this.model.id));
 
 			this.element.setAttribute('aria-selected', 'true');
 			this.element.setAttribute('id', base64Id);
@@ -477,6 +478,7 @@ export class TableView extends HeightMap {
 	private instance: number;
 
 	private context: IViewContext;
+	private modelListeners: Lifecycle.IDisposable[];
 	private model: Model.TableModel;
 
 	private viewListeners: Lifecycle.IDisposable[];
@@ -498,7 +500,7 @@ export class TableView extends HeightMap {
 	private lastRenderLeft: number;
 	private lastRenderWidth: number;
 
-	private rows: { [id: string]: ViewRow; };
+	private rows: { [id: string]: ViewRow; } = {};
 
 	private isRefreshing = false;
 
@@ -562,7 +564,7 @@ export class TableView extends HeightMap {
 		this.scrollableElement = new ScrollableElement(this.rowWrapper, {
 			alwaysConsumeMouseWheel: true,
 			horizontal: ScrollbarVisibility.Auto,
-			vertical: /* (typeof context.options.verticalScrollMode !== 'undefined' ? context.options.verticalScrollMode : */ ScrollbarVisibility.Auto,
+			vertical: ScrollbarVisibility.Auto,
 			useShadows: context.options.useShadows
 		});
 		this.scrollableElement.onScroll((e) => {
@@ -758,6 +760,26 @@ export class TableView extends HeightMap {
 
 		this.lastRenderTop = renderTop;
 		this.lastRenderHeight = renderBottom - renderTop;
+	}
+
+	public setModel(newModel: Model.TableModel): void {
+		this.releaseModel();
+		this.model = newModel;
+
+		// this.model.onRefresh(this.onRefreshing, this, this.modelListeners);
+		// this.model.onDidRefresh(this.onRefreshed, this, this.modelListeners);
+		// this.model.onSetInput(this.onClearingInput, this, this.modelListeners);
+		this.model.onDidSetInput(this.onSetInput, this, this.modelListeners);
+		// this.model.onDidFocus(this.onModelFocusChange, this, this.modelListeners);
+
+		// this.model.onDidRefreshRow(this.onRowRefresh, this, this.modelListeners);
+		// this.model.onDidAddTraitRow(this.onRowAddTrait, this, this.modelListeners);
+		// this.model.onDidRemoveTraitRow(this.onRowRemoveTrait, this, this.modelListeners);
+	}
+
+	private onSetInput(e: Model.IInputEvent): void {
+		this.context.cellCache.garbageCollect();
+		this.onInsertRows(new ArrayIterator(this.model.getRows({ startRow: 0, endRow: e.input.numberOfRows - 1 })));
 	}
 
 	private onRowsChanged(scrollTop: number = this.scrollTop): void {
@@ -1107,6 +1129,15 @@ export class TableView extends HeightMap {
 
 	private shouldBeRendered(row: ViewRow): boolean {
 		return row.top < this.lastRenderTop + this.lastRenderHeight && row.top + row.height > this.lastRenderTop;
+	}
+
+	// Cleanup
+
+	private releaseModel(): void {
+		if (this.model) {
+			this.modelListeners = Lifecycle.dispose(this.modelListeners);
+			this.model = null;
+		}
 	}
 
 }

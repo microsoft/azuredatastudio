@@ -10,6 +10,7 @@ import * as WinJS from 'vs/base/common/winjs.base';
 import * as types from 'vs/base/common/types';
 import Event, { Emitter, once, EventMultiplexer, Relay } from 'vs/base/common/event';
 import { combinedDisposable, IDisposable } from 'vs/base/common/lifecycle';
+import { generateUuid } from 'vs/base/common/uuid';
 
 export interface IBaseRowEvent {
 	row: Row;
@@ -84,7 +85,7 @@ export class RowRegistry {
 		delete this.rows[row.id];
 	}
 
-	public isRegistered(id: string): boolean {
+	public isRegistered(id: number): boolean {
 		return this.rows.hasOwnProperty(id);
 	}
 
@@ -94,7 +95,9 @@ export class RowRegistry {
 
 	public getRows(range: _.IRowRange): Row[] {
 		let ret: Row[] = [];
-		for (let i = range.startRow; i <= range.endRow; i++) {
+		const start = range ? range.startRow : 0;
+		const end = range ? range.endRow : Object.keys(this.rows).length - 1;
+		for (let i = start; i <= end; i++) {
 			ret.push(this.rows[String(i)].row);
 		}
 		return ret;
@@ -119,6 +122,8 @@ export class Cell {
 
 	private _isDisposed: boolean;
 
+	public element: any;
+
 	private _onDidCreate = new Emitter<Cell>();
 	readonly onDidCreate: Event<Cell> = this._onDidCreate.event;
 	private _onDidReveal = new Emitter<ICellRevealEvent>();
@@ -132,7 +137,7 @@ export class Cell {
 	private _onDidRefresh = new Emitter<Cell>();
 	readonly onDidRefresh: Event<Cell> = this._onDidRefresh.event;
 
-	constructor(public id: string, /* private registry: RowRegistry, */ public columnId: string, private context: _.ITableContext, private element: any) {
+	constructor(public id: string, /* private registry: RowRegistry, */ public columnId: string, private context: _.ITableContext) {
 		// this.registry.register(this);
 
 		// this.previous = null;
@@ -161,6 +166,10 @@ export class Cell {
 		return this.traits[trait] || false;
 	}
 
+	public getElement(): WinJS.TPromise<any> {
+		return this.element ? WinJS.TPromise.as(this.element) : this.row.getElement().then(() => this.element);
+	}
+
 	public getAllTraits(): string[] {
 		let result: string[] = [];
 		let trait: string;
@@ -170,10 +179,6 @@ export class Cell {
 			}
 		}
 		return result;
-	}
-
-	public getElement(): any {
-		return this.element;
 	}
 
 	public isVisible(): boolean {
@@ -273,9 +278,11 @@ export class Row {
 	private _onDidRefresh = new Emitter<Row>();
 	readonly onDidRefresh: Event<Row> = this._onDidRefresh.event;
 
+	private _element: any;
+
 	private _isDisposed: boolean;
 
-	constructor(public id: string, private registry: RowRegistry, private context: _.ITableContext, private element: any) {
+	constructor(public id: number, private registry: RowRegistry, private context: _.ITableContext) {
 		this.registry.register(this);
 
 		// this.previous = null;
@@ -322,8 +329,15 @@ export class Row {
 		return this.height;
 	}
 
-	public getElement(): any {
-		return this.element;
+	public getElement(): WinJS.TPromise<any> {
+		return this._element ? WinJS.TPromise.as(this._element) : this.context.dataSource.getRows({ startRow: this.id, endRow: this.id }).then(r => {
+			for (let key in r) {
+				let cell = this.cells.find(c => c.id === key);
+				cell.element = r[key];
+			}
+			this._element = r;
+			return r;
+		});
 	}
 
 	public isVisible(): boolean {
@@ -335,7 +349,7 @@ export class Row {
 	}
 
 	/* protected */ public _getHeight(): number {
-		return this.context.renderer.getHeight(this.context.table, this.element);
+		return this.context.renderer.getHeight(this.context.table /*, this.element */);
 	}
 
 	// /* protected */ public _isVisible(): boolean {
@@ -385,7 +399,6 @@ export interface IInputEvent {
 export interface IRefreshEvent extends IBaseEvent { }
 
 export class TableModel {
-	private context: _.ITableContext;
 	private traitsToRows: ITraitMap;
 	private input: _.ITableInput;
 	private registry: RowRegistry;
@@ -417,8 +430,7 @@ export class TableModel {
 	private _onDidDisposeRow = new Relay<Row>();
 	readonly onDidDisposeRow: Event<Row> = this._onDidDisposeRow.event;
 
-	constructor(context: _.ITableContext) {
-		this.context = context;
+	constructor(private context: _.ITableContext) {
 		this.traitsToRows = {};
 	}
 
@@ -466,6 +478,12 @@ export class TableModel {
 			.onDidDisposeRow(item => item.getAllTraits().forEach(trait => delete this.traitsToRows[trait][item.id]));
 
 		this.input = input;
+
+		for (let i = 0; i < input.numberOfRows; i++) {
+			let row = new Row(i, this.registry, this.context);
+			row.cells = input.columns.map(c => new Cell(generateUuid(), c, this.context));
+		}
+
 		eventData = { input: this.input };
 		this._onDidSetInput.fire(eventData);
 		return this.refresh();
