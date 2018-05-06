@@ -13,14 +13,14 @@
 				},
 				"versions": [
 					{
-						"version": "0.28.1",
-						"lastUpdated": "4/25/2018",
+						"version": "0.29.0",
+						"lastUpdated": "5/7/2018",
 						"assetUri": "",
 						"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 							{
 								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-								"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.28.1.vsix"
+								"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.29.0.vsix"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Links.Source",
