@@ -262,6 +262,8 @@ export class ViewRow implements IViewRow {
 		if (!this.row) {
 			return;
 		}
+		removeFromParent(this.element);
+
 		(<any>this.element)[TableView.BINDING] = null;
 		this.row = null;
 
@@ -332,7 +334,9 @@ export class ViewCell implements IViewCell {
 		}
 
 		if (!skipUserRender) {
-			this.context.renderer.renderElement(this.context.table, this.model.getElement(), this.columnId, this.cell.templateData);
+			this.model.getElement().then(v => {
+				this.context.renderer.renderElement(this.context.table, v, this.columnId, this.cell.templateData);
+			});
 		}
 	}
 

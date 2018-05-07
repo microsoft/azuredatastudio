@@ -116,8 +116,6 @@ export class RowRegistry {
 }
 
 export class Cell {
-	private row: Row;
-
 	private traits: { [trait: string]: boolean; };
 
 	private _isDisposed: boolean;
@@ -137,7 +135,7 @@ export class Cell {
 	private _onDidRefresh = new Emitter<Cell>();
 	readonly onDidRefresh: Event<Cell> = this._onDidRefresh.event;
 
-	constructor(public id: string, /* private registry: RowRegistry, */ public columnId: string, private context: _.ITableContext) {
+	constructor(public id: string, /* private registry: RowRegistry, */ public columnId: string, private row: Row, private context: _.ITableContext) {
 		// this.registry.register(this);
 
 		// this.previous = null;
@@ -167,7 +165,9 @@ export class Cell {
 	}
 
 	public getElement(): WinJS.TPromise<any> {
-		return this.element ? WinJS.TPromise.as(this.element) : this.row.getElement().then(() => this.element);
+		return this.element ? WinJS.TPromise.as(this.element) : this.row.getElement().then(() => {
+			this.element;
+		});
 	}
 
 	public getAllTraits(): string[] {
@@ -332,7 +332,7 @@ export class Row {
 	public getElement(): WinJS.TPromise<any> {
 		return this._element ? WinJS.TPromise.as(this._element) : this.context.dataSource.getRows({ startRow: this.id, endRow: this.id }).then(r => {
 			for (let key in r) {
-				let cell = this.cells.find(c => c.id === key);
+				let cell = this.cells.find(c => c.columnId === key);
 				cell.element = r[key];
 			}
 			this._element = r;
@@ -481,7 +481,7 @@ export class TableModel {
 
 		for (let i = 0; i < input.numberOfRows; i++) {
 			let row = new Row(i, this.registry, this.context);
-			row.cells = input.columns.map(c => new Cell(generateUuid(), c, this.context));
+			row.cells = input.columns.map(c => new Cell(generateUuid(), c, row, this.context));
 		}
 
 		eventData = { input: this.input };

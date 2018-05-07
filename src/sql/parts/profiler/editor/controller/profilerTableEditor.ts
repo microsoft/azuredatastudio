@@ -39,23 +39,25 @@ class DefaultRenderer implements IRenderer {
 	getHeight(tree: ITable, /*element: any */): number {
 		return 22;
 	}
-	getTemplateId(tree: ITable, element: any): string {
-		throw new Error("Method not implemented.");
-	}
-	renderTemplate(tree: ITable, templateId: string, container: HTMLElement) {
-		throw new Error("Method not implemented.");
+	renderTemplate(tree: ITable, templateId: string, container: HTMLElement): any {
+		const text = container.appendChild(document.createElement('div'));
+		return { text };
 	}
 	renderElement(tree: ITable, element: any, templateId: string, templateData: any): void {
-		throw new Error("Method not implemented.");
+		(<HTMLElement>templateData.text).innerText = element;
 	}
 	disposeTemplate(tree: ITable, templateId: string, templateData: any): void {
-		throw new Error("Method not implemented.");
+
 	}
 }
 
 class DefaultDataSource implements IDataSource {
 	getRows(rowRange: IRowRange): Thenable<any> {
-		throw new Error("Method not implemented.");
+		return TPromise.as({
+			'1': `row ${rowRange.startRow} column 1`,
+			'2': `row ${rowRange.startRow} column 2`,
+			'3': `row ${rowRange.startRow} column 3`
+		});
 	}
 }
 
@@ -144,7 +146,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		// 	this._profilerTable.setActiveCell(val.row, val.col);
 		// 	this._updateFinderMatchState();
 		// }, er => { });
-		this._profilerTable.setInput({ columns: ['1', '2', '3'], numberOfRows: 50 });
+		this._profilerTable.setInput({ columns: ['1', '2', '3'], numberOfRows: 2300 });
 		return TPromise.as(null);
 	}
 
