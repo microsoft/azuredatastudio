@@ -367,6 +367,16 @@ declare module 'sqlops' {
 				 * Any additional buttons that should be displayed
 				 */
 				customButtons: Button[];
+
+				/**
+				 * Whether the dialog's content is valid
+				 */
+				readonly valid: boolean;
+
+				/**
+				 * Fired whenever the dialog's valid property changes
+				 */
+				readonly onValidityChanged: vscode.Event<boolean>;
 			}
 
 			export interface DialogTab {

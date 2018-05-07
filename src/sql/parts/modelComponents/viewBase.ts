@@ -103,12 +103,10 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 
 	registerEvent(componentId: string) {
 		this.queueAction(componentId, (component) => {
-			if (component.onEvent) {
-				this._register(component.onEvent(e => {
-					e.componentId = componentId;
-					this._onEventEmitter.fire(e);
-				}));
-			}
+			this._register(component.registerEventHandler(e => {
+				e.componentId = componentId;
+				this._onEventEmitter.fire(e);
+			}));
 		});
 	}
 

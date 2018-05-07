@@ -21,6 +21,7 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { localize } from 'vs/nls';
+import Event, { Emitter } from 'vs/base/common/event';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
