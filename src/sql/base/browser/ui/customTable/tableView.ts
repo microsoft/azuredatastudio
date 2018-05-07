@@ -554,8 +554,7 @@ export class TableView extends HeightMap {
 		this.headerWrapper = document.createElement('div');
 		this.headerWrapper.className = 'monaco-table-header-wrapper';
 		this.headerScrollable = new ScrollableElement(this.headerWrapper, {
-			alwaysConsumeMouseWheel: true,
-			horizontal: ScrollbarVisibility.Auto,
+			horizontal: ScrollbarVisibility.Hidden,
 			vertical: ScrollbarVisibility.Hidden,
 			useShadows: context.options.useShadows
 		});
@@ -572,6 +571,7 @@ export class TableView extends HeightMap {
 			useShadows: context.options.useShadows
 		});
 		this.scrollableElement.onScroll((e) => {
+			this.headerRender(e.scrollLeft, e.width);
 			this.render(e.scrollTop, e.height);
 		});
 
@@ -726,6 +726,7 @@ export class TableView extends HeightMap {
 	}
 
 	private headerRender(scrollLeft: number, viewWidth: number): void {
+		this.rowsContainer.style.left = scrollLeft + 'px';
 	}
 
 	private render(scrollTop: number, viewHeight: number): void {

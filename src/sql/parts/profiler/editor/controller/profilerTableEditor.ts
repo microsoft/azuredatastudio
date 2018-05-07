@@ -30,7 +30,7 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 class DefaultRenderer implements IRenderer {
-	getColumnWidth(table: ITable, element: any): number {
+	getColumnWidth(table: ITable, columnId: string): number {
 		throw new Error("Method not implemented.");
 	}
 	renderColumnTemplate(table: ITable, templateId: string, container: HTMLElement) {

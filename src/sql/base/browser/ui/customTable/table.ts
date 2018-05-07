@@ -56,7 +56,7 @@ export interface IRenderer {
 	/**
 	 * Returns the element's width in the table, in pixels.
 	 */
-	getColumnWidth(table: ITable, element: any): number;
+	getColumnWidth(table: ITable, columnId: string): number;
 
 	renderColumnTemplate(table: ITable, templateId: string, container: HTMLElement): any;
 
