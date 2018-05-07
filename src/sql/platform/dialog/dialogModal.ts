@@ -22,6 +22,7 @@ import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { localize } from 'vs/nls';
 import Event, { Emitter } from 'vs/base/common/event';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -103,8 +104,10 @@ export class DialogModal extends Modal {
 	}
 
 	public done(): void {
-		this.dispose();
-		this.hide();
+		if (this._dialog.okButton.enabled) {
+			this.dispose();
+			this.hide();
+		}
 	}
 
 	public cancel(): void {
@@ -118,6 +121,20 @@ export class DialogModal extends Modal {
 
 	protected show(): void {
 		super.show();
+	}
+
+	/**
+	 * Overridable to change behavior of escape key
+	 */
+	protected onClose(e: StandardKeyboardEvent) {
+		this.cancel();
+	}
+
+	/**
+	 * Overridable to change behavior of enter key
+	 */
+	protected onAccept(e: StandardKeyboardEvent) {
+		this.done();
 	}
 
 	public dispose(): void {

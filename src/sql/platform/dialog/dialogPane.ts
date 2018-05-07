@@ -50,12 +50,20 @@ export class DialogPane extends Disposable implements IThemable {
 			} else {
 				this._tabbedPanel = new TabbedPanel(this._body);
 				this._dialog.content.forEach((tab, tabIndex) => {
+					let tabContainer = document.createElement('div');
+					tabContainer.style.display = 'none';
+					this._body.appendChild(tabContainer);
+					this.initializeModelViewContainer(tabContainer, tab.content);
 					this._tabbedPanel.pushTab({
 						title: tab.title,
 						identifier: 'dialogPane.' + this._dialog.title + '.' + tabIndex,
 						view: {
 							render: (container) => {
-								this.initializeModelViewContainer(container, tab.content);
+								if (tabContainer.parentElement === this._body) {
+									this._body.removeChild(tabContainer);
+								}
+								container.appendChild(tabContainer);
+								tabContainer.style.display = 'block';
 							},
 							layout: (dimension) => { }
 						} as IPanelView
