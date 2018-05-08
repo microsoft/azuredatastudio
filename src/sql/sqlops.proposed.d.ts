@@ -433,4 +433,11 @@ declare module 'sqlops' {
 		 */
 		export function runQuery(fileUri: string): void;
 	}
+
+	/**
+	 * Namespace for interacting with the workspace
+	 */
+	export namespace workspace {
+		export function openModelViewEditor(title: string, modelViewId: string, position?: vscode.ViewColumn, label?: string, options?: any): void;
+	}
 }
