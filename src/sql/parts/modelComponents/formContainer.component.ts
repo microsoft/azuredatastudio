@@ -22,6 +22,8 @@ export interface TitledFormItemLayout {
 	actions?: string[];
 	isFormComponent: Boolean;
 	horizontal: boolean;
+	width: number;
+	componentWidth: number;
 }
 class FormItem {
 	constructor(public descriptor: IComponentDescriptor, public config: TitledFormItemLayout) { }
@@ -29,20 +31,20 @@ class FormItem {
 
 @Component({
 	template: `
-		<div #container *ngIf="items" class="form-table"
-				[style.alignItems]="alignItems" [style.alignContent]="alignContent">
-			<div *ngFor="let item of items" class="form-row">
+		<div #container *ngIf="items" class="form-table" >
+			<ng-container *ngFor="let item of items">
+			<div class="form-row" [style.width]="getFormWidth(item)">
 				<ng-container *ngIf="isFormComponent(item)">
 					<ng-container *ngIf="isHorizontal(item)">
 						<div class="form-cell">{{getItemTitle(item)}}</div>
-						<div class="form-cell">
+						<div class="form-cell" [style.width]="getComponentWidth(item)">
 							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 							</model-component-wrapper>
 						</div>
 						<div *ngIf="itemHasActions(item)" class="form-cell">
 							<div class="form-actions-table">
 								<div *ngFor="let actionItem of getActionComponents(item)" class="form-cell" >
-									<model-component-wrapper  [descriptor]="actionItem.descriptor" [modelStore]="modelStore">
+									<model-component-wrapper  [descriptor]="actionItem.descriptor" [modelStore]="modelStore" >
 									</model-component-wrapper>
 								</div>
 							</div>
@@ -50,8 +52,8 @@ class FormItem {
 					</ng-container>
 					<ng-container *ngIf="isVertical(item)">
 						<div class="form-item-row form-item-title">{{getItemTitle(item)}}</div>
-						<div class="form-item-row">
-							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
+						<div class="form-item-row" [style.width]="getComponentWidth(item)">
+							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)">
 							</model-component-wrapper>
 						</div>
 						<div *ngIf="itemHasActions(item)" class="form-actions-table">
@@ -65,6 +67,7 @@ class FormItem {
 					</ng-container>
 				</ng-container>
 			</div>
+			</ng-container>
 		</div>
 	`
 })
@@ -111,6 +114,16 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 
 	public get alignContent(): string {
 		return this._alignContent;
+	}
+
+	private getFormWidth(item: FormItem): string {
+		let itemConfig = item.config;
+		return itemConfig && itemConfig.width ? +itemConfig.width + 'px' : '400px';
+	}
+
+	private getComponentWidth(item: FormItem): string {
+		let itemConfig = item.config;
+		return itemConfig ? +itemConfig.componentWidth + 'px' : '';
 	}
 
 	private getItemTitle(item: FormItem): string {

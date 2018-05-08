@@ -79,6 +79,12 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._input.value = this.value;
+		this._input.setAriaLabel(this.ariaLabel);
+		this._input.setPlaceHolder(this.placeHolder);
+		this._input.setEnabled(this.enabled);
+		if (this.width) {
+			this._input.width = this.width;
+		}
 	}
 
 	// CSS-bound properties
@@ -88,10 +94,38 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	}
 
 	public set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, string>(this.setInputBoxProperties, newValue);
+		this.setPropertyFromUI<sqlops.InputBoxProperties, string>((props, value) => props.value = value, newValue);
 	}
 
-	private setInputBoxProperties(properties: sqlops.InputBoxProperties, value: string): void {
-		properties.value = value;
+	public get ariaLabel(): string {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, string>((props) => props.ariaLabel, '');
+	}
+
+	public set ariaLabel(newValue: string) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, string>((props, value) => props.ariaLabel = value, newValue);
+	}
+
+	public get placeHolder(): string {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, string>((props) => props.placeHolder, '');
+	}
+
+	public set placeHolder(newValue: string) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, string>((props, value) => props.placeHolder = value, newValue);
+	}
+
+	public get height(): number {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.height, undefined);
+	}
+
+	public set height(newValue: number) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.height = value, newValue);
+	}
+
+	public get width(): number {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.width, undefined);
+	}
+
+	public set width(newValue: number) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.width = value, newValue);
 	}
 }

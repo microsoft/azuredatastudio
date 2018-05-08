@@ -21,7 +21,6 @@ export interface IComponent {
 	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any) => void;
 	setLayout?: (layout: any) => void;
 	setProperties?: (properties: { [key: string]: any; }) => void;
-	title?: string;
 	onEvent?: Event<IComponentEventArgs>;
 }
 
