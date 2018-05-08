@@ -82,6 +82,10 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 		return this.execModelViewAction(handle, (modelView) => modelView.setProperties(componentId, properties));
 	}
 
+	$notifyValidation(handle: number, componentId: string, valid: boolean): Thenable<void> {
+		return this.execModelViewAction(handle, (modelView) => modelView.setValid(componentId, valid));
+	}
+
 	private execModelViewAction<T>(handle: number, action: (m: IModelView) => T): Thenable<T> {
 		let modelView: IModelView = this._dialogs.get(handle);
 		let result = action(modelView);

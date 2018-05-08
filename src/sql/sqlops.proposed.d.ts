@@ -31,6 +31,7 @@ declare module 'sqlops' {
 	export interface ComponentBuilder<T extends Component> {
 		component(): T;
 		withProperties<U>(properties: U): ComponentBuilder<T>;
+		withValidation(validation: (component: T) => boolean): ComponentBuilder<T>;
 	}
 	export interface ContainerBuilder<T extends Component, TLayout, TItemLayout> extends ComponentBuilder<T> {
 		withLayout(layout: TLayout): ContainerBuilder<T, TLayout, TItemLayout>;
@@ -58,6 +59,20 @@ declare module 'sqlops' {
 		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
 
 		enabled: boolean;
+		/**
+		 * Event fired to notify that the component's validity has changed
+		 */
+		readonly onValidityChanged: vscode.Event<boolean>;
+
+		/**
+		 * Whether the component is valid or not
+		 */
+		readonly valid: boolean;
+
+		/**
+		 * Run the component's validations
+		 */
+		validate(): void;
 	}
 
 	export interface FormComponent {
@@ -272,6 +287,21 @@ declare module 'sqlops' {
 		readonly modelBuilder: ModelBuilder;
 
 		/**
+		 * Whether or not the model view's root component is valid
+		 */
+		readonly valid: boolean;
+
+		/**
+		 * Raised when the model view's valid property changes
+		 */
+		readonly onValidityChanged: vscode.Event<boolean>;
+
+		/**
+		 * Run the model view root component's validations
+		 */
+		validate(): void;
+
+		/**
 		 * Initializes the model with a root component definition.
 		 * Once this has been done, the components will be laid out in the UI and
 		 * can be accessed and altered as needed.
@@ -343,6 +373,16 @@ declare module 'sqlops' {
 				 * Any additional buttons that should be displayed
 				 */
 				customButtons: Button[];
+
+				/**
+				 * Whether the dialog's content is valid
+				 */
+				readonly valid: boolean;
+
+				/**
+				 * Fired whenever the dialog's valid property changes
+				 */
+				readonly onValidityChanged: vscode.Event<boolean>;
 			}
 
 			export interface DialogTab {

@@ -24,6 +24,8 @@ export class ItemDescriptor<T> {
 
 export abstract class ComponentBase extends Disposable implements IComponent, OnDestroy, OnInit {
 	protected properties: { [key: string]: any; } = {};
+	protected _valid: boolean = true;
+	private _eventQueue: IComponentEventArgs[] = [];
 	constructor(
 		protected _changeRef: ChangeDetectorRef) {
 		super();
@@ -78,20 +80,48 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 
 	protected setPropertyFromUI<TPropertyBag, TValue>(propertySetter: (TPropertyBag, TValue) => void, value: TValue) {
 		propertySetter(this.getProperties<TPropertyBag>(), value);
-		this._onEventEmitter.fire({
+		this.fireEvent({
 			eventType: ComponentEventType.PropertiesChanged,
 			args: this.getProperties()
 		});
-	}
-
-	public get onEvent(): Event<IComponentEventArgs> {
-		return this._onEventEmitter.event;
 	}
 
 	public get enabled(): boolean {
 		let properties = this.getProperties();
 		let enabled = properties['enabled'];
 		return enabled !== undefined ? <boolean>enabled : true;
+	}
+
+	public get valid(): boolean {
+		return this._valid;
+	}
+
+	public setValid(valid: boolean): void {
+		if (this._valid !== valid) {
+			this._valid = valid;
+			this.fireEvent({
+				eventType: ComponentEventType.validityChanged,
+				args: valid
+			});
+		}
+	}
+
+	public registerEventHandler(handler: (event: IComponentEventArgs) => void): IDisposable {
+		if (this._eventQueue) {
+			while (this._eventQueue.length > 0) {
+				let event = this._eventQueue.pop();
+				handler(event);
+			}
+			this._eventQueue = undefined;
+		}
+		return this._onEventEmitter.event(handler);
+	}
+
+	private fireEvent(event: IComponentEventArgs) {
+		this._onEventEmitter.fire(event);
+		if (this._eventQueue) {
+			this._eventQueue.push(event);
+		}
 	}
 }
 

@@ -52,6 +52,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			let cancelButton = this.getButton(details.cancelButton);
 			dialog.okButton = okButton;
 			dialog.cancelButton = cancelButton;
+			dialog.onValidityChanged(valid => this._proxy.$onDialogValidityChanged(handle, valid));
 			this._dialogs.set(handle, dialog);
 		}
 

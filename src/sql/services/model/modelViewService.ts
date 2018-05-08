@@ -20,6 +20,7 @@ export interface IModelView extends IView {
 	addToContainer(containerId: string, item: IItemConfig): void;
 	setLayout(componentId: string, layout: any): void;
 	setProperties(componentId: string, properties: { [key: string]: any }): void;
+	setValid(componentId: string, valid: boolean): void;
 	registerEvent(componentId: string);
 	onEvent: Event<any>;
 }
