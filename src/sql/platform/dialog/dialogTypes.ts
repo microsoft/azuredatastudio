@@ -28,10 +28,23 @@ export class Dialog implements sqlops.window.modelviewdialog.Dialog {
 	public cancelButton: DialogButton = new DialogButton(Dialog.CANCEL_BUTTON_LABEL, true);
 	public customButtons: DialogButton[];
 
+	private _valid: boolean = true;
+	private _validityChangedEmitter = new Emitter<boolean>();
+	public readonly onValidityChanged = this._validityChangedEmitter.event;
+
 	constructor(public title: string, content?: string | DialogTab[]) {
 		if (content) {
 			this.content = content;
 		}
+	}
+
+	public get valid(): boolean {
+		return this._valid;
+	}
+
+	public notifyValidityChanged(valid: boolean) {
+		this._valid = valid;
+		this._validityChangedEmitter.fire(valid);
 	}
 }
 

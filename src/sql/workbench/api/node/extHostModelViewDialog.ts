@@ -21,10 +21,18 @@ class DialogImpl implements sqlops.window.modelviewdialog.Dialog {
 	public okButton: sqlops.window.modelviewdialog.Button;
 	public cancelButton: sqlops.window.modelviewdialog.Button;
 	public customButtons: sqlops.window.modelviewdialog.Button[];
+	public readonly onValidityChanged: vscode.Event<boolean>;
+	private _valid: boolean = true;
 
 	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) {
 		this.okButton = this._extHostModelViewDialog.createButton(nls.localize('dialogOkLabel', 'Done'));
 		this.cancelButton = this._extHostModelViewDialog.createButton(nls.localize('dialogCancelLabel', 'Cancel'));
+		this.onValidityChanged = this._extHostModelViewDialog.getValidityChangedEvent(this);
+		this.onValidityChanged(valid => this._valid = valid);
+	}
+
+	public get valid(): boolean {
+		return this._valid;
 	}
 }
 
@@ -89,6 +97,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	private readonly _tabHandles = new Map<sqlops.window.modelviewdialog.DialogTab, number>();
 	private readonly _buttonHandles = new Map<sqlops.window.modelviewdialog.Button, number>();
 
+	private readonly _validityEmitters = new Map<number, Emitter<boolean>>();
 	private readonly _onClickCallbacks = new Map<number, () => void>();
 
 	constructor(
@@ -132,6 +141,13 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 
 	public $onButtonClick(handle: number): void {
 		this._onClickCallbacks.get(handle)();
+	}
+
+	public $onDialogValidityChanged(handle: number, valid: boolean): void {
+		let emitter = this._validityEmitters.get(handle);
+		if (emitter) {
+			emitter.fire(valid);
+		}
 	}
 
 	public open(dialog: sqlops.window.modelviewdialog.Dialog): void {
@@ -207,5 +223,15 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this.registerOnClickCallback(button, button.getOnClickCallback());
 		button.label = label;
 		return button;
+	}
+
+	public getValidityChangedEvent(dialog: sqlops.window.modelviewdialog.Dialog) {
+		let handle = this.getDialogHandle(dialog);
+		let emitter = this._validityEmitters.get(handle);
+		if (!emitter) {
+			emitter = new Emitter<boolean>();
+			this._validityEmitters.set(handle, emitter);
+		}
+		return emitter.event;
 	}
 }

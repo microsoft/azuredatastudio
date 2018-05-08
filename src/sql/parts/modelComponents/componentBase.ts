@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./flexContainer';
 
-import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
+import {
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
 	ViewChild, ElementRef, Injector, OnDestroy, OnInit
 } from '@angular/core';
 
@@ -18,14 +19,16 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 
 export class ItemDescriptor<T> {
-	constructor(public descriptor: IComponentDescriptor, public config: T) {}
+	constructor(public descriptor: IComponentDescriptor, public config: T) { }
 }
 
 export abstract class ComponentBase extends Disposable implements IComponent, OnDestroy, OnInit {
 	protected properties: { [key: string]: any; } = {};
-	constructor (
+	protected _valid: boolean = true;
+	private _eventQueue: IComponentEventArgs[] = [];
+	constructor(
 		protected _changeRef: ChangeDetectorRef) {
-			super();
+		super();
 	}
 
 	/// IComponent implementation
@@ -56,7 +59,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		this.dispose();
 	}
 
-	abstract setLayout (layout: any): void;
+	abstract setLayout(layout: any): void;
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		if (!properties) {
@@ -77,20 +80,48 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 
 	protected setPropertyFromUI<TPropertyBag, TValue>(propertySetter: (TPropertyBag, TValue) => void, value: TValue) {
 		propertySetter(this.getProperties<TPropertyBag>(), value);
-		this._onEventEmitter.fire({
+		this.fireEvent({
 			eventType: ComponentEventType.PropertiesChanged,
 			args: this.getProperties()
 		});
-	}
-
-	public get onEvent(): Event<IComponentEventArgs> {
-		return this._onEventEmitter.event;
 	}
 
 	public get title(): string {
 		let properties = this.getProperties();
 		let title = properties['title'];
 		return title ? <string>title : '';
+	}
+
+	public get valid(): boolean {
+		return this._valid;
+	}
+
+	public setValid(valid: boolean): void {
+		if (this._valid !== valid) {
+			this._valid = valid;
+			this.fireEvent({
+				eventType: ComponentEventType.validityChanged,
+				args: valid
+			});
+		}
+	}
+
+	public registerEventHandler(handler: (event: IComponentEventArgs) => void): IDisposable {
+		if (this._eventQueue) {
+			while (this._eventQueue.length > 0) {
+				let event = this._eventQueue.pop();
+				handler(event);
+			}
+			this._eventQueue = undefined;
+		}
+		return this._onEventEmitter.event(handler);
+	}
+
+	private fireEvent(event: IComponentEventArgs) {
+		this._onEventEmitter.fire(event);
+		if (this._eventQueue) {
+			this._eventQueue.push(event);
+		}
 	}
 }
 
@@ -115,5 +146,5 @@ export abstract class ContainerBase<T> extends ComponentBase {
 		this._changeRef.detectChanges();
 	}
 
-	abstract setLayout (layout: any): void;
+	abstract setLayout(layout: any): void;
 }

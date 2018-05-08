@@ -10,10 +10,11 @@ import {
 
 import * as sqlops from 'sqlops';
 import Event, { Emitter } from 'vs/base/common/event';
+import * as nls from 'vs/nls';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { InputBox, IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox';
+import { InputBox, IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 
@@ -44,7 +45,19 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		if (this._inputContainer) {
 			let inputOptions: IInputOptions = {
 				placeholder: '',
-				ariaLabel: ''
+				ariaLabel: '',
+				validationOptions: {
+					validation: () => {
+						if (this.valid) {
+							return undefined;
+						} else {
+							return {
+								content: nls.localize('invalidValueError', 'Invalid value'),
+								type: MessageType.ERROR
+							};
+						}
+					}
+				}
 			};
 
 			this._input = new InputBox(this._inputContainer.nativeElement, this._commonService.contextViewService, inputOptions);
@@ -79,6 +92,11 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._input.value = this.value;
+	}
+
+	public setValid(valid: boolean): void {
+		super.setValid(valid);
+		this._input.validate();
 	}
 
 	// CSS-bound properties
