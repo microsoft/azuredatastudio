@@ -25,7 +25,6 @@ export interface IComponent {
 	setProperties?: (properties: { [key: string]: any; }) => void;
 	readonly valid?: boolean;
 	setValid(valid: boolean): void;
-	title?: string;
 }
 
 export const COMPONENT_CONFIG = new InjectionToken<IComponentConfig>('component_config');

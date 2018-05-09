@@ -243,6 +243,14 @@ class ComponentWrapper implements sqlops.Component {
 		return this.itemConfigs.map(itemConfig => itemConfig.component);
 	}
 
+	public get enabled(): boolean {
+		return this.properties['enabled'];
+	}
+
+	public set enabled(value: boolean) {
+		this.setProperty('enabled', value);
+	}
+
 	public toComponentShape(): IComponentShape {
 		return <IComponentShape>{
 			id: this.id,
@@ -389,6 +397,34 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 	}
 	public set value(v: string) {
 		this.setProperty('value', v);
+	}
+
+	public get ariaLabel(): string {
+		return this.properties['ariaLabel'];
+	}
+	public set ariaLabel(v: string) {
+		this.setProperty('ariaLabel', v);
+	}
+
+	public get placeHolder(): string {
+		return this.properties['placeHolder'];
+	}
+	public set placeHolder(v: string) {
+		this.setProperty('placeHolder', v);
+	}
+
+	public get height(): number {
+		return this.properties['height'];
+	}
+	public set height(v: number) {
+		this.setProperty('height', v);
+	}
+
+	public get width(): number {
+		return this.properties['width'];
+	}
+	public set width(v: number) {
+		this.setProperty('width', v);
 	}
 
 	public get onTextChanged(): vscode.Event<any> {
