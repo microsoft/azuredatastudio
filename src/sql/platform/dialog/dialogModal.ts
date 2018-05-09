@@ -29,9 +29,6 @@ export class DialogModal extends Modal {
 	private _onDone = new Emitter<void>();
 	private _onCancel = new Emitter<void>();
 
-	// Wizard HTML elements
-	private _body: HTMLElement;
-
 	// Buttons
 	private _cancelButton: Button;
 	private _doneButton: Button;
@@ -97,12 +94,13 @@ export class DialogModal extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement): void {
+		let body: HTMLElement;
 		new Builder(container).div({ class: 'dialogModal-body' }, (bodyBuilder) => {
-			this._body = bodyBuilder.getHTMLElement();
+			body = bodyBuilder.getHTMLElement();
 		});
 
 		this._dialogPane = new DialogPane(this._dialog, this._bootstrapService);
-		this._dialogPane.createBody(this._body);
+		this._dialogPane.createBody(body);
 	}
 
 	public open(): void {
