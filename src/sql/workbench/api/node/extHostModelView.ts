@@ -303,6 +303,9 @@ class ComponentWrapper implements sqlops.Component {
 		if (eventArgs && eventArgs.eventType === ComponentEventType.PropertiesChanged) {
 			this.properties = eventArgs.args;
 			this.validate();
+		}
+		else if (eventArgs && eventArgs.eventType === ComponentEventType.validityChanged) {
+
 		} else if (eventArgs) {
 			let emitter = this._emitterMap.get(eventArgs.eventType);
 			if (emitter) {
@@ -425,6 +428,13 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 	}
 	public set width(v: number) {
 		this.setProperty('width', v);
+	}
+
+	public get inputType(): sqlops.InputBoxInputType {
+		return this.properties['inputType'];
+	}
+	public set inputType(v: sqlops.InputBoxInputType) {
+		this.setProperty('inputType', v);
 	}
 
 	public get onTextChanged(): vscode.Event<any> {

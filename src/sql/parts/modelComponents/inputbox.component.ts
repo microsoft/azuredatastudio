@@ -91,6 +91,10 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
+		this._input.inputElement.type = this.inputType;
+		if (this.inputType === 'number') {
+			this._input.inputElement.step = 'any';
+		}
 		this._input.value = this.value;
 		this._input.setAriaLabel(this.ariaLabel);
 		this._input.setPlaceHolder(this.placeHolder);
@@ -145,5 +149,13 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public set width(newValue: number) {
 		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.width = value, newValue);
+	}
+
+	public get inputType(): string {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, string>((props) => props.inputType, 'text');
+	}
+
+	public set inputType(newValue: string) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, string>((props, value) => props.inputType = value, newValue);
 	}
 }

@@ -355,6 +355,14 @@ export class InputBox extends Widget {
 		if (this.validation) {
 			result = this.validation(this.value);
 
+			// {{SQL CARBON EDIT}}
+			if (!result && this.inputElement.validationMessage) {
+				result = {
+					content: this.inputElement.validationMessage,
+					type: MessageType.ERROR
+				};
+			}
+
 			if (!result) {
 				this.inputElement.removeAttribute('aria-invalid');
 				this.hideMessage();

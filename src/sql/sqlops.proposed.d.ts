@@ -204,12 +204,15 @@ declare module 'sqlops' {
 		actions?: ActionDescriptor[];
 	}
 
+	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
+
 	export interface InputBoxProperties {
 		value?: string;
 		ariaLabel?: string;
 		placeHolder?: string;
 		height: number;
 		width: number;
+		inputType?: InputBoxInputType;
 	}
 
 	export interface CheckBoxProperties {
