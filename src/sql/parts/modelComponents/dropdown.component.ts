@@ -19,7 +19,7 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
 
 @Component({
-	selector: 'inputBox',
+	selector: 'dropdown',
 	template: `
 		<div #input style="width: 100%"></div>
 	`

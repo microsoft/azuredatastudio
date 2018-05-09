@@ -86,10 +86,10 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		});
 	}
 
-	public get title(): string {
+	public get enabled(): boolean {
 		let properties = this.getProperties();
-		let title = properties['title'];
-		return title ? <string>title : '';
+		let enabled = properties['enabled'];
+		return enabled !== undefined ? <boolean>enabled : true;
 	}
 
 	public get valid(): boolean {

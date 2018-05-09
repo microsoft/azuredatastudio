@@ -58,6 +58,7 @@ declare module 'sqlops' {
 		 */
 		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
 
+		enabled: boolean;
 		/**
 		 * Event fired to notify that the component's validity has changed
 		 */
@@ -162,6 +163,8 @@ declare module 'sqlops' {
 
 	export interface FormItemLayout {
 		horizontal: boolean;
+		width: number;
+		componentWidth: number;
 	}
 
 	export interface FormLayout {
@@ -203,6 +206,10 @@ declare module 'sqlops' {
 
 	export interface InputBoxProperties {
 		value?: string;
+		ariaLabel?: string;
+		placeHolder?: string;
+		height: number;
+		width: number;
 	}
 
 	export interface CheckBoxProperties {
@@ -225,8 +232,7 @@ declare module 'sqlops' {
 		actions?: ActionDescriptor[];
 	}
 
-	export interface InputBoxComponent extends Component {
-		value: string;
+	export interface InputBoxComponent extends Component, InputBoxProperties {
 		onTextChanged: vscode.Event<any>;
 	}
 
@@ -303,7 +309,7 @@ declare module 'sqlops' {
 		initializeModel<T extends Component>(root: T): Thenable<void>;
 	}
 
-	export namespace dashboard {
+	export namespace ui {
 		/**
 		 * Register a provider for a model-view widget
 		 */

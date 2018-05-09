@@ -327,9 +327,12 @@ export function createApiFactory(
 			const dashboard = {
 				registerWebviewProvider(widgetId: string, handler: (webview: sqlops.DashboardWebview) => void) {
 					extHostWebviewWidgets.$registerProvider(widgetId, handler);
-				},
-				registerModelViewProvider(widgetId: string, handler: (view: sqlops.ModelView) => void): void {
-					extHostModelView.$registerProvider(widgetId, handler);
+				}
+			};
+
+			const ui = {
+				registerModelViewProvider(modelViewId: string, handler: (view: sqlops.ModelView) => void): void {
+					extHostModelView.$registerProvider(modelViewId, handler);
 				}
 			};
 
@@ -364,7 +367,8 @@ export function createApiFactory(
 				tasks,
 				dashboard,
 				workspace,
-				queryeditor: queryEditor
+				queryeditor: queryEditor,
+				ui: ui
 			};
 		}
 	};

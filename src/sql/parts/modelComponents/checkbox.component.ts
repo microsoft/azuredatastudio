@@ -18,7 +18,7 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 
 @Component({
-	selector: 'inputBox',
+	selector: 'checkbox',
 	template: `
 		<div #input style="width: 100%"></div>
 	`
