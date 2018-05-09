@@ -65,15 +65,6 @@ panel {
 	line-height: 45px;
 }
 
-.tabbedPanel .tabList .tab:hover .tabLabel,
-.tabbedPanel .tabList .tab .tabLabel.active {
-	opacity: 1;
-}
-
-.tabbedPanel .tabList .tab .tabLabel {
-	opacity: 0.8;
-}
-
 .tabbedPanel .tabList .tab .tabLabel.icon {
 	background-repeat: no-repeat;
 	background-position: center center;
