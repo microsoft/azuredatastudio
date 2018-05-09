@@ -531,6 +531,7 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 	$registerEvent(handle: number, componentId: string):  Thenable<void>;
 	$notifyValidation(handle: number, componentId: string, valid: boolean): Thenable<void>;
+	$openModelViewEditor(title: string, modelViewId: string, position: vscode.ViewColumn, options: any): Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {

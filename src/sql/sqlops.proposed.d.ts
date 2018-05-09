@@ -438,6 +438,6 @@ declare module 'sqlops' {
 	 * Namespace for interacting with the workspace
 	 */
 	export namespace workspace {
-		export function openModelViewEditor(title: string, modelViewId: string, position?: vscode.ViewColumn, label?: string, options?: any): void;
+		export function openModelViewEditor(title: string, modelViewId: string, position?: vscode.ViewColumn, options?: any): Thenable<void>;
 	}
 }
