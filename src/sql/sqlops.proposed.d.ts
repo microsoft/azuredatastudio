@@ -309,7 +309,7 @@ declare module 'sqlops' {
 		initializeModel<T extends Component>(root: T): Thenable<void>;
 	}
 
-	export namespace modelView {
+	export namespace ui {
 		/**
 		 * Register a provider for a model-view widget
 		 */

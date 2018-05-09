@@ -123,7 +123,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 
 	private getComponentWidth(item: FormItem): string {
 		let itemConfig = item.config;
-		return itemConfig ? +itemConfig.componentWidth + 'px' : '';
+		return itemConfig ? itemConfig.componentWidth + 'px' : '';
 	}
 
 	private getItemTitle(item: FormItem): string {

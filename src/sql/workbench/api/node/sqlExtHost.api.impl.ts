@@ -327,7 +327,7 @@ export function createApiFactory(
 				}
 			};
 
-			const modelView = {
+			const ui = {
 				registerModelViewProvider(modelViewId: string, handler: (view: sqlops.ModelView) => void): void {
 					extHostModelView.$registerProvider(modelViewId, handler);
 				}
@@ -365,7 +365,7 @@ export function createApiFactory(
 				dashboard,
 				workspace,
 				queryeditor: queryEditor,
-				modelView: modelView
+				ui: ui
 			};
 		}
 	};
