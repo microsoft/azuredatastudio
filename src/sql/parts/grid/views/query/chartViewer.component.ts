@@ -97,12 +97,12 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef
 	) {
+		this.setDefaultChartConfig();
 	}
 
 	ngOnInit() {
-		this.setDefaultChartConfig();
 		this.legendOptions = Object.values(LegendPosition);
-		this.initializeUI();
+		this._initActionBar();
 	}
 
 	private setDefaultChartConfig() {
@@ -112,11 +112,6 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 			legendPosition: 'none',
 			labelFirstColumn: false
 		};
-	}
-
-	private initializeUI() {
-		// Initialize the taskbar
-		this._initActionBar();
 	}
 
 	private getDefaultChartType(): string {
@@ -152,6 +147,10 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 			this.dataType = DataType.Point;
 			this.dataDirection = DataDirection.Horizontal;
 		}
+		this.initChart();
+	}
+
+	ngAfterViewInit() {
 		this.initChart();
 	}
 
@@ -316,7 +315,6 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		this._executeResult.rows = dataSet.dataRows.getRange(0, dataSet.dataRows.getLength()).map(gridRow => {
 			return gridRow.values.map(cell => cell.displayValue);
 		});
-		this.initChart();
 	}
 
 	public initChart() {
