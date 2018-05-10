@@ -15,11 +15,11 @@ import {
 	ElementRef, QueryList, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject,
 	ViewChildren, forwardRef, EventEmitter, Input, ViewChild
 } from '@angular/core';
-import { IGridDataRow, SlickGrid, VirtualizedCollection } from 'angular2-slickgrid';
+import { IGridDataRow, SlickGrid, VirtualizedCollection, ISlickRange } from 'angular2-slickgrid';
 
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import * as Services from 'sql/parts/grid/services/sharedServices';
-import { IGridIcon, IMessage, IGridDataSet } from 'sql/parts/grid/common/interfaces';
+import { IGridIcon, IMessage, IGridDataSet, SaveFormat } from 'sql/parts/grid/common/interfaces';
 import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { GridActionProvider } from 'sql/parts/grid/views/gridActions';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
@@ -27,6 +27,7 @@ import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { error } from 'sql/base/common/log';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { clone } from 'sql/base/common/objects';
+import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
 
 import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
@@ -207,14 +208,193 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			}
 			self._cd.detectChanges();
 		});
+
+		this.subscribeWithDispose(this.dataService.gridContentObserver, (type) => {
+			switch (type) {
+				case GridContentEvents.RefreshContents:
+					self.refreshResultsets();
+					break;
+				case GridContentEvents.ResizeContents:
+					self.resizeGrids();
+					break;
+				case GridContentEvents.CopySelection:
+					self.copySelection();
+					break;
+				case GridContentEvents.CopyWithHeaders:
+					self.copyWithHeaders();
+					break;
+				case GridContentEvents.CopyMessagesSelection:
+					self.copyMessagesSelection();
+					break;
+				case GridContentEvents.ToggleResultPane:
+					self.toggleResultPane();
+					break;
+				case GridContentEvents.ToggleMessagePane:
+					self.toggleMessagePane();
+					break;
+				case GridContentEvents.SelectAll:
+					self.onSelectAllForActiveGrid();
+					break;
+				case GridContentEvents.SelectAllMessages:
+					self.selectAllMessages();
+					break;
+				case GridContentEvents.SaveAsCsv:
+					self.sendSaveRequest(SaveFormat.CSV);
+					break;
+				case GridContentEvents.SaveAsJSON:
+					self.sendSaveRequest(SaveFormat.JSON);
+					break;
+				case GridContentEvents.SaveAsExcel:
+					self.sendSaveRequest(SaveFormat.EXCEL);
+					break;
+				case GridContentEvents.GoToNextQueryOutputTab:
+					self.goToNextQueryOutputTab();
+					break;
+				case GridContentEvents.ViewAsChart:
+					self.showChartForGrid(self.activeGrid);
+					break;
+				case GridContentEvents.GoToNextGrid:
+					self.goToNextGrid();
+					break;
+				default:
+					error('Unexpected grid content event type "' + type + '" sent');
+					break;
+			}
+		});
+
+		this.initShortcutsBase();
 		this.dataService.onAngularLoaded();
+	}
+
+	private goToNextGrid() {
+		if (this.renderedDataSets.length > 0) {
+			let next  = this.activeGrid + 1;
+			if (next >= this.renderedDataSets.length) {
+				next = 0;
+			}
+			this.navigateToGrid(next);
+		}
+	}
+
+	private initShortcutsBase(): void {
+		let shortcuts = {
+			'ToggleResultPane': () => {
+				this.toggleResultPane();
+			},
+			'ToggleMessagePane': () => {
+				this.toggleMessagePane();
+			},
+			'CopySelection': () => {
+				this.copySelection();
+			},
+			'CopyWithHeaders': () => {
+				this.copyWithHeaders();
+			},
+			'SelectAll': () => {
+				this.onSelectAllForActiveGrid();
+			},
+			'SaveAsCSV': () => {
+				this.sendSaveRequest(SaveFormat.CSV);
+			},
+			'SaveAsJSON': () => {
+				this.sendSaveRequest(SaveFormat.JSON);
+			},
+			'SaveAsExcel': () => {
+				this.sendSaveRequest(SaveFormat.EXCEL);
+			}
+		};
+
+		this.initShortcuts(shortcuts);
+		this.shortcutfunc = shortcuts;
+	}
+
+	private copySelection(): void {
+		let messageText = this.getMessageText();
+		if (messageText.length > 0) {
+			this._bootstrapService.clipboardService.writeText(messageText);
+		} else {
+			let activeGrid = this.activeGrid;
+			let selection = this.slickgrids.toArray()[activeGrid].getSelectedRanges();
+			this.dataService.copyResults(selection, this.renderedDataSets[activeGrid].batchId, this.renderedDataSets[activeGrid].resultId);
+		}
+	}
+
+	private getMessageText(): string {
+		if (document.activeElement === this.getMessagesElement()) {
+			if (window.getSelection()) {
+				return window.getSelection().toString();
+			}
+		}
+		return '';
+	}
+
+	private copyWithHeaders(): void {
+		let activeGrid = this.activeGrid;
+		let selection = this.slickgrids.toArray()[activeGrid].getSelectedRanges();
+		this.dataService.copyResults(selection, this.renderedDataSets[activeGrid].batchId,
+			this.renderedDataSets[activeGrid].resultId, true);
+	}
+
+	private copyMessagesSelection(): void {
+		let messageText = this.getMessageText();
+		if (messageText.length === 0) {
+			// Since we know we're specifically copying messages, do a select all if nothing is selected
+			this.selectAllMessages();
+			messageText = this.getMessageText();
+		}
+		if (messageText.length > 0) {
+			this._bootstrapService.clipboardService.writeText(messageText);
+		}
+	}
+
+	private onSelectAllForActiveGrid(): void {
+		if (this.activeGrid >= 0 && this.slickgrids.length > this.activeGrid) {
+			this.slickgrids.toArray()[this.activeGrid].selection = true;
+		}
+	}
+
+	private sendSaveRequest(format: SaveFormat) {
+		let activeGrid = this.activeGrid;
+		let batchId = this.renderedDataSets[activeGrid].batchId;
+		let resultId = this.renderedDataSets[activeGrid].resultId;
+		let selection = this.slickgrids.toArray()[activeGrid].getSelectedRanges();
+		this.dataService.sendSaveRequest({ batchIndex: batchId, resultSetNumber: resultId, format: format, selection: selection });
+	}
+
+	/**
+	 * Send save result set request to service
+	 */
+	private handleContextClick(event: { type: string, batchId: number, resultId: number, index: number, selection: ISlickRange[] }): void {
+		switch (event.type) {
+			case 'savecsv':
+				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.CSV, selection: event.selection });
+				break;
+			case 'savejson':
+				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.JSON, selection: event.selection });
+				break;
+			case 'saveexcel':
+				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.EXCEL, selection: event.selection });
+				break;
+			case 'selectall':
+				this.activeGrid = event.index;
+				this.onSelectAllForActiveGrid();
+				break;
+			case 'copySelection':
+				this.dataService.copyResults(event.selection, event.batchId, event.resultId);
+				break;
+			case 'copyWithHeaders':
+				this.dataService.copyResults(event.selection, event.batchId, event.resultId, true);
+				break;
+			default:
+				break;
+		}
 	}
 
 	public ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
-	protected initShortcuts(shortcuts: { [name: string]: Function }): void {
+	private initShortcuts(shortcuts: { [name: string]: Function }): void {
 		shortcuts['event.nextGrid'] = () => {
 			this.navigateToGrid(this.activeGrid + 1);
 		};
@@ -589,17 +769,17 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		});
 	}
 
-	protected showChartForGrid(index: number) {
+	private showChartForGrid(index: number) {
 		if (this.renderedDataSets.length > index) {
 			this.showChartRequested.emit(this.renderedDataSets[index]);
 		}
 	}
 
-	protected goToNextQueryOutputTab(): void {
+	private goToNextQueryOutputTab(): void {
 		this.goToNextQueryOutputTabRequested.emit();
 	}
 
-	protected toggleResultPane(): void {
+	private toggleResultPane(): void {
 		this.resultActive = !this.resultActive;
 		this._cd.detectChanges();
 		if (this.resultActive) {
@@ -608,7 +788,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		}
 	}
 
-	protected toggleMessagePane(): void {
+	private toggleMessagePane(): void {
 		this.messageActive = !this.messageActive;
 		this._cd.detectChanges();
 		if (this.messageActive && this._messagesContainer) {

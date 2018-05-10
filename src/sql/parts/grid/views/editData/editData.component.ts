@@ -22,6 +22,7 @@ import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDataGridActions';
 import { error } from 'sql/base/common/log';
 import { clone } from 'sql/base/common/objects';
+import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
 
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
@@ -110,11 +111,18 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			self._cd.detectChanges();
 		});
 
-		this.dataService.onAngularLoaded();
-	}
+		this.subscribeWithDispose(this.dataService.gridContentObserver, (type) => {
+			switch (type) {
+				case GridContentEvents.RefreshContents:
+					self.refreshResultsets();
+					break;
+				case GridContentEvents.ResizeContents:
+					self.resizeGrids();
+					break;
+			}
+		});
 
-	protected initShortcuts(shortcuts: { [name: string]: Function }): void {
-		// TODO add any Edit Data-specific shortcuts here
+		this.dataService.onAngularLoaded();
 	}
 
 	public ngOnDestroy(): void {
