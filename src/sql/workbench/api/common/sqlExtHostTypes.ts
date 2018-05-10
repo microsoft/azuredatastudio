@@ -70,6 +70,7 @@ export enum ModelComponentTypes {
 	InputBox,
 	DropDown,
 	Button,
+	CheckBox,
 	DashboardWidget,
 	DashboardWebview,
 	Form

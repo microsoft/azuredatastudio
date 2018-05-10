@@ -20,6 +20,7 @@ declare module 'sqlops' {
 		flexContainer(): FlexBuilder;
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
+		checkBox(): ComponentBuilder<CheckBoxComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
@@ -30,6 +31,7 @@ declare module 'sqlops' {
 	export interface ComponentBuilder<T extends Component> {
 		component(): T;
 		withProperties<U>(properties: U): ComponentBuilder<T>;
+		withValidation(validation: (component: T) => boolean): ComponentBuilder<T>;
 	}
 	export interface ContainerBuilder<T extends Component, TLayout, TItemLayout> extends ComponentBuilder<T> {
 		withLayout(layout: TLayout): ContainerBuilder<T, TLayout, TItemLayout>;
@@ -55,6 +57,22 @@ declare module 'sqlops' {
 		 * @memberof Component
 		 */
 		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
+
+		enabled: boolean;
+		/**
+		 * Event fired to notify that the component's validity has changed
+		 */
+		readonly onValidityChanged: vscode.Event<boolean>;
+
+		/**
+		 * Whether the component is valid or not
+		 */
+		readonly valid: boolean;
+
+		/**
+		 * Run the component's validations
+		 */
+		validate(): void;
 	}
 
 	export interface FormComponent {
@@ -144,7 +162,9 @@ declare module 'sqlops' {
 	}
 
 	export interface FormItemLayout {
-
+		horizontal: boolean;
+		width: number;
+		componentWidth: number;
 	}
 
 	export interface FormLayout {
@@ -186,6 +206,15 @@ declare module 'sqlops' {
 
 	export interface InputBoxProperties {
 		value?: string;
+		ariaLabel?: string;
+		placeHolder?: string;
+		height: number;
+		width: number;
+	}
+
+	export interface CheckBoxProperties {
+		checked?: boolean;
+		label?: string;
 	}
 
 	export interface DropDownProperties {
@@ -203,9 +232,14 @@ declare module 'sqlops' {
 		actions?: ActionDescriptor[];
 	}
 
-	export interface InputBoxComponent extends Component {
-		value: string;
+	export interface InputBoxComponent extends Component, InputBoxProperties {
 		onTextChanged: vscode.Event<any>;
+	}
+
+	export interface CheckBoxComponent extends Component {
+		checked: boolean;
+		label: string;
+		onChanged: vscode.Event<any>;
 	}
 
 	export interface DropDownComponent extends Component {
@@ -253,6 +287,21 @@ declare module 'sqlops' {
 		readonly modelBuilder: ModelBuilder;
 
 		/**
+		 * Whether or not the model view's root component is valid
+		 */
+		readonly valid: boolean;
+
+		/**
+		 * Raised when the model view's valid property changes
+		 */
+		readonly onValidityChanged: vscode.Event<boolean>;
+
+		/**
+		 * Run the model view root component's validations
+		 */
+		validate(): void;
+
+		/**
 		 * Initializes the model with a root component definition.
 		 * Once this has been done, the components will be laid out in the UI and
 		 * can be accessed and altered as needed.
@@ -260,7 +309,7 @@ declare module 'sqlops' {
 		initializeModel<T extends Component>(root: T): Thenable<void>;
 	}
 
-	export namespace dashboard {
+	export namespace ui {
 		/**
 		 * Register a provider for a model-view widget
 		 */
@@ -324,6 +373,16 @@ declare module 'sqlops' {
 				 * Any additional buttons that should be displayed
 				 */
 				customButtons: Button[];
+
+				/**
+				 * Whether the dialog's content is valid
+				 */
+				readonly valid: boolean;
+
+				/**
+				 * Fired whenever the dialog's valid property changes
+				 */
+				readonly onValidityChanged: vscode.Event<boolean>;
 			}
 
 			export interface DialogTab {

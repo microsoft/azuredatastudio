@@ -21,12 +21,13 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { localize } from 'vs/nls';
+import Event, { Emitter } from 'vs/base/common/event';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
-
-	// Wizard HTML elements
-	private _body: HTMLElement;
+	private _onDone = new Emitter<void>();
+	private _onCancel = new Emitter<void>();
 
 	// Buttons
 	private _cancelButton: Button;
@@ -65,16 +66,20 @@ export class DialogModal extends Modal {
 			});
 		}
 
-		this._cancelButton = this.addDialogButton(this._dialog.cancelButton, () => this.cancel());
+		this._cancelButton = this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
 		this.updateButtonElement(this._cancelButton, this._dialog.cancelButton);
-		this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done());
+		this._dialog.cancelButton.registerClickEvent(this._onCancel.event);
+		this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done(), false);
 		this.updateButtonElement(this._doneButton, this._dialog.okButton);
+		this._dialog.okButton.registerClickEvent(this._onDone.event);
 	}
 
-	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined): Button {
+	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true): Button {
 		let buttonElement = this.addFooterButton(button.label, onSelect);
 		buttonElement.enabled = button.enabled;
-		button.registerClickEvent(buttonElement.onDidClick);
+		if (registerClickEvent) {
+			button.registerClickEvent(buttonElement.onDidClick);
+		}
 		button.onUpdate(() => {
 			this.updateButtonElement(buttonElement, button);
 		});
@@ -89,12 +94,13 @@ export class DialogModal extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement): void {
+		let body: HTMLElement;
 		new Builder(container).div({ class: 'dialogModal-body' }, (bodyBuilder) => {
-			this._body = bodyBuilder.getHTMLElement();
+			body = bodyBuilder.getHTMLElement();
 		});
 
 		this._dialogPane = new DialogPane(this._dialog, this._bootstrapService);
-		this._dialogPane.createBody(this._body);
+		this._dialogPane.createBody(body);
 	}
 
 	public open(): void {
@@ -102,11 +108,15 @@ export class DialogModal extends Modal {
 	}
 
 	public done(): void {
-		this.dispose();
-		this.hide();
+		if (this._dialog.okButton.enabled) {
+			this._onDone.fire();
+			this.dispose();
+			this.hide();
+		}
 	}
 
 	public cancel(): void {
+		this._onCancel.fire();
 		this.dispose();
 		this.hide();
 	}
@@ -117,6 +127,20 @@ export class DialogModal extends Modal {
 
 	protected show(): void {
 		super.show();
+	}
+
+	/**
+	 * Overridable to change behavior of escape key
+	 */
+	protected onClose(e: StandardKeyboardEvent) {
+		this.cancel();
+	}
+
+	/**
+	 * Overridable to change behavior of enter key
+	 */
+	protected onAccept(e: StandardKeyboardEvent) {
+		this.done();
 	}
 
 	public dispose(): void {

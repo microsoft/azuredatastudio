@@ -12,7 +12,7 @@ import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { Deferred } from 'sql/base/common/promise';
 
-const componentRegistry = <IComponentRegistry> Registry.as(Extensions.ComponentContribution);
+const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
 
 
 class ComponentDescriptor implements IComponentDescriptor {

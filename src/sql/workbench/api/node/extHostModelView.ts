@@ -25,17 +25,23 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	navContainer(): sqlops.ContainerBuilder<sqlops.NavContainer, any, any> {
 		let id = this.getNextComponentId();
-		return new ContainerBuilderImpl(this._proxy, this._handle, ModelComponentTypes.NavContainer, id);
+		let container: ContainerBuilderImpl<sqlops.NavContainer, any, any> = new ContainerBuilderImpl(this._proxy, this._handle, ModelComponentTypes.NavContainer, id);
+		this._eventHandlers.set(id, container);
+		return container;
 	}
 
 	flexContainer(): sqlops.FlexBuilder {
 		let id = this.getNextComponentId();
-		return new ContainerBuilderImpl<sqlops.FlexContainer, sqlops.FlexLayout, sqlops.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id);
+		let container: ContainerBuilderImpl<sqlops.FlexContainer, any, any> = new ContainerBuilderImpl<sqlops.FlexContainer, sqlops.FlexLayout, sqlops.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id);
+		this._eventHandlers.set(id, container);
+		return container;
 	}
 
 	formContainer(): sqlops.FormBuilder {
 		let id = this.getNextComponentId();
-		return new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id);
+		let container = new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id);
+		this._eventHandlers.set(id, container);
+		return container;
 	}
 
 	card(): sqlops.ComponentBuilder<sqlops.CardComponent> {
@@ -46,6 +52,11 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 	inputBox(): sqlops.ComponentBuilder<sqlops.InputBoxComponent> {
 		let id = this.getNextComponentId();
 		return this.withEventHandler(new InputBoxWrapper(this._proxy, this._handle, id), id);
+	}
+
+	checkBox(): sqlops.ComponentBuilder<sqlops.CheckBoxComponent> {
+		let id = this.getNextComponentId();
+		return this.withEventHandler(new CheckBoxWrapper(this._proxy, this._handle, id), id);
 	}
 
 	button(): sqlops.ComponentBuilder<sqlops.ButtonComponent> {
@@ -105,6 +116,11 @@ class ComponentBuilderImpl<T extends sqlops.Component> implements sqlops.Compone
 		return this;
 	}
 
+	withValidation(validation: (component: T) => boolean): sqlops.ComponentBuilder<T> {
+		this._component.validations.push(validation);
+		return this;
+	}
+
 	handleEvent(eventArgs: IComponentEventArgs) {
 		this._component.onEvent(eventArgs);
 	}
@@ -133,6 +149,7 @@ class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> ext
 			let componentWrapper = item as ComponentWrapper;
 			return new InternalItemConfig(componentWrapper, itemLayout);
 		});
+		components.forEach(component => component.onValidityChanged(() => this._component.validate()));
 		return this;
 	}
 }
@@ -164,6 +181,7 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 					this._component.itemConfigs.push(new InternalItemConfig(componentWrapper, itemLayout));
 				});
 			}
+			formItem.component.onValidityChanged(() => this._component.validate());
 		});
 		return this;
 	}
@@ -189,6 +207,10 @@ class ComponentWrapper implements sqlops.Component {
 	public properties: { [key: string]: any } = {};
 	public layout: any;
 	public itemConfigs: InternalItemConfig[];
+	public validations: ((component: ThisType<ComponentWrapper>) => boolean)[] = [];
+	private _valid: boolean = true;
+	private _onValidityChangedEmitter = new Emitter<boolean>();
+	public readonly onValidityChanged = this._onValidityChangedEmitter.event;
 
 	private _onErrorEmitter = new Emitter<Error>();
 	public readonly onError: vscode.Event<Error> = this._onErrorEmitter.event;
@@ -201,6 +223,12 @@ class ComponentWrapper implements sqlops.Component {
 	) {
 		this.properties = {};
 		this.itemConfigs = [];
+		this.validations.push((component: this) => {
+			return component.items.every(item => {
+				item.validate();
+				return item.valid;
+			});
+		});
 	}
 
 	public get id(): string {
@@ -213,6 +241,14 @@ class ComponentWrapper implements sqlops.Component {
 
 	public get items(): sqlops.Component[] {
 		return this.itemConfigs.map(itemConfig => itemConfig.component);
+	}
+
+	public get enabled(): boolean {
+		return this.properties['enabled'];
+	}
+
+	public set enabled(value: boolean) {
+		this.setProperty('enabled', value);
 	}
 
 	public toComponentShape(): IComponentShape {
@@ -243,6 +279,7 @@ class ComponentWrapper implements sqlops.Component {
 		}
 		let config = new InternalItemConfig(itemImpl, itemLayout);
 		this.itemConfigs.push(config);
+		itemImpl.onValidityChanged(() => this.validate());
 		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig()).then(undefined, this.handleError);
 	}
 
@@ -265,18 +302,20 @@ class ComponentWrapper implements sqlops.Component {
 	public onEvent(eventArgs: IComponentEventArgs) {
 		if (eventArgs && eventArgs.eventType === ComponentEventType.PropertiesChanged) {
 			this.properties = eventArgs.args;
+			this.validate();
 		} else if (eventArgs) {
-				let emitter = this._emitterMap.get(eventArgs.eventType);
-				if (emitter) {
-					emitter.fire();
-				}
+			let emitter = this._emitterMap.get(eventArgs.eventType);
+			if (emitter) {
+				emitter.fire();
 			}
+		}
 	}
 
 	protected setProperty(key: string, value: any): Thenable<boolean> {
 		if (!this.properties[key] || this.properties[key] !== value) {
 			// Only notify the front end if a value has been updated
 			this.properties[key] = value;
+			this.validate();
 			return this.notifyPropertyChanged();
 		}
 		return Promise.resolve(true);
@@ -284,6 +323,29 @@ class ComponentWrapper implements sqlops.Component {
 
 	private handleError(err: Error): void {
 		this._onErrorEmitter.fire(err);
+	}
+
+	public validate(): void {
+		let isValid = true;
+		try {
+			this.validations.forEach(validation => {
+				if (!validation(this)) {
+					isValid = false;
+				}
+			});
+		} catch (e) {
+			isValid = false;
+		}
+		let oldValid = this._valid;
+		if (this._valid !== isValid) {
+			this._valid = isValid;
+			this._proxy.$notifyValidation(this._handle, this._id, isValid);
+			this._onValidityChangedEmitter.fire(this._valid);
+		}
+	}
+
+	public get valid(): boolean {
+		return this._valid;
 	}
 }
 
@@ -337,7 +399,63 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 		this.setProperty('value', v);
 	}
 
+	public get ariaLabel(): string {
+		return this.properties['ariaLabel'];
+	}
+	public set ariaLabel(v: string) {
+		this.setProperty('ariaLabel', v);
+	}
+
+	public get placeHolder(): string {
+		return this.properties['placeHolder'];
+	}
+	public set placeHolder(v: string) {
+		this.setProperty('placeHolder', v);
+	}
+
+	public get height(): number {
+		return this.properties['height'];
+	}
+	public set height(v: number) {
+		this.setProperty('height', v);
+	}
+
+	public get width(): number {
+		return this.properties['width'];
+	}
+	public set width(v: number) {
+		this.setProperty('width', v);
+	}
+
 	public get onTextChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+}
+
+class CheckBoxWrapper extends ComponentWrapper implements sqlops.CheckBoxComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.CheckBox, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+	}
+
+	public get checked(): boolean {
+		return this.properties['checked'];
+	}
+	public set checked(v: boolean) {
+		this.setProperty('checked', v);
+	}
+
+	public get label(): string {
+		return this.properties['label'];
+	}
+	public set label(v: string) {
+		this.setProperty('label', v);
+	}
+
+	public get onChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
@@ -395,8 +513,11 @@ class ButtonWrapper extends ComponentWrapper implements sqlops.ButtonComponent {
 class ModelViewImpl implements sqlops.ModelView {
 
 	public onClosedEmitter = new Emitter<any>();
+	private _onValidityChangedEmitter = new Emitter<boolean>();
+	public readonly onValidityChanged = this._onValidityChangedEmitter.event;
 
 	private _modelBuilder: ModelBuilderImpl;
+	private _component: sqlops.Component;
 
 	constructor(
 		private readonly _proxy: MainThreadModelViewShape,
@@ -423,16 +544,27 @@ class ModelViewImpl implements sqlops.ModelView {
 		return this._modelBuilder;
 	}
 
+	public get valid(): boolean {
+		return this._component.valid;
+	}
+
 	public handleEvent(componentId: string, eventArgs: IComponentEventArgs): void {
 		this._modelBuilder.handleEvent(componentId, eventArgs);
 	}
 
 	public initializeModel<T extends sqlops.Component>(component: T): Thenable<void> {
+		component.onValidityChanged(valid => this._onValidityChangedEmitter.fire(valid));
+		this._component = component;
 		let componentImpl = <any>component as ComponentWrapper;
 		if (!componentImpl) {
 			return Promise.reject(nls.localize('unknownConfig', 'Unkown component configuration, must use ModelBuilder to create a configuration object'));
 		}
+		componentImpl.validate();
 		return this._proxy.$initializeModel(this._handle, componentImpl.toComponentShape());
+	}
+
+	public validate(): void {
+		this._component.validate();
 	}
 }
 

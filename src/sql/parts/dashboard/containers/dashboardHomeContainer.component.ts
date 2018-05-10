@@ -63,6 +63,8 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 
 	public layout() {
 		super.layout();
-		this._scrollable.layout();
+		if (this._scrollable) {
+			this._scrollable.layout();
+		}
 	}
 }

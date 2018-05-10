@@ -85,6 +85,7 @@ let defaultVal = [
 		}
 	},
 	{
+		name: 'Search',
 		gridItemConfig: {
 			sizex: 1,
 			sizey: 2

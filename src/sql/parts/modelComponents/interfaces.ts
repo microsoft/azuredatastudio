@@ -6,6 +6,7 @@ import { InjectionToken } from '@angular/core';
 
 import * as sqlops from 'sqlops';
 import Event, { Emitter } from 'vs/base/common/event';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 /**
  * An instance of a model-backed component. This will be a UI element
@@ -17,12 +18,13 @@ export interface IComponent {
 	descriptor: IComponentDescriptor;
 	modelStore: IModelStore;
 	layout();
+	registerEventHandler(handler: (event: IComponentEventArgs) => void): IDisposable;
 	clearContainer?: () => void;
 	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any) => void;
 	setLayout?: (layout: any) => void;
 	setProperties?: (properties: { [key: string]: any; }) => void;
-	title?: string;
-	onEvent?: Event<IComponentEventArgs>;
+	readonly valid?: boolean;
+	setValid(valid: boolean): void;
 }
 
 export const COMPONENT_CONFIG = new InjectionToken<IComponentConfig>('component_config');
@@ -60,7 +62,8 @@ export interface IComponentEventArgs {
 export enum ComponentEventType {
 	PropertiesChanged,
 	onDidChange,
-	onDidClick
+	onDidClick,
+	validityChanged
 }
 
 export interface IModelStore {

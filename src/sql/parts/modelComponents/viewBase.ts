@@ -91,6 +91,10 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.queueAction(componentId, (component) => component.setProperties(properties));
 	}
 
+	setValid(componentId: string, valid: boolean): void {
+		this.queueAction(componentId, (component) => component.setValid(valid));
+	}
+
 	private queueAction<T>(componentId: string, action: (component: IComponent) => T): void {
 		this.modelStore.eventuallyRunOnComponent(componentId, action).catch(err => {
 			// TODO add error handling
@@ -99,12 +103,10 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 
 	registerEvent(componentId: string) {
 		this.queueAction(componentId, (component) => {
-			if (component.onEvent) {
-				this._register(component.onEvent(e => {
-					e.componentId = componentId;
-					this._onEventEmitter.fire(e);
-				}));
-			}
+			this._register(component.registerEventHandler(e => {
+				e.componentId = componentId;
+				this._onEventEmitter.fire(e);
+			}));
 		});
 	}
 

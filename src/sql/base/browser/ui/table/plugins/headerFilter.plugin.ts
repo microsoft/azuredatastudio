@@ -7,6 +7,7 @@ import { SlickGrid } from 'angular2-slickgrid';
 import { Button } from '../../button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { indexOf } from 'vs/platform/files/common/files';
 
 export class HeaderFilter {
 
@@ -123,9 +124,9 @@ export class HeaderFilter {
 		for (var i = 0; i < filterItems.length; i++) {
 			var filtered = _.contains(workingFilters, filterItems[i]);
 
-			filterOptions += "<label><input type='checkbox' value='" + i + "'"
-			+ (filtered ? " checked='checked'" : "")
-			+ "/>" + filterItems[i] + "</label>";
+			filterOptions += '<label><input type="checkbox" value="' + i + '"'
+			+ (filtered ? ' checked="checked"' : '')
+			+ '/>' + filterItems[i] + '</label>';
 		}
 		var $filter = menu.find('.filter');
 		$filter.empty().append($(filterOptions));
@@ -137,7 +138,7 @@ export class HeaderFilter {
 
 	private showFilter(e) {
 		var $menuButton = $(e.target);
-		var columnDef = $menuButton.data("column");
+		var columnDef = $menuButton.data('column');
 
 		columnDef.filterValues = columnDef.filterValues || [];
 
@@ -156,7 +157,7 @@ export class HeaderFilter {
 		}
 
 		if (!this.$menu) {
-			this.$menu = $("<div class='slick-header-menu'>").appendTo(document.body);
+			this.$menu = $('<div class="slick-header-menu">').appendTo(document.body);
 		}
 
 		this.$menu.empty();
@@ -165,16 +166,16 @@ export class HeaderFilter {
 		this.addMenuItem(this.$menu, columnDef, 'Sort Descending', 'sort-desc', this.options.sortDescImage);
 		this.addMenuInput(this.$menu, columnDef);
 
-		let filterOptions = "<label><input type='checkbox' value='-1' />(Select All)</label>";
+		let filterOptions = '<label><input type="checkbox" value="-1" />(Select All)</label>';
 
 		for (var i = 0; i < filterItems.length; i++) {
 			var filtered = _.contains(workingFilters, filterItems[i]);
-
-			filterOptions += "<label><input type='checkbox' value='" + i + "'"
-								+ (filtered ? " checked='checked'" : "")
-								+ "/>" + filterItems[i] + "</label>";
+			if (filterItems[i].indexOf('Error:') < 0) {
+				filterOptions += '<label><input type="checkbox" value="' + i + '"'
+				+ (filtered ? ' checked="checked"' : '')
+				+ '/>' + filterItems[i] + '</label>';
+			}
 		}
-
 		var $filter = $('<div class="filter">')
 						.append($(filterOptions))
 						.appendTo(this.$menu);
@@ -249,6 +250,10 @@ export class HeaderFilter {
 
 			if ($checkbox.prop('checked') && index < 0) {
 				workingFilters.push(filterItems[value]);
+				let nextRow = filterItems[(parseInt(value)+1).toString()];
+				if (nextRow.indexOf('Error:') >= 0) {
+					workingFilters.push(nextRow);
+				}
 			}
 			else {
 				if (index > -1) {
@@ -289,8 +294,7 @@ export class HeaderFilter {
 				seen.push(value);
 			}
 		}
-
-		return _.sortBy(seen, (v) => { return v; });
+		return seen;
 	}
 
 	private getFilterValuesByInput($input) {

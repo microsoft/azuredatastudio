@@ -530,6 +530,7 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 	$registerEvent(handle: number, componentId: string):  Thenable<void>;
+	$notifyValidation(handle: number, componentId: string, valid: boolean): Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {
@@ -547,6 +548,7 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 
 export interface ExtHostModelViewDialogShape {
 	$onButtonClick(handle: number): void;
+	$onDialogValidityChanged(handle: number, valid: boolean): void;
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
