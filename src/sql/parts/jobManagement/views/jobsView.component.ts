@@ -389,9 +389,10 @@ export class JobsViewComponent implements AfterContentChecked {
 			let col: any = columns[i];
 			let filterValues = col.filterValues;
 			if (filterValues && filterValues.length > 0) {
-				value = value &&  _.contains(filterValues, item[col.field]);
 				if (item._parent) {
-					value = value && _.contains(filterValues, item._parent.name);
+					value = value && _.contains(filterValues, item._parent[col.field]);
+				} else {
+					value = value &&  _.contains(filterValues, item[col.field]);
 				}
 			}
 		}

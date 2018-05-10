@@ -272,13 +272,16 @@ export class RowDetailView {
 
 	public getErrorItem(parent, offset) {
 		let item: any = {};
+		// for (let prop in parent) {
+		// 	item[prop] = parent[prop];
+		// }
 		item.id = parent.id + '.' + offset;
 		item._collapsed = true;
 		item._isPadding = false;
 		item._parent = parent;
 		item._offset = offset;
-		item.jobId = parent.jobId;
 		item.name = parent.message ? parent.message : nls.localize('rowDetailView.loadError','Loading Error...');
+		parent._child = item;
 		return item;
 	}
 

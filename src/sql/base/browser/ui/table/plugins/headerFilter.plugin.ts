@@ -170,7 +170,7 @@ export class HeaderFilter {
 
 		for (var i = 0; i < filterItems.length; i++) {
 			var filtered = _.contains(workingFilters, filterItems[i]);
-			if (filterItems[i].indexOf('Error:') < 0) {
+			if (filterItems[i] && filterItems[i].indexOf('Error:') < 0) {
 				filterOptions += '<label><input type="checkbox" value="' + i + '"'
 				+ (filtered ? ' checked="checked"' : '')
 				+ '/>' + filterItems[i] + '</label>';
@@ -251,7 +251,7 @@ export class HeaderFilter {
 			if ($checkbox.prop('checked') && index < 0) {
 				workingFilters.push(filterItems[value]);
 				let nextRow = filterItems[(parseInt(value)+1).toString()];
-				if (nextRow.indexOf('Error:') >= 0) {
+				if (nextRow && nextRow.indexOf('Error:') >= 0) {
 					workingFilters.push(nextRow);
 				}
 			}
