@@ -35,12 +35,8 @@ declare type PaneType = 'messages' | 'results';
 export class QueryOutputComponent implements OnDestroy {
 
 	@ViewChild(QueryComponent) queryComponent: QueryComponent;
-
 	@ViewChild(QueryPlanComponent) queryPlanComponent: QueryPlanComponent;
-
 	@ViewChild(TopOperationsComponent) topOperationsComponent: TopOperationsComponent;
-
-	@ViewChild(ChartViewerComponent) chartViewerComponent: ChartViewerComponent;
 
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 
