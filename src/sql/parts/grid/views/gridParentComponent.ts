@@ -22,6 +22,7 @@ import * as Utils from 'sql/parts/connection/common/utils';
 import { DataService } from 'sql/parts/grid/services/dataService';
 import * as actions from 'sql/parts/grid/views/gridActions';
 import * as Services from 'sql/parts/grid/services/sharedServices';
+import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
 import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/parts/query/common/queryContext';
 import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { error } from 'sql/base/common/log';
@@ -119,14 +120,69 @@ export abstract class GridParentComponent {
 
 	protected baseInit(): void {
 		const self = this;
+		this.initShortcutsBase();
 		if (this._bootstrapService.configurationService) {
 			let sqlConfig = this._bootstrapService.configurationService.getValue('sql');
 			if (sqlConfig) {
 				this._messageActive = sqlConfig['messagesDefaultOpen'];
 			}
 		}
+		this.subscribeWithDispose(this.dataService.gridContentObserver, (type) => {
+			switch (type) {
+				case GridContentEvents.RefreshContents:
+					self.refreshResultsets();
+					break;
+				case GridContentEvents.ResizeContents:
+					self.resizeGrids();
+					break;
+				case GridContentEvents.CopySelection:
+					self.copySelection();
+					break;
+				case GridContentEvents.CopyWithHeaders:
+					self.copyWithHeaders();
+					break;
+				case GridContentEvents.CopyMessagesSelection:
+					self.copyMessagesSelection();
+					break;
+				case GridContentEvents.ToggleResultPane:
+					self.toggleResultPane();
+					break;
+				case GridContentEvents.ToggleMessagePane:
+					self.toggleMessagePane();
+					break;
+				case GridContentEvents.SelectAll:
+					self.onSelectAllForActiveGrid();
+					break;
+				case GridContentEvents.SelectAllMessages:
+					self.selectAllMessages();
+					break;
+				case GridContentEvents.SaveAsCsv:
+					self.sendSaveRequest(SaveFormat.CSV);
+					break;
+				case GridContentEvents.SaveAsJSON:
+					self.sendSaveRequest(SaveFormat.JSON);
+					break;
+				case GridContentEvents.SaveAsExcel:
+					self.sendSaveRequest(SaveFormat.EXCEL);
+					break;
+				case GridContentEvents.GoToNextQueryOutputTab:
+					self.goToNextQueryOutputTab();
+					break;
+				case GridContentEvents.ViewAsChart:
+					self.showChartForGrid(self.activeGrid);
+					break;
+				case GridContentEvents.GoToNextGrid:
+					self.goToNextGrid();
+					break;
+				default:
+					error('Unexpected grid content event type "' + type + '" sent');
+					break;
+			}
+		});
+
 		this.contextMenuService = this._bootstrapService.contextMenuService;
 		this.keybindingService = this._bootstrapService.keybindingService;
+
 		this.bindKeys(this._bootstrapService.contextKeyService);
 	}
 
@@ -158,6 +214,17 @@ export abstract class GridParentComponent {
 		this.toDispose = dispose(this.toDispose);
 	}
 
+	protected toggleResultPane(): void {
+		this.resultActive = !this.resultActive;
+		if (this.resultActive) {
+			this.resizeGrids();
+		}
+		this._cd.detectChanges();
+	}
+
+	protected toggleMessagePane(): void {
+		this.messageActive = !this.messageActive;
+	}
 
 	protected onGridFocus() {
 		this.gridFocussedContextKey.set(true);
@@ -175,7 +242,137 @@ export abstract class GridParentComponent {
 		this.messagesFocussedContextKey.set(false);
 	}
 
+	private copySelection(): void {
+		let messageText = this.getMessageText();
+		if (messageText.length > 0) {
+			this._bootstrapService.clipboardService.writeText(messageText);
+		} else {
+			let activeGrid = this.activeGrid;
+			let selection = this.slickgrids.toArray()[activeGrid].getSelectedRanges();
+			this.dataService.copyResults(selection, this.renderedDataSets[activeGrid].batchId, this.renderedDataSets[activeGrid].resultId);
+		}
+	}
 
+	private copyWithHeaders(): void {
+		let activeGrid = this.activeGrid;
+		let selection = this.slickgrids.toArray()[activeGrid].getSelectedRanges();
+		this.dataService.copyResults(selection, this.renderedDataSets[activeGrid].batchId,
+			this.renderedDataSets[activeGrid].resultId, true);
+	}
+
+	private copyMessagesSelection(): void {
+		let messageText = this.getMessageText();
+		if (messageText.length === 0) {
+			// Since we know we're specifically copying messages, do a select all if nothing is selected
+			this.selectAllMessages();
+			messageText = this.getMessageText();
+		}
+		if (messageText.length > 0) {
+			this._bootstrapService.clipboardService.writeText(messageText);
+		}
+	}
+
+	private getMessageText(): string {
+		if (document.activeElement === this.getMessagesElement()) {
+			if (window.getSelection()) {
+				return window.getSelection().toString();
+			}
+		}
+		return '';
+	}
+
+	protected goToNextQueryOutputTab(): void {
+	}
+
+	protected showChartForGrid(index: number) {
+	}
+
+	protected goToNextGrid() {
+		if (this.renderedDataSets.length > 0) {
+			let next  = this.activeGrid + 1;
+			if (next >= this.renderedDataSets.length) {
+				next = 0;
+			}
+			this.navigateToGrid(next);
+		}
+	}
+
+	protected navigateToGrid(index: number) {
+	}
+
+	private initShortcutsBase(): void {
+		let shortcuts = {
+			'ToggleResultPane': () => {
+				this.toggleResultPane();
+			},
+			'ToggleMessagePane': () => {
+				this.toggleMessagePane();
+			},
+			'CopySelection': () => {
+				this.copySelection();
+			},
+			'CopyWithHeaders': () => {
+				this.copyWithHeaders();
+			},
+			'SelectAll': () => {
+				this.onSelectAllForActiveGrid();
+			},
+			'SaveAsCSV': () => {
+				this.sendSaveRequest(SaveFormat.CSV);
+			},
+			'SaveAsJSON': () => {
+				this.sendSaveRequest(SaveFormat.JSON);
+			},
+			'SaveAsExcel': () => {
+				this.sendSaveRequest(SaveFormat.EXCEL);
+			},
+			'GoToNextQueryOutputTab': () => {
+				this.goToNextQueryOutputTab();
+			}
+		};
+
+		this.initShortcuts(shortcuts);
+		this.shortcutfunc = shortcuts;
+	}
+
+	protected abstract initShortcuts(shortcuts: { [name: string]: Function }): void;
+
+	/**
+	 * Send save result set request to service
+	 */
+	handleContextClick(event: { type: string, batchId: number, resultId: number, index: number, selection: ISlickRange[] }): void {
+		switch (event.type) {
+			case 'savecsv':
+				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.CSV, selection: event.selection });
+				break;
+			case 'savejson':
+				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.JSON, selection: event.selection });
+				break;
+			case 'saveexcel':
+				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.EXCEL, selection: event.selection });
+				break;
+			case 'selectall':
+				this.activeGrid = event.index;
+				this.onSelectAllForActiveGrid();
+				break;
+			case 'copySelection':
+				this.dataService.copyResults(event.selection, event.batchId, event.resultId);
+				break;
+			case 'copyWithHeaders':
+				this.dataService.copyResults(event.selection, event.batchId, event.resultId, true);
+				break;
+			default:
+				break;
+		}
+	}
+
+	private sendSaveRequest(format: SaveFormat) {
+		let activeGrid = this.activeGrid;
+		let batchId = this.renderedDataSets[activeGrid].batchId;
+		let resultId = this.renderedDataSets[activeGrid].resultId;
+		let selection = this.slickgrids.toArray()[activeGrid].getSelectedRanges();
+		this.dataService.sendSaveRequest({ batchIndex: batchId, resultSetNumber: resultId, format: format, selection: selection });
+	}
 
 	protected _keybindingFor(action: IAction): ResolvedKeybinding {
 		var [kb] = this.keybindingService.lookupKeybindings(action.id);
@@ -226,6 +423,12 @@ export abstract class GridParentComponent {
 			self.activeGrid = gridIndex;
 			self.slickgrids.toArray()[this.activeGrid].selection = true;
 		};
+	}
+
+	private onSelectAllForActiveGrid(): void {
+		if (this.activeGrid >= 0 && this.slickgrids.length > this.activeGrid) {
+			this.slickgrids.toArray()[this.activeGrid].selection = true;
+		}
 	}
 
 	/**
