@@ -576,6 +576,10 @@ class ModelViewImpl implements sqlops.ModelView {
 	public validate(): void {
 		this._component.validate();
 	}
+
+	public validateComponent(componentId: string): boolean {
+		return this._modelBuilder.validateComponent(componentId);
+	}
 }
 
 export class ExtHostModelView implements ExtHostModelViewShape {
@@ -612,5 +616,9 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 		if (view) {
 			view.handleEvent(componentId, eventArgs);
 		}
+	}
+
+	$validateWidget(handle: number, componentId: string): Thenable<boolean> {
+		const view = this._modelViews.get(handle);
 	}
 }
