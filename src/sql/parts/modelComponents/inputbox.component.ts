@@ -57,7 +57,8 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 							};
 						}
 					}
-				}
+				},
+				useDefaultValidation: true
 			};
 
 			this._input = new InputBox(this._inputContainer.nativeElement, this._commonService.contextViewService, inputOptions);

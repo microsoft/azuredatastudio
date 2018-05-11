@@ -32,6 +32,7 @@ export interface IInputOptions extends IInputBoxStyles {
 	// {{SQL CARBON EDIT}} Candidate for addition to vscode
 	min?: string;
 	max?: string;
+	useDefaultValidation?: boolean;
 }
 
 export interface IInputBoxStyles {
@@ -356,7 +357,7 @@ export class InputBox extends Widget {
 			result = this.validation(this.value);
 
 			// {{SQL CARBON EDIT}}
-			if (!result && this.inputElement.validationMessage) {
+			if (!result && this.options.useDefaultValidation && this.inputElement.validationMessage) {
 				result = {
 					content: this.inputElement.validationMessage,
 					type: MessageType.ERROR
