@@ -102,7 +102,6 @@ export class QueryOutputComponent implements OnDestroy {
 		})));
 
 		this._disposables.push(toDisposableSubscription(this.queryComponent.goToNextQueryOutputTabRequested.subscribe(() => {
-			let activeTab = this._panel.getActiveTab;
 			this._panel.selectOnNextTab();
 		})));
 	}
