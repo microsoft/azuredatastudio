@@ -7,12 +7,14 @@
 
 <panel class="dashboard-panel" [options]="panelOpt">
 	<tab [title]="jobsComponentTitle" class="fullsize" [identifier]="jobsTabIdentifier"
-	     [iconClass]="jobsIconClass">
-		<div id="jobsDiv" class="fullsize" *ngIf="showHistory === false">
-			<jobsview-component></jobsview-component>
-		</div>
-		<div id="historyDiv" class="fullsize" *ngIf="showHistory === true">
-			<jobhistory-component></jobhistory-component>
-		</div>
+		 [iconClass]="jobsIconClass">
+		 <ng-template>
+			<div id="jobsDiv" class="fullsize" *ngIf="showHistory === false">
+				<jobsview-component></jobsview-component>
+			</div>
+			<div id="historyDiv" class="fullsize" *ngIf="showHistory === true">
+				<jobhistory-component></jobhistory-component>
+			</div>
+		</ng-template>
 	</tab>
 </panel>

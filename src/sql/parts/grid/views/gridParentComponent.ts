@@ -168,6 +168,12 @@ export abstract class GridParentComponent {
 				case GridContentEvents.GoToNextQueryOutputTab:
 					self.goToNextQueryOutputTab();
 					break;
+				case GridContentEvents.ViewAsChart:
+					self.showChartForGrid(self.activeGrid);
+					break;
+				case GridContentEvents.GoToNextGrid:
+					self.goToNextGrid();
+					break;
 				default:
 					error('Unexpected grid content event type "' + type + '" sent');
 					break;
@@ -276,6 +282,22 @@ export abstract class GridParentComponent {
 	}
 
 	protected goToNextQueryOutputTab(): void {
+	}
+
+	protected showChartForGrid(index: number) {
+	}
+
+	protected goToNextGrid() {
+		if (this.renderedDataSets.length > 0) {
+			let next  = this.activeGrid + 1;
+			if (next >= this.renderedDataSets.length) {
+				next = 0;
+			}
+			this.navigateToGrid(next);
+		}
+	}
+
+	protected navigateToGrid(index: number) {
 	}
 
 	private initShortcutsBase(): void {

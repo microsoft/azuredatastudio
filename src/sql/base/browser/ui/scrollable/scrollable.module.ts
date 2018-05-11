@@ -5,15 +5,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { TabComponent } from './tab.component';
-import { TabHeaderComponent } from './tabHeader.component';
-import { PanelComponent } from './panel.component';
-
-import { ScrollableModule } from 'sql/base/browser/ui/scrollable/scrollable.module';
+import { ScrollableDirective } from './scrollable.directive';
 
 @NgModule({
-	imports: [CommonModule, ScrollableModule],
-	exports: [TabComponent, PanelComponent],
-	declarations: [TabComponent, TabHeaderComponent, PanelComponent]
+	imports: [CommonModule],
+	exports: [ScrollableDirective],
+	declarations: [ScrollableDirective]
 })
-export class PanelModule { }
+export class ScrollableModule { }

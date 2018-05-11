@@ -212,6 +212,22 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GRID_VIEWASCHART_ID,
+	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	when: ResultsGridFocusCondition,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_V),
+	handler: gridCommands.viewAsChart
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GRID_GOTONEXTGRID_ID,
+	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	when: ResultsGridFocusCondition,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_N),
+	handler: gridCommands.goToNextGrid
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.TOGGLERESULTS_ID,
 	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
 	when: QueryEditorVisibleCondition,
