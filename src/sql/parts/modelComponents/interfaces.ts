@@ -24,6 +24,7 @@ export interface IComponent {
 	setLayout?: (layout: any) => void;
 	setProperties?: (properties: { [key: string]: any; }) => void;
 	readonly valid?: boolean;
+	validate(): Thenable<boolean>;
 }
 
 export const COMPONENT_CONFIG = new InjectionToken<IComponentConfig>('component_config');

@@ -117,7 +117,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		}
 	}
 
-	protected validate(): Thenable<boolean> {
+	public validate(): Thenable<boolean> {
 		let validations = this._validations.map(validation => Promise.resolve(validation()));
 		return Promise.all(validations).then(values => {
 			let isValid = values.every(value => value === true);

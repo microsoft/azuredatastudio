@@ -52,7 +52,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 							return undefined;
 						} else {
 							return {
-								content: nls.localize('invalidValueError', 'Invalid value'),
+								content: this._input.inputElement.validationMessage || nls.localize('invalidValueError', 'Invalid value'),
 								type: MessageType.ERROR
 							};
 						}
@@ -75,7 +75,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		}
 	}
 
-	protected validate(): Thenable<boolean> {
+	public validate(): Thenable<boolean> {
 		return super.validate().then(valid => {
 			this._input.validate();
 			return valid;
