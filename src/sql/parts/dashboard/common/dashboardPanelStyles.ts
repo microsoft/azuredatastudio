@@ -15,22 +15,22 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const tabActiveForeground = theme.getColor(TAB_ACTIVE_FOREGROUND);
 	if (tabActiveBackground || tabActiveForeground) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title > .monaco-scrollable-element > .tabList .tab:hover .tabLabel,
-			panel.dashboard-panel > .tabbedPanel > .title > .monaco-scrollable-element > .tabList .tab .tabLabel.active {
+			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab:hover .tabLabel,
+			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab .tabLabel.active {
 				color: ${tabActiveForeground};
 				border-bottom: 0px solid;
 			}
 
-			panel.dashboard-panel > .tabbedPanel > .title > .monaco-scrollable-element > .tabList .tab-header.active {
+			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header.active {
 				background-color: ${tabActiveBackground};
 				outline-color: ${tabActiveBackground};
 			}
 
-			panel.dashboard-panel > .tabbedPanel.horizontal > .title > .monaco-scrollable-element > .tabList .tab-header.active {
+			panel.dashboard-panel > .tabbedPanel.horizontal > .title .tabList .tab-header.active {
 				border-bottom-color: transparent;
 			}
 
-			panel.dashboard-panel > .tabbedPanel.vertical > .title > .monaco-scrollable-element > .tabList .tab-header.active {
+			panel.dashboard-panel > .tabbedPanel.vertical > .title .tabList .tab-header.active {
 				border-right-color: transparent;
 			}
 		`);
@@ -39,7 +39,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const activeTabBorderColor = theme.getColor(TAB_ACTIVE_BORDER);
 	if (activeTabBorderColor) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title > .monaco-scrollable-element > .tabList .tab-header.active {
+			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header.active {
 				box-shadow: ${activeTabBorderColor} 0 -1px inset;
 			}
 		`);
@@ -50,11 +50,11 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const tabInactiveForeground = theme.getColor(TAB_INACTIVE_FOREGROUND);
 	if (tabInactiveBackground || tabInactiveForeground) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title > .monaco-scrollable-element > .tabList .tab .tabLabel {
+			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab .tabLabel {
 				color: ${tabInactiveForeground};
 			}
 
-			panel.dashboard-panel > .tabbedPanel > .title > .monaco-scrollable-element > .tabList .tab-header {
+			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header {
 				background-color: ${tabInactiveBackground};
 			}
 		`);
@@ -74,7 +74,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const tabBorder = theme.getColor(TAB_BORDER);
 	if (tabBorder) {
 		collector.addRule(`
-			panel.dashboard-panel > .tabbedPanel > .title > .monaco-scrollable-element > .tabList .tab-header {
+			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header {
 				border-right-color: ${tabBorder};
 				border-bottom-color: ${tabBorder};
 			}

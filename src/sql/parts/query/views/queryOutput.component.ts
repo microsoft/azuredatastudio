@@ -32,17 +32,15 @@ declare type PaneType = 'messages' | 'results';
 	selector: QUERY_OUTPUT_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('sql/parts/query/views/queryOutput.component.html'))
 })
-export class QueryOutputComponent implements OnInit, OnDestroy {
+export class QueryOutputComponent implements OnDestroy {
 
-	@ViewChild('queryComponent') queryComponent: QueryComponent;
-
-	@ViewChild('queryPlanComponent') queryPlanComponent: QueryPlanComponent;
-
-	@ViewChild('topOperationsComponent') topOperationsComponent: TopOperationsComponent;
-
-	@ViewChild('chartViewerComponent') chartViewerComponent: ChartViewerComponent;
+	@ViewChild(QueryComponent) queryComponent: QueryComponent;
+	@ViewChild(QueryPlanComponent) queryPlanComponent: QueryPlanComponent;
+	@ViewChild(TopOperationsComponent) topOperationsComponent: TopOperationsComponent;
 
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
+
+	private activeDataSet: any;
 
 	// tslint:disable:no-unused-variable
 	private readonly queryComponentTitle: string = nls.localize('results', 'Results');
@@ -78,7 +76,7 @@ export class QueryOutputComponent implements OnInit, OnDestroy {
 	/**
 	 * Called by Angular when the object is initialized
 	 */
-	public ngOnInit(): void {
+	public ngAfterViewInit(): void {
 		this._disposables.push(toDisposableSubscription(this.queryComponent.queryPlanAvailable.subscribe((xml) => {
 			this.hasQueryPlan = true;
 			this._cd.detectChanges();
@@ -90,7 +88,7 @@ export class QueryOutputComponent implements OnInit, OnDestroy {
 		this._disposables.push(toDisposableSubscription(this.queryComponent.showChartRequested.subscribe((dataSet) => {
 			this.showChartView = true;
 			this._cd.detectChanges();
-			this.chartViewerComponent.dataSet = dataSet;
+			this.activeDataSet = dataSet;
 			this._panel.selectTab(this.chartViewerTabIdentifier);
 		})));
 
