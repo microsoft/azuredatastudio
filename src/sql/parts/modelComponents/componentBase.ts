@@ -117,9 +117,9 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		}
 	}
 
-	protected validate(): void {
+	protected validate(): Thenable<boolean> {
 		let validations = this._validations.map(validation => Promise.resolve(validation()));
-		Promise.all(validations).then(values => {
+		return Promise.all(validations).then(values => {
 			let isValid = values.every(value => value === true);
 			if (this._valid !== isValid) {
 				this._valid = isValid;
@@ -128,6 +128,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 					args: this._valid
 				});
 			}
+			return isValid;
 		});
 	}
 }

@@ -46,7 +46,7 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 
 	$initializeModel(handle: number, rootComponent: IComponentShape): Thenable<void> {
 		return this.execModelViewAction(handle, (modelView) => {
-			modelView.initializeModel(rootComponent, (componentId) => this.validate(handle, componentId));
+			modelView.initializeModel(rootComponent, (componentId) => this.runExtensionHostValidation(handle, componentId));
 		});
 	}
 
@@ -82,7 +82,11 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 		return this.execModelViewAction(handle, (modelView) => modelView.setProperties(componentId, properties));
 	}
 
-	private validate(handle: number, componentId: string): Thenable<boolean> {
+	$validate(handle: number, componentId: string): Thenable<boolean> {
+		return new Promise(resolve => this.execModelViewAction(handle, (modelView) => resolve(modelView.validate(componentId))));
+	}
+
+	private runExtensionHostValidation(handle: number, componentId: string): Thenable<boolean> {
 		return this._proxy.$validateWidget(handle, componentId);
 	}
 

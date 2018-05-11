@@ -72,7 +72,7 @@ declare module 'sqlops' {
 		/**
 		 * Run the component's validations
 		 */
-		validate(): boolean;
+		validate(): Thenable<boolean>;
 	}
 
 	export interface FormComponent {
@@ -302,7 +302,7 @@ declare module 'sqlops' {
 		/**
 		 * Run the model view root component's validations
 		 */
-		validate(): void;
+		validate(): Thenable<boolean>;
 
 		/**
 		 * Initializes the model with a root component definition.

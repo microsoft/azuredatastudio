@@ -520,7 +520,7 @@ export interface ExtHostModelViewShape {
 	$onClosed(handle: number): void;
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
 	$handleEvent(handle: number, id: string, eventArgs: any);
-	$validateWidget(handle: number, id: string): Thenable<boolean>;
+	$runExtensionValidations(handle: number, id: string): Thenable<boolean>;
 }
 
 export interface MainThreadModelViewShape extends IDisposable {
@@ -531,6 +531,7 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 	$registerEvent(handle: number, componentId: string):  Thenable<void>;
+	$validate(handle: number, componentId: string): Thenable<boolean>;
 }
 
 export interface ExtHostObjectExplorerShape {

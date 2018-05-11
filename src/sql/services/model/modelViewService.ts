@@ -22,4 +22,5 @@ export interface IModelView extends IView {
 	setProperties(componentId: string, properties: { [key: string]: any }): void;
 	registerEvent(componentId: string);
 	onEvent: Event<any>;
+	validate(componentId: string): Thenable<boolean>;
 }

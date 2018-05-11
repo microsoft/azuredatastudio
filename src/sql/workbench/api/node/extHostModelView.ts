@@ -18,7 +18,7 @@ import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs,
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
 	private readonly _eventHandlers = new Map<string, IWithEventHandler>();
-	private readonly _components = new Map<string, sqlops.Component>();
+	private readonly _components = new Map<string, ComponentWrapper>();
 
 	constructor(private readonly _proxy: MainThreadModelViewShape, private readonly _handle: number) {
 		this.nextComponentId = 0;
@@ -112,7 +112,7 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	public validateComponent(componentId: string): boolean {
 		let component = this._components.get(componentId);
-		return component.validate();
+		return component.runExtensionValidations();
 	}
 
 	private getNextComponentId(): string {
@@ -140,7 +140,7 @@ class ComponentBuilderImpl<T extends sqlops.Component> implements sqlops.Compone
 	}
 
 	withValidation(validation: (component: T) => boolean): sqlops.ComponentBuilder<T> {
-		this._component.validations.push(validation);
+		this._component.extensionValidations.push(validation);
 		return this;
 	}
 
@@ -228,7 +228,7 @@ class ComponentWrapper implements sqlops.Component {
 	public properties: { [key: string]: any } = {};
 	public layout: any;
 	public itemConfigs: InternalItemConfig[];
-	public validations: ((component: ThisType<ComponentWrapper>) => boolean)[] = [];
+	public extensionValidations: ((component: ThisType<ComponentWrapper>) => boolean)[] = [];
 	private _valid: boolean = true;
 	private _onValidityChangedEmitter = new Emitter<boolean>();
 	public readonly onValidityChanged = this._onValidityChangedEmitter.event;
@@ -340,10 +340,10 @@ class ComponentWrapper implements sqlops.Component {
 		this._onErrorEmitter.fire(err);
 	}
 
-	public validate(): boolean {
+	public runExtensionValidations(): boolean {
 		let isValid = true;
 		try {
-			this.validations.forEach(validation => {
+			this.extensionValidations.forEach(validation => {
 				if (!validation(this)) {
 					isValid = false;
 				}
@@ -352,12 +352,10 @@ class ComponentWrapper implements sqlops.Component {
 			isValid = false;
 		}
 		return isValid;
-		// let oldValid = this._valid;
-		// if (this._valid !== isValid) {
-		// 	this._valid = isValid;
-		// 	this._proxy.$notifyValidation(this._handle, this._id, isValid);
-		// 	this._onValidityChangedEmitter.fire(this._valid);
-		// }
+	}
+
+	public validate() {
+		return this._proxy.$validate(this._handle, this._id);
 	}
 
 	public get valid(): boolean {
@@ -585,11 +583,11 @@ class ModelViewImpl implements sqlops.ModelView {
 		return this._proxy.$initializeModel(this._handle, componentImpl.toComponentShape());
 	}
 
-	public validate(): void {
-		this._component.validate();
+	public validate(): Thenable<boolean> {
+		return this._proxy.$validate(this._handle, this._component.id);
 	}
 
-	public validateComponent(componentId: string): boolean {
+	public runExtensionValidations(componentId: string): boolean {
 		return this._modelBuilder.validateComponent(componentId);
 	}
 }
@@ -630,8 +628,8 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 		}
 	}
 
-	$validateWidget(handle: number, componentId: string): Thenable<boolean> {
+	$runExtensionValidations(handle: number, componentId: string): Thenable<boolean> {
 		const view = this._modelViews.get(handle);
-		return Promise.resolve(view.validateComponent(componentId));
+		return Promise.resolve(view.runExtensionValidations(componentId));
 	}
 }

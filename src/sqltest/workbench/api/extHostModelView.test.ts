@@ -68,13 +68,9 @@ suite('ExtHostModelView Validation Tests', () => {
 		extHostModelView.$registerWidget(handle, widgetId, undefined, undefined);
 	});
 
-	test('The validity of a component and its containers gets set when it is initialized', done => {
+	test('The validity of a component gets set when it is initialized', done => {
 		try {
-			assert.equal(modelView.valid, false, 'modelView was not marked as invalid');
 			assert.equal(inputBox.valid, false, 'inputBox was not marked as invalid');
-			assert.equal(formContainer.valid, false, 'formContainer was not marked as invalid');
-			assert.equal(flexContainer.valid, false, 'flexContainer was not marked as invalid');
-			assert.equal(dropDownBox.valid, true, 'dropDownBox was marked as invalid');
 			done();
 		} catch (err) {
 			done(err);
@@ -84,10 +80,7 @@ suite('ExtHostModelView Validation Tests', () => {
 	test('Containers reflect validity changes of contained components', done => {
 		try {
 			inputBox.value = validText;
-			assert.equal(modelView.valid, true, 'modelView was not marked as valid');
 			assert.equal(inputBox.valid, true, 'inputBox was not marked as valid');
-			assert.equal(formContainer.valid, true, 'formContainer was not marked as valid');
-			assert.equal(flexContainer.valid, true, 'flexContainer was not marked as valid');
 			done();
 		} catch (err) {
 			done(err);

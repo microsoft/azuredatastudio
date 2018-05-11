@@ -72,12 +72,14 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 					args: e
 				});
 			}));
-			this._register(this._onEventEmitter.event(event => {
-				if (event.eventType === ComponentEventType.validityChanged) {
-					this._input.validate();
-				}
-			}));
 		}
+	}
+
+	protected validate(): Thenable<boolean> {
+		return super.validate().then(valid => {
+			this._input.validate();
+			return valid;
+		});
 	}
 
 	ngOnDestroy(): void {
