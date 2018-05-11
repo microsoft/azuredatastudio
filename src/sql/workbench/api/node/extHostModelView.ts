@@ -14,6 +14,7 @@ import * as sqlops from 'sqlops';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IActionDescriptor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
 
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
@@ -306,7 +307,7 @@ class ComponentWrapper implements sqlops.Component {
 		} else if (eventArgs) {
 			let emitter = this._emitterMap.get(eventArgs.eventType);
 			if (emitter) {
-				emitter.fire();
+				emitter.fire(eventArgs.args);
 			}
 		}
 	}
@@ -362,6 +363,7 @@ class CardWrapper extends ComponentWrapper implements sqlops.CardComponent {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Card, id);
 		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
 	}
 
 	public get label(): string {
@@ -381,6 +383,11 @@ class CardWrapper extends ComponentWrapper implements sqlops.CardComponent {
 	}
 	public set actions(a: sqlops.ActionDescriptor[]) {
 		this.setProperty('actions', a);
+	}
+
+	public get onDidActionClick(): vscode.Event<sqlops.ActionDescriptor> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
 	}
 }
 

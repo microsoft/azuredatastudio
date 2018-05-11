@@ -142,7 +142,7 @@ export class AccountManagementService implements IAccountManagementService {
 				})
 				.then(null, err => {
 					// On error, check to see if the error is because the user cancelled. If so, just ignore
-					if ('userCancelledSignIn' in err) {
+					if (err && 'userCancelledSignIn' in err) {
 						return Promise.resolve();
 					}
 					return Promise.reject(err);

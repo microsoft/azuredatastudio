@@ -118,3 +118,26 @@ export interface IModelViewButtonDetails {
 	enabled: boolean;
 	hidden: boolean;
 }
+
+/// Card-related APIs that need to be here to avoid early load issues
+// with enums causing requiring of sqlops API to fail.
+export enum StatusIndicator {
+	None = 0,
+	Ok = 1,
+	Warning = 2,
+	Error = 3
+}
+
+export interface CardProperties {
+	label: string;
+	value?: string;
+	actions?: ActionDescriptor[];
+	status?: StatusIndicator;
+}
+
+export interface ActionDescriptor {
+	label: string;
+	actionTitle?: string;
+	callbackData?: string;
+}
+
