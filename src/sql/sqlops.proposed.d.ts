@@ -188,10 +188,24 @@ declare module 'sqlops' {
 		 */
 		label: string;
 		/**
-		 * ID of the task to be called when this is clicked on.
-		 * These should be registered using the {tasks.registerTask} API.
+		 * Name of the clickable action. If not defined then no action will be shown
 		 */
-		taskId: string;
+		actionTitle?: string;
+		/**
+		 * Data sent on callback being run.
+		 */
+		callbackData?: string;
+	}
+
+	/**
+	 * Defines status indicators that can be shown to the user as part of
+	 * components such as the Card UI
+	 */
+	export enum StatusIndicator {
+		None = 0,
+		Ok = 1,
+		Warning = 2,
+		Error = 3
 	}
 
 	/**
@@ -202,6 +216,7 @@ declare module 'sqlops' {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
+		status?: StatusIndicator;
 	}
 
 	export interface InputBoxProperties {
@@ -230,6 +245,7 @@ declare module 'sqlops' {
 		label: string;
 		value: string;
 		actions?: ActionDescriptor[];
+		onDidActionClick: vscode.Event<ActionDescriptor>;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {

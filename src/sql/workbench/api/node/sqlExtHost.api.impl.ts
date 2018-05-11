@@ -365,7 +365,8 @@ export function createApiFactory(
 				dashboard,
 				workspace,
 				queryeditor: queryEditor,
-				ui: ui
+				ui: ui,
+				StatusIndicator: sqlExtHostTypes.StatusIndicator
 			};
 		}
 	};
