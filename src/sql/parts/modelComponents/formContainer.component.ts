@@ -42,12 +42,10 @@ class FormItem {
 							</model-component-wrapper>
 						</div>
 						<div *ngIf="itemHasActions(item)" class="form-cell">
-							<div class="form-actions-table">
-								<div *ngFor="let actionItem of getActionComponents(item)" class="form-cell" >
+								<ng-container *ngFor="let actionItem of getActionComponents(item)">
 									<model-component-wrapper  [descriptor]="actionItem.descriptor" [modelStore]="modelStore" >
 									</model-component-wrapper>
-								</div>
-							</div>
+								</ng-container>
 						</div>
 					</ng-container>
 					<ng-container *ngIf="isVertical(item)">
@@ -55,14 +53,12 @@ class FormItem {
 						<div class="form-item-row" [style.width]="getComponentWidth(item)">
 							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)">
 							</model-component-wrapper>
-						</div>
-						<div *ngIf="itemHasActions(item)" class="form-actions-table">
-
-							<div *ngFor="let actionItem of getActionComponents(item)" class="form-actions-cell" >
-								<model-component-wrapper  [descriptor]="actionItem.descriptor" [modelStore]="modelStore">
-								</model-component-wrapper>
+							<div *ngIf="itemHasActions(item)" class="form-actions-table">
+								<div *ngFor="let actionItem of getActionComponents(item)" class="form-actions-cell" >
+									<model-component-wrapper  [descriptor]="actionItem.descriptor" [modelStore]="modelStore">
+									</model-component-wrapper>
+								</div>
 							</div>
-
 						</div>
 					</ng-container>
 				</ng-container>

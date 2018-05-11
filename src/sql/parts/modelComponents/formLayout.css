@@ -1,32 +1,31 @@
 
 .form-table {
-	width:400px;
-	display:table;
-	padding: 30px;
+	width: 100%;
+	display: table;
+	padding: 10px 30px 0px 30px;
+	box-sizing: border-box;
 }
 
 .form-actions-table {
-	display:table;
+	display: table;
 }
 
 .form-row {
 	display: table-row;
 	width: 100px;
-	padding-bottom: 10px;
 }
 
 .form-item-row {
-	padding-bottom: 5px;
+	padding-bottom: 20px;
 	width: 300px;
 }
 
-.form-item-title {
-
-	padding-top: 20px;
+.form-item-row.form-item-title {
+	padding-bottom: 5px;
 }
 
 .form-cell {
-	padding-top: 20px;
+	padding-bottom: 20px;
 	padding-right: 5px;
 	display: table-cell;
 }
