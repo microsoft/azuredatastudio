@@ -89,8 +89,11 @@ export interface IModelStore {
 	 */
 	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): Promise<T>;
 	/**
-	 * TOOD
+	 * Register a callback that will validate components when given a component ID
 	 */
 	registerValidationCallback(callback: (componentId: string) => Thenable<boolean>): void;
+	/**
+	 * Run all validations for the given component and return the new validation value
+	 */
 	validate(component: IComponent): Thenable<boolean>;
 }
