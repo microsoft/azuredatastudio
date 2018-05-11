@@ -78,6 +78,7 @@ function createInstantiationService(addAccountFailureEmitter?: Emitter<string>):
 	mockAccountViewModel.setup(x => x.addProviderEvent).returns(() => mockEvent.event);
 	mockAccountViewModel.setup(x => x.removeProviderEvent).returns(() => mockEvent.event);
 	mockAccountViewModel.setup(x => x.updateAccountListEvent).returns(() => mockEvent.event);
+	mockAccountViewModel.setup(x => x.initialize()).returns(() => Promise.resolve([]));
 
 	// Create a mocked out instantiation service
 	let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
