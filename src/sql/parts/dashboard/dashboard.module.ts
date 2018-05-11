@@ -56,11 +56,12 @@ import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.co
 let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
 	DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
 	ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
-	JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, DashboardModelViewContainer, ModelComponentWrapper,
-	ScrollableDirective];
+	JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, DashboardModelViewContainer, ModelComponentWrapper];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
+
+import { ScrollableModule } from 'sql/base/browser/ui/scrollable/scrollable.module';
 
 /* Pages */
 import { ServerDashboardPage } from 'sql/parts/dashboard/pages/serverDashboardPage.component';
@@ -75,7 +76,6 @@ import { TasksWidget } from 'sql/parts/dashboard/widgets/tasks/tasksWidget.compo
 import { InsightsWidget } from 'sql/parts/dashboard/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/parts/dashboard/widgets/webview/webviewWidget.component';
 import { JobStepsViewComponent } from '../jobManagement/views/jobStepsView.component';
-import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
 
 let widgetComponents = [
 	PropertiesWidgetComponent,
@@ -126,7 +126,8 @@ const appRoutes: Routes = [
 		NgGridModule,
 		ChartsModule,
 		RouterModule.forRoot(appRoutes),
-		PanelModule
+		PanelModule,
+		ScrollableModule
 	],
 	providers: [
 		{ provide: APP_BASE_HREF, useValue: '/' },

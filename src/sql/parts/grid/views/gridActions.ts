@@ -25,7 +25,8 @@ export const MESSAGES_COPY_ID = 'grid.messages.copy';
 export const TOGGLERESULTS_ID = 'grid.toggleResultPane';
 export const TOGGLEMESSAGES_ID = 'grid.toggleMessagePane';
 export const GOTONEXTQUERYOUTPUTTAB_ID = 'query.goToNextQueryOutputTab';
-
+export const GRID_VIEWASCHART_ID = 'grid.viewAsChart';
+export const GRID_GOTONEXTGRID_ID = 'grid.goToNextGrid';
 
 export class GridActionProvider {
 

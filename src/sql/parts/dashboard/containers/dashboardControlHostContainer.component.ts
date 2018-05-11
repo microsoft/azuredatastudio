@@ -5,14 +5,17 @@
 import 'vs/css!./dashboardControlHostContainer';
 
 import { Component, forwardRef, Input, AfterContentInit, ViewChild, OnChanges } from '@angular/core';
+
 import Event, { Emitter } from 'vs/base/common/event';
+
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { ControlHostContent } from 'sql/parts/dashboard/contents/controlHostContent.component';
+import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 @Component({
 	selector: 'dashboard-controlhost-container',
-	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardControlHostContainer) }],
+	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardControlHostContainer) }],
 	template: `
 		<controlhost-content [webviewId]="tab.id">
 		</controlhost-content>

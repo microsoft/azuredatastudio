@@ -19,7 +19,7 @@ import { CloseTabAction } from './tabActions';
 @Component({
 	selector: 'tab-header',
 	template: `
-		<div #actionHeader class="tab-header" style="flex: 0 0; flex-direction: row;" [class.active]="tab.active" tabindex="0" (keyup)="onKey($event)">
+		<div #actionHeader class="tab-header" style="flex: 0 0; flex-direction: row; height: 100%" [class.active]="tab.active" tabindex="0" (keyup)="onKey($event)">
 			<span class="tab" (click)="selectTab(tab)" role="tab" [attr.aria-selected]="tab.active" [attr.aria-label]="tab.title">
 				<a class="tabLabel" [class.active]="tab.active" #tabLabel>
 				</a>
@@ -31,6 +31,7 @@ import { CloseTabAction } from './tabActions';
 export class TabHeaderComponent extends Disposable implements AfterContentInit, OnDestroy {
 	@Input() public tab: TabComponent;
 	@Input() public showIcon: boolean;
+	@Input() public active: boolean;
 	@Output() public onSelectTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
 	@Output() public onCloseTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
 

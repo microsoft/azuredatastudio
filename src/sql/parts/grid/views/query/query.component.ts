@@ -589,7 +589,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		});
 	}
 
-	private showChartForGrid(index: number) {
+	protected showChartForGrid(index: number) {
 		if (this.renderedDataSets.length > index) {
 			this.showChartRequested.emit(this.renderedDataSets[index]);
 		}
