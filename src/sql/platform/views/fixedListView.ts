@@ -67,6 +67,10 @@ export class FixedListView<T> extends CollapsibleView {
 		this.setFixed(this.fixedSize);
 	}
 
+	public get list(): List<T> {
+		return this._list;
+	}
+
 	public listContentHeight(): number {
 		return this._list.contentHeight;
 	}
@@ -86,6 +90,9 @@ export class FixedListView<T> extends CollapsibleView {
 	protected changeState(state: CollapsibleState): void {
 		super.changeState(state);
 		this.setFixed(this.fixedSize);
+		if (this.list) {
+			this.list.getHTMLElement().hidden = (state === CollapsibleState.COLLAPSED);
+		}
 	}
 
 	/**

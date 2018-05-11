@@ -41,13 +41,17 @@ export class AccountDialog extends Modal {
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _providerViews: { [providerId: string]: FixedListView<sqlops.Account> } = {};
+	private _addAccountMaps: { [providerId: string]: AddAccountAction } = {};
 
 	private _closeButton: Button;
+	private _addAccountButton: Button;
 	private _delegate: AccountListDelegate;
 	private _accountRenderer: AccountListRenderer;
 	private _actionRunner: ActionRunner;
 	private _splitView: SplitView;
 	private _container: HTMLElement;
+	private _splitViewContainer: HTMLElement;
+	private _noaccountViewContainer: HTMLElement;
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	private _onAddAccountErrorEmitter: Emitter<string>;
@@ -89,6 +93,14 @@ export class AccountDialog extends Modal {
 		this.viewModel.addProviderEvent(arg => { self.addProvider(arg); });
 		this.viewModel.removeProviderEvent(arg => { self.removeProvider(arg); });
 		this.viewModel.updateAccountListEvent(arg => { self.updateProviderAccounts(arg); });
+
+		// Load the initial contents of the view model
+		this.viewModel.initialize()
+			.then(addedProviders => {
+				for (let addedProvider of addedProviders) {
+					self.addProvider(addedProvider);
+				}
+			});
 	}
 
 	// MODAL OVERRIDE METHODS //////////////////////////////////////////////
@@ -104,26 +116,33 @@ export class AccountDialog extends Modal {
 		attachModalDialogStyler(this, this._themeService);
 		this._closeButton = this.addFooterButton(localize('accountDialog.close', 'Close'), () => this.close());
 		this.registerListeners();
-
-		// Load the initial contents of the view model
-		this.viewModel.initialize()
-			.then(addedProviders => {
-				for (let addedProvider of addedProviders) {
-					self.addProvider(addedProvider);
-				}
-			});
 	}
 
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
-		let viewBody = DOM.$('div.account-view');
-		DOM.append(container, viewBody);
-		this._splitView = new SplitView(viewBody);
+		this._splitViewContainer = DOM.$('div.account-view');
+		DOM.append(container, this._splitViewContainer);
+		this._splitView = new SplitView(this._splitViewContainer);
+
+		this._noaccountViewContainer = DOM.$('div.no-account-view');
+		let noAccountTitle = DOM.append(this._noaccountViewContainer, DOM.$('.no-account-view-label'));
+		let noAccountLabel = localize('accountDialog.noAccountLabel', 'There is no linked account. Please add an acount.');
+		noAccountTitle.innerHTML = noAccountLabel;
+
+		let buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
+		this._addAccountButton = new Button(buttonSection);
+		this._addAccountButton.label = localize('accountDialog.addConnection', 'Add an account');
+		this._register(this._addAccountButton.onDidClick(() => {
+			Object.values(this._addAccountMaps)[0].run();
+		}));
+
+		DOM.append(container, this._noaccountViewContainer);
 	}
 
 	private registerListeners(): void {
 		// Theme styler
 		this._register(attachButtonStyler(this._closeButton, this._themeService));
+		this._register(attachButtonStyler(this._addAccountButton, this._themeService));
 	}
 
 	/* Overwrite escape key behavior */
@@ -143,6 +162,37 @@ export class AccountDialog extends Modal {
 
 	public open() {
 		this.show();
+		if (!this.isEmptyLinkedAccount()) {
+			this.showSplitView();
+		} else {
+			this._splitViewContainer.hidden = true;
+			this._noaccountViewContainer.hidden = false;
+			this._addAccountButton.focus();
+		}
+
+	}
+
+	private showSplitView() {
+		this._splitViewContainer.hidden = false;
+		this._noaccountViewContainer.hidden = true;
+		let views = this._splitView.getViews();
+		if (views && views.length > 0) {
+			let firstView = views[0];
+			if (firstView instanceof FixedListView) {
+				firstView.list.setSelection([0]);
+				firstView.list.domFocus();
+			}
+		}
+	}
+
+	private isEmptyLinkedAccount(): boolean {
+		for (var providerId in this._providerViews) {
+			var listView = this._providerViews[providerId];
+			if (listView.list.length > 0) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public dispose(): void {
@@ -199,10 +249,16 @@ export class AccountDialog extends Modal {
 
 		// Set the initial items of the list
 		providerView.updateList(newProvider.initialAccounts);
+
+		if (newProvider.initialAccounts.length > 0 && this._splitViewContainer.hidden) {
+			this.showSplitView();
+		}
+
 		this.layout();
 
-		// Store the view for the provider
+		// Store the view for the provider and action
 		this._providerViews[newProvider.addedProvider.id] = providerView;
+		this._addAccountMaps[newProvider.addedProvider.id] = addAccountAction;
 	}
 
 	private removeProvider(removedProvider: sqlops.AccountProviderMetadata) {
@@ -227,6 +283,11 @@ export class AccountDialog extends Modal {
 			return;
 		}
 		providerMapping.updateList(args.accountList);
+
+		if (args.accountList.length > 0 && this._splitViewContainer.hidden) {
+			this.showSplitView();
+		}
+
 		this.layout();
 	}
 }
