@@ -53,7 +53,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200 , id: 'name' },
+		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext), width: 200 , id: 'name' },
 		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', minWidth: 150, id: 'lastRun' },
 		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', minWidth: 150, id: 'nextRun' },
 		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', minWidth: 70, id: 'enabled' },
@@ -197,18 +197,36 @@ export class JobsViewComponent implements AfterContentChecked {
 		});
 		this._table.registerPlugin(<any>this.rowDetail);
 
-		this.rowDetail.onBeforeRowDetailToggle.subscribe(function(e, args) {
-		});
-		this.rowDetail.onAfterRowDetailToggle.subscribe(function(e, args) {
-		});
-		this.rowDetail.onAsyncEndUpdate.subscribe(function(e, args) {
-		});
 		this.filterPlugin.onFilterApplied.subscribe((e, args) => {
 			this.dataView.refresh();
 			this._table.grid.resetActiveCell();
+			let filterValues = args.column.filterValues;
+			if (filterValues.length === 0) {
+				for (let row = 0; row < this.jobs.length; row++) {
+					this._table.grid.removeCellCssStyles('error-row'+row.toString());
+				}
+				this.expandJobs();
+			} else {
+				let seenJobs = 0;
+				for (let i = 0; i < this.jobs.length; i++) {
+					this._table.grid.removeCellCssStyles('error-row'+i.toString());
+					let job = this.jobs[i];
+					let item = this.dataView.getItemByIdx(i);
+					if (_.contains(filterValues, item[args.column.field])) {
+						if (item.lastRunOutcome === 'Failed') {
+							this.addToStyleHash(seenJobs);
+							// one expansion for the row and one for
+							// the error detail
+							seenJobs ++;
+						}
+						seenJobs++;
+					}
+				}
+			}
+
 		});
 		this.filterPlugin.onCommand.subscribe(function (e, args: any) {
-			this.dataView.fastSort(args.column.field, args.command === "sort-asc");
+			this.dataView.fastSort(args.column.field, args.command === 'sort-asc');
 		});
 		this._table.registerPlugin(<HeaderFilter>this.filterPlugin);
 
@@ -219,21 +237,8 @@ export class JobsViewComponent implements AfterContentChecked {
 		this.dataView.endUpdate();
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
-		let expandedJobs = this._agentViewComponent.expanded;
-		let expansions = 0;
-		for (let i = 0; i < jobs.length; i++){
-			let job = jobs[i];
-			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
-				this.expandJobRowDetails(i+expandedJobs.size);
-				this.addToStyleHash(i+expandedJobs.size);
-				this._agentViewComponent.setExpanded(job.jobId, 'Loading Error...');
-			} else if (job.lastRunOutcome === 0 && expandedJobs.get(job.jobId)) {
-				this.expandJobRowDetails(i+expansions);
-				this.addToStyleHash(i+expansions);
-				expansions++;
-			}
-		}
-
+		this.expandJobs();
+		// tooltip for job name
 		$('.jobview-jobnamerow').hover(e => {
 			let currentTarget = e.currentTarget;
 			currentTarget.title = currentTarget.innerText;
@@ -379,6 +384,22 @@ export class JobsViewComponent implements AfterContentChecked {
 					}
 				}
 			});
+		}
+	}
+
+	private expandJobs(): void {
+		let expandedJobs = this._agentViewComponent.expanded;
+		let expansions = 0;
+		for (let i = 0; i < this.jobs.length; i++){
+			let job = this.jobs[i];
+			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
+				this.expandJobRowDetails(i+expandedJobs.size);
+				this.addToStyleHash(i+expandedJobs.size);
+				this._agentViewComponent.setExpanded(job.jobId, 'Loading Error...');
+			} else if (job.lastRunOutcome === 0 && expandedJobs.get(job.jobId)) {
+				this.addToStyleHash(i+expansions);
+				expansions++;
+			}
 		}
 	}
 
