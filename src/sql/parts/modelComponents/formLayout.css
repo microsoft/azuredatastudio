@@ -12,22 +12,34 @@
 
 .form-row {
 	display: table-row;
-	width: 100px;
 }
 
 .form-item-row {
-	padding-bottom: 20px;
-	width: 300px;
+	padding-bottom: 5px;
 }
 
-.form-item-row.form-item-title {
-	padding-bottom: 5px;
+.form-vertical-container {
+	padding-bottom: 15px;
+	width: 100%;
 }
 
 .form-cell {
 	padding-bottom: 20px;
 	padding-right: 5px;
 	display: table-cell;
+}
+
+.form-component-container {
+	display: flex;
+	flex-direction: row;
+}
+
+.form-input-flex {
+	flex: 1;
+}
+
+.form-component-actions {
+	padding-left: 5px;
 }
 
 .form-actions-cell {
