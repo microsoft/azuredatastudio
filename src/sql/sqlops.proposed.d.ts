@@ -213,6 +213,7 @@ declare module 'sqlops' {
 		height: number;
 		width: number;
 		inputType?: InputBoxInputType;
+		required?: boolean;
 	}
 
 	export interface CheckBoxProperties {

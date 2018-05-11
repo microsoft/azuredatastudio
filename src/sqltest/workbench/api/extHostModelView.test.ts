@@ -19,9 +19,6 @@ suite('ExtHostModelView Validation Tests', () => {
 	let mockProxy: Mock<MainThreadModelViewShape>;
 	let modelView: sqlops.ModelView;
 	let inputBox: sqlops.InputBoxComponent;
-	let dropDownBox: sqlops.DropDownComponent;
-	let formContainer: sqlops.FormContainer;
-	let flexContainer: sqlops.FlexContainer;
 	let validText = 'valid';
 	let widgetId = 'widget_id';
 	let handle = 1;
@@ -54,11 +51,11 @@ suite('ExtHostModelView Validation Tests', () => {
 			inputBox = view.modelBuilder.inputBox()
 				.withValidation(component => component.value === validText)
 				.component();
-			dropDownBox = view.modelBuilder.dropDown().component();
-			formContainer = view.modelBuilder.formContainer()
+			let dropDownBox = view.modelBuilder.dropDown().component();
+			let formContainer = view.modelBuilder.formContainer()
 				.withItems([inputBox, dropDownBox])
 				.component();
-			flexContainer = view.modelBuilder.flexContainer()
+			let flexContainer = view.modelBuilder.flexContainer()
 				.withItems([formContainer])
 				.component();
 			await view.initializeModel(flexContainer);
@@ -68,40 +65,57 @@ suite('ExtHostModelView Validation Tests', () => {
 		extHostModelView.$registerWidget(handle, widgetId, undefined, undefined);
 	});
 
-	test('The validity of a component gets set when it is initialized', done => {
-		try {
-			assert.equal(inputBox.valid, false, 'inputBox was not marked as invalid');
-			done();
-		} catch (err) {
-			done(err);
-		}
+	test('The custom validation output of a component gets set when it is initialized', done => {
+		extHostModelView.$runCustomValidations(handle, inputBox.id).then(valid => {
+			try {
+				assert.equal(valid, false, 'Empty input box did not validate as false');
+				done();
+			} catch (err) {
+				done(err);
+			}
+		}, err => done(err));
 	});
 
-	test('Containers reflect validity changes of contained components', done => {
-		try {
-			inputBox.value = validText;
-			assert.equal(inputBox.valid, true, 'inputBox was not marked as valid');
-			done();
-		} catch (err) {
-			done(err);
-		}
+	test('The custom validation output of a component changes if its value changes', done => {
+		inputBox.value = validText;
+		extHostModelView.$runCustomValidations(handle, inputBox.id).then(valid => {
+			try {
+				assert.equal(valid, true, 'Valid input box did not validate as valid');
+				done();
+			} catch (err) {
+				done(err);
+			}
+		}, err => done(err));
 	});
 
-	test('PropertiesChanged events cause validation', done => {
-		try {
-			extHostModelView.$handleEvent(handle, inputBox.id, {
-				args: {
-					'value': validText
-				},
-				eventType: ComponentEventType.PropertiesChanged
-			} as IComponentEventArgs);
-			assert.equal(modelView.valid, true, 'modelView was not marked as valid');
-			assert.equal(inputBox.valid, true, 'inputBox was not marked as valid');
-			assert.equal(formContainer.valid, true, 'formContainer was not marked as valid');
-			assert.equal(flexContainer.valid, true, 'flexContainer was not marked as valid');
-			done();
-		} catch (err) {
-			done(err);
-		}
+	test('The custom validation output of a component changes after a PropertiesChanged event', done => {
+		extHostModelView.$handleEvent(handle, inputBox.id, {
+			args: {
+				'value': validText
+			},
+			eventType: ComponentEventType.PropertiesChanged
+		} as IComponentEventArgs);
+		extHostModelView.$runCustomValidations(handle, inputBox.id).then(valid => {
+			try {
+				assert.equal(valid, true, 'Valid input box did not validate as valid after PropertiesChanged event');
+				done();
+			} catch (err) {
+				done(err);
+			}
+		}, err => done(err));
+	});
+
+	test('The validity of a component is set by main thread validationChanged events', () => {
+		assert.equal(inputBox.valid, true, 'Component validity is true by default');
+		extHostModelView.$handleEvent(handle, inputBox.id, {
+			eventType: ComponentEventType.validityChanged,
+			args: false
+		});
+		assert.equal(inputBox.valid, false, 'Input box did not update validity to false based on the validityChanged event');
+		extHostModelView.$handleEvent(handle, inputBox.id, {
+			eventType: ComponentEventType.validityChanged,
+			args: true
+		});
+		assert.equal(inputBox.valid, true, 'Input box did not update validity to true based on the validityChanged event');
 	});
 });

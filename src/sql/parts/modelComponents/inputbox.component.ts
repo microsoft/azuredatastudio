@@ -110,6 +110,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		if (this.width) {
 			this._input.width = this.width;
 		}
+		this._input.inputElement.required = this.required;
 		this.validate();
 	}
 
@@ -161,5 +162,13 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public set inputType(newValue: string) {
 		this.setPropertyFromUI<sqlops.InputBoxProperties, string>((props, value) => props.inputType = value, newValue);
+	}
+
+	public get required(): boolean {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, boolean>((props) => props.required, false);
+	}
+
+	public set required(newValue: boolean) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, boolean>((props, value) => props.required = value, newValue);
 	}
 }

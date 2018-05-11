@@ -69,6 +69,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		}
 		this.properties = properties;
 		this.layout();
+		this.validate();
 	}
 
 	protected getProperties<TPropertyBag>(): TPropertyBag {
