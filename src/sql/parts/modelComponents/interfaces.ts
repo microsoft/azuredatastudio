@@ -24,7 +24,6 @@ export interface IComponent {
 	setLayout?: (layout: any) => void;
 	setProperties?: (properties: { [key: string]: any; }) => void;
 	readonly valid?: boolean;
-	setValid(valid: boolean): void;
 }
 
 export const COMPONENT_CONFIG = new InjectionToken<IComponentConfig>('component_config');
@@ -88,4 +87,9 @@ export interface IModelStore {
 	 * @memberof IModelStore
 	 */
 	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): Promise<T>;
+	/**
+	 * TOOD
+	 */
+	registerValidationCallback(callback: (componentId: string) => Thenable<boolean>): void;
+	validate(component: IComponent): Thenable<boolean>;
 }

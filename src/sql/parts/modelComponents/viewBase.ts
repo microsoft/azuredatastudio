@@ -39,9 +39,10 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	private _onEventEmitter = new Emitter<any>();
 
 
-	initializeModel(rootComponent: IComponentShape): void {
+	initializeModel(rootComponent: IComponentShape, validationCallback: (componentId: string) => Thenable<boolean>): void {
 		let descriptor = this.defineComponent(rootComponent);
 		this.rootDescriptor = descriptor;
+		this.modelStore.registerValidationCallback(validationCallback);
 		// Kick off the build by detecting changes to the model
 		this.changeRef.detectChanges();
 	}
@@ -89,10 +90,6 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 			return;
 		}
 		this.queueAction(componentId, (component) => component.setProperties(properties));
-	}
-
-	setValid(componentId: string, valid: boolean): void {
-		this.queueAction(componentId, (component) => component.setValid(valid));
 	}
 
 	private queueAction<T>(componentId: string, action: (component: IComponent) => T): void {

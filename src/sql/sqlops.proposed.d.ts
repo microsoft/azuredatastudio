@@ -72,7 +72,7 @@ declare module 'sqlops' {
 		/**
 		 * Run the component's validations
 		 */
-		validate(): void;
+		validate(): boolean;
 	}
 
 	export interface FormComponent {

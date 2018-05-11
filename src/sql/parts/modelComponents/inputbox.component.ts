@@ -61,6 +61,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 			};
 
 			this._input = new InputBox(this._inputContainer.nativeElement, this._commonService.contextViewService, inputOptions);
+			this._validations.push(() => !this._input.inputElement.validationMessage);
 
 			this._register(this._input);
 			this._register(attachInputBoxStyler(this._input, this._commonService.themeService));
@@ -70,6 +71,11 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 					eventType: ComponentEventType.onDidChange,
 					args: e
 				});
+			}));
+			this._register(this._onEventEmitter.event(event => {
+				if (event.eventType === ComponentEventType.validityChanged) {
+					this._input.validate();
+				}
 			}));
 		}
 	}
@@ -102,11 +108,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		if (this.width) {
 			this._input.width = this.width;
 		}
-	}
-
-	public setValid(valid: boolean): void {
-		super.setValid(valid);
-		this._input.validate();
+		this.validate();
 	}
 
 	// CSS-bound properties
