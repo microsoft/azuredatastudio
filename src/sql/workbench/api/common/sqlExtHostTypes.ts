@@ -68,14 +68,18 @@ export enum ModelComponentTypes {
 	FlexContainer,
 	Card,
 	InputBox,
+	DropDown,
+	Button,
+	CheckBox,
 	DashboardWidget,
-	DashboardWebview
+	DashboardWebview,
+	Form
 }
 
 export interface IComponentShape {
 	type: ModelComponentTypes;
 	id: string;
-	properties?:  { [key: string]: any };
+	properties?: { [key: string]: any };
 	layout?: any;
 	itemConfigs?: IItemConfig[];
 }
@@ -87,7 +91,9 @@ export interface IItemConfig {
 
 export enum ComponentEventType {
 	PropertiesChanged,
-	onDidChange
+	onDidChange,
+	onDidClick,
+	validityChanged
 }
 
 export interface IComponentEventArgs {
@@ -111,4 +117,28 @@ export interface IModelViewTabDetails {
 export interface IModelViewButtonDetails {
 	label: string;
 	enabled: boolean;
+	hidden: boolean;
 }
+
+/// Card-related APIs that need to be here to avoid early load issues
+// with enums causing requiring of sqlops API to fail.
+export enum StatusIndicator {
+	None = 0,
+	Ok = 1,
+	Warning = 2,
+	Error = 3
+}
+
+export interface CardProperties {
+	label: string;
+	value?: string;
+	actions?: ActionDescriptor[];
+	status?: StatusIndicator;
+}
+
+export interface ActionDescriptor {
+	label: string;
+	actionTitle?: string;
+	callbackData?: string;
+}
+

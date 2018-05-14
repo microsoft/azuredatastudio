@@ -1,5 +1,20 @@
 # Change Log
 
+## Version 0.29.3
+* Release date: May 7, 2018
+* Release status: Public Preview
+
+## What's new in this version
+The May release is focused on stabilization and bug fixes leading up to the Build conference.  This build contains the following highlights.
+
+* Announcing **Redgate SQL Search** extension available in Extension Manager
+* Community Localization available for 10 languages: **German, Spanish, French, Italian, Japanese, Korean, Portuguese, Russian, Simplified Chinese and Traditional Chinese!**
+* **GDPR-compliant** build has reduced telemetry collection, improved [opt-out](https://github.com/Microsoft/sqlopsstudio/wiki/How-to-Disable-Telemetry-Reporting) experience and in-product links to [Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement)
+* Extension Manager has improved Marketplace experience to easily discover community extensions
+* SQL Agent extension Jobs and Job History view improvement
+* Updates for **whoisactive** and **Server Reports** extensions
+* Continue to fix GitHub issues
+
 ## Version 0.28.6
 * Release date: April 25, 2018
 * Release status: Public Preview

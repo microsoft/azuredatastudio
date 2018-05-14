@@ -6,28 +6,36 @@
 -->
 
 <panel class="fullsize" [options]="panelOpt">
-	<tab [title]="queryComponentTitle" class="fullsize" [identifier]="resultsTabIdentifier">
-		<div id="queryDiv" class="fullsize">
-			<query-component id="queryComp" #queryComponent class="fullsize" [queryParameters]="queryParameters"></query-component>
-		</div>
+	<tab [visibilityType]="'visibility'" [title]="queryComponentTitle" class="fullsize" [identifier]="resultsTabIdentifier">
+		<ng-template>
+			<div id="queryDiv" class="fullsize">
+				<query-component id="queryComp" class="fullsize" [queryParameters]="queryParameters"></query-component>
+			</div>
+		</ng-template>
 	</tab>
 
-	<tab *ngIf="hasQueryPlan" [title]="queryPlanTitle" [identifier]="queryPlanTabIdentifier">
-		<div id="queryPlanDiv" class="headersVisible fullsize" style=" overflow: auto; margin-left: 2px">
-			<queryplan-component #queryPlanComponent class="fullsize" style="display: block"></queryplan-component>
-		</div>
+	<tab *ngIf="hasQueryPlan" [visibilityType]="'visibility'" [title]="queryPlanTitle" [identifier]="queryPlanTabIdentifier">
+		<ng-template>
+			<div id="queryPlanDiv" class="headersVisible fullsize" style=" overflow: auto; margin-left: 2px">
+				<queryplan-component class="fullsize" style="display: block"></queryplan-component>
+			</div>
+		</ng-template>
 	</tab>
 
-	<tab *ngIf="hasQueryPlan" class="fullsize" [title]="topOperationsTitle">
-		<div id="topOperationsDiv" class="fullsize">
-			<top-operations-component #topOperationsComponent class="fullsize" style="display: block" [queryParameters]="queryParameters"></top-operations-component>
-		</div>
+	<tab *ngIf="hasQueryPlan" [visibilityType]="'visibility'" class="fullsize" [title]="topOperationsTitle">
+		<ng-template>
+			<div id="topOperationsDiv" class="fullsize">
+				<top-operations-component class="fullsize" style="display: block" [queryParameters]="queryParameters"></top-operations-component>
+			</div>
+		</ng-template>
 	</tab>
 
-	<tab *ngIf="showChartView" [title]="chartViewerTitle" [identifier]="chartViewerTabIdentifier">
-		<div id="chartViewerDiv" class="headersVisible fullsize" >
-			<chart-viewer  #chartViewerComponent class="fullsize" style="display: block">
-			</chart-viewer>
-		</div>
+	<tab *ngIf="showChartView" [visibilityType]="'visibility'" [title]="chartViewerTitle" [identifier]="chartViewerTabIdentifier">
+		<ng-template>
+			<div id="chartViewerDiv" class="headersVisible fullsize" >
+				<chart-viewer [dataSet]="activeDataSet" class="fullsize" style="display: block">
+				</chart-viewer>
+			</div>
+		</ng-template>
 	</tab>
 </panel>

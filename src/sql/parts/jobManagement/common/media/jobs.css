@@ -21,20 +21,20 @@ jobhistory-component {
 	display: block;
 }
 
-.vs-dark .job-heading-container {
+.job-heading-container {
     height: 49px;
-    border-bottom: 3px solid #444444;
+    border-bottom: 3px solid #f4f4f4;
     display: -webkit-box;
 }
 
-#jobsDiv .jobview-grid {
-    height: 96%;
-	width : 100%;
-    display: block;
+.vs-dark .job-heading-container {
+    border-bottom: 3px solid #444444;
 }
 
-#jobsDiv .jobview-grid > .monaco-table > div[class^="slickgrid_"] {
-    overflow: scroll !important;
+#jobsDiv .jobview-grid {
+    height: 94.7%;
+	width : 100%;
+    display: block;
 }
 
 .vs-dark #jobsDiv .slick-header-column {
@@ -179,10 +179,12 @@ agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.od
     cursor: pointer;
 }
 
-jobsview-component .jobview-grid > .monaco-table .slick-viewport > .grid-canvas
-
 .vs-dark .jobview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
     border-left: 1px dotted white;
+}
+
+.jobview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted #444444;
 }
 
 .job-heading-container > .icon.in-progress {

@@ -14,7 +14,6 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IInsightData, IInsightsView, IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
@@ -24,6 +23,7 @@ import * as PathUtilities from 'sql/common/pathUtilities';
 import { IChartViewActionContext, CopyAction, CreateInsightAction, SaveImageAction } from 'sql/parts/grid/views/query/chartViewerActions';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/parts/query/common/constants';
+import { SelectBox as AngularSelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
 
 /* Insights */
 import {
@@ -39,6 +39,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { mixin } from 'vs/base/common/objects';
 import * as paths from 'vs/base/common/paths';
 import * as pfs from 'vs/base/node/pfs';
+import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -53,7 +54,13 @@ const LocalizedStrings = {
 	LABEL_FIRST_COLUMN: nls.localize('labelFirstColumnLabel', 'Use First Column as row label?'),
 	COLUMNS_AS_LABELS: nls.localize('columnsAsLabelsLabel', 'Use Column names as labels?'),
 	LEGEND: nls.localize('legendLabel', 'Legend Position'),
-	CHART_NOT_FOUND: nls.localize('chartNotFound', 'Could not find chart to save')
+	CHART_NOT_FOUND: nls.localize('chartNotFound', 'Could not find chart to save'),
+	X_AXIS_LABEL: nls.localize('xAxisLabel', 'X Axis Label'),
+	X_AXIS_MIN_VAL: nls.localize('xAxisMinVal', 'X Axis Minimum Value'),
+	X_AXIS_MAX_VAL: nls.localize('xAxisMaxVal', 'X Axis Maximum Value'),
+	Y_AXIS_LABEL: nls.localize('yAxisLabel', 'Y Axis Label'),
+	Y_AXIS_MIN_VAL: nls.localize('yAxisMinVal', 'Y Axis Minimum Value'),
+	Y_AXIS_MAX_VAL: nls.localize('yAxisMaxVal', 'Y Axis Maximum Value')
 };
 
 @Component({
@@ -62,10 +69,7 @@ const LocalizedStrings = {
 })
 export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewActionContext {
 	public legendOptions: string[];
-	private chartTypesSelectBox: SelectBox;
-	private legendSelectBox: SelectBox;
-	private labelFirstColumnCheckBox: Checkbox;
-	private columnsAsLabelsCheckBox: Checkbox;
+	@ViewChild('chartTypeSelect') private chartTypesSelectBox: AngularSelectBox;
 
 	/* UI */
 
@@ -80,13 +84,12 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	private _chartComponent: ChartInsight;
 
 	private localizedStrings = LocalizedStrings;
+	private insightRegistry = insightRegistry;
 
 	@ViewChild(ComponentHostDirective) private componentHost: ComponentHostDirective;
 	@ViewChild('taskbarContainer', { read: ElementRef }) private taskbarContainer;
 	@ViewChild('chartTypesContainer', { read: ElementRef }) private chartTypesElement;
 	@ViewChild('legendContainer', { read: ElementRef }) private legendElement;
-	@ViewChild('labelFirstColumnContainer', { read: ElementRef }) private labelFirstColumnElement;
-	@ViewChild('columnsAsLabelsContainer', { read: ElementRef }) private columnsAsLabelsElement;
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
@@ -94,12 +97,12 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef
 	) {
+		this.setDefaultChartConfig();
 	}
 
 	ngOnInit() {
-		this.setDefaultChartConfig();
 		this.legendOptions = Object.values(LegendPosition);
-		this.initializeUI();
+		this._initActionBar();
 	}
 
 	private setDefaultChartConfig() {
@@ -109,39 +112,6 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 			legendPosition: 'none',
 			labelFirstColumn: false
 		};
-	}
-
-	private initializeUI() {
-		// Initialize the taskbar
-		this._initActionBar();
-
-		// Init chart type dropdown
-		this.chartTypesSelectBox = new SelectBox(insightRegistry.getAllIds(), this.getDefaultChartType(), this._bootstrapService.contextViewService);
-		this.chartTypesSelectBox.render(this.chartTypesElement.nativeElement);
-		this.chartTypesSelectBox.onDidSelect(selected => this.onChartChanged());
-		this._disposables.push(attachSelectBoxStyler(this.chartTypesSelectBox, this._bootstrapService.themeService));
-
-		// Init label first column checkbox
-		// Note: must use 'self' for callback
-		this.labelFirstColumnCheckBox = new Checkbox(this.labelFirstColumnElement.nativeElement, {
-			label: LocalizedStrings.LABEL_FIRST_COLUMN,
-			onChange: () => this.onLabelFirstColumnChanged(),
-			ariaLabel: LocalizedStrings.LABEL_FIRST_COLUMN
-		});
-
-		// Init label first column checkbox
-		// Note: must use 'self' for callback
-		this.columnsAsLabelsCheckBox = new Checkbox(this.columnsAsLabelsElement.nativeElement, {
-			label: LocalizedStrings.COLUMNS_AS_LABELS,
-			onChange: () => this.columnsAsLabelsChanged(),
-			ariaLabel: LocalizedStrings.COLUMNS_AS_LABELS
-		});
-
-		// Init legend dropdown
-		this.legendSelectBox = new SelectBox(this.legendOptions, this._chartConfig.legendPosition, this._bootstrapService.contextViewService);
-		this.legendSelectBox.render(this.legendElement.nativeElement);
-		this.legendSelectBox.onDidSelect(selected => this.onLegendChanged());
-		this._disposables.push(attachSelectBoxStyler(this.legendSelectBox, this._bootstrapService.themeService));
 	}
 
 	private getDefaultChartType(): string {
@@ -171,29 +141,24 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		]);
 	}
 
-
-	public onChartChanged(): void {
+	public onChartChanged(e: ISelectData): void {
 		this.setDefaultChartConfig();
-		if ([Constants.chartTypeScatter, Constants.chartTypeTimeSeries].some(item => item === this.chartTypesSelectBox.value)) {
+		if ([Constants.chartTypeScatter, Constants.chartTypeTimeSeries].some(item => item === e.selected)) {
 			this.dataType = DataType.Point;
 			this.dataDirection = DataDirection.Horizontal;
 		}
 		this.initChart();
 	}
 
-	public onLabelFirstColumnChanged(): void {
-		this._chartConfig.labelFirstColumn = this.labelFirstColumnCheckBox.checked;
+	ngAfterViewInit() {
 		this.initChart();
 	}
 
-	public columnsAsLabelsChanged(): void {
-		this._chartConfig.columnsAsLabels = this.columnsAsLabelsCheckBox.checked;
-		this.initChart();
-	}
-
-	public onLegendChanged(): void {
-		this._chartConfig.legendPosition = <LegendPosition>this.legendSelectBox.value;
-		this.initChart();
+	setConfigValue(key: string, value: any, refresh = true): void {
+		this._chartConfig[key] = value;
+		if (refresh) {
+			this.initChart();
+		}
 	}
 
 	public set dataType(type: DataType) {
@@ -350,7 +315,6 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		this._executeResult.rows = dataSet.dataRows.getRange(0, dataSet.dataRows.getLength()).map(gridRow => {
 			return gridRow.values.map(cell => cell.displayValue);
 		});
-		this.initChart();
 	}
 
 	public initChart() {

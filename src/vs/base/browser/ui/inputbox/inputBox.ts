@@ -31,6 +31,8 @@ export interface IInputOptions extends IInputBoxStyles {
 
 	// {{SQL CARBON EDIT}} Candidate for addition to vscode
 	min?: string;
+	max?: string;
+	useDefaultValidation?: boolean;
 }
 
 export interface IInputBoxStyles {
@@ -166,6 +168,11 @@ export class InputBox extends Widget {
 		// {{SQL CARBON EDIT}} Canidate for addition to vscode
 		if (this.options.min) {
 			this.input.min = this.options.min;
+		}
+
+		// {{SQL CARBON EDIT}} Canidate for addition to vscode
+		if (this.options.max) {
+			this.input.max = this.options.max;
 		}
 
 		if (this.ariaLabel) {
@@ -349,6 +356,14 @@ export class InputBox extends Widget {
 		if (this.validation) {
 			result = this.validation(this.value);
 
+			// {{SQL CARBON EDIT}}
+			if (!result && this.options.useDefaultValidation && this.inputElement.validationMessage) {
+				result = {
+					content: this.inputElement.validationMessage,
+					type: MessageType.ERROR
+				};
+			}
+
 			if (!result) {
 				this.inputElement.removeAttribute('aria-invalid');
 				this.hideMessage();
@@ -358,7 +373,8 @@ export class InputBox extends Widget {
 			}
 		}
 
-		return !result;
+		// {{SQL CARBON EDIT}} Canidate for addition to vscode
+		return result ? result.type !== MessageType.ERROR : true;
 	}
 
 	private stylesForType(type: MessageType): { border: Color; background: Color } {

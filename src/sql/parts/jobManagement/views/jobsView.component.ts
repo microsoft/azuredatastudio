@@ -51,7 +51,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200, id: 'name' },
+		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200 , id: 'name' },
 		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', minWidth: 150, id: 'lastRun' },
 		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', minWidth: 150, id: 'nextRun' },
 		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', minWidth: 70, id: 'enabled' },
@@ -74,6 +74,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _serverName: string;
 	private _isCloud: boolean;
 	private _showProgressWheel: boolean;
+	private _tabHeight: number;
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -133,7 +134,8 @@ export class JobsViewComponent implements AfterContentChecked {
 			syncColumnCellResize: true,
 			enableColumnReorder: false,
 			rowHeight: 45,
-			enableCellNavigation: true
+			enableCellNavigation: true,
+			forceFitColumns: true
 		};
 
 		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
@@ -157,9 +159,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			let job = self.getJob(args);
 			self._agentViewComponent.jobId = job.jobId;
 			self._agentViewComponent.agentJobInfo = job;
-			setTimeout(() => {
-				self._agentViewComponent.showHistory = true;
-			}, 500);
+			self._agentViewComponent.showHistory = true;
 		});
 		if (cached && this._agentViewComponent.refresh !== true) {
 			this.onJobsAvailable(this._jobCacheObject.jobs);
@@ -203,9 +203,8 @@ export class JobsViewComponent implements AfterContentChecked {
 		this.dataView.beginUpdate();
 		this.dataView.setItems(jobViews);
 		this.dataView.endUpdate();
-
-		this._table.resizeCanvas();
 		this._table.autosizeColumns();
+		this._table.resizeCanvas();
 		let expandedJobs = this._agentViewComponent.expanded;
 		let expansions = 0;
 		for (let i = 0; i < jobs.length; i++){
@@ -227,6 +226,19 @@ export class JobsViewComponent implements AfterContentChecked {
 		});
 		this._showProgressWheel = false;
 		this._cd.detectChanges();
+		const self = this;
+		this._tabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
+		$(window).resize((e) => {
+			let currentTabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
+			if (currentTabHeight < self._tabHeight) {
+				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
+				self._table.resizeCanvas();
+			} else {
+				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
+				self._table.resizeCanvas();
+			}
+			self._tabHeight = currentTabHeight;
+		});
 		this.loadJobHistories();
 	}
 
@@ -290,44 +302,69 @@ export class JobsViewComponent implements AfterContentChecked {
 		this.rowDetail.applyTemplateNewLineHeight(item, true);
 	}
 
-	private loadJobHistories() {
-		const self = this;
+	private loadJobHistories(): void {
 		if (this.jobs) {
 			let erroredJobs = 0;
-			for (let i = 0; i < this.jobs.length; i++) {
-				let job = this.jobs[i];
-				let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-				this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
-					if (result.jobs) {
-						self.jobHistories[job.jobId] = result.jobs;
-						self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
-						if (self._agentViewComponent.expanded.has(job.jobId)) {
-							let jobHistory = self._jobCacheObject.getJobHistory(job.jobId)[0];
-							let item = self.dataView.getItemById(job.jobId + '.error');
-							let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
-							let errorMessage = jobHistory ? jobHistory.message: noStepsMessage;
-							item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
-							self._agentViewComponent.setExpanded(job.jobId, errorMessage);
-							self.dataView.updateItem(job.jobId + '.error', item);
-
-						}
-					}
-				});
-			}
+			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+			let separatedJobs = this.separateFailingJobs();
+			// grab histories of the failing jobs first
+			// so they can be expanded quicker
+			let failing = separatedJobs[0];
+			this.curateJobHistory(failing, ownerUri);
+			let passing = separatedJobs[1];
+			this.curateJobHistory(passing, ownerUri);
 		}
 	}
 
-	private isErrorRow(jobName: string) {
-		return jobName.includes('Error');
+	private separateFailingJobs(): sqlops.AgentJobInfo[][] {
+		let failing = [];
+		let nonFailing = [];
+		for (let i = 0; i < this.jobs.length; i++) {
+			if (this.jobs[i].lastRunOutcome === 0) {
+				failing.push(this.jobs[i]);
+			} else {
+				nonFailing.push(this.jobs[i]);
+			}
+		}
+		return [failing, nonFailing];
+	}
+
+	private isErrorRow(cell: HTMLElement) {
+		return cell.classList.contains('error-row');
 	}
 
 	private getJob(args: Slick.OnClickEventArgs<any>): sqlops.AgentJobInfo {
 		let row = args.row;
-		let jobName = args.grid.getCellNode(row, 1).innerText.trim();
-		if (this.isErrorRow(jobName)) {
+		let jobName: string;
+		let cell = args.grid.getCellNode(row, 1);
+		if (this.isErrorRow(cell)) {
 			jobName = args.grid.getCellNode(row-1, 1).innerText.trim();
+		} else {
+			jobName = cell.innerText.trim();
 		}
 		let job = this.jobs.filter(job => job.name === jobName)[0];
 		return job;
+	}
+
+	private curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
+		const self = this;
+		for (let i = 0; i < jobs.length; i++) {
+			let job = jobs[i];
+			this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
+				if (result && result.jobs) {
+					self.jobHistories[job.jobId] = result.jobs;
+					self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
+					if (self._agentViewComponent.expanded.has(job.jobId)) {
+						let jobHistory = self._jobCacheObject.getJobHistory(job.jobId)[result.jobs.length-1];
+						let item = self.dataView.getItemById(job.jobId + '.error');
+						let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
+						let errorMessage = jobHistory ? jobHistory.message: noStepsMessage;
+						item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
+						self._agentViewComponent.setExpanded(job.jobId, item['name']);
+						self.dataView.updateItem(job.jobId + '.error', item);
+					}
+				}
+			});
+		}
 	}
 }

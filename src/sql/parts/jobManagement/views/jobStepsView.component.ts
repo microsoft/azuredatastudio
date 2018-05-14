@@ -60,11 +60,13 @@ export class JobStepsViewComponent extends Disposable implements OnInit, AfterCo
 					dataSource: this._treeDataSource,
 					filter: this._treeFilter,
 					renderer: this._treeRenderer
-				}, {verticalScrollMode: ScrollbarVisibility.Visible});
+				}, { verticalScrollMode: ScrollbarVisibility.Visible });
 				this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
 			}
 			this._tree.layout(JobStepsViewComponent._pageSize);
 			this._tree.setInput(new JobStepsViewModel());
+			$('jobstepsview-component .steps-tree .monaco-tree').attr('tabIndex', '-1');
+			$('jobstepsview-component .steps-tree .monaco-tree-row').attr('tabIndex', '0');
 		}
 	}
 

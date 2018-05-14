@@ -16,11 +16,15 @@ import { DialogComponentParams } from 'sql/platform/dialog/dialogContainer.compo
 import { Builder } from 'vs/base/browser/builder';
 import { IThemable } from 'vs/platform/theme/common/styler';
 import { Disposable } from 'vs/base/common/lifecycle';
+import Event, { Emitter } from 'vs/base/common/event';
 
 export class DialogPane extends Disposable implements IThemable {
 	private _activeTabIndex: number;
 	private _tabbedPanel: TabbedPanel;
 	private _moduleRef: NgModuleRef<{}>;
+
+	// Validation
+	private _modelViewValidityMap = new Map<string, boolean>();
 
 	// HTML Elements
 	private _body: HTMLElement;
@@ -46,12 +50,20 @@ export class DialogPane extends Disposable implements IThemable {
 			} else {
 				this._tabbedPanel = new TabbedPanel(this._body);
 				this._dialog.content.forEach((tab, tabIndex) => {
+					let tabContainer = document.createElement('div');
+					tabContainer.style.display = 'none';
+					this._body.appendChild(tabContainer);
+					this.initializeModelViewContainer(tabContainer, tab.content);
 					this._tabbedPanel.pushTab({
 						title: tab.title,
 						identifier: 'dialogPane.' + this._dialog.title + '.' + tabIndex,
 						view: {
 							render: (container) => {
-								this.initializeModelViewContainer(container, tab.content);
+								if (tabContainer.parentElement === this._body) {
+									this._body.removeChild(tabContainer);
+								}
+								container.appendChild(tabContainer);
+								tabContainer.style.display = 'block';
 							},
 							layout: (dimension) => { }
 						} as IPanelView
@@ -72,7 +84,10 @@ export class DialogPane extends Disposable implements IThemable {
 			DialogModule,
 			bodyContainer,
 			'dialog-modelview-container',
-			{ modelViewId: modelViewId } as DialogComponentParams,
+			{
+				modelViewId: modelViewId,
+				validityChangedCallback: (valid: boolean) => this._setValidity(modelViewId, valid)
+			} as DialogComponentParams,
 			undefined,
 			(moduleRef) => this._moduleRef = moduleRef);
 	}
@@ -91,5 +106,25 @@ export class DialogPane extends Disposable implements IThemable {
 	public style(styles: IModalDialogStyles): void {
 		this._body.style.backgroundColor = styles.dialogBodyBackground ? styles.dialogBodyBackground.toString() : undefined;
 		this._body.style.color = styles.dialogForeground ? styles.dialogForeground.toString() : undefined;
+	}
+
+	private _setValidity(modelViewId: string, valid: boolean) {
+		let oldValidity = this.isValid();
+		this._modelViewValidityMap.set(modelViewId, valid);
+		let newValidity = this.isValid();
+		if (newValidity !== oldValidity) {
+			this._dialog.notifyValidityChanged(newValidity);
+		}
+	}
+
+	private isValid(): boolean {
+		let valid = true;
+		this._modelViewValidityMap.forEach(value => valid = valid && value);
+		return valid;
+	}
+
+	public dispose() {
+		super.dispose();
+		this._moduleRef.destroy();
 	}
 }

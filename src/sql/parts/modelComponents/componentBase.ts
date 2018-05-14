@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./flexContainer';
 
-import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
+import {
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
 	ViewChild, ElementRef, Injector, OnDestroy, OnInit
 } from '@angular/core';
 
@@ -18,14 +19,17 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 
 export class ItemDescriptor<T> {
-	constructor(public descriptor: IComponentDescriptor, public config: T) {}
+	constructor(public descriptor: IComponentDescriptor, public config: T) { }
 }
 
 export abstract class ComponentBase extends Disposable implements IComponent, OnDestroy, OnInit {
 	protected properties: { [key: string]: any; } = {};
-	constructor (
+	private _valid: boolean = true;
+	protected _validations: (() => boolean | Thenable<boolean>)[] = [];
+	private _eventQueue: IComponentEventArgs[] = [];
+	constructor(
 		protected _changeRef: ChangeDetectorRef) {
-			super();
+		super();
 	}
 
 	/// IComponent implementation
@@ -41,6 +45,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	protected baseInit(): void {
 		if (this.modelStore) {
 			this.modelStore.registerComponent(this);
+			this._validations.push(() => this.modelStore.validate(this));
 		}
 	}
 
@@ -56,7 +61,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		this.dispose();
 	}
 
-	abstract setLayout (layout: any): void;
+	abstract setLayout(layout: any): void;
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		if (!properties) {
@@ -64,6 +69,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		}
 		this.properties = properties;
 		this.layout();
+		this.validate();
 	}
 
 	protected getProperties<TPropertyBag>(): TPropertyBag {
@@ -75,16 +81,56 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		return types.isUndefinedOrNull(property) ? defaultVal : property;
 	}
 
-	protected setProperty<TPropertyBag, TValue>(propertySetter: (TPropertyBag, TValue) => void, value: TValue) {
+	protected setPropertyFromUI<TPropertyBag, TValue>(propertySetter: (TPropertyBag, TValue) => void, value: TValue) {
 		propertySetter(this.getProperties<TPropertyBag>(), value);
-		this._onEventEmitter.fire({
+		this.fireEvent({
 			eventType: ComponentEventType.PropertiesChanged,
 			args: this.getProperties()
 		});
+		this.validate();
 	}
 
-	public get onEvent(): Event<IComponentEventArgs> {
-		return this._onEventEmitter.event;
+	public get enabled(): boolean {
+		let properties = this.getProperties();
+		let enabled = properties['enabled'];
+		return enabled !== undefined ? <boolean>enabled : true;
+	}
+
+	public get valid(): boolean {
+		return this._valid;
+	}
+
+	public registerEventHandler(handler: (event: IComponentEventArgs) => void): IDisposable {
+		if (this._eventQueue) {
+			while (this._eventQueue.length > 0) {
+				let event = this._eventQueue.pop();
+				handler(event);
+			}
+			this._eventQueue = undefined;
+		}
+		return this._onEventEmitter.event(handler);
+	}
+
+	private fireEvent(event: IComponentEventArgs) {
+		this._onEventEmitter.fire(event);
+		if (this._eventQueue) {
+			this._eventQueue.push(event);
+		}
+	}
+
+	public validate(): Thenable<boolean> {
+		let validations = this._validations.map(validation => Promise.resolve(validation()));
+		return Promise.all(validations).then(values => {
+			let isValid = values.every(value => value === true);
+			if (this._valid !== isValid) {
+				this._valid = isValid;
+				this.fireEvent({
+					eventType: ComponentEventType.validityChanged,
+					args: this._valid
+				});
+			}
+			return isValid;
+		});
 	}
 }
 
@@ -96,11 +142,17 @@ export abstract class ContainerBase<T> extends ComponentBase {
 	) {
 		super(_changeRef);
 		this.items = [];
+		this._validations.push(() => this.items.every(item => this.modelStore.getComponent(item.descriptor.id).valid));
 	}
 
 	/// IComponent container-related implementation
 	public addToContainer(componentDescriptor: IComponentDescriptor, config: any): void {
 		this.items.push(new ItemDescriptor(componentDescriptor, config));
+		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.registerEventHandler(event => {
+			if (event.eventType === ComponentEventType.validityChanged) {
+				this.validate();
+			}
+		}));
 		this._changeRef.detectChanges();
 	}
 
@@ -109,5 +161,5 @@ export abstract class ContainerBase<T> extends ComponentBase {
 		this._changeRef.detectChanges();
 	}
 
-	abstract setLayout (layout: any): void;
+	abstract setLayout(layout: any): void;
 }

@@ -23,7 +23,7 @@
 	height: 100%;
 }
 
-.dialogModal-pane.dialogModal-hidden {
+.dialogModal-hidden {
 	display: none;
 }
 

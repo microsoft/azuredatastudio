@@ -17,6 +17,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { localize } from 'vs/nls';
+import { entries } from 'sql/base/common/objects';
 
 import * as sqlops from 'sqlops';
 
@@ -32,7 +33,7 @@ import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as types from 'vs/base/common/types';
-import { entries } from 'sql/base/common/objects';
+import { trim } from 'vs/base/common/strings';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -108,6 +109,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				}
 				profile = result.connection;
 
+				profile.serverName = trim(profile.serverName);
+
 				// append the port to the server name for SQL Server connections
 				if (this.getCurrentProviderName() === Constants.mssqlProviderName) {
 					let portPropertyName: string = 'port';
@@ -125,6 +128,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 				this.handleDefaultOnConnect(params, profile);
 			} else {
+				profile.serverName = trim(profile.serverName);
 				this._connectionManagementService.addSavedPassword(profile).then(connectionWithPassword => {
 					this.handleDefaultOnConnect(params, connectionWithPassword);
 				});

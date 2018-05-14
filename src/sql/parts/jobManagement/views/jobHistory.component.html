@@ -15,18 +15,11 @@
  </div>
 
 <!-- Actions -->
-<ul class="action-buttons">
-	<li>
-		<div class="icon-start" (click)="jobAction('run', this._agentJobInfo.name)">Run</div>
-	</li>
-	<li>
-		<div class="icon-stop" (click)="jobAction('stop', this._.agentJobInfo.name)">Stop</div>
-	</li>
-</ul>
+<div #actionbarContainer class="actionbar-container"></div>
 
 <!-- Overview  -->
  <div class="overview-container">
-   <div class="overview-tab" (click)='toggleCollapse()'>
+   <div class="overview-tab" (click)='toggleCollapse()' tabindex="0">
 	 <input id="accordion" type="checkbox">
 	 <label for="accordion">
 		<div class="resultsViewCollapsible collapsed" (click)='toggleCollapse()'></div>

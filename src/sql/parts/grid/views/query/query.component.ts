@@ -131,6 +131,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	private messages: IMessage[] = [];
 	private messageStore: IMessage[] = [];
 	private messageTimeout: number;
+	private lastMessageHandleTime: number = 0;
 	private scrollTimeOut: number;
 	private resizing = false;
 	private resizeHandleTop: string = '0';
@@ -248,13 +249,28 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 
 	handleMessage(self: QueryComponent, event: any): void {
 		self.messageStore.push(event.data);
-		clearTimeout(self.messageTimeout);
+		// Ensure that messages are updated at least every 10 seconds during long-running queries
+		if (self.messageTimeout !== undefined && Date.now() - self.lastMessageHandleTime < 10000) {
+			clearTimeout(self.messageTimeout);
+		} else {
+			self.lastMessageHandleTime = Date.now();
+		}
 		self.messageTimeout = setTimeout(() => {
-			self.messages = self.messages.concat(self.messageStore);
-			self.messageStore = [];
+			while (self.messageStore.length > 0) {
+				let lastMessage = self.messages.length > 0 ? self.messages[self.messages.length - 1] : undefined;
+				let nextMessage = self.messageStore[0];
+				// If the next message has the same metadata as the previous one, just append its text to avoid rendering an entirely new message
+				if (lastMessage !== undefined && lastMessage.batchId === nextMessage.batchId && lastMessage.isError === nextMessage.isError
+					&& lastMessage.link === nextMessage.link && lastMessage.link === undefined) {
+					lastMessage.message += '\n' + nextMessage.message;
+				} else {
+					self.messages.push(nextMessage);
+				}
+				self.messageStore = self.messageStore.slice(1);
+			}
 			self._cd.detectChanges();
 			self.scrollMessages();
-		}, 10);
+		}, 100);
 	}
 
 	handleResultSet(self: QueryComponent, event: any): void {
@@ -573,7 +589,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		});
 	}
 
-	private showChartForGrid(index: number) {
+	protected showChartForGrid(index: number) {
 		if (this.renderedDataSets.length > index) {
 			this.showChartRequested.emit(this.renderedDataSets[index]);
 		}

@@ -20,21 +20,30 @@ declare module 'sqlops' {
 		flexContainer(): FlexBuilder;
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
+		checkBox(): ComponentBuilder<CheckBoxComponent>;
+		button(): ComponentBuilder<ButtonComponent>;
+		dropDown(): ComponentBuilder<DropDownComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<WebviewComponent>;
+		formContainer(): FormBuilder;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
 		component(): T;
 		withProperties<U>(properties: U): ComponentBuilder<T>;
+		withValidation(validation: (component: T) => boolean): ComponentBuilder<T>;
 	}
-	export interface ContainerBuilder<T extends Component, TLayout,TItemLayout> extends ComponentBuilder<T> {
+	export interface ContainerBuilder<T extends Component, TLayout, TItemLayout> extends ComponentBuilder<T> {
 		withLayout(layout: TLayout): ContainerBuilder<T, TLayout, TItemLayout>;
-		withItems(components: Array<Component>, itemLayout ?: TItemLayout): ContainerBuilder<T, TLayout, TItemLayout>;
+		withItems(components: Array<Component>, itemLayout?: TItemLayout): ContainerBuilder<T, TLayout, TItemLayout>;
 	}
 
 	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout> {
 
+	}
+
+	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
+		withFormItems(components: FormComponent[], itemLayout?: FormItemLayout): ContainerBuilder<FormContainer, FormLayout, FormItemLayout>;
 	}
 
 	export interface Component {
@@ -48,12 +57,34 @@ declare module 'sqlops' {
 		 * @memberof Component
 		 */
 		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
+
+		enabled: boolean;
+		/**
+		 * Event fired to notify that the component's validity has changed
+		 */
+		readonly onValidityChanged: vscode.Event<boolean>;
+
+		/**
+		 * Whether the component is valid or not
+		 */
+		readonly valid: boolean;
+
+		/**
+		 * Run the component's validations
+		 */
+		validate(): Thenable<boolean>;
+	}
+
+	export interface FormComponent {
+		component: Component;
+		title: string;
+		actions?: Component[];
 	}
 
 	/**
 	 * A component that contains other components
 	 */
-	export interface Container<TLayout,TItemLayout> extends Component {
+	export interface Container<TLayout, TItemLayout> extends Component {
 		/**
 		 * A copy of the child items array. This cannot be added to directly -
 		 * components must be created using the create methods instead
@@ -70,7 +101,7 @@ declare module 'sqlops' {
 		 * @param itemConfigs the definitions
 		 * @param {*} [itemLayout] Optional layout for the child items
 		 */
-		addItems(itemConfigs: Array<Component>, itemLayout ?: TItemLayout): void;
+		addItems(itemConfigs: Array<Component>, itemLayout?: TItemLayout): void;
 
 		/**
 		 * Creates a child component and adds it to this container.
@@ -78,7 +109,7 @@ declare module 'sqlops' {
 		 * @param {Component} component the component to be added
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
-		addItem(component: Component, itemLayout ?: TItemLayout): void;
+		addItem(component: Component, itemLayout?: TItemLayout): void;
 
 		/**
 		 * Defines the layout for this container
@@ -130,8 +161,22 @@ declare module 'sqlops' {
 		flex?: string;
 	}
 
+	export interface FormItemLayout {
+		horizontal: boolean;
+		width: number;
+		componentWidth: number;
+	}
+
+	export interface FormLayout {
+
+	}
+
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
 	}
+
+	export interface FormContainer extends Container<FormLayout, FormItemLayout> {
+	}
+
 
 	/**
 	 * Describes an action to be shown in the UI, with a user-readable label
@@ -143,35 +188,89 @@ declare module 'sqlops' {
 		 */
 		label: string;
 		/**
-		 * ID of the task to be called when this is clicked on.
-		 * These should be registered using the {tasks.registerTask} API.
+		 * Name of the clickable action. If not defined then no action will be shown
 		 */
-		taskId: string;
+		actionTitle?: string;
+		/**
+		 * Data sent on callback being run.
+		 */
+		callbackData?: string;
+	}
+
+	/**
+	 * Defines status indicators that can be shown to the user as part of
+	 * components such as the Card UI
+	 */
+	export enum StatusIndicator {
+		None = 0,
+		Ok = 1,
+		Warning = 2,
+		Error = 3
 	}
 
 	/**
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
 	 */
-	export interface CardProperties  {
+	export interface CardProperties {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
+		status?: StatusIndicator;
 	}
 
-	export interface InputBoxProperties  {
+	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
+
+	export interface InputBoxProperties {
 		value?: string;
+		ariaLabel?: string;
+		placeHolder?: string;
+		height: number;
+		width: number;
+		inputType?: InputBoxInputType;
+		required?: boolean;
+	}
+
+	export interface CheckBoxProperties {
+		checked?: boolean;
+		label?: string;
+	}
+
+	export interface DropDownProperties {
+		value?: string;
+		values?: string[];
+	}
+
+	export interface ButtonProperties {
+		label?: string;
 	}
 
 	export interface CardComponent extends Component {
 		label: string;
 		value: string;
 		actions?: ActionDescriptor[];
+		onDidActionClick: vscode.Event<ActionDescriptor>;
 	}
 
-	export interface InputBoxComponent extends Component {
-		value: string;
+	export interface InputBoxComponent extends Component, InputBoxProperties {
 		onTextChanged: vscode.Event<any>;
+	}
+
+	export interface CheckBoxComponent extends Component {
+		checked: boolean;
+		label: string;
+		onChanged: vscode.Event<any>;
+	}
+
+	export interface DropDownComponent extends Component {
+		value: string;
+		values: string[];
+		onValueChanged: vscode.Event<any>;
+	}
+
+	export interface ButtonComponent extends Component {
+		label: string;
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface WidgetComponent extends Component {
@@ -208,6 +307,21 @@ declare module 'sqlops' {
 		readonly modelBuilder: ModelBuilder;
 
 		/**
+		 * Whether or not the model view's root component is valid
+		 */
+		readonly valid: boolean;
+
+		/**
+		 * Raised when the model view's valid property changes
+		 */
+		readonly onValidityChanged: vscode.Event<boolean>;
+
+		/**
+		 * Run the model view root component's validations
+		 */
+		validate(): Thenable<boolean>;
+
+		/**
 		 * Initializes the model with a root component definition.
 		 * Once this has been done, the components will be laid out in the UI and
 		 * can be accessed and altered as needed.
@@ -215,7 +329,7 @@ declare module 'sqlops' {
 		initializeModel<T extends Component>(root: T): Thenable<void>;
 	}
 
-	export namespace dashboard {
+	export namespace ui {
 		/**
 		 * Register a provider for a model-view widget
 		 */
@@ -242,6 +356,16 @@ declare module 'sqlops' {
 			 */
 			export function createButton(label: string): Button;
 
+			/**
+			 * Opens the given dialog if it is not already open
+			 */
+			export function openDialog(dialog: Dialog): void;
+
+			/**
+			 * Closes the given dialog if it is open
+			 */
+			export function closeDialog(dialog: Dialog): void;
+
 			// Model view dialog classes
 			export interface Dialog {
 				/**
@@ -252,7 +376,6 @@ declare module 'sqlops' {
 				/**
 				 * The content of the dialog. If multiple tabs are given they will be displayed with tabs
 				 * If a string is given, it should be the ID of the dialog's model view content
-				 * TODO mairvine 4/18/18: use a model view content type
 				 */
 				content: string | DialogTab[],
 
@@ -272,49 +395,43 @@ declare module 'sqlops' {
 				customButtons: Button[];
 
 				/**
-				 * Opens the dialog
+				 * Whether the dialog's content is valid
 				 */
-				open(): void;
+				readonly valid: boolean;
 
 				/**
-				 * Closes the dialog
+				 * Fired whenever the dialog's valid property changes
 				 */
-				close(): void;
-
-				/**
-				 * Updates the dialog on screen to reflect changes to the buttons or content
-				 */
-				updateContent(): void;
+				readonly onValidityChanged: vscode.Event<boolean>;
 			}
 
 			export interface DialogTab {
 				/**
 				 * The title of the tab
 				 */
-				title: string,
+				title: string;
 
 				/**
 				 * A string giving the ID of the tab's model view content
-				 * TODO mairvine 4/18/18: use a model view content type
 				 */
 				content: string;
-
-				/**
-				 * Updates the dialog on screen to reflect changes to the content
-				 */
-				updateContent(): void;
 			}
 
 			export interface Button {
 				/**
 				 * The label displayed on the button
 				 */
-				label: string,
+				label: string;
 
 				/**
 				 * Whether the button is enabled
 				 */
-				enabled: boolean,
+				enabled: boolean;
+
+				/**
+				 * Whether the button is hidden
+				 */
+				hidden: boolean;
 
 				/**
 				 * Raised when the button is clicked

@@ -45,8 +45,8 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 	}
 
 	$initializeModel(handle: number, rootComponent: IComponentShape): Thenable<void> {
-		return this.execModelViewAction(handle, (modelView) =>  {
-			modelView.initializeModel(rootComponent);
+		return this.execModelViewAction(handle, (modelView) => {
+			modelView.initializeModel(rootComponent, (componentId) => this.runCustomValidations(handle, componentId));
 		});
 	}
 
@@ -67,17 +67,27 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 		this._proxy.$handleEvent(handle, componentId, eventArgs);
 	}
 
-	$registerEvent(handle: number, componentId: string):  Thenable<void> {
+	$registerEvent(handle: number, componentId: string): Thenable<void> {
 		let properties: { [key: string]: any; } = { eventName: this.onEvent };
 		return this.execModelViewAction(handle, (modelView) => {
-			this._register(modelView.onEvent (e => {
-				this.onEvent(handle, componentId, e);
+			this._register(modelView.onEvent(e => {
+				if (e.componentId && e.componentId === componentId) {
+					this.onEvent(handle, componentId, e);
+				}
 			}));
 		});
 	}
 
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any; }): Thenable<void> {
 		return this.execModelViewAction(handle, (modelView) => modelView.setProperties(componentId, properties));
+	}
+
+	$validate(handle: number, componentId: string): Thenable<boolean> {
+		return new Promise(resolve => this.execModelViewAction(handle, (modelView) => resolve(modelView.validate(componentId))));
+	}
+
+	private runCustomValidations(handle: number, componentId: string): Thenable<boolean> {
+		return this._proxy.$runCustomValidations(handle, componentId);
 	}
 
 	private execModelViewAction<T>(handle: number, action: (m: IModelView) => T): Thenable<T> {

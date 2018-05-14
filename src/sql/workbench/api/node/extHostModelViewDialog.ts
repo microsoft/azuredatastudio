@@ -21,22 +21,18 @@ class DialogImpl implements sqlops.window.modelviewdialog.Dialog {
 	public okButton: sqlops.window.modelviewdialog.Button;
 	public cancelButton: sqlops.window.modelviewdialog.Button;
 	public customButtons: sqlops.window.modelviewdialog.Button[];
+	public readonly onValidityChanged: vscode.Event<boolean>;
+	private _valid: boolean = true;
 
 	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) {
 		this.okButton = this._extHostModelViewDialog.createButton(nls.localize('dialogOkLabel', 'Done'));
 		this.cancelButton = this._extHostModelViewDialog.createButton(nls.localize('dialogCancelLabel', 'Cancel'));
+		this.onValidityChanged = this._extHostModelViewDialog.getValidityChangedEvent(this);
+		this.onValidityChanged(valid => this._valid = valid);
 	}
 
-	public open(): void {
-		this._extHostModelViewDialog.open(this);
-	}
-
-	public close(): void {
-		this._extHostModelViewDialog.close(this);
-	}
-
-	public updateContent(): void {
-		this._extHostModelViewDialog.updateDialogContent(this);
+	public get valid(): boolean {
+		return this._valid;
 	}
 }
 
@@ -45,21 +41,19 @@ class TabImpl implements sqlops.window.modelviewdialog.DialogTab {
 	public content: string;
 
 	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) { }
-
-	public updateContent(): void {
-		this._extHostModelViewDialog.updateTabContent(this);
-	}
 }
 
 class ButtonImpl implements sqlops.window.modelviewdialog.Button {
 	private _label: string;
 	private _enabled: boolean;
+	private _hidden: boolean;
 
 	private _onClick = new Emitter<void>();
 	public onClick = this._onClick.event;
 
 	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) {
 		this._enabled = true;
+		this._hidden = false;
 	}
 
 	public get label(): string {
@@ -80,6 +74,15 @@ class ButtonImpl implements sqlops.window.modelviewdialog.Button {
 		this._extHostModelViewDialog.updateButton(this);
 	}
 
+	public get hidden(): boolean {
+		return this._hidden;
+	}
+
+	public set hidden(hidden: boolean) {
+		this._hidden = hidden;
+		this._extHostModelViewDialog.updateButton(this);
+	}
+
 	public getOnClickCallback(): () => void {
 		return () => this._onClick.fire();
 	}
@@ -94,6 +97,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	private readonly _tabHandles = new Map<sqlops.window.modelviewdialog.DialogTab, number>();
 	private readonly _buttonHandles = new Map<sqlops.window.modelviewdialog.Button, number>();
 
+	private readonly _validityEmitters = new Map<number, Emitter<boolean>>();
 	private readonly _onClickCallbacks = new Map<number, () => void>();
 
 	constructor(
@@ -139,6 +143,13 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._onClickCallbacks.get(handle)();
 	}
 
+	public $onDialogValidityChanged(handle: number, valid: boolean): void {
+		let emitter = this._validityEmitters.get(handle);
+		if (emitter) {
+			emitter.fire(valid);
+		}
+	}
+
 	public open(dialog: sqlops.window.modelviewdialog.Dialog): void {
 		let handle = this.getDialogHandle(dialog);
 		this.updateDialogContent(dialog);
@@ -154,7 +165,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		let handle = this.getDialogHandle(dialog);
 		let tabs = dialog.content;
 		if (tabs && typeof tabs !== 'string') {
-			tabs.forEach(tab => tab.updateContent());
+			tabs.forEach(tab => this.updateTabContent(tab));
 		}
 		if (dialog.customButtons) {
 			dialog.customButtons.forEach(button => this.updateButton(button));
@@ -182,7 +193,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		let handle = this.getButtonHandle(button);
 		this._proxy.$setButtonDetails(handle, {
 			label: button.label,
-			enabled: button.enabled
+			enabled: button.enabled,
+			hidden: button.hidden
 		});
 	}
 
@@ -211,5 +223,15 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this.registerOnClickCallback(button, button.getOnClickCallback());
 		button.label = label;
 		return button;
+	}
+
+	public getValidityChangedEvent(dialog: sqlops.window.modelviewdialog.Dialog) {
+		let handle = this.getDialogHandle(dialog);
+		let emitter = this._validityEmitters.get(handle);
+		if (!emitter) {
+			emitter = new Emitter<boolean>();
+			this._validityEmitters.set(handle, emitter);
+		}
+		return emitter.event;
 	}
 }

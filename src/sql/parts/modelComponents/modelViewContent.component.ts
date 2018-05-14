@@ -11,9 +11,8 @@ import { Parts } from 'vs/workbench/services/part/common/partService';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
-import nls = require('vs/nls');
+import * as nls from 'vs/nls';
 
-import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IModelView } from 'sql/services/model/modelViewService';

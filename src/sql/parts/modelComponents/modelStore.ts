@@ -12,7 +12,7 @@ import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { Deferred } from 'sql/base/common/promise';
 
-const componentRegistry = <IComponentRegistry> Registry.as(Extensions.ComponentContribution);
+const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
 
 
 class ComponentDescriptor implements IComponentDescriptor {
@@ -27,6 +27,7 @@ export class ModelStore implements IModelStore {
 	private _descriptorMappings: { [x: string]: IComponentDescriptor } = {};
 	private _componentMappings: { [x: string]: IComponent } = {};
 	private _componentActions: { [x: string]: Deferred<IComponent> } = {};
+	private _validationCallbacks: ((componentId: string) => Thenable<boolean>)[] = [];
 	constructor() {
 	}
 
@@ -64,6 +65,15 @@ export class ModelStore implements IModelStore {
 		} else {
 			return this.addPendingAction(componentId, action);
 		}
+	}
+
+	registerValidationCallback(callback: (componentId: string) => Thenable<boolean>): void {
+		this._validationCallbacks.push(callback);
+	}
+
+	validate(component: IComponent): Thenable<boolean> {
+		let componentId = Object.entries(this._componentMappings).find(([id, mappedComponent]) => component === mappedComponent)[0];
+		return Promise.all(this._validationCallbacks.map(callback => callback(componentId))).then(validations => validations.every(validation => validation === true));
 	}
 
 	private addPendingAction<T>(componentId: string, action: (component: IComponent) => T): Promise<T> {

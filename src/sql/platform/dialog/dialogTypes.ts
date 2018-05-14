@@ -36,8 +36,6 @@ export class DialogTab implements sqlops.window.modelviewdialog.DialogTab {
 			this.content = content;
 		}
 	}
-
-	public updateContent(): void { }
 }
 
 export class Dialog implements sqlops.window.modelviewdialog.Dialog {
@@ -49,26 +47,66 @@ export class Dialog implements sqlops.window.modelviewdialog.Dialog {
 	public cancelButton: DialogButton = new DialogButton(Dialog.CANCEL_BUTTON_LABEL, true);
 	public customButtons: DialogButton[];
 
+	private _valid: boolean = true;
+	private _validityChangedEmitter = new Emitter<boolean>();
+	public readonly onValidityChanged = this._validityChangedEmitter.event;
+
 	constructor(public title: string, content?: string | DialogTab[]) {
 		if (content) {
 			this.content = content;
 		}
 	}
 
-	public open(): void { }
-	public close(): void { }
-	public updateContent(): void { }
+	public get valid(): boolean {
+		return this._valid;
+	}
+
+	public notifyValidityChanged(valid: boolean) {
+		this._valid = valid;
+		this._validityChangedEmitter.fire(valid);
+	}
 }
 
 export class DialogButton implements sqlops.window.modelviewdialog.Button {
-	public label: string;
-	public enabled: boolean;
+	private _label: string;
+	private _enabled: boolean;
+	private _hidden: boolean;
 	private _onClick: Emitter<void> = new Emitter<void>();
 	public readonly onClick: Event<void> = this._onClick.event;
+	private _onUpdate: Emitter<void> = new Emitter<void>();
+	public readonly onUpdate: Event<void> = this._onUpdate.event;
 
 	constructor(label: string, enabled: boolean) {
-		this.label = label;
-		this.enabled = enabled;
+		this._label = label;
+		this._enabled = enabled;
+		this._hidden = false;
+	}
+
+	public get label(): string {
+		return this._label;
+	}
+
+	public set label(label: string) {
+		this._label = label;
+		this._onUpdate.fire();
+	}
+
+	public get enabled(): boolean {
+		return this._enabled;
+	}
+
+	public set enabled(enabled: boolean) {
+		this._enabled = enabled;
+		this._onUpdate.fire();
+	}
+
+	public get hidden(): boolean {
+		return this._hidden;
+	}
+
+	public set hidden(hidden: boolean) {
+		this._hidden = hidden;
+		this._onUpdate.fire();
 	}
 
 	/**

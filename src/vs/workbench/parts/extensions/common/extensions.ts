@@ -37,6 +37,8 @@ export interface IExtension {
 	description: string;
 	url: string;
 	downloadUrl: string;
+	// {{SQL CARBON EDIT}}
+	downloadPage: string;
 	repository: string;
 	iconUrl: string;
 	iconUrlFallback: string;

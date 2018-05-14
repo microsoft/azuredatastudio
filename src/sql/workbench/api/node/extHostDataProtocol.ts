@@ -247,8 +247,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.QueryProvider>(handle).disposeEdit(ownerUri);
 	}
 
-	$initializeEdit(handle: number, ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void> {
-		return this._resolveProvider<sqlops.QueryProvider>(handle).initializeEdit(ownerUri, schemaName, objectName, objectType, rowLimit);
+	$initializeEdit(handle: number, ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void> {
+		return this._resolveProvider<sqlops.QueryProvider>(handle).initializeEdit(ownerUri, schemaName, objectName, objectType, rowLimit, queryString);
 	}
 
 	$revertCell(handle: number, ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult> {

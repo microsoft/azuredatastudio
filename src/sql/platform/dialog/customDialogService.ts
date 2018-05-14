@@ -17,12 +17,15 @@ const defaultOptions: IModalOptions = { hasBackButton: true, isWide: false };
 const defaultWizardOptions: IModalOptions = { hasBackButton: true, isWide: true };
 
 export class CustomDialogService {
+	private _dialogModals = new Map<Dialog, DialogModal>();
+
 	constructor( @IInstantiationService private _instantiationService: IInstantiationService) { }
 
 	public showDialog(dialog: Dialog, options?: IModalOptions): void {
-		// let optionsDialog = this._instantiationService.createInstance(DialogModal, dialog, 'CustomDialog', options || defaultOptions);
-		// optionsDialog.render();
-		// optionsDialog.open();
+		// let dialogModal = this._instantiationService.createInstance(DialogModal, dialog, 'CustomDialog', options || defaultOptions);
+		// this._dialogModals.set(dialog, dialogModal);
+		// dialogModal.render();
+		// dialogModal.open();
 		let wizard = new Wizard(dialog.title);
 		wizard.customButtons = dialog.customButtons;
 		wizard.pages = Array.isArray(dialog.content) ? dialog.content : [];
@@ -33,5 +36,12 @@ export class CustomDialogService {
 		let wizardModal = this._instantiationService.createInstance(WizardModal, wizard, 'WizardPage', options || defaultWizardOptions);
 		wizardModal.render();
 		wizardModal.open();
+	}
+
+	public closeDialog(dialog: Dialog): void {
+		let dialogModal = this._dialogModals.get(dialog);
+		if (dialogModal) {
+			dialogModal.cancel();
+		}
 	}
 }

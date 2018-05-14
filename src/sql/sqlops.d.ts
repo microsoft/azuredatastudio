@@ -651,7 +651,7 @@ declare module 'sqlops' {
 		createRow(ownerUri: string): Thenable<EditCreateRowResult>;
 		deleteRow(ownerUri: string, rowId: number): Thenable<void>;
 		disposeEdit(ownerUri: string): Thenable<void>;
-		initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void>;
+		initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void>;
 		revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<EditRevertCellResult>;
 		revertRow(ownerUri: string, rowId: number): Thenable<void>;
 		updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<EditUpdateCellResult>;
@@ -879,6 +879,7 @@ declare module 'sqlops' {
 		objectName: string;
 		schemaName: string;
 		objectType: string;
+		queryString: string;
 	}
 
 
@@ -1061,7 +1062,7 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentJobStep {
-		stepId: number;
+		stepId: string;
 		stepName: string;
 		message: string;
 		runDate: string;
@@ -1070,20 +1071,20 @@ declare module 'sqlops' {
 
 	export interface AgentJobHistoryInfo {
 		instanceId: number;
-		sqlMessageId: number;
+		sqlMessageId: string;
 		message: string;
-		stepId: number;
+		stepId: string;
 		stepName: string;
-		sqlSeverity: number;
+		sqlSeverity: string;
 		jobId: string;
 		jobName: string;
 		runStatus: number;
 		runDate: string;
-		runDuration: number;
+		runDuration: string;
 		operatorEmailed: string;
 		operatorNetsent: string;
 		operatorPaged: string;
-		retriesAttempted: number;
+		retriesAttempted: string;
 		server: string;
 		steps: AgentJobStep[];
 	}
