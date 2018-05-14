@@ -34,14 +34,18 @@ import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 's
 import { FixedListView } from 'sql/platform/views/fixedListView';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
+export interface IProviderViewUiComponent {
+	view: FixedListView<sqlops.Account>;
+	addAccountAction: AddAccountAction;
+}
+
 export class AccountDialog extends Modal {
 	public static ACCOUNTLIST_HEIGHT = 77;
 
 	public viewModel: AccountViewModel;
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
-	private _providerViews: { [providerId: string]: FixedListView<sqlops.Account> } = {};
-	private _addAccountMaps: { [providerId: string]: AddAccountAction } = {};
+	private _providerViews: { [providerId: string]: IProviderViewUiComponent } = {};
 
 	private _closeButton: Button;
 	private _addAccountButton: Button;
@@ -129,11 +133,13 @@ export class AccountDialog extends Modal {
 		let noAccountLabel = localize('accountDialog.noAccountLabel', 'There is no linked account. Please add an acount.');
 		noAccountTitle.innerHTML = noAccountLabel;
 
+		// Show the add account button for the first provider
+		// Todo: If we have more than 1 provider, need to show all add account buttons for all providers
 		let buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
 		this._addAccountButton = new Button(buttonSection);
 		this._addAccountButton.label = localize('accountDialog.addConnection', 'Add an account');
 		this._register(this._addAccountButton.onDidClick(() => {
-			Object.values(this._addAccountMaps)[0].run();
+			(<IProviderViewUiComponent>Object.values(this._providerViews)[0]).addAccountAction.run();
 		}));
 
 		DOM.append(container, this._noaccountViewContainer);
@@ -187,8 +193,8 @@ export class AccountDialog extends Modal {
 
 	private isEmptyLinkedAccount(): boolean {
 		for (var providerId in this._providerViews) {
-			var listView = this._providerViews[providerId];
-			if (listView.list.length > 0) {
+			var listView = this._providerViews[providerId].view;
+			if (listView && listView.list.length > 0) {
 				return false;
 			}
 		}
@@ -198,7 +204,12 @@ export class AccountDialog extends Modal {
 	public dispose(): void {
 		super.dispose();
 		for (let key in this._providerViews) {
-			this._providerViews[key].dispose();
+			if (this._providerViews[key].addAccountAction) {
+				this._providerViews[key].addAccountAction.dispose();
+			}
+			if (this._providerViews[key].view) {
+				this._providerViews[key].view.dispose();
+			}
 			delete this._providerViews[key];
 		}
 	}
@@ -257,19 +268,18 @@ export class AccountDialog extends Modal {
 		this.layout();
 
 		// Store the view for the provider and action
-		this._providerViews[newProvider.addedProvider.id] = providerView;
-		this._addAccountMaps[newProvider.addedProvider.id] = addAccountAction;
+		this._providerViews[newProvider.addedProvider.id] = { view: providerView, addAccountAction: addAccountAction };
 	}
 
 	private removeProvider(removedProvider: sqlops.AccountProviderMetadata) {
 		// Skip removing the provider if it doesn't exist
 		let providerView = this._providerViews[removedProvider.id];
-		if (!providerView) {
+		if (!providerView || !providerView.view) {
 			return;
 		}
 
 		// Remove the list view from the split view
-		this._splitView.removeView(providerView);
+		this._splitView.removeView(providerView.view);
 		this._splitView.layout(DOM.getContentHeight(this._container));
 
 		// Remove the list view from our internal map
@@ -279,10 +289,10 @@ export class AccountDialog extends Modal {
 
 	private updateProviderAccounts(args: UpdateAccountListEventParams) {
 		let providerMapping = this._providerViews[args.providerId];
-		if (!providerMapping) {
+		if (!providerMapping || !providerMapping.view) {
 			return;
 		}
-		providerMapping.updateList(args.accountList);
+		providerMapping.view.updateList(args.accountList);
 
 		if (args.accountList.length > 0 && this._splitViewContainer.hidden) {
 			this.showSplitView();
