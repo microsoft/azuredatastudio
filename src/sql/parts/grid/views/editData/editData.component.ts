@@ -22,6 +22,8 @@ import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDataGridActions';
 import { error } from 'sql/base/common/log';
 import { clone } from 'sql/base/common/objects';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
@@ -40,7 +42,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	// All datasets
 	private dataSet: IGridDataSet;
 	private scrollTimeOut: number;
-	private messagesAdded = false;
 	private scrollEnabled = true;
 	private firstRender = true;
 	private totalElapsedTimeSpan: number;
@@ -53,6 +54,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
+
+	private notificationService: INotificationService;
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: { row: number, column: number }) => void;
@@ -75,6 +78,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let editDataParameters: EditDataComponentParams = this._bootstrapService.getBootstrapParams(this._el.nativeElement.tagName);
 		this.dataService = editDataParameters.dataService;
 		this.actionProvider = this._bootstrapService.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
+		this.notificationService = bootstrapService.notificationService;
 	}
 
 	/**
@@ -127,7 +131,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		self.renderedDataSets = self.placeHolderDataSets;
 		self.totalElapsedTimeSpan = undefined;
 		self.complete = false;
-		self.messagesAdded = false;
 
 		// Hooking up edit functions
 		this.onIsCellEditValid = (row, column, value): boolean => {
@@ -302,7 +305,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	handleComplete(self: EditDataComponent, event: any): void {
 		self.totalElapsedTimeSpan = event.data;
 		self.complete = true;
-		self.messagesAdded = true;
 	}
 
 	handleEditSessionReady(self, event): void {
@@ -310,7 +312,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	handleMessage(self: EditDataComponent, event: any): void {
-		// TODO: what do we do with messages?
+		if (event.data && event.data.isError) {
+			self.notificationService.notify({
+				severity: Severity.Error,
+				message: event.data.message
+			});
+		}
 	}
 
 	handleResultSet(self: EditDataComponent, event: any): void {
@@ -360,7 +367,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		undefinedDataSet.dataRows = undefined;
 		undefinedDataSet.resized = new EventEmitter();
 		self.placeHolderDataSets.push(undefinedDataSet);
-		self.messagesAdded = true;
 		self.onScroll(0);
 
 		// Setup the state of the selected cell
