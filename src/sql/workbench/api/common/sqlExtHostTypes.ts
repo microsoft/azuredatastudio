@@ -92,7 +92,8 @@ export interface IItemConfig {
 export enum ComponentEventType {
 	PropertiesChanged,
 	onDidChange,
-	onDidClick
+	onDidClick,
+	validityChanged
 }
 
 export interface IComponentEventArgs {

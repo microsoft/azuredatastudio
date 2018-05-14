@@ -72,7 +72,7 @@ declare module 'sqlops' {
 		/**
 		 * Run the component's validations
 		 */
-		validate(): void;
+		validate(): Thenable<boolean>;
 	}
 
 	export interface FormComponent {
@@ -219,12 +219,16 @@ declare module 'sqlops' {
 		status?: StatusIndicator;
 	}
 
+	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
+
 	export interface InputBoxProperties {
 		value?: string;
 		ariaLabel?: string;
 		placeHolder?: string;
 		height: number;
 		width: number;
+		inputType?: InputBoxInputType;
+		required?: boolean;
 	}
 
 	export interface CheckBoxProperties {
@@ -315,7 +319,7 @@ declare module 'sqlops' {
 		/**
 		 * Run the model view root component's validations
 		 */
-		validate(): void;
+		validate(): Thenable<boolean>;
 
 		/**
 		 * Initializes the model with a root component definition.

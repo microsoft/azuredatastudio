@@ -15,12 +15,12 @@ export interface IView {
 }
 
 export interface IModelView extends IView {
-	initializeModel(rootComponent: IComponentShape): void;
+	initializeModel(rootComponent: IComponentShape, validationCallback?: (componentId: string) => Thenable<boolean>): void;
 	clearContainer(componentId: string): void;
 	addToContainer(containerId: string, item: IItemConfig): void;
 	setLayout(componentId: string, layout: any): void;
 	setProperties(componentId: string, properties: { [key: string]: any }): void;
-	setValid(componentId: string, valid: boolean): void;
 	registerEvent(componentId: string);
 	onEvent: Event<any>;
+	validate(componentId: string): Thenable<boolean>;
 }

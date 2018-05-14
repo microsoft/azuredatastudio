@@ -24,7 +24,8 @@ export class ItemDescriptor<T> {
 
 export abstract class ComponentBase extends Disposable implements IComponent, OnDestroy, OnInit {
 	protected properties: { [key: string]: any; } = {};
-	protected _valid: boolean = true;
+	private _valid: boolean = true;
+	protected _validations: (() => boolean | Thenable<boolean>)[] = [];
 	private _eventQueue: IComponentEventArgs[] = [];
 	constructor(
 		protected _changeRef: ChangeDetectorRef) {
@@ -44,6 +45,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	protected baseInit(): void {
 		if (this.modelStore) {
 			this.modelStore.registerComponent(this);
+			this._validations.push(() => this.modelStore.validate(this));
 		}
 	}
 
@@ -67,6 +69,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		}
 		this.properties = properties;
 		this.layout();
+		this.validate();
 	}
 
 	protected getProperties<TPropertyBag>(): TPropertyBag {
@@ -84,6 +87,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 			eventType: ComponentEventType.PropertiesChanged,
 			args: this.getProperties()
 		});
+		this.validate();
 	}
 
 	public get enabled(): boolean {
@@ -94,16 +98,6 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 
 	public get valid(): boolean {
 		return this._valid;
-	}
-
-	public setValid(valid: boolean): void {
-		if (this._valid !== valid) {
-			this._valid = valid;
-			this.fireEvent({
-				eventType: ComponentEventType.validityChanged,
-				args: valid
-			});
-		}
 	}
 
 	public registerEventHandler(handler: (event: IComponentEventArgs) => void): IDisposable {
@@ -123,6 +117,21 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 			this._eventQueue.push(event);
 		}
 	}
+
+	public validate(): Thenable<boolean> {
+		let validations = this._validations.map(validation => Promise.resolve(validation()));
+		return Promise.all(validations).then(values => {
+			let isValid = values.every(value => value === true);
+			if (this._valid !== isValid) {
+				this._valid = isValid;
+				this.fireEvent({
+					eventType: ComponentEventType.validityChanged,
+					args: this._valid
+				});
+			}
+			return isValid;
+		});
+	}
 }
 
 export abstract class ContainerBase<T> extends ComponentBase {
@@ -133,11 +142,17 @@ export abstract class ContainerBase<T> extends ComponentBase {
 	) {
 		super(_changeRef);
 		this.items = [];
+		this._validations.push(() => this.items.every(item => this.modelStore.getComponent(item.descriptor.id).valid));
 	}
 
 	/// IComponent container-related implementation
 	public addToContainer(componentDescriptor: IComponentDescriptor, config: any): void {
 		this.items.push(new ItemDescriptor(componentDescriptor, config));
+		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.registerEventHandler(event => {
+			if (event.eventType === ComponentEventType.validityChanged) {
+				this.validate();
+			}
+		}));
 		this._changeRef.detectChanges();
 	}
 
