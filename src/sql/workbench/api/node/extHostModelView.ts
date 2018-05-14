@@ -17,8 +17,7 @@ import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs,
 
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
-	private readonly _eventHandlers = new Map<string, IWithEventHandler>();
-	private readonly _components = new Map<string, ComponentWrapper>();
+	private readonly _componentBuilders = new Map<string, ComponentBuilderImpl<any>>();
 
 	constructor(private readonly _proxy: MainThreadModelViewShape, private readonly _handle: number) {
 		this.nextComponentId = 0;
@@ -27,91 +26,88 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 	navContainer(): sqlops.ContainerBuilder<sqlops.NavContainer, any, any> {
 		let id = this.getNextComponentId();
 		let container: ContainerBuilderImpl<sqlops.NavContainer, any, any> = new ContainerBuilderImpl(this._proxy, this._handle, ModelComponentTypes.NavContainer, id);
-		this._eventHandlers.set(id, container);
-		this._components.set(id, container.componentWrapper());
+		this._componentBuilders.set(id, container);
 		return container;
 	}
 
 	flexContainer(): sqlops.FlexBuilder {
 		let id = this.getNextComponentId();
 		let container: ContainerBuilderImpl<sqlops.FlexContainer, any, any> = new ContainerBuilderImpl<sqlops.FlexContainer, sqlops.FlexLayout, sqlops.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id);
-		this._eventHandlers.set(id, container);
-		this._components.set(id, container.componentWrapper());
+		this._componentBuilders.set(id, container);
 		return container;
 	}
 
 	formContainer(): sqlops.FormBuilder {
 		let id = this.getNextComponentId();
 		let container = new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id);
-		this._eventHandlers.set(id, container);
-		this._components.set(id, container.componentWrapper());
+		this._componentBuilders.set(id, container);
 		return container;
 	}
 
 	card(): sqlops.ComponentBuilder<sqlops.CardComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.CardComponent> = this.withEventHandler(new CardWrapper(this._proxy, this._handle, id), id);
-		this._components.set(id, builder.componentWrapper());
+		let builder: ComponentBuilderImpl<sqlops.CardComponent> = this.getComponentBuilder(new CardWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	inputBox(): sqlops.ComponentBuilder<sqlops.InputBoxComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.InputBoxComponent> = this.withEventHandler(new InputBoxWrapper(this._proxy, this._handle, id), id);
-		this._components.set(id, builder.componentWrapper());
+		let builder: ComponentBuilderImpl<sqlops.InputBoxComponent> = this.getComponentBuilder(new InputBoxWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	checkBox(): sqlops.ComponentBuilder<sqlops.CheckBoxComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.CheckBoxComponent> = this.withEventHandler(new CheckBoxWrapper(this._proxy, this._handle, id), id);
-		this._components.set(id, builder.componentWrapper());
+		let builder: ComponentBuilderImpl<sqlops.CheckBoxComponent> = this.getComponentBuilder(new CheckBoxWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	button(): sqlops.ComponentBuilder<sqlops.ButtonComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.ButtonComponent> = this.withEventHandler(new ButtonWrapper(this._proxy, this._handle, id), id);
-		this._components.set(id, builder.componentWrapper());
+		let builder: ComponentBuilderImpl<sqlops.ButtonComponent> = this.getComponentBuilder(new ButtonWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	dropDown(): sqlops.ComponentBuilder<sqlops.DropDownComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.DropDownComponent> = this.withEventHandler(new DropDownWrapper(this._proxy, this._handle, id), id);
-		this._components.set(id, builder.componentWrapper());
+		let builder: ComponentBuilderImpl<sqlops.DropDownComponent> = this.getComponentBuilder(new DropDownWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	dashboardWidget(widgetId: string): sqlops.ComponentBuilder<sqlops.WidgetComponent> {
 		let id = this.getNextComponentId();
-		let builder = this.withEventHandler<sqlops.WidgetComponent>(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id), id);
-		this._components.set(id, builder.componentWrapper());
+		let builder = this.getComponentBuilder<sqlops.WidgetComponent>(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id), id);
+		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
 	dashboardWebview(webviewId: string): sqlops.ComponentBuilder<sqlops.WebviewComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.WebviewComponent> = this.withEventHandler(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id), id);
-		this._components.set(id, builder.componentWrapper());
+		let builder: ComponentBuilderImpl<sqlops.WebviewComponent> = this.getComponentBuilder(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id), id);
+		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	withEventHandler<T extends sqlops.Component>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T> {
+	getComponentBuilder<T extends sqlops.Component>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T> {
 		let componentBuilder: ComponentBuilderImpl<T> = new ComponentBuilderImpl<T>(component);
-		this._eventHandlers.set(id, componentBuilder);
+		this._componentBuilders.set(id, componentBuilder);
 		return componentBuilder;
 	}
 
 	handleEvent(componentId: string, eventArgs: IComponentEventArgs): void {
-		let eventHandler = this._eventHandlers.get(componentId);
+		let eventHandler = this._componentBuilders.get(componentId);
 		if (eventHandler) {
 			eventHandler.handleEvent(eventArgs);
 		}
 	}
 
 	public runCustomValidations(componentId: string): boolean {
-		let component = this._components.get(componentId);
+		let component = this._componentBuilders.get(componentId).componentWrapper();
 		return component.runCustomValidations();
 	}
 
