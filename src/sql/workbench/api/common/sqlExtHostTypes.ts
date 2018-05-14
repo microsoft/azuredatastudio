@@ -138,6 +138,6 @@ export interface CardProperties {
 export interface ActionDescriptor {
 	label: string;
 	actionTitle?: string;
-	callbackData?: string;
+	callbackData?: any;
 }
 
