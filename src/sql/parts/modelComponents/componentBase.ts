@@ -55,6 +55,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		if (this.modelStore) {
 			this.modelStore.unregisterComponent(this);
 		}
+		this.dispose();
 	}
 
 	ngOnDestroy(): void {
