@@ -376,6 +376,16 @@ declare module 'sqlops' {
 				content: string | DialogTab[],
 
 				/**
+				 * Register model view content for the dialog
+				 */
+				registerContent(handler: (view: ModelView) => void): void;
+
+				/**
+				 * Returns he model view content
+				 */
+				modelView: ModelView;
+
+				/**
 				 * The ok button
 				 */
 				okButton: Button;
@@ -411,6 +421,16 @@ declare module 'sqlops' {
 				 * A string giving the ID of the tab's model view content
 				 */
 				content: string;
+
+				/**
+				 * Returns he model view content
+				 */
+				modelView: ModelView;
+
+				/**
+				 * Register model view content for the dialog
+				 */
+				registerContent(handler: (view: ModelView) => void): void;
 			}
 
 			export interface Button {

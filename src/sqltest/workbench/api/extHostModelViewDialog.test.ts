@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import { Mock, It, Times } from 'typemoq';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
-import { MainThreadModelViewDialogShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { MainThreadModelViewDialogShape, ExtHostModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 
 'use strict';
@@ -14,6 +14,7 @@ import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 suite('ExtHostModelViewDialog Tests', () => {
 	let extHostModelViewDialog: ExtHostModelViewDialog;
 	let mockProxy: Mock<MainThreadModelViewDialogShape>;
+	let extHostModelView: Mock<ExtHostModelViewShape>;
 
 	setup(() => {
 		mockProxy = Mock.ofInstance(<MainThreadModelViewDialogShape>{
@@ -26,7 +27,11 @@ suite('ExtHostModelViewDialog Tests', () => {
 		let mainContext = <IMainContext>{
 			getProxy: proxyType => mockProxy.object
 		};
-		extHostModelViewDialog = new ExtHostModelViewDialog(mainContext);
+
+		extHostModelView = Mock.ofInstance(<ExtHostModelViewShape> {
+			$registerProvider: (widget, handler) => undefined
+		});
+		extHostModelViewDialog = new ExtHostModelViewDialog(mainContext, extHostModelView.object);
 	});
 
 	test('Creating a dialog returns a dialog with initialized ok and cancel buttons and the given title', () => {
