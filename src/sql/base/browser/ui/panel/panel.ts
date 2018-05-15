@@ -66,6 +66,8 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this.$header.append(actionbarcontainer);
 		this.$parent.append(this.$header);
 		this.$body = $('tabBody');
+		this.$body.attr('role', 'tabpanel');
+		this.$body.attr('tabindex', '0');
 		this.$parent.append(this.$body);
 	}
 
@@ -92,7 +94,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 		tabHeaderElement.attr('tabindex', '0');
 		tabHeaderElement.attr('role', 'tab');
 		tabHeaderElement.attr('aria-selected', 'false');
-		tabHeaderElement.attr('aria-label', tab.title);
+		tabHeaderElement.attr('aria-controls', tab.identifier);
 		let tabElement = $('.tab');
 		tabHeaderElement.append(tabElement);
 		let tabLabel = $('a.tabLabel');
@@ -124,6 +126,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this._shownTab = id;
 		this.$body.clearChildren();
 		let tab = this._tabMap.get(this._shownTab);
+		this.$body.attr('aria-labelledby', tab.identifier);
 		tab.label.addClass('active');
 		tab.header.addClass('active');
 		tab.header.attr('aria-selected', 'true');
