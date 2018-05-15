@@ -18,16 +18,16 @@ import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench
 class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel {
 	private _modelView: sqlops.ModelView;
 	private _handle: number;
-	private _viewModelId: string;
+	private _modelViewId: string;
 
 	constructor(private _viewType: string,
 		protected _extHostModelView: ExtHostModelViewShape) {
 	}
 
 	public registerContent(handler: (view: sqlops.ModelView) => void): void {
-		if (!this._viewModelId) {
+		if (!this._modelViewId) {
 			let viewId = this._viewType + this.handle;
-			this.setViewModelId(viewId);
+			this.setModelViewId(viewId);
 			this._extHostModelView.$registerProvider(viewId, modelView => {
 				this._modelView = modelView;
 				handler(modelView);
@@ -39,8 +39,8 @@ class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel
 		this._handle = value;
 	}
 
-	public setViewModelId(value: string) {
-		this._viewModelId = value;
+	public setModelViewId(value: string) {
+		this._modelViewId = value;
 	}
 
 	public get modelView(): sqlops.ModelView {
@@ -51,7 +51,6 @@ class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel
 		this._modelView = value;
 	}
 }
-
 
 class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.Dialog  {
 	public title: string;
@@ -76,8 +75,8 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdi
 		return this._valid;
 	}
 
-	public setViewModelId(value: string) {
-		super.setViewModelId(value);
+	public setModelViewId(value: string) {
+		super.setModelViewId(value);
 		this.content = value;
 	}
 }
@@ -93,8 +92,8 @@ class TabImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialo
 	public content: string;
 	public handle: number;
 
-	public setViewModelId(value: string) {
-		super.setViewModelId(value);
+	public setModelViewId(value: string) {
+		super.setModelViewId(value);
 		this.content = value;
 	}
 }
