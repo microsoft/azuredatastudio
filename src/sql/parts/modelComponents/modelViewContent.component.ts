@@ -37,8 +37,6 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 	public readonly onResize: Event<void> = this._onResize.event;
 	private _onMessage = new Emitter<string>();
 	public readonly onMessage: Event<string> = this._onMessage.event;
-	private _onDestroy = new Emitter<void>();
-	public readonly onDestroy: Event<void> = this._onDestroy.event;
 
 	private _onMessageDisposable: IDisposable;
 
