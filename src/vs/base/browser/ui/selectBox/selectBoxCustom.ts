@@ -17,7 +17,7 @@ import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IDelegate, IRenderer } from 'vs/base/browser/ui/list/list';
 import { domEvent } from 'vs/base/browser/event';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
-import { ISelectBoxDelegate, ISelectBoxStyles, ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
+import { ISelectBoxDelegate, ISelectBoxStyles, ISelectBoxOptions, ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { isMacintosh } from 'vs/base/common/platform';
 
 const $ = dom.$;
@@ -91,13 +91,17 @@ export class SelectBoxList implements ISelectBoxDelegate, IDelegate<ISelectOptio
 	private widthControlElement: HTMLElement;
 	private _currentSelection: number;
 
-	constructor(options: string[], selected: number, contextViewProvider: IContextViewProvider, styles: ISelectBoxStyles) {
+	// {{SQL CARBON EDIT}}
+	constructor(options: string[], selected: number, contextViewProvider: IContextViewProvider, styles: ISelectBoxOptions) {
 
 		this.toDispose = [];
 		this._isVisible = false;
 
 		this.selectElement = document.createElement('select');
 		this.selectElement.className = 'select-box';
+
+		// {{SQL CARBON EDIT}}
+		this.selectElement.setAttribute('id', styles.id);
 
 		this._onDidSelect = new Emitter<ISelectData>();
 		this.styles = styles;

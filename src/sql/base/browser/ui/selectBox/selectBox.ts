@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles } from 'vs/base/browser/ui/selectBox/selectBox';
+import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles, ISelectBoxOptions } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import * as dom from 'vs/base/browser/dom';
@@ -46,8 +46,8 @@ export class SelectBox extends vsSelectBox {
 	private inputValidationErrorBackground: Color;
 	private element: HTMLElement;
 
-	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement) {
-		super(options, 0, contextViewProvider);
+	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, style?: ISelectBoxOptions) {
+		super(options, 0, contextViewProvider, style);
 		this._optionsDictionary = new Array();
 		for (var i = 0; i < options.length; i++) {
 			this._optionsDictionary[options[i]] = i;

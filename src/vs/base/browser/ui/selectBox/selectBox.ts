@@ -42,6 +42,11 @@ export interface ISelectBoxStyles extends IListStyles {
 	focusBorder?: Color;
 }
 
+// {{SQL CARBON EDIT}}
+export interface ISelectBoxOptions extends ISelectBoxStyles {
+	id?: string;
+}
+
 export const defaultStyles = {
 	selectBackground: Color.fromHex('#3C3C3C'),
 	selectForeground: Color.fromHex('#F0F0F0'),
@@ -68,7 +73,8 @@ export class SelectBox extends Widget implements ISelectBoxDelegate {
 	private styles: ISelectBoxStyles;
 	private selectBoxDelegate: ISelectBoxDelegate;
 
-	constructor(options: string[], selected: number, contextViewProvider: IContextViewProvider, styles: ISelectBoxStyles = deepClone(defaultStyles)) {
+	// {{SQL CARBON EDIT}}
+	constructor(options: string[], selected: number, contextViewProvider: IContextViewProvider, styles: ISelectBoxOptions = deepClone(defaultStyles)) {
 		super();
 
 		this.toDispose = [];
