@@ -194,7 +194,7 @@ declare module 'sqlops' {
 		/**
 		 * Data sent on callback being run.
 		 */
-		callbackData?: string;
+		callbackData?: any;
 	}
 
 	/**
