@@ -15,36 +15,32 @@ import * as sqlops from 'sqlops';
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 
-class DialogImpl implements sqlops.window.modelviewdialog.Dialog {
-	public title: string;
-	public content: string | sqlops.window.modelviewdialog.DialogTab[];
-	public okButton: sqlops.window.modelviewdialog.Button;
-	public cancelButton: sqlops.window.modelviewdialog.Button;
-	public customButtons: sqlops.window.modelviewdialog.Button[];
-	public readonly onValidityChanged: vscode.Event<boolean>;
-	private _valid: boolean = true;
+class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel {
 	private _modelView: sqlops.ModelView;
-	public handle: number;
+	private _handle: number;
+	private _viewModelId: string;
 
-	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog,
-		private _extHostModelView: ExtHostModelViewShape) {
-		this.okButton = this._extHostModelViewDialog.createButton(nls.localize('dialogOkLabel', 'Done'));
-		this.cancelButton = this._extHostModelViewDialog.createButton(nls.localize('dialogCancelLabel', 'Cancel'));
-		this.onValidityChanged = this._extHostModelViewDialog.getValidityChangedEvent(this);
-		this.onValidityChanged(valid => this._valid = valid);
+	constructor(private _viewType: string,
+		protected _extHostModelView: ExtHostModelViewShape) {
 	}
 
 	public registerContent(handler: (view: sqlops.ModelView) => void): void {
-		let viewId = 'dialog' + this.handle;
-		this.content = viewId;
+		if (!this._viewModelId) {
+			let viewId = this._viewType + this.handle;
+			this.setViewModelId(viewId);
 			this._extHostModelView.$registerProvider(viewId, modelView => {
 				this._modelView = modelView;
 				handler(modelView);
 			});
+		}
 	}
 
-	public get valid(): boolean {
-		return this._valid;
+	public set handle(value: number) {
+		this._handle = value;
+	}
+
+	public setViewModelId(value: string) {
+		this._viewModelId = value;
 	}
 
 	public get modelView(): sqlops.ModelView {
@@ -56,33 +52,51 @@ class DialogImpl implements sqlops.window.modelviewdialog.Dialog {
 	}
 }
 
-class TabImpl implements sqlops.window.modelviewdialog.DialogTab {
+
+class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.Dialog  {
 	public title: string;
-	public content: string;
-	private _modelView: sqlops.ModelView;
+	public content: string | sqlops.window.modelviewdialog.DialogTab[];
+	public okButton: sqlops.window.modelviewdialog.Button;
+	public cancelButton: sqlops.window.modelviewdialog.Button;
+	public customButtons: sqlops.window.modelviewdialog.Button[];
+	public readonly onValidityChanged: vscode.Event<boolean>;
+	private _valid: boolean = true;
 
-	public handle: number;
 
-	public get modelView(): sqlops.ModelView {
-		return this._modelView;
+	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog,
+		extHostModelView: ExtHostModelViewShape) {
+		super('modelViewDialog', extHostModelView);
+		this.okButton = this._extHostModelViewDialog.createButton(nls.localize('dialogOkLabel', 'Done'));
+		this.cancelButton = this._extHostModelViewDialog.createButton(nls.localize('dialogCancelLabel', 'Cancel'));
+		this.onValidityChanged = this._extHostModelViewDialog.getValidityChangedEvent(this);
+		this.onValidityChanged(valid => this._valid = valid);
 	}
 
-	public set modelView(value: sqlops.ModelView) {
-		this._modelView = value;
+	public get valid(): boolean {
+		return this._valid;
 	}
 
-	public registerContent(handler: (view: sqlops.ModelView) => void): void {
-		let viewId = 'tab' + this.handle;
-		this.content = viewId;
-			this._extHostModelView.$registerProvider(viewId, modelView => {
-				this._modelView = modelView;
-				handler(modelView);
-			});
+	public setViewModelId(value: string) {
+		super.setViewModelId(value);
+		this.content = value;
 	}
+}
 
+class TabImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.DialogTab {
 	constructor(
 		private _extHostModelViewDialog: ExtHostModelViewDialog,
-		private _extHostModelView: ExtHostModelViewShape) { }
+		extHostModelView: ExtHostModelViewShape) {
+			super('modelViewDialogTab', extHostModelView);
+	}
+
+	public title: string;
+	public content: string;
+	public handle: number;
+
+	public setViewModelId(value: string) {
+		super.setViewModelId(value);
+		this.content = value;
+	}
 }
 
 class ButtonImpl implements sqlops.window.modelviewdialog.Button {
@@ -249,7 +263,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	public createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
 		let dialog = new DialogImpl(this, this._extHostModelView);
 		dialog.title = title;
-		dialog.handle =this.getDialogHandle(dialog);
+		dialog.handle = this.getDialogHandle(dialog);
 		return dialog;
 	}
 

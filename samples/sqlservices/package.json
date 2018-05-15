@@ -17,12 +17,10 @@
     "main": "./out/src/extension",
     "contributes": {
 
-        "commands": [
-			{
-				"command": "mssql.openDialog",
-				"title": "mssql.openDialog"
-			}
-		],
+        "commands": [{
+              "command": "mssql.openDialog",
+              "title": "mssql.openDialog"
+        }],
         "dashboard.tabs": [
             {
                 "id": "sqlservices.tab",

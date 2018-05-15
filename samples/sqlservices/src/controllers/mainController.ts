@@ -125,12 +125,12 @@ export default class MainController implements vscode.Disposable {
 						component:dropdown,
 						title: 'Backup type'
 				}, {
-					component: checkbox,
-					title: ''
+						component: checkbox,
+						title: ''
 				}, {
-					component: inputBox2,
-					title: 'Backup files',
-					actions: [button, button3]
+						component: inputBox2,
+						title: 'Backup files',
+						actions: [button, button3]
 				}], {
 						horizontal:false,
 						width: 500,
