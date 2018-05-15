@@ -20,9 +20,14 @@
   "contributes": {
     "commands": [
       {
-        "command": "mssql.openTestDialog",
         "category": "MS SQL",
+        "command": "mssql.openTestDialog",
         "title": "Open test dialog"
+      },
+      {
+        "category": "MS SQL",
+        "command": "mssql.openTestDialog2",
+        "title": "Open test editor"
       }
     ],
     "languages": [
