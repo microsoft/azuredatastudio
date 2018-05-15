@@ -67,10 +67,8 @@ export class DialogModal extends Modal {
 		}
 
 		this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done(), false);
-		this.updateButtonElement(this._doneButton, this._dialog.okButton);
 		this._dialog.okButton.registerClickEvent(this._onDone.event);
 		this._cancelButton = this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
-		this.updateButtonElement(this._cancelButton, this._dialog.cancelButton);
 		this._dialog.cancelButton.registerClickEvent(this._onCancel.event);
 	}
 
@@ -84,6 +82,7 @@ export class DialogModal extends Modal {
 			this.updateButtonElement(buttonElement, button);
 		});
 		attachButtonStyler(buttonElement, this._themeService);
+		this.updateButtonElement(buttonElement, button);
 		return buttonElement;
 	}
 
