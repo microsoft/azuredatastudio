@@ -142,3 +142,6 @@ label {
     z-index: 999;
 }
 
+.vs-dark .slick-header-menu > input.input {
+    color: #4a4a4a;
+}

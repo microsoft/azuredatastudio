@@ -78,6 +78,8 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _isCloud: boolean;
 	private _showProgressWheel: boolean;
 	private _tabHeight: number;
+	private filterStylingMap: { [columnName: string]: [any] ;} = {};
+	private filterStack = ['start'];
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -201,29 +203,50 @@ export class JobsViewComponent implements AfterContentChecked {
 			this.dataView.refresh();
 			this._table.grid.resetActiveCell();
 			let filterValues = args.column.filterValues;
-			if (filterValues.length === 0) {
-				for (let row = 0; row < this.jobs.length; row++) {
-					this._table.grid.removeCellCssStyles('error-row'+row.toString());
-				}
-				this.expandJobs();
-			} else {
-				let seenJobs = 0;
-				for (let i = 0; i < this.jobs.length; i++) {
-					this._table.grid.removeCellCssStyles('error-row'+i.toString());
-					let job = this.jobs[i];
-					let item = this.dataView.getItemByIdx(i);
-					if (_.contains(filterValues, item[args.column.field])) {
-						if (item.lastRunOutcome === 'Failed') {
-							this.addToStyleHash(seenJobs);
-							// one expansion for the row and one for
-							// the error detail
-							seenJobs ++;
+			if (filterValues) {
+				if (filterValues.length === 0) {
+					// if an associated styling exists with the current filters
+					if (this.filterStylingMap[args.column.name]) {
+						let filterLength = this.filterStylingMap[args.column.name].length;
+						for (let i = 0; i < filterLength; i++) {
+							let lastAppliedStyle = this.filterStylingMap[args.column.name].pop();
+							this._table.grid.removeCellCssStyles(lastAppliedStyle[0]);
 						}
-						seenJobs++;
+						this.filterStylingMap[args.column.name] = null;
+						this.filterStack.pop();
+						let lastColStyle = this.filterStylingMap[this.filterStack[this.filterStack.length-1]];
+						for (let i = 0; i < lastColStyle.length; i++) {
+							this._table.grid.addCellCssStyles(lastColStyle[i][0], lastColStyle[i][1]);
+						}
+						if (this.filterStack.length === 0) {
+							this.filterStack = ['start'];
+						}
 					}
+				} else {
+					let seenJobs = 0;
+					for (let i = 0; i < this.jobs.length; i++) {
+						this._table.grid.removeCellCssStyles('error-row'+i.toString());
+						let job = this.jobs[i];
+						let item = this.dataView.getItemByIdx(i);
+						if (_.contains(filterValues, item[args.column.field])) {
+							if (item.lastRunOutcome === 'Failed') {
+								this.addToStyleHash(seenJobs, false, args.column.name);
+								if (this.filterStack.indexOf(args.column.name) < 0) {
+									this.filterStack.push(args.column.name);
+								}
+								// one expansion for the row and one for
+								// the error detail
+								seenJobs ++;
+							}
+							seenJobs++;
+						}
+					}
+					this.dataView.refresh();
+					this._table.grid.resetActiveCell();
 				}
+			} else {
+				this.expandJobs(false);
 			}
-
 		});
 		this.filterPlugin.onCommand.subscribe(function (e, args: any) {
 			this.dataView.fastSort(args.column.field, args.command === 'sort-asc');
@@ -237,7 +260,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		this.dataView.endUpdate();
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
-		this.expandJobs();
+		this.expandJobs(true);
 		// tooltip for job name
 		$('.jobview-jobnamerow').hover(e => {
 			let currentTarget = e.currentTarget;
@@ -279,13 +302,26 @@ export class JobsViewComponent implements AfterContentChecked {
 		return hash;
 	}
 
-	private addToStyleHash(row: number) {
+	private addToStyleHash(row: number, start: boolean, name?: string) {
 		let hash : {
 			[index: number]: {
 			[id: string]: string;
 		}} = {};
 		hash = this.setRowWithErrorClass(hash, row, 'job-with-error');
 		hash = this.setRowWithErrorClass(hash, row+1,  'error-row');
+		if (start) {
+			if (this.filterStylingMap['start']) {
+				this.filterStylingMap['start'].push(['error-row'+row.toString(), hash]);
+			} else {
+				this.filterStylingMap['start'] = [['error-row'+row.toString(), hash]];
+			}
+		} else {
+			if (this.filterStylingMap[name]) {
+				this.filterStylingMap[name].push(['error-row'+row.toString(), hash]);
+			} else {
+				this.filterStylingMap[name] = [['error-row'+row.toString(), hash]];
+			}
+		}
 		this._table.grid.setCellCssStyles('error-row'+row.toString(), hash);
 	}
 
@@ -387,17 +423,17 @@ export class JobsViewComponent implements AfterContentChecked {
 		}
 	}
 
-	private expandJobs(): void {
+	private expandJobs(start: boolean): void {
 		let expandedJobs = this._agentViewComponent.expanded;
 		let expansions = 0;
 		for (let i = 0; i < this.jobs.length; i++){
 			let job = this.jobs[i];
 			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
 				this.expandJobRowDetails(i+expandedJobs.size);
-				this.addToStyleHash(i+expandedJobs.size);
+				this.addToStyleHash(i+expandedJobs.size, start);
 				this._agentViewComponent.setExpanded(job.jobId, 'Loading Error...');
 			} else if (job.lastRunOutcome === 0 && expandedJobs.get(job.jobId)) {
-				this.addToStyleHash(i+expansions);
+				this.addToStyleHash(i+expansions, start);
 				expansions++;
 			}
 		}

@@ -27,6 +27,8 @@ export class HeaderFilter {
 	private okButton: Button;
 	private clearButton: Button;
 	private cancelButton: Button;
+	private workingFilters: any;
+	private columnDef: any;
 
 	constructor(options: any, private _themeService: IThemeService) {
 		this.options = mixin(options, this.defaults, false);
@@ -108,7 +110,7 @@ export class HeaderFilter {
 		$('<input class="input" placeholder="Search" style="margin-top: 5px; width: 206px">')
 			.data('column', columnDef)
 			.bind('keyup', (e) => {
-				let filterVals = this.getFilterValuesByInput($(self));
+				let filterVals = this.getFilterValuesByInput($(e.target));
 				self.updateFilterInputs(menu, columnDef, filterVals);
 			})
 			.appendTo(menu);
@@ -119,10 +121,10 @@ export class HeaderFilter {
 		columnDef.filterValues = columnDef.filterValues || [];
 
 		// WorkingFilters is a copy of the filters to enable apply/cancel behaviour
-		let workingFilters = columnDef.filterValues.slice(0);
+		this.workingFilters = columnDef.filterValues.slice(0);
 
 		for (var i = 0; i < filterItems.length; i++) {
-			var filtered = _.contains(workingFilters, filterItems[i]);
+			var filtered = _.contains(this.workingFilters, filterItems[i]);
 
 			filterOptions += '<label><input type="checkbox" value="' + i + '"'
 			+ (filtered ? ' checked="checked"' : '')
@@ -131,29 +133,29 @@ export class HeaderFilter {
 		var $filter = menu.find('.filter');
 		$filter.empty().append($(filterOptions));
 
-		$(':checkbox', $filter).bind('click', () => {
-			workingFilters = this.changeWorkingFilter(filterItems, workingFilters, $(this));
+		$(':checkbox', $filter).bind('click', (e) => {
+			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, $(e.target));
 		});
 	}
 
 	private showFilter(e) {
 		var $menuButton = $(e.target);
-		var columnDef = $menuButton.data('column');
+		this.columnDef = $menuButton.data('column');
 
-		columnDef.filterValues = columnDef.filterValues || [];
+		this.columnDef.filterValues = this.columnDef.filterValues || [];
 
 		// WorkingFilters is a copy of the filters to enable apply/cancel behaviour
-		var workingFilters = columnDef.filterValues.slice(0);
+		this.workingFilters = this.columnDef.filterValues.slice(0);
 
 		var filterItems;
 
-		if (workingFilters.length === 0) {
+		if (this.workingFilters.length === 0) {
 			// Filter based all available values
-			filterItems = this.getFilterValues(this.grid.getData(), columnDef);
+			filterItems = this.getFilterValues(this.grid.getData(), this.columnDef);
 		}
 		else {
 			// Filter based on current dataView subset
-			filterItems = this.getAllFilterValues(this.grid.getData().getItems(), columnDef);
+			filterItems = this.getAllFilterValues(this.grid.getData().getItems(), this.columnDef);
 		}
 
 		if (!this.$menu) {
@@ -162,14 +164,14 @@ export class HeaderFilter {
 
 		this.$menu.empty();
 
-		this.addMenuItem(this.$menu, columnDef, 'Sort Ascending', 'sort-asc', this.options.sortAscImage);
-		this.addMenuItem(this.$menu, columnDef, 'Sort Descending', 'sort-desc', this.options.sortDescImage);
-		this.addMenuInput(this.$menu, columnDef);
+		this.addMenuItem(this.$menu, this.columnDef, 'Sort Ascending', 'sort-asc', this.options.sortAscImage);
+		this.addMenuItem(this.$menu, this.columnDef, 'Sort Descending', 'sort-desc', this.options.sortDescImage);
+		this.addMenuInput(this.$menu, this.columnDef);
 
 		let filterOptions = '<label><input type="checkbox" value="-1" />(Select All)</label>';
 
 		for (var i = 0; i < filterItems.length; i++) {
-			var filtered = _.contains(workingFilters, filterItems[i]);
+			var filtered = _.contains(this.workingFilters, filterItems[i]);
 			if (filterItems[i] && filterItems[i].indexOf('Error:') < 0) {
 				filterOptions += '<label><input type="checkbox" value="' + i + '"'
 				+ (filtered ? ' checked="checked"' : '')
@@ -186,9 +188,9 @@ export class HeaderFilter {
 		this.okButton.element.id = 'filter-ok-button';
 		let okElement = $('#filter-ok-button');
 		okElement.bind('click', (ev) => {
-			columnDef.filterValues = workingFilters.splice(0);
-			this.setButtonImage($menuButton, columnDef.filterValues.length > 0);
-			this.handleApply(ev, columnDef);
+			this.columnDef.filterValues = this.workingFilters.splice(0);
+			this.setButtonImage($menuButton, this.columnDef.filterValues.length > 0);
+			this.handleApply(ev, this.columnDef);
 		});
 
 		this.clearButton = new Button(this.$menu.get(0));
@@ -197,9 +199,9 @@ export class HeaderFilter {
 		this.clearButton.element.id = 'filter-clear-button';
 		let clearElement = $('#filter-clear-button');
 		clearElement.bind('click', (ev) => {
-			columnDef.filterValues.length = 0;
+			this.columnDef.filterValues.length = 0;
 			this.setButtonImage($menuButton, false);
-			this.handleApply(ev, columnDef);
+			this.handleApply(ev, this.columnDef);
 		});
 
 		this.cancelButton = new Button(this.$menu.get(0));
@@ -213,7 +215,7 @@ export class HeaderFilter {
 		attachButtonStyler(this.cancelButton, this._themeService);
 
 		$(':checkbox', $filter).bind('click', (e) => {
-			workingFilters = this.changeWorkingFilter(filterItems, workingFilters, $(e.target));
+			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, $(e.target));
 		});
 
 		var offset = $(e.target).offset();
