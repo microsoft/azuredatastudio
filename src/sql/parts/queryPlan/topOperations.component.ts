@@ -18,6 +18,7 @@ import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
 
 import { localize } from 'vs/nls';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 export const TOP_OPERATIONS_SELECTOR: string = 'top-operations-component';
 
@@ -57,7 +58,7 @@ export class TopOperationsComponent extends TabChild implements OnDestroy, OnIni
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
-
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super();
 	}
@@ -105,7 +106,7 @@ export class TopOperationsComponent extends TabChild implements OnDestroy, OnIni
 				return column;
 			});
 			this._table = new Table(this._el.nativeElement, data, columns);
-			this._disposables.push(attachTableStyler(this._table, this._bootstrapService.themeService));
+			this._disposables.push(attachTableStyler(this._table, this.themeService));
 		}
 	}
 

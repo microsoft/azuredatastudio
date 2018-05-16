@@ -55,50 +55,6 @@ export interface IBootstrapService {
 
 	_serviceBrand: any;
 
-	connectionManagementService: IConnectionManagementService;
-	metadataService: IMetadataService;
-	objectExplorerService: IObjectExplorerService;
-	scriptingService: IScriptingService;
-	queryEditorService: IQueryEditorService;
-	connectionDialogService: IConnectionDialogService;
-	queryModelService: IQueryModelService;
-	adminService: IAdminService;
-	backupService: IBackupService;
-	backupUiService: IBackupUiService;
-	restoreService: IRestoreService;
-	keybindingService: IKeybindingService;
-	contextKeyService: IContextKeyService;
-	contextMenuService: IContextMenuService;
-	themeService: IWorkbenchThemeService;
-	editorService: IWorkbenchEditorService;
-	errorMessageService: IErrorMessageService;
-	partService: IPartService;
-	queryManagementService: IQueryManagementService;
-	instantiationService: IInstantiationService;
-	angularEventingService: IAngularEventingService;
-	configurationService: IConfigurationService;
-	insightsDialogService: IInsightsDialogService;
-	contextViewService: IContextViewService;
-	restoreDialogService: IRestoreDialogController;
-	notificationService: INotificationService;
-	workspaceContextService: IWorkspaceContextService;
-	accountManagementService: IAccountManagementService;
-	windowsService: IWindowsService;
-	sqlOAuthService: ISqlOAuthService;
-	windowService: IWindowService;
-	fileBrowserService: IFileBrowserService;
-	fileBrowserDialogService: IFileBrowserDialogController;
-	telemetryService: ITelemetryService;
-	storageService: IStorageService;
-	clipboardService: IClipboardService;
-	capabilitiesService: ICapabilitiesService;
-	configurationEditorService: ConfigurationEditingService;
-	commandService: ICommandService;
-	dashboardViewService: IDashboardViewService;
-	modelViewService: IModelViewService;
-	jobManagementService: IJobManagementService;
-	environmentService: IEnvironmentService;
-
 	/*
 	* Bootstraps the Angular module described. Components that need singleton services should inject the
 	* 'BootstrapService' dependency to obtain a reference to this class. Components that need dynamic parameters

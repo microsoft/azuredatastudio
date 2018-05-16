@@ -9,14 +9,16 @@ import {
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/dropdown';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
+
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import Event, { Emitter } from 'vs/base/common/event';
+import { attachListStyler } from 'vs/platform/theme/common/styler';
 
 @Component({
 	selector: 'dropdown',
@@ -31,8 +33,10 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IContextViewService) private contextViewService: IContextViewService
+	) {
 		super(changeRef);
 	}
 
@@ -51,11 +55,11 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 				ariaLabel: ''
 			};
 
-			this._dropdown = new Dropdown(this._inputContainer.nativeElement, this._commonService.contextViewService, this._commonService.themeService,
+			this._dropdown = new Dropdown(this._inputContainer.nativeElement, this.contextViewService, this.themeService,
 				dropdownOptions);
 
 			this._register(this._dropdown);
-			this._register(attachEditableDropdownStyler(this._dropdown, this._commonService.themeService));
+			this._register(attachEditableDropdownStyler(this._dropdown, this.themeService));
 			this._register(this._dropdown.onValueChange(e => {
 				this.value = this._dropdown.value;
 				this._onEventEmitter.fire({

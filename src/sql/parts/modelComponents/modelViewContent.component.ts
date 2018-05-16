@@ -17,9 +17,10 @@ import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IModelView } from 'sql/services/model/modelViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { ViewBase } from 'sql/parts/modelComponents/viewBase';
+import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
 
 import * as sqlops from 'sqlops';
-import { ViewBase } from 'sql/parts/modelComponents/viewBase';
 
 @Component({
 	selector: 'modelview-content',
@@ -42,13 +43,14 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(IModelViewService) private modelViewService: IModelViewService
 	) {
 		super(changeRef);
 	}
 
 	ngOnInit() {
-		this._commonService.modelViewService.registerModelView(this);
+		this.modelViewService.registerModelView(this);
 		this._register(addDisposableListener(window, EventType.RESIZE, e => {
 			this.layout();
 		}));

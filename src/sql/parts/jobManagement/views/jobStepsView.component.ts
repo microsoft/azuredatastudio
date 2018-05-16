@@ -6,20 +6,23 @@
 import 'vs/css!./jobStepsView';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable, AfterContentChecked } from '@angular/core';
+
+import { AgentJobHistoryInfo } from 'sqlops';
+
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+
 import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { AgentJobHistoryInfo } from 'sqlops';
 import { JobStepsViewController, JobStepsViewDataSource, JobStepsViewFilter,
 	JobStepsViewRenderer, JobStepsViewRow, JobStepsViewModel} from 'sql/parts/jobManagement/views/jobStepsViewTree';
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
-import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
@@ -29,7 +32,6 @@ export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 })
 export class JobStepsViewComponent extends Disposable implements OnInit, AfterContentChecked {
 
-	private _jobManagementService: IJobManagementService;
 	private _tree: Tree;
 	private _treeController = new JobStepsViewController();
 	private _treeDataSource = new JobStepsViewDataSource();
@@ -41,14 +43,13 @@ export class JobStepsViewComponent extends Disposable implements OnInit, AfterCo
 
 
 	constructor(
-		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
-		@Inject(forwardRef(() => JobHistoryComponent)) private _jobHistoryComponent: JobHistoryComponent
+		@Inject(forwardRef(() => JobHistoryComponent)) private _jobHistoryComponent: JobHistoryComponent,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super();
-		this._jobManagementService = bootstrapService.jobManagementService;
 	}
 
 	ngAfterContentChecked() {
@@ -61,7 +62,7 @@ export class JobStepsViewComponent extends Disposable implements OnInit, AfterCo
 					filter: this._treeFilter,
 					renderer: this._treeRenderer
 				}, { verticalScrollMode: ScrollbarVisibility.Visible });
-				this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
+				this._register(attachListStyler(this._tree, this.themeService));
 			}
 			this._tree.layout(JobStepsViewComponent._pageSize);
 			this._tree.setInput(new JobStepsViewModel());
@@ -78,7 +79,7 @@ export class JobStepsViewComponent extends Disposable implements OnInit, AfterCo
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
 		}, {verticalScrollMode: ScrollbarVisibility.Visible});
-		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
+		this._register(attachListStyler(this._tree, this.themeService));
 	}
 }
 

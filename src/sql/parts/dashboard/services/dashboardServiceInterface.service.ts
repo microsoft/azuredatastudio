@@ -64,9 +64,6 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 
 	/* Static Services */
 
-	private _dashboardViewService = this._bootstrapService.dashboardViewService;
-
-
 	private _updatePage = new Emitter<void>();
 	public readonly onUpdatePage: Event<void> = this._updatePage.event;
 
@@ -90,12 +87,15 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => Router)) private _router: Router,
+		@Inject(INotificationService) private _notificationService: INotificationService,
+		@Inject(IMetadataService) metadataService: IMetadataService,
+		@Inject(IConnectionManagementService) connectionManagementService: IConnectionManagementService,
+		@Inject(IAdminService) adminService: IAdminService,
+		@Inject(IQueryManagementService) queryManagementService: IQueryManagementService,
+		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
+		@Inject(IConfigurationService) private _configService: IConfigurationService
 	) {
-		super(bootstrapService);
-	}
-
-	public get dashboardViewService(): IDashboardViewService {
-		return this._dashboardViewService;
+		super(bootstrapService, metadataService, connectionManagementService, adminService, queryManagementService);
 	}
 
 	/**
@@ -108,9 +108,9 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 
 	protected _getbootstrapParams(): void {
 		this._bootstrapParams = this._bootstrapService.getBootstrapParams<DashboardComponentParams>(this._uniqueSelector);
-		this._contextKeyService = this._bootstrapParams.scopedContextService;
+		this.scopedContextKeyService = this._bootstrapParams.scopedContextService;
 		this._connectionContextKey = this._bootstrapParams.connectionContextKey;
-		this.dashboardContextKey = this._dashboardContextKey.bindTo(this._contextKeyService);
+		this.dashboardContextKey = this._dashboardContextKey.bindTo(this.scopedContextKeyService);
 		this.uri = this._bootstrapParams.ownerUri;
 	}
 
@@ -120,7 +120,7 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	 */
 	protected set uri(uri: string) {
 		super.setUri(uri);
-		this._register(toDisposableSubscription(this._bootstrapService.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
+		this._register(toDisposableSubscription(this.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
 	}
 
 	/**
@@ -147,7 +147,7 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	}
 
 	public writeSettings(type: string, value: any, target: ConfigurationTarget) {
-		this._configurationEditingService.writeConfiguration(target, { key: [DASHBOARD_SETTINGS, type].join('.'), value });
+		this._configService.updateValue([DASHBOARD_SETTINGS, type].join('.'), value, target);
 	}
 
 	private handleDashboardEvent(event: IAngularEvent): void {

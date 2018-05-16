@@ -7,14 +7,11 @@ import 'vs/css!./jobHistory';
 import 'vs/css!sql/media/icons/common-icons';
 import { OnInit, OnChanges, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
 import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
-import { localize } from 'vs/nls';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import Severity from 'vs/base/common/severity';
+
+import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
+import { RunJobAction, StopJobAction } from 'sql/parts/jobManagement/views/jobHistoryActions';
+import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
+import { AgentJobUtilities } from '../common/agentJobUtilities';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IJobManagementService } from '../common/interfaces';
@@ -25,12 +22,19 @@ import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
 import { JobStepsViewRow } from './jobStepsViewTree';
-import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
-import { AgentJobUtilities } from '../common/agentJobUtilities';
+
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { localize } from 'vs/nls';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
 import { ITreeOptions } from 'vs/base/parts/tree/browser/tree';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
-import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
-import { RunJobAction, StopJobAction } from 'sql/parts/jobManagement/views/jobHistoryActions';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -42,7 +46,6 @@ export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 @Injectable()
 export class JobHistoryComponent extends Disposable implements OnInit {
 
-	private _jobManagementService: IJobManagementService;
 	private _tree: Tree;
 	private _treeController: JobHistoryController;
 	private _treeDataSource: JobHistoryDataSource;
@@ -63,24 +66,25 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _showPreviousRuns: boolean = undefined;
 	private _runStatus: string = undefined;
 	private _jobCacheObject: JobCacheObject;
-	private _notificationService: INotificationService;
 	private _agentJobInfo: AgentJobInfo;
 	private _noJobsAvailable: boolean = false;
 
 	constructor(
-		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent
+		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(INotificationService) private _notificationService: INotificationService,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
+		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService
 	) {
 		super();
 		this._treeController = new JobHistoryController();
 		this._treeDataSource = new JobHistoryDataSource();
 		this._treeRenderer = new JobHistoryRenderer();
 		this._treeFilter =  new JobHistoryFilter();
-		this._jobManagementService = bootstrapService.jobManagementService;
-		this._notificationService = bootstrapService.notificationService;
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		let serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[serverName];
@@ -129,7 +133,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
 		}, {verticalScrollMode: ScrollbarVisibility.Visible});
-		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
+		this._register(attachListStyler(this._tree, this.themeService));
 		this._tree.layout(1024);
 		this._initActionBar();
 	}
@@ -267,10 +271,10 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 
 
 	private _initActionBar() {
-		let runJobAction = this.bootstrapService.instantiationService.createInstance(RunJobAction);
-		let stopJobAction = this.bootstrapService.instantiationService.createInstance(StopJobAction);
+		let runJobAction = this.instantiationService.createInstance(RunJobAction);
+		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
 		let taskbar = <HTMLElement>this._actionbarContainer.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this.bootstrapService.contextMenuService);
+		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ action: runJobAction },

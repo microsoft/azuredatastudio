@@ -11,10 +11,14 @@ import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as nls from 'vs/nls';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -38,9 +42,12 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 		@Inject(forwardRef(() => IBreadcrumbService)) private _breadcrumbService: IBreadcrumbService,
 		@Inject(forwardRef(() => CommonServiceInterface)) dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(IInstantiationService) instantiationService: IInstantiationService,
+		@Inject(INotificationService) notificationService: INotificationService,
+		@Inject(IAngularEventingService) angularEventingService: IAngularEventingService
 	) {
-		super(dashboardService, el, _cd);
+		super(dashboardService, el, _cd, instantiationService, notificationService, angularEventingService);
 		this._register(dashboardService.onUpdatePage(() => {
 			this.refresh(true);
 			this._cd.detectChanges();

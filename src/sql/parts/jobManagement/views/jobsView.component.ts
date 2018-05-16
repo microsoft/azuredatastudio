@@ -12,21 +12,18 @@ import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
 
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
-import * as Utils from 'sql/parts/connection/common/utils';
+import { FieldType, IObservableCollection, CollectionChange, SlickGrid } from 'angular2-slickgrid';
+
+import * as sqlops from 'sqlops';
+import * as vscode from 'vscode';
+
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as themeColors from 'vs/workbench/common/theme';
-import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { IJobManagementService } from '../common/interfaces';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import * as sqlops from 'sqlops';
-import * as vscode from 'vscode';
 import * as nls from 'vs/nls';
+
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
-import { FieldType, IObservableCollection, CollectionChange, SlickGrid } from 'angular2-slickgrid';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import { JobHistoryComponent } from './jobHistory.component';
@@ -34,6 +31,11 @@ import { AgentViewComponent } from '../agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { AgentJobUtilities } from '../common/agentJobUtilities';
+import * as Utils from 'sql/parts/connection/common/utils';
+import { IJobManagementService } from '../common/interfaces';
+import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
@@ -45,7 +47,6 @@ export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 
 export class JobsViewComponent implements AfterContentChecked {
 
-	private _jobManagementService: IJobManagementService;
 	private _jobCacheObject: JobCacheObject;
 
 	private _disposables = new Array<vscode.Disposable>();
@@ -77,13 +78,12 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _tabHeight: number;
 
 	constructor(
-		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent
+		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService
 	) {
-		this._jobManagementService = bootstrapService.jobManagementService;
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];

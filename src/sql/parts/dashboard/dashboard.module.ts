@@ -142,7 +142,8 @@ export class DashboardModule {
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
 		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => CommonServiceInterface)) bootstrap: CommonServiceInterface,
-		@Inject(forwardRef(() => Router)) private _router: Router
+		@Inject(forwardRef(() => Router)) private _router: Router,
+		@Inject(ITelemetryService) private telemetryService: ITelemetryService
 	) {
 		this._bootstrap = bootstrap as DashboardServiceInterface;
 	}
@@ -157,7 +158,7 @@ export class DashboardModule {
 		this._router.events.subscribe(e => {
 			if (e instanceof NavigationEnd) {
 				this._bootstrap.handlePageNavigation();
-				TelemetryUtils.addTelemetry(this._bootstrapService.telemetryService, TelemetryKeys.DashboardNavigated, {
+				TelemetryUtils.addTelemetry(this.telemetryService, TelemetryKeys.DashboardNavigated, {
 					numberOfNavigations: this._bootstrap.getNumberOfPageNavigations(),
 					routeUrl: e.url
 				});
