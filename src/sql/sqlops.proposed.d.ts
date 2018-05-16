@@ -366,8 +366,21 @@ declare module 'sqlops' {
 			 */
 			export function closeDialog(dialog: Dialog): void;
 
+			export interface ModelViewPanel {
+				/**
+				 * Register model view content for the dialog.
+				 * Doesn't do anything if model view is already registered
+				 */
+				registerContent(handler: (view: ModelView) => void): void;
+
+				/**
+				 * Returns the model view content if registered. Returns undefined if model review is not registered
+				 */
+				readonly modelView: ModelView;
+			}
+
 			// Model view dialog classes
-			export interface Dialog {
+			export interface Dialog extends ModelViewPanel {
 				/**
 				 * The title of the dialog
 				 */
@@ -405,7 +418,7 @@ declare module 'sqlops' {
 				readonly onValidityChanged: vscode.Event<boolean>;
 			}
 
-			export interface DialogTab {
+			export interface DialogTab extends ModelViewPanel {
 				/**
 				 * The title of the tab
 				 */

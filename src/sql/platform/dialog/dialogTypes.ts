@@ -9,7 +9,7 @@ import * as sqlops from 'sqlops';
 import { localize } from 'vs/nls';
 import Event, { Emitter } from 'vs/base/common/event';
 
-export class DialogTab implements sqlops.window.modelviewdialog.DialogTab {
+export class DialogTab {
 	public content: string;
 
 	constructor(public title: string, content?: string) {
@@ -19,7 +19,7 @@ export class DialogTab implements sqlops.window.modelviewdialog.DialogTab {
 	}
 }
 
-export class Dialog implements sqlops.window.modelviewdialog.Dialog {
+export class Dialog {
 	private static readonly DONE_BUTTON_LABEL = localize('dialogModalDoneButtonLabel', 'Done');
 	private static readonly CANCEL_BUTTON_LABEL = localize('dialogModalCancelButtonLabel', 'Cancel');
 
