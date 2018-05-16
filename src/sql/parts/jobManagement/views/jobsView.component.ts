@@ -221,6 +221,8 @@ export class JobsViewComponent implements AfterContentChecked {
 						if (this.filterStack.length === 0) {
 							this.filterStack = ['start'];
 						}
+					} else {
+						this.expandJobs(false);
 					}
 				} else {
 					let seenJobs = 0;
