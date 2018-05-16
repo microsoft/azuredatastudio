@@ -72,7 +72,7 @@ declare module 'sqlops' {
 		/**
 		 * Run the component's validations
 		 */
-		validate(): void;
+		validate(): Thenable<boolean>;
 	}
 
 	export interface FormComponent {
@@ -188,10 +188,24 @@ declare module 'sqlops' {
 		 */
 		label: string;
 		/**
-		 * ID of the task to be called when this is clicked on.
-		 * These should be registered using the {tasks.registerTask} API.
+		 * Name of the clickable action. If not defined then no action will be shown
 		 */
-		taskId: string;
+		actionTitle?: string;
+		/**
+		 * Data sent on callback being run.
+		 */
+		callbackData?: any;
+	}
+
+	/**
+	 * Defines status indicators that can be shown to the user as part of
+	 * components such as the Card UI
+	 */
+	export enum StatusIndicator {
+		None = 0,
+		Ok = 1,
+		Warning = 2,
+		Error = 3
 	}
 
 	/**
@@ -202,7 +216,10 @@ declare module 'sqlops' {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
+		status?: StatusIndicator;
 	}
+
+	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
 
 	export interface InputBoxProperties {
 		value?: string;
@@ -210,6 +227,8 @@ declare module 'sqlops' {
 		placeHolder?: string;
 		height: number;
 		width: number;
+		inputType?: InputBoxInputType;
+		required?: boolean;
 	}
 
 	export interface CheckBoxProperties {
@@ -230,6 +249,7 @@ declare module 'sqlops' {
 		label: string;
 		value: string;
 		actions?: ActionDescriptor[];
+		onDidActionClick: vscode.Event<ActionDescriptor>;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
@@ -299,7 +319,7 @@ declare module 'sqlops' {
 		/**
 		 * Run the model view root component's validations
 		 */
-		validate(): void;
+		validate(): Thenable<boolean>;
 
 		/**
 		 * Initializes the model with a root component definition.
@@ -346,8 +366,21 @@ declare module 'sqlops' {
 			 */
 			export function closeDialog(dialog: Dialog): void;
 
+			export interface ModelViewPanel {
+				/**
+				 * Register model view content for the dialog.
+				 * Doesn't do anything if model view is already registered
+				 */
+				registerContent(handler: (view: ModelView) => void): void;
+
+				/**
+				 * Returns the model view content if registered. Returns undefined if model review is not registered
+				 */
+				readonly modelView: ModelView;
+			}
+
 			// Model view dialog classes
-			export interface Dialog {
+			export interface Dialog extends ModelViewPanel {
 				/**
 				 * The title of the dialog
 				 */
@@ -385,7 +418,7 @@ declare module 'sqlops' {
 				readonly onValidityChanged: vscode.Event<boolean>;
 			}
 
-			export interface DialogTab {
+			export interface DialogTab extends ModelViewPanel {
 				/**
 				 * The title of the tab
 				 */

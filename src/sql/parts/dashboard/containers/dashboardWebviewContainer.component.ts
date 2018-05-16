@@ -11,10 +11,11 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
+import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 @Component({
 	selector: 'dashboard-webview-container',
-	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWebviewContainer) }],
+	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardWebviewContainer) }],
 	template: `
 		<webview-content [webviewId]="tab.id">
 		</webview-content>

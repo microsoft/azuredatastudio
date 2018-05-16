@@ -196,7 +196,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Initializes a new edit data session for the requested table/view
 	 */
-	$initializeEdit(handle: number, ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void> { throw ni(); }
+	$initializeEdit(handle: number, ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void> { throw ni(); }
 
 	/**
 	 * Reverts any pending changes for the requested cell and returns the original value
@@ -520,6 +520,7 @@ export interface ExtHostModelViewShape {
 	$onClosed(handle: number): void;
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
 	$handleEvent(handle: number, id: string, eventArgs: any);
+	$runCustomValidations(handle: number, id: string): Thenable<boolean>;
 }
 
 export interface MainThreadModelViewShape extends IDisposable {
@@ -530,7 +531,7 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 	$registerEvent(handle: number, componentId: string):  Thenable<void>;
-	$notifyValidation(handle: number, componentId: string, valid: boolean): Thenable<void>;
+	$validate(handle: number, componentId: string): Thenable<boolean>;
 	$openModelViewEditor(title: string, modelViewId: string, position: vscode.ViewColumn, options: any): Thenable<void>;
 }
 

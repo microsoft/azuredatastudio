@@ -12,10 +12,47 @@ import * as nls from 'vs/nls';
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
-import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 
-class DialogImpl implements sqlops.window.modelviewdialog.Dialog {
+class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel {
+	private _modelView: sqlops.ModelView;
+	private _handle: number;
+	private _modelViewId: string;
+
+	constructor(private _viewType: string,
+		protected _extHostModelView: ExtHostModelViewShape) {
+	}
+
+	public registerContent(handler: (view: sqlops.ModelView) => void): void {
+		if (!this._modelViewId) {
+			let viewId = this._viewType + this.handle;
+			this.setModelViewId(viewId);
+			this._extHostModelView.$registerProvider(viewId, modelView => {
+				this._modelView = modelView;
+				handler(modelView);
+			});
+		}
+	}
+
+	public set handle(value: number) {
+		this._handle = value;
+	}
+
+	public setModelViewId(value: string) {
+		this._modelViewId = value;
+	}
+
+	public get modelView(): sqlops.ModelView {
+		return this._modelView;
+	}
+
+	public set modelView(value: sqlops.ModelView) {
+		this._modelView = value;
+	}
+}
+
+class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.Dialog  {
 	public title: string;
 	public content: string | sqlops.window.modelviewdialog.DialogTab[];
 	public okButton: sqlops.window.modelviewdialog.Button;
@@ -24,7 +61,10 @@ class DialogImpl implements sqlops.window.modelviewdialog.Dialog {
 	public readonly onValidityChanged: vscode.Event<boolean>;
 	private _valid: boolean = true;
 
-	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) {
+
+	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog,
+		extHostModelView: ExtHostModelViewShape) {
+		super('modelViewDialog', extHostModelView);
 		this.okButton = this._extHostModelViewDialog.createButton(nls.localize('dialogOkLabel', 'Done'));
 		this.cancelButton = this._extHostModelViewDialog.createButton(nls.localize('dialogCancelLabel', 'Cancel'));
 		this.onValidityChanged = this._extHostModelViewDialog.getValidityChangedEvent(this);
@@ -34,13 +74,28 @@ class DialogImpl implements sqlops.window.modelviewdialog.Dialog {
 	public get valid(): boolean {
 		return this._valid;
 	}
+
+	public setModelViewId(value: string) {
+		super.setModelViewId(value);
+		this.content = value;
+	}
 }
 
-class TabImpl implements sqlops.window.modelviewdialog.DialogTab {
+class TabImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.DialogTab {
+	constructor(
+		private _extHostModelViewDialog: ExtHostModelViewDialog,
+		extHostModelView: ExtHostModelViewShape) {
+			super('modelViewDialogTab', extHostModelView);
+	}
+
 	public title: string;
 	public content: string;
+	public handle: number;
 
-	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) { }
+	public setModelViewId(value: string) {
+		super.setModelViewId(value);
+		this.content = value;
+	}
 }
 
 class ButtonImpl implements sqlops.window.modelviewdialog.Button {
@@ -101,7 +156,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	private readonly _onClickCallbacks = new Map<number, () => void>();
 
 	constructor(
-		mainContext: IMainContext
+		mainContext: IMainContext,
+		private _extHostModelView: ExtHostModelViewShape
 	) {
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadModelViewDialog);
 	}
@@ -204,16 +260,16 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	}
 
 	public createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
-		let dialog = new DialogImpl(this);
+		let dialog = new DialogImpl(this, this._extHostModelView);
 		dialog.title = title;
-		this.getDialogHandle(dialog);
+		dialog.handle = this.getDialogHandle(dialog);
 		return dialog;
 	}
 
 	public createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
-		let tab = new TabImpl(this);
+		let tab = new TabImpl(this, this._extHostModelView);
 		tab.title = title;
-		this.getTabHandle(tab);
+		tab.handle = this.getTabHandle(tab);
 		return tab;
 	}
 
