@@ -373,11 +373,6 @@ declare module 'sqlops' {
 				 * Returns the model view content if registered. Returns undefined if model review is not registered
 				 */
 				readonly modelView: ModelView;
-
-				/**
-				 * The handle assigned to the UI
-				 */
-				handle: number;
 			}
 
 			// Model view dialog classes
