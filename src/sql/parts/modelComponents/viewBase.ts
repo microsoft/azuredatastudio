@@ -27,6 +27,8 @@ const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentCo
 export abstract class ViewBase extends AngularDisposable implements IModelView {
 	protected readonly modelStore: IModelStore;
 	protected rootDescriptor: IComponentDescriptor;
+	protected _onDestroy = new Emitter<void>();
+	public readonly onDestroy = this._onDestroy.event;
 	constructor(protected changeRef: ChangeDetectorRef) {
 		super();
 		this.modelStore = new ModelStore();

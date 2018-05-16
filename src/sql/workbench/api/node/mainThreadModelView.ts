@@ -36,6 +36,7 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 				let handle = MainThreadModelView._handlePool++;
 				this._dialogs.set(handle, view);
 				this._proxy.$registerWidget(handle, view.id, view.connection, view.serverInfo);
+				view.onDestroy(() => this._proxy.$onClosed(handle));
 			}
 		});
 	}
