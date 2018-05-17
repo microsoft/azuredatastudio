@@ -81,12 +81,14 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 		} else {
 			this._input.disable();
 		}
+
+		this._input.checked = this.checked;
 	}
 
 	// CSS-bound properties
 
 	public get checked(): boolean {
-		return this.getPropertyOrDefault<sqlops.RadioButtonProperties, boolean>((props) => props.value, false);
+		return this.getPropertyOrDefault<sqlops.RadioButtonProperties, boolean>((props) => props.checked, false);
 	}
 
 	public set value(newValue: string) {

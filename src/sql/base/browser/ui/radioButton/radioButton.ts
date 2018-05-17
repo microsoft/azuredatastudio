@@ -11,7 +11,7 @@ import Event, { Emitter } from 'vs/base/common/event';
 
 export class RadioButton {
 
-	private _radioButtonInput: HTMLElement;
+	private _radioButtonInput: HTMLInputElement;
 	private _onClicked = new Emitter<void>();
 	public readonly onClicked: Event<void> = this._onClicked.event;
 
@@ -50,5 +50,17 @@ export class RadioButton {
 
 	public isEnabled(): boolean {
 		return !this._radioButtonInput.hasAttribute('disabled');
+	}
+
+	public click(): void {
+		this._radioButtonInput.click();
+	}
+
+	public set checked(val: boolean) {
+		this._radioButtonInput.checked = val;
+	}
+
+	public get checked(): boolean {
+		return this._radioButtonInput.checked;
 	}
 }

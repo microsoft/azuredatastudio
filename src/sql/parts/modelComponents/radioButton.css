@@ -3,7 +3,7 @@
 }
 
 .modelview-radiobutton-item {
-	align-self: center;
+	align-self: flex-start ;
 }
 
 .modelview-radiobutton-title {

@@ -72,9 +72,6 @@ export default class MainController implements vscode.Disposable {
 			let inputBox2 = view.modelBuilder.inputBox()
 			.component();
 
-			let inputBox3 = view.modelBuilder.inputBox()
-			.component();
-
 			let checkbox = view.modelBuilder.checkBox()
 			.withProperties({
 				label: 'Copy-only backup'
@@ -114,6 +111,31 @@ export default class MainController implements vscode.Disposable {
 					vscode.window.showInformationMessage(inputBox2.value);
 					inputBox.value = dropdown.value;
 			});
+			let radioButton = view.modelBuilder.radioButton()
+				.withProperties({
+					value: 'option1',
+					name: 'radioButtonOptions',
+					label: 'Option 1',
+					checked: true
+            //width: 300
+			}).component();
+			let radioButton2 = view.modelBuilder.radioButton()
+				.withProperties({
+					value: 'option2',
+					name: 'radioButtonOptions',
+					label: 'Option 2'
+
+            //width: 300
+			}).component();
+			let flexRadioButtonsModel = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'column',
+					alignItems: 'left',
+					justifyContent: 'space-evenly',
+					height: 50
+			}).withItems([
+				radioButton, radioButton2]
+				, { flex: '1 1 50%' }).component();
 			let formModel = view.modelBuilder.formContainer()
 			.withFormItems([{
 						component: inputBox,
@@ -131,6 +153,9 @@ export default class MainController implements vscode.Disposable {
 						component: inputBox2,
 						title: 'Backup files',
 						actions: [button, button3]
+				}, {
+					component: flexRadioButtonsModel,
+					title: 'Options'
 				}], {
 						horizontal:false,
 						width: 500,

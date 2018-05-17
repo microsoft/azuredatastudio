@@ -544,6 +544,12 @@ class RadioButtonWrapper extends ComponentWrapper implements sqlops.RadioButtonC
 	public set value(v: string) {
 		this.setProperty('value', v);
 	}
+	public get checked(): boolean {
+		return this.properties['checked'];
+	}
+	public set checked(v: boolean) {
+		this.setProperty('checked', v);
+	}
 
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);

@@ -21,6 +21,7 @@ declare module 'sqlops' {
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
+		radioButton(): ComponentBuilder<RadioButtonComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
@@ -163,6 +164,8 @@ declare module 'sqlops' {
 		 * Matches the align-content CSS property.
 		 */
 		alignContent?: string;
+
+		height? : number;
 	}
 
 	export interface FlexItemLayout {
@@ -256,6 +259,7 @@ declare module 'sqlops' {
 		name?: string;
 		label?: string;
 		value?: string;
+		checked?: boolean;
 	}
 
 	export interface DropDownProperties {
