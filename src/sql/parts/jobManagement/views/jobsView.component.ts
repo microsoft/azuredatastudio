@@ -26,8 +26,6 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import * as nls from 'vs/nls';
-import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
-import { FieldType, IObservableCollection, CollectionChange, SlickGrid } from 'angular2-slickgrid';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import { JobHistoryComponent } from './jobHistory.component';
@@ -63,6 +61,14 @@ export class JobsViewComponent implements AfterContentChecked {
 		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', minWidth: 50, id: 'hasSchedule' },
 		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', minWidth: 150, id: 'lastRunOutcome'},
 	];
+
+	private options: Slick.GridOptions<any> = {
+		syncColumnCellResize: true,
+		enableColumnReorder: false,
+		rowHeight: 45,
+		enableCellNavigation: true,
+		editable: true
+	};
 
 	private rowDetail: RowDetailView;
 	private filterPlugin: any;
@@ -135,16 +141,8 @@ export class JobsViewComponent implements AfterContentChecked {
 			column.rerenderOnResize = true;
 			return column;
 		});
-		let options = <Slick.GridOptions<any>>{
-			syncColumnCellResize: true,
-			enableColumnReorder: false,
-			rowHeight: 45,
-			enableCellNavigation: true,
-			editable: true
-		};
-
+		// create the table
 		this.dataView = new Slick.Data.DataView();
-
 		let rowDetail = new RowDetailView({
 			cssClass: '_detail_selector',
 			process: (job) => {
@@ -159,7 +157,10 @@ export class JobsViewComponent implements AfterContentChecked {
 		columns.unshift(this.rowDetail.getColumnDefinition());
 		let filterPlugin = new HeaderFilter({}, this.bootstrapService.themeService);
 		this.filterPlugin = filterPlugin;
-		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
+		this._table = new Table(this._gridEl.nativeElement, undefined, columns, this.options);
+
+
+
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let job = self.getJob(args);
@@ -168,7 +169,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			self._agentViewComponent.showHistory = true;
 		});
 		if (cached && this._agentViewComponent.refresh !== true) {
-			this.onJobsAvailable(this._jobCacheObject.jobs);
+			this.onJobsAvailable(null);
 		} else {
 			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 			this._jobManagementService.getJobs(ownerUri).then((result) => {
@@ -182,21 +183,27 @@ export class JobsViewComponent implements AfterContentChecked {
 	}
 
 	private onJobsAvailable(jobs: sqlops.AgentJobInfo[]) {
-		let jobViews = jobs.map((job) => {
-			return {
-				id: job.jobId,
-				jobId: job.jobId,
-				name: job.name,
-				lastRun: AgentJobUtilities.convertToLastRun(job.lastRun),
-				nextRun: AgentJobUtilities.convertToNextRun(job.nextRun),
-				enabled: AgentJobUtilities.convertToResponse(job.enabled),
-				currentExecutionStatus: AgentJobUtilities.convertToExecutionStatusString(job.currentExecutionStatus),
-				category: job.category,
-				runnable: AgentJobUtilities.convertToResponse(job.runnable),
-				hasSchedule: AgentJobUtilities.convertToResponse(job.hasSchedule),
-				lastRunOutcome: AgentJobUtilities.convertToStatusString(job.lastRunOutcome)
-			};
-		});
+		let jobViews: any;
+		if (!jobs) {
+			let dataView = this._jobCacheObject.dataView;
+			jobViews = dataView.getItems();
+		} else {
+			jobViews = jobs.map((job) => {
+				return {
+					id: job.jobId,
+					jobId: job.jobId,
+					name: job.name,
+					lastRun: AgentJobUtilities.convertToLastRun(job.lastRun),
+					nextRun: AgentJobUtilities.convertToNextRun(job.nextRun),
+					enabled: AgentJobUtilities.convertToResponse(job.enabled),
+					currentExecutionStatus: AgentJobUtilities.convertToExecutionStatusString(job.currentExecutionStatus),
+					category: job.category,
+					runnable: AgentJobUtilities.convertToResponse(job.runnable),
+					hasSchedule: AgentJobUtilities.convertToResponse(job.hasSchedule),
+					lastRunOutcome: AgentJobUtilities.convertToStatusString(job.lastRunOutcome)
+				};
+			});
+		}
 		this._table.registerPlugin(<any>this.rowDetail);
 
 		this.filterPlugin.onFilterApplied.subscribe((e, args) => {
@@ -283,6 +290,8 @@ export class JobsViewComponent implements AfterContentChecked {
 			}
 			self._tabHeight = currentTabHeight;
 		});
+		// cache the dataview for future use
+		this._jobCacheObject.dataView = this.dataView;
 		this.loadJobHistories();
 	}
 
