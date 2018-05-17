@@ -44,6 +44,22 @@ declare module 'sqlops' {
 
 	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
 		withFormItems(components: FormComponent[], itemLayout?: FormItemLayout): ContainerBuilder<FormContainer, FormLayout, FormItemLayout>;
+
+		/**
+		 * Creates a collection of child components and adds them all to this container
+		 *
+		 * @param formComponents the definitions
+		 * @param {*} [itemLayout] Optional layout for the child items
+		 */
+		addFormItems(formComponents: Array<FormComponent>, itemLayout?: FormItemLayout): void;
+
+		/**
+		 * Creates a child component and adds it to this container.
+		 *
+		 * @param formComponent the component to be added
+		 * @param {*} [itemLayout] Optional layout for this child item
+		 */
+		addFormItem(formComponent: FormComponent, itemLayout?: FormItemLayout): void;
 	}
 
 	export interface Component {
@@ -236,6 +252,12 @@ declare module 'sqlops' {
 		label?: string;
 	}
 
+	export interface RadioButtonProperties {
+		name?: string;
+		label?: string;
+		value?: string;
+	}
+
 	export interface DropDownProperties {
 		value?: string;
 		values?: string[];
@@ -254,6 +276,10 @@ declare module 'sqlops' {
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
 		onTextChanged: vscode.Event<any>;
+	}
+
+	export interface RadioButtonComponent extends Component, RadioButtonProperties {
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface CheckBoxComponent extends Component {
