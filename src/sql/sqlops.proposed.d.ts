@@ -366,6 +366,31 @@ declare module 'sqlops' {
 			 */
 			export function closeDialog(dialog: Dialog): void;
 
+			/**
+			 * Create a wizard page with the given title, for inclusion in a wizard
+			 * @param title The title of the page
+			 */
+			export function createWizardPage(title: string): WizardPage;
+
+			/**
+			 * Create a wizard with the given title and pages
+			 * @param title The title of the wizard
+			 * @param pages The list of pages that the wizard contains
+			 */
+			export function createWizard(title: string, pages: WizardPage[]): Wizard;
+
+			/**
+			 * Opens the given wizard if it is not already open
+			 * @param wizard The wizard to open
+			 */
+			export function openWizard(wizard: Wizard);
+
+			/**
+			 * Closes the given wizard if it is open
+			 * @param wizard The wizard to close
+			 */
+			export function closeWizard(wizard: Wizard);
+
 			export interface ModelViewPanel {
 				/**
 				 * Register model view content for the dialog.
@@ -377,6 +402,16 @@ declare module 'sqlops' {
 				 * Returns the model view content if registered. Returns undefined if model review is not registered
 				 */
 				readonly modelView: ModelView;
+
+				/**
+				 * Whether the panel's content is valid
+				 */
+				readonly valid: boolean;
+
+				/**
+				 * Fired whenever the panel's valid property changes
+				 */
+				readonly onValidityChanged: vscode.Event<boolean>;
 			}
 
 			// Model view dialog classes
@@ -406,16 +441,6 @@ declare module 'sqlops' {
 				 * Any additional buttons that should be displayed
 				 */
 				customButtons: Button[];
-
-				/**
-				 * Whether the dialog's content is valid
-				 */
-				readonly valid: boolean;
-
-				/**
-				 * Fired whenever the dialog's valid property changes
-				 */
-				readonly onValidityChanged: vscode.Event<boolean>;
 			}
 
 			export interface DialogTab extends ModelViewPanel {
@@ -450,6 +475,95 @@ declare module 'sqlops' {
 				 * Raised when the button is clicked
 				 */
 				readonly onClick: vscode.Event<void>;
+			}
+
+			export interface WizardPage extends ModelViewPanel {
+				/**
+				 * The title of the page
+				 */
+				title: string;
+
+				/**
+				 * A string giving the ID of the page's model view content
+				 */
+				content: string;
+
+				/**
+				 * Any additional buttons that should be displayed while the page is open
+				 */
+				customButtons: Button[];
+
+				/**
+				 * Whether the page is enabled. If the page is not enabled, the user will not be
+				 * able to advance to it. Defaults to true.
+				 */
+				enabled: boolean;
+			}
+
+			export interface Wizard {
+				/**
+				 * The title of the wizard
+				 */
+				title: string,
+
+				/**
+				 * The wizard's pages. Pages can be added/removed by using the addPage and
+				 * removePage methods
+				 */
+				readonly pages: WizardPage[];
+
+				/**
+				 * The index in the pages array of the active page, or undefined if the wizard is
+				 * not currently visible
+				 */
+				readonly currentPage: number;
+
+				/**
+				 * The done button
+				 */
+				doneButton: Button;
+
+				/**
+				 * The cancel button
+				 */
+				cancelButton: Button;
+
+				/**
+				 * The next button
+				 */
+				nextButton: Button;
+
+				/**
+				 * The back button
+				 */
+				backButton: Button;
+
+				/**
+				 * Any additional buttons that should be displayed for all pages of the dialog. If
+				 * buttons are needed for specific pages they can be added using the customButtons
+				 * property on each page.
+				 */
+				customButtons: Button[];
+
+				/**
+				 * Add a page to the wizard at the given index
+				 * @param page The page to add
+				 * @param index The index in the pages array to add the page at, or undefined to
+				 * add it at the end
+				 */
+				addPage(page: WizardPage, index?: number);
+
+				/**
+				 * Remove the page at the given index from the wizard
+				 * @param index The index in the pages array to remove
+				 */
+				removePage(index: number);
+
+				/**
+				 * Go to the page at the given index in the pages array. 
+				 * @param index The index of the page to go to
+				 */
+				setCurrentPage(index: number);
 			}
 		}
 	}

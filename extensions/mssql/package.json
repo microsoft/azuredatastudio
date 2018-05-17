@@ -28,6 +28,11 @@
         "category": "MS SQL",
         "command": "mssql.openTestDialog2",
         "title": "Open test editor"
+      },
+      {
+        "category": "MS SQL",
+        "command": "mssql.openTestWizard",
+        "title": "Open test wizard"
       }
     ],
     "languages": [

@@ -9,25 +9,6 @@ import * as sqlops from 'sqlops';
 import { localize } from 'vs/nls';
 import Event, { Emitter } from 'vs/base/common/event';
 
-export class Wizard {
-	public pages: DialogTab[];
-	public nextButton: DialogButton;
-	public backButton: DialogButton;
-	public customButtons: DialogButton[];
-
-	public onCompleted: Event<{ [name: string]: string }[]>;
-	private _onCompleted: Emitter<{ [name: string]: string }[]>;
-
-	constructor(public title: string) {
-		this._onCompleted = new Emitter();
-		this.onCompleted = this._onCompleted.event;
-	}
-
-	public complete(values: { [name: string]: string }[]): void {
-		this._onCompleted.fire(values);
-	}
-}
-
 export class DialogTab {
 	public content: string;
 
@@ -114,5 +95,56 @@ export class DialogButton implements sqlops.window.modelviewdialog.Button {
 	 */
 	public registerClickEvent(clickEvent: Event<void>): void {
 		clickEvent(() => this._onClick.fire());
+	}
+}
+
+export class WizardPage extends DialogTab {
+	public customButtons: DialogButton[];
+	public enabled: boolean;
+
+	private _valid: boolean = true;
+	private _validityChangedEmitter = new Emitter<boolean>();
+	public readonly onValidityChanged = this._validityChangedEmitter.event;
+
+	constructor(public title: string, content?: string) {
+		super(title, content);
+	}
+
+	public get valid(): boolean {
+		return this._valid;
+	}
+
+	public notifyValidityChanged(valid: boolean) {
+		this._valid = valid;
+		this._validityChangedEmitter.fire(valid);
+	}
+}
+
+export class Wizard {
+	public pages: WizardPage[];
+	public nextButton: DialogButton;
+	public backButton: DialogButton;
+	public doneButton: DialogButton;
+	public cancelButton: DialogButton;
+	public customButtons: DialogButton[];
+	private _currentPage: number;
+
+	constructor(public title: string) { }
+
+	public get currentPage(): number {
+		return this._currentPage;
+	}
+
+	public addPage(page: WizardPage, index?: number) {
+		// TODO
+	}
+
+	public removePage(index: number) {
+		// TODO
+	}
+
+	public setCurrentPage(index: number) {
+		this._currentPage = index;
+		// TODO
 	}
 }

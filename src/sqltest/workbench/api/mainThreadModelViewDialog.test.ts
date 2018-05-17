@@ -101,7 +101,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 
 	test('Creating a dialog and calling open on it causes a dialog with correct content and buttons to open', () => {
 		// If I open the dialog
-		mainThreadModelViewDialog.$open(dialogHandle);
+		mainThreadModelViewDialog.$openDialog(dialogHandle);
 
 		// Then the opened dialog's content and buttons match what was set
 		mockDialogService.verify(x => x.showDialog(It.isAny()), Times.once());
@@ -129,7 +129,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		mockExtHostModelViewDialog.setup(x => x.$onButtonClick(It.isAny())).callback(handle => pressedHandles.push(handle));
 
 		// Open the dialog so that its buttons can be accessed
-		mainThreadModelViewDialog.$open(dialogHandle);
+		mainThreadModelViewDialog.$openDialog(dialogHandle);
 
 		// Set up click emitters for each button
 		let okEmitter = new Emitter<void>();

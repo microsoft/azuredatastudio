@@ -6,11 +6,11 @@
 
 import { MainThreadModelViewDialogShape, SqlMainContext, ExtHostModelViewDialogShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import { Dialog, DialogTab, DialogButton } from 'sql/platform/dialog/dialogTypes';
+import { Dialog, DialogTab, DialogButton, WizardPage, Wizard } from 'sql/platform/dialog/dialogTypes';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { CustomDialogService } from 'sql/platform/dialog/customDialogService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails, IModelViewWizardPageDetails, IModelViewWizardDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape {
@@ -18,6 +18,8 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	private readonly _dialogs = new Map<number, Dialog>();
 	private readonly _tabs = new Map<number, DialogTab>();
 	private readonly _buttons = new Map<number, DialogButton>();
+	private readonly _wizardPages = new Map<number, WizardPage>();
+	private readonly _wizards = new Map<number, Wizard>();
 	private _dialogService: CustomDialogService;
 
 	constructor(
@@ -32,13 +34,13 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		throw new Error('Method not implemented.');
 	}
 
-	public $open(handle: number): Thenable<void> {
+	public $openDialog(handle: number): Thenable<void> {
 		let dialog = this.getDialog(handle);
 		this._dialogService.showDialog(dialog);
 		return Promise.resolve();
 	}
 
-	public $close(handle: number): Thenable<void> {
+	public $closeDialog(handle: number): Thenable<void> {
 		let dialog = this.getDialog(handle);
 		this._dialogService.closeDialog(dialog);
 		return Promise.resolve();
@@ -98,12 +100,61 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		return Promise.resolve();
 	}
 
+	public $setWizardPageDetails(handle: number, details: IModelViewWizardPageDetails): Thenable<void> {
+		let page = this._wizardPages.get(handle);
+		if (!page) {
+			page = new WizardPage(details.title, details.content);
+			this._wizardPages.set(handle, page);
+		}
+
+		page.title = details.title;
+		page.content = details.content;
+		page.enabled = details.enabled;
+		if (details.customButtons !== undefined) {
+			page.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
+		}
+
+		return Promise.resolve();
+	}
+
+	public $setWizardDetails(handle: number, details: IModelViewWizardDetails): Thenable<void> {
+		let wizard = this._wizards.get(handle);
+		if (!wizard) {
+			wizard = new Wizard(details.title);
+			wizard.backButton = this.getButton(details.backButton);
+			wizard.cancelButton = this.getButton(details.cancelButton);
+			wizard.doneButton = this.getButton(details.doneButton);
+			wizard.nextButton = this.getButton(details.nextButton);
+			this._wizards.set(handle, wizard);
+		}
+
+		wizard.title = details.title;
+		wizard.pages = details.pages.map(handle => this.getWizardPage(handle));
+		wizard.setCurrentPage(details.currentPage);
+		if (details.customButtons !== undefined) {
+			wizard.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
+		}
+
+		return Promise.resolve();
+	}
+
+	public $openWizard(handle: number): Thenable<void> {
+		let wizard = this.getWizard(handle);
+		this._dialogService.showWizard(wizard);
+		return Promise.resolve();
+	}
+
+	public $closeWizard(handle: number): Thenable<void> {
+		let wizard = this.getWizard(handle);
+		this._dialogService.closeWizard(wizard);
+		return Promise.resolve();
+	}
+
 	private getDialog(handle: number): Dialog {
 		let dialog = this._dialogs.get(handle);
 		if (!dialog) {
 			throw new Error('No dialog matching the given handle');
 		}
-
 		return dialog;
 	}
 
@@ -112,7 +163,6 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		if (!tab) {
 			throw new Error('No tab matching the given handle');
 		}
-
 		return tab;
 	}
 
@@ -121,11 +171,26 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		if (!button) {
 			throw new Error('No button matching the given handle');
 		}
-
 		return button;
 	}
 
 	private onButtonClick(handle: number): void {
 		this._proxy.$onButtonClick(handle);
+	}
+
+	private getWizardPage(handle: number): WizardPage {
+		let page = this._wizardPages.get(handle);
+		if (!page) {
+			throw new Error('No page matching the given handle');
+		}
+		return page;
+	}
+
+	private getWizard(handle: number): Wizard {
+		let wizard = this._wizards.get(handle);
+		if (!wizard) {
+			throw new Error('No wizard matching the given handle');
+		}
+		return wizard;
 	}
 }

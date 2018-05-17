@@ -18,8 +18,8 @@ suite('ExtHostModelViewDialog Tests', () => {
 
 	setup(() => {
 		mockProxy = Mock.ofInstance(<MainThreadModelViewDialogShape>{
-			$open: handle => undefined,
-			$close: handle => undefined,
+			$openDialog: handle => undefined,
+			$closeDialog: handle => undefined,
 			$setDialogDetails: (handle, details) => undefined,
 			$setTabDetails: (handle, details) => undefined,
 			$setButtonDetails: (handle, details) => undefined
@@ -59,7 +59,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 	});
 
 	test('Opening a dialog updates its tabs and buttons on the main thread', () => {
-		mockProxy.setup(x => x.$open(It.isAny()));
+		mockProxy.setup(x => x.$openDialog(It.isAny()));
 		mockProxy.setup(x => x.$setDialogDetails(It.isAny(), It.isAny()));
 		mockProxy.setup(x => x.$setTabDetails(It.isAny(), It.isAny()));
 		mockProxy.setup(x => x.$setButtonDetails(It.isAny(), It.isAny()));
@@ -79,7 +79,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		let button2 = extHostModelViewDialog.createButton(button2Label);
 
 		// Open the dialog and verify that the correct main thread methods were called
-		extHostModelViewDialog.open(dialog);
+		extHostModelViewDialog.openDialog(dialog);
 		mockProxy.verify(x => x.$setButtonDetails(It.isAny(), It.is(details => {
 			return details.enabled === false && details.label === button1Label;
 		})), Times.once());
@@ -95,7 +95,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		mockProxy.verify(x => x.$setDialogDetails(It.isAny(), It.is(details => {
 			return details.title === dialogTitle;
 		})), Times.once());
-		mockProxy.verify(x => x.$open(It.isAny()), Times.once());
+		mockProxy.verify(x => x.$openDialog(It.isAny()), Times.once());
 	});
 
 	test('Button clicks are forwarded to the correct button', () => {

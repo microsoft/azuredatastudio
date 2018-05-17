@@ -13,27 +13,25 @@ import { Dialog, Wizard, DialogTab } from 'sql/platform/dialog/dialogTypes';
 import { IModalOptions } from 'sql/base/browser/ui/modal/modal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-const defaultOptions: IModalOptions = { hasBackButton: true, isWide: false };
-const defaultWizardOptions: IModalOptions = { hasBackButton: true, isWide: true };
+const defaultOptions: IModalOptions = { hasBackButton: false, isWide: false };
+const defaultWizardOptions: IModalOptions = { hasBackButton: false, isWide: true };
 
 export class CustomDialogService {
 	private _dialogModals = new Map<Dialog, DialogModal>();
+	private _wizardModals = new Map<Wizard, WizardModal>();
 
 	constructor( @IInstantiationService private _instantiationService: IInstantiationService) { }
 
 	public showDialog(dialog: Dialog, options?: IModalOptions): void {
-		// let dialogModal = this._instantiationService.createInstance(DialogModal, dialog, 'CustomDialog', options || defaultOptions);
-		// this._dialogModals.set(dialog, dialogModal);
-		// dialogModal.render();
-		// dialogModal.open();
-		let wizard = new Wizard(dialog.title);
-		wizard.customButtons = dialog.customButtons;
-		wizard.pages = Array.isArray(dialog.content) ? dialog.content : [];
-		this.showWizard(wizard);
+		let dialogModal = this._instantiationService.createInstance(DialogModal, dialog, 'CustomDialog', options || defaultOptions);
+		this._dialogModals.set(dialog, dialogModal);
+		dialogModal.render();
+		dialogModal.open();
 	}
 
 	public showWizard(wizard: Wizard, options?: IModalOptions): void {
 		let wizardModal = this._instantiationService.createInstance(WizardModal, wizard, 'WizardPage', options || defaultWizardOptions);
+		this._wizardModals.set(wizard, wizardModal);
 		wizardModal.render();
 		wizardModal.open();
 	}
@@ -42,6 +40,13 @@ export class CustomDialogService {
 		let dialogModal = this._dialogModals.get(dialog);
 		if (dialogModal) {
 			dialogModal.cancel();
+		}
+	}
+
+	public closeWizard(wizard: Wizard): void {
+		let wizardModal = this._wizardModals.get(wizard);
+		if (wizardModal) {
+			wizardModal.cancel();
 		}
 	}
 }

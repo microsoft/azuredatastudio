@@ -251,6 +251,15 @@ export async function activate(context: vscode.ExtensionContext) {
 		// sqlops.workspace.openModelViewEditor('Test Model View', 'dialogContent1');
 	});
 
+	vscode.commands.registerCommand('mssql.openTestWizard', () => {
+		let page1 = sqlops.window.modelviewdialog.createWizardPage('Page 1');
+		page1.content = 'dialogContent1';
+		let page2 = sqlops.window.modelviewdialog.createWizardPage('Page 2');
+		page2.content = 'dialogContent2';
+		let wizard = sqlops.window.modelviewdialog.createWizard('Test Wizard', [page1, page2]);
+		sqlops.window.modelviewdialog.openWizard(wizard);
+	});
+
 	// vscode.commands.registerCommand('mssql.openTestDialog2', () => {
 	// 	sqlops.workspace.openModelViewEditor('Test Model View', 'dialogContent1');
 	// });

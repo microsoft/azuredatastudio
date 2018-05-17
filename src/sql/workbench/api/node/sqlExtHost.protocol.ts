@@ -16,7 +16,8 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
+	IModelViewWizardDetails, IModelViewWizardPageDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import Event, { Emitter } from 'vs/base/common/event';
 
 export abstract class ExtHostAccountManagementShape {
@@ -553,11 +554,15 @@ export interface ExtHostModelViewDialogShape {
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
-	$open(handle: number): Thenable<void>;
-	$close(handle: number): Thenable<void>;
+	$openDialog(handle: number): Thenable<void>;
+	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
 	$setTabDetails(handle: number, details: IModelViewTabDetails): Thenable<void>;
 	$setButtonDetails(handle: number, details: IModelViewButtonDetails): Thenable<void>;
+	$openWizard(handle: number): Thenable<void>;
+	$closeWizard(handle: number): Thenable<void>;
+	$setWizardPageDetails(handle: number, details: IModelViewWizardPageDetails): Thenable<void>;
+	$setWizardDetails(handle: number, details: IModelViewWizardDetails): Thenable<void>;
 }
 export interface ExtHostQueryEditorShape {
 }
