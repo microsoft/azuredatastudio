@@ -17,7 +17,6 @@ import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/theme
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { BOOTSTRAP_SERVICE_ID, IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { StatusIndicator, CardProperties, ActionDescriptor } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @Component({

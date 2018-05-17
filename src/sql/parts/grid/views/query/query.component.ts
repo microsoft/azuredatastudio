@@ -22,8 +22,7 @@ import * as Services from 'sql/parts/grid/services/sharedServices';
 import { IGridIcon, IMessage, IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { GridActionProvider } from 'sql/parts/grid/views/gridActions';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { error } from 'sql/base/common/log';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { clone } from 'sql/base/common/objects';
@@ -156,7 +155,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	public showChartRequested: EventEmitter<IGridDataSet> = new EventEmitter<IGridDataSet>();
 	public goToNextQueryOutputTabRequested: EventEmitter<void> = new EventEmitter<void>();
 
-	@Input() public queryParameters: QueryComponentParams;
+	@Input() public queryParameters: IQueryComponentParams;
 
 	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
 	// tslint:disable-next-line:no-unused-variable

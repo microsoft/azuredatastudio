@@ -8,8 +8,8 @@ import { Injectable, Inject, forwardRef, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 /* SQL imports */
-import { DefaultComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { IDefaultComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { IMetadataService } from 'sql/services/metadata/metadataService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
@@ -97,7 +97,6 @@ export class SingleQueryManagementService {
 export class CommonServiceInterface extends AngularDisposable {
 	protected _uniqueSelector: string;
 	protected _uri: string;
-	protected _bootstrapParams: DefaultComponentParams;
 
 	/* Special Services */
 	protected _singleMetadataService: SingleConnectionMetadataService;
@@ -109,7 +108,7 @@ export class CommonServiceInterface extends AngularDisposable {
 	protected _connectionContextKey: ConnectionContextkey;
 
 	constructor(
-		@Inject(BOOTSTRAP_SERVICE_ID) protected _bootstrapService: IBootstrapService,
+		@Inject(IBootstrapParams) protected _params: IDefaultComponentParams,
 		@Inject(IMetadataService) protected _metadataService: IMetadataService,
 		@Inject(IConnectionManagementService) protected _connectionManagementService: IConnectionManagementService,
 		@Inject(IAdminService) protected _adminService: IAdminService,
@@ -143,10 +142,9 @@ export class CommonServiceInterface extends AngularDisposable {
 	}
 
 	protected _getbootstrapParams(): void {
-		this._bootstrapParams = this._bootstrapService.getBootstrapParams<DefaultComponentParams>(this._uniqueSelector);
-		this.scopedContextKeyService = this._bootstrapParams.scopedContextService;
-		this._connectionContextKey = this._bootstrapParams.connectionContextKey;
-		this.uri = this._bootstrapParams.ownerUri;
+		this.scopedContextKeyService = this._params.scopedContextService;
+		this._connectionContextKey = this._params.connectionContextKey;
+		this.uri = this._params.ownerUri;
 	}
 
 	protected setUri(uri: string) {
@@ -178,6 +176,6 @@ export class CommonServiceInterface extends AngularDisposable {
 	}
 
 	public getOriginalConnectionProfile(): IConnectionProfile {
-		return this._bootstrapParams.connection;
+		return this._params.connection;
 	}
 }

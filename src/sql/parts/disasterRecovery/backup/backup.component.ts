@@ -19,8 +19,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
 import { IBackupService, IBackupUiService, TaskExecutionMode } from 'sql/parts/disasterRecovery/backup/common/backupService';
 import FileValidationConstants = require('sql/parts/fileBrowser/common/fileValidationServiceConstants');
-import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 

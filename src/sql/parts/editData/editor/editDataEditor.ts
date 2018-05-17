@@ -34,9 +34,9 @@ import {
 	RefreshTableAction, StopRefreshTableAction, ChangeMaxRowsAction, ChangeMaxRowsActionItem, ShowQueryPaneAction
 } from 'sql/parts/editData/execution/editDataActions';
 import { EditDataModule } from 'sql/parts/grid/views/editData/editData.module';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { EDITDATA_SELECTOR } from 'sql/parts/grid/views/editData/editData.component';
-import { EditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResourceEditor';
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -93,8 +93,7 @@ export class EditDataEditor extends BaseEditor {
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IEditorGroupService private _editorGroupService: IEditorGroupService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IBootstrapService private _bootstrapService: IBootstrapService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super(EditDataEditor.ID, _telemetryService, themeService);
 

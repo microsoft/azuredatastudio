@@ -9,8 +9,8 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
 /* SQL imports */
-import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { IMetadataService } from 'sql/services/metadata/metadataService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
@@ -85,7 +85,6 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	private _numberOfPageNavigations = 0;
 
 	constructor(
-		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => Router)) private _router: Router,
 		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(IMetadataService) metadataService: IMetadataService,
@@ -93,9 +92,14 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 		@Inject(IAdminService) adminService: IAdminService,
 		@Inject(IQueryManagementService) queryManagementService: IQueryManagementService,
 		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
-		@Inject(IConfigurationService) private _configService: IConfigurationService
+		@Inject(IConfigurationService) private _configService: IConfigurationService,
+		@Inject(IBootstrapParams) _params: IDashboardComponentParams
 	) {
-		super(bootstrapService, metadataService, connectionManagementService, adminService, queryManagementService);
+		super(_params, metadataService, connectionManagementService, adminService, queryManagementService);
+	}
+
+	private get params(): IDashboardComponentParams {
+		return this._params;
 	}
 
 	/**
@@ -107,11 +111,10 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	}
 
 	protected _getbootstrapParams(): void {
-		this._bootstrapParams = this._bootstrapService.getBootstrapParams<DashboardComponentParams>(this._uniqueSelector);
-		this.scopedContextKeyService = this._bootstrapParams.scopedContextService;
-		this._connectionContextKey = this._bootstrapParams.connectionContextKey;
+		this.scopedContextKeyService = this.params.scopedContextService;
+		this._connectionContextKey = this.params.connectionContextKey;
 		this.dashboardContextKey = this._dashboardContextKey.bindTo(this.scopedContextKeyService);
-		this.uri = this._bootstrapParams.ownerUri;
+		this.uri = this.params.ownerUri;
 	}
 
 	/**

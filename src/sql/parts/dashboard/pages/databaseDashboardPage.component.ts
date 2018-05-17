@@ -10,7 +10,6 @@ import { BreadcrumbClass } from 'sql/parts/dashboard/services/breadcrumb.service
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 

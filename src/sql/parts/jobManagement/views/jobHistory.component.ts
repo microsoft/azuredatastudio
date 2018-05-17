@@ -13,7 +13,6 @@ import { RunJobAction, StopJobAction } from 'sql/parts/jobManagement/views/jobHi
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { AgentJobUtilities } from '../common/agentJobUtilities';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';

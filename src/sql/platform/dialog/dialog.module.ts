@@ -16,7 +16,7 @@ import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/mo
 import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
-import { BOOTSTRAP_SERVICE_ID, IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import { IUniqueSelector } from 'sql/services/bootstrap/bootstrapService';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { Registry } from 'vs/platform/registry/common/platform';
 
@@ -43,15 +43,14 @@ export class DialogModule {
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
+		@Inject(IUniqueSelector) private selector: IUniqueSelector,
 		@Inject(forwardRef(() => CommonServiceInterface)) bootstrap: CommonServiceInterface,
 	) {
 	}
 
 	ngDoBootstrap(appRef: ApplicationRef) {
 		const factoryWrapper: any = this._resolver.resolveComponentFactory(DialogContainer);
-		const uniqueSelector: string = this._bootstrapService.getUniqueSelector('dialog-modelview-container');
-		factoryWrapper.factory.selector = uniqueSelector;
+		factoryWrapper.factory.selector = this.selector;
 		appRef.bootstrap(factoryWrapper);
 	}
 }

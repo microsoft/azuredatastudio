@@ -8,12 +8,11 @@
 import 'vs/css!./media/dialogModal';
 import { Component, AfterContentInit, ViewChild, Input, Inject, forwardRef, ElementRef } from '@angular/core';
 import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
-import { BootstrapParams } from 'sql/services/bootstrap/bootstrapParams';
-import { BOOTSTRAP_SERVICE_ID, IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import Event, { Emitter } from 'vs/base/common/event';
 import { ComponentEventType } from '../../parts/modelComponents/interfaces';
 
-export interface DialogComponentParams extends BootstrapParams {
+export interface DialogComponentParams extends IBootstrapParams {
 	modelViewId: string;
 	validityChangedCallback: (valid: boolean) => void;
 }
@@ -29,14 +28,12 @@ export interface DialogComponentParams extends BootstrapParams {
 export class DialogContainer implements AfterContentInit {
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
-	private _params: DialogComponentParams;
 
 	public modelViewId: string;
 	@ViewChild(ModelViewContent) private _modelViewContent: ModelViewContent;
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService) {
-		this._params = bootstrapService.getBootstrapParams(el.nativeElement.tagName) as DialogComponentParams;
+		@Inject(IBootstrapParams) private _params: DialogComponentParams) {
 		this.modelViewId = this._params.modelViewId;
 	}
 

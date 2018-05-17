@@ -17,8 +17,7 @@ import { IGridDataRow, VirtualizedCollection } from 'angular2-slickgrid';
 
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import * as Services from 'sql/parts/grid/services/sharedServices';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { EditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDataGridActions';
 import { error } from 'sql/base/common/log';
@@ -33,6 +32,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IBootstrapParams } from '../../../../services/bootstrap/bootstrapService';
 
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
@@ -78,7 +78,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
-		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
+		@Inject(IBootstrapParams) params: IEditDataComponentParams,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
@@ -90,8 +90,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	) {
 		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService);
 		this._el.nativeElement.className = 'slickgridContainer';
-		let editDataParameters: EditDataComponentParams = this.bootstrapService.getBootstrapParams(this._el.nativeElement.tagName);
-		this.dataService = editDataParameters.dataService;
+		this.dataService = params.dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
 	}
 

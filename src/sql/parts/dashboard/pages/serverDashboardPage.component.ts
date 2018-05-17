@@ -11,7 +11,6 @@ import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';

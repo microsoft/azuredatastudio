@@ -13,7 +13,7 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 
 const BrowserAnimationsModule = (<any>require.__$__nodeRequire('@angular/platform-browser/animations')).BrowserAnimationsModule;
 
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { IUniqueSelector } from 'sql/services/bootstrap/bootstrapService';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -69,14 +69,13 @@ export class QueryOutputModule {
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService
+		@Inject(IUniqueSelector) private selector: IUniqueSelector
 	) {
 	}
 
 	ngDoBootstrap(appRef: ApplicationRef) {
 		const factory = this._resolver.resolveComponentFactory(QueryOutputComponent);
-		const uniqueSelector: string = this._bootstrapService.getUniqueSelector(QUERY_OUTPUT_SELECTOR);
-		(<any>factory).factory.selector = uniqueSelector;
+		(<any>factory).factory.selector = this.selector;
 		appRef.bootstrap(factory);
 	}
 }

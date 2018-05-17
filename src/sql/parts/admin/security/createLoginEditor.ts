@@ -17,8 +17,7 @@ import { IConnectionManagementService } from 'sql/parts/connection/common/connec
 import { IMetadataService } from 'sql/services/metadata/metadataService';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
-import { BootstrapParams } from 'sql/services/bootstrap/bootstrapParams';
+import { bootstrapAngular, IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { CREATELOGIN_SELECTOR } from 'sql/parts/admin/security/createLogin.component';
 
 export class CreateLoginEditor extends BaseEditor {
@@ -32,8 +31,7 @@ export class CreateLoginEditor extends BaseEditor {
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IMetadataService private _metadataService: IMetadataService,
 		@IScriptingService private _scriptingService: IScriptingService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService,
-		@IBootstrapService private _bootstrapService: IBootstrapService
+		@IQueryEditorService private _queryEditorService: IQueryEditorService
 	) {
 		super(CreateLoginEditor.ID, telemetryService, themeService);
 	}
@@ -96,11 +94,11 @@ export class CreateLoginEditor extends BaseEditor {
 	private bootstrapAngular(input: CreateLoginInput): void {
 
 		// Get the bootstrap params and perform the bootstrap
-		let params: BootstrapParams = {
+		let params: IBootstrapParams = {
 			connection: input.getConnectionProfile(),
 			ownerUri: input.getUri()
 		};
-		let uniqueSelector = this._bootstrapService.bootstrap(
+		let uniqueSelector = this.instantiationService.invokeFunction(bootstrapAngular,
 			CreateLoginModule,
 			this.getContainer().getHTMLElement(),
 			CREATELOGIN_SELECTOR,

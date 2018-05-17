@@ -10,8 +10,7 @@ import { PlanXmlParser, PlanNode } from 'sql/parts/queryPlan/planXmlParser';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/common/theme/styler';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
 import { DataService } from 'sql/parts/grid/services/dataService';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
@@ -51,13 +50,12 @@ export class TopOperationsComponent extends TabChild implements OnDestroy, OnIni
 		{ name: localize('topOperations.partitioned', 'Partitioned'), field: 'partitioned' }
 	];
 
-	@Input() public queryParameters: QueryComponentParams;
+	@Input() public queryParameters: IQueryComponentParams;
 
 	private _disposables: Array<IDisposable> = [];
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super();

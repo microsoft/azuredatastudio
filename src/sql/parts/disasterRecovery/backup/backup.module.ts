@@ -8,7 +8,7 @@ import { ApplicationRef, ComponentFactoryResolver, ModuleWithProviders, NgModule
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { IUniqueSelector } from 'sql/services/bootstrap/bootstrapService';
 import { BackupComponent, BACKUP_SELECTOR } from 'sql/parts/disasterRecovery/backup/backup.component';
 
 // work around
@@ -32,14 +32,13 @@ export class BackupModule {
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService
+		@Inject(IUniqueSelector) private selector: IUniqueSelector
 	) {
 	}
 
 	ngDoBootstrap(appRef: ApplicationRef) {
 		const factory = this._resolver.resolveComponentFactory(BackupComponent);
-		const uniqueSelector: string = this._bootstrapService.getUniqueSelector(BACKUP_SELECTOR);
-		(<any>factory).factory.selector = uniqueSelector;
+		(<any>factory).factory.selector = this.selector;
 		appRef.bootstrap(factory);
 	}
 }

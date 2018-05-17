@@ -12,7 +12,6 @@ import { NgGridModule } from 'angular2-grid';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 
 import CustomUrlSerializer from 'sql/common/urlSerializer';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { Extensions as ComponentExtensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 
@@ -76,6 +75,7 @@ import { TasksWidget } from 'sql/parts/dashboard/widgets/tasks/tasksWidget.compo
 import { InsightsWidget } from 'sql/parts/dashboard/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/parts/dashboard/widgets/webview/webviewWidget.component';
 import { JobStepsViewComponent } from '../jobManagement/views/jobStepsView.component';
+import { IUniqueSelector } from '../../services/bootstrap/bootstrapService';
 
 let widgetComponents = [
 	PropertiesWidgetComponent,
@@ -140,7 +140,7 @@ export class DashboardModule {
 	private _bootstrap: DashboardServiceInterface;
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
+		@Inject(IUniqueSelector) private selector: IUniqueSelector,
 		@Inject(forwardRef(() => CommonServiceInterface)) bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private _router: Router,
 		@Inject(ITelemetryService) private telemetryService: ITelemetryService
@@ -150,9 +150,8 @@ export class DashboardModule {
 
 	ngDoBootstrap(appRef: ApplicationRef) {
 		const factory = this._resolver.resolveComponentFactory(DashboardComponent);
-		const uniqueSelector: string = this._bootstrapService.getUniqueSelector(DASHBOARD_SELECTOR);
-		this._bootstrap.selector = uniqueSelector;
-		(<any>factory).factory.selector = uniqueSelector;
+		this._bootstrap.selector = this.selector;
+		(<any>factory).factory.selector = this.selector;
 		appRef.bootstrap(factory);
 
 		this._router.events.subscribe(e => {
