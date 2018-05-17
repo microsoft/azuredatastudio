@@ -257,6 +257,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		let page2 = sqlops.window.modelviewdialog.createWizardPage('Page 2');
 		page2.content = 'dialogContent2';
 		let wizard = sqlops.window.modelviewdialog.createWizard('Test Wizard', [page1, page2]);
+		wizard.onPageChanged(info => console.log('Page changed! Last page: ' + info.lastPage + ', new page: ' + info.newPage));
 		sqlops.window.modelviewdialog.openWizard(wizard);
 	});
 

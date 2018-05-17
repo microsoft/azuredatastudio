@@ -54,7 +54,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			let cancelButton = this.getButton(details.cancelButton);
 			dialog.okButton = okButton;
 			dialog.cancelButton = cancelButton;
-			dialog.onValidityChanged(valid => this._proxy.$onDialogValidityChanged(handle, valid));
+			dialog.onValidityChanged(valid => this._proxy.$onPanelValidityChanged(handle, valid));
 			this._dialogs.set(handle, dialog);
 		}
 
@@ -104,6 +104,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		let page = this._wizardPages.get(handle);
 		if (!page) {
 			page = new WizardPage(details.title, details.content);
+			page.onValidityChanged(valid => this._proxy.$onPanelValidityChanged(handle, valid));
 			this._wizardPages.set(handle, page);
 		}
 
@@ -125,6 +126,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			wizard.cancelButton = this.getButton(details.cancelButton);
 			wizard.doneButton = this.getButton(details.doneButton);
 			wizard.nextButton = this.getButton(details.nextButton);
+			wizard.onPageChanged(info => this._proxy.$onWizardPageChanged(handle, info));
 			this._wizards.set(handle, wizard);
 		}
 

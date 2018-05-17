@@ -98,7 +98,8 @@ export class DialogModal extends Modal {
 			body = bodyBuilder.getHTMLElement();
 		});
 
-		this._dialogPane = new DialogPane(this._dialog, this._bootstrapService);
+		this._dialogPane = new DialogPane(this._dialog.title, this._dialog.content,
+			valid => this._dialog.notifyValidityChanged(valid), this._bootstrapService);
 		this._dialogPane.createBody(body);
 	}
 

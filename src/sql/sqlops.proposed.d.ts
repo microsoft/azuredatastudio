@@ -477,6 +477,18 @@ declare module 'sqlops' {
 				readonly onClick: vscode.Event<void>;
 			}
 
+			export interface WizardPageChangeInfo {
+				/**
+				 * The page number that the wizard changed from
+				 */
+				lastPage: number,
+
+				/**
+				 * The new page number
+				 */
+				newPage: number
+			}
+
 			export interface WizardPage extends ModelViewPanel {
 				/**
 				 * The title of the page
@@ -544,6 +556,12 @@ declare module 'sqlops' {
 				 * property on each page.
 				 */
 				customButtons: Button[];
+
+				/**
+				 * Event fired when the wizard's page changes, containing information about the
+				 * previous page and the new page
+				 */
+				onPageChanged: vscode.Event<WizardPageChangeInfo>;
 
 				/**
 				 * Add a page to the wizard at the given index

@@ -27,6 +27,10 @@
 	display: none;
 }
 
+.footer-button.dialogModal-hidden {
+	margin: 0;
+}
+
 /* Wizard modal rules */
 .wizardModal-progressBar {
 	flex-basis: 200px;

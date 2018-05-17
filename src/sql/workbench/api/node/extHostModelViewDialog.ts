@@ -15,6 +15,11 @@ import * as sqlops from 'sqlops';
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 
+const DONE_LABEL = nls.localize('dialogDoneLabel', 'Done');
+const CANCEL_LABEL = nls.localize('dialogCancelLabel', 'Cancel');
+const NEXT_LABEL = nls.localize('dialogNextLabel', 'Next');
+const PREVIOUS_LABEL = nls.localize('dialogPreviousLabel', 'Previous');
+
 class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel {
 	private _modelView: sqlops.ModelView;
 	private _handle: number;
@@ -23,7 +28,10 @@ class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel
 	protected _onValidityChanged: vscode.Event<boolean>;
 
 	constructor(private _viewType: string,
+		protected _extHostModelViewDialog: ExtHostModelViewDialog,
 		protected _extHostModelView: ExtHostModelViewShape) {
+		this._onValidityChanged = this._extHostModelViewDialog.getValidityChangedEvent(this);
+		this._onValidityChanged(valid => this._valid = valid);
 	}
 
 	public registerContent(handler: (view: sqlops.ModelView) => void): void {
@@ -69,13 +77,11 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdi
 	public cancelButton: sqlops.window.modelviewdialog.Button;
 	public customButtons: sqlops.window.modelviewdialog.Button[];
 
-	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog,
+	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape) {
-		super('modelViewDialog', extHostModelView);
-		this.okButton = this._extHostModelViewDialog.createButton(nls.localize('dialogOkLabel', 'Done'));
-		this.cancelButton = this._extHostModelViewDialog.createButton(nls.localize('dialogCancelLabel', 'Cancel'));
-		this._onValidityChanged = this._extHostModelViewDialog.getValidityChangedEvent(this);
-		this._onValidityChanged(valid => this._valid = valid);
+		super('modelViewDialog', extHostModelViewDialog, extHostModelView);
+		this.okButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
+		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL);
 	}
 
 	public setModelViewId(value: string) {
@@ -86,9 +92,9 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdi
 
 class TabImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.DialogTab {
 	constructor(
-		private _extHostModelViewDialog: ExtHostModelViewDialog,
+		extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape) {
-			super('modelViewDialogTab', extHostModelView);
+		super('modelViewDialogTab', extHostModelViewDialog, extHostModelView);
 	}
 
 	public title: string;
@@ -99,8 +105,6 @@ class TabImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialo
 		super.setModelViewId(value);
 		this.content = value;
 	}
-
-	// TODO: Implement validation for tabs
 }
 
 class ButtonImpl implements sqlops.window.modelviewdialog.Button {
@@ -153,8 +157,8 @@ class WizardPageImpl extends ModelViewPanelImpl implements sqlops.window.modelvi
 	public customButtons: sqlops.window.modelviewdialog.Button[];
 	private _enabled: boolean = true;
 
-	constructor(public title: string, _extHostModelView: ExtHostModelViewShape, private _extHostModelViewDialog: ExtHostModelViewDialog) {
-		super('WizardPageImpl', _extHostModelView);
+	constructor(public title: string, _extHostModelViewDialog: ExtHostModelViewDialog, _extHostModelView: ExtHostModelViewShape) {
+		super('modelViewWizardPage', _extHostModelViewDialog, _extHostModelView);
 	}
 
 	public get enabled(): boolean {
@@ -175,19 +179,17 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 	public nextButton: sqlops.window.modelviewdialog.Button;
 	public backButton: sqlops.window.modelviewdialog.Button;
 	public customButtons: sqlops.window.modelviewdialog.Button[];
+	public readonly onPageChanged: Event<sqlops.window.modelviewdialog.WizardPageChangeInfo>;
 
 	constructor(public title: string, pages: sqlops.window.modelviewdialog.WizardPage[],
 		private _extHostModelViewDialog: ExtHostModelViewDialog) {
 		this._pages = pages;
-		this.doneButton = new ButtonImpl(this._extHostModelViewDialog);
-		this.cancelButton = new ButtonImpl(this._extHostModelViewDialog);
-		this.nextButton = new ButtonImpl(this._extHostModelViewDialog);
-		this.backButton = new ButtonImpl(this._extHostModelViewDialog);
-		// TODO: localize
-		this.doneButton.label = 'done';
-		this.cancelButton.label = 'cancel';
-		this.nextButton.label = 'next';
-		this.backButton.label = 'back';
+		this.doneButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
+		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL);
+		this.nextButton = this._extHostModelViewDialog.createButton(NEXT_LABEL);
+		this.backButton = this._extHostModelViewDialog.createButton(PREVIOUS_LABEL);
+		this.onPageChanged = this._extHostModelViewDialog.getWizardPageChangedEvent(this);
+		this.onPageChanged(info => this._currentPage = info.newPage);
 	}
 
 	public get currentPage(): number {
@@ -239,14 +241,9 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 
 	private readonly _proxy: MainThreadModelViewDialogShape;
 
-	// private readonly _dialogHandles = new Map<sqlops.window.modelviewdialog.Dialog, number>();
-	// private readonly _tabHandles = new Map<sqlops.window.modelviewdialog.DialogTab, number>();
-	// private readonly _buttonHandles = new Map<sqlops.window.modelviewdialog.Button, number>();
-	// private readonly _wizardPageHandles = new Map<sqlops.window.modelviewdialog.WizardPage, number>();
-	// private readonly _wizardHandles = new Map<sqlops.window.modelviewdialog.Wizard, number>();
 	private readonly _objectHandles = new Map<object, number>();
-
 	private readonly _validityEmitters = new Map<number, Emitter<boolean>>();
+	private readonly _pageChangedEmitters = new Map<number, Emitter<sqlops.window.modelviewdialog.WizardPageChangeInfo>>();
 	private readonly _onClickCallbacks = new Map<number, () => void>();
 
 	constructor(
@@ -272,59 +269,21 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return handle;
 	}
 
-	// private getDialogHandle(dialog: sqlops.window.modelviewdialog.Dialog) {
-	// 	let handle = this._dialogHandles.get(dialog);
-	// 	if (handle === undefined) {
-	// 		handle = ExtHostModelViewDialog.getNewHandle();
-	// 		this._dialogHandles.set(dialog, handle);
-	// 	}
-	// 	return handle;
-	// }
-
-	// private getTabHandle(tab: sqlops.window.modelviewdialog.DialogTab) {
-	// 	let handle = this._tabHandles.get(tab);
-	// 	if (handle === undefined) {
-	// 		handle = ExtHostModelViewDialog.getNewHandle();
-	// 		this._tabHandles.set(tab, handle);
-	// 	}
-	// 	return handle;
-	// }
-
-	// private getButtonHandle(button: sqlops.window.modelviewdialog.Button) {
-	// 	let handle = this._buttonHandles.get(button);
-	// 	if (handle === undefined) {
-	// 		handle = ExtHostModelViewDialog.getNewHandle();
-	// 		this._buttonHandles.set(button, handle);
-	// 	}
-	// 	return handle;
-	// }
-
-	// private getWizardPageHandle(page: sqlops.window.modelviewdialog.WizardPage) {
-	// 	let handle = this._wizardPageHandles.get(page);
-	// 	if (handle === undefined) {
-	// 		handle = ExtHostModelViewDialog.getNewHandle();
-	// 		this._wizardPageHandles.set(page, handle);
-	// 	}
-	// 	return handle;
-	// }
-
-	// private getWizardHandle(page: sqlops.window.modelviewdialog.Wizard) {
-	// 	let handle = this._wizardHandles.get(page);
-	// 	if (handle === undefined) {
-	// 		handle = ExtHostModelViewDialog.getNewHandle();
-	// 		this._wizardHandles.set(page, handle);
-	// 	}
-	// 	return handle;
-	// }
-
 	public $onButtonClick(handle: number): void {
 		this._onClickCallbacks.get(handle)();
 	}
 
-	public $onDialogValidityChanged(handle: number, valid: boolean): void {
+	public $onPanelValidityChanged(handle: number, valid: boolean): void {
 		let emitter = this._validityEmitters.get(handle);
 		if (emitter) {
 			emitter.fire(valid);
+		}
+	}
+
+	public $onWizardPageChanged(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): void {
+		let emitter = this._pageChangedEmitters.get(handle);
+		if (emitter) {
+			emitter.fire(info);
 		}
 	}
 
@@ -403,8 +362,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return button;
 	}
 
-	public getValidityChangedEvent(dialog: sqlops.window.modelviewdialog.Dialog) {
-		let handle = this.getHandle(dialog);
+	public getValidityChangedEvent(panel: sqlops.window.modelviewdialog.ModelViewPanel) {
+		let handle = this.getHandle(panel);
 		let emitter = this._validityEmitters.get(handle);
 		if (!emitter) {
 			emitter = new Emitter<boolean>();
@@ -413,8 +372,18 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return emitter.event;
 	}
 
+	public getWizardPageChangedEvent(wizard: sqlops.window.modelviewdialog.Wizard) {
+		let handle = this.getHandle(wizard);
+		let emitter = this._pageChangedEmitters.get(handle);
+		if (!emitter) {
+			emitter = new Emitter<sqlops.window.modelviewdialog.WizardPageChangeInfo>();
+			this._pageChangedEmitters.set(handle, emitter);
+		}
+		return emitter.event;
+	}
+
 	public createWizardPage(title: string): sqlops.window.modelviewdialog.WizardPage {
-		let page = new WizardPageImpl(title, this._extHostModelView, this);
+		let page = new WizardPageImpl(title, this, this._extHostModelView);
 		page.handle = this.getHandle(page);
 		return page;
 	}

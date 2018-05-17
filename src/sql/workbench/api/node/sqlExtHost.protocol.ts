@@ -550,7 +550,8 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 
 export interface ExtHostModelViewDialogShape {
 	$onButtonClick(handle: number): void;
-	$onDialogValidityChanged(handle: number, valid: boolean): void;
+	$onPanelValidityChanged(handle: number, valid: boolean): void;
+	$onWizardPageChanged(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): void;
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {

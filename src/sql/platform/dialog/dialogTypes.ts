@@ -12,10 +12,23 @@ import Event, { Emitter } from 'vs/base/common/event';
 export class DialogTab {
 	public content: string;
 
+	private _valid: boolean = true;
+	private _validityChangedEmitter = new Emitter<boolean>();
+	public readonly onValidityChanged = this._validityChangedEmitter.event;
+
 	constructor(public title: string, content?: string) {
 		if (content) {
 			this.content = content;
 		}
+	}
+
+	public get valid(): boolean {
+		return this._valid;
+	}
+
+	public notifyValidityChanged(valid: boolean) {
+		this._valid = valid;
+		this._validityChangedEmitter.fire(valid);
 	}
 }
 
@@ -102,21 +115,8 @@ export class WizardPage extends DialogTab {
 	public customButtons: DialogButton[];
 	public enabled: boolean;
 
-	private _valid: boolean = true;
-	private _validityChangedEmitter = new Emitter<boolean>();
-	public readonly onValidityChanged = this._validityChangedEmitter.event;
-
 	constructor(public title: string, content?: string) {
 		super(title, content);
-	}
-
-	public get valid(): boolean {
-		return this._valid;
-	}
-
-	public notifyValidityChanged(valid: boolean) {
-		this._valid = valid;
-		this._validityChangedEmitter.fire(valid);
 	}
 }
 
@@ -128,6 +128,8 @@ export class Wizard {
 	public cancelButton: DialogButton;
 	public customButtons: DialogButton[];
 	private _currentPage: number;
+	private _pageChangedEmitter = new Emitter<sqlops.window.modelviewdialog.WizardPageChangeInfo>();
+	public readonly onPageChanged = this._pageChangedEmitter.event;
 
 	constructor(public title: string) { }
 
@@ -135,16 +137,14 @@ export class Wizard {
 		return this._currentPage;
 	}
 
-	public addPage(page: WizardPage, index?: number) {
-		// TODO
-	}
-
-	public removePage(index: number) {
-		// TODO
-	}
-
 	public setCurrentPage(index: number) {
+		let lastPage = this._currentPage;
 		this._currentPage = index;
-		// TODO
+		if (lastPage !== undefined && index !== undefined) {
+			this._pageChangedEmitter.fire({
+				lastPage: lastPage,
+				newPage: this._currentPage
+			});
+		}
 	}
 }
