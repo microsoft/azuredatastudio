@@ -70,7 +70,7 @@ class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel
 	}
 }
 
-class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.Dialog  {
+class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.Dialog {
 	public title: string;
 	public content: string | sqlops.window.modelviewdialog.DialogTab[];
 	public okButton: sqlops.window.modelviewdialog.Button;
@@ -225,7 +225,7 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 		this._pages.splice(index, 1);
 		this._extHostModelViewDialog.updateWizard(this);
 	}
-	
+
 	public setCurrentPage(index: number) {
 		if (index >= 0 && index < this.pages.length) {
 			this._currentPage = index;
@@ -428,13 +428,13 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			customButtons: wizard.customButtons ? wizard.customButtons.map(button => this.getHandle(button)) : undefined
 		});
 	}
-	
+
 	public openWizard(wizard: sqlops.window.modelviewdialog.Wizard): void {
 		let handle = this.getHandle(wizard);
 		this.updateWizard(wizard);
 		this._proxy.$openWizard(handle);
 	}
-	
+
 	public closeWizard(wizard: sqlops.window.modelviewdialog.Wizard): void {
 		let handle = this.getHandle(wizard);
 		this._proxy.$closeWizard(handle);

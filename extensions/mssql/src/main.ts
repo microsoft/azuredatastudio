@@ -199,11 +199,11 @@ export async function activate(context: vscode.ExtensionContext) {
 				component: inputBox13,
 				title: 'Week'
 			},
-		], {
-			horizontal: true,
-			componentWidth: undefined,
-			width: undefined
-		}).component();
+			], {
+				horizontal: true,
+				componentWidth: undefined,
+				width: undefined
+			}).component();
 		await view.initializeModel(formModel);
 	});
 
@@ -396,27 +396,27 @@ export async function activate(context: vscode.ExtensionContext) {
 	// 		tab2Valid = true;
 	// 		tab2FirstContainer.validate();
 	// 	}, 10000);
-		// setTimeout(() => {
-		// 	dialog.okButton.label = 'done';
-		// 	dialog.cancelButton.enabled = true;
-		// 	customButton1.enabled = true;
-		// 	customButton2.enabled = false;
-		// 	customButton2.label = 'disabled button 2';
-		// 	customButton1.hidden = true;
-		// 	dialog.cancelButton.hidden = true;
-		// 	dialog.okButton.hidden = false;
-		// 	if (tab2FirstContainer) {
-		// 		tab2FirstContainer.addItem(modelView.modelBuilder.card()
-		// 			.withProperties<sqlops.CardProperties>({
-		// 				label: 'newCard',
-		// 				value: 'newValue',
-		// 				actions: [{ label: 'action', taskId: 'sqlservices.clickTask' }]
-		// 			})
-		// 			.component());
-		// 	}
-		// 	// sqlops.window.modelviewdialog.closeDialog(dialog);
-		// 	// sqlops.window.modelviewdialog.closeDialog(dialog);
-		// }, 5000);
+	// setTimeout(() => {
+	// 	dialog.okButton.label = 'done';
+	// 	dialog.cancelButton.enabled = true;
+	// 	customButton1.enabled = true;
+	// 	customButton2.enabled = false;
+	// 	customButton2.label = 'disabled button 2';
+	// 	customButton1.hidden = true;
+	// 	dialog.cancelButton.hidden = true;
+	// 	dialog.okButton.hidden = false;
+	// 	if (tab2FirstContainer) {
+	// 		tab2FirstContainer.addItem(modelView.modelBuilder.card()
+	// 			.withProperties<sqlops.CardProperties>({
+	// 				label: 'newCard',
+	// 				value: 'newValue',
+	// 				actions: [{ label: 'action', taskId: 'sqlservices.clickTask' }]
+	// 			})
+	// 			.component());
+	// 	}
+	// 	// sqlops.window.modelviewdialog.closeDialog(dialog);
+	// 	// sqlops.window.modelviewdialog.closeDialog(dialog);
+	// }, 5000);
 	// });
 }
 
