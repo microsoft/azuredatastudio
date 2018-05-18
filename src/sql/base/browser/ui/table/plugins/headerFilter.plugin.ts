@@ -88,7 +88,7 @@ export class HeaderFilter {
 		var $item = $('<div class="slick-header-menuitem">')
 						.data('command', command)
 						.data('column', columnDef)
-						.bind('click', this.handleMenuItemClick)
+						.bind('click', (e) => this.handleMenuItemClick(e, command, columnDef))
 						.appendTo(menu);
 
 		var $icon = $('<div class="slick-header-menuicon">')
@@ -339,9 +339,9 @@ export class HeaderFilter {
 		return _.sortBy(seen, (v) => { return v; });
 	}
 
-	private handleMenuItemClick(e) {
-		let command = $(this).data('command');
-		let columnDef = $(this).data('column');
+	private handleMenuItemClick(e, command, columnDef) {
+		// let command = $(e.target).data('command');
+		// let columnDef = $(e.target).data('column');
 
 		this.hideMenu();
 

@@ -220,10 +220,13 @@ export class JobsViewComponent implements AfterContentChecked {
 							this._table.grid.removeCellCssStyles(lastAppliedStyle[0]);
 						}
 						this.filterStylingMap[args.column.name] = null;
-						this.filterStack.pop();
+						let index = this.filterStack.indexOf(args.column.name, 0);
+						if (index > -1) {
+							this.filterStack.splice(index, 1);
+						}
 						let lastColStyle = this.filterStylingMap[this.filterStack[this.filterStack.length-1]];
 						for (let i = 0; i < lastColStyle.length; i++) {
-							this._table.grid.addCellCssStyles(lastColStyle[i][0], lastColStyle[i][1]);
+							this._table.grid.setCellCssStyles(lastColStyle[i][0], lastColStyle[i][1]);
 						}
 						if (this.filterStack.length === 0) {
 							this.filterStack = ['start'];
@@ -257,8 +260,8 @@ export class JobsViewComponent implements AfterContentChecked {
 				this.expandJobs(false);
 			}
 		});
-		this.filterPlugin.onCommand.subscribe(function (e, args: any) {
-			this.dataView.fastSort(args.column.field, args.command === 'sort-asc');
+		this.filterPlugin.onCommand.subscribe((e, args: any) => {
+			this.columnSort(args.column.field, args.command === 'sort-asc');
 		});
 		this._table.registerPlugin(<HeaderFilter>this.filterPlugin);
 
@@ -313,7 +316,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		return hash;
 	}
 
-	private addToStyleHash(row: number, start: boolean, name?: string) {
+	private addToStyleHash(row: number, start: boolean, columnName?: string) {
 		let hash : {
 			[index: number]: {
 			[id: string]: string;
@@ -327,10 +330,10 @@ export class JobsViewComponent implements AfterContentChecked {
 				this.filterStylingMap['start'] = [['error-row'+row.toString(), hash]];
 			}
 		} else {
-			if (this.filterStylingMap[name]) {
-				this.filterStylingMap[name].push(['error-row'+row.toString(), hash]);
+			if (this.filterStylingMap[columnName]) {
+				this.filterStylingMap[columnName].push(['error-row'+row.toString(), hash]);
 			} else {
-				this.filterStylingMap[name] = [['error-row'+row.toString(), hash]];
+				this.filterStylingMap[columnName] = [['error-row'+row.toString(), hash]];
 			}
 		}
 		this._table.grid.setCellCssStyles('error-row'+row.toString(), hash);
@@ -465,5 +468,51 @@ export class JobsViewComponent implements AfterContentChecked {
 			}
 		}
 		return value;
+	}
+
+	private columnSort(column: string, isAscending: boolean) {
+		let items = this.dataView.getItems();
+		// get error items here and remove them
+		let jobItems = items.filter(x => x._parent === undefined);
+		let errorItems = items.filter(x => x._parent !== undefined);
+		switch(column) {
+			case('name'):
+				this.dataView.setItems(jobItems);
+				// sort the actual jobs
+				this.dataView.sort((item1, item2) => {
+					return item1.name.localeCompare(item2.name);
+				}, isAscending);
+				// insert the errors back again
+				let jobItemsLength = jobItems.length;
+				for (let i = 0; i < jobItemsLength; i++) {
+					let item = jobItems[i];
+					if (item._child) {
+						let child = errorItems.find(error => error === item._child);
+						jobItems.splice(i+1, 0, child);
+					}
+				}
+				this.dataView.setItems(jobItems);
+				// remove old style
+				if (this.filterStylingMap[column]) {
+					let filterLength = this.filterStylingMap[column].length;
+					for (let i = 0; i < filterLength; i++) {
+						let lastAppliedStyle = this.filterStylingMap[column].pop();
+						this._table.grid.removeCellCssStyles(lastAppliedStyle[0]);
+					}
+				} else {
+					for (let i = 0; i < this.jobs.length; i++) {
+						this._table.grid.removeCellCssStyles('error-row'+i.toString());
+					}
+				}
+				// add new style (do it dataview items instead of the jobs)
+				let items = this.dataView.getItems();
+				for (let i = 0; i < items.length; i ++) {
+					let item = items[i];
+					if (item.lastRunOutcome === 'Failed') {
+						this.addToStyleHash(i, false, column);
+					}
+				}
+				break;
+		}
 	}
 }
