@@ -77,7 +77,7 @@ export function bootstrapAngular<T>(collection: ServicesAccessor, moduleType: IM
 		// Perform the bootsrap
 		const providers: { provide: ServiceIdentifier<any> | InjectionToken<any>, useValue: any }[] = [
 			// sql services
-			{ provide: IConnectionManagementService, useValue: collection.get(IConnectionManagementService)},
+			{ provide: IConnectionManagementService, useValue: collection.get(IConnectionManagementService) },
 			{ provide: IConnectionDialogService, useValue: collection.get(IConnectionDialogService) },
 			{ provide: IErrorMessageService, useValue: collection.get(IErrorMessageService) },
 			{ provide: IMetadataService, useValue: collection.get(IMetadataService) },

@@ -3,8 +3,10 @@
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { ApplicationRef, ComponentFactoryResolver, ModuleWithProviders, NgModule,
-	Inject, forwardRef, Type } from '@angular/core';
+import {
+	ApplicationRef, ComponentFactoryResolver, ModuleWithProviders, NgModule,
+	Inject, forwardRef, Type
+} from '@angular/core';
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -12,7 +14,7 @@ import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { BackupComponent, BACKUP_SELECTOR } from 'sql/parts/disasterRecovery/backup/backup.component';
 
 // work around
-const BrowserAnimationsModule = (<any> require.__$__nodeRequire('@angular/platform-browser/animations')).BrowserAnimationsModule;
+const BrowserAnimationsModule = (<any>require.__$__nodeRequire('@angular/platform-browser/animations')).BrowserAnimationsModule;
 
 // Backup wizard main angular module
 export const BackupModule = (params: IBootstrapParams, selector: string): Type<any> => {

@@ -41,7 +41,7 @@ export const DialogModule = (params, selector: string): any => {
 		providers: [
 			{ provide: APP_BASE_HREF, useValue: '/' },
 			CommonServiceInterface,
-			{ provide: IBootstrapParams, useValue: params}
+			{ provide: IBootstrapParams, useValue: params }
 		]
 	})
 	class ModuleClass {
