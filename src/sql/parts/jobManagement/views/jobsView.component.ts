@@ -34,6 +34,7 @@ import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { AgentJobUtilities } from '../common/agentJobUtilities';
 import { HeaderFilter } from '../../../base/browser/ui/table/plugins/headerFilter.plugin';
+import { BaseFocusDirectionTerminalAction } from 'vs/workbench/parts/terminal/electron-browser/terminalActions';
 
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
@@ -476,44 +477,127 @@ export class JobsViewComponent implements AfterContentChecked {
 		let jobItems = items.filter(x => x._parent === undefined);
 		let errorItems = items.filter(x => x._parent !== undefined);
 		switch(column) {
-			case('name'):
+			case('name'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => {
 					return item1.name.localeCompare(item2.name);
 				}, isAscending);
-				// insert the errors back again
-				let jobItemsLength = jobItems.length;
-				for (let i = 0; i < jobItemsLength; i++) {
-					let item = jobItems[i];
-					if (item._child) {
-						let child = errorItems.find(error => error === item._child);
-						jobItems.splice(i+1, 0, child);
-						jobItemsLength++;
-					}
-				}
-				this.dataView.setItems(jobItems);
-				// remove old style
-				if (this.filterStylingMap[column]) {
-					let filterLength = this.filterStylingMap[column].length;
-					for (let i = 0; i < filterLength; i++) {
-						let lastAppliedStyle = this.filterStylingMap[column].pop();
-						this._table.grid.removeCellCssStyles(lastAppliedStyle[0]);
-					}
-				} else {
-					for (let i = 0; i < this.jobs.length; i++) {
-						this._table.grid.removeCellCssStyles('error-row'+i.toString());
-					}
-				}
-				// add new style (do it dataview items instead of the jobs)
-				let items = this.dataView.getItems();
-				for (let i = 0; i < items.length; i ++) {
-					let item = items[i];
-					if (item.lastRunOutcome === 'Failed') {
-						this.addToStyleHash(i, false, column);
-					}
-				}
 				break;
+			}
+			case('lastRun'): {
+				this.dataView.setItems(jobItems);
+				// sort the actual jobs
+				this.dataView.sort((item1, item2) => this.dateCompare(item1, item2, true), isAscending);
+				break;
+			}
+			case ('nextRun') : {
+				this.dataView.setItems(jobItems);
+				// sort the actual jobs
+				this.dataView.sort((item1, item2) => this.dateCompare(item1, item2, false), isAscending);
+				break;
+			}
+			case ('enabled'): {
+				this.dataView.setItems(jobItems);
+				// sort the actual jobs
+				this.dataView.sort((item1, item2) => {
+					return item1.enabled.localeCompare(item2.enabled);
+				}, isAscending);
+				break;
+			}
+			case ('status'): {
+				this.dataView.setItems(jobItems);
+				// sort the actual jobs
+				this.dataView.sort((item1, item2) => {
+					return item1.status.localeCompare(item2.status);
+				}, isAscending);
+				break;
+			}
+			case ('category'): {
+				this.dataView.setItems(jobItems);
+				// sort the actual jobs
+				this.dataView.sort((item1, item2) => {
+					return item1.category.localeCompare(item2.category);
+				}, isAscending);
+				break;
+			}
+			case ('runnable'): {
+				this.dataView.setItems(jobItems);
+				// sort the actual jobs
+				this.dataView.sort((item1, item2) => {
+					return item1.runnable.localeCompare(item2.runnable);
+				}, isAscending);
+				break;
+			}
+			case ('schedule'): {
+				this.dataView.setItems(jobItems);
+				// sort the actual jobs
+				this.dataView.sort((item1, item2) => {
+					return item1.schedule.localeCompare(item2.schedule);
+				}, isAscending);
+				break;
+			}
+			case ('lastRunOutcome'): {
+				this.dataView.setItems(jobItems);
+				// sort the actual jobs
+				this.dataView.sort((item1, item2) => {
+					return item1.lastRunOutcome.localeCompare(item2.lastRunOutcome);
+				}, isAscending);
+				break;
+			}
+		}
+		// insert the errors back again
+		let jobItemsLength = jobItems.length;
+		for (let i = 0; i < jobItemsLength; i++) {
+			let item = jobItems[i];
+			if (item._child) {
+				let child = errorItems.find(error => error === item._child);
+				jobItems.splice(i+1, 0, child);
+				jobItemsLength++;
+			}
+		}
+		this.dataView.setItems(jobItems);
+		// remove old style
+		if (this.filterStylingMap[column]) {
+			let filterLength = this.filterStylingMap[column].length;
+			for (let i = 0; i < filterLength; i++) {
+				let lastAppliedStyle = this.filterStylingMap[column].pop();
+				this._table.grid.removeCellCssStyles(lastAppliedStyle[0]);
+			}
+		} else {
+			for (let i = 0; i < this.jobs.length; i++) {
+				this._table.grid.removeCellCssStyles('error-row'+i.toString());
+			}
+		}
+		// add new style (do it dataview items instead of the jobs)
+		items = this.dataView.getItems();
+		for (let i = 0; i < items.length; i ++) {
+			let item = items[i];
+			if (item.lastRunOutcome === 'Failed') {
+				this.addToStyleHash(i, false, column);
+			}
+		}
+
+	}
+
+	private dateCompare(item1: any, item2: any, lastRun: boolean): number {
+		let exceptionString = lastRun ? 'Never Run' : 'Not Scheduled';
+		if (item2.lastRun === exceptionString && item1.lastRun !== exceptionString) {
+			return -1;
+		} else if (item1.lastRun === exceptionString && item2.lastRun !== exceptionString) {
+			return 1;
+		} else if (item1.lastRun === exceptionString && item2.lastRun === exceptionString) {
+			return 0;
+		} else {
+			let date1 = new Date(item1.lastRun);
+			let date2 = new Date(item2.lastRun);
+			if (date1 > date2) {
+				return 1;
+			} else if (date1 === date2) {
+				return 0;
+			} else {
+				return -1;
+			}
 		}
 	}
 }
