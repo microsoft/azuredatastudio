@@ -272,9 +272,6 @@ export class RowDetailView {
 
 	public getErrorItem(parent, offset) {
 		let item: any = {};
-		// for (let prop in parent) {
-		// 	item[prop] = parent[prop];
-		// }
 		item.id = parent.id + '.' + offset;
 		item._collapsed = true;
 		item._isPadding = false;
