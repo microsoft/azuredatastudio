@@ -23,6 +23,7 @@ import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDa
 import { error } from 'sql/base/common/log';
 import { clone } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
@@ -32,7 +33,6 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IBootstrapParams } from '../../../../services/bootstrap/bootstrapService';
 
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
