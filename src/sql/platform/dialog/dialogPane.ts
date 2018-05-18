@@ -23,9 +23,8 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class DialogPane extends Disposable implements IThemable {
-	private _activeTabIndex: number;
 	private _tabbedPanel: TabbedPanel;
-	private _moduleRef: NgModuleRef<{}>;
+	private _moduleRefs: NgModuleRef<{}>[] = [];
 
 	// Validation
 	private _modelViewValidityMap = new Map<string, boolean>();
@@ -76,7 +75,6 @@ export class DialogPane extends Disposable implements IThemable {
 			}
 		});
 
-		this._activeTabIndex = 0;
 		return this._body;
 	}
 
@@ -93,7 +91,7 @@ export class DialogPane extends Disposable implements IThemable {
 				validityChangedCallback: (valid: boolean) => this._setValidity(modelViewId, valid)
 			} as DialogComponentParams,
 			undefined,
-			(moduleRef) => this._moduleRef = moduleRef);
+			(moduleRef) => this._moduleRefs.push(moduleRef));
 	}
 
 	public show(): void {
@@ -129,6 +127,6 @@ export class DialogPane extends Disposable implements IThemable {
 
 	public dispose() {
 		super.dispose();
-		this._moduleRef.destroy();
+		this._moduleRefs.forEach(moduleRef => moduleRef.destroy());
 	}
 }

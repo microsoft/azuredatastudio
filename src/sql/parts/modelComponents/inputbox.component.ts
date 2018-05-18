@@ -56,15 +56,17 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 							return undefined;
 						} else {
 							return {
-								content: nls.localize('invalidValueError', 'Invalid value'),
+								content: this._input.inputElement.validationMessage || nls.localize('invalidValueError', 'Invalid value'),
 								type: MessageType.ERROR
 							};
 						}
 					}
-				}
+				},
+				useDefaultValidation: true
 			};
 
 			this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
+			this._validations.push(() => !this._input.inputElement.validationMessage);
 
 			this._register(this._input);
 			this._register(attachInputBoxStyler(this._input, this.themeService));
@@ -76,6 +78,13 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 				});
 			}));
 		}
+	}
+
+	public validate(): Thenable<boolean> {
+		return super.validate().then(valid => {
+			this._input.validate();
+			return valid;
+		});
 	}
 
 	ngOnDestroy(): void {
@@ -95,6 +104,10 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
+		this._input.inputElement.type = this.inputType;
+		if (this.inputType === 'number') {
+			this._input.inputElement.step = 'any';
+		}
 		this._input.value = this.value;
 		this._input.setAriaLabel(this.ariaLabel);
 		this._input.setPlaceHolder(this.placeHolder);
@@ -102,11 +115,8 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		if (this.width) {
 			this._input.width = this.width;
 		}
-	}
-
-	public setValid(valid: boolean): void {
-		super.setValid(valid);
-		this._input.validate();
+		this._input.inputElement.required = this.required;
+		this.validate();
 	}
 
 	// CSS-bound properties
@@ -149,5 +159,21 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public set width(newValue: number) {
 		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.width = value, newValue);
+	}
+
+	public get inputType(): string {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, string>((props) => props.inputType, 'text');
+	}
+
+	public set inputType(newValue: string) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, string>((props, value) => props.inputType = value, newValue);
+	}
+
+	public get required(): boolean {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, boolean>((props) => props.required, false);
+	}
+
+	public set required(newValue: boolean) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, boolean>((props, value) => props.required = value, newValue);
 	}
 }

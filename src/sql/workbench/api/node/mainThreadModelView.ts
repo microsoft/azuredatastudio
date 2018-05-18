@@ -36,6 +36,7 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 				let handle = MainThreadModelView._handlePool++;
 				this._dialogs.set(handle, view);
 				this._proxy.$registerWidget(handle, view.id, view.connection, view.serverInfo);
+				view.onDestroy(() => this._proxy.$onClosed(handle));
 			}
 		});
 	}
@@ -46,7 +47,7 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 
 	$initializeModel(handle: number, rootComponent: IComponentShape): Thenable<void> {
 		return this.execModelViewAction(handle, (modelView) => {
-			modelView.initializeModel(rootComponent);
+			modelView.initializeModel(rootComponent, (componentId) => this.runCustomValidations(handle, componentId));
 		});
 	}
 
@@ -82,8 +83,12 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 		return this.execModelViewAction(handle, (modelView) => modelView.setProperties(componentId, properties));
 	}
 
-	$notifyValidation(handle: number, componentId: string, valid: boolean): Thenable<void> {
-		return this.execModelViewAction(handle, (modelView) => modelView.setValid(componentId, valid));
+	$validate(handle: number, componentId: string): Thenable<boolean> {
+		return new Promise(resolve => this.execModelViewAction(handle, (modelView) => resolve(modelView.validate(componentId))));
+	}
+
+	private runCustomValidations(handle: number, componentId: string): Thenable<boolean> {
+		return this._proxy.$runCustomValidations(handle, componentId);
 	}
 
 	private execModelViewAction<T>(handle: number, action: (m: IModelView) => T): Thenable<T> {

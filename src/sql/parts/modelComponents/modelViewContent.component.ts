@@ -56,6 +56,11 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 		}));
 	}
 
+	ngOnDestroy() {
+		this._onDestroy.fire();
+		super.ngOnDestroy();
+	}
+
 	public layout(): void {
 	}
 

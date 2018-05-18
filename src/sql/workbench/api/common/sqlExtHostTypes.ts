@@ -92,7 +92,8 @@ export interface IItemConfig {
 export enum ComponentEventType {
 	PropertiesChanged,
 	onDidChange,
-	onDidClick
+	onDidClick,
+	validityChanged
 }
 
 export interface IComponentEventArgs {
@@ -138,6 +139,6 @@ export interface CardProperties {
 export interface ActionDescriptor {
 	label: string;
 	actionTitle?: string;
-	callbackData?: string;
+	callbackData?: any;
 }
 
