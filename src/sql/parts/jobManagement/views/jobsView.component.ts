@@ -489,6 +489,7 @@ export class JobsViewComponent implements AfterContentChecked {
 					if (item._child) {
 						let child = errorItems.find(error => error === item._child);
 						jobItems.splice(i+1, 0, child);
+						jobItemsLength++;
 					}
 				}
 				this.dataView.setItems(jobItems);
