@@ -7,12 +7,9 @@
 import { MainThreadModelViewShape, SqlMainContext, ExtHostModelViewShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { IEditorOptions } from 'vs/platform/editor/common/editor';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 import * as sqlops from 'sqlops';
-import * as vscode from 'vscode';
 
 import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -31,8 +28,7 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 
 	constructor(
 		context: IExtHostContext,
-		@IModelViewService viewService: IModelViewService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService
+		@IModelViewService viewService: IModelViewService
 	) {
 		super();
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModelView);
