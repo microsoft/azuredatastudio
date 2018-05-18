@@ -247,6 +247,18 @@ export async function activate(context: vscode.ExtensionContext) {
 			console.log('dialog is ' + dialog.valid + ', validity is ' + valid);
 			dialog.okButton.enabled = valid;
 		});
+		tab1.onValidityChanged(valid => {
+			console.log('tab 1 validity changed: ' + valid);
+			console.log('tab 1 valid property is ' + tab1.valid);
+		});
+		tab2.onValidityChanged(valid => {
+			console.log('tab 2 validity changed: ' + valid);
+			console.log('tab 2 valid property is ' + tab2.valid);
+		});
+		dialog.onValidityChanged(valid => {
+			console.log('dialog validity changed: ' + valid);
+			console.log('dialog valid property is ' + dialog.valid);
+		});
 		sqlops.window.modelviewdialog.openDialog(dialog);
 		// sqlops.workspace.openModelViewEditor('Test Model View', 'dialogContent1');
 	});
@@ -254,10 +266,23 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('mssql.openTestWizard', () => {
 		let page1 = sqlops.window.modelviewdialog.createWizardPage('Page 1');
 		page1.content = 'dialogContent1';
+		page1.onValidityChanged(valid => {
+			console.log('page 1 validity changed: ' + valid);
+			console.log('page 1 valid property is ' + page1.valid);
+		});
 		let page2 = sqlops.window.modelviewdialog.createWizardPage('Page 2');
 		page2.content = 'dialogContent2';
-		let wizard = sqlops.window.modelviewdialog.createWizard('Test Wizard', [page1, page2]);
+		page2.onValidityChanged(valid => {
+			console.log('page 2 validity changed: ' + valid);
+			console.log('page 2 valid property is ' + page2.valid);
+		});
+		let wizard = sqlops.window.modelviewdialog.createWizard('Test Wizard');
+		wizard.pages = [page1, page2];
 		wizard.onPageChanged(info => console.log('Page changed! Last page: ' + info.lastPage + ', new page: ' + info.newPage));
+		wizard.cancelButton.onClick(() => console.log('wizard canceled'));
+		wizard.doneButton.onClick(() => console.log('wizard done'));
+		wizard.nextButton.onClick(() => console.log('wizard next button clicked'));
+		wizard.backButton.onClick(() => console.log('wizard back button clicked'));
 		sqlops.window.modelviewdialog.openWizard(wizard);
 	});
 

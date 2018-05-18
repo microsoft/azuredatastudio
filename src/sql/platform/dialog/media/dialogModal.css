@@ -32,15 +32,14 @@
 }
 
 /* Wizard modal rules */
-.wizardModal-progressBar {
+/* .wizardModal-progressBar {
 	flex-basis: 200px;
 	height: 100%;
 	background-color: red;
-}
+} */
 
 .wizardModal-page {
 	flex-basis: 100%;
-	background-color: blue;
 	display: flex;
 	flex-direction: column;
 	min-width: 600px;
@@ -48,11 +47,9 @@
 
 .wizardModal-page-header {
 	padding: 15px;
-	background-color: green;
 }
 
 .wizardModal-page-content {
 	flex-basis: 100%;
 	height: 100%;
-	background-color: pink;
 }
