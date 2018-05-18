@@ -52,13 +52,13 @@ class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel
 	}
 }
 
-class ViewModelEditorImpl extends ModelViewPanelImpl implements sqlops.workspace.ModelViewEditor  {
+class ViewModelEditorImpl extends ModelViewPanelImpl implements sqlops.workspace.ModelViewEditor {
 	private _content: string;
 	constructor(
 		extHostModelView: ExtHostModelViewShape,
 		private _proxy: MainThreadModelViewDialogShape
-		) {
-			super('modelViewEditor', extHostModelView);
+	) {
+		super('modelViewEditor', extHostModelView);
 	}
 
 	public setModelViewId(value: string) {
@@ -66,12 +66,12 @@ class ViewModelEditorImpl extends ModelViewPanelImpl implements sqlops.workspace
 		this._content = value;
 	}
 
-	public openEditor(title: string, position?: vscode.ViewColumn): Thenable<void>{
+	public openEditor(title: string, position?: vscode.ViewColumn): Thenable<void> {
 		return this._proxy.$openEditor(this._content, title, position);
 	}
 }
 
-class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.Dialog  {
+class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.Dialog {
 	public title: string;
 	public content: string | sqlops.window.modelviewdialog.DialogTab[];
 	public okButton: sqlops.window.modelviewdialog.Button;
@@ -104,7 +104,7 @@ class TabImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialo
 	constructor(
 		private _extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape) {
-			super('modelViewDialogTab', extHostModelView);
+		super('modelViewDialogTab', extHostModelView);
 	}
 
 	public title: string;
