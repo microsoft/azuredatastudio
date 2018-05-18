@@ -32,12 +32,6 @@
 }
 
 /* Wizard modal rules */
-/* .wizardModal-progressBar {
-	flex-basis: 200px;
-	height: 100%;
-	background-color: red;
-} */
-
 .wizardModal-page {
 	flex-basis: 100%;
 	display: flex;

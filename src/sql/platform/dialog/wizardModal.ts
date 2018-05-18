@@ -102,9 +102,6 @@ export class WizardModal extends Modal {
 		});
 
 		let builder = new Builder(this._body);
-		// builder.div({ class: 'wizardModal-progressBar' }, (progressBarBuilder) => {
-		// 	this._progressBar = progressBarBuilder.getHTMLElement();
-		// });
 		this._wizard.pages.forEach(page => {
 			let dialogPane = new DialogPane(page.title, page.content, valid => page.notifyValidityChanged(valid), this._bootstrapService);
 			dialogPane.createBody(this._body);
