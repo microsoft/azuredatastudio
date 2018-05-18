@@ -4,41 +4,47 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { ApplicationRef, ComponentFactoryResolver, ModuleWithProviders, NgModule,
-	Inject, forwardRef } from '@angular/core';
+	Inject, forwardRef, Type } from '@angular/core';
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { IUniqueSelector } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { BackupComponent, BACKUP_SELECTOR } from 'sql/parts/disasterRecovery/backup/backup.component';
 
 // work around
 const BrowserAnimationsModule = (<any> require.__$__nodeRequire('@angular/platform-browser/animations')).BrowserAnimationsModule;
 
 // Backup wizard main angular module
-@NgModule({
-	declarations: [
-		BackupComponent
-	],
-	entryComponents: [BackupComponent],
-	imports: [
-		FormsModule,
-		CommonModule,
-		BrowserModule,
-		BrowserAnimationsModule,
-	],
-	providers: [{ provide: APP_BASE_HREF, useValue: '/' }]
-})
-export class BackupModule {
+export const BackupModule = (params: IBootstrapParams, selector: string): Type<any> => {
+	@NgModule({
+		declarations: [
+			BackupComponent
+		],
+		entryComponents: [BackupComponent],
+		imports: [
+			FormsModule,
+			CommonModule,
+			BrowserModule,
+			BrowserAnimationsModule,
+		],
+		providers: [
+			{ provide: APP_BASE_HREF, useValue: '/' },
+			{ provide: IBootstrapParams, useValue: params }
+		]
+	})
+	class ModuleClass {
 
-	constructor(
-		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-		@Inject(IUniqueSelector) private selector: IUniqueSelector
-	) {
+		constructor(
+			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver
+		) {
+		}
+
+		ngDoBootstrap(appRef: ApplicationRef) {
+			const factory = this._resolver.resolveComponentFactory(BackupComponent);
+			(<any>factory).factory.selector = selector;
+			appRef.bootstrap(factory);
+		}
 	}
 
-	ngDoBootstrap(appRef: ApplicationRef) {
-		const factory = this._resolver.resolveComponentFactory(BackupComponent);
-		(<any>factory).factory.selector = this.selector;
-		appRef.bootstrap(factory);
-	}
-}
+	return ModuleClass;
+};

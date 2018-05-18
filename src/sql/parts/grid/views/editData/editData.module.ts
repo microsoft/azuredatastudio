@@ -4,41 +4,48 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { ApplicationRef, ComponentFactoryResolver, NgModule, Inject, forwardRef } from '@angular/core';
+import { ApplicationRef, ComponentFactoryResolver, NgModule, Inject, forwardRef, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { EditDataComponent, EDITDATA_SELECTOR } from 'sql/parts/grid/views/editData/editData.component';
 import { SlickGrid } from 'angular2-slickgrid';
-import { IUniqueSelector } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 
-@NgModule({
+export const EditDataModule = (params: IBootstrapParams, selector: string): Type<any> => {
 
-	imports: [
-		CommonModule,
-		BrowserModule
-	],
+	@NgModule({
 
-	declarations: [
-		EditDataComponent,
-		SlickGrid
-	],
+		imports: [
+			CommonModule,
+			BrowserModule
+		],
 
-	entryComponents: [
-		EditDataComponent
-	]
-})
-export class EditDataModule {
+		declarations: [
+			EditDataComponent,
+			SlickGrid
+		],
 
-	constructor(
-		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-		@Inject(IUniqueSelector) private uniqueSelector: IUniqueSelector
-	) {
+		entryComponents: [
+			EditDataComponent
+		],
+		providers: [
+			{ provide: IBootstrapParams, useValue: params }
+		]
+	})
+	class ModuleClass {
+
+		constructor(
+			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver
+		) {
+		}
+
+		ngDoBootstrap(appRef: ApplicationRef) {
+			const factory = this._resolver.resolveComponentFactory(EditDataComponent);
+			(<any>factory).factory.selector = selector;
+			appRef.bootstrap(factory);
+		}
 	}
 
-	ngDoBootstrap(appRef: ApplicationRef) {
-		const factory = this._resolver.resolveComponentFactory(EditDataComponent);
-		(<any>factory).factory.selector = this.uniqueSelector;
-		appRef.bootstrap(factory);
-	}
-}
+	return ModuleClass;
+};

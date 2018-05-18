@@ -33,10 +33,6 @@ import { IConnectionManagementService } from 'sql/parts/connection/common/connec
 import {
 	RefreshTableAction, StopRefreshTableAction, ChangeMaxRowsAction, ChangeMaxRowsActionItem, ShowQueryPaneAction
 } from 'sql/parts/editData/execution/editDataActions';
-import { EditDataModule } from 'sql/parts/grid/views/editData/editData.module';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
-import { EDITDATA_SELECTOR } from 'sql/parts/grid/views/editData/editData.component';
-import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResourceEditor';
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';

@@ -16,41 +16,48 @@ import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/mo
 import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
-import { IUniqueSelector } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 /* Model-backed components */
 let extensionComponents = Registry.as<IComponentRegistry>(Extensions.ComponentContribution).getAllCtors();
 
-@NgModule({
-	declarations: [
-		DialogContainer,
-		ModelViewContent,
-		ModelComponentWrapper,
-		ComponentHostDirective,
-		...extensionComponents
-	],
-	entryComponents: [DialogContainer, ...extensionComponents],
-	imports: [
-		FormsModule,
-		CommonModule,
-		BrowserModule
-	],
-	providers: [{ provide: APP_BASE_HREF, useValue: '/' }, CommonServiceInterface]
-})
-export class DialogModule {
+export const DialogModule = (params, selector: string): any => {
+	@NgModule({
+		declarations: [
+			DialogContainer,
+			ModelViewContent,
+			ModelComponentWrapper,
+			ComponentHostDirective,
+			...extensionComponents
+		],
+		entryComponents: [DialogContainer, ...extensionComponents],
+		imports: [
+			FormsModule,
+			CommonModule,
+			BrowserModule
+		],
+		providers: [
+			{ provide: APP_BASE_HREF, useValue: '/' },
+			CommonServiceInterface,
+			{ provide: IBootstrapParams, useValue: params}
+		]
+	})
+	class ModuleClass {
 
-	constructor(
-		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-		@Inject(IUniqueSelector) private selector: IUniqueSelector,
-		@Inject(forwardRef(() => CommonServiceInterface)) bootstrap: CommonServiceInterface,
-	) {
+		constructor(
+			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
+			@Inject(forwardRef(() => CommonServiceInterface)) bootstrap: CommonServiceInterface,
+		) {
+		}
+
+		ngDoBootstrap(appRef: ApplicationRef) {
+			const factoryWrapper: any = this._resolver.resolveComponentFactory(DialogContainer);
+			factoryWrapper.factory.selector = selector;
+			appRef.bootstrap(factoryWrapper);
+		}
 	}
 
-	ngDoBootstrap(appRef: ApplicationRef) {
-		const factoryWrapper: any = this._resolver.resolveComponentFactory(DialogContainer);
-		factoryWrapper.factory.selector = this.selector;
-		appRef.bootstrap(factoryWrapper);
-	}
-}
+	return ModuleClass;
+};

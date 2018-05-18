@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NgModuleRef, enableProdMode, InjectionToken, ReflectiveInjector } from '@angular/core';
+import { NgModuleRef, enableProdMode, InjectionToken, ReflectiveInjector, Type } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { IConnectionManagementService, IConnectionDialogService, IErrorMessageService }
@@ -52,8 +52,7 @@ export const IBootstrapParams = new InjectionToken('bootstrap_params');
 export interface IBootstrapParams {
 }
 
-export const IUniqueSelector = new InjectionToken('unique_selector');
-export type IUniqueSelector = string;
+export type IModuleFactory<T> = (params: IBootstrapParams, selector: string) => Type<T>;
 
 function createUniqueSelector(selector: string): string {
 	let num: number;
@@ -68,7 +67,7 @@ function createUniqueSelector(selector: string): string {
 
 let platform: PlatformRef;
 
-export function bootstrapAngular(collection: ServicesAccessor, moduleType: any, container: HTMLElement, selectorString: string, params: IBootstrapParams, input?: IEditorInput, callbackSetModule?: (value: NgModuleRef<{}>) => void): string {
+export function bootstrapAngular<T>(collection: ServicesAccessor, moduleType: IModuleFactory<T>, container: HTMLElement, selectorString: string, params: IBootstrapParams, input?: IEditorInput, callbackSetModule?: (value: NgModuleRef<T>) => void): string {
 	// Create the uniqueSelectorString
 	let uniqueSelectorString = createUniqueSelector(selectorString);
 	let selector = document.createElement(uniqueSelectorString);
@@ -127,10 +126,8 @@ export function bootstrapAngular(collection: ServicesAccessor, moduleType: any, 
 
 		platform = platformBrowserDynamic(providers);
 	}
-	platform.bootstrapModule(moduleType, { providers: [
-		{ provide: IUniqueSelector, useValue: uniqueSelectorString },
-		{ provide: IBootstrapParams, useValue: params }
-	]}).then(moduleRef => {
+
+	platform.bootstrapModule(moduleType(params, uniqueSelectorString)).then(moduleRef => {
 		if (input) {
 			input.onDispose(() => {
 				moduleRef.destroy();
