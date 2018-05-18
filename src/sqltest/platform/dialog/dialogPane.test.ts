@@ -114,7 +114,7 @@ suite('Dialog Pane Tests', () => {
 
 		// If I set tab 1's validation to false
 		validationCallbacks[0](false);
-		
+
 		// Then the whole dialog's validation is false
 		assert.equal(dialog.valid, false);
 		assert.equal(validityChanges.length, 3);

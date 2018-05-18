@@ -32,7 +32,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 			getProxy: proxyType => mockProxy.object
 		};
 
-		extHostModelView = Mock.ofInstance(<ExtHostModelViewShape> {
+		extHostModelView = Mock.ofInstance(<ExtHostModelViewShape>{
 			$registerProvider: (widget, handler) => undefined
 		});
 		extHostModelViewDialog = new ExtHostModelViewDialog(mainContext, extHostModelView.object);
