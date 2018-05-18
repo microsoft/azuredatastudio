@@ -44,6 +44,10 @@ export default class MainController implements vscode.Disposable {
 			this.openDialog();
 		});
 
+		vscode.commands.registerCommand('mssql.openEditor', () =>  {
+			this.openEditor();
+		});
+
 		return Promise.resolve(true);
 	}
 
@@ -140,6 +144,22 @@ export default class MainController implements vscode.Disposable {
 		});
 
 		sqlops.window.modelviewdialog.openDialog(dialog);
+	}
+
+	private openEditor(): void {
+		let editor = sqlops.workspace.createViewModelEditor();
+		editor.registerContent(async view => {
+			let inputBox = view.modelBuilder.inputBox()
+				.withValidation(component => component.value !== 'valid')
+				.component();
+			let formModel = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: inputBox,
+					title: 'Enter anything but "valid" for build'
+				}]).component();
+			await view.initializeModel(formModel);
+		});
+		editor.openEditor('Test Editor view');
 	}
 
 	private registerSqlServicesModelView(): void {

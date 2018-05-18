@@ -26,7 +26,7 @@ class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel
 
 	public registerContent(handler: (view: sqlops.ModelView) => void): void {
 		if (!this._modelViewId) {
-			let viewId = this._viewType + this.handle;
+			let viewId = this._viewType + this._handle;
 			this.setModelViewId(viewId);
 			this._extHostModelView.$registerProvider(viewId, modelView => {
 				this._modelView = modelView;
@@ -66,8 +66,8 @@ class ViewModelEditorImpl extends ModelViewPanelImpl implements sqlops.workspace
 		this._content = value;
 	}
 
-	public openEditor(title: string, position?: vscode.ViewColumn, options?: any): Thenable<void>{
-		return this._proxy.$openEditor(this._content, title);
+	public openEditor(title: string, position?: vscode.ViewColumn): Thenable<void>{
+		return this._proxy.$openEditor(this._content, title, position);
 	}
 }
 

@@ -2,13 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Builder } from 'vs/base/browser/builder';
+import { Builder, $ } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { Dimension } from 'vs/workbench/services/part/common/partService';
 import { EditorOptions } from 'vs/workbench/common/editor';
+import * as DOM from 'vs/base/browser/dom';
 
 import { ModelViewInput } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
 import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
@@ -18,7 +19,7 @@ import { DialogPane } from 'sql/platform/dialog/dialogPane';
 export class ModelViewEditor extends BaseEditor {
 
 	public static ID: string = 'workbench.editor.modelViewEditor';
-	private _parent: Builder;
+	private _modelViewMap = new Map<string, HTMLElement>();
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -32,7 +33,6 @@ export class ModelViewEditor extends BaseEditor {
 	 * Called to create the editor in the parent builder.
 	 */
 	public createEditor(parent: Builder): void {
-		this._parent = parent;
 	}
 
 	/**
@@ -45,9 +45,19 @@ export class ModelViewEditor extends BaseEditor {
 		if (this.input && this.input.matches(input)) {
 			return TPromise.as(undefined);
 		}
-		let dialog = new Dialog(input.title, input.modelViewId);
-		let dialogPane = new DialogPane(dialog, this._bootstrapService);
-		dialogPane.createBody(this._parent.getHTMLElement());
+		const parentElement = this.getContainer().getHTMLElement();
+		$(parentElement).clearChildren();
+
+		if (!this._modelViewMap.get(input.modelViewId)) {
+			let modelViewContainer = DOM.$('div.model-view-container');
+			let dialog = new Dialog(input.title, input.modelViewId);
+			let dialogPane = new DialogPane(dialog, this._bootstrapService);
+			dialogPane.createBody(modelViewContainer);
+			this._modelViewMap.set(input.modelViewId, modelViewContainer);
+		}
+		let element = this._modelViewMap.get(input.modelViewId);
+		DOM.append(parentElement, element);
+
 		return super.setInput(input, options);
 	}
 

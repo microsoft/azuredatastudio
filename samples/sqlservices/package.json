@@ -20,6 +20,10 @@
             {
                 "command": "mssql.openDialog",
                 "title": "mssql.openDialog"
+            },
+            {
+                "command": "mssql.openEditor",
+                "title": "mssql.openEditor"
             }
         ],
         "dashboard.tabs": [
