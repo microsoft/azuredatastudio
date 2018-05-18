@@ -532,7 +532,6 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 	$registerEvent(handle: number, componentId: string):  Thenable<void>;
 	$validate(handle: number, componentId: string): Thenable<boolean>;
-	$openModelViewEditor(title: string, modelViewId: string, position: vscode.ViewColumn, options: any): Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {
@@ -554,6 +553,7 @@ export interface ExtHostModelViewDialogShape {
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
+	$openEditor(modelViewId: string, title: string, position?: vscode.ViewColumn): Thenable<void>;
 	$open(handle: number): Thenable<void>;
 	$close(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;

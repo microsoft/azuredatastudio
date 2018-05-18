@@ -477,6 +477,18 @@ declare module 'sqlops' {
 	 * Namespace for interacting with the workspace
 	 */
 	export namespace workspace {
-		export function openModelViewEditor(title: string, modelViewId: string, position?: vscode.ViewColumn, options?: any): Thenable<void>;
+
+		/**
+		 * Create a new model view editor
+		 */
+		export function createViewModelEditor(): ModelViewEditor;
+
+		export interface ModelViewEditor extends window.modelviewdialog.ModelViewPanel {
+
+			/**
+			 * Opens the given dialog if it is not already open
+			 */
+			openEditor(title: string, position?: vscode.ViewColumn): Thenable<void>;
+		}
 	}
 }

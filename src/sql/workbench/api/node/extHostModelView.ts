@@ -611,10 +611,6 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadModelView);
 	}
 
-	public openModelViewEditor(title: string, modelViewId: string, position: vscode.ViewColumn, options: any): Thenable<void> {
-		return this._proxy.$openModelViewEditor(title, modelViewId, position, options);
-	}
-
 	$onClosed(handle: number): void {
 		const view = this._modelViews.get(handle);
 		view.onClosedEmitter.fire();

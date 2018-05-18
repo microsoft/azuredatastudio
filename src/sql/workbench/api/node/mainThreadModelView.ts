@@ -7,6 +7,9 @@
 import { MainThreadModelViewShape, SqlMainContext, ExtHostModelViewShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
@@ -14,81 +17,8 @@ import * as vscode from 'vscode';
 import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IModelView } from 'sql/services/model/modelViewService';
-import { Disposable } from 'vs/base/common/lifecycle';
-import { Dialog } from '../../../platform/dialog/dialogTypes';
-import { DialogPane } from '../../../platform/dialog/dialogPane';
-import { IBootstrapService } from '../../../services/bootstrap/bootstrapService';
-import { ICommandService } from 'vs/platform/commands/common/commands';
-import URI from 'vs/base/common/uri';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { Builder } from 'vs/base/browser/builder';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { Dimension } from 'vs/workbench/services/part/common/partService';
-import { EditorInput, EditorModel, EditorOptions } from 'vs/workbench/common/editor';
-import { TPromise } from 'vs/base/common/winjs.base';
-import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel';
-import { IEditorModel, IEditorOptions } from 'vs/platform/editor/common/editor';
-import { Registry } from 'vs/platform/registry/common/platform';
-import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
-import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ModelViewInput } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
 
-class ModelViewEditor extends BaseEditor {
-	public static ID = 'modelViewEditor';
-	private _parent: Builder;
-
-	constructor(@ITelemetryService telemetryService: ITelemetryService, @IThemeService themeService: IThemeService, @IBootstrapService private _bootstrapService: IBootstrapService) {
-		super(ModelViewEditor.ID, telemetryService, themeService);
-	}
-
-	public createEditor(parent: Builder): void {
-		this._parent = parent;
-	}
-
-	public setInput(input: EditorInput, options?: EditorOptions): TPromise<void, any> {
-		let retVal = super.setInput(input, options);
-		let modelViewInput = <ModelViewEditorInput>input;
-		let dialog = new Dialog(modelViewInput.title, modelViewInput.modelViewId);
-		let dialogPane = new DialogPane(dialog, this._bootstrapService);
-		dialogPane.createBody(this._parent.getHTMLElement());
-		return retVal;
-	}
-
-	public layout(dimension: Dimension): void {
-
-	}
-}
-
-class ModelViewEditorInput extends EditorInput {
-	public title: string;
-	public modelViewId: string;
-
-	public getTypeId(): string {
-		return 'ModelViewEditorInput';
-	}
-
-	public resolve(refresh?: boolean): TPromise<IEditorModel> {
-		return TPromise.as(new ModelViewEditorModel());
-	}
-
-	public getName(): string {
-		return this.title;
-	}
-}
-
-class ModelViewEditorModel extends EditorModel {
-
-}
-
-const modelViewEditorDescriptor = new EditorDescriptor(
-	ModelViewEditor,
-	ModelViewEditor.ID,
-	'ModelView'
-);
-
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(modelViewEditorDescriptor, [new SyncDescriptor(ModelViewEditorInput)]);
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelView)
 export class MainThreadModelView extends Disposable implements MainThreadModelViewShape {
@@ -170,16 +100,5 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 		let modelView: IModelView = this._dialogs.get(handle);
 		let result = action(modelView);
 		return Promise.resolve(result);
-	}
-
-	$openModelViewEditor(title: string, modelViewId: string, position: vscode.ViewColumn, options: any): Thenable<void> {
-		let input = new ModelViewEditorInput();
-		input.title = title;
-		input.modelViewId = modelViewId;
-		let editorOptions = Object.assign({
-			preserveFocus: true,
-			pinned: true
-		} as IEditorOptions);
-		return this._editorService.openEditor(input, editorOptions, position as any).then(() => undefined);
 	}
 }
