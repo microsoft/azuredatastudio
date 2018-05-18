@@ -14,7 +14,6 @@ import * as sqlops from 'sqlops';
 import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IModelView } from 'sql/services/model/modelViewService';
-import { ModelViewInput } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
 
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelView)

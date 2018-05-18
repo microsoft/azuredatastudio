@@ -486,7 +486,7 @@ declare module 'sqlops' {
 		export interface ModelViewEditor extends window.modelviewdialog.ModelViewPanel {
 
 			/**
-			 * Opens the given dialog if it is not already open
+			 * Opens the editor
 			 */
 			openEditor(title: string, position?: vscode.ViewColumn): Thenable<void>;
 		}
