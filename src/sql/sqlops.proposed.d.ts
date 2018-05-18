@@ -375,9 +375,8 @@ declare module 'sqlops' {
 			/**
 			 * Create a wizard with the given title and pages
 			 * @param title The title of the wizard
-			 * @param pages The list of pages that the wizard contains
 			 */
-			export function createWizard(title: string, pages: WizardPage[]): Wizard;
+			export function createWizard(title: string): Wizard;
 
 			/**
 			 * Opens the given wizard if it is not already open
@@ -519,10 +518,10 @@ declare module 'sqlops' {
 				title: string,
 
 				/**
-				 * The wizard's pages. Pages can be added/removed by using the addPage and
-				 * removePage methods
+				 * The wizard's pages. Pages can be added/removed while the dialog is open by using
+				 * the addPage and removePage methods
 				 */
-				readonly pages: WizardPage[];
+				pages: WizardPage[];
 
 				/**
 				 * The index in the pages array of the active page, or undefined if the wizard is

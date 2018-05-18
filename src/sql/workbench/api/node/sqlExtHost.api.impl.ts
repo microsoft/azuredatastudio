@@ -303,8 +303,8 @@ export function createApiFactory(
 				createWizardPage(title: string): sqlops.window.modelviewdialog.WizardPage {
 					return extHostModelViewDialog.createWizardPage(title);
 				},
-				createWizard(title: string, pages: sqlops.window.modelviewdialog.WizardPage[]): sqlops.window.modelviewdialog.Wizard {
-					return extHostModelViewDialog.createWizard(title, pages);
+				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
+					return extHostModelViewDialog.createWizard(title);
 				},
 				openWizard(wizard: sqlops.window.modelviewdialog.Wizard) {
 					return extHostModelViewDialog.openWizard(wizard);

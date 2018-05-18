@@ -22,7 +22,11 @@ suite('ExtHostModelViewDialog Tests', () => {
 			$closeDialog: handle => undefined,
 			$setDialogDetails: (handle, details) => undefined,
 			$setTabDetails: (handle, details) => undefined,
-			$setButtonDetails: (handle, details) => undefined
+			$setButtonDetails: (handle, details) => undefined,
+			$openWizard: handle => undefined,
+			$closeWizard: handle => undefined,
+			$setWizardPageDetails: (handle, details) => undefined,
+			$setWizardDetails: (handle, details) => undefined
 		});
 		let mainContext = <IMainContext>{
 			getProxy: proxyType => mockProxy.object
@@ -77,24 +81,25 @@ suite('ExtHostModelViewDialog Tests', () => {
 		button1.enabled = false;
 		let button2Label = 'button_2';
 		let button2 = extHostModelViewDialog.createButton(button2Label);
+		dialog.customButtons = [button1, button2];
 
 		// Open the dialog and verify that the correct main thread methods were called
 		extHostModelViewDialog.openDialog(dialog);
 		mockProxy.verify(x => x.$setButtonDetails(It.isAny(), It.is(details => {
 			return details.enabled === false && details.label === button1Label;
-		})), Times.once());
+		})), Times.atLeastOnce());
 		mockProxy.verify(x => x.$setButtonDetails(It.isAny(), It.is(details => {
 			return details.enabled === true && details.label === button2Label;
-		})), Times.once());
+		})), Times.atLeastOnce());
 		mockProxy.verify(x => x.$setTabDetails(It.isAny(), It.is(details => {
 			return details.title === tab1Title;
-		})), Times.once());
+		})), Times.atLeastOnce());
 		mockProxy.verify(x => x.$setTabDetails(It.isAny(), It.is(details => {
 			return details.title === tab2Title;
-		})), Times.once());
+		})), Times.atLeastOnce());
 		mockProxy.verify(x => x.$setDialogDetails(It.isAny(), It.is(details => {
-			return details.title === dialogTitle;
-		})), Times.once());
+			return details.title === dialogTitle && details.content.length === 2 && details.customButtons.length === 2;
+		})), Times.atLeastOnce());
 		mockProxy.verify(x => x.$openDialog(It.isAny()), Times.once());
 	});
 
@@ -122,5 +127,194 @@ suite('ExtHostModelViewDialog Tests', () => {
 
 		// Then the clicks should have been handled by the expected handlers
 		assert.deepEqual(clickEvents, [1, 2, 2, 1]);
+	});
+
+	test('Creating a wizard returns a wizard with initialized buttons and the given title', () => {
+		let title = 'wizard_title';
+		let wizard = extHostModelViewDialog.createWizard(title);
+
+		assert.equal(wizard.title, title);
+		assert.equal(wizard.doneButton.enabled, true);
+		assert.equal(wizard.cancelButton.enabled, true);
+		assert.equal(wizard.nextButton.enabled, true);
+		assert.equal(wizard.backButton.enabled, true);
+		assert.deepEqual(wizard.pages, []);
+	});
+
+	test('Opening a wizard updates its pages and buttons on the main thread', () => {
+		mockProxy.setup(x => x.$openWizard(It.isAny()));
+		mockProxy.setup(x => x.$setWizardDetails(It.isAny(), It.isAny()));
+		mockProxy.setup(x => x.$setWizardPageDetails(It.isAny(), It.isAny()));
+		mockProxy.setup(x => x.$setButtonDetails(It.isAny(), It.isAny()));
+
+		// Create a wizard with 2 pages and 2 custom buttons
+		let wizardTitle = 'wizard_title';
+		let wizard = extHostModelViewDialog.createWizard(wizardTitle);
+		let page1Title = 'page_1';
+		let page1 = extHostModelViewDialog.createWizardPage(page1Title);
+		let page2Title = 'page_2';
+		let page2 = extHostModelViewDialog.createWizardPage(page2Title);
+		wizard.pages = [page1, page2];
+		let button1Label = 'button_1';
+		let button1 = extHostModelViewDialog.createButton(button1Label);
+		button1.enabled = false;
+		let button2Label = 'button_2';
+		let button2 = extHostModelViewDialog.createButton(button2Label);
+		wizard.customButtons = [button1, button2];
+
+		// Open the wizard and verify that the correct main thread methods were called
+		extHostModelViewDialog.openWizard(wizard);
+		mockProxy.verify(x => x.$setButtonDetails(It.isAny(), It.is(details => {
+			return details.enabled === false && details.label === button1Label;
+		})), Times.atLeastOnce());
+		mockProxy.verify(x => x.$setButtonDetails(It.isAny(), It.is(details => {
+			return details.enabled === true && details.label === button2Label;
+		})), Times.atLeastOnce());
+		mockProxy.verify(x => x.$setWizardPageDetails(It.isAny(), It.is(details => {
+			return details.title === page1Title;
+		})), Times.atLeastOnce());
+		mockProxy.verify(x => x.$setWizardPageDetails(It.isAny(), It.is(details => {
+			return details.title === page2Title;
+		})), Times.atLeastOnce());
+		mockProxy.verify(x => x.$setWizardDetails(It.isAny(), It.is(details => {
+			return details.title === wizardTitle && details.pages.length === 2 && details.customButtons.length === 2;
+		})), Times.atLeastOnce());
+		mockProxy.verify(x => x.$openWizard(It.isAny()), Times.once());
+	});
+
+	test('Wizard page changed events are handled correctly', () => {
+		// Set up the main thread mock to record the handle assigned to the wizard
+		let wizardHandle: number;
+		mockProxy.setup(x => x.$setWizardDetails(It.isAny(), It.isAny())).callback((handle, details) => wizardHandle = handle);
+
+		// Set up the wizard with 2 pages
+		let wizard = extHostModelViewDialog.createWizard('test_wizard');
+		let page1 = extHostModelViewDialog.createWizardPage('page_1');
+		let page2 = extHostModelViewDialog.createWizardPage('page_2');
+		wizard.pages = [page1, page2];
+		extHostModelViewDialog.updateWizard(wizard);
+
+		// Record page changed events
+		let actualPageChangeInfo = [];
+		wizard.onPageChanged(pageChangeInfo => {
+			actualPageChangeInfo.push(pageChangeInfo);
+		});
+
+		// Call the page changed event and verify that it was handled
+		let expectedPageChangeInfo = {
+			lastPage: 0,
+			newPage: 1
+		};
+		extHostModelViewDialog.$onWizardPageChanged(wizardHandle, expectedPageChangeInfo);
+		assert.equal(actualPageChangeInfo.length, 1);
+		assert.equal(actualPageChangeInfo[0], expectedPageChangeInfo);
+		assert.equal(wizard.currentPage, expectedPageChangeInfo.newPage);
+	});
+
+	test('Validity changed events are handled correctly', () => {
+		// Set up the main thread mock to record handles assigned to tabs
+		let tabHandles = [];
+		mockProxy.setup(x => x.$setTabDetails(It.isAny(), It.isAny())).callback((handle, details) => tabHandles.push(handle));
+
+		// Set up the dialog with 2 tabs
+		let dialog = extHostModelViewDialog.createDialog('test_dialog');
+		let tab1 = extHostModelViewDialog.createTab('tab_1');
+		let tab2 = extHostModelViewDialog.createTab('tab_2');
+		dialog.content = [tab1, tab2];
+		extHostModelViewDialog.updateDialogContent(dialog);
+
+		// Record tab validity changed events
+		let tab1ValidityChangedEvents = [];
+		let tab2ValidityChangedEvents = [];
+		tab1.onValidityChanged(valid => tab1ValidityChangedEvents.push(valid));
+		tab2.onValidityChanged(valid => tab2ValidityChangedEvents.push(valid));
+
+		// Call the validity changed event on tab 2 and verify that it was handled but tab 1 is still not valid
+		extHostModelViewDialog.$onPanelValidityChanged(tabHandles[1], false);
+		assert.equal(tab1ValidityChangedEvents.length, 0);
+		assert.equal(tab1.valid, true);
+		assert.equal(tab2ValidityChangedEvents.length, 1);
+		assert.equal(tab2ValidityChangedEvents[0], false);
+		assert.equal(tab2.valid, false);
+	});
+
+	test('Verify validity changed events update validity for all panel types', () => {
+		// Set up the main thread mock to record handles for the tab, dialog, and page
+		let tabHandle: number;
+		let dialogHandle: number;
+		let pageHandle: number;
+		mockProxy.setup(x => x.$setTabDetails(It.isAny(), It.isAny())).callback((handle, details) => tabHandle = handle);
+		mockProxy.setup(x => x.$setDialogDetails(It.isAny(), It.isAny())).callback((handle, details) => dialogHandle = handle);
+		mockProxy.setup(x => x.$setWizardPageDetails(It.isAny(), It.isAny())).callback((handle, details) => pageHandle = handle);
+
+		// Initialize a tab, dialog, and page
+		let tab = extHostModelViewDialog.createTab('tab_1');
+		extHostModelViewDialog.updateTabContent(tab);
+		let dialog = extHostModelViewDialog.createDialog('dialog_1');
+		extHostModelViewDialog.updateDialogContent(dialog);
+		let page = extHostModelViewDialog.createWizardPage('page_1');
+		extHostModelViewDialog.updateWizardPage(page);
+
+		// Call the validity changed event on each object and verify that the object's validity was updated
+		extHostModelViewDialog.$onPanelValidityChanged(tabHandle, false);
+		assert.equal(tab.valid, false);
+		extHostModelViewDialog.$onPanelValidityChanged(dialogHandle, false);
+		assert.equal(dialog.valid, false);
+		extHostModelViewDialog.$onPanelValidityChanged(pageHandle, false);
+		assert.equal(page.valid, false);
+	});
+
+	test('Wizard addPage method inserts pages at the correct spot and notifies the main thread', () => {
+		mockProxy.setup(x => x.$setWizardDetails(It.isAny(), It.isAny()));
+		mockProxy.setup(x => x.$setWizardPageDetails(It.isAny(), It.isAny()));
+
+		// Create a wizard with two existing pages and set the current page to page 2
+		let wizard = extHostModelViewDialog.createWizard('wizard');
+		let page1 = extHostModelViewDialog.createWizardPage('page_1');
+		let page2 = extHostModelViewDialog.createWizardPage('page_2');
+		wizard.pages = [page1, page2];
+		extHostModelViewDialog.updateWizard(wizard);
+		wizard.setCurrentPage(1);
+
+		// Insert two pages, one before the current page and one after
+		let newPage1Title = 'new_page_1';
+		let newPage2Title = 'new_page_2';
+		let newPage1 = extHostModelViewDialog.createWizardPage(newPage1Title);
+		wizard.addPage(newPage1, 1);
+		let newPage2 = extHostModelViewDialog.createWizardPage(newPage2Title);
+		wizard.addPage(newPage2);
+
+		// Verify that the wizard now has 4 pages, the current page updated correctly, and the updates were forwarded to the main thread
+		assert.equal(wizard.pages.length, 4);
+		assert.equal(wizard.currentPage, 2);
+		mockProxy.verify(x => x.$setWizardPageDetails(It.isAny(), It.is(details => details.title === newPage1Title)), Times.atLeastOnce());
+		mockProxy.verify(x => x.$setWizardPageDetails(It.isAny(), It.is(details => details.title === newPage2Title)), Times.atLeastOnce());
+		mockProxy.verify(x => x.$setWizardDetails(It.isAny(), It.is(details => details.pages.length === 3)), Times.atLeastOnce());
+		mockProxy.verify(x => x.$setWizardDetails(It.isAny(), It.is(details => details.pages.length === 4)), Times.atLeastOnce());
+	});
+
+	test('Wizard removePage method removes pages at the correct spot and notifies the main thread', () => {
+		mockProxy.setup(x => x.$setWizardDetails(It.isAny(), It.isAny()));
+		mockProxy.setup(x => x.$setWizardPageDetails(It.isAny(), It.isAny()));
+
+		// Create a wizard with four existing pages and set the current page to page 2
+		let wizard = extHostModelViewDialog.createWizard('wizard');
+		let page1 = extHostModelViewDialog.createWizardPage('page_1');
+		let page2 = extHostModelViewDialog.createWizardPage('page_2');
+		let page3 = extHostModelViewDialog.createWizardPage('page_3');
+		let page4 = extHostModelViewDialog.createWizardPage('page_4');
+		wizard.pages = [page1, page2, page3, page4];
+		extHostModelViewDialog.updateWizard(wizard);
+		wizard.setCurrentPage(1);
+
+		// Remove two pages, one before the current page and one after
+		wizard.removePage(0);
+		wizard.removePage(1);
+
+		// Verify that the wizard now has 4 pages, the current page updated correctly, and the updates were forwarded to the main thread
+		assert.equal(wizard.pages.length, 2);
+		assert.equal(wizard.currentPage, 0);
+		mockProxy.verify(x => x.$setWizardDetails(It.isAny(), It.is(details => details.pages.length === 3)), Times.atLeastOnce());
+		mockProxy.verify(x => x.$setWizardDetails(It.isAny(), It.is(details => details.pages.length === 2)), Times.atLeastOnce());
 	});
 });

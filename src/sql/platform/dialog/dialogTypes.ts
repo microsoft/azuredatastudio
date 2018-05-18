@@ -9,30 +9,35 @@ import * as sqlops from 'sqlops';
 import { localize } from 'vs/nls';
 import Event, { Emitter } from 'vs/base/common/event';
 
-export class DialogTab {
-	public content: string;
-
+export class ModelViewPane {
 	private _valid: boolean = true;
 	private _validityChangedEmitter = new Emitter<boolean>();
 	public readonly onValidityChanged = this._validityChangedEmitter.event;
-
-	constructor(public title: string, content?: string) {
-		if (content) {
-			this.content = content;
-		}
-	}
 
 	public get valid(): boolean {
 		return this._valid;
 	}
 
 	public notifyValidityChanged(valid: boolean) {
-		this._valid = valid;
-		this._validityChangedEmitter.fire(valid);
+		if (this._valid !== valid) {
+			this._valid = valid;
+			this._validityChangedEmitter.fire(this._valid);
+		}
 	}
 }
 
-export class Dialog {
+export class DialogTab extends ModelViewPane {
+	public content: string;
+
+	constructor(public title: string, content?: string) {
+		super();
+		if (content) {
+			this.content = content;
+		}
+	}
+}
+
+export class Dialog extends ModelViewPane {
 	private static readonly DONE_BUTTON_LABEL = localize('dialogModalDoneButtonLabel', 'Done');
 	private static readonly CANCEL_BUTTON_LABEL = localize('dialogModalCancelButtonLabel', 'Cancel');
 
@@ -41,23 +46,11 @@ export class Dialog {
 	public cancelButton: DialogButton = new DialogButton(Dialog.CANCEL_BUTTON_LABEL, true);
 	public customButtons: DialogButton[];
 
-	private _valid: boolean = true;
-	private _validityChangedEmitter = new Emitter<boolean>();
-	public readonly onValidityChanged = this._validityChangedEmitter.event;
-
 	constructor(public title: string, content?: string | DialogTab[]) {
+		super();
 		if (content) {
 			this.content = content;
 		}
-	}
-
-	public get valid(): boolean {
-		return this._valid;
-	}
-
-	public notifyValidityChanged(valid: boolean) {
-		this._valid = valid;
-		this._validityChangedEmitter.fire(valid);
 	}
 }
 

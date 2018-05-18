@@ -30,7 +30,7 @@ suite('Dialog Pane Tests', () => {
 		// If I fill in a dialog's content with the ID of a specific model view provider and then render the dialog
 		let modelViewId = 'test_content';
 		dialog.content = modelViewId;
-		let dialogPane = new DialogPane(dialog, mockBootstrapService.object);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, mockBootstrapService.object);
 		dialogPane.createBody(container);
 
 		// Then a single dialog-modelview-container element is added directly to the dialog pane
@@ -47,7 +47,7 @@ suite('Dialog Pane Tests', () => {
 		// If I fill in a dialog's content with a single tab and then render the dialog
 		let modelViewId = 'test_content';
 		dialog.content = [new DialogTab('', modelViewId)];
-		let dialogPane = new DialogPane(dialog, mockBootstrapService.object);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, mockBootstrapService.object);
 		dialogPane.createBody(container);
 
 		// Then a single dialog-modelview-container element is added directly to the dialog pane
@@ -65,7 +65,7 @@ suite('Dialog Pane Tests', () => {
 		let modelViewId1 = 'test_content_1';
 		let modelViewId2 = 'test_content_2';
 		dialog.content = [new DialogTab('tab1', modelViewId1), new DialogTab('tab2', modelViewId2)];
-		let dialogPane = new DialogPane(dialog, mockBootstrapService.object);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, mockBootstrapService.object);
 		dialogPane.createBody(container);
 
 		// Then a dialog-modelview-container element is added for the first tab (subsequent ones get added when the tab is actually clicked)
@@ -90,7 +90,7 @@ suite('Dialog Pane Tests', () => {
 		let modelViewId1 = 'test_content_1';
 		let modelViewId2 = 'test_content_2';
 		dialog.content = [new DialogTab('tab1', modelViewId1), new DialogTab('tab2', modelViewId2)];
-		let dialogPane = new DialogPane(dialog, mockBootstrapService.object);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, valid => dialog.notifyValidityChanged(valid), mockBootstrapService.object);
 		dialogPane.createBody(container);
 
 		let validityChanges: boolean[] = [];

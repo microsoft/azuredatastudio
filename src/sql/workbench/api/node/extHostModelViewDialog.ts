@@ -173,7 +173,7 @@ class WizardPageImpl extends ModelViewPanelImpl implements sqlops.window.modelvi
 
 class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 	private _currentPage: number = undefined;
-	private _pages: sqlops.window.modelviewdialog.WizardPage[];
+	public pages: sqlops.window.modelviewdialog.WizardPage[] = [];
 	public doneButton: sqlops.window.modelviewdialog.Button;
 	public cancelButton: sqlops.window.modelviewdialog.Button;
 	public nextButton: sqlops.window.modelviewdialog.Button;
@@ -181,9 +181,7 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 	public customButtons: sqlops.window.modelviewdialog.Button[];
 	public readonly onPageChanged: Event<sqlops.window.modelviewdialog.WizardPageChangeInfo>;
 
-	constructor(public title: string, pages: sqlops.window.modelviewdialog.WizardPage[],
-		private _extHostModelViewDialog: ExtHostModelViewDialog) {
-		this._pages = pages;
+	constructor(public title: string, private _extHostModelViewDialog: ExtHostModelViewDialog) {
 		this.doneButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
 		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL);
 		this.nextButton = this._extHostModelViewDialog.createButton(NEXT_LABEL);
@@ -196,33 +194,29 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 		return this._currentPage;
 	}
 
-	public get pages(): sqlops.window.modelviewdialog.WizardPage[] {
-		return this._pages;
-	}
-
 	public addPage(page: sqlops.window.modelviewdialog.WizardPage, index?: number) {
-		if (index !== undefined && (index < 0 || index > this._pages.length)) {
+		if (index !== undefined && (index < 0 || index > this.pages.length)) {
 			throw new Error('Index is out of bounds');
 		}
 		if (index !== undefined && this.currentPage !== undefined && index <= this.currentPage) {
 			this._currentPage += 1;
 		}
 		if (index === undefined) {
-			this._pages.push(page);
+			this.pages.push(page);
 		} else {
-			this._pages = this._pages.slice(0, index).concat([page], this._pages.slice(index));
+			this.pages = this.pages.slice(0, index).concat([page], this.pages.slice(index));
 		}
 		this._extHostModelViewDialog.updateWizard(this);
 	}
 
 	public removePage(index: number) {
-		if (index === undefined || index < 0 || index >= this._pages.length) {
+		if (index === undefined || index < 0 || index >= this.pages.length) {
 			throw new Error('Index is out of bounds');
 		}
 		if (this.currentPage !== undefined && index <= this.currentPage) {
 			this._currentPage -= 1;
 		}
-		this._pages.splice(index, 1);
+		this.pages.splice(index, 1);
 		this._extHostModelViewDialog.updateWizard(this);
 	}
 
@@ -388,8 +382,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return page;
 	}
 
-	public createWizard(title: string, pages: sqlops.window.modelviewdialog.WizardPage[]): sqlops.window.modelviewdialog.Wizard {
-		let wizard = new WizardImpl(title, pages, this);
+	public createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
+		let wizard = new WizardImpl(title, this);
 		this.getHandle(wizard);
 		return wizard;
 	}

@@ -76,6 +76,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		let tab = this._tabs.get(handle);
 		if (!tab) {
 			tab = new DialogTab(details.title);
+			tab.onValidityChanged(valid => this._proxy.$onPanelValidityChanged(handle, valid));
 			this._tabs.set(handle, tab);
 		}
 
