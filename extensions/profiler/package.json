@@ -1,7 +1,7 @@
 {
   "name": "profiler",
-  "displayName": "SQL Server XEvent Profiler",
-  "description": "SQL Server XEvent Profiler for SQL Operations Studio",
+  "displayName": "SQL Server Profiler",
+  "description": "SQL Server Profiler for SQL Operations Studio",
   "version": "0.30.0",
   "publisher": "Microsoft",
   "preview": true,
@@ -26,6 +26,14 @@
     "Microsoft.mssql"
   ],
   "contributes": {
+
+      "commands": [
+      {
+        "command": "profiler.newProfiler",
+        "title": "New Profiler",
+        "category": "Profiler"
+      }
+    ],
     "outputChannels": [
       "sqlprofiler"
     ]

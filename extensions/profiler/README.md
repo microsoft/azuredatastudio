@@ -1,6 +1,6 @@
-# Microsoft XEvent Profiler for SQL Operations Studio
+# SQL Server Profiler for SQL Operations Studio
 
-Welcome to Microsoft XEvent Profiler for SQL Operations Studio!  The XEvent Profiler Extension provides a simple SQL Server tracing solution similar to SSMS Profiler except built using XEvents.  SSMS Profiler is very easy to use and has good default values for the most common tracing configurations.  The UX is optimized for browsing through events and viewing the associated T-SQL text.  The SQL Ops Studio profiler also assumes good default values for collecting server SQL execution activities with an easy to use UX.
+Welcome to the SQL Server Profiler for SQL Operations Studio!  The SQL Server Profiler extension provides a simple SQL Server tracing solution similar to SSMS Profiler except built using XEvents.  SSMS Profiler is very easy to use and has good default values for the most common tracing configurations.  The UX is optimized for browsing through events and viewing the associated T-SQL text.  The SQL Server Profiler for SQL Operations Studio also assumes good default values for collecting T-SQL execution activities with an easy to use UX.
 
 Common SQL Profiler use-cases taken from https://docs.microsoft.com/en-us/sql/tools/sql-server-profiler/sql-server-profiler.
 
