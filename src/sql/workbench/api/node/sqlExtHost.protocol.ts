@@ -555,6 +555,7 @@ export interface ExtHostModelViewDialogShape {
 	$onButtonClick(handle: number): void;
 	$onPanelValidityChanged(handle: number, valid: boolean): void;
 	$onWizardPageChanged(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): void;
+	$updateWizardPageInfo(handle: number, pageHandles: number[], currentPageIndex: number): void;
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
@@ -567,6 +568,9 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$closeWizard(handle: number): Thenable<void>;
 	$setWizardPageDetails(handle: number, details: IModelViewWizardPageDetails): Thenable<void>;
 	$setWizardDetails(handle: number, details: IModelViewWizardDetails): Thenable<void>;
+	$addWizardPage(wizardHandle: number, pageHandle: number, pageIndex: number): Thenable<void>;
+	$removeWizardPage(wizardHandle: number, pageIndex: number): Thenable<void>;
+	$setWizardPage(wizardHandle: number, pageIndex: number): Thenable<void>;
 }
 export interface ExtHostQueryEditorShape {
 }

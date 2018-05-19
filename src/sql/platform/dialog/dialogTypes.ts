@@ -106,10 +106,21 @@ export class DialogButton implements sqlops.window.modelviewdialog.Button {
 
 export class WizardPage extends DialogTab {
 	public customButtons: DialogButton[];
-	public enabled: boolean;
+	private _enabled: boolean;
+	private _onUpdate: Emitter<void> = new Emitter<void>();
+	public readonly onUpdate: Event<void> = this._onUpdate.event;
 
 	constructor(public title: string, content?: string) {
 		super(title, content);
+	}
+
+	public get enabled(): boolean {
+		return this._enabled;
+	}
+
+	public set enabled(enabled: boolean) {
+		this._enabled = enabled;
+		this._onUpdate.fire();
 	}
 }
 
@@ -123,6 +134,10 @@ export class Wizard {
 	private _currentPage: number;
 	private _pageChangedEmitter = new Emitter<sqlops.window.modelviewdialog.WizardPageChangeInfo>();
 	public readonly onPageChanged = this._pageChangedEmitter.event;
+	private _pageAddedEmitter = new Emitter<WizardPage>();
+	public readonly onPageAdded = this._pageAddedEmitter.event;
+	private _pageRemovedEmitter = new Emitter<WizardPage>();
+	public readonly onPageRemoved = this._pageRemovedEmitter.event;
 
 	constructor(public title: string) { }
 
@@ -130,14 +145,49 @@ export class Wizard {
 		return this._currentPage;
 	}
 
-	public setCurrentPage(index: number) {
+	public setCurrentPage(index: number): void {
+		if (index === undefined || index < 0 || index >= this.pages.length) {
+			throw new Error('Index is out of bounds');
+		}
 		let lastPage = this._currentPage;
 		this._currentPage = index;
-		if (lastPage !== undefined && index !== undefined) {
+		if (lastPage !== undefined && this._currentPage !== undefined && lastPage !== this._currentPage) {
 			this._pageChangedEmitter.fire({
 				lastPage: lastPage,
 				newPage: this._currentPage
 			});
 		}
+	}
+
+	public addPage(page: WizardPage, index?: number): void {
+		if (index !== undefined && (index < 0 || index > this.pages.length)) {
+			throw new Error('Index is out of bounds');
+		}
+		if (index !== undefined && this.currentPage !== undefined && index <= this.currentPage) {
+			this._currentPage += 1;
+		}
+		if (index === undefined) {
+			this.pages.push(page);
+		} else {
+			this.pages = this.pages.slice(0, index).concat([page], this.pages.slice(index));
+		}
+		this._pageAddedEmitter.fire(page);
+	}
+
+	public removePage(index: number): void {
+		if (index === undefined || index < 0 || index >= this.pages.length) {
+			throw new Error('Index is out of bounds');
+		}
+		if (index === this.currentPage) {
+			// Switch to the new page before deleting the current page
+			let newPage = this._currentPage > 0 ? this._currentPage - 1 : this._currentPage + 1;
+			this.setCurrentPage(newPage);
+		}
+		if (this.currentPage !== undefined && index < this.currentPage) {
+			this._currentPage -= 1;
+		}
+		let removedPage = this.pages[index];
+		this.pages.splice(index, 1);
+		this._pageRemovedEmitter.fire(removedPage);
 	}
 }

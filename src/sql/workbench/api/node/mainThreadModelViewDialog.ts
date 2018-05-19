@@ -19,6 +19,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	private readonly _tabs = new Map<number, DialogTab>();
 	private readonly _buttons = new Map<number, DialogButton>();
 	private readonly _wizardPages = new Map<number, WizardPage>();
+	private readonly _wizardPageHandles = new Map<WizardPage, number>();
 	private readonly _wizards = new Map<number, Wizard>();
 	private _dialogService: CustomDialogService;
 
@@ -107,6 +108,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			page = new WizardPage(details.title, details.content);
 			page.onValidityChanged(valid => this._proxy.$onPanelValidityChanged(handle, valid));
 			this._wizardPages.set(handle, page);
+			this._wizardPageHandles.set(page, handle);
 		}
 
 		page.title = details.title;
@@ -128,16 +130,42 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			wizard.doneButton = this.getButton(details.doneButton);
 			wizard.nextButton = this.getButton(details.nextButton);
 			wizard.onPageChanged(info => this._proxy.$onWizardPageChanged(handle, info));
+			wizard.onPageAdded(() => this.handleWizardPageAddedOrRemoved(handle));
+			wizard.onPageRemoved(() => this.handleWizardPageAddedOrRemoved(handle));
 			this._wizards.set(handle, wizard);
 		}
 
 		wizard.title = details.title;
 		wizard.pages = details.pages.map(handle => this.getWizardPage(handle));
-		wizard.setCurrentPage(details.currentPage);
+		if (details.currentPage !== undefined) {
+			wizard.setCurrentPage(details.currentPage);
+		}
 		if (details.customButtons !== undefined) {
 			wizard.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
 
+		return Promise.resolve();
+	}
+
+	public $addWizardPage(wizardHandle: number, pageHandle: number, pageIndex?: number): Thenable<void> {
+		if (pageIndex === null) {
+			pageIndex = undefined;
+		}
+		let wizard = this.getWizard(wizardHandle);
+		let page = this.getWizardPage(pageHandle);
+		wizard.addPage(page, pageIndex);
+		return Promise.resolve();
+	}
+
+	public $removeWizardPage(wizardHandle: number, pageIndex: number): Thenable<void> {
+		let wizard = this.getWizard(wizardHandle);
+		wizard.removePage(pageIndex);
+		return Promise.resolve();
+	}
+
+	public $setWizardPage(wizardHandle: number, pageIndex: number): Thenable<void> {
+		let wizard = this.getWizard(wizardHandle);
+		wizard.setCurrentPage(pageIndex);
 		return Promise.resolve();
 	}
 
@@ -195,5 +223,10 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			throw new Error('No wizard matching the given handle');
 		}
 		return wizard;
+	}
+
+	private handleWizardPageAddedOrRemoved(handle: number): void {
+		let wizard = this._wizards.get(handle);
+		this._proxy.$updateWizardPageInfo(handle, wizard.pages.map(page => this._wizardPageHandles.get(page)), wizard.currentPage);
 	}
 }

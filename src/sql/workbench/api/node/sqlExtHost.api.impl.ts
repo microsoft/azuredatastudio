@@ -305,12 +305,6 @@ export function createApiFactory(
 				},
 				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
 					return extHostModelViewDialog.createWizard(title);
-				},
-				openWizard(wizard: sqlops.window.modelviewdialog.Wizard) {
-					return extHostModelViewDialog.openWizard(wizard);
-				},
-				closeWizard(wizard: sqlops.window.modelviewdialog.Wizard) {
-					return extHostModelViewDialog.closeWizard(wizard);
 				}
 			};
 

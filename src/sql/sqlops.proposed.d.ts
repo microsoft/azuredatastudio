@@ -378,18 +378,6 @@ declare module 'sqlops' {
 			 */
 			export function createWizard(title: string): Wizard;
 
-			/**
-			 * Opens the given wizard if it is not already open
-			 * @param wizard The wizard to open
-			 */
-			export function openWizard(wizard: Wizard);
-
-			/**
-			 * Closes the given wizard if it is open
-			 * @param wizard The wizard to close
-			 */
-			export function closeWizard(wizard: Wizard);
-
 			export interface ModelViewPanel {
 				/**
 				 * Register model view content for the dialog.
@@ -568,19 +556,29 @@ declare module 'sqlops' {
 				 * @param index The index in the pages array to add the page at, or undefined to
 				 * add it at the end
 				 */
-				addPage(page: WizardPage, index?: number);
+				addPage(page: WizardPage, index?: number): Thenable<void>;
 
 				/**
 				 * Remove the page at the given index from the wizard
 				 * @param index The index in the pages array to remove
 				 */
-				removePage(index: number);
+				removePage(index: number): Thenable<void>;
 
 				/**
 				 * Go to the page at the given index in the pages array. 
 				 * @param index The index of the page to go to
 				 */
-				setCurrentPage(index: number);
+				setCurrentPage(index: number): Thenable<void>;
+
+				/**
+				 * Open the wizard. Does nothing if the wizard is already open.
+				 */
+				open(): Thenable<void>;
+
+				/**
+				 * Close the wizard. Does nothing if the wizard is not open.
+				 */
+				close(): Thenable<void>;
 			}
 		}
 	}
