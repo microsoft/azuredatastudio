@@ -43,18 +43,21 @@ suite('MainThreadModelViewDialog Tests', () => {
 	let backButtonDetails: IModelViewButtonDetails;
 	let page1Details: IModelViewWizardPageDetails;
 	let page2Details: IModelViewWizardPageDetails;
+	let page3Details: IModelViewWizardPageDetails;
 	let wizardDetails: IModelViewWizardDetails;
 	let nextButtonHandle = 8;
 	let backButtonHandle = 9;
 	let page1Handle = 10;
 	let page2Handle = 11;
 	let wizardHandle = 12;
+	let page3Handle = 13;
 
 	setup(() => {
 		mockExtHostModelViewDialog = Mock.ofInstance(<ExtHostModelViewDialogShape>{
 			$onButtonClick: handle => undefined,
 			$onPanelValidityChanged: (handle, valid) => undefined,
-			$onWizardPageChanged: (handle, info) => undefined
+			$onWizardPageChanged: (handle, info) => undefined,
+			$updateWizardPageInfo: (wizardHandle, pageHandles, currentPageIndex) => undefined
 		});
 		let extHostContext = <IExtHostContext>{
 			getProxy: proxyType => mockExtHostModelViewDialog.object
@@ -268,5 +271,40 @@ suite('MainThreadModelViewDialog Tests', () => {
 		// Then a validity changed event gets sent to the extension host for the tab and the dialog
 		mockExtHostModelViewDialog.verify(x => x.$onPanelValidityChanged(It.is(handle => handle === dialogHandle), It.is(valid => valid === false)), Times.once());
 		mockExtHostModelViewDialog.verify(x => x.$onPanelValidityChanged(It.is(handle => handle === tab2Handle), It.is(valid => valid === false)), Times.once());
+	});
+
+	test('addWizardPage method inserts pages at the correct spot and notifies the extension host', () => {
+		mockExtHostModelViewDialog.setup(x => x.$updateWizardPageInfo(It.isAny(), It.isAny(), It.isAny()));
+		page3Details = {
+			title: 'page_3',
+			content: 'content_3',
+			customButtons: [],
+			enabled: true
+		};
+
+		// If I open the wizard and then add a page
+		mainThreadModelViewDialog.$openWizard(wizardHandle);
+		mainThreadModelViewDialog.$setWizardPageDetails(page3Handle, page3Details);
+		mainThreadModelViewDialog.$addWizardPage(wizardHandle, page3Handle, 0);
+
+		// Then the updated page info gets sent to the extension host
+		mockExtHostModelViewDialog.verify(x => x.$updateWizardPageInfo(
+			It.is(handle => handle === wizardHandle),
+			It.is(pageHandles => pageHandles.length === 3 && pageHandles[0] === page3Handle),
+			It.is(currentPage => currentPage === 1)), Times.once());
+	});
+
+	test('removeWizardPage method removes pages at the correct spot and notifies the extension host', () => {
+		mockExtHostModelViewDialog.setup(x => x.$updateWizardPageInfo(It.isAny(), It.isAny(), It.isAny()));
+
+		// If I open the wizard and then remove a page
+		mainThreadModelViewDialog.$openWizard(wizardHandle);
+		mainThreadModelViewDialog.$removeWizardPage(wizardHandle, 0);
+
+		// Then the updated page info gets sent to the extension host
+		mockExtHostModelViewDialog.verify(x => x.$updateWizardPageInfo(
+			It.is(handle => handle === wizardHandle),
+			It.is(pageHandles => pageHandles.length === 1 && pageHandles[0] === page2Handle),
+			It.is(currentPage => currentPage === 0)), Times.once());
 	});
 });
