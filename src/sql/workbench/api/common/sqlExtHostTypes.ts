@@ -121,6 +121,25 @@ export interface IModelViewButtonDetails {
 	hidden: boolean;
 }
 
+export interface IModelViewWizardPageDetails {
+	title: string;
+	content: string;
+	enabled: boolean;
+	customButtons: number[];
+}
+
+export interface IModelViewWizardDetails {
+	title: string;
+	pages: number[];
+	currentPage: number;
+	doneButton: number;
+	cancelButton: number;
+	generateScriptButton: number;
+	nextButton: number;
+	backButton: number;
+	customButtons: number[];
+}
+
 /// Card-related APIs that need to be here to avoid early load issues
 // with enums causing requiring of sqlops API to fail.
 export enum StatusIndicator {
