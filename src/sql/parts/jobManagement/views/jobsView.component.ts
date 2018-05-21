@@ -87,6 +87,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _tabHeight: number;
 	private filterStylingMap: { [columnName: string]: [any] ;} = {};
 	private filterStack = ['start'];
+	private sortingStylingMap: { [columnName: string]: any; } = {};
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
@@ -216,6 +217,7 @@ export class JobsViewComponent implements AfterContentChecked {
 					// if an associated styling exists with the current filters
 					if (this.filterStylingMap[args.column.name]) {
 						let filterLength = this.filterStylingMap[args.column.name].length;
+						// then remove the filtered styling
 						for (let i = 0; i < filterLength; i++) {
 							let lastAppliedStyle = this.filterStylingMap[args.column.name].pop();
 							this._table.grid.removeCellCssStyles(lastAppliedStyle[0]);
@@ -225,6 +227,7 @@ export class JobsViewComponent implements AfterContentChecked {
 						if (index > -1) {
 							this.filterStack.splice(index, 1);
 						}
+
 						let lastColStyle = this.filterStylingMap[this.filterStack[this.filterStack.length-1]];
 						for (let i = 0; i < lastColStyle.length; i++) {
 							this._table.grid.setCellCssStyles(lastColStyle[i][0], lastColStyle[i][1]);
@@ -262,7 +265,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			}
 		});
 		this.filterPlugin.onCommand.subscribe((e, args: any) => {
-			this.columnSort(args.column.field, args.command === 'sort-asc');
+			this.columnSort(args.column.name, args.command === 'sort-asc');
 		});
 		this._table.registerPlugin(<HeaderFilter>this.filterPlugin);
 
@@ -317,7 +320,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		return hash;
 	}
 
-	private addToStyleHash(row: number, start: boolean, columnName?: string) {
+	private addToStyleHash(row: number, start: boolean, map: any, columnName?: string) {
 		let hash : {
 			[index: number]: {
 			[id: string]: string;
@@ -325,16 +328,16 @@ export class JobsViewComponent implements AfterContentChecked {
 		hash = this.setRowWithErrorClass(hash, row, 'job-with-error');
 		hash = this.setRowWithErrorClass(hash, row+1,  'error-row');
 		if (start) {
-			if (this.filterStylingMap['start']) {
-				this.filterStylingMap['start'].push(['error-row'+row.toString(), hash]);
+			if (map['start']) {
+				map['start'].push(['error-row'+row.toString(), hash]);
 			} else {
-				this.filterStylingMap['start'] = [['error-row'+row.toString(), hash]];
+				map['start'] = [['error-row'+row.toString(), hash]];
 			}
 		} else {
-			if (this.filterStylingMap[columnName]) {
-				this.filterStylingMap[columnName].push(['error-row'+row.toString(), hash]);
+			if (map[columnName]) {
+				map[columnName].push(['error-row'+row.toString(), hash]);
 			} else {
-				this.filterStylingMap[columnName] = [['error-row'+row.toString(), hash]];
+				map[columnName] = [['error-row'+row.toString(), hash]];
 			}
 		}
 		this._table.grid.setCellCssStyles('error-row'+row.toString(), hash);
@@ -445,10 +448,10 @@ export class JobsViewComponent implements AfterContentChecked {
 			let job = this.jobs[i];
 			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
 				this.expandJobRowDetails(i+expandedJobs.size);
-				this.addToStyleHash(i+expandedJobs.size, start);
+				this.addToStyleHash(i+expandedJobs.size, start, this.filterStylingMap);
 				this._agentViewComponent.setExpanded(job.jobId, 'Loading Error...');
 			} else if (job.lastRunOutcome === 0 && expandedJobs.get(job.jobId)) {
-				this.addToStyleHash(i+expansions, start);
+				this.addToStyleHash(i+expansions, start, this.filterStylingMap);
 				expansions++;
 			}
 		}
@@ -476,8 +479,9 @@ export class JobsViewComponent implements AfterContentChecked {
 		// get error items here and remove them
 		let jobItems = items.filter(x => x._parent === undefined);
 		let errorItems = items.filter(x => x._parent !== undefined);
+		this.sortingStylingMap[column] = items;
 		switch(column) {
-			case('name'): {
+			case('Name'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => {
@@ -485,19 +489,19 @@ export class JobsViewComponent implements AfterContentChecked {
 				}, isAscending);
 				break;
 			}
-			case('lastRun'): {
+			case('Last Run'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => this.dateCompare(item1, item2, true), isAscending);
 				break;
 			}
-			case ('nextRun') : {
+			case ('Next Run') : {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => this.dateCompare(item1, item2, false), isAscending);
 				break;
 			}
-			case ('enabled'): {
+			case ('Enabled'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => {
@@ -505,7 +509,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				}, isAscending);
 				break;
 			}
-			case ('status'): {
+			case ('Status'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => {
@@ -513,7 +517,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				}, isAscending);
 				break;
 			}
-			case ('category'): {
+			case ('Category'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => {
@@ -521,7 +525,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				}, isAscending);
 				break;
 			}
-			case ('runnable'): {
+			case ('Runnable'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => {
@@ -529,7 +533,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				}, isAscending);
 				break;
 			}
-			case ('schedule'): {
+			case ('Schedule'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => {
@@ -537,7 +541,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				}, isAscending);
 				break;
 			}
-			case ('lastRunOutcome'): {
+			case ('Last Run Outcome'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => {
@@ -574,10 +578,9 @@ export class JobsViewComponent implements AfterContentChecked {
 		for (let i = 0; i < items.length; i ++) {
 			let item = items[i];
 			if (item.lastRunOutcome === 'Failed') {
-				this.addToStyleHash(i, false, column);
+				this.addToStyleHash(i, false, this.sortingStylingMap, column);
 			}
 		}
-
 	}
 
 	private dateCompare(item1: any, item2: any, lastRun: boolean): number {

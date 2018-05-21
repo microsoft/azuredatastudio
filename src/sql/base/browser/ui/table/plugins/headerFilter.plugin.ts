@@ -85,13 +85,13 @@ export class HeaderFilter {
 	}
 
 	private addMenuItem(menu, columnDef, title, command, image) {
-		var $item = $('<div class="slick-header-menuitem">')
+		let $item = $('<div class="slick-header-menuitem">')
 						.data('command', command)
 						.data('column', columnDef)
 						.bind('click', (e) => this.handleMenuItemClick(e, command, columnDef))
 						.appendTo(menu);
 
-		var $icon = $('<div class="slick-header-menuicon">')
+		let $icon = $('<div class="slick-header-menuicon">')
 						.appendTo($item);
 
 		if (title === 'Sort Ascending') {
@@ -117,20 +117,20 @@ export class HeaderFilter {
 	}
 
 	private updateFilterInputs(menu, columnDef, filterItems) {
-		var filterOptions = '<label><input type="checkbox" value="-1" />(Select All)</label>';
+		let filterOptions = '<label><input type="checkbox" value="-1" />(Select All)</label>';
 		columnDef.filterValues = columnDef.filterValues || [];
 
 		// WorkingFilters is a copy of the filters to enable apply/cancel behaviour
 		this.workingFilters = columnDef.filterValues.slice(0);
 
-		for (var i = 0; i < filterItems.length; i++) {
-			var filtered = _.contains(this.workingFilters, filterItems[i]);
+		for (let i = 0; i < filterItems.length; i++) {
+			let filtered = _.contains(this.workingFilters, filterItems[i]);
 
 			filterOptions += '<label><input type="checkbox" value="' + i + '"'
 			+ (filtered ? ' checked="checked"' : '')
 			+ '/>' + filterItems[i] + '</label>';
 		}
-		var $filter = menu.find('.filter');
+		let $filter = menu.find('.filter');
 		$filter.empty().append($(filterOptions));
 
 		$(':checkbox', $filter).bind('click', (e) => {
@@ -139,7 +139,7 @@ export class HeaderFilter {
 	}
 
 	private showFilter(e) {
-		var $menuButton = $(e.target);
+		let $menuButton = $(e.target);
 		this.columnDef = $menuButton.data('column');
 
 		this.columnDef.filterValues = this.columnDef.filterValues || [];
@@ -147,7 +147,7 @@ export class HeaderFilter {
 		// WorkingFilters is a copy of the filters to enable apply/cancel behaviour
 		this.workingFilters = this.columnDef.filterValues.slice(0);
 
-		var filterItems;
+		let filterItems;
 
 		if (this.workingFilters.length === 0) {
 			// Filter based all available values
@@ -170,15 +170,15 @@ export class HeaderFilter {
 
 		let filterOptions = '<label><input type="checkbox" value="-1" />(Select All)</label>';
 
-		for (var i = 0; i < filterItems.length; i++) {
-			var filtered = _.contains(this.workingFilters, filterItems[i]);
+		for (let i = 0; i < filterItems.length; i++) {
+			let filtered = _.contains(this.workingFilters, filterItems[i]);
 			if (filterItems[i] && filterItems[i].indexOf('Error:') < 0) {
 				filterOptions += '<label><input type="checkbox" value="' + i + '"'
 				+ (filtered ? ' checked="checked"' : '')
 				+ '/>' + filterItems[i] + '</label>';
 			}
 		}
-		var $filter = $('<div class="filter">')
+		let $filter = $('<div class="filter">')
 						.append($(filterOptions))
 						.appendTo(this.$menu);
 
@@ -218,10 +218,10 @@ export class HeaderFilter {
 			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, $(e.target));
 		});
 
-		var offset = $(e.target).offset();
-		var left = offset.left - this.$menu.width() + $(e.target).width() - 8;
+		let offset = $(e.target).offset();
+		let left = offset.left - this.$menu.width() + $(e.target).width() - 8;
 
-		var menutop = offset.top + $(e.target).height();
+		let menutop = offset.top + $(e.target).height();
 
 		if (menutop + offset.top > $(window).height()) {
 			menutop -= (this.$menu.height() + $(e.target).height() + 8);
@@ -235,8 +235,8 @@ export class HeaderFilter {
 	}
 
 	private changeWorkingFilter(filterItems, workingFilters, $checkbox) {
-		var value = $checkbox.val();
-		var $filter = $checkbox.parent().parent();
+		let value = $checkbox.val();
+		let $filter = $checkbox.parent().parent();
 
 		if ($checkbox.val() < 0) {
 			// Select All
@@ -248,7 +248,7 @@ export class HeaderFilter {
 				workingFilters.length = 0;
 			}
 		} else {
-			var index = _.indexOf(workingFilters, filterItems[value]);
+			let index = _.indexOf(workingFilters, filterItems[value]);
 
 			if ($checkbox.prop('checked') && index < 0) {
 				workingFilters.push(filterItems[value]);
@@ -288,9 +288,9 @@ export class HeaderFilter {
 	}
 
 	private getFilterValues(dataView, column) {
-		var seen = [];
-		for (var i = 0; i < dataView.getLength() ; i++) {
-			var value = dataView.getItem(i)[column.field];
+		let seen = [];
+		for (let i = 0; i < dataView.getLength() ; i++) {
+			let value = dataView.getItem(i)[column.field];
 
 			if (!_.contains(seen, value)) {
 				seen.push(value);
@@ -300,18 +300,18 @@ export class HeaderFilter {
 	}
 
 	private getFilterValuesByInput($input) {
-		var column = $input.data('column'),
+		let column = $input.data('column'),
 			filter = $input.val(),
 			dataView = this.grid.getData(),
 			seen = [];
 
-		for (var i = 0; i < dataView.getLength() ; i++) {
-			var value = dataView.getItem(i)[column.field];
+		for (let i = 0; i < dataView.getLength() ; i++) {
+			let value = dataView.getItem(i)[column.field];
 
 			if (filter.length > 0) {
-				var mVal = !value ? '' : value;
-				var lowercaseFilter = filter.toString().toLowerCase();
-				var lowercaseVal = mVal.toString().toLowerCase();
+				let itemValue = !value ? '' : value;
+				let lowercaseFilter = filter.toString().toLowerCase();
+				let lowercaseVal = itemValue.toString().toLowerCase();
 				if (!_.contains(seen, value) && lowercaseVal.indexOf(lowercaseFilter) > -1) {
 					seen.push(value);
 				}
@@ -340,9 +340,6 @@ export class HeaderFilter {
 	}
 
 	private handleMenuItemClick(e, command, columnDef) {
-		// let command = $(e.target).data('command');
-		// let columnDef = $(e.target).data('column');
-
 		this.hideMenu();
 
 		this.onCommand.notify({
