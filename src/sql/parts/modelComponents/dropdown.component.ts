@@ -19,7 +19,7 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
 
 @Component({
-	selector: 'inputBox',
+	selector: 'dropdown',
 	template: `
 		<div #input style="width: 100%"></div>
 	`
@@ -87,6 +87,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		if (this.value) {
 			this._dropdown.value = this.value;
 		}
+		this._dropdown.enabled = this.enabled;
 	}
 
 	// CSS-bound properties

@@ -4,16 +4,16 @@
 
 SQL Operations Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download SQL Operations Studio March Public Preview**
+**Download SQL Operations Studio May Public Preview**
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=872717
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=872718
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=872719
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=872720
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=872722
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=872721
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=873386
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=873387
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=873388
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=873389
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=873390
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=873391
 
 Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instructions.
 
@@ -74,7 +74,18 @@ We would like to thank all our users who raised issues, and in particular the fo
 * SebastianPfliegel `Remove sqlExtensionHelp (#312)`
 * olljanat for `Implemented npm version check (#314)`
 * Adam Mechanic for helping with the `whoisactive` extension
-* All community localization contributors *(will get list of individuals next month)*
+* All community localization contributors
+  * French: Adrien Clerbois, ANAS BELABBES, Antoine Griffard, Arian Papillon, Eric Macarez, Eric Van Thorre, Jérémy LANDON, Matthias GROSPERRIN, Maxime COQUEREL, Olivier Guinart, thierry DEMAN-BARCELÒ, Thomas Potier
+  * Italian: Aldo Donetti, Alessandro Alpi, Andrea Dottor, Bruni Luca, Gianluca Hotz, Luca Nardi, Luigi Bruno, Marco Dal Pino, Mirco Vanini, Pasquale Ceglie, Riccardo Cappello, Sergio Govoni, Stefano Demiliani
+  * German: Anna Henke-Gunvaldson, Ben Weissman, David Ullmer, J.M. ., Kai Modo, Konstantin Staschill, Kostja Klein, Lennart Trunk, Markus Ehrenmüller-Jensen, Mascha Kroenlein, Matthias Knoll, Mourad Louha, Thomas Hütter, Wolfgang Straßer
+  * Spanish: Alberto Poblacion, Andy Gonzalez, Carlos Mendible, Christian Araujo, Daniel D, Eickhel Mendoza, Ernesto Cardenas, Ivan Toledo Ivanovic, Fran Diaz, JESUS GIL, Jorge Serrano Pérez, José Saturnino Pimentel Juárez, Mauricio Hidalgo, Pablo Iglesias, Rikhardo Estrada Rdez, Thierry DEMAN, YOLANDA CUESTA ALTIERI
+  * Japanese: Fujio Kojima, Kazushi KAMEGAWA, Masayoshi Yamada, Masayuki Ozawa , Seiji Momoto, Takashi Kanai, Takayoshi Tanaka, Yoshihisa Ozaki, 庄垣内治
+  * Chinese (simplified): DAN YE, Joel Yang, Lynne Dong, Ryan（Yu） Zhang, Sheng Jiang, Wei Zhang, Zhiliang Xu
+  * Chinese  (Traditional): Bruce Chen, Chiayi Yen, Kevin Yang,  Winnie Lin, 保哥 Will,  謝政廷
+  * Korean: Do-Kyun Kim, Evelyn Kim, Helen Jung, Hong Jmee, jeongwoo choi, Jun Hyoung Lee, Jungsun Kim정선, Justin Yoo, Kavrith mucha, Kiwoong Youm, MinGyu Ju,  MVP_JUNO BEA, Sejun Kim, SOONMAN KWON, sung man ko, Yeongrak Choi, younggun kim, Youngjae Kim, 소영 이
+  * Russian: Andrey Veselov, Anton Fontanov, Anton Savin, Elena Ostrovskaia, Igor Babichev, Maxim Zelensky, Rodion Fedechkin, Tasha T, Vladimir Zyryanov
+  * Portuguese Brazil: Daniel de Sousa, Diogo Duarte, Douglas Correa, Douglas Eccker, José Emanuel Mendes, Marcelo Fernandes, Marcondes Alexandre, Roberto Fonseca, Rodrigo Crespi   
+
 
 And of course we'd like to thank the authors of all upstream dependencies.  Please see a full list in the [ThirdPartyNotices.txt](https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/ThirdPartyNotices.txt)
 

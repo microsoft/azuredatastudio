@@ -1,42 +1,49 @@
 
 .form-table {
-	width:400px;
-	display:table;
-	padding: 30px;
+	width: 100%;
+	display: table;
+	padding: 10px 30px 0px 30px;
+	box-sizing: border-box;
 }
 
 .form-actions-table {
-	display:table;
+	display: table;
 }
 
 .form-row {
 	display: table-row;
-	width: 100px;
-	padding-bottom: 10px;
 }
 
 .form-item-row {
 	padding-bottom: 5px;
-	width: 300px;
 }
 
-.form-item-title {
-
-	padding-top: 20px;
+.form-vertical-container {
+	padding-bottom: 15px;
+	width: 100%;
 }
 
 .form-cell {
-	padding-top: 20px;
+	padding-bottom: 20px;
 	padding-right: 5px;
 	display: table-cell;
+}
+
+.form-component-container {
+	display: flex;
+	flex-direction: row;
+}
+
+.form-input-flex {
+	flex: 1;
+}
+
+.form-component-actions {
+	padding-left: 5px;
 }
 
 .form-actions-cell {
 	padding-top: 5px;
 	padding-right: 5px;
 	display: table-cell;
-}
-
-.form-action {
-	width: 20px;
 }

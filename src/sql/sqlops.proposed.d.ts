@@ -21,6 +21,7 @@ declare module 'sqlops' {
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
+		radioButton(): ComponentBuilder<RadioButtonComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
@@ -31,6 +32,7 @@ declare module 'sqlops' {
 	export interface ComponentBuilder<T extends Component> {
 		component(): T;
 		withProperties<U>(properties: U): ComponentBuilder<T>;
+		withValidation(validation: (component: T) => boolean): ComponentBuilder<T>;
 	}
 	export interface ContainerBuilder<T extends Component, TLayout, TItemLayout> extends ComponentBuilder<T> {
 		withLayout(layout: TLayout): ContainerBuilder<T, TLayout, TItemLayout>;
@@ -43,6 +45,22 @@ declare module 'sqlops' {
 
 	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
 		withFormItems(components: FormComponent[], itemLayout?: FormItemLayout): ContainerBuilder<FormContainer, FormLayout, FormItemLayout>;
+
+		/**
+		 * Creates a collection of child components and adds them all to this container
+		 *
+		 * @param formComponents the definitions
+		 * @param {*} [itemLayout] Optional layout for the child items
+		 */
+		addFormItems(formComponents: Array<FormComponent>, itemLayout?: FormItemLayout): void;
+
+		/**
+		 * Creates a child component and adds it to this container.
+		 *
+		 * @param formComponent the component to be added
+		 * @param {*} [itemLayout] Optional layout for this child item
+		 */
+		addFormItem(formComponent: FormComponent, itemLayout?: FormItemLayout): void;
 	}
 
 	export interface Component {
@@ -56,6 +74,22 @@ declare module 'sqlops' {
 		 * @memberof Component
 		 */
 		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
+
+		enabled: boolean;
+		/**
+		 * Event fired to notify that the component's validity has changed
+		 */
+		readonly onValidityChanged: vscode.Event<boolean>;
+
+		/**
+		 * Whether the component is valid or not
+		 */
+		readonly valid: boolean;
+
+		/**
+		 * Run the component's validations
+		 */
+		validate(): Thenable<boolean>;
 	}
 
 	export interface FormComponent {
@@ -130,6 +164,8 @@ declare module 'sqlops' {
 		 * Matches the align-content CSS property.
 		 */
 		alignContent?: string;
+
+		height? : number;
 	}
 
 	export interface FlexItemLayout {
@@ -146,6 +182,8 @@ declare module 'sqlops' {
 
 	export interface FormItemLayout {
 		horizontal: boolean;
+		width: number;
+		componentWidth: number;
 	}
 
 	export interface FormLayout {
@@ -169,10 +207,24 @@ declare module 'sqlops' {
 		 */
 		label: string;
 		/**
-		 * ID of the task to be called when this is clicked on.
-		 * These should be registered using the {tasks.registerTask} API.
+		 * Name of the clickable action. If not defined then no action will be shown
 		 */
-		taskId: string;
+		actionTitle?: string;
+		/**
+		 * Data sent on callback being run.
+		 */
+		callbackData?: any;
+	}
+
+	/**
+	 * Defines status indicators that can be shown to the user as part of
+	 * components such as the Card UI
+	 */
+	export enum StatusIndicator {
+		None = 0,
+		Ok = 1,
+		Warning = 2,
+		Error = 3
 	}
 
 	/**
@@ -183,15 +235,31 @@ declare module 'sqlops' {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
+		status?: StatusIndicator;
 	}
+
+	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
 
 	export interface InputBoxProperties {
 		value?: string;
+		ariaLabel?: string;
+		placeHolder?: string;
+		height: number;
+		width: number;
+		inputType?: InputBoxInputType;
+		required?: boolean;
 	}
 
 	export interface CheckBoxProperties {
 		checked?: boolean;
 		label?: string;
+	}
+
+	export interface RadioButtonProperties {
+		name?: string;
+		label?: string;
+		value?: string;
+		checked?: boolean;
 	}
 
 	export interface DropDownProperties {
@@ -207,11 +275,15 @@ declare module 'sqlops' {
 		label: string;
 		value: string;
 		actions?: ActionDescriptor[];
+		onDidActionClick: vscode.Event<ActionDescriptor>;
 	}
 
-	export interface InputBoxComponent extends Component {
-		value: string;
+	export interface InputBoxComponent extends Component, InputBoxProperties {
 		onTextChanged: vscode.Event<any>;
+	}
+
+	export interface RadioButtonComponent extends Component, RadioButtonProperties {
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface CheckBoxComponent extends Component {
@@ -265,6 +337,21 @@ declare module 'sqlops' {
 		readonly modelBuilder: ModelBuilder;
 
 		/**
+		 * Whether or not the model view's root component is valid
+		 */
+		readonly valid: boolean;
+
+		/**
+		 * Raised when the model view's valid property changes
+		 */
+		readonly onValidityChanged: vscode.Event<boolean>;
+
+		/**
+		 * Run the model view root component's validations
+		 */
+		validate(): Thenable<boolean>;
+
+		/**
 		 * Initializes the model with a root component definition.
 		 * Once this has been done, the components will be laid out in the UI and
 		 * can be accessed and altered as needed.
@@ -272,7 +359,7 @@ declare module 'sqlops' {
 		initializeModel<T extends Component>(root: T): Thenable<void>;
 	}
 
-	export namespace dashboard {
+	export namespace ui {
 		/**
 		 * Register a provider for a model-view widget
 		 */
@@ -309,8 +396,21 @@ declare module 'sqlops' {
 			 */
 			export function closeDialog(dialog: Dialog): void;
 
+			export interface ModelViewPanel {
+				/**
+				 * Register model view content for the dialog.
+				 * Doesn't do anything if model view is already registered
+				 */
+				registerContent(handler: (view: ModelView) => void): void;
+
+				/**
+				 * Returns the model view content if registered. Returns undefined if model review is not registered
+				 */
+				readonly modelView: ModelView;
+			}
+
 			// Model view dialog classes
-			export interface Dialog {
+			export interface Dialog extends ModelViewPanel {
 				/**
 				 * The title of the dialog
 				 */
@@ -336,9 +436,19 @@ declare module 'sqlops' {
 				 * Any additional buttons that should be displayed
 				 */
 				customButtons: Button[];
+
+				/**
+				 * Whether the dialog's content is valid
+				 */
+				readonly valid: boolean;
+
+				/**
+				 * Fired whenever the dialog's valid property changes
+				 */
+				readonly onValidityChanged: vscode.Event<boolean>;
 			}
 
-			export interface DialogTab {
+			export interface DialogTab extends ModelViewPanel {
 				/**
 				 * The title of the tab
 				 */
@@ -391,5 +501,24 @@ declare module 'sqlops' {
 		 * @param {string} fileUri file URI for the query editor
 		 */
 		export function runQuery(fileUri: string): void;
+	}
+
+	/**
+	 * Namespace for interacting with the workspace
+	 */
+	export namespace workspace {
+
+		/**
+		 * Create a new model view editor
+		 */
+		export function createModelViewEditor(title: string): ModelViewEditor;
+
+		export interface ModelViewEditor extends window.modelviewdialog.ModelViewPanel {
+
+			/**
+			 * Opens the editor
+			 */
+			openEditor(position?: vscode.ViewColumn): Thenable<void>;
+		}
 	}
 }

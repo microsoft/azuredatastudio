@@ -37,9 +37,8 @@ exports.defaultLanguages = [
 // languages requested by the community to non-stable builds
 exports.extraLanguages = [
     { id: 'pt-br', folderName: 'ptb' },
-    // {{SQL CARBON EDIT}}
-    // { id: 'hu', folderName: 'hun' },
-    // { id: 'tr', folderName: 'trk' }
+    { id: 'hu', folderName: 'hun' },
+    { id: 'tr', folderName: 'trk' }
 ];
 // non built-in extensions also that are transifex and need to be part of the language packs
 var externalExtensionsWithTranslations = {

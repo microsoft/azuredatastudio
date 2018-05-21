@@ -38,6 +38,9 @@ See [Paul Randal's wait types library] for more information about each wait type
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 *	flyfishingdba for Add square brackets for ms_foreachdb call (#1023)
 
+## What's new in Server Reports v1.2?
+* Created left nav bar and added 2 categories for insight widgets: monitor and performance
+
 ## What's new in Server Reports v1.1?
 * Fixed DB Space Usage where it threw an error when database names contain special characters
 * Changed DB Space Usage and DB Buffer Usage to show only top 10 data

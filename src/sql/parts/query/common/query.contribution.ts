@@ -33,6 +33,8 @@ import { QueryPlanEditor } from 'sql/parts/queryPlan/queryPlanEditor';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import * as Constants from 'sql/parts/query/common/constants';
 import { localize } from 'vs/nls';
+import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
+import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands
 
@@ -80,6 +82,16 @@ const editDataEditorDescriptor = new EditorDescriptor(
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(editDataEditorDescriptor, [new SyncDescriptor(EditDataInput)]);
+
+// Editor
+const editDataResultsEditorDescriptor = new EditorDescriptor(
+	EditDataResultsEditor,
+	EditDataResultsEditor.ID,
+	'EditDataResults'
+);
+
+Registry.as<IEditorRegistry>(EditorExtensions.Editors)
+	.registerEditor(editDataResultsEditorDescriptor, [new SyncDescriptor(EditDataResultsInput)]);
 
 let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 
@@ -209,6 +221,22 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: ResultsGridFocusCondition,
 	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_E),
 	handler: gridCommands.saveAsExcel
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GRID_VIEWASCHART_ID,
+	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	when: ResultsGridFocusCondition,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_V),
+	handler: gridCommands.viewAsChart
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GRID_GOTONEXTGRID_ID,
+	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	when: ResultsGridFocusCondition,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_N),
+	handler: gridCommands.goToNextGrid
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({

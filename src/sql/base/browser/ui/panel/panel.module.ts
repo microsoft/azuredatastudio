@@ -9,8 +9,10 @@ import { TabComponent } from './tab.component';
 import { TabHeaderComponent } from './tabHeader.component';
 import { PanelComponent } from './panel.component';
 
+import { ScrollableModule } from 'sql/base/browser/ui/scrollable/scrollable.module';
+
 @NgModule({
-	imports: [CommonModule],
+	imports: [CommonModule, ScrollableModule],
 	exports: [TabComponent, PanelComponent],
 	declarations: [TabComponent, TabHeaderComponent, PanelComponent]
 })

@@ -73,7 +73,7 @@
 		"panel.background": "#FFFFFE",
 		"panel.border": "#C8C8C8",
 		"panelTitle.activeForeground": "#212121",
-		"panelTitle.inactiveForeground": "#888888"
+		"panelTitle.inactiveForeground": "#757575"
 	},
 	"tokenColors": [
 		{

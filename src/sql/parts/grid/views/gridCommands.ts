@@ -77,4 +77,11 @@ export const selectAllMessages = (accessor: ServicesAccessor) => {
 	runActionOnActiveResultsEditor(accessor, GridContentEvents.SelectAllMessages);
 };
 
+export const viewAsChart = (accessor: ServicesAccessor) => {
+	runActionOnActiveResultsEditor(accessor, GridContentEvents.ViewAsChart);
+};
+
+export const goToNextGrid = (accessor: ServicesAccessor) => {
+	runActionOnActiveResultsEditor(accessor, GridContentEvents.GoToNextGrid);
+};
 

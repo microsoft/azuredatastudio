@@ -148,6 +148,8 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 				if (this._jobCacheObject.prevJobID === this._agentViewComponent.jobId || jobHistories[0].jobId === this._agentViewComponent.jobId) {
 					this._showPreviousRuns = true;
 					this.buildHistoryTree(self, jobHistories);
+					$('jobhistory-component .history-details .prev-run-list .monaco-tree').attr('tabIndex', '-1');
+					$('jobhistory-component .history-details .prev-run-list .monaco-tree-row').attr('tabIndex', '0');
 					this._cd.detectChanges();
 				}
 			} else if (jobHistories && jobHistories.length === 0 ){

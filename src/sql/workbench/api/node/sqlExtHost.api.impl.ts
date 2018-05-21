@@ -66,7 +66,7 @@ export function createApiFactory(
 	const extHostWebviewWidgets = rpcProtocol.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(rpcProtocol));
 	const extHostModelView = rpcProtocol.set(SqlExtHostContext.ExtHostModelView, new ExtHostModelView(rpcProtocol));
 	const extHostDashboard = rpcProtocol.set(SqlExtHostContext.ExtHostDashboard, new ExtHostDashboard(rpcProtocol));
-	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol));
+	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
 
 
@@ -318,15 +318,21 @@ export function createApiFactory(
 
 			const workspace: typeof sqlops.workspace = {
 				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
-				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard
+				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
+				createModelViewEditor(title: string): sqlops.workspace.ModelViewEditor {
+					return extHostModelViewDialog.createModelViewEditor(title);
+				}
 			};
 
 			const dashboard = {
 				registerWebviewProvider(widgetId: string, handler: (webview: sqlops.DashboardWebview) => void) {
 					extHostWebviewWidgets.$registerProvider(widgetId, handler);
-				},
-				registerModelViewProvider(widgetId: string, handler: (view: sqlops.ModelView) => void): void {
-					extHostModelView.$registerProvider(widgetId, handler);
+				}
+			};
+
+			const ui = {
+				registerModelViewProvider(modelViewId: string, handler: (view: sqlops.ModelView) => void): void {
+					extHostModelView.$registerProvider(modelViewId, handler);
 				}
 			};
 
@@ -361,7 +367,9 @@ export function createApiFactory(
 				tasks,
 				dashboard,
 				workspace,
-				queryeditor: queryEditor
+				queryeditor: queryEditor,
+				ui: ui,
+				StatusIndicator: sqlExtHostTypes.StatusIndicator
 			};
 		}
 	};

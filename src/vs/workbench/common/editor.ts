@@ -131,6 +131,16 @@ export abstract class EditorInput implements IEditorInput {
 		return this._onDispose.event;
 	}
 
+	// {{SQL CARBON EDIT}}
+	// Saving is not supported in the EditData query editor, so this can be overriden in its Input.
+	private _savingSupported: boolean = true;
+	public get savingSupported(): boolean {
+		return this._savingSupported;
+	}
+	public disableSaving() {
+		this._savingSupported = false;
+	}
+
 	/**
 	 * Returns the associated resource of this input if any.
 	 */
