@@ -173,6 +173,10 @@ export class JobsViewComponent implements AfterContentChecked {
 				}
 			});
 		}
+		// no jobs available
+		if (!this.jobs || this.jobs.length < 1) {
+			this._showProgressWheel = false;
+		}
 	}
 
 	private onJobsAvailable(jobs: sqlops.AgentJobInfo[]) {
@@ -366,5 +370,9 @@ export class JobsViewComponent implements AfterContentChecked {
 				}
 			});
 		}
+	}
+
+	private showLoadingIcon(): boolean {
+		return this._showProgressWheel ? !this._isCloud : this._isCloud;
 	}
 }
