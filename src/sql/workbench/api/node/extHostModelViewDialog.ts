@@ -61,10 +61,6 @@ class ModelViewEditorImpl extends ModelViewPanelImpl implements sqlops.workspace
 		super('modelViewEditor', extHostModelView);
 	}
 
-	public setModelViewId(value: string) {
-		super.setModelViewId(value);
-	}
-
 	public openEditor(position?: vscode.ViewColumn): Thenable<void> {
 		return this._proxy.$openEditor(this._modelViewId, this._title, position);
 	}
