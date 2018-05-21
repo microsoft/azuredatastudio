@@ -156,10 +156,11 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 				this.connectionManagementService.changeDatabase(this.connectionManagementService.connectionInfo.connectionProfile.databaseName).then(
 					result => {
 						if (result) {
-							if (this._router.url === '/database-dashboard') {
+							if (this._router.url.split('/').length === 2) {
 								this._updatePage.fire();
 							} else {
-								this._router.navigate(['database-dashboard']);
+								let profile = this.connectionManagementService.connectionInfo.connectionProfile;
+								this._router.navigate([`${profile.serverName}/${profile.databaseName}`]);
 							}
 						} else {
 							this._notificationService.notify({
@@ -177,7 +178,7 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 				);
 				break;
 			case AngularEventType.NAV_SERVER:
-				this._router.navigate(['server-dashboard']);
+				this._router.navigate([this.connectionManagementService.connectionInfo.connectionProfile.serverName]);
 				break;
 			case AngularEventType.DELETE_WIDGET:
 				this._onDeleteWidget.fire(event.payload.id);

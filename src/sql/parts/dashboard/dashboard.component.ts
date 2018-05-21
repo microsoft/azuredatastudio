@@ -60,7 +60,7 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 		});
 		if (profile && (!profile.databaseName || Utils.isMaster(profile))) {
 			// Route to the server page as this is the default database
-			this._router.navigate(['server-dashboard']);
+			this._router.navigate([profile.serverName]);
 		}
 	}
 

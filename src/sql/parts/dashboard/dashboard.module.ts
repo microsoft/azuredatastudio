@@ -93,14 +93,8 @@ let extensionComponents = Registry.as<IComponentRegistry>(ComponentExtensions.Co
 
 // Setup routes for various child components
 const appRoutes: Routes = [
-	{ path: 'database-dashboard', component: DatabaseDashboardPage },
-	{ path: 'server-dashboard', component: ServerDashboardPage },
-	{
-		path: '',
-		redirectTo: 'database-dashboard',
-		pathMatch: 'full'
-	},
-	{ path: '**', component: DatabaseDashboardPage }
+	{ path: ':server/:database', component: DatabaseDashboardPage },
+	{ path: ':server', component: ServerDashboardPage }
 ];
 
 // Connection Dashboard main angular module

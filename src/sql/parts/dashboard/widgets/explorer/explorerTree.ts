@@ -163,17 +163,17 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 
 	private handleItemDoubleClick(element: IConnectionProfile): void {
 		this._connectionService.changeDatabase(element.databaseName).then(result => {
-			this._router.navigate(['database-dashboard']);
+			this._router.navigate([`${element.serverName}/${element.databaseName}`]);
 		});
 	}
 
 	protected onEnter(tree: tree.ITree, event: IKeyboardEvent): boolean {
 		let result = super.onEnter(tree, event);
 		if (result) {
-			const focus = tree.getFocus();
+			const focus: IConnectionProfile | ObjectMetadataWrapper = tree.getFocus();
 			if (focus && !(focus instanceof ObjectMetadataWrapper)) {
 				this._connectionService.changeDatabase(focus.databaseName).then(result => {
-					this._router.navigate(['database-dashboard']);
+					this._router.navigate([`${focus.serverName}/${focus.databaseName}`]);
 				});
 			}
 		}

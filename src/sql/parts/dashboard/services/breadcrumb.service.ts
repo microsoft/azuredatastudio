@@ -60,13 +60,13 @@ export class BreadcrumbService implements IBreadcrumbService {
 	}
 
 	private getServerBreadcrumb(profile: ConnectionProfile): MenuItem {
-		return { label: profile.serverName, routerLink: ['server-dashboard'] };
+		return { label: profile.serverName, routerLink: [profile.serverName] };
 	}
 
 	private getDbBreadcrumb(profile: ConnectionProfile): MenuItem {
 		let ret: MenuItem = {
 			label: profile.databaseName,
-			routerLink: ['database-dashboard']
+			routerLink: [`${profile.serverName}/${profile.databaseName}`]
 		};
 		this._bootstrap.metadataService.databaseNames.subscribe(e => {
 			ret.routeOptions = e.map(e => {

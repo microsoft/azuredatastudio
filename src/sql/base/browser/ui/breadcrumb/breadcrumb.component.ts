@@ -15,8 +15,9 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { List } from 'vs/base/browser/ui/list/listWidget';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { selectListBackground, selectBackground, selectBorder } from 'vs/platform/theme/common/colorRegistry';
 
 @Component({
 	selector: 'breadcrumb',
@@ -37,6 +38,8 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 })
 export class BreadcrumbComponent extends AngularDisposable implements OnInit {
 	private menuItems: MenuItem[] = [];
+	private listContainer: HTMLElement;
+	private list: List<RouterOption>;
 
 	constructor(
 		@Inject(forwardRef(() => IBreadcrumbService)) private _breadcrumbService: IBreadcrumbService,
@@ -50,6 +53,27 @@ export class BreadcrumbComponent extends AngularDisposable implements OnInit {
 
 	ngOnInit() {
 		this._register(toDisposableSubscription(this._breadcrumbService.breadcrumbItem.subscribe((item) => this.updateCrumb(item))));
+		this.listContainer = document.createElement('div');
+		this.listContainer.style.outlineWidth = '1px';
+		this.listContainer.style.outlineStyle = 'solid';
+		this.list = new List<RouterOption>(this.listContainer, {
+			getHeight: () => 22,
+			getTemplateId: () => 'id'
+		}, [{
+			templateId: 'id',
+			renderElement: (element: RouterOption, index, template: HTMLElement) => {
+				template.innerText = element.label;
+			},
+			renderTemplate: container => {
+				const ele = document.createElement('div');
+				container.appendChild(ele);
+				return ele;
+			},
+			disposeTemplate: () => { }
+		}]);
+		this._register(attachListStyler(this.list, this.themeService));
+		this._register(this.themeService.onThemeChange(this.style, this));
+		this.style(this.themeService.getTheme());
 	}
 
 	private updateCrumb(items: MenuItem[]) {
@@ -61,37 +85,22 @@ export class BreadcrumbComponent extends AngularDisposable implements OnInit {
 		this._router.navigate(link);
 	}
 
+	private style(e: ITheme): void {
+		this.listContainer.style.backgroundColor = e.getColor(selectBackground).toString();
+		this.listContainer.style.outlineColor = e.getColor(selectBorder).toString();
+	}
+
 	public contextMenu(item: MenuItem, ele: HTMLElement): void {
 		this.contextViewService.showContextView({
 			getAnchor: () => ele,
-			render: (container) => {
-				let listele = document.createElement('div');
-				container.appendChild(listele);
-				listele.style.width = ele.offsetWidth + 'px';
-				listele.style.height = '500px';
-				let list = new List<RouterOption>(listele, {
-					getHeight: () => 22,
-					getTemplateId: () => 'id'
-				}, [{
-					templateId: 'id',
-					renderElement: (element: RouterOption, index, template: HTMLElement) => {
-						template.innerText = element.label;
-					},
-					renderTemplate: container => {
-						const ele = document.createElement('div');
-						container.appendChild(ele);
-						return ele;
-					},
-					disposeTemplate: () => { }
-				}]);
-				attachListStyler(list, this.themeService);
-				list.splice(0, list.length, item.routeOptions);
+			render: container => {
+				container.appendChild(this.listContainer);
+				this.listContainer.style.width = ele.offsetWidth + 'px';
+				this.listContainer.style.height = '200px';
+				this.list.splice(0, this.list.length, item.routeOptions);
+				this.list.layout();
 
-				return {
-					dispose: () => {
-
-					}
-				};
+				return { dispose: () => {}};
 			}
 		});
 	}
