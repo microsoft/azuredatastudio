@@ -30,20 +30,3 @@
 .footer-button.dialogModal-hidden {
 	margin: 0;
 }
-
-/* Wizard modal rules */
-.wizardModal-page {
-	flex-basis: 100%;
-	display: flex;
-	flex-direction: column;
-	min-width: 600px;
-}
-
-.wizardModal-page-header {
-	padding: 15px;
-}
-
-.wizardModal-page-content {
-	flex-basis: 100%;
-	height: 100%;
-}

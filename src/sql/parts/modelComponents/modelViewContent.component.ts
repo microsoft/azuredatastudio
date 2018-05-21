@@ -20,7 +20,6 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import * as sqlops from 'sqlops';
 import { ViewBase } from 'sql/parts/modelComponents/viewBase';
-import { ConnectionManagementService } from '../connection/common/connectionManagementService';
 
 @Component({
 	selector: 'modelview-content',
