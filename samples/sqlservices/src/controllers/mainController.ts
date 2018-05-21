@@ -155,7 +155,7 @@ export default class MainController implements vscode.Disposable {
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: inputBox,
-					title: 'Enter anything'
+					title: 'Enter anything but "valid"'
 				}]).component();
 			await view.initializeModel(formModel);
 		});

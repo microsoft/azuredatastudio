@@ -50,7 +50,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			this._editorService.openEditor(input, editorOptions, position as any).then(() => {
 				resolve();
 			}, error => {
-				reject();
+				reject(error);
 			});
 		});
 	}
