@@ -40,8 +40,12 @@ export default class MainController implements vscode.Disposable {
 			vscode.window.showInformationMessage(`Clicked from profile ${profile.serverName}.${profile.databaseName}`);
 		});
 
-		vscode.commands.registerCommand('mssql.openDialog', () =>  {
+		vscode.commands.registerCommand('sqlservices.openDialog', () =>  {
 			this.openDialog();
+		});
+
+		vscode.commands.registerCommand('sqlservices.openEditor', () =>  {
+			this.openEditor();
 		});
 
 		return Promise.resolve(true);
@@ -70,9 +74,6 @@ export default class MainController implements vscode.Disposable {
 			})
 			.component();
 			let inputBox2 = view.modelBuilder.inputBox()
-			.component();
-
-			let inputBox3 = view.modelBuilder.inputBox()
 			.component();
 
 			let checkbox = view.modelBuilder.checkBox()
@@ -114,6 +115,31 @@ export default class MainController implements vscode.Disposable {
 					vscode.window.showInformationMessage(inputBox2.value);
 					inputBox.value = dropdown.value;
 			});
+			let radioButton = view.modelBuilder.radioButton()
+				.withProperties({
+					value: 'option1',
+					name: 'radioButtonOptions',
+					label: 'Option 1',
+					checked: true
+            //width: 300
+			}).component();
+			let radioButton2 = view.modelBuilder.radioButton()
+				.withProperties({
+					value: 'option2',
+					name: 'radioButtonOptions',
+					label: 'Option 2'
+
+            //width: 300
+			}).component();
+			let flexRadioButtonsModel = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'column',
+					alignItems: 'left',
+					justifyContent: 'space-evenly',
+					height: 50
+			}).withItems([
+				radioButton, radioButton2]
+				, { flex: '1 1 50%' }).component();
 			let formModel = view.modelBuilder.formContainer()
 			.withFormItems([{
 						component: inputBox,
@@ -131,6 +157,9 @@ export default class MainController implements vscode.Disposable {
 						component: inputBox2,
 						title: 'Backup files',
 						actions: [button, button3]
+				}, {
+					component: flexRadioButtonsModel,
+					title: 'Options'
 				}], {
 						horizontal:false,
 						width: 500,
@@ -140,6 +169,22 @@ export default class MainController implements vscode.Disposable {
 		});
 
 		sqlops.window.modelviewdialog.openDialog(dialog);
+	}
+
+	private openEditor(): void {
+		let editor = sqlops.workspace.createModelViewEditor('Test Editor view');
+		editor.registerContent(async view => {
+			let inputBox = view.modelBuilder.inputBox()
+				.withValidation(component => component.value !== 'valid')
+				.component();
+			let formModel = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: inputBox,
+					title: 'Enter anything but "valid"'
+				}]).component();
+			await view.initializeModel(formModel);
+		});
+		editor.openEditor();
 	}
 
 	private registerSqlServicesModelView(): void {

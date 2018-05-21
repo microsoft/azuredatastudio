@@ -37,7 +37,7 @@ class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel
 
 	public registerContent(handler: (view: sqlops.ModelView) => void): void {
 		if (!this._modelViewId) {
-			let viewId = this._viewType + this.handle;
+			let viewId = this._viewType + this._handle;
 			this.setModelViewId(viewId);
 			this._extHostModelView.$registerProvider(viewId, modelView => {
 				this._modelView = modelView;
@@ -68,6 +68,21 @@ class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel
 
 	public get onValidityChanged(): Event<boolean> {
 		return this._onValidityChanged;
+	}
+}
+
+class ModelViewEditorImpl extends ModelViewPanelImpl implements sqlops.workspace.ModelViewEditor {
+	constructor(
+		extHostModelViewDialog: ExtHostModelViewDialog,
+		extHostModelView: ExtHostModelViewShape,
+		private _proxy: MainThreadModelViewDialogShape,
+		private _title: string
+	) {
+		super('modelViewEditor', extHostModelViewDialog, extHostModelView);
+	}
+
+	public openEditor(position?: vscode.ViewColumn): Thenable<void> {
+		return this._proxy.$openEditor(this._modelViewId, this._title, position);
 	}
 }
 
@@ -273,7 +288,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	}
 
 	private getHandle(item: sqlops.window.modelviewdialog.Button | sqlops.window.modelviewdialog.Dialog | sqlops.window.modelviewdialog.DialogTab
-		| sqlops.window.modelviewdialog.ModelViewPanel | sqlops.window.modelviewdialog.Wizard | sqlops.window.modelviewdialog.WizardPage) {
+		| sqlops.window.modelviewdialog.ModelViewPanel | sqlops.window.modelviewdialog.Wizard | sqlops.window.modelviewdialog.WizardPage | sqlops.workspace.ModelViewEditor) {
 		let handle = this._objectHandles.get(item);
 		if (handle === undefined) {
 			handle = ExtHostModelViewDialog.getNewHandle();
@@ -328,6 +343,12 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	public closeDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
 		let handle = this.getHandle(dialog);
 		this._proxy.$closeDialog(handle);
+	}
+
+	public createModelViewEditor(title: string): sqlops.workspace.ModelViewEditor {
+		let editor = new ModelViewEditorImpl(this, this._extHostModelView, this._proxy, title);
+		editor.handle = this.getHandle(editor);
+		return editor;
 	}
 
 	public updateDialogContent(dialog: sqlops.window.modelviewdialog.Dialog): void {

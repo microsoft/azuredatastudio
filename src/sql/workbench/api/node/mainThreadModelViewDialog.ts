@@ -4,13 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { MainThreadModelViewDialogShape, SqlMainContext, ExtHostModelViewDialogShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import { Dialog, DialogTab, DialogButton, WizardPage, Wizard } from 'sql/platform/dialog/dialogTypes';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { CustomDialogService } from 'sql/platform/dialog/customDialogService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+
+import { MainThreadModelViewDialogShape, SqlMainContext, ExtHostModelViewDialogShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { Dialog, DialogTab, DialogButton, WizardPage, Wizard } from 'sql/platform/dialog/dialogTypes';
+import { CustomDialogService } from 'sql/platform/dialog/customDialogService';
 import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails, IModelViewWizardPageDetails, IModelViewWizardDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ModelViewInput } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
+
+import * as vscode from 'vscode';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape {
@@ -26,6 +32,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	constructor(
 		context: IExtHostContext,
 		@IInstantiationService instatiationService: IInstantiationService,
+		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService
 	) {
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModelViewDialog);
 		this._dialogService = new CustomDialogService(instatiationService);
@@ -33,6 +40,22 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public dispose(): void {
 		throw new Error('Method not implemented.');
+	}
+
+	public $openEditor(modelViewId: string, title: string, position?: vscode.ViewColumn): Thenable<void> {
+		return new Promise<void>((resolve, reject) => {
+			let input = new ModelViewInput(title, modelViewId);
+			let editorOptions = {
+				preserveFocus: true,
+				pinned: true
+			};
+
+			this._editorService.openEditor(input, editorOptions, position as any).then(() => {
+				resolve();
+			}, error => {
+				reject(error);
+			});
+		});
 	}
 
 	public $openDialog(handle: number): Thenable<void> {
