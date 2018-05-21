@@ -70,7 +70,7 @@ export class BreadcrumbService implements IBreadcrumbService {
 		};
 		this._bootstrap.metadataService.databaseNames.subscribe(e => {
 			ret.routeOptions = e.map(e => {
-				return <RouterOption> {
+				return <RouterOption>{
 					label: e,
 				};
 			});

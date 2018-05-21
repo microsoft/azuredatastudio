@@ -27,7 +27,7 @@ import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardVi
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
 import { SingleConnectionMetadataService, SingleConnectionManagementService, SingleAdminService, SingleQueryManagementService, CommonServiceInterface }
-from 'sql/services/common/commonServiceInterface.service';
+	from 'sql/services/common/commonServiceInterface.service';
 
 import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'sqlops';
 

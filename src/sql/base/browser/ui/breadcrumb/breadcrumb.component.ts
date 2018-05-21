@@ -100,7 +100,7 @@ export class BreadcrumbComponent extends AngularDisposable implements OnInit {
 				this.list.splice(0, this.list.length, item.routeOptions);
 				this.list.layout();
 
-				return { dispose: () => {}};
+				return { dispose: () => { } };
 			}
 		});
 	}
