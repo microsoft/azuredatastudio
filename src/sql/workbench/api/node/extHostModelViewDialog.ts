@@ -18,7 +18,7 @@ import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench
 class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel {
 	private _modelView: sqlops.ModelView;
 	private _handle: number;
-	private _modelViewId: string;
+	protected _modelViewId: string;
 
 	constructor(private _viewType: string,
 		protected _extHostModelView: ExtHostModelViewShape) {
@@ -26,7 +26,7 @@ class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel
 
 	public registerContent(handler: (view: sqlops.ModelView) => void): void {
 		if (!this._modelViewId) {
-			let viewId = this._viewType + this.handle;
+			let viewId = this._viewType + this._handle;
 			this.setModelViewId(viewId);
 			this._extHostModelView.$registerProvider(viewId, modelView => {
 				this._modelView = modelView;
@@ -52,7 +52,21 @@ class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel
 	}
 }
 
-class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.Dialog  {
+class ModelViewEditorImpl extends ModelViewPanelImpl implements sqlops.workspace.ModelViewEditor {
+	constructor(
+		extHostModelView: ExtHostModelViewShape,
+		private _proxy: MainThreadModelViewDialogShape,
+		private _title: string
+	) {
+		super('modelViewEditor', extHostModelView);
+	}
+
+	public openEditor(position?: vscode.ViewColumn): Thenable<void> {
+		return this._proxy.$openEditor(this._modelViewId, this._title, position);
+	}
+}
+
+class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.Dialog {
 	public title: string;
 	public content: string | sqlops.window.modelviewdialog.DialogTab[];
 	public okButton: sqlops.window.modelviewdialog.Button;
@@ -85,7 +99,7 @@ class TabImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialo
 	constructor(
 		private _extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape) {
-			super('modelViewDialogTab', extHostModelView);
+		super('modelViewDialogTab', extHostModelView);
 	}
 
 	public title: string;
@@ -151,6 +165,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	private readonly _dialogHandles = new Map<sqlops.window.modelviewdialog.Dialog, number>();
 	private readonly _tabHandles = new Map<sqlops.window.modelviewdialog.DialogTab, number>();
 	private readonly _buttonHandles = new Map<sqlops.window.modelviewdialog.Button, number>();
+	private readonly _editorHandles = new Map<sqlops.workspace.ModelViewEditor, number>();
 
 	private readonly _validityEmitters = new Map<number, Emitter<boolean>>();
 	private readonly _onClickCallbacks = new Map<number, () => void>();
@@ -165,6 +180,15 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	private static getNewHandle() {
 		let handle = ExtHostModelViewDialog._currentHandle;
 		ExtHostModelViewDialog._currentHandle += 1;
+		return handle;
+	}
+
+	private getEditorHandle(editor: sqlops.workspace.ModelViewEditor) {
+		let handle = this._editorHandles.get(editor);
+		if (handle === undefined) {
+			handle = ExtHostModelViewDialog.getNewHandle();
+			this._editorHandles.set(editor, handle);
+		}
 		return handle;
 	}
 
@@ -215,6 +239,12 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	public close(dialog: sqlops.window.modelviewdialog.Dialog): void {
 		let handle = this.getDialogHandle(dialog);
 		this._proxy.$close(handle);
+	}
+
+	public createModelViewEditor(title: string): sqlops.workspace.ModelViewEditor {
+		let editor = new ModelViewEditorImpl(this._extHostModelView, this._proxy, title);
+		editor.handle = this.getEditorHandle(editor);
+		return editor;
 	}
 
 	public updateDialogContent(dialog: sqlops.window.modelviewdialog.Dialog): void {

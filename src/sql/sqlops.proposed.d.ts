@@ -502,4 +502,23 @@ declare module 'sqlops' {
 		 */
 		export function runQuery(fileUri: string): void;
 	}
+
+	/**
+	 * Namespace for interacting with the workspace
+	 */
+	export namespace workspace {
+
+		/**
+		 * Create a new model view editor
+		 */
+		export function createModelViewEditor(title: string): ModelViewEditor;
+
+		export interface ModelViewEditor extends window.modelviewdialog.ModelViewPanel {
+
+			/**
+			 * Opens the editor
+			 */
+			openEditor(position?: vscode.ViewColumn): Thenable<void>;
+		}
+	}
 }

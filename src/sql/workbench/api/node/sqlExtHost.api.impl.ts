@@ -318,7 +318,10 @@ export function createApiFactory(
 
 			const workspace: typeof sqlops.workspace = {
 				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
-				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard
+				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
+				createModelViewEditor(title: string): sqlops.workspace.ModelViewEditor {
+					return extHostModelViewDialog.createModelViewEditor(title);
+				}
 			};
 
 			const dashboard = {
