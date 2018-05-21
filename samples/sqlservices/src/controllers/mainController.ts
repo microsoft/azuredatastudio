@@ -40,11 +40,11 @@ export default class MainController implements vscode.Disposable {
 			vscode.window.showInformationMessage(`Clicked from profile ${profile.serverName}.${profile.databaseName}`);
 		});
 
-		vscode.commands.registerCommand('mssql.openDialog', () =>  {
+		vscode.commands.registerCommand('sqlservices.openDialog', () =>  {
 			this.openDialog();
 		});
 
-		vscode.commands.registerCommand('mssql.openEditor', () =>  {
+		vscode.commands.registerCommand('sqlservices.openEditor', () =>  {
 			this.openEditor();
 		});
 
@@ -147,7 +147,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private openEditor(): void {
-		let editor = sqlops.workspace.createViewModelEditor();
+		let editor = sqlops.workspace.createModelViewEditor('Test Editor view');
 		editor.registerContent(async view => {
 			let inputBox = view.modelBuilder.inputBox()
 				.withValidation(component => component.value !== 'valid')
@@ -155,11 +155,11 @@ export default class MainController implements vscode.Disposable {
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: inputBox,
-					title: 'Enter anything but "valid" for build'
+					title: 'Enter anything'
 				}]).component();
 			await view.initializeModel(formModel);
 		});
-		editor.openEditor('Test Editor view');
+		editor.openEditor();
 	}
 
 	private registerSqlServicesModelView(): void {

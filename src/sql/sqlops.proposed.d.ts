@@ -481,14 +481,14 @@ declare module 'sqlops' {
 		/**
 		 * Create a new model view editor
 		 */
-		export function createViewModelEditor(): ModelViewEditor;
+		export function createModelViewEditor(title: string): ModelViewEditor;
 
 		export interface ModelViewEditor extends window.modelviewdialog.ModelViewPanel {
 
 			/**
 			 * Opens the editor
 			 */
-			openEditor(title: string, position?: vscode.ViewColumn): Thenable<void>;
+			openEditor(position?: vscode.ViewColumn): Thenable<void>;
 		}
 	}
 }

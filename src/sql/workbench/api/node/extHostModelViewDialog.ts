@@ -18,7 +18,7 @@ import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench
 class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel {
 	private _modelView: sqlops.ModelView;
 	private _handle: number;
-	private _modelViewId: string;
+	protected _modelViewId: string;
 
 	constructor(private _viewType: string,
 		protected _extHostModelView: ExtHostModelViewShape) {
@@ -52,22 +52,21 @@ class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel
 	}
 }
 
-class ViewModelEditorImpl extends ModelViewPanelImpl implements sqlops.workspace.ModelViewEditor {
-	private _content: string;
+class ModelViewEditorImpl extends ModelViewPanelImpl implements sqlops.workspace.ModelViewEditor {
 	constructor(
 		extHostModelView: ExtHostModelViewShape,
-		private _proxy: MainThreadModelViewDialogShape
+		private _proxy: MainThreadModelViewDialogShape,
+		private _title: string
 	) {
 		super('modelViewEditor', extHostModelView);
 	}
 
 	public setModelViewId(value: string) {
 		super.setModelViewId(value);
-		this._content = value;
 	}
 
-	public openEditor(title: string, position?: vscode.ViewColumn): Thenable<void> {
-		return this._proxy.$openEditor(this._content, title, position);
+	public openEditor(position?: vscode.ViewColumn): Thenable<void> {
+		return this._proxy.$openEditor(this._modelViewId, this._title, position);
 	}
 }
 
@@ -246,8 +245,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._proxy.$close(handle);
 	}
 
-	public createViewModelEditor(): sqlops.workspace.ModelViewEditor {
-		let editor = new ViewModelEditorImpl(this._extHostModelView, this._proxy);
+	public createModelViewEditor(title: string): sqlops.workspace.ModelViewEditor {
+		let editor = new ModelViewEditorImpl(this._extHostModelView, this._proxy, title);
 		editor.handle = this.getEditorHandle(editor);
 		return editor;
 	}

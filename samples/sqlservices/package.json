@@ -18,12 +18,12 @@
     "contributes": {
         "commands": [
             {
-                "command": "mssql.openDialog",
-                "title": "mssql.openDialog"
+                "command": "sqlservices.openDialog",
+                "title": "sqlservices.openDialog"
             },
             {
-                "command": "mssql.openEditor",
-                "title": "mssql.openEditor"
+                "command": "sqlservices.openEditor",
+                "title": "sqlservices.openEditor"
             }
         ],
         "dashboard.tabs": [

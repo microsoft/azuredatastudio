@@ -40,12 +40,19 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	}
 
 	public $openEditor(modelViewId: string, title: string, position?: vscode.ViewColumn): Thenable<void> {
-		let input = new ModelViewInput(title, modelViewId);
-		let editorOptions = Object.assign({
-			preserveFocus: true,
-			pinned: true
-		} as IEditorOptions);
-		return this._editorService.openEditor(input, editorOptions, position as any).then(() => undefined);
+		return new Promise<void>((resolve, reject) => {
+			let input = new ModelViewInput(title, modelViewId);
+			let editorOptions = {
+				preserveFocus: true,
+				pinned: true
+			};
+
+			this._editorService.openEditor(input, editorOptions, position as any).then(() => {
+				resolve();
+			}, error => {
+				reject();
+			});
+		});
 	}
 
 	public $open(handle: number): Thenable<void> {
