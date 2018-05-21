@@ -41,18 +41,18 @@ export class ExtHostDocumentsAndEditors implements ExtHostDocumentsAndEditorsSha
 		private readonly _mainContext: IMainContext,
 		_extHostWebviews?: ExtHostWebviews
 	) {
-		if (_extHostWebviews) {
-			_extHostWebviews.onDidChangeActiveWebview(webview => {
-				if (webview) {
-					if (webview !== this._activeWebview) {
-						this._onDidChangeActiveEditor.fire(webview);
-						this._activeWebview = webview;
-					}
-				} else {
-					this._activeWebview = webview;
-				}
-			}, this, this._disposables);
-		}
+		// if (_extHostWebviews) {
+		// 	_extHostWebviews.onDidChangeActiveWebview(webview => {
+		// 		if (webview) {
+		// 			if (webview !== this._activeWebview) {
+		// 				this._onDidChangeActiveEditor.fire(webview);
+		// 				this._activeWebview = webview;
+		// 			}
+		// 		} else {
+		// 			this._activeWebview = webview;
+		// 		}
+		// 	}, this, this._disposables);
+		// }
 	}
 
 	dispose() {

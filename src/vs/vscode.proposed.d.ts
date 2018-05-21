@@ -393,127 +393,6 @@ declare module 'vscode' {
 		validateInput?(value: string, cursorPosition: number): ProviderResult<SourceControlInputBoxValidation | undefined | null>;
 	}
 
-	/**
-	 * Content settings for a webview.
-	 */
-	export interface WebviewOptions {
-		/**
-		 * Should scripts be enabled in the webview content?
-		 *
-		 * Defaults to false (scripts-disabled).
-		 */
-		readonly enableScripts?: boolean;
-
-		/**
-		 * Should command uris be enabled in webview content?
-		 *
-		 * Defaults to false.
-		 */
-		readonly enableCommandUris?: boolean;
-
-		/**
-		 * Should the webview's context be kept around even when the webview is no longer visible?
-		 *
-		 * Normally a webview's context is created when the webview becomes visible
-		 * and destroyed when the webview is hidden. Apps that have complex state
-		 * or UI can set the `retainContextWhenHidden` to make VS Code keep the webview
-		 * context around, even when the webview moves to a background tab. When
-		 * the webview becomes visible again, the context is automatically restored
-		 * in the exact same state it was in originally.
-		 *
-		 * `retainContextWhenHidden` has a high memory overhead and should only be used if
-		 * your webview's context cannot be quickly saved and restored.
-		 */
-		readonly retainContextWhenHidden?: boolean;
-
-		/**
-		 * Root paths from which the webview can load local (filesystem) resources using the `vscode-workspace-resource:` scheme.
-		 *
-		 * Default to the root folders of the current workspace.
-		 *
-		 * Pass in an empty array to disallow access to any local resources.
-		 */
-		readonly localResourceRoots?: Uri[];
-	}
-
-	/**
-	 * A webview is an editor with html content, like an iframe.
-	 */
-	export interface Webview {
-		/**
-		 * Type identifying the editor as a webview editor.
-		 */
-		readonly editorType: 'webview';
-
-		/**
-		 * Unique identifer of the webview.
-		 */
-		readonly uri: Uri;
-
-		/**
-		 * Content settings for the webview.
-		 */
-		readonly options: WebviewOptions;
-
-		/**
-		 * Title of the webview shown in UI.
-		 */
-		title: string;
-
-		/**
-		 * Contents of the webview.
-		 *
-		 * Should be a complete html document.
-		 */
-		html: string;
-
-		/**
-		 * The column in which the webview is showing.
-		 */
-		readonly viewColumn?: ViewColumn;
-
-		/**
-		 * Fired when the webview content posts a message.
-		 */
-		readonly onDidReceiveMessage: Event<any>;
-
-		/**
-		 * Fired when the webview is disposed.
-		 */
-		readonly onDidDispose: Event<void>;
-
-		/**
-		 * Fired when the webview's view column changes.
-		 */
-		readonly onDidChangeViewColumn: Event<ViewColumn>;
-
-		/**
-		 * Post a message to the webview content.
-		 *
-		 * Messages are only develivered if the webview is visible.
-		 *
-		 * @param message Body of the message.
-		 */
-		postMessage(message: any): Thenable<boolean>;
-
-		/**
-		 * Shows the webview in a given column.
-		 *
-		 * A webview may only show in a single column at a time. If it is already showing, this
-		 * command moves it to a new column.
-		 */
-		show(viewColumn: ViewColumn): void;
-
-		/**
-		 * Dispose of the the webview.
-		 *
-		 * This closes the webview if it showing and disposes of the resources owned by the webview.
-		 * Webview are also disposed when the user closes the webview editor. Both cases fire `onDispose`
-		 * event. Trying to use the webview after it has been disposed throws an exception.
-		 */
-		dispose(): any;
-	}
-
 	export interface TextEditor {
 		/**
 		 * Type identifying the editor as a text editor.
@@ -521,21 +400,53 @@ declare module 'vscode' {
 		readonly editorType: 'texteditor';
 	}
 
-	namespace window {
+	/**
+	 * Save and restore webview panels that have been persisted when vscode shuts down.
+	 */
+	interface WebviewPanelSerializer {
 		/**
-		 * Create and show a new webview.
+		 * Save a webview panel's `state`.
 		 *
-		 * @param uri Unique identifier for the webview.
-		 * @param title Title of the webview.
-		 * @param column Editor column to show the new webview in.
-		 * @param options Content settings for the webview.
+		 * Called before shutdown. Extensions have a 250ms timeframe to return a state. If serialization
+		 * takes longer than 250ms, the panel will not be serialized.
+		 *
+		 * @param webviewPanel webview Panel to serialize. May or may not be visible.
+		 *
+		 * @returns JSON serializable state blob.
 		 */
-		export function createWebview(uri: Uri, title: string, column: ViewColumn, options: WebviewOptions): Webview;
+		serializeWebviewPanel(webviewPanel: WebviewPanel): Thenable<any>;
 
+		/**
+		 * Restore a webview panel from its seriailzed `state`.
+		 *
+		 * Called when a serialized webview first becomes visible.
+		 *
+		 * @param webviewPanel Webview panel to restore. The serializer should take ownership of this panel.
+		 * @param state Persisted state.
+		 *
+		 * @return Thanble indicating that the webview has been fully restored.
+		 */
+		deserializeWebviewPanel(webviewPanel: WebviewPanel, state: any): Thenable<void>;
+	}
+
+	namespace window {
 		/**
 		 * Event fired when the active editor changes.
 		 */
 		export const onDidChangeActiveEditor: Event<TextEditor | Webview | undefined>;
+
+		/**
+		 * Registers a webview panel serializer.
+		 *
+		 * Extensions that support reviving should have an `"onView:viewType"` activation method and
+		 * make sure that [registerWebviewPanelSerializer](#registerWebviewPanelSerializer) is called during activation.
+		 *
+		 * Only a single serializer may be registered at a time for a given `viewType`.
+		 *
+		 * @param viewType Type of the webview panel that can be serialized.
+		 * @param reviver Webview serializer.
+		 */
+		export function registerWebviewPanelSerializer(viewType: string, reviver: WebviewPanelSerializer): Disposable;
 	}
 
 	export namespace window {
@@ -547,6 +458,8 @@ declare module 'vscode' {
 		 * @return handle to the [treeview](#TreeView) that can be disposable.
 		 */
 		export function registerTreeDataProvider<T>(viewId: string, treeDataProvider: TreeDataProvider<T>): TreeView<T>;
+
+		export function registerDecorationProvider(provider: DecorationProvider): Disposable;
 
 	}
 

@@ -407,9 +407,8 @@ export function createApiFactory(
 			registerDecorationProvider: proposedApiFunction(extension, (provider: vscode.DecorationProvider) => {
 				return extHostDecorations.registerDecorationProvider(provider, extension.id);
 			}),
-			// {{SQL CARBON EDIT}}
-			createWebview(uri: vscode.Uri, title: string, column: vscode.ViewColumn, options: vscode.WebviewOptions): vscode.Webview {
-				return extHostWebviews.createWebview(uri, title, column, options);
+			createWebviewPanel(viewType: string, title: string, column: vscode.ViewColumn, options: vscode.WebviewPanelOptions & vscode.WebviewOptions): vscode.WebviewPanel {
+				return extHostWebviews.createWebview(viewType, title, column, options, extension.extensionFolderPath);
 			},
 			onDidChangeActiveEditor: proposedApiFunction(extension, (listener, thisArg?, disposables?) => {
 				return extHostDocumentsAndEditors.onDidChangeActiveEditor(listener, thisArg, disposables);

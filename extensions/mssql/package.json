@@ -18,6 +18,13 @@
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
   "contributes": {
+    "commands": [
+      {
+        "category": "MSSQL",
+        "command": "mssql.createWebview",
+        "title": "Create test webview"
+      }
+    ],
     "languages": [
       {
         "id": "sql",

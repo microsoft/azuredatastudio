@@ -342,21 +342,26 @@ export interface MainThreadTelemetryShape extends IDisposable {
 	$publicLog(eventName: string, data?: any): void;
 }
 
-export type WebviewHandle = number;
+export type WebviewPanelHandle = string;
 
 export interface MainThreadWebviewsShape extends IDisposable {
-	$createWebview(handle: WebviewHandle, uri: URI, title: string, column: EditorPosition, options: vscode.WebviewOptions): void;
-	$disposeWebview(handle: WebviewHandle): void;
-	$show(handle: WebviewHandle, column: EditorPosition): void;
-	$setTitle(handle: WebviewHandle, value: string): void;
-	$setHtml(handle: WebviewHandle, value: string): void;
-	$sendMessage(handle: WebviewHandle, value: any): Thenable<boolean>;
+	$createWebviewPanel(handle: WebviewPanelHandle, viewType: string, title: string, column: EditorPosition, options: vscode.WebviewPanelOptions & vscode.WebviewOptions, extensionFolderPath: string): void;
+	$disposeWebview(handle: WebviewPanelHandle): void;
+	$reveal(handle: WebviewPanelHandle, column: EditorPosition | undefined): void;
+	$setTitle(handle: WebviewPanelHandle, value: string): void;
+	$setHtml(handle: WebviewPanelHandle, value: string): void;
+	$postMessage(handle: WebviewPanelHandle, value: any): Thenable<boolean>;
+
+	$registerSerializer(viewType: string): void;
+	$unregisterSerializer(viewType: string): void;
 }
+
 export interface ExtHostWebviewsShape {
-	$onMessage(handle: WebviewHandle, message: any): void;
-	$onDidChangeActiveWeview(handle: WebviewHandle | undefined): void;
-	$onDidDisposeWeview(handle: WebviewHandle): Thenable<void>;
-	$onDidChangePosition(handle: WebviewHandle, newPosition: EditorPosition): void;
+	$onMessage(handle: WebviewPanelHandle, message: any): void;
+	$onDidChangeWebviewPanelViewState(handle: WebviewPanelHandle, active: boolean, position: EditorPosition): void;
+	$onDidDisposeWebviewPanel(handle: WebviewPanelHandle): Thenable<void>;
+	$deserializeWebviewPanel(newWebviewHandle: WebviewPanelHandle, viewType: string, title: string, state: any, position: EditorPosition, options: vscode.WebviewOptions): Thenable<void>;
+	$serializeWebviewPanel(webviewHandle: WebviewPanelHandle): Thenable<any>;
 }
 
 export interface MainThreadWorkspaceShape extends IDisposable {

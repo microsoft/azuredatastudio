@@ -160,6 +160,7 @@ import { DashboardViewService } from 'sql/services/dashboard/common/dashboardVie
 import { ModelViewService } from 'sql/services/modelComponents/modelViewServiceImpl';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { DashboardService } from 'sql/services/dashboard/common/dashboardServiceImpl';
+import { IWebviewEditorService, WebviewEditorService } from '../parts/webview/electron-browser/webviewEditorService';
 
 export const EditorsVisibleContext = new RawContextKey<boolean>('editorIsOpen', false);
 export const InZenModeContext = new RawContextKey<boolean>('inZenMode', false);
@@ -677,6 +678,7 @@ export class Workbench implements IPartService {
 		serviceCollection.set(IQuickOpenService, this.quickOpen);
 
 		// {{SQL CARBON EDIT}}
+		serviceCollection.set(IWebviewEditorService, this.instantiationService.createInstance(WebviewEditorService));
 		// SQL Tools services
 		serviceCollection.set(IDashboardService, this.instantiationService.createInstance(DashboardService));
 		serviceCollection.set(IDashboardViewService, this.instantiationService.createInstance(DashboardViewService));

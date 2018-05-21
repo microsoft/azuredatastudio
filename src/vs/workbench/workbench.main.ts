@@ -67,6 +67,8 @@ import 'vs/workbench/parts/scm/electron-browser/scmViewlet'; // can be packaged 
 import 'vs/workbench/parts/markers/markers.contribution';
 import 'vs/workbench/parts/markers/browser/markersPanel'; // can be packaged separately
 
+import 'vs/workbench/parts/webview/electron-browser/webview.contribution';
+
 import 'vs/workbench/parts/html/browser/html.contribution';
 
 // {{SQL CARBON EDIT}}

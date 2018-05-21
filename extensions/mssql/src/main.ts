@@ -22,6 +22,11 @@ const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
+const cats = {
+    'Coding Cat': 'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
+    'Compiling Cat':'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif'
+};
+
 export async function activate(context: vscode.ExtensionContext) {
 	// lets make sure we support this platform first
 	let supported = await Utils.verifyPlatform();
@@ -94,6 +99,37 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(credentialsStore);
 	context.subscriptions.push(resourceProvider);
 	context.subscriptions.push({ dispose: () => languageClient.stop() });
+
+	vscode.commands.registerCommand('mssql.createWebview', () => {
+		const panel = vscode.window.createWebviewPanel('catCoding', 'Cat Coding', vscode.ViewColumn.One, { });
+
+        let iteration = 0;
+        const updateWebview = () => {
+            const cat = iteration++ % 2 ? 'Compiling Cat' : 'Coding Cat';
+            panel.title = cat;
+            panel.webview.html = getWebviewContent(cat);
+        };
+
+        // Set initial content
+        updateWebview();
+
+        // And schedule updates to the content every second
+        setInterval(updateWebview, 1000);
+	});
+}
+
+function getWebviewContent(cat: keyof typeof cats) {
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat Coding</title>
+</head>
+<body>
+    <img src="${cats[cat]}" width="300" />
+</body>
+</html>`;
 }
 
 function generateServerOptions(executablePath: string): ServerOptions {
