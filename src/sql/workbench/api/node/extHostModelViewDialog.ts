@@ -23,7 +23,7 @@ const PREVIOUS_LABEL = nls.localize('dialogPreviousLabel', 'Previous');
 class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel {
 	private _modelView: sqlops.ModelView;
 	private _handle: number;
-	private _modelViewId: string;
+	protected _modelViewId: string;
 	protected _valid: boolean = true;
 	protected _onValidityChanged: vscode.Event<boolean>;
 
@@ -153,7 +153,6 @@ class ButtonImpl implements sqlops.window.modelviewdialog.Button {
 }
 
 class WizardPageImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.WizardPage {
-	public content: string;
 	public customButtons: sqlops.window.modelviewdialog.Button[];
 	private _enabled: boolean = true;
 
@@ -168,6 +167,14 @@ class WizardPageImpl extends ModelViewPanelImpl implements sqlops.window.modelvi
 	public set enabled(enabled: boolean) {
 		this._enabled = enabled;
 		this._extHostModelViewDialog.updateWizardPage(this);
+	}
+
+	public get content(): string {
+		return this._modelViewId;
+	}
+
+	public set content(content: string) {
+		this._modelViewId = content;
 	}
 }
 
