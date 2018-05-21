@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./radioButton';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
@@ -13,20 +14,21 @@ import Event, { Emitter } from 'vs/base/common/event';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { Checkbox, ICheckboxOptions } from 'sql/base/browser/ui/checkbox/checkbox';
+import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 
 @Component({
-	selector: 'checkbox',
+	selector: 'radioButton',
 	template: `
-		<div #input style="width: 100%"></div>
+		<div #input class="modelview-radiobutton-container">
+
+		</div>
 	`
 })
-export default class CheckBoxComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class RadioButtonComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
-	private _input: Checkbox;
+	private _input: RadioButton;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -42,17 +44,14 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			let inputOptions: ICheckboxOptions = {
-				label: ''
-			};
-
-			this._input = new Checkbox(this._inputContainer.nativeElement, inputOptions);
+			this._input = new RadioButton(this._inputContainer.nativeElement, {
+				label: this.label
+			});
 
 			this._register(this._input);
-			this._register(this._input.onChange(e => {
-				this.value = this._input.checked;
+			this._register(this._input.onClicked(e => {
 				this._onEventEmitter.fire({
-					eventType: ComponentEventType.onDidChange,
+					eventType: ComponentEventType.onDidClick,
 					args: e
 				});
 			}));
@@ -76,30 +75,45 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._input.checked = this.checked;
+		this._input.name = this.name;
+		this._input.value = this.value;
 		this._input.label = this.label;
-		if (this.enabled) {
-			this._input.enable();
-		} else {
-			this._input.disable();
-		}
+		this._input.enabled = this.enabled;
+
+		this._input.checked = this.checked;
 	}
 
 	// CSS-bound properties
 
 	public get checked(): boolean {
-		return this.getPropertyOrDefault<sqlops.CheckBoxProperties, boolean>((props) => props.value, false);
+		return this.getPropertyOrDefault<sqlops.RadioButtonProperties, boolean>((props) => props.checked, false);
 	}
 
-	public set value(newValue: boolean) {
-		this.setPropertyFromUI<sqlops.CheckBoxProperties, boolean>((properties, value) => { properties.checked = value; }, newValue);
+	public set value(newValue: string) {
+		this.setPropertyFromUI<sqlops.RadioButtonProperties, string>((properties, value) => { properties.checked = value; }, newValue);
 	}
 
-	private get label(): string {
-		return this.getPropertyOrDefault<sqlops.CheckBoxProperties, string>((props) => props.label, '');
+	public get value(): string {
+		return this.getPropertyOrDefault<sqlops.RadioButtonProperties, string>((props) => props.value, '');
 	}
 
-	private set label(newValue: string) {
-		this.setPropertyFromUI<sqlops.CheckBoxProperties, string>((properties, label) => { properties.label = label; }, newValue);
+	public getLabel(): string {
+		return this.label;
+	}
+
+	public get label(): string {
+		return this.getPropertyOrDefault<sqlops.RadioButtonProperties, string>((props) => props.label, '');
+	}
+
+	public set label(newValue: string) {
+		this.setPropertyFromUI<sqlops.RadioButtonProperties, string>((properties, label) => { properties.label = label; }, newValue);
+	}
+
+	public get name(): string {
+		return this.getPropertyOrDefault<sqlops.RadioButtonProperties, string>((props) => props.name, '');
+	}
+
+	public set name(newValue: string) {
+		this.setPropertyFromUI<sqlops.RadioButtonProperties, string>((properties, label) => { properties.name = label; }, newValue);
 	}
 }
