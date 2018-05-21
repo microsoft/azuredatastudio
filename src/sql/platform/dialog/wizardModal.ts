@@ -35,6 +35,7 @@ export class WizardModal extends Modal {
 	// Buttons
 	private _previousButton: Button;
 	private _nextButton: Button;
+	private _generateScriptButton: Button;
 	private _doneButton: Button;
 	private _cancelButton: Button;
 
@@ -66,6 +67,7 @@ export class WizardModal extends Modal {
 
 		this._previousButton = this.addDialogButton(this._wizard.backButton, () => this.showPage(this.getCurrentPage() - 1));
 		this._nextButton = this.addDialogButton(this._wizard.nextButton, () => this.showPage(this.getCurrentPage() + 1));
+		this._generateScriptButton = this.addDialogButton(this._wizard.generateScriptButton, () => undefined);
 		this._doneButton = this.addDialogButton(this._wizard.doneButton, () => this.done(), false);
 		this._wizard.doneButton.registerClickEvent(this._onDone.event);
 		this._cancelButton = this.addDialogButton(this._wizard.cancelButton, () => this.cancel(), false);

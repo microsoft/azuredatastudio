@@ -528,6 +528,11 @@ declare module 'sqlops' {
 				cancelButton: Button;
 
 				/**
+				 * The generate script button
+				 */
+				generateScriptButton: Button;
+
+				/**
 				 * The next button
 				 */
 				nextButton: Button;

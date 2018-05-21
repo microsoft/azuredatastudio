@@ -127,6 +127,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			wizard = new Wizard(details.title);
 			wizard.backButton = this.getButton(details.backButton);
 			wizard.cancelButton = this.getButton(details.cancelButton);
+			wizard.generateScriptButton = this.getButton(details.generateScriptButton);
 			wizard.doneButton = this.getButton(details.doneButton);
 			wizard.nextButton = this.getButton(details.nextButton);
 			wizard.onPageChanged(info => this._proxy.$onWizardPageChanged(handle, info));

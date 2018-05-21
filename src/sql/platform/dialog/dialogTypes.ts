@@ -128,6 +128,7 @@ export class Wizard {
 	public pages: WizardPage[];
 	public nextButton: DialogButton;
 	public backButton: DialogButton;
+	public generateScriptButton: DialogButton;
 	public doneButton: DialogButton;
 	public cancelButton: DialogButton;
 	public customButtons: DialogButton[];
@@ -164,7 +165,7 @@ export class Wizard {
 			throw new Error('Index is out of bounds');
 		}
 		if (index !== undefined && this.currentPage !== undefined && index <= this.currentPage) {
-			this._currentPage += 1;
+			++this._currentPage;
 		}
 		if (index === undefined) {
 			this.pages.push(page);
@@ -184,7 +185,7 @@ export class Wizard {
 			this.setCurrentPage(newPage);
 		}
 		if (this.currentPage !== undefined && index < this.currentPage) {
-			this._currentPage -= 1;
+			--this._currentPage;
 		}
 		let removedPage = this.pages[index];
 		this.pages.splice(index, 1);

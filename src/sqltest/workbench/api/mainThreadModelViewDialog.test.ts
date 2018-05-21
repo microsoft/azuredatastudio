@@ -41,16 +41,18 @@ suite('MainThreadModelViewDialog Tests', () => {
 	// Wizard details
 	let nextButtonDetails: IModelViewButtonDetails;
 	let backButtonDetails: IModelViewButtonDetails;
+	let generateScriptButtonDetails: IModelViewButtonDetails;
 	let page1Details: IModelViewWizardPageDetails;
 	let page2Details: IModelViewWizardPageDetails;
 	let page3Details: IModelViewWizardPageDetails;
 	let wizardDetails: IModelViewWizardDetails;
 	let nextButtonHandle = 8;
 	let backButtonHandle = 9;
-	let page1Handle = 10;
-	let page2Handle = 11;
-	let wizardHandle = 12;
-	let page3Handle = 13;
+	let generateScriptButtonHandle = 10;
+	let page1Handle = 11;
+	let page2Handle = 12;
+	let wizardHandle = 13;
+	let page3Handle = 14;
 
 	setup(() => {
 		mockExtHostModelViewDialog = Mock.ofInstance(<ExtHostModelViewDialogShape>{
@@ -123,6 +125,11 @@ suite('MainThreadModelViewDialog Tests', () => {
 			enabled: true,
 			hidden: false
 		};
+		generateScriptButtonDetails = {
+			label: 'generate_script_label',
+			enabled: true,
+			hidden: false
+		};
 		page1Details = {
 			title: 'page1',
 			content: 'content1',
@@ -138,6 +145,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		wizardDetails = {
 			backButton: backButtonHandle,
 			nextButton: nextButtonHandle,
+			generateScriptButton: generateScriptButtonHandle,
 			cancelButton: cancelButtonHandle,
 			doneButton: okButtonHandle,
 			currentPage: undefined,
@@ -158,6 +166,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		// Register the wizard and its pages and buttons
 		mainThreadModelViewDialog.$setButtonDetails(nextButtonHandle, nextButtonDetails);
 		mainThreadModelViewDialog.$setButtonDetails(backButtonHandle, backButtonDetails);
+		mainThreadModelViewDialog.$setButtonDetails(generateScriptButtonHandle, generateScriptButtonDetails);
 		mainThreadModelViewDialog.$setWizardPageDetails(page1Handle, page1Details);
 		mainThreadModelViewDialog.$setWizardPageDetails(page2Handle, page2Details);
 		mainThreadModelViewDialog.$setWizardDetails(wizardHandle, wizardDetails);

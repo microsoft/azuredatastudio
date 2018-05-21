@@ -133,6 +133,7 @@ export interface IModelViewWizardDetails {
 	currentPage: number;
 	doneButton: number;
 	cancelButton: number;
+	generateScriptButton: number;
 	nextButton: number;
 	backButton: number;
 	customButtons: number[];

@@ -17,6 +17,7 @@ import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', 'Done');
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', 'Cancel');
+const GENERATE_SCRIPT_LABEL = nls.localize('generateScriptLabel', 'Generate script');
 const NEXT_LABEL = nls.localize('dialogNextLabel', 'Next');
 const PREVIOUS_LABEL = nls.localize('dialogPreviousLabel', 'Previous');
 
@@ -194,6 +195,7 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 	public pages: sqlops.window.modelviewdialog.WizardPage[] = [];
 	public doneButton: sqlops.window.modelviewdialog.Button;
 	public cancelButton: sqlops.window.modelviewdialog.Button;
+	public generateScriptButton: sqlops.window.modelviewdialog.Button;
 	public nextButton: sqlops.window.modelviewdialog.Button;
 	public backButton: sqlops.window.modelviewdialog.Button;
 	public customButtons: sqlops.window.modelviewdialog.Button[];
@@ -203,6 +205,7 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 	constructor(public title: string, private _extHostModelViewDialog: ExtHostModelViewDialog) {
 		this.doneButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
 		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL);
+		this.generateScriptButton = this._extHostModelViewDialog.createButton(GENERATE_SCRIPT_LABEL);
 		this.nextButton = this._extHostModelViewDialog.createButton(NEXT_LABEL);
 		this.backButton = this._extHostModelViewDialog.createButton(PREVIOUS_LABEL);
 		this._extHostModelViewDialog.registerWizardPageInfoChangedCallback(this, info => this.handlePageInfoChanged(info));
@@ -436,6 +439,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		wizard.pages.forEach(page => this.updateWizardPage(page));
 		this.updateButton(wizard.backButton);
 		this.updateButton(wizard.cancelButton);
+		this.updateButton(wizard.generateScriptButton);
 		this.updateButton(wizard.doneButton);
 		this.updateButton(wizard.nextButton);
 		if (wizard.customButtons) {
@@ -447,6 +451,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			currentPage: wizard.currentPage,
 			backButton: this.getHandle(wizard.backButton),
 			cancelButton: this.getHandle(wizard.cancelButton),
+			generateScriptButton: this.getHandle(wizard.generateScriptButton),
 			doneButton: this.getHandle(wizard.doneButton),
 			nextButton: this.getHandle(wizard.nextButton),
 			customButtons: wizard.customButtons ? wizard.customButtons.map(button => this.getHandle(button)) : undefined
