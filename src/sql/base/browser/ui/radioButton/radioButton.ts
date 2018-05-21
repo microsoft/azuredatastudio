@@ -7,60 +7,77 @@
 import * as DOM from 'vs/base/browser/dom';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { Color } from 'vs/base/common/color';
+import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import Event, { Emitter } from 'vs/base/common/event';
+import { Widget } from 'vs/base/browser/ui/widget';
 
-export class RadioButton {
+export interface IRadioButtonOptions {
+	label: string;
+	enabled?: boolean;
+	checked?: boolean;
+}
 
-	private _radioButtonInput: HTMLInputElement;
+export class RadioButton extends Widget {
+
+	private inputElement: HTMLInputElement;
 	private _onClicked = new Emitter<void>();
 	public readonly onClicked: Event<void> = this._onClicked.event;
+	private _label: HTMLSpanElement;
 
-	constructor(container: HTMLElement) {
-		this._radioButtonInput = DOM.append(container, DOM.$('input.option-input'));
-		this._radioButtonInput.setAttribute('type', 'radio');
+	constructor(container: HTMLElement, opts: IRadioButtonOptions) {
+		super();
+		this.inputElement = document.createElement('input');
+		this.inputElement.type = 'radio';
 
-		jQuery(this._radioButtonInput).on('click', () => {
-			this._onClicked.fire();
-		});
+		this._label = document.createElement('span');
+
+		this.label = opts.label;
+		this.enabled = opts.enabled || true;
+		this.checked = opts.checked || false;
+		this.onclick(this.inputElement, () => this._onClicked.fire());
+
+		container.appendChild(this.inputElement);
+		container.appendChild(this._label);
 	}
 
 	public set name(value: string) {
-		this._radioButtonInput.setAttribute('name', value);
+		this.inputElement.setAttribute('name', value);
 	}
 
 	public get name(): string {
-		return this._radioButtonInput.getAttribute('name');
+		return this.inputElement.getAttribute('name');
 	}
 
 	public set value(value: string) {
-		this._radioButtonInput.setAttribute('value', value);
+		this.inputElement.setAttribute('value', value);
 	}
 
 	public get value(): string {
-		return this._radioButtonInput.getAttribute('value');
-	}
-
-	public enable(): void {
-		this._radioButtonInput.removeAttribute('disabled');
-	}
-
-	public disable(): void {
-		this._radioButtonInput.setAttribute('disabled', 'true');
-	}
-
-	public isEnabled(): boolean {
-		return !this._radioButtonInput.hasAttribute('disabled');
-	}
-
-	public click(): void {
-		this._radioButtonInput.click();
+		return this.inputElement.getAttribute('value');
 	}
 
 	public set checked(val: boolean) {
-		this._radioButtonInput.checked = val;
+		this.inputElement.checked = val;
 	}
 
 	public get checked(): boolean {
-		return this._radioButtonInput.checked;
+		return this.inputElement.checked;
 	}
+
+	public set enabled(val: boolean) {
+		this.inputElement.disabled = !val;
+	}
+
+	public get enabled(): boolean {
+		return !this.inputElement.disabled;
+	}
+
+	public isEnabled(): boolean {
+		return !this.inputElement.hasAttribute('disabled');
+	}
+
+	public set label(val: string) {
+		this._label.innerText = val;
+	}
+
 }

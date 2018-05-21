@@ -16,14 +16,12 @@ import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 
 @Component({
 	selector: 'radioButton',
 	template: `
-		<div class="modelview-radiobutton-container">
-		<span #input></span>
-			{{getLabel()}}
+		<div #input class="modelview-radiobutton-container">
+
 		</div>
 	`
 })
@@ -46,8 +44,11 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			this._input = new RadioButton(this._inputContainer.nativeElement);
+			this._input = new RadioButton(this._inputContainer.nativeElement, {
+				label: this.label
+			});
 
+			this._register(this._input);
 			this._register(this._input.onClicked(e => {
 				this._onEventEmitter.fire({
 					eventType: ComponentEventType.onDidClick,
@@ -76,11 +77,8 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 		super.setProperties(properties);
 		this._input.name = this.name;
 		this._input.value = this.value;
-		if (this.enabled) {
-			this._input.enable();
-		} else {
-			this._input.disable();
-		}
+		this._input.label = this.label;
+		this._input.enabled = this.enabled;
 
 		this._input.checked = this.checked;
 	}
