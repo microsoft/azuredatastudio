@@ -8,7 +8,7 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as dom from 'vs/base/browser/dom';
 import * as arrays from 'vs/base/common/arrays';
-import { ISelectBoxDelegate, ISelectBoxStyles, ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
+import { ISelectBoxDelegate, ISelectBoxStyles, ISelectBoxOptions, ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { isMacintosh } from 'vs/base/common/platform';
 
 export class SelectBoxNative implements ISelectBoxDelegate {
@@ -21,12 +21,16 @@ export class SelectBoxNative implements ISelectBoxDelegate {
 	private toDispose: IDisposable[];
 	private styles: ISelectBoxStyles;
 
-	constructor(options: string[], selected: number, styles: ISelectBoxStyles) {
+	// {{SQL CARBON EDIT}}
+	constructor(options: string[], selected: number, styles: ISelectBoxOptions) {
 
 		this.toDispose = [];
 
 		this.selectElement = document.createElement('select');
 		this.selectElement.className = 'select-box';
+
+		// {{SQL CARBON EDIT}}
+		this.selectElement.setAttribute('id', styles.id);
 
 		this._onDidSelect = new Emitter<ISelectData>();
 

@@ -7,9 +7,9 @@
 	</div>
 	<div class="angular-modal-body-content chart-viewer" style="flex:1 1 auto; border-left: 1px solid; margin: 5px;">
 		<div style="position: relative; width: 100%">
-			<div class="dialog-label" id="chartTypeLabel">{{localizedStrings.CHART_TYPE}}</div>
+			<div class="dialog-label" for="chartType">{{localizedStrings.CHART_TYPE}}</div>
 			<select-box #chartTypeSelect class="input-divider"
-				aria-labelledby="chartTypeLabel"
+				id="chartType"
 				[options]="insightRegistry.getAllIds()"
 				[selectedOption]="getDefaultChartType()"
 				[onlyEmitOnChange]="true"
@@ -149,8 +149,9 @@
 	Valid for any charting type, i.e not image/count
 -->
 <ng-template #legendInput>
-	<div class="dialog-label" id="legendLabel">{{localizedStrings.LEGEND}}</div>
-	<select-box class="input-divider" aria-labelledby="legendLabel"
+	<div class="dialog-label" for="legend">{{localizedStrings.LEGEND}}</div>
+	<select-box class="input-divider"
+		id="legend"
 		[options]="legendOptions"
 		[selectedOption]="_chartConfig.legendPosition"
 		[onlyEmitOnChange]="true"
@@ -180,15 +181,13 @@
 	otherwise the direction is assumed for each other type
 -->
 <ng-template #dataDirectionInput>
-	<div class="dialog-label" id="dataDirectionLabel">{{localizedStrings.DATA_DIRECTION}}</div>
-	<div class="radio-indent" role="radiogroup" aria-labelledby="dataDirectionLabel">
-		<div class="option">
-			<input type="radio" role="radio" name="data-direction" value="vertical" [(ngModel)]="dataDirection" aria-labelledby="verticalLabel"><span id="verticalLabel">{{localizedStrings.VERTICAL}}</span>
-		</div>
-		<div class="option">
-			<input type="radio" role="radio" name="data-direction" value="horizontal" [(ngModel)]="dataDirection" aria-labelledby="horizontalLabel"><span id="horizontalLabel">{{localizedStrings.HORIZONTAL}}</span>
-		</div>
-	</div>
+	<div class="dialog-label" for="dataDirection">{{localizedStrings.DATA_DIRECTION}}</div>
+	<select-box
+		id="dataDirection"
+		[options]="['vertical', 'horizontal']"
+		selectedOption="vertical"
+		[onlyEmitOnChange]="true"
+		(onDidSelect)="setConfigValue('dataDirection', $event.selected)"></select-box>
 </ng-template>
 
 <!--

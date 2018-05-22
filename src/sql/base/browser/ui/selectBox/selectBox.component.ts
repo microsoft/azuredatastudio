@@ -28,6 +28,7 @@ export class SelectBox extends AngularDisposable implements OnInit, OnChanges {
 	@Input() options: string[];
 	@Input() selectedOption: string;
 	@Input() onlyEmitOnChange = false;
+	@Input() id: string;
 
 	@Output() onDidSelect = new EventEmitter<ISelectData>();
 
@@ -42,7 +43,7 @@ export class SelectBox extends AngularDisposable implements OnInit, OnChanges {
 	}
 
 	ngOnInit(): void {
-		this._selectbox = new vsSelectBox(this.options, this.selectedOption, this.contextViewService);
+		this._selectbox = new vsSelectBox(this.options, this.selectedOption, this.contextViewService, undefined, { id: this.id });
 		this._selectbox.render(this._el.nativeElement);
 		this._selectbox.onDidSelect(e => {
 			if (this.onlyEmitOnChange) {
