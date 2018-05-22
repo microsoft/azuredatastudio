@@ -22,10 +22,11 @@ declare module 'sqlops' {
 		inputBox(): ComponentBuilder<InputBoxComponent>;
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
 		radioButton(): ComponentBuilder<RadioButtonComponent>;
+		webView(): ComponentBuilder<WebViewComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
-		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
-		dashboardWebview(webviewId: string): ComponentBuilder<WebviewComponent>;
+		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent>;
+		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent>;
 		formContainer(): FormBuilder;
 	}
 
@@ -267,6 +268,11 @@ declare module 'sqlops' {
 		values?: string[];
 	}
 
+	export interface WebViewProperties {
+		message?: any;
+		html?: string;
+	}
+
 	export interface ButtonProperties {
 		label?: string;
 	}
@@ -298,16 +304,22 @@ declare module 'sqlops' {
 		onValueChanged: vscode.Event<any>;
 	}
 
+	export interface WebViewComponent extends Component {
+		html: string;
+		message: any;
+		onMessage: vscode.Event<any>;
+	}
+
 	export interface ButtonComponent extends Component {
 		label: string;
 		onDidClick: vscode.Event<any>;
 	}
 
-	export interface WidgetComponent extends Component {
+	export interface DashboardWidgetComponent extends Component {
 		widgetId: string;
 	}
 
-	export interface WebviewComponent extends Component {
+	export interface DashboardWebviewComponent extends Component {
 		webviewId: string;
 	}
 

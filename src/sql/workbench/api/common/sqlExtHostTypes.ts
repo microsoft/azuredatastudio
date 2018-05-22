@@ -72,6 +72,7 @@ export enum ModelComponentTypes {
 	Button,
 	CheckBox,
 	RadioButton,
+	WebView,
 	DashboardWidget,
 	DashboardWebview,
 	Form
@@ -94,7 +95,8 @@ export enum ComponentEventType {
 	PropertiesChanged,
 	onDidChange,
 	onDidClick,
-	validityChanged
+	validityChanged,
+	onMessage
 }
 
 export interface IComponentEventArgs {

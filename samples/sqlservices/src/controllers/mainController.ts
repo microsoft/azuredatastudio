@@ -9,6 +9,8 @@ import * as sqlops from 'sqlops';
 import * as Utils from '../utils';
 import * as vscode from 'vscode';
 import SplitPropertiesPanel from './splitPropertiesPanel';
+import * as fs from 'fs';
+import * as path from 'path';
 
 /**
  * The main controller class that initializes the extension
@@ -33,6 +35,8 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	public activate(): Promise<boolean> {
+		const buttonHtml = fs.readFileSync(path.join(__dirname, 'button.html')).toString();
+		const counterHtml = fs.readFileSync(path.join(__dirname, 'counter.html')).toString();	
 		this.registerSqlServicesModelView();
 		this.registerSplitPanelModelView();
 
@@ -45,7 +49,7 @@ export default class MainController implements vscode.Disposable {
 		});
 
 		vscode.commands.registerCommand('sqlservices.openEditor', () =>  {
-			this.openEditor();
+			this.openEditor(buttonHtml, counterHtml);
 		});
 
 		return Promise.resolve(true);
@@ -171,18 +175,34 @@ export default class MainController implements vscode.Disposable {
 		sqlops.window.modelviewdialog.openDialog(dialog);
 	}
 
-	private openEditor(): void {
+	private openEditor(html1: string, html2: string): void {
 		let editor = sqlops.workspace.createModelViewEditor('Test Editor view');
 		editor.registerContent(async view => {
-			let inputBox = view.modelBuilder.inputBox()
-				.withValidation(component => component.value !== 'valid')
+			let count = 0;
+			let webview1 = view.modelBuilder.webView()
+				.withProperties({
+					html: html1
+				})
 				.component();
-			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: inputBox,
-					title: 'Enter anything but "valid"'
-				}]).component();
-			await view.initializeModel(formModel);
+			let webview2 = view.modelBuilder.webView()
+				.withProperties({
+					html: html2
+				})
+				.component();
+			webview1.onMessage((params) => {
+				count++;
+				webview2.message = count;
+			});
+
+			let flexModel = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'column',
+					alignItems: 'left'
+				}).withItems([
+					webview1, webview2
+				], { flex: '1 1 50%' })
+				.component();
+			await view.initializeModel(flexModel);
 		});
 		editor.openEditor();
 	}
