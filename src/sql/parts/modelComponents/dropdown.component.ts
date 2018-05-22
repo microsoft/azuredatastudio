@@ -24,8 +24,8 @@ import { attachEditableDropdownStyler , attachSelectBoxStyler} from 'sql/common/
 	template: `
 
 	<div>
-		<div [style.visibility]="editableVisibility()" [style.position]="editablePosition()"  #editableDropDown style="width: 100%;z-index: 1; top: 0px; left: 0px;"></div>
-		<div [style.visibility]="notEditableVisibility()" [style.position]="notEditablePosition()" #dropDown style="width: 100%;z-index: 2; top: 0px; left: 0px;"></div>
+		<div [style.display]="getEditableDisplay()"   #editableDropDown style="width: 100%;"></div>
+		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
 	</div>
 	`
 })
@@ -133,22 +133,14 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		return this.getPropertyOrDefault<sqlops.DropDownProperties, boolean>((props) => props.editable, false);
 	}
 
-	public editableVisibility() : string {
-		return this.editable ? 'visible' : 'hidden';
+	public getEditableDisplay() : string {
+		return this.editable ? '' : 'none';
 	}
 
-	public notEditableVisibility() : string {
-		return !this.editable ? 'visible' : 'hidden';
+	public getNotEditableDisplay() : string {
+		return !this.editable ? '' : 'none';
 	}
 
-
-	public editablePosition() : string {
-		return this.editable ? 'relative' : 'absolute';
-	}
-
-	public notEditablePosition() : string {
-		return !this.editable ? 'relative' : 'absolute';
-	}
 	private set value(newValue: string) {
 		this.setPropertyFromUI<sqlops.DropDownProperties, string>(this.setValueProperties, newValue);
 	}
