@@ -54,7 +54,7 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 	}
 
 	public set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.TextComponentProperties, string>((properties, value) => { properties.checked = value; }, newValue);
+		this.setPropertyFromUI<sqlops.TextComponentProperties, string>((properties, value) => { properties.value = value; }, newValue);
 	}
 
 	public get value(): string {
