@@ -295,10 +295,16 @@ export function createApiFactory(
 					return extHostModelViewDialog.createButton(label);
 				},
 				openDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					return extHostModelViewDialog.open(dialog);
+					return extHostModelViewDialog.openDialog(dialog);
 				},
 				closeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					return extHostModelViewDialog.close(dialog);
+					return extHostModelViewDialog.closeDialog(dialog);
+				},
+				createWizardPage(title: string): sqlops.window.modelviewdialog.WizardPage {
+					return extHostModelViewDialog.createWizardPage(title);
+				},
+				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
+					return extHostModelViewDialog.createWizard(title);
 				}
 			};
 

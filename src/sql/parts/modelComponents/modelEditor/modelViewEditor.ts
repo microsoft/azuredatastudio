@@ -50,8 +50,7 @@ export class ModelViewEditor extends BaseEditor {
 
 		if (!this._modelViewMap.get(input.modelViewId)) {
 			let modelViewContainer = DOM.$('div.model-view-container');
-			let dialog = new Dialog(input.title, input.modelViewId);
-			let dialogPane = new DialogPane(dialog, this._bootstrapService);
+			let dialogPane = new DialogPane(input.title, input.modelViewId, () => undefined, this._bootstrapService);
 			dialogPane.createBody(modelViewContainer);
 			this._modelViewMap.set(input.modelViewId, modelViewContainer);
 		}
