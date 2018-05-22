@@ -12,16 +12,11 @@ import * as sqlops from 'sqlops';
 import Event, { Emitter } from 'vs/base/common/event';
 import { Webview } from 'vs/workbench/parts/html/browser/webview';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
-import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
-import { IPartService, Parts } from 'vs/workbench/services/part/common/partService';
+import { Parts } from 'vs/workbench/services/part/common/partService';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
-import { CssSelector } from '@angular/compiler';
 
 @Component({
 	template: '',
