@@ -205,11 +205,11 @@ export class FirewallRuleDialog extends Modal {
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		this.updateTheme(this._themeService.getColorTheme());
 
-		jQuery(this._IPAddressInput).on('click', () => {
+		$(this._IPAddressInput).on('click', () => {
 			this.onFirewallRuleOptionSelected(true);
 		});
 
-		jQuery(this._subnetIPRangeInput).on('click', () => {
+		$(this._subnetIPRangeInput).on('click', () => {
 			this.onFirewallRuleOptionSelected(false);
 		});
 	}

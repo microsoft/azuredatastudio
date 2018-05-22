@@ -35,6 +35,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { DragCellSelectionModel } from 'sql/base/browser/ui/table/plugins/dragCellSelectionModel.plugin';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export abstract class GridParentComponent {
 	// CONSTANTS
@@ -567,9 +568,8 @@ export abstract class GridParentComponent {
 	}
 
 	keyEvent(e: KeyboardEvent): void {
-		let self = this;
-		let handled = self.tryHandleKeyEvent(e);
-		if (handled) {
+		let standardEvent = new StandardKeyboardEvent(e);
+		if (this.tryHandleKeyEvent(standardEvent)) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -582,12 +582,12 @@ export abstract class GridParentComponent {
 	 *
 	 * @protected
 	 * @abstract
-	 * @param {any} e
+	 * @param {StandardKeyboardEvent} e
 	 * @returns {boolean}
 	 *
 	 * @memberOf GridParentComponent
 	 */
-	protected abstract tryHandleKeyEvent(e): boolean;
+	protected abstract tryHandleKeyEvent(e: StandardKeyboardEvent): boolean;
 
 	resizeGrids(): void {
 		const self = this;
