@@ -217,8 +217,8 @@ export class InsightsDialogView extends Modal {
 		attachPanelStyler(bottomTableView, this._themeService);
 
 		panelCreation.then(() => {
-			this.panelView.addPanel(topTableView, 1);
-			this.panelView.addPanel(bottomTableView, 1);
+			this.panelView.addPanel(topTableView, 1, 0);
+			this.panelView.addPanel(bottomTableView, 1, 1);
 		});
 
 		this._register(attachTableStyler(this._topTable, this._themeService));
