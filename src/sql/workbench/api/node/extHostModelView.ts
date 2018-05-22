@@ -579,6 +579,13 @@ class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownCompone
 		this.setProperty('values', v);
 	}
 
+	public get editable(): boolean {
+		return this.properties['editable'];
+	}
+	public set editable(v: boolean) {
+		this.setProperty('editable', v);
+	}
+
 	public get onValueChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
