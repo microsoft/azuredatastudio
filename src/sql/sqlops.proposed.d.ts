@@ -265,6 +265,7 @@ declare module 'sqlops' {
 	export interface DropDownProperties {
 		value?: string;
 		values?: string[];
+		editable?: boolean;
 	}
 
 	export interface ButtonProperties {
@@ -292,7 +293,7 @@ declare module 'sqlops' {
 		onChanged: vscode.Event<any>;
 	}
 
-	export interface DropDownComponent extends Component {
+	export interface DropDownComponent extends Component, DropDownProperties {
 		value: string;
 		values: string[];
 		onValueChanged: vscode.Event<any>;
@@ -600,7 +601,7 @@ declare module 'sqlops' {
 				removePage(index: number): Thenable<void>;
 
 				/**
-				 * Go to the page at the given index in the pages array. 
+				 * Go to the page at the given index in the pages array.
 				 * @param index The index of the page to go to
 				 */
 				setCurrentPage(index: number): Thenable<void>;
