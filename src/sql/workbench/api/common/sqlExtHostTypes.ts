@@ -72,6 +72,7 @@ export enum ModelComponentTypes {
 	Button,
 	CheckBox,
 	RadioButton,
+	Text,
 	DashboardWidget,
 	DashboardWebview,
 	Form

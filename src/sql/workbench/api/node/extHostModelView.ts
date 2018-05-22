@@ -59,6 +59,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	text(): sqlops.ComponentBuilder<sqlops.TextComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.TextComponent> = this.getComponentBuilder(new TextComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	radioButton(): sqlops.ComponentBuilder<sqlops.RadioButtonComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.RadioButtonComponent> = this.getComponentBuilder(new RadioButtonWrapper(this._proxy, this._handle, id), id);
@@ -554,6 +561,21 @@ class RadioButtonWrapper extends ComponentWrapper implements sqlops.RadioButtonC
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
+	}
+}
+
+class TextComponentWrapper extends ComponentWrapper implements sqlops.TextComponentProperties {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Text, id);
+		this.properties = {};
+	}
+
+	public get value(): string {
+		return this.properties['value'];
+	}
+	public set value(v: string) {
+		this.setProperty('value', v);
 	}
 }
 
