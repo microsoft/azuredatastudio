@@ -78,3 +78,18 @@ export namespace AgentJobHistoryRequest {
 export namespace AgentJobActionRequest {
 	export const type = new RequestType<AgentJobActionParams, AgentJobActionResult, void, void>('agent/jobaction');
 }
+
+// Availability Group Types
+export interface AvailabilityGroupsParams {
+	ownerUri: string;
+}
+
+export interface AvailabilityGroupsResult {
+	succeeded: boolean;
+	errorMessage: string;
+	availabilityGroups: sqlops.AvailabilityGroup[];
+}
+
+export namespace AvailabilityGroupsRequest {
+	export const type = new RequestType<AvailabilityGroupsParams, AvailabilityGroupsResult, void, void>('hadr/availabilitygroups');
+}

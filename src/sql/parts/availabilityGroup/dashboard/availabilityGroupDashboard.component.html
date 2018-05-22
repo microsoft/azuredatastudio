@@ -1,0 +1,29 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div class="ag-dashboard">
+	<div class="ag-tile-container">
+		<div *ngFor="let ag of AvailabilityGroups" class="ag-tile" tabindex="0" (click)="showDetail(ag)" (keyup)="handleKeyboardEvents($event, ag)">
+			<div class="ag-tile-header">
+				<div class="ag-icon"></div>
+				<div>{{ag.name}}</div>
+			</div>
+			<div class="ag-tile-body">
+				<div class="ag-tile-body-section">
+					Overview
+				</div>
+				<div class="ag-tile-body-section">
+					Replicas
+				</div>
+				<div class="ag-tile-body-section">
+					Databases
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="ag-detail" class="ag-detail">
+	</div>
+</div>

@@ -127,6 +127,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerAvailabilityGroupServiceProvider(provider: sqlops.AvailabilityGroupServiceProvider):vscode.Disposable {
+        let rt = this.registerProvider(provider);
+		this._proxy.$registerAvailabilityGroupServiceProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	$registerCapabilitiesServiceProvider(provider: sqlops.CapabilitiesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider);
 		this._proxy.$registerCapabilitiesServiceProvider(provider.providerId, provider.handle);
@@ -512,5 +518,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	public $jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult> {
 		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).jobAction(ownerUri, jobName, action);
+	}
+
+
+	/**
+	 * Availability Group Service Provider methods
+	 */
+	public $getAvailabilityGroups(handle: number, ownerUri: string):Thenable<sqlops.AvailabilityGroupsResult> {
+		return this._resolveProvider<sqlops.AvailabilityGroupServiceProvider>(handle).getAvailabilityGroups(ownerUri);
 	}
 }

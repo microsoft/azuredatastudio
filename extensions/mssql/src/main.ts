@@ -16,7 +16,7 @@ import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
-import { TelemetryFeature, AgentServicesFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature, AvailabilityGroupServicesFeature } from './features';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -55,7 +55,8 @@ export async function activate(context: vscode.ExtensionContext) {
 			// we only want to add new features
 			...SqlOpsDataClient.defaultFeatures,
 			TelemetryFeature,
-			AgentServicesFeature
+			AgentServicesFeature,
+			AvailabilityGroupServicesFeature
 		],
 		outputChannel: new CustomOutputChannel()
 	};

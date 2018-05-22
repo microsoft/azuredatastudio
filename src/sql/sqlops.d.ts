@@ -37,6 +37,8 @@ declare module 'sqlops' {
 
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
 
+		export function registerAvailabilityGroupServiceProvider(provider: AvailabilityGroupServiceProvider):vscode.Disposable;
+
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
 		 * connections has changed. And example is for a SQL connection, the flavor changes
@@ -1703,5 +1705,21 @@ declare module 'sqlops' {
 		* @return Disposable which unregisters this task on disposal.
 		*/
 		export function registerTask(task: string, callback: ITaskHandler, thisArg?: any): vscode.Disposable;
+	}
+
+	export interface AvailabilityGroupsResult
+	{
+		succeeded: boolean;
+		errorMessage: string;
+		availabilityGroups: AvailabilityGroup[];
+	}
+
+	export interface AvailabilityGroup{
+		name: string;
+		clusterType:string;
+	}
+
+	export interface AvailabilityGroupServiceProvider extends DataProvider {
+		getAvailabilityGroups(connectionUri: string): Thenable<AvailabilityGroupsResult>;
 	}
 }

@@ -49,6 +49,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IAvailabilityGroupService } from 'sql/parts/availabilityGroup/common/interfaces';
 
 export class BootstrapService implements IBootstrapService {
 
@@ -107,7 +108,8 @@ export class BootstrapService implements IBootstrapService {
 		@IDashboardViewService public dashboardViewService: IDashboardViewService,
 		@IModelViewService public modelViewService: IModelViewService,
 		@IJobManagementService public jobManagementService: IJobManagementService,
-		@IEnvironmentService public environmentService: IEnvironmentService
+		@IEnvironmentService public environmentService: IEnvironmentService,
+		@IAvailabilityGroupService public availabilityGroupService:IAvailabilityGroupService
 	) {
 		this.configurationEditorService = this.instantiationService.createInstance(ConfigurationEditingService);
 		this._bootstrapParameterMap = new Map<string, BootstrapParams>();

@@ -12,7 +12,7 @@ import * as sqlops from 'sqlops';
 
 import { Telemetry } from './telemetry';
 import * as Utils from './utils';
-import { TelemetryNotification, AgentJobsRequest, AgentJobActionRequest, AgentJobHistoryRequest, AgentJobsParams, AgentJobHistoryParams, AgentJobActionParams } from './contracts';
+import { TelemetryNotification, AgentJobsRequest, AgentJobActionRequest, AgentJobHistoryRequest, AgentJobsParams, AgentJobHistoryParams, AgentJobActionParams, AvailabilityGroupsRequest, AvailabilityGroupsParams } from './contracts';
 
 export class TelemetryFeature implements StaticFeature {
 
@@ -94,6 +94,48 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			getJobs,
 			getJobHistory,
 			jobAction
+		});
+	}
+}
+
+export class AvailabilityGroupServicesFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		AvailabilityGroupsRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, AvailabilityGroupServicesFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+		// this isn't explicitly necessary
+		// ensure(ensure(capabilities, 'connection')!, 'agentServices')!.dynamicRegistration = true;
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let getAvailabilityGroups = (ownerUri: string): Thenable<sqlops.AvailabilityGroupsResult> => {
+			let params: AvailabilityGroupsParams = { ownerUri: ownerUri};
+			return client.sendRequest(AvailabilityGroupsRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(AvailabilityGroupsRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		return sqlops.dataprotocol.registerAvailabilityGroupServiceProvider({
+			providerId: client.providerId,
+			getAvailabilityGroups
 		});
 	}
 }

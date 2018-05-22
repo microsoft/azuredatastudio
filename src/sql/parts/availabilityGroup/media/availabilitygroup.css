@@ -1,0 +1,85 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+ availabilitygroupview-component {
+	height: 100%;
+	width: 100%;
+	display: block;
+}
+
+.ag-dashboard {
+	height: 100%;
+	width: 100%;
+}
+
+.ag-tile-container {
+	overflow-x: scroll;
+	overflow-y: scroll;
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	height: 60%;
+}
+
+.ag-tile {
+	cursor: pointer;
+	margin: 10px;
+}
+
+.ag-tile-header {
+	background-color: silver;
+	font-size: 13px;
+	padding:3px;
+	display: flex;
+	flex-wrap: nowrap;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+.ag-tile-header > div {
+	margin: 5px;
+}
+
+.ag-tile-body {
+	background-color:whitesmoke;
+	font-size: 13px;
+	border-style: solid;
+	border-width: 1px;
+	border-color: silver;
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+}
+
+.ag-tile-body-section {
+	padding-bottom:5px;
+	padding-left: 5px;
+}
+
+.ag-detail {
+	overflow-x: scroll;
+	overflow-y: scroll;
+	border-top-style: solid;
+	border-top-width: 4px;
+	border-top-color: silver;
+	height: 40%;
+}
+
+.ag-icon {
+	background-image: url('./AvailabilityGroup.svg');
+	width: 16px;
+	height: 16px;
+}
+
+.replica-icon {
+	background-image: url('./AvailabilityReplica.svg');
+	width: 16px;
+	height: 16px;
+}
+
+.database-icon {
+	background-image: url('./database.svg');
+	width: 16px;
+	height: 16px;
+}

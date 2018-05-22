@@ -160,7 +160,8 @@ import { DashboardViewService } from 'sql/services/dashboard/common/dashboardVie
 import { ModelViewService } from 'sql/services/modelComponents/modelViewServiceImpl';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { DashboardService } from 'sql/services/dashboard/common/dashboardServiceImpl';
-
+import { IAvailabilityGroupService } from 'sql/parts/availabilityGroup/common/interfaces';
+import { AvailabilityGroupService } from 'sql/parts/availabilityGroup/common/availabilityGroupService';
 export const EditorsVisibleContext = new RawContextKey<boolean>('editorIsOpen', false);
 export const InZenModeContext = new RawContextKey<boolean>('inZenMode', false);
 export const SidebarVisibleContext = new RawContextKey<boolean>('sidebarVisible', false);
@@ -705,6 +706,7 @@ export class Workbench implements IPartService {
 		serviceCollection.set(IScriptingService, this.instantiationService.createInstance(ScriptingService));
 		serviceCollection.set(IAdminService, this.instantiationService.createInstance(AdminService));
 		serviceCollection.set(IJobManagementService, this.instantiationService.createInstance(JobManagementService));
+		serviceCollection.set(IAvailabilityGroupService, this.instantiationService.createInstance(AvailabilityGroupService));
 		serviceCollection.set(IBackupService, this.instantiationService.createInstance(BackupService));
 		serviceCollection.set(IBackupUiService, this.instantiationService.createInstance(BackupUiService));
 		serviceCollection.set(IRestoreService, this.instantiationService.createInstance(RestoreService));

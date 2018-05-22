@@ -77,7 +77,8 @@ const vsce = require('vsce');
 const sqlBuiltInExtensions = [
 	// Add SQL built-in extensions here.
 	// the extension will be excluded from SQLOps package and will have separate vsix packages
-	'agent'
+	'agent',
+	'availabilitygroup'
 ];
 
 const vscodeEntryPoints = _.flatten([
