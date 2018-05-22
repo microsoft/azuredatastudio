@@ -10,7 +10,7 @@ import { Modal, IModalOptions } from 'sql/base/browser/ui/modal/modal';
 import { attachModalDialogStyler } from 'sql/common/theme/styler';
 import { Wizard, Dialog, DialogButton, WizardPage } from 'sql/platform/dialog/dialogTypes';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { Builder } from 'vs/base/browser/builder';
@@ -23,6 +23,7 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { localize } from 'vs/nls';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter } from 'vs/base/common/event';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -47,7 +48,7 @@ export class WizardModal extends Modal {
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IBootstrapService private _bootstrapService: IBootstrapService
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(_wizard.title, name, partService, telemetryService, contextKeyService, options);
 	}
@@ -116,7 +117,7 @@ export class WizardModal extends Modal {
 	}
 
 	private registerPage(page: WizardPage): void {
-		let dialogPane = new DialogPane(page.title, page.content, valid => page.notifyValidityChanged(valid), this._bootstrapService);
+		let dialogPane = new DialogPane(page.title, page.content, valid => page.notifyValidityChanged(valid), this._instantiationService);
 		dialogPane.createBody(this._body);
 		this._dialogPanes.set(page, dialogPane);
 		page.onUpdate(() => this.setButtonsForPage(this._wizard.currentPage));
