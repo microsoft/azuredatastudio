@@ -22,6 +22,7 @@ declare module 'sqlops' {
 		inputBox(): ComponentBuilder<InputBoxComponent>;
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
 		radioButton(): ComponentBuilder<RadioButtonComponent>;
+		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
@@ -262,6 +263,10 @@ declare module 'sqlops' {
 		checked?: boolean;
 	}
 
+	export interface TextComponentProperties {
+		value?: string;
+	}
+
 	export interface DropDownProperties {
 		value?: string;
 		values?: string[];
@@ -277,6 +282,10 @@ declare module 'sqlops' {
 		value: string;
 		actions?: ActionDescriptor[];
 		onDidActionClick: vscode.Event<ActionDescriptor>;
+	}
+
+	export interface TextComponent extends Component {
+		value: string;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
