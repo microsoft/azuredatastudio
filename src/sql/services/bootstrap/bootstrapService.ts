@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NgModuleRef, enableProdMode, InjectionToken, ReflectiveInjector, Type } from '@angular/core';
+import { NgModuleRef, enableProdMode, InjectionToken, ReflectiveInjector, Type, PlatformRef } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { IConnectionManagementService, IConnectionDialogService, IErrorMessageService }
@@ -45,7 +45,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IClipboardService as vsIClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { ALLOW_MULTIPLE_PLATFORMS, PlatformRef } from '@angular/core/src/application_ref';
+
 const selectorCounter = new Map<string, number>();
 
 export const IBootstrapParams = new InjectionToken('bootstrap_params');
