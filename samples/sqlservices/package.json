@@ -16,6 +16,16 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
+        "commands": [
+            {
+                "command": "sqlservices.openDialog",
+                "title": "sqlservices.openDialog"
+            },
+            {
+                "command": "sqlservices.openEditor",
+                "title": "sqlservices.openEditor"
+            }
+        ],
         "dashboard.tabs": [
             {
                 "id": "sqlservices.tab",
@@ -62,7 +72,9 @@
         "postinstall": "node ./node_modules/vscode/bin/install && node ./node_modules/sqlops/bin/install && gulp copytypings"
     },
     "dependencies": {
-        "vscode-nls": "^3.2.2"
+        "vscode-nls": "^3.2.2",
+        "fs-extra": "^5.0.0",
+        "handlebars": "^4.0.11"
     },
     "devDependencies": {
         "@types/node": "^7.0.43",
@@ -76,6 +88,8 @@
         "sqlops": "github:anthonydresser/sqlops-extension-sqlops",
         "tslint": "^3.14.0",
         "typescript": "^2.6.1",
-        "vscode": "^1.1.14"
+        "vscode": "^1.1.14",
+        "@types/handlebars": "^4.0.11",
+        "vsce": "1.36.2"
     }
 }

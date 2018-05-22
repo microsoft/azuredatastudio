@@ -1285,7 +1285,8 @@ class ScreenReaderDetectedExplanation {
 		}));
 		domNode.appendChild(closeBtn);
 
-		const question = $('p.question', {}, nls.localize('screenReaderDetectedExplanation.question', "Are you using a screen reader to operate VS Code?"));
+		// {{SQL CARBON EDIT}}
+		const question = $('p.question', {}, nls.localize('screenReaderDetectedExplanation.question', "Are you using a screen reader to operate SQL Operations Studio?"));
 		domNode.appendChild(question);
 
 		const buttonContainer = $('div.buttons');
@@ -1317,7 +1318,8 @@ class ScreenReaderDetectedExplanation {
 		const hr = $('hr');
 		domNode.appendChild(hr);
 
-		const explanation1 = $('p.body1', {}, nls.localize('screenReaderDetectedExplanation.body1', "VS Code is now optimized for usage with a screen reader."));
+		// {{SQL CARBON EDIT}}
+		const explanation1 = $('p.body1', {}, nls.localize('screenReaderDetectedExplanation.body1', "SQL Operations Studio is now optimized for usage with a screen reader."));
 		domNode.appendChild(explanation1);
 
 		const explanation2 = $('p.body2', {}, nls.localize('screenReaderDetectedExplanation.body2', "Some editor features will have different behaviour: e.g. word wrapping, folding, etc."));

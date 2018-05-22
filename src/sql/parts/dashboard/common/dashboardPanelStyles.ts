@@ -71,12 +71,12 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	}
 
 	// Panel title background
-	const tabBoarder = theme.getColor(TAB_BORDER);
-	if (tabBoarder) {
+	const tabBorder = theme.getColor(TAB_BORDER);
+	if (tabBorder) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header {
-				border-right-color: ${tabBoarder};
-				border-bottom-color: ${tabBoarder};
+				border-right-color: ${tabBorder};
+				border-bottom-color: ${tabBorder};
 			}
 		`);
 	}
@@ -86,13 +86,13 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	if (outline) {
 		collector.addRule(`
 			panel.dashboard-panel > .tabbedPanel > .title {
-				border-bottom-color: ${tabBoarder};
+				border-bottom-color: ${tabBorder};
 				border-bottom-width: 1px;
 				border-bottom-style: solid;
 			}
 
 			panel.dashboard-panel > .tabbedPanel.vertical > .title {
-				border-right-color: ${tabBoarder};
+				border-right-color: ${tabBorder};
 				border-right-width: 1px;
 				border-right-style: solid;
 			}

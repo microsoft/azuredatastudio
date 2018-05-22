@@ -40,11 +40,155 @@ export default class MainController implements vscode.Disposable {
 			vscode.window.showInformationMessage(`Clicked from profile ${profile.serverName}.${profile.databaseName}`);
 		});
 
+		vscode.commands.registerCommand('sqlservices.openDialog', () =>  {
+			this.openDialog();
+		});
+
+		vscode.commands.registerCommand('sqlservices.openEditor', () =>  {
+			this.openEditor();
+		});
+
 		return Promise.resolve(true);
 	}
 
+	private openDialog(): void {
+		let dialog = sqlops.window.modelviewdialog.createDialog('Test dialog');
+		let tab1 = sqlops.window.modelviewdialog.createTab('Test tab 1');
+
+		let tab2 = sqlops.window.modelviewdialog.createTab('Test tab 2');
+		tab2.content = 'sqlservices';
+		dialog.content = [tab1, tab2];
+		dialog.okButton.onClick(() => console.log('ok clicked!'));
+		dialog.cancelButton.onClick(() => console.log('cancel clicked!'));
+		dialog.okButton.label = 'ok';
+		dialog.cancelButton.label = 'no';
+		let customButton1 = sqlops.window.modelviewdialog.createButton('Test button 1');
+		customButton1.onClick(() => console.log('button 1 clicked!'));
+		let customButton2 = sqlops.window.modelviewdialog.createButton('Test button 2');
+		customButton2.onClick(() => console.log('button 2 clicked!'));
+		dialog.customButtons = [customButton1, customButton2];
+		tab1.registerContent(async (view) => {
+			let inputBox = view.modelBuilder.inputBox()
+			.withProperties({
+				//width: 300
+			})
+			.component();
+			let inputBox2 = view.modelBuilder.inputBox()
+			.component();
+
+			let checkbox = view.modelBuilder.checkBox()
+			.withProperties({
+				label: 'Copy-only backup'
+			})
+			.component();
+			checkbox.onChanged(e => {
+						console.info("inputBox.enabled " + inputBox.enabled);
+						inputBox.enabled = !inputBox.enabled;
+			});
+			let button = view.modelBuilder.button()
+			.withProperties({
+				label: '+'
+			}).component();
+			let button3 = view.modelBuilder.button()
+			.withProperties({
+			label: '-'
+
+			}).component();
+			let button2 = view.modelBuilder.button()
+			.component();
+			button.onDidClick(e => {
+							inputBox2.value = 'Button clicked';
+			});
+			let dropdown = view.modelBuilder.dropDown()
+			.withProperties({
+				value: 'Full',
+				values: ['Full', 'Differential', 'Transaction Log']
+			})
+			.component();
+			let f = 0;
+			inputBox.onTextChanged((params) => {
+			vscode.window.showInformationMessage(inputBox.value);
+				f = f + 1;
+				inputBox2.value=f.toString();
+			});
+			dropdown.onValueChanged((params) => {
+					vscode.window.showInformationMessage(inputBox2.value);
+					inputBox.value = dropdown.value;
+			});
+			let radioButton = view.modelBuilder.radioButton()
+				.withProperties({
+					value: 'option1',
+					name: 'radioButtonOptions',
+					label: 'Option 1',
+					checked: true
+            //width: 300
+			}).component();
+			let radioButton2 = view.modelBuilder.radioButton()
+				.withProperties({
+					value: 'option2',
+					name: 'radioButtonOptions',
+					label: 'Option 2'
+
+            //width: 300
+			}).component();
+			let flexRadioButtonsModel = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'column',
+					alignItems: 'left',
+					justifyContent: 'space-evenly',
+					height: 50
+			}).withItems([
+				radioButton, radioButton2]
+				, { flex: '1 1 50%' }).component();
+			let formModel = view.modelBuilder.formContainer()
+			.withFormItems([{
+						component: inputBox,
+						title: 'Backup name'
+				}, {
+						component: inputBox2,
+						title: 'Recovery model'
+				}, {
+						component:dropdown,
+						title: 'Backup type'
+				}, {
+						component: checkbox,
+						title: ''
+				}, {
+						component: inputBox2,
+						title: 'Backup files',
+						actions: [button, button3]
+				}, {
+					component: flexRadioButtonsModel,
+					title: 'Options'
+				}], {
+						horizontal:false,
+						width: 500,
+						componentWidth: 400
+							}).component();
+			await view.initializeModel(formModel);
+		});
+
+		sqlops.window.modelviewdialog.openDialog(dialog);
+	}
+
+	private openEditor(): void {
+		let editor = sqlops.workspace.createModelViewEditor('Test Editor view');
+		editor.registerContent(async view => {
+			let inputBox = view.modelBuilder.inputBox()
+				.withValidation(component => component.value !== 'valid')
+				.component();
+			let formModel = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: inputBox,
+					title: 'Enter anything but "valid"'
+				}]).component();
+			await view.initializeModel(formModel);
+		});
+		editor.openEditor();
+	}
+
 	private registerSqlServicesModelView(): void {
-		sqlops.dashboard.registerModelViewProvider('sqlservices', async (view) => {
+		sqlops.ui.registerModelViewProvider('sqlservices', async (view) => {
 			let flexModel = view.modelBuilder.flexContainer()
 				.withLayout({
 					flexFlow: 'row',
@@ -62,7 +206,7 @@ export default class MainController implements vscode.Disposable {
 								.withProperties<sqlops.CardProperties>({
 									label: 'label1',
 									value: 'value1',
-									actions: [{ label: 'action', taskId: 'sqlservices.clickTask' }]
+									actions: [{ label: 'action' }]
 								})
 								.component()
 						]).component(),
@@ -74,7 +218,7 @@ export default class MainController implements vscode.Disposable {
 								.withProperties<sqlops.CardProperties>({
 									label: 'label2',
 									value: 'value2',
-									actions: [{ label: 'action', taskId: 'sqlservices.clickTask' }]
+									actions: [{ label: 'action' }]
 								})
 								.component()
 						]).component()
@@ -85,7 +229,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private registerSplitPanelModelView(): void {
-		sqlops.dashboard.registerModelViewProvider('splitPanel', async (view) => {
+		sqlops.ui.registerModelViewProvider('splitPanel', async (view) => {
 			let numPanels = 3;
 			let splitPanel = new SplitPropertiesPanel(view, numPanels);
 			await view.initializeModel(splitPanel.modelBase);

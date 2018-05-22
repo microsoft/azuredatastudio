@@ -653,7 +653,7 @@ declare module 'sqlops' {
 		createRow(ownerUri: string): Thenable<EditCreateRowResult>;
 		deleteRow(ownerUri: string, rowId: number): Thenable<void>;
 		disposeEdit(ownerUri: string): Thenable<void>;
-		initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void>;
+		initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void>;
 		revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<EditRevertCellResult>;
 		revertRow(ownerUri: string, rowId: number): Thenable<void>;
 		updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<EditUpdateCellResult>;
@@ -881,6 +881,7 @@ declare module 'sqlops' {
 		objectName: string;
 		schemaName: string;
 		objectType: string;
+		queryString: string;
 	}
 
 

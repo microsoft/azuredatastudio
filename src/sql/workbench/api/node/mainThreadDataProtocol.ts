@@ -134,8 +134,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 					return self._serializationService.saveAs(requestParams.resultFormat, requestParams.filePath, undefined, true);
 				}
 			},
-			initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void> {
-				return self._proxy.$initializeEdit(handle, ownerUri, schemaName, objectName, objectType, rowLimit);
+			initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void> {
+				return self._proxy.$initializeEdit(handle, ownerUri, schemaName, objectName, objectType, rowLimit, queryString);
 			},
 			updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult> {
 				return self._proxy.$updateCell(handle, ownerUri, rowId, columnId, newValue);

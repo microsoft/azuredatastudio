@@ -66,12 +66,10 @@ export class DialogModal extends Modal {
 			});
 		}
 
-		this._cancelButton = this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
-		this.updateButtonElement(this._cancelButton, this._dialog.cancelButton);
-		this._dialog.cancelButton.registerClickEvent(this._onCancel.event);
 		this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done(), false);
-		this.updateButtonElement(this._doneButton, this._dialog.okButton);
 		this._dialog.okButton.registerClickEvent(this._onDone.event);
+		this._cancelButton = this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
+		this._dialog.cancelButton.registerClickEvent(this._onCancel.event);
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true): Button {
@@ -84,6 +82,7 @@ export class DialogModal extends Modal {
 			this.updateButtonElement(buttonElement, button);
 		});
 		attachButtonStyler(buttonElement, this._themeService);
+		this.updateButtonElement(buttonElement, button);
 		return buttonElement;
 	}
 
@@ -99,7 +98,8 @@ export class DialogModal extends Modal {
 			body = bodyBuilder.getHTMLElement();
 		});
 
-		this._dialogPane = new DialogPane(this._dialog, this._bootstrapService);
+		this._dialogPane = new DialogPane(this._dialog.title, this._dialog.content,
+			valid => this._dialog.notifyValidityChanged(valid), this._bootstrapService);
 		this._dialogPane.createBody(body);
 	}
 

@@ -19,8 +19,8 @@ import { CloseTabAction } from './tabActions';
 @Component({
 	selector: 'tab-header',
 	template: `
-		<div #actionHeader class="tab-header" style="flex: 0 0; flex-direction: row; height: 100%" [class.active]="tab.active" tabindex="0" (keyup)="onKey($event)">
-			<span class="tab" (click)="selectTab(tab)" role="tab" [attr.aria-selected]="tab.active" [attr.aria-label]="tab.title">
+		<div #actionHeader role="presentation" class="tab-header" style="flex: 0 0; flex-direction: row; height: 100%" [class.active]="tab.active" tabindex="0" (keyup)="onKey($event)">
+			<span class="tab" (click)="selectTab(tab)" role="tab" [attr.aria-selected]="tab.active" [attr.aria-controls]="tab.title">
 				<a class="tabLabel" [class.active]="tab.active" #tabLabel>
 				</a>
 			</span>

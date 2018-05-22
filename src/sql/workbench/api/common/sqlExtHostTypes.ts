@@ -71,6 +71,7 @@ export enum ModelComponentTypes {
 	DropDown,
 	Button,
 	CheckBox,
+	RadioButton,
 	DashboardWidget,
 	DashboardWebview,
 	Form
@@ -92,7 +93,8 @@ export interface IItemConfig {
 export enum ComponentEventType {
 	PropertiesChanged,
 	onDidChange,
-	onDidClick
+	onDidClick,
+	validityChanged
 }
 
 export interface IComponentEventArgs {
@@ -118,3 +120,45 @@ export interface IModelViewButtonDetails {
 	enabled: boolean;
 	hidden: boolean;
 }
+
+export interface IModelViewWizardPageDetails {
+	title: string;
+	content: string;
+	enabled: boolean;
+	customButtons: number[];
+}
+
+export interface IModelViewWizardDetails {
+	title: string;
+	pages: number[];
+	currentPage: number;
+	doneButton: number;
+	cancelButton: number;
+	generateScriptButton: number;
+	nextButton: number;
+	backButton: number;
+	customButtons: number[];
+}
+
+/// Card-related APIs that need to be here to avoid early load issues
+// with enums causing requiring of sqlops API to fail.
+export enum StatusIndicator {
+	None = 0,
+	Ok = 1,
+	Warning = 2,
+	Error = 3
+}
+
+export interface CardProperties {
+	label: string;
+	value?: string;
+	actions?: ActionDescriptor[];
+	status?: StatusIndicator;
+}
+
+export interface ActionDescriptor {
+	label: string;
+	actionTitle?: string;
+	callbackData?: any;
+}
+

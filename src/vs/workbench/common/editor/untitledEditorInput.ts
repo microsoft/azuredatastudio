@@ -167,6 +167,11 @@ export class UntitledEditorInput extends EditorInput implements IEncodingSupport
 	}
 
 	public isDirty(): boolean {
+		// {{SQL CARBON EDIT}}
+		if (!this.savingSupported) {
+			return false;
+		}
+
 		if (this.cachedModel) {
 			return this.cachedModel.isDirty();
 		}

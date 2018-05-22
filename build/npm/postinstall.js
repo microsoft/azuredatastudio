@@ -36,7 +36,8 @@ const extensions = [
 	'insights-default',
 	'account-provider-azure',
 	'agent',
-	'availabilitygroup'
+	'availabilitygroup',
+	'profiler'
 ];
 
 extensions.forEach(extension => yarnInstall(`extensions/${extension}`));
