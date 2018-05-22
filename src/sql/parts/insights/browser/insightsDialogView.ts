@@ -172,11 +172,11 @@ export class InsightsDialogView extends Modal {
 		let panelCreation = this.panelView.create($(this._container));
 		this._topTableData = new TableDataView();
 		this._bottomTableData = new TableDataView();
-		let topTableView = this._instantiationService.createInstance(TableCollapsibleView, nls.localize("insights.dialog.items", "Items"), { ariaHeaderLabel: 'title' }, this._topTableData, this._topColumns, { forceFitColumns: true });
+		let topTableView = this._instantiationService.createInstance(TableCollapsibleView, nls.localize("insights.dialog.items", "Items"), { ariaHeaderLabel: 'title' }, this._topTableData, this._topColumns, { forceFitColumns: true }) as TableCollapsibleView<ListResource>;
 		this._topTable = topTableView.table;
 		topTableView.addContainerClass('insights');
 		this._topTable.setSelectionModel(new RowSelectionModel<ListResource>());
-		let bottomTableView = this._instantiationService.createInstance(TableCollapsibleView, nls.localize("insights.dialog.itemDetails", "Item Details"), { ariaHeaderLabel: 'title' }, this._bottomTableData, this._bottomColumns, { forceFitColumns: true });
+		let bottomTableView = this._instantiationService.createInstance(TableCollapsibleView, nls.localize("insights.dialog.itemDetails", "Item Details"), { ariaHeaderLabel: 'title' }, this._bottomTableData, this._bottomColumns, { forceFitColumns: true }) as TableCollapsibleView<ListResource>;
 		this._bottomTable = bottomTableView.table;
 		this._bottomTable.setSelectionModel(new RowSelectionModel<ListResource>());
 
