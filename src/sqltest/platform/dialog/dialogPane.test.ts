@@ -75,6 +75,7 @@ suite('Dialog Pane Tests', () => {
 			It.isAny(),
 			It.isAny(),
 			It.isAny(),
+			It.isAny(),
 			It.is((x: DialogComponentParams) => x.modelViewId === modelViewId1),
 			undefined,
 			It.isAny()), Times.once());
@@ -85,7 +86,7 @@ suite('Dialog Pane Tests', () => {
 		let validationCallbacks: ((valid: boolean) => void)[] = [];
 		mockInstantiationService.reset();
 		mockInstantiationService.setup(x => x.invokeFunction(It.isAny(), It.isAny(), It.isAny(), It.isAny(), It.isAny(), undefined, It.isAny())).callback(
-			(moduleType, container, selectorString, params: DialogComponentParams, input, callbackSetModule) => {
+			(collection, moduleType, container, selectorString, params: DialogComponentParams, input, callbackSetModule) => {
 				validationCallbacks.push(params.validityChangedCallback);
 			});
 
