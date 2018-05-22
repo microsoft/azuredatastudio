@@ -11,7 +11,7 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { mixin } from 'vs/base/common/objects';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { Builder, $, withElementById } from 'vs/base/browser/builder';
+import { Builder, $, withElementById, Dimension } from 'vs/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -305,17 +305,21 @@ export abstract class Modal extends Disposable implements IThemable {
 			}
 		});
 		this._resizeListener = DOM.addDisposableListener(window, DOM.EventType.RESIZE, (e: Event) => {
-			this.layout(DOM.getTotalHeight(this._builder.getHTMLElement()));
+			this._layout();
 		});
 
-		this.layout(DOM.getTotalHeight(this._builder.getHTMLElement()));
+		this._layout();
 		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ModalDialogOpened, { name: this._name });
 	}
 
 	/**
 	 * Required to be implemented so that scrolling and other functions operate correctly. Should re-layout controls in the modal
 	 */
-	protected abstract layout(height?: number): void;
+	protected abstract layout(dimension: Dimension): void;
+
+	protected _layout(): void {
+		this.layout(new Dimension(DOM.getTotalWidth(this._builder.getHTMLElement()), DOM.getTotalHeight(this._builder.getHTMLElement())));
+	}
 
 	/**
 	 * Hides the modal and removes key listeners

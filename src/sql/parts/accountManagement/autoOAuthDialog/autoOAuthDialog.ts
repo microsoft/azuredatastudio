@@ -5,7 +5,7 @@
 
 'use strict';
 import 'vs/css!./media/autoOAuthDialog';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $, Dimension } from 'vs/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
@@ -74,7 +74,7 @@ export class AutoOAuthDialog extends Modal {
 		this._websiteInputBox.disable();
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: Dimension): void {
 		// NO OP
 	}
 

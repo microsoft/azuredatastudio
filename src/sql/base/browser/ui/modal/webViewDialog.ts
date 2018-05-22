@@ -10,7 +10,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/styler';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder, Dimension } from 'vs/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IPartService, Parts } from 'vs/workbench/services/part/common/partService';
 import Event, { Emitter } from 'vs/base/common/event';
@@ -128,7 +128,7 @@ export class WebViewDialog extends Modal {
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: Dimension): void {
 		// Nothing to re-layout
 	}
 

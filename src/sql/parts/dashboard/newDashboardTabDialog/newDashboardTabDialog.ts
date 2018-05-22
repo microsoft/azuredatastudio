@@ -32,6 +32,7 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { Orientation } from 'sql/base/browser/ui/splitview/splitview';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabViewModel';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { Dimension } from 'vs/base/browser/builder';
 
 class ExtensionListDelegate implements IDelegate<IDashboardUITab> {
 
@@ -141,7 +142,7 @@ export class NewDashboardTabDialog extends Modal {
 	}
 
 	// MODAL OVERRIDE METHODS //////////////////////////////////////////////
-	protected layout(height?: number): void {
+	protected layout(dimension?: Dimension): void {
 		// Nothing currently laid out in this class
 	}
 

@@ -27,7 +27,7 @@ import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import * as styler from 'vs/platform/theme/common/styler';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { SplitView, CollapsibleState } from 'sql/base/browser/ui/splitview/splitview';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $, Dimension } from 'vs/base/browser/builder';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -256,7 +256,7 @@ export class OptionsDialog extends Modal {
 		firstOptionWidget.focus();
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: Dimension): void {
 		// Nothing currently laid out in this class
 	}
 

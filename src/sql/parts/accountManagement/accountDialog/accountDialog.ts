@@ -33,6 +33,7 @@ import { AccountListRenderer, AccountListDelegate } from 'sql/parts/accountManag
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
 import { FixedListView } from 'sql/platform/views/fixedListView';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { Dimension } from 'vs/base/browser/builder';
 
 export class AccountDialog extends Modal {
 	public static ACCOUNTLIST_HEIGHT = 77;
@@ -92,7 +93,7 @@ export class AccountDialog extends Modal {
 	}
 
 	// MODAL OVERRIDE METHODS //////////////////////////////////////////////
-	protected layout(height?: number): void {
+	protected layout(dimension?: Dimension): void {
 		// Ignore height as it's a subcomponent being laid out
 		this._splitView.layout(DOM.getContentHeight(this._container));
 	}

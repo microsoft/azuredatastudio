@@ -19,7 +19,7 @@ import { FileBrowserTreeView } from 'sql/parts/fileBrowser/fileBrowserTreeView';
 import { FileBrowserViewModel } from 'sql/parts/fileBrowser/fileBrowserViewModel';
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder, Dimension } from 'vs/base/browser/builder';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import Event, { Emitter } from 'vs/base/common/event';
@@ -64,7 +64,7 @@ export class FileBrowserDialog extends Modal {
 		this._viewModel.onPathValidate(args => this.handleOnValidate(args.succeeded, args.message));
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: Dimension): void {
 	}
 
 	protected renderBody(container: HTMLElement) {

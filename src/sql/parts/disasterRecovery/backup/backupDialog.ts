@@ -15,7 +15,7 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder, Dimension } from 'vs/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 export class BackupDialog extends Modal {
@@ -98,7 +98,7 @@ export class BackupDialog extends Modal {
 		this.show();
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: Dimension): void {
 		// Nothing currently laid out in this class
 	}
 

@@ -5,7 +5,7 @@
 
 'use strict';
 import 'vs/css!./media/serverGroupDialog';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder, Dimension } from 'vs/base/browser/builder';
 import { Checkbox } from 'vs/base/browser/ui/checkbox/checkbox';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as DOM from 'vs/base/browser/dom';
@@ -68,7 +68,7 @@ export class ServerGroupDialog extends Modal {
 		this.registerListeners();
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: Dimension): void {
 		// NO OP
 	}
 

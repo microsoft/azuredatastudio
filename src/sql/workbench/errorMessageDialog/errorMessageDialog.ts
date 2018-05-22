@@ -11,7 +11,7 @@ import { Modal } from 'sql/base/browser/ui/modal/modal';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/styler';
 
-import { Builder } from 'vs/base/browser/builder';
+import { Builder, Dimension } from 'vs/base/browser/builder';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
@@ -94,7 +94,7 @@ export class ErrorMessageDialog extends Modal {
 		}
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: Dimension): void {
 		// Nothing to re-layout
 	}
 
