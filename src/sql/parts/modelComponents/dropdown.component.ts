@@ -91,6 +91,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		if (this.value) {
 			this._dropdown.value = this.value;
 		}
+		this._dropdown.enabled = this.enabled;
 	}
 
 	// CSS-bound properties

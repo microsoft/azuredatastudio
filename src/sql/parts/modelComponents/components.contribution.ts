@@ -10,6 +10,7 @@ import InputBoxComponent from './inputbox.component';
 import DropDownComponent from './dropdown.component';
 import ButtonComponent from './button.component';
 import CheckBoxComponent from './checkbox.component';
+import RadioButtonComponent from './radioButton.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -34,3 +35,6 @@ registerComponentType(BUTTON_COMPONENT, ModelComponentTypes.Button, ButtonCompon
 
 export const CHECKBOX_COMPONENT = 'checkbox-component';
 registerComponentType(CHECKBOX_COMPONENT, ModelComponentTypes.CheckBox, CheckBoxComponent);
+
+export const RADIOBUTTON_COMPONENT = 'radiobutton-component';
+registerComponentType(RADIOBUTTON_COMPONENT, ModelComponentTypes.RadioButton, RadioButtonComponent);

@@ -71,6 +71,7 @@ export enum ModelComponentTypes {
 	DropDown,
 	Button,
 	CheckBox,
+	RadioButton,
 	DashboardWidget,
 	DashboardWebview,
 	Form
@@ -118,6 +119,25 @@ export interface IModelViewButtonDetails {
 	label: string;
 	enabled: boolean;
 	hidden: boolean;
+}
+
+export interface IModelViewWizardPageDetails {
+	title: string;
+	content: string;
+	enabled: boolean;
+	customButtons: number[];
+}
+
+export interface IModelViewWizardDetails {
+	title: string;
+	pages: number[];
+	currentPage: number;
+	doneButton: number;
+	cancelButton: number;
+	generateScriptButton: number;
+	nextButton: number;
+	backButton: number;
+	customButtons: number[];
 }
 
 /// Card-related APIs that need to be here to avoid early load issues
