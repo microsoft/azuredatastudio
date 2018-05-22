@@ -318,7 +318,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected abstract layout(dimension: Dimension): void;
 
 	protected _layout(): void {
-		this.layout(new Dimension(DOM.getTotalWidth(this._builder.getHTMLElement()), DOM.getTotalHeight(this._builder.getHTMLElement())));
+		this.layout(new Dimension(DOM.getContentWidth(this._modalBodySection), DOM.getContentHeight(this._modalBodySection)));
 	}
 
 	/**
