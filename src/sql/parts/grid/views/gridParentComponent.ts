@@ -290,7 +290,7 @@ export abstract class GridParentComponent {
 
 	protected goToNextGrid() {
 		if (this.renderedDataSets.length > 0) {
-			let next  = this.activeGrid + 1;
+			let next = this.activeGrid + 1;
 			if (next >= this.renderedDataSets.length) {
 				next = 0;
 			}
