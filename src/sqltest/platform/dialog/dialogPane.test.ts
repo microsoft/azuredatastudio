@@ -20,7 +20,7 @@ suite('Dialog Pane Tests', () => {
 	setup(() => {
 		dialog = new Dialog('test_dialog');
 		mockInstantiationService = Mock.ofInstance({
-			bootstrap: () => undefined
+			invokeFunction: () => undefined
 		} as any);
 		mockInstantiationService.setup(x => x.invokeFunction(It.isAny(), It.isAny(), It.isAny(), It.isAny(), It.isAny(), undefined, It.isAny()));
 		container = document.createElement('div');
