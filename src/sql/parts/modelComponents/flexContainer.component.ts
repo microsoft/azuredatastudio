@@ -71,7 +71,7 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		this._justifyContent= layout.justifyContent ? layout.justifyContent : '';
 		this._alignItems= layout.alignItems ? layout.alignItems : '';
 		this._alignContent= layout.alignContent ? layout.alignContent : '';
-		this._height= layout.height ? layout.height + 'px' : '';
+		this._height= layout.height ? layout.height + 'px' : '100%';
 		this.layout();
 	}
 
