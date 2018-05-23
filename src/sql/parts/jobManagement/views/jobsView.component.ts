@@ -208,7 +208,6 @@ export class JobsViewComponent implements AfterContentChecked {
 			});
 		}
 		this._table.registerPlugin(<any>this.rowDetail);
-
 		this.filterPlugin.onFilterApplied.subscribe((e, args) => {
 			this.dataView.refresh();
 			this._table.grid.resetActiveCell();
@@ -308,6 +307,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		this.dataView.endUpdate();
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
+
 		this.expandJobs(true);
 		// tooltip for job name
 		$('.jobview-jobnamerow').hover(e => {
@@ -331,6 +331,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		});
 		// cache the dataview for future use
 		this._jobCacheObject.dataView = this.dataView;
+		this.filterValueMap['start'] = [[], this.dataView.getItems()];
 		this.loadJobHistories();
 	}
 
@@ -436,8 +437,10 @@ export class JobsViewComponent implements AfterContentChecked {
 
 	private checkPreviousFilters(item): boolean {
 		for (let column in this.filterValueMap) {
-			if (!_.contains(this.filterValueMap[column][0], item[AgentJobUtilities.convertColNameToField(column)])) {
-				return false;
+			if (column !== 'start' && this.filterValueMap[column][0].length > 0) {
+				if (!_.contains(this.filterValueMap[column][0], item[AgentJobUtilities.convertColNameToField(column)])) {
+					return false;
+				}
 			}
 		}
 		return true;
