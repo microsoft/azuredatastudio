@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!sql/parts/query/editor/media/queryEditor';
+
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Dimension, Builder } from 'vs/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
@@ -11,11 +12,12 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+
 import { TaskDialogInput } from './taskDialogInput';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
-import { TaskDialogComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { ITaskDialogComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { TaskDialogModule } from 'sql/parts/tasks/dialog/taskDialog.module';
 import { TASKDIALOG_SELECTOR } from 'sql/parts/tasks/dialog/taskDialog.component';
+import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 
 export class TaskDialogEditor extends BaseEditor {
 
@@ -24,8 +26,7 @@ export class TaskDialogEditor extends BaseEditor {
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
-		@IInstantiationService private instantiationService: IInstantiationService,
-		@IBootstrapService private _bootstrapService: IBootstrapService
+		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		super(TaskDialogEditor.ID, telemetryService, themeService);
 	}
@@ -88,10 +89,10 @@ export class TaskDialogEditor extends BaseEditor {
 	private bootstrapAngular(input: TaskDialogInput): void {
 
 		// Get the bootstrap params and perform the bootstrap
-		let params: TaskDialogComponentParams = {
+		let params: ITaskDialogComponentParams = {
 			ownerUri: input.getUri()
 		};
-		let uniqueSelector = this._bootstrapService.bootstrap(
+		let uniqueSelector = this.instantiationService.invokeFunction(bootstrapAngular,
 			TaskDialogModule,
 			this.getContainer().getHTMLElement(),
 			TASKDIALOG_SELECTOR,

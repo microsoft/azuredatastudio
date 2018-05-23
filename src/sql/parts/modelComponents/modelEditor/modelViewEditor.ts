@@ -12,9 +12,10 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { Dimension } from 'vs/workbench/services/part/common/partService';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { ModelViewInput } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { Dialog } from 'sql/platform/dialog/dialogTypes';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 
@@ -26,7 +27,7 @@ export class ModelViewEditor extends BaseEditor {
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
-		@IBootstrapService private _bootstrapService: IBootstrapService
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(ModelViewEditor.ID, telemetryService, themeService);
 	}
@@ -52,7 +53,7 @@ export class ModelViewEditor extends BaseEditor {
 
 		if (!this._modelViewMap.get(input.modelViewId)) {
 			let modelViewContainer = DOM.$('div.model-view-container');
-			let dialogPane = new DialogPane(input.title, input.modelViewId, () => undefined, this._bootstrapService);
+			let dialogPane = new DialogPane(input.title, input.modelViewId, () => undefined, this._instantiationService);
 			dialogPane.createBody(modelViewContainer);
 			this._modelViewMap.set(input.modelViewId, modelViewContainer);
 		}

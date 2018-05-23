@@ -26,8 +26,10 @@ import * as types from 'vs/base/common/types';
 import * as pfs from 'vs/base/node/pfs';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { WorkbenchState } from 'vs/platform/workspace/common/workspace';
+import { WorkbenchState, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IntervalTimer } from 'vs/base/common/async';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -63,7 +65,11 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(forwardRef(() => CommonServiceInterface)) private dashboardService: CommonServiceInterface,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(forwardRef(() => ViewContainerRef)) private viewContainerRef: ViewContainerRef,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IStorageService) private storageService: IStorageService,
+		@Inject(IWorkspaceContextService) private workspaceContextService: IWorkspaceContextService,
+
 	) {
 		super();
 		this.insightConfig = <IInsightsConfig>this._config.widget['insights-widget'];
@@ -128,9 +134,9 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	get actions(): Array<Action> {
 		let actions: Array<Action> = [];
 		if (this.insightConfig.details && (this.insightConfig.details.query || this.insightConfig.details.queryFile)) {
-			actions.push(this.dashboardService.instantiationService.createInstance(InsightAction, InsightAction.ID, InsightAction.LABEL));
+			actions.push(this.instantiationService.createInstance(InsightAction, InsightAction.ID, InsightAction.LABEL));
 		}
-		actions.push(this.dashboardService.instantiationService.createInstance(RunInsightQueryAction, RunInsightQueryAction.ID, RunInsightQueryAction.LABEL));
+		actions.push(this.instantiationService.createInstance(RunInsightQueryAction, RunInsightQueryAction.ID, RunInsightQueryAction.LABEL));
 		return actions;
 	}
 
@@ -150,14 +156,14 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			};
 			this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", currentTime.toLocaleTimeString(), currentTime.toLocaleDateString());
 			this._cd.detectChanges();
-			this.dashboardService.storageService.store(this._getStorageKey(), JSON.stringify(store));
+			this.storageService.store(this._getStorageKey(), JSON.stringify(store));
 		}
 		return result;
 	}
 
 	private _checkStorage(): boolean {
 		if (this.insightConfig.cacheId) {
-			let storage = this.dashboardService.storageService.get(this._getStorageKey());
+			let storage = this.storageService.get(this._getStorageKey());
 			if (storage) {
 				let storedResult: IStorageResult = JSON.parse(storage);
 				let date = new Date(storedResult.date);
@@ -272,15 +278,15 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				filePath = filePath.replace(match[0], '');
 
 				//filePath = this.dashboardService.workspaceContextService.toResource(filePath).fsPath;
-				switch (this.dashboardService.workspaceContextService.getWorkbenchState()) {
+				switch (this.workspaceContextService.getWorkbenchState()) {
 					case WorkbenchState.FOLDER:
-						filePath = this.dashboardService.workspaceContextService.getWorkspace().folders[0].toResource(filePath).fsPath;
+						filePath = this.workspaceContextService.getWorkspace().folders[0].toResource(filePath).fsPath;
 						break;
 					case WorkbenchState.WORKSPACE:
 						let filePathArray = filePath.split('/');
 						// filter out empty sections
 						filePathArray = filePathArray.filter(i => !!i);
-						let folder = this.dashboardService.workspaceContextService.getWorkspace().folders.find(i => i.name === filePathArray[0]);
+						let folder = this.workspaceContextService.getWorkspace().folders.find(i => i.name === filePathArray[0]);
 						if (!folder) {
 							return Promise.reject<void[]>(new Error(`Could not find workspace folder ${filePathArray[0]}`));
 						}

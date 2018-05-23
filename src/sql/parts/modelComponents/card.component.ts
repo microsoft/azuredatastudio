@@ -9,14 +9,14 @@ import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFacto
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
+
 import { ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
+import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { BOOTSTRAP_SERVICE_ID, IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { StatusIndicator, CardProperties, ActionDescriptor } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @Component({
@@ -30,15 +30,15 @@ export default class CardComponent extends ComponentBase implements IComponent, 
 
 	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super(changeRef);
 	}
 
 	ngOnInit(): void {
 		this.baseInit();
-		this._register(this._bootstrapService.themeService.onDidColorThemeChange(this.updateTheme, this));
-		this.updateTheme(this._bootstrapService.themeService.getColorTheme());
+		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
+		this.updateTheme(this.themeService.getColorTheme());
 
 	}
 

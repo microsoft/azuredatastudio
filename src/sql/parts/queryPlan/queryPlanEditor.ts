@@ -18,8 +18,8 @@ import { IConnectionManagementService } from 'sql/parts/connection/common/connec
 import { IMetadataService } from 'sql/services/metadata/metadataService';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
-import { QueryPlanParams } from 'sql/services/bootstrap/bootstrapParams';
+import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { IQueryPlanParams } from 'sql/services/bootstrap/bootstrapParams';
 import { QUERYPLAN_SELECTOR } from 'sql/parts/queryPlan/queryPlan.component';
 
 declare let QP;
@@ -35,8 +35,7 @@ export class QueryPlanEditor extends BaseEditor {
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IMetadataService private _metadataService: IMetadataService,
 		@IScriptingService private _scriptingService: IScriptingService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService,
-		@IBootstrapService private _bootstrapService: IBootstrapService
+		@IQueryEditorService private _queryEditorService: IQueryEditorService
 	) {
 		super(QueryPlanEditor.ID, telemetryService, themeService);
 	}
@@ -109,11 +108,11 @@ export class QueryPlanEditor extends BaseEditor {
 	 */
 	private bootstrapAngular(input: QueryPlanInput): void {
 		// Get the bootstrap params and perform the bootstrap
-		let params: QueryPlanParams = {
+		let params: IQueryPlanParams = {
 			planXml: input.planXml
 		};
 
-		let uniqueSelector = this._bootstrapService.bootstrap(
+		let uniqueSelector = this.instantiationService.invokeFunction(bootstrapAngular,
 			QueryPlanModule,
 			this.getContainer().getHTMLElement(),
 			QUERYPLAN_SELECTOR,
