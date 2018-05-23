@@ -118,6 +118,16 @@ actionRegistry.registerWorkbenchAction(
 
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
+		RunCurrentQueryKeyboardAction,
+		RunCurrentQueryKeyboardAction.ID,
+		RunCurrentQueryKeyboardAction.LABEL,
+		{ primary: KeyMod.Alt | KeyCode.KEY_X }
+	),
+	RunCurrentQueryKeyboardAction.LABEL
+);
+
+actionRegistry.registerWorkbenchAction(
+	new SyncActionDescriptor(
 		RunCurrentQueryWithActualPlanKeyboardAction,
 		RunCurrentQueryWithActualPlanKeyboardAction.ID,
 		RunCurrentQueryWithActualPlanKeyboardAction.LABEL
