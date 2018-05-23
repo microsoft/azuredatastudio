@@ -202,7 +202,8 @@ export default class MainController implements vscode.Disposable {
 			let flexModel = view.modelBuilder.flexContainer()
 				.withLayout({
 					flexFlow: 'column',
-					alignItems: 'flex-start'
+					alignItems: 'flex-start',
+					height: 500
 				}).withItems([
 					webview1, webview2
 				], { flex: '1 1 50%' })
@@ -224,7 +225,8 @@ export default class MainController implements vscode.Disposable {
 			let flexModel = view.modelBuilder.flexContainer()
 				.withLayout({
 					flexFlow: 'column',
-					alignItems: 'stretch'
+					alignItems: 'stretch',
+					height: '100%'
 				}).withItems([
 					webview1
 				], { flex: '1' })
