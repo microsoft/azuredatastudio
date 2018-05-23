@@ -14,19 +14,14 @@ import { EditorOptions } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 
 import { ModelViewInput } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
-import { Dialog } from 'sql/platform/dialog/dialogTypes';
-import { DialogPane } from 'sql/platform/dialog/dialogPane';
 
 export class ModelViewEditor extends BaseEditor {
 
 	public static ID: string = 'workbench.editor.modelViewEditor';
-	private _modelViewMap = new Map<string, HTMLElement>();
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IThemeService themeService: IThemeService,
-		@IBootstrapService private _bootstrapService: IBootstrapService
+		@IThemeService themeService: IThemeService
 	) {
 		super(ModelViewEditor.ID, telemetryService, themeService);
 	}
@@ -50,14 +45,7 @@ export class ModelViewEditor extends BaseEditor {
 		const parentElement = this.getContainer().getHTMLElement();
 		$(parentElement).clearChildren();
 
-		if (!this._modelViewMap.get(input.modelViewId)) {
-			let modelViewContainer = DOM.$('div.model-view-container');
-			let dialogPane = new DialogPane(input.title, input.modelViewId, () => undefined, this._bootstrapService);
-			dialogPane.createBody(modelViewContainer);
-			this._modelViewMap.set(input.modelViewId, modelViewContainer);
-		}
-		let element = this._modelViewMap.get(input.modelViewId);
-		DOM.append(parentElement, element);
+		DOM.append(parentElement, input.container);
 
 		return super.setInput(input, options);
 	}
