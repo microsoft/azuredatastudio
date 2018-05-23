@@ -14,6 +14,7 @@ import 'vs/css!./media/editData';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
 import { IGridDataRow, VirtualizedCollection } from 'angular2-slickgrid';
+
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import * as Services from 'sql/parts/grid/services/sharedServices';
 import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
@@ -22,8 +23,11 @@ import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDataGridActions';
 import { error } from 'sql/base/common/log';
 import { clone } from 'sql/base/common/objects';
+
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
@@ -408,12 +412,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		}, self.scrollTimeOutTime);
 	}
 
-	protected tryHandleKeyEvent(e): boolean {
+	protected tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {
 		let handled: boolean = false;
 		// If the esc key was pressed while in a create session
 		let currentNewRowIndex = this.dataSet.totalRows - 2;
 
-		if (e.keyCode === jQuery.ui.keyCode.ESCAPE && this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
+		if (e.keyCode === KeyCode.Escape && this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
 			// revert our last new row
 			this.removingNewRow = true;
 
@@ -423,7 +427,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					this.newRowVisible = false;
 				});
 			handled = true;
-		} else if (e.keyCode === jQuery.ui.keyCode.ESCAPE) {
+		} else if (e.keyCode === KeyCode.Escape) {
 			this.currentEditCellValue = null;
 			this.onRevertRow()(this.currentCell.row);
 			handled = true;
