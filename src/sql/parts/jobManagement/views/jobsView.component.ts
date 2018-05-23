@@ -73,7 +73,7 @@ export class JobsViewComponent implements AfterContentChecked {
 
 	private rowDetail: RowDetailView;
 	private filterPlugin: any;
-	private dataView: Slick.Data.DataView<any>;
+	private dataView: any;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 	private isVisible: boolean = false;
@@ -87,6 +87,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _tabHeight: number;
 	private filterStylingMap: { [columnName: string]: [any] ;} = {};
 	private filterStack = ['start'];
+	private filterValueMap: { [columnName: string]: string[] ;} = {};
 	private sortingStylingMap: { [columnName: string]: any; } = {};
 
 	constructor(
@@ -222,42 +223,73 @@ export class JobsViewComponent implements AfterContentChecked {
 							let lastAppliedStyle = this.filterStylingMap[args.column.name].pop();
 							this._table.grid.removeCellCssStyles(lastAppliedStyle[0]);
 						}
-						this.filterStylingMap[args.column.name] = null;
+						delete this.filterStylingMap[args.column.name];
 						let index = this.filterStack.indexOf(args.column.name, 0);
 						if (index > -1) {
 							this.filterStack.splice(index, 1);
+							delete this.filterValueMap[args.column.name];
 						}
-
-						let lastColStyle = this.filterStylingMap[this.filterStack[this.filterStack.length-1]];
-						for (let i = 0; i < lastColStyle.length; i++) {
-							this._table.grid.setCellCssStyles(lastColStyle[i][0], lastColStyle[i][1]);
+						// apply the previous filter styling
+						let currentItems = this.dataView.getFilteredItems();
+						let styledItems = this.filterValueMap[this.filterStack[this.filterStack.length-1]][1];
+						if (styledItems === currentItems) {
+							let lastColStyle = this.filterStylingMap[this.filterStack[this.filterStack.length-1]];
+							for (let i = 0; i < lastColStyle.length; i++) {
+								this._table.grid.setCellCssStyles(lastColStyle[i][0], lastColStyle[i][1]);
+							}
+						} else {
+							// style it all over again
+							let seenJobs = 0;
+							for (let i = 0; i < currentItems.length; i++) {
+								this._table.grid.removeCellCssStyles('error-row'+i.toString());
+								let item = this.dataView.getFilteredItems()[i];
+								if (item.lastRunOutcome === 'Failed') {
+									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
+									if (this.filterStack.indexOf(args.column.name) < 0) {
+										this.filterStack.push(args.column.name);
+										this.filterValueMap[args.column.name] = [filterValues];
+									}
+									// one expansion for the row and one for
+									// the error detail
+									seenJobs ++;
+									i++;
+								}
+								seenJobs++;
+							}
+							this.dataView.refresh();
+							this.filterValueMap[args.column.name].push(this.dataView.getFilteredItems());
+							this._table.grid.resetActiveCell();
 						}
 						if (this.filterStack.length === 0) {
 							this.filterStack = ['start'];
 						}
-					} else {
-						this.expandJobs(false);
 					}
 				} else {
 					let seenJobs = 0;
 					for (let i = 0; i < this.jobs.length; i++) {
 						this._table.grid.removeCellCssStyles('error-row'+i.toString());
-						let job = this.jobs[i];
 						let item = this.dataView.getItemByIdx(i);
+						// current filter
 						if (_.contains(filterValues, item[args.column.field])) {
-							if (item.lastRunOutcome === 'Failed') {
-								this.addToStyleHash(seenJobs, false, args.column.name);
-								if (this.filterStack.indexOf(args.column.name) < 0) {
-									this.filterStack.push(args.column.name);
+							// check all previous filters
+							if (this.checkPreviousFilters(item)) {
+								if (item.lastRunOutcome === 'Failed') {
+									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
+									if (this.filterStack.indexOf(args.column.name) < 0) {
+										this.filterStack.push(args.column.name);
+										this.filterValueMap[args.column.name] = [filterValues];
+									}
+									// one expansion for the row and one for
+									// the error detail
+									seenJobs ++;
+									i++;
 								}
-								// one expansion for the row and one for
-								// the error detail
-								seenJobs ++;
+								seenJobs++;
 							}
-							seenJobs++;
 						}
 					}
 					this.dataView.refresh();
+					this.filterValueMap[args.column.name].push(this.dataView.getFilteredItems());
 					this._table.grid.resetActiveCell();
 				}
 			} else {
@@ -320,7 +352,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		return hash;
 	}
 
-	private addToStyleHash(row: number, start: boolean, map: any, columnName?: string) {
+	private addToStyleHash(row: number, start: boolean, map: any, columnName: string) {
 		let hash : {
 			[index: number]: {
 			[id: string]: string;
@@ -402,6 +434,15 @@ export class JobsViewComponent implements AfterContentChecked {
 		return [failing, nonFailing];
 	}
 
+	private checkPreviousFilters(item): boolean {
+		for (let column in this.filterValueMap) {
+			if (!_.contains(this.filterValueMap[column][0], item[AgentJobUtilities.convertColNameToField(column)])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private isErrorRow(cell: HTMLElement) {
 		return cell.classList.contains('error-row');
 	}
@@ -448,10 +489,10 @@ export class JobsViewComponent implements AfterContentChecked {
 			let job = this.jobs[i];
 			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
 				this.expandJobRowDetails(i+expandedJobs.size);
-				this.addToStyleHash(i+expandedJobs.size, start, this.filterStylingMap);
+				this.addToStyleHash(i+expandedJobs.size, start, this.filterStylingMap, undefined);
 				this._agentViewComponent.setExpanded(job.jobId, 'Loading Error...');
 			} else if (job.lastRunOutcome === 0 && expandedJobs.get(job.jobId)) {
-				this.addToStyleHash(i+expansions, start, this.filterStylingMap);
+				this.addToStyleHash(i+expansions, start, this.filterStylingMap, undefined);
 				expansions++;
 			}
 		}
@@ -513,7 +554,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => {
-					return item1.status.localeCompare(item2.status);
+					return item1.currentExecutionStatus.localeCompare(item2.currentExecutionStatus);
 				}, isAscending);
 				break;
 			}
@@ -537,7 +578,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => {
-					return item1.schedule.localeCompare(item2.schedule);
+					return item1.hasSchedule.localeCompare(item2.hasSchedule);
 				}, isAscending);
 				break;
 			}
@@ -573,8 +614,8 @@ export class JobsViewComponent implements AfterContentChecked {
 				this._table.grid.removeCellCssStyles('error-row'+i.toString());
 			}
 		}
-		// add new style (do it dataview items instead of the jobs)
-		items = this.dataView.getItems();
+		// add new style to the items back again
+		items = this.filterStack.length > 1 ? this.dataView.getFilteredItems() : this.dataView.getItems();
 		for (let i = 0; i < items.length; i ++) {
 			let item = items[i];
 			if (item.lastRunOutcome === 'Failed') {
