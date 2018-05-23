@@ -568,8 +568,7 @@ export abstract class GridParentComponent {
 	}
 
 	keyEvent(e: KeyboardEvent): void {
-		let standardEvent = new StandardKeyboardEvent(e);
-		if (this.tryHandleKeyEvent(standardEvent)) {
+		if (this.tryHandleKeyEvent(new StandardKeyboardEvent(e))) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
