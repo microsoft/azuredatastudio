@@ -50,6 +50,7 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 
 			this._register(this._input);
 			this._register(this._input.onClicked(e => {
+				this.checked = this._input.checked;
 				this._onEventEmitter.fire({
 					eventType: ComponentEventType.onDidClick,
 					args: e
@@ -89,8 +90,12 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 		return this.getPropertyOrDefault<sqlops.RadioButtonProperties, boolean>((props) => props.checked, false);
 	}
 
+	public set checked(newValue: boolean) {
+		this.setPropertyFromUI<sqlops.RadioButtonProperties, boolean>((properties, value) => { properties.checked = value; }, newValue);
+	}
+
 	public set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.RadioButtonProperties, string>((properties, value) => { properties.checked = value; }, newValue);
+		this.setPropertyFromUI<sqlops.RadioButtonProperties, string>((properties, value) => { properties.value = value; }, newValue);
 	}
 
 	public get value(): string {

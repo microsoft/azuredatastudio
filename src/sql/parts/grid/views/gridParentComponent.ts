@@ -37,6 +37,7 @@ import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumn
 import { DragCellSelectionModel } from 'sql/base/browser/ui/table/plugins/dragCellSelectionModel.plugin';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export abstract class GridParentComponent {
 	// CONSTANTS
@@ -290,7 +291,7 @@ export abstract class GridParentComponent {
 
 	protected goToNextGrid() {
 		if (this.renderedDataSets.length > 0) {
-			let next  = this.activeGrid + 1;
+			let next = this.activeGrid + 1;
 			if (next >= this.renderedDataSets.length) {
 				next = 0;
 			}
@@ -568,9 +569,7 @@ export abstract class GridParentComponent {
 	}
 
 	keyEvent(e: KeyboardEvent): void {
-		let self = this;
-		let handled = self.tryHandleKeyEvent(e);
-		if (handled) {
+		if (this.tryHandleKeyEvent(new StandardKeyboardEvent(e))) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -583,12 +582,12 @@ export abstract class GridParentComponent {
 	 *
 	 * @protected
 	 * @abstract
-	 * @param {any} e
+	 * @param {StandardKeyboardEvent} e
 	 * @returns {boolean}
 	 *
 	 * @memberOf GridParentComponent
 	 */
-	protected abstract tryHandleKeyEvent(e): boolean;
+	protected abstract tryHandleKeyEvent(e: StandardKeyboardEvent): boolean;
 
 	resizeGrids(): void {
 		const self = this;

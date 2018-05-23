@@ -22,10 +22,12 @@ declare module 'sqlops' {
 		inputBox(): ComponentBuilder<InputBoxComponent>;
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
 		radioButton(): ComponentBuilder<RadioButtonComponent>;
+		webView(): ComponentBuilder<WebViewComponent>;
+		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
-		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
-		dashboardWebview(webviewId: string): ComponentBuilder<WebviewComponent>;
+		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent>;
+		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent>;
 		formContainer(): FormBuilder;
 	}
 
@@ -165,7 +167,7 @@ declare module 'sqlops' {
 		 */
 		alignContent?: string;
 
-		height? : number;
+		height? : number | string;
 	}
 
 	export interface FlexItemLayout {
@@ -182,12 +184,11 @@ declare module 'sqlops' {
 
 	export interface FormItemLayout {
 		horizontal: boolean;
-		width: number;
 		componentWidth: number;
 	}
 
 	export interface FormLayout {
-
+		width: number;
 	}
 
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
@@ -262,9 +263,19 @@ declare module 'sqlops' {
 		checked?: boolean;
 	}
 
+	export interface TextComponentProperties {
+		value?: string;
+	}
+
 	export interface DropDownProperties {
 		value?: string;
 		values?: string[];
+		editable?: boolean;
+	}
+
+	export interface WebViewProperties {
+		message?: any;
+		html?: string;
 	}
 
 	export interface ButtonProperties {
@@ -276,6 +287,10 @@ declare module 'sqlops' {
 		value: string;
 		actions?: ActionDescriptor[];
 		onDidActionClick: vscode.Event<ActionDescriptor>;
+	}
+
+	export interface TextComponent extends Component {
+		value: string;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
@@ -292,10 +307,16 @@ declare module 'sqlops' {
 		onChanged: vscode.Event<any>;
 	}
 
-	export interface DropDownComponent extends Component {
+	export interface DropDownComponent extends Component, DropDownProperties {
 		value: string;
 		values: string[];
 		onValueChanged: vscode.Event<any>;
+	}
+
+	export interface WebViewComponent extends Component {
+		html: string;
+		message: any;
+		onMessage: vscode.Event<any>;
 	}
 
 	export interface ButtonComponent extends Component {
@@ -303,11 +324,11 @@ declare module 'sqlops' {
 		onDidClick: vscode.Event<any>;
 	}
 
-	export interface WidgetComponent extends Component {
+	export interface DashboardWidgetComponent extends Component {
 		widgetId: string;
 	}
 
-	export interface WebviewComponent extends Component {
+	export interface DashboardWebviewComponent extends Component {
 		webviewId: string;
 	}
 
@@ -600,7 +621,7 @@ declare module 'sqlops' {
 				removePage(index: number): Thenable<void>;
 
 				/**
-				 * Go to the page at the given index in the pages array. 
+				 * Go to the page at the given index in the pages array.
 				 * @param index The index of the page to go to
 				 */
 				setCurrentPage(index: number): Thenable<void>;

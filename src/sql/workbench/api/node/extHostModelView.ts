@@ -59,6 +59,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	text(): sqlops.ComponentBuilder<sqlops.TextComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.TextComponent> = this.getComponentBuilder(new TextComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	radioButton(): sqlops.ComponentBuilder<sqlops.RadioButtonComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.RadioButtonComponent> = this.getComponentBuilder(new RadioButtonWrapper(this._proxy, this._handle, id), id);
@@ -69,6 +76,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 	checkBox(): sqlops.ComponentBuilder<sqlops.CheckBoxComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.CheckBoxComponent> = this.getComponentBuilder(new CheckBoxWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	webView(): sqlops.ComponentBuilder<sqlops.WebViewComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.WebViewComponent> = this.getComponentBuilder(new WebViewWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -87,16 +101,16 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
-	dashboardWidget(widgetId: string): sqlops.ComponentBuilder<sqlops.WidgetComponent> {
+	dashboardWidget(widgetId: string): sqlops.ComponentBuilder<sqlops.DashboardWidgetComponent> {
 		let id = this.getNextComponentId();
-		let builder = this.getComponentBuilder<sqlops.WidgetComponent>(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id), id);
+		let builder = this.getComponentBuilder<sqlops.DashboardWidgetComponent>(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	dashboardWebview(webviewId: string): sqlops.ComponentBuilder<sqlops.WebviewComponent> {
+	dashboardWebview(webviewId: string): sqlops.ComponentBuilder<sqlops.DashboardWebviewComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.WebviewComponent> = this.getComponentBuilder(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id), id);
+		let builder: ComponentBuilderImpl<sqlops.DashboardWebviewComponent> = this.getComponentBuilder(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -516,6 +530,34 @@ class CheckBoxWrapper extends ComponentWrapper implements sqlops.CheckBoxCompone
 	}
 }
 
+class WebViewWrapper extends ComponentWrapper implements sqlops.WebViewComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.WebView, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onMessage, new Emitter<any>());
+	}
+
+	public get message(): any {
+		return this.properties['message'];
+	}
+	public set message(v: any) {
+		this.setProperty('message', v);
+	}
+
+	public get html(): string {
+		return this.properties['html'];
+	}
+	public set html(v: string) {
+		this.setProperty('html', v);
+	}
+
+	public get onMessage(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onMessage);
+		return emitter && emitter.event;
+	}
+}
+
 class RadioButtonWrapper extends ComponentWrapper implements sqlops.RadioButtonComponent {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
@@ -557,6 +599,21 @@ class RadioButtonWrapper extends ComponentWrapper implements sqlops.RadioButtonC
 	}
 }
 
+class TextComponentWrapper extends ComponentWrapper implements sqlops.TextComponentProperties {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Text, id);
+		this.properties = {};
+	}
+
+	public get value(): string {
+		return this.properties['value'];
+	}
+	public set value(v: string) {
+		this.setProperty('value', v);
+	}
+}
+
 class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownComponent {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
@@ -577,6 +634,13 @@ class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownCompone
 	}
 	public set values(v: string[]) {
 		this.setProperty('values', v);
+	}
+
+	public get editable(): boolean {
+		return this.properties['editable'];
+	}
+	public set editable(v: boolean) {
+		this.setProperty('editable', v);
 	}
 
 	public get onValueChanged(): vscode.Event<any> {
