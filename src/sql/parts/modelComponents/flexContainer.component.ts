@@ -15,6 +15,8 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 
+import types = require('vs/base/common/types');
+
 class FlexItem {
 	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) {}
 }
@@ -68,10 +70,16 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 	public setLayout (layout: FlexLayout): void {
 		this._flexFlow = layout.flexFlow ? layout.flexFlow : '';
-		this._justifyContent= layout.justifyContent ? layout.justifyContent : '';
-		this._alignItems= layout.alignItems ? layout.alignItems : '';
-		this._alignContent= layout.alignContent ? layout.alignContent : '';
-		this._height= layout.height ? layout.height + 'px' : '100%';
+		this._justifyContent = layout.justifyContent ? layout.justifyContent : '';
+		this._alignItems = layout.alignItems ? layout.alignItems : '';
+		this._alignContent = layout.alignContent ? layout.alignContent : '';
+		if (types.isUndefinedOrNull(layout.height)) {
+			this._height = '';
+		} else if (types.isNumber(layout.height)) {
+			this._height = layout.height + 'px';
+		} else {
+			this._height = layout.height;
+		}
 		this.layout();
 	}
 

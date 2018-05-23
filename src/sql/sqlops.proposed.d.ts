@@ -167,7 +167,7 @@ declare module 'sqlops' {
 		 */
 		alignContent?: string;
 
-		height? : number;
+		height? : number | string;
 	}
 
 	export interface FlexItemLayout {
