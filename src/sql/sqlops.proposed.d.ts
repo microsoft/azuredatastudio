@@ -183,12 +183,11 @@ declare module 'sqlops' {
 
 	export interface FormItemLayout {
 		horizontal: boolean;
-		width: number;
 		componentWidth: number;
 	}
 
 	export interface FormLayout {
-
+		width: number;
 	}
 
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
