@@ -156,6 +156,9 @@ export abstract class ContainerBase<T> extends ComponentBase {
 
 	/// IComponent container-related implementation
 	public addToContainer(componentDescriptor: IComponentDescriptor, config: any): void {
+		if (this.items.some(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type)) {
+			return;
+		}
 		this.items.push(new ItemDescriptor(componentDescriptor, config));
 		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.registerEventHandler(event => {
 			if (event.eventType === ComponentEventType.validityChanged) {

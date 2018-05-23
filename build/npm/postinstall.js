@@ -35,7 +35,8 @@ const extensions = [
 	'merge-conflict',
 	'insights-default',
 	'account-provider-azure',
-	'agent'
+	'agent',
+	'profiler'
 ];
 
 extensions.forEach(extension => yarnInstall(`extensions/${extension}`));
