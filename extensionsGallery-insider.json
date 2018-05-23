@@ -453,7 +453,7 @@
 										],
 										"properties": [
 											{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value": "Microsoft.mssql" },
-											{ "key": "Microsoft.VisualStudio.Code.Engine", "value": "*" }
+											{ "key": "Microsoft.VisualStudio.Code.Engine", "value": ">=0.30.2" }
 										]
 									}
 								],
