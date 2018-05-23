@@ -28,12 +28,12 @@ import * as vscode from 'vscode';
 import * as nls from 'vs/nls';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/common/theme/styler';
-import { JobHistoryComponent } from './jobHistory.component';
-import { AgentViewComponent } from '../agent/agentView.component';
+import { JobHistoryComponent } from 'src/sql/parts/jobManagement/views/jobHistory.component';
+import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
-import { AgentJobUtilities } from '../common/agentJobUtilities';
-import { HeaderFilter } from '../../../base/browser/ui/table/plugins/headerFilter.plugin';
+import { AgentJobUtilities } from 'sql/parts/jobManagement/common/agentJobUtilities';
+import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { BaseFocusDirectionTerminalAction } from 'vs/workbench/parts/terminal/electron-browser/terminalActions';
 
 
