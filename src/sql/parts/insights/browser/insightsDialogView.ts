@@ -168,15 +168,18 @@ export class InsightsDialogView extends Modal {
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
 
+		const itemsHeaderTitle = nls.localize("insights.dialog.items", "Items");
+		const itemsDetailHeaderTitle = nls.localize("insights.dialog.itemDetails", "Item Details");
+
 		this.panelView = this._instantiationService.createInstance(PanelViewlet, 'insightsView', { showHeaderInTitleWhenSingleView: true });
 		let panelCreation = this.panelView.create($(this._container));
 		this._topTableData = new TableDataView();
 		this._bottomTableData = new TableDataView();
-		let topTableView = this._instantiationService.createInstance(TableCollapsibleView, nls.localize("insights.dialog.items", "Items"), { ariaHeaderLabel: 'title' }, this._topTableData, this._topColumns, { forceFitColumns: true }) as TableCollapsibleView<ListResource>;
+		let topTableView = this._instantiationService.createInstance(TableCollapsibleView, itemsHeaderTitle, { ariaHeaderLabel: itemsHeaderTitle }, this._topTableData, this._topColumns, { forceFitColumns: true }) as TableCollapsibleView<ListResource>;
 		this._topTable = topTableView.table;
 		topTableView.addContainerClass('insights');
 		this._topTable.setSelectionModel(new RowSelectionModel<ListResource>());
-		let bottomTableView = this._instantiationService.createInstance(TableCollapsibleView, nls.localize("insights.dialog.itemDetails", "Item Details"), { ariaHeaderLabel: 'title' }, this._bottomTableData, this._bottomColumns, { forceFitColumns: true }) as TableCollapsibleView<ListResource>;
+		let bottomTableView = this._instantiationService.createInstance(TableCollapsibleView, itemsDetailHeaderTitle, { ariaHeaderLabel: itemsDetailHeaderTitle }, this._bottomTableData, this._bottomColumns, { forceFitColumns: true }) as TableCollapsibleView<ListResource>;
 		this._bottomTable = bottomTableView.table;
 		this._bottomTable.setSelectionModel(new RowSelectionModel<ListResource>());
 

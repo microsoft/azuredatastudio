@@ -54,8 +54,7 @@ export class TableCollapsibleView<T> extends ViewletPanel {
 	}
 
 	protected renderHeader(container: HTMLElement): void {
-		const titleDiv = $('div.title').appendTo(container);
-		$('span').text(this._viewTitle).appendTo(titleDiv);
+		container.innerText = this._viewTitle;
 	}
 
 	protected renderBody(container: HTMLElement): void {
