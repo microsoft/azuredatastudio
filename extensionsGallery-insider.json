@@ -428,7 +428,7 @@
 											"files": [
 											{
 												"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-												"source": "https://sqlopsextensions.blob.core.windows.net/march-extensions/profiler/agent-0.27.0.vs"
+												"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.1.0.vsix"
 											},
 											{
 												"assetType": "Microsoft.VisualStudio.Services.Links.Source",
