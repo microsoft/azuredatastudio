@@ -35,6 +35,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	public activate(): Promise<boolean> {
+		const webviewExampleHtml = fs.readFileSync(path.join(__dirname, 'webviewExample.html')).toString();
 		const buttonHtml = fs.readFileSync(path.join(__dirname, 'button.html')).toString();
 		const counterHtml = fs.readFileSync(path.join(__dirname, 'counter.html')).toString();
 		this.registerSqlServicesModelView();
@@ -48,8 +49,12 @@ export default class MainController implements vscode.Disposable {
 			this.openDialog();
 		});
 
-		vscode.commands.registerCommand('sqlservices.openEditor', () => {
-			this.openEditor(buttonHtml, counterHtml);
+		vscode.commands.registerCommand('sqlservices.openEditor1', () => {
+			this.openEditor1(buttonHtml, counterHtml);
+		});
+
+		vscode.commands.registerCommand('sqlservices.openEditor2', () => {
+			this.openEditor2(webviewExampleHtml);
 		});
 
 		return Promise.resolve(true);
@@ -175,8 +180,8 @@ export default class MainController implements vscode.Disposable {
 		sqlops.window.modelviewdialog.openDialog(dialog);
 	}
 
-	private openEditor(html1: string, html2: string): void {
-		let editor = sqlops.workspace.createModelViewEditor('Test Editor view');
+	private openEditor1(html1: string, html2: string): void {
+		let editor = sqlops.workspace.createModelViewEditor('Editor view1');
 		editor.registerContent(async view => {
 			let count = 0;
 			let webview1 = view.modelBuilder.webView()
@@ -197,10 +202,32 @@ export default class MainController implements vscode.Disposable {
 			let flexModel = view.modelBuilder.flexContainer()
 				.withLayout({
 					flexFlow: 'column',
-					alignItems: 'left'
+					alignItems: 'flex-start'
 				}).withItems([
 					webview1, webview2
 				], { flex: '1 1 50%' })
+				.component();
+			await view.initializeModel(flexModel);
+		});
+		editor.openEditor();
+	}
+
+	private openEditor2(html: string): void {
+		let editor = sqlops.workspace.createModelViewEditor('Editor view2');
+		editor.registerContent(async view => {
+			let webview1 = view.modelBuilder.webView()
+				.withProperties({
+					html: html
+				})
+				.component();
+
+			let flexModel = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'column',
+					alignItems: 'stretch'
+				}).withItems([
+					webview1
+				], { flex: '1' })
 				.component();
 			await view.initializeModel(flexModel);
 		});
