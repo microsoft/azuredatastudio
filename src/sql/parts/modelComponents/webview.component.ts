@@ -12,11 +12,14 @@ import * as sqlops from 'sqlops';
 import Event, { Emitter } from 'vs/base/common/event';
 import { Webview } from 'vs/workbench/parts/html/browser/webview';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
-import { Parts } from 'vs/workbench/services/part/common/partService';
+import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 @Component({
 	template: '',
@@ -33,7 +36,12 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef) {
+		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(IPartService) private partService: IPartService,
+		@Inject(IThemeService) private themeService: IThemeService,
+		@Inject(IEnvironmentService) private environmentService: IEnvironmentService,
+		@Inject(IContextViewService) private contextViewService: IContextViewService
+	) {
 		super(changeRef);
 	}
 
@@ -47,10 +55,10 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 	private _createWebview(): void {
 		this._webview = this._register(new Webview(this._el.nativeElement,
-			this._commonService.partService.getContainer(Parts.EDITOR_PART),
-			this._commonService.themeService,
-			this._commonService.environmentService,
-			this._commonService.contextViewService,
+			this.partService.getContainer(Parts.EDITOR_PART),
+			this.themeService,
+			this.environmentService,
+			this.contextViewService,
 			undefined,
 			undefined,
 			{
@@ -67,7 +75,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 			});
 		}));
 
-		this._webview.style(this._commonService.themeService.getTheme());
+		this._webview.style(this.themeService.getTheme());
 		this.setHtml();
 	}
 

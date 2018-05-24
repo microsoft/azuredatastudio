@@ -6,17 +6,21 @@
 'use strict';
 
 import 'vs/css!./media/dialogModal';
+
 import { NgModuleRef } from '@angular/core';
+
 import { IModalDialogStyles } from 'sql/base/browser/ui/modal/modal';
 import { Dialog, DialogTab } from 'sql/platform/dialog/dialogTypes';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { DialogModule } from 'sql/platform/dialog/dialog.module';
 import { DialogComponentParams } from 'sql/platform/dialog/dialogContainer.component';
+
 import { Builder } from 'vs/base/browser/builder';
 import { IThemable } from 'vs/platform/theme/common/styler';
 import { Disposable } from 'vs/base/common/lifecycle';
 import Event, { Emitter } from 'vs/base/common/event';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class DialogPane extends Disposable implements IThemable {
 	private _tabbedPanel: TabbedPanel;
@@ -35,7 +39,7 @@ export class DialogPane extends Disposable implements IThemable {
 		private _title: string,
 		private _content: string | DialogTab[],
 		private _validityChangedCallback: (valid: boolean) => void,
-		private _bootstrapService: IBootstrapService
+		private _instantiationService: IInstantiationService
 	) {
 		super();
 		this._tabs = [];
@@ -80,7 +84,7 @@ export class DialogPane extends Disposable implements IThemable {
 	 * Bootstrap angular for the dialog's model view controller with the given model view ID
 	 */
 	private initializeModelViewContainer(bodyContainer: HTMLElement, modelViewId: string, tab?: DialogTab) {
-		this._bootstrapService.bootstrap(
+		this._instantiationService.invokeFunction(bootstrapAngular,
 			DialogModule,
 			bodyContainer,
 			'dialog-modelview-container',

@@ -10,6 +10,7 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { Dimension } from 'vs/workbench/services/part/common/partService';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { ModelViewInput } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
 

@@ -13,11 +13,12 @@ import Event, { Emitter } from 'vs/base/common/event';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { attachButtonStyler } from 'sql/common/theme/styler';
 import { Button } from 'sql/base/browser/ui/button/button';
+
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { attachListStyler } from 'vs/platform/theme/common/styler';
 
 @Component({
 	selector: 'button',
@@ -32,8 +33,9 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
+	) {
 		super(changeRef);
 	}
 
@@ -49,7 +51,7 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 			this._button = new Button(this._inputContainer.nativeElement);
 
 			this._register(this._button);
-			this._register(attachButtonStyler(this._button, this._commonService.themeService, {
+			this._register(attachButtonStyler(this._button, this.themeService, {
 				buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND
 			}));
 			this._register(this._button.onDidClick(e => {

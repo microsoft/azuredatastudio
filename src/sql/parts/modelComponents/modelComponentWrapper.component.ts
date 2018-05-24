@@ -13,12 +13,11 @@ import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost
 import { error } from 'sql/base/common/log';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IComponent, IComponentConfig, IComponentDescriptor, IModelStore, COMPONENT_CONFIG } from './interfaces';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
 import { Action } from 'vs/base/common/actions';
@@ -53,22 +52,22 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
 		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
-		@Inject(forwardRef(() => Injector)) private _injector: Injector
+		@Inject(forwardRef(() => Injector)) private _injector: Injector,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super();
 	}
 
 	ngOnInit() {
 		let self = this;
-		this._register(self._bootstrap.themeService.onDidColorThemeChange((event: IColorTheme) => {
+		this._register(self.themeService.onDidColorThemeChange((event: IColorTheme) => {
 			self.updateTheme(event);
 		}));
 	}
 
 	ngAfterViewInit() {
-		this.updateTheme(this._bootstrap.themeService.getColorTheme());
+		this.updateTheme(this.themeService.getColorTheme());
 		if (this.componentHost) {
 			this.loadComponent();
 		}

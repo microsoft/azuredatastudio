@@ -10,7 +10,7 @@ import { Modal, IModalOptions } from 'sql/base/browser/ui/modal/modal';
 import { attachModalDialogStyler } from 'sql/common/theme/styler';
 import { Dialog, DialogButton } from 'sql/platform/dialog/dialogTypes';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+
 import { Builder } from 'vs/base/browser/builder';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -23,6 +23,7 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { localize } from 'vs/nls';
 import Event, { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -41,7 +42,7 @@ export class DialogModal extends Modal {
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IBootstrapService private _bootstrapService: IBootstrapService
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(_dialog.title, name, partService, telemetryService, contextKeyService, options);
 	}
@@ -99,7 +100,7 @@ export class DialogModal extends Modal {
 		});
 
 		this._dialogPane = new DialogPane(this._dialog.title, this._dialog.content,
-			valid => this._dialog.notifyValidityChanged(valid), this._bootstrapService);
+			valid => this._dialog.notifyValidityChanged(valid), this._instantiationService);
 		this._dialogPane.createBody(body);
 	}
 

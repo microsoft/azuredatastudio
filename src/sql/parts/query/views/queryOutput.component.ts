@@ -12,8 +12,8 @@ import 'vs/css!sql/parts/grid/media/slick.grid';
 import 'vs/css!sql/parts/grid/media/slickGrid';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, ViewChild } from '@angular/core';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { QueryComponent } from 'sql/parts/grid/views/query/query.component';
 import { QueryPlanComponent } from 'sql/parts/queryPlan/queryPlan.component';
 import { TopOperationsComponent } from 'sql/parts/queryPlan/topOperations.component';
@@ -61,16 +61,13 @@ export class QueryOutputComponent implements OnDestroy {
 		showTabsWhenOne: false
 	};
 
-	public queryParameters: QueryComponentParams;
-
 	private _disposables: Array<IDisposable> = [];
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService
+		@Inject(IBootstrapParams) public queryParameters: IQueryComponentParams
 	) {
-		this.queryParameters = bootstrapService.getBootstrapParams(el.nativeElement.tagName);
 	}
 
 	/**

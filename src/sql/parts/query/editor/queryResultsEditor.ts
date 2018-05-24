@@ -21,10 +21,11 @@ import * as types from 'vs/base/common/types';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
-import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { QueryOutputModule } from 'sql/parts/query/views/queryOutput.module';
 import { QUERY_OUTPUT_SELECTOR } from 'sql/parts/query/views/queryOutput.component';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const RESULTS_GRID_DEFAULTS = {
 	cellPadding: [6, 10, 5],
@@ -99,8 +100,8 @@ export class QueryResultsEditor extends BaseEditor {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IBootstrapService private _bootstrapService: IBootstrapService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(QueryResultsEditor.ID, telemetryService, themeService);
 		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
@@ -168,8 +169,8 @@ export class QueryResultsEditor extends BaseEditor {
 		// Note: pass in input so on disposal this is cleaned up.
 		// Otherwise many components will be left around and be subscribed
 		// to events from the backing data service
-		let params: QueryComponentParams = { dataService: dataService };
-		this._bootstrapService.bootstrap(
+		let params: IQueryComponentParams = { dataService: dataService };
+		this._instantiationService.invokeFunction(bootstrapAngular,
 			QueryOutputModule,
 			this.getContainer().getHTMLElement(),
 			QUERY_OUTPUT_SELECTOR,
