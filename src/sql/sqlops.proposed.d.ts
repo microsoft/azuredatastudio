@@ -666,7 +666,7 @@ declare module 'sqlops' {
 		/**
 		 * Create a new model view editor
 		 */
-		export function createModelViewEditor(title: string): ModelViewEditor;
+		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions): ModelViewEditor;
 
 		export interface ModelViewEditor extends window.modelviewdialog.ModelViewPanel {
 
@@ -675,5 +675,12 @@ declare module 'sqlops' {
 			 */
 			openEditor(position?: vscode.ViewColumn): Thenable<void>;
 		}
+	}
+
+	export interface ModelViewEditorOptions {
+		/**
+		 * Should the model view editor's context be kept around even when the editor is no longer visible? It is false by default
+		 */
+		readonly retainContextWhenHidden?: boolean;
 	}
 }

@@ -17,6 +17,7 @@ import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 import { ModelViewInput } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
 
 import * as vscode from 'vscode';
+import * as sqlops from 'sqlops';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape {
@@ -31,20 +32,20 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	constructor(
 		context: IExtHostContext,
-		@IInstantiationService instatiationService: IInstantiationService,
+		@IInstantiationService private _instatiationService: IInstantiationService,
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService
 	) {
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModelViewDialog);
-		this._dialogService = new CustomDialogService(instatiationService);
+		this._dialogService = new CustomDialogService(_instatiationService);
 	}
 
 	public dispose(): void {
 		throw new Error('Method not implemented.');
 	}
 
-	public $openEditor(modelViewId: string, title: string, position?: vscode.ViewColumn): Thenable<void> {
+	public $openEditor(modelViewId: string, title: string, options?: sqlops.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void> {
 		return new Promise<void>((resolve, reject) => {
-			let input = new ModelViewInput(title, modelViewId);
+			let input = this._instatiationService.createInstance(ModelViewInput, title, modelViewId, options);
 			let editorOptions = {
 				preserveFocus: true,
 				pinned: true
