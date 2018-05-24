@@ -42,7 +42,7 @@ export function bootstrapAngular<T>(service: IInstantiationService, moduleType: 
 		const providers: Provider = [];
 
 		_util.serviceIds.forEach(id => {
-			providers.push({ provide: id, useFactory: () => (<any>service)._getOrCreateServiceInstance(id)});
+			providers.push({ provide: id, useFactory: () => (<any>service)._getOrCreateServiceInstance(id) });
 		});
 
 		platform = platformBrowserDynamic(providers);
