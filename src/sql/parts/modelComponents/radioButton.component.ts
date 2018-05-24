@@ -18,7 +18,7 @@ import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 @Component({
-	selector: 'radioButton',
+	selector: 'modelview-radioButton',
 	template: `
 		<div #input class="modelview-radiobutton-container">
 

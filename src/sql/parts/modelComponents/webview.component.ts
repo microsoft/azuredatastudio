@@ -23,7 +23,7 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 
 @Component({
 	template: '',
-	selector: 'webview-component'
+	selector: 'modelview-webview-component'
 })
 export default class WebViewComponent extends ComponentBase implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;

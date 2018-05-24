@@ -23,7 +23,7 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 
 @Component({
-	selector: 'dropdown',
+	selector: 'modelview-dropdown',
 	template: `
 
 	<div>
