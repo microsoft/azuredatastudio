@@ -22,10 +22,12 @@ declare module 'sqlops' {
 		inputBox(): ComponentBuilder<InputBoxComponent>;
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
 		radioButton(): ComponentBuilder<RadioButtonComponent>;
+		webView(): ComponentBuilder<WebViewComponent>;
+		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
-		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
-		dashboardWebview(webviewId: string): ComponentBuilder<WebviewComponent>;
+		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent>;
+		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent>;
 		formContainer(): FormBuilder;
 	}
 
@@ -165,7 +167,7 @@ declare module 'sqlops' {
 		 */
 		alignContent?: string;
 
-		height? : number;
+		height? : number | string;
 	}
 
 	export interface FlexItemLayout {
@@ -182,12 +184,11 @@ declare module 'sqlops' {
 
 	export interface FormItemLayout {
 		horizontal: boolean;
-		width: number;
 		componentWidth: number;
 	}
 
 	export interface FormLayout {
-
+		width: number;
 	}
 
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
@@ -262,9 +263,19 @@ declare module 'sqlops' {
 		checked?: boolean;
 	}
 
+	export interface TextComponentProperties {
+		value?: string;
+	}
+
 	export interface DropDownProperties {
 		value?: string;
 		values?: string[];
+		editable?: boolean;
+	}
+
+	export interface WebViewProperties {
+		message?: any;
+		html?: string;
 	}
 
 	export interface ButtonProperties {
@@ -276,6 +287,10 @@ declare module 'sqlops' {
 		value: string;
 		actions?: ActionDescriptor[];
 		onDidActionClick: vscode.Event<ActionDescriptor>;
+	}
+
+	export interface TextComponent extends Component {
+		value: string;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
@@ -292,10 +307,16 @@ declare module 'sqlops' {
 		onChanged: vscode.Event<any>;
 	}
 
-	export interface DropDownComponent extends Component {
+	export interface DropDownComponent extends Component, DropDownProperties {
 		value: string;
 		values: string[];
 		onValueChanged: vscode.Event<any>;
+	}
+
+	export interface WebViewComponent extends Component {
+		html: string;
+		message: any;
+		onMessage: vscode.Event<any>;
 	}
 
 	export interface ButtonComponent extends Component {
@@ -303,11 +324,11 @@ declare module 'sqlops' {
 		onDidClick: vscode.Event<any>;
 	}
 
-	export interface WidgetComponent extends Component {
+	export interface DashboardWidgetComponent extends Component {
 		widgetId: string;
 	}
 
-	export interface WebviewComponent extends Component {
+	export interface DashboardWebviewComponent extends Component {
 		webviewId: string;
 	}
 
@@ -396,6 +417,18 @@ declare module 'sqlops' {
 			 */
 			export function closeDialog(dialog: Dialog): void;
 
+			/**
+			 * Create a wizard page with the given title, for inclusion in a wizard
+			 * @param title The title of the page
+			 */
+			export function createWizardPage(title: string): WizardPage;
+
+			/**
+			 * Create a wizard with the given title and pages
+			 * @param title The title of the wizard
+			 */
+			export function createWizard(title: string): Wizard;
+
 			export interface ModelViewPanel {
 				/**
 				 * Register model view content for the dialog.
@@ -407,6 +440,16 @@ declare module 'sqlops' {
 				 * Returns the model view content if registered. Returns undefined if model review is not registered
 				 */
 				readonly modelView: ModelView;
+
+				/**
+				 * Whether the panel's content is valid
+				 */
+				readonly valid: boolean;
+
+				/**
+				 * Fired whenever the panel's valid property changes
+				 */
+				readonly onValidityChanged: vscode.Event<boolean>;
 			}
 
 			// Model view dialog classes
@@ -436,16 +479,6 @@ declare module 'sqlops' {
 				 * Any additional buttons that should be displayed
 				 */
 				customButtons: Button[];
-
-				/**
-				 * Whether the dialog's content is valid
-				 */
-				readonly valid: boolean;
-
-				/**
-				 * Fired whenever the dialog's valid property changes
-				 */
-				readonly onValidityChanged: vscode.Event<boolean>;
 			}
 
 			export interface DialogTab extends ModelViewPanel {
@@ -480,6 +513,128 @@ declare module 'sqlops' {
 				 * Raised when the button is clicked
 				 */
 				readonly onClick: vscode.Event<void>;
+			}
+
+			export interface WizardPageChangeInfo {
+				/**
+				 * The page number that the wizard changed from
+				 */
+				lastPage: number,
+
+				/**
+				 * The new page number
+				 */
+				newPage: number
+			}
+
+			export interface WizardPage extends ModelViewPanel {
+				/**
+				 * The title of the page
+				 */
+				title: string;
+
+				/**
+				 * A string giving the ID of the page's model view content
+				 */
+				content: string;
+
+				/**
+				 * Any additional buttons that should be displayed while the page is open
+				 */
+				customButtons: Button[];
+
+				/**
+				 * Whether the page is enabled. If the page is not enabled, the user will not be
+				 * able to advance to it. Defaults to true.
+				 */
+				enabled: boolean;
+			}
+
+			export interface Wizard {
+				/**
+				 * The title of the wizard
+				 */
+				title: string,
+
+				/**
+				 * The wizard's pages. Pages can be added/removed while the dialog is open by using
+				 * the addPage and removePage methods
+				 */
+				pages: WizardPage[];
+
+				/**
+				 * The index in the pages array of the active page, or undefined if the wizard is
+				 * not currently visible
+				 */
+				readonly currentPage: number;
+
+				/**
+				 * The done button
+				 */
+				doneButton: Button;
+
+				/**
+				 * The cancel button
+				 */
+				cancelButton: Button;
+
+				/**
+				 * The generate script button
+				 */
+				generateScriptButton: Button;
+
+				/**
+				 * The next button
+				 */
+				nextButton: Button;
+
+				/**
+				 * The back button
+				 */
+				backButton: Button;
+
+				/**
+				 * Any additional buttons that should be displayed for all pages of the dialog. If
+				 * buttons are needed for specific pages they can be added using the customButtons
+				 * property on each page.
+				 */
+				customButtons: Button[];
+
+				/**
+				 * Event fired when the wizard's page changes, containing information about the
+				 * previous page and the new page
+				 */
+				onPageChanged: vscode.Event<WizardPageChangeInfo>;
+
+				/**
+				 * Add a page to the wizard at the given index
+				 * @param page The page to add
+				 * @param index The index in the pages array to add the page at, or undefined to
+				 * add it at the end
+				 */
+				addPage(page: WizardPage, index?: number): Thenable<void>;
+
+				/**
+				 * Remove the page at the given index from the wizard
+				 * @param index The index in the pages array to remove
+				 */
+				removePage(index: number): Thenable<void>;
+
+				/**
+				 * Go to the page at the given index in the pages array.
+				 * @param index The index of the page to go to
+				 */
+				setCurrentPage(index: number): Thenable<void>;
+
+				/**
+				 * Open the wizard. Does nothing if the wizard is already open.
+				 */
+				open(): Thenable<void>;
+
+				/**
+				 * Close the wizard. Does nothing if the wizard is not open.
+				 */
+				close(): Thenable<void>;
 			}
 		}
 	}

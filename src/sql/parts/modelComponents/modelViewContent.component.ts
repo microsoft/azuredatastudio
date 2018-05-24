@@ -24,7 +24,7 @@ import { ViewBase } from 'sql/parts/modelComponents/viewBase';
 @Component({
 	selector: 'modelview-content',
 	template: `
-		<div *ngIf="rootDescriptor">
+		<div *ngIf="rootDescriptor" style="width: 100%; height: 100%;">
 			<model-component-wrapper [descriptor]="rootDescriptor" [modelStore]="modelStore">
 			</model-component-wrapper>
 		</div>

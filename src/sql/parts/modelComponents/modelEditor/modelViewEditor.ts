@@ -2,6 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import 'vs/css!./modelViewEditor';
+
 import { Builder, $ } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -50,8 +52,7 @@ export class ModelViewEditor extends BaseEditor {
 
 		if (!this._modelViewMap.get(input.modelViewId)) {
 			let modelViewContainer = DOM.$('div.model-view-container');
-			let dialog = new Dialog(input.title, input.modelViewId);
-			let dialogPane = new DialogPane(dialog, this._bootstrapService);
+			let dialogPane = new DialogPane(input.title, input.modelViewId, () => undefined, this._bootstrapService);
 			dialogPane.createBody(modelViewContainer);
 			this._modelViewMap.set(input.modelViewId, modelViewContainer);
 		}
