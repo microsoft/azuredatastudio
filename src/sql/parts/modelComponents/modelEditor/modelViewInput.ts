@@ -10,6 +10,8 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
+
+import * as sqlops from 'sqlops';
 export class ModelViewInput extends EditorInput {
 
 	public static ID: string = 'workbench.editorinputs.ModelViewEditorInput';
@@ -17,7 +19,8 @@ export class ModelViewInput extends EditorInput {
 	private _dialogPane: DialogPane;
 
 	constructor(private _title: string, private _modelViewId: string,
-		@IBootstrapService private _bootstrapService: IBootstrapService
+		private _options: sqlops.ModelViewEditorOptions,
+		@IBootstrapService private _bootstrapService: IBootstrapService,
 	) {
 		super();
 	}
@@ -49,6 +52,14 @@ export class ModelViewInput extends EditorInput {
 			this._dialogPane.createBody(this._container);
 		}
 		return this._container;
+	}
+
+	public get dialogPane(): DialogPane {
+		return this._dialogPane;
+	}
+
+	public get options(): sqlops.ModelViewEditorOptions {
+		return this._options;
 	}
 
 	public dispose(): void {

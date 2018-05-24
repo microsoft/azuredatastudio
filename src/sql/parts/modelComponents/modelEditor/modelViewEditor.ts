@@ -2,8 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./modelViewEditor';
-
 import { Builder, $ } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -19,6 +17,8 @@ export class ModelViewEditor extends BaseEditor {
 
 	public static ID: string = 'workbench.editor.modelViewEditor';
 
+	private _editorFrame: HTMLElement;
+
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService
@@ -30,6 +30,7 @@ export class ModelViewEditor extends BaseEditor {
 	 * Called to create the editor in the parent builder.
 	 */
 	public createEditor(parent: Builder): void {
+		this._editorFrame = parent.getHTMLElement();
 	}
 
 	/**
@@ -38,16 +39,43 @@ export class ModelViewEditor extends BaseEditor {
 	public focus(): void {
 	}
 
-	public setInput(input: ModelViewInput, options?: EditorOptions): TPromise<void, any> {
+	async setInput(input: ModelViewInput, options?: EditorOptions): TPromise<void, any> {
 		if (this.input && this.input.matches(input)) {
 			return TPromise.as(undefined);
 		}
+
 		const parentElement = this.getContainer().getHTMLElement();
-		$(parentElement).clearChildren();
+		if (this.input instanceof ModelViewInput) {
+			if (this.input.container) {
+				if (this.input.options && this.input.options.retainContextWhenHidden) {
+					this.input.container.style.visibility = 'hidden';
+				} else {
+					parentElement.removeChild(this.input.container);
+				}
+			}
+		}
 
-		DOM.append(parentElement, input.container);
+		if (!parentElement.contains(input.container)) {
+			parentElement.appendChild(input.container);
+		}
+		input.container.style.visibility = 'visible';
 
-		return super.setInput(input, options);
+		await super.setInput(input, options);
+		this.doUpdateContainer();
+	}
+
+	private doUpdateContainer() {
+		const modelViewContainer = this.input && (this.input as ModelViewInput).container;
+		if (modelViewContainer) {
+			const frameRect = this._editorFrame.getBoundingClientRect();
+			const containerRect = modelViewContainer.parentElement.getBoundingClientRect();
+
+			modelViewContainer.style.position = 'absolute';
+			modelViewContainer.style.top = `${frameRect.top}px`;
+			modelViewContainer.style.left = `${frameRect.left - containerRect.left}px`;
+			modelViewContainer.style.width = `${frameRect.width}px`;
+			modelViewContainer.style.height = `${frameRect.height}px`;
+		}
 	}
 
 	/**
@@ -55,7 +83,12 @@ export class ModelViewEditor extends BaseEditor {
 	 * To be called when the container of this editor changes size.
 	 */
 	public layout(dimension: Dimension): void {
-
+		if (this.input instanceof ModelViewInput) {
+			if (this.input.container && this.input.dialogPane) {
+				this.doUpdateContainer();
+				// todo: layout this.input.dialogPane
+			}
+		}
 	}
 
 }

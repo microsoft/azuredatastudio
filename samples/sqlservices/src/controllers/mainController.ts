@@ -44,7 +44,7 @@ export default class MainController implements vscode.Disposable {
 			vscode.window.showInformationMessage(`Clicked from profile ${profile.serverName}.${profile.databaseName}`);
 		});
 
-		vscode.commands.registerCommand('mssql.openDialog', () =>  {
+		vscode.commands.registerCommand('sqlservices.openDialog', () =>  {
 			this.openDialog();
 		});
 
@@ -170,7 +170,7 @@ export default class MainController implements vscode.Disposable {
 						title: 'Options'
 				}], {
 						horizontal: false,
-						width: 500,
+						//width: 500,
 						componentWidth: 400
 							}).component();
 			await view.initializeModel(formModel);
@@ -199,7 +199,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private openEditorWithWebview(html1: string, html2: string): void {
-		let editor = sqlops.workspace.createModelViewEditor('Editor view1');
+		let editor = sqlops.workspace.createModelViewEditor('Editor view1', { retainContextWhenHidden: true });
 		editor.registerContent(async view => {
 			let count = 0;
 			let webview1 = view.modelBuilder.webView()
