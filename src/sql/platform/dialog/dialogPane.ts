@@ -84,7 +84,7 @@ export class DialogPane extends Disposable implements IThemable {
 	 * Bootstrap angular for the dialog's model view controller with the given model view ID
 	 */
 	private initializeModelViewContainer(bodyContainer: HTMLElement, modelViewId: string, tab?: DialogTab) {
-		this._instantiationService.invokeFunction(bootstrapAngular,
+		bootstrapAngular(this._instantiationService,
 			DialogModule,
 			bodyContainer,
 			'dialog-modelview-container',

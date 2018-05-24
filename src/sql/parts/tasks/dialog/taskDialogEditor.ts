@@ -92,7 +92,7 @@ export class TaskDialogEditor extends BaseEditor {
 		let params: ITaskDialogComponentParams = {
 			ownerUri: input.getUri()
 		};
-		let uniqueSelector = this.instantiationService.invokeFunction(bootstrapAngular,
+		let uniqueSelector = bootstrapAngular(this.instantiationService,
 			TaskDialogModule,
 			this.getContainer().getHTMLElement(),
 			TASKDIALOG_SELECTOR,
