@@ -36,27 +36,48 @@ export const AvailabilityGroupView_SELECTOR: string = 'availabilitygroupview-com
 export class AvailabilityGroupDashboardComponent implements OnInit {
 	private _availabilityGroupService: IAvailabilityGroupService;
 	private _refresh: boolean = undefined;
-	private Title: string = nls.localize('agDashboard.AvailabilityGroups', "Availability Groups");
-	private AvailabilityGroups: sqlops.AvailabilityGroup[];
+	private AvailabilityGroupText: string = nls.localize('agDashboard.AvailabilityGroupText', "Availability Group");
+	private LoadingText: string = nls.localize('agDashboard.LoadingText', "Loading...");
+	private ReplicasText: string = nls.localize('agDashboard.ReplicasText', "Replicas");
+	private DatabasesText: string = nls.localize('agDashboard.DatabasesText', "Databases");
+	private ClusterTypeLabel:string = nls.localize('agDashboard.ClusterTypeLabel',"Cluster Type:");
+	private BasicAvailabilityGroupLabel:string = nls.localize('agDashboard.BasicAvailabilityGroupLabel',"Is Basic Availability Group:");
+	private DTCSupportedEnabledLabel:string = nls.localize('agDashboard.DTCSupportedEnabledLabel',"Per Database DTC Support Enabled:");
+	private DatabaseHealthTriggerLabel:string = nls.localize('agDashboard.DatabaseHealthTriggerLabel',"Database Level Health Detection:");
+	private RequiredSynchronizedSecondariesToCommitLabel:string = nls.localize('agDashboard.RequiredSynchronizedSecondariesToCommitLabel',"Required Synchronized Secondaries To Commit:");
+	private LoadingCompleted: boolean = false;
+	private AvailabilityGroups: sqlops.AvailabilityGroup[] = [];
+	private CurrentAvailabilityGroup: sqlops.AvailabilityGroup;
+	private ServerInstanceText:string=nls.localize('agDashboard.ServerInstanceText', "Server Instance");
+	private RoleText:string=nls.localize('agDashboard.RoleText', "Role");
+	private StateText:string=nls.localize('agDashboard.StateText', "State");
+	private AvailabilityModeText:string=nls.localize('agDashboard.AvailabilityModeText', "Availability Mode");
+	private FailoverModeText:string=nls.localize('agDashboard.FailoverModeText', "Failover Mode");
+	private ConnectionsInPrimaryRoleText:string=nls.localize('agDashboard.ConnectionsInPrimaryRoleText', "Connections In Primary Role");
+	private ReadableSecondaryText:string=nls.localize('agDashboard.ReadableSecondaryText', "Readable Secondary");
+	private SeedingModeText:string=nls.localize('agDashboard.SeedingModeText', "Seeding Mode");
+	private SessionTimeoutInSecondsText:string=nls.localize('agDashboard.SessionTimeoutInSecondsText', "Session Timeout(seconds)");
+	private EndpointUrlText:string=nls.localize('agDashboard.EndpointUrlText', "Endpoint URL");
+	private GeneralText:string=nls.localize('agDashboard.GeneralText', "General");
+	private DatabaseText:string=nls.localize('agDashboard.DatabaseText', "Name");
+	private IsJoinedText:string=nls.localize('agDashboard.IsJoinedText', "Joined");
+	private IsSuspendedText:string=nls.localize('agDashboard.IsSuspendedText', "Suspended");
+
+	// tslint:disable-next-line:no-unused-variable
+	private readonly panelOpt: IPanelOptions = {
+		showTabsWhenOne: true,
+		layout: NavigationBarLayout.vertical,
+		showIcon: false,
+	};
 
 	ngOnInit(): void {
-		let ags: sqlops.AvailabilityGroup[] = [];
-		let i: number = 0;
-		for (i = 0; i < 100; i++) {
-			// tslint:disable-next-line:no-unexternalized-strings
-			ags.push({ name: "Availability Group " + i, clusterType: "WSFC" });
-		}
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-
-		this._availabilityGroupService.getAvailabilityGroups(ownerUri).then((result)=>{
-			this.AvailabilityGroups = result.availabilityGroups;
-		});
+		this.getAvailabilityGroups();
 	}
 
 	constructor(
 		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef) {
 		this._availabilityGroupService = this.bootstrapService.availabilityGroupService;
 	}
@@ -70,15 +91,57 @@ export class AvailabilityGroupDashboardComponent implements OnInit {
 		this._cd.detectChanges();
 	}
 
-	protected showDetail(agIndex: number) {
-
+	private getAvailabilityGroups() {
+		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		let _self = this;
+		this._availabilityGroupService.getAvailabilityGroups(ownerUri).then((result) => {
+			_self.LoadingCompleted = true;
+			_self.AvailabilityGroups = result.availabilityGroups;
+			if (result.availabilityGroups.length > 0) {
+				_self.CurrentAvailabilityGroup = result.availabilityGroups[0];
+			}
+			_self._cd.detectChanges();
+		});
 	}
 
-	protected handleKeyboardEvents(event: KeyboardEvent, agIndex: number) {
+	protected showDetail(availabilitygroup: sqlops.AvailabilityGroup) {
+		if (availabilitygroup) {
+			this.CurrentAvailabilityGroup = availabilitygroup;
+		}
+
+		this._cd.detectChanges();
+	}
+
+	protected handleKeyboardEvents(event: KeyboardEvent, availabilitygroup: sqlops.AvailabilityGroup) {
 		let kbEvent = new StandardKeyboardEvent(event);
 		if (kbEvent.keyCode === KeyCode.Enter) {
-			this.showDetail(agIndex);
+			this.showDetail(availabilitygroup);
 			event.stopPropagation();
+		}
+	}
+
+	private getReplicaStateImageClass(replica: sqlops.AvailabilityReplica) {
+		switch (replica.stateValue) {
+			case 0:
+				return "availability-replica-diconnected";
+			case 1:
+				return "availability-replica-connected";
+			default:
+				return "availability-replica-unknown";
+		}
+	}
+
+	private getDatabaseStateImageClass(database: sqlops.AvailabilityDatabase) {
+		if (database.isJoined && !database.isSuspended && (database.stateValue === 0 || database.stateValue === 3 || database.stateValue === 4)) {
+			return "availability-database-not-synchronizing";
+		} else if (database.isJoined && !database.isSuspended && (database.stateValue === 1 || database.stateValue === 2)) {
+			return "availability-database-synchronizing";
+		} else if (database.isJoined && database.isSuspended) {
+			return "availability-database-suspended";
+		} else if (!database.isJoined) {
+			return "availability-database-not-joined";
+		} else {
+			return "availability-database-unknown";
 		}
 	}
 }

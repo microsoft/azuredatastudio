@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
- availabilitygroupview-component {
+availabilitygroupview-component {
 	height: 100%;
 	width: 100%;
 	display: block;
@@ -14,47 +14,64 @@
 	width: 100%;
 }
 
+.loading-text {
+	padding: 10px;
+}
+
 .ag-tile-container {
 	overflow-x: scroll;
 	overflow-y: scroll;
 	display: flex;
 	flex-wrap: wrap;
-	align-content: flex-start;
+	align-items: flex-start;
 	height: 60%;
 }
 
 .ag-tile {
 	cursor: pointer;
 	margin: 10px;
+	min-width: 150px;
 }
 
 .ag-tile-header {
 	background-color: silver;
-	font-size: 13px;
-	padding:3px;
+	font-size: 14px;
+	padding: 2px;
 	display: flex;
 	flex-wrap: nowrap;
 	border-top-left-radius: 8px;
 	border-top-right-radius: 8px;
 }
 
-.ag-tile-header > div {
+.ag-tile-header>div {
 	margin: 5px;
 }
 
 .ag-tile-body {
-	background-color:whitesmoke;
+	background-color: whitesmoke;
 	font-size: 13px;
 	border-style: solid;
 	border-width: 1px;
 	border-color: silver;
 	border-bottom-left-radius: 8px;
 	border-bottom-right-radius: 8px;
+	padding: 5px;
 }
 
-.ag-tile-body-section {
-	padding-bottom:5px;
+.ag-tile-body-section-header {
+	padding-bottom: 5px;
+}
+
+.ag-tile-body-section-item {
+	padding-top: 2px;
 	padding-left: 5px;
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+}
+
+.ag-tile-body-section-item>div {
+	margin-left: 5px;
 }
 
 .ag-detail {
@@ -64,6 +81,47 @@
 	border-top-width: 4px;
 	border-top-color: silver;
 	height: 40%;
+	padding: 5px;
+	font-size: 13px;
+}
+
+.ag-detail-header {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	font-size: 18px;
+}
+
+.ag-detail-header>div {
+	margin: 5px;
+}
+
+.ag-detail-section-header {
+	font-size: 15px;
+	font-weight: bold;
+	padding-top:10px;
+	padding-bottom:5px;
+}
+
+.property-label-value-container {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	padding-right: 10px;
+}
+
+.property-label-value-container>div {
+	padding: 2px;
+	margin-left: 5px;
+}
+
+.property-label {
+	font-size: 13px;
+}
+
+.property-value {
+	font-size: 13px;
+	font-weight: bold;
 }
 
 .ag-icon {
@@ -72,14 +130,58 @@
 	height: 16px;
 }
 
-.replica-icon {
-	background-image: url('./AvailabilityReplica.svg');
+.ag-icon-large {
+	background-image: url('./AvailabilityGroup.svg');
+	background-size: 24px 24px;
+	background-repeat: no-repeat;
+	width: 24px;
+	height: 24px;
+}
+
+.availability-replica-diconnected {
+	background-image: url('./Availability_Replica_Offline.svg');
 	width: 16px;
 	height: 16px;
 }
 
-.database-icon {
-	background-image: url('./database.svg');
+.availability-replica-connected {
+	background-image: url('./Availability_Replica_Synchronizing.svg');
+	width: 16px;
+	height: 16px;
+}
+
+.availability-replica-unknown {
+	background-image: url('./Availability_Replica_Unknown.svg');
+	width: 16px;
+	height: 16px;
+}
+
+.availability-database-not-synchronizing {
+	background-image: url('./Availability_Database_NotSynchronizing.svg');
+	width: 16px;
+	height: 16px;
+}
+
+.availability-database-synchronizing {
+	background-image: url('./Availability_Database_Synchronizing.svg');
+	width: 16px;
+	height: 16px;
+}
+
+.availability-database-suspended {
+	background-image: url('./Availability_Database_Suspended.svg');
+	width: 16px;
+	height: 16px;
+}
+
+.availability-database-not-joined {
+	background-image: url('./Availability_Database_NotJoined.svg');
+	width: 16px;
+	height: 16px;
+}
+
+.availability-database-unknown {
+	background-image: url('./Availability_Database_Unknown.svg');
 	width: 16px;
 	height: 16px;
 }

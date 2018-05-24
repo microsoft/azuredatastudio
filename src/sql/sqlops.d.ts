@@ -37,7 +37,7 @@ declare module 'sqlops' {
 
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
 
-		export function registerAvailabilityGroupServiceProvider(provider: AvailabilityGroupServiceProvider):vscode.Disposable;
+		export function registerAvailabilityGroupServiceProvider(provider: AvailabilityGroupServiceProvider): vscode.Disposable;
 
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
@@ -1708,16 +1708,55 @@ declare module 'sqlops' {
 		export function registerTask(task: string, callback: ITaskHandler, thisArg?: any): vscode.Disposable;
 	}
 
-	export interface AvailabilityGroupsResult
-	{
+	export interface AvailabilityGroupsResult {
 		succeeded: boolean;
 		errorMessage: string;
 		availabilityGroups: AvailabilityGroup[];
 	}
 
-	export interface AvailabilityGroup{
+	export interface AvailabilityReplica {
 		name: string;
-		clusterType:string;
+		role: string;
+		roleValue: number;
+		availabilityMode: string;
+		availabilityModeValue: number;
+		failoverMode: string;
+		failoverModeValue: number;
+		connectionsInPrimaryRole: string;
+		connectionsInPrimaryRoleValue: number;
+		readableSecondary: string;
+		readableSecondaryValue: number;
+		seedingMode: string;
+		seedingModeValue: number;
+		isSupported_SeedingMode: boolean;
+		sessionTimeoutInSeconds: number;
+		endpointUrl: string;
+		state: string;
+		stateValue: number;
+	}
+
+	export interface AvailabilityDatabase {
+		name: string;
+		state: string;
+		stateValue: number;
+		isJoined: boolean;
+		isSuspended: boolean;
+	}
+
+	export interface AvailabilityGroup {
+		name: string;
+		basicAvailabilityGroup: boolean;
+		isSupported_BasicAvailabilityGroup: boolean
+		databaseHealthTrigger: boolean;
+		isSupported_DatabaseHealthTrigger: boolean;
+		dtcSupportEnabled: boolean;
+		isSupported_DtcSupportEnabled: boolean;
+		requiredSynchronizedSecondariesToCommit: number;
+		isSupported_RequiredSynchronizedSecondariesToCommit: boolean;
+		clusterType: string;
+		clusterTypeValue: number;
+		replicas: AvailabilityReplica[];
+		databases: AvailabilityDatabase[];
 	}
 
 	export interface AvailabilityGroupServiceProvider extends DataProvider {
