@@ -66,6 +66,10 @@ export class ModelViewInput extends EditorInput {
 		if (this._dialogPane) {
 			this._dialogPane.dispose();
 		}
+		if (this._container) {
+			this._container.remove();
+			this._container = undefined;
+		}
 		super.dispose();
 	}
 }
