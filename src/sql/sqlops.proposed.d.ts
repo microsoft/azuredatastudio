@@ -679,7 +679,7 @@ declare module 'sqlops' {
 
 	export interface ModelViewEditorOptions {
 		/**
-		 * Should the model view editor's context be kept around even when the editor is no longer visible?
+		 * Should the model view editor's context be kept around even when the editor is no longer visible? It is false by default
 		 */
 		readonly retainContextWhenHidden?: boolean;
 	}

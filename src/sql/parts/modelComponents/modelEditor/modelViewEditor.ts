@@ -87,7 +87,7 @@ export class ModelViewEditor extends BaseEditor {
 		if (this.input instanceof ModelViewInput) {
 			if (this.input.container && this.input.dialogPane) {
 				this.doUpdateContainer();
-				// todo: layout this.input.dialogPane
+				// todo: layout this.input.dialogPane (Github issue: #1484)
 			}
 		}
 	}
