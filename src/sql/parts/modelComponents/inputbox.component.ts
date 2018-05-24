@@ -21,7 +21,7 @@ import Event, { Emitter } from 'vs/base/common/event';
 import * as nls from 'vs/nls';
 
 @Component({
-	selector: 'inputBox',
+	selector: 'modelview-inputBox',
 	template: `
 		<div #input style="width: 100%"></div>
 	`
