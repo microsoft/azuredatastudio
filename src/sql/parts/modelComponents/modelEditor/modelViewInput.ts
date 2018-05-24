@@ -7,8 +7,8 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 
 import * as sqlops from 'sqlops';
@@ -20,7 +20,7 @@ export class ModelViewInput extends EditorInput {
 
 	constructor(private _title: string, private _modelViewId: string,
 		private _options: sqlops.ModelViewEditorOptions,
-		@IBootstrapService private _bootstrapService: IBootstrapService,
+		@IInstantiationService private _instantiationService: IInstantiationService,
 	) {
 		super();
 	}
@@ -48,7 +48,7 @@ export class ModelViewInput extends EditorInput {
 	public get container(): HTMLElement {
 		if (!this._container && !this._dialogPane) {
 			this._container = DOM.$('div.model-view-container');
-			this._dialogPane = new DialogPane(this.title, this.modelViewId, () => undefined, this._bootstrapService);
+			this._dialogPane = new DialogPane(this.title, this.modelViewId, () => undefined, this._instantiationService);
 			this._dialogPane.createBody(this._container);
 		}
 		return this._container;
