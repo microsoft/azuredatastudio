@@ -30,7 +30,7 @@ import Severity from 'vs/base/common/severity';
 
 const selectionSnippetMaxLen = 100;
 
-interface QueryEvent {
+export interface QueryEvent {
 	type: string;
 	data: any;
 }
@@ -38,7 +38,7 @@ interface QueryEvent {
 /**
  * Holds information about the state of a query runner
  */
-class QueryInfo {
+export class QueryInfo {
 	public queryRunner: QueryRunner;
 	public dataService: DataService;
 	public queryEventQueue: QueryEvent[];
@@ -561,7 +561,7 @@ export class QueryModelService implements IQueryModelService {
 		}
 	}
 
-	private _getQueryInfo(uri: string): QueryInfo {
+	public _getQueryInfo(uri: string): QueryInfo {
 		return this._queryInfoMap.get(uri);
 	}
 

@@ -138,7 +138,7 @@ export class QueryResultsEditor extends BaseEditor {
 	}
 
 	createEditor(parent: Builder): void {
-		this.resultsView = new QueryResultsView(parent.getHTMLElement(), this._instantiationService);
+		this.resultsView = new QueryResultsView(parent.getHTMLElement(), this._instantiationService, this._queryModelService);
 	}
 
 	layout(dimension: Dimension): void {

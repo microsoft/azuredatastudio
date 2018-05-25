@@ -25,6 +25,7 @@ export interface IPanelOptions {
 export interface IPanelView {
 	render(container: HTMLElement): void;
 	layout(dimension: Dimension): void;
+	remove?(): void;
 }
 
 export interface IPanelTab {
@@ -145,6 +146,11 @@ export class TabbedPanel extends Disposable implements IThemable {
 	}
 
 	public removeTab(tab: PanelTabIdentifier) {
+		let actualTab = this._tabMap.get(tab);
+		actualTab.header.destroy();
+		if (actualTab.view.remove) {
+			actualTab.view.remove();
+		}
 		this._tabMap.get(tab).header.destroy();
 		this._tabMap.delete(tab);
 	}

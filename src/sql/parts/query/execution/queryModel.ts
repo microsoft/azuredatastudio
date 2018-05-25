@@ -19,6 +19,7 @@ import {
 	EditRevertCellResult,
 	ExecutionPlanOptions
 } from 'sqlops';
+import { QueryInfo } from 'sql/parts/query/execution/queryModelService';
 
 export const SERVICE_ID = 'queryModelService';
 
@@ -67,6 +68,7 @@ export interface IQueryModelService {
 	revertRow(ownerUri: string, rowId: number): Thenable<void>;
 	getEditRows(ownerUri: string, rowStart: number, numberOfRows: number): Thenable<EditSubsetResult>;
 
+	_getQueryInfo(uri: string): QueryInfo;
 	// Edit Data Callbacks
 	onEditSessionReady: Event<EditSessionReadyParams>;
 }
