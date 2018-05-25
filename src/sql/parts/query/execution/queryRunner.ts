@@ -311,7 +311,7 @@ export default class QueryRunner {
 			}, error => {
 				self._notificationService.notify({
 					severity: Severity.Error,
-					message:  nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
+					message: nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
 				});
 				reject(error);
 			});
@@ -338,7 +338,7 @@ export default class QueryRunner {
 			this._isExecuting = false;
 			this._notificationService.notify({
 				severity: Severity.Error,
-				message:  nls.localize('query.initEditExecutionFailed', 'Init Edit Execution failed: ') + error
+				message: nls.localize('query.initEditExecutionFailed', 'Init Edit Execution failed: ') + error
 			});
 		});
 	}
@@ -362,7 +362,7 @@ export default class QueryRunner {
 					let error = `Nothing returned from subset query`;
 					self._notificationService.notify({
 						severity: Severity.Error,
-						message:  error
+						message: error
 					});
 					reject(error);
 				}
@@ -371,7 +371,7 @@ export default class QueryRunner {
 				let errorMessage = nls.localize('query.moreRowsFailedError', 'Something went wrong getting more rows:');
 				self._notificationService.notify({
 					severity: Severity.Error,
-					message:  `${errorMessage} ${error}`
+					message: `${errorMessage} ${error}`
 				});
 				reject(error);
 			});

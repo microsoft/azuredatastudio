@@ -163,9 +163,9 @@ export class MessageController extends WorkbenchTreeController {
 		const mouseEvent = <IMouseEvent>eventish;
 		// input and output are one element in the tree => we only expand if the user clicked on the output.
 		// if ((element.reference > 0 || (element instanceof RawObjectReplElement && element.hasChildren)) && mouseEvent.target.className.indexOf('input expression') === -1) {
-			super.onLeftClick(tree, element, eventish, origin);
-			tree.clearFocus();
-			tree.deselect(element);
+		super.onLeftClick(tree, element, eventish, origin);
+		tree.clearFocus();
+		tree.deselect(element);
 		// }
 
 		const selection = window.getSelection();

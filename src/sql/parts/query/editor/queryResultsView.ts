@@ -108,7 +108,7 @@ export class QueryResultsView {
 		this._input = input;
 		this.resultsTab.queryRunner = this.queryModelService._getQueryInfo(input.uri).queryRunner;
 		// if (!this.resultsTab.isAttached) {
-			this._panelView.pushTab(this.resultsTab);
+		this._panelView.pushTab(this.resultsTab);
 		// }
 	}
 
