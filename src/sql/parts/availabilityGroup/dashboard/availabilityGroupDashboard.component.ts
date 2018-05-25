@@ -36,7 +36,6 @@ export const AvailabilityGroupView_SELECTOR: string = 'availabilitygroupview-com
 export class AvailabilityGroupDashboardComponent implements OnInit {
 	private _availabilityGroupService: IAvailabilityGroupService;
 	private _refresh: boolean = undefined;
-	private AvailabilityGroupText: string = nls.localize('agDashboard.AvailabilityGroupText', "Availability Group");
 	private LoadingText: string = nls.localize('agDashboard.LoadingText', "Loading...");
 	private ReplicasText: string = nls.localize('agDashboard.ReplicasText', "Replicas");
 	private DatabasesText: string = nls.localize('agDashboard.DatabasesText', "Databases");
@@ -62,6 +61,7 @@ export class AvailabilityGroupDashboardComponent implements OnInit {
 	private DatabaseText:string=nls.localize('agDashboard.DatabaseText', "Name");
 	private IsJoinedText:string=nls.localize('agDashboard.IsJoinedText', "Joined");
 	private IsSuspendedText:string=nls.localize('agDashboard.IsSuspendedText', "Suspended");
+	private LocalReplicaRoleText:string=nls.localize('agDashboard.LocalReplicaRoleText', "Local Replica Role:");
 
 	// tslint:disable-next-line:no-unused-variable
 	private readonly panelOpt: IPanelOptions = {

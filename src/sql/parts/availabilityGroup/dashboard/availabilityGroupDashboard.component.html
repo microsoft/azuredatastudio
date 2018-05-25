@@ -4,28 +4,25 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div class="ag-dashboard">
+<div class="fullsize">
 	<div class="ag-tile-container">
-		<div *ngIf="!LoadingCompleted" class="loading-text">{{LoadingText}}</div>
+		<div *ngIf="!LoadingCompleted">
+			<h3>{{LoadingText}}</h3>
+		</div>
 		<div *ngFor="let ag of AvailabilityGroups" class="ag-tile" tabindex="0" (click)="showDetail(ag)" (keyup)="handleKeyboardEvents($event, ag)">
 			<div class="ag-tile-header">
-				<div class="ag-icon"></div>
 				<div>{{ag.name}}</div>
 			</div>
 			<div class="ag-tile-body">
-				<div>
-					<div class="ag-tile-body-section-header">{{ReplicasText}}</div>
-					<div *ngFor="let replica of ag.replicas" class="ag-tile-body-section-item">
-						<div class="{{getReplicaStateImageClass(replica)}}"></div>
-						<div>{{replica.name}} ({{replica.role}})</div>
-					</div>
+				<div class="ag-tile-body-section-header">{{ReplicasText}}</div>
+				<div *ngFor="let replica of ag.replicas" class="ag-row">
+					<div class="{{getReplicaStateImageClass(replica)}}"></div>
+					<div>{{replica.name}} ({{replica.role}})</div>
 				</div>
-				<div>
-					<div class="ag-tile-body-section-header">{{DatabasesText}}</div>
-					<div *ngFor="let database of ag.databases" class="ag-tile-body-section-item">
-						<div class="{{getDatabaseStateImageClass(database)}}"></div>
-						<div>{{database.name}}</div>
-					</div>
+				<div class="ag-tile-body-section-header">{{DatabasesText}}</div>
+				<div *ngFor="let database of ag.databases" class="ag-row">
+					<div class="{{getDatabaseStateImageClass(database)}}"></div>
+					<div>{{database.name}}</div>
 				</div>
 			</div>
 		</div>
@@ -34,84 +31,92 @@
 		<div *ngIf="CurrentAvailabilityGroup">
 			<div class="ag-detail-header">
 				<div class="ag-icon-large"></div>
-				<div>{{AvailabilityGroupText}} - {{CurrentAvailabilityGroup.name}}</div>
+				<div>{{CurrentAvailabilityGroup.name}}</div>
 			</div>
-			<div class="ag-detail-section-header">{{GeneralText}}</div>
-			<div>
-				<div class="property-label-value-container">
-					<div class="property-label">{{ClusterTypeLabel}}</div>
-					<div class="property-value">{{CurrentAvailabilityGroup.clusterType}}</div>
-				</div>
-				<div class="property-label-value-container" *ngIf="CurrentAvailabilityGroup.isSupported_BasicAvailabilityGroup">
-					<div class="property-label">{{BasicAvailabilityGroupLabel}}</div>
-					<div class="property-value">{{CurrentAvailabilityGroup.basicAvailabilityGroup}}</div>
-				</div>
-				<div class="property-label-value-container" *ngIf="CurrentAvailabilityGroup.isSupported_DtcSupportEnabled">
-					<div class="property-label">{{DTCSupportedEnabledLabel}}</div>
-					<div class="property-value">{{CurrentAvailabilityGroup.dtcSupportEnabled}}</div>
-				</div>
-				<div class="property-label-value-container" *ngIf="CurrentAvailabilityGroup.isSupported_DatabaseHealthTrigger">
-					<div class="property-label">{{DatabaseHealthTriggerLabel}}</div>
-					<div class="property-value">{{CurrentAvailabilityGroup.databaseHealthTrigger}}</div>
-				</div>
-				<div class="property-label-value-container" *ngIf="CurrentAvailabilityGroup.isSupported_RequiredSynchronizedSecondariesToCommit">
-					<div class="property-label">{{RequiredSynchronizedSecondariesToCommitLabel}}</div>
-					<div class="property-value">{{CurrentAvailabilityGroup.requiredSynchronizedSecondariesToCommit}}</div>
-				</div>
-			</div>
-			<div class="ag-detail-section-header">{{ReplicasText}}</div>
-			<div>
-				<table>
+
+			<div class="ag-detail-section">
+				<div class="ag-detail-section-header">{{GeneralText}}</div>
+				<table class="ag-detail-table">
 					<tr>
-						<th></th>
-						<th>{{ServerInstanceText}}</th>
-						<th>{{RoleText}}</th>
-						<th>{{StateText}}</th>
-						<th>{{AvailabilityModeText}}</th>
-						<th>{{FailoverModeText}}</th>
-						<th>{{ConnectionsInPrimaryRoleText}}</th>
-						<th>{{ReadableSecondaryText}}</th>
-						<th>{{SeedingModeText}}</th>
-						<th>{{SessionTimeoutInSecondsText}}</th>
-						<th>{{EndpointUrlText}}</th>
+						<td>{{LocalReplicaRoleText}}</td>
+						<td>{{CurrentAvailabilityGroup.localReplicaRole}}</td>
+						<td></td>
+						<td>{{DatabaseHealthTriggerLabel}}</td>
+						<td>{{CurrentAvailabilityGroup.databaseHealthTrigger}}</td>
 					</tr>
-					<tr *ngFor="let replica of CurrentAvailabilityGroup.replicas">
-						<td>
-							<div class="{{getReplicaStateImageClass(replica)}}"></div>
-						</td>
-						<td>{{replica.name}}</td>
-						<td>{{replica.role}}</td>
-						<td>{{replica.state}}</td>
-						<td>{{replica.availabilityMode}}</td>
-						<td>{{replica.failoverMode}}</td>
-						<td>{{replica.connectionsInPrimaryRole}}</td>
-						<td>{{replica.readableSecondary}}</td>
-						<td>{{replica.seedingMode}}</td>
-						<td>{{replica.sessionTimeoutInSeconds}}</td>
-						<td>{{replica.endpointUrl}}</td>
+					<tr>
+						<td>{{ClusterTypeLabel}}</td>
+						<td>{{CurrentAvailabilityGroup.clusterType}}</td>
+						<td></td>
+						<td>{{DTCSupportedEnabledLabel}}</td>
+						<td>{{CurrentAvailabilityGroup.dtcSupportEnabled}}</td>
+					</tr>
+					<tr>
+						<td>{{BasicAvailabilityGroupLabel}}</td>
+						<td>{{CurrentAvailabilityGroup.basicAvailabilityGroup}}</td>
+						<td></td>
+						<td>{{RequiredSynchronizedSecondariesToCommitLabel}}</td>
+						<td>{{CurrentAvailabilityGroup.requiredSynchronizedSecondariesToCommit}}</td>
 					</tr>
 				</table>
 			</div>
-			<div class="ag-detail-section-header">{{DatabasesText}}</div>
-			<div>
-				<table>
-					<tr>
-						<th></th>
-						<th>{{DatabaseText}}</th>
-						<th>{{StateText}}</th>
-						<th>{{IsJoinedText}}</th>
-						<th>{{IsSuspendedText}}</th>
-					</tr>
-					<tr *ngFor="let database of CurrentAvailabilityGroup.databases">
-						<td>
-							<div class="{{getDatabaseStateImageClass(database)}}"></div>
-						</td>
-						<td>{{database.name}}</td>
-						<td>{{database.state}}</td>
-						<td>{{database.isJoined}}</td>
-						<td>{{database.isSuspended}}</td>
-					</tr>
-				</table>
+			<div class="ag-detail-section">
+				<div class="ag-detail-section-header">{{ReplicasText}}</div>
+				<div>
+					<table class="ag-detail-table">
+						<tr>
+							<th></th>
+							<th>{{ServerInstanceText}}</th>
+							<th>{{RoleText}}</th>
+							<th>{{StateText}}</th>
+							<th>{{AvailabilityModeText}}</th>
+							<th>{{FailoverModeText}}</th>
+							<th>{{ConnectionsInPrimaryRoleText}}</th>
+							<th>{{ReadableSecondaryText}}</th>
+							<th>{{SeedingModeText}}</th>
+							<th>{{SessionTimeoutInSecondsText}}</th>
+							<th>{{EndpointUrlText}}</th>
+						</tr>
+						<tr *ngFor="let replica of CurrentAvailabilityGroup.replicas">
+							<td>
+								<div class="{{getReplicaStateImageClass(replica)}}"></div>
+							</td>
+							<td>{{replica.name}}</td>
+							<td>{{replica.role}}</td>
+							<td>{{replica.state}}</td>
+							<td>{{replica.availabilityMode}}</td>
+							<td>{{replica.failoverMode}}</td>
+							<td>{{replica.connectionsInPrimaryRole}}</td>
+							<td>{{replica.readableSecondary}}</td>
+							<td>{{replica.seedingMode}}</td>
+							<td>{{replica.sessionTimeoutInSeconds}}</td>
+							<td>{{replica.endpointUrl}}</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="ag-detail-section">
+				<div class="ag-detail-section-header">{{DatabasesText}}</div>
+				<div>
+					<table class="ag-detail-table">
+						<tr>
+							<th></th>
+							<th>{{DatabaseText}}</th>
+							<th>{{StateText}}</th>
+							<th>{{IsJoinedText}}</th>
+							<th>{{IsSuspendedText}}</th>
+						</tr>
+						<tr *ngFor="let database of CurrentAvailabilityGroup.databases">
+							<td>
+								<div class="{{getDatabaseStateImageClass(database)}}"></div>
+							</td>
+							<td>{{database.name}}</td>
+							<td>{{database.state}}</td>
+							<td>{{database.isJoined}}</td>
+							<td>{{database.isSuspended}}</td>
+						</tr>
+					</table>
+				</div>
 			</div>
 		</div>
 	</div>
