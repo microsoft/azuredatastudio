@@ -21,6 +21,7 @@ import * as types from 'vs/base/common/types';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import Event, { Emitter, echo, debounceEvent } from 'vs/base/common/event';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -60,6 +61,26 @@ export default class QueryRunner {
 	private _hasCompleted: boolean = false;
 	private _batchSets: sqlops.BatchSummary[] = [];
 	private _eventEmitter = new EventEmitter();
+
+	private _onMessage = new Emitter<sqlops.IResultMessage>();
+	public readonly onMessage = debounceEvent<sqlops.IResultMessage, sqlops.IResultMessage[]>(echo(this._onMessage.event), (l, e) => {
+		// on first run
+		if (types.isUndefinedOrNull(l)) {
+			return [e];
+		} else {
+			return l.concat(e);
+		}
+	});
+
+	private _onResultSet = new Emitter<sqlops.ResultSetSummary>();
+	public readonly onResultSet = debounceEvent<sqlops.ResultSetSummary, sqlops.ResultSetSummary[]>(echo(this._onResultSet.event), (l, e) => {
+		// on first run
+		if (types.isUndefinedOrNull(l)) {
+			return [e];
+		} else {
+			return l.concat(e);
+		}
+	});
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
@@ -255,7 +276,7 @@ export default class QueryRunner {
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed
 				batchSet.resultSetSummaries[resultSet.id] = resultSet;
-				this._eventEmitter.emit(EventType.RESULT_SET, resultSet);
+				this._onResultSet.fire(resultSet);
 			}
 		}
 	}
@@ -268,7 +289,7 @@ export default class QueryRunner {
 		message.time = new Date(message.time).toLocaleTimeString();
 
 		// Send the message to the results pane
-		this._eventEmitter.emit(EventType.MESSAGE, message);
+		this._onMessage.fire(message);
 	}
 
 	/**
@@ -513,7 +534,7 @@ export default class QueryRunner {
 				isError: false
 			};
 			// Send the message to the results pane
-			this._eventEmitter.emit(EventType.MESSAGE, message);
+			this._onMessage.fire(message);
 		}
 	}
 }

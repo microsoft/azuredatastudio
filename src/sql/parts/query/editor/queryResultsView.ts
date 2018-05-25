@@ -10,6 +10,7 @@ import { IQueryModelService } from '../execution/queryModel';
 import { DataService } from 'sql/parts/grid/services/dataService';
 import QueryRunner, { EventType } from 'sql/parts/query/execution/queryRunner';
 import { MessagePanel } from './messagePanel';
+import { GridPanel } from './gridPanel';
 
 import { Dimension, $ } from 'vs/base/browser/builder';
 import * as nls from 'vs/nls';
@@ -20,14 +21,6 @@ import * as DOM from 'vs/base/browser/dom';
 import Event, { Emitter } from 'vs/base/common/event';
 
 import { IResultMessage } from 'sqlops';
-
-class GridPanel extends ViewletPanel {
-	protected renderBody(container: HTMLElement): void {
-		container.innerText = 'Results';
-	}
-	protected layoutBody(size: number): void {
-	}
-}
 
 class ResultsView implements IPanelView {
 	private panelViewlet: PanelViewlet;
@@ -64,7 +57,7 @@ class ResultsView implements IPanelView {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
-		runner.addListener(EventType.MESSAGE, e => {
+		runner.onMessage(e => {
 			this.messagePanel.onMessage(e);
 		});
 	}
@@ -98,8 +91,6 @@ export class QueryResultsView {
 	private _input: QueryResultsInput;
 	private resultsTab: ResultsTab;
 
-	private dataService: QueryRunner;
-
 	constructor(
 		container: HTMLElement,
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -115,10 +106,10 @@ export class QueryResultsView {
 
 	public set input(input: QueryResultsInput) {
 		this._input = input;
-		this.dataService = this.queryModelService._getQueryInfo(input.uri).queryRunner;
-		if (!this.resultsTab.isAttached) {
+		this.resultsTab.queryRunner = this.queryModelService._getQueryInfo(input.uri).queryRunner;
+		// if (!this.resultsTab.isAttached) {
 			this._panelView.pushTab(this.resultsTab);
-		}
+		// }
 	}
 
 	public get input(): QueryResultsInput {
