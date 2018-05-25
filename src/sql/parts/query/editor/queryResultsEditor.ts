@@ -18,6 +18,7 @@ import { Configuration } from 'vs/editor/browser/config/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as dom from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
@@ -25,7 +26,7 @@ import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { QueryOutputModule } from 'sql/parts/query/views/queryOutput.module';
 import { QUERY_OUTPUT_SELECTOR } from 'sql/parts/query/views/queryOutput.component';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { QueryResultsView } from 'sql/parts/query/editor/queryResultsView';
 
 export const RESULTS_GRID_DEFAULTS = {
 	cellPadding: [6, 10, 5],
@@ -96,6 +97,8 @@ export class QueryResultsEditor extends BaseEditor {
 	protected _rawOptions: BareResultsGridInfo;
 	protected _input: QueryResultsInput;
 
+	private resultsView: QueryResultsView;
+
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
@@ -135,47 +138,18 @@ export class QueryResultsEditor extends BaseEditor {
 	}
 
 	createEditor(parent: Builder): void {
+		this.resultsView = new QueryResultsView(parent.getHTMLElement(), this._instantiationService);
 	}
 
 	layout(dimension: Dimension): void {
+		this.resultsView.layout(dimension);
 	}
 
 	setInput(input: QueryResultsInput, options: EditorOptions): TPromise<void> {
 		super.setInput(input, options);
 		this.applySettings();
-		if (!input.hasBootstrapped) {
-			this._bootstrapAngular();
-		}
+		this.resultsView.input = input;
 		return TPromise.wrap<void>(null);
-	}
-
-	/**
-	 * Load the angular components and record for this input that we have done so
-	 */
-	private _bootstrapAngular(): void {
-		let input = <QueryResultsInput>this.input;
-		let uri = input.uri;
-
-		// Pass the correct DataService to the new angular component
-		let dataService = this._queryModelService.getDataService(uri);
-		if (!dataService) {
-			throw new Error('DataService not found for URI: ' + uri);
-		}
-
-		// Mark that we have bootstrapped
-		input.setBootstrappedTrue();
-
-		// Get the bootstrap params and perform the bootstrap
-		// Note: pass in input so on disposal this is cleaned up.
-		// Otherwise many components will be left around and be subscribed
-		// to events from the backing data service
-		let params: IQueryComponentParams = { dataService: dataService };
-		this._instantiationService.invokeFunction(bootstrapAngular,
-			QueryOutputModule,
-			this.getContainer().getHTMLElement(),
-			QUERY_OUTPUT_SELECTOR,
-			params,
-			input);
 	}
 
 	public dispose(): void {

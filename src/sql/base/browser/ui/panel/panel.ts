@@ -16,7 +16,10 @@ import './panelStyles';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IPanelStyles {
+}
 
+export interface IPanelOptions {
+	showHeaderWhenSingleView?: boolean;
 }
 
 export interface IPanelView {
@@ -35,6 +38,10 @@ interface IInternalPanelTab extends IPanelTab {
 	label: Builder;
 }
 
+const defaultOptions: IPanelOptions = {
+	showHeaderWhenSingleView: true
+};
+
 export type PanelTabIdentifier = string;
 
 export class TabbedPanel extends Disposable implements IThemable {
@@ -52,7 +59,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 	private _onTabChange = new Emitter<PanelTabIdentifier>();
 	public onTabChange: Event<PanelTabIdentifier> = this._onTabChange.event;
 
-	constructor(private container: HTMLElement) {
+	constructor(private container: HTMLElement, private options: IPanelOptions = defaultOptions) {
 		super();
 		this.$parent = this._register($('.tabbedPanel'));
 		this.$parent.appendTo(container);
@@ -72,7 +79,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 	}
 
 	public pushTab(tab: IPanelTab): PanelTabIdentifier {
-		let internalTab = objects.clone(tab) as IInternalPanelTab;
+		let internalTab = tab as IInternalPanelTab;
 		this._tabMap.set(tab.identifier, internalTab);
 		this._createTab(internalTab);
 		if (!this._shownTab) {
