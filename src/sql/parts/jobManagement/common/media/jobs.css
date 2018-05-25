@@ -76,7 +76,7 @@ jobhistory-component {
     background: green;
 }
 
-#jobsDiv .jobview-jobnameindicatorfailure {
+#jobsDiv .slick-cell.l1.r1 .jobview-jobnameindicatorfailure {
     width: 5px;
     background: red;
 }
@@ -88,7 +88,7 @@ jobhistory-component {
 
 #jobsDiv .jobview-grid .jobview-jobnameindicatorunknown {
     width: 5px;
-    background: yellow;
+    background: grey;
 }
 
 #jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext {

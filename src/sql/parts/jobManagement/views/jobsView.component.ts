@@ -52,7 +52,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200 , id: 'name' },
+		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, minWidth: 200 , id: 'name' },
 		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', minWidth: 150, id: 'lastRun' },
 		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', minWidth: 150, id: 'nextRun' },
 		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', minWidth: 70, id: 'enabled' },
@@ -228,16 +228,19 @@ export class JobsViewComponent implements AfterContentChecked {
 		this._cd.detectChanges();
 		const self = this;
 		this._tabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
-		$(window).resize((e) => {
-			let currentTabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
-			if (currentTabHeight < self._tabHeight) {
-				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
-				self._table.resizeCanvas();
-			} else {
-				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
-				self._table.resizeCanvas();
+		$(window).resize(() => {
+			let currentTab = $('agentview-component #jobsDiv .jobview-grid').get(0);
+			if (currentTab) {
+				let currentTabHeight = currentTab.clientHeight;
+				if (currentTabHeight < self._tabHeight) {
+					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
+					self._table.resizeCanvas();
+				} else {
+					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
+					self._table.resizeCanvas();
+				}
+				self._tabHeight = currentTabHeight;
 			}
-			self._tabHeight = currentTabHeight;
 		});
 		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
 			let nameWidth: number = data.grid.getColumnWidths()[1];
