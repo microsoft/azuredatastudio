@@ -54,24 +54,24 @@ export class GridPanel extends ViewletPanel {
 	public onResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
 		if (isArray(resultSet)) {
 			resultSet.forEach(c => {
-				this.splitView.addView(new GridTable(this.runner, c, this.themeService), 1, this.splitView.length);
+				this.splitView.addView(new GridTable(this.runner, c), 1, this.splitView.length);
 			});
 		} else {
-			this.splitView.addView(new GridTable(this.runner, resultSet, this.themeService), 1, this.splitView.length);
+			this.splitView.addView(new GridTable(this.runner, resultSet), 1, this.splitView.length);
 		}
 	}
 
 	public runner: QueryRunner;
 }
 
-class GridTable extends Panel {
+class GridTable implements IView {
 	private table: Table<any>;
 	private container = document.createElement('div');
 
-	constructor(private runner: QueryRunner, private resultSet: sqlops.ResultSetSummary, themeService: IThemeService) {
-		super();
-		this.maximumBodySize = this.getMaximumSize();
-		this.minimumBodySize = this.getMinimumSize();
+	private _onDidChange = new Emitter<number>();
+	public readonly onDidChange: Event<number> = this._onDidChange.event;
+
+	constructor(private runner: QueryRunner, private resultSet: sqlops.ResultSetSummary) {
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
 		let collection = new VirtualizedCollection(50, resultSet.rowCount, (offset, count) => {
@@ -91,28 +91,23 @@ class GridTable extends Panel {
 		});
 		let dataProvider = new AsyncDataProvider(collection, columns);
 		this.table = new Table(this.container, { dataProvider, columns }, { rowHeight });
-		attachPanelStyler(this, themeService);
 	}
 
-	protected renderHeader(container: HTMLElement): void {
-	}
-
-	protected renderBody(container: HTMLElement): void {
+	public render(container: HTMLElement, orientation: Orientation): void {
 		container.appendChild(this.container);
 	}
 
-	protected layoutBody(size: number): void {
-		this.headerVisible = false;
+	public layout(size: number): void {
 		this.table.layout(size, Orientation.VERTICAL);
 	}
 
-	public getMinimumSize(): number {
+	public get minimumSize(): number {
 		let smallestRows = (this.resultSet.rowCount + 1) * rowHeight;
 		let smallestSize = minGridHeightInRows * rowHeight;
 		return Math.min(smallestRows, smallestSize);
 	}
 
-	public getMaximumSize(): number {
+	public get maximumSize(): number {
 		return (this.resultSet.rowCount + 1) * rowHeight;
 	}
 
