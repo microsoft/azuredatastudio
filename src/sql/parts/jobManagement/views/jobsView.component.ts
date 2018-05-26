@@ -153,7 +153,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		this.rowDetail = rowDetail;
 
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
+		this._table = new Table(this._gridEl.nativeElement, {columns}, options);
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let job = self.getJob(args);

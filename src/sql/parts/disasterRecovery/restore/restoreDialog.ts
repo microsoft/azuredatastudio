@@ -271,7 +271,8 @@ export class RestoreDialog extends Modal {
 				this._restorePlanTableContainer = labelContainer.getHTMLElement();
 				labelContainer.hide();
 				this._restorePlanData = new TableDataView<Slick.SlickData>();
-				this._restorePlanTable = new Table<Slick.SlickData>(labelContainer.getHTMLElement(), this._restorePlanData, this._restorePlanColumn, { enableColumnReorder: false });
+				this._restorePlanTable = new Table<Slick.SlickData>(labelContainer.getHTMLElement(),
+				{ dataProvider: this._restorePlanData, columns: this._restorePlanColumn }, { enableColumnReorder: false });
 				this._restorePlanTable.setSelectionModel(new RowSelectionModel({ selectActiveRow: false }));
 				this._restorePlanTable.onSelectedRowsChanged((e, data) => this.backupFileCheckboxChanged(e, data));
 			});
@@ -327,7 +328,8 @@ export class RestoreDialog extends Modal {
 						field: 'restoreAs'
 					}];
 					this._fileListData = new TableDataView<FileListElement>();
-					this._fileListTable = new Table<FileListElement>(fileNameContainer.getHTMLElement(), this._fileListData, columns, { enableColumnReorder: false });
+					this._fileListTable = new Table<FileListElement>(fileNameContainer.getHTMLElement(),
+					{ dataProvider : this._fileListData, columns } , { enableColumnReorder: false });
 					this._fileListTable.setSelectionModel(new RowSelectionModel());
 				});
 			});

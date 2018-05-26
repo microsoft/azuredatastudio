@@ -57,6 +57,10 @@ class ResultsView implements IPanelView {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
+		this.gridPanel.runner = runner;
+		runner.onResultSet(e => {
+			this.gridPanel.onResultSet(e);
+		})
 		runner.onMessage(e => {
 			this.messagePanel.onMessage(e);
 		});

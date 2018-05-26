@@ -15,6 +15,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { Dimension } from 'vs/base/browser/builder';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Widget } from 'vs/base/browser/ui/widget';
+import { isArray } from 'vs/base/common/types';
 
 export interface ITableStyles extends IListStyles {
 	tableHeaderBackground?: Color;
@@ -28,30 +29,41 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	};
 }
 
+export interface ITableSorter<T> {
+	sort(args: Slick.OnSortEventArgs<T>);
+}
+
+export interface ITableConfiguration<T> {
+	dataProvider?: Slick.DataProvider<T> | Array<T>;
+	columns?: Slick.Column<T>[];
+	sorter?: ITableSorter<T>;
+}
+
 export class Table<T extends Slick.SlickData> extends Widget implements IThemable {
 	private styleElement: HTMLStyleElement;
 	private idPrefix: string;
 
 	private _grid: Slick.Grid<T>;
 	private _columns: Slick.Column<T>[];
-	private _data: TableDataView<T>;
+	private _data: Slick.DataProvider<T>;
+	private _sorter: ITableSorter<T>;
+
 	private _autoscroll: boolean;
-	private _onRowCountChangeListener: IDisposable;
 	private _container: HTMLElement;
 	private _tableContainer: HTMLElement;
 
 	private _classChangeTimeout: number;
 
-	constructor(parent: HTMLElement, data?: Array<T> | TableDataView<T>, columns?: Slick.Column<T>[], options?: Slick.GridOptions<T>) {
+	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super();
-		if (data instanceof TableDataView) {
-			this._data = data;
+		if (!configuration || isArray(configuration.dataProvider)) {
+			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>);
 		} else {
-			this._data = new TableDataView<T>(data);
+			this._data = configuration.dataProvider;
 		}
 
-		if (columns) {
-			this._columns = columns;
+		if (configuration.columns) {
+			this._columns = configuration.columns;
 		} else {
 			this._columns = new Array<Slick.Column<T>>();
 		}
@@ -82,15 +94,23 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		this._grid = new Slick.Grid<T>(this._tableContainer, this._data, this._columns, newOptions);
 		this.idPrefix = this._tableContainer.classList[0];
 		DOM.addClass(this._container, this.idPrefix);
-		this._onRowCountChangeListener = this._data.onRowCountChange(() => this._handleRowCountChange());
-		this._grid.onSort.subscribe((e, args) => {
-			this._data.sort(args);
-			this._grid.invalidate();
-			this._grid.render();
-		});
+		if (configuration.sorter) {
+			this._sorter = configuration.sorter;
+			this._grid.onSort.subscribe((e, args) => {
+				this._sorter.sort(args);
+				this._grid.invalidate();
+				this._grid.render();
+			});
+		}
+
 	}
 
-	private _handleRowCountChange() {
+	public invalidateRows(rows: number[], keepEditor: boolean) {
+		this._grid.invalidateRows(rows, keepEditor);
+		this._grid.render();
+	}
+
+	public updateRowCount() {
 		this._grid.updateRowCount();
 		this._grid.render();
 		if (this._autoscroll) {
@@ -114,9 +134,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		} else {
 			this._data = new TableDataView<T>(data);
 		}
-		this._onRowCountChangeListener.dispose();
 		this._grid.setData(this._data, true);
-		this._onRowCountChangeListener = this._data.onRowCountChange(() => this._handleRowCountChange());
 	}
 
 	get columns(): Slick.Column<T>[] {
@@ -193,7 +211,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 			this._tableContainer.style.width = sizing.width + 'px';
 			this._tableContainer.style.height = sizing.height + 'px';
 		} else {
-			if (orientation === Orientation.HORIZONTAL) {
+			if (orientation === Orientation.VERTICAL) {
 				this._container.style.width = '100%';
 				this._container.style.height = sizing + 'px';
 				this._tableContainer.style.width = '100%';

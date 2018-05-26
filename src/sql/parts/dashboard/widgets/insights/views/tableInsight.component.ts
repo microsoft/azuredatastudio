@@ -63,7 +63,7 @@ export default class TableInsight extends Disposable implements IInsightsView, O
 
 	private createTable() {
 		if (!this.table) {
-			this.table = new Table(this._elementRef.nativeElement, this.dataView, this.columns, { showRowNumber: true });
+			this.table = new Table(this._elementRef.nativeElement, { dataProvider: this.dataView, columns: this.columns }, { showRowNumber: true });
 			this.table.setSelectionModel(new DragCellSelectionModel());
 			this._register(attachTableStyler(this.table, this.themeService));
 		}

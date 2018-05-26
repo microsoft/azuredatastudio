@@ -108,12 +108,12 @@ export class QueryResultsEditor extends BaseEditor {
 	) {
 		super(QueryResultsEditor.ID, telemetryService, themeService);
 		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
-		this._configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('resultsGrid')) {
-				this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
-				this.applySettings();
-			}
-		});
+		// this._configurationService.onDidChangeConfiguration(e => {
+		// 	if (e.affectsConfiguration('resultsGrid')) {
+		// 		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
+		// 		this.applySettings();
+		// 	}
+		// });
 	}
 
 	public get input(): QueryResultsInput {
@@ -138,7 +138,9 @@ export class QueryResultsEditor extends BaseEditor {
 	}
 
 	createEditor(parent: Builder): void {
-		this.resultsView = new QueryResultsView(parent.getHTMLElement(), this._instantiationService, this._queryModelService);
+		if (!this.resultsView) {
+			this.resultsView = new QueryResultsView(parent.getHTMLElement(), this._instantiationService, this._queryModelService);
+		}
 	}
 
 	layout(dimension: Dimension): void {
@@ -147,7 +149,6 @@ export class QueryResultsEditor extends BaseEditor {
 
 	setInput(input: QueryResultsInput, options: EditorOptions): TPromise<void> {
 		super.setInput(input, options);
-		this.applySettings();
 		this.resultsView.input = input;
 		return TPromise.wrap<void>(null);
 	}
