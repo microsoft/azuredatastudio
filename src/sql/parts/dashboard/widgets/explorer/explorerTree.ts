@@ -16,6 +16,8 @@ import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesServ
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import * as Constants from 'sql/parts/connection/common/constants';
 import { OEAction } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
+import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IScriptingService } from 'sql/services/scripting/scriptingService';
 
 import { ObjectMetadata } from 'sqlops';
 
@@ -30,8 +32,6 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { $ } from 'vs/base/browser/dom';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IProgressService } from 'vs/platform/progress/common/progress';
 
 export class ObjectMetadataWrapper implements ObjectMetadata {
