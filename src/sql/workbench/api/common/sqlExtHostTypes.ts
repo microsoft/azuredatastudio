@@ -76,7 +76,8 @@ export enum ModelComponentTypes {
 	Text,
 	DashboardWidget,
 	DashboardWebview,
-	Form
+	Form,
+	Group
 }
 
 export interface IComponentShape {
