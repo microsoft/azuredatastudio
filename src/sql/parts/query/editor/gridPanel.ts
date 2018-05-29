@@ -4,24 +4,24 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { ViewletPanel, IViewletPanelOptions, attachPanelStyler } from 'vs/workbench/browser/parts/views/panelViewlet';
-import { isArray } from 'vs/base/common/types';
-import { range } from 'vs/base/common/arrays';
-import { Orientation, SplitView, IView } from 'vs/base/browser/ui/splitview/splitview';
 import { DragCellSelectionModel } from 'sql/base/browser/ui/table/plugins/dragCellSelectionModel.plugin';
 import { attachTableStyler } from 'sql/common/theme/styler';
-
-import * as sqlops from 'sqlops';
-
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { VirtualizedCollection, IGridDataRow, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table, ITableStyles } from 'sql/base/browser/ui/table/table';
+
+import * as sqlops from 'sqlops';
+
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import Event, { Emitter } from 'vs/base/common/event';
 import { Panel } from 'vs/base/browser/ui/splitview/panelview';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { ViewletPanel, IViewletPanelOptions, attachPanelStyler } from 'vs/workbench/browser/parts/views/panelViewlet';
+import { isArray } from 'vs/base/common/types';
+import { range } from 'vs/base/common/arrays';
+import { Orientation, SplitView, IView } from 'vs/base/browser/ui/splitview/splitview';
 
 const rowHeight = 29;
 const minGridHeightInRows = 8;
