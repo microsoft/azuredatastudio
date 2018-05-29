@@ -27,6 +27,7 @@ import { Delayer } from 'vs/base/common/async';
 import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 
 @Component({
 	selector: 'explorer-widget',
@@ -63,7 +64,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
-		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService
+		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
+		@Inject(IProgressService) private progressService: IProgressService
 	) {
 		super();
 		this.init();

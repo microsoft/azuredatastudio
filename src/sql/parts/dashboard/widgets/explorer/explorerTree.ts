@@ -6,7 +6,7 @@
 import { Router } from '@angular/router';
 
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { MetadataType } from 'sql/parts/connection/common/connectionManagement';
+import { MetadataType, IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
 import {
 	NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction, ScriptExecuteAction, ScriptAlterAction,
@@ -30,6 +30,9 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { $ } from 'vs/base/browser/dom';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IScriptingService } from 'sql/services/scripting/scriptingService';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 
 export class ObjectMetadataWrapper implements ObjectMetadata {
 	public metadataType: MetadataType;
@@ -370,7 +373,7 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 
 	if (element instanceof ObjectMetadataWrapper) {
 		if (element.metadataType === MetadataType.View || element.metadataType === MetadataType.Table) {
-			actions.push(instantiationService.createInstance(ScriptSelectAction, ScriptSelectAction.ID, ScriptSelectAction.LABEL));
+			actions.push(instantiationService.createInstance(ExplorerScriptSelectAction, ScriptSelectAction.ID, ScriptSelectAction.LABEL));
 		}
 
 		if (element.metadataType === MetadataType.Table) {
@@ -378,12 +381,12 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 		}
 
 		if (element.metadataType === MetadataType.SProc && info.connectionProfile.providerName === Constants.mssqlProviderName) {
-			actions.push(instantiationService.createInstance(ScriptExecuteAction, ScriptExecuteAction.ID, ScriptExecuteAction.LABEL));
+			actions.push(instantiationService.createInstance(ExplorerScriptExecuteAction, ScriptExecuteAction.ID, ScriptExecuteAction.LABEL));
 		}
 
 		if ((element.metadataType === MetadataType.SProc || element.metadataType === MetadataType.Function || element.metadataType === MetadataType.View)
 			&& info.connectionProfile.providerName === Constants.mssqlProviderName) {
-			actions.push(instantiationService.createInstance(ScriptAlterAction, ScriptAlterAction.ID, ScriptAlterAction.LABEL));
+			actions.push(instantiationService.createInstance(ExplorerScriptAlterAction, ScriptAlterAction.ID, ScriptAlterAction.LABEL));
 		}
 	} else {
 		actions.push(instantiationService.createInstance(CustomExecuteCommandAction, NewQueryAction.ID, NewQueryAction.LABEL));
@@ -402,7 +405,7 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 		return TPromise.as(actions);
 	}
 
-	actions.push(instantiationService.createInstance(ScriptCreateAction, ScriptCreateAction.ID, ScriptCreateAction.LABEL));
+	actions.push(instantiationService.createInstance(ExplorerScriptCreateAction, ScriptCreateAction.ID, ScriptCreateAction.LABEL));
 
 	return TPromise.as(actions);
 }
@@ -410,5 +413,80 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 class CustomExecuteCommandAction extends ExecuteCommandAction {
 	run(context: ManageActionContext): TPromise<any> {
 		return super.run(context.profile);
+	}
+}
+
+class ExplorerScriptSelectAction extends ScriptSelectAction {
+	constructor(
+		id: string, label: string,
+		@IQueryEditorService queryEditorService: IQueryEditorService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IScriptingService scriptingService: IScriptingService,
+		@IProgressService private progressService: IProgressService
+	) {
+		super(id, label, queryEditorService, connectionManagementService, scriptingService);
+	}
+
+	public run(actionContext: BaseActionContext): TPromise<boolean> {
+		let promise = super.run(actionContext);
+		this.progressService.showWhile(promise);
+		return promise;
+	}
+}
+
+class ExplorerScriptCreateAction extends ScriptCreateAction {
+	constructor(
+		id: string, label: string,
+		@IQueryEditorService queryEditorService: IQueryEditorService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IScriptingService scriptingService: IScriptingService,
+		@IErrorMessageService errorMessageService: IErrorMessageService,
+		@IProgressService private progressService: IProgressService
+	) {
+		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+	}
+
+	public run(actionContext: BaseActionContext): TPromise<boolean> {
+		let promise = super.run(actionContext);
+		this.progressService.showWhile(promise);
+		return promise;
+	}
+}
+
+class ExplorerScriptAlterAction extends ScriptAlterAction {
+	constructor(
+		id: string, label: string,
+		@IQueryEditorService queryEditorService: IQueryEditorService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IScriptingService scriptingService: IScriptingService,
+		@IErrorMessageService errorMessageService: IErrorMessageService,
+		@IProgressService private progressService: IProgressService
+	) {
+		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+	}
+
+	public run(actionContext: BaseActionContext): TPromise<boolean> {
+		let promise = super.run(actionContext);
+		this.progressService.showWhile(promise);
+		return promise;
+	}
+}
+
+class ExplorerScriptExecuteAction extends ScriptExecuteAction {
+	constructor(
+		id: string, label: string,
+		@IQueryEditorService queryEditorService: IQueryEditorService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IScriptingService scriptingService: IScriptingService,
+		@IErrorMessageService errorMessageService: IErrorMessageService,
+		@IProgressService private progressService: IProgressService
+	) {
+		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+	}
+
+	public run(actionContext: BaseActionContext): TPromise<boolean> {
+		let promise = super.run(actionContext);
+		this.progressService.showWhile(promise);
+		return promise;
 	}
 }
