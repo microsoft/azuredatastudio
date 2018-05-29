@@ -122,9 +122,11 @@ class GridTable implements IView {
 		return this.runner.getQueryRows(offset, count, this.resultSet.batchId, this.resultSet.id).then(response => {
 			let rows = response.resultSubset;
 			return rows.rows.map(r => {
-				return { values: r.map(c => {
-					return c.displayValue;
-				})};
+				return {
+					values: r.map(c => {
+						return c.displayValue;
+					})
+				};
 			});
 		});
 	}
@@ -134,19 +136,19 @@ class GridTable implements IView {
 	}
 
 	private renderGridDataRowsRange(startIndex: number, count: number): void {
-        // let editor = this.table.getCellEditor();
-        // let oldValue = editor ? editor.getValue() : undefined;
-        // let wasValueChanged = editor ? editor.isValueChanged() : false;
-        this.invalidateRange(startIndex, startIndex + count);
-        // let activeCell = this._grid.getActiveCell();
-        // if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
-        //     if (oldValue && wasValueChanged) {
-        //         editor.setValue(oldValue);
-        //     }
-        // }
+		// let editor = this.table.getCellEditor();
+		// let oldValue = editor ? editor.getValue() : undefined;
+		// let wasValueChanged = editor ? editor.isValueChanged() : false;
+		this.invalidateRange(startIndex, startIndex + count);
+		// let activeCell = this._grid.getActiveCell();
+		// if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
+		//     if (oldValue && wasValueChanged) {
+		//         editor.setValue(oldValue);
+		//     }
+		// }
 	}
 
-    private invalidateRange(start: number, end: number): void {
+	private invalidateRange(start: number, end: number): void {
 		let refreshedRows = range(start, end);
 		if (this.table) {
 			this.table.invalidateRows(refreshedRows, true);
