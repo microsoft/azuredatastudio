@@ -11,7 +11,7 @@ import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 import * as DOM from 'vs/base/browser/dom';
 import { Color } from 'vs/base/common/color';
 import { mixin } from 'vs/base/common/objects';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Dimension } from 'vs/base/browser/builder';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Widget } from 'vs/base/browser/ui/widget';
@@ -39,7 +39,7 @@ export interface ITableConfiguration<T> {
 	sorter?: ITableSorter<T>;
 }
 
-export class Table<T extends Slick.SlickData> extends Widget implements IThemable {
+export class Table<T extends Slick.SlickData> extends Widget implements IThemable, IDisposable {
 	private styleElement: HTMLStyleElement;
 	private idPrefix: string;
 
@@ -53,6 +53,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 	private _tableContainer: HTMLElement;
 
 	private _classChangeTimeout: number;
+
+	private _disposables: IDisposable[] = [];
 
 	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super();
@@ -103,6 +105,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 			});
 		}
 
+	}
+
+	public dispose() {
+		dispose(this._disposables);
 	}
 
 	public invalidateRows(rows: number[], keepEditor: boolean) {

@@ -72,7 +72,9 @@ export class TabbedPanel extends Disposable implements IThemable {
 		let actionbarcontainer = $('.title-actions');
 		this._actionbar = new ActionBar(actionbarcontainer);
 		this.$header.append(actionbarcontainer);
-		this.$parent.append(this.$header);
+		if (options.showHeaderWhenSingleView) {
+			this.$parent.append(this.$header);
+		}
 		this.$body = $('tabBody');
 		this.$body.attr('role', 'tabpanel');
 		this.$body.attr('tabindex', '0');
@@ -85,6 +87,9 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this._createTab(internalTab);
 		if (!this._shownTab) {
 			this.showTab(tab.identifier);
+		}
+		if (this._tabMap.size > 1 && !this.$header.getHTMLElement().parentNode) {
+			this.$parent.append(this.$header, 0);
 		}
 		return tab.identifier as PanelTabIdentifier;
 	}

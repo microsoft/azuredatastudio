@@ -86,9 +86,7 @@ export class MessagePanel extends ViewletPanel {
 
 	public reset() {
 		this.model.messages = [];
-		this.tree.refresh(this.model).then(() => {
-			this.tree.setScrollPosition(1);
-		});
+		this.tree.refresh(this.model);
 	}
 }
 

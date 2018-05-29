@@ -22,14 +22,19 @@ import { ViewletPanel, IViewletPanelOptions, attachPanelStyler } from 'vs/workbe
 import { isArray } from 'vs/base/common/types';
 import { range } from 'vs/base/common/arrays';
 import { Orientation, SplitView, IView } from 'vs/base/browser/ui/splitview/splitview';
+import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { $ } from 'vs/base/browser/builder';
 
 const rowHeight = 29;
 const minGridHeightInRows = 8;
 
 export class GridPanel extends ViewletPanel {
 	private container = document.createElement('div');
-
 	private splitView: SplitView;
+	private tables: GridTable[] = [];
+	private tableDisposable: IDisposable[] = [];
+
+	public runner: QueryRunner;
 
 	constructor(
 		title: string, options: IViewletPanelOptions,
@@ -57,20 +62,32 @@ export class GridPanel extends ViewletPanel {
 		if (isArray(resultSet)) {
 			resultSet.forEach(c => {
 				let table = new GridTable(this.runner, c);
-				this.disposables.push(attachTableStyler(table, this.themeService));
+				this.tableDisposable.push(attachTableStyler(table, this.themeService));
 				this.splitView.addView(table, 1, this.splitView.length);
+				this.tables.push(table);
 			});
 		} else {
 			let table = new GridTable(this.runner, resultSet);
-			this.disposables.push(attachTableStyler(table, this.themeService));
+			this.tableDisposable.push(attachTableStyler(table, this.themeService));
 			this.splitView.addView(table, 1, this.splitView.length);
+			this.tables.push(table);
 		}
+
+		this.maximumBodySize = this.tables.reduce((p, c) => {
+			return p + c.maximumSize;
+		}, 0);
 	}
 
-	public runner: QueryRunner;
+	public reset() {
+		for (let i = this.splitView.length - 1; i >= 0; i--) {
+			this.splitView.removeView(i);
+		}
+		dispose(this.tables);
+		this.tables = [];
+	}
 }
 
-class GridTable implements IView {
+class GridTable extends Disposable implements IView {
 	private table: Table<any>;
 	private container = document.createElement('div');
 
@@ -78,6 +95,7 @@ class GridTable implements IView {
 	public readonly onDidChange: Event<number> = this._onDidChange.event;
 
 	constructor(private runner: QueryRunner, private resultSet: sqlops.ResultSetSummary) {
+		super();
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
 		let collection = new VirtualizedCollection(50, resultSet.rowCount, (offset, count) => {
@@ -96,7 +114,7 @@ class GridTable implements IView {
 			};
 		});
 		let dataProvider = new AsyncDataProvider(collection, columns);
-		this.table = new Table(this.container, { dataProvider, columns }, { rowHeight, showRowNumber: true });
+		this.table = this._register(new Table(this.container, { dataProvider, columns }, { rowHeight, showRowNumber: true }));
 		this.table.setSelectionModel(new DragCellSelectionModel());
 	}
 
@@ -157,5 +175,10 @@ class GridTable implements IView {
 
 	public style(styles: ITableStyles) {
 		this.table.style(styles);
+	}
+
+	public dispose() {
+		$(this.container).destroy();
+		super.dispose();
 	}
 }

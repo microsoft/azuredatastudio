@@ -82,6 +82,9 @@ export default class QueryRunner {
 		}
 	});
 
+	private _onStartQuery = new Emitter<void>();
+	public readonly onStartQuery: Event<void> = this._onStartQuery.event;
+
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		public uri: string,
@@ -173,7 +176,7 @@ export default class QueryRunner {
 
 	private handleSuccessRunQueryResult() {
 		// The query has started, so lets fire up the result pane
-		this._eventEmitter.emit(EventType.START);
+		this._onStartQuery.fire();
 		this._queryManagementService.registerRunner(this, this.uri);
 	}
 

@@ -21,6 +21,7 @@ import * as DOM from 'vs/base/browser/dom';
 import Event, { Emitter } from 'vs/base/common/event';
 
 import { IResultMessage } from 'sqlops';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 class ResultsView implements IPanelView {
 	private panelViewlet: PanelViewlet;
@@ -34,13 +35,15 @@ class ResultsView implements IPanelView {
 	private _onLayout = new Emitter<void>();
 	public readonly onLayout = this._onLayout.event;
 
+	private queryRunnerDisposable: IDisposable[] = [];
+
 	constructor(instantiationService: IInstantiationService) {
 		this.panelViewlet = instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: true });
 		this.gridPanel = instantiationService.createInstance(GridPanel, nls.localize('gridPanel', 'Results'), {});
 		this.messagePanel = instantiationService.createInstance(MessagePanel, nls.localize('messagePanel', 'Messages'), {});
 		this.panelViewlet.create($(this.container)).then(() => {
 			this.panelViewlet.addPanel(this.gridPanel, 1, 0);
-			this.panelViewlet.addPanel(this.messagePanel, 1, 1);
+			this.panelViewlet.addPanel(this.messagePanel, this.messagePanel.minimumSize, 1);
 		});
 	}
 
@@ -57,13 +60,21 @@ class ResultsView implements IPanelView {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
+		dispose(this.queryRunnerDisposable);
+		this.queryRunnerDisposable = [];
+		this.gridPanel.reset();
+		this.messagePanel.reset();
 		this.gridPanel.runner = runner;
-		runner.onResultSet(e => {
+		this.queryRunnerDisposable.push(runner.onResultSet(e => {
 			this.gridPanel.onResultSet(e);
-		});
-		runner.onMessage(e => {
+		}));
+		this.queryRunnerDisposable.push(runner.onMessage(e => {
 			this.messagePanel.onMessage(e);
-		});
+		}));
+		this.queryRunnerDisposable.push(runner.onStartQuery(() => {
+			this.gridPanel.reset();
+			this.messagePanel.reset();
+		}));
 	}
 }
 
