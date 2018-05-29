@@ -8,12 +8,14 @@ import { ViewletPanel, IViewletPanelOptions, attachPanelStyler } from 'vs/workbe
 import { isArray } from 'vs/base/common/types';
 import { range } from 'vs/base/common/arrays';
 import { Orientation, SplitView, IView } from 'vs/base/browser/ui/splitview/splitview';
+import { DragCellSelectionModel } from 'sql/base/browser/ui/table/plugins/dragCellSelectionModel.plugin';
+import { attachTableStyler } from 'sql/common/theme/styler';
 
 import * as sqlops from 'sqlops';
 
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { VirtualizedCollection, IGridDataRow, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
-import { Table } from 'sql/base/browser/ui/table/table';
+import { Table, ITableStyles } from 'sql/base/browser/ui/table/table';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -54,10 +56,14 @@ export class GridPanel extends ViewletPanel {
 	public onResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
 		if (isArray(resultSet)) {
 			resultSet.forEach(c => {
-				this.splitView.addView(new GridTable(this.runner, c), 1, this.splitView.length);
+				let table = new GridTable(this.runner, c);
+				this.disposables.push(attachTableStyler(table, this.themeService));
+				this.splitView.addView(table, 1, this.splitView.length);
 			});
 		} else {
-			this.splitView.addView(new GridTable(this.runner, resultSet), 1, this.splitView.length);
+			let table = new GridTable(this.runner, resultSet);
+			this.disposables.push(attachTableStyler(table, this.themeService));
+			this.splitView.addView(table, 1, this.splitView.length);
 		}
 	}
 
@@ -90,7 +96,8 @@ class GridTable implements IView {
 			};
 		});
 		let dataProvider = new AsyncDataProvider(collection, columns);
-		this.table = new Table(this.container, { dataProvider, columns }, { rowHeight });
+		this.table = new Table(this.container, { dataProvider, columns }, { rowHeight, showRowNumber: true });
+		this.table.setSelectionModel(new DragCellSelectionModel());
 	}
 
 	public render(container: HTMLElement, orientation: Orientation): void {
@@ -144,5 +151,9 @@ class GridTable implements IView {
 		if (this.table) {
 			this.table.invalidateRows(refreshedRows, true);
 		}
-    }
+	}
+
+	public style(styles: ITableStyles) {
+		this.table.style(styles);
+	}
 }

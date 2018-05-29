@@ -60,7 +60,7 @@ class ResultsView implements IPanelView {
 		this.gridPanel.runner = runner;
 		runner.onResultSet(e => {
 			this.gridPanel.onResultSet(e);
-		})
+		});
 		runner.onMessage(e => {
 			this.messagePanel.onMessage(e);
 		});
