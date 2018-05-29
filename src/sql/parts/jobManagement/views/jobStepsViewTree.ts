@@ -111,7 +111,7 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 	private _statusIcon: HTMLElement;
 
 	public getHeight(tree: tree.ITree, element: JobStepsViewRow): number {
-		return 22;
+		return 22 * Math.ceil(element.message.length/110);
 	}
 
 	public getTemplateId(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): string {
