@@ -29,6 +29,7 @@ declare module 'sqlops' {
 		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent>;
 		formContainer(): FormBuilder;
+		groupContainer(): GroupBuilder;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -43,6 +44,9 @@ declare module 'sqlops' {
 
 	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout> {
 
+	}
+
+	export interface GroupBuilder extends ContainerBuilder<GroupContainer, GroupLayout, GroupItemLayout> {
 	}
 
 	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
@@ -167,7 +171,7 @@ declare module 'sqlops' {
 		 */
 		alignContent?: string;
 
-		height? : number | string;
+		height?: number | string;
 	}
 
 	export interface FlexItemLayout {
@@ -183,12 +187,20 @@ declare module 'sqlops' {
 	}
 
 	export interface FormItemLayout {
-		horizontal: boolean;
-		componentWidth: number;
+		horizontal?: boolean;
+		componentWidth?: number;
 	}
 
 	export interface FormLayout {
-		width: number;
+		width?: number;
+	}
+
+	export interface GroupLayout {
+		width?: number | string;
+		header?: string;
+	}
+
+	export interface GroupItemLayout {
 	}
 
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
@@ -197,6 +209,8 @@ declare module 'sqlops' {
 	export interface FormContainer extends Container<FormLayout, FormItemLayout> {
 	}
 
+	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout> {
+	}
 
 	/**
 	 * Describes an action to be shown in the UI, with a user-readable label

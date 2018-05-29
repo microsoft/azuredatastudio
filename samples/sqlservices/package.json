@@ -19,7 +19,7 @@
         "commands": [
             {
                 "command": "sqlservices.openDialog",
-                "title": "sqlservices.openDialog"
+                "title": "openDialog"
             },
             {
                 "command": "sqlservices.openEditor",
