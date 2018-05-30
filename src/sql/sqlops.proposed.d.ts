@@ -697,4 +697,35 @@ declare module 'sqlops' {
 		 */
 		readonly retainContextWhenHidden?: boolean;
 	}
+
+	export enum DataProviderType {
+		ConnectionProvider = 'ConnectionProvider',
+		BackupProvider = 'BackupProvider',
+		RestoreProvider = 'RestoreProvider',
+		ScriptingProvider = 'ScriptingProvider',
+		ObjectExplorerProvider = 'ObjectExplorerProvider',
+		TaskServicesProvider = 'TaskServicesProvider',
+		FileBrowserProvider = 'FileBrowserProvider',
+		ProfilerProvider = 'ProfilerProvider',
+		MetadataProvider = 'MetadataProvider',
+		QueryProvider = 'QueryProvider',
+		AdminServicesProvider = 'AdminServicesProvider',
+		AgentServicesProvider = 'AgentServicesProvider',
+		CapabilitiesProvider = 'CapabilitiesProvider'
+	}
+
+	export namespace dataprotocol {
+		/**
+		 * Get the provider corresponding to the given provider ID and type
+		 * @param providerId The ID that the provider was registered with
+		 * @param providerType The type of the provider
+		 */
+		export function getProvider<T extends DataProvider>(providerId: string, providerType: DataProviderType): T;
+
+		/**
+		 * Get all registered providers of the given type
+		 * @param providerType The type of the providers
+		 */
+		export function getProvidersByType<T extends DataProvider>(providerType: DataProviderType): T[];
+	}
 }

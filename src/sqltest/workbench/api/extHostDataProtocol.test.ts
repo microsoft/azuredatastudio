@@ -6,105 +6,60 @@
 'use strict';
 
 import * as assert from 'assert';
-import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { setUnexpectedErrorHandler, errorHandler } from 'vs/base/common/errors';
-import URI from 'vs/base/common/uri';
-import * as EditorCommon from 'vs/editor/common/editorCommon';
-import { TextModel as EditorModel } from 'vs/editor/common/model/textModel';
-import { TestRPCProtocol } from 'vs/workbench/test/electron-browser/api/testRPCProtocol';
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IMarkerService } from 'vs/platform/markers/common/markers';
-import { MarkerService } from 'vs/platform/markers/common/markerService';
-import { IRPCProtocol } from 'vs/workbench/services/extensions/node/proxyIdentifier';
-import { ExtHostCommands } from 'vs/workbench/api/node/extHostCommands';
-import { MainThreadCommands } from 'vs/workbench/api/electron-browser/mainThreadCommands';
-import { IHeapService } from 'vs/workbench/api/electron-browser/mainThreadHeapService';
-import { ExtHostDocuments } from 'vs/workbench/api/node/extHostDocuments';
-import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/node/extHostDocumentsAndEditors';
-import { DocumentSymbolProviderRegistry } from 'vs/editor/common/modes';
-import { MainContext, ExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { ExtHostDiagnostics } from 'vs/workbench/api/node/extHostDiagnostics';
-import { ExtHostHeapService } from 'vs/workbench/api/node/extHostHeapService';
-import * as vscode from 'vscode';
-
+import { Mock } from 'typemoq';
 import * as sqlops from 'sqlops';
 import { ExtHostDataProtocol } from 'sql/workbench/api/node/extHostDataProtocol';
-import { SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ProxyAuthHandler } from 'vs/code/electron-main/auth';
+import { MainThreadDataProtocolShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 
-const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
+suite('ExtHostDataProtocol', () => {
 
-const model = EditorModel.createFromString(
-	[
-		'This is the first line',
-		'This is the second line',
-		'This is the third line',
-	].join('\n'),
-	undefined,
-	undefined,
-	URI.parse('far://testing/file.a'));
+	let extHostDataProtocol: ExtHostDataProtocol;
 
-let extHost: ExtHostDataProtocol;
-let disposables: vscode.Disposable[] = [];
-let threadService: TestRPCProtocol;
-let originalErrorHandler: (e: any) => any;
-
-suite('ExtHostDataProtocol', function () {
-
-	suiteSetup(() => {
-
-		// threadService = new TestThreadService();
-		// let instantiationService = new TestInstantiationService();
-		// instantiationService.stub(IThreadService, threadService);
-		// instantiationService.stub(IMarkerService, MarkerService);
-		// instantiationService.stub(IHeapService, {
-		// 	_serviceBrand: undefined,
-		// 	trackRecursive(args) {
-		// 		// nothing
-		// 		return args;
-		// 	}
-		// });
-
-		// originalErrorHandler = errorHandler.getUnexpectedErrorHandler();
-		// setUnexpectedErrorHandler(() => { });
-
-		// const extHostDocumentsAndEditors = new ExtHostDocumentsAndEditors(threadService);
-		// extHostDocumentsAndEditors.$acceptDocumentsAndEditorsDelta({
-		// 	addedDocuments: [{
-		// 		isDirty: false,
-		// 		versionId: model.getVersionId(),
-		// 		modeId: model.getLanguageIdentifier().language,
-		// 		url: model.uri,
-		// 		lines: model.getValue().split(model.getEOL()),
-		// 		EOL: model.getEOL(),
-		// 	}]
-		// });
-		// const extHostDocuments = new ExtHostDocuments(threadService, extHostDocumentsAndEditors);
-		// threadService.set(ExtHostContext.ExtHostDocuments, extHostDocuments);
-
-		// const heapService = new ExtHostHeapService();
-
-		// const commands = new ExtHostCommands(threadService, heapService);
-		// threadService.set(ExtHostContext.ExtHostCommands, commands);
-		// threadService.setTestInstance(MainContext.MainThreadCommands, instantiationService.createInstance(MainThreadCommands));
-
-		// const diagnostics = new ExtHostDiagnostics(threadService);
-		// threadService.set(ExtHostContext.ExtHostDiagnostics, diagnostics);
-
-		// extHost = new ExtHostDataProtocol(threadService);
-		// threadService.set(SqlExtHostContext.ExtHostDataProtocol, extHost);
+	setup(() => {
+		extHostDataProtocol = new ExtHostDataProtocol({
+			getProxy: identifier => {
+				return {
+					$registerMetadataProvider: (providerId, handle) => Promise.resolve(),
+					$registerConnectionProvider: (providerId, handle) => Promise.resolve()
+				} as any;
+			}
+		} as any);
 	});
 
-	suiteTeardown(() => {
-		// setUnexpectedErrorHandler(originalErrorHandler);
-		// model.dispose();
-	});
+	test('Providers are exposed to other extensions', () => {
+		let extension1Id = 'provider1';
+		let extension1MetadataMock = Mock.ofInstance({
+			getMetadata: () => undefined,
+			getDatabases: () => undefined,
+			getTableInfo: () => undefined,
+			getViewInfo: () => undefined,
+			providerId: extension1Id
+		} as sqlops.MetadataProvider);
 
-	teardown(function () {
-		// while (disposables.length) {
-		// 	disposables.pop().dispose();
-		// }
-		// return threadService.sync();
-	});
+		let extension2Id = 'provider2';
+		let extension2MetadataMock = Mock.ofInstance({
+			getMetadata: () => undefined,
+			getDatabases: () => undefined,
+			getTableInfo: () => undefined,
+			getViewInfo: () => undefined,
+			providerId: extension2Id
+		} as sqlops.MetadataProvider);
 
-	// --- outline
+		// If I register both providers and then get them using the getProvider API
+		extHostDataProtocol.$registerMetadataProvider(extension1MetadataMock.object);
+		extHostDataProtocol.$registerMetadataProvider(extension2MetadataMock.object);
+		extHostDataProtocol.$registerConnectionProvider({} as sqlops.ConnectionProvider);
+		let retrievedProvider1 = extHostDataProtocol.getProvider<sqlops.MetadataProvider>(extension1Id, DataProviderType.MetadataProvider);
+		let retrievedProvider2 = extHostDataProtocol.getProvider<sqlops.MetadataProvider>(extension2Id, DataProviderType.MetadataProvider);
+		let allProviders = extHostDataProtocol.getProvidersByType<sqlops.MetadataProvider>(DataProviderType.MetadataProvider);
+
+		// Then each provider was retrieved successfully
+		assert.equal(retrievedProvider1, extension1MetadataMock.object, 'Expected metadata provider was not retrieved for extension 1');
+		assert.equal(retrievedProvider2, extension2MetadataMock.object, 'Expected metadata provider was not retrieved for extension 2');
+		assert.equal(allProviders.length, 2, 'All metadata providers had unexpected length');
+		assert.equal(allProviders.some(provider => provider === extension1MetadataMock.object), true, 'All metadata providers did not include extension 1 metadata provider');
+		assert.equal(allProviders.some(provider => provider === extension2MetadataMock.object), true, 'All metadata providers did not include extension 2 metadata provider');
+	});
 });
