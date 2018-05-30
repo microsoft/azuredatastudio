@@ -12,12 +12,11 @@ import pkg from 'vs/platform/node/package';
 import product from 'vs/platform/node/product';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ReleaseNotesInput } from 'vs/workbench/parts/update/electron-browser/releaseNotesInput';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import URI from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { AbstractShowReleaseNotesAction, loadReleaseNotes } from 'vs/workbench/parts/update/electron-browser/update';
+import { AbstractShowReleaseNotesAction } from 'vs/workbench/parts/update/electron-browser/update';
 import { INotification, INotificationService, INotificationActions } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 
@@ -43,9 +42,8 @@ export class ShowCurrentReleaseNotesAction extends AbstractShowReleaseNotesActio
 	constructor(
 		id = ShowCurrentReleaseNotesAction.ID,
 		label = ShowCurrentReleaseNotesAction.LABEL,
-		@IWorkbenchEditorService editorService: IWorkbenchEditorService,
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(id, label, pkg.version, editorService, instantiationService);
+		super(id, label, pkg.version, instantiationService);
 	}
 }

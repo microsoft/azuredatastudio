@@ -606,7 +606,7 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 	}
 
 	// {{SQL CARBON EDIT}}
-	private downloadOrBrowse(ext: Extension): TPromise<void> {
+	private downloadOrBrowse(ext: Extension): TPromise<any> {
 		if (ext.gallery.assets.downloadPage && ext.gallery.assets.downloadPage.uri) {
 			window.open(ext.gallery.assets.downloadPage.uri);
 			return TPromise.wrap<void>(void 0);

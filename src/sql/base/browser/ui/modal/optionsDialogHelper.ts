@@ -51,7 +51,7 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 	} else if (option.valueType === ServiceOptionType.category || option.valueType === ServiceOptionType.boolean) {
 		optionWidget = new SelectBox(possibleInputs, optionValue.toString(), contextViewService);
 		DialogHelper.appendInputSelectBox(rowContainer, optionWidget);
-		inputElement = findElement(rowContainer, 'select-box');
+		inputElement = findElement(rowContainer, 'monaco-select-box');
 	} else if (option.valueType === ServiceOptionType.string || option.valueType === ServiceOptionType.password) {
 		optionWidget = new InputBox(rowContainer.getHTMLElement(), contextViewService, {
 			validationOptions: {

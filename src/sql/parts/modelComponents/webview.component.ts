@@ -10,13 +10,13 @@ import {
 
 import * as sqlops from 'sqlops';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Webview } from 'vs/workbench/parts/html/browser/webview';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -29,7 +29,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
-	private _webview: Webview;
+	private _webview: WebviewElement;
 	private _onMessage = new Emitter<any>();
 	private _renderedHtml: string;
 
@@ -54,7 +54,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	}
 
 	private _createWebview(): void {
-		this._webview = this._register(new Webview(this._el.nativeElement,
+		this._webview = this._register(new WebviewElement(
 			this.partService.getContainer(Parts.EDITOR_PART),
 			this.themeService,
 			this.environmentService,
@@ -66,7 +66,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 				enableWrappedPostMessage: true
 			}
 		));
-
+		this._webview.mountTo(this._el.nativeElement);
 
 		this._register(this._webview.onMessage(e => {
 			this._onEventEmitter.fire({

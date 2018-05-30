@@ -18,10 +18,10 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
-import { Webview } from 'vs/workbench/parts/html/browser/webview';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
+import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
 
 export class WebViewDialog extends Modal {
 
@@ -29,7 +29,7 @@ export class WebViewDialog extends Modal {
 	private _okButton: Button;
 	private _okLabel: string;
 	private _closeLabel: string;
-	private _webview: Webview;
+	private _webview: WebviewElement;
 	private _html: string;
 	private _headerTitle: string;
 
@@ -89,8 +89,7 @@ export class WebViewDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		new Builder(container).div({ 'class': 'webview-dialog' }, (bodyBuilder) => {
 			this._body = bodyBuilder.getHTMLElement();
-			this._webview = new Webview(
-				this._body,
+			this._webview = new WebviewElement(
 				this._webViewPartService.getContainer(Parts.EDITOR_PART),
 				this._themeService,
 				this._environmentService,
@@ -102,6 +101,7 @@ export class WebViewDialog extends Modal {
 					enableWrappedPostMessage: true
 				}
 			);
+			this._webview.mountTo(this._body);
 
 			this._webview.style(this._themeService.getTheme());
 

@@ -13,7 +13,7 @@ import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { localize } from 'vs/nls';
 import Severity from 'vs/base/common/severity';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IChoiceService } from 'vs/platform/dialogs/common/dialogs';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 export const SERVICE_ID = 'taskHistoryService';
 export const ITaskService = createDecorator<ITaskService>(SERVICE_ID);
@@ -51,7 +51,7 @@ export class TaskService implements ITaskService {
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
-		@IChoiceService private choiceService: IChoiceService,
+		@IDialogService private dialogService: IDialogService,
 		@IQueryEditorService private queryEditorService: IQueryEditorService
 	) {
 		this._taskQueue = new TaskNode('Root', undefined, undefined);
@@ -134,7 +134,7 @@ export class TaskService implements ITaskService {
 		return new TPromise<boolean>((resolve, reject) => {
 			let numOfInprogressTasks = this.getNumberOfInProgressTasks();
 			if (numOfInprogressTasks > 0) {
-				this.choiceService.choose(Severity.Warning, message, options, 0, false).done(choice => {
+				this.dialogService.show(Severity.Warning, message, options).done(choice => {
 					switch (choice) {
 						case 0:
 							let timeoutId: number;

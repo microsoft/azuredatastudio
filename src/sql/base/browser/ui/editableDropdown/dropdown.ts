@@ -117,7 +117,7 @@ export class Dropdown extends Disposable {
 
 		this._toggleAction = new ToggleDropdownAction(() => {
 			this._showList();
-			this._tree.DOMFocus();
+			this._tree.domFocus();
 			this._tree.focusFirst();
 		});
 
@@ -168,7 +168,7 @@ export class Dropdown extends Disposable {
 					if (!this.$treeContainer.getHTMLElement().parentElement) {
 						this._showList();
 					}
-					this._tree.DOMFocus();
+					this._tree.domFocus();
 					this._tree.focusFirst();
 					e.stopPropagation();
 					e.preventDefault();

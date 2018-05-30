@@ -99,7 +99,7 @@ export class DialogButton implements sqlops.window.modelviewdialog.Button {
 	/**
 	 * Register an event that notifies the button that it has been clicked
 	 */
-	public registerClickEvent(clickEvent: Event<void>): void {
+	public registerClickEvent(clickEvent: Event<any>): void {
 		clickEvent(() => this._onClick.fire());
 	}
 }

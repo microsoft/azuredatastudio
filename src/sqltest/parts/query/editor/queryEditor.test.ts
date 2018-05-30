@@ -31,7 +31,7 @@ import * as assert from 'assert';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { INotification, INotificationService } from 'vs/platform/notification/common/notification';
-import { TestNotificationService } from 'vs/workbench/test/workbenchTestServices';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 
 suite('SQL QueryEditor Tests', () => {
 	let queryModelService: QueryModelService;
@@ -140,7 +140,7 @@ suite('SQL QueryEditor Tests', () => {
 	test('createEditor creates only the taskbar', (done) => {
 		// If I call createEditor
 		let editor: QueryEditor = getQueryEditor();
-		editor.createEditor(parentBuilder);
+		editor.createEditor(parentBuilder.getHTMLElement());
 
 		// The taskbar should be created
 		assert.equal(!!editor.taskbar, true);

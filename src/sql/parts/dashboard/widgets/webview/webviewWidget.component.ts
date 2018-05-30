@@ -5,7 +5,6 @@
 
 import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ViewChild, ElementRef } from '@angular/core';
 
-import { Webview } from 'vs/workbench/parts/html/browser/webview';
 import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -20,6 +19,7 @@ import * as sqlops from 'sqlops';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
 
 interface IWebviewWidgetConfig {
 	id: string;
@@ -34,7 +34,7 @@ const selector = 'webview-widget';
 export class WebviewWidget extends DashboardWidget implements IDashboardWidget, OnInit, IDashboardWebview {
 
 	private _id: string;
-	private _webview: Webview;
+	private _webview: WebviewElement;
 	private _html: string;
 	private _onMessage = new Emitter<string>();
 	public readonly onMessage: Event<string> = this._onMessage.event;
@@ -105,8 +105,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		if (this._onMessageDisposable) {
 			this._onMessageDisposable.dispose();
 		}
-		this._webview = new Webview(
-			this._el.nativeElement,
+		this._webview = new WebviewElement(
 			this.partService.getContainer(Parts.EDITOR_PART),
 			this.themeService,
 			this.environmentService,
@@ -118,6 +117,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 				enableWrappedPostMessage: true
 			}
 		);
+		this._webview.mountTo(this._el.nativeElement);
 		this._onMessageDisposable = this._webview.onMessage(e => {
 			this._onMessage.fire(e);
 		});

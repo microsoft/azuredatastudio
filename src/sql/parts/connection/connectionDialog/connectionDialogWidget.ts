@@ -36,7 +36,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import * as styler from 'vs/platform/theme/common/styler';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as DOM from 'vs/base/browser/dom';
-import { DialogService } from 'vs/workbench/services/dialogs/electron-browser/dialogs';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 
 export interface OnShowUIResponse {
@@ -266,7 +265,7 @@ export class ConnectionDialogWidget extends Modal {
 					recentTitle.innerHtml(recentHistoryLabel);
 				});
 				container.div({ class: 'connection-history-actions' }, (actionsContainer) => {
-					this._actionbar = this._register(new ActionBar(actionsContainer, { animated: false }));
+					this._actionbar = this._register(new ActionBar(actionsContainer.getHTMLElement(), { animated: false }));
 					let clearAction = this._instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
 					clearAction.useConfirmationMessage = true;
 					clearAction.onRecentConnectionsRemoved(() => this.open(false));

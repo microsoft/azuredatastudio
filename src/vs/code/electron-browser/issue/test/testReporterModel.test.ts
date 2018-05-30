@@ -51,12 +51,13 @@ OS version: undefined
 			}
 		});
 		assert.equal(issueReporterModel.serialize(),
+		// {{SQL CARBON EDIT}}
 			`
 Issue Type: <b>Bug</b>
 
 undefined
 
-VS Code version: undefined
+SQL Operations Studio version: undefined
 OS version: undefined
 
 <details>

@@ -129,7 +129,7 @@ export class RecentConnectionTreeController extends DefaultController {
 			getActions: () => this.actionProvider.getActions(tree, element),
 			onHide: (wasCancelled?: boolean) => {
 				if (wasCancelled) {
-					tree.DOMFocus();
+					tree.domFocus();
 				}
 			},
 			getActionsContext: () => (actionContext)

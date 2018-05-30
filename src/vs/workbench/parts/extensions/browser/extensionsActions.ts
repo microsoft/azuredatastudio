@@ -948,7 +948,7 @@ export class ReloadAction extends Action {
 		if (this.extension.type === LocalExtensionType.System) {
 			return disabledExtensions.some(d => areSameExtensions(d, identifier));
 		}
-		return !this.extensionEnablementService.isEnabled({ id: this.extension.id, uuid: this.extension.uuid });
+		return !this.extensionEnablementService.isEnabled(this.extension.local);
 	}
 
 	run(): TPromise<any> {

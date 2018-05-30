@@ -22,7 +22,6 @@ import { entries } from 'sql/base/common/objects';
 import * as sqlops from 'sqlops';
 
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import { withElementById } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as platform from 'vs/base/common/platform';
@@ -306,7 +305,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private doShowDialog(params: INewConnectionParams): TPromise<void> {
 		if (!this._connectionDialog) {
-			let container = withElementById(this._partService.getWorkbenchElementId()).getHTMLElement().parentElement;
+			let container = document.getElementById(this._partService.getWorkbenchElementId()).parentElement;
 			this._container = container;
 			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerTypes, this._providerNameToDisplayNameMap[this._model.providerName]);
 			this._connectionDialog.onCancel(() => {

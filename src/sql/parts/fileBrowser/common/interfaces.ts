@@ -19,7 +19,7 @@ export interface IFileBrowserDialogController {
 	 */
 	showDialog(ownerUri: string,
 		expandPath: string,
-		fileFilters: [{ label: string, filters: string[] }],
+		fileFilters: { label: string, filters: string[] }[],
 		fileValidationServiceType: string,
 		isWide: boolean,
 		handleOnOk: (path: string) => void): void;

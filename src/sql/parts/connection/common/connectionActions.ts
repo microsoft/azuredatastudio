@@ -12,7 +12,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { INotificationService, INotificationActions } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { IConfirmationService, IChoiceService, IConfirmation, IConfirmationResult, Choice } from 'vs/platform/dialogs/common/dialogs';
+import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
 
 /**
  * Workbench action to clear the recent connnections list
@@ -34,7 +34,7 @@ export class ClearRecentConnectionsAction extends Action {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@INotificationService private _notificationService: INotificationService,
 		@IQuickOpenService private _quickOpenService: IQuickOpenService,
-		@IConfirmationService private _confirmationService: IConfirmationService,
+		@IDialogService private _dialogService: IDialogService,
 	) {
 		super(id, label, ClearRecentConnectionsAction.ICON);
 		this.enabled = true;
@@ -47,7 +47,7 @@ export class ClearRecentConnectionsAction extends Action {
 	public run(): TPromise<void> {
 		if (this._useConfirmationMessage) {
 			return this.promptConfirmationMessage().then(result => {
-				if (result) {
+				if (result.confirmed) {
 					this._connectionManagementService.clearRecentConnectionsList();
 					this._onRecentConnectionsRemoved.fire();
 				}
@@ -84,7 +84,7 @@ export class ClearRecentConnectionsAction extends Action {
 		});
 	}
 
-	private promptConfirmationMessage(): TPromise<boolean> {
+	private promptConfirmationMessage(): TPromise<IConfirmationResult> {
 		let confirm: IConfirmation = {
 			message: nls.localize('clearRecentConnectionMessage', 'Are you sure you want to delete all the connections from the list?'),
 			primaryButton: nls.localize('connectionDialog.yes', 'Yes'),
@@ -92,8 +92,8 @@ export class ClearRecentConnectionsAction extends Action {
 			type: 'question'
 		};
 
-		return new TPromise<boolean>((resolve, reject) => {
-			this._confirmationService.confirm(confirm).then((confirmed) => {
+		return new TPromise<IConfirmationResult>((resolve, reject) => {
+			this._dialogService.confirm(confirm).then((confirmed) => {
 				resolve(confirmed);
 			});
 		});

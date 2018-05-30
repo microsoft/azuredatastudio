@@ -21,11 +21,12 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
-import { Dimension, Builder } from 'vs/base/browser/builder';
+import { Builder } from 'vs/base/browser/builder';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Dimension } from 'vs/base/browser/dom';
 
 export class ProfilerTableEditor extends BaseEditor implements IProfilerController, ITableController {
 
@@ -57,15 +58,15 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		this._actionMap[ACTION_IDS.FIND_PREVIOUS] = this._instantiationService.createInstance(ProfilerFindPrevious, this);
 	}
 
-	public createEditor(parent: Builder): void {
+	public createEditor(parent: HTMLElement): void {
 
 		this._overlay = document.createElement('div');
 		this._overlay.className = 'overlayWidgets';
 		this._overlay.style.width = '100%';
 		this._overlay.style.zIndex = '4';
-		parent.getHTMLElement().appendChild(this._overlay);
+		parent.appendChild(this._overlay);
 
-		this._profilerTable = new Table(parent.getHTMLElement());
+		this._profilerTable = new Table(parent);
 		this._profilerTable.setSelectionModel(new RowSelectionModel());
 		attachTableStyler(this._profilerTable, this._themeService);
 
