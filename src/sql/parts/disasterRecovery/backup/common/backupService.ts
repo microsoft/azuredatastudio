@@ -9,7 +9,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import Event from 'vs/base/common/event';
 import * as sqlops from 'sqlops';
 
-import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 

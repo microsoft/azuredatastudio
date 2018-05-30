@@ -12,8 +12,8 @@ import 'vs/css!sql/parts/grid/media/slick.grid';
 import 'vs/css!sql/parts/grid/media/slickGrid';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, ViewChild } from '@angular/core';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { QueryComponent } from 'sql/parts/grid/views/query/query.component';
 import { QueryPlanComponent } from 'sql/parts/queryPlan/queryPlan.component';
 import { TopOperationsComponent } from 'sql/parts/queryPlan/topOperations.component';
@@ -32,17 +32,15 @@ declare type PaneType = 'messages' | 'results';
 	selector: QUERY_OUTPUT_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('sql/parts/query/views/queryOutput.component.html'))
 })
-export class QueryOutputComponent implements OnInit, OnDestroy {
+export class QueryOutputComponent implements OnDestroy {
 
-	@ViewChild('queryComponent') queryComponent: QueryComponent;
-
-	@ViewChild('queryPlanComponent') queryPlanComponent: QueryPlanComponent;
-
-	@ViewChild('topOperationsComponent') topOperationsComponent: TopOperationsComponent;
-
-	@ViewChild('chartViewerComponent') chartViewerComponent: ChartViewerComponent;
+	@ViewChild(QueryComponent) queryComponent: QueryComponent;
+	@ViewChild(QueryPlanComponent) queryPlanComponent: QueryPlanComponent;
+	@ViewChild(TopOperationsComponent) topOperationsComponent: TopOperationsComponent;
 
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
+
+	private activeDataSet: any;
 
 	// tslint:disable:no-unused-variable
 	private readonly queryComponentTitle: string = nls.localize('results', 'Results');
@@ -63,22 +61,19 @@ export class QueryOutputComponent implements OnInit, OnDestroy {
 		showTabsWhenOne: false
 	};
 
-	public queryParameters: QueryComponentParams;
-
 	private _disposables: Array<IDisposable> = [];
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService
+		@Inject(IBootstrapParams) public queryParameters: IQueryComponentParams
 	) {
-		this.queryParameters = bootstrapService.getBootstrapParams(el.nativeElement.tagName);
 	}
 
 	/**
 	 * Called by Angular when the object is initialized
 	 */
-	public ngOnInit(): void {
+	public ngAfterViewInit(): void {
 		this._disposables.push(toDisposableSubscription(this.queryComponent.queryPlanAvailable.subscribe((xml) => {
 			this.hasQueryPlan = true;
 			this._cd.detectChanges();
@@ -90,7 +85,7 @@ export class QueryOutputComponent implements OnInit, OnDestroy {
 		this._disposables.push(toDisposableSubscription(this.queryComponent.showChartRequested.subscribe((dataSet) => {
 			this.showChartView = true;
 			this._cd.detectChanges();
-			this.chartViewerComponent.dataSet = dataSet;
+			this.activeDataSet = dataSet;
 			this._panel.selectTab(this.chartViewerTabIdentifier);
 		})));
 
@@ -104,7 +99,6 @@ export class QueryOutputComponent implements OnInit, OnDestroy {
 		})));
 
 		this._disposables.push(toDisposableSubscription(this.queryComponent.goToNextQueryOutputTabRequested.subscribe(() => {
-			let activeTab = this._panel.getActiveTab;
 			this._panel.selectOnNextTab();
 		})));
 	}

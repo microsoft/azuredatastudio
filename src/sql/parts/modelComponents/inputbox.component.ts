@@ -9,17 +9,20 @@ import {
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
-import * as nls from 'vs/nls';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { InputBox, IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+
+import { InputBox } from 'sql/base/browser/ui/inputbox/inputBox';
+import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import Event, { Emitter } from 'vs/base/common/event';
+import * as nls from 'vs/nls';
 
 @Component({
-	selector: 'inputBox',
+	selector: 'modelview-inputBox',
 	template: `
 		<div #input style="width: 100%"></div>
 	`
@@ -31,8 +34,10 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IContextViewService) private contextViewService: IContextViewService
+	) {
 		super(changeRef);
 	}
 
@@ -52,18 +57,20 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 							return undefined;
 						} else {
 							return {
-								content: nls.localize('invalidValueError', 'Invalid value'),
+								content: this._input.inputElement.validationMessage || nls.localize('invalidValueError', 'Invalid value'),
 								type: MessageType.ERROR
 							};
 						}
 					}
-				}
+				},
+				useDefaultValidation: true
 			};
 
-			this._input = new InputBox(this._inputContainer.nativeElement, this._commonService.contextViewService, inputOptions);
+			this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
+			this._validations.push(() => !this._input.inputElement.validationMessage);
 
 			this._register(this._input);
-			this._register(attachInputBoxStyler(this._input, this._commonService.themeService));
+			this._register(attachInputBoxStyler(this._input, this.themeService));
 			this._register(this._input.onDidChange(e => {
 				this.value = this._input.value;
 				this._onEventEmitter.fire({
@@ -72,6 +79,13 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 				});
 			}));
 		}
+	}
+
+	public validate(): Thenable<boolean> {
+		return super.validate().then(valid => {
+			this._input.validate();
+			return valid;
+		});
 	}
 
 	ngOnDestroy(): void {
@@ -91,6 +105,10 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
+		this._input.inputElement.type = this.inputType;
+		if (this.inputType === 'number') {
+			this._input.inputElement.step = 'any';
+		}
 		this._input.value = this.value;
 		this._input.setAriaLabel(this.ariaLabel);
 		this._input.setPlaceHolder(this.placeHolder);
@@ -98,11 +116,8 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		if (this.width) {
 			this._input.width = this.width;
 		}
-	}
-
-	public setValid(valid: boolean): void {
-		super.setValid(valid);
-		this._input.validate();
+		this._input.inputElement.required = this.required;
+		this.validate();
 	}
 
 	// CSS-bound properties
@@ -145,5 +160,21 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public set width(newValue: number) {
 		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.width = value, newValue);
+	}
+
+	public get inputType(): string {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, string>((props) => props.inputType, 'text');
+	}
+
+	public set inputType(newValue: string) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, string>((props, value) => props.inputType = value, newValue);
+	}
+
+	public get required(): boolean {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, boolean>((props) => props.required, false);
+	}
+
+	public set required(newValue: boolean) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, boolean>((props, value) => props.required = value, newValue);
 	}
 }

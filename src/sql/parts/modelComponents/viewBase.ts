@@ -27,6 +27,8 @@ const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentCo
 export abstract class ViewBase extends AngularDisposable implements IModelView {
 	protected readonly modelStore: IModelStore;
 	protected rootDescriptor: IComponentDescriptor;
+	protected _onDestroy = new Emitter<void>();
+	public readonly onDestroy = this._onDestroy.event;
 	constructor(protected changeRef: ChangeDetectorRef) {
 		super();
 		this.modelStore = new ModelStore();
@@ -39,9 +41,10 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	private _onEventEmitter = new Emitter<any>();
 
 
-	initializeModel(rootComponent: IComponentShape): void {
+	initializeModel(rootComponent: IComponentShape, validationCallback: (componentId: string) => Thenable<boolean>): void {
 		let descriptor = this.defineComponent(rootComponent);
 		this.rootDescriptor = descriptor;
+		this.modelStore.registerValidationCallback(validationCallback);
 		// Kick off the build by detecting changes to the model
 		this.changeRef.detectChanges();
 	}
@@ -91,10 +94,6 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.queueAction(componentId, (component) => component.setProperties(properties));
 	}
 
-	setValid(componentId: string, valid: boolean): void {
-		this.queueAction(componentId, (component) => component.setValid(valid));
-	}
-
 	private queueAction<T>(componentId: string, action: (component: IComponent) => T): void {
 		this.modelStore.eventuallyRunOnComponent(componentId, action).catch(err => {
 			// TODO add error handling
@@ -112,5 +111,9 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 
 	public get onEvent(): Event<IComponentEventArgs> {
 		return this._onEventEmitter.event;
+	}
+
+	public validate(componentId: string): Thenable<boolean> {
+		return new Promise(resolve => this.modelStore.eventuallyRunOnComponent(componentId, component => resolve(component.validate())));
 	}
 }

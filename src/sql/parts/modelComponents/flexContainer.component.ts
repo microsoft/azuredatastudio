@@ -15,6 +15,8 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 
+import types = require('vs/base/common/types');
+
 class FlexItem {
 	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) {}
 }
@@ -22,7 +24,7 @@ class FlexItem {
 @Component({
 	template: `
 		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent"
-				[style.alignItems]="alignItems" [style.alignContent]="alignContent">
+				[style.alignItems]="alignItems" [style.alignContent]="alignContent" [style.height]="height">
 			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.order]="getItemOrder(item)" >
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
@@ -37,6 +39,7 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	private _justifyContent: string;
 	private _alignItems: string;
 	private _alignContent: string;
+	private _height: string;
 
 	@ViewChildren(ModelComponentWrapper) private _componentWrappers: QueryList<ModelComponentWrapper>;
 
@@ -67,9 +70,16 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 	public setLayout (layout: FlexLayout): void {
 		this._flexFlow = layout.flexFlow ? layout.flexFlow : '';
-		this._justifyContent= layout.justifyContent ? layout.justifyContent : '';
-		this._alignItems= layout.alignItems ? layout.alignItems : '';
-		this._alignContent= layout.alignContent ? layout.alignContent : '';
+		this._justifyContent = layout.justifyContent ? layout.justifyContent : '';
+		this._alignItems = layout.alignItems ? layout.alignItems : '';
+		this._alignContent = layout.alignContent ? layout.alignContent : '';
+		if (types.isUndefinedOrNull(layout.height)) {
+			this._height = '';
+		} else if (types.isNumber(layout.height)) {
+			this._height = layout.height + 'px';
+		} else {
+			this._height = layout.height;
+		}
 		this.layout();
 	}
 
@@ -84,6 +94,10 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 	public get alignItems(): string {
 		return this._alignItems;
+	}
+
+	public get height(): string {
+		return this._height;
 	}
 
 	public get alignContent(): string {

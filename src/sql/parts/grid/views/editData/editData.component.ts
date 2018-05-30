@@ -14,14 +14,27 @@ import 'vs/css!./media/editData';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
 import { IGridDataRow, VirtualizedCollection } from 'angular2-slickgrid';
+
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import * as Services from 'sql/parts/grid/services/sharedServices';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { EditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDataGridActions';
 import { error } from 'sql/base/common/log';
 import { clone } from 'sql/base/common/objects';
+import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
@@ -40,7 +53,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	// All datasets
 	private dataSet: IGridDataSet;
 	private scrollTimeOut: number;
-	private messagesAdded = false;
 	private scrollEnabled = true;
 	private firstRender = true;
 	private totalElapsedTimeSpan: number;
@@ -68,13 +80,20 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
-		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService
+		@Inject(IBootstrapParams) params: IEditDataComponentParams,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(INotificationService) private notificationService: INotificationService,
+		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
+		@Inject(IKeybindingService) keybindingService: IKeybindingService,
+		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
+		@Inject(IConfigurationService) configurationService: IConfigurationService,
+		@Inject(IClipboardService) clipboardService: IClipboardService,
+		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService
 	) {
-		super(el, cd, bootstrapService);
+		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService);
 		this._el.nativeElement.className = 'slickgridContainer';
-		let editDataParameters: EditDataComponentParams = this._bootstrapService.getBootstrapParams(this._el.nativeElement.tagName);
-		this.dataService = editDataParameters.dataService;
-		this.actionProvider = this._bootstrapService.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
+		this.dataService = params.dataService;
+		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
 	}
 
 	/**
@@ -127,7 +146,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		self.renderedDataSets = self.placeHolderDataSets;
 		self.totalElapsedTimeSpan = undefined;
 		self.complete = false;
-		self.messagesAdded = false;
 
 		// Hooking up edit functions
 		this.onIsCellEditValid = (row, column, value): boolean => {
@@ -302,7 +320,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	handleComplete(self: EditDataComponent, event: any): void {
 		self.totalElapsedTimeSpan = event.data;
 		self.complete = true;
-		self.messagesAdded = true;
 	}
 
 	handleEditSessionReady(self, event): void {
@@ -310,7 +327,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	handleMessage(self: EditDataComponent, event: any): void {
-		// TODO: what do we do with messages?
+		if (event.data && event.data.isError) {
+			self.notificationService.notify({
+				severity: Severity.Error,
+				message: event.data.message
+			});
+		}
 	}
 
 	handleResultSet(self: EditDataComponent, event: any): void {
@@ -360,7 +382,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		undefinedDataSet.dataRows = undefined;
 		undefinedDataSet.resized = new EventEmitter();
 		self.placeHolderDataSets.push(undefinedDataSet);
-		self.messagesAdded = true;
 		self.onScroll(0);
 
 		// Setup the state of the selected cell
@@ -402,12 +423,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		}, self.scrollTimeOutTime);
 	}
 
-	protected tryHandleKeyEvent(e): boolean {
+	protected tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {
 		let handled: boolean = false;
 		// If the esc key was pressed while in a create session
 		let currentNewRowIndex = this.dataSet.totalRows - 2;
 
-		if (e.keyCode === jQuery.ui.keyCode.ESCAPE && this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
+		if (e.keyCode === KeyCode.Escape && this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
 			// revert our last new row
 			this.removingNewRow = true;
 
@@ -417,7 +438,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					this.newRowVisible = false;
 				});
 			handled = true;
-		} else if (e.keyCode === jQuery.ui.keyCode.ESCAPE) {
+		} else if (e.keyCode === KeyCode.Escape) {
 			this.currentEditCellValue = null;
 			this.onRevertRow()(this.currentCell.row);
 			handled = true;

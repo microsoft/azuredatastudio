@@ -6,23 +6,23 @@
 import * as assert from 'assert';
 import { Mock, It, Times } from 'typemoq';
 import { Dialog, DialogTab } from 'sql/platform/dialog/dialogTypes';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { DialogComponentParams } from 'sql/platform/dialog/dialogContainer.component';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 'use strict';
 
 suite('Dialog Pane Tests', () => {
 	let dialog: Dialog;
-	let mockBootstrapService: Mock<IBootstrapService>;
+	let mockInstantiationService: Mock<IInstantiationService>;
 	let container: HTMLElement;
 
 	setup(() => {
 		dialog = new Dialog('test_dialog');
-		mockBootstrapService = Mock.ofInstance({
-			bootstrap: () => undefined
+		mockInstantiationService = Mock.ofInstance({
+			invokeFunction: () => undefined
 		} as any);
-		mockBootstrapService.setup(x => x.bootstrap(It.isAny(), It.isAny(), It.isAny(), It.isAny(), undefined, It.isAny()));
+		mockInstantiationService.setup(x => x.invokeFunction(It.isAny(), It.isAny(), It.isAny(), It.isAny(), It.isAny(), undefined, It.isAny()));
 		container = document.createElement('div');
 	});
 
@@ -30,11 +30,12 @@ suite('Dialog Pane Tests', () => {
 		// If I fill in a dialog's content with the ID of a specific model view provider and then render the dialog
 		let modelViewId = 'test_content';
 		dialog.content = modelViewId;
-		let dialogPane = new DialogPane(dialog, mockBootstrapService.object);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, mockInstantiationService.object);
 		dialogPane.createBody(container);
 
 		// Then a single dialog-modelview-container element is added directly to the dialog pane
-		mockBootstrapService.verify(x => x.bootstrap(
+		mockInstantiationService.verify(x => x.invokeFunction(
+			It.isAny(),
 			It.isAny(),
 			It.isAny(),
 			It.isAny(),
@@ -47,11 +48,12 @@ suite('Dialog Pane Tests', () => {
 		// If I fill in a dialog's content with a single tab and then render the dialog
 		let modelViewId = 'test_content';
 		dialog.content = [new DialogTab('', modelViewId)];
-		let dialogPane = new DialogPane(dialog, mockBootstrapService.object);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, mockInstantiationService.object);
 		dialogPane.createBody(container);
 
 		// Then a single dialog-modelview-container element is added directly to the dialog pane
-		mockBootstrapService.verify(x => x.bootstrap(
+		mockInstantiationService.verify(x => x.invokeFunction(
+			It.isAny(),
 			It.isAny(),
 			It.isAny(),
 			It.isAny(),
@@ -65,11 +67,12 @@ suite('Dialog Pane Tests', () => {
 		let modelViewId1 = 'test_content_1';
 		let modelViewId2 = 'test_content_2';
 		dialog.content = [new DialogTab('tab1', modelViewId1), new DialogTab('tab2', modelViewId2)];
-		let dialogPane = new DialogPane(dialog, mockBootstrapService.object);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, mockInstantiationService.object);
 		dialogPane.createBody(container);
 
 		// Then a dialog-modelview-container element is added for the first tab (subsequent ones get added when the tab is actually clicked)
-		mockBootstrapService.verify(x => x.bootstrap(
+		mockInstantiationService.verify(x => x.invokeFunction(
+			It.isAny(),
 			It.isAny(),
 			It.isAny(),
 			It.isAny(),
@@ -81,16 +84,16 @@ suite('Dialog Pane Tests', () => {
 	test('Dialog validation gets set based on the validity of the model view content', () => {
 		// Set up the mock bootstrap service to intercept validation callbacks
 		let validationCallbacks: ((valid: boolean) => void)[] = [];
-		mockBootstrapService.reset();
-		mockBootstrapService.setup(x => x.bootstrap(It.isAny(), It.isAny(), It.isAny(), It.isAny(), undefined, It.isAny())).callback(
-			(moduleType, container, selectorString, params: DialogComponentParams, input, callbackSetModule) => {
+		mockInstantiationService.reset();
+		mockInstantiationService.setup(x => x.invokeFunction(It.isAny(), It.isAny(), It.isAny(), It.isAny(), It.isAny(), undefined, It.isAny())).callback(
+			(collection, moduleType, container, selectorString, params: DialogComponentParams, input, callbackSetModule) => {
 				validationCallbacks.push(params.validityChangedCallback);
 			});
 
 		let modelViewId1 = 'test_content_1';
 		let modelViewId2 = 'test_content_2';
 		dialog.content = [new DialogTab('tab1', modelViewId1), new DialogTab('tab2', modelViewId2)];
-		let dialogPane = new DialogPane(dialog, mockBootstrapService.object);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, valid => dialog.notifyValidityChanged(valid), mockInstantiationService.object);
 		dialogPane.createBody(container);
 
 		let validityChanges: boolean[] = [];
@@ -114,7 +117,7 @@ suite('Dialog Pane Tests', () => {
 
 		// If I set tab 1's validation to false
 		validationCallbacks[0](false);
-		
+
 		// Then the whole dialog's validation is false
 		assert.equal(dialog.valid, false);
 		assert.equal(validityChanges.length, 3);

@@ -5,8 +5,8 @@
 
 import { ChangeDetectorRef, ElementRef, Component, forwardRef, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { TaskDialogComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+
+import { ITaskDialogComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import { ITaskDialogComponent } from 'sql/parts/tasks/common/tasks';
@@ -31,8 +31,6 @@ export interface DatabaseFile {
 })
 export class CreateDatabaseComponent implements ITaskDialogComponent {
 
-	private _adminService: IAdminService;
-
 	public formSubmitted: boolean = false;
 
 	public ownerUri: string;
@@ -49,9 +47,8 @@ export class CreateDatabaseComponent implements ITaskDialogComponent {
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeDetectorRef: ChangeDetectorRef,
-		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService
+		@Inject(IAdminService) private _adminService: IAdminService
 	) {
-		this._adminService = this._bootstrapService.adminService;
 	}
 
 	private getDatabaseInfo(form: NgForm): sqlops.DatabaseInfo {
@@ -77,7 +74,7 @@ export class CreateDatabaseComponent implements ITaskDialogComponent {
 
 	public onSelectOwner(): void { }
 
-	public injectBootstapper(parameters: TaskDialogComponentParams): void {
+	public injectBootstapper(parameters: ITaskDialogComponentParams): void {
 		let self = this;
 		this.ownerUri = parameters.ownerUri;
 		this._adminService.getDefaultDatabaseInfo(this.ownerUri).then(dbInfo => {

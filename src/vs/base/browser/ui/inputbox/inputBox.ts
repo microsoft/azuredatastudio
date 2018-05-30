@@ -32,6 +32,7 @@ export interface IInputOptions extends IInputBoxStyles {
 	// {{SQL CARBON EDIT}} Candidate for addition to vscode
 	min?: string;
 	max?: string;
+	useDefaultValidation?: boolean;
 }
 
 export interface IInputBoxStyles {
@@ -354,6 +355,14 @@ export class InputBox extends Widget {
 
 		if (this.validation) {
 			result = this.validation(this.value);
+
+			// {{SQL CARBON EDIT}}
+			if (!result && this.options.useDefaultValidation && this.inputElement.validationMessage) {
+				result = {
+					content: this.inputElement.validationMessage,
+					type: MessageType.ERROR
+				};
+			}
 
 			if (!result) {
 				this.inputElement.removeAttribute('aria-invalid');
