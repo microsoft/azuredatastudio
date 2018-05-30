@@ -3,7 +3,7 @@
  * Version: 4.4.0(ec3258a9f3a36805a187848984e3bb938044178d)
  * Copyright (c) Microsoft Corporation.
  * All Rights Reserved.
- * Licensed under the MIT License.
+ * Licensed under the Source EULA.
  */
 var __winjs_exports;
 
