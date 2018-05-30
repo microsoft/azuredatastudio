@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { Webview } from 'vs/workbench/parts/html/browser/webview';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';

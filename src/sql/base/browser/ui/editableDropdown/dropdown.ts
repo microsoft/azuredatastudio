@@ -19,7 +19,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
 import * as nls from 'vs/nls';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';

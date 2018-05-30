@@ -25,7 +25,7 @@ export interface IOptionElement {
 export function createOptionElement(option: sqlops.ServiceOption, rowContainer: Builder, options: { [name: string]: any },
 	optionsMap: { [optionName: string]: IOptionElement }, contextViewService: IContextViewService, onFocus: (name) => void): void {
 	let possibleInputs: string[] = [];
-	let optionValue = this.getOptionValueAndCategoryValues(option, options, possibleInputs);
+	let optionValue = getOptionValueAndCategoryValues(option, options, possibleInputs);
 	let optionWidget: any;
 	let inputElement: HTMLElement;
 	let missingErrorMessage = localize('optionsDialog.missingRequireField', ' is required.');
@@ -47,11 +47,11 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 			ariaLabel: option.displayName
 		});
 		optionWidget.value = optionValue;
-		inputElement = this.findElement(rowContainer, 'input');
+		inputElement = findElement(rowContainer, 'input');
 	} else if (option.valueType === ServiceOptionType.category || option.valueType === ServiceOptionType.boolean) {
 		optionWidget = new SelectBox(possibleInputs, optionValue.toString(), contextViewService);
 		DialogHelper.appendInputSelectBox(rowContainer, optionWidget);
-		inputElement = this.findElement(rowContainer, 'select-box');
+		inputElement = findElement(rowContainer, 'select-box');
 	} else if (option.valueType === ServiceOptionType.string || option.valueType === ServiceOptionType.password) {
 		optionWidget = new InputBox(rowContainer.getHTMLElement(), contextViewService, {
 			validationOptions: {
@@ -63,7 +63,7 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 		if (option.valueType === ServiceOptionType.password) {
 			optionWidget.inputElement.type = 'password';
 		}
-		inputElement = this.findElement(rowContainer, 'input');
+		inputElement = findElement(rowContainer, 'input');
 	}
 	optionsMap[option.name] = { optionWidget: optionWidget, option: option, optionValue: optionValue };
 	inputElement.onfocus = () => onFocus(option.name);
@@ -74,10 +74,10 @@ export function getOptionValueAndCategoryValues(option: sqlops.ServiceOption, op
 	if (options[option.name]) {
 		// if the value type is boolean, the option value can be either boolean or string
 		if (option.valueType === ServiceOptionType.boolean) {
-			if (options[option.name] === true || options[option.name] === this.trueInputValue) {
-				optionValue = this.trueInputValue;
+			if (options[option.name] === true || options[option.name] === trueInputValue) {
+				optionValue = trueInputValue;
 			} else {
-				optionValue = this.falseInputValue;
+				optionValue = falseInputValue;
 			}
 		} else {
 			optionValue = options[option.name];
@@ -91,7 +91,7 @@ export function getOptionValueAndCategoryValues(option: sqlops.ServiceOption, op
 		}
 
 		if (option.valueType === ServiceOptionType.boolean) {
-			possibleInputs.push(this.trueInputValue, this.falseInputValue);
+			possibleInputs.push(trueInputValue, falseInputValue);
 		} else {
 			option.categoryValues.map(c => possibleInputs.push(c.name));
 		}
@@ -136,7 +136,7 @@ export function updateOptions(options: { [optionName: string]: any }, optionsMap
 			}
 			if (optionElement.optionWidget.value) {
 				if (optionElement.option.valueType === ServiceOptionType.boolean) {
-					options[optionName] = (optionElement.optionWidget.value === this.trueInputValue) ? true : false;
+					options[optionName] = (optionElement.optionWidget.value === trueInputValue) ? true : false;
 				} else {
 					options[optionName] = optionElement.optionWidget.value;
 				}

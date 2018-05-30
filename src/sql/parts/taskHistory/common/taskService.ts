@@ -8,7 +8,7 @@ import * as sqlops from 'sqlops';
 import { TaskNode, TaskStatus, TaskExecutionMode } from 'sql/parts/taskHistory/common/taskNode';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { localize } from 'vs/nls';
 import Severity from 'vs/base/common/severity';

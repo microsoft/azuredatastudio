@@ -7,7 +7,7 @@
 
 import * as sqlops from 'sqlops';
 import { localize } from 'vs/nls';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export class ModelViewPane {
 	private _valid: boolean = true;

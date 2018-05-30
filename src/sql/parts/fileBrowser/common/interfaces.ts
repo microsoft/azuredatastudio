@@ -8,7 +8,7 @@
 import * as sqlops from 'sqlops';
 import { FileBrowserTree } from 'sql/parts/fileBrowser/common/fileBrowserTree';
 import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
-import Event from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 export const IFileBrowserDialogController = createDecorator<IFileBrowserDialogController>('fileBrowserDialogService');

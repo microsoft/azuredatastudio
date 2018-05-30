@@ -6,7 +6,7 @@ import 'vs/css!./controlHostContent';
 
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { Parts } from 'vs/workbench/services/part/common/partService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 

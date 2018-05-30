@@ -7,7 +7,7 @@ import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ViewChild, El
 
 import { Webview } from 'vs/workbench/parts/html/browser/webview';
 import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { memoize } from 'vs/base/common/decorators';
 

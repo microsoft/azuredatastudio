@@ -4,11 +4,11 @@ MICROSOFT SQL OPERATIONS STUDIO
 
 Microsoft Corporation ("Microsoft") grants you a nonexclusive, perpetual,
 royalty-free right to use, copy, and modify the software code provided by us
-("Software Code"). You may not sublicense the Software Code or any use of it 
-(except to your affiliates and to vendors to perform work on your behalf) 
-through distribution, network access, service agreement, lease, rental, or 
-otherwise. Unless applicable law gives you more rights, Microsoft reserves all 
-other rights not expressly granted herein, whether by implication, estoppel or 
+("Software Code"). You may not sublicense the Software Code or any use of it
+(except to your affiliates and to vendors to perform work on your behalf)
+through distribution, network access, service agreement, lease, rental, or
+otherwise. Unless applicable law gives you more rights, Microsoft reserves all
+other rights not expressly granted herein, whether by implication, estoppel or
 otherwise.
 
 THE SOFTWARE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY

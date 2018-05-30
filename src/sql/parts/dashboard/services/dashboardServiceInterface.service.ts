@@ -40,7 +40,7 @@ import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configur
 import { ConfigurationEditingService, IConfigurationValue } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
 import { IPartService } from 'vs/workbench/services/part/common/partService';

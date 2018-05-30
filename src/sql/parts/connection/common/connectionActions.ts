@@ -6,7 +6,7 @@
 import nls = require('vs/nls');
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';

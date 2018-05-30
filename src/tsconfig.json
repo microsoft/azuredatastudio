@@ -10,6 +10,9 @@
 		"experimentalDecorators": true,
 		"declaration": true,
 		"noImplicitReturns": true,
+		"noUnusedLocals": false,
+		"noImplicitThis": true,
+		"alwaysStrict": true,
 		"baseUrl": ".",
 		"outDir": "../out",
 		"typeRoots": [

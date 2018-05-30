@@ -7,7 +7,7 @@
 
 import * as assert from 'assert';
 import * as os from 'os';
-import extfs = require('vs/base/node/extfs');
+import * as extfs from 'vs/base/node/extfs';
 import { EnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { parseArgs } from 'vs/platform/environment/node/argv';
 import { getRandomTestPath } from 'vs/workbench/test/workbenchTestServices';
@@ -27,7 +27,7 @@ suite('Extension Gallery Service', () => {
 		extfs.del(marketplaceHome, os.tmpdir(), () => {
 			mkdirp(marketplaceHome).then(() => {
 				done();
-			});
+			}, error => done(error));
 		});
 	});
 
@@ -35,7 +35,7 @@ suite('Extension Gallery Service', () => {
 		extfs.del(marketplaceHome, os.tmpdir(), done);
 	});
 
-	test('marketplace machine id', done => {
+	test('marketplace machine id', () => {
 		const args = ['--user-data-dir', marketplaceHome];
 		const environmentService = new EnvironmentService(parseArgs(args), process.execPath);
 
@@ -44,8 +44,6 @@ suite('Extension Gallery Service', () => {
 
 			return resolveMarketplaceHeaders(environmentService).then(headers2 => {
 				assert.equal(headers['X-Market-User-Id'], headers2['X-Market-User-Id']);
-
-				done();
 			});
 		});
 	});

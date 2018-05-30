@@ -24,7 +24,7 @@ import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contri
 import { Dimension, Builder } from 'vs/base/browser/builder';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class ProfilerTableEditor extends BaseEditor implements IProfilerController, ITableController {

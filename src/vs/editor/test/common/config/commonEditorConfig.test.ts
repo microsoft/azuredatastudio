@@ -107,7 +107,7 @@ suite('Common Editor Config', () => {
 				enabled: false
 			}
 		});
-		assertWrapping(config, true, 89);
+		assertWrapping(config, true, 88);
 	});
 
 	test('wordWrap on does not use wordWrapColumn', () => {

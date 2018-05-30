@@ -20,7 +20,7 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { ValidationStatus, ValidationState, IProblemReporter, Parser } from 'vs/base/common/parsers';
 import { IStringDictionary } from 'vs/base/common/collections';
 
-import { IMarkerData } from 'vs/platform/markers/common/markers';
+import { IMarkerData, MarkerSeverity } from 'vs/platform/markers/common/markers';
 import { ExtensionsRegistry, ExtensionMessageCollector } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 
 export enum FileLocationKind {
@@ -127,6 +127,7 @@ export module ApplyToKind {
 
 export interface ProblemMatcher {
 	owner: string;
+	source?: string;
 	applyTo: ApplyToKind;
 	fileLocation: FileLocationKind;
 	filePrefix?: string;
@@ -278,8 +279,11 @@ abstract class AbstractLineMatcher implements ILineMatcher {
 					endColumn: location.endCharacter,
 					message: data.message
 				};
-				if (!Types.isUndefined(data.code)) {
+				if (data.code !== void 0) {
 					marker.code = data.code;
+				}
+				if (this.matcher.source !== void 0) {
+					marker.source = this.matcher.source;
 				}
 				return {
 					description: this.matcher,
@@ -298,6 +302,9 @@ abstract class AbstractLineMatcher implements ILineMatcher {
 	}
 
 	private getLocation(data: ProblemData): Location {
+		if (data.kind === ProblemLocationKind.File) {
+			return this.createLocation(0, 0, 0, 0);
+		}
 		if (data.location) {
 			return this.parseLocationInfo(data.location);
 		}
@@ -335,7 +342,7 @@ abstract class AbstractLineMatcher implements ILineMatcher {
 		return { startLineNumber: startLine, startCharacter: 1, endLineNumber: startLine, endCharacter: Number.MAX_VALUE };
 	}
 
-	private getSeverity(data: ProblemData): Severity {
+	private getSeverity(data: ProblemData): MarkerSeverity {
 		let result: Severity = null;
 		if (data.severity) {
 			let value = data.severity;
@@ -359,7 +366,7 @@ abstract class AbstractLineMatcher implements ILineMatcher {
 		if (result === null || result === Severity.Ignore) {
 			result = this.matcher.severity || Severity.Error;
 		}
-		return result;
+		return MarkerSeverity.fromSeverity(result);
 	}
 }
 
@@ -379,7 +386,7 @@ class SingleLineMatcher extends AbstractLineMatcher {
 	public handle(lines: string[], start: number = 0): HandleResult {
 		Assert.ok(lines.length - start === 1);
 		let data: ProblemData = Object.create(null);
-		if (this.pattern.kind) {
+		if (this.pattern.kind !== void 0) {
 			data.kind = this.pattern.kind;
 		}
 		let matches = this.pattern.regexp.exec(lines[start]);
@@ -638,20 +645,26 @@ export namespace Config {
 	export interface ProblemMatcher {
 
 		/**
-		* The name of a base problem matcher to use. If specified the
-		* base problem matcher will be used as a template and properties
-		* specified here will replace properties of the base problem
-		* matcher
-		*/
+		 * The name of a base problem matcher to use. If specified the
+		 * base problem matcher will be used as a template and properties
+		 * specified here will replace properties of the base problem
+		 * matcher
+		 */
 		base?: string;
 
 		/**
-		* The owner of the produced VSCode problem. This is typically
-		* the identifier of a VSCode language service if the problems are
-		* to be merged with the one produced by the language service
-		* or a generated internal id. Defaults to the generated internal id.
-		*/
+		 * The owner of the produced VSCode problem. This is typically
+		 * the identifier of a VSCode language service if the problems are
+		 * to be merged with the one produced by the language service
+		 * or a generated internal id. Defaults to the generated internal id.
+		 */
 		owner?: string;
+
+		/**
+		 * A human-readable string describing the source of this problem.
+		 * E.g. 'typescript' or 'super lint'.
+		 */
+		source?: string;
 
 		/**
 		* Specifies to which kind of documents the problems found by this
@@ -1068,7 +1081,7 @@ class ProblemPatternRegistryImpl implements IProblemPatternRegistry {
 				}
 				resolve(undefined);
 			});
-		});
+		}, () => { });
 	}
 
 	public onReady(): TPromise<void> {
@@ -1240,6 +1253,7 @@ export class ProblemMatcherParser extends Parser {
 		let result: ProblemMatcher = null;
 
 		let owner = description.owner ? description.owner : UUID.generateUuid();
+		let source = Types.isString(description.source) ? description.source : undefined;
 		let applyTo = Types.isString(description.applyTo) ? ApplyToKind.fromString(description.applyTo) : ApplyToKind.allDocuments;
 		if (!applyTo) {
 			applyTo = ApplyToKind.allDocuments;
@@ -1289,6 +1303,9 @@ export class ProblemMatcherParser extends Parser {
 					if (description.owner) {
 						result.owner = owner;
 					}
+					if (source) {
+						result.source = source;
+					}
 					if (fileLocation) {
 						result.fileLocation = fileLocation;
 					}
@@ -1310,6 +1327,9 @@ export class ProblemMatcherParser extends Parser {
 				fileLocation: fileLocation,
 				pattern: pattern,
 			};
+			if (source) {
+				result.source = source;
+			}
 			if (filePrefix) {
 				result.filePrefix = filePrefix;
 			}
@@ -1456,6 +1476,10 @@ export namespace Schemas {
 			owner: {
 				type: 'string',
 				description: localize('ProblemMatcherSchema.owner', 'The owner of the problem inside Code. Can be omitted if base is specified. Defaults to \'external\' if omitted and base is not specified.')
+			},
+			source: {
+				type: 'string',
+				description: localize('ProblemMatcherSchema.source', 'A human-readable string describing the source of this diagnostic, e.g. \'typescript\' or \'super lint\'.')
 			},
 			severity: {
 				type: 'string',
@@ -1611,7 +1635,7 @@ class ProblemMatcherRegistryImpl implements IProblemMatcherRegistry {
 				}
 				resolve(undefined);
 			});
-		});
+		}, () => { });
 	}
 
 	public onReady(): TPromise<void> {
@@ -1646,6 +1670,7 @@ class ProblemMatcherRegistryImpl implements IProblemMatcherRegistry {
 			label: localize('lessCompile', 'Less problems'),
 			deprecated: true,
 			owner: 'lessCompile',
+			source: 'less',
 			applyTo: ApplyToKind.allDocuments,
 			fileLocation: FileLocationKind.Absolute,
 			pattern: ProblemPatternRegistry.get('lessCompile'),
@@ -1656,6 +1681,7 @@ class ProblemMatcherRegistryImpl implements IProblemMatcherRegistry {
 			name: 'gulp-tsc',
 			label: localize('gulp-tsc', 'Gulp TSC Problems'),
 			owner: 'typescript',
+			source: 'ts',
 			applyTo: ApplyToKind.closedDocuments,
 			fileLocation: FileLocationKind.Relative,
 			filePrefix: '${workspaceFolder}',
@@ -1666,6 +1692,7 @@ class ProblemMatcherRegistryImpl implements IProblemMatcherRegistry {
 			name: 'jshint',
 			label: localize('jshint', 'JSHint problems'),
 			owner: 'jshint',
+			source: 'jshint',
 			applyTo: ApplyToKind.allDocuments,
 			fileLocation: FileLocationKind.Absolute,
 			pattern: ProblemPatternRegistry.get('jshint')
@@ -1675,6 +1702,7 @@ class ProblemMatcherRegistryImpl implements IProblemMatcherRegistry {
 			name: 'jshint-stylish',
 			label: localize('jshint-stylish', 'JSHint stylish problems'),
 			owner: 'jshint',
+			source: 'jshint',
 			applyTo: ApplyToKind.allDocuments,
 			fileLocation: FileLocationKind.Absolute,
 			pattern: ProblemPatternRegistry.get('jshint-stylish')
@@ -1684,6 +1712,7 @@ class ProblemMatcherRegistryImpl implements IProblemMatcherRegistry {
 			name: 'eslint-compact',
 			label: localize('eslint-compact', 'ESLint compact problems'),
 			owner: 'eslint',
+			source: 'eslint',
 			applyTo: ApplyToKind.allDocuments,
 			fileLocation: FileLocationKind.Absolute,
 			filePrefix: '${workspaceFolder}',
@@ -1694,6 +1723,7 @@ class ProblemMatcherRegistryImpl implements IProblemMatcherRegistry {
 			name: 'eslint-stylish',
 			label: localize('eslint-stylish', 'ESLint stylish problems'),
 			owner: 'eslint',
+			source: 'eslint',
 			applyTo: ApplyToKind.allDocuments,
 			fileLocation: FileLocationKind.Absolute,
 			pattern: ProblemPatternRegistry.get('eslint-stylish')
@@ -1703,6 +1733,7 @@ class ProblemMatcherRegistryImpl implements IProblemMatcherRegistry {
 			name: 'go',
 			label: localize('go', 'Go problems'),
 			owner: 'go',
+			source: 'go',
 			applyTo: ApplyToKind.allDocuments,
 			fileLocation: FileLocationKind.Relative,
 			filePrefix: '${workspaceFolder}',

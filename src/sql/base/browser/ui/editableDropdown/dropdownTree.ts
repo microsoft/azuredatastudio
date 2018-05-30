@@ -9,7 +9,7 @@ import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
 import { $ } from 'vs/base/browser/builder';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export interface Template {

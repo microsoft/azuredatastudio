@@ -9,10 +9,9 @@ import { IDisposable, Disposable, dispose } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as DOM from 'vs/base/browser/dom';
-import { $ } from 'vs/base/browser/builder';
 import { LIGHT, FileThemeIcon, FolderThemeIcon } from 'vs/platform/theme/common/themeService';
 import { ITree, IDataSource, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
-import { TreeItemCollapsibleState, ITreeItem, ITreeViewer, ICustomViewsService, ITreeViewDataProvider, ViewsRegistry, IViewDescriptor, TreeViewItemHandleArg, ICustomViewDescriptor, IViewsViewlet } from 'vs/workbench/common/views';
+import { TreeItemCollapsibleState, ITreeItem, ITreeViewer, IViewsService, ITreeViewDataProvider, ViewsRegistry, IViewDescriptor, TreeViewItemHandleArg, ICustomViewDescriptor, IViewsViewlet, ViewLocation } from 'vs/workbench/common/views';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IProgressService2, ProgressLocation } from 'vs/platform/progress/common/progress';
@@ -34,7 +33,7 @@ import { FileIconThemableWorkbenchTree } from 'vs/workbench/browser/parts/views/
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 
-export class CustomViewsService extends Disposable implements ICustomViewsService {
+export class CustomViewsService extends Disposable implements IViewsService {
 
 	_serviceBrand: any;
 
@@ -57,12 +56,16 @@ export class CustomViewsService extends Disposable implements ICustomViewsServic
 	openView(id: string, focus: boolean): TPromise<void> {
 		const viewDescriptor = ViewsRegistry.getView(id);
 		if (viewDescriptor) {
-			return this.viewletService.openViewlet(viewDescriptor.id)
-				.then((viewlet: IViewsViewlet) => {
-					if (viewlet && viewlet.openView) {
-						viewlet.openView(id, focus);
-					}
-				});
+			const viewletId = viewDescriptor.location === ViewLocation.SCM ? 'workbench.view.scm' : viewDescriptor.location.id;
+			const viewletDescriptor = this.viewletService.getViewlet(viewletId);
+			if (viewletDescriptor) {
+				return this.viewletService.openViewlet(viewletDescriptor.id)
+					.then((viewlet: IViewsViewlet) => {
+						if (viewlet && viewlet.openView) {
+							viewlet.openView(id, focus);
+						}
+					});
+			}
 		}
 		return TPromise.as(null);
 	}
@@ -70,7 +73,7 @@ export class CustomViewsService extends Disposable implements ICustomViewsServic
 	private createViewers(viewDescriptors: IViewDescriptor[]): void {
 		for (const viewDescriptor of viewDescriptors) {
 			if ((<ICustomViewDescriptor>viewDescriptor).treeView) {
-				this.viewers.set(viewDescriptor.id, this.instantiationService.createInstance(CustomTreeViewer, viewDescriptor.id));
+				this.viewers.set(viewDescriptor.id, this.instantiationService.createInstance(CustomTreeViewer, viewDescriptor.id, viewDescriptor.location));
 			}
 		}
 	}
@@ -111,6 +114,7 @@ class CustomTreeViewer extends Disposable implements ITreeViewer {
 
 	constructor(
 		private id: string,
+		private location: ViewLocation,
 		@IExtensionService private extensionService: IExtensionService,
 		@IWorkbenchThemeService private themeService: IWorkbenchThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
@@ -133,7 +137,7 @@ class CustomTreeViewer extends Disposable implements ITreeViewer {
 				onDidChange = dataProvider.onDidChange;
 				onDispose = dataProvider.onDispose;
 				getChildren(node?: ITreeItem): TPromise<ITreeItem[]> {
-					if (node.children) {
+					if (node && node.children) {
 						return TPromise.as(node.children);
 					}
 					const promise = node instanceof Root ? dataProvider.getChildren() : dataProvider.getChildren(node);
@@ -171,9 +175,9 @@ class CustomTreeViewer extends Disposable implements ITreeViewer {
 
 		if (this.tree) {
 			if (this.isVisible) {
-				$(this.tree.getHTMLElement()).show();
+				DOM.show(this.tree.getHTMLElement());
 			} else {
-				$(this.tree.getHTMLElement()).hide(); // make sure the tree goes out of the tabindex world by hiding it
+				DOM.hide(this.tree.getHTMLElement()); // make sure the tree goes out of the tabindex world by hiding it
 			}
 
 			if (this.isVisible) {
@@ -198,7 +202,7 @@ class CustomTreeViewer extends Disposable implements ITreeViewer {
 			}
 
 			// Pass Focus to Viewer
-			this.tree.DOMFocus();
+			this.tree.domFocus();
 		}
 	}
 
@@ -213,7 +217,7 @@ class CustomTreeViewer extends Disposable implements ITreeViewer {
 		this.treeContainer = DOM.$('.tree-explorer-viewlet-tree-view');
 		const actionItemProvider = (action: IAction) => action instanceof MenuItemAction ? this.instantiationService.createInstance(ContextAwareMenuItemActionItem, action) : undefined;
 		const menus = this.instantiationService.createInstance(Menus, this.id);
-		const dataSource = this.instantiationService.createInstance(TreeDataSource, this);
+		const dataSource = this.instantiationService.createInstance(TreeDataSource, this, this.getProgressLocation());
 		const renderer = this.instantiationService.createInstance(TreeRenderer, this.id, menus, actionItemProvider);
 		const controller = this.instantiationService.createInstance(TreeController, this.id, menus);
 		this.tree = this.instantiationService.createInstance(FileIconThemableWorkbenchTree, this.treeContainer, { dataSource, renderer, controller }, {});
@@ -221,6 +225,18 @@ class CustomTreeViewer extends Disposable implements ITreeViewer {
 		this._register(this.tree);
 		this._register(this.tree.onDidChangeSelection(e => this.onSelection(e)));
 		this.tree.setInput(this.root);
+	}
+
+	private getProgressLocation(): ProgressLocation {
+		switch (this.location.id) {
+			case ViewLocation.Explorer.id:
+				return ProgressLocation.Explorer;
+			case ViewLocation.SCM.id:
+				return ProgressLocation.Scm;
+			case ViewLocation.Debug.id:
+				return null /* No debug progress location yet */;
+		}
+		return null;
 	}
 
 	layout(size: number) {
@@ -265,7 +281,7 @@ class CustomTreeViewer extends Disposable implements ITreeViewer {
 			return result.then(() => this.tree.reveal(item))
 				.then(() => {
 					if (select) {
-						this.tree.setSelection([item]);
+						this.tree.setSelection([item], { source: 'api' });
 					}
 				});
 		}
@@ -287,6 +303,9 @@ class CustomTreeViewer extends Disposable implements ITreeViewer {
 	}
 
 	private onSelection({ payload }: any): void {
+		if (payload && payload.source === 'api') {
+			return;
+		}
 		const selection: ITreeItem = this.tree.getSelection()[0];
 		if (selection) {
 			if (selection.command) {
@@ -306,6 +325,7 @@ class TreeDataSource implements IDataSource {
 
 	constructor(
 		private treeView: ITreeViewer,
+		private location: ProgressLocation,
 		@IProgressService2 private progressService: IProgressService2
 	) {
 	}
@@ -320,7 +340,7 @@ class TreeDataSource implements IDataSource {
 
 	public getChildren(tree: ITree, node: ITreeItem): TPromise<any[]> {
 		if (this.treeView.dataProvider) {
-			return this.progressService.withProgress({ location: ProgressLocation.Explorer }, () => this.treeView.dataProvider.getChildren(node));
+			return this.location ? this.progressService.withProgress({ location: this.location }, () => this.treeView.dataProvider.getChildren(node)) : this.treeView.dataProvider.getChildren(node);
 		}
 		return TPromise.as([]);
 	}
@@ -406,7 +426,7 @@ class TreeRenderer implements IRenderer {
 		templateData.actionBar.context = (<TreeViewItemHandleArg>{ $treeViewId: this.treeViewId, $treeItemHandle: node.handle });
 		templateData.actionBar.push(this.menus.getResourceActions(node), { icon: true, label: false });
 
-		templateData.aligner.align(node);
+		templateData.aligner.treeItem = node;
 	}
 
 	private getFileKind(node: ITreeItem): FileKind {
@@ -430,7 +450,7 @@ class TreeRenderer implements IRenderer {
 
 class Aligner extends Disposable {
 
-	private node: ITreeItem;
+	private _treeItem: ITreeItem;
 
 	constructor(
 		private container: HTMLElement,
@@ -438,65 +458,47 @@ class Aligner extends Disposable {
 		private themeService: IWorkbenchThemeService
 	) {
 		super();
-		this._register(this.themeService.onDidFileIconThemeChange(() => this.alignByTheme()));
+		this._register(this.themeService.onDidFileIconThemeChange(() => this.render()));
 	}
 
-	align(treeItem: ITreeItem): void {
-		this.node = treeItem;
-		this.alignByTheme();
+	set treeItem(treeItem: ITreeItem) {
+		this._treeItem = treeItem;
+		this.render();
 	}
 
-	private alignByTheme(): void {
-		if (this.node) {
-			DOM.toggleClass(this.container, 'align-with-twisty', this.hasToAlignWithTwisty());
+	private render(): void {
+		if (this._treeItem) {
+			DOM.toggleClass(this.container, 'align-icon-with-twisty', this.hasToAlignIconWithTwisty());
 		}
 	}
 
-	private hasToAlignWithTwisty(): boolean {
-		if (this.hasParentHasIcon()) {
+	private hasToAlignIconWithTwisty(): boolean {
+		if (this._treeItem.collapsibleState !== TreeItemCollapsibleState.None) {
 			return false;
 		}
+		if (!this.hasIcon(this._treeItem)) {
+			return false;
 
-		const fileIconTheme = this.themeService.getFileIconTheme();
-		if (!(fileIconTheme.hasFileIcons && !fileIconTheme.hasFolderIcons)) {
+		}
+		const parent: ITreeItem = this.tree.getNavigator(this._treeItem).parent() || this.tree.getInput();
+		if (this.hasIcon(parent)) {
 			return false;
 		}
-		if (this.node.collapsibleState !== TreeItemCollapsibleState.None) {
-			return false;
-		}
-		const icon = this.themeService.getTheme().type === LIGHT ? this.node.icon : this.node.iconDark;
-		const hasIcon = !!icon || !!this.node.resourceUri;
-		if (!hasIcon) {
-			return false;
-		}
-
-		const siblingsWithChildren = this.getSiblings().filter(s => s.collapsibleState !== TreeItemCollapsibleState.None);
-		for (const s of siblingsWithChildren) {
-			const icon = this.themeService.getTheme().type === LIGHT ? s.icon : s.iconDark;
-			if (icon) {
-				return false;
-			}
-		}
-
-		return true;
+		return parent.children && parent.children.every(c => c.collapsibleState === TreeItemCollapsibleState.None || !this.hasIcon(c));
 	}
 
-	private getSiblings(): ITreeItem[] {
-		const parent: ITreeItem = this.tree.getNavigator(this.node).parent() || this.tree.getInput();
-		return parent.children;
-	}
-
-	private hasParentHasIcon(): boolean {
-		const parent = this.tree.getNavigator(this.node).parent() || this.tree.getInput();
-		const icon = this.themeService.getTheme().type === LIGHT ? parent.icon : parent.iconDark;
+	private hasIcon(node: ITreeItem): boolean {
+		const icon = this.themeService.getTheme().type === LIGHT ? node.icon : node.iconDark;
 		if (icon) {
 			return true;
 		}
-		if (parent.resourceUri) {
+		if (node.resourceUri || node.themeIcon) {
 			const fileIconTheme = this.themeService.getFileIconTheme();
-			if (fileIconTheme.hasFileIcons && fileIconTheme.hasFolderIcons) {
-				return true;
+			const isFolder = node.themeIcon ? node.themeIcon.id === FolderThemeIcon.id : node.collapsibleState !== TreeItemCollapsibleState.None;
+			if (isFolder) {
+				return fileIconTheme.hasFileIcons && fileIconTheme.hasFolderIcons;
 			}
+			return fileIconTheme.hasFileIcons;
 		}
 		return false;
 	}
@@ -541,7 +543,7 @@ class TreeController extends WorkbenchTreeController {
 
 			onHide: (wasCancelled?: boolean) => {
 				if (wasCancelled) {
-					tree.DOMFocus();
+					tree.domFocus();
 				}
 			},
 

@@ -20,7 +20,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Builder, Dimension } from 'vs/base/browser/builder';
 import { IThemable } from 'vs/platform/theme/common/styler';
 import { Disposable } from 'vs/base/common/lifecycle';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class DialogPane extends Disposable implements IThemable {

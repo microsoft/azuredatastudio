@@ -5,7 +5,7 @@
 
 import { IThemable } from 'vs/platform/theme/common/styler';
 import * as objects from 'sql/base/common/objects';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { Dimension, $, Builder } from 'vs/base/browser/builder';
 import { EventType } from 'vs/base/browser/dom';
 import { IAction } from 'vs/base/common/actions';

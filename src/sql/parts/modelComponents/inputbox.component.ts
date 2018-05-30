@@ -18,7 +18,7 @@ import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import * as nls from 'vs/nls';
 
 @Component({
