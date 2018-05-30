@@ -127,6 +127,14 @@
 	border: 1px solid transparent;
 }
 
+.modal .monaco-select-box {
+	width: 100%;
+	height: 25px;
+	color: #6C6C6C;
+	font-size: 11px;
+	border: 1px solid transparent;
+}
+
 .modal.flyout-dialog .dialogErrorMessage {
 	overflow: hidden;
 	padding-left: 10px;
