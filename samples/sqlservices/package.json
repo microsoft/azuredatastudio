@@ -28,6 +28,10 @@
             {
                 "command": "sqlservices.openEditorWithWebView",
                 "title": "sqlservices.openEditorWithWebView"
+            },
+            {
+                "command": "sqlservices.openEditorWithWebView2",
+                "title": "sqlservices.openEditorWithWebView2"
             }
         ],
         "dashboard.tabs": [
