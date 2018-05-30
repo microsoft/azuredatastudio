@@ -51,6 +51,7 @@ export class QueryOutputComponent implements OnDestroy {
 	private readonly resultsTabIdentifier = 'results';
 	private readonly queryPlanTabIdentifier = 'queryPlan';
 	private readonly chartViewerTabIdentifier = 'chartViewer';
+	private readonly topOperationsTabIdentifier = 'topOperations';
 	// tslint:enable:no-unused-variable
 
 	private hasQueryPlan = false;
@@ -77,9 +78,10 @@ export class QueryOutputComponent implements OnDestroy {
 		this._disposables.push(toDisposableSubscription(this.queryComponent.queryPlanAvailable.subscribe((xml) => {
 			this.hasQueryPlan = true;
 			this._cd.detectChanges();
+			this._panel.selectTab(this.topOperationsTabIdentifier);
+			this.topOperationsComponent.planXml = xml;
 			this._panel.selectTab(this.queryPlanTabIdentifier);
 			this.queryPlanComponent.planXml = xml;
-			this.topOperationsComponent.planXml = xml;
 		})));
 
 		this._disposables.push(toDisposableSubscription(this.queryComponent.showChartRequested.subscribe((dataSet) => {
