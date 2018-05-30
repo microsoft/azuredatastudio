@@ -5,6 +5,7 @@
 
 import FlexContainer from './flexContainer.component';
 import FormContainer from './formContainer.component';
+import GroupContainer from './groupContainer.component';
 import CardComponent from './card.component';
 import InputBoxComponent from './inputbox.component';
 import DropDownComponent from './dropdown.component';
@@ -21,6 +22,9 @@ registerComponentType(FLEX_CONTAINER, ModelComponentTypes.FlexContainer, FlexCon
 
 export const FORM_CONTAINER = 'form-container';
 registerComponentType(FORM_CONTAINER, ModelComponentTypes.Form, FormContainer);
+
+export const GROUP_CONTAINER = 'group-container';
+registerComponentType(GROUP_CONTAINER, ModelComponentTypes.Group, GroupContainer);
 
 export const CARD_COMPONENT = 'card-component';
 registerComponentType(CARD_COMPONENT, ModelComponentTypes.Card, CardComponent);

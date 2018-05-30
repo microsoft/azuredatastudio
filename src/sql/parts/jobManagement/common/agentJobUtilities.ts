@@ -11,6 +11,7 @@ export class AgentJobUtilities {
 
 	public static startIconClass: string = 'action-label icon runJobIcon';
 	public static stopIconClass: string = 'action-label icon stopJobIcon';
+	public static jobMessageLength: number = 110;
 
 	public static convertToStatusString(status: number): string {
 		switch(status) {

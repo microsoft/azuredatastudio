@@ -13,7 +13,8 @@ import * as sqlops from 'sqlops';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 
-import { InputBox, IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
