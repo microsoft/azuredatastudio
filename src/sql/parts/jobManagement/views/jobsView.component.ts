@@ -161,10 +161,6 @@ export class JobsViewComponent implements AfterContentChecked {
 			self._agentViewComponent.agentJobInfo = job;
 			self._agentViewComponent.showHistory = true;
 		});
-		this._table.grid.onMouseEnter.subscribe((e, args) => {
-			let meme = e;
-			let meme2 = args;
-		});
 		if (cached && this._agentViewComponent.refresh !== true) {
 			this.onJobsAvailable(this._jobCacheObject.jobs);
 		} else {
