@@ -201,3 +201,8 @@ agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.od
     padding-top: 16px;
     padding-left: 15px;
 }
+
+#jobsDiv jobsview-component .jobview-grid .slick-cell.l1.r1.error-row td.jobview-jobnameindicatorfailure {
+    width: 0;
+    background: none;
+}
