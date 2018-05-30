@@ -48,9 +48,11 @@ export class QueryPlanComponent implements OnDestroy, OnInit {
 
 	public set planXml(val: string) {
 		this._planXml = val;
-		QP.showPlan(this._container.nativeElement, this._planXml, {
-			jsTooltips: false
-		});
+		if (this._planXml) {
+			QP.showPlan(this._container.nativeElement, this._planXml, {
+				jsTooltips: false
+			});
+		}
 	}
 
 	private _updateTheme(theme: ITheme, collector: ICssStyleCollector) {
