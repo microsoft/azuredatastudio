@@ -459,13 +459,64 @@
 								],
 								"statistics": [],
 								"flags": "preview"
+							},
+							{
+								"extensionId": "19",
+								"extensionName": "sqldw-insights",
+								"displayName": "Azure SQL Data Warehouse Insights",
+								"shortDescription": "Azure SQL Data Warehouse Insights for SQL Operations Studio",
+								"publisher": {
+									"displayName": "Microsoft",
+									"publisherId": "Microsoft",
+									"publisherName": "Microsoft"
+								},
+								"versions": [
+									{
+										"version": "0.0.1",
+										"lastUpdated": "5/31/2018",
+										"assetUri": "",
+										"fallbackAssetUri": "fallbackAssetUri",
+											"files": [
+											{
+												"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+												"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sqldwInsights/sql-dw-0.0.1.vsix"
+											},
+											{
+												"assetType": "Microsoft.VisualStudio.Services.Links.Source",
+												"source": "https://github.com/Microsoft/sql-data-warehouse-samples/tree/master/samples/sqlops/MonitoringScripts"
+											},
+											{
+												"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+												"source": "https://github.com/Microsoft/sql-data-warehouse-samples/blob/master/samples/sqlops/MonitoringScripts/sqldw_icon.png"
+											},
+											{
+												"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+												"source": "https://github.com/Microsoft/sql-data-warehouse-samples/blob/master/samples/sqlops/README.md"
+											},
+											{
+												"assetType": "Microsoft.VisualStudio.Code.Manifest",
+												"source": "https://github.com/Microsoft/sql-data-warehouse-samples/blob/master/samples/sqlops/package.json"
+											},
+											{
+												"assetType": "Microsoft.VisualStudio.Services.Content.License",
+												"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt"
+											}
+										],
+										"properties": [
+											{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+                      						{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"}
+										]
+									}
+								],
+								"statistics": [],
+								"flags": "preview"
 							}
 		],
 		"resultMetadata": [{
 			"metadataType": "ResultCount",
 			"metadataItems": [{
 				"name": "TotalCount",
-				"count": 9
+				"count": 10
 			}]
 		}]
 	}]
