@@ -5,29 +5,29 @@
 
 .modelview-toolbar-container {
 	display: flex;
-    padding: 15px;
-    justify-content: flex-start;
-    line-height: 1.4em;
+	padding: 15px;
+	justify-content: flex-start;
+	line-height: 1.4em;
 	white-space: nowrap;
 	flex-wrap: wrap;
 	border-bottom-width: .5px;
-    border-bottom-style: solid;
-    box-sizing: border-box;
-    border-bottom-color: rgba(128, 128, 128, 0.35);
+	border-bottom-style: solid;
+	box-sizing: border-box;
+	border-bottom-color: rgba(128, 128, 128, 0.35);
 }
 
 .modelview-toolbar-container .modelview-toolbar-item {
 	flex: 0 0;
-    flex-direction: row;
+	flex-direction: row;
 	display: flex;
-    padding-left: 10px;
+	padding-left: 10px;
 }
 
 .modelview-toolbar-container .modelview-toolbar-title {
 	padding-right: 5px;
 	font-size: 14px;
 	cursor: pointer;
-    margin: auto;
+	margin: auto;
 }
 
 .modelview-toolbar-container .modelview-toolbar-component .select-box,
