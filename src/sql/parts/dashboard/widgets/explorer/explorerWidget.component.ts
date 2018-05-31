@@ -43,7 +43,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		this._router,
 		this.contextMenuService,
 		this.capabilitiesService,
-		this.instantiationService
+		this.instantiationService,
+		this.progressService
 	);
 	private _treeRenderer = new ExplorerRenderer();
 	private _treeDataSource = new ExplorerDataSource();
