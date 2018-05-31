@@ -56,6 +56,10 @@ export default class MainController implements vscode.Disposable {
 			this.openEditorWithWebview(buttonHtml, counterHtml);
 		});
 
+		vscode.commands.registerCommand('sqlservices.openEditorWithWebView2', () => {
+			this.openEditorWithWebview2();
+		});
+
 		return Promise.resolve(true);
 	}
 
@@ -219,7 +223,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private openEditorWithWebview(html1: string, html2: string): void {
-		let editor = sqlops.workspace.createModelViewEditor('Editor view1', { retainContextWhenHidden: true });
+		let editor = sqlops.workspace.createModelViewEditor('Editor webview', { retainContextWhenHidden: true });
 		editor.registerContent(async view => {
 			let count = 0;
 			let webview1 = view.modelBuilder.webView()
@@ -250,6 +254,34 @@ export default class MainController implements vscode.Disposable {
 		});
 		editor.openEditor();
 	}
+
+	private openEditorWithWebview2(): void {
+		let editor = sqlops.workspace.createModelViewEditor('Editor webview2', { retainContextWhenHidden: true });
+		editor.registerContent(async view => {
+
+			let webview = view.modelBuilder.webView()
+				.component();
+			let flexModel = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'column',
+					alignItems: 'stretch',
+					height: '100%'
+				}).withItems([
+					webview
+				], { flex: '1 1 50%' })
+				.component();
+
+			let templateValues = {url: 'http://whoisactive.com/docs/'};
+			Utils.renderTemplateHtml(path.join(__dirname, '..'), 'templateTab.html', templateValues)
+				.then(html => {
+					webview.html = html;
+				});
+
+			await view.initializeModel(flexModel);
+		});
+		editor.openEditor();
+	}
+
 
 	private registerSqlServicesModelView(): void {
 		sqlops.ui.registerModelViewProvider('sqlservices', async (view) => {

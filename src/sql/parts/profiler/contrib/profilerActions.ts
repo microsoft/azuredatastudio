@@ -228,7 +228,7 @@ export class ProfilerFindPrevious implements IEditorAction {
 }
 
 export class NewProfilerAction extends Task {
-	public static readonly ID = 'newProfiler';
+	public static readonly ID = 'profiler.newProfiler';
 	public static readonly LABEL = nls.localize('profilerAction.newProfiler', 'New Profiler');
 	public static readonly ICON = 'profile';
 
