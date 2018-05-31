@@ -67,7 +67,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 		let rowEl = this.createRow(columnDef);
 		let data = this._grid.getData();
 		let viewPort = this._grid.getViewport();
-		let start = Math.max(0, viewPort.top + 1);
+		let start = Math.max(0, viewPort.top);
 		let end = Math.min(data.getLength(), viewPort.bottom);
 		for (let i = start; i < end; i++) {
 			texts.push(data.getItem(i)[columnDef.field]);
