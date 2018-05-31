@@ -12,21 +12,18 @@ import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
 
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
-import * as Utils from 'sql/parts/connection/common/utils';
+import { FieldType, IObservableCollection, CollectionChange, SlickGrid } from 'angular2-slickgrid';
+
+import * as sqlops from 'sqlops';
+import * as vscode from 'vscode';
+
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as themeColors from 'vs/workbench/common/theme';
-import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { IJobManagementService } from '../common/interfaces';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import * as sqlops from 'sqlops';
-import * as vscode from 'vscode';
 import * as nls from 'vs/nls';
+
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
-import { FieldType, IObservableCollection, CollectionChange, SlickGrid } from 'angular2-slickgrid';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import { JobHistoryComponent } from './jobHistory.component';
@@ -34,6 +31,11 @@ import { AgentViewComponent } from '../agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { AgentJobUtilities } from '../common/agentJobUtilities';
+import * as Utils from 'sql/parts/connection/common/utils';
+import { IJobManagementService } from '../common/interfaces';
+import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
@@ -45,21 +47,20 @@ export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 
 export class JobsViewComponent implements AfterContentChecked {
 
-	private _jobManagementService: IJobManagementService;
 	private _jobCacheObject: JobCacheObject;
 
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
 		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200 , id: 'name' },
-		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', minWidth: 150, id: 'lastRun' },
-		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', minWidth: 150, id: 'nextRun' },
-		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', minWidth: 70, id: 'enabled' },
-		{ name: nls.localize('jobColumns.status','Status'), field: 'currentExecutionStatus', minWidth: 60, id: 'currentExecutionStatus' },
-		{ name: nls.localize('jobColumns.category','Category'), field: 'category', minWidth: 150, id: 'category' },
-		{ name: nls.localize('jobColumns.runnable','Runnable'), field: 'runnable', minWidth: 50, id: 'runnable' },
-		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', minWidth: 50, id: 'hasSchedule' },
-		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', minWidth: 150, id: 'lastRunOutcome' },
+		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', width: 150, id: 'lastRun' },
+		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', width: 150, id: 'nextRun' },
+		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', width: 70, id: 'enabled' },
+		{ name: nls.localize('jobColumns.status','Status'), field: 'currentExecutionStatus', width: 60, id: 'currentExecutionStatus' },
+		{ name: nls.localize('jobColumns.category','Category'), field: 'category', width: 150, id: 'category' },
+		{ name: nls.localize('jobColumns.runnable','Runnable'), field: 'runnable', width: 50, id: 'runnable' },
+		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', width: 50, id: 'hasSchedule' },
+		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', width: 150, id: 'lastRunOutcome' },
 	];
 
 	private rowDetail: RowDetailView;
@@ -77,13 +78,12 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _tabHeight: number;
 
 	constructor(
-		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent
+		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService
 	) {
-		this._jobManagementService = bootstrapService.jobManagementService;
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];
@@ -228,16 +228,26 @@ export class JobsViewComponent implements AfterContentChecked {
 		this._cd.detectChanges();
 		const self = this;
 		this._tabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
-		$(window).resize((e) => {
-			let currentTabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
-			if (currentTabHeight < self._tabHeight) {
-				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
-				self._table.resizeCanvas();
-			} else {
-				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
-				self._table.resizeCanvas();
+		$(window).resize(() => {
+			let currentTab = $('agentview-component #jobsDiv .jobview-grid').get(0);
+			if (currentTab) {
+				let currentTabHeight = currentTab.clientHeight;
+				if (currentTabHeight < self._tabHeight) {
+					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
+					self._table.resizeCanvas();
+				} else {
+					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
+					self._table.resizeCanvas();
+				}
+				self._tabHeight = currentTabHeight;
 			}
-			self._tabHeight = currentTabHeight;
+		});
+		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
+			let nameWidth: number = data.grid.getColumnWidths()[1];
+			// adjust job name when resized
+			$('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth-10}px`);
+			// adjust error message when resized
+			$('#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext').css('width', '100%');
 		});
 		this.loadJobHistories();
 	}

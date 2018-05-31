@@ -14,7 +14,6 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IInsightData, IInsightsView, IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
@@ -24,6 +23,8 @@ import { IChartViewActionContext, CopyAction, CreateInsightAction, SaveImageActi
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import { SelectBox as AngularSelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
+import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 
 /* Insights */
 import {
@@ -40,6 +41,13 @@ import { mixin } from 'vs/base/common/objects';
 import * as paths from 'vs/base/common/paths';
 import * as pfs from 'vs/base/node/pfs';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -94,8 +102,17 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
 		@Inject(forwardRef(() => ViewContainerRef)) private _viewContainerRef: ViewContainerRef,
-		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(INotificationService) private notificationService: INotificationService,
+		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
+		@Inject(IClipboardService) private clipboardService: IClipboardService,
+		@Inject(IConfigurationService) private configurationService: IConfigurationService,
+		@Inject(IWindowsService) private windowsService: IWindowsService,
+		@Inject(IWorkspaceContextService) private workspaceContextService: IWorkspaceContextService,
+		@Inject(IWindowService) private windowService: IWindowService,
+		@Inject(IQueryModelService) private queryModelService: IQueryModelService,
+		@Inject(IWorkbenchEditorService) private editorService: IWorkbenchEditorService
 	) {
 		this.setDefaultChartConfig();
 	}
@@ -116,8 +133,8 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 
 	private getDefaultChartType(): string {
 		let defaultChartType = Constants.chartTypeHorizontalBar;
-		if (this._bootstrapService.configurationService) {
-			let chartSettings = WorkbenchUtils.getSqlConfigSection(this._bootstrapService.configurationService, 'chart');
+		if (this.configurationService) {
+			let chartSettings = WorkbenchUtils.getSqlConfigSection(this.configurationService, 'chart');
 			// Only use the value if it's a known chart type. Ideally could query this dynamically but can't figure out how
 			if (chartSettings && Constants.allChartTypes.indexOf(chartSettings[Constants.defaultChartType]) > -1) {
 				defaultChartType = chartSettings[Constants.defaultChartType];
@@ -127,12 +144,12 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	}
 
 	private _initActionBar() {
-		this._createInsightAction = this._bootstrapService.instantiationService.createInstance(CreateInsightAction);
-		this._copyAction = this._bootstrapService.instantiationService.createInstance(CopyAction);
-		this._saveAction = this._bootstrapService.instantiationService.createInstance(SaveImageAction);
+		this._createInsightAction = this.instantiationService.createInstance(CreateInsightAction);
+		this._copyAction = this.instantiationService.createInstance(CopyAction);
+		this._saveAction = this.instantiationService.createInstance(SaveImageAction);
 
 		let taskbar = <HTMLElement>this.taskbarContainer.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this._bootstrapService.contextMenuService);
+		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ action: this._createInsightAction },
@@ -180,7 +197,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 			return;
 		}
 
-		this._bootstrapService.clipboardService.writeImageDataUrl(data);
+		this.clipboardService.writeImageDataUrl(data);
 	}
 
 	public saveChart(): void {
@@ -197,8 +214,8 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 						this.showError(err.message);
 					} else {
 						let fileUri = URI.from({ scheme: PathUtilities.FILE_SCHEMA, path: filePath });
-						this._bootstrapService.windowsService.openExternal(fileUri.toString());
-						this._bootstrapService.notificationService.notify({
+						this.windowsService.openExternal(fileUri.toString());
+						this.notificationService.notify({
 							severity: Severity.Error,
 							message: nls.localize('chartSaved', 'Saved Chart to path: {0}', filePath)
 						});
@@ -209,9 +226,9 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	}
 
 	private promptForFilepath(): Thenable<string> {
-		let filepathPlaceHolder = PathUtilities.resolveCurrentDirectory(this.getActiveUriString(), PathUtilities.getRootPath(this._bootstrapService.workspaceContextService));
+		let filepathPlaceHolder = PathUtilities.resolveCurrentDirectory(this.getActiveUriString(), PathUtilities.getRootPath(this.workspaceContextService));
 		filepathPlaceHolder = paths.join(filepathPlaceHolder, 'chart.png');
-		return this._bootstrapService.windowService.showSaveDialog({
+		return this.windowService.showSaveDialog({
 			title: nls.localize('chartViewer.saveAsFileTitle', 'Choose Results File'),
 			defaultPath: paths.normalize(filepathPlaceHolder, true)
 		});
@@ -230,7 +247,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		}
 
 		let uri: URI = URI.parse(uriString);
-		let dataService = this._bootstrapService.queryModelService.getDataService(uriString);
+		let dataService = this.queryModelService.getDataService(uriString);
 		if (!dataService) {
 			this.showError(nls.localize('createInsightNoDataService', 'Cannot create insight, backing data model not found'));
 			return;
@@ -259,7 +276,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	}
 
 	private showError(errorMsg: string) {
-		this._bootstrapService.notificationService.notify({
+		this.notificationService.notify({
 			severity: Severity.Error,
 			message: errorMsg
 		});
@@ -274,7 +291,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	}
 
 	private getActiveUriString(): string {
-		let editorService = this._bootstrapService.editorService;
+		let editorService = this.editorService;
 		let editor = editorService.getActiveEditor();
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;

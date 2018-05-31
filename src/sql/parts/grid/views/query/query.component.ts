@@ -22,16 +22,22 @@ import * as Services from 'sql/parts/grid/services/sharedServices';
 import { IGridIcon, IMessage, IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { GridActionProvider } from 'sql/parts/grid/views/gridActions';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { error } from 'sql/base/common/log';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { clone } from 'sql/base/common/objects';
+import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 
 import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export const QUERY_SELECTOR: string = 'query-component';
 
@@ -149,7 +155,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	public showChartRequested: EventEmitter<IGridDataSet> = new EventEmitter<IGridDataSet>();
 	public goToNextQueryOutputTabRequested: EventEmitter<void> = new EventEmitter<void>();
 
-	@Input() public queryParameters: QueryComponentParams;
+	@Input() public queryParameters: IQueryComponentParams;
 
 	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
 	// tslint:disable-next-line:no-unused-variable
@@ -159,14 +165,20 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
-		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
+		@Inject(IKeybindingService) keybindingService: IKeybindingService,
+		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
+		@Inject(IConfigurationService) configurationService: IConfigurationService,
+		@Inject(IClipboardService) clipboardService: IClipboardService,
+		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService
 	) {
-		super(el, cd, bootstrapService);
+		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService);
 		this._el.nativeElement.className = 'slickgridContainer';
-		this.rowHeight = bootstrapService.configurationService.getValue<any>('resultsGrid').rowHeight;
-		bootstrapService.configurationService.onDidChangeConfiguration(e => {
+		this.rowHeight = configurationService.getValue<any>('resultsGrid').rowHeight;
+		configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('resultsGrid')) {
-				this.rowHeight = bootstrapService.configurationService.getValue<any>('resultsGrid').rowHeight;
+				this.rowHeight = configurationService.getValue<any>('resultsGrid').rowHeight;
 				this.slickgrids.forEach(i => {
 					i.rowHeight = this.rowHeight;
 				});
@@ -182,7 +194,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		const self = this;
 
 		this.dataService = this.queryParameters.dataService;
-		this.actionProvider = this._bootstrapService.instantiationService.createInstance(GridActionProvider, this.dataService, this.onGridSelectAll());
+		this.actionProvider = this.instantiationService.createInstance(GridActionProvider, this.dataService, this.onGridSelectAll());
 
 		this.baseInit();
 		this.setupResizeBind();

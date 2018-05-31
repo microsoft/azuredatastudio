@@ -9,8 +9,8 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
 /* SQL imports */
-import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { IMetadataService } from 'sql/services/metadata/metadataService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
@@ -64,9 +64,6 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 
 	/* Static Services */
 
-	private _dashboardViewService = this._bootstrapService.dashboardViewService;
-
-
 	private _updatePage = new Emitter<void>();
 	public readonly onUpdatePage: Event<void> = this._updatePage.event;
 
@@ -88,14 +85,21 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	private _numberOfPageNavigations = 0;
 
 	constructor(
-		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => Router)) private _router: Router,
+		@Inject(INotificationService) private _notificationService: INotificationService,
+		@Inject(IMetadataService) metadataService: IMetadataService,
+		@Inject(IConnectionManagementService) connectionManagementService: IConnectionManagementService,
+		@Inject(IAdminService) adminService: IAdminService,
+		@Inject(IQueryManagementService) queryManagementService: IQueryManagementService,
+		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
+		@Inject(IConfigurationService) private _configService: IConfigurationService,
+		@Inject(IBootstrapParams) _params: IDashboardComponentParams
 	) {
-		super(bootstrapService);
+		super(_params, metadataService, connectionManagementService, adminService, queryManagementService);
 	}
 
-	public get dashboardViewService(): IDashboardViewService {
-		return this._dashboardViewService;
+	private get params(): IDashboardComponentParams {
+		return this._params;
 	}
 
 	/**
@@ -107,11 +111,10 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	}
 
 	protected _getbootstrapParams(): void {
-		this._bootstrapParams = this._bootstrapService.getBootstrapParams<DashboardComponentParams>(this._uniqueSelector);
-		this._contextKeyService = this._bootstrapParams.scopedContextService;
-		this._connectionContextKey = this._bootstrapParams.connectionContextKey;
-		this.dashboardContextKey = this._dashboardContextKey.bindTo(this._contextKeyService);
-		this.uri = this._bootstrapParams.ownerUri;
+		this.scopedContextKeyService = this.params.scopedContextService;
+		this._connectionContextKey = this.params.connectionContextKey;
+		this.dashboardContextKey = this._dashboardContextKey.bindTo(this.scopedContextKeyService);
+		this.uri = this.params.ownerUri;
 	}
 
 	/**
@@ -120,7 +123,7 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	 */
 	protected set uri(uri: string) {
 		super.setUri(uri);
-		this._register(toDisposableSubscription(this._bootstrapService.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
+		this._register(toDisposableSubscription(this.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
 	}
 
 	/**
@@ -147,7 +150,7 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	}
 
 	public writeSettings(type: string, value: any, target: ConfigurationTarget) {
-		this._configurationEditingService.writeConfiguration(target, { key: [DASHBOARD_SETTINGS, type].join('.'), value });
+		this._configService.updateValue([DASHBOARD_SETTINGS, type].join('.'), value, target);
 	}
 
 	private handleDashboardEvent(event: IAngularEvent): void {

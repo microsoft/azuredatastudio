@@ -15,8 +15,8 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { DashboardInput } from './dashboardInput';
 import { DashboardModule } from './dashboard.module';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
-import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { DASHBOARD_SELECTOR } from 'sql/parts/dashboard/dashboard.component';
 import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
@@ -34,7 +34,6 @@ export class DashboardEditor extends BaseEditor {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IBootstrapService private _bootstrapService: IBootstrapService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IDashboardService private _dashboardService: IDashboardService,
 		@IConnectionManagementService private _connMan: IConnectionManagementService
@@ -114,7 +113,7 @@ export class DashboardEditor extends BaseEditor {
 		let connectionContextKey = new ConnectionContextkey(scopedContextService);
 		connectionContextKey.set(input.connectionProfile);
 
-		let params: DashboardComponentParams = {
+		let params: IDashboardComponentParams = {
 			connection: input.connectionProfile,
 			ownerUri: input.uri,
 			scopedContextService,
@@ -123,7 +122,7 @@ export class DashboardEditor extends BaseEditor {
 
 		input.hasBootstrapped = true;
 
-		let uniqueSelector = this._bootstrapService.bootstrap(
+		let uniqueSelector = this.instantiationService.invokeFunction(bootstrapAngular,
 			DashboardModule,
 			this._dashboardContainer,
 			DASHBOARD_SELECTOR,

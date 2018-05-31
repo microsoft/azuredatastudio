@@ -6,7 +6,7 @@
 import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import { Webview } from 'vs/workbench/parts/html/browser/webview';
-import { Parts } from 'vs/workbench/services/part/common/partService';
+import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
 import Event, { Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { memoize } from 'vs/base/common/decorators';
@@ -14,9 +14,12 @@ import { memoize } from 'vs/base/common/decorators';
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IDashboardWebview } from 'sql/services/dashboard/common/dashboardViewService';
+import { IDashboardWebview, IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
 
 import * as sqlops from 'sqlops';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 interface IWebviewWidgetConfig {
 	id: string;
@@ -36,21 +39,24 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	private _onMessage = new Emitter<string>();
 	public readonly onMessage: Event<string> = this._onMessage.event;
 	private _onMessageDisposable: IDisposable;
-	private _dashboardService: DashboardServiceInterface;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private commonService: CommonServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IContextViewService) private contextViewService: IContextViewService,
+		@Inject(IDashboardViewService) private dashboardViewService: IDashboardViewService,
+		@Inject(IPartService) private partService: IPartService,
+		@Inject(IEnvironmentService) private environmentService: IEnvironmentService
 	) {
 		super();
 		this._id = (_config.widget[selector] as IWebviewWidgetConfig).id;
-		this._dashboardService = commonService as DashboardServiceInterface;
 	}
 
 	ngOnInit() {
-		this._dashboardService.dashboardViewService.registerWebview(this);
+		this.dashboardViewService.registerWebview(this);
 		this._createWebview();
 	}
 
@@ -101,10 +107,10 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		}
 		this._webview = new Webview(
 			this._el.nativeElement,
-			this._dashboardService.partService.getContainer(Parts.EDITOR_PART),
-			this._dashboardService.themeService,
-			this._dashboardService.environmentService,
-			this._dashboardService.contextViewService,
+			this.partService.getContainer(Parts.EDITOR_PART),
+			this.themeService,
+			this.environmentService,
+			this.contextViewService,
 			undefined,
 			undefined,
 			{
@@ -115,7 +121,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		this._onMessageDisposable = this._webview.onMessage(e => {
 			this._onMessage.fire(e);
 		});
-		this._webview.style(this._dashboardService.themeService.getTheme());
+		this._webview.style(this.themeService.getTheme());
 		if (this._html) {
 			this._webview.contents = this._html;
 		}

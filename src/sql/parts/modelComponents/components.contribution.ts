@@ -5,12 +5,15 @@
 
 import FlexContainer from './flexContainer.component';
 import FormContainer from './formContainer.component';
+import GroupContainer from './groupContainer.component';
 import CardComponent from './card.component';
 import InputBoxComponent from './inputbox.component';
 import DropDownComponent from './dropdown.component';
 import ButtonComponent from './button.component';
 import CheckBoxComponent from './checkbox.component';
 import RadioButtonComponent from './radioButton.component';
+import WebViewComponent from './webview.component';
+import TextComponent from './text.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -19,6 +22,9 @@ registerComponentType(FLEX_CONTAINER, ModelComponentTypes.FlexContainer, FlexCon
 
 export const FORM_CONTAINER = 'form-container';
 registerComponentType(FORM_CONTAINER, ModelComponentTypes.Form, FormContainer);
+
+export const GROUP_CONTAINER = 'group-container';
+registerComponentType(GROUP_CONTAINER, ModelComponentTypes.Group, GroupContainer);
 
 export const CARD_COMPONENT = 'card-component';
 registerComponentType(CARD_COMPONENT, ModelComponentTypes.Card, CardComponent);
@@ -38,3 +44,9 @@ registerComponentType(CHECKBOX_COMPONENT, ModelComponentTypes.CheckBox, CheckBox
 
 export const RADIOBUTTON_COMPONENT = 'radiobutton-component';
 registerComponentType(RADIOBUTTON_COMPONENT, ModelComponentTypes.RadioButton, RadioButtonComponent);
+
+export const WEBVIEW_COMPONENT = 'webview-component';
+registerComponentType(WEBVIEW_COMPONENT, ModelComponentTypes.WebView, WebViewComponent);
+
+export const TEXT_COMPONENT = 'text-component';
+registerComponentType(TEXT_COMPONENT, ModelComponentTypes.Text, TextComponent);

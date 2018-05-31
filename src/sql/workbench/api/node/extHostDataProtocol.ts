@@ -4,12 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import Event, { Emitter } from 'vs/base/common/event';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
-import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
+import Event, { Emitter } from 'vs/base/common/event';
+import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
+import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -21,6 +22,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	private static _handlePool: number = 0;
 	private _adapter = new Map<number, sqlops.DataProvider>();
+	private _providersByType = new Map<sqlops.DataProviderType, sqlops.DataProvider[]>();
 
 	constructor(
 		mainContext: IMainContext
@@ -49,92 +51,112 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		}
 	}
 
-	private registerProvider(provider: sqlops.DataProvider): vscode.Disposable {
+	private registerProvider(provider: sqlops.DataProvider, providerType: DataProviderType): vscode.Disposable {
 		provider.handle = this._nextHandle();
 		this._adapter.set(provider.handle, provider);
+		let providersForType = this._providersByType.get(providerType);
+		if (!providersForType) {
+			providersForType = [provider];
+		} else {
+			providersForType.push(provider);
+		}
+		this._providersByType.set(providerType, providersForType);
 		return this._createDisposable(provider.handle);
 	}
 
+	public getProvider<T extends sqlops.DataProvider>(providerId: string, providerType: sqlops.DataProviderType): T {
+		let providersForType = this._providersByType.get(providerType);
+		if (!providersForType) {
+			return undefined;
+		}
+		return providersForType.find(provider => provider.providerId === providerId) as T;
+	}
+
+	public getProvidersByType<T extends sqlops.DataProvider>(providerType: sqlops.DataProviderType): T[] {
+		let providersForType = this._providersByType.get(providerType);
+		return (providersForType || []) as T[];
+	}
+
 	$registerConnectionProvider(provider: sqlops.ConnectionProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
+		let rt = this.registerProvider(provider, DataProviderType.ConnectionProvider);
 		this._proxy.$registerConnectionProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
 	$registerBackupProvider(provider: sqlops.BackupProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
+		let rt = this.registerProvider(provider, DataProviderType.BackupProvider);
 		this._proxy.$registerBackupProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
 	$registerRestoreProvider(provider: sqlops.RestoreProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
+		let rt = this.registerProvider(provider, DataProviderType.RestoreProvider);
 		this._proxy.$registerRestoreProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
 	$registerScriptingProvider(provider: sqlops.ScriptingProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
+		let rt = this.registerProvider(provider, DataProviderType.ScriptingProvider);
 		this._proxy.$registerScriptingProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
 	$registerQueryProvider(provider: sqlops.QueryProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
+		let rt = this.registerProvider(provider, DataProviderType.QueryProvider);
 		this._proxy.$registerQueryProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
 	$registerMetadataProvider(provider: sqlops.MetadataProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
+		let rt = this.registerProvider(provider, DataProviderType.MetadataProvider);
 		this._proxy.$registerMetadataProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
 	$registerTaskServicesProvider(provider: sqlops.TaskServicesProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
+		let rt = this.registerProvider(provider, DataProviderType.TaskServicesProvider);
 		this._proxy.$registerTaskServicesProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
 	$registerFileBrowserProvider(provider: sqlops.FileBrowserProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
+		let rt = this.registerProvider(provider, DataProviderType.FileBrowserProvider);
 		this._proxy.$registerFileBrowserProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
 	$registerObjectExplorerProvider(provider: sqlops.ObjectExplorerProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
+		let rt = this.registerProvider(provider, DataProviderType.ObjectExplorerProvider);
 		this._proxy.$registerObjectExplorerProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
 	$registerProfilerProvider(provider: sqlops.ProfilerProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
+		let rt = this.registerProvider(provider, DataProviderType.ProfilerProvider);
 		this._proxy.$registerProfilerProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
 	$registerAdminServicesProvider(provider: sqlops.AdminServicesProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
+		let rt = this.registerProvider(provider, DataProviderType.AdminServicesProvider);
 		this._proxy.$registerAdminServicesProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
 	$registerAgentServiceProvider(provider: sqlops.AgentServicesProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
+		let rt = this.registerProvider(provider, DataProviderType.AgentServicesProvider);
 		this._proxy.$registerAgentServicesProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
-	$registerAvailabilityGroupServiceProvider(provider: sqlops.AvailabilityGroupServiceProvider):vscode.Disposable {
-        let rt = this.registerProvider(provider);
+	$registerAvailabilityGroupServiceProvider(provider: sqlops.AvailabilityGroupServiceProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.AvailabilityGroupServiceProvider);
 		this._proxy.$registerAvailabilityGroupServiceProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
 	$registerCapabilitiesServiceProvider(provider: sqlops.CapabilitiesProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider);
+		let rt = this.registerProvider(provider, DataProviderType.CapabilitiesProvider);
 		this._proxy.$registerCapabilitiesServiceProvider(provider.providerId, provider.handle);
 		return rt;
 	}
@@ -524,7 +546,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Availability Group Service Provider methods
 	 */
-	public $getAvailabilityGroups(handle: number, ownerUri: string):Thenable<sqlops.AvailabilityGroupsResult> {
+	public $getAvailabilityGroups(handle: number, ownerUri: string): Thenable<sqlops.AvailabilityGroupsResult> {
 		return this._resolveProvider<sqlops.AvailabilityGroupServiceProvider>(handle).getAvailabilityGroups(ownerUri);
 	}
 }

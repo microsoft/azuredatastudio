@@ -14,7 +14,6 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as themeColors from 'vs/workbench/common/theme';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IAvailabilityGroupService } from 'sql/parts/availabilityGroup/common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
@@ -23,7 +22,6 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as sqlops from 'sqlops';
 import { equals } from 'vs/base/common/objects';
-import { BootstrapService } from '../../../services/bootstrap/bootstrapServiceImpl';
 import { Observable } from 'rxjs/Observable';
 
 export const AvailabilityGroupView_SELECTOR: string = 'availabilitygroupview-component';
@@ -34,7 +32,6 @@ export const AvailabilityGroupView_SELECTOR: string = 'availabilitygroupview-com
 })
 @Injectable()
 export class AvailabilityGroupDashboardComponent implements OnInit {
-	private _availabilityGroupService: IAvailabilityGroupService;
 	private _refresh: boolean = undefined;
 	private LoadingText: string = nls.localize('agDashboard.LoadingText', "Loading...");
 	private ReplicasText: string = nls.localize('agDashboard.ReplicasText', "Replicas");
@@ -76,11 +73,10 @@ export class AvailabilityGroupDashboardComponent implements OnInit {
 	}
 
 	constructor(
-		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef) {
-		this._availabilityGroupService = this.bootstrapService.availabilityGroupService;
+		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(IAvailabilityGroupService) private _availabilityGroupService: IAvailabilityGroupService) {
 	}
 
 	public get refresh(): boolean {

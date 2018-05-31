@@ -45,6 +45,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return container;
 	}
 
+	groupContainer(): sqlops.GroupBuilder {
+		let id = this.getNextComponentId();
+		let container: ContainerBuilderImpl<sqlops.GroupContainer, any, any> = new ContainerBuilderImpl<sqlops.GroupContainer, sqlops.GroupLayout, sqlops.GroupItemLayout>(this._proxy, this._handle, ModelComponentTypes.Group, id);
+		this._componentBuilders.set(id, container);
+		return container;
+	}
+
 	card(): sqlops.ComponentBuilder<sqlops.CardComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.CardComponent> = this.getComponentBuilder(new CardWrapper(this._proxy, this._handle, id), id);
@@ -55,6 +62,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 	inputBox(): sqlops.ComponentBuilder<sqlops.InputBoxComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.InputBoxComponent> = this.getComponentBuilder(new InputBoxWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	text(): sqlops.ComponentBuilder<sqlops.TextComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.TextComponent> = this.getComponentBuilder(new TextComponentWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -73,6 +87,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	webView(): sqlops.ComponentBuilder<sqlops.WebViewComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.WebViewComponent> = this.getComponentBuilder(new WebViewWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	button(): sqlops.ComponentBuilder<sqlops.ButtonComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.ButtonComponent> = this.getComponentBuilder(new ButtonWrapper(this._proxy, this._handle, id), id);
@@ -87,16 +108,16 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
-	dashboardWidget(widgetId: string): sqlops.ComponentBuilder<sqlops.WidgetComponent> {
+	dashboardWidget(widgetId: string): sqlops.ComponentBuilder<sqlops.DashboardWidgetComponent> {
 		let id = this.getNextComponentId();
-		let builder = this.getComponentBuilder<sqlops.WidgetComponent>(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id), id);
+		let builder = this.getComponentBuilder<sqlops.DashboardWidgetComponent>(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	dashboardWebview(webviewId: string): sqlops.ComponentBuilder<sqlops.WebviewComponent> {
+	dashboardWebview(webviewId: string): sqlops.ComponentBuilder<sqlops.DashboardWebviewComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.WebviewComponent> = this.getComponentBuilder(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id), id);
+		let builder: ComponentBuilderImpl<sqlops.DashboardWebviewComponent> = this.getComponentBuilder(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -185,7 +206,6 @@ class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> ext
 }
 
 class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> implements sqlops.FormBuilder {
-
 	withFormItems(components: sqlops.FormComponent[], itemLayout?: sqlops.FormItemLayout): sqlops.ContainerBuilder<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> {
 		this._component.itemConfigs = components.map(item => {
 			return this.convertToItemConfig(item, itemLayout);
@@ -516,6 +536,34 @@ class CheckBoxWrapper extends ComponentWrapper implements sqlops.CheckBoxCompone
 	}
 }
 
+class WebViewWrapper extends ComponentWrapper implements sqlops.WebViewComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.WebView, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onMessage, new Emitter<any>());
+	}
+
+	public get message(): any {
+		return this.properties['message'];
+	}
+	public set message(v: any) {
+		this.setProperty('message', v);
+	}
+
+	public get html(): string {
+		return this.properties['html'];
+	}
+	public set html(v: string) {
+		this.setProperty('html', v);
+	}
+
+	public get onMessage(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onMessage);
+		return emitter && emitter.event;
+	}
+}
+
 class RadioButtonWrapper extends ComponentWrapper implements sqlops.RadioButtonComponent {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
@@ -554,6 +602,21 @@ class RadioButtonWrapper extends ComponentWrapper implements sqlops.RadioButtonC
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
+	}
+}
+
+class TextComponentWrapper extends ComponentWrapper implements sqlops.TextComponentProperties {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Text, id);
+		this.properties = {};
+	}
+
+	public get value(): string {
+		return this.properties['value'];
+	}
+	public set value(v: string) {
+		this.setProperty('value', v);
 	}
 }
 

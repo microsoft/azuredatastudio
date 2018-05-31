@@ -17,6 +17,11 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { mixin } from 'vs/base/common/objects';
+import * as DOM from 'vs/base/browser/dom';
+import * as strings from 'vs/base/common/strings';
+
+import * as sqlops from 'sqlops';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
@@ -33,14 +38,10 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/parts/disasterRecovery/restore/restoreViewModel';
 import * as FileValidationConstants from 'sql/parts/fileBrowser/common/fileValidationServiceConstants';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
-import * as DOM from 'vs/base/browser/dom';
-import * as sqlops from 'sqlops';
-import * as strings from 'vs/base/common/strings';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { mixin } from 'vs/base/common/objects';
+import { IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -130,9 +131,9 @@ export class RestoreDialog extends Modal {
 		@IPartService partService: IPartService,
 		@IThemeService private _themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IBootstrapService private _bootstrapService: IBootstrapService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IFileBrowserDialogController private fileBrowserDialogService: IFileBrowserDialogController
 	) {
 		super(localize('RestoreDialogTitle', 'Restore database'), TelemetryKeys.Restore, partService, telemetryService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
 		this._restoreTitle = localize('restoreDialog.restoreTitle', 'Restore database');
@@ -656,7 +657,7 @@ export class RestoreDialog extends Modal {
 	}
 
 	private onFileBrowserRequested(): void {
-		this._bootstrapService.fileBrowserDialogService.showDialog(this._ownerUri,
+		this.fileBrowserDialogService.showDialog(this._ownerUri,
 			this.viewModel.defaultBackupFolder,
 			BackupConstants.fileFiltersSet,
 			FileValidationConstants.restore,
