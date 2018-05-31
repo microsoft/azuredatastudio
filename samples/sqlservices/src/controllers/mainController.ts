@@ -209,7 +209,7 @@ export default class MainController implements vscode.Disposable {
 			let inputBox = view.modelBuilder.inputBox()
 				.withValidation(component => component.value !== 'valid')
 				.component();
-			let formModel = view.modelBuilder.formContainer()
+				let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: inputBox,
 					title: 'Enter anything but "valid"'
@@ -259,17 +259,51 @@ export default class MainController implements vscode.Disposable {
 		let editor = sqlops.workspace.createModelViewEditor('Editor webview2', { retainContextWhenHidden: true });
 		editor.registerContent(async view => {
 
+			let inputBox = view.modelBuilder.inputBox().component();
+			let dropdown = view.modelBuilder.dropDown()
+				.withProperties({
+					value: 'aa',
+					values: ['aa', 'bb', 'cc']
+				})
+				.component();
+			let button = view.modelBuilder.button()
+				.withProperties({
+					label: 'Run'
+				}).component();
+			let toolbarModel = view.modelBuilder.toolbarContainer()
+				.withToolbarItems([{
+					component: inputBox,
+					title: 'User name:'
+				}, {
+					component: dropdown,
+					title: 'favorite:'
+				}, {
+					component: button
+				}]).component();
+
+
 			let webview = view.modelBuilder.webView()
 				.component();
+
 			let flexModel = view.modelBuilder.flexContainer()
 				.withLayout({
 					flexFlow: 'column',
 					alignItems: 'stretch',
 					height: '100%'
 				}).withItems([
-					webview
-				], { flex: '1 1 50%' })
+					toolbarModel, webview
+				], { flex: '1' })
 				.component();
+
+			// bug: #1531
+			// let flexModel = view.modelBuilder.flexContainer().component();
+			// flexModel.addItem(toolbarModel, { flex: '0' });
+			// flexModel.addItem(webview, { flex: '1' });
+			// flexModel.setLayout({
+			// 	flexFlow: 'column',
+			// 	alignItems: 'stretch',
+			// 	height: '100%'
+			// });
 
 			let templateValues = {url: 'http://whoisactive.com/docs/'};
 			Utils.renderTemplateHtml(path.join(__dirname, '..'), 'templateTab.html', templateValues)

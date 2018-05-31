@@ -30,6 +30,7 @@ declare module 'sqlops' {
 		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent>;
 		formContainer(): FormBuilder;
 		groupContainer(): GroupBuilder;
+		toolbarContainer(): ToolbarBuilder;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -47,6 +48,24 @@ declare module 'sqlops' {
 	}
 
 	export interface GroupBuilder extends ContainerBuilder<GroupContainer, GroupLayout, GroupItemLayout> {
+	}
+
+	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, any, any> {
+		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, any, any>;
+
+		/**
+		 * Creates a collection of child components and adds them all to this container
+		 *
+		 * @param toolbarComponents the definitions
+		 */
+		addToolbarItems(toolbarComponents: Array<ToolbarComponent>): void;
+
+		/**
+		 * Creates a child component and adds it to this container.
+		 *
+		 * @param toolbarComponent the component to be added
+		 */
+		addToolbarItem(toolbarComponent: ToolbarComponent): void;
 	}
 
 	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
@@ -102,6 +121,11 @@ declare module 'sqlops' {
 		component: Component;
 		title: string;
 		actions?: Component[];
+	}
+
+	export interface ToolbarComponent {
+		component: Component;
+		title?: string;
 	}
 
 	/**
@@ -210,6 +234,9 @@ declare module 'sqlops' {
 	}
 
 	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout> {
+	}
+
+	export interface ToolbarContainer extends Container<any, any> {
 	}
 
 	/**

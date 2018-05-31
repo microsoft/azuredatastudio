@@ -5,6 +5,7 @@
 
 import FlexContainer from './flexContainer.component';
 import FormContainer from './formContainer.component';
+import ToolbarContainer from './toolbarContainer.component';
 import GroupContainer from './groupContainer.component';
 import CardComponent from './card.component';
 import InputBoxComponent from './inputbox.component';
@@ -22,6 +23,9 @@ registerComponentType(FLEX_CONTAINER, ModelComponentTypes.FlexContainer, FlexCon
 
 export const FORM_CONTAINER = 'form-container';
 registerComponentType(FORM_CONTAINER, ModelComponentTypes.Form, FormContainer);
+
+export const TOOLBAR_CONTAINER = 'toolbar-container';
+registerComponentType(TOOLBAR_CONTAINER, ModelComponentTypes.Toolbar, ToolbarContainer);
 
 export const GROUP_CONTAINER = 'group-container';
 registerComponentType(GROUP_CONTAINER, ModelComponentTypes.Group, GroupContainer);
