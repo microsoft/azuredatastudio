@@ -775,6 +775,7 @@ export class ExtHostTask implements ExtHostTaskShape {
 		} else {
 			let dto = TaskDTO.from(task, extension);
 			if (dto === void 0) {
+				// {{ SQL CARBON EDIT }} - Add type assertion to fix build break
 				return Promise.reject<vscode.TaskExecution>(new Error('Task is not valid'));
 			}
 			return this._proxy.$executeTask(dto).then(value => this.getTaskExecution(value, task));

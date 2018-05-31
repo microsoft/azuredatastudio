@@ -17,7 +17,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IExtension, ExtensionState, IExtensionsWorkbenchService, VIEWLET_ID, IExtensionsViewlet, AutoUpdateConfigurationKey } from 'vs/workbench/parts/extensions/common/extensions';
 import { ExtensionsConfigurationInitialContent } from 'vs/workbench/parts/extensions/common/extensionsFileTemplate';
-import { LocalExtensionType, IExtensionEnablementService, IExtensionTipsService, EnablementState, ExtensionsLabel, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { LocalExtensionType, IExtensionEnablementService, IExtensionTipsService, EnablementState, ExtensionsLabel } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ToggleViewletAction } from 'vs/workbench/browser/viewlet';
@@ -891,14 +891,14 @@ export class ReloadAction extends Action {
 			if (state === ExtensionState.Installing || state === ExtensionState.Uninstalling) {
 				return TPromise.wrap<void>(null);
 			}
-			return TPromise.join([this.extensionService.getExtensions(), this.extensionEnablementService.getDisabledExtensions()])
-				.then(([runningExtensions, disabledExtensions]) => this.computeReloadState(runningExtensions, disabledExtensions));
+			return this.extensionService.getExtensions()
+				.then(runningExtensions => this.computeReloadState(runningExtensions));
 		}).done(() => {
 			this.class = this.enabled ? ReloadAction.EnabledClass : ReloadAction.DisabledClass;
 		});
 	}
 
-	private computeReloadState(runningExtensions: IExtensionDescription[], disabledExtensions: IExtensionIdentifier[]): void {
+	private computeReloadState(runningExtensions: IExtensionDescription[]): void {
 		const isInstalled = this.extensionsWorkbenchService.local.some(e => e.id === this.extension.id);
 		const isUninstalled = this.extension.state === ExtensionState.Uninstalled;
 		const isDisabled = this.extension.local ? !this.extensionEnablementService.isEnabled(this.extension.local) : false;
@@ -941,14 +941,6 @@ export class ReloadAction extends Action {
 			this.reloadMessage = localize('postUninstallMessage', "Reload this window to deactivate the uninstalled extension '{0}'?", this.extension.displayName);
 			return;
 		}
-	}
-
-	private isDisabled(disabledExtensions: IExtensionIdentifier[]): boolean {
-		const identifier = { id: this.extension.id, uuid: this.extension.uuid };
-		if (this.extension.type === LocalExtensionType.System) {
-			return disabledExtensions.some(d => areSameExtensions(d, identifier));
-		}
-		return !this.extensionEnablementService.isEnabled(this.extension.local);
 	}
 
 	run(): TPromise<any> {

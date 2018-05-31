@@ -6,7 +6,7 @@
 import 'vs/css!./selectBox';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { Event, Emitter } from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { Color } from 'vs/base/common/color';
 import { deepClone, mixin } from 'vs/base/common/objects';
@@ -58,17 +58,12 @@ export interface ISelectData {
 }
 
 export class SelectBox extends Widget implements ISelectBoxDelegate {
-	protected options: string[];
-	private selected: number;
-	private _onDidSelect: Emitter<ISelectData>;
-
 	// {{SQL CARBON EDIT}}
 	protected selectElement: HTMLSelectElement;
 	protected selectBackground: Color;
 	protected selectForeground: Color;
 	protected selectBorder: Color;
 	private toDispose: IDisposable[];
-
 	private styles: ISelectBoxStyles;
 	private selectBoxDelegate: ISelectBoxDelegate;
 
