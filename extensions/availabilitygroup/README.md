@@ -1,14 +1,10 @@
-# Microsoft SQL Server Agent for SQL Operations Studio
+# Microsoft SQL Server Availability Groups extension for SQL Operations Studio
 
-Welcome to Microsoft SQL Server Agent for SQL Operations Studio! An extension for managing and troubleshooting
-SQL Server Agent jobs and configuration.  The current is an early release of this extension that provides
-basic functionality for the following.
+Welcome to Microsoft SQL Server Availability Groups extension for SQL Operations Studio! An extension for managing and troubleshooting
+SQL Server Availability Groups and configuration.  The current version is an early release of this extension that provides:
 
-* List SQL Server Agent Jobs configured on a SQL Server
-* View Job History with job execution results
-* Basic Job Control to start and stop jobs
-
-<img src="https://user-images.githubusercontent.com/599935/39215738-d3a52580-47cd-11e8-9788-b290048c270e.png" alt="SQL Agent" style="width:800px;"/>
+* List SQL Server Availability Groups on a SQL Server
+* View Availability Group details
 
 ## Code of Conduct
 
