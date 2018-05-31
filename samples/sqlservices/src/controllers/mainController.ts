@@ -209,7 +209,7 @@ export default class MainController implements vscode.Disposable {
 			let inputBox = view.modelBuilder.inputBox()
 				.withValidation(component => component.value !== 'valid')
 				.component();
-				let formModel = view.modelBuilder.formContainer()
+			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: inputBox,
 					title: 'Enter anything but "valid"'
