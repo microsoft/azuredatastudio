@@ -7,6 +7,12 @@ availabilitygroupview-component {
 	height: 100%;
 	width: 100%;
 	display: block;
+	font-size: 13px;
+}
+
+.ag-dashboard-top-container {
+	height: 50%;
+	padding: 10px;
 }
 
 .ag-tile-container {
@@ -20,31 +26,31 @@ availabilitygroupview-component {
 }
 
 .ag-tile {
+	overflow: auto;
 	cursor: pointer;
 	margin: 10px;
-	min-width: 150px;
+	min-width: 100px;
+	min-height: 150px;
+	max-width: 300px;
+	max-height: 500px;
+	border-style: solid;
+	border-width: 2px;
+	border-color: lightgray;
+	padding: 5px;
+	padding-top: 0px;
 }
 
 .ag-tile-header {
-	background-color: #eaeaea;
-	font-size: 13px;
-	padding: 2px;
-}
-
-.ag-tile-header>div {
-	margin: 5px;
-}
-
-.ag-tile-body {
-	font-size: 13px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border-width: 0px;
+	border-bottom-width: 2px;
 	border-style: solid;
-	border-width: 3px;
-	border-top-width: 0px;
-	border-color: #eaeaea;
-	padding: 5px;
+	border-color: lightgray;
+	font-size: 16px;
 }
 
-.ag-tile-body-section-header {
+.ag-tile-section-header {
 	padding-top: 5px;
 	padding-bottom: 5px;
 }
@@ -57,19 +63,18 @@ availabilitygroupview-component {
 	align-items: flex-start;
 }
 
-.ag-tile-body-section-row>div {
+.ag-row>div {
 	margin-right: 5px;
 }
 
 .ag-detail {
 	overflow-x: scroll;
 	overflow-y: scroll;
-	border-top-style: double;
+	border-top-style: solid;
 	border-top-width: 4px;
-	border-top-color: #eaeaea;
+	border-top-color: lightgray;
 	height: 50%;
 	padding: 10px;
-	font-size: 13px;
 }
 
 .ag-detail-header {
@@ -91,8 +96,7 @@ availabilitygroupview-component {
 
 .ag-detail-section-header {
 	font-size: 14px;
-	padding-top: 5px;
-	padding-bottom: 5px;
+	padding: 5px;
 	background-color: #eaeaea;
 }
 
@@ -117,11 +121,41 @@ availabilitygroupview-component {
 	font-size: 14px;
 }
 
-.ag-detail-table {
+.ag-property-table {
 	text-align: left;
 	border-collapse: separate;
-	border-spacing: 8px;
-	margin-left: -8px;
+	border-spacing: 2px 5px;
+	margin-top: 5px;
+}
+
+.ag-detail-table {
+	margin-top: 5px;
+	border-collapse: collapse;
+	text-align: left;
+}
+
+.ag-detail-table th {
+	border-style: solid;
+	border-color: lightgray;
+	border-width: 0px;
+	border-right-width: 1px;
+	padding: 5px;
+}
+
+.ag-detail-table td {
+	border-style: solid;
+	border-color: lightgray;
+	border-width: 0px;
+	border-bottom-width: 1px;
+	padding: 5px;
+}
+
+.no-border-th {
+	border-right-width: 0px !important;
+}
+
+.ag-seperator-column {
+	width: 80px;
 }
 
 .ag-icon {
