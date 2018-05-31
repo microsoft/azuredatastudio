@@ -19,15 +19,19 @@
         "commands": [
             {
                 "command": "sqlservices.openDialog",
-                "title": "sqlservices.openDialog"
+                "title": "openDialog"
             },
             {
-                "command": "sqlservices.openEditor1",
-                "title": "sqlservices.openEditor1"
+                "command": "sqlservices.openEditor",
+                "title": "sqlservices.openEditor"
             },
             {
-                "command": "sqlservices.openEditor2",
-                "title": "sqlservices.openEditor2"
+                "command": "sqlservices.openEditorWithWebView",
+                "title": "sqlservices.openEditorWithWebView"
+            },
+            {
+                "command": "sqlservices.openEditorWithWebView2",
+                "title": "sqlservices.openEditorWithWebView2"
             }
         ],
         "dashboard.tabs": [

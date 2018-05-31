@@ -29,6 +29,7 @@ declare module 'sqlops' {
 		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent>;
 		formContainer(): FormBuilder;
+		groupContainer(): GroupBuilder;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -43,6 +44,9 @@ declare module 'sqlops' {
 
 	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout> {
 
+	}
+
+	export interface GroupBuilder extends ContainerBuilder<GroupContainer, GroupLayout, GroupItemLayout> {
 	}
 
 	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
@@ -167,7 +171,7 @@ declare module 'sqlops' {
 		 */
 		alignContent?: string;
 
-		height? : number | string;
+		height?: number | string;
 	}
 
 	export interface FlexItemLayout {
@@ -183,12 +187,20 @@ declare module 'sqlops' {
 	}
 
 	export interface FormItemLayout {
-		horizontal: boolean;
-		componentWidth: number;
+		horizontal?: boolean;
+		componentWidth?: number;
 	}
 
 	export interface FormLayout {
-		width: number;
+		width?: number;
+	}
+
+	export interface GroupLayout {
+		width?: number | string;
+		header?: string;
+	}
+
+	export interface GroupItemLayout {
 	}
 
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
@@ -197,6 +209,8 @@ declare module 'sqlops' {
 	export interface FormContainer extends Container<FormLayout, FormItemLayout> {
 	}
 
+	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout> {
+	}
 
 	/**
 	 * Describes an action to be shown in the UI, with a user-readable label
@@ -666,7 +680,7 @@ declare module 'sqlops' {
 		/**
 		 * Create a new model view editor
 		 */
-		export function createModelViewEditor(title: string): ModelViewEditor;
+		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions): ModelViewEditor;
 
 		export interface ModelViewEditor extends window.modelviewdialog.ModelViewPanel {
 
@@ -675,5 +689,43 @@ declare module 'sqlops' {
 			 */
 			openEditor(position?: vscode.ViewColumn): Thenable<void>;
 		}
+	}
+
+	export interface ModelViewEditorOptions {
+		/**
+		 * Should the model view editor's context be kept around even when the editor is no longer visible? It is false by default
+		 */
+		readonly retainContextWhenHidden?: boolean;
+	}
+
+	export enum DataProviderType {
+		ConnectionProvider = 'ConnectionProvider',
+		BackupProvider = 'BackupProvider',
+		RestoreProvider = 'RestoreProvider',
+		ScriptingProvider = 'ScriptingProvider',
+		ObjectExplorerProvider = 'ObjectExplorerProvider',
+		TaskServicesProvider = 'TaskServicesProvider',
+		FileBrowserProvider = 'FileBrowserProvider',
+		ProfilerProvider = 'ProfilerProvider',
+		MetadataProvider = 'MetadataProvider',
+		QueryProvider = 'QueryProvider',
+		AdminServicesProvider = 'AdminServicesProvider',
+		AgentServicesProvider = 'AgentServicesProvider',
+		CapabilitiesProvider = 'CapabilitiesProvider'
+	}
+
+	export namespace dataprotocol {
+		/**
+		 * Get the provider corresponding to the given provider ID and type
+		 * @param providerId The ID that the provider was registered with
+		 * @param providerType The type of the provider
+		 */
+		export function getProvider<T extends DataProvider>(providerId: string, providerType: DataProviderType): T;
+
+		/**
+		 * Get all registered providers of the given type
+		 * @param providerType The type of the providers
+		 */
+		export function getProvidersByType<T extends DataProvider>(providerType: DataProviderType): T[];
 	}
 }

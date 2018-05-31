@@ -281,6 +281,12 @@ export function createApiFactory(
 				registerCapabilitiesServiceProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
+				},
+				getProvider<T extends sqlops.DataProvider>(providerId: string, providerType: sqlops.DataProviderType) {
+					return extHostDataProvider.getProvider<T>(providerId, providerType);
+				},
+				getProvidersByType<T extends sqlops.DataProvider>(providerType: sqlops.DataProviderType) {
+					return extHostDataProvider.getProvidersByType<T>(providerType);
 				}
 			};
 
@@ -325,8 +331,8 @@ export function createApiFactory(
 			const workspace: typeof sqlops.workspace = {
 				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
 				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
-				createModelViewEditor(title: string): sqlops.workspace.ModelViewEditor {
-					return extHostModelViewDialog.createModelViewEditor(title);
+				createModelViewEditor(title: string, options?: sqlops.ModelViewEditorOptions): sqlops.workspace.ModelViewEditor {
+					return extHostModelViewDialog.createModelViewEditor(title, options);
 				}
 			};
 
@@ -362,6 +368,7 @@ export function createApiFactory(
 				resources,
 				serialization,
 				dataprotocol,
+				DataProviderType: sqlExtHostTypes.DataProviderType,
 				ServiceOptionType: sqlExtHostTypes.ServiceOptionType,
 				ConnectionOptionSpecialType: sqlExtHostTypes.ConnectionOptionSpecialType,
 				EditRowState: sqlExtHostTypes.EditRowState,

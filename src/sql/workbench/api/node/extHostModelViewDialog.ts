@@ -76,13 +76,14 @@ class ModelViewEditorImpl extends ModelViewPanelImpl implements sqlops.workspace
 		extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
 		private _proxy: MainThreadModelViewDialogShape,
-		private _title: string
+		private _title: string,
+		private _options: sqlops.ModelViewEditorOptions
 	) {
 		super('modelViewEditor', extHostModelViewDialog, extHostModelView);
 	}
 
 	public openEditor(position?: vscode.ViewColumn): Thenable<void> {
-		return this._proxy.$openEditor(this._modelViewId, this._title, position);
+		return this._proxy.$openEditor(this._modelViewId, this._title, this._options, position);
 	}
 }
 
@@ -345,8 +346,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._proxy.$closeDialog(handle);
 	}
 
-	public createModelViewEditor(title: string): sqlops.workspace.ModelViewEditor {
-		let editor = new ModelViewEditorImpl(this, this._extHostModelView, this._proxy, title);
+	public createModelViewEditor(title: string, options?: sqlops.ModelViewEditorOptions): sqlops.workspace.ModelViewEditor {
+		let editor = new ModelViewEditorImpl(this, this._extHostModelView, this._proxy, title, options);
 		editor.handle = this.getHandle(editor);
 		return editor;
 	}

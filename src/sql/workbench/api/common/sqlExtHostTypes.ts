@@ -76,7 +76,8 @@ export enum ModelComponentTypes {
 	Text,
 	DashboardWidget,
 	DashboardWebview,
-	Form
+	Form,
+	Group
 }
 
 export interface IComponentShape {
@@ -165,3 +166,18 @@ export interface ActionDescriptor {
 	callbackData?: any;
 }
 
+export enum DataProviderType {
+	ConnectionProvider = 'ConnectionProvider',
+	BackupProvider = 'BackupProvider',
+	RestoreProvider = 'RestoreProvider',
+	ScriptingProvider = 'ScriptingProvider',
+	ObjectExplorerProvider = 'ObjectExplorerProvider',
+	TaskServicesProvider = 'TaskServicesProvider',
+	FileBrowserProvider = 'FileBrowserProvider',
+	ProfilerProvider = 'ProfilerProvider',
+	MetadataProvider = 'MetadataProvider',
+	QueryProvider = 'QueryProvider',
+	AdminServicesProvider = 'AdminServicesProvider',
+	AgentServicesProvider = 'AgentServicesProvider',
+	CapabilitiesProvider = 'CapabilitiesProvider'
+}

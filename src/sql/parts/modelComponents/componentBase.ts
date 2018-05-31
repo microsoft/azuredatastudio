@@ -105,6 +105,12 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		return <boolean>enabled;
 	}
 
+	public set enabled(value: boolean) {
+		let properties = this.getProperties();
+		properties['enabled'] = value;
+		this.setProperties(properties);
+	}
+
 	public get valid(): boolean {
 		return this._valid;
 	}
@@ -171,6 +177,16 @@ export abstract class ContainerBase<T> extends ComponentBase {
 	public clearContainer(): void {
 		this.items = [];
 		this._changeRef.detectChanges();
+	}
+
+	public setProperties(properties: { [key: string]: any; }): void {
+		super.setProperties(properties);
+		this.items.forEach(item => {
+			let component = this.modelStore.getComponent(item.descriptor.id);
+			if (component) {
+				component.enabled = this.enabled;
+			}
+		});
 	}
 
 	abstract setLayout(layout: any): void;

@@ -53,14 +53,14 @@ export class JobsViewComponent implements AfterContentChecked {
 
 	private columns: Array<Slick.Column<any>> = [
 		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200 , id: 'name' },
-		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', minWidth: 150, id: 'lastRun' },
-		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', minWidth: 150, id: 'nextRun' },
-		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', minWidth: 70, id: 'enabled' },
-		{ name: nls.localize('jobColumns.status','Status'), field: 'currentExecutionStatus', minWidth: 60, id: 'currentExecutionStatus' },
-		{ name: nls.localize('jobColumns.category','Category'), field: 'category', minWidth: 150, id: 'category' },
-		{ name: nls.localize('jobColumns.runnable','Runnable'), field: 'runnable', minWidth: 50, id: 'runnable' },
-		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', minWidth: 50, id: 'hasSchedule' },
-		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', minWidth: 150, id: 'lastRunOutcome' },
+		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', width: 150, id: 'lastRun' },
+		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', width: 150, id: 'nextRun' },
+		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', width: 70, id: 'enabled' },
+		{ name: nls.localize('jobColumns.status','Status'), field: 'currentExecutionStatus', width: 60, id: 'currentExecutionStatus' },
+		{ name: nls.localize('jobColumns.category','Category'), field: 'category', width: 150, id: 'category' },
+		{ name: nls.localize('jobColumns.runnable','Runnable'), field: 'runnable', width: 50, id: 'runnable' },
+		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', width: 50, id: 'hasSchedule' },
+		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', width: 150, id: 'lastRunOutcome' },
 	];
 
 	private rowDetail: RowDetailView;
@@ -228,16 +228,26 @@ export class JobsViewComponent implements AfterContentChecked {
 		this._cd.detectChanges();
 		const self = this;
 		this._tabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
-		$(window).resize((e) => {
-			let currentTabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
-			if (currentTabHeight < self._tabHeight) {
-				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
-				self._table.resizeCanvas();
-			} else {
-				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
-				self._table.resizeCanvas();
+		$(window).resize(() => {
+			let currentTab = $('agentview-component #jobsDiv .jobview-grid').get(0);
+			if (currentTab) {
+				let currentTabHeight = currentTab.clientHeight;
+				if (currentTabHeight < self._tabHeight) {
+					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
+					self._table.resizeCanvas();
+				} else {
+					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
+					self._table.resizeCanvas();
+				}
+				self._tabHeight = currentTabHeight;
 			}
-			self._tabHeight = currentTabHeight;
+		});
+		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
+			let nameWidth: number = data.grid.getColumnWidths()[1];
+			// adjust job name when resized
+			$('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth-10}px`);
+			// adjust error message when resized
+			$('#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext').css('width', '100%');
 		});
 		this.loadJobHistories();
 	}

@@ -332,7 +332,6 @@ export abstract class DashboardPage extends AngularDisposable {
 	public handleTabClose(tab: TabComponent): void {
 		let index = this.tabs.findIndex(i => i.id === tab.identifier);
 		this.tabs.splice(index, 1);
-		this._cd.detectChanges();
 		this.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { id: tab.identifier });
 	}
 }

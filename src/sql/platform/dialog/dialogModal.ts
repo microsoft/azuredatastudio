@@ -48,7 +48,7 @@ export class DialogModal extends Modal {
 	}
 
 	public layout(): void {
-
+		this._dialogPane.layout();
 	}
 
 	public render() {

@@ -7,7 +7,23 @@ import { NgModuleRef, enableProdMode, InjectionToken, ReflectiveInjector, Type, 
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { IEditorInput } from 'vs/platform/editor/common/editor';
+<<<<<<< HEAD
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
+=======
+import { IInstantiationService, ServicesAccessor, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
+import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IClipboardService as vsIClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IProgressService } from 'vs/platform/progress/common/progress';
+>>>>>>> master
 
 const selectorCounter = new Map<string, number>();
 

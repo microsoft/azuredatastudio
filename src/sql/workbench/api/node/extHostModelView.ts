@@ -45,6 +45,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return container;
 	}
 
+	groupContainer(): sqlops.GroupBuilder {
+		let id = this.getNextComponentId();
+		let container: ContainerBuilderImpl<sqlops.GroupContainer, any, any> = new ContainerBuilderImpl<sqlops.GroupContainer, sqlops.GroupLayout, sqlops.GroupItemLayout>(this._proxy, this._handle, ModelComponentTypes.Group, id);
+		this._componentBuilders.set(id, container);
+		return container;
+	}
+
 	card(): sqlops.ComponentBuilder<sqlops.CardComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.CardComponent> = this.getComponentBuilder(new CardWrapper(this._proxy, this._handle, id), id);
@@ -199,7 +206,6 @@ class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> ext
 }
 
 class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> implements sqlops.FormBuilder {
-
 	withFormItems(components: sqlops.FormComponent[], itemLayout?: sqlops.FormItemLayout): sqlops.ContainerBuilder<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> {
 		this._component.itemConfigs = components.map(item => {
 			return this.convertToItemConfig(item, itemLayout);

@@ -17,7 +17,7 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 @Component({
-	selector: 'label',
+	selector: 'modelview-text',
 	template: `
 		<p>{{getValue()}}</p>`
 })
