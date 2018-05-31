@@ -78,8 +78,6 @@ export class ProfilerStart extends Action {
 
 	public run(input: ProfilerInput): TPromise<boolean> {
 		this.enabled = false;
-		console.log('Do we get here first or what?');
-		console.log('Can I put logic in here???');
 		input.data.clear();
 		return TPromise.wrap(this._profilerService.startSession(input.id).then(() => {
 			input.state.change({ isRunning: true, isStopped: false, isPaused: false });
