@@ -103,7 +103,7 @@ export class ScrollableSplitView implements IDisposable {
 		this.orientation = types.isUndefined(options.orientation) ? Orientation.VERTICAL : options.orientation;
 
 		this.el = document.createElement('div');
-		this.scrollable = new ScrollableElement(this.el, {  });
+		this.scrollable = new ScrollableElement(this.el, {});
 		this.scrollable.onScroll(this.onScroll, this);
 		let domNode = this.scrollable.getDomNode();
 		dom.addClass(this.el, 'monaco-scroll-split-view');
