@@ -9,7 +9,7 @@ import * as sqlops from 'sqlops';
 import * as types from './types';
 
 export enum BuiltInCommands {
-    SetContext = 'setContext',
+	SetContext = 'setContext',
 }
 
 export enum ContextKeys {
@@ -23,7 +23,7 @@ const isCloudEditions = [
 ];
 
 export function setCommandContext(key: ContextKeys | string, value: any) {
-    return vscode.commands.executeCommand(BuiltInCommands.SetContext, key, value);
+	return vscode.commands.executeCommand(BuiltInCommands.SetContext, key, value);
 }
 
 export default class ContextProvider {
