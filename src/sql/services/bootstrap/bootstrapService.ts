@@ -10,6 +10,7 @@ import { IEditorInput } from 'vs/platform/editor/common/editor';
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
 
 const selectorCounter = new Map<string, number>();
+const serviceMap = new Map<string, IInstantiationService>();
 
 export const IBootstrapParams = new InjectionToken('bootstrap_params');
 export interface IBootstrapParams {
@@ -36,13 +37,17 @@ export function bootstrapAngular<T>(service: IInstantiationService, moduleType: 
 	let selector = document.createElement(uniqueSelectorString);
 	container.appendChild(selector);
 
+	serviceMap.set(uniqueSelectorString, service);
+
 	if (!platform) {
 		// Perform the bootsrap
 
 		const providers: Provider = [];
 
 		_util.serviceIds.forEach(id => {
-			providers.push({ provide: id, useFactory: () => (<any>service)._getOrCreateServiceInstance(id) });
+			providers.push({ provide: id, useFactory: () => {
+				return (<any>serviceMap.get(uniqueSelectorString))._getOrCreateServiceInstance(id);
+			}});
 		});
 
 		platform = platformBrowserDynamic(providers);
@@ -51,6 +56,10 @@ export function bootstrapAngular<T>(service: IInstantiationService, moduleType: 
 	platform.bootstrapModule(moduleType(params, uniqueSelectorString)).then(moduleRef => {
 		if (input) {
 			input.onDispose(() => {
+				serviceMap.delete(uniqueSelectorString);
+				moduleRef.onDestroy(() => {
+					serviceMap.delete(uniqueSelectorString);
+				});
 				moduleRef.destroy();
 			});
 		}
