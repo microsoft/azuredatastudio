@@ -487,15 +487,15 @@
 											},
 											{
 												"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-												"source": "https://github.com/Microsoft/sql-data-warehouse-samples/blob/master/samples/sqlops/MonitoringScripts/sqldw_icon.png"
+												"source": "https://raw.github.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/MonitoringScripts/sqldw_icon.png"
 											},
 											{
 												"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-												"source": "https://github.com/Microsoft/sql-data-warehouse-samples/blob/master/samples/sqlops/README.md"
+												"source": "https://raw.github.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/README.md"
 											},
 											{
 												"assetType": "Microsoft.VisualStudio.Code.Manifest",
-												"source": "https://github.com/Microsoft/sql-data-warehouse-samples/blob/master/samples/sqlops/package.json"
+												"source": "https://raw.github.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/package.json"
 											},
 											{
 												"assetType": "Microsoft.VisualStudio.Services.Content.License",
