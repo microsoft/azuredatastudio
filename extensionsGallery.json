@@ -410,7 +410,7 @@
                 "flags": "preview"
               },
 			  {
-				"extensionId": "18",
+				"extensionId": "19",
 				"extensionName": "sqldw-insights",
 				"displayName": "Azure SQL Data Warehouse Insights",
 				"shortDescription": "Azure SQL Data Warehouse Insights for SQL Operations Studio",
