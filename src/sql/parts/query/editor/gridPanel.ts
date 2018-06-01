@@ -24,13 +24,14 @@ import { range } from 'vs/base/common/arrays';
 import { Orientation, SplitView, IView } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { $ } from 'vs/base/browser/builder';
+import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 
 const rowHeight = 29;
 const minGridHeightInRows = 8;
 
 export class GridPanel extends ViewletPanel {
 	private container = document.createElement('div');
-	private splitView: SplitView;
+	private splitView: ScrollableSplitView;
 	private tables: GridTable[] = [];
 	private tableDisposable: IDisposable[] = [];
 
@@ -44,7 +45,7 @@ export class GridPanel extends ViewletPanel {
 		@IThemeService private themeService: IThemeService
 	) {
 		super(title, options, keybindingService, contextMenuService, configurationService);
-		this.splitView = new SplitView(this.container);
+		this.splitView = new ScrollableSplitView(this.container);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -106,11 +107,12 @@ class GridTable extends Disposable implements IView {
 		collection.setCollectionChangedCallback((change, startIndex, count) => {
 			this.renderGridDataRowsRange(startIndex, count);
 		});
-		let columns = resultSet.columnInfo.map((c, i) => {
+		let columns = resultSet.columnInfo.map<Slick.Column<any>>((c, i) => {
 			return {
 				id: i.toString(),
 				name: c.columnName,
-				field: i.toString()
+				field: i.toString(),
+				width: 100
 			};
 		});
 		let dataProvider = new AsyncDataProvider(collection, columns);
