@@ -274,9 +274,9 @@ class ToolbarContainerBuilder extends ContainerBuilderImpl<sqlops.ToolbarContain
 	private convertToItemConfig(toolbarComponent: sqlops.ToolbarComponent): InternalItemConfig {
 		let componentWrapper = toolbarComponent.component as ComponentWrapper;
 
-		return new InternalItemConfig(componentWrapper, Object.assign({}, {
+		return new InternalItemConfig(componentWrapper, {
 			title: toolbarComponent.title
-		}));
+		});
 	}
 
 	addToolbarItems(toolbarComponent: Array<sqlops.ToolbarComponent>): void {
