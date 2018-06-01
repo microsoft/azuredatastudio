@@ -14,7 +14,7 @@ export enum BuiltInCommands {
 
 export enum ContextKeys {
 	ISCLOUD = 'mssql:iscloud',
-	EDITIONID = 'mssql:edition'
+	EDITIONID = 'mssql:engineedition'
 }
 
 const isCloudEditions = [
