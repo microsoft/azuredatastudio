@@ -155,9 +155,10 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		return validateLocalExtension(zipPath)
 			.then(manifest => {
 				const identifier = { id: getLocalExtensionIdFromManifest(manifest) };
-				if (manifest.engines && manifest.engines.vscode && !isEngineValid(manifest.engines.vscode)) {
-					return TPromise.wrapError<ILocalExtension>(new Error(nls.localize('incompatible', "Unable to install Extension '{0}' as it is not compatible with Code '{1}'.", identifier.id, pkg.version)));
-				}
+				// {{SQL CARBON EDIT - Remove VS Code version check}}
+				// if (manifest.engines && manifest.engines.vscode && !isEngineValid(manifest.engines.vscode)) {
+				// 	return TPromise.wrapError<ILocalExtension>(new Error(nls.localize('incompatible', "Unable to install Extension '{0}' as it is not compatible with Code '{1}'.", identifier.id, pkg.version)));
+				// }
 				return this.removeIfExists(identifier.id)
 					.then(
 					() => this.checkOutdated(manifest)
