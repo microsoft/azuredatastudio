@@ -36,6 +36,7 @@ const extensions = [
 	'insights-default',
 	'account-provider-azure',
 	'agent',
+	'availabilitygroup',
 	'profiler'
 ];
 

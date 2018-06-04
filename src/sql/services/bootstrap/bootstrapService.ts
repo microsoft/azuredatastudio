@@ -43,6 +43,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IAvailabilityGroupService } from 'sql/parts/availabilityGroup/common/interfaces';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IClipboardService as vsIClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IProgressService } from 'vs/platform/progress/common/progress';
@@ -101,6 +102,7 @@ export function bootstrapAngular<T>(collection: ServicesAccessor, moduleType: IM
 			{ provide: ICapabilitiesService, useValue: collection.get(ICapabilitiesService) },
 			{ provide: IDashboardViewService, useValue: collection.get(IDashboardViewService) },
 			{ provide: IModelViewService, useValue: collection.get(IModelViewService) },
+			{ provide: IAvailabilityGroupService, useValue: collection.get(IAvailabilityGroupService) },
 
 			// vscode services
 			{ provide: vsIClipboardService, useValue: collection.get(vsIClipboardService) },

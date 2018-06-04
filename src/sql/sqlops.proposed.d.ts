@@ -753,7 +753,8 @@ declare module 'sqlops' {
 		QueryProvider = 'QueryProvider',
 		AdminServicesProvider = 'AdminServicesProvider',
 		AgentServicesProvider = 'AgentServicesProvider',
-		CapabilitiesProvider = 'CapabilitiesProvider'
+		CapabilitiesProvider = 'CapabilitiesProvider',
+		AvailabilityGroupServiceProvider = 'AvailabilityGroupServiceProvider',
 	}
 
 	export namespace dataprotocol {

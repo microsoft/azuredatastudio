@@ -19,6 +19,7 @@ import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectEx
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { IAvailabilityGroupService } from 'sql/parts/availabilityGroup/common/interfaces';
 import { IBackupService } from 'sql/parts/disasterRecovery/backup/common/backupService';
 import { IRestoreService } from 'sql/parts/disasterRecovery/restore/common/restoreService';
 import { ITaskService } from 'sql/parts/taskHistory/common/taskService';
@@ -51,6 +52,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@IScriptingService private _scriptingService: IScriptingService,
 		@IAdminService private _adminService: IAdminService,
 		@IJobManagementService private _jobManagementService: IJobManagementService,
+		@IAvailabilityGroupService private _availabilityGroupService: IAvailabilityGroupService,
 		@IBackupService private _backupService: IBackupService,
 		@IRestoreService private _restoreService: IRestoreService,
 		@ITaskService private _taskService: ITaskService,
@@ -355,6 +357,17 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			}
 		});
 
+		return undefined;
+	}
+
+	public $registerAvailabilityGroupServiceProvider(providerId:string, handle: number): TPromise<any> {
+		const self = this;
+		this._availabilityGroupService.registerProvider(providerId, <sqlops.AvailabilityGroupServiceProvider> {
+			providerId: providerId,
+			getAvailabilityGroups(connectionUri:string): Thenable<sqlops.AvailabilityGroupsResult> {
+				return self._proxy.$getAvailabilityGroups(handle, connectionUri);
+			}
+		});
 		return undefined;
 	}
 

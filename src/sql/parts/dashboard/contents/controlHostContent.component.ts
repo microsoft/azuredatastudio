@@ -17,6 +17,7 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import * as sqlops from 'sqlops';
 import { memoize } from 'vs/base/common/decorators';
 import { AgentViewComponent } from '../../jobManagement/agent/agentView.component';
+import { AvailabilityGroupDashboardComponent } from '../../availabilitygroup/dashboard/availabilityGroupDashboard.component';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/contents/controlHostContent.component.html')),
@@ -35,6 +36,7 @@ export class ControlHostContent {
 
 	/* Children components */
 	@ViewChild('agent') private _agentViewComponent: AgentViewComponent;
+	@ViewChild('availabilitygroup') private _availabilitygroupViewComponent: AvailabilityGroupDashboardComponent;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
@@ -76,6 +78,13 @@ export class ControlHostContent {
 	}
 
 	public refresh() {
-		this._agentViewComponent.refresh = true;
+		if(this._type === 'agent')
+		{
+			this._agentViewComponent.refresh = true;
+		}
+		else if(this._type === 'availabilitygroup')
+		{
+			this._availabilitygroupViewComponent.refresh = true;
+		}
 	}
 }

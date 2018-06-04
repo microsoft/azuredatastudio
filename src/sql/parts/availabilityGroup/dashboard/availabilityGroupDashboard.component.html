@@ -1,0 +1,144 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div class="fullsize">
+	<div class="ag-dashboard-top-container">
+		<div *ngIf="!LoadingCompleted">
+			<h3>{{LoadingText}}</h3>
+		</div>
+		<div *ngIf="LoadingCompleted" class="ag-tile-container">
+			<div *ngFor="let ag of AvailabilityGroups;let idx=index" class="ag-tile" id="ag-tile-{{idx}}" tabindex="0" (click)="showDetail(idx)" (keyup)="handleKeyboardEvents($event, idx)">
+				<div class="ag-tile-header">
+					{{ag.name}}
+				</div>
+				<div>
+					<div class="ag-tile-section-header">{{ReplicasText}} ({{ag.replicas.length}})</div>
+					<div *ngFor="let replica of ag.replicas | slice:0:getVisibleReplicaCountForTile(ag.replicas.length)" class="ag-row">
+						<div class="{{getReplicaStateImageClass(replica)}}"></div>
+						<div>{{replica.name}} ({{replica.role}})</div>
+					</div>
+					<div *ngIf="ag.replicas.length > MaxRowCountForReplicasSectionInTile" class="more-items-available-row">{{getMoreReplicasAvailableText(ag.replicas.length)}}</div>
+					<div class="ag-tile-section-header">{{DatabasesText}} ({{ag.databases.length}})</div>
+					<div *ngFor="let database of ag.databases | slice:0:getVisibleDatabaseCountForTile(ag.databases.length)" class="ag-row">
+						<div class="{{getDatabaseStateImageClass(database)}}"></div>
+						<div>{{database.name}}</div>
+					</div>
+					<div *ngIf="ag.databases.length > MaxRowCountForDatabasesSectionInTile" class="more-items-available-row">{{getMoreDatabasesAvailableText(ag.databases.length)}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="ag-detail">
+		<div *ngIf="LoadingCompleted && CurrentAvailabilityGroup">
+			<div class="ag-detail-header">
+				<div class="ag-icon-large"></div>
+				<div>{{CurrentAvailabilityGroup.name}}</div>
+			</div>
+
+			<div class="ag-detail-section">
+				<div class="ag-detail-section-header">{{GeneralText}}</div>
+				<table class="ag-property-table">
+					<tr>
+						<td>{{LocalReplicaRoleText}}</td>
+						<td>{{ColonText}} {{CurrentAvailabilityGroup.localReplicaRole}}</td>
+						<td class="ag-seperator-column"></td>
+						<td>
+							<div *ngIf="CurrentAvailabilityGroup.isSupported_DatabaseHealthTrigger">{{DatabaseHealthTriggerLabel}}</div>
+						</td>
+						<td>
+							<div *ngIf="CurrentAvailabilityGroup.isSupported_DatabaseHealthTrigger">{{ColonText}} {{CurrentAvailabilityGroup.databaseHealthTrigger}}</div>
+						</td>
+					</tr>
+					<tr>
+						<td>{{ClusterTypeLabel}}</td>
+						<td>{{ColonText}} {{CurrentAvailabilityGroup.clusterType}}</td>
+						<td></td>
+
+						<td>
+							<div *ngIf="CurrentAvailabilityGroup.isSupported_DtcSupportEnabled">{{DTCSupportedEnabledLabel}}</div>
+						</td>
+						<td>
+							<div *ngIf="CurrentAvailabilityGroup.isSupported_DtcSupportEnabled">{{ColonText}} {{CurrentAvailabilityGroup.dtcSupportEnabled}}</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div *ngIf="CurrentAvailabilityGroup.isSupported_BasicAvailabilityGroup">{{BasicAvailabilityGroupLabel}}</div>
+						</td>
+						<td>
+							<div *ngIf="CurrentAvailabilityGroup.isSupported_BasicAvailabilityGroup">{{ColonText}} {{CurrentAvailabilityGroup.basicAvailabilityGroup}}</div>
+						</td>
+						<td></td>
+						<td>
+							<div *ngIf="CurrentAvailabilityGroup.isSupported_RequiredSynchronizedSecondariesToCommit">{{RequiredSynchronizedSecondariesToCommitLabel}}</div>
+						</td>
+						<td>
+							<div *ngIf="CurrentAvailabilityGroup.isSupported_RequiredSynchronizedSecondariesToCommit">{{ColonText}} {{CurrentAvailabilityGroup.requiredSynchronizedSecondariesToCommit}}</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="ag-detail-section">
+				<div class="ag-detail-section-header">{{ReplicasText}}</div>
+				<div>
+					<table class="ag-detail-table">
+						<tr>
+							<th class="no-border-th"></th>
+							<th>{{ServerInstanceText}}</th>
+							<th>{{RoleText}}</th>
+							<th>{{StateText}}</th>
+							<th>{{AvailabilityModeText}}</th>
+							<th>{{FailoverModeText}}</th>
+							<th>{{ConnectionsInPrimaryRoleText}}</th>
+							<th>{{ReadableSecondaryText}}</th>
+							<th>{{SeedingModeText}}</th>
+							<th>{{SessionTimeoutInSecondsText}}</th>
+							<th class="no-border-th">{{EndpointUrlText}}</th>
+						</tr>
+						<tr *ngFor="let replica of CurrentAvailabilityGroup.replicas">
+							<td>
+								<div class="{{getReplicaStateImageClass(replica)}}"></div>
+							</td>
+							<td>{{replica.name}}</td>
+							<td>{{replica.role}}</td>
+							<td>{{replica.state}}</td>
+							<td>{{replica.availabilityMode}}</td>
+							<td>{{replica.failoverMode}}</td>
+							<td>{{replica.connectionsInPrimaryRole}}</td>
+							<td>{{replica.readableSecondary}}</td>
+							<td>{{replica.seedingMode}}</td>
+							<td>{{replica.sessionTimeoutInSeconds}}</td>
+							<td>{{replica.endpointUrl}}</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="ag-detail-bottom-section">
+				<div class="ag-detail-section-header">{{DatabasesText}}</div>
+				<div>
+					<table class="ag-detail-table">
+						<tr>
+							<th class="no-border-th"></th>
+							<th>{{DatabaseText}}</th>
+							<th>{{StateText}}</th>
+							<th>{{IsJoinedText}}</th>
+							<th class="no-border-th">{{IsSuspendedText}}</th>
+						</tr>
+						<tr *ngFor="let database of CurrentAvailabilityGroup.databases">
+							<td>
+								<div class="{{getDatabaseStateImageClass(database)}}"></div>
+							</td>
+							<td>{{database.name}}</td>
+							<td>{{database.state}}</td>
+							<td>{{database.isJoined}}</td>
+							<td>{{database.isSuspended}}</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

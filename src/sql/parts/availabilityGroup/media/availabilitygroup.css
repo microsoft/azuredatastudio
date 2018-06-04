@@ -1,0 +1,271 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+availabilitygroupview-component {
+	height: 100%;
+	width: 100%;
+	display: block;
+	font-size: 13px;
+	user-select: text;
+}
+
+.ag-dashboard-top-container {
+	overflow-x: scroll;
+	overflow-y: scroll;
+	padding: 10px;
+	height: 50%;
+}
+
+.ag-tile-container {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	min-width: 250px;
+}
+
+.ag-tile {
+	overflow: hidden;
+	cursor: pointer;
+	margin: 10px;
+	max-width: 240px;
+	max-height: 250px;
+	border-style: solid;
+	border-width: 2px;
+	border-color: lightgray;
+	padding: 5px;
+	padding-top: 0px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.selected-tile {
+	border-color: #00bcf2;
+	border-style: double;
+	border-width: 2px;
+}
+
+.ag-tile div {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.ag-tile-header {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border-width: 0px;
+	border-bottom-width: 2px;
+	border-style: solid;
+	font-size: 16px;
+	border-color: inherit;
+}
+
+.ag-tile-section-header {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.ag-row {
+	padding-top: 2px;
+	padding-bottom: 2px;
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+}
+
+.more-items-available-row {
+	text-align: left;
+}
+
+.ag-row>div {
+	margin-right: 5px;
+}
+
+.ag-detail {
+	overflow-x: scroll;
+	overflow-y: scroll;
+	padding: 10px;
+	height: 50%;
+	border-width: 0px;
+	border-top-width: 1px;
+	border-style: solid;
+}
+
+.ag-detail>div {
+	min-width: 1400px;
+}
+
+.ag-detail-header {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	font-size: 18px;
+}
+
+.ag-detail-header>div {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-right: 10px;
+}
+
+.ag-detail-section {
+	margin-bottom: 15px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ag-detail-bottom-section {
+	margin-bottom: 50px;
+}
+
+.ag-detail-section-header {
+	font-size: 14px;
+	padding: 5px;
+	background-color: #eaeaea;
+}
+
+.vs-dark .ag-detail-section-header {
+	background-color: inherit;
+}
+
+.property-label-value-container {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	padding-right: 10px;
+}
+
+.property-label-value-container>div {
+	padding-top: 2px;
+	padding-bottom: 2px;
+	margin-right: 5px;
+}
+
+.property-label {
+	font-size: 12px;
+}
+
+.property-value {
+	font-size: 14px;
+}
+
+.ag-property-table {
+	text-align: left;
+	border-collapse: separate;
+	border-spacing: 2px 5px;
+	margin-top: 5px;
+}
+
+.ag-detail-table {
+	margin-top: 5px;
+	border-collapse: collapse;
+	text-align: left;
+}
+
+.ag-detail-table th {
+	border-style: solid;
+	border-color: lightgray;
+	border-width: 0px;
+	border-right-width: 1px;
+	padding: 5px;
+}
+
+.ag-detail-table td {
+	border-style: solid;
+	border-color: lightgray;
+	border-width: 0px;
+	border-bottom-width: 1px;
+	padding: 5px;
+}
+
+.no-border-th {
+	border-right-width: 0px !important;
+}
+
+.ag-seperator-column {
+	width: 80px;
+}
+
+.ag-icon {
+	background-image: url('./AvailabilityGroup.svg');
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
+}
+
+.ag-icon-large {
+	background-image: url('./AvailabilityGroup.svg');
+	background-size: 24px 24px;
+	background-repeat: no-repeat;
+	width: 24px;
+	height: 24px;
+	min-width: 24px;
+	min-height: 24px;
+}
+
+.availability-replica-diconnected {
+	background-image: url('./Availability_Replica_Offline.svg');
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
+}
+
+.availability-replica-connected {
+	background-image: url('./Availability_Replica_Synchronizing.svg');
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
+}
+
+.availability-replica-unknown {
+	background-image: url('./Availability_Replica_Unknown.svg');
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
+}
+
+.availability-database-not-synchronizing {
+	background-image: url('./Availability_Database_NotSynchronizing.svg');
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
+}
+
+.availability-database-synchronizing {
+	background-image: url('./Availability_Database_Synchronizing.svg');
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
+}
+
+.availability-database-suspended {
+	background-image: url('./Availability_Database_Suspended.svg');
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
+}
+
+.availability-database-not-joined {
+	background-image: url('./Availability_Database_NotJoined.svg');
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
+}
+
+.availability-database-unknown {
+	background-image: url('./Availability_Database_Unknown.svg');
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
+}

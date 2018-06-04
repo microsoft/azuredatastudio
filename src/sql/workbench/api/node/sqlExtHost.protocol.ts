@@ -327,7 +327,13 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Run an action on a Job
 	 */
-	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult> { throw ni(); }
+	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult>{ throw ni(); }
+
+	/**
+	 * Get the availability groups on a server
+	 */
+	$getAvailabilityGroups(handle: number, ownerUri:string):Thenable<sqlops.AvailabilityGroupsResult> { throw ni(); }
+
 }
 
 /**
@@ -393,6 +399,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any>;
 	$registerAdminServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$registerAgentServicesProvider(providerId: string, handle: number): TPromise<any>;
+	$registerAvailabilityGroupServiceProvider(providerId: string, handle: number): TPromise<any>;
 	$unregisterProvider(handle: number): TPromise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
