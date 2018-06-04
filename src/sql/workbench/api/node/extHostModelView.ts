@@ -45,6 +45,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return container;
 	}
 
+	toolbarContainer(): sqlops.ToolbarBuilder {
+		let id = this.getNextComponentId();
+		let container = new ToolbarContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Toolbar, id);
+		this._componentBuilders.set(id, container);
+		return container;
+	}
+
 	groupContainer(): sqlops.GroupBuilder {
 		let id = this.getNextComponentId();
 		let container: ContainerBuilderImpl<sqlops.GroupContainer, any, any> = new ContainerBuilderImpl<sqlops.GroupContainer, sqlops.GroupLayout, sqlops.GroupItemLayout>(this._proxy, this._handle, ModelComponentTypes.Group, id);
@@ -253,6 +260,34 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 		let itemImpl = this.convertToItemConfig(formComponent, itemLayout);
 		this._component.addItem(formComponent.component as ComponentWrapper, itemImpl.config);
 		this.addComponentActions(formComponent, itemLayout);
+	}
+}
+
+class ToolbarContainerBuilder extends ContainerBuilderImpl<sqlops.ToolbarContainer, any, any> implements sqlops.ToolbarBuilder {
+	withToolbarItems(components: sqlops.ToolbarComponent[]): sqlops.ContainerBuilder<sqlops.ToolbarContainer, any, any> {
+		this._component.itemConfigs = components.map(item => {
+			return this.convertToItemConfig(item);
+		});
+		return this;
+	}
+
+	private convertToItemConfig(toolbarComponent: sqlops.ToolbarComponent): InternalItemConfig {
+		let componentWrapper = toolbarComponent.component as ComponentWrapper;
+
+		return new InternalItemConfig(componentWrapper, {
+			title: toolbarComponent.title
+		});
+	}
+
+	addToolbarItems(toolbarComponent: Array<sqlops.ToolbarComponent>): void {
+		toolbarComponent.forEach(toolbarComponent => {
+			this.addToolbarItem(toolbarComponent);
+		});
+	}
+
+	addToolbarItem(toolbarComponent: sqlops.ToolbarComponent): void {
+		let itemImpl = this.convertToItemConfig(toolbarComponent);
+		this._component.addItem(toolbarComponent.component as ComponentWrapper, itemImpl.config);
 	}
 }
 
