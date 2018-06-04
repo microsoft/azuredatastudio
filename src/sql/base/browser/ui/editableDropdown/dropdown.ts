@@ -115,7 +115,7 @@ export class Dropdown extends Disposable {
 		this.$input = $('.dropdown-input').style('width', '100%').appendTo(this.$el);
 		this.$treeContainer = $('.dropdown-tree');
 
-		this._toggleAction = new ToggleDropdownAction(() => {
+		this._toggleAction = new ToggleDropdownAction(nls.localize('dropdown.toggle', '{0} Toggle Dropdown', this._options.ariaLabel), () => {
 			this._showList();
 			this._tree.DOMFocus();
 			this._tree.focusFirst();
