@@ -108,6 +108,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	table(): sqlops.ComponentBuilder<sqlops.TableComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.TableComponent> = this.getComponentBuilder(new TableComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	dashboardWidget(widgetId: string): sqlops.ComponentBuilder<sqlops.DashboardWidgetComponent> {
 		let id = this.getNextComponentId();
 		let builder = this.getComponentBuilder<sqlops.DashboardWidgetComponent>(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id), id);
@@ -617,6 +624,41 @@ class TextComponentWrapper extends ComponentWrapper implements sqlops.TextCompon
 	}
 	public set value(v: string) {
 		this.setProperty('value', v);
+	}
+}
+
+class TableComponentWrapper extends ComponentWrapper implements sqlops.TableComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Table, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
+	}
+
+	public get data(): any[][] {
+		return this.properties['data'];
+	}
+	public set data(v: any[][]) {
+		this.setProperty('data', v);
+	}
+
+	public get columns(): string[] | sqlops.TableColumn[] {
+		return this.properties['columns'];
+	}
+	public set columns(v: string[] | sqlops.TableColumn[]) {
+		this.setProperty('columns', v);
+	}
+
+	public get selectedRows(): number[] {
+		return this.properties['selectedRows'];
+	}
+	public set selectedRows(v: number[]) {
+		this.setProperty('selectedRows', v);
+	}
+
+	public get onRowSelected(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
+		return emitter && emitter.event;
 	}
 }
 

@@ -26,6 +26,7 @@ declare module 'sqlops' {
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
+		table(): ComponentBuilder<TableComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent>;
 		formContainer(): FormBuilder;
@@ -265,6 +266,16 @@ declare module 'sqlops' {
 		required?: boolean;
 	}
 
+	export interface TableColumn {
+		value: string
+	}
+
+	export interface TableComponentProperties {
+		data: any[][];
+		columns: string[] | TableColumn[];
+		selectedRows?: number[];
+	}
+
 	export interface CheckBoxProperties {
 		checked?: boolean;
 		label?: string;
@@ -325,6 +336,10 @@ declare module 'sqlops' {
 		value: string;
 		values: string[];
 		onValueChanged: vscode.Event<any>;
+	}
+
+	export interface TableComponent extends Component, TableComponentProperties {
+		onRowSelected: vscode.Event<any>;
 	}
 
 	export interface WebViewComponent extends Component {
