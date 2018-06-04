@@ -74,6 +74,7 @@ export enum ModelComponentTypes {
 	RadioButton,
 	WebView,
 	Text,
+	Table,
 	DashboardWidget,
 	DashboardWebview,
 	Form,
@@ -99,7 +100,8 @@ export enum ComponentEventType {
 	onDidChange,
 	onDidClick,
 	validityChanged,
-	onMessage
+	onMessage,
+	onSelectedRowChanged
 }
 
 export interface IComponentEventArgs {
