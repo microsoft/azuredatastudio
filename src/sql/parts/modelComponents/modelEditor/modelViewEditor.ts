@@ -44,17 +44,17 @@ export class ModelViewEditor extends BaseEditor {
 	}
 
 	public clearInput() {
-		this.hideOrRemoveModelViewCotainer();
+		this.hideOrRemoveModelViewContainer();
 		super.clearInput();
 	}
 
-	private hideOrRemoveModelViewCotainer() {
+	private hideOrRemoveModelViewContainer() {
 		if (this.input instanceof ModelViewInput) {
 			if (this.input.container) {
 				if (this.input.options && this.input.options.retainContextWhenHidden) {
 					this.input.container.style.visibility = 'hidden';
 				} else {
-					this.input.removeModelContainer();
+					this.input.removeModelViewContainer();
 					this.input.container.style.visibility = 'hidden';
 				}
 			}
@@ -66,9 +66,9 @@ export class ModelViewEditor extends BaseEditor {
 			return TPromise.as(undefined);
 		}
 
-		this.hideOrRemoveModelViewCotainer();
+		this.hideOrRemoveModelViewContainer();
 
-		input.appendViewModelContainer();
+		input.appendModelViewContainer();
 		input.container.style.visibility = 'visible';
 
 		await super.setInput(input, options);

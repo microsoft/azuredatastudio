@@ -56,7 +56,7 @@ export class ModelViewInput extends EditorInput {
 		return this._container;
 	}
 
-	public appendViewModelContainer(): void {
+	public appendModelViewContainer(): void {
 		if (!this._dialogPane) {
 			this.createDialogPane();
 		}
@@ -65,7 +65,7 @@ export class ModelViewInput extends EditorInput {
 		}
 	}
 
-	public removeModelContainer(): void {
+	public removeModelViewContainer(): void {
 		if (this._dialogPaneContainer) {
 			this._container.removeChild(this._dialogPaneContainer);
 		}
