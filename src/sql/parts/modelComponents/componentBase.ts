@@ -6,7 +6,7 @@ import 'vs/css!./flexContainer';
 
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ElementRef, Injector, OnDestroy, OnInit
+	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, OnInit, QueryList
 } from '@angular/core';
 
 import * as types from 'vs/base/common/types';
@@ -17,6 +17,7 @@ import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import Event, { Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 
 export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }
@@ -152,6 +153,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 export abstract class ContainerBase<T> extends ComponentBase {
 	protected items: ItemDescriptor<T>[];
 
+	@ViewChildren(ModelComponentWrapper) protected _componentWrappers: QueryList<ModelComponentWrapper>;
 	constructor(
 		_changeRef: ChangeDetectorRef
 	) {
@@ -187,6 +189,15 @@ export abstract class ContainerBase<T> extends ComponentBase {
 				component.enabled = this.enabled;
 			}
 		});
+	}
+
+	public layout(): void {
+		if (this._componentWrappers) {
+			this._componentWrappers.forEach(wrapper => {
+				wrapper.layout();
+			});
+		}
+		super.layout();
 	}
 
 	abstract setLayout(layout: any): void;

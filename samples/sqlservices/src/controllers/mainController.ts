@@ -285,25 +285,14 @@ export default class MainController implements vscode.Disposable {
 			let webview = view.modelBuilder.webView()
 				.component();
 
-			let flexModel = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'column',
-					alignItems: 'stretch',
-					height: '100%'
-				}).withItems([
-					toolbarModel, webview
-				], { flex: '1' })
-				.component();
-
-			// bug: #1531
-			// let flexModel = view.modelBuilder.flexContainer().component();
-			// flexModel.addItem(toolbarModel, { flex: '0' });
-			// flexModel.addItem(webview, { flex: '1' });
-			// flexModel.setLayout({
-			// 	flexFlow: 'column',
-			// 	alignItems: 'stretch',
-			// 	height: '100%'
-			// });
+			let flexModel = view.modelBuilder.flexContainer().component();
+			flexModel.addItem(toolbarModel, { flex: '0' });
+			flexModel.addItem(webview, { flex: '1' });
+			flexModel.setLayout({
+				flexFlow: 'column',
+				alignItems: 'stretch',
+				height: '100%'
+			});
 
 			let templateValues = {url: 'http://whoisactive.com/docs/'};
 			Utils.renderTemplateHtml(path.join(__dirname, '..'), 'templateTab.html', templateValues)

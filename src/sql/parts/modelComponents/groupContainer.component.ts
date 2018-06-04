@@ -41,7 +41,6 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 
 	private _containerLayout: GroupLayout;
 
-	@ViewChildren(ModelComponentWrapper) private _componentWrappers: QueryList<ModelComponentWrapper>;
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
 	constructor(
@@ -62,14 +61,6 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 	}
 
 	/// IComponent implementation
-
-	public layout(): void {
-		if (this._componentWrappers) {
-			this._componentWrappers.forEach(wrapper => {
-				wrapper.layout();
-			});
-		}
-	}
 
 	public setLayout(layout: GroupLayout): void {
 		this._containerLayout = layout;
