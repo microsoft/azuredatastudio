@@ -2,6 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import 'vs/css!./modelViewEditor';
+
 import { Builder, $ } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -10,6 +12,7 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { Dimension } from 'vs/workbench/services/part/common/partService';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
+import { Position } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { ModelViewInput } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
@@ -40,25 +43,32 @@ export class ModelViewEditor extends BaseEditor {
 	public focus(): void {
 	}
 
-	async setInput(input: ModelViewInput, options?: EditorOptions): TPromise<void, any> {
-		if (this.input && this.input.matches(input)) {
-			return TPromise.as(undefined);
-		}
+	public clearInput() {
+		this.hideOrRemoveModelViewCotainer();
+		super.clearInput();
+	}
 
-		const parentElement = this.getContainer().getHTMLElement();
+	private hideOrRemoveModelViewCotainer() {
 		if (this.input instanceof ModelViewInput) {
 			if (this.input.container) {
 				if (this.input.options && this.input.options.retainContextWhenHidden) {
 					this.input.container.style.visibility = 'hidden';
 				} else {
-					parentElement.removeChild(this.input.container);
+					this.input.removeModelContainer();
+					this.input.container.style.visibility = 'hidden';
 				}
 			}
 		}
+	}
 
-		if (!parentElement.contains(input.container)) {
-			parentElement.appendChild(input.container);
+	async setInput(input: ModelViewInput, options?: EditorOptions): TPromise<void, any> {
+		if (this.input && this.input.matches(input)) {
+			return TPromise.as(undefined);
 		}
+
+		this.hideOrRemoveModelViewCotainer();
+
+		input.appendViewModelContainer();
 		input.container.style.visibility = 'visible';
 
 		await super.setInput(input, options);
