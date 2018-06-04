@@ -56,14 +56,14 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200 , id: 'name' },
-		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', width: 150, id: 'lastRun' },
-		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', width: 150, id: 'nextRun' },
-		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', width: 70, id: 'enabled' },
-		{ name: nls.localize('jobColumns.status','Status'), field: 'currentExecutionStatus', width: 60, id: 'currentExecutionStatus' },
-		{ name: nls.localize('jobColumns.category','Category'), field: 'category', width: 150, id: 'category' },
-		{ name: nls.localize('jobColumns.runnable','Runnable'), field: 'runnable', width: 50, id: 'runnable' },
-		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', width: 50, id: 'hasSchedule' },
+		{ name: nls.localize('jobColumns.name', 'Name'), field: 'name', formatter: this.renderName, width: 200, id: 'name' },
+		{ name: nls.localize('jobColumns.lastRun', 'Last Run'), field: 'lastRun', width: 150, id: 'lastRun' },
+		{ name: nls.localize('jobColumns.nextRun', 'Next Run'), field: 'nextRun', width: 150, id: 'nextRun' },
+		{ name: nls.localize('jobColumns.enabled', 'Enabled'), field: 'enabled', width: 70, id: 'enabled' },
+		{ name: nls.localize('jobColumns.status', 'Status'), field: 'currentExecutionStatus', width: 60, id: 'currentExecutionStatus' },
+		{ name: nls.localize('jobColumns.category', 'Category'), field: 'category', width: 150, id: 'category' },
+		{ name: nls.localize('jobColumns.runnable', 'Runnable'), field: 'runnable', width: 50, id: 'runnable' },
+		{ name: nls.localize('jobColumns.schedule', 'Schedule'), field: 'hasSchedule', width: 50, id: 'hasSchedule' },
 		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', width: 150, id: 'lastRunOutcome' },
 	];
 
@@ -201,11 +201,11 @@ export class JobsViewComponent implements AfterContentChecked {
 		});
 		this._table.registerPlugin(<any>this.rowDetail);
 
-		this.rowDetail.onBeforeRowDetailToggle.subscribe(function(e, args) {
+		this.rowDetail.onBeforeRowDetailToggle.subscribe(function (e, args) {
 		});
-		this.rowDetail.onAfterRowDetailToggle.subscribe(function(e, args) {
+		this.rowDetail.onAfterRowDetailToggle.subscribe(function (e, args) {
 		});
-		this.rowDetail.onAsyncEndUpdate.subscribe(function(e, args) {
+		this.rowDetail.onAsyncEndUpdate.subscribe(function (e, args) {
 		});
 
 		this.dataView.beginUpdate();
@@ -215,15 +215,15 @@ export class JobsViewComponent implements AfterContentChecked {
 		this._table.resizeCanvas();
 		let expandedJobs = this._agentViewComponent.expanded;
 		let expansions = 0;
-		for (let i = 0; i < jobs.length; i++){
+		for (let i = 0; i < jobs.length; i++) {
 			let job = jobs[i];
 			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
-				this.expandJobRowDetails(i+expandedJobs.size);
-				this.addToStyleHash(i+expandedJobs.size);
+				this.expandJobRowDetails(i + expandedJobs.size);
+				this.addToStyleHash(i + expandedJobs.size);
 				this._agentViewComponent.setExpanded(job.jobId, 'Loading Error...');
 			} else if (job.lastRunOutcome === 0 && expandedJobs.get(job.jobId)) {
-				this.expandJobRowDetails(i+expansions);
-				this.addToStyleHash(i+expansions);
+				this.expandJobRowDetails(i + expansions);
+				this.addToStyleHash(i + expansions);
 				expansions++;
 			}
 		}
@@ -241,7 +241,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			if (currentTab) {
 				let currentTabHeight = currentTab.clientHeight;
 				if (currentTabHeight < self._tabHeight) {
-					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
+					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight - 22}px`);
 					self._table.resizeCanvas();
 				} else {
 					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
@@ -253,14 +253,14 @@ export class JobsViewComponent implements AfterContentChecked {
 		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
 			let nameWidth: number = data.grid.getColumnWidths()[1];
 			// adjust job name when resized
-			$('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth-10}px`);
+			$('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth - 10}px`);
 			// adjust error message when resized
 			$('#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext').css('width', '100%');
 		});
 		this.loadJobHistories();
 	}
 
-	private setRowWithErrorClass(hash: {[index: number]: {[id: string]: string;}}, row: number, errorClass: string) {
+	private setRowWithErrorClass(hash: { [index: number]: { [id: string]: string; } }, row: number, errorClass: string) {
 		hash[row] = {
 			'_detail_selector': errorClass,
 			'id': errorClass,
@@ -279,13 +279,14 @@ export class JobsViewComponent implements AfterContentChecked {
 	}
 
 	private addToStyleHash(row: number) {
-		let hash : {
+		let hash: {
 			[index: number]: {
-			[id: string]: string;
-		}} = {};
+				[id: string]: string;
+			}
+		} = {};
 		hash = this.setRowWithErrorClass(hash, row, 'job-with-error');
-		hash = this.setRowWithErrorClass(hash, row+1,  'error-row');
-		this._table.grid.setCellCssStyles('error-row'+row.toString(), hash);
+		hash = this.setRowWithErrorClass(hash, row + 1, 'error-row');
+		this._table.grid.setCellCssStyles('error-row' + row.toString(), hash);
 	}
 
 	private renderName(row, cell, value, columnDef, dataContext) {
@@ -356,7 +357,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		let jobName: string;
 		let cell = args.grid.getCellNode(row, 1);
 		if (this.isErrorRow(cell)) {
-			jobName = args.grid.getCellNode(row-1, 1).innerText.trim();
+			jobName = args.grid.getCellNode(row - 1, 1).innerText.trim();
 		} else {
 			jobName = cell.innerText.trim();
 		}
@@ -373,10 +374,10 @@ export class JobsViewComponent implements AfterContentChecked {
 					self.jobHistories[job.jobId] = result.jobs;
 					self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
 					if (self._agentViewComponent.expanded.has(job.jobId)) {
-						let jobHistory = self._jobCacheObject.getJobHistory(job.jobId)[result.jobs.length-1];
+						let jobHistory = self._jobCacheObject.getJobHistory(job.jobId)[result.jobs.length - 1];
 						let item = self.dataView.getItemById(job.jobId + '.error');
 						let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
-						let errorMessage = jobHistory ? jobHistory.message: noStepsMessage;
+						let errorMessage = jobHistory ? jobHistory.message : noStepsMessage;
 						item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
 						self._agentViewComponent.setExpanded(job.jobId, item['name']);
 						self.dataView.updateItem(job.jobId + '.error', item);
