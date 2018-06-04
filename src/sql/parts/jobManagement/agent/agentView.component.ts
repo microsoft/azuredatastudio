@@ -103,4 +103,8 @@ export class AgentViewComponent {
 	public setExpanded(jobId: string, errorMessage: string) {
 		this._expanded.set(jobId, errorMessage);
 	}
+
+	public layout() {
+		this._panel.layout();
+	}
 }

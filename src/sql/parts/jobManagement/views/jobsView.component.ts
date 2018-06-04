@@ -22,6 +22,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as themeColors from 'vs/workbench/common/theme';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import * as nls from 'vs/nls';
+import * as dom from 'vs/base/browser/dom';
 
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -36,13 +37,16 @@ import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
+import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { Dimension } from 'vs/base/browser/builder';
 
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 
 @Component({
 	selector: JOBSVIEW_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./jobsView.component.html'))
+	templateUrl: decodeURI(require.toUrl('./jobsView.component.html')),
+	providers: [{ provide: TabChild, useExisting: forwardRef(() => JobsViewComponent) }],
 })
 
 export class JobsViewComponent implements AfterContentChecked {
@@ -95,6 +99,10 @@ export class JobsViewComponent implements AfterContentChecked {
 			this._jobManagementService.addToCache(this._serverName, this._jobCacheObject);
 		}
 		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+	}
+
+	public layout() {
+		this._table.layout(new Dimension(dom.getContentWidth(this._gridEl.nativeElement), dom.getContentHeight(this._gridEl.nativeElement)));
 	}
 
 	ngAfterContentChecked() {
