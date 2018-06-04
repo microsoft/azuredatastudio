@@ -10,26 +10,28 @@
 			<h3>{{LoadingText}}</h3>
 		</div>
 		<div *ngIf="LoadingCompleted" class="ag-tile-container">
-			<div *ngFor="let ag of AvailabilityGroups" class="ag-tile" tabindex="0" (click)="showDetail(ag)" (keyup)="handleKeyboardEvents($event, ag)">
+			<div *ngFor="let ag of AvailabilityGroups;let idx=index" class="ag-tile" id="ag-tile-{{idx}}" tabindex="0" (click)="showDetail(idx)" (keyup)="handleKeyboardEvents($event, idx)">
 				<div class="ag-tile-header">
 					{{ag.name}}
 				</div>
 				<div>
-					<div class="ag-tile-section-header">{{ReplicasText}}</div>
-					<div *ngFor="let replica of ag.replicas" class="ag-row">
+					<div class="ag-tile-section-header">{{ReplicasText}} ({{ag.replicas.length}})</div>
+					<div *ngFor="let replica of ag.replicas | slice:0:getVisibleReplicaCountForTile(ag.replicas.length)" class="ag-row">
 						<div class="{{getReplicaStateImageClass(replica)}}"></div>
 						<div>{{replica.name}} ({{replica.role}})</div>
 					</div>
-					<div class="ag-tile-section-header">{{DatabasesText}}</div>
-					<div *ngFor="let database of ag.databases" class="ag-row">
+					<div *ngIf="ag.replicas.length > MaxRowCountForReplicasSectionInTile" class="more-items-available-row">{{getMoreReplicasAvailableText(ag.replicas.length)}}</div>
+					<div class="ag-tile-section-header">{{DatabasesText}} ({{ag.databases.length}})</div>
+					<div *ngFor="let database of ag.databases | slice:0:getVisibleDatabaseCountForTile(ag.databases.length)" class="ag-row">
 						<div class="{{getDatabaseStateImageClass(database)}}"></div>
 						<div>{{database.name}}</div>
 					</div>
+					<div *ngIf="ag.databases.length > MaxRowCountForDatabasesSectionInTile" class="more-items-available-row">{{getMoreDatabasesAvailableText(ag.databases.length)}}</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div id="ag-detail" class="ag-detail">
+	<div class="ag-detail">
 		<div *ngIf="LoadingCompleted && CurrentAvailabilityGroup">
 			<div class="ag-detail-header">
 				<div class="ag-icon-large"></div>
@@ -114,7 +116,7 @@
 					</table>
 				</div>
 			</div>
-			<div class="ag-detail-section">
+			<div class="ag-detail-bottom-section">
 				<div class="ag-detail-section-header">{{DatabasesText}}</div>
 				<div>
 					<table class="ag-detail-table">

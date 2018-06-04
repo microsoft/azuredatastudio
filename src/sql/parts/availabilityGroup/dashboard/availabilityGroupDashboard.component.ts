@@ -60,6 +60,8 @@ export class AvailabilityGroupDashboardComponent implements OnInit {
 	private IsSuspendedText: string = nls.localize('agDashboard.IsSuspendedText', "Suspended");
 	private LocalReplicaRoleText: string = nls.localize('agDashboard.LocalReplicaRoleText', "Local Replica Role");
 	private ColonText: string = nls.localize('agDashboard.ColonText', ":");
+	private MaxRowCountForReplicasSectionInTile: number = 4;
+	private MaxRowCountForDatabasesSectionInTile: number = 4;
 
 	// tslint:disable-next-line:no-unused-variable
 	private readonly panelOpt: IPanelOptions = {
@@ -105,18 +107,30 @@ export class AvailabilityGroupDashboardComponent implements OnInit {
 		});
 	}
 
-	protected showDetail(availabilitygroup: sqlops.AvailabilityGroup) {
+	protected showDetail(idx: number) {
+		let availabilitygroup = this.AvailabilityGroups[idx];
 		if (availabilitygroup) {
 			this.CurrentAvailabilityGroup = availabilitygroup;
+		}
+		var tiles = document.getElementsByClassName("ag-tile");
+		if (tiles && tiles.length > 0) {
+			for (let i = 0; i < tiles.length; i++) {
+				tiles[i].className = "ag-tile";
+			}
+		}
+
+		var newActiveTile = document.getElementById(`ag-tile-${idx}`);
+		if (newActiveTile) {
+			newActiveTile.className = "ag-tile selected-tile";
 		}
 
 		this._cd.detectChanges();
 	}
 
-	protected handleKeyboardEvents(event: KeyboardEvent, availabilitygroup: sqlops.AvailabilityGroup) {
+	protected handleKeyboardEvents(event: KeyboardEvent, idx: number) {
 		let kbEvent = new StandardKeyboardEvent(event);
 		if (kbEvent.keyCode === KeyCode.Enter) {
-			this.showDetail(availabilitygroup);
+			this.showDetail(idx);
 			event.stopPropagation();
 		}
 	}
@@ -143,6 +157,35 @@ export class AvailabilityGroupDashboardComponent implements OnInit {
 			return "availability-database-not-joined";
 		} else {
 			return "availability-database-unknown";
+		}
+	}
+
+	private getVisibleReplicaCountForTile(replicaCount: number): number {
+		return this.getVisibleItemCountForTile(this.MaxRowCountForReplicasSectionInTile, replicaCount);
+	}
+
+	private getVisibleDatabaseCountForTile(databaseCount: number): number {
+		return this.getVisibleItemCountForTile(this.MaxRowCountForDatabasesSectionInTile, databaseCount);
+	}
+
+	private getVisibleItemCountForTile(maxRowCount: number, itemCount: number): number {
+		return itemCount <= maxRowCount ? itemCount : maxRowCount - 1;
+	}
+
+	private getMoreDatabasesAvailableText(dbCount: number): string {
+		return nls.localize('agDashboard.MoreDatabasesAvailableText', "{0} more databases…", dbCount - this.MaxRowCountForDatabasesSectionInTile + 1);
+	}
+
+	private getMoreReplicasAvailableText(replicaCount: number): string {
+		return nls.localize('agDashboard.MoreReplicasAvailableText', "{0} more replicas…", replicaCount - this.MaxRowCountForReplicasSectionInTile + 1);
+	}
+
+	private getTileClass(availabilitygroup: sqlops.AvailabilityGroup): string {
+		if (availabilitygroup === this.CurrentAvailabilityGroup) {
+			return "ag-tile";
+		}
+		else {
+			return "ag-tile selected-tile";
 		}
 	}
 }

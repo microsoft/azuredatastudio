@@ -8,36 +8,48 @@ availabilitygroupview-component {
 	width: 100%;
 	display: block;
 	font-size: 13px;
+	user-select: text;
 }
 
 .ag-dashboard-top-container {
-	height: 50%;
+	overflow-x: scroll;
+	overflow-y: scroll;
 	padding: 10px;
+	height: 50%;
 }
 
 .ag-tile-container {
-	overflow-x: scroll;
-	overflow-y: scroll;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: flex-start;
-	height: 50%;
-	padding: 10px;
+	min-width: 250px;
 }
 
 .ag-tile {
-	overflow: auto;
+	overflow: hidden;
 	cursor: pointer;
 	margin: 10px;
-	min-width: 100px;
-	min-height: 150px;
-	max-width: 300px;
-	max-height: 500px;
+	max-width: 240px;
+	max-height: 250px;
 	border-style: solid;
 	border-width: 2px;
 	border-color: lightgray;
 	padding: 5px;
 	padding-top: 0px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.selected-tile {
+	border-color: #00bcf2;
+	border-style: double;
+	border-width: 2px;
+}
+
+.ag-tile div {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .ag-tile-header {
@@ -46,8 +58,8 @@ availabilitygroupview-component {
 	border-width: 0px;
 	border-bottom-width: 2px;
 	border-style: solid;
-	border-color: lightgray;
 	font-size: 16px;
+	border-color: inherit;
 }
 
 .ag-tile-section-header {
@@ -63,6 +75,10 @@ availabilitygroupview-component {
 	align-items: flex-start;
 }
 
+.more-items-available-row {
+	text-align: left;
+}
+
 .ag-row>div {
 	margin-right: 5px;
 }
@@ -70,11 +86,15 @@ availabilitygroupview-component {
 .ag-detail {
 	overflow-x: scroll;
 	overflow-y: scroll;
-	border-top-style: solid;
-	border-top-width: 4px;
-	border-top-color: lightgray;
-	height: 50%;
 	padding: 10px;
+	height: 50%;
+	border-width: 0px;
+	border-top-width: 1px;
+	border-style: solid;
+}
+
+.ag-detail>div {
+	min-width: 1400px;
 }
 
 .ag-detail-header {
@@ -92,12 +112,22 @@ availabilitygroupview-component {
 
 .ag-detail-section {
 	margin-bottom: 15px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ag-detail-bottom-section {
+	margin-bottom: 50px;
 }
 
 .ag-detail-section-header {
 	font-size: 14px;
 	padding: 5px;
 	background-color: #eaeaea;
+}
+
+.vs-dark .ag-detail-section-header {
+	background-color: inherit;
 }
 
 .property-label-value-container {
@@ -162,6 +192,8 @@ availabilitygroupview-component {
 	background-image: url('./AvailabilityGroup.svg');
 	width: 16px;
 	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
 }
 
 .ag-icon-large {
@@ -170,52 +202,70 @@ availabilitygroupview-component {
 	background-repeat: no-repeat;
 	width: 24px;
 	height: 24px;
+	min-width: 24px;
+	min-height: 24px;
 }
 
 .availability-replica-diconnected {
 	background-image: url('./Availability_Replica_Offline.svg');
 	width: 16px;
 	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
 }
 
 .availability-replica-connected {
 	background-image: url('./Availability_Replica_Synchronizing.svg');
 	width: 16px;
 	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
 }
 
 .availability-replica-unknown {
 	background-image: url('./Availability_Replica_Unknown.svg');
 	width: 16px;
 	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
 }
 
 .availability-database-not-synchronizing {
 	background-image: url('./Availability_Database_NotSynchronizing.svg');
 	width: 16px;
 	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
 }
 
 .availability-database-synchronizing {
 	background-image: url('./Availability_Database_Synchronizing.svg');
 	width: 16px;
 	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
 }
 
 .availability-database-suspended {
 	background-image: url('./Availability_Database_Suspended.svg');
 	width: 16px;
 	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
 }
 
 .availability-database-not-joined {
 	background-image: url('./Availability_Database_NotJoined.svg');
 	width: 16px;
 	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
 }
 
 .availability-database-unknown {
 	background-image: url('./Availability_Database_Unknown.svg');
 	width: 16px;
 	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
 }
