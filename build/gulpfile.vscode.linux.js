@@ -21,29 +21,6 @@ const rpmDependencies = require('../resources/linux/rpm/dependencies.json');
 
 const linuxPackageRevision = Math.floor(new Date().getTime() / 1000);
 
-const flatpakManifest = {
-	appId: product.darwinBundleIdentifier,  // We need a reverse-url style identifier.
-	sdk: 'org.freedesktop.Sdk',
-	runtime: 'org.freedesktop.Sdk',
-	runtimeVersion: '1.4',
-	base: 'io.atom.electron.BaseApp',
-	baseFlatpakref: 'https://s3-us-west-2.amazonaws.com/electron-flatpak.endlessm.com/electron-base-app-master.flatpakref',
-	command: product.applicationName,
-	symlinks: [
-		['/share/' + product.applicationName + '/bin/' + product.applicationName, '/bin/' + product.applicationName],
-	],
-	finishArgs: [
-		'--share=ipc', '--socket=x11',  // Allow showing X11 windows.
-		'--share=network',              // Network access (e.g. for installing extension).
-		'--filesystem=host',            // Allow access to the whole file system.
-		'--device=dri',                 // Allow OpenGL rendering.
-		'--filesystem=/tmp',            // Needed for Chromium's single instance check.
-		'--socket=pulseaudio',          // Some extensions may want to play sounds...
-		'--talk-name=org.freedesktop.Notifications',  // ...or pop up notifications.
-	],
-};
-
-
 function getDebPackageArch(arch) {
 	return { x64: 'amd64', ia32: 'i386', arm: 'armhf' }[arch];
 }
@@ -336,10 +313,3 @@ gulp.task('vscode-linux-arm-prepare-snap', ['clean-vscode-linux-arm-snap'], prep
 gulp.task('vscode-linux-ia32-build-snap', ['vscode-linux-ia32-prepare-snap'], buildSnapPackage('ia32'));
 gulp.task('vscode-linux-x64-build-snap', ['vscode-linux-x64-prepare-snap'], buildSnapPackage('x64'));
 gulp.task('vscode-linux-arm-build-snap', ['vscode-linux-arm-prepare-snap'], buildSnapPackage('arm'));
-
-gulp.task('vscode-linux-ia32-prepare-flatpak', ['clean-vscode-linux-ia32-flatpak'], prepareFlatpak('ia32'));
-gulp.task('vscode-linux-x64-prepare-flatpak', ['clean-vscode-linux-x64-flatpak'], prepareFlatpak('x64'));
-gulp.task('vscode-linux-arm-prepare-flatpak', ['clean-vscode-linux-arm-flatpak'], prepareFlatpak('arm'));
-gulp.task('vscode-linux-ia32-flatpak', ['vscode-linux-ia32-prepare-flatpak'], buildFlatpak('ia32'));
-gulp.task('vscode-linux-x64-flatpak', ['vscode-linux-x64-prepare-flatpak'], buildFlatpak('x64'));
-gulp.task('vscode-linux-arm-flatpak', ['vscode-linux-arm-prepare-flatpak'], buildFlatpak('arm'));

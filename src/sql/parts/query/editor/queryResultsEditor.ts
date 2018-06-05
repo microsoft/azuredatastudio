@@ -6,7 +6,7 @@
 'use strict';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Builder, Dimension } from 'vs/base/browser/builder';
+import { Builder } from 'vs/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -16,7 +16,7 @@ import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
 import { getZoomLevel } from 'vs/base/browser/browser';
 import { Configuration } from 'vs/editor/browser/config/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import * as dom from 'vs/base/browser/dom';
+import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
@@ -120,7 +120,7 @@ export class QueryResultsEditor extends BaseEditor {
 	private applySettings() {
 		if (this.input && this.input.container) {
 			if (!this.input.css) {
-				this.input.css = dom.createStyleSheet(this.input.container);
+				this.input.css = DOM.createStyleSheet(this.input.container);
 			}
 			let cssRuleText = '';
 			if (types.isNumber(this._rawOptions.cellPadding)) {
@@ -134,10 +134,10 @@ export class QueryResultsEditor extends BaseEditor {
 		}
 	}
 
-	createEditor(parent: Builder): void {
+	createEditor(parent: HTMLElement): void {
 	}
 
-	layout(dimension: Dimension): void {
+	layout(dimension: DOM.Dimension): void {
 	}
 
 	setInput(input: QueryResultsInput, options: EditorOptions): TPromise<void> {
@@ -172,7 +172,7 @@ export class QueryResultsEditor extends BaseEditor {
 		let params: IQueryComponentParams = { dataService: dataService };
 		this._instantiationService.invokeFunction(bootstrapAngular,
 			QueryOutputModule,
-			this.getContainer().getHTMLElement(),
+			this.getContainer(),
 			QUERY_OUTPUT_SELECTOR,
 			params,
 			input);

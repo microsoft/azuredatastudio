@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
@@ -18,10 +17,7 @@ import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import Event, { Emitter } from 'vs/base/common/event';
-import { Dimension } from 'vs/base/browser/builder';
-import * as nls from 'vs/nls';
-import { getContentHeight, getContentWidth } from 'vs/base/browser/dom';
+import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 
 @Component({
@@ -40,9 +36,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService
-	) {
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService) {
 		super(changeRef);
 	}
 
@@ -140,7 +134,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this._changeRef.detectChanges();
 	}
 
-	public setLayout(layout: any): void {
+	public setLayout(): void {
 		// TODO allow configuring the look and feel
 		this.layout();
 	}

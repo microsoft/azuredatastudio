@@ -18,7 +18,7 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { CapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 

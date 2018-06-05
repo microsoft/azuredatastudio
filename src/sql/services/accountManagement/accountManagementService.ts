@@ -10,7 +10,7 @@ import * as nls from 'vs/nls';
 import * as platform from 'vs/platform/registry/common/platform';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { Memento, Scope as MementoScope } from 'vs/workbench/common/memento';

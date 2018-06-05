@@ -19,7 +19,7 @@ import { attachEditableDropdownStyler , attachSelectBoxStyler} from 'sql/common/
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 
 @Component({

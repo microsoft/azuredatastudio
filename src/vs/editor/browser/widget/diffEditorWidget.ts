@@ -27,10 +27,10 @@ import { LineTokens } from 'vs/editor/common/core/lineTokens';
 import { Configuration } from 'vs/editor/browser/config/configuration';
 import { Position, IPosition } from 'vs/editor/common/core/position';
 import { Selection, ISelection } from 'vs/editor/common/core/selection';
-import { InlineDecoration, InlineDecorationType } from 'vs/editor/common/viewModel/viewModel';
+import { InlineDecoration, InlineDecorationType, ViewLineRenderingData } from 'vs/editor/common/viewModel/viewModel';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { ColorId, MetadataConsts, FontStyle } from 'vs/editor/common/modes';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import * as editorOptions from 'vs/editor/common/config/editorOptions';
 import { registerThemingParticipant, IThemeService, ITheme, getThemeTypeSelector } from 'vs/platform/theme/common/themeService';
 import { scrollbarShadow, diffInserted, diffRemoved, defaultInsertColor, defaultRemoveColor, diffInsertedOutline, diffRemovedOutline } from 'vs/platform/theme/common/colorRegistry';
@@ -43,6 +43,7 @@ import URI from 'vs/base/common/uri';
 import { IStringBuilder, createStringBuilder } from 'vs/editor/common/core/stringBuilder';
 import { IModelDeltaDecoration, IModelDecorationsChangeAccessor, ITextModel } from 'vs/editor/common/model';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { StableEditorScrollState } from 'vs/editor/browser/core/editorState';
 
 interface IEditorDiffDecorations {
 	decorations: IModelDeltaDecoration[];
@@ -99,15 +100,13 @@ class VisualEditorState {
 		this._zonesMap = {};
 
 		// (2) Model decorations
-		if (this._decorations.length > 0) {
-			editor.changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
-				changeAccessor.deltaDecorations(this._decorations, []);
-			});
-		}
-		this._decorations = [];
+		this._decorations = editor.deltaDecorations(this._decorations, []);
 	}
 
-	public apply(editor: CodeEditor, overviewRuler: editorBrowser.IOverviewRuler, newDecorations: IEditorDiffDecorationsWithZones): void {
+	public apply(editor: CodeEditor, overviewRuler: editorBrowser.IOverviewRuler, newDecorations: IEditorDiffDecorationsWithZones, restoreScrollState: boolean): void {
+
+		const scrollState = restoreScrollState ? StableEditorScrollState.capture(editor) : null;
+
 		// view zones
 		editor.changeViewZones((viewChangeAccessor: editorBrowser.IViewZoneChangeAccessor) => {
 			for (let i = 0, length = this._zones.length; i < length; i++) {
@@ -122,6 +121,10 @@ class VisualEditorState {
 				this._zonesMap[String(zoneId)] = true;
 			}
 		});
+
+		if (scrollState) {
+			scrollState.restore(editor);
+		}
 
 		// decorations
 		this._decorations = editor.deltaDecorations(this._decorations, newDecorations.decorations);
@@ -284,13 +287,22 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 
 		this._lineChanges = null;
 
-		const services = new ServiceCollection();
-		services.set(IContextKeyService, this._contextKeyService);
+		const leftContextKeyService = this._contextKeyService.createScoped();
+		leftContextKeyService.createKey('isInDiffLeftEditor', true);
 
-		const scopedInstantiationService = instantiationService.createChild(services);
+		const leftServices = new ServiceCollection();
+		leftServices.set(IContextKeyService, leftContextKeyService);
+		const leftScopedInstantiationService = instantiationService.createChild(leftServices);
 
-		this._createLeftHandSideEditor(options, scopedInstantiationService);
-		this._createRightHandSideEditor(options, scopedInstantiationService);
+		const rightContextKeyService = this._contextKeyService.createScoped();
+		rightContextKeyService.createKey('isInDiffRightEditor', true);
+
+		const rightServices = new ServiceCollection();
+		rightServices.set(IContextKeyService, rightContextKeyService);
+		const rightScopedInstantiationService = instantiationService.createChild(rightServices);
+
+		this._createLeftHandSideEditor(options, leftScopedInstantiationService);
+		this._createRightHandSideEditor(options, rightScopedInstantiationService);
 
 		this._reviewPane = new DiffReview(this);
 		this._containerDomElement.appendChild(this._reviewPane.domNode.domNode);
@@ -912,8 +924,8 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 
 		try {
 			this._currentlyChangingViewZones = true;
-			this._originalEditorState.apply(this.originalEditor, this._originalOverviewRuler, diffDecorations.original);
-			this._modifiedEditorState.apply(this.modifiedEditor, this._modifiedOverviewRuler, diffDecorations.modified);
+			this._originalEditorState.apply(this.originalEditor, this._originalOverviewRuler, diffDecorations.original, false);
+			this._modifiedEditorState.apply(this.modifiedEditor, this._modifiedOverviewRuler, diffDecorations.modified, true);
 		} finally {
 			this._currentlyChangingViewZones = false;
 		}
@@ -1989,10 +2001,13 @@ class InlineViewZonesComputer extends ViewZonesComputer {
 		sb.appendASCIIString(String(count * config.lineHeight));
 		sb.appendASCIIString('px;width:1000000px;">');
 
+		const isBasicASCII = ViewLineRenderingData.isBasicASCII(lineContent, originalModel.mightContainNonBasicASCII());
+		const containsRTL = ViewLineRenderingData.containsRTL(lineContent, isBasicASCII, originalModel.mightContainRTL());
 		renderViewLine(new RenderLineInput(
 			(config.fontInfo.isMonospace && !config.viewInfo.disableMonospaceOptimizations),
 			lineContent,
-			originalModel.mightContainRTL(),
+			isBasicASCII,
+			containsRTL,
 			0,
 			lineTokens,
 			actualDecorations,
@@ -2023,27 +2038,31 @@ function createFakeLinesDiv(): HTMLElement {
 }
 
 registerThemingParticipant((theme, collector) => {
-	let added = theme.getColor(diffInserted);
+	const added = theme.getColor(diffInserted);
 	if (added) {
 		collector.addRule(`.monaco-editor .line-insert, .monaco-editor .char-insert { background-color: ${added}; }`);
 		collector.addRule(`.monaco-diff-editor .line-insert, .monaco-diff-editor .char-insert { background-color: ${added}; }`);
 		collector.addRule(`.monaco-editor .inline-added-margin-view-zone { background-color: ${added}; }`);
 	}
-	let removed = theme.getColor(diffRemoved);
+
+	const removed = theme.getColor(diffRemoved);
 	if (removed) {
 		collector.addRule(`.monaco-editor .line-delete, .monaco-editor .char-delete { background-color: ${removed}; }`);
 		collector.addRule(`.monaco-diff-editor .line-delete, .monaco-diff-editor .char-delete { background-color: ${removed}; }`);
 		collector.addRule(`.monaco-editor .inline-deleted-margin-view-zone { background-color: ${removed}; }`);
 	}
-	let addedOutline = theme.getColor(diffInsertedOutline);
+
+	const addedOutline = theme.getColor(diffInsertedOutline);
 	if (addedOutline) {
-		collector.addRule(`.monaco-editor .line-insert, .monaco-editor .char-insert { border: 1px dashed ${addedOutline}; }`);
+		collector.addRule(`.monaco-editor .line-insert, .monaco-editor .char-insert { border: 1px ${theme.type === 'hc' ? 'dashed' : 'solid'} ${addedOutline}; }`);
 	}
-	let removedOutline = theme.getColor(diffRemovedOutline);
+
+	const removedOutline = theme.getColor(diffRemovedOutline);
 	if (removedOutline) {
-		collector.addRule(`.monaco-editor .line-delete, .monaco-editor .char-delete { border: 1px dashed ${removedOutline}; }`);
+		collector.addRule(`.monaco-editor .line-delete, .monaco-editor .char-delete { border: 1px ${theme.type === 'hc' ? 'dashed' : 'solid'} ${removedOutline}; }`);
 	}
-	let shadow = theme.getColor(scrollbarShadow);
+
+	const shadow = theme.getColor(scrollbarShadow);
 	if (shadow) {
 		collector.addRule(`.monaco-diff-editor.side-by-side .editor.modified { box-shadow: -6px 0 5px -5px ${shadow}; }`);
 	}

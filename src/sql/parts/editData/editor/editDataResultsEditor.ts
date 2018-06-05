@@ -3,8 +3,9 @@
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Dimension, Builder } from 'vs/base/browser/builder';
+import { Builder } from 'vs/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { getZoomLevel } from 'vs/base/browser/browser';
@@ -13,7 +14,6 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import * as dom from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
@@ -52,14 +52,14 @@ export class EditDataResultsEditor extends BaseEditor {
 		return this._input;
 	}
 
-	public createEditor(parent: Builder): void {
+	public createEditor(parent: HTMLElement): void {
 	}
 
 	public dispose(): void {
 		super.dispose();
 	}
 
-	public layout(dimension: Dimension): void {
+	public layout(dimension: DOM.Dimension): void {
 	}
 
 	public setInput(input: EditDataResultsInput, options: EditorOptions): TPromise<void> {
@@ -73,9 +73,9 @@ export class EditDataResultsEditor extends BaseEditor {
 
 	private _applySettings() {
 		if (this.input && this.input.container) {
-			Configuration.applyFontInfoSlow(this.getContainer().getHTMLElement(), this._rawOptions);
+			Configuration.applyFontInfoSlow(this.getContainer(), this._rawOptions);
 			if (!this.input.css) {
-				this.input.css = dom.createStyleSheet(this.input.container);
+				this.input.css = DOM.createStyleSheet(this.input.container);
 			}
 			let cssRuleText = '';
 			if (types.isNumber(this._rawOptions.cellPadding)) {

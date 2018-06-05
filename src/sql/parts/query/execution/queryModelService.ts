@@ -21,7 +21,7 @@ import * as nls from 'vs/nls';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import * as platform from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';

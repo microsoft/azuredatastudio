@@ -6,7 +6,7 @@
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/node/sqlExtHost.protocol';

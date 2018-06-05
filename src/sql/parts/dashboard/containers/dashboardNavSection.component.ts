@@ -18,7 +18,7 @@ import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridCont
 import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 
 import { Registry } from 'vs/platform/registry/common/platform';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import * as nls from 'vs/nls';
 
 @Component({

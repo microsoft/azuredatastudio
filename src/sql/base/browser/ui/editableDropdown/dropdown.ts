@@ -19,7 +19,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
 import * as nls from 'vs/nls';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
@@ -110,14 +110,14 @@ export class Dropdown extends Disposable {
 		super();
 		this._contextView = new ContextView(document.body);
 		this._options = mixin(opt, defaults, false) as IDropdownOptions;
-		this.$el = $('.dropdown').style('width', '100%').appendTo(container);
+		this.$el = $('.monaco-dropdown').style('width', '100%').appendTo(container);
 
 		this.$input = $('.dropdown-input').style('width', '100%').appendTo(this.$el);
 		this.$treeContainer = $('.dropdown-tree');
 
 		this._toggleAction = new ToggleDropdownAction(() => {
 			this._showList();
-			this._tree.DOMFocus();
+			this._tree.domFocus();
 			this._tree.focusFirst();
 		});
 
@@ -168,7 +168,7 @@ export class Dropdown extends Disposable {
 					if (!this.$treeContainer.getHTMLElement().parentElement) {
 						this._showList();
 					}
-					this._tree.DOMFocus();
+					this._tree.domFocus();
 					this._tree.focusFirst();
 					e.stopPropagation();
 					e.preventDefault();
@@ -195,17 +195,7 @@ export class Dropdown extends Disposable {
 		this._input.onDidChange(e => {
 			if (this._dataSource.options) {
 				this._filter.filterString = e;
-				let filteredLength = this._dataSource.options.reduce((p, i) => {
-					if (this._filter.isVisible(undefined, i)) {
-						return p + 1;
-					} else {
-						return p;
-					}
-				}, 0);
-				let height = filteredLength * this._renderer.getHeight(undefined, undefined) > this._options.maxHeight ? this._options.maxHeight : filteredLength * this._renderer.getHeight(undefined, undefined);
-				this.$treeContainer.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) - 2 + 'px');
-				this._tree.layout(parseInt(this.$treeContainer.style('height')));
-				this._tree.refresh();
+				this._layoutTree();
 			}
 		});
 
@@ -221,11 +211,12 @@ export class Dropdown extends Disposable {
 	private _showList(): void {
 		if (this._input.isEnabled) {
 			this._onFocus.fire();
+			this._filter.filterString = '';
 			this._contextView.show({
 				getAnchor: () => this.$input.getHTMLElement(),
 				render: container => {
 					this.$treeContainer.appendTo(container);
-					this._tree.layout(parseInt(this.$treeContainer.style('height')));
+					this._layoutTree();
 					return { dispose: () => { } };
 				},
 				onDOMEvent: (e, activeElement) => {
@@ -237,6 +228,20 @@ export class Dropdown extends Disposable {
 				}
 			});
 		}
+	}
+
+	private _layoutTree(): void {
+		let filteredLength = this._dataSource.options.reduce((p, i) => {
+			if (this._filter.isVisible(undefined, i)) {
+				return p + 1;
+			} else {
+				return p;
+			}
+		}, 0);
+		let height = filteredLength * this._renderer.getHeight(undefined, undefined) > this._options.maxHeight ? this._options.maxHeight : filteredLength * this._renderer.getHeight(undefined, undefined);
+		this.$treeContainer.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) - 2 + 'px');
+		this._tree.layout(parseInt(this.$treeContainer.style('height')));
+		this._tree.refresh();
 	}
 
 	public set values(vals: string[]) {

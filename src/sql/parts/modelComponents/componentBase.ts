@@ -15,7 +15,7 @@ import { IComponent, IComponentDescriptor, IModelStore, IComponentEventArgs, Com
 import { FlexLayout, FlexItemLayout } from 'sqlops';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 
