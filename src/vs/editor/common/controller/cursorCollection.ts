@@ -31,6 +31,20 @@ export class CursorCollection {
 		this.killSecondaryCursors();
 	}
 
+	public startTrackingSelections(): void {
+		this.primaryCursor.startTrackingSelection(this.context);
+		for (let i = 0, len = this.secondaryCursors.length; i < len; i++) {
+			this.secondaryCursors[i].startTrackingSelection(this.context);
+		}
+	}
+
+	public stopTrackingSelections(): void {
+		this.primaryCursor.stopTrackingSelection(this.context);
+		for (let i = 0, len = this.secondaryCursors.length; i < len; i++) {
+			this.secondaryCursors[i].stopTrackingSelection(this.context);
+		}
+	}
+
 	public updateContext(context: CursorContext): void {
 		this.context = context;
 	}
@@ -192,6 +206,10 @@ export class CursorCollection {
 
 			const currentViewSelection = current.viewSelection;
 			const nextViewSelection = next.viewSelection;
+
+			if (!this.context.config.multiCursorMergeOverlapping) {
+				continue;
+			}
 
 			let shouldMergeCursors: boolean;
 			if (nextViewSelection.isEmpty() || currentViewSelection.isEmpty()) {

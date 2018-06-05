@@ -12,7 +12,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { Color } from 'vs/base/common/color';
 import { mixin } from 'vs/base/common/objects';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { Dimension } from 'vs/base/browser/builder';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Widget } from 'vs/base/browser/ui/widget';
 
@@ -136,8 +135,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 	onSelectedRowsChanged(fn: any): IDisposable {
 		this._grid.onSelectedRowsChanged.subscribe(fn);
 		return {
-			dispose() {
-				this._grid.onSelectedRowsChanged.unsubscribe(fn);
+			dispose: () => {
+				if (this._grid && this._grid.onSelectedRowsChanged) {
+					this._grid.onSelectedRowsChanged.unsubscribe(fn);
+				}
 			}
 		};
 	}
@@ -147,7 +148,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 	onContextMenu(fn: any): IDisposable {
 		this._grid.onContextMenu.subscribe(fn);
 		return {
-			dispose() {
+			dispose: () => {
 				this._grid.onContextMenu.unsubscribe(fn);
 			}
 		};
@@ -184,10 +185,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		this._grid.resizeCanvas();
 	}
 
-	layout(dimension: Dimension): void;
+	layout(dimension: DOM.Dimension): void;
 	layout(size: number, orientation: Orientation): void;
-	layout(sizing: number | Dimension, orientation?: Orientation): void {
-		if (sizing instanceof Dimension) {
+	layout(sizing: number | DOM.Dimension, orientation?: Orientation): void {
+		if (sizing instanceof DOM.Dimension) {
 			this._container.style.width = sizing.width + 'px';
 			this._container.style.height = sizing.height + 'px';
 			this._tableContainer.style.width = sizing.width + 'px';

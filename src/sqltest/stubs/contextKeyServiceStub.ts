@@ -5,7 +5,7 @@
 
 
 import { IContextKeyService, IContextKeyServiceTarget, IContextKey, ContextKeyExpr, IContext, IContextKeyChangeEvent } from 'vs/platform/contextkey/common/contextkey';
-import Event from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 
 export class ContextKeyServiceStub implements IContextKeyService {
 	_serviceBrand: any;

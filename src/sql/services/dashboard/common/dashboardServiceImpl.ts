@@ -6,7 +6,7 @@
 
 import { IDashboardService } from './dashboardService';
 
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 import * as sqlops from 'sqlops';
 

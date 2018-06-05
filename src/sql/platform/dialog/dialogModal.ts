@@ -21,7 +21,7 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { localize } from 'vs/nls';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 

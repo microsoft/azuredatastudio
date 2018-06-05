@@ -139,7 +139,7 @@ suite('AbstractKeybindingService', () => {
 					showMessageCalls.push({ sev: Severity.Error, message });
 					return new NoOpNotification();
 				},
-				prompt(severity: Severity, message: string, choices: IPromptChoice[], onCancel?: () => void): any {
+				prompt(severity: Severity, message: string, choices: IPromptChoice[], onCancel?: () => void) {
 					throw new Error('not implemented');
 				}
 			};

@@ -8,7 +8,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { Color } from 'vs/base/common/color';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
 
 export interface IRadioButtonOptions {

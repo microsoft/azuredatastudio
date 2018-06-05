@@ -89,7 +89,7 @@ suite('Common Editor Config', () => {
 			wordWrap: <any>true
 		});
 		// {{SQL CARBON EDIT}}
-		assertWrapping(config, true, 89);
+		assertWrapping(config, true, 88);
 	});
 
 	test('wordWrap on', () => {
@@ -97,7 +97,7 @@ suite('Common Editor Config', () => {
 			wordWrap: 'on'
 		});
 		// {{SQL CARBON EDIT}}
-		assertWrapping(config, true, 89);
+		assertWrapping(config, true, 88);
 	});
 
 	test('wordWrap on without minimap', () => {
@@ -107,7 +107,7 @@ suite('Common Editor Config', () => {
 				enabled: false
 			}
 		});
-		assertWrapping(config, true, 89);
+		assertWrapping(config, true, 88);
 	});
 
 	test('wordWrap on does not use wordWrapColumn', () => {
@@ -116,7 +116,7 @@ suite('Common Editor Config', () => {
 			wordWrapColumn: 10
 		});
 		// {{SQL CARBON EDIT}}
-		assertWrapping(config, true, 89);
+		assertWrapping(config, true, 88);
 	});
 
 	test('wordWrap off', () => {

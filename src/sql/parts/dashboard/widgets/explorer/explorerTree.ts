@@ -33,6 +33,7 @@ import { $ } from 'vs/base/browser/dom';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IProgressService } from 'vs/platform/progress/common/progress';
+import { IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 
 export class ObjectMetadataWrapper implements ObjectMetadata {
 	public metadataType: MetadataType;
@@ -110,7 +111,8 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 		private _router: Router,
 		private _contextMenuService: IContextMenuService,
 		private _capabilitiesService: ICapabilitiesService,
-		private _instantiationService: IInstantiationService
+		private _instantiationService: IInstantiationService,
+		private _progressService: IProgressService
 	) {
 		super();
 	}
@@ -165,9 +167,9 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 	}
 
 	private handleItemDoubleClick(element: IConnectionProfile): void {
-		this._connectionService.changeDatabase(element.databaseName).then(result => {
+		this._progressService.showWhile(TPromise.wrap(this._connectionService.changeDatabase(element.databaseName).then(result => {
 			this._router.navigate(['database-dashboard']);
-		});
+		})));
 	}
 
 	protected onEnter(tree: tree.ITree, event: IKeyboardEvent): boolean {
@@ -401,7 +403,7 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 			actions.push(action);
 		}
 
-		actions.push(instantiationService.createInstance(ManageAction, ManageAction.ID, ManageAction.LABEL));
+		actions.push(instantiationService.createInstance(ExplorerManageAction, ManageAction.ID, ManageAction.LABEL));
 		return TPromise.as(actions);
 	}
 
@@ -487,6 +489,23 @@ class ExplorerScriptExecuteAction extends ScriptExecuteAction {
 	public run(actionContext: BaseActionContext): TPromise<boolean> {
 		let promise = super.run(actionContext);
 		this.progressService.showWhile(promise);
+		return promise;
+	}
+}
+
+class ExplorerManageAction extends ManageAction {
+	constructor(
+		id: string, label: string,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IAngularEventingService angularEventingService: IAngularEventingService,
+		@IProgressService private _progressService: IProgressService
+	) {
+		super(id, label, connectionManagementService, angularEventingService);
+	}
+
+	public run(actionContext: ManageActionContext): TPromise<boolean> {
+		let promise = super.run(actionContext);
+		this._progressService.showWhile(promise);
 		return promise;
 	}
 }

@@ -78,9 +78,9 @@ export class SelectColorThemeAction extends Action {
 
 			return this.quickOpenService.pick(picks, { placeHolder, autoFocus: { autoFocusIndex } })
 				.then(
-				theme => delayer.trigger(() => selectTheme(theme || currentTheme, true), 0),
-				null,
-				theme => delayer.trigger(() => selectTheme(theme, false))
+					theme => delayer.trigger(() => selectTheme(theme || currentTheme, true), 0),
+					null,
+					theme => delayer.trigger(() => selectTheme(theme, false))
 				);
 		});
 	}
@@ -137,9 +137,9 @@ class SelectIconThemeAction extends Action {
 
 			return this.quickOpenService.pick(picks, { placeHolder, autoFocus: { autoFocusIndex } })
 				.then(
-				theme => delayer.trigger(() => selectTheme(theme || currentTheme, true), 0),
-				null,
-				theme => delayer.trigger(() => selectTheme(theme, false))
+					theme => delayer.trigger(() => selectTheme(theme || currentTheme, true), 0),
+					null,
+					theme => delayer.trigger(() => selectTheme(theme, false))
 				);
 		});
 	}
@@ -187,7 +187,7 @@ class GenerateColorThemeAction extends Action {
 
 	run(): TPromise<any> {
 		let theme = this.themeService.getColorTheme();
-		let colorRegistry = <IColorRegistry>Registry.as(ColorRegistryExtensions.ColorContribution);
+		let colorRegistry = Registry.as<IColorRegistry>(ColorRegistryExtensions.ColorContribution);
 		let resultingColors = {};
 		colorRegistry.getColors().map(c => {
 			let color = theme.getColor(c.id, false);

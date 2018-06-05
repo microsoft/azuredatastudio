@@ -45,6 +45,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return container;
 	}
 
+	toolbarContainer(): sqlops.ToolbarBuilder {
+		let id = this.getNextComponentId();
+		let container = new ToolbarContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Toolbar, id);
+		this._componentBuilders.set(id, container);
+		return container;
+	}
+
 	groupContainer(): sqlops.GroupBuilder {
 		let id = this.getNextComponentId();
 		let container: ContainerBuilderImpl<sqlops.GroupContainer, any, any> = new ContainerBuilderImpl<sqlops.GroupContainer, sqlops.GroupLayout, sqlops.GroupItemLayout>(this._proxy, this._handle, ModelComponentTypes.Group, id);
@@ -104,6 +111,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 	dropDown(): sqlops.ComponentBuilder<sqlops.DropDownComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.DropDownComponent> = this.getComponentBuilder(new DropDownWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	table(): sqlops.ComponentBuilder<sqlops.TableComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.TableComponent> = this.getComponentBuilder(new TableComponentWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -253,6 +267,34 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 		let itemImpl = this.convertToItemConfig(formComponent, itemLayout);
 		this._component.addItem(formComponent.component as ComponentWrapper, itemImpl.config);
 		this.addComponentActions(formComponent, itemLayout);
+	}
+}
+
+class ToolbarContainerBuilder extends ContainerBuilderImpl<sqlops.ToolbarContainer, any, any> implements sqlops.ToolbarBuilder {
+	withToolbarItems(components: sqlops.ToolbarComponent[]): sqlops.ContainerBuilder<sqlops.ToolbarContainer, any, any> {
+		this._component.itemConfigs = components.map(item => {
+			return this.convertToItemConfig(item);
+		});
+		return this;
+	}
+
+	private convertToItemConfig(toolbarComponent: sqlops.ToolbarComponent): InternalItemConfig {
+		let componentWrapper = toolbarComponent.component as ComponentWrapper;
+
+		return new InternalItemConfig(componentWrapper, {
+			title: toolbarComponent.title
+		});
+	}
+
+	addToolbarItems(toolbarComponent: Array<sqlops.ToolbarComponent>): void {
+		toolbarComponent.forEach(toolbarComponent => {
+			this.addToolbarItem(toolbarComponent);
+		});
+	}
+
+	addToolbarItem(toolbarComponent: sqlops.ToolbarComponent): void {
+		let itemImpl = this.convertToItemConfig(toolbarComponent);
+		this._component.addItem(toolbarComponent.component as ComponentWrapper, itemImpl.config);
 	}
 }
 
@@ -617,6 +659,41 @@ class TextComponentWrapper extends ComponentWrapper implements sqlops.TextCompon
 	}
 	public set value(v: string) {
 		this.setProperty('value', v);
+	}
+}
+
+class TableComponentWrapper extends ComponentWrapper implements sqlops.TableComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Table, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
+	}
+
+	public get data(): any[][] {
+		return this.properties['data'];
+	}
+	public set data(v: any[][]) {
+		this.setProperty('data', v);
+	}
+
+	public get columns(): string[] | sqlops.TableColumn[] {
+		return this.properties['columns'];
+	}
+	public set columns(v: string[] | sqlops.TableColumn[]) {
+		this.setProperty('columns', v);
+	}
+
+	public get selectedRows(): number[] {
+		return this.properties['selectedRows'];
+	}
+	public set selectedRows(v: number[]) {
+		this.setProperty('selectedRows', v);
+	}
+
+	public get onRowSelected(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
+		return emitter && emitter.event;
 	}
 }
 

@@ -280,7 +280,7 @@ export abstract class CollapsibleView extends AbstractCollapsibleView implements
 		}
 
 		// Pass Focus to Viewer
-		this.tree.DOMFocus();
+		this.tree.domFocus();
 	}
 }
 
