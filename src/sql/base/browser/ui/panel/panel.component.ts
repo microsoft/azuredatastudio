@@ -3,9 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone,
+import {
+	Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone,
 	OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, OnChanges, OnDestroy, ViewChildren,
-	AfterViewInit } from '@angular/core';
+	AfterViewInit
+} from '@angular/core';
 
 import './panelStyles';
 
