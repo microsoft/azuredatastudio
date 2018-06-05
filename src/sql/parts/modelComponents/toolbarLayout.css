@@ -1,0 +1,45 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.modelview-toolbar-container {
+	display: flex;
+	padding: 15px;
+	justify-content: flex-start;
+	line-height: 1.4em;
+	white-space: nowrap;
+	flex-wrap: wrap;
+	border-bottom-width: .5px;
+	border-bottom-style: solid;
+	box-sizing: border-box;
+	border-bottom-color: rgba(128, 128, 128, 0.35);
+}
+
+.modelview-toolbar-container .modelview-toolbar-item {
+	flex: 0 0;
+	flex-direction: row;
+	display: flex;
+	padding-left: 10px;
+}
+
+.modelview-toolbar-container .modelview-toolbar-title {
+	padding-right: 5px;
+	font-size: 14px;
+	cursor: pointer;
+	margin: auto;
+}
+
+.modelview-toolbar-container .modelview-toolbar-component .select-box,
+.modelview-toolbar-container .modelview-toolbar-component .monaco-inputbox {
+	width: 200px;
+	height: 25px;
+}
+
+.modelview-toolbar-container .modelview-toolbar-component button {
+	height: 25px;
+}
+
+.modelview-toolbar-container .modelview-toolbar-component button .monaco-text-button {
+	padding: 0px
+}

@@ -136,7 +136,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		this._grid.onSelectedRowsChanged.subscribe(fn);
 		return {
 			dispose: () => {
-				this._grid.onSelectedRowsChanged.unsubscribe(fn);
+				if (this._grid && this._grid.onSelectedRowsChanged) {
+					this._grid.onSelectedRowsChanged.unsubscribe(fn);
+				}
 			}
 		};
 	}
