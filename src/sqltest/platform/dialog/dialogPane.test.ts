@@ -61,21 +61,6 @@ suite('Dialog Pane Tests', () => {
 		assert.equal(bootstrapCalls, 1);
 	});
 
-	test('Creating a pane from content with multiple tabs initializes multiple model view tabs', () => {
-		// If I fill in a dialog's content with a single tab and then render the dialog
-		let modelViewId1 = 'test_content_1';
-		let modelViewId2 = 'test_content_2';
-		let bootstrapCalls = 0;
-		setupBootstrap((collection, moduleType, container, selectorString, params: DialogComponentParams, input, callbackSetModule) => {
-			assert.equal(params.modelViewId, modelViewId1);
-			bootstrapCalls++;
-		});
-		dialog.content = [new DialogTab('tab1', modelViewId1), new DialogTab('tab2', modelViewId2)];
-		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, undefined);
-		dialogPane.createBody(container);
-		assert.equal(bootstrapCalls, 1);
-	});
-
 	test('Dialog validation gets set based on the validity of the model view content', () => {
 		// Set up the mock bootstrap service to intercept validation callbacks
 		let validationCallbacks: ((valid: boolean) => void)[] = [];
