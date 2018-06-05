@@ -115,6 +115,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	listBox(): sqlops.ComponentBuilder<sqlops.ListBoxComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.ListBoxComponent> = this.getComponentBuilder(new ListBoxWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	table(): sqlops.ComponentBuilder<sqlops.TableComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.TableComponent> = this.getComponentBuilder(new TableComponentWrapper(this._proxy, this._handle, id), id);
@@ -728,6 +735,34 @@ class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownCompone
 
 	public get onValueChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+}
+
+class ListBoxWrapper extends ComponentWrapper implements sqlops.ListBoxComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.ListBox, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
+	}
+
+	public get selectedRow(): number {
+		return this.properties['selectedRow'];
+	}
+	public set selectedRow(v: number) {
+		this.setProperty('selectedRow', v);
+	}
+
+	public get values(): string[] {
+		return this.properties['values'];
+	}
+	public set values(v: string[]) {
+		this.setProperty('values', v);
+	}
+
+	public get onRowSelected(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
 	}
 }

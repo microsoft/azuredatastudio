@@ -69,6 +69,7 @@ export enum ModelComponentTypes {
 	Card,
 	InputBox,
 	DropDown,
+	ListBox,
 	Button,
 	CheckBox,
 	RadioButton,

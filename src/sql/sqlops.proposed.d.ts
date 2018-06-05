@@ -26,6 +26,7 @@ declare module 'sqlops' {
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
+		listBox(): ComponentBuilder<ListBoxComponent>;
 		table(): ComponentBuilder<TableComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent>;
@@ -325,6 +326,11 @@ declare module 'sqlops' {
 		editable?: boolean;
 	}
 
+	export interface ListBoxProperties {
+		selectedRow?: number;
+		values?: string[];
+	}
+
 	export interface WebViewProperties {
 		message?: any;
 		html?: string;
@@ -363,6 +369,12 @@ declare module 'sqlops' {
 		value: string;
 		values: string[];
 		onValueChanged: vscode.Event<any>;
+	}
+
+	export interface ListBoxComponent extends Component, ListBoxProperties {
+		selectedRow?: number;
+		values: string[];
+		onRowSelected: vscode.Event<any>;
 	}
 
 	export interface TableComponent extends Component, TableComponentProperties {
