@@ -3,12 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, OnChanges, OnDestroy, ViewChildren, AfterViewInit } from '@angular/core';
+import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone,
+	OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, OnChanges, OnDestroy, ViewChildren,
+	AfterViewInit } from '@angular/core';
+
+import './panelStyles';
 
 import { TabComponent } from './tab.component';
 import { TabHeaderComponent } from './tabHeader.component';
 import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
-import './panelStyles';
+import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
@@ -96,16 +100,11 @@ export class PanelComponent extends Disposable {
 	}
 
 	ngAfterContentInit(): void {
-		if (this._tabs && this._tabs.length > 0) {
-			this.selectTab(this._tabs.first);
-		} else {
-			const sub = this._tabs.changes.subscribe(() => {
-				if (this._tabs && this._tabs.length > 0) {
-					this.selectTab(this._tabs.first);
-					sub.unsubscribe();
-				}
-			});
-		}
+		this._register(subscriptionToDisposable(this._tabs.changes.subscribe(() => {
+			if (this._tabs && this._tabs.length > 0) {
+				this.selectTab(this._tabs.first);
+			}
+		})));
 	}
 
 	ngOnChanges(): void {
@@ -136,6 +135,7 @@ export class PanelComponent extends Disposable {
 		if (this.actions && this.actions.length > 0) {
 			this.actions.forEach((action) => action.dispose());
 		}
+		this.dispose();
 	}
 
 	/**
