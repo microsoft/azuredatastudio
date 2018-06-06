@@ -157,11 +157,19 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 	}
 
 	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+<<<<<<< HEAD
 		return this.getPropertyOrDefault<sqlops.ButtonProperties, IUserFriendlyIcon>((props) => props.iconPath, undefined);
 	}
 
 	public set iconPath(newValue: string | URI | { light: string | URI; dark: string | URI }) {
 		this.setPropertyFromUI<sqlops.ButtonProperties, IUserFriendlyIcon>((properties, iconPath) => { properties.iconPath = iconPath; }, newValue);
+=======
+		return this.getPropertyOrDefault<sqlops.ButtonProperties, string | URI | { light: string | URI; dark: string | URI }>((props) => props.iconPath, undefined);
+	}
+
+	public set iconPath(newValue: string | URI | { light: string | URI; dark: string | URI }) {
+		this.setPropertyFromUI<sqlops.ButtonProperties, string | URI | { light: string | URI; dark: string | URI }>((properties, iconPath) => { properties.iconPath = iconPath; }, newValue);
+>>>>>>> master
 	}
 
 	private setValueProperties(properties: sqlops.ButtonProperties, label: string): void {
