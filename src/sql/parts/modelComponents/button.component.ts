@@ -23,6 +23,9 @@ import { IdGenerator } from 'vs/base/common/idGenerator';
 import { createCSSRule, removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
 import { focusBorder, foreground } from 'vs/platform/theme/common/colorRegistry';
 import { Color } from 'vs/base/common/color';
+
+type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
+
 @Component({
 	selector: 'modelview-button',
 	template: `
@@ -34,7 +37,7 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 	@Input() modelStore: IModelStore;
 	private _button: Button;
 	private _iconClass: string;
-	private _iconPath: string | URI | { light: string | URI; dark: string | URI };
+	private _iconPath: IUserFriendlyIcon;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -119,7 +122,7 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 		}
 	}
 
-	private getLightIconPath(iconPath: string | URI | { light: string | URI; dark: string | URI }): string {
+	private getLightIconPath(iconPath: IUserFriendlyIcon): string {
 		if (iconPath && iconPath['light']) {
 			return this.getIconPath(iconPath['light']);
 		} else {
@@ -127,7 +130,7 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 		}
 	}
 
-	private getDarkIconPath(iconPath: string | URI | { light: string | URI; dark: string | URI }): string {
+	private getDarkIconPath(iconPath: IUserFriendlyIcon): string {
 		if (iconPath && iconPath['dark']) {
 			return this.getIconPath(iconPath['dark']);
 		}
@@ -154,11 +157,11 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 	}
 
 	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
-		return this.getPropertyOrDefault<sqlops.ButtonProperties, string | URI | { light: string | URI; dark: string | URI }>((props) => props.iconPath, undefined);
+		return this.getPropertyOrDefault<sqlops.ButtonProperties, IUserFriendlyIcon>((props) => props.iconPath, undefined);
 	}
 
 	public set iconPath(newValue: string | URI | { light: string | URI; dark: string | URI }) {
-		this.setPropertyFromUI<sqlops.ButtonProperties, string | URI | { light: string | URI; dark: string | URI }>((properties, iconPath) => { properties.iconPath = iconPath; }, newValue);
+		this.setPropertyFromUI<sqlops.ButtonProperties, IUserFriendlyIcon>((properties, iconPath) => { properties.iconPath = iconPath; }, newValue);
 	}
 
 	private setValueProperties(properties: sqlops.ButtonProperties, label: string): void {

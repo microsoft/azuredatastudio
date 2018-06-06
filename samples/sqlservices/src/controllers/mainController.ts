@@ -273,9 +273,9 @@ export default class MainController implements vscode.Disposable {
 					iconPath: runIcon
 				}).component();
 
-			let monitoLightPath = vscode.Uri.file(path.join(__dirname, '..', 'media', 'monitor.svg'));
+			let monitorLightPath = vscode.Uri.file(path.join(__dirname, '..', 'media', 'monitor.svg'));
 			let monitorIcon = {
-				light: monitoLightPath,
+				light: monitorLightPath,
 				dark: path.join(__dirname, '..', 'media', 'monitor_inverse.svg') };
 
 			let monitorButton = view.modelBuilder.button()
