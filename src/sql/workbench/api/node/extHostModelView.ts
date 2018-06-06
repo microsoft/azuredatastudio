@@ -136,6 +136,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	loadingComponent(): sqlops.LoadingComponentBuilder {
+		let id = this.getNextComponentId();
+		let builder = new LoadingComponentBuilder(new LoadingComponentWrapper(this._proxy, this._handle, id));
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	getComponentBuilder<T extends sqlops.Component>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T> {
 		let componentBuilder: ComponentBuilderImpl<T> = new ComponentBuilderImpl<T>(component);
 		this._componentBuilders.set(id, componentBuilder);
@@ -295,6 +302,13 @@ class ToolbarContainerBuilder extends ContainerBuilderImpl<sqlops.ToolbarContain
 	addToolbarItem(toolbarComponent: sqlops.ToolbarComponent): void {
 		let itemImpl = this.convertToItemConfig(toolbarComponent);
 		this._component.addItem(toolbarComponent.component as ComponentWrapper, itemImpl.config);
+	}
+}
+
+class LoadingComponentBuilder extends ComponentBuilderImpl<sqlops.LoadingComponent> implements sqlops.LoadingComponentBuilder {
+	withItem(component: sqlops.Component) {
+		this.component().component = component;
+		return this;
 	}
 }
 
@@ -750,6 +764,29 @@ class ButtonWrapper extends ComponentWrapper implements sqlops.ButtonComponent {
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
+	}
+}
+
+class LoadingComponentWrapper extends ComponentWrapper implements sqlops.LoadingComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.LoadingComponent, id);
+		this.properties = {};
+	}
+
+	public get loading(): boolean {
+		return this.properties['loading'];
+	}
+
+	public set loading(value: boolean) {
+		this.setProperty('loading', value);
+	}
+
+	public get component(): sqlops.Component {
+		return this.items[0];
+	}
+
+	public set component(value: sqlops.Component) {
+		this.addItem(value);
 	}
 }
 

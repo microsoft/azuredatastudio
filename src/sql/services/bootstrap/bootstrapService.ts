@@ -123,7 +123,7 @@ export function bootstrapAngular<T>(collection: ServicesAccessor, moduleType: IM
 			{ provide: IEnvironmentService, useValue: collection.get(IEnvironmentService) },
 			{ provide: INotificationService, useValue: collection.get(INotificationService) },
 			{ provide: IWorkbenchThemeService, useValue: collection.get(IWorkbenchThemeService) },
-			{ provide: IProgressService, useValue: collection.get(IProgressService) }
+			// { provide: IProgressService, useValue: collection.get(IProgressService) }
 		];
 
 		platform = platformBrowserDynamic(providers);
