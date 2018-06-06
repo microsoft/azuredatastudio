@@ -266,10 +266,23 @@ export default class MainController implements vscode.Disposable {
 					values: ['aa', 'bb', 'cc']
 				})
 				.component();
-			let button = view.modelBuilder.button()
+			let runIcon = path.join(__dirname, '..', 'media', 'start.svg');
+			let runButton = view.modelBuilder.button()
 				.withProperties({
-					label: 'Run'
+					label: 'Run',
+					iconPath: runIcon
 				}).component();
+
+			let monitoLightPath = vscode.Uri.file(path.join(__dirname, '..', 'media', 'monitor.svg'));
+			let monitorIcon = {
+				light: monitoLightPath,
+				dark: path.join(__dirname, '..', 'media', 'monitor_inverse.svg') };
+
+			let monitorButton = view.modelBuilder.button()
+					.withProperties({
+						label: 'Monitor',
+						iconPath: monitorIcon
+					}).component();
 			let toolbarModel = view.modelBuilder.toolbarContainer()
 				.withToolbarItems([{
 					component: inputBox,
@@ -278,7 +291,9 @@ export default class MainController implements vscode.Disposable {
 					component: dropdown,
 					title: 'favorite:'
 				}, {
-					component: button
+					component: runButton
+				}, {
+					component: monitorButton
 				}]).component();
 
 

@@ -332,6 +332,7 @@ declare module 'sqlops' {
 
 	export interface ButtonProperties {
 		label?: string;
+		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 	}
 
 	export interface CardComponent extends Component {
@@ -377,6 +378,7 @@ declare module 'sqlops' {
 
 	export interface ButtonComponent extends Component {
 		label: string;
+		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 		onDidClick: vscode.Event<any>;
 	}
 
