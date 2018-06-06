@@ -34,7 +34,7 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 	@Input() modelStore: IModelStore;
 	private _button: Button;
 	private _iconClass: string;
-	private _iconPath: string | URI | { light: string | URI; dark: string | URI
+	private _iconPath: string | URI | { light: string | URI; dark: string | URI };
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -104,7 +104,7 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 
 				// Styling for icon button
 				this._register(attachButtonStyler(this._button, this.themeService, {
-					buttonBackground: Color.transparent.toString() ,
+					buttonBackground: Color.transparent.toString(),
 					buttonHoverBackground: Color.transparent.toString(),
 					buttonFocusOutline: focusBorder,
 					buttonForeground: foreground
@@ -123,7 +123,7 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 		if (iconPath && iconPath['light']) {
 			return this.getIconPath(iconPath['light']);
 		} else {
-			return this.getIconPath(<string | URI> iconPath);
+			return this.getIconPath(<string | URI>iconPath);
 		}
 	}
 
@@ -154,11 +154,11 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 	}
 
 	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
-		return this.getPropertyOrDefault<sqlops.ButtonProperties, string | URI | { light: string | URI; dark: string | URI } >((props) => props.iconPath, undefined);
+		return this.getPropertyOrDefault<sqlops.ButtonProperties, string | URI | { light: string | URI; dark: string | URI }>((props) => props.iconPath, undefined);
 	}
 
 	public set iconPath(newValue: string | URI | { light: string | URI; dark: string | URI }) {
-		this.setPropertyFromUI<sqlops.ButtonProperties, string | URI | { light: string | URI; dark: string | URI } >((properties, iconPath) => { properties.iconPath = iconPath; }, newValue);
+		this.setPropertyFromUI<sqlops.ButtonProperties, string | URI | { light: string | URI; dark: string | URI }>((properties, iconPath) => { properties.iconPath = iconPath; }, newValue);
 	}
 
 	private setValueProperties(properties: sqlops.ButtonProperties, label: string): void {
