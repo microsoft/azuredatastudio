@@ -30,7 +30,7 @@
 	margin: auto;
 }
 
-.modelview-toolbar-container .modelview-toolbar-component .select-box,
+.modelview-toolbar-container .modelview-toolbar-component select,
 .modelview-toolbar-container .modelview-toolbar-component .monaco-inputbox {
 	width: 200px;
 	height: 25px;
