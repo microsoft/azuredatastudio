@@ -35,8 +35,6 @@ import * as Utils from 'sql/parts/connection/common/utils';
 import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
-
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 
@@ -52,15 +50,16 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 200 , id: 'name' },
-		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', width: 150, id: 'lastRun' },
-		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', width: 150, id: 'nextRun' },
-		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', width: 70, id: 'enabled' },
+		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: this.renderName, width: 180 , id: 'name' },
+		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', width: 120, id: 'lastRun' },
+		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', width: 120, id: 'nextRun' },
+		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', width: 50, id: 'enabled' },
 		{ name: nls.localize('jobColumns.status','Status'), field: 'currentExecutionStatus', width: 60, id: 'currentExecutionStatus' },
-		{ name: nls.localize('jobColumns.category','Category'), field: 'category', width: 150, id: 'category' },
-		{ name: nls.localize('jobColumns.runnable','Runnable'), field: 'runnable', width: 50, id: 'runnable' },
-		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', width: 50, id: 'hasSchedule' },
-		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', width: 150, id: 'lastRunOutcome' },
+		{ name: nls.localize('jobColumns.category','Category'), field: 'category', width: 120, id: 'category' },
+		{ name: nls.localize('jobColumns.runnable','Runnable'), field: 'runnable', width: 70, id: 'runnable' },
+		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', width: 60, id: 'hasSchedule' },
+		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', width: 120, id: 'lastRunOutcome' },
+		{ name: nls.localize('jobColumns.previousRuns', 'Previous Runs'), formatter: this.renderChartsPostHistory, field: 'previousRuns', width: 80, id: 'previousRuns'}
 	];
 
 	private rowDetail: RowDetailView;
@@ -265,7 +264,8 @@ export class JobsViewComponent implements AfterContentChecked {
 			'category': errorClass,
 			'runnable': errorClass,
 			'hasSchedule': errorClass,
-			'lastRunOutcome': errorClass
+			'lastRunOutcome': errorClass,
+			'previousRuns': errorClass
 		};
 		return hash;
 	}
@@ -304,6 +304,17 @@ export class JobsViewComponent implements AfterContentChecked {
 			'<td nowrap class=' + resultIndicatorClass + '></td>' +
 			'<td nowrap class="jobview-jobnametext">' + dataContext.name + '</td>' +
 			'</tr></table>';
+	}
+
+	private renderChartsPostHistory(row, cell, value, columnDef, dataContext) {
+		return `<table class="jobprevruns" id="${dataContext.id}">
+				<tr>
+					<td><div class="bar1"></div></td>
+					<td><div class="bar2"></div></td>
+					<td><div class="bar3"></div></td>
+					<td><div class="bar4"></div></td>
+				</tr>
+				</table>`;
 	}
 
 	private expandJobRowDetails(rowIdx: number, message?: string): void {
@@ -364,11 +375,14 @@ export class JobsViewComponent implements AfterContentChecked {
 				if (result && result.jobs) {
 					self.jobHistories[job.jobId] = result.jobs;
 					self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
+					let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
+					let previousRuns = jobHistories.slice(jobHistories.length-5, jobHistories.length);
+					self.createJobChart(job.jobId, previousRuns);
 					if (self._agentViewComponent.expanded.has(job.jobId)) {
-						let jobHistory = self._jobCacheObject.getJobHistory(job.jobId)[result.jobs.length-1];
+						let lastJobHistory = jobHistories[result.jobs.length-1];
 						let item = self.dataView.getItemById(job.jobId + '.error');
 						let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
-						let errorMessage = jobHistory ? jobHistory.message: noStepsMessage;
+						let errorMessage = lastJobHistory ? lastJobHistory.message: noStepsMessage;
 						item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
 						self._agentViewComponent.setExpanded(job.jobId, item['name']);
 						self.dataView.updateItem(job.jobId + '.error', item);
@@ -376,5 +390,55 @@ export class JobsViewComponent implements AfterContentChecked {
 				}
 			});
 		}
+	}
+
+	private createJobChart(jobId: string, jobHistories: sqlops.AgentJobHistoryInfo[]): void {
+		let chartHeights = this.getChartHeights(jobHistories);
+		for (let i = 0; i < jobHistories.length; i++) {
+			let runGraph = $(`table#${jobId}.jobprevruns > tbody > tr > td > div.bar${i+1}`);
+			if (jobHistories && jobHistories.length > 0) {
+				//runGraph.get(0).style.height = chartHeights[i];
+
+				//runGraph.height(chartHeights[i]);
+				runGraph.css('height', chartHeights[i]);
+				let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
+				runGraph.css('background', bgColor);
+				runGraph.hover((e) => {
+					let currentTarget = e.currentTarget;
+					currentTarget.title = jobHistories[i].runDuration;
+				});
+			} else {
+				runGraph.css('height', '5px');
+				runGraph.css('background', 'red');
+				runGraph.hover((e) => {
+					let currentTarget = e.currentTarget;
+					currentTarget.title = 'Job not run.';
+				});
+			}
+		}
+	}
+
+	// chart height normalization logic
+	private getChartHeights(jobHistories: sqlops.AgentJobHistoryInfo[]): string[] {
+		if (!jobHistories || jobHistories.length === 0) {
+			return ['5px','5px','5px','5px','5px'];
+		}
+		let maxDuration: number = 0;
+		jobHistories.forEach(history => {
+			let historyDuration = AgentJobUtilities.convertDurationToSeconds(history.runDuration) ;
+			if (historyDuration > maxDuration) {
+				maxDuration = historyDuration;
+			}
+		});
+		maxDuration = maxDuration === 0 ? 1 : maxDuration;
+		let maxBarHeight: number = 24;
+		let chartHeights = [];
+		for (let i = 0; i < jobHistories.length; i++) {
+			let duration = jobHistories[i].runDuration;
+			let chartHeight = (maxBarHeight * AgentJobUtilities.convertDurationToSeconds(duration))/maxDuration;
+			chartHeights.push(`${chartHeight}px`);
+		}
+		return chartHeights;
+
 	}
 }

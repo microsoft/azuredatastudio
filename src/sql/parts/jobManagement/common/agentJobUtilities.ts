@@ -92,4 +92,11 @@ export class AgentJobUtilities {
 				return;
 		}
 	}
+
+	public static convertDurationToSeconds(duration: string): number {
+		let split = duration.split(':');
+		let seconds = (+split[0]) * 60 * 60 + (+split[1]) * 60 + (+split[2]);
+		return seconds;
+	}
+
 }
