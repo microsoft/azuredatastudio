@@ -56,6 +56,10 @@ export default class MainController implements vscode.Disposable {
 			this.openEditorWithWebview(buttonHtml, counterHtml);
 		});
 
+		vscode.commands.registerCommand('sqlservices.openEditorWithWebView2', () => {
+			this.openEditorWithWebview2();
+		});
+
 		return Promise.resolve(true);
 	}
 
@@ -219,7 +223,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private openEditorWithWebview(html1: string, html2: string): void {
-		let editor = sqlops.workspace.createModelViewEditor('Editor view1', { retainContextWhenHidden: true });
+		let editor = sqlops.workspace.createModelViewEditor('Editor webview', { retainContextWhenHidden: true });
 		editor.registerContent(async view => {
 			let count = 0;
 			let webview1 = view.modelBuilder.webView()
@@ -250,6 +254,57 @@ export default class MainController implements vscode.Disposable {
 		});
 		editor.openEditor();
 	}
+
+	private openEditorWithWebview2(): void {
+		let editor = sqlops.workspace.createModelViewEditor('Editor webview2', { retainContextWhenHidden: true });
+		editor.registerContent(async view => {
+
+			let inputBox = view.modelBuilder.inputBox().component();
+			let dropdown = view.modelBuilder.dropDown()
+				.withProperties({
+					value: 'aa',
+					values: ['aa', 'bb', 'cc']
+				})
+				.component();
+			let button = view.modelBuilder.button()
+				.withProperties({
+					label: 'Run'
+				}).component();
+			let toolbarModel = view.modelBuilder.toolbarContainer()
+				.withToolbarItems([{
+					component: inputBox,
+					title: 'User name:'
+				}, {
+					component: dropdown,
+					title: 'favorite:'
+				}, {
+					component: button
+				}]).component();
+
+
+			let webview = view.modelBuilder.webView()
+				.component();
+
+			let flexModel = view.modelBuilder.flexContainer().component();
+			flexModel.addItem(toolbarModel, { flex: '0' });
+			flexModel.addItem(webview, { flex: '1' });
+			flexModel.setLayout({
+				flexFlow: 'column',
+				alignItems: 'stretch',
+				height: '100%'
+			});
+
+			let templateValues = {url: 'http://whoisactive.com/docs/'};
+			Utils.renderTemplateHtml(path.join(__dirname, '..'), 'templateTab.html', templateValues)
+				.then(html => {
+					webview.html = html;
+				});
+
+			await view.initializeModel(flexModel);
+		});
+		editor.openEditor();
+	}
+
 
 	private registerSqlServicesModelView(): void {
 		sqlops.ui.registerModelViewProvider('sqlservices', async (view) => {

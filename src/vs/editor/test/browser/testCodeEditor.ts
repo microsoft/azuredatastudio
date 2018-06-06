@@ -17,13 +17,15 @@ import { TextModel } from 'vs/editor/common/model/textModel';
 import { TestConfiguration } from 'vs/editor/test/common/mocks/testConfiguration';
 import * as editorOptions from 'vs/editor/common/config/editorOptions';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IPosition } from 'vs/editor/common/core/position';
 import { EditorExtensionsRegistry } from 'vs/editor/browser/editorExtensions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IModelDecorationOptions, ITextModel } from 'vs/editor/common/model';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class TestCodeEditor extends CommonCodeEditor implements editorBrowser.ICodeEditor {
 
@@ -168,12 +170,14 @@ export function createTestCodeEditor(model: ITextModel): TestCodeEditor {
 function _createTestCodeEditor(options: TestCodeEditorCreationOptions): TestCodeEditor {
 
 	let contextKeyService = new MockContextKeyService();
+	let notificationService = new TestNotificationService();
 
 	let services = options.serviceCollection || new ServiceCollection();
 	services.set(IContextKeyService, contextKeyService);
+	services.set(INotificationService, notificationService);
 	let instantiationService = new InstantiationService(services);
 
-	let editor = new TestCodeEditor(new MockScopeLocation(), options, instantiationService, contextKeyService);
+	let editor = new TestCodeEditor(new MockScopeLocation(), options, false, instantiationService, contextKeyService, notificationService);
 	editor.setModel(options.model);
 	return editor;
 }

@@ -24,9 +24,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
 import { OEAction } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
-import { Builder, $, withElementById } from 'vs/base/browser/builder';
 import { AgentJobHistoryInfo } from 'sqlops';
 import { Agent } from 'vs/base/node/request';
+import { AgentJobUtilities } from 'sql/parts/jobManagement/common/agentJobUtilities';
 
 export class JobStepsViewRow {
 	public stepID: string;
@@ -111,7 +111,7 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 	private _statusIcon: HTMLElement;
 
 	public getHeight(tree: tree.ITree, element: JobStepsViewRow): number {
-		return 22;
+		return 22 * Math.ceil(element.message.length/AgentJobUtilities.jobMessageLength);
 	}
 
 	public getTemplateId(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): string {

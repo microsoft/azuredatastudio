@@ -9,7 +9,7 @@ import 'vs/css!./media/dialogModal';
 import { Component, AfterContentInit, ViewChild, Input, Inject, forwardRef, ElementRef } from '@angular/core';
 import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { ComponentEventType } from '../../parts/modelComponents/interfaces';
 
 export interface DialogComponentParams extends IBootstrapParams {

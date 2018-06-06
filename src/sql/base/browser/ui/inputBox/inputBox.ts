@@ -7,7 +7,7 @@
 import { InputBox as vsInputBox, IInputOptions, IInputBoxStyles as vsIInputBoxStyles } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { Color } from 'vs/base/common/color';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export interface OnLoseFocusParams {
 	value: string;

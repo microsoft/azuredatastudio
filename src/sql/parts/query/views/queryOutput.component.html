@@ -22,7 +22,7 @@
 		</ng-template>
 	</tab>
 
-	<tab *ngIf="hasQueryPlan" [visibilityType]="'visibility'" class="fullsize" [title]="topOperationsTitle">
+	<tab *ngIf="hasQueryPlan" [visibilityType]="'visibility'" class="fullsize" [title]="topOperationsTitle" [identifier]="topOperationsTabIdentifier">
 		<ng-template>
 			<div id="topOperationsDiv" class="fullsize">
 				<top-operations-component class="fullsize" style="display: block" [queryParameters]="queryParameters"></top-operations-component>

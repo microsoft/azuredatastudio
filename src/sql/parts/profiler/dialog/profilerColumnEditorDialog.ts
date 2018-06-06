@@ -22,7 +22,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { IDataSource, ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';

@@ -74,10 +74,12 @@ export enum ModelComponentTypes {
 	RadioButton,
 	WebView,
 	Text,
+	Table,
 	DashboardWidget,
 	DashboardWebview,
 	Form,
-	Group
+	Group,
+	Toolbar
 }
 
 export interface IComponentShape {
@@ -98,7 +100,8 @@ export enum ComponentEventType {
 	onDidChange,
 	onDidClick,
 	validityChanged,
-	onMessage
+	onMessage,
+	onSelectedRowChanged
 }
 
 export interface IComponentEventArgs {
@@ -166,3 +169,18 @@ export interface ActionDescriptor {
 	callbackData?: any;
 }
 
+export enum DataProviderType {
+	ConnectionProvider = 'ConnectionProvider',
+	BackupProvider = 'BackupProvider',
+	RestoreProvider = 'RestoreProvider',
+	ScriptingProvider = 'ScriptingProvider',
+	ObjectExplorerProvider = 'ObjectExplorerProvider',
+	TaskServicesProvider = 'TaskServicesProvider',
+	FileBrowserProvider = 'FileBrowserProvider',
+	ProfilerProvider = 'ProfilerProvider',
+	MetadataProvider = 'MetadataProvider',
+	QueryProvider = 'QueryProvider',
+	AdminServicesProvider = 'AdminServicesProvider',
+	AgentServicesProvider = 'AgentServicesProvider',
+	CapabilitiesProvider = 'CapabilitiesProvider'
+}

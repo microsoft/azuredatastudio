@@ -16,7 +16,7 @@ import { IModelView } from 'sql/services/model/modelViewService';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { ModelStore } from 'sql/parts/modelComponents/modelStore';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
 

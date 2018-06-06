@@ -321,16 +321,26 @@ export class JobsViewComponent implements AfterContentChecked {
 		this._cd.detectChanges();
 		const self = this;
 		this._tabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
-		$(window).resize((e) => {
-			let currentTabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
-			if (currentTabHeight < self._tabHeight) {
-				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
-				self._table.resizeCanvas();
-			} else {
-				$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
-				self._table.resizeCanvas();
+		$(window).resize(() => {
+			let currentTab = $('agentview-component #jobsDiv .jobview-grid').get(0);
+			if (currentTab) {
+				let currentTabHeight = currentTab.clientHeight;
+				if (currentTabHeight < self._tabHeight) {
+					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
+					self._table.resizeCanvas();
+				} else {
+					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
+					self._table.resizeCanvas();
+				}
+				self._tabHeight = currentTabHeight;
 			}
-			self._tabHeight = currentTabHeight;
+		});
+		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
+			let nameWidth: number = data.grid.getColumnWidths()[1];
+			// adjust job name when resized
+			$('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth-10}px`);
+			// adjust error message when resized
+			$('#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext').css('width', '100%');
 		});
 		// cache the dataview for future use
 		this._jobCacheObject.dataView = this.dataView;

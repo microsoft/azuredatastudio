@@ -31,7 +31,7 @@ export class FileBrowserController extends treedefaults.DefaultController {
 					event.preventDefault(); // we cannot preventDefault onMouseDown because this would break DND otherwise
 				}
 				event.stopPropagation();
-				tree.DOMFocus();
+				tree.domFocus();
 				tree.setSelection([element], payload);
 			}
 			return true;

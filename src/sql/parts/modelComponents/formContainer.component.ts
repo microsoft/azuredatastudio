@@ -83,7 +83,6 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	private _alignContent: string;
 	private _formLayout: FormLayout;
 
-	@ViewChildren(ModelComponentWrapper) private _componentWrappers: QueryList<ModelComponentWrapper>;
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
 	constructor(
@@ -104,14 +103,6 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	}
 
 	/// IComponent implementation
-
-	public layout(): void {
-		if (this._componentWrappers) {
-			this._componentWrappers.forEach(wrapper => {
-				wrapper.layout();
-			});
-		}
-	}
 
 	public get alignItems(): string {
 		return this._alignItems;

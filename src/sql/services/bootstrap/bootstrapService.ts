@@ -45,6 +45,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IClipboardService as vsIClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 
 const selectorCounter = new Map<string, number>();
 
@@ -121,7 +122,8 @@ export function bootstrapAngular<T>(collection: ServicesAccessor, moduleType: IM
 			{ provide: IJobManagementService, useValue: collection.get(IJobManagementService) },
 			{ provide: IEnvironmentService, useValue: collection.get(IEnvironmentService) },
 			{ provide: INotificationService, useValue: collection.get(INotificationService) },
-			{ provide: IWorkbenchThemeService, useValue: collection.get(IWorkbenchThemeService) }
+			{ provide: IWorkbenchThemeService, useValue: collection.get(IWorkbenchThemeService) },
+			{ provide: IProgressService, useValue: collection.get(IProgressService) }
 		];
 
 		platform = platformBrowserDynamic(providers);

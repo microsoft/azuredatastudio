@@ -10,7 +10,7 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
 import { ISelectionData, ExecutionPlanOptions } from 'sqlops';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';

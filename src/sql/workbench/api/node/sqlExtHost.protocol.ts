@@ -21,7 +21,7 @@ import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }

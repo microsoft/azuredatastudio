@@ -6,7 +6,7 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
@@ -14,7 +14,7 @@ import { Action } from 'vs/base/common/actions';
 import { error } from 'sql/base/common/log';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
-import { IConfirmationService, IConfirmation } from 'vs/platform/dialogs/common/dialogs';
+import { IDialogService, IConfirmation } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 
@@ -81,7 +81,7 @@ export class RemoveAccountAction extends Action {
 
 	constructor(
 		private _account: sqlops.Account,
-		@IConfirmationService private _confirmationService: IConfirmationService,
+		@IDialogService private _dialogService: IDialogService,
 		@INotificationService private _notificationService: INotificationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
@@ -100,7 +100,7 @@ export class RemoveAccountAction extends Action {
 			type: 'question'
 		};
 
-		return this._confirmationService.confirm(confirm).then(result => {
+		return this._dialogService.confirm(confirm).then(result => {
 			if (!result) {
 				return TPromise.as(false);
 			} else {
