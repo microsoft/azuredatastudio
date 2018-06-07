@@ -110,7 +110,7 @@ export class EditDataResultsEditor extends BaseEditor {
 		// to events from the backing data service
 		const parent = input.container;
 		let params: IEditDataComponentParams = { dataService: dataService };
-		this._instantiationService.invokeFunction(bootstrapAngular,
+		bootstrapAngular(this._instantiationService,
 			EditDataModule,
 			parent,
 			EDITDATA_SELECTOR,
