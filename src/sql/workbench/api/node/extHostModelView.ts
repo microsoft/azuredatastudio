@@ -771,6 +771,7 @@ class LoadingComponentWrapper extends ComponentWrapper implements sqlops.Loading
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.LoadingComponent, id);
 		this.properties = {};
+		this.loading = true;
 	}
 
 	public get loading(): boolean {

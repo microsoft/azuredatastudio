@@ -12,16 +12,20 @@ import * as sqlops from 'sqlops';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
+import * as nls from 'vs/nls';
 
 @Component({
 	selector: 'modelview-loadingComponent',
 	template: `
-		<div class="modelview-loadingComponent-spinner" *ngIf="loading" #spinnerElement></div>
+		<div class="modelview-loadingComponent-container" *ngIf="loading">
+			<div class="modelview-loadingComponent-spinner" *ngIf="loading" [title]=_loadingTitle #spinnerElement></div>
+		</div>
 		<model-component-wrapper #childElement [descriptor]="_component" [modelStore]="modelStore" *ngIf="_component" [ngClass]="{'modelview-loadingComponent-content-loading': loading}">
 		</model-component-wrapper>
 	`
 })
 export default class LoadingComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+	private readonly _loadingTitle = nls.localize('loadingMessage', 'Loading');
 	private _component: IComponentDescriptor;
 
 	@Input() descriptor: IComponentDescriptor;
@@ -58,9 +62,6 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 
 	public layout(): void {
 		this._changeRef.detectChanges();
-		if (this._spinnerElement && this._childElement) {
-			(this._spinnerElement.nativeElement as HTMLElement).style.height = (this._childElement.nativeElement as HTMLElement).style.height;
-		}
 	}
 
 	public setLayout(): void {
@@ -73,8 +74,8 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 	}
 
 	public get loading(): boolean {
-		return true;
-		// return this.getPropertyOrDefault<sqlops.LoadingComponentProperties, boolean>((props) => props.loading, false);
+		// return true;
+		return this.getPropertyOrDefault<sqlops.LoadingComponentProperties, boolean>((props) => props.loading, false);
 	}
 
 	public set loading(newValue: boolean) {
