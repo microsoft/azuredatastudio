@@ -12,33 +12,21 @@ import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
 
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
-import { FieldType, IObservableCollection, CollectionChange, SlickGrid } from 'angular2-slickgrid';
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IDisposable } from 'vs/base/common/lifecycle';
-import * as themeColors from 'vs/workbench/common/theme';
-import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
 
-import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { attachTableStyler } from 'sql/common/theme/styler';
-import { JobHistoryComponent } from './jobHistory.component';
 import { AgentViewComponent } from '../agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { AgentJobUtilities } from '../common/agentJobUtilities';
-import * as Utils from 'sql/parts/connection/common/utils';
 import { IJobManagementService } from '../common/interfaces';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { Dimension } from 'vs/base/browser/builder';
 
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
@@ -102,7 +90,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	}
 
 	public layout() {
-		this._table.layout(new Dimension(dom.getContentWidth(this._gridEl.nativeElement), dom.getContentHeight(this._gridEl.nativeElement)));
+		this._table.layout(new dom.Dimension(dom.getContentWidth(this._gridEl.nativeElement), dom.getContentHeight(this._gridEl.nativeElement)));
 	}
 
 	ngAfterContentChecked() {
