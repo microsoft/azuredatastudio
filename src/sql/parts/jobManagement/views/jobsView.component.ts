@@ -397,9 +397,6 @@ export class JobsViewComponent implements AfterContentChecked {
 		for (let i = 0; i < jobHistories.length; i++) {
 			let runGraph = $(`table#${jobId}.jobprevruns > tbody > tr > td > div.bar${i+1}`);
 			if (jobHistories && jobHistories.length > 0) {
-				//runGraph.get(0).style.height = chartHeights[i];
-
-				//runGraph.height(chartHeights[i]);
 				runGraph.css('height', chartHeights[i]);
 				let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
 				runGraph.css('background', bgColor);
