@@ -74,9 +74,9 @@ export default class MainController implements vscode.Disposable {
 		dialog.cancelButton.onClick(() => console.log('cancel clicked!'));
 		dialog.okButton.label = 'ok';
 		dialog.cancelButton.label = 'no';
-		let customButton1 = sqlops.window.modelviewdialog.createButton('Load all');
+		let customButton1 = sqlops.window.modelviewdialog.createButton('Load name');
 		customButton1.onClick(() => console.log('button 1 clicked!'));
-		let customButton2 = sqlops.window.modelviewdialog.createButton('Load name');
+		let customButton2 = sqlops.window.modelviewdialog.createButton('Load all');
 		customButton2.onClick(() => console.log('button 2 clicked!'));
 		dialog.customButtons = [customButton1, customButton2];
 		tab1.registerContent(async (view) => {
