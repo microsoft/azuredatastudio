@@ -242,4 +242,8 @@ export class PanelComponent extends Disposable {
 			this.selectTab(this._mru[0]);
 		}
 	}
+
+	public layout() {
+		this._activeTab.layout();
+	}
 }
