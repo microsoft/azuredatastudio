@@ -407,9 +407,9 @@ class ComponentWrapper implements sqlops.Component {
 	public onEvent(eventArgs: IComponentEventArgs) {
 		if (eventArgs && eventArgs.eventType === ComponentEventType.PropertiesChanged) {
 			this.properties = eventArgs.args;
-		}
-		else if (eventArgs && eventArgs.eventType === ComponentEventType.validityChanged) {
+		} else if (eventArgs && eventArgs.eventType === ComponentEventType.validityChanged) {
 			this._valid = eventArgs.args;
+			this._onValidityChangedEmitter.fire(this._valid);
 		} else if (eventArgs) {
 			let emitter = this._emitterMap.get(eventArgs.eventType);
 			if (emitter) {
