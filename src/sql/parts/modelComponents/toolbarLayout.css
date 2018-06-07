@@ -30,16 +30,14 @@
 	margin: auto;
 }
 
-.modelview-toolbar-container .modelview-toolbar-component .select-box,
+.modelview-toolbar-container .modelview-toolbar-component select,
 .modelview-toolbar-container .modelview-toolbar-component .monaco-inputbox {
 	width: 200px;
 	height: 25px;
 }
 
-.modelview-toolbar-container .modelview-toolbar-component button {
-	height: 25px;
-}
-
-.modelview-toolbar-container .modelview-toolbar-component button .monaco-text-button {
-	padding: 0px
+.modelview-toolbar-container .modelview-toolbar-component modelview-button .monaco-text-button.icon {
+	padding-left: 15px;
+	background-size: 11px;
+	margin-right: 0.3em;
 }
