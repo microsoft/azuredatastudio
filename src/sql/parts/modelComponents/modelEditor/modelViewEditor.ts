@@ -21,6 +21,7 @@ export class ModelViewEditor extends BaseEditor {
 	public static ID: string = 'workbench.editor.modelViewEditor';
 
 	private _editorFrame: HTMLElement;
+	private _content: HTMLElement;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -34,6 +35,8 @@ export class ModelViewEditor extends BaseEditor {
 	 */
 	public createEditor(parent: HTMLElement): void {
 		this._editorFrame = parent;
+		this._content = document.createElement('div');
+		parent.appendChild(this._content);
 	}
 
 	/**
@@ -69,6 +72,7 @@ export class ModelViewEditor extends BaseEditor {
 
 		input.appendModelViewContainer();
 		input.container.style.visibility = 'visible';
+		this._content.setAttribute('aria-flowto', input.container.id);
 
 		await super.setInput(input, options);
 		this.doUpdateContainer();
