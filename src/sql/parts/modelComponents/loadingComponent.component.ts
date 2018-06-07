@@ -65,7 +65,6 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 	}
 
 	public setLayout(): void {
-		// TODO allow configuring the look and feel
 		this.layout();
 	}
 
@@ -74,7 +73,6 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 	}
 
 	public get loading(): boolean {
-		// return true;
 		return this.getPropertyOrDefault<sqlops.LoadingComponentProperties, boolean>((props) => props.loading, false);
 	}
 

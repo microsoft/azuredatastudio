@@ -91,6 +91,7 @@ export default class MainController implements vscode.Disposable {
 				setTimeout(() => inputBoxWrapper.loading = false, 5000);
 			});
 			let inputBox2 = view.modelBuilder.inputBox().component();
+			let backupFilesInputBox = view.modelBuilder.inputBox().component();
 
 			let checkbox = view.modelBuilder.checkBox()
 				.withProperties({
@@ -113,7 +114,7 @@ export default class MainController implements vscode.Disposable {
 			let button2 = view.modelBuilder.button()
 				.component();
 			button.onDidClick(e => {
-				inputBox2.value = 'Button clicked';
+				backupFilesInputBox.value = 'Button clicked';
 			});
 			let dropdown = view.modelBuilder.dropDown()
 				.withProperties({
@@ -193,7 +194,7 @@ export default class MainController implements vscode.Disposable {
 					component: checkbox,
 					title: ''
 				}, {
-					component: inputBox2,
+					component: backupFilesInputBox,
 					title: 'Backup files',
 					actions: [button, button3]
 				}, {

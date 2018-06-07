@@ -408,7 +408,14 @@ declare module 'sqlops' {
 	 * while the contained component is loading
 	 */
 	export interface LoadingComponent extends Component {
+		/**
+		 * Whether to show the loading spinner instead of the contained component. True by default
+		 */
 		loading: boolean;
+
+		/**
+		 * The component displayed when the loading property is false
+		 */
 		component: Component;
 	}
 
