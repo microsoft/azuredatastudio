@@ -74,9 +74,9 @@ export default class MainController implements vscode.Disposable {
 		dialog.cancelButton.onClick(() => console.log('cancel clicked!'));
 		dialog.okButton.label = 'ok';
 		dialog.cancelButton.label = 'no';
-		let customButton1 = sqlops.window.modelviewdialog.createButton('Test button 1');
+		let customButton1 = sqlops.window.modelviewdialog.createButton('Load all');
 		customButton1.onClick(() => console.log('button 1 clicked!'));
-		let customButton2 = sqlops.window.modelviewdialog.createButton('Test button 2');
+		let customButton2 = sqlops.window.modelviewdialog.createButton('Load name');
 		customButton2.onClick(() => console.log('button 2 clicked!'));
 		dialog.customButtons = [customButton1, customButton2];
 		tab1.registerContent(async (view) => {
@@ -84,6 +84,12 @@ export default class MainController implements vscode.Disposable {
 				.withProperties({
 					//width: 300
 				}).component();
+			let inputBoxWrapper = view.modelBuilder.loadingComponent().withItem(inputBox).component();
+			inputBoxWrapper.loading = false;
+			customButton1.onClick(() => {
+				inputBoxWrapper.loading = true;
+				setTimeout(() => inputBoxWrapper.loading = false, 5000);
+			});
 			let inputBox2 = view.modelBuilder.inputBox().component();
 
 			let checkbox = view.modelBuilder.checkBox()
@@ -175,7 +181,7 @@ export default class MainController implements vscode.Disposable {
 				, { flex: '1 1 50%' }).component();
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
-					component: inputBox,
+					component: inputBoxWrapper,
 					title: 'Backup name'
 				}, {
 					component: inputBox2,
@@ -197,7 +203,13 @@ export default class MainController implements vscode.Disposable {
 					horizontal: false,
 					componentWidth: 400
 				}).component();
-			await view.initializeModel(formModel);
+			let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
+			formWrapper.loading = false;
+			customButton2.onClick(() => {
+				formWrapper.loading = true;
+				setTimeout(() => formWrapper.loading = false, 5000);
+			});
+			await view.initializeModel(formWrapper);
 		});
 
 		sqlops.window.modelviewdialog.openDialog(dialog);
