@@ -247,6 +247,14 @@ export class JobsViewComponent implements AfterContentChecked {
 			$('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth-10}px`);
 			// adjust error message when resized
 			$('#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext').css('width', '100%');
+
+			// generate job charts again
+			self.jobs.forEach(job => {
+				let jobId = job.jobId;
+				let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
+				let previousRuns = jobHistories.slice(jobHistories.length-5, jobHistories.length);
+				self.createJobChart(job.jobId, previousRuns);
+			});
 		});
 		this.loadJobHistories();
 	}
