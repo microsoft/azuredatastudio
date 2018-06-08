@@ -89,11 +89,23 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		let createJob = (connectionUri: string, jobInfo: sqlops.AgentJobInfo): Thenable<sqlops.AgentJobResult> => {
+			let params: AgentJobActionParams = { ownerUri: connectionUri, jobName: '', action: '' };
+			return client.sendRequest(AgentJobActionRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(AgentJobActionRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
 		return sqlops.dataprotocol.registerAgentServicesProvider({
 			providerId: client.providerId,
 			getJobs,
 			getJobHistory,
-			jobAction
+			jobAction,
+			createJob
 		});
 	}
 }

@@ -1061,7 +1061,7 @@ declare module 'sqlops' {
 		jobId: string;
 	}
 
-	export interface AgentJobStep {
+	export interface AgentJobStepInfo {
 		stepId: string;
 		stepName: string;
 		message: string;
@@ -1082,17 +1082,23 @@ declare module 'sqlops' {
 		runDate: string;
 		runDuration: string;
 		operatorEmailed: string;
-		operatorNetsent: string;
+		operatorNetsent: string
 		operatorPaged: string;
 		retriesAttempted: string;
 		server: string;
-		steps: AgentJobStep[];
+		steps: AgentJobStepInfo[];
+	}
+
+	export interface AgentJobResult {
+
 	}
 
 	export interface AgentServicesProvider extends DataProvider {
 		getJobs(connectionUri: string): Thenable<AgentJobsResult>;
 		getJobHistory(connectionUri: string, jobId: string): Thenable<AgentJobHistoryResult>;
 		jobAction(connectionUri: string, jobName: string, action: string): Thenable<AgentJobActionResult>;
+
+		createJob(connectionUri: string, jobInfo: AgentJobInfo): Thenable<AgentJobResult>;
 	}
 
 	// Task service interfaces ----------------------------------------------------------------------------
