@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!sql/parts/query/editor/media/queryEditor';
+import * as DOM from 'vs/base/browser/dom';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Dimension, Builder } from 'vs/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -37,9 +37,9 @@ export class CreateLoginEditor extends BaseEditor {
 	}
 
 	/**
-	 * Called to create the editor in the parent builder.
+	 * Called to create the editor in the parent element.
 	 */
-	public createEditor(parent: Builder): void {
+	public createEditor(parent: HTMLElement): void {
 	}
 
 	/**
@@ -52,7 +52,7 @@ export class CreateLoginEditor extends BaseEditor {
 	 * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
 	 * To be called when the container of this editor changes size.
 	 */
-	public layout(dimension: Dimension): void {
+	public layout(dimension: DOM.Dimension): void {
 	}
 
 	public setInput(input: CreateLoginInput, options: EditorOptions): TPromise<void> {
@@ -63,7 +63,7 @@ export class CreateLoginEditor extends BaseEditor {
 		if (!input.hasInitialized) {
 			this.bootstrapAngular(input);
 		}
-		this.revealElementWithTagName(input.uniqueSelector, this.getContainer().getHTMLElement());
+		this.revealElementWithTagName(input.uniqueSelector, this.getContainer());
 
 		return super.setInput(input, options);
 	}
@@ -98,9 +98,9 @@ export class CreateLoginEditor extends BaseEditor {
 			connection: input.getConnectionProfile(),
 			ownerUri: input.getUri()
 		};
-		let uniqueSelector = this.instantiationService.invokeFunction(bootstrapAngular,
+		let uniqueSelector = bootstrapAngular(this.instantiationService,
 			CreateLoginModule,
-			this.getContainer().getHTMLElement(),
+			this.getContainer(),
 			CREATELOGIN_SELECTOR,
 			params);
 		input.setUniqueSelector(uniqueSelector);

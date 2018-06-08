@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -18,7 +18,7 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 
 @Component({
-	selector: 'checkbox',
+	selector: 'modelview-checkbox',
 	template: `
 		<div #input style="width: 100%"></div>
 	`

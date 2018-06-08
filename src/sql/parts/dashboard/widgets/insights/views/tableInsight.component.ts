@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnInit } from '@angular/core';
 
-import { getContentHeight, getContentWidth } from 'vs/base/browser/dom';
-import { Dimension } from 'vs/base/browser/builder';
+import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 

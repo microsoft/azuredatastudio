@@ -6,7 +6,6 @@
 import 'vs/css!sql/parts/query/editor/media/queryEditor';
 import * as DOM from 'vs/base/browser/dom';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Dimension, Builder } from 'vs/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -41,11 +40,11 @@ export class QueryPlanEditor extends BaseEditor {
 	}
 
 	/**
-	 * Called to create the editor in the parent builder.
+	 * Called to create the editor in the parent element.
 	 */
-	public createEditor(parent: Builder): void {
+	public createEditor(parent: HTMLElement): void {
 		//Enable scrollbars when drawing area is larger than viewport
-		parent.overflow('auto');
+		parent.style.overflow = 'auto';
 		//Set background of parent to white (same as .qp-root from src\sql\parts\grid\load\css\qp.css)
 		//This is because the bottom-most tooltips can extend past the drawing area, which causes the
 		//scrolling area to have gaps on the bottom and left. So if the colors aren't matched then
@@ -54,7 +53,7 @@ export class QueryPlanEditor extends BaseEditor {
 		//during the load - but changing the background color was the simplest and least error prone
 		//(plus it's probable that we won't be using this control in the future anyways if development)
 		//continues on the Query plan feature
-		parent.background('#fff');
+		parent.style.background = '#fff';
 	}
 
 	/**
@@ -67,7 +66,7 @@ export class QueryPlanEditor extends BaseEditor {
 	 * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
 	 * To be called when the container of this editor changes size.
 	 */
-	public layout(dimension: Dimension): void {
+	public layout(dimension: DOM.Dimension): void {
 	}
 
 	public setInput(input: QueryPlanInput, options: EditorOptions): TPromise<void> {
@@ -78,7 +77,7 @@ export class QueryPlanEditor extends BaseEditor {
 		if (!input.hasInitialized) {
 			this.bootstrapAngular(input);
 		}
-		this.revealElementWithTagName(input.uniqueSelector, this.getContainer().getHTMLElement());
+		this.revealElementWithTagName(input.uniqueSelector, this.getContainer());
 
 		return super.setInput(input, options);
 	}
@@ -112,9 +111,9 @@ export class QueryPlanEditor extends BaseEditor {
 			planXml: input.planXml
 		};
 
-		let uniqueSelector = this.instantiationService.invokeFunction(bootstrapAngular,
+		let uniqueSelector = bootstrapAngular(this.instantiationService,
 			QueryPlanModule,
-			this.getContainer().getHTMLElement(),
+			this.getContainer(),
 			QUERYPLAN_SELECTOR,
 			params);
 		input.setUniqueSelector(uniqueSelector);

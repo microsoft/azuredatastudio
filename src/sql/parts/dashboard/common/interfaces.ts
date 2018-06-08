@@ -5,7 +5,7 @@
 
 import { OnDestroy } from '@angular/core';
 
-import Event from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 import { AngularDisposable } from 'sql/base/common/lifecycle';

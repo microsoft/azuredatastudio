@@ -5,6 +5,8 @@
 
 import FlexContainer from './flexContainer.component';
 import FormContainer from './formContainer.component';
+import ToolbarContainer from './toolbarContainer.component';
+import GroupContainer from './groupContainer.component';
 import CardComponent from './card.component';
 import InputBoxComponent from './inputbox.component';
 import DropDownComponent from './dropdown.component';
@@ -12,7 +14,9 @@ import ButtonComponent from './button.component';
 import CheckBoxComponent from './checkbox.component';
 import RadioButtonComponent from './radioButton.component';
 import WebViewComponent from './webview.component';
+import TableComponent from './table.component';
 import TextComponent from './text.component';
+import LoadingComponent from './loadingComponent.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -21,6 +25,12 @@ registerComponentType(FLEX_CONTAINER, ModelComponentTypes.FlexContainer, FlexCon
 
 export const FORM_CONTAINER = 'form-container';
 registerComponentType(FORM_CONTAINER, ModelComponentTypes.Form, FormContainer);
+
+export const TOOLBAR_CONTAINER = 'toolbar-container';
+registerComponentType(TOOLBAR_CONTAINER, ModelComponentTypes.Toolbar, ToolbarContainer);
+
+export const GROUP_CONTAINER = 'group-container';
+registerComponentType(GROUP_CONTAINER, ModelComponentTypes.Group, GroupContainer);
 
 export const CARD_COMPONENT = 'card-component';
 registerComponentType(CARD_COMPONENT, ModelComponentTypes.Card, CardComponent);
@@ -46,3 +56,9 @@ registerComponentType(WEBVIEW_COMPONENT, ModelComponentTypes.WebView, WebViewCom
 
 export const TEXT_COMPONENT = 'text-component';
 registerComponentType(TEXT_COMPONENT, ModelComponentTypes.Text, TextComponent);
+
+export const TABLE_COMPONENT = 'table-component';
+registerComponentType(TABLE_COMPONENT, ModelComponentTypes.Table, TableComponent);
+
+export const LOADING_COMPONENT = 'loading-component';
+registerComponentType(LOADING_COMPONENT, ModelComponentTypes.LoadingComponent, LoadingComponent);

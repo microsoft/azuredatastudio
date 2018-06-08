@@ -10,8 +10,9 @@
     <body>
         <button onclick="count()">Count</button>
         <script>
+            const vscode = acquireVsCodeApi();
             function count() {
-                parent.postMessage('count', '*');
+                vscode.postMessage('count', '*');
             }
         </script>
     </body>

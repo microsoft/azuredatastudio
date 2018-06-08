@@ -9,12 +9,11 @@ import 'vs/css!./media/editorpart';
 import 'vs/workbench/browser/parts/editor/editor.contribution';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { Dimension, Builder, $ } from 'vs/base/browser/builder';
-import nls = require('vs/nls');
-import strings = require('vs/base/common/strings');
-import arrays = require('vs/base/common/arrays');
-import types = require('vs/base/common/types');
-import errors = require('vs/base/common/errors');
+import * as nls from 'vs/nls';
+import * as strings from 'vs/base/common/strings';
+import * as arrays from 'vs/base/common/arrays';
+import * as types from 'vs/base/common/types';
+import * as errors from 'vs/base/common/errors';
 import * as objects from 'vs/base/common/objects';
 import { getCodeEditor } from 'vs/editor/browser/services/codeEditorService';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
@@ -35,20 +34,19 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IProgressService } from 'vs/platform/progress/common/progress';
 import { EditorStacksModel, EditorGroup, EditorIdentifier, EditorCloseEvent } from 'vs/workbench/common/editor/editorStacksModel';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter, once } from 'vs/base/common/event';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { editorBackground } from 'vs/platform/theme/common/colorRegistry';
 import { EDITOR_GROUP_BACKGROUND } from 'vs/workbench/common/theme';
-import { createCSSRule } from 'vs/base/browser/dom';
+import { createCSSRule, Dimension, addClass, removeClass } from 'vs/base/browser/dom';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { join } from 'vs/base/common/paths';
 import { IEditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { ThrottledEmitter } from 'vs/base/common/async';
 import { isCodeEditor } from 'vs/editor/browser/editorBrowser';
-import { isUndefinedOrNull } from 'vs/base/common/types';
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
-import { isErrorWithActions } from 'vs/base/common/errors';
+import { dispose } from 'vs/base/common/lifecycle';
 
 // {{SQL CARBON EDIT}}
 import { convertEditorInput } from 'sql/parts/common/customInputConverter';
@@ -107,15 +105,16 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 	private forceHideTabs: boolean;
 	private doNotFireTabOptionsChanged: boolean;
 	private revealIfOpen: boolean;
-
-	private _onEditorsChanged: ThrottledEmitter<void>;
-	private _onEditorOpening: Emitter<IEditorOpeningEvent>;
-	private _onEditorGroupMoved: Emitter<void>;
-	private _onEditorOpenFail: Emitter<EditorInput>;
-	private _onGroupOrientationChanged: Emitter<void>;
-	private _onTabOptionsChanged: Emitter<IEditorTabOptions>;
-
+	private ignoreOpenEditorErrors: boolean;
 	private textCompareEditorVisible: IContextKey<boolean>;
+
+	private readonly _onEditorsChanged: ThrottledEmitter<void>;
+	private readonly _onEditorOpening: Emitter<IEditorOpeningEvent>;
+	private readonly _onEditorGroupMoved: Emitter<void>;
+	private readonly _onEditorOpenFail: Emitter<EditorInput>;
+	private readonly _onGroupOrientationChanged: Emitter<void>;
+	private readonly _onTabOptionsChanged: Emitter<IEditorTabOptions>;
+	private readonly _onLayout: Emitter<Dimension>;
 
 	// The following data structures are partitioned into array of Position as provided by Services.POSITION array
 	private visibleEditors: BaseEditor[];
@@ -123,9 +122,6 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 	private editorOpenToken: number[];
 	private pendingEditorInputsToClose: EditorIdentifier[];
 	private pendingEditorInputCloseTimeout: number;
-
-	private onLayoutEmitter = new Emitter<Dimension>();
-	public onLayout = this.onLayoutEmitter.event;
 
 	constructor(
 		id: string,
@@ -148,6 +144,7 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 		this._onEditorOpenFail = new Emitter<EditorInput>();
 		this._onGroupOrientationChanged = new Emitter<void>();
 		this._onTabOptionsChanged = new Emitter<IEditorTabOptions>();
+		this._onLayout = new Emitter<Dimension>();
 
 		this.visibleEditors = [];
 
@@ -296,6 +293,10 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 
 	public resizeGroup(position: Position, groupSizeChange: number): void {
 		this.editorGroupsControl.resizeGroup(position, groupSizeChange);
+	}
+
+	public get onLayout(): Event<Dimension> {
+		return this._onLayout.event;
 	}
 
 	public get onEditorsChanged(): Event<void> {
@@ -479,11 +480,12 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 
 		// Create editor as needed
 		if (!editor.getContainer()) {
-			editor.create($().div({
-				'class': 'editor-container',
-				'role': 'tabpanel',
-				id: descriptor.getId()
-			}));
+			const editorContainer = document.createElement('div');
+			editorContainer.id = descriptor.getId();
+			addClass(editorContainer, 'editor-container');
+			editorContainer.setAttribute('role', 'tabpanel');
+
+			editor.create(editorContainer);
 		}
 
 		return editor;
@@ -555,18 +557,21 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 		// Stop loading promise if any
 		monitor.cancel();
 
-		// Report error only if this was not us restoring previous error state
-		if (this.partService.isCreated() && !errors.isPromiseCanceledError(error)) {
+		// Report error only if this was not us restoring previous error state or
+		// we are told to ignore errors that occur from opening an editor
+		if (this.partService.isCreated() && !errors.isPromiseCanceledError(error) && !this.ignoreOpenEditorErrors) {
 			const actions: INotificationActions = { primary: [] };
-			if (isErrorWithActions(error)) {
-				actions.primary = error.actions;
+			if (errors.isErrorWithActions(error)) {
+				actions.primary = (error as errors.IErrorWithActions).actions;
 			}
 
-			this.notificationService.notify({
+			const handle = this.notificationService.notify({
 				severity: Severity.Error,
 				message: nls.localize('editorOpenError', "Unable to open '{0}': {1}.", input.getName(), toErrorMessage(error)),
 				actions
 			});
+
+			once(handle.onDidClose)(() => dispose(actions.primary));
 		}
 
 		this.editorGroupsControl.updateProgress(position, ProgressState.DONE);
@@ -576,7 +581,7 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 
 		// Recover by closing the active editor (if the input is still the active one)
 		if (group.activeEditor === input) {
-			this.doCloseActiveEditor(group, !(options && options.preserveFocus) /* still preserve focus as needed */);
+			this.doCloseActiveEditor(group, !(options && options.preserveFocus) /* still preserve focus as needed */, true /* from error */);
 		}
 	}
 
@@ -610,7 +615,7 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 		}
 	}
 
-	private doCloseActiveEditor(group: EditorGroup, focusNext = true): void {
+	private doCloseActiveEditor(group: EditorGroup, focusNext = true, fromError?: boolean): void {
 		const position = this.stacks.positionOfGroup(group);
 
 		// Update stacks model
@@ -623,7 +628,22 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 
 		// Otherwise open next active
 		else {
-			this.openEditor(group.activeEditor, !focusNext ? EditorOptions.create({ preserveFocus: true }) : null, position).done(null, errors.onUnexpectedError);
+			// When closing an editor due to an error we can end up in a loop where we continue closing
+			// editors that fail to open (e.g. when the file no longer exists). We do not want to show
+			// repeated errors in this case to the user. As such, if we open the next editor and we are
+			// in a scope of a previous editor failing, we silence the input errors until the editor is
+			// opened.
+			if (fromError) {
+				this.ignoreOpenEditorErrors = true;
+			}
+
+			this.openEditor(group.activeEditor, !focusNext ? EditorOptions.create({ preserveFocus: true }) : null, position).done(() => {
+				this.ignoreOpenEditorErrors = false;
+			}, error => {
+				errors.onUnexpectedError(error);
+
+				this.ignoreOpenEditorErrors = false;
+			});
 		}
 	}
 
@@ -710,7 +730,7 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 		}
 
 		// Then check for array of positions to close
-		if (Array.isArray(positionsOrEditors) || isUndefinedOrNull(positionsOrEditors)) {
+		if (Array.isArray(positionsOrEditors) || types.isUndefinedOrNull(positionsOrEditors)) {
 			return this.doCloseAllEditorsAtPositions(positionsOrEditors as Position[]);
 		}
 
@@ -833,8 +853,10 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 
 		// Close: By Filter or all
 		else {
-			editorsToClose = group.getEditors(true /* in MRU order */);
 			filter = filterOrEditors || Object.create(null);
+
+			const hasDirection = !types.isUndefinedOrNull(filter.direction);
+			editorsToClose = group.getEditors(!hasDirection /* in MRU order only if direction is not specified */);
 
 			// Filter: saved only
 			if (filter.savedOnly) {
@@ -842,7 +864,7 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 			}
 
 			// Filter: direction (left / right)
-			else if (!types.isUndefinedOrNull(filter.direction)) {
+			else if (hasDirection) {
 				editorsToClose = (filter.direction === Direction.LEFT) ? editorsToClose.slice(0, group.indexOf(filter.except)) : editorsToClose.slice(group.indexOf(filter.except) + 1);
 			}
 
@@ -1141,12 +1163,12 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 		return this.editorGroupsControl.getGroupOrientation();
 	}
 
-	public createContentArea(parent: Builder): Builder {
+	public createContentArea(parent: HTMLElement): HTMLElement {
 
 		// Content Container
-		const contentArea = $(parent)
-			.div()
-			.addClass('content');
+		const contentArea = document.createElement('div');
+		addClass(contentArea, 'content');
+		parent.appendChild(contentArea);
 
 		// get settings
 		this.memento = this.getMemento(this.storageService, MementoScope.WORKSPACE);
@@ -1164,19 +1186,19 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 
 		// Part container
 		const container = this.getContainer();
-		container.style('background-color', this.getColor(editorBackground));
+		container.style.backgroundColor = this.getColor(editorBackground);
 
 		// Content area
 		const content = this.getContentArea();
 
 		const groupCount = this.stacks.groups.length;
 		if (groupCount > 1) {
-			content.addClass('multiple-groups');
+			addClass(content, 'multiple-groups');
 		} else {
-			content.removeClass('multiple-groups');
+			removeClass(content, 'multiple-groups');
 		}
 
-		content.style('background-color', groupCount > 0 ? this.getColor(EDITOR_GROUP_BACKGROUND) : null);
+		content.style.backgroundColor = groupCount > 0 ? this.getColor(EDITOR_GROUP_BACKGROUND) : null;
 	}
 
 	private onGroupFocusChanged(): void {
@@ -1474,7 +1496,7 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 		this.dimension = sizes[1];
 		this.editorGroupsControl.layout(this.dimension);
 
-		this.onLayoutEmitter.fire(dimension);
+		this._onLayout.fire(dimension);
 
 		return sizes;
 	}
@@ -1512,6 +1534,9 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 		this._onEditorOpening.dispose();
 		this._onEditorGroupMoved.dispose();
 		this._onEditorOpenFail.dispose();
+		this._onGroupOrientationChanged.dispose();
+		this._onTabOptionsChanged.dispose();
+		this._onLayout.dispose();
 
 		// Reset Tokens
 		this.editorOpenToken = [];

@@ -6,7 +6,7 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export interface IView {
 	readonly id: string;

@@ -30,6 +30,9 @@ import { WorkbenchState, IWorkspaceContextService } from 'vs/platform/workspace/
 import { IntervalTimer } from 'vs/base/common/async';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { toDisposable } from 'vs/base/common/lifecycle';
+import { isPromiseCanceledError } from 'vs/base/common/errors';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -80,23 +83,27 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			if (!this._checkStorage()) {
 				let promise = this._runQuery();
 				this.queryObv = Observable.fromPromise(promise);
-				promise.then(
+				let tpromise = promise.then(
 					result => {
 						if (this._init) {
 							this._updateChild(result);
 							this.setupInterval();
 						} else {
-							this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(result));
+							this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(result));
 						}
 					},
 					error => {
+						if (isPromiseCanceledError(error)) {
+							return;
+						}
 						if (this._init) {
 							this.showError(error);
 						} else {
-							this.queryObv = Observable.fromPromise(Promise.reject<SimpleExecuteResult>(error));
+							this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(error));
 						}
 					}
 				);
+				this._register(toDisposable(() => tpromise.cancel()));
 			}
 		}, error => {
 			this.showError(error);
@@ -195,15 +202,15 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		return `insights.${this.insightConfig.cacheId}.${this.dashboardService.connectionManagementService.connectionInfo.connectionProfile.getOptionsKey()}`;
 	}
 
-	private _runQuery(): Thenable<SimpleExecuteResult> {
-		return this.dashboardService.queryManagementService.runQueryAndReturn(this.insightConfig.query as string).then(
+	private _runQuery(): TPromise<SimpleExecuteResult> {
+		return TPromise.wrap(this.dashboardService.queryManagementService.runQueryAndReturn(this.insightConfig.query as string).then(
 			result => {
 				return this._storeResult(result);
 			},
 			error => {
 				throw error;
 			}
-		);
+		));
 	}
 
 	private _updateChild(result: SimpleExecuteResult): void {

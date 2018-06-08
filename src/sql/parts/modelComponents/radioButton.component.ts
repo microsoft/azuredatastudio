@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -18,7 +18,7 @@ import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 @Component({
-	selector: 'radioButton',
+	selector: 'modelview-radioButton',
 	template: `
 		<div #input class="modelview-radiobutton-container">
 

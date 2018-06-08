@@ -12,7 +12,7 @@ import { Action } from 'vs/base/common/actions';
 import { IConstructorSignature3, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import * as nls from 'vs/nls';
 import { ILocalizedString, IMenuItem, MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { LinkedList } from 'vs/base/common/linkedList';

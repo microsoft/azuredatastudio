@@ -2,8 +2,8 @@
   "name": "vscode-extensions",
   "version": "0.0.1",
   "description": "Dependencies shared by all extensions",
-  "devDependencies": {
-    "typescript": "2.7.2"
+  "dependencies": {
+    "typescript": "2.8.3"
   },
   "scripts": {
     "postinstall": "node ./postinstall"

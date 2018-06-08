@@ -13,7 +13,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IBackupService, TaskExecutionMode, IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
 import { BackupDialog } from 'sql/parts/disasterRecovery/backup/backupDialog';
 import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
