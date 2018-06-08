@@ -364,7 +364,11 @@ export class InputBox extends Widget {
 				};
 			}
 
-			if (!errorMsg) {
+			if (errorMsg) {
+				this.inputElement.setAttribute('aria-invalid', 'true');
+				this.showMessage(errorMsg);
+			}
+			else if (this.inputElement.hasAttribute('aria-invalid')) {
 				this.inputElement.removeAttribute('aria-invalid');
 				this.hideMessage();
 			}
