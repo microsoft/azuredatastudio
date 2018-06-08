@@ -21,7 +21,7 @@ import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams
 import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDataGridActions';
 import { error } from 'sql/base/common/log';
-import { clone } from 'sql/base/common/objects';
+import { clone, mixin } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 
@@ -195,7 +195,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					let gridData: IGridDataRow[] = result.subset.map(row => {
 						self.idMapping[rowIndex] = row.id;
 						rowIndex++;
-						return { values: row.cells, row: row.id };
+						return { values: row.cells.map(c => {
+							return mixin({ ariaLabel: c.displayValue}, c);
+						}), row: row.id};
 					});
 
 					// Append a NULL row to the end of gridData
