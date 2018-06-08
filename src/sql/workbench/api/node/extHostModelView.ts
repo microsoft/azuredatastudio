@@ -392,13 +392,13 @@ class ComponentWrapper implements sqlops.Component {
 		return this._proxy.$setLayout(this._handle, this.id, layout);
 	}
 
-	public updateProperties(properties: { [key: string]: any }): Thenable<boolean> {
+	public updateProperties(properties: { [key: string]: any }): Thenable<void> {
 		this.properties = Object.assign(this.properties, properties);
 		return this.notifyPropertyChanged();
 	}
 
-	protected notifyPropertyChanged(): Thenable<boolean> {
-		return this._proxy.$setProperties(this._handle, this._id, this.properties).then(() => true);
+	protected notifyPropertyChanged(): Thenable<void> {
+		return this._proxy.$setProperties(this._handle, this._id, this.properties);
 	}
 
 	public registerEvent(): Thenable<boolean> {
@@ -419,13 +419,13 @@ class ComponentWrapper implements sqlops.Component {
 		}
 	}
 
-	protected async setProperty(key: string, value: any): Promise<boolean> {
+	protected async setProperty(key: string, value: any): Promise<void> {
 		if (!this.properties[key] || this.properties[key] !== value) {
 			// Only notify the front end if a value has been updated
 			this.properties[key] = value;
 			return this.notifyPropertyChanged();
 		}
-		return Promise.resolve(true);
+		return Promise.resolve();
 	}
 
 	private handleError(err: Error): void {
