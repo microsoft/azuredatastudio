@@ -44,6 +44,7 @@ export class ControlHostContent {
 	}
 
 	public layout(): void {
+		this._agentViewComponent.layout();
 	}
 
 	public get id(): string {

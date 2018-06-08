@@ -29,7 +29,6 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 		background_color: colors.editorBackground,
 		border: 'none',
 		fontSize: '14px',
-		fontWeight: '200',
 		padding: '5px 0 0 0',
 		provider: undefined,
 		edition: undefined

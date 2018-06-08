@@ -70,6 +70,7 @@ export enum ModelComponentTypes {
 	InputBox,
 	DropDown,
 	DeclarativeTable,
+	ListBox,
 	Button,
 	CheckBox,
 	RadioButton,
@@ -80,7 +81,8 @@ export enum ModelComponentTypes {
 	DashboardWebview,
 	Form,
 	Group,
-	Toolbar
+	Toolbar,
+	LoadingComponent
 }
 
 export interface IComponentShape {

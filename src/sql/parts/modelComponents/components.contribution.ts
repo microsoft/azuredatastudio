@@ -10,13 +10,18 @@ import GroupContainer from './groupContainer.component';
 import CardComponent from './card.component';
 import InputBoxComponent from './inputbox.component';
 import DropDownComponent from './dropdown.component';
+<<<<<<< HEAD
 import DeclarativeTableComponent from './declarativeTable.component';
+=======
+import ListBoxComponent from './listbox.component';
+>>>>>>> master
 import ButtonComponent from './button.component';
 import CheckBoxComponent from './checkbox.component';
 import RadioButtonComponent from './radioButton.component';
 import WebViewComponent from './webview.component';
 import TableComponent from './table.component';
 import TextComponent from './text.component';
+import LoadingComponent from './loadingComponent.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -41,8 +46,13 @@ registerComponentType(INPUTBOX_COMPONENT, ModelComponentTypes.InputBox, InputBox
 export const DROPDOWN_COMPONENT = 'dropdown-component';
 registerComponentType(DROPDOWN_COMPONENT, ModelComponentTypes.DropDown, DropDownComponent);
 
+<<<<<<< HEAD
 export const DECLARATIVETABLE_COMPONENT = 'declarativeTable-component';
 registerComponentType(DECLARATIVETABLE_COMPONENT, ModelComponentTypes.DeclarativeTable, DeclarativeTableComponent);
+=======
+export const LISTBOX_COMPONENT = 'lisbox-component';
+registerComponentType(LISTBOX_COMPONENT, ModelComponentTypes.ListBox, ListBoxComponent);
+>>>>>>> master
 
 export const BUTTON_COMPONENT = 'button-component';
 registerComponentType(BUTTON_COMPONENT, ModelComponentTypes.Button, ButtonComponent);
@@ -62,3 +72,6 @@ registerComponentType(TEXT_COMPONENT, ModelComponentTypes.Text, TextComponent);
 
 export const TABLE_COMPONENT = 'table-component';
 registerComponentType(TABLE_COMPONENT, ModelComponentTypes.Table, TableComponent);
+
+export const LOADING_COMPONENT = 'loading-component';
+registerComponentType(LOADING_COMPONENT, ModelComponentTypes.LoadingComponent, LoadingComponent);

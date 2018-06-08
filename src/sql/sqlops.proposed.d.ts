@@ -26,6 +26,7 @@ declare module 'sqlops' {
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
+		listBox(): ComponentBuilder<ListBoxComponent>;
 		table(): ComponentBuilder<TableComponent>;
 		declarativeTable(): ComponentBuilder<DeclarativeTableComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent>;
@@ -33,6 +34,7 @@ declare module 'sqlops' {
 		formContainer(): FormBuilder;
 		groupContainer(): GroupBuilder;
 		toolbarContainer(): ToolbarBuilder;
+		loadingComponent(): LoadingComponentBuilder;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -70,6 +72,14 @@ declare module 'sqlops' {
 		addToolbarItem(toolbarComponent: ToolbarComponent): void;
 	}
 
+	export interface LoadingComponentBuilder extends ComponentBuilder<LoadingComponent> {
+		/**
+		 * Set the component wrapped by the LoadingComponent
+		 * @param component The component to wrap
+		 */
+		withItem(component: Component): LoadingComponentBuilder;
+	}
+
 	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
 		withFormItems(components: FormComponent[], itemLayout?: FormItemLayout): ContainerBuilder<FormContainer, FormLayout, FormItemLayout>;
 
@@ -96,11 +106,11 @@ declare module 'sqlops' {
 		/**
 		 * Sends any updated properties of the component to the UI
 		 *
-		 * @returns {Thenable<boolean>} Thenable that completes once the update
+		 * @returns {Thenable<void>} Thenable that completes once the update
 		 * has been applied in the UI
 		 * @memberof Component
 		 */
-		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
+		updateProperties(properties: { [key: string]: any }): Thenable<void>;
 
 		enabled: boolean;
 		/**
@@ -345,6 +355,12 @@ declare module 'sqlops' {
 		columns: DeclarativeTableColumn[];
 	}
 
+	export interface ListBoxProperties {
+		selectedRow?: number;
+		values?: string[];
+
+	}
+
 	export interface WebViewProperties {
 		message?: any;
 		html?: string;
@@ -352,6 +368,11 @@ declare module 'sqlops' {
 
 	export interface ButtonProperties {
 		label?: string;
+		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+	}
+
+	export interface LoadingComponentProperties {
+		loading?: boolean;
 	}
 
 	export interface CardComponent extends Component {
@@ -395,6 +416,12 @@ declare module 'sqlops' {
 		onDataChanged: vscode.Event<any>;
 	}
 
+	export interface ListBoxComponent extends Component, ListBoxProperties {
+		selectedRow?: number;
+		values: string[];
+		onRowSelected: vscode.Event<any>;
+	}
+
 	export interface TableComponent extends Component, TableComponentProperties {
 		onRowSelected: vscode.Event<any>;
 	}
@@ -407,6 +434,7 @@ declare module 'sqlops' {
 
 	export interface ButtonComponent extends Component {
 		label: string;
+		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 		onDidClick: vscode.Event<any>;
 	}
 
@@ -416,6 +444,22 @@ declare module 'sqlops' {
 
 	export interface DashboardWebviewComponent extends Component {
 		webviewId: string;
+	}
+
+	/**
+	 * Component used to wrap another component that needs to be loaded, and show a loading spinner
+	 * while the contained component is loading
+	 */
+	export interface LoadingComponent extends Component {
+		/**
+		 * Whether to show the loading spinner instead of the contained component. True by default
+		 */
+		loading: boolean;
+
+		/**
+		 * The component displayed when the loading property is false
+		 */
+		component: Component;
 	}
 
 	/**
