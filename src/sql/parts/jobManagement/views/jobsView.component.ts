@@ -39,6 +39,7 @@ import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.componen
 
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
+export const ROW_HEIGHT: number = 45;
 
 @Component({
 	selector: JOBSVIEW_SELECTOR,
@@ -133,7 +134,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		let options = <Slick.GridOptions<any>>{
 			syncColumnCellResize: true,
 			enableColumnReorder: false,
-			rowHeight: 45,
+			rowHeight: ROW_HEIGHT,
 			enableCellNavigation: true,
 			forceFitColumns: true
 		};
@@ -248,6 +249,42 @@ export class JobsViewComponent implements AfterContentChecked {
 			$('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth-10}px`);
 			// adjust error message when resized
 			$('#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext').css('width', '100%');
+		});
+		$('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e) => {
+			// highlight the error row as well if a failing job row is hovered
+			if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
+				let target = $(e.currentTarget);
+				let targetChildren = $(e.currentTarget.children);
+				let siblings = target.nextAll().toArray();
+				let top = parseInt(target.css('top'), 10);
+				siblings.forEach(sibling => {
+					let siblingTop = parseInt($(sibling).css('top'), 10);
+					if (siblingTop === top + ROW_HEIGHT) {
+						$(sibling.children).css('background', '#444444');
+						sibling.onmouseenter = (e) => {
+							targetChildren.css('background', '#444444');
+						};
+						sibling.onmouseleave = (e) => {
+							targetChildren.css('background', '#333333');
+						};
+						return;
+					}
+				});
+			}
+		}, (e) => {
+			// switch back to original background
+			if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
+				let target = $(e.currentTarget);
+				let siblings = target.nextAll().toArray();
+				let top = parseInt(target.css('top'), 10);
+				siblings.forEach(sibling => {
+					let siblingTop = parseInt($(sibling).css('top'), 10);
+					if (siblingTop === top + ROW_HEIGHT) {
+						$(sibling.children).css('background', '#333333');
+						return;
+					}
+				});
+			}
 		});
 		this.loadJobHistories();
 	}
