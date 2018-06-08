@@ -12,6 +12,19 @@
 .declarative-table-header {
 	padding: 5px;
 	border: 1px solid gray;
+	background-color: #F5F5F5;
+}
+
+.vs-dark .declarative-table-header {
+	padding: 5px;
+	border: 1px solid gray;
+	background-color: #333334;
+}
+
+.hc-black .declarative-table-header {
+	padding: 5px;
+	border: 1px solid gray;
+	background-color: #333334;
 }
 
 .declarative-table-cell {
