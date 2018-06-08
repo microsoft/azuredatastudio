@@ -17,8 +17,6 @@ import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { attachListBoxStyler } from 'sql/common/theme/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import Event, { Emitter } from 'vs/base/common/event';
-import * as nls from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 @Component({
