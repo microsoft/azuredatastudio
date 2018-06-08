@@ -11,6 +11,7 @@ import URI from 'vs/base/common/uri';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileLabel } from 'vs/workbench/browser/labels';
 import { IFileTemplateData } from 'vs/workbench/parts/files/electron-browser/views/explorerViewer';
+import { empty as EmptyDisposable } from 'vs/base/common/lifecycle';
 
 /**
  * Renders the tree items.
@@ -43,8 +44,9 @@ export class FileBrowserRenderer implements IRenderer {
 	 * Render template in a dom element based on template id
 	 */
 	public renderTemplate(tree: ITree, templateId: string, container: HTMLElement): IFileTemplateData {
+		const elementDisposable = EmptyDisposable;
 		const label = this.instantiationService.createInstance(FileLabel, container, void 0);
-		return { label, container };
+		return { elementDisposable, label, container };
 	}
 
 	/**

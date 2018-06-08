@@ -245,7 +245,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let index: number = group.indexOf(editor.input);
 		let position: Position = editor.position;
 		let options: IQueryEditorOptions = editor.options ? editor.options : {};
-		options.index = index;
+		options = Object.assign(options, { index: index });
 		options.pinned = group.isPinned(index);
 
 		// Return a promise that will resovle when the old editor has been replaced by a new editor

@@ -7,7 +7,7 @@
 import { TPromise, ValueCallback } from 'vs/base/common/winjs.base';
 import { IViewlet } from 'vs/workbench/common/viewlet';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { SidebarPart } from 'vs/workbench/browser/parts/sidebar/sidebarPart';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ViewletDescriptor, ViewletRegistry, Extensions as ViewletExtensions } from 'vs/workbench/browser/viewlet';
@@ -33,6 +33,7 @@ export class ViewletService implements IViewletService {
 	private _onDidViewletEnable = new Emitter<{ id: string, enabled: boolean }>();
 	private disposables: IDisposable[] = [];
 
+	public get onDidViewletRegister(): Event<ViewletDescriptor> { return <Event<ViewletDescriptor>>this.viewletRegistry.onDidRegister; }
 	public get onDidViewletOpen(): Event<IViewlet> { return this.sidebarPart.onDidViewletOpen; }
 	public get onDidViewletClose(): Event<IViewlet> { return this.sidebarPart.onDidViewletClose; }
 	public get onDidViewletEnablementChange(): Event<{ id: string, enabled: boolean }> { return this._onDidViewletEnable.event; }

@@ -25,7 +25,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
 import { OEAction } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
-import { Builder, $, withElementById } from 'vs/base/browser/builder';
+import { $ } from 'vs/base/browser/builder';
 import { AgentJobHistoryInfo } from 'sqlops';
 import { Agent } from 'vs/base/node/request';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';

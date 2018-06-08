@@ -26,10 +26,13 @@ declare module 'sqlops' {
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
+		table(): ComponentBuilder<TableComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent>;
 		formContainer(): FormBuilder;
 		groupContainer(): GroupBuilder;
+		toolbarContainer(): ToolbarBuilder;
+		loadingComponent(): LoadingComponentBuilder;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -47,6 +50,32 @@ declare module 'sqlops' {
 	}
 
 	export interface GroupBuilder extends ContainerBuilder<GroupContainer, GroupLayout, GroupItemLayout> {
+	}
+
+	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, any, any> {
+		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, any, any>;
+
+		/**
+		 * Creates a collection of child components and adds them all to this container
+		 *
+		 * @param toolbarComponents the definitions
+		 */
+		addToolbarItems(toolbarComponents: Array<ToolbarComponent>): void;
+
+		/**
+		 * Creates a child component and adds it to this container.
+		 *
+		 * @param toolbarComponent the component to be added
+		 */
+		addToolbarItem(toolbarComponent: ToolbarComponent): void;
+	}
+
+	export interface LoadingComponentBuilder extends ComponentBuilder<LoadingComponent> {
+		/**
+		 * Set the component wrapped by the LoadingComponent
+		 * @param component The component to wrap
+		 */
+		withItem(component: Component): LoadingComponentBuilder;
 	}
 
 	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
@@ -75,11 +104,11 @@ declare module 'sqlops' {
 		/**
 		 * Sends any updated properties of the component to the UI
 		 *
-		 * @returns {Thenable<boolean>} Thenable that completes once the update
+		 * @returns {Thenable<void>} Thenable that completes once the update
 		 * has been applied in the UI
 		 * @memberof Component
 		 */
-		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
+		updateProperties(properties: { [key: string]: any }): Thenable<void>;
 
 		enabled: boolean;
 		/**
@@ -102,6 +131,11 @@ declare module 'sqlops' {
 		component: Component;
 		title: string;
 		actions?: Component[];
+	}
+
+	export interface ToolbarComponent {
+		component: Component;
+		title?: string;
 	}
 
 	/**
@@ -212,6 +246,9 @@ declare module 'sqlops' {
 	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout> {
 	}
 
+	export interface ToolbarContainer extends Container<any, any> {
+	}
+
 	/**
 	 * Describes an action to be shown in the UI, with a user-readable label
 	 * and a callback to execute the action
@@ -265,6 +302,16 @@ declare module 'sqlops' {
 		required?: boolean;
 	}
 
+	export interface TableColumn {
+		value: string
+	}
+
+	export interface TableComponentProperties {
+		data: any[][];
+		columns: string[] | TableColumn[];
+		selectedRows?: number[];
+	}
+
 	export interface CheckBoxProperties {
 		checked?: boolean;
 		label?: string;
@@ -294,6 +341,11 @@ declare module 'sqlops' {
 
 	export interface ButtonProperties {
 		label?: string;
+		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+	}
+
+	export interface LoadingComponentProperties {
+		loading?: boolean;
 	}
 
 	export interface CardComponent extends Component {
@@ -327,6 +379,10 @@ declare module 'sqlops' {
 		onValueChanged: vscode.Event<any>;
 	}
 
+	export interface TableComponent extends Component, TableComponentProperties {
+		onRowSelected: vscode.Event<any>;
+	}
+
 	export interface WebViewComponent extends Component {
 		html: string;
 		message: any;
@@ -335,6 +391,7 @@ declare module 'sqlops' {
 
 	export interface ButtonComponent extends Component {
 		label: string;
+		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 		onDidClick: vscode.Event<any>;
 	}
 
@@ -344,6 +401,22 @@ declare module 'sqlops' {
 
 	export interface DashboardWebviewComponent extends Component {
 		webviewId: string;
+	}
+
+	/**
+	 * Component used to wrap another component that needs to be loaded, and show a loading spinner
+	 * while the contained component is loading
+	 */
+	export interface LoadingComponent extends Component {
+		/**
+		 * Whether to show the loading spinner instead of the contained component. True by default
+		 */
+		loading: boolean;
+
+		/**
+		 * The component displayed when the loading property is false
+		 */
+		component: Component;
 	}
 
 	/**

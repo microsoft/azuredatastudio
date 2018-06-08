@@ -5,7 +5,7 @@
 import { InjectionToken } from '@angular/core';
 
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 /**
@@ -65,7 +65,8 @@ export enum ComponentEventType {
 	onDidChange,
 	onDidClick,
 	validityChanged,
-	onMessage
+	onMessage,
+	onSelectedRowChanged
 }
 
 export interface IModelStore {

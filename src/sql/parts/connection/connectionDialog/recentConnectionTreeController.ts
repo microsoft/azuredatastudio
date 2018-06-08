@@ -15,7 +15,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IAction } from 'vs/base/common/actions';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import mouse = require('vs/base/browser/mouseEvent');
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
@@ -129,7 +129,7 @@ export class RecentConnectionTreeController extends DefaultController {
 			getActions: () => this.actionProvider.getActions(tree, element),
 			onHide: (wasCancelled?: boolean) => {
 				if (wasCancelled) {
-					tree.DOMFocus();
+					tree.domFocus();
 				}
 			},
 			getActionsContext: () => (actionContext)

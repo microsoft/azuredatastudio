@@ -11,7 +11,7 @@ import { LinesLayout } from 'vs/editor/common/viewLayout/linesLayout';
 import { IViewLayout, IViewWhitespaceViewportData, Viewport } from 'vs/editor/common/viewModel/viewModel';
 import { IPartialViewLinesViewportData } from 'vs/editor/common/viewLayout/viewLinesViewportData';
 import { IEditorWhitespace } from 'vs/editor/common/viewLayout/whitespaceComputer';
-import Event from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { IConfigurationChangedEvent } from 'vs/editor/common/config/editorOptions';
 
 const SMOOTH_SCROLLING_TIME = 125;
@@ -75,15 +75,12 @@ export class ViewLayout extends Disposable implements IViewLayout {
 	}
 	public onFlushed(lineCount: number): void {
 		this._linesLayout.onFlushed(lineCount);
-		this._updateHeight();
 	}
 	public onLinesDeleted(fromLineNumber: number, toLineNumber: number): void {
 		this._linesLayout.onLinesDeleted(fromLineNumber, toLineNumber);
-		this._updateHeight();
 	}
 	public onLinesInserted(fromLineNumber: number, toLineNumber: number): void {
 		this._linesLayout.onLinesInserted(fromLineNumber, toLineNumber);
-		this._updateHeight();
 	}
 
 	// ---- end view event handlers
@@ -163,7 +160,7 @@ export class ViewLayout extends Disposable implements IViewLayout {
 
 	// ---- view state
 
-	public saveState(): editorCommon.IViewState {
+	public saveState(): { scrollTop: number; scrollTopWithoutViewZones: number; scrollLeft: number; } {
 		const currentScrollPosition = this.scrollable.getFutureScrollPosition();
 		let scrollTop = currentScrollPosition.scrollTop;
 		let firstLineNumberInViewport = this._linesLayout.getLineNumberAtOrAfterVerticalOffset(scrollTop);
@@ -172,17 +169,6 @@ export class ViewLayout extends Disposable implements IViewLayout {
 			scrollTop: scrollTop,
 			scrollTopWithoutViewZones: scrollTop - whitespaceAboveFirstLine,
 			scrollLeft: currentScrollPosition.scrollLeft
-		};
-	}
-
-	public reduceRestoreState(state: editorCommon.IViewState): { scrollLeft: number; scrollTop: number; } {
-		let restoreScrollTop = state.scrollTop;
-		if (typeof state.scrollTopWithoutViewZones === 'number' && !this._linesLayout.hasWhitespace()) {
-			restoreScrollTop = state.scrollTopWithoutViewZones;
-		}
-		return {
-			scrollLeft: state.scrollLeft,
-			scrollTop: restoreScrollTop
 		};
 	}
 

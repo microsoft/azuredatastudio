@@ -103,7 +103,7 @@ export class ServerTreeController extends treedefaults.DefaultController {
 			getKeyBinding: (action) => this.keybindingService.lookupKeybinding(action.id),
 			onHide: (wasCancelled?: boolean) => {
 				if (wasCancelled) {
-					tree.DOMFocus();
+					tree.domFocus();
 				}
 			},
 			getActionsContext: () => (actionContext)

@@ -63,7 +63,7 @@ export class TreeUpdateUtils {
 		let targetsToExpand: any[];
 
 		// Focus
-		tree.DOMFocus();
+		tree.domFocus();
 
 		if (tree) {
 			let selection = tree.getSelection();

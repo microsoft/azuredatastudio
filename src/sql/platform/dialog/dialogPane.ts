@@ -17,10 +17,9 @@ import { DialogModule } from 'sql/platform/dialog/dialog.module';
 import { DialogComponentParams } from 'sql/platform/dialog/dialogContainer.component';
 
 import * as DOM from 'vs/base/browser/dom';
-import { Builder, Dimension } from 'vs/base/browser/builder';
+import { Builder } from 'vs/base/browser/builder';
 import { IThemable } from 'vs/platform/theme/common/styler';
 import { Disposable } from 'vs/base/common/lifecycle';
-import Event, { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class DialogPane extends Disposable implements IThemable {
@@ -82,14 +81,16 @@ export class DialogPane extends Disposable implements IThemable {
 	}
 
 	public layout(): void {
-		this._tabbedPanel.layout(new Dimension(DOM.getContentWidth(this._body), DOM.getContentHeight(this._body)));
+		if (this._tabbedPanel) {
+			this._tabbedPanel.layout(new DOM.Dimension(DOM.getContentWidth(this._body), DOM.getContentHeight(this._body)));
+		}
 	}
 
 	/**
 	 * Bootstrap angular for the dialog's model view controller with the given model view ID
 	 */
 	private initializeModelViewContainer(bodyContainer: HTMLElement, modelViewId: string, tab?: DialogTab) {
-		this._instantiationService.invokeFunction(bootstrapAngular,
+		bootstrapAngular(this._instantiationService,
 			DialogModule,
 			bodyContainer,
 			'dialog-modelview-container',

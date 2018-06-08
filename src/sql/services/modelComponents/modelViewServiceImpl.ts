@@ -6,7 +6,7 @@
 'use strict';
 
 import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IModelView } from 'sql/services/model/modelViewService';
 
 export class ModelViewService implements IModelViewService {

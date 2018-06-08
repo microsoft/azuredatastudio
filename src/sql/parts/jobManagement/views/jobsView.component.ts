@@ -12,35 +12,29 @@ import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
 
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
-import { FieldType, IObservableCollection, CollectionChange, SlickGrid } from 'angular2-slickgrid';
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IDisposable } from 'vs/base/common/lifecycle';
-import * as themeColors from 'vs/workbench/common/theme';
-import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import * as nls from 'vs/nls';
+import * as dom from 'vs/base/browser/dom';
 
-import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { attachTableStyler } from 'sql/common/theme/styler';
-import { JobHistoryComponent } from './jobHistory.component';
 import { AgentViewComponent } from '../agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { AgentJobUtilities } from '../common/agentJobUtilities';
-import * as Utils from 'sql/parts/connection/common/utils';
 import { IJobManagementService } from '../common/interfaces';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 
 @Component({
 	selector: JOBSVIEW_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./jobsView.component.html'))
+	templateUrl: decodeURI(require.toUrl('./jobsView.component.html')),
+	providers: [{ provide: TabChild, useExisting: forwardRef(() => JobsViewComponent) }],
 })
 
 export class JobsViewComponent implements AfterContentChecked {
@@ -94,6 +88,10 @@ export class JobsViewComponent implements AfterContentChecked {
 			this._jobManagementService.addToCache(this._serverName, this._jobCacheObject);
 		}
 		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+	}
+
+	public layout() {
+		this._table.layout(new dom.Dimension(dom.getContentWidth(this._gridEl.nativeElement), dom.getContentHeight(this._gridEl.nativeElement)));
 	}
 
 	ngAfterContentChecked() {
@@ -192,11 +190,11 @@ export class JobsViewComponent implements AfterContentChecked {
 		});
 		this._table.registerPlugin(<any>this.rowDetail);
 
-		this.rowDetail.onBeforeRowDetailToggle.subscribe(function(e, args) {
+		this.rowDetail.onBeforeRowDetailToggle.subscribe(function (e, args) {
 		});
-		this.rowDetail.onAfterRowDetailToggle.subscribe(function(e, args) {
+		this.rowDetail.onAfterRowDetailToggle.subscribe(function (e, args) {
 		});
-		this.rowDetail.onAsyncEndUpdate.subscribe(function(e, args) {
+		this.rowDetail.onAsyncEndUpdate.subscribe(function (e, args) {
 		});
 
 		this.dataView.beginUpdate();
@@ -206,15 +204,15 @@ export class JobsViewComponent implements AfterContentChecked {
 		this._table.resizeCanvas();
 		let expandedJobs = this._agentViewComponent.expanded;
 		let expansions = 0;
-		for (let i = 0; i < jobs.length; i++){
+		for (let i = 0; i < jobs.length; i++) {
 			let job = jobs[i];
 			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
-				this.expandJobRowDetails(i+expandedJobs.size);
-				this.addToStyleHash(i+expandedJobs.size);
+				this.expandJobRowDetails(i + expandedJobs.size);
+				this.addToStyleHash(i + expandedJobs.size);
 				this._agentViewComponent.setExpanded(job.jobId, 'Loading Error...');
 			} else if (job.lastRunOutcome === 0 && expandedJobs.get(job.jobId)) {
-				this.expandJobRowDetails(i+expansions);
-				this.addToStyleHash(i+expansions);
+				this.expandJobRowDetails(i + expansions);
+				this.addToStyleHash(i + expansions);
 				expansions++;
 			}
 		}
@@ -232,7 +230,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			if (currentTab) {
 				let currentTabHeight = currentTab.clientHeight;
 				if (currentTabHeight < self._tabHeight) {
-					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
+					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight - 22}px`);
 					self._table.resizeCanvas();
 				} else {
 					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
@@ -244,7 +242,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
 			let nameWidth: number = data.grid.getColumnWidths()[1];
 			// adjust job name when resized
-			$('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth-10}px`);
+			$('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth - 10}px`);
 			// adjust error message when resized
 			$('#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext').css('width', '100%');
 
@@ -259,7 +257,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		this.loadJobHistories();
 	}
 
-	private setRowWithErrorClass(hash: {[index: number]: {[id: string]: string;}}, row: number, errorClass: string) {
+	private setRowWithErrorClass(hash: { [index: number]: { [id: string]: string; } }, row: number, errorClass: string) {
 		hash[row] = {
 			'_detail_selector': errorClass,
 			'id': errorClass,
@@ -279,13 +277,14 @@ export class JobsViewComponent implements AfterContentChecked {
 	}
 
 	private addToStyleHash(row: number) {
-		let hash : {
+		let hash: {
 			[index: number]: {
-			[id: string]: string;
-		}} = {};
+				[id: string]: string;
+			}
+		} = {};
 		hash = this.setRowWithErrorClass(hash, row, 'job-with-error');
-		hash = this.setRowWithErrorClass(hash, row+1,  'error-row');
-		this._table.grid.setCellCssStyles('error-row'+row.toString(), hash);
+		hash = this.setRowWithErrorClass(hash, row + 1, 'error-row');
+		this._table.grid.setCellCssStyles('error-row' + row.toString(), hash);
 	}
 
 	private renderName(row, cell, value, columnDef, dataContext) {
@@ -367,7 +366,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		let jobName: string;
 		let cell = args.grid.getCellNode(row, 1);
 		if (this.isErrorRow(cell)) {
-			jobName = args.grid.getCellNode(row-1, 1).innerText.trim();
+			jobName = args.grid.getCellNode(row - 1, 1).innerText.trim();
 		} else {
 			jobName = cell.innerText.trim();
 		}

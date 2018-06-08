@@ -13,7 +13,7 @@ import { toObject } from 'sql/base/common/map';
 
 import * as sqlops from 'sqlops';
 
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
 import { Memento } from 'vs/workbench/common/memento';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
