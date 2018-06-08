@@ -392,7 +392,8 @@ class ComponentWrapper implements sqlops.Component {
 		return this._proxy.$setLayout(this._handle, this.id, layout);
 	}
 
-	public updateProperties(): Thenable<boolean> {
+	public updateProperties(properties: { [key: string]: any }): Thenable<boolean> {
+		this.properties = Object.assign(this.properties, properties);
 		return this.notifyPropertyChanged();
 	}
 
