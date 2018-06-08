@@ -104,11 +104,11 @@ declare module 'sqlops' {
 		/**
 		 * Sends any updated properties of the component to the UI
 		 *
-		 * @returns {Thenable<boolean>} Thenable that completes once the update
+		 * @returns {Thenable<void>} Thenable that completes once the update
 		 * has been applied in the UI
 		 * @memberof Component
 		 */
-		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
+		updateProperties(properties: { [key: string]: any }): Thenable<void>;
 
 		enabled: boolean;
 		/**
