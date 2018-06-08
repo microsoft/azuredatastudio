@@ -16,6 +16,7 @@ import RadioButtonComponent from './radioButton.component';
 import WebViewComponent from './webview.component';
 import TableComponent from './table.component';
 import TextComponent from './text.component';
+import LoadingComponent from './loadingComponent.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -58,3 +59,6 @@ registerComponentType(TEXT_COMPONENT, ModelComponentTypes.Text, TextComponent);
 
 export const TABLE_COMPONENT = 'table-component';
 registerComponentType(TABLE_COMPONENT, ModelComponentTypes.Table, TableComponent);
+
+export const LOADING_COMPONENT = 'loading-component';
+registerComponentType(LOADING_COMPONENT, ModelComponentTypes.LoadingComponent, LoadingComponent);
