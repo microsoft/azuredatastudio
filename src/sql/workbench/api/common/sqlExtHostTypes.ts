@@ -79,7 +79,8 @@ export enum ModelComponentTypes {
 	DashboardWebview,
 	Form,
 	Group,
-	Toolbar
+	Toolbar,
+	LoadingComponent
 }
 
 export interface IComponentShape {

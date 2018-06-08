@@ -32,6 +32,7 @@ declare module 'sqlops' {
 		formContainer(): FormBuilder;
 		groupContainer(): GroupBuilder;
 		toolbarContainer(): ToolbarBuilder;
+		loadingComponent(): LoadingComponentBuilder;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -67,6 +68,14 @@ declare module 'sqlops' {
 		 * @param toolbarComponent the component to be added
 		 */
 		addToolbarItem(toolbarComponent: ToolbarComponent): void;
+	}
+
+	export interface LoadingComponentBuilder extends ComponentBuilder<LoadingComponent> {
+		/**
+		 * Set the component wrapped by the LoadingComponent
+		 * @param component The component to wrap
+		 */
+		withItem(component: Component): LoadingComponentBuilder;
 	}
 
 	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
@@ -335,6 +344,10 @@ declare module 'sqlops' {
 		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 	}
 
+	export interface LoadingComponentProperties {
+		loading?: boolean;
+	}
+
 	export interface CardComponent extends Component {
 		label: string;
 		value: string;
@@ -388,6 +401,22 @@ declare module 'sqlops' {
 
 	export interface DashboardWebviewComponent extends Component {
 		webviewId: string;
+	}
+
+	/**
+	 * Component used to wrap another component that needs to be loaded, and show a loading spinner
+	 * while the contained component is loading
+	 */
+	export interface LoadingComponent extends Component {
+		/**
+		 * Whether to show the loading spinner instead of the contained component. True by default
+		 */
+		loading: boolean;
+
+		/**
+		 * The component displayed when the loading property is false
+		 */
+		component: Component;
 	}
 
 	/**
