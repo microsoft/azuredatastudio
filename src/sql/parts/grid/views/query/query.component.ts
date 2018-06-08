@@ -302,7 +302,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 						// Push row values onto end of gridData for slickgrid
 						gridData.push({
 							values: rows.rows[row].map(c => {
-								return mixin({ ariaLabel: c.displayValue}, c);
+								return mixin({ ariaLabel: c.displayValue }, c);
 							})
 						});
 					}

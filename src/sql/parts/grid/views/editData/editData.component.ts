@@ -195,9 +195,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					let gridData: IGridDataRow[] = result.subset.map(row => {
 						self.idMapping[rowIndex] = row.id;
 						rowIndex++;
-						return { values: row.cells.map(c => {
-							return mixin({ ariaLabel: c.displayValue}, c);
-						}), row: row.id};
+						return {
+							values: row.cells.map(c => {
+								return mixin({ ariaLabel: c.displayValue }, c);
+							}), row: row.id
+						};
 					});
 
 					// Append a NULL row to the end of gridData
