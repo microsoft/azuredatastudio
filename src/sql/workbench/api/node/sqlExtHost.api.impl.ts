@@ -369,6 +369,7 @@ export function createApiFactory(
 				serialization,
 				dataprotocol,
 				DataProviderType: sqlExtHostTypes.DataProviderType,
+				DeclarativeDataType: sqlExtHostTypes.DeclarativeDataType,
 				ServiceOptionType: sqlExtHostTypes.ServiceOptionType,
 				ConnectionOptionSpecialType: sqlExtHostTypes.ConnectionOptionSpecialType,
 				EditRowState: sqlExtHostTypes.EditRowState,

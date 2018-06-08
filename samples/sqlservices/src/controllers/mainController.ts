@@ -165,11 +165,50 @@ export default class MainController implements vscode.Disposable {
 				groupModel1.enabled = false;
 			});
 
+			let declarativeTable = view.modelBuilder.declarativeTable()
+			.withProperties({
+				columns: [{
+						displayName: 'Column 1',
+						valueType: sqlops.DeclarativeDataType.string,
+						width: '20px',
+						isReadOnly: true
+					}, {
+						displayName: 'Column 2',
+						valueType: sqlops.DeclarativeDataType.string,
+						width: '100px',
+						isReadOnly: false
+					}, {
+						displayName: 'Column 3',
+						valueType: sqlops.DeclarativeDataType.boolean,
+						width: '20px',
+						isReadOnly: false
+					}, {
+						displayName: 'Column 4',
+						valueType: sqlops.DeclarativeDataType.category,
+						isReadOnly: false,
+						width: '120px',
+						categoryValues: [
+							{ name: 'options1', displayName: 'option 1' },
+							{ name: 'options2', displayName: 'option 2' }
+						]
+					}
+				],
+				data: [
+					['Data00', 'Data01', false, 'options2'],
+					['Data10', 'Data11', true, 'options1']
+				]
+			}).component();
+
+			declarativeTable.onDataChanged(e => {
+				inputBox2.value = e.row.toString() + ' ' + e.column.toString() + ' ' + e.value.toString();
+				inputBox3.value = declarativeTable.data[e.row][e.column];
+			});
+
 			let flexRadioButtonsModel = view.modelBuilder.flexContainer()
 				.withLayout({
 					flexFlow: 'column',
 					alignItems: 'left',
-					height: 50
+					height: 150
 				}).withItems([
 					radioButton, groupModel1, radioButton2]
 				, { flex: '1 1 50%' }).component();
@@ -193,6 +232,9 @@ export default class MainController implements vscode.Disposable {
 				}, {
 					component: flexRadioButtonsModel,
 					title: 'Options'
+				}, {
+					component: declarativeTable,
+					title: 'Declarative Table'
 				}], {
 					horizontal: false,
 					componentWidth: 400

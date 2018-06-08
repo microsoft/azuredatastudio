@@ -1,0 +1,28 @@
+
+.declarative-table {
+	padding: 5px 30px 0px 30px;
+	box-sizing: border-box;
+	width:100%;
+	border-collapse: collapse;
+}
+
+.declarative-table-row {
+}
+
+.declarative-table-header {
+	padding: 5px;
+	border: 1px solid gray;
+}
+
+.declarative-table-cell {
+	padding: 5px;
+	border: 1px solid gray;
+}
+
+[role="gridcell"]:focus,
+[role="gridcell"] *:focus,
+[role="grid"] [tabindex="0"]:focus {
+	outline: #005a9c;
+	outline-style: dotted;
+	outline-width: 3px;
+}

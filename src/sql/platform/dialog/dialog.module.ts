@@ -19,6 +19,9 @@ import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
+import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 
 /* Model-backed components */
 let extensionComponents = Registry.as<IComponentRegistry>(Extensions.ComponentContribution).getAllCtors();
@@ -26,6 +29,9 @@ let extensionComponents = Registry.as<IComponentRegistry>(Extensions.ComponentCo
 export const DialogModule = (params, selector: string): any => {
 	@NgModule({
 		declarations: [
+			Checkbox,
+			SelectBox,
+			InputBox,
 			DialogContainer,
 			ModelViewContent,
 			ModelComponentWrapper,
