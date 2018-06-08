@@ -21,7 +21,7 @@ import * as types from 'vs/base/common/types';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import Event, { Emitter, echo, debounceEvent } from 'vs/base/common/event';
+import { Emitter, echo, debounceEvent, Event } from 'vs/base/common/event';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;

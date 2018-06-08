@@ -7,7 +7,7 @@
 
 import 'vs/css!./scrollableSplitview';
 import { IDisposable, combinedDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import Event, { mapEvent, Emitter } from 'vs/base/common/event';
+import { mapEvent, Emitter, Event } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
 import * as dom from 'vs/base/browser/dom';
 import { clamp } from 'vs/base/common/numbers';

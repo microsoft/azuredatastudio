@@ -7,7 +7,7 @@
 import { DragCellSelectionModel } from 'sql/base/browser/ui/table/plugins/dragCellSelectionModel.plugin';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
-import { VirtualizedCollection, IGridDataRow, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
+import { VirtualizedCollection,AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table, ITableStyles } from 'sql/base/browser/ui/table/table';
 
 import * as sqlops from 'sqlops';
@@ -15,16 +15,16 @@ import * as sqlops from 'sqlops';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import Event, { Emitter } from 'vs/base/common/event';
-import { Panel } from 'vs/base/browser/ui/splitview/panelview';
+import { Emitter, Event } from 'vs/base/common/event';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { ViewletPanel, IViewletPanelOptions, attachPanelStyler } from 'vs/workbench/browser/parts/views/panelViewlet';
+import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { isArray } from 'vs/base/common/types';
 import { range } from 'vs/base/common/arrays';
-import { Orientation, SplitView, IView } from 'vs/base/browser/ui/splitview/splitview';
+import { Orientation, IView } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { $ } from 'vs/base/browser/builder';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
+import { MouseWheelSupport } from '../../../base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 
 const rowHeight = 29;
 const minGridHeightInRows = 8;
@@ -118,6 +118,7 @@ class GridTable extends Disposable implements IView {
 		let dataProvider = new AsyncDataProvider(collection, columns);
 		this.table = this._register(new Table(this.container, { dataProvider, columns }, { rowHeight, showRowNumber: true }));
 		this.table.setSelectionModel(new DragCellSelectionModel());
+		this.table.registerPlugin(new MouseWheelSupport());
 	}
 
 	public render(container: HTMLElement, orientation: Orientation): void {

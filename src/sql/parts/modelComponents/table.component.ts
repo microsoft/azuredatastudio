@@ -16,7 +16,6 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 
@@ -97,7 +96,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				forceFitColumns: true
 			};
 
-			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, this._tableData, this._tableColumns, options);
+			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, { dataProvider: this._tableData, columns: this._tableColumns }, options);
 			this._table.setData(this._tableData);
 			this._table.setSelectionModel(new RowSelectionModel({ selectActiveRow: true }));
 

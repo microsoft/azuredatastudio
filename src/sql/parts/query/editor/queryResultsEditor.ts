@@ -6,7 +6,6 @@
 'use strict';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Builder } from 'vs/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -14,7 +13,6 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
 import { getZoomLevel } from 'vs/base/browser/browser';
-import { Configuration } from 'vs/editor/browser/config/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
@@ -22,10 +20,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
-import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import { QueryOutputModule } from 'sql/parts/query/views/queryOutput.module';
-import { QUERY_OUTPUT_SELECTOR } from 'sql/parts/query/views/queryOutput.component';
 import { QueryResultsView } from 'sql/parts/query/editor/queryResultsView';
 
 export const RESULTS_GRID_DEFAULTS = {

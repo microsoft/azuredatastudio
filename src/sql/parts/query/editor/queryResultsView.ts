@@ -7,20 +7,16 @@
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { IQueryModelService } from '../execution/queryModel';
-import { DataService } from 'sql/parts/grid/services/dataService';
-import QueryRunner, { EventType } from 'sql/parts/query/execution/queryRunner';
+import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { MessagePanel } from './messagePanel';
 import { GridPanel } from './gridPanel';
 
-import { Dimension, $ } from 'vs/base/browser/builder';
 import * as nls from 'vs/nls';
 import * as UUID from 'vs/base/common/uuid';
-import { ViewletPanel, PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
+import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
-import Event, { Emitter } from 'vs/base/common/event';
-
-import { IResultMessage } from 'sqlops';
+import { Emitter } from 'vs/base/common/event';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 class ResultsView implements IPanelView {
@@ -41,9 +37,9 @@ class ResultsView implements IPanelView {
 		this.panelViewlet = instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: true });
 		this.gridPanel = instantiationService.createInstance(GridPanel, nls.localize('gridPanel', 'Results'), {});
 		this.messagePanel = instantiationService.createInstance(MessagePanel, nls.localize('messagePanel', 'Messages'), {});
-		this.panelViewlet.create($(this.container)).then(() => {
-			this.panelViewlet.addPanel(this.gridPanel, 1, 0);
-			this.panelViewlet.addPanel(this.messagePanel, this.messagePanel.minimumSize, 1);
+		this.panelViewlet.create(this.container).then(() => {
+			this.panelViewlet.addPanels([{ panel: this.gridPanel, size: 1, index: 0}]);
+			this.panelViewlet.addPanels([{ panel: this.messagePanel, size: this.messagePanel.minimumSize, index: 1}]);
 		});
 	}
 
@@ -51,7 +47,7 @@ class ResultsView implements IPanelView {
 		container.appendChild(this.container);
 	}
 
-	layout(dimension: Dimension): void {
+	layout(dimension: DOM.Dimension): void {
 		this.panelViewlet.layout(dimension);
 	}
 
@@ -131,7 +127,7 @@ export class QueryResultsView {
 		return this._input;
 	}
 
-	public layout(dimension: Dimension) {
+	public layout(dimension: DOM.Dimension) {
 		this._panelView.layout(dimension);
 	}
 }

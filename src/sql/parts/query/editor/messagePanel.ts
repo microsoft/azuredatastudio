@@ -8,7 +8,7 @@ import 'vs/css!./media/messagePanel';
 import { IResultMessage } from 'sqlops';
 
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
-import { IDataSource, ITree, IRenderer, ContextMenuEvent, IController } from 'vs/base/parts/tree/browser/tree';
+import { IDataSource, ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
