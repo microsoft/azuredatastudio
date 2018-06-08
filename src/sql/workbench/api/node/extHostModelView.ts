@@ -7,6 +7,8 @@
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
+import { IActionDescriptor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
+import URI from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 
 import * as vscode from 'vscode';
@@ -14,7 +16,6 @@ import * as sqlops from 'sqlops';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IActionDescriptor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
 
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
@@ -132,6 +133,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 	dashboardWebview(webviewId: string): sqlops.ComponentBuilder<sqlops.DashboardWebviewComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.DashboardWebviewComponent> = this.getComponentBuilder(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	loadingComponent(): sqlops.LoadingComponentBuilder {
+		let id = this.getNextComponentId();
+		let builder = new LoadingComponentBuilder(new LoadingComponentWrapper(this._proxy, this._handle, id));
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -298,6 +306,13 @@ class ToolbarContainerBuilder extends ContainerBuilderImpl<sqlops.ToolbarContain
 	}
 }
 
+class LoadingComponentBuilder extends ComponentBuilderImpl<sqlops.LoadingComponent> implements sqlops.LoadingComponentBuilder {
+	withItem(component: sqlops.Component) {
+		this.component().component = component;
+		return this;
+	}
+}
+
 class InternalItemConfig {
 	constructor(private _component: ComponentWrapper, public config: any) { }
 
@@ -391,12 +406,13 @@ class ComponentWrapper implements sqlops.Component {
 		return this._proxy.$setLayout(this._handle, this.id, layout);
 	}
 
-	public updateProperties(): Thenable<boolean> {
+	public updateProperties(properties: { [key: string]: any }): Thenable<void> {
+		this.properties = Object.assign(this.properties, properties);
 		return this.notifyPropertyChanged();
 	}
 
-	protected notifyPropertyChanged(): Thenable<boolean> {
-		return this._proxy.$setProperties(this._handle, this._id, this.properties).then(() => true);
+	protected notifyPropertyChanged(): Thenable<void> {
+		return this._proxy.$setProperties(this._handle, this._id, this.properties);
 	}
 
 	public registerEvent(): Thenable<boolean> {
@@ -417,13 +433,13 @@ class ComponentWrapper implements sqlops.Component {
 		}
 	}
 
-	protected async setProperty(key: string, value: any): Promise<boolean> {
+	protected async setProperty(key: string, value: any): Promise<void> {
 		if (!this.properties[key] || this.properties[key] !== value) {
 			// Only notify the front end if a value has been updated
 			this.properties[key] = value;
 			return this.notifyPropertyChanged();
 		}
-		return Promise.resolve(true);
+		return Promise.resolve();
 	}
 
 	private handleError(err: Error): void {
@@ -747,9 +763,40 @@ class ButtonWrapper extends ComponentWrapper implements sqlops.ButtonComponent {
 		this.setProperty('label', v);
 	}
 
+	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+		return this.properties['iconPath'];
+	}
+	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+		this.setProperty('iconPath', v);
+	}
+
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
+	}
+}
+
+class LoadingComponentWrapper extends ComponentWrapper implements sqlops.LoadingComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.LoadingComponent, id);
+		this.properties = {};
+		this.loading = true;
+	}
+
+	public get loading(): boolean {
+		return this.properties['loading'];
+	}
+
+	public set loading(value: boolean) {
+		this.setProperty('loading', value);
+	}
+
+	public get component(): sqlops.Component {
+		return this.items[0];
+	}
+
+	public set component(value: sqlops.Component) {
+		this.addItem(value);
 	}
 }
 

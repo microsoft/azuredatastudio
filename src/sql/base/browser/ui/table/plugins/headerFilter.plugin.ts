@@ -7,7 +7,6 @@ import { SlickGrid } from 'angular2-slickgrid';
 import { Button } from '../../button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { indexOf } from 'vs/platform/files/common/files';
 
 export class HeaderFilter {
 

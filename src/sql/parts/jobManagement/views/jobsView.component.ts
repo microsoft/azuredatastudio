@@ -13,16 +13,12 @@ import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!sql/base/browser/ui/table/media/table';
 
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
-import { FieldType, IObservableCollection, CollectionChange, SlickGrid } from 'angular2-slickgrid';
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IDisposable } from 'vs/base/common/lifecycle';
-import * as themeColors from 'vs/workbench/common/theme';
-import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import * as nls from 'vs/nls';
+
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/common/theme/styler';
@@ -34,18 +30,21 @@ import { AgentJobUtilities } from 'sql/parts/jobManagement/common/agentJobUtilit
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { BaseFocusDirectionTerminalAction } from 'vs/workbench/parts/terminal/electron-browser/terminalActions';
 import * as Utils from 'sql/parts/connection/common/utils';
+import * as dom from 'vs/base/browser/dom';
 import { IJobManagementService } from '../common/interfaces';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+
 
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 
 @Component({
 	selector: JOBSVIEW_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./jobsView.component.html'))
+	templateUrl: decodeURI(require.toUrl('./jobsView.component.html')),
+	providers: [{ provide: TabChild, useExisting: forwardRef(() => JobsViewComponent) }],
 })
 
 export class JobsViewComponent implements AfterContentChecked {
@@ -112,6 +111,10 @@ export class JobsViewComponent implements AfterContentChecked {
 			this._jobManagementService.addToCache(this._serverName, this._jobCacheObject);
 		}
 		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+	}
+
+	public layout() {
+		this._table.layout(new dom.Dimension(dom.getContentWidth(this._gridEl.nativeElement), dom.getContentHeight(this._gridEl.nativeElement)));
 	}
 
 	ngAfterContentChecked() {
@@ -291,7 +294,12 @@ export class JobsViewComponent implements AfterContentChecked {
 						}
 					}
 					this.dataView.refresh();
-					this.filterValueMap[args.column.name].push(this.dataView.getFilteredItems());
+					if (this.filterValueMap[args.column.name]) {
+						this.filterValueMap[args.column.name].push(this.dataView.getFilteredItems());
+					} else {
+						this.filterValueMap[args.column.name] = this.dataView.getFilteredItems();
+					}
+
 					this._table.grid.resetActiveCell();
 				}
 			} else {
@@ -326,7 +334,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			if (currentTab) {
 				let currentTabHeight = currentTab.clientHeight;
 				if (currentTabHeight < self._tabHeight) {
-					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight-22}px`);
+					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight - 22}px`);
 					self._table.resizeCanvas();
 				} else {
 					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
@@ -338,7 +346,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
 			let nameWidth: number = data.grid.getColumnWidths()[1];
 			// adjust job name when resized
-			$('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth-10}px`);
+			$('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth - 10}px`);
 			// adjust error message when resized
 			$('#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext').css('width', '100%');
 		});
@@ -348,7 +356,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		this.loadJobHistories();
 	}
 
-	private setRowWithErrorClass(hash: {[index: number]: {[id: string]: string;}}, row: number, errorClass: string) {
+	private setRowWithErrorClass(hash: { [index: number]: { [id: string]: string; } }, row: number, errorClass: string) {
 		hash[row] = {
 			'_detail_selector': errorClass,
 			'id': errorClass,
@@ -369,8 +377,9 @@ export class JobsViewComponent implements AfterContentChecked {
 	private addToStyleHash(row: number, start: boolean, map: any, columnName: string) {
 		let hash : {
 			[index: number]: {
-			[id: string]: string;
-		}} = {};
+				[id: string]: string;
+			}
+		} = {};
 		hash = this.setRowWithErrorClass(hash, row, 'job-with-error');
 		hash = this.setRowWithErrorClass(hash, row+1,  'error-row');
 		if (start) {
@@ -468,7 +477,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		let jobName: string;
 		let cell = args.grid.getCellNode(row, 1);
 		if (this.isErrorRow(cell)) {
-			jobName = args.grid.getCellNode(row-1, 1).innerText.trim();
+			jobName = args.grid.getCellNode(row - 1, 1).innerText.trim();
 		} else {
 			jobName = cell.innerText.trim();
 		}
@@ -485,10 +494,10 @@ export class JobsViewComponent implements AfterContentChecked {
 					self.jobHistories[job.jobId] = result.jobs;
 					self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
 					if (self._agentViewComponent.expanded.has(job.jobId)) {
-						let jobHistory = self._jobCacheObject.getJobHistory(job.jobId)[result.jobs.length-1];
+						let jobHistory = self._jobCacheObject.getJobHistory(job.jobId)[result.jobs.length - 1];
 						let item = self.dataView.getItemById(job.jobId + '.error');
 						let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
-						let errorMessage = jobHistory ? jobHistory.message: noStepsMessage;
+						let errorMessage = jobHistory ? jobHistory.message : noStepsMessage;
 						item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
 						self._agentViewComponent.setExpanded(job.jobId, item['name']);
 						self.dataView.updateItem(job.jobId + '.error', item);
