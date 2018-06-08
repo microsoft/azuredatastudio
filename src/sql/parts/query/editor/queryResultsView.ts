@@ -38,8 +38,8 @@ class ResultsView implements IPanelView {
 		this.gridPanel = instantiationService.createInstance(GridPanel, nls.localize('gridPanel', 'Results'), {});
 		this.messagePanel = instantiationService.createInstance(MessagePanel, nls.localize('messagePanel', 'Messages'), {});
 		this.panelViewlet.create(this.container).then(() => {
-			this.panelViewlet.addPanels([{ panel: this.gridPanel, size: 1, index: 0}]);
-			this.panelViewlet.addPanels([{ panel: this.messagePanel, size: this.messagePanel.minimumSize, index: 1}]);
+			this.panelViewlet.addPanels([{ panel: this.gridPanel, size: 1, index: 0 }]);
+			this.panelViewlet.addPanels([{ panel: this.messagePanel, size: this.messagePanel.minimumSize, index: 1 }]);
 		});
 	}
 

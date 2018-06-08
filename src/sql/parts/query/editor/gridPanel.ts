@@ -7,7 +7,7 @@
 import { DragCellSelectionModel } from 'sql/base/browser/ui/table/plugins/dragCellSelectionModel.plugin';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
-import { VirtualizedCollection,AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
+import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table, ITableStyles } from 'sql/base/browser/ui/table/table';
 
 import * as sqlops from 'sqlops';
