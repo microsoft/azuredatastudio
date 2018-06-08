@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as sqlops from 'sqlops';
 import * as assert from 'assert';
 import { Mock, It, Times } from 'typemoq';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
@@ -262,5 +263,31 @@ suite('ExtHostModelViewDialog Tests', () => {
 		assert.equal(dialog.valid, false);
 		extHostModelViewDialog.$onPanelValidityChanged(pageHandle, false);
 		assert.equal(page.valid, false);
+	});
+
+	test('Main thread can execute wizard navigation validation', () => {
+		// Set up the main thread mock to record the wizard handle
+		let wizardHandle: number;
+		mockProxy.setup(x => x.$setWizardDetails(It.isAny(), It.isAny())).callback((handle, details) => wizardHandle = handle);
+
+		// Create the wizard and add a validation that records that it has been called
+		let wizard = extHostModelViewDialog.createWizard('wizard_1');
+		extHostModelViewDialog.updateWizard(wizard);
+		let validationInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo;
+		wizard.registerNavigationValidator(info => {
+			validationInfo = info;
+			return true;
+		});
+
+		// If I call the validation from the main thread then it should run and record the correct page change info
+		let lastPage = 0;
+		let newPage = 1;
+		extHostModelViewDialog.$validateNavigation(wizardHandle, {
+			lastPage: lastPage,
+			newPage: newPage
+		});
+		assert.notEqual(validationInfo, undefined);
+		assert.equal(validationInfo.lastPage, lastPage);
+		assert.equal(validationInfo.newPage, newPage);
 	});
 });
