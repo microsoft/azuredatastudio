@@ -580,7 +580,7 @@ declare module 'sqlops' {
 				lastPage: number,
 
 				/**
-				 * The new page number
+				 * The new page number or undefined if the user is closing the wizard
 				 */
 				newPage: number
 			}
@@ -693,6 +693,16 @@ declare module 'sqlops' {
 				 * Close the wizard. Does nothing if the wizard is not open.
 				 */
 				close(): Thenable<void>;
+
+				/**
+				 * Register a callback that will be called when the user tries to navigate by
+				 * changing pages or clicking done. Only one callback can be registered at once, so
+				 * each registration call will clear the previous registration.
+				 * @param validator The callback that gets executed when the user tries to
+				 * navigate. Return true to allow the navigation to proceed, or false to
+				 * cancel it.
+				 */
+				registerNavigationValidator(validator: (pageChangeInfo: WizardPageChangeInfo) => boolean | Thenable<boolean>): void;
 			}
 		}
 	}
