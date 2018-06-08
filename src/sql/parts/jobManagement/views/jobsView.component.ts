@@ -35,7 +35,6 @@ import * as Utils from 'sql/parts/connection/common/utils';
 import { IJobManagementService } from '../common/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
@@ -257,19 +256,20 @@ export class JobsViewComponent implements AfterContentChecked {
 				let targetChildren = $(e.currentTarget.children);
 				let siblings = target.nextAll().toArray();
 				let top = parseInt(target.css('top'), 10);
-				siblings.forEach(sibling => {
+				for (let i = 0; i < siblings.length; i++) {
+					let sibling = siblings[i];
 					let siblingTop = parseInt($(sibling).css('top'), 10);
 					if (siblingTop === top + ROW_HEIGHT) {
-						$(sibling.children).css('background', '#444444');
+						$(sibling.children).addClass('hovered');
 						sibling.onmouseenter = (e) => {
-							targetChildren.css('background', '#444444');
+							targetChildren.addClass('hovered');
 						};
 						sibling.onmouseleave = (e) => {
-							targetChildren.css('background', '#333333');
-						};
-						return;
+							targetChildren.removeClass('hovered');
+						}
+						break;
 					}
-				});
+				}
 			}
 		}, (e) => {
 			// switch back to original background
@@ -277,13 +277,14 @@ export class JobsViewComponent implements AfterContentChecked {
 				let target = $(e.currentTarget);
 				let siblings = target.nextAll().toArray();
 				let top = parseInt(target.css('top'), 10);
-				siblings.forEach(sibling => {
+				for (let i = 0; i < siblings.length; i++) {
+					let sibling = siblings[i];
 					let siblingTop = parseInt($(sibling).css('top'), 10);
 					if (siblingTop === top + ROW_HEIGHT) {
-						$(sibling.children).css('background', '#333333');
-						return;
+						$(sibling.children).removeClass('hovered');
+						break;
 					}
-				});
+				}
 			}
 		});
 		this.loadJobHistories();
