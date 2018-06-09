@@ -82,6 +82,7 @@ export class JobCacheObject {
 	private _jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = {};
 	private _prevJobID: string;
 	private _serverName: string;
+	private _dataView: Slick.Data.DataView<any>;
 
 		/* Getters */
 		public get jobs(): sqlops.AgentJobInfo[] {
@@ -102,6 +103,10 @@ export class JobCacheObject {
 
 		public get serverName(): string {
 			return this._serverName;
+		}
+
+		public get dataView(): Slick.Data.DataView<any> {
+			return this._dataView;
 		}
 
 		/* Setters */
@@ -125,4 +130,7 @@ export class JobCacheObject {
 			this._serverName = value;
 		}
 
+		public set dataView(value: Slick.Data.DataView<any>) {
+			this._dataView = value;
+		}
 }
