@@ -1026,23 +1026,6 @@ declare module 'sqlops' {
 	}
 
 	// Agent Services interfaces
-	export interface AgentJobsResult {
-		succeeded: boolean;
-		errorMessage: string;
-		jobs: AgentJobInfo[];
-	}
-
-	export interface AgentJobHistoryResult {
-		succeeded: boolean;
-		errorMessage: string;
-		jobs: AgentJobHistoryInfo[];
-	}
-
-	export interface AgentJobActionResult {
-		succeeded: boolean;
-		errorMessage: string;
-	}
-
 	export interface AgentJobInfo {
 		name: string;
 		currentExecutionStatus: number;
@@ -1062,6 +1045,7 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentJobStepInfo {
+		jobId: string;
 		stepId: string;
 		stepName: string;
 		message: string;
@@ -1089,16 +1073,150 @@ declare module 'sqlops' {
 		steps: AgentJobStepInfo[];
 	}
 
-	export interface AgentJobResult {
+	export interface AgentProxyInfo {
+        id: number;
+        accountName: string;
+        description: string;
+        credentialName: string;
+        credentialIdentity: string;
+        credentialId: number;
+        isEnabled: boolean;
+	}
 
+	export enum WeekDays {
+        sunday = 1,
+        monday = 2,
+        tuesday = 4,
+        wednesday = 8,
+        thursday = 16,
+        friday = 32,
+        weekDays = 62,
+        saturday = 64,
+        weekEnds = 65,
+        everyDay = 127
+	}
+
+	export enum NotifyMethods {
+        none = 0,
+        notifyEmail = 1,
+        pager = 2,
+        netSend = 4,
+        notifyAll = 7
+    }
+
+    export enum AlertType {
+        sqlServerEvent = 1,
+        sqlServerPerformanceCondition = 2,
+        nonSqlServerEvent = 3,
+        wmiEvent = 4
+    }
+
+    export interface AgentAlertInfo {
+        id: number;
+        delayBetweenResponses: number;
+        eventDescriptionKeyword: string;
+        eventSource: string;
+        hasNotification: number;
+        includeEventDescription: NotifyMethods;
+        isEnabled: boolean;
+        jobId: string;
+        jobName: string;
+        lastOccurrenceDate: string;
+        lastResponseDate: string;
+        messageId: number;
+        notificationMessage: string;
+        occurrenceCount: number;
+        performanceCondition: string;
+        severity: number;
+        databaseName: string;
+        countResetDate: string;
+        categoryName: string;
+        alertType: AlertType;
+        wmiEventNamespace: string;
+        wmiEventQuery: string;
+    }
+
+	export interface AgentOperatorInfo {
+    	name: string;
+        id: number;
+        emailAddress: string;
+        enabled: boolean;
+        lastEmailDate: string;
+        lastNetSendDate: string;
+        lastPagerDate: string;
+        pagerAddress: string;
+        categoryName: string;
+        pagerDays: WeekDays;
+        saturdayPagerEndTime: string;
+        saturdayPagerStartTime: string;
+        sundayPagerEndTime: string;
+        sundayPagerStartTime: string;
+        netSendAddress: string;
+        weekdayPagerStartTime: string;
+        weekdayPagerEndTime: string;
+    }
+
+	export interface ResultStatus {
+		success: boolean;
+		errorMessage: string;
+	}
+
+	export interface AgentJobsResult extends ResultStatus {
+		jobs: AgentJobInfo[];
+	}
+
+	export interface AgentJobHistoryResult extends ResultStatus {
+		jobs: AgentJobHistoryInfo[];
+	}
+
+	export interface CreateAgentJobResult extends ResultStatus {
+		job: AgentJobInfo;
+	}
+
+	export interface UpdateAgentJobResult extends ResultStatus  {
+		job: AgentJobInfo;
+	}
+
+	export interface CreateAgentJobStepResult extends ResultStatus {
+		step: AgentJobStepInfo;
+	}
+
+	export interface UpdateAgentJobStepResult extends ResultStatus  {
+		step: AgentJobStepInfo;
+	}
+
+	export interface CreateAgentProxyResult extends ResultStatus {
+		step: AgentJobStepInfo;
+	}
+
+	export interface UpdateAgentProxyResult extends ResultStatus  {
+		step: AgentJobStepInfo;
 	}
 
 	export interface AgentServicesProvider extends DataProvider {
 		getJobs(connectionUri: string): Thenable<AgentJobsResult>;
 		getJobHistory(connectionUri: string, jobId: string): Thenable<AgentJobHistoryResult>;
-		jobAction(connectionUri: string, jobName: string, action: string): Thenable<AgentJobActionResult>;
+		jobAction(connectionUri: string, jobName: string, action: string): Thenable<ResultStatus>;
 
-		createJob(connectionUri: string, jobInfo: AgentJobInfo): Thenable<AgentJobResult>;
+		// Create/Update/Delete Jobs
+		createJob(connectionUri: string, jobInfo: AgentJobInfo): Thenable<CreateAgentJobResult>;
+		updateJob(connectionUri: string, jobInfo: AgentJobInfo): Thenable<UpdateAgentJobResult>;
+		deleteJob(connectionUri: string, jobInfo: AgentJobInfo): Thenable<ResultStatus>;
+
+		// Create/Update/Delete Job Steps
+		createJobSteps(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
+		updateJobSteps(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
+		deleteJobSteps(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<ResultStatus>;
+
+		// Create/Update/Delete Job Steps
+		createJobSteps(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
+		updateJobSteps(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
+		deleteJobSteps(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<ResultStatus>;
+
+		// Create/Update/Delete Job Steps
+		createProxy(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
+		updateProxy(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
+		deleteProxy(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<ResultStatus>;
 	}
 
 	// Task service interfaces ----------------------------------------------------------------------------

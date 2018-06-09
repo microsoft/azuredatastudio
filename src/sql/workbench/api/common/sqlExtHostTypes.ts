@@ -63,6 +63,37 @@ export enum ScriptOperation {
 	Alter = 6
 }
 
+export enum WeekDays
+{
+	sunday = 1,
+	monday = 2,
+	tuesday = 4,
+	wednesday = 8,
+	thursday = 16,
+	friday = 32,
+	weekDays = 62,
+	saturday = 64,
+	weekEnds = 65,
+	everyDay = 127
+}
+
+export enum NotifyMethods
+{
+	none = 0,
+	notifyEmail = 1,
+	pager = 2,
+	netSend = 4,
+	notifyAll = 7
+}
+
+export enum AlertType
+{
+	sqlServerEvent = 1,
+	sqlServerPerformanceCondition = 2,
+	nonSqlServerEvent = 3,
+	wmiEvent = 4
+}
+
 export enum ModelComponentTypes {
 	NavContainer,
 	FlexContainer,
