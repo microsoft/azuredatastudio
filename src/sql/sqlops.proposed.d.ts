@@ -26,6 +26,7 @@ declare module 'sqlops' {
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
+		listBox(): ComponentBuilder<ListBoxComponent>;
 		table(): ComponentBuilder<TableComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent>;
@@ -334,6 +335,11 @@ declare module 'sqlops' {
 		editable?: boolean;
 	}
 
+	export interface ListBoxProperties {
+		selectedRow?: number;
+		values?: string[];
+	}
+
 	export interface WebViewProperties {
 		message?: any;
 		html?: string;
@@ -377,6 +383,12 @@ declare module 'sqlops' {
 		value: string;
 		values: string[];
 		onValueChanged: vscode.Event<any>;
+	}
+
+	export interface ListBoxComponent extends Component, ListBoxProperties {
+		selectedRow?: number;
+		values: string[];
+		onRowSelected: vscode.Event<any>;
 	}
 
 	export interface TableComponent extends Component, TableComponentProperties {
@@ -609,7 +621,7 @@ declare module 'sqlops' {
 				lastPage: number,
 
 				/**
-				 * The new page number
+				 * The new page number or undefined if the user is closing the wizard
 				 */
 				newPage: number
 			}
@@ -722,6 +734,16 @@ declare module 'sqlops' {
 				 * Close the wizard. Does nothing if the wizard is not open.
 				 */
 				close(): Thenable<void>;
+
+				/**
+				 * Register a callback that will be called when the user tries to navigate by
+				 * changing pages or clicking done. Only one callback can be registered at once, so
+				 * each registration call will clear the previous registration.
+				 * @param validator The callback that gets executed when the user tries to
+				 * navigate. Return true to allow the navigation to proceed, or false to
+				 * cancel it.
+				 */
+				registerNavigationValidator(validator: (pageChangeInfo: WizardPageChangeInfo) => boolean | Thenable<boolean>): void;
 			}
 		}
 	}

@@ -171,12 +171,28 @@ export default class MainController implements vscode.Disposable {
 				inputBox.value = radioButton.value;
 				groupModel1.enabled = false;
 			});
+			let table = view.modelBuilder.table().withProperties({
+				data: [
+					['1', '2', '2'],
+					['4', '5', '6'],
+					['7', '8', '9']
+				], columns: ['c1', 'c2', 'c3'],
+				height: 250,
+				selectedRows: [0]
+			}).component();
+			table.onRowSelected(e => {
+				// TODO:
+			});
+			let listBox = view.modelBuilder.listBox().withProperties({
+				values: ['1', '2', '3'],
+				selectedRow: 2
+			}).component();
 
 			let flexRadioButtonsModel = view.modelBuilder.flexContainer()
 				.withLayout({
 					flexFlow: 'column',
 					alignItems: 'left',
-					height: 50
+					height: 150
 				}).withItems([
 					radioButton, groupModel1, radioButton2]
 				, { flex: '1 1 50%' }).component();
@@ -200,6 +216,12 @@ export default class MainController implements vscode.Disposable {
 				}, {
 					component: flexRadioButtonsModel,
 					title: 'Options'
+				}, {
+					component: table,
+					title: 'Table'
+				}, {
+					component: listBox,
+					title: 'List Box'
 				}], {
 					horizontal: false,
 					componentWidth: 400
@@ -322,7 +344,7 @@ export default class MainController implements vscode.Disposable {
 				height: '100%'
 			});
 
-			let templateValues = {url: 'http://whoisactive.com/docs/'};
+			let templateValues = { url: 'http://whoisactive.com/docs/' };
 			Utils.renderTemplateHtml(path.join(__dirname, '..'), 'templateTab.html', templateValues)
 				.then(html => {
 					webview.html = html;
