@@ -211,7 +211,6 @@ export class ProfilerEditor extends BaseEditor {
 			{ action: this._pauseAction },
 			{ action: this._autoscrollAction },
 			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) }
-			//{ action: this._instantiationService.createInstance(Actions.ProfilerEditColumns, Actions.ProfilerEditColumns.ID, Actions.ProfilerEditColumns.LABEL) }
 		]);
 	}
 
@@ -315,7 +314,6 @@ export class ProfilerEditor extends BaseEditor {
 		return this._input as ProfilerInput;
 	}
 
-	// should get called every time we switch between profiler windows
 	public setInput(input: ProfilerInput, options?: EditorOptions): TPromise<void> {
 		this._profilerEditorContextKey.set(true);
 		if (input instanceof ProfilerInput && input.matches(this.input)) {
@@ -399,15 +397,9 @@ export class ProfilerEditor extends BaseEditor {
 			return;
 		}
 
-		//handle changing pause button text
 		if(e.isPaused){
 			this._pauseAction.paused = this.input.state.isPaused;
 		}
-
-		//Button enabling
-		//if (e.isRunning) {
-		//	this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused;
-		//}
 
 		if (e.isStopped || e.isRunning) {
 			this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused;
