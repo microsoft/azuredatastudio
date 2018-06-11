@@ -1025,7 +1025,35 @@ declare module 'sqlops' {
 		getDatabaseInfo(connectionUri: string): Thenable<DatabaseInfo>;
 	}
 
-	// Agent Services interfaces
+	// Agent Services types
+	export enum WeekDays {
+        sunday = 1,
+        monday = 2,
+        tuesday = 4,
+        wednesday = 8,
+        thursday = 16,
+        friday = 32,
+        weekDays = 62,
+        saturday = 64,
+        weekEnds = 65,
+        everyDay = 127
+	}
+
+	export enum NotifyMethods {
+        none = 0,
+        notifyEmail = 1,
+        pager = 2,
+        netSend = 4,
+        notifyAll = 7
+    }
+
+    export enum AlertType {
+        sqlServerEvent = 1,
+        sqlServerPerformanceCondition = 2,
+        nonSqlServerEvent = 3,
+        wmiEvent = 4
+    }
+
 	export interface AgentJobInfo {
 		name: string;
 		currentExecutionStatus: number;
@@ -1082,34 +1110,6 @@ declare module 'sqlops' {
         credentialId: number;
         isEnabled: boolean;
 	}
-
-	export enum WeekDays {
-        sunday = 1,
-        monday = 2,
-        tuesday = 4,
-        wednesday = 8,
-        thursday = 16,
-        friday = 32,
-        weekDays = 62,
-        saturday = 64,
-        weekEnds = 65,
-        everyDay = 127
-	}
-
-	export enum NotifyMethods {
-        none = 0,
-        notifyEmail = 1,
-        pager = 2,
-        netSend = 4,
-        notifyAll = 7
-    }
-
-    export enum AlertType {
-        sqlServerEvent = 1,
-        sqlServerPerformanceCondition = 2,
-        nonSqlServerEvent = 3,
-        wmiEvent = 4
-    }
 
     export interface AgentAlertInfo {
         id: number;
@@ -1193,30 +1193,73 @@ declare module 'sqlops' {
 		step: AgentJobStepInfo;
 	}
 
+	export interface AgentAlertsResult extends ResultStatus {
+        alerts: AgentAlertInfo[];
+    }
+
+	export interface CreateAgentAlertResult extends ResultStatus {
+		alert: AgentJobStepInfo;
+	}
+
+	export interface UpdateAgentAlertResult extends ResultStatus  {
+		alert: AgentJobStepInfo;
+	}
+
+	export interface AgentOperatorsResult extends ResultStatus {
+        operators: AgentOperatorInfo[];
+    }
+
+	export interface CreateAgentOperatorResult extends ResultStatus {
+		operator: AgentOperatorInfo;
+	}
+
+	export interface UpdateAgentOperatorResult extends ResultStatus  {
+		operator: AgentOperatorInfo;
+	}
+
+	export interface AgentProxiesResult extends ResultStatus {
+        operators: AgentOperatorInfo[];
+    }
+
+	export interface CreateAgentProxyResult extends ResultStatus {
+		operator: AgentOperatorInfo;
+	}
+
+	export interface UpdateAgentProxyResult extends ResultStatus  {
+		operator: AgentOperatorInfo;
+	}
+
 	export interface AgentServicesProvider extends DataProvider {
-		getJobs(connectionUri: string): Thenable<AgentJobsResult>;
-		getJobHistory(connectionUri: string, jobId: string): Thenable<AgentJobHistoryResult>;
-		jobAction(connectionUri: string, jobName: string, action: string): Thenable<ResultStatus>;
+		// Job management methods
+		getJobs(ownerUri: string): Thenable<AgentJobsResult>;
+		getJobHistory(ownerUri: string, jobId: string): Thenable<AgentJobHistoryResult>;
+		jobAction(ownerUri: string, jobName: string, action: string): Thenable<ResultStatus>;
+		createJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<CreateAgentJobResult>;
+		updateJob(ownerUri: string, originalJobName: string, jobInfo: AgentJobInfo): Thenable<UpdateAgentJobResult>;
+		deleteJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<ResultStatus>;
 
-		// Create/Update/Delete Jobs
-		createJob(connectionUri: string, jobInfo: AgentJobInfo): Thenable<CreateAgentJobResult>;
-		updateJob(connectionUri: string, jobInfo: AgentJobInfo): Thenable<UpdateAgentJobResult>;
-		deleteJob(connectionUri: string, jobInfo: AgentJobInfo): Thenable<ResultStatus>;
+		// Job Step management methods
+		createJobStep(ownerUri: string, jobInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
+		updateJobStep(ownerUri: string, originalJobStepName: string, jobInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
+		deleteJobStep(ownerUri: string, jobInfo: AgentJobStepInfo): Thenable<ResultStatus>;
 
-		// Create/Update/Delete Job Steps
-		createJobSteps(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
-		updateJobSteps(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
-		deleteJobSteps(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<ResultStatus>;
+		// Alert management methods
+		getAlerts(ownerUri: string): Thenable<AgentAlertsResult>;
+		createAlert(ownerUri: string, alertInfo: AgentAlertInfo): Thenable<CreateAgentAlertResult>;
+		updateAlert(ownerUri: string, originalAlertName: string, alertInfo: AgentAlertInfo): Thenable<UpdateAgentAlertResult>;
+		deleteAlert(ownerUri: string, alertInfo: AgentAlertInfo): Thenable<ResultStatus>;
 
-		// Create/Update/Delete Job Steps
-		createJobSteps(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
-		updateJobSteps(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
-		deleteJobSteps(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<ResultStatus>;
+		// Operator management methods
+		getOperators(ownerUri: string): Thenable<AgentOperatorsResult>;
+		createOperator(ownerUri: string, operatorInfo: AgentOperatorInfo): Thenable<CreateAgentOperatorResult>;
+		updateOperator(ownerUri: string, originalOperatorName: string, operatorInfo: AgentOperatorInfo): Thenable<UpdateAgentOperatorResult>;
+		deleteOperator(ownerUri: string, operatorInfo: AgentOperatorInfo): Thenable<ResultStatus>;
 
-		// Create/Update/Delete Job Steps
-		createProxy(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
-		updateProxy(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
-		deleteProxy(connectionUri: string, jobInfo: AgentJobStepInfo): Thenable<ResultStatus>;
+		// Proxy management methods
+		getProxies(ownerUri: string): Thenable<AgentProxiesResult>;
+		createProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<CreateAgentOperatorResult>;
+		updateProxy(ownerUri: string, originalProxyName: string, proxyInfo: AgentProxyInfo): Thenable<UpdateAgentOperatorResult>;
+		deleteProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<ResultStatus>;
 	}
 
 	// Task service interfaces ----------------------------------------------------------------------------
