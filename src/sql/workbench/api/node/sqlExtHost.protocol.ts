@@ -313,6 +313,11 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$stopSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
 
+	/**
+	 * Pause a profiler session
+	 */
+	$pauseSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
+
 
 	/**
 	 * Get Agent Job list

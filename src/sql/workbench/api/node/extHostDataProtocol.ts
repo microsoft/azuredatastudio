@@ -504,6 +504,14 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	/**
+	 * Pause a profiler session
+	 */
+	public $pauseSession(handle: number, sessionId: string): Thenable<boolean> {
+		return this._resolveProvider<sqlops.ProfilerProvider>(handle).pauseSession(sessionId);
+	}
+
+
+	/**
 	 * Profiler session events available notification
 	 */
 	public $onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void {

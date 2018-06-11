@@ -57,7 +57,7 @@ export class ProfilerConnect extends Action {
 	public set connected(value: boolean) {
 		this._connected = value;
 		this._setClass(value ? 'disconnect' : 'connect');
-		this._setLabel(value ? nls.localize('profilerAction.disconnect', 'Disconnected') : nls.localize('profilerAction.connect', "Connect"));
+		this._setLabel(value ? nls.localize('profilerAction.disconnect', 'Disconnect') : nls.localize('profilerAction.connect', "Connect"));
 	}
 
 	public get connected(): boolean {
@@ -89,7 +89,9 @@ export class ProfilerStart extends Action {
 
 export class ProfilerPause extends Action {
 	public static ID = 'profiler.pause';
-	public static LABEL = nls.localize('pause', "Pause");
+	public static LABEL = nls.localize('pause', "Capture");
+
+	private _paused: boolean = false;
 
 	constructor(
 		id: string, label: string,
@@ -99,11 +101,29 @@ export class ProfilerPause extends Action {
 	}
 
 	public run(input: ProfilerInput): TPromise<boolean> {
-		this.enabled = false;
-		return TPromise.wrap(this._profilerService.pauseSession(input.id).then(() => {
-			input.state.change({ isPaused: true, isStopped: false, isRunning: false });
-			return true;
-		}));
+		if(!this._paused) {
+			return TPromise.wrap(this._profilerService.pauseSession(input.id).then(() => {
+				this.paused = true;
+				input.state.change({ isPaused: true, isStopped: false, isRunning: false });
+				return true;
+			}));
+		}
+		else {
+			return TPromise.wrap(this._profilerService.pauseSession(input.id).then(() => {
+				this.paused = false;
+				input.state.change({ isPaused: false, isStopped: false, isRunning: true });
+				return true;
+			}));
+		}
+	}
+
+	public set paused(value: boolean) {
+		this._paused = value;
+		this._setClass(value ? 'start' : 'stop');
+	}
+
+	public get paused(): boolean {
+		return this._paused;
 	}
 }
 
