@@ -69,6 +69,7 @@ export enum ModelComponentTypes {
 	Card,
 	InputBox,
 	DropDown,
+	DeclarativeTable,
 	ListBox,
 	Button,
 	CheckBox,
@@ -185,4 +186,10 @@ export enum DataProviderType {
 	AdminServicesProvider = 'AdminServicesProvider',
 	AgentServicesProvider = 'AgentServicesProvider',
 	CapabilitiesProvider = 'CapabilitiesProvider'
+}
+
+export enum DeclarativeDataType {
+	string = 'string',
+	category = 'category',
+	boolean = 'boolean'
 }
