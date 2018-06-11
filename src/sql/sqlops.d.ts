@@ -1094,7 +1094,7 @@ declare module 'sqlops' {
 		runDate: string;
 		runDuration: string;
 		operatorEmailed: string;
-		operatorNetsent: string
+		operatorNetsent: string;
 		operatorPaged: string;
 		retriesAttempted: string;
 		server: string;
