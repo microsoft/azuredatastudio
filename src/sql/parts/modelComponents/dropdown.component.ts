@@ -15,7 +15,8 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { attachEditableDropdownStyler , attachSelectBoxStyler} from 'sql/common/theme/styler';
+import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
+import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';

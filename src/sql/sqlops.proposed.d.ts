@@ -26,7 +26,9 @@ declare module 'sqlops' {
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
+		listBox(): ComponentBuilder<ListBoxComponent>;
 		table(): ComponentBuilder<TableComponent>;
+		declarativeTable(): ComponentBuilder<DeclarativeTableComponent>;
 		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent>;
 		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent>;
 		formContainer(): FormBuilder;
@@ -317,6 +319,12 @@ declare module 'sqlops' {
 		label?: string;
 	}
 
+	export enum DeclarativeDataType {
+		string = 'string',
+		category = 'category',
+		boolean = 'boolean'
+	}
+
 	export interface RadioButtonProperties {
 		name?: string;
 		label?: string;
@@ -332,6 +340,25 @@ declare module 'sqlops' {
 		value?: string;
 		values?: string[];
 		editable?: boolean;
+	}
+
+	export interface DeclarativeTableColumn {
+		displayName: string;
+		categoryValues: CategoryValue[];
+		valueType: DeclarativeDataType;
+		isReadOnly: boolean;
+		width: number|string;
+	}
+
+	export interface DeclarativeTableProperties {
+		data: any[][];
+		columns: DeclarativeTableColumn[];
+	}
+
+	export interface ListBoxProperties {
+		selectedRow?: number;
+		values?: string[];
+
 	}
 
 	export interface WebViewProperties {
@@ -377,6 +404,22 @@ declare module 'sqlops' {
 		value: string;
 		values: string[];
 		onValueChanged: vscode.Event<any>;
+	}
+
+	export interface TableCell {
+		row: number;
+		column: number;
+		value: any;
+	}
+
+	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
+		onDataChanged: vscode.Event<any>;
+	}
+
+	export interface ListBoxComponent extends Component, ListBoxProperties {
+		selectedRow?: number;
+		values: string[];
+		onRowSelected: vscode.Event<any>;
 	}
 
 	export interface TableComponent extends Component, TableComponentProperties {
@@ -609,7 +652,7 @@ declare module 'sqlops' {
 				lastPage: number,
 
 				/**
-				 * The new page number
+				 * The new page number or undefined if the user is closing the wizard
 				 */
 				newPage: number
 			}
@@ -722,6 +765,16 @@ declare module 'sqlops' {
 				 * Close the wizard. Does nothing if the wizard is not open.
 				 */
 				close(): Thenable<void>;
+
+				/**
+				 * Register a callback that will be called when the user tries to navigate by
+				 * changing pages or clicking done. Only one callback can be registered at once, so
+				 * each registration call will clear the previous registration.
+				 * @param validator The callback that gets executed when the user tries to
+				 * navigate. Return true to allow the navigation to proceed, or false to
+				 * cancel it.
+				 */
+				registerNavigationValidator(validator: (pageChangeInfo: WizardPageChangeInfo) => boolean | Thenable<boolean>): void;
 			}
 		}
 	}
