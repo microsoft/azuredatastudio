@@ -242,148 +242,148 @@
 				"flags": "preview"
 			},
 			{
-                "extensionId": "15",
-                "extensionName": "alwayson-insights",
-                "displayName": "AlwaysOn Insights",
-                "shortDescription": "Sql Server AlwaysOn insights",
-                "publisher": {
-                  "displayName":"matticusau",
-                  "publisherId": "matticusau",
-                  "publisherName":"matticusau"
-                },
-                "versions": [
-                  {
-                    "version": "0.2.1",
-                    "lastUpdated": "04/21/2018",
-                    "assetUri": "",
-                    "fallbackAssetUri": "fallbackAssetUri",
-                    "files": [
-                    {
-                      "assetType": "Microsoft.SQLOps.DownloadPage",
-                      "source": "https://github.com/Matticusau/sqlops-alwayson-insights/releases/tag/0.2.1"
-                    },
-                   {
-                      "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-                      "source": "https://raw.githubusercontent.com/Matticusau/sqlops-alwayson-insights/master/src/images/icon.png"
-                    },
-                    {
-                      "assetType": "Microsoft.VisualStudio.Services.Content.Details",
-                     "source": "https://raw.githubusercontent.com/Matticusau/sqlops-alwayson-insights/master/src/README.md"
-                    },
-                    {
-                      "assetType": "Microsoft.VisualStudio.Code.Manifest",
-                      "source": "https://raw.githubusercontent.com/Matticusau/sqlops-alwayson-insights/master/src/package.json"
-                    },
-                    {
-                      "assetType": "Microsoft.VisualStudio.Services.Content.License",
-                      "source": "https://raw.githubusercontent.com/Matticusau/sqlops-alwayson-insights/master/LICENSE"
-                    }
-                    ],
-                    "properties": [
-                      { "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
-                      { "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
-											{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Matticusau/sqlops-alwayson-insights"}
-                    ]
-                  }
-                ],
-                "statistics": [],
-                "flags": "preview"
-            },
-            {
-                "extensionId": "16",
-                "extensionName": "mssql-instance-insights",
-                "displayName": "MSSQL Instance Insights",
-                "shortDescription": "Sql Server Instance insights",
-                "publisher": {
-                  "displayName":"matticusau",
-                  "publisherId": "matticusau",
-                  "publisherName":"matticusau"
-                },
-                "versions": [
-                  {
-                    "version": "0.2.1",
-                    "lastUpdated": "04/21/2018",
-                    "assetUri": "",
-                    "fallbackAssetUri": "fallbackAssetUri",
-                    "files": [
-                    {
-                      "assetType": "Microsoft.SQLOps.DownloadPage",
-                      "source": "https://github.com/Matticusau/sqlops-mssql-instance-insights/releases/tag/0.2.1"
-                    },
-                   {
-                      "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-                      "source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-instance-insights/master/src/images/icon.png"
-                    },
-                    {
-                      "assetType": "Microsoft.VisualStudio.Services.Content.Details",
-                     "source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-instance-insights/master/src/README.md"
-                    },
-                    {
-                      "assetType": "Microsoft.VisualStudio.Code.Manifest",
-                      "source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-instance-insights/master/src/package.json"
-                    },
-                    {
-                      "assetType": "Microsoft.VisualStudio.Services.Content.License",
-                      "source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-instance-insights/master/LICENSE"
-                    }
-                    ],
-                    "properties": [
-                      { "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
-                      { "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
-											{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Matticusau/sqlops-mssql-instance-insights"}
-                    ]
-                  }
-                ],
-                "statistics": [],
-                "flags": "preview"
-              },
-              {
-                "extensionId": "17",
-                "extensionName": "mssql-db-insights",
-                "displayName": "MSSQL Db Insights",
-                "shortDescription": "Sql Server Database insights",
-                "publisher": {
-                  "displayName":"matticusau",
-                  "publisherId": "matticusau",
-                  "publisherName":"matticusau"
-                },
-                "versions": [
-                  {
-                    "version": "0.2.1",
-                    "lastUpdated": "04/21/2018",
-                    "assetUri": "",
-                    "fallbackAssetUri": "fallbackAssetUri",
-                    "files": [
-                    {
-                      "assetType": "Microsoft.SQLOps.DownloadPage",
-                      "source": "https://github.com/Matticusau/sqlops-mssql-db-insights/releases/tag/0.2.1"
-                    },
-                   {
-                      "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-                      "source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-db-insights/master/src/images/icon.png"
-                    },
-                    {
-                      "assetType": "Microsoft.VisualStudio.Services.Content.Details",
-                     "source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-db-insights/master/src/README.md"
-                    },
-                    {
-                      "assetType": "Microsoft.VisualStudio.Code.Manifest",
-                      "source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-db-insights/master/src/package.json"
-                    },
-                    {
-                      "assetType": "Microsoft.VisualStudio.Services.Content.License",
-                      "source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-db-insights/master/LICENSE"
-                    }
-                    ],
-                    "properties": [
-                      { "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
-                      { "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
-                      { "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Matticusau/sqlops-mssql-db-insights"}
-                    ]
-                  }
-                ],
-                "statistics": [],
-                "flags": "preview"
+				"extensionId": "15",
+				"extensionName": "alwayson-insights",
+				"displayName": "AlwaysOn Insights",
+				"shortDescription": "Sql Server AlwaysOn insights",
+				"publisher": {
+					"displayName":"matticusau",
+					"publisherId": "matticusau",
+					"publisherName":"matticusau"
+				},
+				"versions": [
+					{
+					"version": "0.2.1",
+					"lastUpdated": "04/21/2018",
+					"assetUri": "",
+					"fallbackAssetUri": "fallbackAssetUri",
+					"files": [
+					{
+						"assetType": "Microsoft.SQLOps.DownloadPage",
+						"source": "https://github.com/Matticusau/sqlops-alwayson-insights/releases/tag/0.2.1"
+					},
+					{
+						"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+						"source": "https://raw.githubusercontent.com/Matticusau/sqlops-alwayson-insights/master/src/images/icon.png"
+					},
+					{
+						"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+						"source": "https://raw.githubusercontent.com/Matticusau/sqlops-alwayson-insights/master/src/README.md"
+					},
+					{
+						"assetType": "Microsoft.VisualStudio.Code.Manifest",
+						"source": "https://raw.githubusercontent.com/Matticusau/sqlops-alwayson-insights/master/src/package.json"
+					},
+					{
+						"assetType": "Microsoft.VisualStudio.Services.Content.License",
+						"source": "https://raw.githubusercontent.com/Matticusau/sqlops-alwayson-insights/master/LICENSE"
+					}
+					],
+					"properties": [
+					{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+					{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
+					{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Matticusau/sqlops-alwayson-insights"}
+					]
+				  }
+				],
+				"statistics": [],
+				"flags": "preview"
+			},
+			{
+				"extensionId": "16",
+				"extensionName": "mssql-instance-insights",
+				"displayName": "MSSQL Instance Insights",
+				"shortDescription": "Sql Server Instance insights",
+				"publisher": {
+					"displayName":"matticusau",
+					"publisherId": "matticusau",
+					"publisherName":"matticusau"
+				},
+				"versions": [
+					{
+					"version": "0.2.1",
+					"lastUpdated": "04/21/2018",
+					"assetUri": "",
+					"fallbackAssetUri": "fallbackAssetUri",
+					"files": [
+					{
+						"assetType": "Microsoft.SQLOps.DownloadPage",
+						"source": "https://github.com/Matticusau/sqlops-mssql-instance-insights/releases/tag/0.2.1"
+					},
+					{
+						"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+						"source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-instance-insights/master/src/images/icon.png"
+					},
+					{
+						"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+						"source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-instance-insights/master/src/README.md"
+					},
+					{
+						"assetType": "Microsoft.VisualStudio.Code.Manifest",
+						"source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-instance-insights/master/src/package.json"
+					},
+					{
+						"assetType": "Microsoft.VisualStudio.Services.Content.License",
+						"source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-instance-insights/master/LICENSE"
+					}
+					],
+					"properties": [
+						{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+						{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
+						{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Matticusau/sqlops-mssql-instance-insights"}
+					]
+				  }
+				],
+				"statistics": [],
+				"flags": "preview"
+			},
+			{
+				"extensionId": "17",
+				"extensionName": "mssql-db-insights",
+				"displayName": "MSSQL Db Insights",
+				"shortDescription": "Sql Server Database insights",
+				"publisher": {
+				  "displayName":"matticusau",
+				  "publisherId": "matticusau",
+				  "publisherName":"matticusau"
+				},
+				"versions": [
+				  {
+					"version": "0.2.1",
+					"lastUpdated": "04/21/2018",
+					"assetUri": "",
+					"fallbackAssetUri": "fallbackAssetUri",
+					"files": [
+					{
+						"assetType": "Microsoft.SQLOps.DownloadPage",
+						"source": "https://github.com/Matticusau/sqlops-mssql-db-insights/releases/tag/0.2.1"
+					},
+				   {
+						"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+						"source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-db-insights/master/src/images/icon.png"
+					},
+					{
+						"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+				 	"source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-db-insights/master/src/README.md"
+					},
+					{
+						"assetType": "Microsoft.VisualStudio.Code.Manifest",
+						"source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-db-insights/master/src/package.json"
+					},
+					{
+						"assetType": "Microsoft.VisualStudio.Services.Content.License",
+						"source": "https://raw.githubusercontent.com/Matticusau/sqlops-mssql-db-insights/master/LICENSE"
+					}
+					],
+					"properties": [
+						{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+						{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
+						{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Matticusau/sqlops-mssql-db-insights"}
+					]
+				  }
+				],
+				"statistics": [],
+				"flags": "preview"
 							},
 							{
 								"extensionId": "18",
@@ -473,8 +473,8 @@
 										],
 										"properties": [
 											{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
-                      						{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
-																	{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Microsoft/sql-data-warehouse-samples/tree/master/samples/sqlops/MonitoringScripts"}
+											{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
+											{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Microsoft/sql-data-warehouse-samples/tree/master/samples/sqlops/MonitoringScripts"}
 										]
 									}
 								],
