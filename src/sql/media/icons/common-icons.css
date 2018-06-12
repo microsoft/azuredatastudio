@@ -217,3 +217,18 @@
 .vs .icon.unpin {
 	background: url('unpin.svg') center center no-repeat;
 }
+
+.small {
+	width: 16px;
+	height: 16px;
+}
+
+.medium {
+	width: 24px;
+	height: 24px;
+}
+
+.large {
+	width: 32px;
+	height: 32px;
+}
