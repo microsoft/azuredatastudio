@@ -378,7 +378,7 @@
                     "properties": [
                       { "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
                       { "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
-											{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Matticusau/sqlops-mssql-db-insights"}
+                      { "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Matticusau/sqlops-mssql-db-insights"}
                     ]
                   }
                 ],
