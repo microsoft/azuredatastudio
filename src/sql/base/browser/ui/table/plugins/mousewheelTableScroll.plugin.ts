@@ -8,29 +8,56 @@
 import * as DOM from 'vs/base/browser/dom';
 import { StandardMouseWheelEvent } from 'vs/base/browser/mouseEvent';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { mixin } from 'vs/base/common/objects';
+import { runInThisContext } from 'vm';
+
+const SCROLL_WHEEL_SENSITIVITY = 50;
+
+export interface IMouseWheelSupportOptions {
+	scrollSpeed?: number;
+}
+
+const defaultOptions: IMouseWheelSupportOptions = {
+	scrollSpeed: SCROLL_WHEEL_SENSITIVITY
+};
 
 export class MouseWheelSupport implements Slick.Plugin<any> {
 
-	private canvas: HTMLCanvasElement;
+	private viewport: HTMLElement;
+	private canvas: HTMLElement;
+	private options: IMouseWheelSupportOptions;
 	private grid: Slick.Grid<any>;
 
 	private _disposables: IDisposable[] = [];
 
+	constructor(options: IMouseWheelSupportOptions = {}) {
+		this.options = mixin(options, defaultOptions);
+	}
+
 	public init(grid: Slick.Grid<any>): void {
 		this.canvas = grid.getCanvasNode();
+		this.viewport = this.canvas.parentElement;
+		this.grid = grid;
 		let onMouseWheel = (browserEvent: MouseWheelEvent) => {
 			let e = new StandardMouseWheelEvent(browserEvent);
 			this._onMouseWheel(e);
 		};
-		this._disposables.push(DOM.addDisposableListener(this.canvas, 'mousewheel', onMouseWheel));
-		this._disposables.push(DOM.addDisposableListener(this.canvas, 'DOMMouseScroll', onMouseWheel));
+		this._disposables.push(DOM.addDisposableListener(this.viewport, 'mousewheel', onMouseWheel));
+		this._disposables.push(DOM.addDisposableListener(this.viewport, 'DOMMouseScroll', onMouseWheel));
 	}
 
 	private _onMouseWheel(event: StandardMouseWheelEvent) {
-		this.canvas.scrollTop = this.canvas.scrollTop - event.deltaY;
-		this.canvas.dispatchEvent(new Event('scroll'));
-		event.stopPropagation();
-		event.preventDefault();
+		const scrollHeight = this.canvas.clientHeight;
+		const height = this.viewport.clientHeight;
+		if ((this.viewport.scrollTop - (event.deltaY * this.options.scrollSpeed)) + height > scrollHeight) {
+			this.viewport.scrollTop = scrollHeight - height;
+			this.viewport.dispatchEvent(new Event('scroll'));
+		} else {
+			this.viewport.scrollTop = this.viewport.scrollTop - (event.deltaY * this.options.scrollSpeed);
+			this.viewport.dispatchEvent(new Event('scroll'));
+			event.stopPropagation();
+			event.preventDefault();
+		}
 	}
 
 	destroy() {
