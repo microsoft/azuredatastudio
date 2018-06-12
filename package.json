@@ -1,6 +1,6 @@
 {
   "name": "sqlops",
-  "version": "0.30.4",
+  "version": "0.30.5",
   "distro": "8c3e97e3425cc9814496472ab73e076de2ba99ee",
   "author": {
     "name": "Microsoft Corporation"
@@ -60,7 +60,7 @@
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.4.0",
     "semver": "4.3.6",
-    "slickgrid": "github:anthonydresser/SlickGrid#2.3.17",
+    "slickgrid": "github:anthonydresser/SlickGrid#2.3.20",
     "spdlog": "0.6.0",
     "sudo-prompt": "^8.0.0",
     "svg.js": "^2.2.5",

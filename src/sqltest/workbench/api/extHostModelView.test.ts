@@ -118,4 +118,14 @@ suite('ExtHostModelView Validation Tests', () => {
 		});
 		assert.equal(inputBox.valid, true, 'Input box did not update validity to true based on the validityChanged event');
 	});
+
+	test('Main thread validityChanged events cause component to fire validity changed events', () => {
+		let validityFromEvent: boolean = undefined;
+		inputBox.onValidityChanged(valid => validityFromEvent = valid);
+		extHostModelView.$handleEvent(handle, inputBox.id, {
+			eventType: ComponentEventType.validityChanged,
+			args: false
+		});
+		assert.equal(validityFromEvent, false, 'Main thread validityChanged event did not cause component to fire its own event');
+	});
 });

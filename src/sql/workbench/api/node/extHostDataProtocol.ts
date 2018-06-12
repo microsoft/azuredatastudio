@@ -532,7 +532,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Run an action on a job
 	 */
-	public $jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult> {
+	public $jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> {
 		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).jobAction(ownerUri, jobName, action);
 	}
 }
