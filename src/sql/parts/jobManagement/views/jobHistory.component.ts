@@ -301,7 +301,4 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		this._showSteps = value;
 		this._cd.detectChanges();
 	}
-
-
 }
-

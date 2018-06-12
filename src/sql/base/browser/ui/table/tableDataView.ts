@@ -14,7 +14,7 @@ export interface IFindPosition {
 	row: number;
 }
 
-function defaultSort<T>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T> {
+export function defaultSort<T>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T> {
 	let field = args.sortCol.field;
 	let sign = args.sortAsc ? 1 : -1;
 	return data.sort((a, b) => (a[field] === b[field] ? 0 : (a[field] > b[field] ? 1 : -1)) * sign);

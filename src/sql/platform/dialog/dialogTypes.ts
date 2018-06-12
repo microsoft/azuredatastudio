@@ -139,6 +139,7 @@ export class Wizard {
 	public readonly onPageAdded = this._pageAddedEmitter.event;
 	private _pageRemovedEmitter = new Emitter<WizardPage>();
 	public readonly onPageRemoved = this._pageRemovedEmitter.event;
+	private _navigationValidator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean | Thenable<boolean>;
 
 	constructor(public title: string) { }
 
@@ -190,5 +191,20 @@ export class Wizard {
 		let removedPage = this.pages[index];
 		this.pages.splice(index, 1);
 		this._pageRemovedEmitter.fire(removedPage);
+	}
+
+	public registerNavigationValidator(validator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean | Thenable<boolean>): void {
+		this._navigationValidator = validator;
+	}
+
+	public validateNavigation(newPage: number): Thenable<boolean> {
+		if (this._navigationValidator) {
+			return Promise.resolve(this._navigationValidator({
+				lastPage: this._currentPage,
+				newPage: newPage
+			}));
+		} else {
+			return Promise.resolve(true);
+		}
 	}
 }

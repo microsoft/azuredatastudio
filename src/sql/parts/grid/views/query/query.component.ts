@@ -25,7 +25,7 @@ import { GridActionProvider } from 'sql/parts/grid/views/gridActions';
 import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { error } from 'sql/base/common/log';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { clone } from 'sql/base/common/objects';
+import { clone, mixin } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 
 import * as strings from 'vs/base/common/strings';
@@ -301,7 +301,9 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 					for (let row = 0; row < rows.rows.length; row++) {
 						// Push row values onto end of gridData for slickgrid
 						gridData.push({
-							values: rows.rows[row]
+							values: rows.rows[row].map(c => {
+								return mixin({ ariaLabel: c.displayValue }, c);
+							})
 						});
 					}
 

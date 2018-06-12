@@ -248,7 +248,8 @@ export class ContextView {
 		this.$view.hide();
 	}
 
-	private isVisible(): boolean {
+	// {{SQL CARBON EDIT}}
+	public isVisible(): boolean {
 		return !!this.delegate;
 	}
 

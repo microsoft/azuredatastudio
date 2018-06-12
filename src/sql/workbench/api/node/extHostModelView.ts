@@ -116,9 +116,23 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	listBox(): sqlops.ComponentBuilder<sqlops.ListBoxComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.ListBoxComponent> = this.getComponentBuilder(new ListBoxWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	table(): sqlops.ComponentBuilder<sqlops.TableComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.TableComponent> = this.getComponentBuilder(new TableComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	declarativeTable(): sqlops.ComponentBuilder<sqlops.DeclarativeTableComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.DeclarativeTableComponent> = this.getComponentBuilder(new DeclarativeTableWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -406,12 +420,13 @@ class ComponentWrapper implements sqlops.Component {
 		return this._proxy.$setLayout(this._handle, this.id, layout);
 	}
 
-	public updateProperties(): Thenable<boolean> {
+	public updateProperties(properties: { [key: string]: any }): Thenable<void> {
+		this.properties = Object.assign(this.properties, properties);
 		return this.notifyPropertyChanged();
 	}
 
-	protected notifyPropertyChanged(): Thenable<boolean> {
-		return this._proxy.$setProperties(this._handle, this._id, this.properties).then(() => true);
+	protected notifyPropertyChanged(): Thenable<void> {
+		return this._proxy.$setProperties(this._handle, this._id, this.properties);
 	}
 
 	public registerEvent(): Thenable<boolean> {
@@ -421,9 +436,9 @@ class ComponentWrapper implements sqlops.Component {
 	public onEvent(eventArgs: IComponentEventArgs) {
 		if (eventArgs && eventArgs.eventType === ComponentEventType.PropertiesChanged) {
 			this.properties = eventArgs.args;
-		}
-		else if (eventArgs && eventArgs.eventType === ComponentEventType.validityChanged) {
+		} else if (eventArgs && eventArgs.eventType === ComponentEventType.validityChanged) {
 			this._valid = eventArgs.args;
+			this._onValidityChangedEmitter.fire(this._valid);
 		} else if (eventArgs) {
 			let emitter = this._emitterMap.get(eventArgs.eventType);
 			if (emitter) {
@@ -432,13 +447,13 @@ class ComponentWrapper implements sqlops.Component {
 		}
 	}
 
-	protected async setProperty(key: string, value: any): Promise<boolean> {
+	protected async setProperty(key: string, value: any): Promise<void> {
 		if (!this.properties[key] || this.properties[key] !== value) {
 			// Only notify the front end if a value has been updated
 			this.properties[key] = value;
 			return this.notifyPropertyChanged();
 		}
-		return Promise.resolve(true);
+		return Promise.resolve();
 	}
 
 	private handleError(err: Error): void {
@@ -743,6 +758,63 @@ class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownCompone
 
 	public get onValueChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+}
+
+class DeclarativeTableWrapper extends ComponentWrapper implements sqlops.DeclarativeTableComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.DeclarativeTable, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+	}
+
+	public get data(): any[][] {
+		return this.properties['data'];
+	}
+	public set data(v: any[][]) {
+		this.setProperty('data', v);
+	}
+
+	public get columns(): sqlops.DeclarativeTableColumn[] {
+		return this.properties['columns'];
+	}
+
+	public set columns(v: sqlops.DeclarativeTableColumn[]) {
+		this.setProperty('columns', v);
+	}
+
+	public get onDataChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+}
+
+class ListBoxWrapper extends ComponentWrapper implements sqlops.ListBoxComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.ListBox, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
+	}
+
+	public get selectedRow(): number {
+		return this.properties['selectedRow'];
+	}
+	public set selectedRow(v: number) {
+		this.setProperty('selectedRow', v);
+	}
+
+	public get values(): string[] {
+		return this.properties['values'];
+	}
+	public set values(v: string[]) {
+		this.setProperty('values', v);
+	}
+
+	public get onRowSelected(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
 	}
 }

@@ -112,6 +112,14 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		this.setProperties(properties);
 	}
 
+	protected convertSize(size: number | string): string {
+		let convertedSize: string = size ? size.toString() : '100%';
+		if (!convertedSize.toLowerCase().endsWith('px') && !convertedSize.toLowerCase().endsWith('%')) {
+			convertedSize = convertedSize + 'px';
+		}
+		return convertedSize;
+	}
+
 	public get valid(): boolean {
 		return this._valid;
 	}

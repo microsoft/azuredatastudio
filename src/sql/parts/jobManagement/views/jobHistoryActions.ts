@@ -33,7 +33,7 @@ export class RunJobAction extends Action {
 		let ownerUri = context.ownerUri;
 		return new TPromise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobHistoryActions.Run).then(result => {
-				if (result.succeeded) {
+				if (result.success) {
 					var startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
 					this.notificationService.notify({
 						severity: Severity.Info,
@@ -68,7 +68,7 @@ export class StopJobAction extends Action {
 		let ownerUri = context.ownerUri;
 		return new TPromise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobHistoryActions.Stop).then(result => {
-				if (result.succeeded) {
+				if (result.success) {
 						var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
 						this.notificationService.notify({
 							severity: Severity.Info,

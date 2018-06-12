@@ -132,7 +132,7 @@ export class Dropdown extends Disposable {
 			ariaLabel: this._options.ariaLabel
 		});
 
-		this._register(DOM.addDisposableListener(this._input.inputElement, DOM.EventType.FOCUS, () => {
+		this._register(DOM.addDisposableListener(this._input.inputElement, DOM.EventType.CLICK, () => {
 			this._showList();
 		}));
 
@@ -145,8 +145,12 @@ export class Dropdown extends Disposable {
 		this._register(DOM.addStandardDisposableListener(this._input.inputElement, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
 			switch (e.keyCode) {
 				case KeyCode.Enter:
-					if (this._input.validate()) {
-						this._onValueChange.fire(this._input.value);
+					if (this._contextView.isVisible()) {
+						if (this._input.validate()) {
+							this._onValueChange.fire(this._input.value);
+						}
+					} else {
+						this._showList();
 					}
 					e.stopPropagation();
 					break;
@@ -192,6 +196,11 @@ export class Dropdown extends Disposable {
 			this._contextView.hide();
 		});
 
+		this._controller.onDropdownEscape(() => {
+			this._input.focus();
+			this._contextView.hide();
+		});
+
 		this._input.onDidChange(e => {
 			if (this._dataSource.options) {
 				this._filter.filterString = e;
@@ -231,17 +240,19 @@ export class Dropdown extends Disposable {
 	}
 
 	private _layoutTree(): void {
-		let filteredLength = this._dataSource.options.reduce((p, i) => {
-			if (this._filter.isVisible(undefined, i)) {
-				return p + 1;
-			} else {
-				return p;
-			}
-		}, 0);
-		let height = filteredLength * this._renderer.getHeight(undefined, undefined) > this._options.maxHeight ? this._options.maxHeight : filteredLength * this._renderer.getHeight(undefined, undefined);
-		this.$treeContainer.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) - 2 + 'px');
-		this._tree.layout(parseInt(this.$treeContainer.style('height')));
-		this._tree.refresh();
+		if (this._dataSource && this._dataSource.options && this._dataSource.options.length > 0) {
+			let filteredLength = this._dataSource.options.reduce((p, i) => {
+				if (this._filter.isVisible(undefined, i)) {
+					return p + 1;
+				} else {
+					return p;
+				}
+			}, 0);
+			let height = filteredLength * this._renderer.getHeight(undefined, undefined) > this._options.maxHeight ? this._options.maxHeight : filteredLength * this._renderer.getHeight(undefined, undefined);
+			this.$treeContainer.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) - 2 + 'px');
+			this._tree.layout(parseInt(this.$treeContainer.style('height')));
+			this._tree.refresh();
+		}
 	}
 
 	public set values(vals: string[]) {

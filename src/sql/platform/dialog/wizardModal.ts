@@ -106,12 +106,12 @@ export class WizardModal extends Modal {
 		});
 		this._wizard.onPageAdded(page => {
 			this.registerPage(page);
-			this.showPage(this.getCurrentPage());
+			this.showPage(this.getCurrentPage(), false);
 		});
 		this._wizard.onPageRemoved(page => {
 			let dialogPane = this._dialogPanes.get(page);
 			this._dialogPanes.delete(page);
-			this.showPage(this.getCurrentPage());
+			this.showPage(this.getCurrentPage(), false);
 			dialogPane.dispose();
 		});
 	}
@@ -123,10 +123,13 @@ export class WizardModal extends Modal {
 		page.onUpdate(() => this.setButtonsForPage(this._wizard.currentPage));
 	}
 
-	private showPage(index: number): void {
+	private async showPage(index: number, validate: boolean = true): Promise<void> {
 		let pageToShow = this._wizard.pages[index];
 		if (!pageToShow) {
-			this.done();
+			this.done(validate);
+			return;
+		}
+		if (validate && !await this._wizard.validateNavigation(index)) {
 			return;
 		}
 		this._dialogPanes.forEach((dialogPane, page) => {
@@ -163,12 +166,15 @@ export class WizardModal extends Modal {
 	}
 
 	public open(): void {
-		this.showPage(0);
+		this.showPage(0, false);
 		this.show();
 	}
 
-	public done(): void {
+	public async done(validate: boolean = true): Promise<void> {
 		if (this._wizard.doneButton.enabled) {
+			if (validate && !await this._wizard.validateNavigation(undefined)) {
+				return;
+			}
 			this._onDone.fire();
 			this.dispose();
 			this.hide();
