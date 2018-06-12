@@ -4,11 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IThemable } from 'vs/platform/theme/common/styler';
-import * as objects from 'sql/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Dimension } from 'vs/base/browser/dom';
+import { Dimension, EventType } from 'vs/base/browser/dom';
 import { $, Builder } from 'vs/base/browser/builder';
-import { EventType } from 'vs/base/browser/dom';
 import { IAction } from 'vs/base/common/actions';
 import { IActionOptions, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -57,6 +55,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 	private _actionbar: ActionBar;
 	private _currentDimensions: Dimension;
 	private _collapsed = false;
+	private _headerVisible: boolean;
 
 	private _onTabChange = new Emitter<PanelTabIdentifier>();
 	public onTabChange: Event<PanelTabIdentifier> = this._onTabChange.event;
@@ -74,7 +73,10 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this._actionbar = new ActionBar(actionbarcontainer.getHTMLElement());
 		this.$header.append(actionbarcontainer);
 		if (options.showHeaderWhenSingleView) {
+			this._headerVisible = true;
 			this.$parent.append(this.$header);
+		} else {
+			this._headerVisible = false;
 		}
 		this.$body = $('tabBody');
 		this.$body.attr('role', 'tabpanel');
@@ -89,8 +91,9 @@ export class TabbedPanel extends Disposable implements IThemable {
 		if (!this._shownTab) {
 			this.showTab(tab.identifier);
 		}
-		if (this._tabMap.size > 1 && !this.$header.getHTMLElement().parentNode) {
+		if (this._tabMap.size > 1 && !this._headerVisible) {
 			this.$parent.append(this.$header, 0);
+			this._headerVisible = true;
 		}
 		return tab.identifier as PanelTabIdentifier;
 	}
@@ -169,8 +172,9 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this._currentDimensions = dimension;
 		this.$header.style('width', dimension.width + 'px');
 		this.$body.style('width', dimension.width + 'px');
-		this.$body.style('height', (dimension.height - this.headersize) + 'px');
-		this._layoutCurrentTab(new Dimension(dimension.width, dimension.height - this.headersize));
+		const bodyHeight = dimension.height - (this._headerVisible ? this.headersize : 0);
+		this.$body.style('height', bodyHeight + 'px');
+		this._layoutCurrentTab(new Dimension(dimension.width, bodyHeight));
 	}
 
 	private _layoutCurrentTab(dimension: Dimension): void {

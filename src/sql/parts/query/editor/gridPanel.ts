@@ -9,6 +9,9 @@ import { attachTableStyler } from 'sql/common/theme/styler';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table, ITableStyles } from 'sql/base/browser/ui/table/table';
+import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
+import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
+import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 
 import * as sqlops from 'sqlops';
 
@@ -23,11 +26,11 @@ import { range } from 'vs/base/common/arrays';
 import { Orientation, IView } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { $ } from 'vs/base/browser/builder';
-import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
-import { MouseWheelSupport } from '../../../base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 
 const rowHeight = 29;
+const columnHeight = 26;
 const minGridHeightInRows = 8;
+const estimatedScrollBarHeight = 10;
 
 export class GridPanel extends ViewletPanel {
 	private container = document.createElement('div');
@@ -62,21 +65,22 @@ export class GridPanel extends ViewletPanel {
 	public onResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
 		if (isArray(resultSet)) {
 			resultSet.forEach(c => {
-				let table = new GridTable(this.runner, c);
-				this.tableDisposable.push(attachTableStyler(table, this.themeService));
-				this.splitView.addView(table, 1, this.splitView.length);
-				this.tables.push(table);
+				this.addResultSet(c);
 			});
 		} else {
-			let table = new GridTable(this.runner, resultSet);
-			this.tableDisposable.push(attachTableStyler(table, this.themeService));
-			this.splitView.addView(table, 1, this.splitView.length);
-			this.tables.push(table);
+			this.addResultSet(resultSet);
 		}
 
 		this.maximumBodySize = this.tables.reduce((p, c) => {
 			return p + c.maximumSize;
 		}, 0);
+	}
+
+	private addResultSet(resultSet: sqlops.ResultSetSummary) {
+		let table = new GridTable(this.runner, resultSet);
+		this.tableDisposable.push(attachTableStyler(table, this.themeService));
+		this.splitView.addView(table, table.minimumSize, this.splitView.length);
+		this.tables.push(table);
 	}
 
 	public reset() {
@@ -119,6 +123,7 @@ class GridTable extends Disposable implements IView {
 		this.table = this._register(new Table(this.container, { dataProvider, columns }, { rowHeight, showRowNumber: true }));
 		this.table.setSelectionModel(new DragCellSelectionModel());
 		this.table.registerPlugin(new MouseWheelSupport());
+		this.table.registerPlugin(new AutoColumnSize({}));
 	}
 
 	public render(container: HTMLElement, orientation: Orientation): void {
@@ -130,13 +135,13 @@ class GridTable extends Disposable implements IView {
 	}
 
 	public get minimumSize(): number {
-		let smallestRows = (this.resultSet.rowCount + 1) * rowHeight;
-		let smallestSize = minGridHeightInRows * rowHeight;
+		let smallestRows = ((this.resultSet.rowCount) * rowHeight) + columnHeight + estimatedScrollBarHeight;
+		let smallestSize = (minGridHeightInRows * rowHeight) + columnHeight + estimatedScrollBarHeight;
 		return Math.min(smallestRows, smallestSize);
 	}
 
 	public get maximumSize(): number {
-		return (this.resultSet.rowCount + 1) * rowHeight;
+		return ((this.resultSet.rowCount) * rowHeight) + columnHeight + estimatedScrollBarHeight;
 	}
 
 	private loadData(offset: number, count: number): Thenable<any[]> {

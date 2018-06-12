@@ -249,7 +249,7 @@ export class DragCellSelectionModel<T> implements Slick.SelectionModel<T, Array<
 			this._ranges.push(new Slick.Range(0, last, this._grid.getDataLength() - 1, last));
 		} else {
 			this._ranges = [new Slick.Range(0, columnIndex, this._grid.getDataLength() - 1, columnIndex)];
-			this._grid.resetActiveCell();
+			this._grid.setActiveCell(0, columnIndex + 1);
 		}
 		this.setSelectedRanges(this._ranges);
 		e.stopImmediatePropagation();

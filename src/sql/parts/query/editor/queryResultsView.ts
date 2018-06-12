@@ -34,12 +34,14 @@ class ResultsView implements IPanelView {
 	private queryRunnerDisposable: IDisposable[] = [];
 
 	constructor(instantiationService: IInstantiationService) {
-		this.panelViewlet = instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: true });
+		this.panelViewlet = instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: false });
 		this.gridPanel = instantiationService.createInstance(GridPanel, nls.localize('gridPanel', 'Results'), {});
 		this.messagePanel = instantiationService.createInstance(MessagePanel, nls.localize('messagePanel', 'Messages'), {});
 		this.panelViewlet.create(this.container).then(() => {
-			this.panelViewlet.addPanels([{ panel: this.gridPanel, size: 1, index: 0 }]);
-			this.panelViewlet.addPanels([{ panel: this.messagePanel, size: this.messagePanel.minimumSize, index: 1 }]);
+			this.panelViewlet.addPanels([
+				{ panel: this.gridPanel, size: 1000, index: 0 },
+				{ panel: this.messagePanel, size: this.messagePanel.minimumSize, index: 1 }
+			]);
 		});
 	}
 

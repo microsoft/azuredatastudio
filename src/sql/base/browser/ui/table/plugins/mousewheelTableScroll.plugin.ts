@@ -9,7 +9,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardMouseWheelEvent } from 'vs/base/browser/mouseEvent';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { mixin } from 'vs/base/common/objects';
-import { runInThisContext } from 'vm';
 
 const SCROLL_WHEEL_SENSITIVITY = 50;
 
@@ -26,7 +25,6 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 	private viewport: HTMLElement;
 	private canvas: HTMLElement;
 	private options: IMouseWheelSupportOptions;
-	private grid: Slick.Grid<any>;
 
 	private _disposables: IDisposable[] = [];
 
@@ -37,7 +35,6 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 	public init(grid: Slick.Grid<any>): void {
 		this.canvas = grid.getCanvasNode();
 		this.viewport = this.canvas.parentElement;
-		this.grid = grid;
 		let onMouseWheel = (browserEvent: MouseWheelEvent) => {
 			let e = new StandardMouseWheelEvent(browserEvent);
 			this._onMouseWheel(e);
@@ -49,14 +46,27 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 	private _onMouseWheel(event: StandardMouseWheelEvent) {
 		const scrollHeight = this.canvas.clientHeight;
 		const height = this.viewport.clientHeight;
-		if ((this.viewport.scrollTop - (event.deltaY * this.options.scrollSpeed)) + height > scrollHeight) {
-			this.viewport.scrollTop = scrollHeight - height;
-			this.viewport.dispatchEvent(new Event('scroll'));
+		const scrollDown = Math.sign(event.deltaY) === -1;
+		if (scrollDown) {
+			if ((this.viewport.scrollTop - (event.deltaY * this.options.scrollSpeed)) + height > scrollHeight) {
+				this.viewport.scrollTop = scrollHeight - height;
+				this.viewport.dispatchEvent(new Event('scroll'));
+			} else {
+				this.viewport.scrollTop = this.viewport.scrollTop - (event.deltaY * this.options.scrollSpeed);
+				this.viewport.dispatchEvent(new Event('scroll'));
+				event.stopPropagation();
+				event.preventDefault();
+			}
 		} else {
-			this.viewport.scrollTop = this.viewport.scrollTop - (event.deltaY * this.options.scrollSpeed);
-			this.viewport.dispatchEvent(new Event('scroll'));
-			event.stopPropagation();
-			event.preventDefault();
+			if ((this.viewport.scrollTop - (event.deltaY * this.options.scrollSpeed)) < 0) {
+				this.viewport.scrollTop = 0;
+				this.viewport.dispatchEvent(new Event('scroll'));
+			} else {
+				this.viewport.scrollTop = this.viewport.scrollTop - (event.deltaY * this.options.scrollSpeed);
+				this.viewport.dispatchEvent(new Event('scroll'));
+				event.stopPropagation();
+				event.preventDefault();
+			}
 		}
 	}
 
