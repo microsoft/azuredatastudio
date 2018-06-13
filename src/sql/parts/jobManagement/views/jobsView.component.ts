@@ -36,7 +36,7 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
@@ -94,8 +94,8 @@ export class JobsViewComponent implements AfterContentChecked {
 	private filterValueMap: { [columnName: string]: string[]; } = {};
 	private sortingStylingMap: { [columnName: string]: any; } = {};
 
-	private NewJobText:string = nls.localize("jobsToolbar-NewJob", "New job");
-	private RefreshText:string = nls.localize("jobsToolbar-Refresh", "Refresh");
+	private NewJobText: string = nls.localize("jobsToolbar-NewJob", "New job");
+	private RefreshText: string = nls.localize("jobsToolbar-Refresh", "Refresh");
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
@@ -103,7 +103,8 @@ export class JobsViewComponent implements AfterContentChecked {
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
-		@Inject(IThemeService) private _themeService: IThemeService
+		@Inject(IThemeService) private _themeService: IThemeService,
+		@Inject(ICommandService) private _commandService: ICommandService
 	) {
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
@@ -745,8 +746,10 @@ export class JobsViewComponent implements AfterContentChecked {
 	}
 
 	private openCreateJobDialog() {
+		this._commandService.executeCommand("agent.openCreateJobDialog");
 	}
 
 	private refreshJobs() {
+		this._agentViewComponent.refresh = true;
 	}
 }

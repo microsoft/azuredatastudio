@@ -3,15 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
-
+import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import * as data from 'sqlops';
 import { ApiWrapper } from './apiWrapper';
+import {CreateJobDialog} from './dialogs/createJobDialog';
 
 /**
  * The main controller class that initializes the extension
  */
-export class MainController  {
+export class MainController {
     protected _apiWrapper: ApiWrapper;
     protected _context: vscode.ExtensionContext;
 
@@ -33,6 +33,10 @@ export class MainController  {
 
         this._apiWrapper.registerWebviewProvider('data-management-agent', webview => {
             webview.html = '<div><h1>SQL Agent</h1></div>';
+        });
+        vscode.commands.registerCommand('agent.openCreateJobDialog', () => {
+            let dialog = new CreateJobDialog();
+            dialog.showDialog();
         });
     }
 }
