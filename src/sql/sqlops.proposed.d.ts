@@ -305,6 +305,8 @@ declare module 'sqlops' {
 		multiline?: boolean;
 		rows?: number;
 		columns?: number;
+		min?: number;
+		max?: number;
 	}
 
 	export interface TableColumn {

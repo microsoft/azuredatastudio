@@ -144,6 +144,12 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 			input.inputElement.type = this.inputType;
 			if (this.inputType === 'number') {
 				input.inputElement.step = 'any';
+				if (this.min) {
+					input.inputElement.min = this.min.toString();
+				}
+				if (this.max) {
+					input.inputElement.max = this.max.toString();
+				}
 			}
 		}
 		input.value = this.value;
@@ -226,6 +232,22 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public set rows(newValue: number) {
 		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.rows = value, newValue);
+	}
+
+	public get min(): number {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.min, undefined);
+	}
+
+	public set min(newValue: number) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.min = value, newValue);
+	}
+
+	public get max(): number {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.max, undefined);
+	}
+
+	public set max(newValue: number) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.max = value, newValue);
 	}
 
 	public get inputType(): string {

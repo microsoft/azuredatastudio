@@ -567,6 +567,20 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 		this.setProperty('rows', v);
 	}
 
+	public get min(): number {
+		return this.properties['min'];
+	}
+	public set min(v: number) {
+		this.setProperty('min', v);
+	}
+
+	public get max(): number {
+		return this.properties['max'];
+	}
+	public set max(v: number) {
+		this.setProperty('max', v);
+	}
+
 	public get columns(): number {
 		return this.properties['columns'];
 	}
