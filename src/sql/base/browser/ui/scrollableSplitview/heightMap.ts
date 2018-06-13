@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { INextIterator, ArrayIterator } from 'vs/base/common/iterator';
+import { INextIterator } from 'vs/base/common/iterator';
 
 export interface IView {
 	id: string;
@@ -31,8 +31,7 @@ export class HeightMap {
 		return !last ? 0 : last.top + last.height;
 	}
 
-	public onInsertItems(iterator: INextIterator<IView>, afterItemId: string = null): number {
-		let item: IView;
+	public onInsertItems(iterator: INextIterator<IViewItem>, afterItemId: string = null): number {
 		let viewItem: IViewItem;
 		let i: number, j: number;
 		let totalSize: number;
@@ -57,11 +56,10 @@ export class HeightMap {
 
 		let itemsToInsert: IViewItem[] = [];
 
-		while (item = iterator.next()) {
-			viewItem = this.createViewItem(item);
+		while (viewItem = iterator.next()) {
 			viewItem.top = totalSize + sizeDiff;
 
-			this.indexes[item.id] = i++;
+			this.indexes[viewItem.view.id] = i++;
 			itemsToInsert.push(viewItem);
 			sizeDiff += viewItem.height;
 		}
@@ -137,6 +135,22 @@ export class HeightMap {
 		// noop
 	}
 
+	protected updateSize(item: string, size: number): void {
+		let i = this.indexes[item];
+
+		let viewItem = this.heightMap[i];
+
+		viewItem.height = size;
+	}
+
+	protected updateTop(item: string, top: number): void {
+		let i = this.indexes[item];
+
+		let viewItem = this.heightMap[i];
+
+		viewItem.top = top;
+	}
+
 	public itemsCount(): number {
 		return this.heightMap.length;
 	}
@@ -189,10 +203,6 @@ export class HeightMap {
 
 	public itemAfter(item: IViewItem): IViewItem {
 		return this.heightMap[this.indexes[item.view.id] + 1] || null;
-	}
-
-	protected createViewItem(item: IView): IViewItem {
-		throw new Error('not implemented');
 	}
 
 	public dispose(): void {

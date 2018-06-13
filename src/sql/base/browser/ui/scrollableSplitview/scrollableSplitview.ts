@@ -15,6 +15,7 @@ import { range, firstIndex } from 'vs/base/common/arrays';
 import { Sash, Orientation, ISashEvent as IBaseSashEvent } from 'vs/base/browser/ui/sash/sash';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { HeightMap, IView as HeightIView, IViewItem as HeightIViewItem } from './heightMap';
+import { ArrayIterator } from 'vs/base/common/iterator';
 export { Orientation } from 'vs/base/browser/ui/sash/sash';
 
 export interface ISplitViewOptions {
@@ -109,7 +110,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		this.el = document.createElement('div');
 		this.scrollable = new ScrollableElement(this.el, {});
 		this.scrollable.onScroll(e => {
-			this.render(e.scrollTop, e.height, e.scrollLeft, e.width, e.scrollWidth);
+			this.render(e.scrollTop, e.height);
 		});
 		let domNode = this.scrollable.getDomNode();
 		dom.addClass(this.el, 'monaco-scroll-split-view');
@@ -128,12 +129,6 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		// Add view
 		const container = dom.$('.split-view-view');
 
-		if (index === this.viewItems.length) {
-			this.el.appendChild(container);
-		} else {
-			this.el.insertBefore(container, this.el.children.item(index));
-		}
-
 		const onChangeDisposable = view.onDidChange(size => this.onViewChange(item, size));
 		const containerDisposable = toDisposable(() => this.el.removeChild(container));
 		const disposable = combinedDisposable([onChangeDisposable, containerDisposable]);
@@ -150,6 +145,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		size = Math.round(size);
 		const item: IViewItem = { view, container, size, layout, disposable, height: 0, top: 0, width: 0 };
 		this.viewItems.splice(index, 0, item);
+
+		this.onInsertItems(new ArrayIterator([item]), index > 0 ? this.viewItems[index - 1].view.id : undefined);
 
 		// Add sash
 		if (this.viewItems.length > 1) {
@@ -177,6 +174,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		view.render(container, this.orientation);
 		this.relayout(index);
+		this.render(this.scrollable.getScrollPosition().scrollLeft, this.scrollable.getScrollDimensions().height);
 		this.state = State.Idle;
 	}
 
@@ -249,7 +247,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		this.resize(this.viewItems.length - 1, size - previousSize);
 	}
 
-	private render(scrollTop: number, viewHeight: number, scrollLeft: number, viewWidth: number, scrollWidth: number): void {
+	private render(scrollTop: number, viewHeight: number): void {
 		let i: number;
 		let stop: number;
 
