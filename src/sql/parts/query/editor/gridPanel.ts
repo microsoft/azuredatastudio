@@ -26,6 +26,7 @@ import { range } from 'vs/base/common/arrays';
 import { Orientation, IView } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { $ } from 'vs/base/browser/builder';
+import { generateUuid } from 'vs/base/common/uuid';
 
 const rowHeight = 29;
 const columnHeight = 26;
@@ -99,15 +100,16 @@ class GridTable extends Disposable implements IView {
 	private _onDidChange = new Emitter<number>();
 	public readonly onDidChange: Event<number> = this._onDidChange.event;
 
+	public id = generateUuid();
+
 	constructor(private runner: QueryRunner, private resultSet: sqlops.ResultSetSummary) {
 		super();
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-		let collection = new VirtualizedCollection(50, resultSet.rowCount, (offset, count) => {
-			return this.loadData(offset, count);
-		}, index => {
-			return this.placeholdGenerator(index);
-		});
+		let collection = new VirtualizedCollection(50, resultSet.rowCount,
+			(offset, count) => this.loadData(offset, count),
+			index => this.placeholdGenerator(index)
+		);
 		collection.setCollectionChangedCallback((change, startIndex, count) => {
 			this.renderGridDataRowsRange(startIndex, count);
 		});
@@ -123,7 +125,7 @@ class GridTable extends Disposable implements IView {
 		this.table = this._register(new Table(this.container, { dataProvider, columns }, { rowHeight, showRowNumber: true }));
 		this.table.setSelectionModel(new DragCellSelectionModel());
 		this.table.registerPlugin(new MouseWheelSupport());
-		this.table.registerPlugin(new AutoColumnSize({}));
+		this.table.registerPlugin(new AutoColumnSize());
 	}
 
 	public render(container: HTMLElement, orientation: Orientation): void {

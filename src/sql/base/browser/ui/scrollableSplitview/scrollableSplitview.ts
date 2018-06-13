@@ -14,14 +14,14 @@ import { clamp } from 'vs/base/common/numbers';
 import { range, firstIndex } from 'vs/base/common/arrays';
 import { Sash, Orientation, ISashEvent as IBaseSashEvent } from 'vs/base/browser/ui/sash/sash';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
-import { ScrollEvent } from 'vs/base/common/scrollable';
+import { HeightMap, IView as HeightIView, IViewItem as HeightIViewItem } from './heightMap';
 export { Orientation } from 'vs/base/browser/ui/sash/sash';
 
 export interface ISplitViewOptions {
 	orientation?: Orientation; // default Orientation.VERTICAL
 }
 
-export interface IView {
+export interface IView extends HeightIView {
 	readonly minimumSize: number;
 	readonly maximumSize: number;
 	readonly onDidChange: Event<number | undefined>;
@@ -35,7 +35,7 @@ interface ISashEvent {
 	current: number;
 }
 
-interface IViewItem {
+interface IViewItem extends HeightIViewItem {
 	view: IView;
 	size: number;
 	container: HTMLElement;
@@ -78,7 +78,7 @@ function pushToEnd<T>(arr: T[], value: T): T[] {
 	return result;
 }
 
-export class ScrollableSplitView implements IDisposable {
+export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 	private orientation: Orientation;
 	private el: HTMLElement;
@@ -90,6 +90,9 @@ export class ScrollableSplitView implements IDisposable {
 	private state: State = State.Idle;
 	private scrollable: ScrollableElement;
 
+	private lastRenderTop: number;
+	private lastRenderHeight: number;
+
 	private _onDidSashChange = new Emitter<void>();
 	readonly onDidSashChange = this._onDidSashChange.event;
 	private _onDidSashReset = new Emitter<void>();
@@ -100,11 +103,14 @@ export class ScrollableSplitView implements IDisposable {
 	}
 
 	constructor(container: HTMLElement, options: ISplitViewOptions = {}) {
+		super();
 		this.orientation = types.isUndefined(options.orientation) ? Orientation.VERTICAL : options.orientation;
 
 		this.el = document.createElement('div');
 		this.scrollable = new ScrollableElement(this.el, {});
-		this.scrollable.onScroll(this.onScroll, this);
+		this.scrollable.onScroll(e => {
+			this.render(e.scrollTop, e.height, e.scrollLeft, e.width, e.scrollWidth);
+		});
 		let domNode = this.scrollable.getDomNode();
 		dom.addClass(this.el, 'monaco-scroll-split-view');
 		dom.addClass(domNode, 'monaco-split-view2');
@@ -142,7 +148,7 @@ export class ScrollableSplitView implements IDisposable {
 		};
 
 		size = Math.round(size);
-		const item: IViewItem = { view, container, size, layout, disposable };
+		const item: IViewItem = { view, container, size, layout, disposable, height: 0, top: 0, width: 0 };
 		this.viewItems.splice(index, 0, item);
 
 		// Add sash
@@ -243,8 +249,42 @@ export class ScrollableSplitView implements IDisposable {
 		this.resize(this.viewItems.length - 1, size - previousSize);
 	}
 
-	private onScroll(e: ScrollEvent): void {
-		this.el.style.top = `-${e.scrollTop}px`;
+	private render(scrollTop: number, viewHeight: number, scrollLeft: number, viewWidth: number, scrollWidth: number): void {
+		let i: number;
+		let stop: number;
+
+		let renderTop = scrollTop;
+		let renderBottom = scrollTop + viewHeight;
+		let thisRenderBottom = this.lastRenderTop + this.lastRenderHeight;
+
+		// when view scrolls down, start rendering from the renderBottom
+		for (i = this.indexAfter(renderBottom) - 1, stop = this.indexAt(Math.max(thisRenderBottom, renderTop)); i >= stop; i--) {
+			this.insertItemInDOM(<IViewItem>this.itemAtIndex(i));
+		}
+
+		// when view scrolls up, start rendering from either this.renderTop or renderBottom
+		for (i = Math.min(this.indexAt(this.lastRenderTop), this.indexAfter(renderBottom)) - 1, stop = this.indexAt(renderTop); i >= stop; i--) {
+			this.insertItemInDOM(<IViewItem>this.itemAtIndex(i));
+		}
+
+		// when view scrolls down, start unrendering from renderTop
+		for (i = this.indexAt(this.lastRenderTop), stop = Math.min(this.indexAt(renderTop), this.indexAfter(thisRenderBottom)); i < stop; i++) {
+			this.removeItemFromDOM(<IViewItem>this.itemAtIndex(i));
+		}
+
+		// when view scrolls up, start unrendering from either renderBottom this.renderTop
+		for (i = Math.max(this.indexAfter(renderBottom), this.indexAt(this.lastRenderTop)), stop = this.indexAfter(thisRenderBottom); i < stop; i++) {
+			this.removeItemFromDOM(<IViewItem>this.itemAtIndex(i));
+		}
+
+		let topItem = this.itemAtIndex(this.indexAt(renderTop));
+
+		if (topItem) {
+			this.el.style.top = (topItem.top - renderTop) + 'px';
+		}
+
+		this.lastRenderTop = renderTop;
+		this.lastRenderHeight = renderBottom - renderTop;
 	}
 
 	private onSashStart({ sash, start }: ISashEvent): void {
@@ -321,6 +361,27 @@ export class ScrollableSplitView implements IDisposable {
 		}
 
 		this.state = State.Idle;
+	}
+
+	// DOM changes
+
+	private insertItemInDOM(item: IViewItem): void {
+		let elementAfter: HTMLElement = null;
+		let itemAfter = <IViewItem>this.itemAfter(item);
+
+		if (itemAfter && itemAfter.container) {
+			elementAfter = itemAfter.container;
+		}
+
+		this.el.insertBefore(item.container, elementAfter);
+	}
+
+	private removeItemFromDOM(item: IViewItem): void {
+		if (!item) {
+			return;
+		}
+
+		this.el.removeChild(item.container);
 	}
 
 	getViewSize(index: number): number {

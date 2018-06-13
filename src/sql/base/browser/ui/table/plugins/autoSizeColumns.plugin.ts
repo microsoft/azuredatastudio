@@ -16,7 +16,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 	private _context: CanvasRenderingContext2D;
 	private _options: IAutoColumnSizeOptions;
 
-	constructor(options: IAutoColumnSizeOptions) {
+	constructor(options: IAutoColumnSizeOptions = {}) {
 		this._options = mixin(options, defaultOptions, false);
 	}
 
