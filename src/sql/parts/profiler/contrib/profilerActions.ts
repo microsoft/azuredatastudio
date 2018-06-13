@@ -84,12 +84,11 @@ export class ProfilerStart extends Action {
 			return true;
 		}));
 	}
-
 }
 
 export class ProfilerPause extends Action {
 	public static ID = 'profiler.pause';
-	public static LABEL = nls.localize('pause', "Capture");
+	public static LABEL = nls.localize('profiler.capture', "Pause Capture");
 
 	private _paused: boolean = false;
 
@@ -101,25 +100,31 @@ export class ProfilerPause extends Action {
 	}
 
 	public run(input: ProfilerInput): TPromise<boolean> {
-		if(!this._paused) {
+		return TPromise.wrap(this._profilerService.pauseSession(input.id).then(() => {
+			this.paused = !this._paused;
+			input.state.change({ isPaused: this.paused, isStopped: false, isRunning: !this.paused });
+			return true;
+		}));
+		/*if (!this._paused) {
 			return TPromise.wrap(this._profilerService.pauseSession(input.id).then(() => {
 				this.paused = true;
 				input.state.change({ isPaused: true, isStopped: false, isRunning: false });
 				return true;
 			}));
-		}
-		else {
+		} else {
 			return TPromise.wrap(this._profilerService.pauseSession(input.id).then(() => {
 				this.paused = false;
-				input.state.change({ isPaused: false, isStopped: false, isRunning: true });
+				input.state.change({ isPaused: true, isStopped: false, isRunning: false });
 				return true;
 			}));
 		}
+		*/
 	}
 
 	public set paused(value: boolean) {
 		this._paused = value;
 		this._setClass(value ? 'start' : 'stop');
+		this._setLabel(value ? nls.localize('profilerAction.resumeCapture', "Resume Capture") : nls.localize('profilerAction.pauseCapture', "Pause Capture"));
 	}
 
 	public get paused(): boolean {

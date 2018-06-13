@@ -397,7 +397,7 @@ export class ProfilerEditor extends BaseEditor {
 			return;
 		}
 
-		if(e.isPaused){
+		if (e.isPaused){
 			this._pauseAction.paused = this.input.state.isPaused;
 		}
 
