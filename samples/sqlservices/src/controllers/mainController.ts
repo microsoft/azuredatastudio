@@ -82,7 +82,8 @@ export default class MainController implements vscode.Disposable {
 		tab1.registerContent(async (view) => {
 			let inputBox = view.modelBuilder.inputBox()
 				.withProperties({
-					//width: 300
+					multiline: true,
+					height: 100
 				}).component();
 			let inputBoxWrapper = view.modelBuilder.loadingComponent().withItem(inputBox).component();
 			inputBoxWrapper.loading = false;
