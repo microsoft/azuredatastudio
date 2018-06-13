@@ -105,20 +105,6 @@ export class ProfilerPause extends Action {
 			input.state.change({ isPaused: this.paused, isStopped: false, isRunning: !this.paused });
 			return true;
 		}));
-		/*if (!this._paused) {
-			return TPromise.wrap(this._profilerService.pauseSession(input.id).then(() => {
-				this.paused = true;
-				input.state.change({ isPaused: true, isStopped: false, isRunning: false });
-				return true;
-			}));
-		} else {
-			return TPromise.wrap(this._profilerService.pauseSession(input.id).then(() => {
-				this.paused = false;
-				input.state.change({ isPaused: true, isStopped: false, isRunning: false });
-				return true;
-			}));
-		}
-		*/
 	}
 
 	public set paused(value: boolean) {
