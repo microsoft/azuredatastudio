@@ -25,10 +25,8 @@ import { TextAreaInput } from 'vs/editor/browser/controller/textAreaInput';
 @Component({
 	selector: 'modelview-inputBox',
 	template: `
-	<div>
-		<div [style.display]="getInputBoxDisplay()" #input style="width: 100%"></div>
-		<div [style.display]="getTextAreaDisplay()" #textarea style="width: 100%"></div>
-		</div>
+			<div [style.display]="getInputBoxDisplay()" #input style="width: 100%"></div>
+			<div [style.display]="getTextAreaDisplay()" #textarea style="width: 100%"></div>
 	`
 })
 export default class InputBoxComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
