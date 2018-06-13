@@ -71,13 +71,13 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		};
 		if (this._inputContainer) {
 			this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
-			this.registerInput(this._input, ()=>!this.multiline);
+			this.registerInput(this._input, () => !this.multiline);
 
 		}
 		if (this._textareaContainer) {
 			let textAreaInputOptions = Object.assign({}, inputOptions, { flexibleHeight: true });
 			this._textAreaInput = new InputBox(this._textareaContainer.nativeElement, this.contextViewService, textAreaInputOptions);
-			this.registerInput(this._textAreaInput, ()=>this.multiline);
+			this.registerInput(this._textAreaInput, () => this.multiline);
 		}
 	}
 
@@ -85,7 +85,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		return this.multiline ? this._textAreaInput : this._input;
 	}
 
-	private registerInput(input: InputBox, checkOption:()=>boolean): void {
+	private registerInput(input: InputBox, checkOption: () => boolean): void {
 		if (input) {
 			this._validations.push(() => !input.inputElement.validationMessage);
 
@@ -103,11 +103,11 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		}
 	}
 
-	public getInputBoxDisplay() : string {
+	public getInputBoxDisplay(): string {
 		return !this.multiline ? '' : 'none';
 	}
 
-	public getTextAreaDisplay() : string {
+	public getTextAreaDisplay(): string {
 		return this.multiline ? '' : 'none';
 	}
 
