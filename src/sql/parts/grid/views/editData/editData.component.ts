@@ -220,17 +220,20 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		};
 	}
 
-	onRevertRow(): (index: number) => void {
+	onRevertRow(): () => void {
 		const self = this;
-		return (index: number): void => {
-			// Force focus to the first cell (completing any active edit operation)
-			self.focusCell(index, 0, false);
-			this.currentEditCellValue = null;
-			// Perform a revert row operation
-			self.dataService.revertRow(index)
-				.then(() => {
-					self.refreshResultsets();
-				});
+		return async (): Promise<void> => {
+			try {
+				// Perform a revert row operation
+				if (self.currentCell) {
+					await self.dataService.revertRow(self.currentCell.row);
+				}
+			} finally {
+				// The operation may fail if there were no changes sent to the service to revert,
+				// so clear any existing client-side edit and refresh the table regardless
+				this.currentEditCellValue = null;
+				self.refreshResultsets();
+			}
 		};
 	}
 
@@ -444,7 +447,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			handled = true;
 		} else if (e.keyCode === KeyCode.Escape) {
 			this.currentEditCellValue = null;
-			this.onRevertRow()(this.currentCell.row);
+			this.onRevertRow()();
 			handled = true;
 		}
 		return handled;
