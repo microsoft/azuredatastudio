@@ -129,7 +129,6 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			let data = {};
 			data['EventClass'] =  e.name;
 			data['StartTime'] = e.timestamp;
-			data['EndTime'] = e.timestamp;
 			const columns = [
 				'TextData',
 				'ApplicationName',
@@ -156,11 +155,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			columnNameMap['cpu_time'] = 'CPU';
 			columnNameMap['duration'] = 'Duration';
 			columnNameMap['logical_reads'] = 'Reads';
-
-			for (let idx = 0; idx < columns.length; ++idx) {
-				let columnName = columns[idx];
-				data[columnName] = '';
-			}
+			columnNameMap['event_sequence'] = 'EventSequence';
+			columnNameMap['client_pid'] = 'ClientProcessID';
+			columnNameMap['writes'] = 'Writes';
+			columnNameMap['duration'] = 'Duration';
 
 			for (let key in e.values) {
 				let columnName = columnNameMap[key];
