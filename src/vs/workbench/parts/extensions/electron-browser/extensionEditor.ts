@@ -327,17 +327,20 @@ export class ExtensionEditor extends BaseEditor {
 					.done(viewlet => viewlet.search(`publisher:"${extension.publisherDisplayName}"`));
 			});
 
-			if (extension.licenseUrl) {
-				this.license.onclick = finalHandler(() => window.open(extension.licenseUrl));
-				this.license.style.display = 'initial';
-			} else {
-				this.license.onclick = null;
-				this.license.style.display = 'none';
-			}
+
 		} else {
 			this.name.onclick = null;
 			this.rating.onclick = null;
 			this.publisher.onclick = null;
+		}
+
+		// {{SQL CARBON EDIT}}
+		if (extension.licenseUrl) {
+			this.license.onclick = finalHandler(() => window.open(extension.licenseUrl));
+			this.license.style.display = 'initial';
+		} else {
+			this.license.onclick = null;
+			this.license.style.display = 'none';
 		}
 
 		if (extension.repository) {
