@@ -272,24 +272,27 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		}
 
 		if (this.currentCell.row !== row) {
-			// We're changing row, commit the changes
-			cellSelectTasks = cellSelectTasks.then(() => {
-				return self.dataService.commitEdit()
-					.then(
-					result => {
+			// If we're currently adding a new row, only commit it if it has changes or the user is trying to add another new row
+			if (this.newRowVisible && this.currentCell.row === this.dataSet.dataRows.getLength() - 2 && !this.isNullRow(row) && this.currentEditCellValue === null) {
+				cellSelectTasks = cellSelectTasks.then(() => {
+					return this.revertCurrentRow().then(() => this.focusCell(row, column));
+				});
+			} else {
+				// We're changing row, commit the changes
+				cellSelectTasks = cellSelectTasks.then(() => {
+					return self.dataService.commitEdit().then(result => {
 						// Committing was successful, clean the grid
 						self.setGridClean();
 						self.rowIdMappings = {};
 						self.newRowVisible = false;
 						return Promise.resolve();
-					},
-					error => {
+					}, error => {
 						// Committing failed, jump back to the last selected cell
 						self.focusCell(self.currentCell.row, self.currentCell.column);
 						return Promise.reject(null);
-					}
-					);
-			});
+					});
+				});
+			}
 		}
 
 		if (this.isNullRow(row) && !this.removingNewRow) {
@@ -547,9 +550,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		// refresh results view
 		this.onScroll(0);
 
-		// Set focus to the row index column of the removed row
+		// Set focus to the row index column of the removed row if the current selection is in the removed row
 		setTimeout(() => {
-			this.focusCell(row, 0);
+			if (this.currentCell.row === row) {
+				this.focusCell(row, 0);
+			}
 			this.removingNewRow = false;
 		}, this.scrollTimeOutTime);
 	}
