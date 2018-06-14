@@ -117,7 +117,10 @@ export class CreateJobDialog {
 			this.nameTextBox = view.modelBuilder.inputBox().component();
 			this.ownerTextBox = view.modelBuilder.inputBox().component();
 			this.categoryDropdown = view.modelBuilder.dropDown().component();
-			this.descriptionTextBox = view.modelBuilder.inputBox().component();
+			this.descriptionTextBox = view.modelBuilder.inputBox().withProperties({
+				multiline: true,
+				height: 200
+			}).component();
 			this.enabledCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: this.EnabledCheckboxLabel
@@ -154,8 +157,12 @@ export class CreateJobDialog {
 						this.StepsTable_SuccessColumnString,
 						this.StepsTable_FailureColumnString
 					],
-					data:[],
-					height:500
+					data: [
+						['1', 'my step 1', '', 'quit', 'email'],
+						['2', 'my step 2', '', 'quit', 'email'],
+						['3', 'my step 3', '', 'quit', 'email']
+					],
+					height: 500
 				}).component();
 
 			this.newStepButton = view.modelBuilder.button().withProperties({
@@ -170,19 +177,15 @@ export class CreateJobDialog {
 				label: this.EditStepButtonString
 			}).component();
 
-			this.newStepButton = view.modelBuilder.button().withProperties({
+			this.deleteStepButton = view.modelBuilder.button().withProperties({
 				label: this.DeleteStepButtonString
 			}).component();
-
-			let buttonContainer = this.createRowContainer(view).withItems([this.newStepButton, this.insertStepButton, this.editStepButton, this.deleteStepButton]).component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.stepsTable,
-					title: this.JobStepsTopLabelString
-				}, {
-					component: buttonContainer,
-					title: ''
+					title: this.JobStepsTopLabelString,
+					actions: [this.newStepButton, this.insertStepButton, this.editStepButton, this.deleteStepButton]
 				}]).component();
 			await view.initializeModel(formModel);
 		});
