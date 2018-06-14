@@ -9,6 +9,8 @@
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ITree } from 'vs/base/parts/tree/browser/tree';
 
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
@@ -21,6 +23,11 @@ export interface IGridActionContext {
 	batchId: number;
 	resultId: number;
 	table: Table<any>;
+}
+
+export interface IMessagesActionContext {
+	selection: Selection;
+	tree: ITree;
 }
 
 export class SaveResultAction extends Action {
@@ -78,6 +85,40 @@ export class SelectAllGridAction extends Action {
 
 	public run(context: IGridActionContext): TPromise<boolean> {
 		context.table.setSelectedRows(true);
+		return TPromise.as(true);
+	}
+}
+
+export class CopyMessagesAction extends Action {
+	public static ID = 'grid.messages.copy';
+	public static LABEL = localize('copyMessages', 'Copy');
+
+	constructor(
+		@IClipboardService private clipboardService: IClipboardService
+	) {
+		super(CopyMessagesAction.ID, CopyMessagesAction.LABEL);
+	}
+
+	public run(context: IMessagesActionContext): TPromise<boolean> {
+		this.clipboardService.writeText(context.selection.toString());
+		return TPromise.as(true);
+	}
+}
+
+export class SelectAllMessagesAction extends Action {
+	public static ID = 'grid.messages.selectAll';
+	public static LABEL = localize('selectAll', 'Select All');
+
+	constructor() {
+		super(SelectAllMessagesAction.ID, SelectAllMessagesAction.LABEL);
+	}
+
+	public run(context: IMessagesActionContext): TPromise<boolean> {
+		let range = document.createRange();
+		range.selectNodeContents(context.tree.getHTMLElement());
+		let sel = document.getSelection();
+		sel.removeAllRanges();
+		sel.addRange(range);
 		return TPromise.as(true);
 	}
 }

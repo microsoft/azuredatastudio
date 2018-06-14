@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import 'vs/css!./media/messagePanel';
+import { IMessagesActionContext, SelectAllMessagesAction, CopyMessagesAction } from './actions';
 
 import { IResultMessage } from 'sqlops';
 
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
-import { IDataSource, ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
+import { IDataSource, ITree, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -18,7 +19,7 @@ import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { OpenMode, ClickBehavior, ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
+import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'vs/base/parts/tree/browser/treeDefaults';
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { $ } from 'vs/base/browser/builder';
@@ -157,6 +158,15 @@ export class MessageController extends WorkbenchTreeController {
 	private lastSelectedString: string = null;
 	public toFocusOnClick: { focus(): void };
 
+	constructor(
+		options: IControllerOptions,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IContextMenuService private contextMenuService: IContextMenuService,
+		@IInstantiationService private instantiationService: IInstantiationService
+	) {
+		super(options, configurationService);
+	}
+
 	protected onLeftClick(tree: ITree, element: any, eventish: ICancelableEvent, origin: string = 'mouse'): boolean {
 		const mouseEvent = <IMouseEvent>eventish;
 		// input and output are one element in the tree => we only expand if the user clicked on the output.
@@ -172,6 +182,40 @@ export class MessageController extends WorkbenchTreeController {
 			this.toFocusOnClick.focus();
 		}
 		this.lastSelectedString = selection.toString();
+
+		return true;
+	}
+
+	public onContextMenu(tree: ITree, element: any, event: ContextMenuEvent): boolean {
+		if (event.target && event.target.tagName && event.target.tagName.toLowerCase() === 'input') {
+			return false; // allow context menu on input fields
+		}
+
+		// Prevent native context menu from showing up
+		if (event) {
+			event.preventDefault();
+			event.stopPropagation();
+		}
+
+		const selection = document.getSelection();
+
+		this.contextMenuService.showContextMenu({
+			getAnchor: () => {
+				return { x: event.posx, y: event.posy };
+			},
+			getActions: () => {
+				return TPromise.as([
+					this.instantiationService.createInstance(CopyMessagesAction),
+					new SelectAllMessagesAction()
+				]);
+			},
+			getActionsContext: () => {
+				return <IMessagesActionContext> {
+					selection,
+					tree
+				};
+			}
+		});
 
 		return true;
 	}
