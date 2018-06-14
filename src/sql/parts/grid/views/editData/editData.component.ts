@@ -214,9 +214,14 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	onDeleteRow(): (index: number) => void {
 		const self = this;
 		return (index: number): void => {
-			self.dataService.deleteRow(index)
-				.then(() => self.dataService.commitEdit())
-				.then(() => self.removeRow(index));
+			// If the user is deleting a new row that hasn't been committed yet then use the revert code
+			if (self.newRowVisible && index === self.dataSet.dataRows.getLength() - 2) {
+				self.revertCurrentRow();
+			} else {
+				self.dataService.deleteRow(index)
+					.then(() => self.dataService.commitEdit())
+					.then(() => self.removeRow(index));
+			}
 		};
 	}
 
