@@ -1056,6 +1056,8 @@ declare module 'sqlops' {
 
 	export interface AgentJobInfo {
 		name: string;
+		owner: string;
+		description: string;
 		currentExecutionStatus: number;
 		lastRunOutcome: number;
 		currentExecutionStep: string;
@@ -1173,7 +1175,7 @@ declare module 'sqlops' {
 		job: AgentJobInfo;
 	}
 
-	export interface UpdateAgentJobResult extends ResultStatus  {
+	export interface UpdateAgentJobResult extends ResultStatus {
 		job: AgentJobInfo;
 	}
 
@@ -1181,7 +1183,7 @@ declare module 'sqlops' {
 		step: AgentJobStepInfo;
 	}
 
-	export interface UpdateAgentJobStepResult extends ResultStatus  {
+	export interface UpdateAgentJobStepResult extends ResultStatus {
 		step: AgentJobStepInfo;
 	}
 
@@ -1189,7 +1191,7 @@ declare module 'sqlops' {
 		step: AgentJobStepInfo;
 	}
 
-	export interface UpdateAgentProxyResult extends ResultStatus  {
+	export interface UpdateAgentProxyResult extends ResultStatus {
 		step: AgentJobStepInfo;
 	}
 
@@ -1201,7 +1203,7 @@ declare module 'sqlops' {
 		alert: AgentJobStepInfo;
 	}
 
-	export interface UpdateAgentAlertResult extends ResultStatus  {
+	export interface UpdateAgentAlertResult extends ResultStatus {
 		alert: AgentJobStepInfo;
 	}
 
@@ -1213,7 +1215,7 @@ declare module 'sqlops' {
 		operator: AgentOperatorInfo;
 	}
 
-	export interface UpdateAgentOperatorResult extends ResultStatus  {
+	export interface UpdateAgentOperatorResult extends ResultStatus {
 		operator: AgentOperatorInfo;
 	}
 
@@ -1225,7 +1227,7 @@ declare module 'sqlops' {
 		operator: AgentOperatorInfo;
 	}
 
-	export interface UpdateAgentProxyResult extends ResultStatus  {
+	export interface UpdateAgentProxyResult extends ResultStatus {
 		operator: AgentOperatorInfo;
 	}
 

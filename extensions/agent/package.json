@@ -30,18 +30,18 @@
       "sqlagent"
     ],
     "dashboard.tabs": [
-        {
-            "id": "data-management-agent",
-            "description": "Manage and troubleshoot SQL Agent jobs",
-            "provider": "MSSQL",
-            "title": "SQL Agent",
-            "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
-            "container": {
-                "controlhost-container": {
-                  "type": "agent"
-                }
-            }
+      {
+        "id": "data-management-agent",
+        "description": "Manage and troubleshoot SQL Agent jobs",
+        "provider": "MSSQL",
+        "title": "SQL Agent",
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
+        "container": {
+          "controlhost-container": {
+            "type": "agent"
+          }
         }
+      }
     ]
   },
   "devDependencies": {

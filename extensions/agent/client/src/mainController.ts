@@ -6,7 +6,7 @@
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { ApiWrapper } from './apiWrapper';
-import {CreateJobDialog} from './dialogs/createJobDialog';
+import { CreateJobDialog } from './dialogs/createJobDialog';
 
 /**
  * The main controller class that initializes the extension
@@ -34,8 +34,8 @@ export class MainController {
         this._apiWrapper.registerWebviewProvider('data-management-agent', webview => {
             webview.html = '<div><h1>SQL Agent</h1></div>';
         });
-        vscode.commands.registerCommand('agent.openCreateJobDialog', () => {
-            let dialog = new CreateJobDialog();
+        vscode.commands.registerCommand('agent.openCreateJobDialog', (ownerUri: string) => {
+            let dialog = new CreateJobDialog(ownerUri);
             dialog.showDialog();
         });
     }

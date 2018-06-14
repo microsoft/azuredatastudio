@@ -746,7 +746,8 @@ export class JobsViewComponent implements AfterContentChecked {
 	}
 
 	private openCreateJobDialog() {
-		this._commandService.executeCommand("agent.openCreateJobDialog");
+		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		this._commandService.executeCommand("agent.openCreateJobDialog", ownerUri);
 	}
 
 	private refreshJobs() {
