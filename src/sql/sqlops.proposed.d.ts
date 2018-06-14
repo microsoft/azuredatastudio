@@ -302,6 +302,11 @@ declare module 'sqlops' {
 		width: number;
 		inputType?: InputBoxInputType;
 		required?: boolean;
+		multiline?: boolean;
+		rows?: number;
+		columns?: number;
+		min?: number;
+		max?: number;
 	}
 
 	export interface TableColumn {

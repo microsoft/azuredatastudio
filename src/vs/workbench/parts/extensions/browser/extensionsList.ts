@@ -28,8 +28,9 @@ export interface ITemplateData {
 	element: HTMLElement;
 	icon: HTMLImageElement;
 	name: HTMLElement;
-	installCount: HTMLElement;
-	ratings: HTMLElement;
+	// {{SQL CARBON EDIT}}
+	//installCount: HTMLElement;
+	//ratings: HTMLElement;
 	author: HTMLElement;
 	description: HTMLElement;
 	extension: IExtension;
@@ -103,16 +104,19 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		const reloadAction = this.instantiationService.createInstance(ReloadAction);
 		const manageAction = this.instantiationService.createInstance(ManageExtensionAction);
 
+		// {{SQL CARBON EDIT}}
 		actionbar.push([updateAction, reloadAction, installAction, disabledStatusAction, maliciousStatusAction, manageAction], actionOptions);
-		const disposables = [versionWidget, installCountWidget, ratingsWidget, maliciousStatusAction, disabledStatusAction, updateAction, reloadAction, manageAction, actionbar, bookmarkStyler];
+		const disposables = [versionWidget, /*installCountWidget, ratingsWidget*/, maliciousStatusAction, disabledStatusAction, updateAction, reloadAction, manageAction, actionbar, bookmarkStyler];
 
 		return {
-			root, element, icon, name, installCount, ratings, author, description, disposables,
+			// {{SQL CARBON EDIT}}
+			root, element, icon, name, /*installCount, ratings,*/ author, description, disposables,
 			extensionDisposables: [],
 			set extension(extension: IExtension) {
 				versionWidget.extension = extension;
-				installCountWidget.extension = extension;
-				ratingsWidget.extension = extension;
+				// {{SQL CARBON EDIT}}
+				//installCountWidget.extension = extension;
+				//ratingsWidget.extension = extension;
 				maliciousStatusAction.extension = extension;
 				disabledStatusAction.extension = extension;
 				installAction.extension = extension;
@@ -132,8 +136,8 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		data.name.textContent = '';
 		data.author.textContent = '';
 		data.description.textContent = '';
-		data.installCount.style.display = 'none';
-		data.ratings.style.display = 'none';
+		//data.installCount.style.display = 'none';
+		//data.ratings.style.display = 'none';
 		data.extension = null;
 	}
 
@@ -173,8 +177,9 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		data.name.textContent = extension.displayName;
 		data.author.textContent = extension.publisherDisplayName;
 		data.description.textContent = extension.description;
-		data.installCount.style.display = '';
-		data.ratings.style.display = '';
+		// {{SQL CARBON EDIT}}
+		//data.installCount.style.display = '';
+		//data.ratings.style.display = '';
 		data.extension = extension;
 	}
 

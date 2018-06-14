@@ -67,12 +67,24 @@ export class InputBox extends vsInputBox {
 		this.applyStyles();
 	}
 
+	public set rows(value: number) {
+		this.inputElement.setAttribute('rows', value.toString());
+	}
+
+	public set columns(value: number) {
+		this.inputElement.setAttribute('cols', value.toString());
+	}
+
 	public disable(): void {
 		super.disable();
 		this.inputBackground = this.disabledInputBackground;
 		this.inputForeground = this.disabledInputForeground;
 		this.inputBorder = this.disabledInputBorder;
 		this.applyStyles();
+	}
+
+	public setHeight(value: string) {
+		this.inputElement.style.height = value;
 	}
 
 	public isEnabled(): boolean {
