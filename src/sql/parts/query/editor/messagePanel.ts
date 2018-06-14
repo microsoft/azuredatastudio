@@ -210,7 +210,7 @@ export class MessageController extends WorkbenchTreeController {
 				]);
 			},
 			getActionsContext: () => {
-				return <IMessagesActionContext> {
+				return <IMessagesActionContext>{
 					selection,
 					tree
 				};
