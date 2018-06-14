@@ -130,7 +130,12 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		const container = dom.$('.split-view-view');
 
 		const onChangeDisposable = view.onDidChange(size => this.onViewChange(item, size));
-		const containerDisposable = toDisposable(() => this.el.removeChild(container));
+		const containerDisposable = toDisposable(() => {
+			if (container.parentElement) {
+				this.el.removeChild(container);
+			}
+			this.onRemoveItems(new ArrayIterator([item.view.id]));
+		});
 		const disposable = combinedDisposable([onChangeDisposable, containerDisposable]);
 
 		const layoutContainer = this.orientation === Orientation.VERTICAL
@@ -143,7 +148,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		};
 
 		size = Math.round(size);
-		const item: IViewItem = { view, container, size, layout, disposable, height: 0, top: 0, width: 0 };
+		const item: IViewItem = { view, container, size, layout, disposable, height: size, top: 0, width: 0 };
 		this.viewItems.splice(index, 0, item);
 
 		this.onInsertItems(new ArrayIterator([item]), index > 0 ? this.viewItems[index - 1].view.id : undefined);
@@ -364,6 +369,10 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	// DOM changes
 
 	private insertItemInDOM(item: IViewItem): void {
+		if (item.container.parentElement) {
+			return;
+		}
+
 		let elementAfter: HTMLElement = null;
 		let itemAfter = <IViewItem>this.itemAfter(item);
 
@@ -371,11 +380,22 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			elementAfter = itemAfter.container;
 		}
 
-		this.el.insertBefore(item.container, elementAfter);
+		if (elementAfter === null) {
+			this.el.appendChild(item.container);
+		} else {
+			try {
+				this.el.insertBefore(item.container, elementAfter);
+			} catch (e) {
+				// console.warn('Failed to locate previous tree element');
+				this.el.appendChild(item.container);
+			}
+		}
+
+		item.layout();
 	}
 
 	private removeItemFromDOM(item: IViewItem): void {
-		if (!item) {
+		if (!item || !item.container || !item.container.parentElement) {
 			return;
 		}
 

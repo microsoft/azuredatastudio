@@ -12,6 +12,7 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { ISlickRange } from 'angular2-slickgrid';
 import * as Utils from 'sql/parts/connection/common/utils';
+import { SaveFormat } from 'sql/parts/grid/common/interfaces';
 
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
@@ -22,6 +23,8 @@ import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Emitter, echo, debounceEvent, Event } from 'vs/base/common/event';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ResultSerializer } from 'sql/parts/query/common/resultSerializer';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -92,7 +95,8 @@ export default class QueryRunner {
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@INotificationService private _notificationService: INotificationService,
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
-		@IClipboardService private _clipboardService: IClipboardService
+		@IClipboardService private _clipboardService: IClipboardService,
+		@IInstantiationService private instantiationService: IInstantiationService
 	) { }
 
 	get isExecuting(): boolean {
@@ -539,5 +543,9 @@ export default class QueryRunner {
 			// Send the message to the results pane
 			this._onMessage.fire(message);
 		}
+	}
+
+	public serializeResults(batchId: number, resultSetId: number, format: SaveFormat, selection: Slick.Range[]) {
+		return this.instantiationService.createInstance(ResultSerializer).saveResults(this.uri, { selection, format, batchIndex: batchId, resultSetNumber: resultSetId });
 	}
 }

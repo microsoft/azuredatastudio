@@ -14,7 +14,14 @@ import { mixin } from 'vs/base/common/objects';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Widget } from 'vs/base/browser/ui/widget';
-import { isArray } from 'vs/base/common/types';
+import { isArray, isBoolean } from 'vs/base/common/types';
+import { Event, Emitter } from 'vs/base/common/event';
+import { range } from 'vs/base/common/arrays';
+
+export interface ITableContextMenuEvent {
+	anchor: HTMLElement | { x: number, y: number};
+	cell?: { row: number, cell: number };
+}
 
 export interface ITableStyles extends IListStyles {
 	tableHeaderBackground?: Color;
@@ -54,6 +61,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 	private _classChangeTimeout: number;
 
 	private _disposables: IDisposable[] = [];
+
+	private _onContextMenu = new Emitter<ITableContextMenuEvent>();
+	public readonly onContextMenu: Event<ITableContextMenuEvent> = this._onContextMenu.event;
 
 	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super();
@@ -104,6 +114,12 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 			});
 		}
 
+		this._grid.onContextMenu.subscribe((e: JQuery.Event) => {
+			const originalEvent = e.originalEvent;
+			const cell = this._grid.getCellFromEvent(originalEvent);
+			const anchor = originalEvent instanceof MouseEvent ? { x: originalEvent.x, y: originalEvent.y } : originalEvent.srcElement as HTMLElement;
+			this._onContextMenu.fire({ anchor, cell });
+		});
 	}
 
 	public dispose() {
@@ -146,11 +162,15 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		return this._grid.getColumns();
 	}
 
-	setSelectedRows(rows: number[]) {
-		this._grid.setSelectedRows(rows);
+	public setSelectedRows(rows: number[] | boolean) {
+		if (isBoolean(rows)) {
+			this._grid.setSelectedRows(range(this._grid.getDataLength()));
+		} else {
+			this._grid.setSelectedRows(rows);
+		}
 	}
 
-	getSelectedRows(): number[] {
+	public getSelectedRows(): number[] {
 		return this._grid.getSelectedRows();
 	}
 
@@ -165,21 +185,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 				}
 			}
 		};
-	}
-
-	onContextMenu(fn: (e: Slick.EventData, data: Slick.OnContextMenuEventArgs<T>) => any): IDisposable;
-	onContextMenu(fn: (e: DOMEvent, data: Slick.OnContextMenuEventArgs<T>) => any): IDisposable;
-	onContextMenu(fn: any): IDisposable {
-		this._grid.onContextMenu.subscribe(fn);
-		return {
-			dispose: () => {
-				this._grid.onContextMenu.unsubscribe(fn);
-			}
-		};
-	}
-
-	getCellFromEvent(e: DOMEvent): Slick.Cell {
-		return this._grid.getCellFromEvent(e);
 	}
 
 	setSelectionModel(model: Slick.SelectionModel<T, Array<Slick.Range>>) {

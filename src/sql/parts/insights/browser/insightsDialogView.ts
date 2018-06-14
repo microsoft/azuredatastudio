@@ -193,21 +193,21 @@ export class InsightsDialogView extends Modal {
 			}
 		}));
 
-		this._register(this._topTable.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+		this._register(this._topTable.onContextMenu(e => {
 			if (this.hasActions()) {
 				this._contextMenuService.showContextMenu({
-					getAnchor: () => e.target as HTMLElement,
+					getAnchor: () => e.anchor,
 					getActions: () => this.insightActions,
-					getActionsContext: () => this.topInsightContext(this._topTableData.getItem(this._topTable.getCellFromEvent(e).row))
+					getActionsContext: () => this.topInsightContext(this._topTableData.getItem(e.cell.row))
 				});
 			}
 		}));
 
-		this._register(this._bottomTable.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+		this._register(this._bottomTable.onContextMenu(e => {
 			this._contextMenuService.showContextMenu({
-				getAnchor: () => e.target as HTMLElement,
+				getAnchor: () => e.anchor,
 				getActions: () => TPromise.as([this._instantiationService.createInstance(CopyInsightDialogSelectionAction, CopyInsightDialogSelectionAction.ID, CopyInsightDialogSelectionAction.LABEL)]),
-				getActionsContext: () => this.bottomInsightContext(this._bottomTableData.getItem(this._bottomTable.getCellFromEvent(e).row), this._bottomTable.getCellFromEvent(e))
+				getActionsContext: () => this.bottomInsightContext(this._bottomTableData.getItem(e.cell.row), e.cell)
 			});
 		}));
 
