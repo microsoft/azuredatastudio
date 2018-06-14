@@ -189,7 +189,7 @@ class GridTable extends Disposable implements IView {
 				]);
 			},
 			getActionsContext: () => {
-				return <IGridActionContext> {
+				return <IGridActionContext>{
 					cell,
 					selection,
 					runner: this.runner,

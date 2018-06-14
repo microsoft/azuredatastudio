@@ -19,7 +19,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
 
 export interface ITableContextMenuEvent {
-	anchor: HTMLElement | { x: number, y: number};
+	anchor: HTMLElement | { x: number, y: number };
 	cell?: { row: number, cell: number };
 }
 
