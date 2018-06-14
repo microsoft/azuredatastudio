@@ -222,18 +222,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	onRevertRow(): () => void {
 		const self = this;
-		return async (): Promise<void> => {
-			try {
-				// Perform a revert row operation
-				if (self.currentCell) {
-					await self.dataService.revertRow(self.currentCell.row);
-				}
-			} finally {
-				// The operation may fail if there were no changes sent to the service to revert,
-				// so clear any existing client-side edit and refresh the table regardless
-				this.currentEditCellValue = null;
-				self.refreshResultsets();
-			}
+		return (): void => {
+			self.revertCurrentRow();
 		};
 	}
 
@@ -435,7 +425,18 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		// If the esc key was pressed while in a create session
 		let currentNewRowIndex = this.dataSet.totalRows - 2;
 
-		if (e.keyCode === KeyCode.Escape && this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
+		if (e.keyCode === KeyCode.Escape) {
+			this.revertCurrentRow();
+			handled = true;
+		}
+		return handled;
+	}
+
+	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
+
+	private async revertCurrentRow(): Promise<void> {
+		let currentNewRowIndex = this.dataSet.totalRows - 2;
+		if (this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
 			// revert our last new row
 			this.removingNewRow = true;
 
@@ -444,16 +445,20 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					this.removeRow(currentNewRowIndex);
 					this.newRowVisible = false;
 				});
-			handled = true;
-		} else if (e.keyCode === KeyCode.Escape) {
-			this.currentEditCellValue = null;
-			this.onRevertRow()();
-			handled = true;
+		} else {
+			try {
+				// Perform a revert row operation
+				if (this.currentCell) {
+					await this.dataService.revertRow(this.currentCell.row);
+				}
+			} finally {
+				// The operation may fail if there were no changes sent to the service to revert,
+				// so clear any existing client-side edit and refresh the table regardless
+				this.currentEditCellValue = null;
+				this.refreshResultsets();
+			}
 		}
-		return handled;
 	}
-
-	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
 
 	// Checks if input row is our NULL new row
 	private isNullRow(row: number): boolean {
