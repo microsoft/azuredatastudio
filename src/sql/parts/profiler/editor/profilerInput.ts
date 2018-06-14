@@ -160,6 +160,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			columnNameMap['writes'] = 'Writes';
 			columnNameMap['duration'] = 'Duration';
 
+			data['TextData'] = ' ';
 			for (let key in e.values) {
 				let columnName = columnNameMap[key];
 				if (columnName) {
