@@ -228,7 +228,9 @@ export class ProfilerEditor extends BaseEditor {
 			if (data) {
 				this._modelService.updateModel(this._editorModel, data['TextData']);
 				this._detailTableData.clear();
-				this._detailTableData.push(Object.keys(data).map(key => {
+				this._detailTableData.push(Object.keys(data).filter(key => {
+					return data[key] !== ' ';
+				}).map(key => {
 					return {
 						label: key,
 						value: data[key]
