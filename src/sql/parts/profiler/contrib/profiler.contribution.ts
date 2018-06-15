@@ -92,33 +92,6 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 					}
 				]
 			}
-		},
-		{
-			name: 'TSQL'
-		},
-		{
-			name: 'Blank'
-		},
-		{
-			name: 'SP_Counts'
-		},
-		{
-			name: 'TQL_Duration'
-		},
-		{
-			name: 'TSQL_Grouped'
-		},
-		{
-			name: 'TSQL_Locks'
-		},
-		{
-			name: 'TSQL_Replay'
-		},
-		{
-			name: 'TSQL_SPs'
-		},
-		{
-			name: 'Tuning'
 		}
 	]
 };
