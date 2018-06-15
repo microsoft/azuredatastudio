@@ -100,6 +100,7 @@ export class GridPanel extends ViewletPanel {
 }
 
 class GridTable extends Disposable implements IView {
+	private static BOTTOMPADDING = 5;
 	private table: Table<any>;
 	private container = document.createElement('div');
 	private selectionModel = new DragCellSelectionModel();
@@ -118,6 +119,7 @@ class GridTable extends Disposable implements IView {
 		super();
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
+		this.container.style.marginBottom = GridTable.BOTTOMPADDING + 'px';
 		let collection = new VirtualizedCollection(50, resultSet.rowCount,
 			(offset, count) => this.loadData(offset, count),
 			index => this.placeholdGenerator(index)
@@ -145,17 +147,17 @@ class GridTable extends Disposable implements IView {
 	}
 
 	public layout(size: number): void {
-		this.table.layout(size, Orientation.VERTICAL);
+		this.table.layout(size - GridTable.BOTTOMPADDING, Orientation.VERTICAL);
 	}
 
 	public get minimumSize(): number {
-		let smallestRows = ((this.resultSet.rowCount) * rowHeight) + columnHeight + estimatedScrollBarHeight;
-		let smallestSize = (minGridHeightInRows * rowHeight) + columnHeight + estimatedScrollBarHeight;
+		let smallestRows = ((this.resultSet.rowCount) * rowHeight) + columnHeight + estimatedScrollBarHeight + GridTable.BOTTOMPADDING;
+		let smallestSize = (minGridHeightInRows * rowHeight) + columnHeight + estimatedScrollBarHeight + GridTable.BOTTOMPADDING;
 		return Math.min(smallestRows, smallestSize);
 	}
 
 	public get maximumSize(): number {
-		return ((this.resultSet.rowCount) * rowHeight) + columnHeight + estimatedScrollBarHeight;
+		return ((this.resultSet.rowCount) * rowHeight) + columnHeight + estimatedScrollBarHeight + GridTable.BOTTOMPADDING;
 	}
 
 	private loadData(offset: number, count: number): Thenable<any[]> {
