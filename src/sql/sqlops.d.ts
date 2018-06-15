@@ -1449,6 +1449,8 @@ declare module 'sqlops' {
 		sessionId: string;
 
 		events: ProfilerEvent[];
+
+		eventsLost: boolean;
 	}
 
 	// File browser interfaces  -----------------------------------------------------------------------
