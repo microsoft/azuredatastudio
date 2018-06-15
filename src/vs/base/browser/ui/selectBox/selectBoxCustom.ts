@@ -541,21 +541,22 @@ export class SelectBoxList implements ISelectBoxDelegate, IDelegate<ISelectOptio
 
 			this.selectList.setFocus([this.selected]);
 			this.selectList.reveal(this.selectList.getFocus()[0]);
+
+			// {{SQL CARBON EDIT}} - Update the selection before firing the handler instead of after
+			// Reset Selection Handler
+			this._currentSelection = -1;
+			this.hideSelectDropDown(true);
+
 			this._onDidSelect.fire({
 				index: this.selectElement.selectedIndex,
 				selected: this.selectElement.title
 			});
-
-			// Reset Selection Handler
-			this._currentSelection = -1;
-			this.hideSelectDropDown(true);
 		}
 		dom.EventHelper.stop(e);
 	}
 
 	// List Exit - passive - hide drop-down, fire onDidSelect
 	private onListBlur(): void {
-
 		if (this._currentSelection >= 0) {
 			this.select(this._currentSelection);
 		}
