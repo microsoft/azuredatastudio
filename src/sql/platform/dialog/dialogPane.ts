@@ -35,7 +35,6 @@ export class DialogPane extends Disposable implements IThemable {
 	private _tabBar: HTMLElement;
 	private _tabs: HTMLElement[];
 	private _tabContent: HTMLElement[];
-	private _dialogModule: any;
 	private _selectedTabIndex: number = 0; //TODO: can be an option
 	private _onTabChange = new Emitter<string>();
 	private _selectedTabContent: string;
@@ -122,7 +121,6 @@ export class DialogPane extends Disposable implements IThemable {
 			} as DialogComponentParams,
 			undefined,
 			(moduleRef) => {
-				this._dialogModule = moduleRef;
 				return this._moduleRefs.push(moduleRef);
 			});
 	}
