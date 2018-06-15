@@ -6,8 +6,7 @@ import 'vs/css!./webviewContent';
 
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef } from '@angular/core';
 
-import Event, { Emitter } from 'vs/base/common/event';
-import { Webview } from 'vs/workbench/parts/html/browser/webview';
+import { Event, Emitter } from 'vs/base/common/event';
 import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
@@ -15,6 +14,7 @@ import { memoize } from 'vs/base/common/decorators';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
 
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
@@ -37,7 +37,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	public readonly onMessage: Event<string> = this._onMessage.event;
 
 	private _onMessageDisposable: IDisposable;
-	private _webview: Webview;
+	private _webview: WebviewElement;
 	private _html: string;
 
 	constructor(
@@ -108,7 +108,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 			this._onMessageDisposable.dispose();
 		}
 
-		this._webview = new Webview(this._el.nativeElement,
+		this._webview = new WebviewElement(
 			this.partService.getContainer(Parts.EDITOR_PART),
 			this.themeService,
 			this.environmentService,
@@ -120,7 +120,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 				enableWrappedPostMessage: true
 			}
 		);
-
+		this._webview.mountTo(this._el.nativeElement);
 
 		this._onMessageDisposable = this._webview.onMessage(e => {
 			this._onMessage.fire(e);

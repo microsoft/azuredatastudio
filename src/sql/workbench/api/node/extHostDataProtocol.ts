@@ -6,7 +6,7 @@
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
@@ -540,7 +540,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Run an action on a job
 	 */
-	public $jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult> {
+	public $jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> {
 		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).jobAction(ownerUri, jobName, action);
 	}
 }

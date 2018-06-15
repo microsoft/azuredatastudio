@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.dropdown {
+.monaco-dropdown {
 	width: 100%;
 	/* TODO: Determine a more permanent fix; vs/dropdown is overwriting this selector in packaged builds */
 	display: flex !important;
@@ -11,15 +11,15 @@
 	cursor: pointer;
 }
 
-.dropdown > .dropdown-label {
+.monaco-dropdown > .dropdown-label {
 	width: 100%;
 }
 
-.dropdown > .dropdown-label:not(:empty) {
+.monaco-dropdown > .dropdown-label:not(:empty) {
 	padding: 0px;
 }
 
-.dropdown > .dropdown-icon {
+.monaco-dropdown > .dropdown-icon {
 	flex: 0 0 15px;
 	height: 10px;
 	width: 10px;
@@ -28,7 +28,7 @@
 	padding-right: 10px;
 }
 
-.vs-dark .dropdown > .dropdown-icon,
-.hc-black .dropdown > .dropdown-icon {
+.vs-dark .monaco-dropdown > .dropdown-icon,
+.hc-black .monaco-dropdown > .dropdown-icon {
 	content: url("dropdownarrow_inverse.svg");
 }

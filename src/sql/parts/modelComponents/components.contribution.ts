@@ -5,15 +5,20 @@
 
 import FlexContainer from './flexContainer.component';
 import FormContainer from './formContainer.component';
+import ToolbarContainer from './toolbarContainer.component';
 import GroupContainer from './groupContainer.component';
 import CardComponent from './card.component';
 import InputBoxComponent from './inputbox.component';
 import DropDownComponent from './dropdown.component';
+import DeclarativeTableComponent from './declarativeTable.component';
+import ListBoxComponent from './listbox.component';
 import ButtonComponent from './button.component';
 import CheckBoxComponent from './checkbox.component';
 import RadioButtonComponent from './radioButton.component';
 import WebViewComponent from './webview.component';
+import TableComponent from './table.component';
 import TextComponent from './text.component';
+import LoadingComponent from './loadingComponent.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -22,6 +27,9 @@ registerComponentType(FLEX_CONTAINER, ModelComponentTypes.FlexContainer, FlexCon
 
 export const FORM_CONTAINER = 'form-container';
 registerComponentType(FORM_CONTAINER, ModelComponentTypes.Form, FormContainer);
+
+export const TOOLBAR_CONTAINER = 'toolbar-container';
+registerComponentType(TOOLBAR_CONTAINER, ModelComponentTypes.Toolbar, ToolbarContainer);
 
 export const GROUP_CONTAINER = 'group-container';
 registerComponentType(GROUP_CONTAINER, ModelComponentTypes.Group, GroupContainer);
@@ -34,6 +42,12 @@ registerComponentType(INPUTBOX_COMPONENT, ModelComponentTypes.InputBox, InputBox
 
 export const DROPDOWN_COMPONENT = 'dropdown-component';
 registerComponentType(DROPDOWN_COMPONENT, ModelComponentTypes.DropDown, DropDownComponent);
+
+export const DECLARATIVETABLE_COMPONENT = 'declarativeTable-component';
+registerComponentType(DECLARATIVETABLE_COMPONENT, ModelComponentTypes.DeclarativeTable, DeclarativeTableComponent);
+
+export const LISTBOX_COMPONENT = 'lisbox-component';
+registerComponentType(LISTBOX_COMPONENT, ModelComponentTypes.ListBox, ListBoxComponent);
 
 export const BUTTON_COMPONENT = 'button-component';
 registerComponentType(BUTTON_COMPONENT, ModelComponentTypes.Button, ButtonComponent);
@@ -50,3 +64,9 @@ registerComponentType(WEBVIEW_COMPONENT, ModelComponentTypes.WebView, WebViewCom
 
 export const TEXT_COMPONENT = 'text-component';
 registerComponentType(TEXT_COMPONENT, ModelComponentTypes.Text, TextComponent);
+
+export const TABLE_COMPONENT = 'table-component';
+registerComponentType(TABLE_COMPONENT, ModelComponentTypes.Table, TableComponent);
+
+export const LOADING_COMPONENT = 'loading-component';
+registerComponentType(LOADING_COMPONENT, ModelComponentTypes.LoadingComponent, LoadingComponent);

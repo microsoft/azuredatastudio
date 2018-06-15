@@ -41,8 +41,6 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	private _alignContent: string;
 	private _height: string;
 
-	@ViewChildren(ModelComponentWrapper) private _componentWrappers: QueryList<ModelComponentWrapper>;
-
 	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
 		super(changeRef);
 		this._flexFlow = '';	// default
@@ -59,14 +57,6 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 
 	/// IComponent implementation
-
-	public layout(): void {
-		if (this._componentWrappers) {
-			this._componentWrappers.forEach(wrapper => {
-				wrapper.layout();
-			});
-		}
-	}
 
 	public setLayout (layout: FlexLayout): void {
 		this._flexFlow = layout.flexFlow ? layout.flexFlow : '';

@@ -12,7 +12,7 @@ import { SplitView } from 'sql/base/browser/ui/splitview/splitview';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IListService, ListService } from 'vs/platform/list/browser/listService';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';

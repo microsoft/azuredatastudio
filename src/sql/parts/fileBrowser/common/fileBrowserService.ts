@@ -12,7 +12,7 @@ import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
 import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
 import * as Constants from 'sql/common/constants';
 
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

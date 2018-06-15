@@ -59,7 +59,8 @@ suite('MainThreadModelViewDialog Tests', () => {
 			$onButtonClick: handle => undefined,
 			$onPanelValidityChanged: (handle, valid) => undefined,
 			$onWizardPageChanged: (handle, info) => undefined,
-			$updateWizardPageInfo: (wizardHandle, pageHandles, currentPageIndex) => undefined
+			$updateWizardPageInfo: (wizardHandle, pageHandles, currentPageIndex) => undefined,
+			$validateNavigation: (handle, info) => undefined
 		});
 		let extHostContext = <IExtHostContext>{
 			getProxy: proxyType => mockExtHostModelViewDialog.object
@@ -315,5 +316,16 @@ suite('MainThreadModelViewDialog Tests', () => {
 			It.is(handle => handle === wizardHandle),
 			It.is(pageHandles => pageHandles.length === 1 && pageHandles[0] === page2Handle),
 			It.is(currentPage => currentPage === 0)), Times.once());
+	});
+
+	test('Creating a wizard adds a navigation validation that calls the extension host', () => {
+		mockExtHostModelViewDialog.setup(x => x.$validateNavigation(It.isAny(), It.isAny()));
+
+		// If I call validateNavigation on the wizard that gets created
+		let wizard: Wizard = (mainThreadModelViewDialog as any).getWizard(wizardHandle);
+		wizard.validateNavigation(1);
+
+		// Then the call gets forwarded to the extension host
+		mockExtHostModelViewDialog.verify(x => x.$validateNavigation(It.is(handle => handle === wizardHandle), It.is(info => info.newPage === 1)), Times.once());
 	});
 });

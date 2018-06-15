@@ -5,13 +5,12 @@
 
 'use strict';
 
-import Severity from 'vs/base/common/severity';
+import BaseSeverity from 'vs/base/common/severity';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IDisposable } from 'vs/base/common/lifecycle';
 import { IAction } from 'vs/base/common/actions';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
-export import Severity = Severity;
+export import Severity = BaseSeverity;
 
 export const INotificationService = createDecorator<INotificationService>('notificationService');
 
@@ -44,7 +43,7 @@ export interface INotification {
 	 * close automatically when invoking a secondary action.
 	 *
 	 * **Note:** If your intent is to show a message with actions to the user, consider
-	 * the `IChoiceService` and `IConfirmationService` instead which are optimized for
+	 * the `INotificationService.prompt()` method instead which are optimized for
 	 * this usecase and much easier to use!
 	 */
 	actions?: INotificationActions;
@@ -150,6 +149,11 @@ export interface IPromptChoice {
 	run: () => void;
 }
 
+/**
+ * A service to bring up notifications and non-modal prompts.
+ *
+ * Note: use the `IDialogService` for a modal way to ask the user for input.
+ */
 export interface INotificationService {
 
 	_serviceBrand: any;
@@ -159,8 +163,10 @@ export interface INotificationService {
 	 * can be used to control the notification afterwards.
 	 *
 	 * **Note:** If your intent is to show a message with actions to the user, consider
-	 * the `IChoiceService` and `IConfirmationService` instead which are optimized for
+	 * the `INotificationService.prompt()` method instead which are optimized for
 	 * this usecase and much easier to use!
+	 *
+	 * @returns a handle on the notification to e.g. hide it or update message, buttons, etc.
 	 */
 	notify(notification: INotification): INotificationHandle;
 

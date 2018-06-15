@@ -7,6 +7,8 @@
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
+import { IActionDescriptor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
+import URI from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 
 import * as vscode from 'vscode';
@@ -14,7 +16,6 @@ import * as sqlops from 'sqlops';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IActionDescriptor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
 
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
@@ -41,6 +42,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 	formContainer(): sqlops.FormBuilder {
 		let id = this.getNextComponentId();
 		let container = new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id);
+		this._componentBuilders.set(id, container);
+		return container;
+	}
+
+	toolbarContainer(): sqlops.ToolbarBuilder {
+		let id = this.getNextComponentId();
+		let container = new ToolbarContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Toolbar, id);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -108,6 +116,27 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	listBox(): sqlops.ComponentBuilder<sqlops.ListBoxComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.ListBoxComponent> = this.getComponentBuilder(new ListBoxWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	table(): sqlops.ComponentBuilder<sqlops.TableComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.TableComponent> = this.getComponentBuilder(new TableComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	declarativeTable(): sqlops.ComponentBuilder<sqlops.DeclarativeTableComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.DeclarativeTableComponent> = this.getComponentBuilder(new DeclarativeTableWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	dashboardWidget(widgetId: string): sqlops.ComponentBuilder<sqlops.DashboardWidgetComponent> {
 		let id = this.getNextComponentId();
 		let builder = this.getComponentBuilder<sqlops.DashboardWidgetComponent>(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id), id);
@@ -118,6 +147,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 	dashboardWebview(webviewId: string): sqlops.ComponentBuilder<sqlops.DashboardWebviewComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.DashboardWebviewComponent> = this.getComponentBuilder(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	loadingComponent(): sqlops.LoadingComponentBuilder {
+		let id = this.getNextComponentId();
+		let builder = new LoadingComponentBuilder(new LoadingComponentWrapper(this._proxy, this._handle, id));
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -256,6 +292,41 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 	}
 }
 
+class ToolbarContainerBuilder extends ContainerBuilderImpl<sqlops.ToolbarContainer, any, any> implements sqlops.ToolbarBuilder {
+	withToolbarItems(components: sqlops.ToolbarComponent[]): sqlops.ContainerBuilder<sqlops.ToolbarContainer, any, any> {
+		this._component.itemConfigs = components.map(item => {
+			return this.convertToItemConfig(item);
+		});
+		return this;
+	}
+
+	private convertToItemConfig(toolbarComponent: sqlops.ToolbarComponent): InternalItemConfig {
+		let componentWrapper = toolbarComponent.component as ComponentWrapper;
+
+		return new InternalItemConfig(componentWrapper, {
+			title: toolbarComponent.title
+		});
+	}
+
+	addToolbarItems(toolbarComponent: Array<sqlops.ToolbarComponent>): void {
+		toolbarComponent.forEach(toolbarComponent => {
+			this.addToolbarItem(toolbarComponent);
+		});
+	}
+
+	addToolbarItem(toolbarComponent: sqlops.ToolbarComponent): void {
+		let itemImpl = this.convertToItemConfig(toolbarComponent);
+		this._component.addItem(toolbarComponent.component as ComponentWrapper, itemImpl.config);
+	}
+}
+
+class LoadingComponentBuilder extends ComponentBuilderImpl<sqlops.LoadingComponent> implements sqlops.LoadingComponentBuilder {
+	withItem(component: sqlops.Component) {
+		this.component().component = component;
+		return this;
+	}
+}
+
 class InternalItemConfig {
 	constructor(private _component: ComponentWrapper, public config: any) { }
 
@@ -349,12 +420,13 @@ class ComponentWrapper implements sqlops.Component {
 		return this._proxy.$setLayout(this._handle, this.id, layout);
 	}
 
-	public updateProperties(): Thenable<boolean> {
+	public updateProperties(properties: { [key: string]: any }): Thenable<void> {
+		this.properties = Object.assign(this.properties, properties);
 		return this.notifyPropertyChanged();
 	}
 
-	protected notifyPropertyChanged(): Thenable<boolean> {
-		return this._proxy.$setProperties(this._handle, this._id, this.properties).then(() => true);
+	protected notifyPropertyChanged(): Thenable<void> {
+		return this._proxy.$setProperties(this._handle, this._id, this.properties);
 	}
 
 	public registerEvent(): Thenable<boolean> {
@@ -364,9 +436,9 @@ class ComponentWrapper implements sqlops.Component {
 	public onEvent(eventArgs: IComponentEventArgs) {
 		if (eventArgs && eventArgs.eventType === ComponentEventType.PropertiesChanged) {
 			this.properties = eventArgs.args;
-		}
-		else if (eventArgs && eventArgs.eventType === ComponentEventType.validityChanged) {
+		} else if (eventArgs && eventArgs.eventType === ComponentEventType.validityChanged) {
 			this._valid = eventArgs.args;
+			this._onValidityChangedEmitter.fire(this._valid);
 		} else if (eventArgs) {
 			let emitter = this._emitterMap.get(eventArgs.eventType);
 			if (emitter) {
@@ -375,13 +447,13 @@ class ComponentWrapper implements sqlops.Component {
 		}
 	}
 
-	protected async setProperty(key: string, value: any): Promise<boolean> {
+	protected async setProperty(key: string, value: any): Promise<void> {
 		if (!this.properties[key] || this.properties[key] !== value) {
 			// Only notify the front end if a value has been updated
 			this.properties[key] = value;
 			return this.notifyPropertyChanged();
 		}
-		return Promise.resolve(true);
+		return Promise.resolve();
 	}
 
 	private handleError(err: Error): void {
@@ -488,11 +560,46 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 		this.setProperty('height', v);
 	}
 
+	public get rows(): number {
+		return this.properties['rows'];
+	}
+	public set rows(v: number) {
+		this.setProperty('rows', v);
+	}
+
+	public get min(): number {
+		return this.properties['min'];
+	}
+	public set min(v: number) {
+		this.setProperty('min', v);
+	}
+
+	public get max(): number {
+		return this.properties['max'];
+	}
+	public set max(v: number) {
+		this.setProperty('max', v);
+	}
+
+	public get columns(): number {
+		return this.properties['columns'];
+	}
+	public set columns(v: number) {
+		this.setProperty('columns', v);
+	}
+
 	public get width(): number {
 		return this.properties['width'];
 	}
 	public set width(v: number) {
 		this.setProperty('width', v);
+	}
+
+	public get multiline(): boolean {
+		return this.properties['multiline'];
+	}
+	public set multiline(v: boolean) {
+		this.setProperty('multiline', v);
 	}
 
 	public get inputType(): sqlops.InputBoxInputType {
@@ -620,6 +727,41 @@ class TextComponentWrapper extends ComponentWrapper implements sqlops.TextCompon
 	}
 }
 
+class TableComponentWrapper extends ComponentWrapper implements sqlops.TableComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Table, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
+	}
+
+	public get data(): any[][] {
+		return this.properties['data'];
+	}
+	public set data(v: any[][]) {
+		this.setProperty('data', v);
+	}
+
+	public get columns(): string[] | sqlops.TableColumn[] {
+		return this.properties['columns'];
+	}
+	public set columns(v: string[] | sqlops.TableColumn[]) {
+		this.setProperty('columns', v);
+	}
+
+	public get selectedRows(): number[] {
+		return this.properties['selectedRows'];
+	}
+	public set selectedRows(v: number[]) {
+		this.setProperty('selectedRows', v);
+	}
+
+	public get onRowSelected(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
+		return emitter && emitter.event;
+	}
+}
+
 class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownComponent {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
@@ -655,6 +797,63 @@ class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownCompone
 	}
 }
 
+class DeclarativeTableWrapper extends ComponentWrapper implements sqlops.DeclarativeTableComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.DeclarativeTable, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+	}
+
+	public get data(): any[][] {
+		return this.properties['data'];
+	}
+	public set data(v: any[][]) {
+		this.setProperty('data', v);
+	}
+
+	public get columns(): sqlops.DeclarativeTableColumn[] {
+		return this.properties['columns'];
+	}
+
+	public set columns(v: sqlops.DeclarativeTableColumn[]) {
+		this.setProperty('columns', v);
+	}
+
+	public get onDataChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+}
+
+class ListBoxWrapper extends ComponentWrapper implements sqlops.ListBoxComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.ListBox, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
+	}
+
+	public get selectedRow(): number {
+		return this.properties['selectedRow'];
+	}
+	public set selectedRow(v: number) {
+		this.setProperty('selectedRow', v);
+	}
+
+	public get values(): string[] {
+		return this.properties['values'];
+	}
+	public set values(v: string[]) {
+		this.setProperty('values', v);
+	}
+
+	public get onRowSelected(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
+		return emitter && emitter.event;
+	}
+}
+
 class ButtonWrapper extends ComponentWrapper implements sqlops.ButtonComponent {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
@@ -670,9 +869,40 @@ class ButtonWrapper extends ComponentWrapper implements sqlops.ButtonComponent {
 		this.setProperty('label', v);
 	}
 
+	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+		return this.properties['iconPath'];
+	}
+	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+		this.setProperty('iconPath', v);
+	}
+
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
+	}
+}
+
+class LoadingComponentWrapper extends ComponentWrapper implements sqlops.LoadingComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.LoadingComponent, id);
+		this.properties = {};
+		this.loading = true;
+	}
+
+	public get loading(): boolean {
+		return this.properties['loading'];
+	}
+
+	public set loading(value: boolean) {
+		this.setProperty('loading', value);
+	}
+
+	public get component(): sqlops.Component {
+		return this.items[0];
+	}
+
+	public set component(value: sqlops.Component) {
+		this.addItem(value);
 	}
 }
 

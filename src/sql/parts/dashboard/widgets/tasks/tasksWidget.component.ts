@@ -86,7 +86,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 			}).filter(i => !!i);
 		}
 
-		this._tasks = tasks.map(i => MenuRegistry.getCommand(i));
+		this._tasks = tasks.map(i => MenuRegistry.getCommand(i)).filter(v => !!v);
 	}
 
 	ngOnInit() {

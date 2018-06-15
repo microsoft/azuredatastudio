@@ -18,21 +18,25 @@ import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import * as nls from 'vs/nls';
+import { TextAreaInput } from 'vs/editor/browser/controller/textAreaInput';
 
 @Component({
 	selector: 'modelview-inputBox',
 	template: `
-		<div #input style="width: 100%"></div>
+			<div [style.display]="getInputBoxDisplay()" #input style="width: 100%"></div>
+			<div [style.display]="getTextAreaDisplay()" #textarea style="width: 100%"></div>
 	`
 })
 export default class InputBoxComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _input: InputBox;
+	private _textAreaInput: InputBox;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
+	@ViewChild('textarea', { read: ElementRef }) private _textareaContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
@@ -43,47 +47,71 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	ngOnInit(): void {
 		this.baseInit();
-
 	}
 
 	ngAfterViewInit(): void {
-		if (this._inputContainer) {
-			let inputOptions: IInputOptions = {
-				placeholder: '',
-				ariaLabel: '',
-				validationOptions: {
-					validation: () => {
-						if (this.valid) {
-							return undefined;
-						} else {
-							return {
-								content: this._input.inputElement.validationMessage || nls.localize('invalidValueError', 'Invalid value'),
-								type: MessageType.ERROR
-							};
-						}
+		let inputOptions: IInputOptions = {
+			placeholder: '',
+			ariaLabel: '',
+			validationOptions: {
+				validation: () => {
+					if (this.valid) {
+						return undefined;
+					} else {
+						return {
+							content: this.inputElement.inputElement.validationMessage || nls.localize('invalidValueError', 'Invalid value'),
+							type: MessageType.ERROR
+						};
 					}
-				},
-				useDefaultValidation: true
-			};
-
+				}
+			},
+			useDefaultValidation: true
+		};
+		if (this._inputContainer) {
 			this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
-			this._validations.push(() => !this._input.inputElement.validationMessage);
+			this.registerInput(this._input, () => !this.multiline);
 
-			this._register(this._input);
-			this._register(attachInputBoxStyler(this._input, this.themeService));
-			this._register(this._input.onDidChange(e => {
-				this.value = this._input.value;
-				this._onEventEmitter.fire({
-					eventType: ComponentEventType.onDidChange,
-					args: e
-				});
+		}
+		if (this._textareaContainer) {
+			let textAreaInputOptions = Object.assign({}, inputOptions, { flexibleHeight: true });
+			this._textAreaInput = new InputBox(this._textareaContainer.nativeElement, this.contextViewService, textAreaInputOptions);
+			this.registerInput(this._textAreaInput, () => this.multiline);
+		}
+	}
+
+	private get inputElement(): InputBox {
+		return this.multiline ? this._textAreaInput : this._input;
+	}
+
+	private registerInput(input: InputBox, checkOption: () => boolean): void {
+		if (input) {
+			this._validations.push(() => !input.inputElement.validationMessage);
+
+			this._register(input);
+			this._register(attachInputBoxStyler(input, this.themeService));
+			this._register(input.onDidChange(e => {
+				if (checkOption()) {
+					this.value = input.value;
+					this._onEventEmitter.fire({
+						eventType: ComponentEventType.onDidChange,
+						args: e
+					});
+				}
 			}));
 		}
 	}
 
+	public getInputBoxDisplay(): string {
+		return !this.multiline ? '' : 'none';
+	}
+
+	public getTextAreaDisplay(): string {
+		return this.multiline ? '' : 'none';
+	}
+
 	public validate(): Thenable<boolean> {
 		return super.validate().then(valid => {
-			this._input.validate();
+			this.inputElement.validate();
 			return valid;
 		});
 	}
@@ -105,19 +133,45 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._input.inputElement.type = this.inputType;
-		if (this.inputType === 'number') {
-			this._input.inputElement.step = 'any';
-		}
-		this._input.value = this.value;
-		this._input.setAriaLabel(this.ariaLabel);
-		this._input.setPlaceHolder(this.placeHolder);
-		this._input.setEnabled(this.enabled);
-		if (this.width) {
-			this._input.width = this.width;
-		}
-		this._input.inputElement.required = this.required;
+		this.setInputProperties(this.inputElement);
 		this.validate();
+	}
+
+	private setInputProperties(input: InputBox): void {
+		if (!this.multiline) {
+			input.inputElement.type = this.inputType;
+			if (this.inputType === 'number') {
+				input.inputElement.step = 'any';
+				if (this.min) {
+					input.inputElement.min = this.min.toString();
+				}
+				if (this.max) {
+					input.inputElement.max = this.max.toString();
+				}
+			}
+		}
+		input.value = this.value;
+		input.setAriaLabel(this.ariaLabel);
+		input.setPlaceHolder(this.placeHolder);
+		input.setEnabled(this.enabled);
+		if (this.width) {
+			input.width = this.width;
+		}
+		if (this.height) {
+			input.setHeight(this.convertSize(this.height));
+			input.layout();
+		}
+		if (this.multiline) {
+			if (this.rows) {
+				this.inputElement.rows = this.rows;
+			}
+			if (this.columns) {
+				this.inputElement.columns = this.columns;
+			}
+		}
+
+
+		input.inputElement.required = this.required;
 	}
 
 	// CSS-bound properties
@@ -162,12 +216,52 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.width = value, newValue);
 	}
 
+	public set columns(newValue: number) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.columns = value, newValue);
+	}
+
+	public get rows(): number {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.rows, undefined);
+	}
+
+	public get columns(): number {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.columns, undefined);
+	}
+
+	public set rows(newValue: number) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.rows = value, newValue);
+	}
+
+	public get min(): number {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.min, undefined);
+	}
+
+	public set min(newValue: number) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.min = value, newValue);
+	}
+
+	public get max(): number {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.max, undefined);
+	}
+
+	public set max(newValue: number) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.max = value, newValue);
+	}
+
 	public get inputType(): string {
 		return this.getPropertyOrDefault<sqlops.InputBoxProperties, string>((props) => props.inputType, 'text');
 	}
 
 	public set inputType(newValue: string) {
 		this.setPropertyFromUI<sqlops.InputBoxProperties, string>((props, value) => props.inputType = value, newValue);
+	}
+
+	public get multiline(): boolean {
+		return this.getPropertyOrDefault<sqlops.InputBoxProperties, boolean>((props) => props.multiline, false);
+	}
+
+	public set multiline(newValue: boolean) {
+		this.setPropertyFromUI<sqlops.InputBoxProperties, boolean>((props, value) => props.multiline = value, newValue);
 	}
 
 	public get required(): boolean {

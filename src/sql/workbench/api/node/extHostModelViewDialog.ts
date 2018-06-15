@@ -5,7 +5,7 @@
 'use strict';
 
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
 
@@ -217,6 +217,7 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 	public customButtons: sqlops.window.modelviewdialog.Button[];
 	private _pageChangedEmitter = new Emitter<sqlops.window.modelviewdialog.WizardPageChangeInfo>();
 	public readonly onPageChanged = this._pageChangedEmitter.event;
+	private _navigationValidator: (info: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean | Thenable<boolean>;
 
 	constructor(public title: string, private _extHostModelViewDialog: ExtHostModelViewDialog) {
 		this.doneButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
@@ -225,6 +226,7 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 		this.nextButton = this._extHostModelViewDialog.createButton(NEXT_LABEL);
 		this.backButton = this._extHostModelViewDialog.createButton(PREVIOUS_LABEL);
 		this._extHostModelViewDialog.registerWizardPageInfoChangedCallback(this, info => this.handlePageInfoChanged(info));
+		this._currentPage = 0;
 		this.onPageChanged(info => this._currentPage = info.newPage);
 	}
 
@@ -252,6 +254,18 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 
 	public close(): Thenable<void> {
 		return this._extHostModelViewDialog.closeWizard(this);
+	}
+
+	public registerNavigationValidator(validator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean | Thenable<boolean>): void {
+		this._navigationValidator = validator;
+	}
+
+	public validateNavigation(info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean> {
+		if (this._navigationValidator) {
+			return Promise.resolve(this._navigationValidator(info));
+		} else {
+			return Promise.resolve(true);
+		}
 	}
 
 	private handlePageInfoChanged(info: WizardPageEventInfo): void {
@@ -333,6 +347,11 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 				pages: pages
 			});
 		}
+	}
+
+	public $validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean> {
+		let wizard = this._objectsByHandle.get(handle) as WizardImpl;
+		return wizard.validateNavigation(info);
 	}
 
 	public openDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {

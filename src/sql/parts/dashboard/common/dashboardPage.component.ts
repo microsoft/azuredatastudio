@@ -35,7 +35,7 @@ import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeS
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
 import * as objects from 'vs/base/common/objects';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import Severity from 'vs/base/common/severity';
@@ -332,7 +332,6 @@ export abstract class DashboardPage extends AngularDisposable {
 	public handleTabClose(tab: TabComponent): void {
 		let index = this.tabs.findIndex(i => i.id === tab.identifier);
 		this.tabs.splice(index, 1);
-		this._cd.detectChanges();
 		this.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { id: tab.identifier });
 	}
 }

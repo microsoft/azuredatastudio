@@ -7,7 +7,7 @@
 
 import * as sqlops from 'sqlops';
 import { localize } from 'vs/nls';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export class ModelViewPane {
 	private _valid: boolean = true;
@@ -99,7 +99,7 @@ export class DialogButton implements sqlops.window.modelviewdialog.Button {
 	/**
 	 * Register an event that notifies the button that it has been clicked
 	 */
-	public registerClickEvent(clickEvent: Event<void>): void {
+	public registerClickEvent(clickEvent: Event<any>): void {
 		clickEvent(() => this._onClick.fire());
 	}
 }
@@ -139,6 +139,7 @@ export class Wizard {
 	public readonly onPageAdded = this._pageAddedEmitter.event;
 	private _pageRemovedEmitter = new Emitter<WizardPage>();
 	public readonly onPageRemoved = this._pageRemovedEmitter.event;
+	private _navigationValidator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean | Thenable<boolean>;
 
 	constructor(public title: string) { }
 
@@ -190,5 +191,20 @@ export class Wizard {
 		let removedPage = this.pages[index];
 		this.pages.splice(index, 1);
 		this._pageRemovedEmitter.fire(removedPage);
+	}
+
+	public registerNavigationValidator(validator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean | Thenable<boolean>): void {
+		this._navigationValidator = validator;
+	}
+
+	public validateNavigation(newPage: number): Thenable<boolean> {
+		if (this._navigationValidator) {
+			return Promise.resolve(this._navigationValidator({
+				lastPage: this._currentPage,
+				newPage: newPage
+			}));
+		} else {
+			return Promise.resolve(true);
+		}
 	}
 }

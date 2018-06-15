@@ -157,6 +157,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			wizard.onPageChanged(info => this._proxy.$onWizardPageChanged(handle, info));
 			wizard.onPageAdded(() => this.handleWizardPageAddedOrRemoved(handle));
 			wizard.onPageRemoved(() => this.handleWizardPageAddedOrRemoved(handle));
+			wizard.registerNavigationValidator(info => this.validateNavigation(handle, info));
 			this._wizards.set(handle, wizard);
 		}
 
@@ -253,5 +254,9 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	private handleWizardPageAddedOrRemoved(handle: number): void {
 		let wizard = this._wizards.get(handle);
 		this._proxy.$updateWizardPageInfo(handle, wizard.pages.map(page => this._wizardPageHandles.get(page)), wizard.currentPage);
+	}
+
+	private validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean> {
+		return this._proxy.$validateNavigation(handle, info);
 	}
 }

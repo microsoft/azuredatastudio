@@ -21,7 +21,7 @@ import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -332,7 +332,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Run an action on a Job
 	 */
-	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult> { throw ni(); }
+	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> { throw ni(); }
 }
 
 /**
@@ -561,6 +561,7 @@ export interface ExtHostModelViewDialogShape {
 	$onPanelValidityChanged(handle: number, valid: boolean): void;
 	$onWizardPageChanged(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): void;
 	$updateWizardPageInfo(handle: number, pageHandles: number[], currentPageIndex: number): void;
+	$validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean>;
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {

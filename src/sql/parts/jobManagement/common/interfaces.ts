@@ -23,7 +23,7 @@ export interface IJobManagementService {
 
 	getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>;
 
-	jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult>;
+	jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus>;
 
 	addToCache(server: string, cache: JobCacheObject);
 
