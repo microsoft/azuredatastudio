@@ -109,20 +109,4 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 	private set selectedRow(newValue: number) {
 		this.setPropertyFromUI<sqlops.ListBoxProperties, number>((props, value) => props.selectedRow = value, newValue);
 	}
-
-	public get height(): number {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.height, undefined);
-	}
-
-	public set height(newValue: number) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.height = value, newValue);
-	}
-
-	public get width(): number {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.width, undefined);
-	}
-
-	public set width(newValue: number) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.width = value, newValue);
-	}
 }

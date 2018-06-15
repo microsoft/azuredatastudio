@@ -25,9 +25,17 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { Event, Emitter } from 'vs/base/common/event';
 import * as nls from 'vs/nls';
 
 const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
+
+export interface ModelComponentParams extends IBootstrapParams {
+
+	onLayoutRequested: Event<string>;
+	modelViewId: string;
+}
 
 @Component({
 	selector: 'model-component-wrapper',
@@ -46,6 +54,7 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 	}
 
 	private _componentInstance: IComponent;
+	private _modelViewId: string;
 
 	@ViewChild(ComponentHostDirective) componentHost: ComponentHostDirective;
 
@@ -54,9 +63,18 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(forwardRef(() => Injector)) private _injector: Injector,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IBootstrapParams) private _params: ModelComponentParams
 	) {
 		super();
+		if (_params && _params.onLayoutRequested) {
+			this._modelViewId = _params.modelViewId;
+			_params.onLayoutRequested(modelViewId => {
+				if (modelViewId === this._modelViewId) {
+					this.layout();
+				}
+			});
+		}
 	}
 
 	ngOnInit() {

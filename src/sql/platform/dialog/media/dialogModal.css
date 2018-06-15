@@ -30,3 +30,8 @@
 .footer-button.dialogModal-hidden {
 	margin: 0;
 }
+
+.tabContainer {
+	width: 100%;
+	height: 100%;
+}

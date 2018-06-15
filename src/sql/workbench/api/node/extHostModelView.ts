@@ -342,7 +342,6 @@ class InternalItemConfig {
 	}
 }
 
-
 class ComponentWrapper implements sqlops.Component {
 	public properties: { [key: string]: any } = {};
 	public layout: any;
@@ -383,6 +382,22 @@ class ComponentWrapper implements sqlops.Component {
 
 	public set enabled(value: boolean) {
 		this.setProperty('enabled', value);
+	}
+
+	public get height(): number | string {
+		return this.properties['height'];
+	}
+
+	public set height(v: number | string) {
+		this.setProperty('height', v);
+	}
+
+	public get width(): number | string {
+		return this.properties['width'];
+	}
+
+	public set width(v: number | string) {
+		this.setProperty('width', v);
 	}
 
 	public toComponentShape(): IComponentShape {
@@ -553,13 +568,6 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 		this.setProperty('placeHolder', v);
 	}
 
-	public get height(): number {
-		return this.properties['height'];
-	}
-	public set height(v: number) {
-		this.setProperty('height', v);
-	}
-
 	public get rows(): number {
 		return this.properties['rows'];
 	}
@@ -586,13 +594,6 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 	}
 	public set columns(v: number) {
 		this.setProperty('columns', v);
-	}
-
-	public get width(): number {
-		return this.properties['width'];
-	}
-	public set width(v: number) {
-		this.setProperty('width', v);
 	}
 
 	public get multiline(): boolean {
@@ -777,10 +778,10 @@ class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownCompone
 		this.setProperty('value', v);
 	}
 
-	public get values(): string[] {
+	public get values(): string[] | sqlops.CategoryValue[] {
 		return this.properties['values'];
 	}
-	public set values(v: string[]) {
+	public set values(v: string[] | sqlops.CategoryValue[]) {
 		this.setProperty('values', v);
 	}
 

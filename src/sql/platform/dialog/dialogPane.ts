@@ -21,6 +21,7 @@ import { Builder } from 'vs/base/browser/builder';
 import { IThemable } from 'vs/platform/theme/common/styler';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Emitter } from 'vs/base/common/event';
 
 export class DialogPane extends Disposable implements IThemable {
 	private _tabbedPanel: TabbedPanel;
@@ -34,6 +35,10 @@ export class DialogPane extends Disposable implements IThemable {
 	private _tabBar: HTMLElement;
 	private _tabs: HTMLElement[];
 	private _tabContent: HTMLElement[];
+	private _dialogModule: any;
+	private _selectedTabIndex: number = 0; //TODO: can be an option
+	private _onTabChange = new Emitter<string>();
+	private _selectedTabContent: string;
 
 	constructor(
 		private _title: string,
@@ -55,10 +60,17 @@ export class DialogPane extends Disposable implements IThemable {
 			} else {
 				this._tabbedPanel = new TabbedPanel(this._body);
 				this._content.forEach((tab, tabIndex) => {
+					if (this._selectedTabIndex === tabIndex) {
+						this._selectedTabContent = tab.content;
+					}
 					let tabContainer = document.createElement('div');
 					tabContainer.style.display = 'none';
+					tabContainer.className = 'tabContainer';
 					this._body.appendChild(tabContainer);
 					this.initializeModelViewContainer(tabContainer, tab.content, tab);
+					this._tabbedPanel.onTabChange(e => {
+						this._onTabChange.fire(tab.content);
+					});
 					this._tabbedPanel.pushTab({
 						title: tab.title,
 						identifier: 'dialogPane.' + this._title + '.' + tabIndex,
@@ -70,7 +82,7 @@ export class DialogPane extends Disposable implements IThemable {
 								container.appendChild(tabContainer);
 								tabContainer.style.display = 'block';
 							},
-							layout: (dimension) => { }
+							layout: (dimension) => { this.getTabDimension(); }
 						} as IPanelView
 					} as IPanelTab);
 				});
@@ -80,9 +92,14 @@ export class DialogPane extends Disposable implements IThemable {
 		return this._body;
 	}
 
+	private getTabDimension(): DOM.Dimension {
+		return new DOM.Dimension(DOM.getContentWidth(this._body), DOM.getContentHeight(this._body))
+	}
+
 	public layout(): void {
 		if (this._tabbedPanel) {
 			this._tabbedPanel.layout(new DOM.Dimension(DOM.getContentWidth(this._body), DOM.getContentHeight(this._body)));
+			this._onTabChange.fire(this._selectedTabContent);
 		}
 	}
 
@@ -101,10 +118,14 @@ export class DialogPane extends Disposable implements IThemable {
 					if (tab) {
 						tab.notifyValidityChanged(valid);
 					}
-				}
+				},
+				onLayoutRequested: this._onTabChange.event
 			} as DialogComponentParams,
 			undefined,
-			(moduleRef) => this._moduleRefs.push(moduleRef));
+			(moduleRef) => {
+				this._dialogModule = moduleRef;
+				return this._moduleRefs.push(moduleRef);
+			});
 	}
 
 	public show(): void {
