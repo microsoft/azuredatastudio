@@ -6,10 +6,9 @@
 import 'vs/css!./jobHistory';
 import 'vs/css!sql/media/icons/common-icons';
 import { OnInit, OnChanges, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
-import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
-
+import * as sqlops from 'sqlops';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
-import { RunJobAction, StopJobAction } from 'sql/parts/jobManagement/views/jobHistoryActions';
+import { RunJobAction, StopJobAction, NewStepAction } from 'sql/parts/jobManagement/views/jobActions';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { AgentJobUtilities } from '../common/agentJobUtilities';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
@@ -55,9 +54,9 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	@ViewChild('table') private _tableContainer: ElementRef;
 	@ViewChild('actionbarContainer') private _actionbarContainer: ElementRef;
 
-	@Input() public agentJobInfo: AgentJobInfo = undefined;
-	@Input() public agentJobHistories: AgentJobHistoryInfo[] = undefined;
-	public agentJobHistoryInfo: AgentJobHistoryInfo = undefined;
+	@Input() public agentJobInfo: sqlops.AgentJobInfo = undefined;
+	@Input() public agentJobHistories: sqlops.AgentJobHistoryInfo[] = undefined;
+	public agentJobHistoryInfo: sqlops.AgentJobHistoryInfo = undefined;
 
 	private _isVisible: boolean = false;
 	private _stepRows: JobStepsViewRow[] = [];
@@ -65,7 +64,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _showPreviousRuns: boolean = undefined;
 	private _runStatus: string = undefined;
 	private _jobCacheObject: JobCacheObject;
-	private _agentJobInfo: AgentJobInfo;
+	private _agentJobInfo: sqlops.AgentJobInfo;
 	private _noJobsAvailable: boolean = false;
 
 	constructor(
@@ -219,7 +218,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		}
 	}
 
-	private buildHistoryTree(self: any, jobHistories: AgentJobHistoryInfo[]) {
+	private buildHistoryTree(self: any, jobHistories: sqlops.AgentJobHistoryInfo[]) {
 		self._treeController.jobHistories = jobHistories;
 		self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, jobHistories);
 		let jobHistoryRows = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
@@ -246,7 +245,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		this._agentViewComponent.showHistory = false;
 	}
 
-	private convertToJobHistoryRow(historyInfo: AgentJobHistoryInfo): JobHistoryRow {
+	private convertToJobHistoryRow(historyInfo: sqlops.AgentJobHistoryInfo): JobHistoryRow {
 		let jobHistoryRow = new JobHistoryRow();
 		jobHistoryRow.runDate = this.formatTime(historyInfo.runDate);
 		jobHistoryRow.runStatus = AgentJobUtilities.convertToStatusString(historyInfo.runStatus);
@@ -272,12 +271,14 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _initActionBar() {
 		let runJobAction = this.instantiationService.createInstance(RunJobAction);
 		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
+		let newStepAction = this.instantiationService.createInstance(NewStepAction);
 		let taskbar = <HTMLElement>this._actionbarContainer.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ action: runJobAction },
-			{ action: stopJobAction }
+			{ action: stopJobAction },
+			{ action: newStepAction }
 		]);
 	}
 

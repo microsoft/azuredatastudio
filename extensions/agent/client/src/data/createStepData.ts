@@ -7,7 +7,7 @@
 import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
 
-export class CreateJobData {
+export class CreateStepData {
 	public ownerUri: string;
 	public name: string;
 	public enabled: boolean;
@@ -15,32 +15,21 @@ export class CreateJobData {
 	public categoryId:number;
 	public owner: string;
 
-	constructor(ownerUri: string) {
+	constructor(ownerUri:string) {
 		this.ownerUri = ownerUri;
 	}
 
 	public async save() {
 		let agentService = await AgentUtils.getAgentService();
-		agentService.createJob(this.ownerUri, {
-			name: this.name,
-			owner: 'redmond\\alanren',
-			description:'',
-			currentExecutionStatus: 0,
-			lastRunOutcome: 0,
-			currentExecutionStep: '',
-			enabled: this.enabled,
-			hasTarget: true,
-			hasSchedule: false,
-			hasStep: false,
-			runnable: true,
-			category: '',
-			categoryId: 1,
-			categoryType: 1,
-			lastRun: '',
-			nextRun: '',
+		agentService.createJobStep(this.ownerUri, {
 			jobId: '',
+			stepId: '',
+			stepName: this.name,
+			message: '',
+			runDate: '',
+			runStatus: 1,
 		}).then(result => {
-			console.info(result.job.name);
+			console.info(result.step.stepName);
 		});
 	}
 }

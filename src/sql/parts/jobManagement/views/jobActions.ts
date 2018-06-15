@@ -8,15 +8,16 @@ import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { BaseActionContext } from '../../../workbench/common/actions';
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
-import { JobManagementService } from '../common/jobManagementService';
 import { IJobManagementService } from '../common/interfaces';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
-export enum JobHistoryActions {
+export enum JobActions {
 	Run = 'run',
 	Stop = 'stop',
+	NewStep = 'newStep'
 }
+
 export class RunJobAction extends Action {
 	public static ID = 'jobaction.runJob';
 	public static LABEL = nls.localize('jobaction.run', "Run");
@@ -32,7 +33,7 @@ export class RunJobAction extends Action {
 		let jobName = context.agentJobInfo.name;
 		let ownerUri = context.ownerUri;
 		return new TPromise<boolean>((resolve, reject) => {
-			this.jobManagementService.jobAction(ownerUri, jobName, JobHistoryActions.Run).then(result => {
+			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(result => {
 				if (result.success) {
 					var startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
 					this.notificationService.notify({
@@ -67,7 +68,7 @@ export class StopJobAction extends Action {
 		let jobName = context.agentJobInfo.name;
 		let ownerUri = context.ownerUri;
 		return new TPromise<boolean>((resolve, reject) => {
-			this.jobManagementService.jobAction(ownerUri, jobName, JobHistoryActions.Stop).then(result => {
+			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(result => {
 				if (result.success) {
 						var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
 						this.notificationService.notify({
@@ -83,6 +84,25 @@ export class StopJobAction extends Action {
 					resolve(false);
 				}
 			});
+		});
+	}
+}
+
+export class NewStepAction extends Action {
+	public static ID = 'jobaction.newStep';
+	public static LABEL = nls.localize('jobaction.newStep', "New Step");
+
+	constructor(
+		@INotificationService private notificationService: INotificationService,
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(NewStepAction.ID, NewStepAction.LABEL, 'newStepIcon');
+	}
+
+	public run(context: JobHistoryComponent): TPromise<boolean> {
+		let ownerUri = context.ownerUri;
+		return new TPromise<boolean>((resolve, reject) => {
+			resolve(this._commandService.executeCommand('agent.openNewStepDialog', ownerUri));
 		});
 	}
 }
