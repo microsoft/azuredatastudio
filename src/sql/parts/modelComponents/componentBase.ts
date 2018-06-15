@@ -12,7 +12,7 @@ import {
 import * as types from 'vs/base/common/types';
 
 import { IComponent, IComponentDescriptor, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { FlexLayout, FlexItemLayout } from 'sqlops';
+import * as sqlops from 'sqlops';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -112,7 +112,36 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		this.setProperties(properties);
 	}
 
+	public get height(): number | string {
+		return this.getPropertyOrDefault<sqlops.ComponentProperties, number | string>((props) => props.height, undefined);
+	}
+
+	public set height(newValue: number | string) {
+		this.setPropertyFromUI<sqlops.ComponentProperties, number | string>((props, value) => props.height = value, newValue);
+	}
+
+	public get width(): number | string {
+		return this.getPropertyOrDefault<sqlops.ComponentProperties, number | string>((props) => props.width, undefined);
+	}
+
+	public set width(newValue: number | string) {
+		this.setPropertyFromUI<sqlops.ComponentProperties, number | string>((props, value) => props.width = value, newValue);
+	}
+
+	protected convertSizeToNumber(size: number | string): number {
+		if (size && typeof (size) === 'string') {
+			if (size.toLowerCase().endsWith('px')) {
+				return +size.replace('px', '');
+			}
+			return 0;
+		}
+		return +size;
+	}
+
 	protected convertSize(size: number | string): string {
+		if (types.isUndefinedOrNull(size)) {
+			return '';
+		}
 		let convertedSize: string = size ? size.toString() : '100%';
 		if (!convertedSize.toLowerCase().endsWith('px') && !convertedSize.toLowerCase().endsWith('%')) {
 			convertedSize = convertedSize + 'px';

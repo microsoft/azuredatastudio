@@ -55,8 +55,6 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-
-
 			this._button = new Button(this._inputContainer.nativeElement);
 
 			this._register(this._button);
@@ -94,6 +92,12 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 		super.setProperties(properties);
 		this._button.enabled = this.enabled;
 		this._button.label = this.label;
+		if (this.width) {
+			this._button.setWidth(this.width.toString());
+		}
+		if (this.height) {
+			this._button.setWidth(this.height.toString());
+		}
 		this.updateIcon();
 	}
 

@@ -73,7 +73,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 		}
 		if (this._textareaContainer) {
-			let textAreaInputOptions = Object.assign({}, inputOptions, { flexibleHeight: true });
+			let textAreaInputOptions = Object.assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
 			this._textAreaInput = new InputBox(this._textareaContainer.nativeElement, this.contextViewService, textAreaInputOptions);
 			this.registerInput(this._textAreaInput, () => this.multiline);
 		}
@@ -124,6 +124,16 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public layout(): void {
 		this._changeRef.detectChanges();
+		this.layoutInputBox();
+	}
+
+	private layoutInputBox(): void {
+		if (this.width) {
+			this.inputElement.width = this.convertSizeToNumber(this.width);
+		}
+		if (this.height) {
+			this.inputElement.setHeight(this.convertSize(this.height));
+		}
 	}
 
 	public setLayout(layout: any): void {
@@ -154,13 +164,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		input.setAriaLabel(this.ariaLabel);
 		input.setPlaceHolder(this.placeHolder);
 		input.setEnabled(this.enabled);
-		if (this.width) {
-			input.width = this.width;
-		}
-		if (this.height) {
-			input.setHeight(this.convertSize(this.height));
-			input.layout();
-		}
+		this.layoutInputBox();
 		if (this.multiline) {
 			if (this.rows) {
 				this.inputElement.rows = this.rows;
@@ -198,22 +202,6 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public set placeHolder(newValue: string) {
 		this.setPropertyFromUI<sqlops.InputBoxProperties, string>((props, value) => props.placeHolder = value, newValue);
-	}
-
-	public get height(): number {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.height, undefined);
-	}
-
-	public set height(newValue: number) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.height = value, newValue);
-	}
-
-	public get width(): number {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.width, undefined);
-	}
-
-	public set width(newValue: number) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.width = value, newValue);
 	}
 
 	public set columns(newValue: number) {

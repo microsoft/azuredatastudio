@@ -50,7 +50,7 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 
 			this._register(this._input);
 			this._register(this._input.onChange(e => {
-				this.value = this._input.checked;
+				this.checked = this._input.checked;
 				this._onEventEmitter.fire({
 					eventType: ComponentEventType.onDidChange,
 					args: e
@@ -88,10 +88,10 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	// CSS-bound properties
 
 	public get checked(): boolean {
-		return this.getPropertyOrDefault<sqlops.CheckBoxProperties, boolean>((props) => props.value, false);
+		return this.getPropertyOrDefault<sqlops.CheckBoxProperties, boolean>((props) => props.checked, false);
 	}
 
-	public set value(newValue: boolean) {
+	public set checked(newValue: boolean) {
 		this.setPropertyFromUI<sqlops.CheckBoxProperties, boolean>((properties, value) => { properties.checked = value; }, newValue);
 	}
 
