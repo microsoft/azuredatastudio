@@ -158,8 +158,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			columnNameMap['event_sequence'] = 'EventSequence';
 			columnNameMap['client_pid'] = 'ClientProcessID';
 			columnNameMap['writes'] = 'Writes';
-			columnNameMap['duration'] = 'Duration';
 
+			// Using ' ' instead of '' fixed the error where clicking through events
+			// with empty text fields causes future text panes to be highlighted.
+			// This is a temporary fix, and should be changed before the July release
 			data['TextData'] = ' ';
 			for (let key in e.values) {
 				let columnName = columnNameMap[key];
