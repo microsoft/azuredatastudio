@@ -65,7 +65,6 @@ export class DialogPane extends Disposable implements IThemable {
 					}
 					let tabContainer = document.createElement('div');
 					tabContainer.style.display = 'none';
-					tabContainer.className = 'tabContainer';
 					this._body.appendChild(tabContainer);
 					this.initializeModelViewContainer(tabContainer, tab.content, tab);
 					this._tabbedPanel.onTabChange(e => {

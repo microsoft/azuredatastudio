@@ -37,7 +37,7 @@ class FormItem {
 	template: `
 		<div #container *ngIf="items" class="form-table" [style.width]="getFormWidth()" [style.height]="getFormHeight()">
 			<ng-container *ngFor="let item of items">
-			<div class="form-row" *ngIf="isFormComponent(item)" [style.height]="getFormHeight()">
+			<div class="form-row" *ngIf="isFormComponent(item)">
 
 					<ng-container *ngIf="isHorizontal(item)">
 						<div class="form-cell">{{getItemTitle(item)}}</div>
