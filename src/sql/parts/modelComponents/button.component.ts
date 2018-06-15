@@ -15,7 +15,7 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 import { attachButtonStyler } from 'sql/common/theme/styler';
 import { Button } from 'sql/base/browser/ui/button/button';
 
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { SIDE_BAR_BACKGROUND, SIDE_BAR_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import URI from 'vs/base/common/uri';
@@ -61,7 +61,7 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 
 			this._register(this._button);
 			this._register(attachButtonStyler(this._button, this.themeService, {
-				buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND
+				buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_TITLE_FOREGROUND
 			}));
 			this._register(this._button.onDidClick(e => {
 				this._onEventEmitter.fire({
