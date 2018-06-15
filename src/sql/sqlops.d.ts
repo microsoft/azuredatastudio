@@ -1054,6 +1054,13 @@ declare module 'sqlops' {
 		wmiEvent = 4
 	}
 
+	export enum JobCompletionActionCondition{
+		Never = 0,
+		OnSuccess = 1,
+		OnFailure = 2,
+		Always = 3
+	}
+
 	export interface AgentJobInfo {
 		name: string;
 		owner: string;
@@ -1072,6 +1079,12 @@ declare module 'sqlops' {
 		lastRun: string;
 		nextRun: string;
 		jobId: string;
+		EmailLevel: JobCompletionActionCondition;
+		PageLevel: JobCompletionActionCondition;
+		EventLogLevel: JobCompletionActionCondition;
+		DeleteLevel: JobCompletionActionCondition;
+		OperatorToEmail: string;
+		OperatorToPage: string;
 	}
 
 	export interface AgentJobStepInfo {

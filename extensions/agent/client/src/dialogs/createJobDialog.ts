@@ -93,6 +93,7 @@ export class CreateJobDialog {
 	}
 
 	public async showDialog() {
+		await this.model.initialize();
 		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
 		this.generalTab = sqlops.window.modelviewdialog.createTab(this.GeneralTabText);
 		this.stepsTab = sqlops.window.modelviewdialog.createTab(this.StepsTabText);
@@ -105,8 +106,8 @@ export class CreateJobDialog {
 		this.initializeSchedulesTab();
 		this.initializeNotificationsTab();
 		this.dialog.content = [this.generalTab, this.stepsTab, this.schedulesTab, this.alertsTab, this.notificationsTab];
-		this.dialog.okButton.onClick(() => this.execute());
-		this.dialog.cancelButton.onClick(() => this.cancel());
+		this.dialog.okButton.onClick(async () => await this.execute());
+		this.dialog.cancelButton.onClick(async () => await this.cancel());
 		this.dialog.okButton.label = this.OkButtonText;
 		this.dialog.cancelButton.label = this.CancelButtonText;
 		sqlops.window.modelviewdialog.openDialog(this.dialog);
@@ -142,6 +143,10 @@ export class CreateJobDialog {
 					component: this.enabledCheckBox,
 					title: ''
 				}]).component();
+
+			this.ownerTextBox.value = this.model.defaultOwner;
+			this.categoryDropdown.values = this.model.jobCategories;
+
 			await view.initializeModel(formModel);
 		});
 	}
@@ -246,6 +251,16 @@ export class CreateJobDialog {
 					title: ''
 				}
 			]).component();
+			this.emailConditionDropdown.values = this.model.JobCompletionActionConditions;
+			this.pagerConditionDropdown.values = this.model.JobCompletionActionConditions;
+			this.eventLogConditionDropdown.values = this.model.JobCompletionActionConditions;
+			this.deleteJobConditionDropdown.values = this.model.JobCompletionActionConditions;
+			this.emailConditionDropdown.value = this.model.getJobCompletionActionConditionDisplayName(this.model.emailLevel);
+			this.pagerConditionDropdown.value = this.model.getJobCompletionActionConditionDisplayName(this.model.pageLevel);
+			this.eventLogConditionDropdown.value = this.model.getJobCompletionActionConditionDisplayName(this.model.eventLogLevel);
+			this.deleteJobConditionDropdown.value = this.model.getJobCompletionActionConditionDisplayName(this.model.deleteLevel);
+			this.emailOperatorDropdown.values = this.model.operators;
+			this.pagerOperatorDropdown.values = this.model.operators;
 			await view.initializeModel(formModel);
 		});
 	}
@@ -259,13 +274,25 @@ export class CreateJobDialog {
 
 	private async execute() {
 		this.model.name = this.nameTextBox.value;
+		this.model.owner = this.ownerTextBox.value;
 		this.model.enabled = this.enabledCheckBox.checked;
 		this.model.description = this.descriptionTextBox.value;
-		this.model.categoryId = 1;
+		this.model.category = this.categoryDropdown.value;
+		this.model.emailLevel = this.getActualConditionValue(this.emailCheckBox, this.emailConditionDropdown);
+		this.model.operatorToEmail = this.emailOperatorDropdown.value;
+		this.model.operatorToPage = this.pagerOperatorDropdown.value;
+		this.model.pageLevel = this.getActualConditionValue(this.pagerCheckBox, this.pagerConditionDropdown);
+		this.model.eventLogLevel = this.getActualConditionValue(this.eventLogCheckBox, this.eventLogConditionDropdown);
+		this.model.deleteLevel = this.getActualConditionValue(this.pagerCheckBox, this.deleteJobConditionDropdown);
 		await this.model.save();
 	}
 
-	private cancel() {
+	private async cancel() {
 
 	}
+
+	private getActualConditionValue(checkbox: sqlops.CheckBoxComponent, dropdown: sqlops.DropDownComponent): sqlops.JobCompletionActionCondition {
+		return checkbox.checked ? this.model.getJobCompletionActionConditionByDisplayName(dropdown.value) : sqlops.JobCompletionActionCondition.Never;
+	}
+
 }
