@@ -25,6 +25,10 @@ export interface IProfilerSession {
 	 * Called by the service when more rows are available to render
 	 */
 	onMoreRows(events: sqlops.ProfilerSessionEvents);
+	/**
+	 * Called by the service when the session is closed unexpectedly
+	 */
+	onSessionStopped(events: sqlops.ProfilerSessionStoppedParams);
 }
 
 /**
@@ -65,6 +69,10 @@ export interface IProfilerService {
 	 * The method called by the service provider for when more rows are available to render
 	 */
 	onMoreRows(params: sqlops.ProfilerSessionEvents): void;
+	/**
+	 * The method called by the service provider for when more rows are available to render
+	 */
+	onSessionStopped(params: sqlops.ProfilerSessionStoppedParams): void;
 	/**
 	 * Gets a list of the session templates that are specified in the settings
 	 * @param provider An optional string to limit the session template to a specific

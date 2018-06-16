@@ -18,6 +18,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 
 import * as nls from 'vs/nls';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
@@ -35,7 +36,8 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	constructor(
 		private _connection: IConnectionProfile,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IProfilerService private _profilerService: IProfilerService
+		@IProfilerService private _profilerService: IProfilerService,
+		@INotificationService private _notificationService: INotificationService
 	) {
 		super();
 		this._state = new ProfilerState();
@@ -123,7 +125,19 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._state;
 	}
 
+	public onSessionStopped(notification: sqlops.ProfilerSessionStoppedParams) {
+		this.state.change({
+			isStopped: true,
+			isPaused: false,
+			isRunning: false
+		});
+	}
+
 	public onMoreRows(eventMessage: sqlops.ProfilerSessionEvents) {
+		if (eventMessage.eventsLost){
+			this._notificationService.warn(nls.localize("profiler.eventslost", "Some events may have been lost."));
+		}
+
 		for (let i: number  = 0; i < eventMessage.events.length && i < 500; ++i) {
 			let e: sqlops.ProfilerEvent = eventMessage.events[i];
 			let data = {};
