@@ -25,6 +25,7 @@ export class CreateStepDialog {
 	private static readonly NextButtonText: string = 'Next';
 	private static readonly PreviousButtonText: string = 'Previous';
 	private static readonly SuccessAction: string = 'On success action';
+	private static readonly FailureAction: string = 'On failure action';
 
 
 	// Dropdown options
@@ -44,6 +45,7 @@ export class CreateStepDialog {
 	private runAsDropdown: sqlops.DropDownComponent;
 	private databaseDropdown: sqlops.DropDownComponent;
 	private successActionDropdown: sqlops.DropDownComponent;
+	private failureActionDropdown: sqlops.DropDownComponent;
 	private commandTextBox: sqlops.InputBoxComponent;
 	private openButton: sqlops.ButtonComponent;
 	private selectAllButton: sqlops.ButtonComponent;
@@ -212,6 +214,45 @@ export class CreateStepDialog {
 		});
 	}
 
+	private createRetryCounters(view) {
+		this.retryAttemptsBox = view.modelBuilder.inputBox()
+		.withProperties({
+			inputType: 'number'
+		})
+		.component();
+		this.retryIntervalBox = view.modelBuilder.inputBox()
+			.withProperties({
+				inputType: 'number'
+			}).component();
+
+		let retryAttemptsContainer = view.modelBuilder.formContainer()
+			.withFormItems(
+				[{
+					component: this.retryAttemptsBox,
+					title: 'Retry Attempts'
+				}], {
+					horizontal: false
+				})
+				.component();
+
+		let retryIntervalContainer = view.modelBuilder.formContainer()
+			.withFormItems(
+				[{
+					component: this.retryIntervalBox,
+					title: 'Retry Attempts'
+					}], {
+					horizontal: false
+				})
+			.component();
+
+		let retryFlexContainer = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'row',
+			}).withItems([retryAttemptsContainer, retryIntervalContainer]).component();
+		return retryFlexContainer;
+	}
+
+
 	private createAdvancedTab() {
 		this.advancedTab.registerContent(async (view) => {
 			this.successActionDropdown = view.modelBuilder.dropDown()
@@ -220,43 +261,13 @@ export class CreateStepDialog {
 					values: [CreateStepDialog.NextStep, CreateStepDialog.QuitJobReportingSuccess, CreateStepDialog.QuitJobReportingFailure]
 				})
 				.component();
-
-			this.retryAttemptsBox = view.modelBuilder.inputBox()
+			let retryFlexContainer = this.createRetryCounters(view);
+			this.failureActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					inputType: 'number'
+					value: CreateStepDialog.QuitJobReportingFailure,
+					values: [CreateStepDialog.QuitJobReportingFailure, CreateStepDialog.NextStep, CreateStepDialog.QuitJobReportingSuccess]
 				})
-				.component();
-			this.retryIntervalBox = view.modelBuilder.inputBox()
-				.withProperties({
-					inputType: 'number'
-				}).component();
-
-			let retryAttemptsContainer = view.modelBuilder.formContainer()
-				.withFormItems(
-					[{
-						component: this.retryAttemptsBox,
-						title: 'Retry Attempts'
-					 }], {
-						horizontal: false
-					})
-					.component();
-
-			let retryIntervalContainer = view.modelBuilder.formContainer()
-				.withFormItems(
-					[{
-						component: this.retryIntervalBox,
-						title: 'Retry Attempts'
-						}], {
-						horizontal: false
-					})
-					.component();
-
-			let retryFlexContainer = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'row',
-				}).withItems([retryAttemptsContainer, retryIntervalContainer]).component();
-
-
+			.component();
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems(
 				[{
@@ -265,6 +276,9 @@ export class CreateStepDialog {
 				}, {
 					component: retryFlexContainer,
 					title: ''
+				}, {
+					component: this.failureActionDropdown,
+					title: CreateStepDialog.FailureAction
 				}]).component();
 
 			let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
