@@ -15,6 +15,7 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
+import { GridTableState } from 'sql/parts/query/editor/gridPanel';
 
 export interface IGridActionContext {
 	cell: { row: number; cell: number; };
@@ -23,6 +24,7 @@ export interface IGridActionContext {
 	batchId: number;
 	resultId: number;
 	table: Table<any>;
+	tableState: GridTableState;
 }
 
 export interface IMessagesActionContext {
@@ -119,6 +121,34 @@ export class SelectAllMessagesAction extends Action {
 		let sel = document.getSelection();
 		sel.removeAllRanges();
 		sel.addRange(range);
+		return TPromise.as(true);
+	}
+}
+
+export class MaximizeTableAction extends Action {
+	public static ID = 'grid.maximize';
+	public static LABEL = localize('maximize', 'Maximize');
+
+	constructor() {
+		super(MaximizeTableAction.ID, MaximizeTableAction.LABEL);
+	}
+
+	public run(context: IGridActionContext): TPromise<boolean> {
+		context.tableState.maximized = true;
+		return TPromise.as(true);
+	}
+}
+
+export class MinimizeTableAction extends Action {
+	public static ID = 'grid.minimize';
+	public static LABEL = localize('minimize', 'Minimize');
+
+	constructor() {
+		super(MinimizeTableAction.ID, MinimizeTableAction.LABEL);
+	}
+
+	public run(context: IGridActionContext): TPromise<boolean> {
+		context.tableState.maximized = false;
 		return TPromise.as(true);
 	}
 }

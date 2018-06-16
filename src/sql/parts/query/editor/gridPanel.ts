@@ -13,7 +13,7 @@ import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scr
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
-import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction } from 'sql/parts/query/editor/actions';
+import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, MinimizeTableAction } from 'sql/parts/query/editor/actions';
 
 import * as sqlops from 'sqlops';
 
@@ -23,7 +23,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { Emitter, Event } from 'vs/base/common/event';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
-import { isArray } from 'vs/base/common/types';
+import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
 import { range } from 'vs/base/common/arrays';
 import { Orientation, IView } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
@@ -38,6 +38,44 @@ const columnHeight = 26;
 const minGridHeightInRows = 8;
 const estimatedScrollBarHeight = 10;
 
+export interface IGridTableState {
+	canBeMaximized: boolean;
+	maximized: boolean;
+}
+
+export class GridTableState {
+
+	private _maximized: boolean;
+
+	private _onMaximizedChange = new Emitter<boolean>();
+	public onMaximizedChange: Event<boolean> = this._onMaximizedChange.event;
+
+	public canBeMaximized: boolean;
+
+	constructor(state?: IGridTableState) {
+		if (state) {
+			this._maximized = state.maximized;
+			this.canBeMaximized = state.canBeMaximized;
+		}
+	}
+
+	public get maximized(): boolean {
+		return this._maximized;
+	}
+
+	public set maximized(val: boolean) {
+		if (val === this._maximized) {
+			return;
+		}
+		this._maximized = val;
+		this._onMaximizedChange.fire(val);
+	}
+
+	public clone(): GridTableState {
+		return new GridTableState({ canBeMaximized: this.canBeMaximized, maximized: this.maximized });
+	}
+}
+
 export class GridPanel extends ViewletPanel {
 	private container = document.createElement('div');
 	private splitView: ScrollableSplitView;
@@ -45,6 +83,8 @@ export class GridPanel extends ViewletPanel {
 	private tableDisposable: IDisposable[] = [];
 
 	public runner: QueryRunner;
+
+	private maximizedGrid: GridTable;
 
 	constructor(
 		title: string, options: IViewletPanelOptions,
@@ -78,15 +118,29 @@ export class GridPanel extends ViewletPanel {
 			this.addResultSet(resultSet);
 		}
 
+		this.tables.map(t => {
+			t.state.canBeMaximized = this.tables.length > 1;
+		});
+
 		this.maximumBodySize = this.tables.reduce((p, c) => {
 			return p + c.maximumSize;
 		}, 0);
 	}
 
 	private addResultSet(resultSet: sqlops.ResultSetSummary) {
-		let table = new GridTable(this.runner, resultSet, this.contextMenuService, this.instantiationService);
+		let tableState = new GridTableState();
+		let table = new GridTable(this.runner, tableState, resultSet, this.contextMenuService, this.instantiationService);
+		tableState.onMaximizedChange(e => {
+			if (e) {
+				this.maximizeTable(table.id);
+			} else {
+				this.minimizeTables();
+			}
+		});
 		this.tableDisposable.push(attachTableStyler(table, this.themeService));
-		this.splitView.addView(table, table.minimumSize, this.splitView.length);
+		if (isUndefinedOrNull(this.maximizedGrid)) {
+			this.splitView.addView(table, table.minimumSize, this.splitView.length);
+		}
 		this.tables.push(table);
 	}
 
@@ -96,6 +150,33 @@ export class GridPanel extends ViewletPanel {
 		}
 		dispose(this.tables);
 		this.tables = [];
+	}
+
+	private maximizeTable(tableid: string): void {
+		if (!this.tables.find(t => t.id === tableid)) {
+			return;
+		}
+
+		for (let i = this.tables.length - 1; i >= 0; i--) {
+			if (this.tables[i].id === tableid) {
+				this.tables[i].state.maximized = true;
+				this.maximizedGrid = this.tables[i];
+				continue;
+			}
+
+			this.splitView.removeView(i);
+		}
+	}
+
+	private minimizeTables(): void {
+		if (this.maximizedGrid) {
+			this.maximizedGrid.state.maximized = false;
+			this.maximizedGrid = undefined;
+			this.splitView.removeView(0);
+			this.tables.map(t => {
+				this.splitView.addView(t, t.minimumSize, this.splitView.length);
+			});
+		}
 	}
 }
 
@@ -112,6 +193,7 @@ class GridTable extends Disposable implements IView {
 
 	constructor(
 		private runner: QueryRunner,
+		public state: GridTableState,
 		private resultSet: sqlops.ResultSetSummary,
 		private contextMenuService: IContextMenuService,
 		private instantiationService: IInstantiationService
@@ -179,7 +261,7 @@ class GridTable extends Disposable implements IView {
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => e.anchor,
 			getActions: () => {
-				return TPromise.as([
+				let actions = [
 					new SelectAllGridAction(),
 					new Separator(),
 					new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveFormat.CSV),
@@ -188,7 +270,17 @@ class GridTable extends Disposable implements IView {
 					new Separator(),
 					new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
 					new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
-				]);
+				];
+
+				if (this.state.canBeMaximized) {
+					if (this.state.maximized) {
+						actions.splice(1, 0, new MinimizeTableAction());
+					} else {
+						actions.splice(1, 0, new MaximizeTableAction());
+					}
+				}
+
+				return TPromise.as(actions);
 			},
 			getActionsContext: () => {
 				return <IGridActionContext>{
@@ -197,7 +289,8 @@ class GridTable extends Disposable implements IView {
 					runner: this.runner,
 					batchId: this.resultSet.batchId,
 					resultId: this.resultSet.id,
-					table: this.table
+					table: this.table,
+					tableState: this.state
 				};
 			}
 		});
