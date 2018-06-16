@@ -24,6 +24,7 @@ export class CreateStepDialog {
 	private static readonly ParseCommandText: string = 'Parse';
 	private static readonly NextButtonText: string = 'Next';
 	private static readonly PreviousButtonText: string = 'Previous';
+	private static readonly SuccessAction: string = 'On success action';
 
 
 	// Dropdown options
@@ -31,6 +32,7 @@ export class CreateStepDialog {
 	private static readonly AgentServiceAccount: string = 'SQL Server Agent Service Account';
 	private static readonly NextStep: string =  'Go to the next step';
 	private static readonly QuitJobReportingSuccess: string =  'Quit the job reporting success';
+	private static readonly QuitJobReportingFailure: string = 'Quit the job reporting failure';
 
 	// UI Components
 	//
@@ -41,6 +43,7 @@ export class CreateStepDialog {
 	private typeDropdown: sqlops.DropDownComponent;
 	private runAsDropdown: sqlops.DropDownComponent;
 	private databaseDropdown: sqlops.DropDownComponent;
+	private successActionDropdown: sqlops.DropDownComponent;
 	private commandTextBox: sqlops.InputBoxComponent;
 	private openButton: sqlops.ButtonComponent;
 	private selectAllButton: sqlops.ButtonComponent;
@@ -49,6 +52,8 @@ export class CreateStepDialog {
 	private parseButton: sqlops.ButtonComponent;
 	private nextButton: sqlops.ButtonComponent;
 	private previousButton: sqlops.ButtonComponent;
+	private retryAttemptsBox: sqlops.InputBoxComponent;
+	private retryIntervalBox: sqlops.InputBoxComponent;
 
 	private flexButtonsModel;
 	private overallContainer;
@@ -199,7 +204,7 @@ export class CreateStepDialog {
 					title: ''
 				}], {
 					horizontal: false,
-					componentWidth: 450
+					componentWidth: 420
 				}).component();
 			let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
 			formWrapper.loading = false;
@@ -209,12 +214,62 @@ export class CreateStepDialog {
 
 	private createAdvancedTab() {
 		this.advancedTab.registerContent(async (view) => {
-			let successAction = view.modelBuilder.dropDown()
+			this.successActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: CreateStepDialog.NextStep,
-					values: [CreateStepDialog.NextStep, CreateStepDialog.QuitJobReportingSuccess, 'Quit the job reporting failure']
+					values: [CreateStepDialog.NextStep, CreateStepDialog.QuitJobReportingSuccess, CreateStepDialog.QuitJobReportingFailure]
 				})
 				.component();
+
+			this.retryAttemptsBox = view.modelBuilder.inputBox()
+				.withProperties({
+					inputType: 'number'
+				})
+				.component();
+			this.retryIntervalBox = view.modelBuilder.inputBox()
+				.withProperties({
+					inputType: 'number'
+				}).component();
+
+			let retryAttemptsContainer = view.modelBuilder.formContainer()
+				.withFormItems(
+					[{
+						component: this.retryAttemptsBox,
+						title: 'Retry Attempts'
+					 }], {
+						horizontal: false
+					})
+					.component();
+
+			let retryIntervalContainer = view.modelBuilder.formContainer()
+				.withFormItems(
+					[{
+						component: this.retryIntervalBox,
+						title: 'Retry Attempts'
+						}], {
+						horizontal: false
+					})
+					.component();
+
+			let retryFlexContainer = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'row',
+				}).withItems([retryAttemptsContainer, retryIntervalContainer]).component();
+
+
+			let formModel = view.modelBuilder.formContainer()
+				.withFormItems(
+				[{
+					component: this.successActionDropdown,
+					title: CreateStepDialog.SuccessAction
+				}, {
+					component: retryFlexContainer,
+					title: ''
+				}]).component();
+
+			let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
+			formWrapper.loading = false;
+			view.initializeModel(formWrapper);
 		});
 	}
 
