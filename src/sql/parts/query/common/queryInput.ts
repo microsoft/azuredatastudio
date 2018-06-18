@@ -136,7 +136,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public resolve(refresh?: boolean): TPromise<EditorModel> { return this._sql.resolve(); }
 	public save(): TPromise<boolean> { return this._sql.save(); }
 	public isDirty(): boolean { return this._sql.isDirty(); }
-	public confirmSave(): TPromise<ConfirmResult>  { return this._sql.confirmSave(); }
+	public confirmSave(): TPromise<ConfirmResult> { return this._sql.confirmSave(); }
 	public getResource(): URI { return this._sql.getResource(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }
 	public suggestFileName(): string { return this._sql.suggestFileName(); }
