@@ -304,8 +304,8 @@ declare module 'sqlops' {
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
 
 	export interface ComponentProperties {
-		height: number | string;
-		width: number | string;
+		height?: number | string;
+		width?: number | string;
 	}
 
 	export interface InputBoxProperties extends ComponentProperties {
