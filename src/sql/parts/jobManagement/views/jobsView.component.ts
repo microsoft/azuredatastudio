@@ -13,33 +13,23 @@ import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!sql/base/browser/ui/table/media/table';
 
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
-
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-
 import * as nls from 'vs/nls';
-
-import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { attachTableStyler } from 'sql/common/theme/styler';
-import { JobHistoryComponent } from 'src/sql/parts/jobManagement/views/jobHistory.component';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { AgentJobUtilities } from 'sql/parts/jobManagement/common/agentJobUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
-import { BaseFocusDirectionTerminalAction } from 'vs/workbench/parts/terminal/electron-browser/terminalActions';
-import * as Utils from 'sql/parts/connection/common/utils';
 import * as dom from 'vs/base/browser/dom';
 import { IJobManagementService } from '../common/interfaces';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-
-
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
+export const ROW_HEIGHT: number = 45;
 
 @Component({
 	selector: JOBSVIEW_SELECTOR,
@@ -82,6 +72,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 	private isVisible: boolean = false;
 	private isInitialized: boolean = false;
+	private isRefreshing: boolean = false;
 	private _table: Table<any>;
 	public jobs: sqlops.AgentJobInfo[];
 	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
@@ -141,10 +132,14 @@ export class JobsViewComponent implements AfterContentChecked {
 		} else if (this.isVisible === true && this._agentViewComponent.refresh === true) {
 			this._showProgressWheel = true;
 			this.onFirstVisible(false);
+			this.isRefreshing = true;
 			this._agentViewComponent.refresh = false;
 		} else if (this.isVisible === true && this._agentViewComponent.refresh === false) {
-			this._showProgressWheel = true;
-			this.onFirstVisible(true);
+			if (!this.isRefreshing) {
+				this._showProgressWheel = true;
+				this.onFirstVisible(true);
+			}
+			this.isRefreshing = false;
 		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
 			this.isVisible = false;
 		}
@@ -156,8 +151,16 @@ export class JobsViewComponent implements AfterContentChecked {
 			column.rerenderOnResize = true;
 			return column;
 		});
-		// create the table
-		this.dataView = new Slick.Data.DataView();
+		let options = <Slick.GridOptions<any>>{
+			syncColumnCellResize: true,
+			enableColumnReorder: false,
+			rowHeight: ROW_HEIGHT,
+			enableCellNavigation: true,
+			forceFitColumns: true
+		};
+
+		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
+
 		let rowDetail = new RowDetailView({
 			cssClass: '_detail_selector',
 			process: (job) => {
@@ -172,10 +175,8 @@ export class JobsViewComponent implements AfterContentChecked {
 		columns.unshift(this.rowDetail.getColumnDefinition());
 		let filterPlugin = new HeaderFilter({}, this._themeService);
 		this.filterPlugin = filterPlugin;
+		$(this._gridEl.nativeElement).empty();
 		this._table = new Table(this._gridEl.nativeElement, undefined, columns, this.options);
-
-
-
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let job = self.getJob(args);
@@ -199,9 +200,11 @@ export class JobsViewComponent implements AfterContentChecked {
 
 	private onJobsAvailable(jobs: sqlops.AgentJobInfo[]) {
 		let jobViews: any;
+		let start: boolean = true;
 		if (!jobs) {
 			let dataView = this._jobCacheObject.dataView;
 			jobViews = dataView.getItems();
+			start = false;
 		} else {
 			jobViews = jobs.map((job) => {
 				return {
@@ -325,7 +328,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
 
-		this.expandJobs(true);
+		this.expandJobs(start);
 		// tooltip for job name
 		$('.jobview-jobnamerow').hover(e => {
 			let currentTarget = e.currentTarget;
@@ -363,6 +366,44 @@ export class JobsViewComponent implements AfterContentChecked {
 				let previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
 				self.createJobChart(job.jobId, previousRuns);
 			});
+		});
+		$('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e) => {
+			// highlight the error row as well if a failing job row is hovered
+			if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
+				let target = $(e.currentTarget);
+				let targetChildren = $(e.currentTarget.children);
+				let siblings = target.nextAll().toArray();
+				let top = parseInt(target.css('top'), 10);
+				for (let i = 0; i < siblings.length; i++) {
+					let sibling = siblings[i];
+					let siblingTop = parseInt($(sibling).css('top'), 10);
+					if (siblingTop === top + ROW_HEIGHT) {
+						$(sibling.children).addClass('hovered');
+						sibling.onmouseenter = (e) => {
+							targetChildren.addClass('hovered');
+						};
+						sibling.onmouseleave = (e) => {
+							targetChildren.removeClass('hovered');
+						}
+						break;
+					}
+				}
+			}
+		}, (e) => {
+			// switch back to original background
+			if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
+				let target = $(e.currentTarget);
+				let siblings = target.nextAll().toArray();
+				let top = parseInt(target.css('top'), 10);
+				for (let i = 0; i < siblings.length; i++) {
+					let sibling = siblings[i];
+					let siblingTop = parseInt($(sibling).css('top'), 10);
+					if (siblingTop === top + ROW_HEIGHT) {
+						$(sibling.children).removeClass('hovered');
+						break;
+					}
+				}
+			}
 		});
 		// cache the dataview for future use
 		this._jobCacheObject.dataView = this.dataView;
@@ -583,6 +624,9 @@ export class JobsViewComponent implements AfterContentChecked {
 	}
 
 	private expandJobs(start: boolean): void {
+		if (start) {
+			this._agentViewComponent.expanded = new Map<string, string>();
+		}
 		let expandedJobs = this._agentViewComponent.expanded;
 		let expansions = 0;
 		for (let i = 0; i < this.jobs.length; i++) {

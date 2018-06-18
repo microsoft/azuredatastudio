@@ -15,6 +15,7 @@ import { ComponentEventType } from '../../parts/modelComponents/interfaces';
 export interface DialogComponentParams extends IBootstrapParams {
 	modelViewId: string;
 	validityChangedCallback: (valid: boolean) => void;
+	onLayoutRequested: Event<string>;
 }
 
 @Component({
@@ -35,6 +36,11 @@ export class DialogContainer implements AfterContentInit {
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IBootstrapParams) private _params: DialogComponentParams) {
 		this.modelViewId = this._params.modelViewId;
+		this._params.onLayoutRequested(e => {
+			if (this.modelViewId === e) {
+				this.layout();
+			}
+		});
 	}
 
 	ngAfterContentInit(): void {

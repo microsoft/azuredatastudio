@@ -7,11 +7,7 @@ import 'vs/css!./controlHostContent';
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { Parts } from 'vs/workbench/services/part/common/partService';
 import { IDisposable } from 'vs/base/common/lifecycle';
-
-import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 import * as sqlops from 'sqlops';
