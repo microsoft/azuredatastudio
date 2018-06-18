@@ -21,7 +21,7 @@ import * as nls from 'vs/nls';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import * as platform from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
@@ -352,7 +352,7 @@ export class QueryModelService implements IQueryModelService {
 	}
 
 	// EDIT DATA METHODS /////////////////////////////////////////////////////
-	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): void {
+	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): void {
 		// Reuse existing query runner if it exists
 		let queryRunner: QueryRunner;
 		let info: QueryInfo;
@@ -368,6 +368,8 @@ export class QueryModelService implements IQueryModelService {
 
 			queryRunner = existingRunner;
 		} else {
+			info = new QueryInfo();
+
 			// We do not have a query runner for this editor, so create a new one
 			// and map it to the results uri
 			queryRunner = this._instantiationService.createInstance(QueryRunner, ownerUri, ownerUri);
@@ -376,15 +378,21 @@ export class QueryModelService implements IQueryModelService {
 			});
 			queryRunner.addListener(QREvents.BATCH_START, batch => {
 				let link = undefined;
+				let messageText = LocalizedConstants.runQueryBatchStartMessage;
 				if (batch.selection) {
-					link = {
-						text: strings.format(LocalizedConstants.runQueryBatchStartLine, batch.selection.startLine + 1),
-						uri: ''
-					};
+					if (info.selectionSnippet) {
+						// This indicates it's a query string. Do not include line information since it'll be inaccurate, but show some of the
+						// executed query text
+						messageText = nls.localize('runQueryStringBatchStartMessage', 'Started executing query "{0}"', info.selectionSnippet);
+					} else {
+						link = {
+							text: strings.format(LocalizedConstants.runQueryBatchStartLine, batch.selection.startLine + 1)
+						};
+					}
 				}
 				let message = {
-					message: LocalizedConstants.runQueryBatchStartMessage,
-					batchId: undefined,
+					message: messageText,
+					batchId: batch.id,
 					isError: false,
 					time: new Date().toLocaleTimeString(),
 					link: link
@@ -407,13 +415,20 @@ export class QueryModelService implements IQueryModelService {
 				this._fireQueryEvent(e.ownerUri, 'editSessionReady');
 			});
 
-			info = new QueryInfo();
 			info.queryRunner = queryRunner;
 			info.dataService = this._instantiationService.createInstance(DataService, ownerUri);
 			this._queryInfoMap.set(ownerUri, info);
 		}
 
-		queryRunner.initializeEdit(ownerUri, schemaName, objectName, objectType, rowLimit);
+		if (queryString) {
+			if (queryString.length < selectionSnippetMaxLen) {
+				info.selectionSnippet = queryString;
+			} else {
+				info.selectionSnippet = queryString.substring(0, selectionSnippetMaxLen - 3) + '...';
+			}
+		}
+
+		queryRunner.initializeEdit(ownerUri, schemaName, objectName, objectType, rowLimit, queryString);
 	}
 
 	public cancelInitializeEdit(input: QueryRunner | string): void {

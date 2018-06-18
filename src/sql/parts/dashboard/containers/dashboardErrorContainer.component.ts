@@ -11,7 +11,7 @@ import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import * as nls from 'vs/nls';
 
 @Component({

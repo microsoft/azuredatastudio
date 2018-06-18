@@ -7,7 +7,7 @@ import 'vs/css!../common/media/jobs';
 import 'sql/parts/dashboard/common/dashboardPanelStyles';
 
 import * as nls from 'vs/nls';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable} from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { RefreshWidgetAction, EditDashboardAction } from 'sql/parts/dashboard/common/actions';
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -15,7 +15,6 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as themeColors from 'vs/workbench/common/theme';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentJobInfo, AgentJobHistoryInfo } from 'sqlops';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
@@ -50,8 +49,8 @@ export class AgentViewComponent {
 	};
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef){
-			this._expanded = new Map<string, string>();
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef) {
+		this._expanded = new Map<string, string>();
 	}
 
 	/**
@@ -83,7 +82,6 @@ export class AgentViewComponent {
 
 	public set jobId(value: string) {
 		this._jobId = value;
-		this._cd.detectChanges();
 	}
 
 	public set showHistory(value: boolean) {
@@ -93,7 +91,6 @@ export class AgentViewComponent {
 
 	public set agentJobInfo(value: AgentJobInfo) {
 		this._agentJobInfo = value;
-		this._cd.detectChanges();
 	}
 
 	public set refresh(value: boolean) {
@@ -103,5 +100,13 @@ export class AgentViewComponent {
 
 	public setExpanded(jobId: string, errorMessage: string) {
 		this._expanded.set(jobId, errorMessage);
+	}
+
+	public set expanded(value: Map<string, string>) {
+		this._expanded = value;
+	}
+
+	public layout() {
+		this._panel.layout();
 	}
 }

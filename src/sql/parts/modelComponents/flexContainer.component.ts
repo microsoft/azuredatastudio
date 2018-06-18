@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./flexContainer';
 
-import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
+import {
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList,
 } from '@angular/core';
 
@@ -15,14 +16,16 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 
+import types = require('vs/base/common/types');
+
 class FlexItem {
-	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) {}
+	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) { }
 }
 
 @Component({
 	template: `
 		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent"
-				[style.alignItems]="alignItems" [style.alignContent]="alignContent">
+				[style.alignItems]="alignItems" [style.alignContent]="alignContent" [style.height]="height" [style.width]="width">
 			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.order]="getItemOrder(item)" >
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
@@ -37,8 +40,8 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	private _justifyContent: string;
 	private _alignItems: string;
 	private _alignContent: string;
-
-	@ViewChildren(ModelComponentWrapper) private _componentWrappers: QueryList<ModelComponentWrapper>;
+	private _height: string;
+	private _width: string;
 
 	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
 		super(changeRef);
@@ -57,19 +60,14 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 	/// IComponent implementation
 
-	public layout(): void {
-		if (this._componentWrappers) {
-			this._componentWrappers.forEach(wrapper => {
-				wrapper.layout();
-			});
-		}
-	}
-
-	public setLayout (layout: FlexLayout): void {
+	public setLayout(layout: FlexLayout): void {
 		this._flexFlow = layout.flexFlow ? layout.flexFlow : '';
-		this._justifyContent= layout.justifyContent ? layout.justifyContent : '';
-		this._alignItems= layout.alignItems ? layout.alignItems : '';
-		this._alignContent= layout.alignContent ? layout.alignContent : '';
+		this._justifyContent = layout.justifyContent ? layout.justifyContent : '';
+		this._alignItems = layout.alignItems ? layout.alignItems : '';
+		this._alignContent = layout.alignContent ? layout.alignContent : '';
+		this._height = this.convertSize(layout.height);
+		this._width = this.convertSize(layout.width);
+
 		this.layout();
 	}
 
@@ -84,6 +82,14 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 	public get alignItems(): string {
 		return this._alignItems;
+	}
+
+	public get height(): string {
+		return this._height;
+	}
+
+	public get width(): string {
+		return this._width;
 	}
 
 	public get alignContent(): string {

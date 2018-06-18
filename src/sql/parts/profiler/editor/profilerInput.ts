@@ -14,7 +14,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 
 import * as nls from 'vs/nls';
@@ -129,7 +129,6 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			let data = {};
 			data['EventClass'] =  e.name;
 			data['StartTime'] = e.timestamp;
-			data['EndTime'] = e.timestamp;
 			const columns = [
 				'TextData',
 				'ApplicationName',
@@ -156,12 +155,14 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			columnNameMap['cpu_time'] = 'CPU';
 			columnNameMap['duration'] = 'Duration';
 			columnNameMap['logical_reads'] = 'Reads';
+			columnNameMap['event_sequence'] = 'EventSequence';
+			columnNameMap['client_pid'] = 'ClientProcessID';
+			columnNameMap['writes'] = 'Writes';
 
-			for (let idx = 0; idx < columns.length; ++idx) {
-				let columnName = columns[idx];
-				data[columnName] = '';
-			}
-
+			// Using ' ' instead of '' fixed the error where clicking through events
+			// with empty text fields causes future text panes to be highlighted.
+			// This is a temporary fix, and should be changed before the July release
+			data['TextData'] = ' ';
 			for (let key in e.values) {
 				let columnName = columnNameMap[key];
 				if (columnName) {

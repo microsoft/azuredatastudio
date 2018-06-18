@@ -1,0 +1,19 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<html>
+    <header>
+    </header>
+    <body>
+        <button onclick="count()">Count</button>
+        <script>
+            const vscode = acquireVsCodeApi();
+            function count() {
+                vscode.postMessage('count', '*');
+            }
+        </script>
+    </body>
+</html>

@@ -66,7 +66,7 @@ export function createApiFactory(
 	const extHostWebviewWidgets = rpcProtocol.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(rpcProtocol));
 	const extHostModelView = rpcProtocol.set(SqlExtHostContext.ExtHostModelView, new ExtHostModelView(rpcProtocol));
 	const extHostDashboard = rpcProtocol.set(SqlExtHostContext.ExtHostDashboard, new ExtHostDashboard(rpcProtocol));
-	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol));
+	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
 
 
@@ -281,6 +281,12 @@ export function createApiFactory(
 				registerCapabilitiesServiceProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
+				},
+				getProvider<T extends sqlops.DataProvider>(providerId: string, providerType: sqlops.DataProviderType) {
+					return extHostDataProvider.getProvider<T>(providerId, providerType);
+				},
+				getProvidersByType<T extends sqlops.DataProvider>(providerType: sqlops.DataProviderType) {
+					return extHostDataProvider.getProvidersByType<T>(providerType);
 				}
 			};
 
@@ -295,10 +301,16 @@ export function createApiFactory(
 					return extHostModelViewDialog.createButton(label);
 				},
 				openDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					return extHostModelViewDialog.open(dialog);
+					return extHostModelViewDialog.openDialog(dialog);
 				},
 				closeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					return extHostModelViewDialog.close(dialog);
+					return extHostModelViewDialog.closeDialog(dialog);
+				},
+				createWizardPage(title: string): sqlops.window.modelviewdialog.WizardPage {
+					return extHostModelViewDialog.createWizardPage(title);
+				},
+				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
+					return extHostModelViewDialog.createWizard(title);
 				}
 			};
 
@@ -318,7 +330,10 @@ export function createApiFactory(
 
 			const workspace: typeof sqlops.workspace = {
 				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
-				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard
+				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
+				createModelViewEditor(title: string, options?: sqlops.ModelViewEditorOptions): sqlops.workspace.ModelViewEditor {
+					return extHostModelViewDialog.createModelViewEditor(title, options);
+				}
 			};
 
 			const dashboard = {
@@ -353,6 +368,8 @@ export function createApiFactory(
 				resources,
 				serialization,
 				dataprotocol,
+				DataProviderType: sqlExtHostTypes.DataProviderType,
+				DeclarativeDataType: sqlExtHostTypes.DeclarativeDataType,
 				ServiceOptionType: sqlExtHostTypes.ServiceOptionType,
 				ConnectionOptionSpecialType: sqlExtHostTypes.ConnectionOptionSpecialType,
 				EditRowState: sqlExtHostTypes.EditRowState,
@@ -360,6 +377,9 @@ export function createApiFactory(
 				TaskStatus: sqlExtHostTypes.TaskStatus,
 				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode,
 				ScriptOperation: sqlExtHostTypes.ScriptOperation,
+				WeekDays: sqlExtHostTypes.WeekDays,
+				NotifyMethods: sqlExtHostTypes.NotifyMethods,
+				AlertType: sqlExtHostTypes.AlertType,
 				window,
 				tasks,
 				dashboard,

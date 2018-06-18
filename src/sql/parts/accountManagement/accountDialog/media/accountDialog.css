@@ -2,9 +2,49 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+.no-account-view {
+	font-size: 12px;
+	padding: 15px;
+}
 
-.account-view .monaco-split-view .split-view-view .header {
+.no-account-view .no-account-view-label {
+	padding-bottom: 15px;
+}
+
+.account-view .header {
+	position: relative;
+	line-height: 22px;
+	font-size: 11px;
+	font-weight: bold;
+	text-transform: uppercase;
+	padding-left: 20px;
 	padding-right: 12px;
+	overflow: hidden;
+	display: flex;
+}
+
+.account-view .header .title {
+	display: flex;
+	justify-content: flex-start;
+	flex: 1 1 auto;
+}
+
+.account-view .header .actions {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.account-view .header .actions .action-item .action-label {
+	width: 30px;
+	background-size: 16px;
+	background-position: center center;
+	background-repeat: no-repeat;
+	margin-right: 0;
+	height: 22px;
+}
+
+.account-view .header .count-badge-wrapper {
+	justify-content: flex-end;
 }
 
 .account-view .provider-view .list-row {
@@ -58,24 +98,4 @@
 .account-view .provider-view .monaco-list .monaco-list-row.selected .list-row .actions-container,
 .account-view .provider-view .monaco-list .monaco-list-row.focused .list-row .actions-container{
 	display: block;
-}
-
-.account-view .split-view-view .header .title {
-	display: flex;
-	justify-content: flex-start;
-	flex: 1 1 auto;
-}
-
-.account-view .split-view-view .header .actions {
-	display: flex;
-	justify-content: flex-end;
-}
-
-.account-view .split-view-view .header .actions .action-item .action-label {
-	width: 30px;
-	background-size: 16px;
-	background-position: center center;
-	background-repeat: no-repeat;
-	margin-right: 0;
-	height: 22px;
 }

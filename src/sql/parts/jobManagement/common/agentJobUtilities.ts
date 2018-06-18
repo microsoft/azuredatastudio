@@ -11,6 +11,7 @@ export class AgentJobUtilities {
 
 	public static startIconClass: string = 'action-label icon runJobIcon';
 	public static stopIconClass: string = 'action-label icon stopJobIcon';
+	public static jobMessageLength: number = 110;
 
 	public static convertToStatusString(status: number): string {
 		switch(status) {
@@ -90,5 +91,59 @@ export class AgentJobUtilities {
 			default:
 				return;
 		}
+	}
+
+	public static convertDurationToSeconds(duration: string): number {
+		let split = duration.split(':');
+		let seconds = (+split[0]) * 60 * 60 + (+split[1]) * 60 + (+split[2]);
+		return seconds;
+	}
+
+	public static convertColFieldToName(colField: string) {
+		switch(colField) {
+			case('name'):
+				return 'Name';
+			case('lastRun'):
+				return 'Last Run';
+			case('nextRun'):
+				return 'Next Run';
+			case('enabled'):
+				return 'Enabled';
+			case('status'):
+				return 'Status';
+			case('category'):
+				return 'Category';
+			case('runnable'):
+				return 'Runnable';
+			case('schedule'):
+				return 'Schedule';
+			case('lastRunOutcome'):
+				return 'Last Run Outcome';
+		}
+		return '';
+	}
+
+	public static convertColNameToField(columnName: string) {
+		switch(columnName) {
+			case('Name'):
+				return 'name';
+			case('Last Run'):
+				return 'lastRun';
+			case('Next Run'):
+				return 'nextRun';
+			case('Enabled'):
+				return 'enabled';
+			case('Status'):
+				return 'status';
+			case('Category'):
+				return 'category';
+			case('Runnable'):
+				return 'runnable';
+			case('Schedule'):
+				return 'schedule';
+			case('Last Run Outcome'):
+				return 'lastRunOutcome';
+		}
+		return '';
 	}
 }

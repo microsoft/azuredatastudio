@@ -39,8 +39,7 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { attachPanelStyler, PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
-import { Dimension, $ } from 'vs/base/browser/builder';
+import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -172,7 +171,7 @@ export class InsightsDialogView extends Modal {
 		const itemsDetailHeaderTitle = nls.localize("insights.dialog.itemDetails", "Item Details");
 
 		this.panelView = this._instantiationService.createInstance(PanelViewlet, 'insightsView', { showHeaderInTitleWhenSingleView: true });
-		let panelCreation = this.panelView.create($(this._container));
+		let panelCreation = this.panelView.create(this._container);
 		this._topTableData = new TableDataView();
 		this._bottomTableData = new TableDataView();
 		let topTableView = this._instantiationService.createInstance(TableCollapsibleView, itemsHeaderTitle, { ariaHeaderLabel: itemsHeaderTitle }, this._topTableData, this._topColumns, { forceFitColumns: true }) as TableCollapsibleView<ListResource>;
@@ -216,12 +215,11 @@ export class InsightsDialogView extends Modal {
 			});
 		}));
 
-		attachPanelStyler(topTableView, this._themeService);
-		attachPanelStyler(bottomTableView, this._themeService);
-
 		panelCreation.then(() => {
-			this.panelView.addPanel(topTableView, 1, 0);
-			this.panelView.addPanel(bottomTableView, 1, 1);
+			this.panelView.addPanels([
+				{ index: 0, panel: topTableView, size: 1 },
+				{ index: 1, panel: bottomTableView, size: 1 }
+			]);
 		});
 
 		this._register(attachTableStyler(this._topTable, this._themeService));
@@ -268,7 +266,7 @@ export class InsightsDialogView extends Modal {
 		this._register(attachModalDialogStyler(this, this._themeService));
 	}
 
-	protected layout(dimension: Dimension): void {
+	protected layout(dimension: DOM.Dimension): void {
 		this.panelView.layout(dimension);
 	}
 

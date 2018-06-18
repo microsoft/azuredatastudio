@@ -33,4 +33,12 @@ export class Button extends vsButton {
 	public set title(value: string) {
 		this.$el.title(value);
 	}
+
+	public setHeight(value: string) {
+		this.$el.style('height', value);
+	}
+
+	public setWidth(value: string) {
+		this.$el.style('width', value);
+	}
 }

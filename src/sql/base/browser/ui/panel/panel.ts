@@ -5,8 +5,9 @@
 
 import { IThemable } from 'vs/platform/theme/common/styler';
 import * as objects from 'sql/base/common/objects';
-import Event, { Emitter } from 'vs/base/common/event';
-import { Dimension, $, Builder } from 'vs/base/browser/builder';
+import { Event, Emitter } from 'vs/base/common/event';
+import { Dimension } from 'vs/base/browser/dom';
+import { $, Builder } from 'vs/base/browser/builder';
 import { EventType } from 'vs/base/browser/dom';
 import { IAction } from 'vs/base/common/actions';
 import { IActionOptions, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -62,10 +63,12 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this.$tabList.style('height', this.headersize + 'px');
 		this.$header.append(this.$tabList);
 		let actionbarcontainer = $('.title-actions');
-		this._actionbar = new ActionBar(actionbarcontainer);
+		this._actionbar = new ActionBar(actionbarcontainer.getHTMLElement());
 		this.$header.append(actionbarcontainer);
 		this.$parent.append(this.$header);
 		this.$body = $('tabBody');
+		this.$body.attr('role', 'tabpanel');
+		this.$body.attr('tabindex', '0');
 		this.$parent.append(this.$body);
 	}
 
@@ -92,7 +95,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 		tabHeaderElement.attr('tabindex', '0');
 		tabHeaderElement.attr('role', 'tab');
 		tabHeaderElement.attr('aria-selected', 'false');
-		tabHeaderElement.attr('aria-label', tab.title);
+		tabHeaderElement.attr('aria-controls', tab.identifier);
 		let tabElement = $('.tab');
 		tabHeaderElement.append(tabElement);
 		let tabLabel = $('a.tabLabel');
@@ -124,6 +127,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this._shownTab = id;
 		this.$body.clearChildren();
 		let tab = this._tabMap.get(this._shownTab);
+		this.$body.attr('aria-labelledby', tab.identifier);
 		tab.label.addClass('active');
 		tab.header.addClass('active');
 		tab.header.attr('aria-selected', 'true');

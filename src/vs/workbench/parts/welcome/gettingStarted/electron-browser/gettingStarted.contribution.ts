@@ -17,4 +17,8 @@ import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 
 Registry
 	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
+	.registerWorkbenchContribution(GettingStarted, LifecyclePhase.Running);
+
+Registry
+	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(TelemetryOptOut, LifecyclePhase.Eventually);

@@ -9,7 +9,7 @@ import 'vs/css!./media/suggest';
 import * as nls from 'vs/nls';
 import { createMatches } from 'vs/base/common/filters';
 import * as strings from 'vs/base/common/strings';
-import Event, { Emitter, chain } from 'vs/base/common/event';
+import { Event, Emitter, chain } from 'vs/base/common/event';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { isPromiseCanceledError, onUnexpectedError } from 'vs/base/common/errors';
 import { IDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
@@ -207,6 +207,7 @@ class SuggestionDetails {
 	private docs: HTMLElement;
 	private ariaLabel: string;
 	private disposables: IDisposable[];
+	private renderDisposeable: IDisposable;
 	private borderWidth: number = 1;
 
 	constructor(
@@ -247,6 +248,8 @@ class SuggestionDetails {
 	}
 
 	render(item: ICompletionItem): void {
+		this.renderDisposeable = dispose(this.renderDisposeable);
+
 		if (!item || !canExpandCompletionItem(item)) {
 			this.type.textContent = '';
 			this.docs.textContent = '';
@@ -261,7 +264,9 @@ class SuggestionDetails {
 		} else {
 			addClass(this.docs, 'markdown-docs');
 			this.docs.innerHTML = '';
-			this.docs.appendChild(this.markdownRenderer.render(item.suggestion.documentation));
+			const renderedContents = this.markdownRenderer.render(item.suggestion.documentation);
+			this.renderDisposeable = renderedContents;
+			this.docs.appendChild(renderedContents.element);
 		}
 
 		if (item.suggestion.detail) {
@@ -338,6 +343,7 @@ class SuggestionDetails {
 
 	dispose(): void {
 		this.disposables = dispose(this.disposables);
+		this.renderDisposeable = dispose(this.renderDisposeable);
 	}
 }
 
@@ -361,7 +367,6 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 	private isAuto: boolean;
 	private loadingTimeout: number;
 	private currentSuggestionDetails: TPromise<void>;
-	private focusedItemIndex: number;
 	private focusedItem: ICompletionItem;
 	private ignoreFocusEvents = false;
 	private completionModel: CompletionModel;
@@ -440,7 +445,8 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 		this.list = new List(this.listElement, this, [renderer], {
 			useShadows: false,
 			selectOnMouseDown: true,
-			focusOnMouseDown: false
+			focusOnMouseDown: false,
+			openController: { shouldOpen: () => false }
 		});
 
 		this.toDispose = [
@@ -592,27 +598,17 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 
 		this.suggestionSupportsAutoAccept.set(!item.suggestion.noAutoAccept);
 
-		const oldFocus = this.focusedItem;
-		const oldFocusIndex = this.focusedItemIndex;
-		this.focusedItemIndex = index;
 		this.focusedItem = item;
-
-		if (oldFocus) {
-			this.ignoreFocusEvents = true;
-			this.list.splice(oldFocusIndex, 1, [oldFocus]);
-			this.ignoreFocusEvents = false;
-		}
 
 		this.list.reveal(index);
 
 		this.currentSuggestionDetails = item.resolve()
 			.then(() => {
+				// item can have extra information, so re-render
 				this.ignoreFocusEvents = true;
 				this.list.splice(index, 1, [item]);
-				this.ignoreFocusEvents = false;
-
 				this.list.setFocus([index]);
-				this.list.reveal(index);
+				this.ignoreFocusEvents = false;
 
 				if (this.expandDocsSettingFromStorage()) {
 					this.showDetails();
@@ -641,6 +637,7 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 			case State.Hidden:
 				hide(this.messageElement, this.details.element, this.listElement);
 				this.hide();
+				this.listHeight = 0;
 				if (stateChanged) {
 					this.list.splice(0, this.list.length);
 				}
@@ -725,7 +722,7 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 			stats['wasAutomaticallyTriggered'] = !!isAuto;
 			/* __GDPR__
 				"suggestWidget" : {
-					"wasAutomaticallyTriggered" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+					"wasAutomaticallyTriggered" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
 					"${include}": [
 						"${ICompletionStats}",
 						"${EditorTelemetryData}"
@@ -735,7 +732,6 @@ export class SuggestWidget implements IContentWidget, IDelegate<ICompletionItem>
 			this.telemetryService.publicLog('suggestWidget', { ...stats, ...this.editor.getTelemetryData() });
 
 			this.focusedItem = null;
-			this.focusedItemIndex = null;
 			this.list.splice(0, this.list.length, this.completionModel.items);
 
 			if (isFrozen) {

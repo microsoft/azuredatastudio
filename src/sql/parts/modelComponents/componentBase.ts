@@ -6,17 +6,18 @@ import 'vs/css!./flexContainer';
 
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ElementRef, Injector, OnDestroy, OnInit
+	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, OnInit, QueryList
 } from '@angular/core';
 
 import * as types from 'vs/base/common/types';
 
 import { IComponent, IComponentDescriptor, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { FlexLayout, FlexItemLayout } from 'sqlops';
+import * as sqlops from 'sqlops';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 
 export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }
@@ -24,7 +25,8 @@ export class ItemDescriptor<T> {
 
 export abstract class ComponentBase extends Disposable implements IComponent, OnDestroy, OnInit {
 	protected properties: { [key: string]: any; } = {};
-	protected _valid: boolean = true;
+	private _valid: boolean = true;
+	protected _validations: (() => boolean | Thenable<boolean>)[] = [];
 	private _eventQueue: IComponentEventArgs[] = [];
 	constructor(
 		protected _changeRef: ChangeDetectorRef) {
@@ -44,6 +46,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	protected baseInit(): void {
 		if (this.modelStore) {
 			this.modelStore.registerComponent(this);
+			this._validations.push(() => this.modelStore.validate(this));
 		}
 	}
 
@@ -53,6 +56,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		if (this.modelStore) {
 			this.modelStore.unregisterComponent(this);
 		}
+		this.dispose();
 	}
 
 	ngOnDestroy(): void {
@@ -67,6 +71,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		}
 		this.properties = properties;
 		this.layout();
+		this.validate();
 	}
 
 	protected getProperties<TPropertyBag>(): TPropertyBag {
@@ -84,26 +89,76 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 			eventType: ComponentEventType.PropertiesChanged,
 			args: this.getProperties()
 		});
+		this.validate();
 	}
 
 	public get enabled(): boolean {
 		let properties = this.getProperties();
 		let enabled = properties['enabled'];
-		return enabled !== undefined ? <boolean>enabled : true;
+		if (enabled === undefined) {
+			enabled = true;
+			properties['enabled'] = enabled;
+			this.fireEvent({
+				eventType: ComponentEventType.PropertiesChanged,
+				args: this.getProperties()
+			});
+		}
+		return <boolean>enabled;
+	}
+
+	public set enabled(value: boolean) {
+		let properties = this.getProperties();
+		properties['enabled'] = value;
+		this.setProperties(properties);
+	}
+
+	public get height(): number | string {
+		return this.getPropertyOrDefault<sqlops.ComponentProperties, number | string>((props) => props.height, undefined);
+	}
+
+	public set height(newValue: number | string) {
+		this.setPropertyFromUI<sqlops.ComponentProperties, number | string>((props, value) => props.height = value, newValue);
+	}
+
+	public get width(): number | string {
+		return this.getPropertyOrDefault<sqlops.ComponentProperties, number | string>((props) => props.width, undefined);
+	}
+
+	public set width(newValue: number | string) {
+		this.setPropertyFromUI<sqlops.ComponentProperties, number | string>((props, value) => props.width = value, newValue);
+	}
+
+	protected convertSizeToNumber(size: number | string): number {
+		if (size && typeof (size) === 'string') {
+			if (size.toLowerCase().endsWith('px')) {
+				return +size.replace('px', '');
+			}
+			return 0;
+		}
+		return +size;
+	}
+
+	protected getWidth(): string {
+		return this.width ? this.convertSize(this.width) : '';
+	}
+
+	protected getHeight(): string {
+		return this.height ? this.convertSize(this.height) : '';
+	}
+
+	protected convertSize(size: number | string): string {
+		if (types.isUndefinedOrNull(size)) {
+			return '100%';
+		}
+		let convertedSize: string = size ? size.toString() : '100%';
+		if (!convertedSize.toLowerCase().endsWith('px') && !convertedSize.toLowerCase().endsWith('%')) {
+			convertedSize = convertedSize + 'px';
+		}
+		return convertedSize;
 	}
 
 	public get valid(): boolean {
 		return this._valid;
-	}
-
-	public setValid(valid: boolean): void {
-		if (this._valid !== valid) {
-			this._valid = valid;
-			this.fireEvent({
-				eventType: ComponentEventType.validityChanged,
-				args: valid
-			});
-		}
 	}
 
 	public registerEventHandler(handler: (event: IComponentEventArgs) => void): IDisposable {
@@ -123,27 +178,71 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 			this._eventQueue.push(event);
 		}
 	}
+
+	public validate(): Thenable<boolean> {
+		let validations = this._validations.map(validation => Promise.resolve(validation()));
+		return Promise.all(validations).then(values => {
+			let isValid = values.every(value => value === true);
+			if (this._valid !== isValid) {
+				this._valid = isValid;
+				this.fireEvent({
+					eventType: ComponentEventType.validityChanged,
+					args: this._valid
+				});
+			}
+			return isValid;
+		});
+	}
 }
 
 export abstract class ContainerBase<T> extends ComponentBase {
 	protected items: ItemDescriptor<T>[];
 
+	@ViewChildren(ModelComponentWrapper) protected _componentWrappers: QueryList<ModelComponentWrapper>;
 	constructor(
 		_changeRef: ChangeDetectorRef
 	) {
 		super(_changeRef);
 		this.items = [];
+		this._validations.push(() => this.items.every(item => this.modelStore.getComponent(item.descriptor.id).valid));
 	}
 
 	/// IComponent container-related implementation
 	public addToContainer(componentDescriptor: IComponentDescriptor, config: any): void {
+		if (this.items.some(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type)) {
+			return;
+		}
 		this.items.push(new ItemDescriptor(componentDescriptor, config));
+		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.registerEventHandler(event => {
+			if (event.eventType === ComponentEventType.validityChanged) {
+				this.validate();
+			}
+		}));
 		this._changeRef.detectChanges();
 	}
 
 	public clearContainer(): void {
 		this.items = [];
 		this._changeRef.detectChanges();
+	}
+
+	public setProperties(properties: { [key: string]: any; }): void {
+		super.setProperties(properties);
+		this.items.forEach(item => {
+			let component = this.modelStore.getComponent(item.descriptor.id);
+			if (component) {
+				component.enabled = this.enabled;
+			}
+		});
+	}
+
+	public layout(): void {
+		if (this._componentWrappers) {
+			this._componentWrappers.forEach(wrapper => {
+				wrapper.layout();
+			});
+		}
+		super.layout();
 	}
 
 	abstract setLayout(layout: any): void;

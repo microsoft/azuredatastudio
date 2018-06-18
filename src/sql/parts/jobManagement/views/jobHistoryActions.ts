@@ -8,9 +8,7 @@ import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { BaseActionContext } from '../../../workbench/common/actions';
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
-import { JobManagementService } from '../common/jobManagementService';
 import { IJobManagementService } from '../common/interfaces';
 
 export enum JobHistoryActions {
@@ -33,7 +31,7 @@ export class RunJobAction extends Action {
 		let ownerUri = context.ownerUri;
 		return new TPromise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobHistoryActions.Run).then(result => {
-				if (result.succeeded) {
+				if (result.success) {
 					var startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
 					this.notificationService.notify({
 						severity: Severity.Info,
@@ -68,7 +66,7 @@ export class StopJobAction extends Action {
 		let ownerUri = context.ownerUri;
 		return new TPromise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobHistoryActions.Stop).then(result => {
-				if (result.succeeded) {
+				if (result.success) {
 						var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
 						this.notificationService.notify({
 							severity: Severity.Info,

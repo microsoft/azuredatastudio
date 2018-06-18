@@ -13,8 +13,8 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IBackupService, TaskExecutionMode, IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
 import { BackupDialog } from 'sql/parts/disasterRecovery/backup/backupDialog';
 import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
-import Event, { Emitter } from 'vs/base/common/event';
-import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { Event, Emitter } from 'vs/base/common/event';
+import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
@@ -22,7 +22,6 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as ConnectionUtils from 'sql/parts/connection/common/utils';
 import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
-import { ServiceOption } from 'sqlops';
 
 export class BackupService implements IBackupService {
 
@@ -96,11 +95,13 @@ export class BackupUiService implements IBackupUiService {
 	private _onShowBackupEvent: Emitter<{ connection: IConnectionProfile, ownerUri: string }>;
 	public get onShowBackupEvent(): Event<{ connection: IConnectionProfile, ownerUri: string }> { return this._onShowBackupEvent.event; }
 
-	constructor( @IInstantiationService private _instantiationService: IInstantiationService,
+	constructor(
+		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IPartService private _partService: IPartService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IBackupService private _disasterRecoveryService: IBackupService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService) {
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+	) {
 		this._onShowBackupEvent = new Emitter<{ connection: IConnectionProfile, ownerUri: string }>();
 	}
 
@@ -115,7 +116,7 @@ export class BackupUiService implements IBackupUiService {
 		});
 	}
 
-	private getOptions(provider: string): ServiceOption[] {
+	private getOptions(provider: string): sqlops.ServiceOption[] {
 		let feature = this._capabilitiesService.getLegacyCapabilities(this._currentProvider).features.find(f => f.featureName === 'backup');
 		if (feature) {
 			return feature.optionsMetadata;

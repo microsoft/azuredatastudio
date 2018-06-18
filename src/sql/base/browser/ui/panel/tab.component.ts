@@ -13,7 +13,7 @@ export abstract class TabChild {
 @Component({
 	selector: 'tab',
 	template: `
-		<div class="visibility" [class.hidden]="shouldBeHidden()" *ngIf="shouldBeIfed()" class="fullsize">
+		<div role="tabpanel" [attr.aria-labelledby]="identifier" tabindex="0" class="visibility" [class.hidden]="shouldBeHidden()" *ngIf="shouldBeIfed()" class="fullsize">
 			<ng-container *ngTemplateOutlet="templateRef"></ng-container>
 		</div>
 	`
@@ -71,5 +71,9 @@ export class TabComponent implements OnDestroy {
 		} else {
 			return false;
 		}
+	}
+
+	public layout() {
+		this._child.layout();
 	}
 }

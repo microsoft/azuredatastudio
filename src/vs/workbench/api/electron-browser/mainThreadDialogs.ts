@@ -28,6 +28,7 @@ export class MainThreadDialogs implements MainThreadDiaglogsShape {
 	$showOpenDialog(options: MainThreadDialogOpenOptions): Promise<string[]> {
 		// TODO@joh what about remote dev setup?
 		if (options.defaultUri && options.defaultUri.scheme !== 'file') {
+			// {{ SQL CARBON EDIT }} - Add type assertion to fix build break
 			return <any>Promise.reject(new Error('Not supported - Open-dialogs can only be opened on `file`-uris.'));
 		}
 		return new Promise<string[]>(resolve => {
@@ -40,6 +41,7 @@ export class MainThreadDialogs implements MainThreadDiaglogsShape {
 	$showSaveDialog(options: MainThreadDialogSaveOptions): Promise<string> {
 		// TODO@joh what about remote dev setup?
 		if (options.defaultUri && options.defaultUri.scheme !== 'file') {
+			// {{ SQL CARBON EDIT }} - Add type assertion to fix build break
 			return <any>Promise.reject(new Error('Not supported - Save-dialogs can only be opened on `file`-uris.'));
 		}
 		return new Promise<string>(resolve => {

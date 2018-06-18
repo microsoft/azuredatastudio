@@ -24,8 +24,8 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import Event, { Emitter } from 'vs/base/common/event';
-import { Builder, $, Dimension } from 'vs/base/browser/builder';
+import { Event, Emitter } from 'vs/base/common/event';
+import { Builder, $ } from 'vs/base/browser/builder';
 import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -34,9 +34,7 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as styler from 'vs/platform/theme/common/styler';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as DOM from 'vs/base/browser/dom';
-import { DialogService } from 'vs/workbench/services/dialogs/electron-browser/dialogs';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 
 export interface OnShowUIResponse {
@@ -266,7 +264,7 @@ export class ConnectionDialogWidget extends Modal {
 					recentTitle.innerHtml(recentHistoryLabel);
 				});
 				container.div({ class: 'connection-history-actions' }, (actionsContainer) => {
-					this._actionbar = this._register(new ActionBar(actionsContainer, { animated: false }));
+					this._actionbar = this._register(new ActionBar(actionsContainer.getHTMLElement(), { animated: false }));
 					let clearAction = this._instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
 					clearAction.useConfirmationMessage = true;
 					clearAction.onRecentConnectionsRemoved(() => this.open(false));
@@ -377,7 +375,7 @@ export class ConnectionDialogWidget extends Modal {
 		this.initDialog();
 	}
 
-	protected layout(dimension?: Dimension): void {
+	protected layout(dimension?: DOM.Dimension): void {
 		// Height is the overall height. Since we're laying out a specific component, always get its actual height
 		this._recentConnectionTree.layout(DOM.getTotalHeight(this._recentConnectionTree.getHTMLElement()));
 	}

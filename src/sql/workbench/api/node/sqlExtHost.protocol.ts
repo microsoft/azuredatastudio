@@ -7,7 +7,8 @@
 import {
 	createMainContextProxyIdentifier as createMainId,
 	createExtHostContextProxyIdentifier as createExtId,
-	ProxyIdentifier, IRPCProtocol } from 'vs/workbench/services/extensions/node/proxyIdentifier';
+	ProxyIdentifier, IRPCProtocol
+} from 'vs/workbench/services/extensions/node/proxyIdentifier';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -16,8 +17,11 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
-import Event, { Emitter } from 'vs/base/common/event';
+import {
+	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
+	IModelViewWizardDetails, IModelViewWizardPageDetails
+} from 'sql/workbench/api/common/sqlExtHostTypes';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -196,7 +200,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Initializes a new edit data session for the requested table/view
 	 */
-	$initializeEdit(handle: number, ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void> { throw ni(); }
+	$initializeEdit(handle: number, ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void> { throw ni(); }
 
 	/**
 	 * Reverts any pending changes for the requested cell and returns the original value
@@ -309,21 +313,26 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$stopSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
 
+	/**
+	 * Pause a profiler session
+	 */
+	$pauseSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
+
 
 	/**
 	 * Get Agent Job list
 	 */
-	$getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult>{ throw ni(); }
+	$getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult> { throw ni(); }
 
 	/**
 	 * Get a Agent Job's history
 	 */
-	$getJobHistory(handle: number, ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>{ throw ni(); }
+	$getJobHistory(handle: number, ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> { throw ni(); }
 
 	/**
 	 * Run an action on a Job
 	 */
-	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult>{ throw ni(); }
+	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> { throw ni(); }
 }
 
 /**
@@ -520,6 +529,7 @@ export interface ExtHostModelViewShape {
 	$onClosed(handle: number): void;
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
 	$handleEvent(handle: number, id: string, eventArgs: any);
+	$runCustomValidations(handle: number, id: string): Thenable<boolean>;
 }
 
 export interface MainThreadModelViewShape extends IDisposable {
@@ -529,8 +539,8 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$addToContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
-	$registerEvent(handle: number, componentId: string):  Thenable<void>;
-	$notifyValidation(handle: number, componentId: string, valid: boolean): Thenable<void>;
+	$registerEvent(handle: number, componentId: string): Thenable<void>;
+	$validate(handle: number, componentId: string): Thenable<boolean>;
 }
 
 export interface ExtHostObjectExplorerShape {
@@ -538,7 +548,7 @@ export interface ExtHostObjectExplorerShape {
 
 export interface MainThreadObjectExplorerShape extends IDisposable {
 	$getNode(connectionId: string, nodePath?: string): Thenable<sqlops.NodeInfo>;
-	$getActiveConnectionNodes(): Thenable<{ nodeInfo: sqlops.NodeInfo, connectionId: string}[]>;
+	$getActiveConnectionNodes(): Thenable<{ nodeInfo: sqlops.NodeInfo, connectionId: string }[]>;
 	$setExpandedState(connectionId: string, nodePath: string, expandedState: vscode.TreeItemCollapsibleState): Thenable<void>;
 	$setSelected(connectionId: string, nodePath: string, selected: boolean, clearOtherSelections?: boolean): Thenable<void>;
 	$getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]>;
@@ -548,15 +558,26 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 
 export interface ExtHostModelViewDialogShape {
 	$onButtonClick(handle: number): void;
-	$onDialogValidityChanged(handle: number, valid: boolean): void;
+	$onPanelValidityChanged(handle: number, valid: boolean): void;
+	$onWizardPageChanged(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): void;
+	$updateWizardPageInfo(handle: number, pageHandles: number[], currentPageIndex: number): void;
+	$validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean>;
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
-	$open(handle: number): Thenable<void>;
-	$close(handle: number): Thenable<void>;
+	$openEditor(modelViewId: string, title: string, options?: sqlops.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
+	$openDialog(handle: number): Thenable<void>;
+	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
 	$setTabDetails(handle: number, details: IModelViewTabDetails): Thenable<void>;
 	$setButtonDetails(handle: number, details: IModelViewButtonDetails): Thenable<void>;
+	$openWizard(handle: number): Thenable<void>;
+	$closeWizard(handle: number): Thenable<void>;
+	$setWizardPageDetails(handle: number, details: IModelViewWizardPageDetails): Thenable<void>;
+	$setWizardDetails(handle: number, details: IModelViewWizardDetails): Thenable<void>;
+	$addWizardPage(wizardHandle: number, pageHandle: number, pageIndex: number): Thenable<void>;
+	$removeWizardPage(wizardHandle: number, pageIndex: number): Thenable<void>;
+	$setWizardPage(wizardHandle: number, pageIndex: number): Thenable<void>;
 }
 export interface ExtHostQueryEditorShape {
 }

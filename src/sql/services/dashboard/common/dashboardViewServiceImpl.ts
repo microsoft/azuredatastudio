@@ -6,7 +6,7 @@
 'use strict';
 
 import { IDashboardViewService, IDashboardWebview } from 'sql/services/dashboard/common/dashboardViewService';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IModelView } from 'sql/services/model/modelViewService';
 
 export class DashboardViewService implements IDashboardViewService {

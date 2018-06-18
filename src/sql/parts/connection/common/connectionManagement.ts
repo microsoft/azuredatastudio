@@ -8,7 +8,7 @@
 import { IViewlet } from 'vs/workbench/common/viewlet';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
-import Event from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
 import Severity from 'vs/base/common/severity';
 import * as sqlops from 'sqlops';

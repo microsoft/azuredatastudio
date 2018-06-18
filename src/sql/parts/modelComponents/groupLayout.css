@@ -1,0 +1,21 @@
+
+.modelview-group-container {
+	display: table;
+	padding: 5px 10px 5px 10px;
+	box-sizing: border-box;
+}
+
+.modelview-group-row {
+	display: table-row;
+
+}
+
+.modelview-group-header {
+	padding-bottom: 5px;
+	font-size: 14px;
+}
+
+.modelview-group-cell {
+	padding-bottom: 5px;
+	display: table-cell;
+}

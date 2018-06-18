@@ -9,7 +9,7 @@ import 'vs/css!./media/firewallRuleDialog';
 import { Builder, $, Dimension } from 'vs/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { buttonBackground } from 'vs/platform/theme/common/colorRegistry';
@@ -205,11 +205,11 @@ export class FirewallRuleDialog extends Modal {
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		this.updateTheme(this._themeService.getColorTheme());
 
-		jQuery(this._IPAddressInput).on('click', () => {
+		$(this._IPAddressInput).on(DOM.EventType.CLICK, () => {
 			this.onFirewallRuleOptionSelected(true);
 		});
 
-		jQuery(this._subnetIPRangeInput).on('click', () => {
+		$(this._subnetIPRangeInput).on(DOM.EventType.CLICK, () => {
 			this.onFirewallRuleOptionSelected(false);
 		});
 	}

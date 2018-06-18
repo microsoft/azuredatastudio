@@ -107,7 +107,7 @@ export class TaskHistoryView {
 		let targetsToExpand: any[];
 
 		// Focus
-		this._tree.DOMFocus();
+		this._tree.domFocus();
 
 		if (this._tree) {
 			let selection = this._tree.getSelection();

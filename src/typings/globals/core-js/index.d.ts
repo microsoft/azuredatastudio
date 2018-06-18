@@ -483,7 +483,7 @@ interface SymbolConstructor {
       * A method that returns the default iterator for an object. Called by the semantics of the
       * for-of statement.
       */
-      iterator: symbol;
+    readonly iterator: symbol;
 
     /**
       * A regular expression method that matches the regular expression against a string. Called

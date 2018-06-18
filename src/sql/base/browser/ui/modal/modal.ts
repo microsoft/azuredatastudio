@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/modal';
+
 import { IThemable } from 'vs/platform/theme/common/styler';
 import { Color } from 'vs/base/common/color';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
@@ -11,16 +12,16 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { mixin } from 'vs/base/common/objects';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { Builder, $, withElementById, Dimension } from 'vs/base/browser/builder';
+import { Builder, $ } from 'vs/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { localize } from 'vs/nls';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import { localize } from 'vs/nls';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -285,7 +286,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected show() {
 		this._modalShowingContext.get().push(this._staticKey);
-		this._builder.appendTo(withElementById(this._partService.getWorkbenchElementId()).getHTMLElement().parentElement);
+		this._builder.appendTo(document.getElementById(this._partService.getWorkbenchElementId()).parentElement);
 
 		this.setFocusableElements();
 
@@ -315,10 +316,10 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Required to be implemented so that scrolling and other functions operate correctly. Should re-layout controls in the modal
 	 */
-	protected abstract layout(dimension: Dimension): void;
+	protected abstract layout(dimension: DOM.Dimension): void;
 
 	protected _layout(): void {
-		this.layout(new Dimension(DOM.getContentWidth(this._modalBodySection), DOM.getContentHeight(this._modalBodySection)));
+		this.layout(new DOM.Dimension(DOM.getContentWidth(this._modalBodySection), DOM.getContentHeight(this._modalBodySection)));
 	}
 
 	/**

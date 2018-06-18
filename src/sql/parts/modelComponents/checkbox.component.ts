@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -18,7 +18,7 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 
 @Component({
-	selector: 'checkbox',
+	selector: 'modelview-checkbox',
 	template: `
 		<div #input style="width: 100%"></div>
 	`
@@ -50,7 +50,7 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 
 			this._register(this._input);
 			this._register(this._input.onChange(e => {
-				this.value = this._input.checked;
+				this.checked = this._input.checked;
 				this._onEventEmitter.fire({
 					eventType: ComponentEventType.onDidChange,
 					args: e
@@ -78,20 +78,21 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 		super.setProperties(properties);
 		this._input.checked = this.checked;
 		this._input.label = this.label;
+		if (this.enabled) {
+			this._input.enable();
+		} else {
+			this._input.disable();
+		}
 	}
 
 	// CSS-bound properties
 
 	public get checked(): boolean {
-		return this.getPropertyOrDefault<sqlops.CheckBoxProperties, boolean>((props) => props.value, false);
+		return this.getPropertyOrDefault<sqlops.CheckBoxProperties, boolean>((props) => props.checked, false);
 	}
 
-	public set value(newValue: boolean) {
-		this.setPropertyFromUI<sqlops.CheckBoxProperties, boolean>(this.setInputBoxProperties, newValue);
-	}
-
-	private setInputBoxProperties(properties: sqlops.CheckBoxProperties, value: boolean): void {
-		properties.checked = value;
+	public set checked(newValue: boolean) {
+		this.setPropertyFromUI<sqlops.CheckBoxProperties, boolean>((properties, value) => { properties.checked = value; }, newValue);
 	}
 
 	private get label(): string {
@@ -99,10 +100,6 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	}
 
 	private set label(newValue: string) {
-		this.setPropertyFromUI<sqlops.CheckBoxProperties, string>(this.setValueProperties, newValue);
-	}
-
-	private setValueProperties(properties: sqlops.CheckBoxProperties, label: string): void {
-		properties.label = label;
+		this.setPropertyFromUI<sqlops.CheckBoxProperties, string>((properties, label) => { properties.label = label; }, newValue);
 	}
 }
