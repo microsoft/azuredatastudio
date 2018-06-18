@@ -8,9 +8,7 @@ import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { BaseActionContext } from '../../../workbench/common/actions';
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
-import { JobManagementService } from '../common/jobManagementService';
 import { IJobManagementService } from '../common/interfaces';
 
 export enum JobHistoryActions {

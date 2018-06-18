@@ -214,23 +214,21 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	onDeleteRow(): (index: number) => void {
 		const self = this;
 		return (index: number): void => {
-			self.dataService.deleteRow(index)
-				.then(() => self.dataService.commitEdit())
-				.then(() => self.removeRow(index));
+			// If the user is deleting a new row that hasn't been committed yet then use the revert code
+			if (self.newRowVisible && index === self.dataSet.dataRows.getLength() - 2) {
+				self.revertCurrentRow();
+			} else {
+				self.dataService.deleteRow(index)
+					.then(() => self.dataService.commitEdit())
+					.then(() => self.removeRow(index));
+			}
 		};
 	}
 
-	onRevertRow(): (index: number) => void {
+	onRevertRow(): () => void {
 		const self = this;
-		return (index: number): void => {
-			// Force focus to the first cell (completing any active edit operation)
-			self.focusCell(index, 0, false);
-			this.currentEditCellValue = null;
-			// Perform a revert row operation
-			self.dataService.revertRow(index)
-				.then(() => {
-					self.refreshResultsets();
-				});
+		return (): void => {
+			self.revertCurrentRow();
 		};
 	}
 
@@ -279,24 +277,27 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		}
 
 		if (this.currentCell.row !== row) {
-			// We're changing row, commit the changes
-			cellSelectTasks = cellSelectTasks.then(() => {
-				return self.dataService.commitEdit()
-					.then(
-					result => {
+			// If we're currently adding a new row, only commit it if it has changes or the user is trying to add another new row
+			if (this.newRowVisible && this.currentCell.row === this.dataSet.dataRows.getLength() - 2 && !this.isNullRow(row) && this.currentEditCellValue === null) {
+				cellSelectTasks = cellSelectTasks.then(() => {
+					return this.revertCurrentRow().then(() => this.focusCell(row, column));
+				});
+			} else {
+				// We're changing row, commit the changes
+				cellSelectTasks = cellSelectTasks.then(() => {
+					return self.dataService.commitEdit().then(result => {
 						// Committing was successful, clean the grid
 						self.setGridClean();
 						self.rowIdMappings = {};
 						self.newRowVisible = false;
 						return Promise.resolve();
-					},
-					error => {
+					}, error => {
 						// Committing failed, jump back to the last selected cell
 						self.focusCell(self.currentCell.row, self.currentCell.column);
 						return Promise.reject(null);
-					}
-					);
-			});
+					});
+				});
+			}
 		}
 
 		if (this.isNullRow(row) && !this.removingNewRow) {
@@ -432,7 +433,18 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		// If the esc key was pressed while in a create session
 		let currentNewRowIndex = this.dataSet.totalRows - 2;
 
-		if (e.keyCode === KeyCode.Escape && this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
+		if (e.keyCode === KeyCode.Escape) {
+			this.revertCurrentRow();
+			handled = true;
+		}
+		return handled;
+	}
+
+	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
+
+	private async revertCurrentRow(): Promise<void> {
+		let currentNewRowIndex = this.dataSet.totalRows - 2;
+		if (this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
 			// revert our last new row
 			this.removingNewRow = true;
 
@@ -441,16 +453,20 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					this.removeRow(currentNewRowIndex);
 					this.newRowVisible = false;
 				});
-			handled = true;
-		} else if (e.keyCode === KeyCode.Escape) {
-			this.currentEditCellValue = null;
-			this.onRevertRow()(this.currentCell.row);
-			handled = true;
+		} else {
+			try {
+				// Perform a revert row operation
+				if (this.currentCell) {
+					await this.dataService.revertRow(this.currentCell.row);
+				}
+			} finally {
+				// The operation may fail if there were no changes sent to the service to revert,
+				// so clear any existing client-side edit and refresh the table regardless
+				this.currentEditCellValue = null;
+				this.refreshResultsets();
+			}
 		}
-		return handled;
 	}
-
-	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
 
 	// Checks if input row is our NULL new row
 	private isNullRow(row: number): boolean {
@@ -539,9 +555,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		// refresh results view
 		this.onScroll(0);
 
-		// Set focus to the row index column of the removed row
+		// Set focus to the row index column of the removed row if the current selection is in the removed row
 		setTimeout(() => {
-			this.focusCell(row, 0);
+			if (this.currentCell.row === row) {
+				this.focusCell(row, 0);
+			}
 			this.removingNewRow = false;
 		}, this.scrollTimeOutTime);
 	}
