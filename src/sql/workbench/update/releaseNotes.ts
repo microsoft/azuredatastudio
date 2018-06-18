@@ -29,14 +29,14 @@ export class OpenGettingStartedInBrowserAction extends Action {
 	}
 
 	run(): TPromise<any> {
-		const uri = URI.parse(product.releaseNotesUrl);
+		const uri = URI.parse(product.gettingStartedUrl);
 		return this.openerService.open(uri);
 	}
 }
 
 export class ShowCurrentReleaseNotesAction extends AbstractShowReleaseNotesAction {
 
-	static ID = 'update.showCurrentCarbonReleaseNotes';
+	static ID = 'update.showGettingStarted';
 	static LABEL = nls.localize('showReleaseNotes', "Show Getting Started");
 
 	constructor(
