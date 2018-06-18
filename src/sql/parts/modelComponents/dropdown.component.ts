@@ -27,7 +27,7 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 	selector: 'modelview-dropdown',
 	template: `
 
-	<div>
+	<div [style.width]="getWidth()">
 		<div [style.display]="getEditableDisplay()"   #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
 	</div>
