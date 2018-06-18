@@ -33,8 +33,9 @@
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [
 		"Microsoft.agent",
-		"Microsoft.whoisactive",
+		"Microsoft.profiler",
 		"Microsoft.server-report",
+		"Microsoft.whoisactive",
 		"Redgate.sql-search"
 	],
 	"extensionsGallery": {
