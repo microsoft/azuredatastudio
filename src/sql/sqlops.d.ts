@@ -1074,13 +1074,40 @@ declare module 'sqlops' {
 		jobId: string;
 	}
 
-	export interface AgentJobStepInfo {
+	export interface AgentJobStep {
 		jobId: string;
 		stepId: string;
 		stepName: string;
 		message: string;
 		runDate: string;
 		runStatus: number;
+	}
+
+	export interface AgentJobStepInfo {
+		jobId: string;
+		jobName: string;
+		script: string;
+		scriptName: string;
+		stepName: string;
+		subSystem: string;
+		id: number;
+		failureAction: string;
+		successAction: string;
+		failStepId: number;
+		successStepId: number;
+		command: string;
+		commandExecutionSuccessCode: number;
+		databaseName: string;
+		databaseUserName: string;
+		server: string;
+		outputFileName: string;
+		appendToLogFile: boolean;
+		appendToStepHist: boolean;
+		writeLogToTable: boolean;
+		appendLogToTable: boolean;
+		retryAttempts: number;
+		retryInterval: number;
+		proxyName: string;
 	}
 
 	export interface AgentJobHistoryInfo {
@@ -1100,7 +1127,7 @@ declare module 'sqlops' {
 		operatorPaged: string;
 		retriesAttempted: string;
 		server: string;
-		steps: AgentJobStepInfo[];
+		steps: AgentJobStep[];
 	}
 
 	export interface AgentProxyInfo {

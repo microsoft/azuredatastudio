@@ -62,10 +62,12 @@ export class CreateStepDialog {
 
 	private model: CreateStepData;
 	private ownerUri: string;
+	private jobId: string;
 
-	constructor(ownerUri: string) {
+	constructor(ownerUri: string, jobId: string) {
 		this.model = new CreateStepData(ownerUri);
 		this.ownerUri = ownerUri;
+		this.jobId = jobId;
 	}
 
 	private initializeUIComponents() {
@@ -74,6 +76,7 @@ export class CreateStepDialog {
 		this.advancedTab = sqlops.window.modelviewdialog.createTab(CreateStepDialog.AdvancedTabText);
 		this.dialog.content = [this.generalTab, this.advancedTab];
 		this.dialog.okButton.label = CreateStepDialog.OkButtonText;
+		this.dialog.okButton.onClick(() => this.execute());
 		this.dialog.cancelButton.label = CreateStepDialog.CancelButtonText;
 	}
 
@@ -159,7 +162,6 @@ export class CreateStepDialog {
 			});
 			this.databaseDropdown = view.modelBuilder.dropDown()
 			.withProperties({
-				horizontal: true,
 				width: 320,
 				value: databases[0],
 				values: databases
@@ -170,11 +172,13 @@ export class CreateStepDialog {
 
 			this.nextButton = view.modelBuilder.button()
 			.withProperties({
-				label: CreateStepDialog.NextButtonText
+				label: CreateStepDialog.NextButtonText,
+				enabled: false
 			}).component();
 			this.previousButton = view.modelBuilder.button()
 			.withProperties({
-				label: CreateStepDialog.PreviousButtonText
+				label: CreateStepDialog.PreviousButtonText,
+				enabled: false
 			}).component();
 
 			let buttonContainer = view.modelBuilder.flexContainer()
@@ -268,6 +272,7 @@ export class CreateStepDialog {
 					values: [CreateStepDialog.QuitJobReportingFailure, CreateStepDialog.NextStep, CreateStepDialog.QuitJobReportingSuccess]
 				})
 			.component();
+			let optionsGroup = this.createTSQLOptions(view);
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems(
 				[{
@@ -279,12 +284,40 @@ export class CreateStepDialog {
 				}, {
 					component: this.failureActionDropdown,
 					title: CreateStepDialog.FailureAction
+				}, {
+					component: optionsGroup,
+					title: 'Options'
 				}]).component();
 
 			let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
 			formWrapper.loading = false;
 			view.initializeModel(formWrapper);
 		});
+	}
+
+	private createTSQLOptions(view) {
+		let outputFileBox = view.modelBuilder.inputBox()
+			.withProperties({
+				width: 200,
+				inputType: 'file'
+			})
+		.component();
+		let outputFileForm = view.modelBuilder.formContainer()
+			.withFormItems([{
+					component: outputFileBox,
+					title: 'Output file'
+				}], { horizontal: true, componentWidth: 400}).component();
+		let optionsGroup = view.modelBuilder.groupContainer()
+			.withItems([outputFileForm]).component();
+		return optionsGroup;
+	}
+
+	private async execute() {
+		this.model.name = this.nameTextBox.value;
+		this.model.type = this.typeDropdown.value;
+		this.model.database = this.databaseDropdown.value;
+		this.model.jobId = this.jobId;
+		await this.model.save();
 	}
 
 	public async openNewStepDialog() {

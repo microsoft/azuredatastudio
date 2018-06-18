@@ -101,8 +101,9 @@ export class NewStepAction extends Action {
 
 	public run(context: JobHistoryComponent): TPromise<boolean> {
 		let ownerUri = context.ownerUri;
+		let jobId = context.agentJobInfo.jobId;
 		return new TPromise<boolean>((resolve, reject) => {
-			resolve(this._commandService.executeCommand('agent.openNewStepDialog', ownerUri));
+			resolve(this._commandService.executeCommand('agent.openNewStepDialog', ownerUri, jobId));
 		});
 	}
 }

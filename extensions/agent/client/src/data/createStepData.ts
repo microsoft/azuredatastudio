@@ -9,11 +9,10 @@ import { AgentUtils } from '../agentUtils';
 
 export class CreateStepData {
 	public ownerUri: string;
+	public jobId: string;
 	public name: string;
-	public enabled: boolean;
-	public description:string;
-	public categoryId:number;
-	public owner: string;
+	public type: string;
+	public database: string;
 
 	constructor(ownerUri:string) {
 		this.ownerUri = ownerUri;
@@ -22,12 +21,30 @@ export class CreateStepData {
 	public async save() {
 		let agentService = await AgentUtils.getAgentService();
 		agentService.createJobStep(this.ownerUri, {
-			jobId: '',
-			stepId: '',
-			stepName: this.name,
-			message: '',
-			runDate: '',
-			runStatus: 1,
+			jobId: this.jobId,
+			jobName: this.jobName,
+			script: this.script,
+			scriptName: this.scriptName,
+			stepName: this.stepName,
+			subSystem: this.subSystem,
+			id: this.id,
+			failureAction: '',
+			successAction: '',
+			failStepId: 0,
+			successStepId: 0,
+			command: '',
+			commandExecutionSuccessCode: 0,
+			databaseName: '',
+			databaseUserName: '',
+			server: '',
+			outputFileName: '',
+			appendToLogFile: false,
+			appendToStepHist: false,
+			writeLogToTable: false,
+			appendLogToTable: false,
+			retryAttempts: 0,
+			retryInterval: 0,
+			proxyName: ''
 		}).then(result => {
 			console.info(result.step.stepName);
 		});
