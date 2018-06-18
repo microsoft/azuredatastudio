@@ -117,7 +117,7 @@ export class CreateJobDialog {
 		this.generalTab.registerContent(async view => {
 			this.nameTextBox = view.modelBuilder.inputBox().component();
 			this.ownerTextBox = view.modelBuilder.inputBox().component();
-			this.categoryDropdown = view.modelBuilder.dropDown().component();
+			this.categoryDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
 			this.descriptionTextBox = view.modelBuilder.inputBox().withProperties({
 				multiline: true,
 				height: 200
@@ -142,13 +142,17 @@ export class CreateJobDialog {
 				}, {
 					component: this.enabledCheckBox,
 					title: ''
-				}]).component();
+				}], {
+						componentWidth: 430
+					}).component();
 
 			await view.initializeModel(formModel);
 
 			this.ownerTextBox.value = this.model.defaultOwner;
 			this.categoryDropdown.values = this.model.jobCategories;
+			this.categoryDropdown.value = this.model.jobCategories[0];
 			this.enabledCheckBox.checked = this.model.enabled;
+			this.descriptionTextBox.value = '';
 		});
 	}
 
@@ -168,23 +172,27 @@ export class CreateJobDialog {
 						['2', 'my step 2', '', 'quit', 'email'],
 						['3', 'my step 3', '', 'quit', 'email']
 					],
-					height: 500
+					height: 800
 				}).component();
 
 			this.newStepButton = view.modelBuilder.button().withProperties({
-				label: this.NewStepButtonString
+				label: this.NewStepButtonString,
+				width: 80
 			}).component();
 
 			this.insertStepButton = view.modelBuilder.button().withProperties({
-				label: this.InsertStepButtonString
+				label: this.InsertStepButtonString,
+				width: 80
 			}).component();
 
 			this.editStepButton = view.modelBuilder.button().withProperties({
-				label: this.EditStepButtonString
+				label: this.EditStepButtonString,
+				width: 80
 			}).component();
 
 			this.deleteStepButton = view.modelBuilder.button().withProperties({
-				label: this.DeleteStepButtonString
+				label: this.DeleteStepButtonString,
+				width: 80
 			}).component();
 
 			let formModel = view.modelBuilder.formContainer()
@@ -192,7 +200,9 @@ export class CreateJobDialog {
 					component: this.stepsTable,
 					title: this.JobStepsTopLabelString,
 					actions: [this.newStepButton, this.insertStepButton, this.editStepButton, this.deleteStepButton]
-				}]).component();
+				}], {
+						componentWidth: 430
+					}).component();
 			await view.initializeModel(formModel);
 		});
 	}
@@ -208,40 +218,44 @@ export class CreateJobDialog {
 
 			this.notificationsTabTopLabel = view.modelBuilder.text().withProperties({ value: this.NotificationsTabTopLabelString }).component();
 			this.emailCheckBox = view.modelBuilder.checkBox().withProperties({
-				label: this.EmailCheckBoxString
+				label: this.EmailCheckBoxString,
+				width: 100
 			}).component();
 
 			this.pagerCheckBox = view.modelBuilder.checkBox().withProperties({
-				label: this.PagerCheckBoxString
+				label: this.PagerCheckBoxString,
+				width: 100
 			}).component();
 			this.eventLogCheckBox = view.modelBuilder.checkBox().withProperties({
-				label: this.EventLogCheckBoxString
+				label: this.EventLogCheckBoxString,
+				width: 250
 			}).component();
 			this.deleteJobCheckBox = view.modelBuilder.checkBox().withProperties({
-				label: this.DeleteJobCheckBoxString
+				label: this.DeleteJobCheckBoxString,
+				width: 250
 			}).component();
 
-            this.emailCheckBox.onChanged(() => {
-                this.emailOperatorDropdown.enabled = this.emailConditionDropdown.enabled = this.emailCheckBox.checked;
-            });
+			this.emailCheckBox.onChanged(() => {
+				this.emailOperatorDropdown.enabled = this.emailConditionDropdown.enabled = this.emailCheckBox.checked;
+			});
 
-            this.pagerCheckBox.onChanged(() => {
-                this.pagerOperatorDropdown.enabled = this.pagerConditionDropdown.enabled = this.pagerCheckBox.checked;
-            });
-            this.eventLogCheckBox.onChanged(() => {
-                this.eventLogConditionDropdown.enabled = this.eventLogCheckBox.checked;
-            });
+			this.pagerCheckBox.onChanged(() => {
+				this.pagerOperatorDropdown.enabled = this.pagerConditionDropdown.enabled = this.pagerCheckBox.checked;
+			});
+			this.eventLogCheckBox.onChanged(() => {
+				this.eventLogConditionDropdown.enabled = this.eventLogCheckBox.checked;
+			});
 
-            this.deleteJobCheckBox.onChanged(() => {
-                this.deleteJobConditionDropdown.enabled = this.deleteJobCheckBox.checked;
-            });
+			this.deleteJobCheckBox.onChanged(() => {
+				this.deleteJobConditionDropdown.enabled = this.deleteJobCheckBox.checked;
+			});
 
-			this.emailOperatorDropdown = view.modelBuilder.dropDown().component();
-			this.pagerOperatorDropdown = view.modelBuilder.dropDown().component();
-			this.emailConditionDropdown = view.modelBuilder.dropDown().component();
-			this.pagerConditionDropdown = view.modelBuilder.dropDown().component();
-			this.eventLogConditionDropdown = view.modelBuilder.dropDown().component();
-			this.deleteJobConditionDropdown = view.modelBuilder.dropDown().component();
+			this.emailOperatorDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
+			this.pagerOperatorDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
+			this.emailConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
+			this.pagerConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
+			this.eventLogConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
+			this.deleteJobConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
 
 			let emailContainer = this.createRowContainer(view).withItems([this.emailCheckBox, this.emailOperatorDropdown, this.emailConditionDropdown]).component();
 
@@ -268,7 +282,9 @@ export class CreateJobDialog {
 					component: deleteJobContainer,
 					title: ''
 				}
-			]).component();
+			], {
+					componentWidth: 430
+				}).component();
 
 			await view.initializeModel(formModel);
 			this.emailConditionDropdown.values = this.model.JobCompletionActionConditions;
@@ -281,7 +297,7 @@ export class CreateJobDialog {
 			this.deleteJobConditionDropdown.value = this.model.getJobCompletionActionConditionDisplayName(this.model.deleteLevel);
 			this.emailOperatorDropdown.values = this.model.operators;
 			this.pagerOperatorDropdown.values = this.model.operators;
-			this.emailCheckBox.checked = true;
+			this.emailCheckBox.checked = false;
 			this.pagerCheckBox.checked = false;
 			this.eventLogCheckBox.checked = false;
 			this.deleteJobCheckBox.checked = false;
@@ -292,7 +308,7 @@ export class CreateJobDialog {
 		return view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			alignItems: 'left',
-			alignContent:'space-between'
+			justifyContent: 'space-between'
 		});
 	}
 
@@ -300,14 +316,14 @@ export class CreateJobDialog {
 		this.model.name = this.nameTextBox.value;
 		this.model.owner = this.ownerTextBox.value;
 		this.model.enabled = this.enabledCheckBox.checked;
-		this.model.description = this.descriptionTextBox.value;
+		this.model.description = this.descriptionTextBox.value.replace('\n','\r');
 		this.model.category = this.categoryDropdown.value;
 		this.model.emailLevel = this.getActualConditionValue(this.emailCheckBox, this.emailConditionDropdown);
 		this.model.operatorToEmail = this.emailOperatorDropdown.value;
 		this.model.operatorToPage = this.pagerOperatorDropdown.value;
 		this.model.pageLevel = this.getActualConditionValue(this.pagerCheckBox, this.pagerConditionDropdown);
 		this.model.eventLogLevel = this.getActualConditionValue(this.eventLogCheckBox, this.eventLogConditionDropdown);
-		this.model.deleteLevel = this.getActualConditionValue(this.pagerCheckBox, this.deleteJobConditionDropdown);
+		this.model.deleteLevel = this.getActualConditionValue(this.deleteJobCheckBox, this.deleteJobConditionDropdown);
 		await this.model.save();
 	}
 
