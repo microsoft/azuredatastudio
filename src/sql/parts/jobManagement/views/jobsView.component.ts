@@ -29,6 +29,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
+export const ROW_HEIGHT: number = 45;
 
 @Component({
 	selector: JOBSVIEW_SELECTOR,
@@ -146,8 +147,16 @@ export class JobsViewComponent implements AfterContentChecked {
 			column.rerenderOnResize = true;
 			return column;
 		});
-		// create the table
-		this.dataView = new Slick.Data.DataView();
+		let options = <Slick.GridOptions<any>>{
+			syncColumnCellResize: true,
+			enableColumnReorder: false,
+			rowHeight: ROW_HEIGHT,
+			enableCellNavigation: true,
+			forceFitColumns: true
+		};
+
+		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
+
 		let rowDetail = new RowDetailView({
 			cssClass: '_detail_selector',
 			process: (job) => {
@@ -353,6 +362,44 @@ export class JobsViewComponent implements AfterContentChecked {
 				let previousRuns = jobHistories.slice(jobHistories.length-5, jobHistories.length);
 				self.createJobChart(job.jobId, previousRuns);
 			});
+		});
+		$('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e) => {
+			// highlight the error row as well if a failing job row is hovered
+			if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
+				let target = $(e.currentTarget);
+				let targetChildren = $(e.currentTarget.children);
+				let siblings = target.nextAll().toArray();
+				let top = parseInt(target.css('top'), 10);
+				for (let i = 0; i < siblings.length; i++) {
+					let sibling = siblings[i];
+					let siblingTop = parseInt($(sibling).css('top'), 10);
+					if (siblingTop === top + ROW_HEIGHT) {
+						$(sibling.children).addClass('hovered');
+						sibling.onmouseenter = (e) => {
+							targetChildren.addClass('hovered');
+						};
+						sibling.onmouseleave = (e) => {
+							targetChildren.removeClass('hovered');
+						}
+						break;
+					}
+				}
+			}
+		}, (e) => {
+			// switch back to original background
+			if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
+				let target = $(e.currentTarget);
+				let siblings = target.nextAll().toArray();
+				let top = parseInt(target.css('top'), 10);
+				for (let i = 0; i < siblings.length; i++) {
+					let sibling = siblings[i];
+					let siblingTop = parseInt($(sibling).css('top'), 10);
+					if (siblingTop === top + ROW_HEIGHT) {
+						$(sibling.children).removeClass('hovered');
+						break;
+					}
+				}
+			}
 		});
 		// cache the dataview for future use
 		this._jobCacheObject.dataView = this.dataView;

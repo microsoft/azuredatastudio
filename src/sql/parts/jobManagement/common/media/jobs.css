@@ -49,12 +49,12 @@ jobhistory-component {
     font-size: larger;
 }
 
-.vs-dark #jobsDiv .slick-cell {
-	background:#333333 !important;
+.vs-dark #jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+    background:#333333;
 }
 
-#jobsDiv .slick-cell {
-    background: white !important;
+#jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+    background: white;
     border-right: transparent !important;
     border-left: transparent !important;
     line-height: 33px !important;
@@ -205,6 +205,18 @@ agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.od
 #jobsDiv jobsview-component .jobview-grid .slick-cell.l1.r1.error-row td.jobview-jobnameindicatorfailure {
     width: 0;
     background: none;
+}
+
+#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
+#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
+    background: #dcdcdc !important;
+}
+
+.vs-dark #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+.vs-dark #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
+.vs-dark #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
+    background: #444444 !important;
 }
 
 table.jobprevruns div.bar1, table.jobprevruns div.bar2, table.jobprevruns div.bar3,
