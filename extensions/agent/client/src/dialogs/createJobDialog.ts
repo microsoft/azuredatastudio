@@ -144,10 +144,11 @@ export class CreateJobDialog {
 					title: ''
 				}]).component();
 
+			await view.initializeModel(formModel);
+
 			this.ownerTextBox.value = this.model.defaultOwner;
 			this.categoryDropdown.values = this.model.jobCategories;
-
-			await view.initializeModel(formModel);
+			this.enabledCheckBox.checked = this.model.enabled;
 		});
 	}
 
@@ -209,6 +210,7 @@ export class CreateJobDialog {
 			this.emailCheckBox = view.modelBuilder.checkBox().withProperties({
 				label: this.EmailCheckBoxString
 			}).component();
+
 			this.pagerCheckBox = view.modelBuilder.checkBox().withProperties({
 				label: this.PagerCheckBoxString
 			}).component();
@@ -218,6 +220,22 @@ export class CreateJobDialog {
 			this.deleteJobCheckBox = view.modelBuilder.checkBox().withProperties({
 				label: this.DeleteJobCheckBoxString
 			}).component();
+
+            this.emailCheckBox.onChanged(() => {
+                this.emailOperatorDropdown.enabled = this.emailConditionDropdown.enabled = this.emailCheckBox.checked;
+            });
+
+            this.pagerCheckBox.onChanged(() => {
+                this.pagerOperatorDropdown.enabled = this.pagerConditionDropdown.enabled = this.pagerCheckBox.checked;
+            });
+            this.eventLogCheckBox.onChanged(() => {
+                this.eventLogConditionDropdown.enabled = this.eventLogCheckBox.checked;
+            });
+
+            this.deleteJobCheckBox.onChanged(() => {
+                this.deleteJobConditionDropdown.enabled = this.deleteJobCheckBox.checked;
+            });
+
 			this.emailOperatorDropdown = view.modelBuilder.dropDown().component();
 			this.pagerOperatorDropdown = view.modelBuilder.dropDown().component();
 			this.emailConditionDropdown = view.modelBuilder.dropDown().component();
@@ -251,6 +269,8 @@ export class CreateJobDialog {
 					title: ''
 				}
 			]).component();
+
+			await view.initializeModel(formModel);
 			this.emailConditionDropdown.values = this.model.JobCompletionActionConditions;
 			this.pagerConditionDropdown.values = this.model.JobCompletionActionConditions;
 			this.eventLogConditionDropdown.values = this.model.JobCompletionActionConditions;
@@ -261,14 +281,18 @@ export class CreateJobDialog {
 			this.deleteJobConditionDropdown.value = this.model.getJobCompletionActionConditionDisplayName(this.model.deleteLevel);
 			this.emailOperatorDropdown.values = this.model.operators;
 			this.pagerOperatorDropdown.values = this.model.operators;
-			await view.initializeModel(formModel);
+			this.emailCheckBox.checked = true;
+			this.pagerCheckBox.checked = false;
+			this.eventLogCheckBox.checked = false;
+			this.deleteJobCheckBox.checked = false;
 		});
 	}
 
 	private createRowContainer(view: sqlops.ModelView): sqlops.FlexBuilder {
 		return view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
-			alignItems: 'left'
+			alignItems: 'left',
+			alignContent:'space-between'
 		});
 	}
 

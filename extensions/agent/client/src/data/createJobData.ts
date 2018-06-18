@@ -23,7 +23,7 @@ export class CreateJobData {
 	private _jobCompletionActionConditions: string[];
 
 	public name: string;
-	public enabled: boolean;
+	public enabled: boolean = true;
 	public description: string;
 	public category: string;
 	public categoryId: number;
