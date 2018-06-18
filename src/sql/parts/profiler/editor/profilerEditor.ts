@@ -202,15 +202,15 @@ export class ProfilerEditor extends BaseEditor {
 		this._register(attachSelectBoxStyler(this._sessionTemplateSelector, this.themeService));
 
 		this._actionBar.setContent([
-			{ action: this._startAction },
-			{ action: this._pauseAction },
-			{ action: this._stopAction },
 			{ action: this._connectAction },
 			{ element: Taskbar.createTaskbarSeparator() },
-			{ action: this._autoscrollAction },
-			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) },
+			{ action: this._startAction },
+			{ action: this._stopAction },
 			{ element: dropdownContainer },
-			{ action: this._instantiationService.createInstance(Actions.ProfilerEditColumns, Actions.ProfilerEditColumns.ID, Actions.ProfilerEditColumns.LABEL) }
+			{ element: Taskbar.createTaskbarSeparator() },
+			{ action: this._pauseAction },
+			{ action: this._autoscrollAction },
+			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) }
 		]);
 	}
 
@@ -228,7 +228,9 @@ export class ProfilerEditor extends BaseEditor {
 			if (data) {
 				this._modelService.updateModel(this._editorModel, data['TextData']);
 				this._detailTableData.clear();
-				this._detailTableData.push(Object.keys(data).map(key => {
+				this._detailTableData.push(Object.keys(data).filter(key => {
+					return data[key] !== ' ';
+				}).map(key => {
 					return {
 						label: key,
 						value: data[key]
@@ -397,16 +399,14 @@ export class ProfilerEditor extends BaseEditor {
 			return;
 		}
 
-		if (e.isRunning) {
-			this._startAction.enabled = !this.input.state.isRunning;
+		if (e.isPaused){
+			this._pauseAction.paused = this.input.state.isPaused;
 		}
 
 		if (e.isStopped || e.isRunning) {
-			this._stopAction.enabled = !this.input.state.isStopped && this.input.state.isRunning;
-		}
-
-		if (e.isPaused || e.isRunning) {
-			this._pauseAction.enabled = !this.input.state.isPaused && this.input.state.isRunning;
+			this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused;
+			this._stopAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
+			this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
 		}
 	}
 

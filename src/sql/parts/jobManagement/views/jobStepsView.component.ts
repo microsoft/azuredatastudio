@@ -6,22 +6,14 @@
 import 'vs/css!./jobStepsView';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable, AfterContentChecked } from '@angular/core';
-
-import { AgentJobHistoryInfo } from 'sqlops';
-
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-
-import { IJobManagementService } from '../common/interfaces';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { JobStepsViewController, JobStepsViewDataSource, JobStepsViewFilter,
-	JobStepsViewRenderer, JobStepsViewRow, JobStepsViewModel} from 'sql/parts/jobManagement/views/jobStepsViewTree';
+	JobStepsViewRenderer, JobStepsViewModel} from 'sql/parts/jobManagement/views/jobStepsViewTree';
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
