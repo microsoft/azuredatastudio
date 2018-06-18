@@ -14,11 +14,11 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 
 import * as nls from 'vs/nls';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
