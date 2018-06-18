@@ -62,6 +62,7 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 	}
 
 	public layout(): void {
+		this.changeRef.detectChanges();
 	}
 
 	public get id(): string {

@@ -207,7 +207,15 @@ declare module 'sqlops' {
 		 */
 		alignContent?: string;
 
+		/**
+		 * Container Height
+		 */
 		height?: number | string;
+
+		/**
+		 * Container Width
+		 */
+		width?: number | string;
 	}
 
 	export interface FlexItemLayout {
@@ -228,7 +236,8 @@ declare module 'sqlops' {
 	}
 
 	export interface FormLayout {
-		width?: number;
+		width?: number | string;
+		height?: number | string;
 	}
 
 	export interface GroupLayout {
@@ -294,21 +303,29 @@ declare module 'sqlops' {
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
 
-	export interface InputBoxProperties {
+	export interface ComponentProperties {
+		height: number | string;
+		width: number | string;
+	}
+
+	export interface InputBoxProperties extends ComponentProperties {
 		value?: string;
 		ariaLabel?: string;
 		placeHolder?: string;
-		height: number;
-		width: number;
 		inputType?: InputBoxInputType;
 		required?: boolean;
+		multiline?: boolean;
+		rows?: number;
+		columns?: number;
+		min?: number;
+		max?: number;
 	}
 
 	export interface TableColumn {
 		value: string
 	}
 
-	export interface TableComponentProperties {
+	export interface TableComponentProperties extends ComponentProperties {
 		data: any[][];
 		columns: string[] | TableColumn[];
 		selectedRows?: number[];
@@ -336,9 +353,9 @@ declare module 'sqlops' {
 		value?: string;
 	}
 
-	export interface DropDownProperties {
+	export interface DropDownProperties extends ComponentProperties {
 		value?: string;
-		values?: string[];
+		values?: string[] | CategoryValue[];
 		editable?: boolean;
 	}
 
@@ -347,7 +364,7 @@ declare module 'sqlops' {
 		categoryValues: CategoryValue[];
 		valueType: DeclarativeDataType;
 		isReadOnly: boolean;
-		width: number|string;
+		width: number | string;
 	}
 
 	export interface DeclarativeTableProperties {
@@ -366,7 +383,7 @@ declare module 'sqlops' {
 		html?: string;
 	}
 
-	export interface ButtonProperties {
+	export interface ButtonProperties extends ComponentProperties {
 		label?: string;
 		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 	}
@@ -402,7 +419,7 @@ declare module 'sqlops' {
 
 	export interface DropDownComponent extends Component, DropDownProperties {
 		value: string;
-		values: string[];
+		values: string[] | CategoryValue[];
 		onValueChanged: vscode.Event<any>;
 	}
 

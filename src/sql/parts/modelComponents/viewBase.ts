@@ -40,7 +40,6 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	abstract serverInfo: sqlops.ServerInfo;
 	private _onEventEmitter = new Emitter<any>();
 
-
 	initializeModel(rootComponent: IComponentShape, validationCallback: (componentId: string) => Thenable<boolean>): void {
 		let descriptor = this.defineComponent(rootComponent);
 		this.rootDescriptor = descriptor;
@@ -50,6 +49,10 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	}
 
 	private defineComponent(component: IComponentShape): IComponentDescriptor {
+		let existingDescriptor = this.modelStore.getComponentDescriptor(component.id);
+		if (existingDescriptor) {
+			return existingDescriptor;
+		}
 		let typeId = componentRegistry.getIdForTypeMapping(component.type);
 		if (!typeId) {
 			// failure case

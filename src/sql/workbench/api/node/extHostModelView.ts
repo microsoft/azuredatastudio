@@ -342,7 +342,6 @@ class InternalItemConfig {
 	}
 }
 
-
 class ComponentWrapper implements sqlops.Component {
 	public properties: { [key: string]: any } = {};
 	public layout: any;
@@ -383,6 +382,22 @@ class ComponentWrapper implements sqlops.Component {
 
 	public set enabled(value: boolean) {
 		this.setProperty('enabled', value);
+	}
+
+	public get height(): number | string {
+		return this.properties['height'];
+	}
+
+	public set height(v: number | string) {
+		this.setProperty('height', v);
+	}
+
+	public get width(): number | string {
+		return this.properties['width'];
+	}
+
+	public set width(v: number | string) {
+		this.setProperty('width', v);
 	}
 
 	public toComponentShape(): IComponentShape {
@@ -553,18 +568,39 @@ class InputBoxWrapper extends ComponentWrapper implements sqlops.InputBoxCompone
 		this.setProperty('placeHolder', v);
 	}
 
-	public get height(): number {
-		return this.properties['height'];
+	public get rows(): number {
+		return this.properties['rows'];
 	}
-	public set height(v: number) {
-		this.setProperty('height', v);
+	public set rows(v: number) {
+		this.setProperty('rows', v);
 	}
 
-	public get width(): number {
-		return this.properties['width'];
+	public get min(): number {
+		return this.properties['min'];
 	}
-	public set width(v: number) {
-		this.setProperty('width', v);
+	public set min(v: number) {
+		this.setProperty('min', v);
+	}
+
+	public get max(): number {
+		return this.properties['max'];
+	}
+	public set max(v: number) {
+		this.setProperty('max', v);
+	}
+
+	public get columns(): number {
+		return this.properties['columns'];
+	}
+	public set columns(v: number) {
+		this.setProperty('columns', v);
+	}
+
+	public get multiline(): boolean {
+		return this.properties['multiline'];
+	}
+	public set multiline(v: boolean) {
+		this.setProperty('multiline', v);
 	}
 
 	public get inputType(): sqlops.InputBoxInputType {
@@ -742,10 +778,10 @@ class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownCompone
 		this.setProperty('value', v);
 	}
 
-	public get values(): string[] {
+	public get values(): string[] | sqlops.CategoryValue[] {
 		return this.properties['values'];
 	}
-	public set values(v: string[]) {
+	public set values(v: string[] | sqlops.CategoryValue[]) {
 		this.setProperty('values', v);
 	}
 
