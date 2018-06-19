@@ -20,7 +20,7 @@ export class CreateJobData {
 	private _operators: string[];
 	private _agentService: sqlops.AgentServicesProvider;
 	private _defaultOwner: string;
-	private _jobCompletionActionConditions: string[];
+	private _jobCompletionActionConditions: sqlops.CategoryValue[];
 
 	public name: string;
 	public enabled: boolean = true;
@@ -55,7 +55,7 @@ export class CreateJobData {
 		return this._defaultOwner;
 	}
 
-	public get JobCompletionActionConditions(): string[] {
+	public get JobCompletionActionConditions(): sqlops.CategoryValue[] {
 		return this._jobCompletionActionConditions;
 	}
 
@@ -77,7 +77,16 @@ export class CreateJobData {
 		this._operators = ['', 'alanren'];
 		this._defaultOwner = 'REDMOND\\alanren';
 
-		this._jobCompletionActionConditions = [this.JobCompletionActionCondition_OnSuccess, this.JobCompletionActionCondition_OnFailure, this.JobCompletionActionCondition_Always];
+		this._jobCompletionActionConditions = [{
+			displayName: this.JobCompletionActionCondition_OnSuccess,
+			name: sqlops.JobCompletionActionCondition.OnSuccess.toString()
+		}, {
+			displayName: this.JobCompletionActionCondition_OnFailure,
+			name: sqlops.JobCompletionActionCondition.OnFailure.toString()
+		}, {
+			displayName: this.JobCompletionActionCondition_Always,
+			name: sqlops.JobCompletionActionCondition.Always.toString()
+		}];
 	}
 
 	public async save() {
@@ -110,31 +119,5 @@ export class CreateJobData {
 				console.info(result.errorMessage);
 			}
 		});
-	}
-
-	public getJobCompletionActionConditionByDisplayName(displayName: string): sqlops.JobCompletionActionCondition {
-		switch (displayName) {
-			case this.JobCompletionActionCondition_Always:
-				return sqlops.JobCompletionActionCondition.Always;
-			case this.JobCompletionActionCondition_OnFailure:
-				return sqlops.JobCompletionActionCondition.OnFailure;
-			case this.JobCompletionActionCondition_OnSuccess:
-				return sqlops.JobCompletionActionCondition.OnSuccess;
-			default:
-				return sqlops.JobCompletionActionCondition.Never;
-		}
-	}
-
-	public getJobCompletionActionConditionDisplayName(condition: sqlops.JobCompletionActionCondition): string {
-		switch (condition) {
-			case sqlops.JobCompletionActionCondition.Always:
-				return this.JobCompletionActionCondition_Always;
-			case sqlops.JobCompletionActionCondition.OnFailure:
-				return this.JobCompletionActionCondition_OnFailure;
-			case sqlops.JobCompletionActionCondition.OnSuccess:
-				return this.JobCompletionActionCondition_OnSuccess;
-			default:
-				return this.JobCompletionActionCondition_Never;
-		}
 	}
 }
