@@ -26,7 +26,7 @@ class FlexItem {
 	template: `
 		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent"
 				[style.alignItems]="alignItems" [style.alignContent]="alignContent" [style.height]="height" [style.width]="width">
-			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.order]="getItemOrder(item)" >
+			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.textAlign]="textAlign" [style.order]="getItemOrder(item)" >
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
 			</div>
@@ -40,6 +40,7 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	private _justifyContent: string;
 	private _alignItems: string;
 	private _alignContent: string;
+	private _textAlign: string;
 	private _height: string;
 	private _width: string;
 
@@ -65,6 +66,7 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		this._justifyContent = layout.justifyContent ? layout.justifyContent : '';
 		this._alignItems = layout.alignItems ? layout.alignItems : '';
 		this._alignContent = layout.alignContent ? layout.alignContent : '';
+		this._textAlign = layout.textAlign ? layout.textAlign : '';
 		this._height = this.convertSize(layout.height);
 		this._width = this.convertSize(layout.width);
 
@@ -94,6 +96,10 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 	public get alignContent(): string {
 		return this._alignContent;
+	}
+
+	public get textAlign(): string {
+		return this._textAlign;
 	}
 
 	private getItemFlex(item: FlexItem): string {
