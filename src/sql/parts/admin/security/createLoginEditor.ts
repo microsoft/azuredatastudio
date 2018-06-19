@@ -98,7 +98,7 @@ export class CreateLoginEditor extends BaseEditor {
 			connection: input.getConnectionProfile(),
 			ownerUri: input.getUri()
 		};
-		let uniqueSelector = bootstrapAngular(this.instantiationService,
+		let uniqueSelector = this.instantiationService.invokeFunction(bootstrapAngular,
 			CreateLoginModule,
 			this.getContainer(),
 			CREATELOGIN_SELECTOR,

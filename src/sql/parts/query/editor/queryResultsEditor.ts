@@ -170,7 +170,7 @@ export class QueryResultsEditor extends BaseEditor {
 		// Otherwise many components will be left around and be subscribed
 		// to events from the backing data service
 		let params: IQueryComponentParams = { dataService: dataService };
-		bootstrapAngular(this._instantiationService,
+		this._instantiationService.invokeFunction(bootstrapAngular,
 			QueryOutputModule,
 			this.getContainer(),
 			QUERY_OUTPUT_SELECTOR,

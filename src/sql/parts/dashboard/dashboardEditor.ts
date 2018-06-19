@@ -122,7 +122,7 @@ export class DashboardEditor extends BaseEditor {
 
 		input.hasBootstrapped = true;
 
-		let uniqueSelector = bootstrapAngular(this.instantiationService,
+		let uniqueSelector = this.instantiationService.invokeFunction(bootstrapAngular,
 			DashboardModule,
 			this._dashboardContainer,
 			DASHBOARD_SELECTOR,
