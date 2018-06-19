@@ -398,7 +398,7 @@ export class SelectBoxList implements ISelectBoxDelegate, IDelegate<ISelectOptio
 
 		this.layoutSelectDropDown();
 
-		// {{SQL EDIT}}
+		// {{SQL CARBON EDIT}}
 		return {
 			dispose: () => {
 				try {
