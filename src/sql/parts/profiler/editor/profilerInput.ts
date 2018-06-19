@@ -126,7 +126,8 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public onSessionStopped(notification: sqlops.ProfilerSessionStoppedParams) {
-		this._notificationService.error(nls.localize("profiler.sessionStopped", "Session stopped unexpectedly on the server."));
+		this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this._connection.serverName));
+
 		this.state.change({
 			isStopped: true,
 			isPaused: false,
@@ -136,7 +137,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	public onMoreRows(eventMessage: sqlops.ProfilerSessionEvents) {
 		if (eventMessage.eventsLost){
-			this._notificationService.warn(nls.localize("profiler.eventsLost", "Some events may have been lost."));
+			this._notificationService.warn(nls.localize("profiler.eventsLost", "The XEvent Profiler session for {0} has lost events.", this._connection.serverName));
 		}
 
 		for (let i: number  = 0; i < eventMessage.events.length && i < 500; ++i) {
