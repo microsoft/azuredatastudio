@@ -14,6 +14,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 
@@ -35,7 +36,8 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	constructor(
 		private _connection: IConnectionProfile,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IProfilerService private _profilerService: IProfilerService
+		@IProfilerService private _profilerService: IProfilerService,
+		@INotificationService private _notificationService: INotificationService
 	) {
 		super();
 		this._state = new ProfilerState();
@@ -123,7 +125,21 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._state;
 	}
 
+	public onSessionStopped(notification: sqlops.ProfilerSessionStoppedParams) {
+		this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this._connection.serverName));
+
+		this.state.change({
+			isStopped: true,
+			isPaused: false,
+			isRunning: false
+		});
+	}
+
 	public onMoreRows(eventMessage: sqlops.ProfilerSessionEvents) {
+		if (eventMessage.eventsLost){
+			this._notificationService.warn(nls.localize("profiler.eventsLost", "The XEvent Profiler session for {0} has lost events.", this._connection.serverName));
+		}
+
 		for (let i: number  = 0; i < eventMessage.events.length && i < 500; ++i) {
 			let e: sqlops.ProfilerEvent = eventMessage.events[i];
 			let data = {};
