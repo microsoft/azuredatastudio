@@ -42,7 +42,6 @@ CommandsRegistry.registerCommand({
 		let objectExplorerService: IObjectExplorerService = accessor.get(IObjectExplorerService);
 
 		let connectionProfile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionService, editorService);
-
 		let profilerInput = instantiationService.createInstance(ProfilerInput, connectionProfile);
 		return editorService.openEditor(profilerInput, { pinned: true }, false).then(() => TPromise.as(true));
 	}
