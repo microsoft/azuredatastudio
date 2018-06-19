@@ -32,6 +32,7 @@ export class InputBox extends vsInputBox {
 	private _onLoseFocus = this._register(new Emitter<OnLoseFocusParams>());
 	public onLoseFocus: Event<OnLoseFocusParams> = this._onLoseFocus.event;
 
+	private _isTextAreaInput: boolean;
 
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, options?: IInputOptions) {
 		super(container, contextViewProvider, options);
@@ -48,6 +49,10 @@ export class InputBox extends vsInputBox {
 			self._onLoseFocus.fire({ value: self.value, hasChanged: self._lastLoseFocusValue !== self.value });
 			self._lastLoseFocusValue = self.value;
 		});
+
+		if (options && options.type === 'textarea') {
+			this._isTextAreaInput = true;
+		}
 	}
 
 	public style(styles: IInputBoxStyles): void {
@@ -75,6 +80,12 @@ export class InputBox extends vsInputBox {
 		this.inputElement.setAttribute('cols', value.toString());
 	}
 
+	public layout(): void {
+		if (!this._isTextAreaInput) {
+			super.layout();
+		}
+	}
+
 	public disable(): void {
 		super.disable();
 		this.inputBackground = this.disabledInputBackground;
@@ -84,7 +95,9 @@ export class InputBox extends vsInputBox {
 	}
 
 	public setHeight(value: string) {
-		this.inputElement.style.height = value;
+		if (this._isTextAreaInput) {
+			this.inputElement.style.height = value;
+		}
 	}
 
 	public isEnabled(): boolean {

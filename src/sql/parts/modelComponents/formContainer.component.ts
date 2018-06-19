@@ -35,10 +35,10 @@ class FormItem {
 
 @Component({
 	template: `
-		<div #container *ngIf="items" class="form-table" [style.width]="getFormWidth()">
+		<div #container *ngIf="items" class="form-table" [style.width]="getFormWidth()" [style.height]="getFormHeight()">
 			<ng-container *ngFor="let item of items">
-			<div class="form-row" >
-				<ng-container *ngIf="isFormComponent(item)">
+			<div class="form-row" *ngIf="isFormComponent(item)">
+
 					<ng-container *ngIf="isHorizontal(item)">
 						<div class="form-cell">{{getItemTitle(item)}}</div>
 						<div class="form-cell">
@@ -69,7 +69,6 @@ class FormItem {
 								</div>
 							</div>
 					</div>
-				</ng-container>
 			</div>
 			</ng-container>
 		</div>
@@ -113,7 +112,11 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	}
 
 	private getFormWidth(): string {
-		return this._formLayout && this._formLayout.width ? +this._formLayout.width + 'px' : '100%';
+		return this.convertSize(this._formLayout && this._formLayout.width);
+	}
+
+	private getFormHeight(): string {
+		return this.convertSize(this._formLayout && this._formLayout.height);
 	}
 
 	private getComponentWidth(item: FormItem): string {

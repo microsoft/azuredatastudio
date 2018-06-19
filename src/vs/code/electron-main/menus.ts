@@ -999,8 +999,8 @@ export class CodeMenu {
 		arrays.coalesce([
 			// new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miWelcome', comment: ['&& denotes a mnemonic'] }, "&&Welcome")), click: () => this.windowsService.sendToFocused('vscode:runAction', 'workbench.action.showWelcomePage') }),
 			// {{SQL CARBON EDIT}}
-			product.releaseNotesUrl ?
-				this.createMenuItem(nls.localize({ key: 'miReleaseNotes', comment: ['&& denotes a mnemonic'] }, "Getting &&Started"), 'update.showCurrentCarbonReleaseNotes')
+			product.gettingStartedUrl ?
+				this.createMenuItem(nls.localize({ key: 'miGettingStarted', comment: ['&& denotes a mnemonic'] }, "Getting &&Started"), 'update.showGettingStarted')
 				: null,
 			product.documentationUrl ?
 				this.createMenuItem(nls.localize({ key: 'miDocumentation', comment: ['&& denotes a mnemonic'] }, "&&Documentation"), 'workbench.action.openDocumentationUrl')

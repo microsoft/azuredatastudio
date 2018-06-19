@@ -11,8 +11,6 @@ import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, Que
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, TabSettingConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
-import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
@@ -27,13 +25,8 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
-import { ScrollbarVisibility } from 'vs/base/common/scrollable';
-import { addDisposableListener, getContentHeight, EventType } from 'vs/base/browser/dom';
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import * as colors from 'vs/platform/theme/common/colorRegistry';
-import * as themeColors from 'vs/workbench/common/theme';
 import * as objects from 'vs/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
