@@ -5,7 +5,8 @@
 
 'use strict';
 import 'vs/css!./media/serverGroupDialog';
-import { Builder, Dimension } from 'vs/base/browser/builder';
+
+import { Builder } from 'vs/base/browser/builder';
 import { Checkbox } from 'vs/base/browser/ui/checkbox/checkbox';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as DOM from 'vs/base/browser/dom';
@@ -18,13 +19,13 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ServerGroupViewModel } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupViewModel';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/styler';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
 export class ServerGroupDialog extends Modal {
@@ -68,7 +69,7 @@ export class ServerGroupDialog extends Modal {
 		this.registerListeners();
 	}
 
-	protected layout(dimension?: Dimension): void {
+	protected layout(dimension?: DOM.Dimension): void {
 		// NO OP
 	}
 

@@ -7,6 +7,7 @@
 
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/newDashboardTabDialog';
+
 import * as DOM from 'vs/base/browser/dom';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IListService, ListService } from 'vs/platform/list/browser/listService';
@@ -20,9 +21,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IDelegate, IRenderer, IListMouseEvent } from 'vs/base/browser/ui/list/list';
+import { IDelegate, IRenderer } from 'vs/base/browser/ui/list/list';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
@@ -32,7 +33,6 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { Orientation } from 'sql/base/browser/ui/splitview/splitview';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabViewModel';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
-import { Dimension } from 'vs/base/browser/builder';
 
 class ExtensionListDelegate implements IDelegate<IDashboardUITab> {
 
@@ -142,7 +142,7 @@ export class NewDashboardTabDialog extends Modal {
 	}
 
 	// MODAL OVERRIDE METHODS //////////////////////////////////////////////
-	protected layout(dimension?: Dimension): void {
+	protected layout(dimension?: DOM.Dimension): void {
 		// Nothing currently laid out in this class
 	}
 

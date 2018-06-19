@@ -14,7 +14,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import * as nls from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { Builder, Dimension } from 'vs/base/browser/builder';
+import { Builder } from 'vs/base/browser/builder';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -404,7 +404,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 		this._tree.layout(DOM.getTotalHeight(this._treeContainer));
 	}
 
-	protected layout(dimension?: Dimension): void {
+	protected layout(dimension?: DOM.Dimension): void {
 		this._tree.layout(DOM.getContentHeight(this._treeContainer));
 	}
 
