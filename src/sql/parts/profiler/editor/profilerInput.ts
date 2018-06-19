@@ -44,7 +44,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		// set inital state
 		this.state.change({
 			isConnected: true,
-			isStopped: false,
+			isStopped: true,
 			isPaused: false,
 			isRunning: false,
 			autoscroll: true
