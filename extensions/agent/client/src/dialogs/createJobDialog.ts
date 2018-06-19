@@ -117,7 +117,7 @@ export class CreateJobDialog {
 		this.generalTab.registerContent(async view => {
 			this.nameTextBox = view.modelBuilder.inputBox().component();
 			this.ownerTextBox = view.modelBuilder.inputBox().component();
-			this.categoryDropdown = view.modelBuilder.dropDown().withProperties({ width: 150 }).component();
+			this.categoryDropdown = view.modelBuilder.dropDown().component();
 			this.descriptionTextBox = view.modelBuilder.inputBox().withProperties({
 				multiline: true,
 				height: 200
@@ -142,9 +142,7 @@ export class CreateJobDialog {
 				}, {
 					component: this.enabledCheckBox,
 					title: ''
-				}], {
-						componentWidth: 430
-					}).component();
+				}]).component();
 
 			await view.initializeModel(formModel);
 
@@ -167,11 +165,7 @@ export class CreateJobDialog {
 						this.StepsTable_SuccessColumnString,
 						this.StepsTable_FailureColumnString
 					],
-					data: [
-						['1', 'my step 1', '', 'quit', 'email'],
-						['2', 'my step 2', '', 'quit', 'email'],
-						['3', 'my step 3', '', 'quit', 'email']
-					],
+					data: [],
 					height: 800
 				}).component();
 
@@ -200,9 +194,7 @@ export class CreateJobDialog {
 					component: this.stepsTable,
 					title: this.JobStepsTopLabelString,
 					actions: [this.newStepButton, this.insertStepButton, this.editStepButton, this.deleteStepButton]
-				}], {
-						componentWidth: 430
-					}).component();
+				}]).component();
 			await view.initializeModel(formModel);
 		});
 	}
@@ -219,12 +211,12 @@ export class CreateJobDialog {
 			this.notificationsTabTopLabel = view.modelBuilder.text().withProperties({ value: this.NotificationsTabTopLabelString }).component();
 			this.emailCheckBox = view.modelBuilder.checkBox().withProperties({
 				label: this.EmailCheckBoxString,
-				width: 100
+				width: 80
 			}).component();
 
 			this.pagerCheckBox = view.modelBuilder.checkBox().withProperties({
 				label: this.PagerCheckBoxString,
-				width: 100
+				width: 80
 			}).component();
 			this.eventLogCheckBox = view.modelBuilder.checkBox().withProperties({
 				label: this.EventLogCheckBoxString,
@@ -282,9 +274,7 @@ export class CreateJobDialog {
 					component: deleteJobContainer,
 					title: ''
 				}
-			], {
-					componentWidth: 430
-				}).component();
+			]).component();
 
 			await view.initializeModel(formModel);
 			this.emailConditionDropdown.values = this.model.JobCompletionActionConditions;
@@ -301,6 +291,12 @@ export class CreateJobDialog {
 			this.pagerCheckBox.checked = false;
 			this.eventLogCheckBox.checked = false;
 			this.deleteJobCheckBox.checked = false;
+			this.emailOperatorDropdown.enabled = false;
+			this.pagerOperatorDropdown.enabled = false;
+			this.emailConditionDropdown.enabled = false;
+			this.pagerConditionDropdown.enabled = false;
+			this.eventLogConditionDropdown.enabled = false;
+			this.deleteJobConditionDropdown.enabled = false;
 		});
 	}
 
@@ -316,7 +312,7 @@ export class CreateJobDialog {
 		this.model.name = this.nameTextBox.value;
 		this.model.owner = this.ownerTextBox.value;
 		this.model.enabled = this.enabledCheckBox.checked;
-		this.model.description = this.descriptionTextBox.value.replace('\n','\r');
+		this.model.description = this.descriptionTextBox.value;
 		this.model.category = this.categoryDropdown.value;
 		this.model.emailLevel = this.getActualConditionValue(this.emailCheckBox, this.emailConditionDropdown);
 		this.model.operatorToEmail = this.emailOperatorDropdown.value;
