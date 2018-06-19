@@ -89,7 +89,8 @@
 			"skipFiles": [
 				"**/winjs*.js"
 			],
-			"webRoot": "${workspaceFolder}"
+			"webRoot": "${workspaceFolder}",
+			"timeout": 15000
 		},
 		{
 			"type": "node",

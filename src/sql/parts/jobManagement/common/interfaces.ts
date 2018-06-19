@@ -8,12 +8,11 @@
 import * as sqlops from 'sqlops';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Table } from 'sql/base/browser/ui/table/table';
+import { JobCacheObject } from './jobManagementService';
 
 export const SERVICE_ID = 'jobManagementService';
-export const CACHE_ID = 'jobCacheService';
 
 export const IJobManagementService = createDecorator<IJobManagementService>(SERVICE_ID);
-export const IAgentJobCacheService = createDecorator<IAgentJobCacheService>(CACHE_ID);
 
 export interface IJobManagementService {
 	_serviceBrand: any;
@@ -24,19 +23,9 @@ export interface IJobManagementService {
 
 	getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>;
 
-	jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult>;
-}
+	jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus>;
 
-export interface IAgentJobCacheService {
-	_serviceBrand: any;
+	addToCache(server: string, cache: JobCacheObject);
 
-	jobs: sqlops.AgentJobInfo[];
-
-	jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; };
-
-	prevJobID: string;
-
-	getJobHistory(jobID: string): sqlops.AgentJobHistoryInfo[];
-
-	setJobHistory(jobID: string, value: sqlops.AgentJobHistoryInfo[]);
+	jobCacheObjectMap:  { [server: string]: JobCacheObject; };
 }

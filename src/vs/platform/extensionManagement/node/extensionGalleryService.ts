@@ -18,7 +18,7 @@ import { IPager } from 'vs/base/common/paging';
 import { IRequestOptions, IRequestContext, download, asJson, asText } from 'vs/base/node/request';
 import pkg from 'vs/platform/node/package';
 import product from 'vs/platform/node/product';
-import { isVersionValid } from 'vs/platform/extensions/node/extensionValidator';
+import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { readFile } from 'vs/base/node/pfs';
 import { writeFileAndFlushSync } from 'vs/base/node/extfs';
@@ -324,7 +324,7 @@ function toExtension(galleryExtension: IRawGalleryExtension, extensionsGalleryUr
 		},
 		/* __GDPR__FRAGMENT__
 			"GalleryExtensionTelemetryData2" : {
-				"index" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+				"index" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
 				"searchText": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 				"querySource": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 			}
@@ -435,7 +435,9 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 
 		return this.queryGallery(query).then(({ galleryExtensions, total }) => {
 			const extensions = galleryExtensions.map((e, index) => toExtension(e, this.extensionsGalleryUrl, index, query, options.source));
-			const pageSize = query.pageSize;
+
+			// {{SQL CARBON EDIT}}
+			const pageSize = extensions.length;
 			const getPage = (pageIndex: number) => {
 				const nextPageQuery = query.withPage(pageIndex + 1);
 				return this.queryGallery(nextPageQuery)
@@ -454,6 +456,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	 * @param galleryExtensions
 	 */
 	private createQueryResult(query: Query, galleryExtensions: IRawGalleryExtension[]): { galleryExtensions: IRawGalleryExtension[], total: number; } {
+
+		// Filtering
 		let filteredExtensions = galleryExtensions;
 		if (query.criteria) {
 			const ids = query.criteria.filter(x => x.filterType === FilterType.ExtensionId).map(v => v.value.toLocaleLowerCase());
@@ -464,10 +468,58 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (names && names.length > 0) {
 				filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && names.includes(`${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
 			}
+			const searchTexts = query.criteria.filter(x => x.filterType === FilterType.SearchText).map(v => v.value.toLocaleLowerCase());
+			if (searchTexts && searchTexts.length > 0) {
+				searchTexts.forEach(searchText => {
+					if (searchText !== '@allmarketplace') {
+						filteredExtensions = filteredExtensions.filter(
+							e => 	e.extensionName && e.extensionName.includes(searchText) ||
+									e.publisher && e.publisher.publisherName && e.publisher.publisherName.includes(searchText) ||
+									e.publisher && e.publisher.displayName && e.publisher.displayName.includes(searchText) ||
+									e.displayName && e.displayName.includes(searchText) ||
+									e.shortDescription && e.shortDescription.includes(searchText) ||
+									e.extensionId && e.extensionId.includes(searchText)
+						);
+					}
+				});
+			}
+		}
+
+		// Sorting
+		switch (query.sortBy) {
+			case SortBy.PublisherName:
+				filteredExtensions.sort( (a, b) => ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'));
+				break;
+			case SortBy.Title:
+			default:
+				filteredExtensions.sort( (a, b) => ExtensionGalleryService.compareByField(a, b, 'displayName'));
+				break;
 		}
 
 		let actualTotal = filteredExtensions.length;
 		return { galleryExtensions: filteredExtensions, total: actualTotal };
+	}
+
+	public static compareByField(a: any, b: any, fieldName: string): number {
+		if (a && !b) {
+			return 1;
+		}
+		if (b && !a) {
+			return -1;
+		}
+		if (a && a[fieldName] && (!b || !b[fieldName])) {
+			return 1;
+		}
+		if (b && b[fieldName] && (!a || !a[fieldName])) {
+			return -1;
+		}
+		if (!b || !b[fieldName] && (!a || !a[fieldName])) {
+			return 0;
+		}
+		if (a[fieldName] ===  b[fieldName]) {
+			return 0;
+		}
+		return a[fieldName] < b[fieldName] ? -1 : 1;
 	}
 
 	private queryGallery(query: Query): TPromise<{ galleryExtensions: IRawGalleryExtension[], total: number; }> {
@@ -534,7 +586,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				const startTime = new Date().getTime();
 				/* __GDPR__
 					"galleryService:downloadVSIX" : {
-						"duration": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
+						"duration": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
 						"${include}": [
 							"${GalleryExtensionTelemetryData}"
 						]
@@ -570,7 +622,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	}
 
 	loadCompatibleVersion(extension: IGalleryExtension): TPromise<IGalleryExtension> {
-		if (extension.properties.engine && this.isEngineValid(extension.properties.engine)) {
+		if (extension.properties.engine && isEngineValid(extension.properties.engine)) {
 			return TPromise.wrap(extension);
 		}
 
@@ -686,7 +738,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					/* __GDPR__
 						"galleryService:requestError" : {
 							"url" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-							"cdn": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+							"cdn": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
 							"message": { "classification": "CallstackOrException", "purpose": "FeatureInsight" }
 						}
 					*/
@@ -734,7 +786,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (!engine) {
 				return null;
 			}
-			if (this.isEngineValid(engine)) {
+			if (isEngineValid(engine)) {
 				return TPromise.wrap(version);
 			}
 		}
@@ -755,7 +807,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			.then(manifest => {
 				const engine = manifest.engines.vscode;
 
-				if (!this.isEngineValid(engine)) {
+				if (!isEngineValid(engine)) {
 					return this.getLastValidExtensionVersionReccursively(extension, versions.slice(1));
 				}
 
@@ -763,11 +815,6 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				version.properties.push({ key: PropertyType.Engine, value: manifest.engines.vscode });
 				return version;
 			});
-	}
-
-	private isEngineValid(engine: string): boolean {
-		// TODO@joao: discuss with alex '*' doesn't seem to be a valid engine version
-		return engine === '*' || isVersionValid(pkg.version, engine);
 	}
 
 	private static hasExtensionByName(extensions: IGalleryExtension[], name: string): boolean {

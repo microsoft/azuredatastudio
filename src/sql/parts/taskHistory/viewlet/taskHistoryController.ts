@@ -73,7 +73,7 @@ export class TaskHistoryController extends treedefaults.DefaultController {
 			getKeyBinding: (action) => this.keybindingService.lookupKeybinding(action.id),
 			onHide: (wasCancelled?: boolean) => {
 				if (wasCancelled) {
-					tree.DOMFocus();
+					tree.domFocus();
 				}
 			},
 			getActionsContext: () => (element)

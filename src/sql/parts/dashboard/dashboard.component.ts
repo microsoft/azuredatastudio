@@ -9,13 +9,14 @@ import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, O
 import { Router } from '@angular/router';
 
 import { DashboardServiceInterface } from './services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { RefreshWidgetAction, EditDashboardAction } from 'sql/parts/dashboard/common/actions';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as themeColors from 'vs/workbench/common/theme';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -36,16 +37,17 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 	private editDisposable: IDisposable;
 
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrapService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private _router: Router,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super();
 	}
 
 	ngOnInit() {
-		this._register(this._bootstrapService.themeService.onDidColorThemeChange(this.updateTheme, this));
-		this.updateTheme(this._bootstrapService.themeService.getColorTheme());
+		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
+		this.updateTheme(this.themeService.getColorTheme());
 		let profile: IConnectionProfile = this._bootstrapService.getOriginalConnectionProfile();
 		this.actionbar = new ActionBar(this.actionbarContainer.nativeElement);
 		this.actionbar.push(new RefreshWidgetAction(this.refresh, this), {

@@ -7,7 +7,7 @@
 import { MainThreadDashboardWebviewShape, SqlMainContext, ExtHostDashboardWebviewsShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { IDashboardWebviewService, IDashboardWebview } from 'sql/services/dashboardWebview/common/dashboardWebviewService';
+import { IDashboardViewService, IDashboardWebview } from 'sql/services/dashboard/common/dashboardViewService';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadDashboardWebview)
 export class MainThreadDashboardWebview implements MainThreadDashboardWebviewShape {
@@ -20,10 +20,10 @@ export class MainThreadDashboardWebview implements MainThreadDashboardWebviewSha
 
 	constructor(
 		context: IExtHostContext,
-		@IDashboardWebviewService webviewService: IDashboardWebviewService
+		@IDashboardViewService viewService: IDashboardViewService
 	) {
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostDashboardWebviews);
-		webviewService.onRegisteredWebview(e => {
+		viewService.onRegisteredWebview(e => {
 			if (this.knownWidgets.includes(e.id)) {
 				let handle = MainThreadDashboardWebview._handlePool++;
 				this._dialogs.set(handle, e);
@@ -36,7 +36,7 @@ export class MainThreadDashboardWebview implements MainThreadDashboardWebviewSha
 	}
 
 	public dispose(): void {
-		throw new Error("Method not implemented.");
+		throw new Error('Method not implemented.');
 	}
 
 	$sendMessage(handle: number, message: string) {

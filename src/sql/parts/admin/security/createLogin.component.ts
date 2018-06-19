@@ -4,8 +4,8 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { ElementRef, Component, Inject, forwardRef } from '@angular/core';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 
 export const CREATELOGIN_SELECTOR: string = 'createlogin-component';
@@ -22,9 +22,7 @@ export class CreateLoginComponent {
 
 	constructor(
         @Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-        @Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService
+        @Inject(IBootstrapParams) private _params: IDashboardComponentParams
 	) {
-        let parameters: DashboardComponentParams = this._bootstrapService.getBootstrapParams(this._el.nativeElement.tagName);
-
 	}
 }

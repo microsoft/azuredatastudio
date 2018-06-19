@@ -8,7 +8,7 @@ import * as sqlops from 'sqlops';
 import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
 import * as types from 'vs/base/common/types';
 
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface RestoreOptionsElement {

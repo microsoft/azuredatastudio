@@ -17,11 +17,11 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { localize } from 'vs/nls';
+import { entries } from 'sql/base/common/objects';
 
 import * as sqlops from 'sqlops';
 
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import { withElementById } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as platform from 'vs/base/common/platform';
@@ -32,7 +32,7 @@ import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as types from 'vs/base/common/types';
-import { entries } from 'sql/base/common/objects';
+import { trim } from 'vs/base/common/strings';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -108,6 +108,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				}
 				profile = result.connection;
 
+				profile.serverName = trim(profile.serverName);
+
 				// append the port to the server name for SQL Server connections
 				if (this.getCurrentProviderName() === Constants.mssqlProviderName) {
 					let portPropertyName: string = 'port';
@@ -125,6 +127,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 				this.handleDefaultOnConnect(params, profile);
 			} else {
+				profile.serverName = trim(profile.serverName);
 				this._connectionManagementService.addSavedPassword(profile).then(connectionWithPassword => {
 					this.handleDefaultOnConnect(params, connectionWithPassword);
 				});
@@ -302,7 +305,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private doShowDialog(params: INewConnectionParams): TPromise<void> {
 		if (!this._connectionDialog) {
-			let container = withElementById(this._partService.getWorkbenchElementId()).getHTMLElement().parentElement;
+			let container = document.getElementById(this._partService.getWorkbenchElementId()).parentElement;
 			this._container = container;
 			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerTypes, this._providerNameToDisplayNameMap[this._model.providerName]);
 			this._connectionDialog.onCancel(() => {

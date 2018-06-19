@@ -10,7 +10,7 @@ import * as nls from 'vs/nls';
 import * as platform from 'vs/platform/registry/common/platform';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { Memento, Scope as MementoScope } from 'vs/workbench/common/memento';
@@ -142,7 +142,7 @@ export class AccountManagementService implements IAccountManagementService {
 				})
 				.then(null, err => {
 					// On error, check to see if the error is because the user cancelled. If so, just ignore
-					if ('userCancelledSignIn' in err) {
+					if (err && 'userCancelledSignIn' in err) {
 						return Promise.resolve();
 					}
 					return Promise.reject(err);

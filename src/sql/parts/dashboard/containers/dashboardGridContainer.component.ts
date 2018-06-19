@@ -7,19 +7,21 @@ import 'vs/css!./dashboardGridContainer';
 
 import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
+import { concat } from 'rxjs/operator/concat';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { TabConfig, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
+import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
+import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import * as objects from 'vs/base/common/objects';
-import Event, { Emitter } from 'vs/base/common/event';
-import { concat } from 'rxjs/operator/concat';
-import { WebviewContent } from 'sql/parts/dashboard/contents/webviewContent.component';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export interface GridCellConfig {
 	id?: string;
@@ -41,7 +43,7 @@ export interface GridWebviewConfig extends GridCellConfig {
 @Component({
 	selector: 'dashboard-grid-container',
 	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/containers/dashboardGridContainer.component.html')),
-	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardGridContainer) }]
+	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardGridContainer) }]
 })
 export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	@Input() private tab: TabConfig;
@@ -153,7 +155,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	@ViewChildren(DashboardWidgetWrapper) private _widgets: QueryList<DashboardWidgetWrapper>;
 	@ViewChildren(WebviewContent) private _webViews: QueryList<WebviewContent>;
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {

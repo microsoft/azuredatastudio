@@ -45,7 +45,7 @@ export class FileBrowserTreeView {
 			this._toDispose.push(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 			this._toDispose.push(this._fileBrowserService.onExpandFolder(fileNode => this._tree.refresh(fileNode)));
 			this._toDispose.push(attachListStyler(this._tree, this._themeService));
-			this._tree.DOMFocus();
+			this._tree.domFocus();
 		}
 
 		if (rootNode) {
@@ -91,7 +91,7 @@ export class FileBrowserTreeView {
 		let targetsToExpand: any[];
 
 		// Focus
-		this._tree.DOMFocus();
+		this._tree.domFocus();
 
 		if (this._tree) {
 			let selection = this._tree.getSelection();

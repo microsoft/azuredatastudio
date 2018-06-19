@@ -16,7 +16,7 @@ FROM sys.dm_os_buffer_descriptors
 --WHERE database_id BETWEEN 5 AND 32766
 GROUP BY database_id
 )
-SELECT
+SELECT TOP 10 
 [db_name] = CASE [database_id] WHEN 32767 
 THEN 'Resource DB' 
 ELSE DB_NAME([database_id]) END,

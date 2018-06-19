@@ -16,6 +16,8 @@
 	"darwinBundleIdentifier": "com.sqlopsstudio.oss",
 	"reportIssueUrl": "https://github.com/Microsoft/sqlopsstudio/issues/new?labels=customer%20reported%20issue",
 	"requestFeatureUrl": "https://github.com/Microsoft/sqlopsstudio/issues/new?labels=feature-request",
+	"privacyStatementUrl": "https://privacy.microsoft.com/en-us/privacystatement",
+	"telemetryOptOutUrl": "https://github.com/Microsoft/sqlopsstudio/wiki/How-to-Disable-Telemetry-Reporting",
 	"urlProtocol": "sqlops",
 	"enableTelemetry": true,
 	"aiConfig": {
@@ -32,9 +34,10 @@
 	"recommendedExtensions": [
 		"Microsoft.agent",
 		"Microsoft.whoisactive",
-		"Microsoft.server-report"
+		"Microsoft.server-report",
+		"Redgate.sql-search"
 	],
 	"extensionsGallery": {
-		"serviceUrl": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/release/extensions/extensionsGallery.json"
+		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	}
 }

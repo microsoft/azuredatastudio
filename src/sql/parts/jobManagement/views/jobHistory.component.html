@@ -4,8 +4,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-
- <h1 class="job-heading">Jobs | {{agentJobInfo.name}} </h1>
+<div class="jobhistory-heading-container">
+ <h1 class="job-heading">Jobs | {{this._agentJobInfo?.name}} </h1>
+ <div class="icon in-progress" *ngIf="showProgressWheel()"></div>
+</div>
 
  <!-- Back -->
  <div class="all-jobs">
@@ -13,18 +15,11 @@
  </div>
 
 <!-- Actions -->
-<ul class="action-buttons">
-	<li>
-		<div class="icon-start" (click)="jobAction('run', agentJobInfo.name)">Run</div>
-	</li>
-	<li>
-		<div class="icon-stop" (click)="jobAction('stop', agentJobInfo.name)">Stop</div>
-	</li>
-</ul>
+<div #actionbarContainer class="actionbar-container"></div>
 
 <!-- Overview  -->
  <div class="overview-container">
-   <div class="overview-tab" (click)='toggleCollapse()'>
+   <div class="overview-tab" (click)='toggleCollapse()' tabindex="0">
 	 <input id="accordion" type="checkbox">
 	 <label for="accordion">
 		<div class="resultsViewCollapsible collapsed" (click)='toggleCollapse()'></div>
@@ -37,13 +32,13 @@
 						Category:
 					</td>
 					<td id='col2'>
-						{{agentJobInfo.category}}
+						{{this._agentJobInfo?.category}}
 					</td>
 					<td id='col3'>
 						Enabled:
 					</td>
 					<td id='col4'>
-						{{agentJobInfo.enabled}}
+						{{this._agentJobInfo?.enabled}}
 					</td>
 				</tr>
 				<tr>
@@ -51,13 +46,13 @@
 						Has Alert:
 					</td>
 					<td id='col2'>
-						{{agentJobInfo.hasTarget}}
+						{{this._agentJobInfo?.hasTarget}}
 					</td>
 					<td id='col3'>
 						Has Schedule:
 					</td>
 					<td id='col4'>
-						{{agentJobInfo.hasSchedule}}
+						{{this._agentJobInfo?.hasSchedule}}
 					</td>
 				</tr>
 				<tr>
@@ -65,13 +60,13 @@
 						Last Run:
 					</td>
 					<td id='col2'>
-						{{agentJobInfo.lastRun}}
+						{{this._agentJobInfo?.lastRun}}
 					</td>
 					<td id='col3'>
 						Next Run:
 					</td>
 					<td id='col4'>
-						{{agentJobInfo.nextRun}}
+						{{this._agentJobInfo?.nextRun}}
 					</td>
 				</tr>
 		</table>
@@ -82,8 +77,8 @@
 <!-- Job History details -->
 <div class='history-details'>
 	<!-- Previous run list -->
-	<div style="width: 20%">
-		<table>
+	<div style="min-width: 275px">
+		<table *ngIf="_showPreviousRuns === true">
 			<tr>
 				<td class="date-column">
 					<b>Date</b>
@@ -93,48 +88,49 @@
 				</td>
 			</tr>
 		</table>
+		<h3 *ngIf="_showPreviousRuns === false" style="text-align: center">No Previous Runs Available</h3>
 		<div #table class="step-table prev-run-list" style="position: relative; height: 100%; width: 100%"></div>
 	</div>
 	<!-- Job Steps -->
-	<div class="job-steps">
+	<div class="job-steps" id="job-steps">
 		<h1 class="job-heading">
 			{{agentJobHistoryInfo?.runDate}}
 		</h1>
 		<table class="step-list">
 			<tr class="step-row">
-				<td height="30">
+				<td height="20">
 					<h3>Status:</h3>
 				</td>
-				<td height="30">
+				<td height="20">
 					<h3>{{_runStatus}}</h3>
 				</td>
 			</tr>
 			<tr class="step-row">
-				<td height="30">
+				<td height="20">
 					Job ID:
 				</td>
-				<td height="30">
+				<td height="20" style="user-select: initial">
 					{{agentJobHistoryInfo?.jobId || agentJobInfo?.jobId}}
 				</td>
 			</tr>
 			<tr class="step-row">
-				<td height="30">
+				<td height="20">
 					Message:
 				</td>
-				<td height="30">
+				<td height="20" style="user-select: initial">
 					{{agentJobHistoryInfo?.message}}
 				</td>
 			</tr>
 			<tr class="step-row">
-				<td height="30">
+				<td height="20">
 					Duration:
 				</td>
-				<td height="30">
+				<td height="20">
 					{{agentJobHistoryInfo?.runDuration}}
 				</td>
 			</tr>
 			<tr class="step-row">
-				<td height="30">
+				<td height="20">
 					Server:
 				</td>
 				<td>
@@ -142,23 +138,24 @@
 				</td>
 			</tr>
 			<tr class="step-row">
-				<td height="30">
+				<td height="20">
 					SQL message ID:
 				</td>
-				<td height="30">
+				<td height="20">
 					{{agentJobHistoryInfo?.sqlMessageId}}
 				</td>
 			</tr>
 			<tr class="step-row">
-				<td height="30">
+				<td height="20">
 					Retries Attempted:
 				</td>
-				<td height="30">
+				<td height="20">
 					{{agentJobHistoryInfo?.retriesAttempted}}
 				</td>
 			</tr>
 		</table>
-		<jobstepsview-component *ngIf="showSteps() === true" [stepRows]="_stepRows"></jobstepsview-component>
+		<jobstepsview-component *ngIf="showSteps === true"></jobstepsview-component>
+		<h3 *ngIf="showSteps === false">No Steps Available</h3>
 	</div>
 </div>
 

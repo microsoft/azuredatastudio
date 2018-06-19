@@ -25,9 +25,10 @@ import { InsightsWidget } from 'sql/parts/dashboard/widgets/insights/insightsWid
 import { WebviewWidget } from 'sql/parts/dashboard/widgets/webview/webviewWidget.component';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
 import { Action } from 'vs/base/common/actions';
@@ -36,6 +37,7 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Emitter } from 'vs/base/common/event';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
@@ -53,6 +55,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	@Input() private _config: WidgetConfig;
 	@Input() private collapsable = false;
 
+	private _collapseAction: CollapseWidgetAction;
 	private _collapsed = false;
 
 	public get collapsed(): boolean {
@@ -64,16 +67,12 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			return;
 		}
 		this._collapsed = val;
-		if (this.collapsedStateChangedEmitter) {
-			this.collapsedStateChangedEmitter.fire(this._collapsed);
-		}
+		this._collapseAction.state = val;
 		this._changeref.detectChanges();
 		if (!val) {
 			this.loadWidget();
 		}
 	}
-
-	private collapsedStateChangedEmitter: Emitter<boolean>;
 
 	@memoize
 	public get guid(): string {
@@ -91,22 +90,24 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
 		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrap: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
-		@Inject(forwardRef(() => Injector)) private _injector: Injector
+		@Inject(forwardRef(() => Injector)) private _injector: Injector,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService
 	) {
 		super();
 	}
 
 	ngOnInit() {
 		let self = this;
-		this._register(self._bootstrap.themeService.onDidColorThemeChange((event: IColorTheme) => {
+		this._register(self.themeService.onDidColorThemeChange((event: IColorTheme) => {
 			self.updateTheme(event);
 		}));
 	}
 
 	ngAfterViewInit() {
-		this.updateTheme(this._bootstrap.themeService.getColorTheme());
+		this.updateTheme(this.themeService.getColorTheme());
 		if (this.componentHost) {
 			this.loadWidget();
 		}
@@ -114,22 +115,22 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
 		if (this._actions) {
 			if (this.collapsable) {
-				this.collapsedStateChangedEmitter = new Emitter<boolean>();
-				this._actionbar.push(this._bootstrap.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed, this.collapsedStateChangedEmitter.event), { icon: true, label: false });
+				this._collapseAction = this.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed);
+				this._actionbar.push(this._collapseAction, { icon: true, label: false });
 			}
-			this._actionbar.push(this._bootstrap.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this._component.actionsContext), { icon: true, label: false });
+			this._actionbar.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this._component.actionsContext), { icon: true, label: false });
 		}
 		this.layout();
 	}
 
 	public refresh(): void {
-		if (this._component && this._component.refresh) {
+		if (!this.collapsed && this._component && this._component.refresh) {
 			this._component.refresh();
 		}
 	}
 
 	public layout(): void {
-		if (this._component && this._component.layout) {
+		if (!this.collapsed && this._component && this._component.layout) {
 			this._component.layout();
 		}
 	}
@@ -139,7 +140,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	}
 
 	public enableEdit(): void {
-		this._actionbar.push(this._bootstrap.instantiationService.createInstance(DeleteWidgetAction, this._config.id, this._bootstrap.getUnderlyingUri()), { icon: true, label: false });
+		this._actionbar.push(this.instantiationService.createInstance(DeleteWidgetAction, this._config.id, this._bootstrap.getUnderlyingUri()), { icon: true, label: false });
 	}
 
 	public disableEdit(): void {
@@ -158,6 +159,14 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			return;
 		}
 
+		// If _config.name is not set, set it to _config.widget.name
+		if (!this._config.name) {
+			let widget = Object.values(this._config.widget)[0];
+			if (widget.name) {
+				this._config.name = widget.name;
+			}
+		}
+
 		let componentFactory = this._componentFactoryResolver.resolveComponentFactory(selector);
 
 		let viewContainerRef = this.componentHost.viewContainerRef;
@@ -170,7 +179,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			this._component = componentRef.instance;
 			let actions = componentRef.instance.actions;
 			if (componentRef.instance.refresh) {
-				actions.push(new RefreshWidgetAction(componentRef.instance.refresh, componentRef.instance));
+				actions.push(new RefreshWidgetAction(this.refresh, this));
 			}
 			if (actions !== undefined && actions.length > 0) {
 				this._actions = actions;

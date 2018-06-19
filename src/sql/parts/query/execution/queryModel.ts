@@ -7,7 +7,7 @@ import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { DataService } from 'sql/parts/grid/services/dataService';
 import { ISlickRange } from 'angular2-slickgrid';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import Event from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import {
 	ISelectionData,
@@ -57,7 +57,7 @@ export interface IQueryModelService {
 
 
 	// Edit Data Functions
-	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): void;
+	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): void;
 	disposeEdit(ownerUri: string): Thenable<void>;
 	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<EditUpdateCellResult>;
 	commitEdit(ownerUri): Thenable<void>;

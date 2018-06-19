@@ -6,15 +6,15 @@
 
 import 'vs/css!./inputBox';
 
-import nls = require('vs/nls');
+import * as nls from 'vs/nls';
 import * as Bal from 'vs/base/browser/browser';
 import * as dom from 'vs/base/browser/dom';
 import { RenderOptions, renderFormattedText, renderText } from 'vs/base/browser/htmlContentRenderer';
-import aria = require('vs/base/browser/ui/aria/aria');
+import * as aria from 'vs/base/browser/ui/aria/aria';
 import { IAction } from 'vs/base/common/actions';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { Color } from 'vs/base/common/color';
 import { mixin } from 'vs/base/common/objects';
@@ -31,6 +31,8 @@ export interface IInputOptions extends IInputBoxStyles {
 
 	// {{SQL CARBON EDIT}} Candidate for addition to vscode
 	min?: string;
+	max?: string;
+	useDefaultValidation?: boolean;
 }
 
 export interface IInputBoxStyles {
@@ -110,10 +112,10 @@ export class InputBox extends Widget {
 	private inputValidationErrorBackground: Color;
 
 	private _onDidChange = this._register(new Emitter<string>());
-	public onDidChange: Event<string> = this._onDidChange.event;
+	public readonly onDidChange: Event<string> = this._onDidChange.event;
 
 	private _onDidHeightChange = this._register(new Emitter<number>());
-	public onDidHeightChange: Event<number> = this._onDidHeightChange.event;
+	public readonly onDidHeightChange: Event<number> = this._onDidHeightChange.event;
 
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, options?: IInputOptions) {
 		super();
@@ -166,6 +168,11 @@ export class InputBox extends Widget {
 		// {{SQL CARBON EDIT}} Canidate for addition to vscode
 		if (this.options.min) {
 			this.input.min = this.options.min;
+		}
+
+		// {{SQL CARBON EDIT}} Canidate for addition to vscode
+		if (this.options.max) {
+			this.input.max = this.options.max;
 		}
 
 		if (this.ariaLabel) {
@@ -344,21 +351,31 @@ export class InputBox extends Widget {
 	}
 
 	public validate(): boolean {
-		let result: IMessage = null;
+		let errorMsg: IMessage = null;
 
 		if (this.validation) {
-			result = this.validation(this.value);
+			errorMsg = this.validation(this.value);
 
-			if (!result) {
+			// {{SQL CARBON EDIT}}
+			if (!errorMsg && this.options.useDefaultValidation && this.inputElement.validationMessage) {
+				errorMsg = {
+					content: this.inputElement.validationMessage,
+					type: MessageType.ERROR
+				};
+			}
+
+			if (errorMsg) {
+				this.inputElement.setAttribute('aria-invalid', 'true');
+				this.showMessage(errorMsg);
+			}
+			else if (this.inputElement.hasAttribute('aria-invalid')) {
 				this.inputElement.removeAttribute('aria-invalid');
 				this.hideMessage();
-			} else {
-				this.inputElement.setAttribute('aria-invalid', 'true');
-				this.showMessage(result);
 			}
 		}
 
-		return !result;
+		// {{SQL CARBON EDIT}} Canidate for addition to vscode
+		return errorMsg ? errorMsg.type !== MessageType.ERROR : true;
 	}
 
 	private stylesForType(type: MessageType): { border: Color; background: Color } {

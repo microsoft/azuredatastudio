@@ -6,13 +6,13 @@
 'use strict';
 
 import 'vs/css!./media/connectionViewlet';
+import * as DOM from 'vs/base/browser/dom';
 import { ThrottledDelayer } from 'vs/base/common/async';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Builder, Dimension } from 'vs/base/browser/builder';
+import { Builder } from 'vs/base/browser/builder';
 import { Viewlet } from 'vs/workbench/browser/viewlet';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IAction } from 'vs/base/common/actions';
-import { toggleClass } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
@@ -81,11 +81,12 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 		});
 	}
 
-	public create(parent: Builder): TPromise<void> {
+	public create(parent: HTMLElement): TPromise<void> {
 		return new TPromise<void>((resolve) => {
 			super.create(parent);
-			this._root = parent.getHTMLElement();
-			parent.div({ class: 'server-explorer-viewlet' }, (viewletContainer) => {
+			this._root = parent;
+			let parentBuilder = new Builder(parent);
+			parentBuilder.div({ class: 'server-explorer-viewlet' }, (viewletContainer) => {
 				this._viewletContainer = viewletContainer;
 				viewletContainer.div({ class: 'search-box' }, (searchBoxContainer) => {
 					this._searchBoxContainer = searchBoxContainer;
@@ -147,10 +148,10 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 		super.focus();
 	}
 
-	public layout({ height, width }: Dimension): void {
+	public layout({ height, width }: DOM.Dimension): void {
 		this._searchBox.layout();
 		this._serverTreeView.layout(height - 36); // account for search box
-		toggleClass(this._root, 'narrow', width <= 350);
+		DOM.toggleClass(this._root, 'narrow', width <= 350);
 	}
 
 	public getOptimalWidth(): number {

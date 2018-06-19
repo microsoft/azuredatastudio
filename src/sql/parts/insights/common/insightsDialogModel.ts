@@ -7,7 +7,7 @@ import { IInsightsDialogModel, ListResource } from './interfaces';
 import { IInsightsConfigDetails, IInsightsLabel } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { Conditional } from 'sql/parts/dashboard/common/interfaces';
 
-import Event, { Emitter, debounceEvent } from 'vs/base/common/event';
+import { Event, Emitter, debounceEvent } from 'vs/base/common/event';
 
 export class InsightsDialogModel implements IInsightsDialogModel {
 	private _rows: string[][];

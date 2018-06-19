@@ -53,6 +53,10 @@ export const toggleResultsPane = (accessor: ServicesAccessor) => {
 	runActionOnActiveResultsEditor(accessor, GridContentEvents.ToggleResultPane);
 };
 
+export const goToNextQueryOutputTab = (accessor: ServicesAccessor) => {
+	runActionOnActiveResultsEditor(accessor, GridContentEvents.GoToNextQueryOutputTab);
+};
+
 export const saveAsCsv = (accessor: ServicesAccessor) => {
 	runActionOnActiveResultsEditor(accessor, GridContentEvents.SaveAsCsv);
 };
@@ -73,4 +77,11 @@ export const selectAllMessages = (accessor: ServicesAccessor) => {
 	runActionOnActiveResultsEditor(accessor, GridContentEvents.SelectAllMessages);
 };
 
+export const viewAsChart = (accessor: ServicesAccessor) => {
+	runActionOnActiveResultsEditor(accessor, GridContentEvents.ViewAsChart);
+};
+
+export const goToNextGrid = (accessor: ServicesAccessor) => {
+	runActionOnActiveResultsEditor(accessor, GridContentEvents.GoToNextGrid);
+};
 

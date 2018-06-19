@@ -89,7 +89,7 @@ FROM (
         ON p.object_id = it.object_id
 ) AS partitions'
 -----------------------------------
-select
+select TOP 10
     d.Dbname,
     --(file_size_mb + log_file_size_mb) as DBsize,
     --d.file_Size_MB,
@@ -100,4 +100,4 @@ select
     --l.log_Free_Space_MB,
     --fs.Freespace as DB_Freespace
 from @dbsize d join @logsize l on d.Dbname=l.Dbname join @dbfreesize fs on d.Dbname=fs.name
-order by Dbname
+order by d.Space_Used_MB DESC

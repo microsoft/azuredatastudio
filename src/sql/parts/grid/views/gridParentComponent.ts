@@ -23,9 +23,9 @@ import { DataService } from 'sql/parts/grid/services/dataService';
 import * as actions from 'sql/parts/grid/views/gridActions';
 import * as Services from 'sql/parts/grid/services/sharedServices';
 import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
-import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext } from 'sql/parts/query/common/queryContext';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/parts/query/common/queryContext';
 import { error } from 'sql/base/common/log';
+import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 
 import { IAction } from 'vs/base/common/actions';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
@@ -35,6 +35,9 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { DragCellSelectionModel } from 'sql/base/browser/ui/table/plugins/dragCellSelectionModel.plugin';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export abstract class GridParentComponent {
 	// CONSTANTS
@@ -62,9 +65,6 @@ export abstract class GridParentComponent {
 	// FIELDS
 	// Service for interaction with the IQueryModel
 	protected dataService: DataService;
-	protected keybindingService: IKeybindingService;
-	protected scopedContextKeyService: IContextKeyService;
-	protected contextMenuService: IContextMenuService;
 	protected actionProvider: actions.GridActionProvider;
 
 	protected toDispose: IDisposable[];
@@ -74,6 +74,7 @@ export abstract class GridParentComponent {
 	private resultsVisibleContextKey: IContextKey<boolean>;
 	private gridFocussedContextKey: IContextKey<boolean>;
 	private messagesFocussedContextKey: IContextKey<boolean>;
+	private queryEditorVisible: IContextKey<boolean>;
 
 	// All datasets
 	// Place holder data sets to buffer between data sets and rendered data sets
@@ -112,7 +113,12 @@ export abstract class GridParentComponent {
 	constructor(
 		protected _el: ElementRef,
 		protected _cd: ChangeDetectorRef,
-		protected _bootstrapService: IBootstrapService
+		protected contextMenuService: IContextMenuService,
+		protected keybindingService: IKeybindingService,
+		protected contextKeyService: IContextKeyService,
+		protected configurationService: IConfigurationService,
+		protected clipboardService: IClipboardService,
+		protected queryEditorService: IQueryEditorService
 	) {
 		this.toDispose = [];
 	}
@@ -120,8 +126,8 @@ export abstract class GridParentComponent {
 	protected baseInit(): void {
 		const self = this;
 		this.initShortcutsBase();
-		if (this._bootstrapService.configurationService) {
-			let sqlConfig = this._bootstrapService.configurationService.getValue('sql');
+		if (this.configurationService) {
+			let sqlConfig = this.configurationService.getValue('sql');
 			if (sqlConfig) {
 				this._messageActive = sqlConfig['messagesDefaultOpen'];
 			}
@@ -164,16 +170,22 @@ export abstract class GridParentComponent {
 				case GridContentEvents.SaveAsExcel:
 					self.sendSaveRequest(SaveFormat.EXCEL);
 					break;
+				case GridContentEvents.GoToNextQueryOutputTab:
+					self.goToNextQueryOutputTab();
+					break;
+				case GridContentEvents.ViewAsChart:
+					self.showChartForGrid(self.activeGrid);
+					break;
+				case GridContentEvents.GoToNextGrid:
+					self.goToNextGrid();
+					break;
 				default:
 					error('Unexpected grid content event type "' + type + '" sent');
 					break;
 			}
 		});
 
-		this.contextMenuService = this._bootstrapService.contextMenuService;
-		this.keybindingService = this._bootstrapService.keybindingService;
-
-		this.bindKeys(this._bootstrapService.contextKeyService);
+		this.bindKeys(this.contextKeyService);
 	}
 
 	/*
@@ -187,7 +199,10 @@ export abstract class GridParentComponent {
 
 	private bindKeys(contextKeyService: IContextKeyService): void {
 		if (contextKeyService) {
-			let gridContextKeyService = this._bootstrapService.contextKeyService.createScoped(this._el.nativeElement);
+			this.queryEditorVisible = QueryEditorVisibleContext.bindTo(contextKeyService);
+			this.queryEditorVisible.set(true);
+
+			let gridContextKeyService = this.contextKeyService.createScoped(this._el.nativeElement);
 			this.toDispose.push(gridContextKeyService);
 			this.resultsVisibleContextKey = ResultsVisibleContext.bindTo(gridContextKeyService);
 			this.resultsVisibleContextKey.set(true);
@@ -201,7 +216,7 @@ export abstract class GridParentComponent {
 		this.toDispose = dispose(this.toDispose);
 	}
 
-	private toggleResultPane(): void {
+	protected toggleResultPane(): void {
 		this.resultActive = !this.resultActive;
 		if (this.resultActive) {
 			this.resizeGrids();
@@ -209,7 +224,7 @@ export abstract class GridParentComponent {
 		this._cd.detectChanges();
 	}
 
-	private toggleMessagePane(): void {
+	protected toggleMessagePane(): void {
 		this.messageActive = !this.messageActive;
 	}
 
@@ -232,7 +247,7 @@ export abstract class GridParentComponent {
 	private copySelection(): void {
 		let messageText = this.getMessageText();
 		if (messageText.length > 0) {
-			this._bootstrapService.clipboardService.writeText(messageText);
+			this.clipboardService.writeText(messageText);
 		} else {
 			let activeGrid = this.activeGrid;
 			let selection = this.slickgrids.toArray()[activeGrid].getSelectedRanges();
@@ -255,7 +270,7 @@ export abstract class GridParentComponent {
 			messageText = this.getMessageText();
 		}
 		if (messageText.length > 0) {
-			this._bootstrapService.clipboardService.writeText(messageText);
+			this.clipboardService.writeText(messageText);
 		}
 	}
 
@@ -266,6 +281,25 @@ export abstract class GridParentComponent {
 			}
 		}
 		return '';
+	}
+
+	protected goToNextQueryOutputTab(): void {
+	}
+
+	protected showChartForGrid(index: number) {
+	}
+
+	protected goToNextGrid() {
+		if (this.renderedDataSets.length > 0) {
+			let next = this.activeGrid + 1;
+			if (next >= this.renderedDataSets.length) {
+				next = 0;
+			}
+			this.navigateToGrid(next);
+		}
+	}
+
+	protected navigateToGrid(index: number) {
 	}
 
 	private initShortcutsBase(): void {
@@ -293,6 +327,9 @@ export abstract class GridParentComponent {
 			},
 			'SaveAsExcel': () => {
 				this.sendSaveRequest(SaveFormat.EXCEL);
+			},
+			'GoToNextQueryOutputTab': () => {
+				this.goToNextQueryOutputTab();
 			}
 		};
 
@@ -497,7 +534,7 @@ export abstract class GridParentComponent {
 	private handleQueryPlanLink(cellRef: string, value: string): void {
 		const self = this;
 		$(cellRef).children('.xmlLink').click(function (): void {
-			self._bootstrapService.queryEditorService.newQueryPlanEditor(value);
+			self.queryEditorService.newQueryPlanEditor(value);
 		});
 	}
 
@@ -532,9 +569,7 @@ export abstract class GridParentComponent {
 	}
 
 	keyEvent(e: KeyboardEvent): void {
-		let self = this;
-		let handled = self.tryHandleKeyEvent(e);
-		if (handled) {
+		if (this.tryHandleKeyEvent(new StandardKeyboardEvent(e))) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -547,12 +582,12 @@ export abstract class GridParentComponent {
 	 *
 	 * @protected
 	 * @abstract
-	 * @param {any} e
+	 * @param {StandardKeyboardEvent} e
 	 * @returns {boolean}
 	 *
 	 * @memberOf GridParentComponent
 	 */
-	protected abstract tryHandleKeyEvent(e): boolean;
+	protected abstract tryHandleKeyEvent(e: StandardKeyboardEvent): boolean;
 
 	resizeGrids(): void {
 		const self = this;

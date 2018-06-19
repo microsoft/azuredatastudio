@@ -61,19 +61,20 @@
 		"editorLink.activeForeground": "#3062D6",
 		"editorGroup.border": "#f4f4f4",
 		"editorGroup.background": "#fffffe",
+		"editorIndentGuide.activeBackground": "#939393",
 
 		// Workbench: Tabs
 		"tab.activeBackground": "#FFFFFE",
 		"tab.activeForeground": "#4A4A4A",
 		"tab.inactiveBackground": "#f4f4f4",
-		"tab.inactiveForeground": "#888888",
+		"tab.inactiveForeground": "#707070",
 		"tab.border": "#EAEAEA",
 		"tab.unfocusedInactiveForeground": "#888888",
 		"tab.unfocusedActiveForeground": "#212121",
 		"panel.background": "#FFFFFE",
 		"panel.border": "#C8C8C8",
 		"panelTitle.activeForeground": "#212121",
-		"panelTitle.inactiveForeground": "#888888"
+		"panelTitle.inactiveForeground": "#757575"
 	},
 	"tokenColors": [
 		{

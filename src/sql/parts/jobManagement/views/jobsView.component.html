@@ -4,6 +4,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<h1 class="job-heading">Jobs</h1>
+<div class="job-heading-container">
+	<h1 class="job-heading" *ngIf="_isCloud === false">Jobs</h1>
+	<h1 class="job-heading" *ngIf="_isCloud === true">No Jobs Available</h1>
+	<div class="icon in-progress" *ngIf="_showProgressWheel === true"></div>
+</div>
 
 <div #jobsgrid class="jobview-grid"></div>

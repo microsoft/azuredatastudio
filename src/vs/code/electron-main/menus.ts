@@ -100,7 +100,7 @@ export class CodeMenu {
 		this.windowsMainService.onWindowClose(() => this.updateWorkspaceMenuItems());
 
 		// Listen to extension viewlets
-		ipc.on('vscode:extensionViewlets', (_event: any, rawExtensionViewlets: string) => {
+		ipc.on('vscode:extensionViewlets', (event: any, rawExtensionViewlets: string) => {
 			let extensionViewlets: IExtensionViewlet[] = [];
 			try {
 				extensionViewlets = JSON.parse(rawExtensionViewlets);
@@ -465,7 +465,7 @@ export class CodeMenu {
 	}
 
 	private getPreferencesMenu(): Electron.MenuItem {
-		const settings = this.createMenuItem(nls.localize({ key: 'miOpenSettings', comment: ['&& denotes a mnemonic'] }, "&&Settings"), 'workbench.action.openGlobalSettings');
+		const settings = this.createMenuItem(nls.localize({ key: 'miOpenSettings', comment: ['&& denotes a mnemonic'] }, "&&Settings"), 'workbench.action.openSettings');
 		const kebindingSettings = this.createMenuItem(nls.localize({ key: 'miOpenKeymap', comment: ['&& denotes a mnemonic'] }, "&&Keyboard Shortcuts"), 'workbench.action.openGlobalKeybindings');
 		// {{SQL CARBON EDIT}}
 		// const keymapExtensions = this.createMenuItem(nls.localize({ key: 'miOpenKeymapExtensions', comment: ['&& denotes a mnemonic'] }, "&&Keymap Extensions"), 'workbench.extensions.action.showRecommendedKeymapExtensions');
@@ -892,6 +892,7 @@ export class CodeMenu {
 		breakpointsMenu.append(this.createMenuItem(nls.localize({ key: 'miConditionalBreakpoint', comment: ['&& denotes a mnemonic'] }, "&&Conditional Breakpoint..."), 'editor.debug.action.conditionalBreakpoint'));
 		breakpointsMenu.append(this.createMenuItem(nls.localize({ key: 'miColumnBreakpoint', comment: ['&& denotes a mnemonic'] }, "C&&olumn Breakpoint"), 'editor.debug.action.toggleColumnBreakpoint'));
 		breakpointsMenu.append(this.createMenuItem(nls.localize({ key: 'miFunctionBreakpoint', comment: ['&& denotes a mnemonic'] }, "&&Function Breakpoint..."), 'workbench.debug.viewlet.action.addFunctionBreakpointAction'));
+		breakpointsMenu.append(this.createMenuItem(nls.localize({ key: 'miLogPoint', comment: ['&& denotes a mnemonic'] }, "&&Logpoint..."), 'editor.debug.action.toggleLogPoint'));
 		const newBreakpoints = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'miNewBreakpoint', comment: ['&& denotes a mnemonic'] }, "&&New Breakpoint")), submenu: breakpointsMenu });
 		const enableAllBreakpoints = this.createMenuItem(nls.localize({ key: 'miEnableAllBreakpoints', comment: ['&& denotes a mnemonic'] }, "Enable All Breakpoints"), 'workbench.debug.viewlet.action.enableAllBreakpoints');
 		const disableAllBreakpoints = this.createMenuItem(nls.localize({ key: 'miDisableAllBreakpoints', comment: ['&& denotes a mnemonic'] }, "Disable A&&ll Breakpoints"), 'workbench.debug.viewlet.action.disableAllBreakpoints');
@@ -980,6 +981,8 @@ export class CodeMenu {
 			}
 		}, false));
 
+		const openProcessExplorer = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'miOpenProcessExplorerer', comment: ['&& denotes a mnemonic'] }, "Open &&Process Explorer")), click: () => this.runActionInRenderer('workbench.action.openProcessExplorer') });
+
 		let reportIssuesItem: Electron.MenuItem = null;
 		if (product.reportIssueUrl) {
 			const label = nls.localize({ key: 'miReportIssue', comment: ['&& denotes a mnemonic', 'Translate this to "Report Issue in English" in all languages please!'] }, "Report &&Issue");
@@ -1009,30 +1012,41 @@ export class CodeMenu {
 			// product.twitterUrl ? new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miTwitter', comment: ['&& denotes a mnemonic'] }, "&&Join us on Twitter")), click: () => this.openUrl(product.twitterUrl, 'openTwitterUrl') }) : null,
 			// product.requestFeatureUrl ? new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miUserVoice', comment: ['&& denotes a mnemonic'] }, "&&Search Feature Requests")), click: () => this.openUrl(product.requestFeatureUrl, 'openUserVoiceUrl') }) : null,
 			reportIssuesItem,
-			// (product.twitterUrl || product.requestFeatureUrl || product.reportIssueUrl) ? __separator__() : null,
-			// product.licenseUrl ? new MenuItem({
-			// 	label: mnemonicLabel(nls.localize({ key: 'miLicense', comment: ['&& denotes a mnemonic'] }, "View &&License")), click: () => {
-			// 		if (language) {
-			// 			const queryArgChar = product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
-			// 			this.openUrl(`${product.licenseUrl}${queryArgChar}lang=${language}`, 'openLicenseUrl');
-			// 		} else {
-			// 			this.openUrl(product.licenseUrl, 'openLicenseUrl');
-			// 		}
-			// 	}
-			// }) : null,
-			// product.privacyStatementUrl ? new MenuItem({
-			// 	label: mnemonicLabel(nls.localize({ key: 'miPrivacyStatement', comment: ['&& denotes a mnemonic'] }, "&&Privacy Statement")), click: () => {
-			// 		if (language) {
-			// 			const queryArgChar = product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
-			// 			this.openUrl(`${product.privacyStatementUrl}${queryArgChar}lang=${language}`, 'openPrivacyStatement');
-			// 		} else {
-			// 			this.openUrl(product.privacyStatementUrl, 'openPrivacyStatement');
-			// 		}
-			// 	}
-			// }) : null,
-			// (product.licenseUrl || product.privacyStatementUrl) ? __separator__() : null,
+			(product.twitterUrl || product.requestFeatureUrl || product.reportIssueUrl) ? __separator__() : null,
+			product.licenseUrl ? new MenuItem({
+				label: this.mnemonicLabel(nls.localize({ key: 'miLicense', comment: ['&& denotes a mnemonic'] }, "View &&License")), click: () => {
+					if (language) {
+						const queryArgChar = product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
+						this.openUrl(`${product.licenseUrl}${queryArgChar}lang=${language}`, 'openLicenseUrl');
+					} else {
+						this.openUrl(product.licenseUrl, 'openLicenseUrl');
+					}
+				}
+			}) : null,
+			product.privacyStatementUrl ? new MenuItem({
+				label: this.mnemonicLabel(nls.localize({ key: 'miPrivacyStatement', comment: ['&& denotes a mnemonic'] }, "&&Privacy Statement")), click: () => {
+					if (language) {
+						const queryArgChar = product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
+						this.openUrl(`${product.privacyStatementUrl}${queryArgChar}lang=${language}`, 'openPrivacyStatement');
+					} else {
+						this.openUrl(product.privacyStatementUrl, 'openPrivacyStatement');
+					}
+				}
+			}) : null,
+			product.telemetryOptOutUrl ? new MenuItem({
+				label: this.mnemonicLabel(nls.localize({ key: 'mTelemetryOptOut', comment: ['&& denotes a mnemonic'] }, "Telemetry &&Opt-Out")), click: () => {
+					if (language) {
+						const queryArgChar = product.telemetryOptOutUrl.indexOf('?') > 0 ? '&' : '?';
+						this.openUrl(`${product.telemetryOptOutUrl}${queryArgChar}lang=${language}`, 'openTelemetryOptOut');
+					} else {
+						this.openUrl(product.telemetryOptOutUrl, 'openTelemetryOptOut');
+					}
+				}
+			}) : null,
+			(product.licenseUrl || product.privacyStatementUrl) ? __separator__() : null,
 			toggleDevToolsItem,
-			isWindows && product.quality !== 'stable' ? showAccessibilityOptions : null
+			openProcessExplorer,
+			isWindows && product.quality !== 'stable' ? showAccessibilityOptions : null,
 		]).forEach(item => helpMenu.append(item));
 
 		if (!isMacintosh) {
@@ -1075,7 +1089,7 @@ export class CodeMenu {
 	}
 
 	private openAccessibilityOptions(): void {
-		let win = new BrowserWindow({
+		const win = new BrowserWindow({
 			alwaysOnTop: true,
 			skipTaskbar: true,
 			resizable: false,

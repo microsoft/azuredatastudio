@@ -168,13 +168,16 @@ export class InsightsDialogView extends Modal {
 
 		this._splitView = new SplitView(container);
 
+		const itemsHeaderTitle = nls.localize("insights.dialog.items", "Items");
+		const itemsDetailHeaderTitle = nls.localize("insights.dialog.itemDetails", "Item Details");
+
 		this._topTableData = new TableDataView();
 		this._bottomTableData = new TableDataView();
-		let topTableView = new TableCollapsibleView(nls.localize("insights.dialog.items", "Items"), { sizing: ViewSizing.Flexible, ariaHeaderLabel: 'title' }, this._topTableData, this._topColumns, { forceFitColumns: true });
+		let topTableView = new TableCollapsibleView(itemsHeaderTitle, { sizing: ViewSizing.Flexible, ariaHeaderLabel: itemsHeaderTitle }, this._topTableData, this._topColumns, { forceFitColumns: true });
 		this._topTable = topTableView.table;
 		topTableView.addContainerClass('insights');
 		this._topTable.setSelectionModel(new RowSelectionModel<ListResource>());
-		let bottomTableView = new TableCollapsibleView(nls.localize("insights.dialog.itemDetails", "Item Details"), { sizing: ViewSizing.Flexible, ariaHeaderLabel: 'title' }, this._bottomTableData, this._bottomColumns, { forceFitColumns: true });
+		let bottomTableView = new TableCollapsibleView(itemsDetailHeaderTitle, { sizing: ViewSizing.Flexible, ariaHeaderLabel: itemsDetailHeaderTitle }, this._bottomTableData, this._bottomColumns, { forceFitColumns: true });
 		this._bottomTable = bottomTableView.table;
 		this._bottomTable.setSelectionModel(new RowSelectionModel<ListResource>());
 
@@ -330,6 +333,10 @@ export class InsightsDialogView extends Modal {
 		this.hide();
 		dispose(this._taskButtonDisposables);
 		this._taskButtonDisposables = [];
+	}
+
+	protected onClose(e: StandardKeyboardEvent) {
+		this.close();
 	}
 
 	private hasActions(): boolean {

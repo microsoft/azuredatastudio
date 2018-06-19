@@ -3,19 +3,22 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, OnChanges, OnDestroy, ViewChildren, AfterViewInit } from '@angular/core';
+import {
+	Component, ContentChildren, QueryList, Inject, forwardRef, NgZone,
+	Input, EventEmitter, Output, ViewChild, ElementRef
+} from '@angular/core';
+
+import './panelStyles';
 
 import { TabComponent } from './tab.component';
-import { TabHeaderComponent } from './tabHeader.component';
-import './panelStyles';
+import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
+import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';
 import { mixin } from 'vs/base/common/objects';
-import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
-import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IPanelOptions {
@@ -38,20 +41,18 @@ const defaultOptions: IPanelOptions = {
 	showIcon: false
 };
 
-const verticalLayout = 'vertical';
-const horizontalLayout = 'horizontal';
-
 let idPool = 0;
 
 @Component({
 	selector: 'panel',
 	template: `
-
-		<div class="tabbedPanel fullsize" #tabbedPanel>
-			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title" #titleContainer>
-				<div class="tabList" #tabList>
-					<div *ngFor="let tab of _tabs">
-						<tab-header [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'> </tab-header>
+		<div class="tabbedPanel fullsize" [ngClass]="options.layout === NavigationBarLayout.vertical ? 'vertical' : 'horizontal'">
+			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
+				<div class="tabContainer">
+					<div class="tabList" role="tablist" scrollable [horizontalScroll]="ScrollbarVisibility.Auto" [verticalScroll]="ScrollbarVisibility.Hidden" [scrollYToX]="true">
+						<div role="presentation" *ngFor="let tab of _tabs">
+							<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
+						</div>
 					</div>
 				</div>
 				<div class="title-actions">
@@ -67,11 +68,11 @@ let idPool = 0;
 		</div>
 	`
 })
-export class PanelComponent extends Disposable implements AfterContentInit, OnInit, OnChanges, OnDestroy, AfterViewInit {
+export class PanelComponent extends Disposable {
 	@Input() public options: IPanelOptions;
 	@Input() public actions: Array<Action>;
 	@ContentChildren(TabComponent) private _tabs: QueryList<TabComponent>;
-	@ViewChildren(TabHeaderComponent) private _headerTabs: QueryList<TabHeaderComponent>;
+	@ViewChild(ScrollableDirective) private scrollable: ScrollableDirective;
 
 	@Output() public onTabChange = new EventEmitter<TabComponent>();
 	@Output() public onTabClose = new EventEmitter<TabComponent>();
@@ -79,12 +80,11 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 	private _activeTab: TabComponent;
 	private _actionbar: ActionBar;
 	private _mru: TabComponent[];
-	private _scrollableElement: ScrollableElement;
+
+	protected ScrollbarVisibility = ScrollbarVisibility;
+	protected NavigationBarLayout = NavigationBarLayout;
 
 	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
-	@ViewChild('tabbedPanel', { read: ElementRef }) private _tabbedPanelRef: ElementRef;
-	@ViewChild('titleContainer', { read: ElementRef }) private _titleContainer: ElementRef;
-	@ViewChild('tabList', { read: ElementRef }) private _tabList: ElementRef;
 	constructor( @Inject(forwardRef(() => NgZone)) private _zone: NgZone) {
 		super();
 	}
@@ -96,50 +96,14 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 
 	ngAfterContentInit(): void {
 		if (this._tabs && this._tabs.length > 0) {
-			this._activeTab = this._tabs.first;
-			this._activeTab.active = true;
+			this.selectTab(this._tabs.first);
 		}
-	}
 
-	ngAfterViewInit(): void {
-		let container = this._titleContainer.nativeElement as HTMLElement;
-		let tabList = this._tabList.nativeElement as HTMLElement;
-		container.removeChild(tabList);
-
-		this._scrollableElement = new ScrollableElement(tabList, {
-			horizontal: ScrollbarVisibility.Auto,
-			vertical: ScrollbarVisibility.Hidden,
-			scrollYToX: true,
-			useShadows: false,
-			horizontalScrollbarSize: 3
-		});
-
-		this._scrollableElement.onScroll(e => {
-			tabList.scrollLeft = e.scrollLeft;
-		});
-
-		container.insertBefore(this._scrollableElement.getDomNode(), container.firstChild);
-
-		this._scrollableElement.setScrollDimensions({
-			width: tabList.offsetWidth,
-			scrollWidth: tabList.scrollWidth
-		});
-
-		this._register(addDisposableListener(window, EventType.RESIZE, () => {
-			// Todo: Need to set timeout because we have to make sure that the grids have already rearraged before the getContentHeight gets called.
-			setTimeout(() => {
-				this._scrollableElement.setScrollDimensions({
-					width: tabList.offsetWidth,
-					scrollWidth: tabList.scrollWidth
-				});
-			}, 100);
-		}));
-
-		if (this.options.layout === NavigationBarLayout.horizontal) {
-			(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(horizontalLayout);
-		} else {
-			(<HTMLElement>this._tabbedPanelRef.nativeElement).classList.add(verticalLayout);
-		}
+		this._register(subscriptionToDisposable(this._tabs.changes.subscribe(() => {
+			if (this._tabs && this._tabs.length > 0) {
+				this.selectTab(this._tabs.first);
+			}
+		})));
 	}
 
 	ngOnChanges(): void {
@@ -152,6 +116,17 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 		}
 	}
 
+	ngAfterViewInit(): void {
+		this._tabs.changes.subscribe(() => {
+			if (this.scrollable) {
+				this.scrollable.layout();
+			}
+		});
+		if (this.scrollable) {
+			this.scrollable.layout();
+		}
+	}
+
 	ngOnDestroy() {
 		if (this._actionbar) {
 			this._actionbar.dispose();
@@ -159,6 +134,7 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 		if (this.actions && this.actions.length > 0) {
 			this.actions.forEach((action) => action.dispose());
 		}
+		this.dispose();
 	}
 
 	/**
@@ -182,7 +158,7 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 			if (input instanceof TabComponent) {
 				tab = input;
 			} else if (types.isNumber(input)) {
-				tab = this._tabs[input];
+				tab = this._tabs.toArray()[input];
 			} else if (types.isString(input)) {
 				tab = this._tabs.find(i => i.identifier === input);
 			}
@@ -208,12 +184,6 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 				this.setMostRecentlyUsed(tab);
 				this._activeTab.active = true;
 
-				// Make the tab header focus on the new selected tab
-				let activeTabHeader = this._headerTabs.find(i => i.tab === this._activeTab);
-				if (activeTabHeader) {
-					activeTabHeader.focusOnTabHeader();
-				}
-
 				this.onTabChange.emit(tab);
 			});
 		}
@@ -224,6 +194,18 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 	 */
 	public get getActiveTab(): string {
 		return this._activeTab.identifier;
+	}
+
+	/**
+	 * Select on the next tab
+	 */
+	public selectOnNextTab(): void {
+		let activeIndex = this._tabs.toArray().findIndex(i => i === this._activeTab);
+		let nextTabIndex = activeIndex + 1;
+		if (nextTabIndex === this._tabs.length) {
+			nextTabIndex = 0;
+		}
+		this.selectTab(nextTabIndex);
 	}
 
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {
@@ -256,5 +238,9 @@ export class PanelComponent extends Disposable implements AfterContentInit, OnIn
 		if (this._mru.length > 0) {
 			this.selectTab(this._mru[0]);
 		}
+	}
+
+	public layout() {
+		this._activeTab.layout();
 	}
 }

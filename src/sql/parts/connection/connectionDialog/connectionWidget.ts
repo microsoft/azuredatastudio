@@ -6,28 +6,32 @@
 'use strict';
 
 import 'vs/css!./media/sqlConnection';
-import { Builder, $ } from 'vs/base/browser/builder';
+
 import { Button } from 'sql/base/browser/ui/button/button';
-import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
 import { IConnectionComponentCallbacks } from 'sql/parts/connection/connectionDialog/connectionDialogService';
-import * as lifecycle from 'vs/base/common/lifecycle';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/parts/connection/common/constants';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import * as styler from 'vs/platform/theme/common/styler';
 import { attachInputBoxStyler, attachButtonStyler, attachEditableDropdownStyler } from 'sql/common/theme/styler';
-import * as DOM from 'vs/base/browser/dom';
+import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
+
 import * as sqlops from 'sqlops';
+
+import * as lifecycle from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
+import * as DOM from 'vs/base/browser/dom';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import * as styler from 'vs/platform/theme/common/styler';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
+import { Builder, $ } from 'vs/base/browser/builder';
+import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
+import { endsWith, startsWith } from 'vs/base/common/strings';
 
 export class ConnectionWidget {
 	private _builder: Builder;
@@ -120,13 +124,18 @@ export class ConnectionWidget {
 	}
 
 	private fillInConnectionForm(): void {
-		let errorMessage = localize('connectionWidget.missingRequireField', ' is required.');
-
 		let serverNameOption = this._optionsMaps[ConnectionOptionSpecialType.serverName];
 		let serverNameBuilder = DialogHelper.appendRow(this._tableContainer, serverNameOption.displayName, 'connection-label', 'connection-input');
 		this._serverNameInputBox = new InputBox(serverNameBuilder.getHTMLElement(), this._contextViewService, {
 			validationOptions: {
-				validation: (value: string) => !value ? ({ type: MessageType.ERROR, content: serverNameOption.displayName + errorMessage }) : null
+				validation: (value: string) => {
+					if (!value) {
+						return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', serverNameOption.displayName)});
+					} else if (startsWith(value, ' ') || endsWith(value, ' ')) {
+						return ({ type: MessageType.WARNING, content: localize('connectionWidget.fieldWillBeTrimmed', '{0} will be trimmed.', serverNameOption.displayName) });
+					}
+					return undefined;
+				}
 			},
 			ariaLabel: serverNameOption.displayName
 		});
@@ -141,7 +150,7 @@ export class ConnectionWidget {
 		let userNameBuilder = DialogHelper.appendRow(this._tableContainer, userNameOption.displayName, 'connection-label', 'connection-input');
 		this._userNameInputBox = new InputBox(userNameBuilder.getHTMLElement(), this._contextViewService, {
 			validationOptions: {
-				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: userNameOption.displayName + errorMessage }) : null
+				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', userNameOption.displayName) }) : null
 			},
 			ariaLabel: userNameOption.displayName
 		});

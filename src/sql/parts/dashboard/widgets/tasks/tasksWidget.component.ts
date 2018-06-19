@@ -12,6 +12,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 /* SQL imports */
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { BaseActionContext } from 'sql/workbench/common/actions';
@@ -28,9 +29,9 @@ import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElemen
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { $, Builder } from 'vs/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
-import { CommandsRegistry, ICommand } from 'vs/platform/commands/common/commands';
+import { CommandsRegistry, ICommand, ICommandService } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
@@ -51,16 +52,19 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	private _profile: IConnectionProfile;
 	private _scrollableElement: ScrollableElement;
 	private $container: Builder;
+	static readonly ICON_PATH_TO_CSS_RULES: Map<string /* path*/, string /* CSS rule */> = new Map<string, string>();
 
 	private _inited = false;
 
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrap: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => DomSanitizer)) private _sanitizer: DomSanitizer,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
-		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig
+		@Inject(ICommandService) private commandService: ICommandService,
+		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
+		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
 		super();
 		this._profile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
@@ -74,7 +78,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 						return i;
 					}
 				} else {
-					if (tasks.includes(i.name) && _bootstrap.contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(i.when))) {
+					if (tasks.includes(i.name) && contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(i.when))) {
 						return i.name;
 					}
 				}
@@ -82,7 +86,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 			}).filter(i => !!i);
 		}
 
-		this._tasks = tasks.map(i => MenuRegistry.getCommand(i));
+		this._tasks = tasks.map(i => MenuRegistry.getCommand(i)).filter(v => !!v);
 	}
 
 	ngOnInit() {
@@ -130,9 +134,9 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		let tile = $('div.task-tile').style('height', this._size + 'px').style('width', this._size + 'px');
 		let innerTile = $('div');
 
-		// @SQLTODO - iconPath shouldn't be used as a CSS class
-		if (action.iconPath && action.iconPath.dark) {
-			let icon = $('span.icon').addClass(action.iconPath.dark);
+		let iconClassName = TaskRegistry.getOrCreateTaskIconClassName(action);
+		if (iconClassName) {
+			let icon = $('span.icon').addClass(iconClassName);
 			innerTile.append(icon);
 		}
 		innerTile.append(label);
@@ -163,7 +167,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 
 	public runTask(task: ICommandAction) {
 		let serverInfo = this._bootstrap.connectionManagementService.connectionInfo.serverInfo;
-		this._bootstrap.commandService.executeCommand(task.id, this._profile);
+		this.commandService.executeCommand(task.id, this._profile);
 	}
 
 	public layout(): void {

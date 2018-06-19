@@ -119,7 +119,8 @@
 	color:  #3C3C3C;
 }
 
-.modal .select-box {
+.modal .select-box,
+.modal .monaco-select-box {
 	width: 100%;
 	height: 25px;
 	color: #6C6C6C;

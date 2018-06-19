@@ -10,6 +10,7 @@ import { Observable } from 'rxjs/Observable';
 
 import { DashboardWidget, IDashboardWidget, WIDGET_CONFIG, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { InsightAction, InsightActionContext } from 'sql/workbench/common/actions';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
@@ -25,7 +26,13 @@ import * as types from 'vs/base/common/types';
 import * as pfs from 'vs/base/node/pfs';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { WorkbenchState } from 'vs/platform/workspace/common/workspace';
+import { WorkbenchState, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { IntervalTimer } from 'vs/base/common/async';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { toDisposable } from 'vs/base/common/lifecycle';
+import { isPromiseCanceledError } from 'vs/base/common/errors';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -51,16 +58,21 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	private _typeKey: string;
 	private _init: boolean = false;
+	private _intervalTimer: IntervalTimer;
 
 	public error: string;
 	public lastUpdated: string;
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
-		@Inject(forwardRef(() => DashboardServiceInterface)) private dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private dashboardService: CommonServiceInterface,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(forwardRef(() => ViewContainerRef)) private viewContainerRef: ViewContainerRef,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IStorageService) private storageService: IStorageService,
+		@Inject(IWorkspaceContextService) private workspaceContextService: IWorkspaceContextService,
+
 	) {
 		super();
 		this.insightConfig = <IInsightsConfig>this._config.widget['insights-widget'];
@@ -71,22 +83,27 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			if (!this._checkStorage()) {
 				let promise = this._runQuery();
 				this.queryObv = Observable.fromPromise(promise);
-				promise.then(
+				let tpromise = promise.then(
 					result => {
 						if (this._init) {
 							this._updateChild(result);
+							this.setupInterval();
 						} else {
-							this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(result));
+							this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(result));
 						}
 					},
 					error => {
+						if (isPromiseCanceledError(error)) {
+							return;
+						}
 						if (this._init) {
 							this.showError(error);
 						} else {
-							this.queryObv = Observable.fromPromise(Promise.reject<SimpleExecuteResult>(error));
+							this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(error));
 						}
 					}
 				);
+				this._register(toDisposable(() => tpromise.cancel()));
 			}
 		}, error => {
 			this.showError(error);
@@ -99,11 +116,20 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			this._register(toDisposableSubscription(this.queryObv.subscribe(
 				result => {
 					this._updateChild(result);
+					this.setupInterval();
 				},
 				error => {
 					this.showError(error);
 				}
 			)));
+		}
+	}
+
+	private setupInterval(): void {
+		if (this.insightConfig.autoRefreshInterval) {
+			this._intervalTimer = new IntervalTimer();
+			this._register(this._intervalTimer);
+			this._intervalTimer.cancelAndSet(() => this.refresh(), this.insightConfig.autoRefreshInterval * 60 * 1000);
 		}
 	}
 
@@ -115,9 +141,9 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	get actions(): Array<Action> {
 		let actions: Array<Action> = [];
 		if (this.insightConfig.details && (this.insightConfig.details.query || this.insightConfig.details.queryFile)) {
-			actions.push(this.dashboardService.instantiationService.createInstance(InsightAction, InsightAction.ID, InsightAction.LABEL));
+			actions.push(this.instantiationService.createInstance(InsightAction, InsightAction.ID, InsightAction.LABEL));
 		}
-		actions.push(this.dashboardService.instantiationService.createInstance(RunInsightQueryAction, RunInsightQueryAction.ID, RunInsightQueryAction.LABEL));
+		actions.push(this.instantiationService.createInstance(RunInsightQueryAction, RunInsightQueryAction.ID, RunInsightQueryAction.LABEL));
 		return actions;
 	}
 
@@ -137,20 +163,21 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			};
 			this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", currentTime.toLocaleTimeString(), currentTime.toLocaleDateString());
 			this._cd.detectChanges();
-			this.dashboardService.storageService.store(this._getStorageKey(), JSON.stringify(store));
+			this.storageService.store(this._getStorageKey(), JSON.stringify(store));
 		}
 		return result;
 	}
 
 	private _checkStorage(): boolean {
 		if (this.insightConfig.cacheId) {
-			let storage = this.dashboardService.storageService.get(this._getStorageKey());
+			let storage = this.storageService.get(this._getStorageKey());
 			if (storage) {
 				let storedResult: IStorageResult = JSON.parse(storage);
 				let date = new Date(storedResult.date);
 				this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", date.toLocaleTimeString(), date.toLocaleDateString());
 				if (this._init) {
 					this._updateChild(storedResult.results);
+					this.setupInterval();
 					this._cd.detectChanges();
 				} else {
 					this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(JSON.parse(storage)));
@@ -175,19 +202,21 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		return `insights.${this.insightConfig.cacheId}.${this.dashboardService.connectionManagementService.connectionInfo.connectionProfile.getOptionsKey()}`;
 	}
 
-	private _runQuery(): Thenable<SimpleExecuteResult> {
-		return this.dashboardService.queryManagementService.runQueryAndReturn(this.insightConfig.query as string).then(
+	private _runQuery(): TPromise<SimpleExecuteResult> {
+		return TPromise.wrap(this.dashboardService.queryManagementService.runQueryAndReturn(this.insightConfig.query as string).then(
 			result => {
 				return this._storeResult(result);
 			},
 			error => {
 				throw error;
 			}
-		);
+		));
 	}
 
 	private _updateChild(result: SimpleExecuteResult): void {
 		this.componentHost.viewContainerRef.clear();
+		this.error = undefined;
+		this._cd.detectChanges();
 
 		if (result.rowCount === 0) {
 			this.showError(nls.localize('noResults', 'No results to show'));
@@ -230,6 +259,10 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			throw new Error('No query was specified for this insight');
 		}
 
+		if (this.insightConfig.autoRefreshInterval && !types.isNumber(this.insightConfig.autoRefreshInterval)) {
+			throw new Error('Auto Refresh Interval must be a number if specified');
+		}
+
 		if (!types.isStringArray(this.insightConfig.query)
 			&& !types.isString(this.insightConfig.query)
 			&& !types.isString(this.insightConfig.queryFile)) {
@@ -252,15 +285,15 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				filePath = filePath.replace(match[0], '');
 
 				//filePath = this.dashboardService.workspaceContextService.toResource(filePath).fsPath;
-				switch (this.dashboardService.workspaceContextService.getWorkbenchState()) {
+				switch (this.workspaceContextService.getWorkbenchState()) {
 					case WorkbenchState.FOLDER:
-						filePath = this.dashboardService.workspaceContextService.getWorkspace().folders[0].toResource(filePath).fsPath;
+						filePath = this.workspaceContextService.getWorkspace().folders[0].toResource(filePath).fsPath;
 						break;
 					case WorkbenchState.WORKSPACE:
 						let filePathArray = filePath.split('/');
 						// filter out empty sections
 						filePathArray = filePathArray.filter(i => !!i);
-						let folder = this.dashboardService.workspaceContextService.getWorkspace().folders.find(i => i.name === filePathArray[0]);
+						let folder = this.workspaceContextService.getWorkspace().folders.find(i => i.name === filePathArray[0]);
 						if (!folder) {
 							return Promise.reject<void[]>(new Error(`Could not find workspace folder ${filePathArray[0]}`));
 						}

@@ -39,16 +39,16 @@ const viewletDescriptor = new ViewletDescriptor(
 	VIEWLET_ID,
 	localize('source control', "Source Control"),
 	'scm',
-	36
+	2
 );
 
 Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets)
 	.registerViewlet(viewletDescriptor);
 
-Registry.as(WorkbenchExtensions.Workbench)
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(StatusUpdater, LifecyclePhase.Running);
 
-Registry.as(WorkbenchExtensions.Workbench)
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(StatusBarController, LifecyclePhase.Running);
 
 // Register Action to Open Viewlet

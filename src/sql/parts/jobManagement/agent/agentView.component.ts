@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!../common/media/jobs';
+import 'sql/parts/dashboard/common/dashboardPanelStyles';
+
 import * as nls from 'vs/nls';
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable } from '@angular/core';
 import * as Utils from 'sql/parts/connection/common/utils';
@@ -13,10 +15,10 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as themeColors from 'vs/workbench/common/theme';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { AgentJobInfo, AgentJobHistoryInfo } from 'sqlops';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
+
 
 export const DASHBOARD_SELECTOR: string = 'agentview-component';
 
@@ -31,14 +33,11 @@ export class AgentViewComponent {
 
 	// tslint:disable:no-unused-variable
 	private readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
-	private readonly alertsComponentTitle: string = nls.localize('jobview.Alerts', "Alerts");
-	private readonly schedulesComponentTitle: string = nls.localize('jobview.Schedules', "Schedules");
-	private readonly operatorsComponentTitle: string = nls.localize('jobview.Operator', "Operators");
-	private readonly jobHistoryComponentTitle: string = nls.localize('jobview.History', "History");
 	private _showHistory: boolean = false;
 	private _jobId: string = null;
 	private _agentJobInfo: AgentJobInfo = null;
-	private _agentJobHistories: AgentJobHistoryInfo[] = null;
+	private _refresh: boolean = undefined;
+	private _expanded: Map<string, string>;
 
 	public jobsIconClass: string = 'jobsview-icon';
 
@@ -50,7 +49,8 @@ export class AgentViewComponent {
 	};
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef){
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef) {
+		this._expanded = new Map<string, string>();
 	}
 
 	/**
@@ -68,8 +68,12 @@ export class AgentViewComponent {
 		return this._agentJobInfo;
 	}
 
-	public get agentJobHistories(): AgentJobHistoryInfo[] {
-		return this._agentJobHistories;
+	public get refresh(): boolean {
+		return this._refresh;
+	}
+
+	public get expanded(): Map<string, string> {
+		return this._expanded;
 	}
 
 	/**
@@ -78,7 +82,6 @@ export class AgentViewComponent {
 
 	public set jobId(value: string) {
 		this._jobId = value;
-		this._cd.detectChanges();
 	}
 
 	public set showHistory(value: boolean) {
@@ -88,11 +91,22 @@ export class AgentViewComponent {
 
 	public set agentJobInfo(value: AgentJobInfo) {
 		this._agentJobInfo = value;
+	}
+
+	public set refresh(value: boolean) {
+		this._refresh = value;
 		this._cd.detectChanges();
 	}
 
-	public set agentJobHistories(value: AgentJobHistoryInfo[]) {
-		this._agentJobHistories = value;
-		this._cd.detectChanges();
+	public setExpanded(jobId: string, errorMessage: string) {
+		this._expanded.set(jobId, errorMessage);
+	}
+
+	public set expanded(value: Map<string, string>) {
+		this._expanded = value;
+	}
+
+	public layout() {
+		this._panel.layout();
 	}
 }

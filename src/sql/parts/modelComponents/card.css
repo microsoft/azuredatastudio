@@ -1,0 +1,72 @@
+
+.model-card {
+	position: relative;
+	display: inline-block;
+	height: 90%;
+	width: auto;
+	margin: 15px;
+	border-width: 1px;
+    border-style: solid;
+    border-color: rgb(214, 214, 214);
+    text-align: left;
+    vertical-align: top;
+    box-shadow: rgba(120, 120, 120, 0.75) 0px 0px 6px;
+}
+
+.model-card .card-content {
+	position: relative;
+	display: inline-block;
+	height: auto;
+	width: auto;
+	padding: 10px 45px 20px 45px;
+	min-height: 30px;
+	min-width: 30px;
+}
+
+.model-card .card-label {
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.model-card .card-value {
+	font-size: 12px;
+	line-height: 18px;
+}
+
+.model-card .card-status {
+	position: absolute;
+	top: 7px;
+	left: 5px;
+	overflow: hidden;
+	width: 22px;
+	height: 22px;
+}
+
+.model-card .status-content {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	min-width: 16px;
+	height: 16px;
+	border-radius: 8px;
+	text-align: center;
+}
+
+.model-card .model-table {
+	border-spacing: 5px;
+}
+
+.model-table .table-row {
+		width: auto;
+		clear: both;
+}
+
+.model-table .table-cell {
+		vertical-align: top;
+		padding: 7px;
+}
+
+.model-table a {
+	cursor: pointer;
+	text-decoration: underline
+}

@@ -1,0 +1,21 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<html>
+    <header>
+
+    </header>
+    <body>
+        <div id="output">Total Counts: 0</div>
+        <script>
+            let output = document.getElementById('output');
+            window.addEventListener("message", receiveMessage, false);
+            function receiveMessage(e) {
+                output.innerText = 'Total Counts: ' + e.data;
+            }
+        </script>
+    </body>
+</html>

@@ -132,8 +132,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 					return self._serializationService.saveAs(requestParams.resultFormat, requestParams.filePath, undefined, true);
 				}
 			},
-			initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number): Thenable<void> {
-				return self._proxy.$initializeEdit(handle, ownerUri, schemaName, objectName, objectType, rowLimit);
+			initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void> {
+				return self._proxy.$initializeEdit(handle, ownerUri, schemaName, objectName, objectType, rowLimit, queryString);
 			},
 			updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult> {
 				return self._proxy.$updateCell(handle, ownerUri, rowId, columnId, newValue);
@@ -296,7 +296,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 				return self._proxy.$stopSession(handle, sessionId);
 			},
 			pauseSession(sessionId: string): Thenable<boolean> {
-				return TPromise.as(true);
+				return self._proxy.$pauseSession(handle, sessionId);
 			},
 			connectSession(sessionId: string): Thenable<boolean> {
 				return TPromise.as(true);
@@ -339,7 +339,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
 				return self._proxy.$getJobHistory(handle, connectionUri, jobID);
 			},
-			jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult> {
+			jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> {
 				return self._proxy.$jobAction(handle, connectionUri, jobName, action);
 			}
 		});

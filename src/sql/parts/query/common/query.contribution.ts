@@ -25,7 +25,7 @@ import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
-	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction
+	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction
 } from 'sql/parts/query/execution/keyboardQueryActions';
 import * as gridActions from 'sql/parts/grid/views/gridActions';
 import * as gridCommands from 'sql/parts/grid/views/gridCommands';
@@ -33,6 +33,8 @@ import { QueryPlanEditor } from 'sql/parts/queryPlan/queryPlanEditor';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import * as Constants from 'sql/parts/query/common/constants';
 import { localize } from 'vs/nls';
+import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
+import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands
 
@@ -80,6 +82,16 @@ const editDataEditorDescriptor = new EditorDescriptor(
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(editDataEditorDescriptor, [new SyncDescriptor(EditDataInput)]);
+
+// Editor
+const editDataResultsEditorDescriptor = new EditorDescriptor(
+	EditDataResultsEditor,
+	EditDataResultsEditor.ID,
+	'EditDataResults'
+);
+
+Registry.as<IEditorRegistry>(EditorExtensions.Editors)
+	.registerEditor(editDataResultsEditorDescriptor, [new SyncDescriptor(EditDataResultsInput)]);
 
 let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 
@@ -130,6 +142,16 @@ actionRegistry.registerWorkbenchAction(
 		RefreshIntellisenseKeyboardAction.LABEL
 	),
 	RefreshIntellisenseKeyboardAction.LABEL
+);
+
+actionRegistry.registerWorkbenchAction(
+	new SyncActionDescriptor(
+		FocusOnCurrentQueryKeyboardAction,
+		FocusOnCurrentQueryKeyboardAction.ID,
+		FocusOnCurrentQueryKeyboardAction.LABEL,
+		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_O }
+	),
+	FocusOnCurrentQueryKeyboardAction.LABEL
 );
 
 // Grid actions
@@ -202,6 +224,22 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GRID_VIEWASCHART_ID,
+	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	when: ResultsGridFocusCondition,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_V),
+	handler: gridCommands.viewAsChart
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GRID_GOTONEXTGRID_ID,
+	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	when: ResultsGridFocusCondition,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_N),
+	handler: gridCommands.goToNextGrid
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.TOGGLERESULTS_ID,
 	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
 	when: QueryEditorVisibleCondition,
@@ -215,6 +253,14 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: QueryEditorVisibleCondition,
 	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_Y,
 	handler: gridCommands.toggleMessagePane
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GOTONEXTQUERYOUTPUTTAB_ID,
+	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	when: QueryEditorVisibleCondition,
+	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_P,
+	handler: gridCommands.goToNextQueryOutputTab
 });
 
 // Intellisense and other configuration options

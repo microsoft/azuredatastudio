@@ -14,23 +14,24 @@ import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWi
 import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
+import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import * as objects from 'vs/base/common/objects';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 @Component({
 	selector: 'dashboard-widget-container',
-	providers: [{ provide: DashboardTab, useExisting: forwardRef(() => DashboardWidgetContainer) }],
+	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardWidgetContainer) }],
 	template: `
 		<widget-content [widgets]="widgets" [originalConfig]="tab.originalConfig" [context]="tab.context">
 		</widget-content>
 	`
 })
-export class DashboardWidgetContainer extends DashboardTab implements OnDestroy, OnChanges, AfterContentInit {
-	@Input() private tab: TabConfig;
-	private widgets: WidgetConfig[];
+export class DashboardWidgetContainer extends DashboardTab implements OnDestroy, AfterContentInit {
+	@Input() protected tab: TabConfig;
+	protected widgets: WidgetConfig[];
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
 
@@ -42,7 +43,7 @@ export class DashboardWidgetContainer extends DashboardTab implements OnDestroy,
 		super();
 	}
 
-	ngOnChanges() {
+	ngOnInit() {
 		if (this.tab.container) {
 			this.widgets = Object.values(this.tab.container)[0];
 			this._cd.detectChanges();

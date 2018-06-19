@@ -5,8 +5,10 @@
 import * as types from 'vs/base/common/types';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { error } from 'sql/base/common/log';
 import * as nls from 'vs/nls';
+import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+
+import { error } from 'sql/base/common/log';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
@@ -14,17 +16,19 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 import { WEBVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
+import { MODELVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardModelViewContainer.contribution';
 import { CONTROLHOST_CONTAINER } from 'sql/parts/dashboard/containers/dashboardControlHostContainer.contribution';
 import { NAV_SECTION } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
 import { IDashboardContainerRegistry, Extensions as DashboardContainerExtensions, IDashboardContainer, registerContainerType } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
 
 const dashboardcontainerRegistry = Registry.as<IDashboardContainerRegistry>(DashboardContainerExtensions.dashboardContainerContributions);
 const containerTypes = [
 	WIDGETS_CONTAINER,
 	GRID_CONTAINER,
 	WEBVIEW_CONTAINER,
+	MODELVIEW_CONTAINER,
 	CONTROLHOST_CONTAINER,
 	NAV_SECTION
 ];
@@ -116,8 +120,8 @@ export function initExtensionConfigs(configurations: WidgetConfig[]): Array<Widg
  * Add provider to the passed widgets and returns the new widgets
  * @param widgets Array of widgets to add provider onto
  */
-export function addProvider(config: WidgetConfig[], dashboardService: DashboardServiceInterface): Array<WidgetConfig> {
-	let provider = dashboardService.connectionManagementService.connectionInfo.providerId;
+export function addProvider<T extends { connectionManagementService: SingleConnectionManagementService }>(config: WidgetConfig[], collection: T): Array<WidgetConfig> {
+	let provider = collection.connectionManagementService.connectionInfo.providerId;
 	return config.map((item) => {
 		if (item.provider === undefined) {
 			item.provider = provider;
@@ -130,8 +134,8 @@ export function addProvider(config: WidgetConfig[], dashboardService: DashboardS
  * Adds the edition to the passed widgets and returns the new widgets
  * @param widgets Array of widgets to add edition onto
  */
-export function addEdition(config: WidgetConfig[], dashboardService: DashboardServiceInterface): Array<WidgetConfig> {
-	let connectionInfo: ConnectionManagementInfo = dashboardService.connectionManagementService.connectionInfo;
+export function addEdition<T extends { connectionManagementService: SingleConnectionManagementService }>(config: WidgetConfig[], collection: DashboardServiceInterface): Array<WidgetConfig> {
+	let connectionInfo: ConnectionManagementInfo = collection.connectionManagementService.connectionInfo;
 	let edition = connectionInfo.serverInfo.engineEditionId;
 	return config.map((item) => {
 		if (item.edition === undefined) {
@@ -145,7 +149,7 @@ export function addEdition(config: WidgetConfig[], dashboardService: DashboardSe
  * Adds the context to the passed widgets and returns the new widgets
  * @param widgets Array of widgets to add context to
  */
-export function addContext(config: WidgetConfig[], dashboardServer: DashboardServiceInterface, context: string): Array<WidgetConfig> {
+export function addContext(config: WidgetConfig[], collection: any, context: string): Array<WidgetConfig> {
 	return config.map((item) => {
 		if (item.context === undefined) {
 			item.context = context;
@@ -158,12 +162,12 @@ export function addContext(config: WidgetConfig[], dashboardServer: DashboardSer
  * Returns a filtered version of the widgets passed based on edition and provider
  * @param config widgets to filter
  */
-export function filterConfigs<T extends { when?: string }>(config: T[], dashboardService: DashboardServiceInterface): Array<T> {
+export function filterConfigs<T extends { when?: string }, K extends { contextKeyService: IContextKeyService }>(config: T[], collection: K): Array<T> {
 	return config.filter((item) => {
 		if (!item.when) {
 			return true;
 		} else {
-			return dashboardService.contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(item.when));
+			return collection.contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(item.when));
 		}
 	});
 }

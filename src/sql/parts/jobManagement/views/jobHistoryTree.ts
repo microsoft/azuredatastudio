@@ -3,45 +3,24 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Router } from '@angular/router';
-
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { MetadataType } from 'sql/parts/connection/common/connectionManagement';
-import { SingleConnectionManagementService } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import {
 	NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction, ScriptExecuteAction, ScriptAlterAction,
 	BackupAction, ManageActionContext, BaseActionContext, ManageAction, RestoreAction
 } from 'sql/workbench/common/actions';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
-import * as Constants from 'sql/parts/connection/common/constants';
 import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IAction } from 'vs/base/common/actions';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
-import { OEAction } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
-import { Builder, $, withElementById } from 'vs/base/browser/builder';
 import { AgentJobHistoryInfo } from 'sqlops';
-import { Agent } from 'vs/base/node/request';
+import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export class JobHistoryRow {
 	runDate: string;
 	runStatus: string;
 	instanceID: number;
 	rowID: string = generateUuid();
-
-	public static convertToStatusString(status: number): string {
-		switch(status) {
-			case(1): return 'Succeeded';
-			case(0): return 'Failed';
-			default: return 'Unknown';
-		}
-	}
 }
 
 // Empty class just for tree input
@@ -56,10 +35,6 @@ export class JobHistoryController extends TreeDefaults.DefaultController {
 		return true;
 	}
 
-	public onContextMenu(tree: tree.ITree, element: JobHistoryRow, event: tree.ContextMenuEvent): boolean {
-		return true;
-	}
-
 	public set jobHistories(value: AgentJobHistoryInfo[]) {
 		this._jobHistories = value;
 	}
@@ -68,6 +43,19 @@ export class JobHistoryController extends TreeDefaults.DefaultController {
 		return this._jobHistories;
 	}
 
+	public onKeyDownWrapper(tree: tree.ITree, event: IKeyboardEvent): boolean {
+		if (event.code === 'ArrowDown' || event.keyCode === 40) {
+			super.onDown(tree, event);
+			return super.onEnter(tree, event);
+		} else if (event.code === 'ArrowUp' || event.keyCode === 38) {
+			super.onUp(tree, event);
+			return super.onEnter(tree, event);
+		} else {
+			event.preventDefault();
+			event.stopPropagation();
+			return true;
+		}
+	}
 }
 
 export class JobHistoryDataSource implements tree.IDataSource {
@@ -119,7 +107,7 @@ export class JobHistoryRenderer implements tree.IRenderer {
 	private _statusIcon: HTMLElement;
 
 	public getHeight(tree: tree.ITree, element: JobHistoryRow): number {
-		return 22;
+		return 30;
 	}
 
 	public getTemplateId(tree: tree.ITree, element: JobHistoryRow | JobHistoryModel): string {
@@ -142,7 +130,7 @@ export class JobHistoryRenderer implements tree.IRenderer {
 	}
 
 	public renderElement(tree: tree.ITree, element: JobHistoryRow, templateId: string, templateData: IListTemplate): void {
-		templateData.label.innerText = element.runDate + '\t\t\t' + element.runStatus;
+		templateData.label.innerHTML = element.runDate + '&nbsp;&nbsp;' + element.runStatus;
 		let statusClass: string;
 		if (element.runStatus === 'Succeeded') {
 			statusClass = ' job-passed';

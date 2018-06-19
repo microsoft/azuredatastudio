@@ -3,28 +3,29 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.steps-tree .list-row .status-icon {
-	height: 10px;
-	width: 10px;
-	display: inline-block;
-	margin-top: 4px;
+.steps-tree .list-row .status-icon.step-passed {
+	content: url("../common/media/success_complete.svg");
+	height: 100%;
+}
+
+.steps-tree .list-row .status-icon.step-failed {
+	content: url("../common/media/failed.svg");
+	height: 100%;
 }
 
 .steps-tree .list-row .label {
 	padding-left: 10px;
 	display: flex;
 	text-align: center;
+	vertical-align: middle;
+	user-select: initial;
 }
 
-.step-passed {
-	background: green;
-}
-
-.step-failed {
-	background: red;
-}
-
-.step-unknown {
+.steps-tree .list-row .status-icon.step-unknown {
+	height: 10px;
+	width: 10px;
+	display: inline-block;
+	margin-top: 4px;
 	background: yellow;
 }
 
@@ -35,9 +36,10 @@
 
 .step-columns {
 	padding-left: 50px;
+	padding-top: 10px;
 }
 
-.step-columns .step-id-col, .step-tree .tree-id-col {
+.step-columns .step-id-col, .steps-tree .tree-id-col {
 	padding-left: 10px;
 	white-space: normal;
 	text-align: center;
@@ -45,16 +47,36 @@
 
 }
 
-.step-columns .step-name-col, .step-tree .tree-name-col  {
+.step-columns .step-name-col, .steps-tree .tree-name-col  {
 	padding-right: 10px;
 	white-space: normal;
 	text-align: center;
 	width: 350px;
 }
 
-.step-columns .step-message-col, .step-tree .tree-message-col {
+.step-columns .step-message-col, .steps-tree .tree-message-col {
 	padding-right: 10px;
 	white-space: normal;
 	text-align: center;
 	width: 680px;
+}
+
+.steps-header > .steps-icon {
+	height: 25px;
+	padding-right: 10px;
+	display: inline;
+	vertical-align: middle;
+}
+
+.vs-dark .steps-header > .steps-icon,
+.hc-black .steps-header > .steps-icon {
+	content: url("../common/media/step_inverse.svg");
+}
+
+.steps-header > .steps-icon {
+	content: url("../common/media/step.svg");
+}
+
+jobstepsview-component {
+	padding-top: 10px;
 }

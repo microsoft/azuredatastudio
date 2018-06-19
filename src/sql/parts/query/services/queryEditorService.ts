@@ -29,6 +29,7 @@ import paths = require('vs/base/common/paths');
 import { isLinux } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 
 const fs = require('fs');
 
@@ -120,7 +121,7 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Creates new edit data session
 	 */
-	public newEditDataEditor(schemaName: string, tableName: string): Promise<IConnectableInput> {
+	public newEditDataEditor(schemaName: string, tableName: string, sqlContent: string): Promise<IConnectableInput> {
 
 		return new Promise<IConnectableInput>((resolve, reject) => {
 			try {
@@ -129,8 +130,17 @@ export class QueryEditorService implements IQueryEditorService {
 				let filePath = this.createEditDataFileName(objectName);
 				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
+				// Create a sql document pane with accoutrements
+				const fileInput = this._untitledEditorService.createOrGet(docUri, 'sql');
+				fileInput.resolve().then(m => {
+					if (sqlContent) {
+						m.textEditorModel.setValue(sqlContent);
+					}
+				});
+
 				// Create an EditDataInput for editing
-				let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName);
+				const resultsInput: EditDataResultsInput = this._instantiationService.createInstance(EditDataResultsInput, docUri.toString());
+				let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName, fileInput, sqlContent, resultsInput);
 
 				this._editorService.openEditor(editDataInput, { pinned: true })
 					.then((editor) => {
@@ -212,7 +222,7 @@ export class QueryEditorService implements IQueryEditorService {
 		}
 
 		let uri: URI = QueryEditorService._getEditorChangeUri(editor.input, changingToSql);
-		if(uri.scheme === Schemas.untitled && editor.input instanceof QueryInput)
+		if(uri.scheme === Schemas.untitled && (editor.input instanceof QueryInput || editor.input instanceof EditDataInput))
 		{
 			QueryEditorService.notificationService.notify({
 				severity: Severity.Error,
@@ -235,7 +245,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let index: number = group.indexOf(editor.input);
 		let position: Position = editor.position;
 		let options: IQueryEditorOptions = editor.options ? editor.options : {};
-		options.index = index;
+		options = Object.assign(options, { index: index });
 		options.pinned = group.isPinned(index);
 
 		// Return a promise that will resovle when the old editor has been replaced by a new editor
@@ -299,10 +309,8 @@ export class QueryEditorService implements IQueryEditorService {
 			filePath = editDataFileName(counter);
 		}
 
-		// TODO: check if this document name already exists in any open documents tabs
-		let fileNames: string[] = [];
-		this._editorGroupService.getStacksModel().groups.map(group => group.getEditors().map(editor => fileNames.push(editor.getName())));
-		while (fileNames.find(x => x.toUpperCase() === filePath.toUpperCase())) {
+		let untitledEditors = this._untitledEditorService.getAll();
+		while (untitledEditors.find(x => x.getName().toUpperCase() === filePath.toUpperCase())) {
 			counter++;
 			filePath = editDataFileName(counter);
 		}

@@ -19,7 +19,7 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 
 import * as DOM from 'vs/base/browser/dom';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { Dimension, Builder } from 'vs/base/browser/builder';
+import { Builder } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -138,13 +138,13 @@ export class ProfilerEditor extends BaseEditor {
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
 	}
 
-	protected createEditor(parent: Builder): void {
+	protected createEditor(parent: HTMLElement): void {
 		// test backend
 		//this._profilerService.registerProvider('default', this._instantiationService.createInstance(ProfilerTestBackend));
 
 		this._container = document.createElement('div');
 		this._container.className = 'carbon-profiler';
-		parent.append(this._container);
+		parent.appendChild(this._container);
 
 		this._createHeader();
 
@@ -159,7 +159,7 @@ export class ProfilerEditor extends BaseEditor {
 			300,
 			tableContainer,
 			() => this._profilerTableEditor.focus(),
-			size => this._profilerTableEditor.layout(new Dimension(parseFloat(DOM.getComputedStyle(this._body).width), size)),
+			size => this._profilerTableEditor.layout(new DOM.Dimension(parseFloat(DOM.getComputedStyle(this._body).width), size)),
 			{}
 		));
 
@@ -167,7 +167,7 @@ export class ProfilerEditor extends BaseEditor {
 			300,
 			paneContainer,
 			() => this._tabbedPanel.focus(),
-			size => this._tabbedPanel.layout(new Dimension(DOM.getTotalWidth(this._body), size)),
+			size => this._tabbedPanel.layout(new DOM.Dimension(DOM.getTotalWidth(this._body), size)),
 			{ minimumSize: 35 }
 		);
 		this._panelView.headerSize = 35;
@@ -202,15 +202,15 @@ export class ProfilerEditor extends BaseEditor {
 		this._register(attachSelectBoxStyler(this._sessionTemplateSelector, this.themeService));
 
 		this._actionBar.setContent([
-			{ action: this._startAction },
-			{ action: this._pauseAction },
-			{ action: this._stopAction },
 			{ action: this._connectAction },
 			{ element: Taskbar.createTaskbarSeparator() },
-			{ action: this._autoscrollAction },
-			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) },
+			{ action: this._startAction },
+			{ action: this._stopAction },
 			{ element: dropdownContainer },
-			{ action: this._instantiationService.createInstance(Actions.ProfilerEditColumns, Actions.ProfilerEditColumns.ID, Actions.ProfilerEditColumns.LABEL) }
+			{ element: Taskbar.createTaskbarSeparator() },
+			{ action: this._pauseAction },
+			{ action: this._autoscrollAction },
+			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) }
 		]);
 	}
 
@@ -222,13 +222,15 @@ export class ProfilerEditor extends BaseEditor {
 		profilerTableContainer.style.overflow = 'hidden';
 		profilerTableContainer.style.position = 'relative';
 		this._profilerTableEditor = this._instantiationService.createInstance(ProfilerTableEditor);
-		this._profilerTableEditor.createEditor(new Builder(profilerTableContainer));
+		this._profilerTableEditor.createEditor(profilerTableContainer);
 		this._profilerTableEditor.onSelectedRowsChanged((e, args) => {
 			let data = this.input.data.getItem(args.rows[0]);
 			if (data) {
 				this._modelService.updateModel(this._editorModel, data['TextData']);
 				this._detailTableData.clear();
-				this._detailTableData.push(Object.keys(data).map(key => {
+				this._detailTableData.push(Object.keys(data).filter(key => {
+					return data[key] !== ' ';
+				}).map(key => {
 					return {
 						label: key,
 						value: data[key]
@@ -302,7 +304,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._editor = this._instantiationService.createInstance(ProfilerResourceEditor);
 		let editorContainer = document.createElement('div');
 		editorContainer.className = 'profiler-editor';
-		this._editor.create(new Builder(editorContainer));
+		this._editor.create(editorContainer);
 		this._editor.setVisible(true);
 		this._editorInput = this._instantiationService.createInstance(UntitledEditorInput, URI.from({ scheme: Schemas.untitled }), false, 'sql', '', '');
 		this._editor.setInput(this._editorInput, undefined);
@@ -397,20 +399,18 @@ export class ProfilerEditor extends BaseEditor {
 			return;
 		}
 
-		if (e.isRunning) {
-			this._startAction.enabled = !this.input.state.isRunning;
+		if (e.isPaused){
+			this._pauseAction.paused = this.input.state.isPaused;
 		}
 
 		if (e.isStopped || e.isRunning) {
-			this._stopAction.enabled = !this.input.state.isStopped && this.input.state.isRunning;
-		}
-
-		if (e.isPaused || e.isRunning) {
-			this._pauseAction.enabled = !this.input.state.isPaused && this.input.state.isRunning;
+			this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused;
+			this._stopAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
+			this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
 		}
 	}
 
-	public layout(dimension: Dimension): void {
+	public layout(dimension: DOM.Dimension): void {
 		this._container.style.width = dimension.width + 'px';
 		this._container.style.height = dimension.height + 'px';
 		this._body.style.width = dimension.width + 'px';

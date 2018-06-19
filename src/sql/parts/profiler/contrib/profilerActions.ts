@@ -57,7 +57,7 @@ export class ProfilerConnect extends Action {
 	public set connected(value: boolean) {
 		this._connected = value;
 		this._setClass(value ? 'disconnect' : 'connect');
-		this._setLabel(value ? nls.localize('profilerAction.disconnect', 'Disconnected') : nls.localize('profilerAction.connect', "Connect"));
+		this._setLabel(value ? nls.localize('profilerAction.disconnect', 'Disconnect') : nls.localize('profilerAction.connect', "Connect"));
 	}
 
 	public get connected(): boolean {
@@ -78,17 +78,19 @@ export class ProfilerStart extends Action {
 
 	public run(input: ProfilerInput): TPromise<boolean> {
 		this.enabled = false;
+		input.data.clear();
 		return TPromise.wrap(this._profilerService.startSession(input.id).then(() => {
 			input.state.change({ isRunning: true, isStopped: false, isPaused: false });
 			return true;
 		}));
 	}
-
 }
 
 export class ProfilerPause extends Action {
 	public static ID = 'profiler.pause';
-	public static LABEL = nls.localize('pause', "Pause");
+	public static LABEL = nls.localize('profiler.capture', "Pause Capture");
+
+	private _paused: boolean = false;
 
 	constructor(
 		id: string, label: string,
@@ -98,11 +100,21 @@ export class ProfilerPause extends Action {
 	}
 
 	public run(input: ProfilerInput): TPromise<boolean> {
-		this.enabled = false;
 		return TPromise.wrap(this._profilerService.pauseSession(input.id).then(() => {
-			input.state.change({ isPaused: true, isStopped: false, isRunning: false });
+			this.paused = !this._paused;
+			input.state.change({ isPaused: this.paused, isStopped: false, isRunning: !this.paused });
 			return true;
 		}));
+	}
+
+	public set paused(value: boolean) {
+		this._paused = value;
+		this._setClass(value ? 'start' : 'stop');
+		this._setLabel(value ? nls.localize('profilerAction.resumeCapture', "Resume Capture") : nls.localize('profilerAction.pauseCapture', "Pause Capture"));
+	}
+
+	public get paused(): boolean {
+		return this._paused;
 	}
 }
 
@@ -228,7 +240,7 @@ export class ProfilerFindPrevious implements IEditorAction {
 }
 
 export class NewProfilerAction extends Task {
-	public static readonly ID = 'newProfiler';
+	public static readonly ID = 'profiler.newProfiler';
 	public static readonly LABEL = nls.localize('profilerAction.newProfiler', 'New Profiler');
 	public static readonly ICON = 'profile';
 
@@ -238,7 +250,8 @@ export class NewProfilerAction extends Task {
 		super({
 			id: NewProfilerAction.ID,
 			title: NewProfilerAction.LABEL,
-			iconPath: { dark: NewProfilerAction.ICON, light: NewProfilerAction.ICON }
+			iconPath: { dark: NewProfilerAction.ICON, light: NewProfilerAction.ICON },
+			iconClass: NewProfilerAction.ICON
 		});
 	}
 

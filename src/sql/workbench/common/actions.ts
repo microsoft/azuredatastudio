@@ -51,7 +51,8 @@ export class NewQueryAction extends Task {
 		super({
 			id: NewQueryAction.ID,
 			title: NewQueryAction.LABEL,
-			iconPath: { dark: NewQueryAction.ICON, light: NewQueryAction.ICON }
+			iconPath: { dark: NewQueryAction.ICON, light: NewQueryAction.ICON },
+			iconClass: NewQueryAction.ICON
 		});
 	}
 
@@ -186,19 +187,20 @@ export class EditDataAction extends Action {
 	constructor(
 		id: string, label: string,
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
+		@IScriptingService protected _scriptingService: IScriptingService
 	) {
 		super(id, label);
 	}
 
 	public run(actionContext: BaseActionContext): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
-			TaskUtilities.editData(
+			TaskUtilities.scriptEditSelect(
 				actionContext.profile,
-				actionContext.object.name,
-				actionContext.object.schema,
+				actionContext.object,
 				this._connectionManagementService,
-				this._queryEditorService
+				this._queryEditorService,
+				this._scriptingService
 			).then(
 				result => {
 					resolve(true);
@@ -292,7 +294,8 @@ export class BackupAction extends Task {
 		super({
 			id: BackupAction.ID,
 			title: BackupAction.LABEL,
-			iconPath: { dark: BackupAction.ICON, light: BackupAction.ICON }
+			iconPath: { dark: BackupAction.ICON, light: BackupAction.ICON },
+			iconClass: BackupAction.ICON
 		});
 	}
 
@@ -322,7 +325,8 @@ export class RestoreAction extends Task {
 		super({
 			id: RestoreAction.ID,
 			title: RestoreAction.LABEL,
-			iconPath: { dark: RestoreAction.ICON, light: RestoreAction.ICON }
+			iconPath: { dark: RestoreAction.ICON, light: RestoreAction.ICON },
+			iconClass: RestoreAction.ICON
 		});
 	}
 
@@ -421,7 +425,8 @@ export class ConfigureDashboardAction extends Task {
 		super({
 			id: ConfigureDashboardAction.ID,
 			title: ConfigureDashboardAction.LABEL,
-			iconPath: { dark: ConfigureDashboardAction.ICON, light: ConfigureDashboardAction.ICON }
+			iconPath: { dark: ConfigureDashboardAction.ICON, light: ConfigureDashboardAction.ICON },
+			iconClass: ConfigureDashboardAction.ICON
 		});
 	}
 

@@ -9,6 +9,7 @@ import { Component, Inject, Input, forwardRef, ViewChild, ViewChildren, QueryLis
 import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { subscriptionToDisposable, AngularDisposable } from 'sql/base/common/lifecycle';
@@ -16,7 +17,7 @@ import { subscriptionToDisposable, AngularDisposable } from 'sql/base/common/lif
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import * as objects from 'vs/base/common/objects';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { getContentHeight, addDisposableListener, EventType } from 'vs/base/browser/dom';
@@ -74,6 +75,7 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 	@Input() private widgets: WidgetConfig[];
 	@Input() private originalConfig: WidgetConfig[];
 	@Input() private context: string;
+	@Input() private scrollContent = true;
 
 	private _scrollableElement: ScrollableElement;
 
@@ -111,49 +113,54 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 	@ViewChildren(NgGridItem) private _items: QueryList<NgGridItem>;
 	@ViewChild('scrollable', { read: ElementRef }) private _scrollable: ElementRef;
 	@ViewChild('scrollContainer', { read: ElementRef }) private _scrollContainer: ElementRef;
+
+	protected dashboardService: DashboardServiceInterface;
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) protected dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) protected commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
 	) {
 		super();
+		this.dashboardService = commonService as DashboardServiceInterface;
 	}
 
 	ngAfterViewInit() {
-		let container = this._scrollContainer.nativeElement as HTMLElement;
-		let scrollable = this._scrollable.nativeElement as HTMLElement;
-		container.removeChild(scrollable);
+		if (this.scrollContent) {
+			let container = this._scrollContainer.nativeElement as HTMLElement;
+			let scrollable = this._scrollable.nativeElement as HTMLElement;
+			container.removeChild(scrollable);
 
-		this._scrollableElement = new ScrollableElement(scrollable, {
-			horizontal: ScrollbarVisibility.Hidden,
-			vertical: ScrollbarVisibility.Auto,
-			useShadows: false
-		});
+			this._scrollableElement = new ScrollableElement(scrollable, {
+				horizontal: ScrollbarVisibility.Hidden,
+				vertical: ScrollbarVisibility.Auto,
+				useShadows: false
+			});
 
-		this._scrollableElement.onScroll(e => {
-			scrollable.style.bottom = e.scrollTop + 'px';
-		});
+			this._scrollableElement.onScroll(e => {
+				scrollable.style.bottom = e.scrollTop + 'px';
+			});
 
-		container.appendChild(this._scrollableElement.getDomNode());
-		let initalHeight = getContentHeight(scrollable);
-		this._scrollableElement.setScrollDimensions({
-			scrollHeight: getContentHeight(scrollable),
-			height: getContentHeight(container)
-		});
+			container.appendChild(this._scrollableElement.getDomNode());
+			let initalHeight = getContentHeight(scrollable);
+			this._scrollableElement.setScrollDimensions({
+				scrollHeight: getContentHeight(scrollable),
+				height: getContentHeight(container)
+			});
 
-		this._register(addDisposableListener(window, EventType.RESIZE, () => {
-			this.resetScrollDimensions();
-		}));
+			this._register(addDisposableListener(window, EventType.RESIZE, () => {
+				this.resetScrollDimensions();
+			}));
 
-		// unforunately because of angular rendering behavior we need to do a double check to make sure nothing changed after this point
-		setTimeout(() => {
-			let currentheight = getContentHeight(scrollable);
-			if (initalHeight !== currentheight) {
-				this._scrollableElement.setScrollDimensions({
-					scrollHeight: currentheight,
-					height: getContentHeight(container)
-				});
-			}
-		}, 200);
+			// unforunately because of angular rendering behavior we need to do a double check to make sure nothing changed after this point
+			setTimeout(() => {
+				let currentheight = getContentHeight(scrollable);
+				if (initalHeight !== currentheight) {
+					this._scrollableElement.setScrollDimensions({
+						scrollHeight: currentheight,
+						height: getContentHeight(container)
+					});
+				}
+			}, 200);
+		}
 	}
 
 	public layout() {
@@ -163,7 +170,9 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 			});
 		}
 		this._grid.triggerResize();
-		this.resetScrollDimensions();
+		if (this.scrollContent) {
+			this.resetScrollDimensions();
+		}
 	}
 
 	private resetScrollDimensions() {

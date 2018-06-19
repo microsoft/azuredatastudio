@@ -12,7 +12,7 @@ import { SplitView } from 'sql/base/browser/ui/splitview/splitview';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IListService, ListService } from 'vs/platform/list/browser/listService';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -34,20 +34,28 @@ import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 's
 import { FixedListView } from 'sql/platform/views/fixedListView';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
+export interface IProviderViewUiComponent {
+	view: FixedListView<sqlops.Account>;
+	addAccountAction: AddAccountAction;
+}
+
 export class AccountDialog extends Modal {
 	public static ACCOUNTLIST_HEIGHT = 77;
 
 	public viewModel: AccountViewModel;
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
-	private _providerViews: { [providerId: string]: FixedListView<sqlops.Account> } = {};
+	private _providerViews: { [providerId: string]: IProviderViewUiComponent } = {};
 
 	private _closeButton: Button;
+	private _addAccountButton: Button;
 	private _delegate: AccountListDelegate;
 	private _accountRenderer: AccountListRenderer;
 	private _actionRunner: ActionRunner;
 	private _splitView: SplitView;
 	private _container: HTMLElement;
+	private _splitViewContainer: HTMLElement;
+	private _noaccountViewContainer: HTMLElement;
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	private _onAddAccountErrorEmitter: Emitter<string>;
@@ -89,6 +97,14 @@ export class AccountDialog extends Modal {
 		this.viewModel.addProviderEvent(arg => { self.addProvider(arg); });
 		this.viewModel.removeProviderEvent(arg => { self.removeProvider(arg); });
 		this.viewModel.updateAccountListEvent(arg => { self.updateProviderAccounts(arg); });
+
+		// Load the initial contents of the view model
+		this.viewModel.initialize()
+			.then(addedProviders => {
+				for (let addedProvider of addedProviders) {
+					self.addProvider(addedProvider);
+				}
+			});
 	}
 
 	// MODAL OVERRIDE METHODS //////////////////////////////////////////////
@@ -104,26 +120,35 @@ export class AccountDialog extends Modal {
 		attachModalDialogStyler(this, this._themeService);
 		this._closeButton = this.addFooterButton(localize('accountDialog.close', 'Close'), () => this.close());
 		this.registerListeners();
-
-		// Load the initial contents of the view model
-		this.viewModel.initialize()
-			.then(addedProviders => {
-				for (let addedProvider of addedProviders) {
-					self.addProvider(addedProvider);
-				}
-			});
 	}
 
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
-		let viewBody = DOM.$('div.account-view');
-		DOM.append(container, viewBody);
-		this._splitView = new SplitView(viewBody);
+		this._splitViewContainer = DOM.$('div.account-view');
+		DOM.append(container, this._splitViewContainer);
+		this._splitView = new SplitView(this._splitViewContainer);
+
+		this._noaccountViewContainer = DOM.$('div.no-account-view');
+		let noAccountTitle = DOM.append(this._noaccountViewContainer, DOM.$('.no-account-view-label'));
+		let noAccountLabel = localize('accountDialog.noAccountLabel', 'There is no linked account. Please add an acount.');
+		noAccountTitle.innerHTML = noAccountLabel;
+
+		// Show the add account button for the first provider
+		// Todo: If we have more than 1 provider, need to show all add account buttons for all providers
+		let buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
+		this._addAccountButton = new Button(buttonSection);
+		this._addAccountButton.label = localize('accountDialog.addConnection', 'Add an account');
+		this._register(this._addAccountButton.onDidClick(() => {
+			(<IProviderViewUiComponent>Object.values(this._providerViews)[0]).addAccountAction.run();
+		}));
+
+		DOM.append(container, this._noaccountViewContainer);
 	}
 
 	private registerListeners(): void {
 		// Theme styler
 		this._register(attachButtonStyler(this._closeButton, this._themeService));
+		this._register(attachButtonStyler(this._addAccountButton, this._themeService));
 	}
 
 	/* Overwrite escape key behavior */
@@ -143,12 +168,48 @@ export class AccountDialog extends Modal {
 
 	public open() {
 		this.show();
+		if (!this.isEmptyLinkedAccount()) {
+			this.showSplitView();
+		} else {
+			this._splitViewContainer.hidden = true;
+			this._noaccountViewContainer.hidden = false;
+			this._addAccountButton.focus();
+		}
+
+	}
+
+	private showSplitView() {
+		this._splitViewContainer.hidden = false;
+		this._noaccountViewContainer.hidden = true;
+		let views = this._splitView.getViews();
+		if (views && views.length > 0) {
+			let firstView = views[0];
+			if (firstView instanceof FixedListView) {
+				firstView.list.setSelection([0]);
+				firstView.list.domFocus();
+			}
+		}
+	}
+
+	private isEmptyLinkedAccount(): boolean {
+		for (var providerId in this._providerViews) {
+			var listView = this._providerViews[providerId].view;
+			if (listView && listView.list.length > 0) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public dispose(): void {
 		super.dispose();
 		for (let key in this._providerViews) {
-			this._providerViews[key].dispose();
+			if (this._providerViews[key].addAccountAction) {
+				this._providerViews[key].addAccountAction.dispose();
+			}
+			if (this._providerViews[key].view) {
+				this._providerViews[key].view.dispose();
+			}
 			delete this._providerViews[key];
 		}
 	}
@@ -199,21 +260,26 @@ export class AccountDialog extends Modal {
 
 		// Set the initial items of the list
 		providerView.updateList(newProvider.initialAccounts);
+
+		if (newProvider.initialAccounts.length > 0 && this._splitViewContainer.hidden) {
+			this.showSplitView();
+		}
+
 		this.layout();
 
-		// Store the view for the provider
-		this._providerViews[newProvider.addedProvider.id] = providerView;
+		// Store the view for the provider and action
+		this._providerViews[newProvider.addedProvider.id] = { view: providerView, addAccountAction: addAccountAction };
 	}
 
 	private removeProvider(removedProvider: sqlops.AccountProviderMetadata) {
 		// Skip removing the provider if it doesn't exist
 		let providerView = this._providerViews[removedProvider.id];
-		if (!providerView) {
+		if (!providerView || !providerView.view) {
 			return;
 		}
 
 		// Remove the list view from the split view
-		this._splitView.removeView(providerView);
+		this._splitView.removeView(providerView.view);
 		this._splitView.layout(DOM.getContentHeight(this._container));
 
 		// Remove the list view from our internal map
@@ -223,10 +289,15 @@ export class AccountDialog extends Modal {
 
 	private updateProviderAccounts(args: UpdateAccountListEventParams) {
 		let providerMapping = this._providerViews[args.providerId];
-		if (!providerMapping) {
+		if (!providerMapping || !providerMapping.view) {
 			return;
 		}
-		providerMapping.updateList(args.accountList);
+		providerMapping.view.updateList(args.accountList);
+
+		if (args.accountList.length > 0 && this._splitViewContainer.hidden) {
+			this.showSplitView();
+		}
+
 		this.layout();
 	}
 }

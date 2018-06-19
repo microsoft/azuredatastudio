@@ -12,9 +12,11 @@ import { Router } from '@angular/router';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
 import { ExplorerFilter, ExplorerRenderer, ExplorerDataSource, ExplorerController, ObjectMetadataWrapper, ExplorerModel } from './explorerTree';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 
 import { InputBox, IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox';
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
@@ -22,6 +24,10 @@ import * as nls from 'vs/nls';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { getContentHeight } from 'vs/base/browser/dom';
 import { Delayer } from 'vs/base/common/async';
+import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 
 @Component({
 	selector: 'explorer-widget',
@@ -35,9 +41,10 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		this._bootstrap.getUnderlyingUri(),
 		this._bootstrap.connectionManagementService,
 		this._router,
-		this._bootstrap.contextMenuService,
-		this._bootstrap.capabilitiesService,
-		this._bootstrap.instantiationService
+		this.contextMenuService,
+		this.capabilitiesService,
+		this.instantiationService,
+		this.progressService
 	);
 	private _treeRenderer = new ExplorerRenderer();
 	private _treeDataSource = new ExplorerDataSource();
@@ -49,11 +56,17 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	@ViewChild('table') private _tableContainer: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => DashboardServiceInterface)) private _bootstrap: DashboardServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private _router: Router,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IContextViewService) private contextViewService: IContextViewService,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
+		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
+		@Inject(IProgressService) private progressService: IProgressService
 	) {
 		super();
 		this.init();
@@ -68,7 +81,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			placeholder: placeholderLabel,
 			ariaLabel: placeholderLabel
 		};
-		this._input = new InputBox(this._inputContainer.nativeElement, this._bootstrap.contextViewService, inputOptions);
+		this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 		this._register(this._input.onDidChange(e => {
 			this._filterDelayer.trigger(() => {
 				this._treeFilter.filterString = e;
@@ -83,9 +96,9 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		});
 		this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
 		this._register(this._input);
-		this._register(attachInputBoxStyler(this._input, this._bootstrap.themeService));
+		this._register(attachInputBoxStyler(this._input, this.themeService));
 		this._register(this._tree);
-		this._register(attachListStyler(this._tree, this._bootstrap.themeService));
+		this._register(attachListStyler(this._tree, this.themeService));
 	}
 
 	private init(): void {
@@ -108,7 +121,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			this._register(toDisposableSubscription(this._bootstrap.metadataService.databaseNames.subscribe(
 				data => {
 					let profileData = data.map(d => {
-						let profile = new ConnectionProfile(this._bootstrap.capabilitiesService, currentProfile);
+						let profile = new ConnectionProfile(this.capabilitiesService, currentProfile);
 						profile.databaseName = d;
 						return profile;
 					});

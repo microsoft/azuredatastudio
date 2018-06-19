@@ -6,21 +6,25 @@
 -->
 <panel class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)" [actions]="panelActions">
 	<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
-		<dashboard-home-container *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget" [tab]="tab">
-		</dashboard-home-container>
-		<ng-template #not_home>
-			<dashboard-webview-container *ngIf="getContentType(tab) === 'webview-container'" [tab]="tab">
-			</dashboard-webview-container>
-			<dashboard-widget-container *ngIf="getContentType(tab) === 'widgets-container'" [tab]="tab">
-			</dashboard-widget-container>
-			<dashboard-controlhost-container *ngIf="getContentType(tab) === 'controlhost-container'" [tab]="tab">
-			</dashboard-controlhost-container>
-			<dashboard-nav-section *ngIf="getContentType(tab) === 'nav-section'" [tab]="tab">
-			</dashboard-nav-section>
-			<dashboard-grid-container *ngIf="getContentType(tab) === 'grid-container'" [tab]="tab">
-			</dashboard-grid-container>
-			<dashboard-error-container *ngIf="getContentType(tab) === 'error-container'" [tab]="tab">
-			</dashboard-error-container>
+		<ng-template>
+			<dashboard-home-container *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget" [tab]="tab">
+			</dashboard-home-container>
+			<ng-template #not_home>
+				<dashboard-webview-container *ngIf="getContentType(tab) === 'webview-container'" [tab]="tab">
+				</dashboard-webview-container>
+				<dashboard-widget-container *ngIf="getContentType(tab) === 'widgets-container'" [tab]="tab">
+				</dashboard-widget-container>
+				<dashboard-modelview-container *ngIf="getContentType(tab) === 'modelview-container'" [tab]="tab">
+				</dashboard-modelview-container>
+				<dashboard-controlhost-container *ngIf="getContentType(tab) === 'controlhost-container'" [tab]="tab">
+				</dashboard-controlhost-container>
+				<dashboard-nav-section *ngIf="getContentType(tab) === 'nav-section'" [tab]="tab">
+				</dashboard-nav-section>
+				<dashboard-grid-container *ngIf="getContentType(tab) === 'grid-container'" [tab]="tab">
+				</dashboard-grid-container>
+				<dashboard-error-container *ngIf="getContentType(tab) === 'error-container'" [tab]="tab">
+				</dashboard-error-container>
+			</ng-template>
 		</ng-template>
 	</tab>
 </panel>
