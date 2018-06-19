@@ -82,6 +82,11 @@ export class ProfilerService implements IProfilerService {
 		this._sessionMap.get(this._idMap.reverseGet(params.sessionId)).onMoreRows(params);
 	}
 
+	public onSessionStopped(params: sqlops.ProfilerSessionStoppedParams): void {
+
+		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onSessionStopped(params);
+	}
+
 	public connectSession(id: ProfilerSessionID): Thenable<boolean> {
 		return this._runAction(id, provider => provider.connectSession(this._idMap.get(id)));
 	}

@@ -1409,6 +1409,7 @@ declare module 'sqlops' {
 		disconnectSession(sessionId: string): Thenable<boolean>;
 
 		registerOnSessionEventsAvailable(handler: (response: ProfilerSessionEvents) => any): void;
+		registerOnSessionStopped(handler: (response: ProfilerSessionStoppedParams) => any): void;
 	}
 
 	export interface IProfilerTableRow {
@@ -1449,6 +1450,15 @@ declare module 'sqlops' {
 		sessionId: string;
 
 		events: ProfilerEvent[];
+
+		eventsLost: boolean;
+	}
+
+	export interface ProfilerSessionStoppedParams {
+
+		ownerUri: string;
+
+		sessionId: number;
 	}
 
 	// File browser interfaces  -----------------------------------------------------------------------

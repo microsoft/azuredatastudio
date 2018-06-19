@@ -397,8 +397,16 @@ export class SelectBoxList implements ISelectBoxDelegate, IDelegate<ISelectOptio
 		container.appendChild(this.selectDropDownContainer);
 
 		this.layoutSelectDropDown();
+
+		// {{SQL CARBON EDIT}}
 		return {
-			dispose: () => container.removeChild(this.selectDropDownContainer) // remove to take out the CSS rules we add
+			dispose: () => {
+				try {
+					container.removeChild(this.selectDropDownContainer); // remove to take out the CSS rules we add
+				} catch(e) {
+					// if this fails it means it is already removed
+				}
+			}
 		};
 	}
 
