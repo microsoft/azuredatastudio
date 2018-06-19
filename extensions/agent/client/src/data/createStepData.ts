@@ -4,15 +4,34 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
 
 export class CreateStepData {
 	public ownerUri: string;
 	public jobId: string;
-	public name: string;
-	public type: string;
-	public database: string;
+	public jobName: string;
+	public script: string;
+	public scriptName: string;
+	public stepName: string;
+	public subSystem: string;
+	public id: number;
+	public failureAction: string;
+	public successAction: string;
+	public failStepId: number;
+	public successStepId: number;
+	public command: string;
+	public commandExecutionSuccessCode: number;
+	public databaseName: string;
+	public databaseUserName: string;
+	public server: string;
+	public outputFileName: string;
+	public appendToLogFile: boolean;
+	public appendToStepHist: boolean;
+	public writeLogToTable: boolean;
+	public appendLogToTable: boolean;
+	public retryAttempts: number;
+	public retryInterval: number;
+	public proxyName: string;
 
 	constructor(ownerUri:string) {
 		this.ownerUri = ownerUri;
@@ -28,23 +47,23 @@ export class CreateStepData {
 			stepName: this.stepName,
 			subSystem: this.subSystem,
 			id: this.id,
-			failureAction: '',
-			successAction: '',
-			failStepId: 0,
-			successStepId: 0,
-			command: '',
-			commandExecutionSuccessCode: 0,
-			databaseName: '',
-			databaseUserName: '',
-			server: '',
-			outputFileName: '',
-			appendToLogFile: false,
-			appendToStepHist: false,
-			writeLogToTable: false,
-			appendLogToTable: false,
-			retryAttempts: 0,
-			retryInterval: 0,
-			proxyName: ''
+			failureAction: this.failureAction,
+			successAction: this.successAction,
+			failStepId: this.failStepId,
+			successStepId: this.successStepId,
+			command: this.command,
+			commandExecutionSuccessCode: this.commandExecutionSuccessCode,
+			databaseName: this.databaseName,
+			databaseUserName: this.databaseUserName,
+			server: this.server,
+			outputFileName: this.outputFileName,
+			appendToLogFile: this.appendToLogFile,
+			appendToStepHist: this.appendToStepHist,
+			writeLogToTable: this.writeLogToTable,
+			appendLogToTable: this.appendLogToTable,
+			retryAttempts: this.retryAttempts,
+			retryInterval: this.retryInterval,
+			proxyName: this.proxyName
 		}).then(result => {
 			console.info(result.step.stepName);
 		});
