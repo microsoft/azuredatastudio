@@ -19,8 +19,10 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IObjectExplorerService } from '../../objectExplorer/common/objectExplorerService';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { TPromise } from 'vs/base/common/winjs.base';
+import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 
 // Contribute Global Actions
 const category = nls.localize('profilerCategory', "Profiler");
@@ -37,19 +39,9 @@ CommandsRegistry.registerCommand({
 		let editorService: IWorkbenchEditorService = accessor.get(IWorkbenchEditorService);
 		let instantiationService: IInstantiationService = accessor.get(IInstantiationService);
 		let connectionService: IConnectionManagementService = accessor.get(IConnectionManagementService);
+		let objectExplorerService: IObjectExplorerService = accessor.get(IObjectExplorerService);
 
-		// TODO: for test-only, grab the first MSSQL active connection for the profiler session
-		// TODO: when finishing the feature the connection should come from the launch context
-		let connectionProfile: IConnectionProfile;
-		let activeConnections = connectionService.getActiveConnections();
-		if (activeConnections) {
-			for (let i = 0; i < activeConnections.length; ++i) {
-				if (activeConnections[i].providerName === 'MSSQL') {
-					connectionProfile = activeConnections[i];
-					break;
-				}
-			}
-		}
+		let connectionProfile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionService, editorService);
 
 		let profilerInput = instantiationService.createInstance(ProfilerInput, connectionProfile);
 		return editorService.openEditor(profilerInput, { pinned: true }, false).then(() => TPromise.as(true));
