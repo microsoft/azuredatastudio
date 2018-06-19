@@ -138,11 +138,20 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		return +size;
 	}
 
-	protected convertSize(size: number | string): string {
+	protected getWidth(): string {
+		return this.width ? this.convertSize(this.width) : '';
+	}
+
+	protected getHeight(): string {
+		return this.height ? this.convertSize(this.height) : '';
+	}
+
+	protected convertSize(size: number | string, defaultValue?: string): string {
+		defaultValue = defaultValue || '';
 		if (types.isUndefinedOrNull(size)) {
-			return '';
+			return defaultValue;
 		}
-		let convertedSize: string = size ? size.toString() : '100%';
+		let convertedSize: string = size ? size.toString() : defaultValue;
 		if (!convertedSize.toLowerCase().endsWith('px') && !convertedSize.toLowerCase().endsWith('%')) {
 			convertedSize = convertedSize + 'px';
 		}

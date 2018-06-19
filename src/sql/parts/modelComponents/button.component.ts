@@ -93,10 +93,10 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 		this._button.enabled = this.enabled;
 		this._button.label = this.label;
 		if (this.width) {
-			this._button.setWidth(this.width.toString());
+			this._button.setWidth(this.convertSize(this.width.toString()));
 		}
 		if (this.height) {
-			this._button.setWidth(this.height.toString());
+			this._button.setWidth(this.convertSize(this.height.toString()));
 		}
 		this.updateIcon();
 	}

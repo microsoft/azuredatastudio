@@ -20,7 +20,7 @@ import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common
 @Component({
 	selector: 'modelview-checkbox',
 	template: `
-		<div #input style="width: 100%"></div>
+		<div #input [style.width]="getWidth()"></div>
 	`
 })
 export default class CheckBoxComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
