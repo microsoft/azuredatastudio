@@ -11,7 +11,9 @@ Common SQL Profiler use-cases taken from https://docs.microsoft.com/en-us/sql/to
 - Correlating performance counters to diagnose problems.
 
 ## SQL Server Profiler 0.1.1 Release
-SQL Server Profiler 0.1.1 is the initial release of the a new light-weight XEvent-based profiler.  Checkout the following screenshot.
+The SQL Server Profiler for SQL Operations Studio *Preview* extension is now available. This is the initial preview release for a new lightweight XEvent-based profiler. The SQL Server Profiler extension tries to make it simple to quickly trace server activity for troubleshooting and monitoring.
+
+We'll continue to enhance this extension over the next couple releases. Take a look at the below screenshot to see what's currently available.
 
 <img width="850" src="https://user-images.githubusercontent.com/599935/41578613-fa10e8bc-7347-11e8-8b97-9fb7d186c9f6.png">
 
