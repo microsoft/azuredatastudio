@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
+	Component, Input, Inject, ChangeDetectorRef, forwardRef,
+	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
@@ -14,14 +14,11 @@ import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { Event, Emitter } from 'vs/base/common/event';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
 
 @Component({
 	selector: 'modelview-dropdown',
@@ -60,7 +57,8 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 				strictSelection: false,
 				placeholder: '',
 				maxHeight: 125,
-				ariaLabel: ''
+				ariaLabel: '',
+				actionLabel: ''
 			};
 			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService, this.themeService,
 				dropdownOptions);
