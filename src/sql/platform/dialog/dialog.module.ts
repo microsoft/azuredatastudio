@@ -16,7 +16,7 @@ import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/mo
 import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams, ISelector } from 'sql/services/bootstrap/bootstrapService';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
@@ -47,20 +47,21 @@ export const DialogModule = (params, selector: string): any => {
 		providers: [
 			{ provide: APP_BASE_HREF, useValue: '/' },
 			CommonServiceInterface,
-			{ provide: IBootstrapParams, useValue: params }
+			{ provide: IBootstrapParams, useValue: params },
+			{ provide: ISelector, useValue: selector }
 		]
 	})
 	class ModuleClass {
 
 		constructor(
 			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-			@Inject(forwardRef(() => CommonServiceInterface)) bootstrap: CommonServiceInterface,
+			@Inject(ISelector) private selector: string
 		) {
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
 			const factoryWrapper: any = this._resolver.resolveComponentFactory(DialogContainer);
-			factoryWrapper.factory.selector = selector;
+			factoryWrapper.factory.selector = this.selector;
 			appRef.bootstrap(factoryWrapper);
 		}
 	}

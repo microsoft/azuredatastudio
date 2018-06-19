@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Inject, NgModule, forwardRef, ApplicationRef, ComponentFactoryResolver, NgModuleRef, NgModuleFactory } from '@angular/core';
+import { Inject, NgModule, forwardRef, ApplicationRef, ComponentFactoryResolver } from '@angular/core';
 import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes, UrlSerializer, Router, NavigationEnd } from '@angular/router';
@@ -14,7 +14,7 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 import CustomUrlSerializer from 'sql/common/urlSerializer';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { Extensions as ComponentExtensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams, ISelector } from 'sql/services/bootstrap/bootstrapService';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 
@@ -32,7 +32,7 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 
 /* Base Components */
-import { DashboardComponent, DASHBOARD_SELECTOR } from 'sql/parts/dashboard/dashboard.component';
+import { DashboardComponent } from 'sql/parts/dashboard/dashboard.component';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { DashboardWidgetContainer } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.component';
 import { DashboardGridContainer } from 'sql/parts/dashboard/containers/dashboardGridContainer.component';
@@ -80,7 +80,7 @@ import { ExplorerWidget } from 'sql/parts/dashboard/widgets/explorer/explorerWid
 import { TasksWidget } from 'sql/parts/dashboard/widgets/tasks/tasksWidget.component';
 import { InsightsWidget } from 'sql/parts/dashboard/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/parts/dashboard/widgets/webview/webviewWidget.component';
-import { JobStepsViewComponent } from '../jobManagement/views/jobStepsView.component';
+import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
 
 let widgetComponents = [
 	PropertiesWidgetComponent,
@@ -140,31 +140,31 @@ export const DashboardModule = (params, selector: string): any => {
 			{ provide: IBreadcrumbService, useClass: BreadcrumbService },
 			{ provide: CommonServiceInterface, useClass: DashboardServiceInterface },
 			{ provide: UrlSerializer, useClass: CustomUrlSerializer },
-			{ provide: IBootstrapParams, useValue: params }
+			{ provide: IBootstrapParams, useValue: params },
+			{ provide: ISelector, useValue: selector }
 		]
 	})
 	class ModuleClass {
-		private _bootstrap: DashboardServiceInterface;
+		private navigations = 0;
 		constructor(
 			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-			@Inject(forwardRef(() => CommonServiceInterface)) bootstrap: CommonServiceInterface,
 			@Inject(forwardRef(() => Router)) private _router: Router,
-			@Inject(ITelemetryService) private telemetryService: ITelemetryService
+			@Inject(ITelemetryService) private telemetryService: ITelemetryService,
+			@Inject(ISelector) private selector: string
 		) {
-			this._bootstrap = bootstrap as DashboardServiceInterface;
+			console.log(selector);
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
 			const factory = this._resolver.resolveComponentFactory(DashboardComponent);
-			this._bootstrap.selector = selector;
-			(<any>factory).factory.selector = selector;
+			(<any>factory).factory.selector = this.selector;
 			appRef.bootstrap(factory);
 
 			this._router.events.subscribe(e => {
 				if (e instanceof NavigationEnd) {
-					this._bootstrap.handlePageNavigation();
+					this.navigations++;
 					TelemetryUtils.addTelemetry(this.telemetryService, TelemetryKeys.DashboardNavigated, {
-						numberOfNavigations: this._bootstrap.getNumberOfPageNavigations(),
+						numberOfNavigations: this.navigations,
 						routeUrl: e.url
 					});
 				}

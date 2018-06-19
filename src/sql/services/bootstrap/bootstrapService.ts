@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NgModuleRef, enableProdMode, InjectionToken, ReflectiveInjector, Type, PlatformRef, Provider } from '@angular/core';
+import { NgModuleRef, enableProdMode, InjectionToken, Type, PlatformRef, Provider, Injector } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { IEditorInput } from 'vs/platform/editor/common/editor';
@@ -12,7 +12,9 @@ import { IInstantiationService, _util } from 'vs/platform/instantiation/common/i
 const selectorCounter = new Map<string, number>();
 const serviceMap = new Map<string, IInstantiationService>();
 
-export const IBootstrapParams = new InjectionToken('bootstrap_params');
+export const ISelector = new InjectionToken<string>('selector');
+
+export const IBootstrapParams = new InjectionToken<IBootstrapParams>('bootstrap_params');
 export interface IBootstrapParams {
 }
 
@@ -59,10 +61,10 @@ export function bootstrapAngular<T>(service: IInstantiationService, moduleType: 
 		if (input) {
 			input.onDispose(() => {
 				serviceMap.delete(uniqueSelectorString);
-				moduleRef.onDestroy(() => {
-					serviceMap.delete(uniqueSelectorString);
-				});
 				moduleRef.destroy();
+			});
+			moduleRef.onDestroy(() => {
+				serviceMap.delete(uniqueSelectorString);
 			});
 		}
 		if (callbackSetModule) {

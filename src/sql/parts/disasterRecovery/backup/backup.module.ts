@@ -4,14 +4,14 @@
 *--------------------------------------------------------------------------------------------*/
 
 import {
-	ApplicationRef, ComponentFactoryResolver, ModuleWithProviders, NgModule,
+	ApplicationRef, ComponentFactoryResolver, NgModule,
 	Inject, forwardRef, Type
 } from '@angular/core';
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { BackupComponent, BACKUP_SELECTOR } from 'sql/parts/disasterRecovery/backup/backup.component';
+import { IBootstrapParams, ISelector } from 'sql/services/bootstrap/bootstrapService';
+import { BackupComponent } from 'sql/parts/disasterRecovery/backup/backup.component';
 
 // work around
 const BrowserAnimationsModule = (<any>require.__$__nodeRequire('@angular/platform-browser/animations')).BrowserAnimationsModule;
@@ -31,19 +31,21 @@ export const BackupModule = (params: IBootstrapParams, selector: string): Type<a
 		],
 		providers: [
 			{ provide: APP_BASE_HREF, useValue: '/' },
-			{ provide: IBootstrapParams, useValue: params }
+			{ provide: IBootstrapParams, useValue: params },
+			{ provide: ISelector, useValue: selector }
 		]
 	})
 	class ModuleClass {
 
 		constructor(
-			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver
+			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
+			@Inject(ISelector) private selector: string
 		) {
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
 			const factory = this._resolver.resolveComponentFactory(BackupComponent);
-			(<any>factory).factory.selector = selector;
+			(<any>factory).factory.selector = this.selector;
 			appRef.bootstrap(factory);
 		}
 	}
