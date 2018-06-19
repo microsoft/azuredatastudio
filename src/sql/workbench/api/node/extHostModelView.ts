@@ -771,10 +771,10 @@ class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownCompone
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
 	}
 
-	public get value(): string {
+	public get value(): string | sqlops.CategoryValue {
 		return this.properties['value'];
 	}
-	public set value(v: string) {
+	public set value(v: string | sqlops.CategoryValue) {
 		this.setProperty('value', v);
 	}
 

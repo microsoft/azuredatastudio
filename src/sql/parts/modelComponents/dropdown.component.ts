@@ -145,18 +145,26 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	}
 
 	private getSelectedValue(): string {
-		if (this.values && this.valuesHaveDisplayName()) {
-			let valueCategory = (<sqlops.CategoryValue[]>this.values).find(v => v.name === this.value);
+		if (this.values && this.values.length > 0 && this.valuesHaveDisplayName()) {
+			let selectedValue = <sqlops.CategoryValue>this.value || <sqlops.CategoryValue>this.values[0];
+			if (!this.value) {
+				this.value = selectedValue;
+			}
+			let valueCategory = (<sqlops.CategoryValue[]>this.values).find(v => v.name === selectedValue.name);
+
 			return valueCategory && valueCategory.displayName;
 		} else {
-			return this.value;
+			if (!this.value && this.values && this.values.length > 0) {
+				this.value = <string>this.values[0];
+			}
+			return <string>this.value;
 		}
 	}
 
 	private setSelectedValue(newValue: string): void {
 		if (this.values && this.valuesHaveDisplayName()) {
 			let valueCategory = (<sqlops.CategoryValue[]>this.values).find(v => v.displayName === newValue);
-			this.value = valueCategory && valueCategory.name;
+			this.value = valueCategory;
 		} else {
 			this.value = newValue;
 		}
@@ -164,8 +172,8 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	// CSS-bound properties
 
-	private get value(): string {
-		return this.getPropertyOrDefault<sqlops.DropDownProperties, string>((props) => props.value, '');
+	private get value(): string | sqlops.CategoryValue {
+		return this.getPropertyOrDefault<sqlops.DropDownProperties, string | sqlops.CategoryValue>((props) => props.value, '');
 	}
 
 	private get editable(): boolean {
@@ -180,8 +188,8 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		return !this.editable ? '' : 'none';
 	}
 
-	private set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.DropDownProperties, string>(this.setValueProperties, newValue);
+	private set value(newValue: string | sqlops.CategoryValue) {
+		this.setPropertyFromUI<sqlops.DropDownProperties, string | sqlops.CategoryValue>(this.setValueProperties, newValue);
 	}
 
 	private get values(): string[] | sqlops.CategoryValue[] {

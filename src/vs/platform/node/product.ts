@@ -52,6 +52,7 @@ export interface IProductConfiguration {
 	};
 	documentationUrl: string;
 	releaseNotesUrl: string;
+	gettingStartedUrl: string;
 	keyboardShortcutsUrlMac: string;
 	keyboardShortcutsUrlLinux: string;
 	keyboardShortcutsUrlWin: string;
