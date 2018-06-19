@@ -10,6 +10,11 @@ Common SQL Profiler use-cases taken from https://docs.microsoft.com/en-us/sql/to
 - Monitoring the performance of SQL Server to tune workloads.
 - Correlating performance counters to diagnose problems.
 
+## SQL Server Profiler 0.1.1 Release
+SQL Server Profiler 0.1.1 is the initial release of the a new light-weight XEvent-based profiler.  Checkout the following screenshot.
+
+<img width="850" src="https://user-images.githubusercontent.com/599935/41578613-fa10e8bc-7347-11e8-8b97-9fb7d186c9f6.png">
+
 ## Code of Conduct
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
