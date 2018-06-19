@@ -118,11 +118,11 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	}
 
 	private getFormWidth(): string {
-		return this.convertSize(this._formLayout && this._formLayout.width, '100%');
+		return this.convertSize(this._formLayout && this._formLayout.width, '');
 	}
 
 	private getFormHeight(): string {
-		return this.convertSize(this._formLayout && this._formLayout.height, '100%');
+		return this.convertSize(this._formLayout && this._formLayout.height, '');
 	}
 
 	private getComponentWidth(item: FormItem): string {

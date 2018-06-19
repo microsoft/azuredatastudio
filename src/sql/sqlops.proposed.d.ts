@@ -216,6 +216,11 @@ declare module 'sqlops' {
 		 * Container Width
 		 */
 		width?: number | string;
+
+		/**
+		 *
+		 */
+		textAlign?: string
 	}
 
 	export interface FlexItemLayout {
