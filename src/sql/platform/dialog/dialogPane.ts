@@ -67,6 +67,7 @@ export class DialogPane extends Disposable implements IThemable {
 					this._body.appendChild(tabContainer);
 					this.initializeModelViewContainer(tabContainer, tab.content, tab);
 					this._tabbedPanel.onTabChange(e => {
+						tabContainer.style.height = (this.getTabDimension().height - this._tabbedPanel.headersize) + 'px';
 						this._onTabChange.fire(tab.content);
 					});
 					this._tabbedPanel.pushTab({
@@ -91,7 +92,7 @@ export class DialogPane extends Disposable implements IThemable {
 	}
 
 	private getTabDimension(): DOM.Dimension {
-		return new DOM.Dimension(DOM.getContentWidth(this._body), DOM.getContentHeight(this._body))
+		return new DOM.Dimension(DOM.getContentWidth(this._body), DOM.getContentHeight(this._body));
 	}
 
 	public layout(): void {

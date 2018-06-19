@@ -232,7 +232,8 @@ declare module 'sqlops' {
 
 	export interface FormItemLayout {
 		horizontal?: boolean;
-		componentWidth?: number;
+		componentWidth?: number | string;
+		componentHeight?: number | string;
 	}
 
 	export interface FormLayout {
@@ -354,7 +355,7 @@ declare module 'sqlops' {
 	}
 
 	export interface DropDownProperties extends ComponentProperties {
-		value?: string;
+		value?: string | CategoryValue;
 		values?: string[] | CategoryValue[];
 		editable?: boolean;
 	}
@@ -418,7 +419,7 @@ declare module 'sqlops' {
 	}
 
 	export interface DropDownComponent extends Component, DropDownProperties {
-		value: string;
+		value: string | CategoryValue;
 		values: string[] | CategoryValue[];
 		onValueChanged: vscode.Event<any>;
 	}
