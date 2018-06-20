@@ -416,6 +416,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onFilePathsValidated(handle: number, response: sqlops.FileBrowserValidatedParams): void;
 	$onScriptingComplete(handle: number, message: sqlops.ScriptingCompleteResult): void;
 	$onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void;
+	$onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void;
 
 	/**
 	 * Callback when a session has completed initialization
