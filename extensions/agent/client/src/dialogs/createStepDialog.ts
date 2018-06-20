@@ -201,8 +201,9 @@ export class CreateStepDialog {
 			let buttonContainer = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row',
+				textAlign: 'right',
 				justifyContent: 'flex-end',
-				width: '100%'
+				width: 400
 			}).withItems([this.nextButton, this.previousButton], {
 				flex: '1 1 50%'
 			}).component();
@@ -279,7 +280,7 @@ export class CreateStepDialog {
 			let appendCheckboxContainer = view.modelBuilder.groupContainer()
 				.withItems([appendToExistingEntryInTableCheckbox]).component();
 			let logToTableContainer = view.modelBuilder.flexContainer()
-				.withLayout({ flexFlow: 'row', justifyContent: 'space-between', width: 400})
+				.withLayout({ flexFlow: 'row', justifyContent: 'space-between', width: 300})
 				.withItems([this.logToTableCheckbox, viewButton]).component();
 			let logStepOutputHistoryCheckbox = view.modelBuilder.checkBox()
 				.withProperties({ label: 'Include step output in history'}).component();
@@ -311,7 +312,7 @@ export class CreateStepDialog {
 					component: runAsUserOptions,
 					title: ''
 				}], {
-					componentWidth: 420
+					componentWidth: 400
 				}).component();
 
 			let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
