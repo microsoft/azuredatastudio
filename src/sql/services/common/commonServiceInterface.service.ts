@@ -114,9 +114,12 @@ export class CommonServiceInterface extends AngularDisposable {
 		@Inject(IQueryManagementService) protected _queryManagementService: IQueryManagementService
 	) {
 		super();
-		this.scopedContextKeyService = this._params.scopedContextService;
-		this._connectionContextKey = this._params.connectionContextKey;
-		this.uri = this._params.ownerUri;
+		// during testing there may not be params
+		if (this._params) {
+			this.scopedContextKeyService = this._params.scopedContextService;
+			this._connectionContextKey = this._params.connectionContextKey;
+			this.uri = this._params.ownerUri;
+		}
 	}
 
 	public get metadataService(): SingleConnectionMetadataService {

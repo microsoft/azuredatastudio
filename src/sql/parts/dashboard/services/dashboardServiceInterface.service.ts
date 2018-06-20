@@ -75,8 +75,11 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 		@Inject(IConfigurationService) private _configService: IConfigurationService
 	) {
 		super(params, metadataService, connectionManagementService, adminService, queryManagementService);
-		this.dashboardContextKey = this._dashboardContextKey.bindTo(this.scopedContextKeyService);
-		this._register(toDisposableSubscription(this.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
+		// during testing there may not be params
+		if (this._params) {
+			this.dashboardContextKey = this._dashboardContextKey.bindTo(this.scopedContextKeyService);
+			this._register(toDisposableSubscription(this.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
+		}
 	}
 
 	/**
