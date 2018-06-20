@@ -173,3 +173,21 @@
 	width: 20px;
 	height: 20px;
 }
+
+.modal .modal-footer .dialogErrorMessage {
+	align-items: center;
+	max-height: 30px;
+	margin-right: 5px;
+}
+
+.modal .dialogErrorMessage .icon {
+	float: left;
+	margin-right: 10px;
+	width: auto;
+	height: 20px;
+}
+
+.modal .modal-footer .dialogErrorMessage .errorMessage {
+	max-height: 100%;
+	overflow-y: scroll;
+}

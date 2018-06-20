@@ -591,8 +591,8 @@ declare module 'sqlops' {
 			 * A message shown in a dialog. If the level is not set it defaults to error.
 			 */
 			export type DialogMessage = {
-				text: string,
-				level?: MessageLevel
+				readonly text: string,
+				readonly level?: MessageLevel
 			};
 
 			export interface ModelViewPanel {

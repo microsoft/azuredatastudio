@@ -59,7 +59,7 @@ export class WizardModal extends Modal {
 	}
 
 	public render() {
-		super.render();
+		super.render(true);
 		attachModalDialogStyler(this, this._themeService);
 
 		if (this.backButton) {
@@ -74,6 +74,17 @@ export class WizardModal extends Modal {
 		this._wizard.doneButton.registerClickEvent(this._onDone.event);
 		this._cancelButton = this.addDialogButton(this._wizard.cancelButton, () => this.cancel(), false);
 		this._wizard.cancelButton.registerClickEvent(this._onCancel.event);
+
+		let messageChangeHandler = (message: DialogMessage) => {
+			if (message && message.text) {
+				this.setError(message.text, message.level);
+			} else {
+				this.setError('');
+			}
+		};
+
+		messageChangeHandler(this._wizard.message);
+		this._wizard.onMessageChange(message => messageChangeHandler(message));
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true): Button {
@@ -113,28 +124,6 @@ export class WizardModal extends Modal {
 			this._dialogPanes.delete(page);
 			this.showPage(this.getCurrentPage(), false);
 			dialogPane.dispose();
-		});
-
-		new Builder(this._body).div({ class: 'dialogModal-message' }, messageBuilder => {
-			let messagePane = messageBuilder.getHTMLElement();
-			let messageChangeHandler = (message: DialogMessage) => {
-				if (message && message.text) {
-					messagePane.classList.remove('dialogModal-hidden');
-					messagePane.textContent = message.text;
-					if (message.level === undefined || message.level === MessageLevel.Error) {
-						messagePane.classList.add('dialogMessage-error');
-					} else if (message.level === MessageLevel.Information) {
-						messagePane.classList.add('dialogMessage-info');
-					} else if (message.level === MessageLevel.Warning) {
-						messagePane.classList.add('dialogMessage-warning');
-					}
-				} else {
-					messagePane.classList.add('dialogModal-hidden');
-					messagePane.classList.remove('dialogMessage-error', 'dialogMessage-info', 'dialogMessage-warning');
-				}
-			};
-			messageChangeHandler(this._wizard.message);
-			this._wizard.onMessageChange(message => messageChangeHandler(message));
 		});
 	}
 
