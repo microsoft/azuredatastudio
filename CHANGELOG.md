@@ -1,5 +1,18 @@
 # Change Log
 
+## Version 0.30.6
+* Release date: June 20, 2018
+* Release status: Public Preview
+
+## What's new in this version
+* **SQL Server Profiler for SQL Operations Studio  *Preview*** extension initial release
+* The new **SQL Data Warehouse** extension includes rich customizable dashboard widgets surfacing insights to your data warehouse. This unlocks key scenarios around managing and tuning your data warehouse to ensure it is optimized for consistent performance.
+* **Edit Data "Filtering and Sorting"** support
+* **SQL Server Agent for SQL Operations Studio *Preview*** extension enhancements for Jobs and Job History views
+* Improved **Wizard & Dialog UI Builder Framework** extensibility APIs
+* Update VS Code Platform source code integrating [March 2018 (1.22)](https://code.visualstudio.com/updates/v1_22) and [April 2018 (1.23)](https://code.visualstudio.com/updates/v1_23)  releases
+* Fix GitHub Issues
+
 ## Version 0.29.3
 * Release date: May 7, 2018
 * Release status: Public Preview
