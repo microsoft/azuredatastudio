@@ -24,6 +24,7 @@ import { localize } from 'vs/nls';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { DialogMessage, MessageLevel } from '../../workbench/api/common/sqlExtHostTypes';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -100,7 +101,6 @@ export class WizardModal extends Modal {
 			this._body = bodyBuilder.getHTMLElement();
 		});
 
-		let builder = new Builder(this._body);
 		this._wizard.pages.forEach(page => {
 			this.registerPage(page);
 		});
@@ -113,6 +113,28 @@ export class WizardModal extends Modal {
 			this._dialogPanes.delete(page);
 			this.showPage(this.getCurrentPage(), false);
 			dialogPane.dispose();
+		});
+
+		new Builder(this._body).div({ class: 'dialogModal-message' }, messageBuilder => {
+			let messagePane = messageBuilder.getHTMLElement();
+			let messageChangeHandler = (message: DialogMessage) => {
+				if (message && message.text) {
+					messagePane.classList.remove('dialogModal-hidden');
+					messagePane.textContent = message.text;
+					if (message.level === undefined || message.level === MessageLevel.Error) {
+						messagePane.classList.add('dialogMessage-error');
+					} else if (message.level === MessageLevel.Information) {
+						messagePane.classList.add('dialogMessage-info');
+					} else if (message.level === MessageLevel.Warning) {
+						messagePane.classList.add('dialogMessage-warning');
+					}
+				} else {
+					messagePane.classList.add('dialogModal-hidden');
+					messagePane.classList.remove('dialogMessage-error', 'dialogMessage-info', 'dialogMessage-warning');
+				}
+			};
+			messageChangeHandler(this._wizard.message);
+			this._wizard.onMessageChange(message => messageChangeHandler(message));
 		});
 	}
 

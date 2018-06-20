@@ -24,6 +24,7 @@ import { localize } from 'vs/nls';
 import { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { DialogMessage, MessageLevel } from '../../workbench/api/common/sqlExtHostTypes';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -102,6 +103,28 @@ export class DialogModal extends Modal {
 		this._dialogPane = new DialogPane(this._dialog.title, this._dialog.content,
 			valid => this._dialog.notifyValidityChanged(valid), this._instantiationService);
 		this._dialogPane.createBody(body);
+
+		new Builder(body).div({ class: 'dialogModal-message' }, messageBuilder => {
+			let messagePane = messageBuilder.getHTMLElement();
+			let messageChangeHandler = (message: DialogMessage) => {
+				if (message && message.text) {
+					messagePane.classList.remove('dialogModal-hidden');
+					messagePane.textContent = message.text;
+					if (message.level === undefined || message.level === MessageLevel.Error) {
+						messagePane.classList.add('dialogMessage-error');
+					} else if (message.level === MessageLevel.Information) {
+						messagePane.classList.add('dialogMessage-info');
+					} else if (message.level === MessageLevel.Warning) {
+						messagePane.classList.add('dialogMessage-warning');
+					}
+				} else {
+					messagePane.classList.add('dialogModal-hidden');
+					messagePane.classList.remove('dialogMessage-error', 'dialogMessage-info', 'dialogMessage-warning');
+				}
+			};
+			messageChangeHandler(this._dialog.message);
+			this._dialog.onMessageChange(message => messageChangeHandler(message));
+		});
 	}
 
 	public open(): void {

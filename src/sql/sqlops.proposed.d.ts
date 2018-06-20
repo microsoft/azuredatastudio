@@ -577,6 +577,24 @@ declare module 'sqlops' {
 			 */
 			export function createWizard(title: string): Wizard;
 
+			/**
+			 * Used to control whether a message in a dialog/wizard is displayed as an error,
+			 * warning, or informational message. Default is error.
+			 */
+			export enum MessageLevel {
+				Error = 0,
+				Warning = 1,
+				Information = 2
+			}
+
+			/**
+			 * A message shown in a dialog. If the level is not set it defaults to error.
+			 */
+			export type DialogMessage = {
+				text: string,
+				level?: MessageLevel
+			};
+
 			export interface ModelViewPanel {
 				/**
 				 * Register model view content for the dialog.
@@ -627,6 +645,12 @@ declare module 'sqlops' {
 				 * Any additional buttons that should be displayed
 				 */
 				customButtons: Button[];
+
+				/**
+				 * Set the informational message shown in the dialog. Hidden when the message is
+				 * undefined or the text is empty or undefined. The default level is error.
+				 */
+				message: DialogMessage
 			}
 
 			export interface DialogTab extends ModelViewPanel {
@@ -793,6 +817,12 @@ declare module 'sqlops' {
 				 * cancel it.
 				 */
 				registerNavigationValidator(validator: (pageChangeInfo: WizardPageChangeInfo) => boolean | Thenable<boolean>): void;
+
+				/**
+				 * Set the informational message shown in the wizard. Hidden when the message is
+				 * undefined or the text is empty or undefined. The default level is error.
+				 */
+				message: DialogMessage
 			}
 		}
 	}

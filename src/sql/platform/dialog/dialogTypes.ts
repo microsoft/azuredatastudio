@@ -8,6 +8,7 @@
 import * as sqlops from 'sqlops';
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
+import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ModelViewPane {
 	private _valid: boolean = true;
@@ -45,11 +46,25 @@ export class Dialog extends ModelViewPane {
 	public okButton: DialogButton = new DialogButton(Dialog.DONE_BUTTON_LABEL, true);
 	public cancelButton: DialogButton = new DialogButton(Dialog.CANCEL_BUTTON_LABEL, true);
 	public customButtons: DialogButton[];
+	private _onMessageChange = new Emitter<DialogMessage>();
+	public readonly onMessageChange = this._onMessageChange.event;
+	private _message: DialogMessage;
 
 	constructor(public title: string, content?: string | DialogTab[]) {
 		super();
 		if (content) {
 			this.content = content;
+		}
+	}
+
+	public get message(): DialogMessage {
+		return this._message;
+	}
+
+	public set message(value: DialogMessage) {
+		if (this._message && !value || !this._message && value || (this._message && value && this._message.level !== value.level || this._message.text !== value.text)) {
+			this._message = value;
+			this._onMessageChange.fire(this._message);
 		}
 	}
 }
@@ -140,6 +155,9 @@ export class Wizard {
 	private _pageRemovedEmitter = new Emitter<WizardPage>();
 	public readonly onPageRemoved = this._pageRemovedEmitter.event;
 	private _navigationValidator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean | Thenable<boolean>;
+	private _onMessageChange = new Emitter<DialogMessage>();
+	public readonly onMessageChange = this._onMessageChange.event;
+	private _message: DialogMessage;
 
 	constructor(public title: string) { }
 
@@ -205,6 +223,17 @@ export class Wizard {
 			}));
 		} else {
 			return Promise.resolve(true);
+		}
+	}
+
+	public get message(): DialogMessage {
+		return this._message;
+	}
+
+	public set message(value: DialogMessage) {
+		if (this._message && !value || !this._message && value || (this._message && value && this._message.level !== value.level || this._message.text !== value.text)) {
+			this._message = value;
+			this._onMessageChange.fire(this._message);
 		}
 	}
 }
