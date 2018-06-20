@@ -13,10 +13,11 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 
 const BrowserAnimationsModule = (<any>require.__$__nodeRequire('@angular/platform-browser/animations')).BrowserAnimationsModule;
 
-import { IBootstrapParams, ISelector } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 
 import { Registry } from 'vs/platform/registry/common/platform';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 
 import { QueryOutputComponent } from 'sql/parts/query/views/queryOutput.component';
@@ -41,7 +42,7 @@ let baseComponents = [QueryComponent, ComponentHostDirective, QueryOutputCompone
 /* Insights */
 let insightComponents = Registry.as<IInsightRegistry>(Extensions.InsightContribution).getAllCtors();
 
-export const QueryOutputModule = (params: IBootstrapParams, selector: string): Type<any> => {
+export const QueryOutputModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): Type<any> => {
 
 	@NgModule({
 		imports: [
@@ -68,7 +69,8 @@ export const QueryOutputModule = (params: IBootstrapParams, selector: string): T
 		],
 		providers: [
 			{ provide: IBootstrapParams, useValue: params },
-			{ provide: ISelector, useValue: selector }
+			{ provide: ISelector, useValue: selector },
+			...providerIterator(instantiationService)
 		]
 	})
 	class ModuleClass {

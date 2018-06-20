@@ -7,12 +7,14 @@
 import { ApplicationRef, ComponentFactoryResolver, NgModule, Inject, forwardRef, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
+import { SlickGrid } from 'angular2-slickgrid';
 
 import { EditDataComponent } from 'sql/parts/grid/views/editData/editData.component';
-import { SlickGrid } from 'angular2-slickgrid';
-import { IBootstrapParams, ISelector } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
 
-export const EditDataModule = (params: IBootstrapParams, selector: string): Type<any> => {
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+
+export const EditDataModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): Type<any> => {
 
 	@NgModule({
 
@@ -31,7 +33,8 @@ export const EditDataModule = (params: IBootstrapParams, selector: string): Type
 		],
 		providers: [
 			{ provide: IBootstrapParams, useValue: params },
-			{ provide: ISelector, useValue: selector }
+			{ provide: ISelector, useValue: selector },
+			...providerIterator(instantiationService)
 		]
 	})
 	class ModuleClass {

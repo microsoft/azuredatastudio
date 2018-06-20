@@ -14,7 +14,7 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 import CustomUrlSerializer from 'sql/common/urlSerializer';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { Extensions as ComponentExtensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
-import { IBootstrapParams, ISelector } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 
@@ -81,6 +81,7 @@ import { TasksWidget } from 'sql/parts/dashboard/widgets/tasks/tasksWidget.compo
 import { InsightsWidget } from 'sql/parts/dashboard/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/parts/dashboard/widgets/webview/webviewWidget.component';
 import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
+import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
 
 let widgetComponents = [
 	PropertiesWidgetComponent,
@@ -109,7 +110,7 @@ const appRoutes: Routes = [
 ];
 
 // Connection Dashboard main angular module
-export const DashboardModule = (params, selector: string): any => {
+export const DashboardModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 	@NgModule({
 		declarations: [
 			...baseComponents,
@@ -141,7 +142,8 @@ export const DashboardModule = (params, selector: string): any => {
 			{ provide: CommonServiceInterface, useClass: DashboardServiceInterface },
 			{ provide: UrlSerializer, useClass: CustomUrlSerializer },
 			{ provide: IBootstrapParams, useValue: params },
-			{ provide: ISelector, useValue: selector }
+			{ provide: ISelector, useValue: selector },
+			...providerIterator(instantiationService)
 		]
 	})
 	class ModuleClass {

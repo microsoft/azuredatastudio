@@ -12,9 +12,11 @@ import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+
 import { TaskDialogComponent } from 'sql/parts/tasks/dialog/taskDialog.component';
 import { CreateDatabaseComponent } from 'sql/parts/admin/database/create/createDatabase.component';
-import { IBootstrapParams, ISelector } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
 
 // Setup routes for various child components
 const appRoutes: Routes = [
@@ -27,7 +29,7 @@ const appRoutes: Routes = [
 	{ path: '**', component: CreateDatabaseComponent }
 ];
 
-export const TaskDialogModule = (params: IBootstrapParams, selector: string): Type<any> => {
+export const TaskDialogModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): Type<any> => {
 	@NgModule({
 		declarations: [
 			TaskDialogComponent,
@@ -43,7 +45,8 @@ export const TaskDialogModule = (params: IBootstrapParams, selector: string): Ty
 		providers: [
 			{ provide: APP_BASE_HREF, useValue: '/' },
 			{ provide: IBootstrapParams, useValue: params },
-			{ provide: ISelector, useValue: selector }
+			{ provide: ISelector, useValue: selector },
+			...providerIterator(instantiationService)
 		]
 	})
 	class ModuleClass {

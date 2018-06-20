@@ -64,33 +64,18 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	private _numberOfPageNavigations = 0;
 
 	constructor(
-		@Inject(forwardRef(() => Router)) private _router: Router,
-		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(IMetadataService) metadataService: IMetadataService,
 		@Inject(IConnectionManagementService) connectionManagementService: IConnectionManagementService,
 		@Inject(IAdminService) adminService: IAdminService,
 		@Inject(IQueryManagementService) queryManagementService: IQueryManagementService,
+		@Inject(IBootstrapParams) params: IDashboardComponentParams,
+		@Inject(forwardRef(() => Router)) private _router: Router,
+		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
-		@Inject(IConfigurationService) private _configService: IConfigurationService,
-		@Inject(IBootstrapParams) _params: IDashboardComponentParams
+		@Inject(IConfigurationService) private _configService: IConfigurationService
 	) {
-		super(_params, metadataService, connectionManagementService, adminService, queryManagementService);
-		this.scopedContextKeyService = this.params.scopedContextService;
-		this._connectionContextKey = this.params.connectionContextKey;
+		super(params, metadataService, connectionManagementService, adminService, queryManagementService);
 		this.dashboardContextKey = this._dashboardContextKey.bindTo(this.scopedContextKeyService);
-		this.uri = this.params.ownerUri;
-	}
-
-	private get params(): IDashboardComponentParams {
-		return this._params;
-	}
-
-	/**
-	 * Set the uri for this dashboard instance, should only be set once
-	 * Inits all the services that depend on knowing a uri
-	 */
-	protected set uri(uri: string) {
-		super.setUri(uri);
 		this._register(toDisposableSubscription(this.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
 	}
 
