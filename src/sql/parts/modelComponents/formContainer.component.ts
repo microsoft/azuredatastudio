@@ -61,7 +61,7 @@ class FormItem {
 					<div class="form-vertical-container" *ngIf="isVertical(item)" [style.height]="getRowHeight(item)">
 						<div class="form-item-row">{{getItemTitle(item)}}</div>
 						<div class="form-item-row" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
-							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
+							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [width]="getComponentWidth(item)" [height]="getRowHeight(item)">
 							</model-component-wrapper>
 						</div>
 						<div *ngIf="itemHasActions(item)" class="form-item-row form-actions-table form-item-last-row">

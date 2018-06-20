@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 // import 'vs/css!./modelViewContent';
 
-import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { Parts } from 'vs/workbench/services/part/common/partService';
@@ -19,13 +19,15 @@ import { IModelView } from 'sql/services/model/modelViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { ViewBase } from 'sql/parts/modelComponents/viewBase';
 import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
+import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
+import * as DOM from 'vs/base/browser/dom';
 
 import * as sqlops from 'sqlops';
 
 @Component({
 	selector: 'modelview-content',
 	template: `
-		<div *ngIf="rootDescriptor" style="width: 100%; height: 100%;">
+		<div #container *ngIf="rootDescriptor" style="width: 100%; height: 100%;">
 			<model-component-wrapper [descriptor]="rootDescriptor" [modelStore]="modelStore">
 			</model-component-wrapper>
 		</div>
@@ -40,8 +42,10 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 	public readonly onMessage: Event<string> = this._onMessage.event;
 
 	private _onMessageDisposable: IDisposable;
-
+	@ViewChild(ModelComponentWrapper) private _modelComponentWrapper: ModelComponentWrapper;
+	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 	constructor(
+
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IModelViewService) private modelViewService: IModelViewService
@@ -62,6 +66,11 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 	}
 
 	public layout(): void {
+		let height = DOM.getContentHeight(this._container.nativeElement);
+		let width = DOM.getContentWidth(this._container.nativeElement);
+		this._modelComponentWrapper.height = height + 'px';
+		this._modelComponentWrapper.width = width + 'px';
+		this._modelComponentWrapper.layout();
 		this.changeRef.detectChanges();
 	}
 

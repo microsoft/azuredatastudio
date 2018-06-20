@@ -40,13 +40,17 @@ export interface ModelComponentParams extends IBootstrapParams {
 @Component({
 	selector: 'model-component-wrapper',
 	template: `
+		<div #container>
 		<ng-template component-host>
 		</ng-template>
+		</div>
 	`
 })
 export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
+	@Input() height: string;
+	@Input() width: string;
 
 	@memoize
 	public get guid(): string {
@@ -55,8 +59,11 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 
 	private _componentInstance: IComponent;
 	private _modelViewId: string;
+	//public height: string;
+	//public width: string;
 
 	@ViewChild(ComponentHostDirective) componentHost: ComponentHostDirective;
+	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
@@ -71,7 +78,7 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 			this._modelViewId = _params.modelViewId;
 			_params.onLayoutRequested(modelViewId => {
 				if (modelViewId === this._modelViewId) {
-					this.layout();
+					//this.layout();
 				}
 			});
 		}
@@ -95,6 +102,12 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 
 	public layout(): void {
 		if (this._componentInstance && this._componentInstance.layout) {
+			if (this.height) {
+				this._container.nativeElement.style.height = this.height;
+			}
+			if (this.width) {
+				this._container.nativeElement.style.width = this.width;
+			}
 			this._componentInstance.layout();
 		}
 	}
