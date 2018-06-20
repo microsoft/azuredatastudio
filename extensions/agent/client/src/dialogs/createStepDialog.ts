@@ -59,6 +59,7 @@ export class CreateStepDialog {
 	private retryIntervalBox: sqlops.InputBoxComponent;
 	private appendToExistingFileCheckbox: sqlops.CheckBoxComponent;
 	private logToTableCheckbox: sqlops.CheckBoxComponent;
+	private outputFileNameBox: sqlops.InputBoxComponent;
 
 	private flexButtonsModel;
 	private overallContainer;
@@ -107,9 +108,6 @@ export class CreateStepDialog {
 				label: CreateStepDialog.PasteCommandText,
 				width: '55px'
 			}).component();
-		this.pasteButton.onDidClick(() => {
-			return vscode.commands.executeCommand('editor.action.clipboardPasteAction');
-		});
 		this.parseButton = view.modelBuilder.button()
 			.withProperties({
 				label: CreateStepDialog.ParseCommandText,
@@ -166,6 +164,7 @@ export class CreateStepDialog {
 					values: ['']
 				})
 				.component();
+			this.runAsDropdown.enabled = false;
 			this.typeDropdown.onValueChanged((type) => {
 				if (type.selected !== CreateStepDialog.TSQLScript) {
 					this.runAsDropdown.value = CreateStepDialog.AgentServiceAccount;
@@ -177,7 +176,6 @@ export class CreateStepDialog {
 			});
 			this.databaseDropdown = view.modelBuilder.dropDown()
 			.withProperties({
-				width: 320,
 				value: databases[0],
 				values: databases
 			}).component();
@@ -239,17 +237,24 @@ export class CreateStepDialog {
 
 	private createRunAsUserOptions(view) {
 		let userInputBox = view.modelBuilder.inputBox()
-			.withProperties({ inputType: 'text'}).component();
+			.withProperties({ inputType: 'text', width: '100px' }).component();
 		let viewButton = view.modelBuilder.button()
-			.withProperties({label: '...', width: '50px'}).component();
+			.withProperties({label: '...', width: '20px'}).component();
+		let viewButtonContainer = view.modelBuilder.flexContainer()
+			.withLayout({ width: 100, textAlign: 'right'})
+			.withItems([viewButton], { flex: '1 1 50%'}).component();
+		let userInputBoxContainer = view.modelBuilder.flexContainer()
+			.withLayout({ width: 200, textAlign: 'left' })
+			.withItems([userInputBox], { flex: '1 1 50%'}).component();
 		let runAsUserContainer = view.modelBuilder.flexContainer()
-			.withLayout({ width: 300, justifyContent: 'space-between' })
-			.withItems([userInputBox, viewButton], { flex: '1 1 50%'}).component();
+			.withLayout({ width: 200})
+			.withItems([userInputBoxContainer, viewButtonContainer],{ flex: '1 1 50%'})
+			.component();
 		let runAsUserForm = view.modelBuilder.formContainer()
 			.withFormItems([{
 				component: runAsUserContainer,
 				title: 'Run as user'
-			}], { horizontal: true, componentWidth: 300 }).component();
+			}], { horizontal: true, componentWidth: 200 }).component();
 		return runAsUserForm;
 	}
 
@@ -271,12 +276,18 @@ export class CreateStepDialog {
 			let optionsGroup = this.createTSQLOptions(view);
 			let viewButton = view.modelBuilder.button()
 				.withProperties({ label: 'View', width: '50px'}).component();
+			viewButton.enabled = false;
 			this.logToTableCheckbox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: 'Log to table'
 				}).component();
 			let appendToExistingEntryInTableCheckbox = view.modelBuilder.checkBox()
 				.withProperties({ label: 'Append output to existing entry in table'}).component();
+			appendToExistingEntryInTableCheckbox.enabled = false;
+			this.logToTableCheckbox.onChanged(e => {
+				viewButton.enabled = e;
+				appendToExistingEntryInTableCheckbox.enabled = e;
+			});
 			let appendCheckboxContainer = view.modelBuilder.groupContainer()
 				.withItems([appendToExistingEntryInTableCheckbox]).component();
 			let logToTableContainer = view.modelBuilder.flexContainer()
@@ -359,15 +370,10 @@ export class CreateStepDialog {
 		return retryFlexContainer;
 	}
 
-	private createLoggingOptions(view) {
-
-	}
-
-
 	private createTSQLOptions(view) {
 		let outputFileBrowserButton = view.modelBuilder.button()
 			.withProperties({width: '20px', label: '...'}).component();
-		let outputFileNameBox = view.modelBuilder.inputBox()
+		this.outputFileNameBox = view.modelBuilder.inputBox()
 			.withProperties({
 				width: '100px',
 				inputType: 'text'
@@ -377,25 +383,32 @@ export class CreateStepDialog {
 				width: '50px',
 				label: 'View'
 			}).component();
+		outputViewButton.enabled = false;
 		let outputButtonContainer = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row',
-				justifyContent: 'space-between',
-				width: 200
-			}).withItems([outputFileNameBox, outputFileBrowserButton], { flex: '1 1 50%'}).component();
+				textAlign: 'right',
+				width: 120
+			}).withItems([outputFileBrowserButton, outputViewButton], { flex: '1 1 50%'}).component();
 		let outputFlexBox = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row',
-				alignItems: 'center',
-				justifyContent: 'space-between',
-				width: 300
-			}).withItems([outputButtonContainer, outputViewButton], {
+				width: 350
+			}).withItems([this.outputFileNameBox, outputButtonContainer], {
 				flex: '1 1 50%'
 			}).component();
 		this.appendToExistingFileCheckbox = view.modelBuilder.checkBox()
 			.withProperties({
 				label: 'Append output to existing file'
 			}).component();
+		this.appendToExistingFileCheckbox.enabled = false;
+		this.outputFileNameBox.onTextChanged((input) => {
+			if (input !== '') {
+				this.appendToExistingFileCheckbox.enabled = true;
+			} else {
+				this.appendToExistingFileCheckbox.enabled = false;
+			}
+		});
 		let outputFileForm = view.modelBuilder.formContainer()
 			.withFormItems([{
 					component: outputFlexBox,
@@ -409,14 +422,14 @@ export class CreateStepDialog {
 
 	private async execute() {
 		this.model.stepName = this.nameTextBox.value;
-		this.model.subSystem = this.typeDropdown.value;
-		this.model.databaseName = this.databaseDropdown.value;
+		this.model.subSystem = this.typeDropdown.value as string;
+		this.model.databaseName = this.databaseDropdown.value as string;
 		this.model.jobId = this.jobId;
 		this.model.script = this.commandTextBox.value;
-		this.model.successAction = this.successActionDropdown.value;
+		this.model.successAction = this.successActionDropdown.value as string;
 		this.model.retryAttempts = +this.retryAttemptsBox.value;
 		this.model.retryInterval = +this.retryIntervalBox.value;
-		this.model.failureAction = this.failureActionDropdown.value;
+		this.model.failureAction = this.failureActionDropdown.value as string;
 		//this.model.outputFileName = this.outputFileNameBox;
 
 		await this.model.save();

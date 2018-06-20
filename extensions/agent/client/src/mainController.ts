@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
 import { ApiWrapper } from './apiWrapper';
 import { CreateJobDialog } from './dialogs/createJobDialog';
 import { CreateStepDialog } from './dialogs/createStepDialog';
