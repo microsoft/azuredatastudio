@@ -52,6 +52,7 @@ export interface IProductConfiguration {
 	};
 	documentationUrl: string;
 	releaseNotesUrl: string;
+	// {SQL CARBON EDIT}
 	gettingStartedUrl: string;
 	keyboardShortcutsUrlMac: string;
 	keyboardShortcutsUrlLinux: string;
