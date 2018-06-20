@@ -512,6 +512,7 @@ class CardWrapper extends ComponentWrapper implements sqlops.CardComponent {
 		super(proxy, handle, ModelComponentTypes.Card, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
 	}
 
 	public get label(): string {
@@ -526,14 +527,50 @@ class CardWrapper extends ComponentWrapper implements sqlops.CardComponent {
 	public set value(v: string) {
 		this.setProperty('value', v);
 	}
+	public get selected(): boolean {
+		return this.properties['selected'];
+	}
+	public set selected(v: boolean) {
+		this.setProperty('selected', v);
+	}
+	public get selectable(): boolean {
+		return this.properties['selectable'];
+	}
+	public set selectable(v: boolean) {
+		this.setProperty('selectable', v);
+	}
 	public get actions(): sqlops.ActionDescriptor[] {
 		return this.properties['actions'];
 	}
 	public set actions(a: sqlops.ActionDescriptor[]) {
 		this.setProperty('actions', a);
 	}
+	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+		return this.properties['iconPath'];
+	}
+	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+		this.setProperty('iconPath', v);
+	}
+
+	public get iconHeight(): number | string {
+		return this.properties['iconHeight'];
+	}
+	public set iconHeight(v: number | string) {
+		this.setProperty('iconHeight', v);
+	}
+	public get iconWidth(): number | string {
+		return this.properties['iconWidth'];
+	}
+	public set iconWidth(v: number | string) {
+		this.setProperty('iconWidth', v);
+	}
 
 	public get onDidActionClick(): vscode.Event<sqlops.ActionDescriptor> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+
+	public get onCardSelectedChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}

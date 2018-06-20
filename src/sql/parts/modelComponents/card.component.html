@@ -1,19 +1,32 @@
-<div *ngIf="label" class="model-card">
+<div *ngIf="label" class="model-card" (click)="onCardClick()" [style.border-color]="getBorderColor()" (mouseover)="onCardHoverChanged($event)" (mouseout)="onCardHoverChanged($event)">
 	<span *ngIf="hasStatus" class="card-status">
 		<div class="status-content" [style.backgroundColor]="statusColor"></div>
 	</span>
-	<div class="card-content">
-		<h4 class="card-label">{{label}}</h4>
-		<p class="card-value">{{value}}</p>
-		<span *ngIf="actions">
-			<table class="model-table">
-				<tr *ngFor="let action of actions">
-					<td class="table-row">{{action.label}}</td>
-					<td *ngIf="action.actionTitle" class="table-row">
-						<a class="pointer prominent" (click)="onDidActionClick(action)">{{action.actionTitle}}</a>
-					</td>
-				</tr>
-			</table>
-		</span>
-	</div>
+
+		<ng-container *ngIf="layoutType1">
+			<div class="card-content2">
+				<div *ngIf="iconPath" class="iconContainer"><div [class]="iconClass" [style.width]="iconWidth" [style.height]="iconHeight"></div>
+				<hr/>
+				<h4 class="card-label">{{label}}</h4>
+				</div>
+			</div>
+		</ng-container>
+
+		<ng-container *ngIf="layoutType2">
+				<div class="card-content">
+					<h4 class="card-label">{{label}}</h4>
+					<p class="card-value">{{value}}</p>
+					<span *ngIf="actions">
+						<table class="model-table">
+							<tr *ngFor="let action of actions">
+								<td class="table-row">{{action.label}}</td>
+								<td *ngIf="action.actionTitle" class="table-row">
+									<a class="pointer prominent" (click)="onDidActionClick(action)">{{action.actionTitle}}</a>
+								</td>
+							</tr>
+						</table>
+					</span>
+			</div>
+		</ng-container>
+
 </div>

@@ -195,6 +195,8 @@ export interface CardProperties {
 	value?: string;
 	actions?: ActionDescriptor[];
 	status?: StatusIndicator;
+	selectable?: boolean;
+	selected?: boolean;
 }
 
 export interface ActionDescriptor {

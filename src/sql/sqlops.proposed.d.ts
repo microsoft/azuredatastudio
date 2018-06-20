@@ -300,7 +300,7 @@ declare module 'sqlops' {
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
 	 */
-	export interface CardProperties {
+	export interface CardProperties extends ComponentWithIcon {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
@@ -310,6 +310,12 @@ declare module 'sqlops' {
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
 
 	export interface ComponentProperties {
+		height?: number | string;
+		width?: number | string;
+	}
+
+	export interface ComponentWithIcon {
+		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 		height?: number | string;
 		width?: number | string;
 	}
@@ -389,20 +395,17 @@ declare module 'sqlops' {
 		html?: string;
 	}
 
-	export interface ButtonProperties extends ComponentProperties {
+	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
 		label?: string;
-		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 	}
 
 	export interface LoadingComponentProperties {
 		loading?: boolean;
 	}
 
-	export interface CardComponent extends Component {
-		label: string;
-		value: string;
-		actions?: ActionDescriptor[];
+	export interface CardComponent extends Component, CardProperties {
 		onDidActionClick: vscode.Event<ActionDescriptor>;
+		onCardSelectedChanged: vscode.Event<any>;
 	}
 
 	export interface TextComponent extends Component {
