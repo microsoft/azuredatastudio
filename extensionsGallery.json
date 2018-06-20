@@ -380,59 +380,107 @@
 								{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
 								{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Matticusau/sqlops-mssql-db-insights"}
 							]
-				  }
-				],
-				"statistics": [],
-				"flags": "preview"
-				  },
-			  {
-								"extensionId": "19",
-								"extensionName": "sqldw-insights",
-								"displayName": "Azure SQL Data Warehouse Insights",
-								"shortDescription": "Azure SQL Data Warehouse Insights for SQL Operations Studio",
-								"publisher": {
-									"displayName": "Microsoft",
-									"publisherId": "Microsoft",
-									"publisherName": "Microsoft"
+				  	}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "18",
+					"extensionName": "profiler",
+					"displayName": "SQL Server Profiler",
+					"shortDescription": "SQL Server Profiler for SQL Operations Studio",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.1.1",
+							"lastUpdated": "6/19/2018",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+								"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.1.1.vsix"
 								},
-								"versions": [
-									{
-										"version": "0.0.1",
-										"lastUpdated": "5/31/2018",
-										"assetUri": "",
-										"fallbackAssetUri": "fallbackAssetUri",
-											"files": [
-											{
-												"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-												"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sqldwInsights/sql-dw-0.0.1.vsix"
-											},
-											{
-												"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-												"source": "https://raw.github.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/MonitoringScripts/sqldw_icon.png"
-											},
-											{
-												"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-												"source": "https://raw.github.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/README.md"
-											},
-											{
-												"assetType": "Microsoft.VisualStudio.Code.Manifest",
-												"source": "https://raw.github.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/package.json"
-											},
-											{
-												"assetType": "Microsoft.VisualStudio.Services.Content.License",
-												"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt"
-											}
-										],
-										"properties": [
-											{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
-											{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
-											{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Microsoft/sql-data-warehouse-samples/tree/master/samples/sqlops/MonitoringScripts"}
-										]
-									}
-								],
-								"statistics": [],
-								"flags": "preview"
-							}
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/profiler/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/profiler/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value": "Microsoft.mssql" },
+								{ "key": "Microsoft.VisualStudio.Code.Engine", "value": ">=0.30.2" },
+								{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Microsoft/sqlopsstudio"}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "19",
+					"extensionName": "sqldw-insights",
+					"displayName": "Azure SQL Data Warehouse Insights",
+					"shortDescription": "Azure SQL Data Warehouse Insights for SQL Operations Studio",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.0.1",
+							"lastUpdated": "5/31/2018",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+								"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sqldwInsights/sql-dw-0.0.1.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.github.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/MonitoringScripts/sqldw_icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.github.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.github.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+								{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
+								{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Microsoft/sql-data-warehouse-samples/tree/master/samples/sqlops/MonitoringScripts"}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				}
 		],
 		"resultMetadata": [{
 			"metadataType": "ResultCount",
