@@ -316,7 +316,7 @@ export function createApiFactory(
 				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
 					return extHostModelViewDialog.createWizard(title);
 				},
-				MessageLevel: sqlops.window.modelviewdialog.MessageLevel
+				MessageLevel: sqlExtHostTypes.MessageLevel
 			};
 
 			const window: typeof sqlops.window = {
