@@ -239,11 +239,13 @@ declare module 'sqlops' {
 		horizontal?: boolean;
 		componentWidth?: number | string;
 		componentHeight?: number | string;
+		titleFontSize?: number;
 	}
 
 	export interface FormLayout {
 		width?: number | string;
 		height?: number | string;
+		padding?: string;
 	}
 
 	export interface GroupLayout {

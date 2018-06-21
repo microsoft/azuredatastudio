@@ -25,6 +25,7 @@ export interface TitledFormItemLayout {
 	horizontal: boolean;
 	componentWidth?: number | string;
 	componentHeight?: number | string;
+	titleFontSize?: number;
 }
 
 export interface FormLayout {
@@ -37,12 +38,12 @@ class FormItem {
 
 @Component({
 	template: `
-		<div #container *ngIf="items" class="form-table" [style.width]="getFormWidth()" [style.height]="getFormHeight()">
+		<div #container *ngIf="items" class="form-table" [style.padding]="getFormPadding()" [style.width]="getFormWidth()" [style.height]="getFormHeight()">
 			<ng-container *ngFor="let item of items">
 			<div class="form-row" *ngIf="isFormComponent(item)" [style.height]="getRowHeight(item)">
 
 					<ng-container *ngIf="isHorizontal(item)">
-						<div class="form-cell">{{getItemTitle(item)}}</div>
+						<div class="form-cell" [style.font-size]="getItemTitleFontSize(item)">{{getItemTitle(item)}}</div>
 						<div class="form-cell">
 							<div class="form-component-container">
 								<div [style.width]="getComponentWidth(item)" [ngClass]="{'form-input-flex': !getComponentWidth(item)}">
@@ -59,7 +60,7 @@ class FormItem {
 						</div>
 					</ng-container>
 					<div class="form-vertical-container" *ngIf="isVertical(item)" [style.height]="getRowHeight(item)">
-						<div class="form-item-row">{{getItemTitle(item)}}</div>
+						<div class="form-item-row" [style.font-size]="getItemTitleFontSize(item)">{{getItemTitle(item)}}</div>
 						<div class="form-item-row" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							</model-component-wrapper>
@@ -121,6 +122,10 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		return this.convertSize(this._formLayout && this._formLayout.width, '');
 	}
 
+	private getFormPadding(): string {
+		return this._formLayout && this._formLayout.padding ? this._formLayout.padding : '10px 30px 0px 30px';
+	}
+
 	private getFormHeight(): string {
 		return this.convertSize(this._formLayout && this._formLayout.height, '');
 	}
@@ -138,6 +143,11 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	private getItemTitle(item: FormItem): string {
 		let itemConfig = item.config;
 		return itemConfig ? itemConfig.title : '';
+	}
+
+	private getItemTitleFontSize(item: FormItem): string {
+		let itemConfig = item.config;
+		return itemConfig && itemConfig.titleFontSize ? this.convertSize(itemConfig.titleFontSize, '13px') : '13px';
 	}
 
 	private getActionComponents(item: FormItem): FormItem[] {
