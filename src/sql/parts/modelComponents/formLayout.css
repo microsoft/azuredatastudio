@@ -37,6 +37,11 @@
 	flex: 1;
 }
 
+.form-required {
+	color: red;
+	padding-left: 5px;
+}
+
 .form-component-actions {
 	padding-left: 5px;
 }

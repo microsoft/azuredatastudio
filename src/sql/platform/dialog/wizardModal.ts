@@ -24,6 +24,7 @@ import { localize } from 'vs/nls';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { DialogMessage, MessageLevel } from '../../workbench/api/common/sqlExtHostTypes';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -58,12 +59,19 @@ export class WizardModal extends Modal {
 	}
 
 	public render() {
-		super.render();
+		super.render(true);
 		attachModalDialogStyler(this, this._themeService);
 
 		if (this.backButton) {
 			this.backButton.onDidClick(() => this.cancel());
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
+		}
+
+		if (this._wizard.customButtons) {
+			this._wizard.customButtons.forEach(button => {
+				let buttonElement = this.addDialogButton(button);
+				this.updateButtonElement(buttonElement, button);
+			});
 		}
 
 		this._previousButton = this.addDialogButton(this._wizard.backButton, () => this.showPage(this.getCurrentPage() - 1));
@@ -73,6 +81,17 @@ export class WizardModal extends Modal {
 		this._wizard.doneButton.registerClickEvent(this._onDone.event);
 		this._cancelButton = this.addDialogButton(this._wizard.cancelButton, () => this.cancel(), false);
 		this._wizard.cancelButton.registerClickEvent(this._onCancel.event);
+
+		let messageChangeHandler = (message: DialogMessage) => {
+			if (message && message.text) {
+				this.setError(message.text, message.level);
+			} else {
+				this.setError('');
+			}
+		};
+
+		messageChangeHandler(this._wizard.message);
+		this._wizard.onMessageChange(message => messageChangeHandler(message));
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true): Button {
@@ -100,7 +119,6 @@ export class WizardModal extends Modal {
 			this._body = bodyBuilder.getHTMLElement();
 		});
 
-		let builder = new Builder(this._body);
 		this._wizard.pages.forEach(page => {
 			this.registerPage(page);
 		});
