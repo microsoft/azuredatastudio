@@ -650,7 +650,7 @@ declare module 'sqlops' {
 				 * Set the informational message shown in the dialog. Hidden when the message is
 				 * undefined or the text is empty or undefined. The default level is error.
 				 */
-				message: DialogMessage
+				message: DialogMessage;
 			}
 
 			export interface DialogTab extends ModelViewPanel {
