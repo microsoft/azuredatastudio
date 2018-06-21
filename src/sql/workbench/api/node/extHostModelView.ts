@@ -377,7 +377,8 @@ class ComponentWrapper implements sqlops.Component {
 	}
 
 	public get enabled(): boolean {
-		return this.properties['enabled'];
+		let isEnabled = this.properties['enabled'];
+		return (isEnabled === undefined) ? true : isEnabled;
 	}
 
 	public set enabled(value: boolean) {
