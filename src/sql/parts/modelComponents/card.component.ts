@@ -94,6 +94,9 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		return this._iconClass + ' icon' + ' cardIcon';
 	}
 
+	private get selectable(): boolean {
+		return this.cardType === 'selectableCard';
+	}
 
 	// CSS-bound properties
 
@@ -105,8 +108,8 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		return this.getPropertyOrDefault<CardProperties, string>((props) => props.value, '');
 	}
 
-	public get selectable(): boolean {
-		return this.getPropertyOrDefault<CardProperties, boolean>((props) => props.selectable, false);
+	public get cardType(): string {
+		return this.getPropertyOrDefault<CardProperties, string>((props) => props.cardType, 'actionCard');
 	}
 
 	public get selected(): boolean {
@@ -117,12 +120,12 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		this.setPropertyFromUI<sqlops.CardProperties, boolean>((props, value) => props.selected = value, newValue);
 	}
 
-	public get layoutType2(): boolean {
-		return true;
+	public get isActionCard(): boolean {
+		return !this.cardType || this.cardType === 'actionCard';
 	}
 
-	public get layoutType1(): boolean {
-		return false;
+	public get isSelectableCard(): boolean {
+		return this.cardType === 'selectableCard';
 	}
 
 

@@ -15,7 +15,7 @@ import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, CardType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
@@ -533,11 +533,11 @@ class CardWrapper extends ComponentWrapper implements sqlops.CardComponent {
 	public set selected(v: boolean) {
 		this.setProperty('selected', v);
 	}
-	public get selectable(): boolean {
-		return this.properties['selectable'];
+	public get cardType(): sqlops.CardType {
+		return this.properties['cardType'];
 	}
-	public set selectable(v: boolean) {
-		this.setProperty('selectable', v);
+	public set cardType(v: sqlops.CardType) {
+		this.setProperty('cardType', v);
 	}
 	public get actions(): sqlops.ActionDescriptor[] {
 		return this.properties['actions'];

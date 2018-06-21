@@ -296,6 +296,11 @@ declare module 'sqlops' {
 		Error = 3
 	}
 
+	export enum CardType {
+		actionCard = 'actionCard',
+		selecableCard = 'selectableCard'
+	}
+
 	/**
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
@@ -305,6 +310,8 @@ declare module 'sqlops' {
 		value?: string;
 		actions?: ActionDescriptor[];
 		status?: StatusIndicator;
+		selected?: boolean;
+		cardType: CardType;
 	}
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
@@ -316,8 +323,8 @@ declare module 'sqlops' {
 
 	export interface ComponentWithIcon {
 		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
-		height?: number | string;
-		width?: number | string;
+		iconHeight?: number | string;
+		iconWidth?: number | string;
 	}
 
 	export interface InputBoxProperties extends ComponentProperties {

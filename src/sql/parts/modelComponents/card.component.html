@@ -3,7 +3,7 @@
 		<div class="status-content" [style.backgroundColor]="statusColor"></div>
 	</span>
 
-		<ng-container *ngIf="layoutType1">
+		<ng-container *ngIf="isSelectableCard">
 			<div class="card-content2">
 				<div *ngIf="iconPath" class="iconContainer"><div [class]="iconClass" [style.width]="iconWidth" [style.height]="iconHeight"></div>
 				<hr/>
@@ -12,7 +12,7 @@
 			</div>
 		</ng-container>
 
-		<ng-container *ngIf="layoutType2">
+		<ng-container *ngIf="isActionCard">
 				<div class="card-content">
 					<h4 class="card-label">{{label}}</h4>
 					<p class="card-value">{{value}}</p>
