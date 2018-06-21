@@ -15,6 +15,7 @@ import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/pa
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { DialogModule } from 'sql/platform/dialog/dialog.module';
 import { DialogComponentParams } from 'sql/platform/dialog/dialogContainer.component';
+import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import * as DOM from 'vs/base/browser/dom';
 import { Builder } from 'vs/base/browser/builder';
