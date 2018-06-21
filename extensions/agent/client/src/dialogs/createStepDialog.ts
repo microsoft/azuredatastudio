@@ -60,6 +60,7 @@ export class CreateStepDialog {
 	private appendToExistingFileCheckbox: sqlops.CheckBoxComponent;
 	private logToTableCheckbox: sqlops.CheckBoxComponent;
 	private outputFileNameBox: sqlops.InputBoxComponent;
+	private outputFileBrowserButton: sqlops.ButtonComponent;
 
 	private flexButtonsModel;
 	private overallContainer;
@@ -67,14 +68,17 @@ export class CreateStepDialog {
 	private model: CreateStepData;
 	private ownerUri: string;
 	private jobId: string;
+	private server: string;
 
 	constructor(
 		ownerUri: string,
 		jobId: string,
+		server: string
 	) {
 		this.model = new CreateStepData(ownerUri);
 		this.ownerUri = ownerUri;
 		this.jobId = jobId;
+		this.server = server;
 	}
 
 	private initializeUIComponents() {
@@ -87,7 +91,7 @@ export class CreateStepDialog {
 		this.dialog.cancelButton.label = CreateStepDialog.CancelButtonText;
 	}
 
-	private createCommands(view) {
+	private createCommands(view, queryProvider: sqlops.QueryProvider) {
 		this.openButton = view.modelBuilder.button()
 			.withProperties({
 				label: CreateStepDialog.OpenCommandText,
@@ -113,6 +117,15 @@ export class CreateStepDialog {
 				label: CreateStepDialog.ParseCommandText,
 				width: '55px'
 			}).component();
+		this.parseButton.onDidClick(e => {
+			queryProvider.runQueryAndReturn(this.ownerUri, this.commandTextBox.value, true).then(result => {
+				if (result && result.parseable) {
+					// show parsed dialog!
+				} else if (result && !result.parseable) {
+					// show error dialog !
+				}
+			});
+		});
 		let text = view.modelBuilder.text()
 			.withProperties({
 				value: 'Command'
@@ -147,7 +160,7 @@ export class CreateStepDialog {
 			).withItems([this.flexButtonsModel, commandContainer]).component();
 	}
 
-	private createGeneralTab(databases: string[]) {
+	private createGeneralTab(databases: string[], queryProvider: sqlops.QueryProvider) {
 		this.generalTab.registerContent(async (view) => {
 			this.nameTextBox = view.modelBuilder.inputBox()
 				.withProperties({
@@ -181,7 +194,7 @@ export class CreateStepDialog {
 			}).component();
 
 			// create the commands section
-			this.createCommands(view);
+			this.createCommands(view, queryProvider);
 
 			this.nextButton = view.modelBuilder.button()
 			.withProperties({
@@ -258,7 +271,7 @@ export class CreateStepDialog {
 		return runAsUserForm;
 	}
 
-	private createAdvancedTab() {
+	private createAdvancedTab(fileBrowserService: sqlops.FileBrowserProvider) {
 		this.advancedTab.registerContent(async (view) => {
 			this.successActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
@@ -273,7 +286,7 @@ export class CreateStepDialog {
 					values: [CreateStepDialog.QuitJobReportingFailure, CreateStepDialog.NextStep, CreateStepDialog.QuitJobReportingSuccess]
 				})
 			.component();
-			let optionsGroup = this.createTSQLOptions(view);
+			let optionsGroup = this.createTSQLOptions(view, fileBrowserService);
 			let viewButton = view.modelBuilder.button()
 				.withProperties({ label: 'View', width: '50px'}).component();
 			viewButton.enabled = false;
@@ -370,9 +383,21 @@ export class CreateStepDialog {
 		return retryFlexContainer;
 	}
 
-	private createTSQLOptions(view) {
-		let outputFileBrowserButton = view.modelBuilder.button()
+	private createTSQLOptions(view, fileBrowserService: sqlops.FileBrowserProvider) {
+		this.outputFileBrowserButton = view.modelBuilder.button()
 			.withProperties({width: '20px', label: '...'}).component();
+		this.outputFileBrowserButton.onDidClick(() => {
+			fileBrowserService.openFileBrowser(this.ownerUri,
+				'C:\\Program Files\\Microsoft SQL Server\\MSSQL14.MSSQLSERVER\\MSSQL\\Backup',
+				['*'] , false).then(result => {
+				if (result) {
+					console.log(result);
+					Promise.resolve(result);
+				} else {
+					Promise.reject(false);
+				}
+			});
+		});
 		this.outputFileNameBox = view.modelBuilder.inputBox()
 			.withProperties({
 				width: '100px',
@@ -389,7 +414,7 @@ export class CreateStepDialog {
 				flexFlow: 'row',
 				textAlign: 'right',
 				width: 120
-			}).withItems([outputFileBrowserButton, outputViewButton], { flex: '1 1 50%'}).component();
+			}).withItems([this.outputFileBrowserButton, outputViewButton], { flex: '1 1 50%'}).component();
 		let outputFlexBox = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row',
@@ -421,25 +446,44 @@ export class CreateStepDialog {
 	}
 
 	private async execute() {
+		this.model.jobId = this.jobId;
+		this.model.server = this.server;
 		this.model.stepName = this.nameTextBox.value;
 		this.model.subSystem = this.typeDropdown.value as string;
 		this.model.databaseName = this.databaseDropdown.value as string;
-		this.model.jobId = this.jobId;
 		this.model.script = this.commandTextBox.value;
 		this.model.successAction = this.successActionDropdown.value as string;
 		this.model.retryAttempts = +this.retryAttemptsBox.value;
 		this.model.retryInterval = +this.retryIntervalBox.value;
 		this.model.failureAction = this.failureActionDropdown.value as string;
-		//this.model.outputFileName = this.outputFileNameBox;
-
+		this.model.outputFileName = this.outputFileNameBox.value;
 		await this.model.save();
+	}
+
+	private openFileBrowserDialog(rootNode, selectedNode) {
+	}
+
+	private onFileBrowserOpened(handle: number, fileBrowserOpenedParams: sqlops.FileBrowserOpenedParams) {
+		if (fileBrowserOpenedParams.succeeded === true
+			&& fileBrowserOpenedParams.fileTree
+			&& fileBrowserOpenedParams.fileTree.rootNode
+			&& fileBrowserOpenedParams.fileTree.selectedNode) {
+				this.openFileBrowserDialog(fileBrowserOpenedParams.fileTree.rootNode, fileBrowserOpenedParams.fileTree.selectedNode);
+			}
+		console.log('no response');
+		return;
 	}
 
 	public async openNewStepDialog() {
 		let databases = await AgentUtils.getDatabases(this.ownerUri);
+		let fileBrowserService =  await AgentUtils.getFileBrowserService(this.ownerUri);
+		let queryProvider = await AgentUtils.getQueryProvider(this.ownerUri);
+		fileBrowserService.registerOnFileBrowserOpened((response: sqlops.FileBrowserOpenedParams) => {
+			this.onFileBrowserOpened(fileBrowserService.handle, response);
+		});
 		this.initializeUIComponents();
-		this.createGeneralTab(databases);
-		this.createAdvancedTab();
+		this.createGeneralTab(databases, queryProvider);
+		this.createAdvancedTab(fileBrowserService);
 		sqlops.window.modelviewdialog.openDialog(this.dialog);
 	}
 }

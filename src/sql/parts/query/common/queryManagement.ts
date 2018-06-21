@@ -27,7 +27,7 @@ export interface IQueryManagementService {
 	runQuery(ownerUri: string, selection: sqlops.ISelectionData, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 	runQueryString(ownerUri: string, queryString: string): Thenable<void>;
-	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult>;
+	runQueryAndReturn(ownerUri: string, queryString: string, isParse: boolean): Thenable<sqlops.SimpleExecuteResult>;
 	getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult>;
 	disposeQuery(ownerUri: string): Thenable<void>;
 	saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult>;
@@ -62,7 +62,7 @@ export interface IQueryRequestHandler {
 	runQuery(ownerUri: string, selection: sqlops.ISelectionData, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 	runQueryString(ownerUri: string, queryString: string): Thenable<void>;
-	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult>;
+	runQueryAndReturn(ownerUri: string, queryString: string, isParse: boolean): Thenable<sqlops.SimpleExecuteResult>;
 	getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult>;
 	disposeQuery(ownerUri: string): Thenable<void>;
 	saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult>;
@@ -192,9 +192,9 @@ export class QueryManagementService implements IQueryManagementService {
 			return runner.runQueryString(ownerUri, queryString);
 		});
 	}
-	public runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> {
+	public runQueryAndReturn(ownerUri: string, queryString: string, isParse: boolean): Thenable<sqlops.SimpleExecuteResult> {
 		return this._runAction(ownerUri, (runner) => {
-			return runner.runQueryAndReturn(ownerUri, queryString);
+			return runner.runQueryAndReturn(ownerUri, queryString, isParse);
 		});
 	}
 	public getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> {

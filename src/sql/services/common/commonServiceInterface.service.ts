@@ -82,7 +82,7 @@ export class SingleQueryManagementService {
 	) { }
 
 	public runQueryAndReturn(queryString: string): Thenable<SimpleExecuteResult> {
-		return this._queryManagementService.runQueryAndReturn(this._uri, queryString);
+		return this._queryManagementService.runQueryAndReturn(this._uri, queryString, false);
 	}
 }
 

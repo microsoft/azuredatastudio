@@ -58,6 +58,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _jobCacheObject: JobCacheObject;
 	private _agentJobInfo: sqlops.AgentJobInfo;
 	private _noJobsAvailable: boolean = false;
+	private _serverName: string;
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
@@ -76,14 +77,14 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		this._treeRenderer = new JobHistoryRenderer();
 		this._treeFilter =  new JobHistoryFilter();
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
-		let serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
-		let jobCache = jobCacheObjectMap[serverName];
+		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
+		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
 			this._jobCacheObject = jobCache;
 		} else {
 			this._jobCacheObject = new JobCacheObject();
-			this._jobCacheObject.serverName = serverName;
-			this._jobManagementService.addToCache(serverName, this._jobCacheObject);
+			this._jobCacheObject.serverName = this._serverName;
+			this._jobManagementService.addToCache(this._serverName, this._jobCacheObject);
 		}
 	}
 
@@ -286,6 +287,10 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 
 	public get ownerUri(): string {
 		return this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+	}
+
+	public get serverName(): string {
+		return this._serverName;
 	}
 
 	/** SETTERS */

@@ -309,7 +309,7 @@ export class RunQueryShortcutAction extends Action {
 			if (this.canQueryProcMetadata(editor)) {
 				let dbName = this.getDatabaseName(editor);
 				let query = `exec dbo.sp_sproc_columns @procedure_name = N'${escapeSqlString(shortcutText, singleQuote)}', @procedure_owner = null, @procedure_qualifier = N'${escapeSqlString(dbName, singleQuote)}'`;
-				return this._queryManagementService.runQueryAndReturn(editor.uri, query)
+				return this._queryManagementService.runQueryAndReturn(editor.uri, query, false)
 					.then(result => {
 						switch (this.isProcWithSingleArgument(result)) {
 							case 1:

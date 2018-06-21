@@ -220,8 +220,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.QueryProvider>(handle).runQueryString(ownerUri, queryString);
 	}
 
-	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> {
-		return this._resolveProvider<sqlops.QueryProvider>(handle).runQueryAndReturn(ownerUri, queryString);
+	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string, isParse: boolean): Thenable<sqlops.SimpleExecuteResult> {
+		return this._resolveProvider<sqlops.QueryProvider>(handle).runQueryAndReturn(ownerUri, queryString, isParse);
 	}
 
 	$getQueryRows(handle: number, rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> {

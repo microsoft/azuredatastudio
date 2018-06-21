@@ -8,29 +8,29 @@ import { AgentUtils } from '../agentUtils';
 
 export class CreateStepData {
 	public ownerUri: string;
-	public jobId: string;
+	public jobId: string; //
 	public jobName: string;
-	public script: string;
+	public script: string; //
 	public scriptName: string;
-	public stepName: string;
-	public subSystem: string;
+	public stepName: string; //
+	public subSystem: string; //
 	public id: number;
-	public failureAction: string;
-	public successAction: string;
+	public failureAction: string; //
+	public successAction: string; //
 	public failStepId: number;
 	public successStepId: number;
 	public command: string;
 	public commandExecutionSuccessCode: number;
-	public databaseName: string;
+	public databaseName: string; //
 	public databaseUserName: string;
 	public server: string;
-	public outputFileName: string;
+	public outputFileName: string; //
 	public appendToLogFile: boolean;
 	public appendToStepHist: boolean;
 	public writeLogToTable: boolean;
 	public appendLogToTable: boolean;
-	public retryAttempts: number;
-	public retryInterval: number;
+	public retryAttempts: number; //
+	public retryInterval: number; //
 	public proxyName: string;
 
 	constructor(ownerUri:string) {

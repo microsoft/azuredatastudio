@@ -634,7 +634,7 @@ declare module 'sqlops' {
 		runQuery(ownerUri: string, selection: ISelectionData, runOptions?: ExecutionPlanOptions): Thenable<void>;
 		runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 		runQueryString(ownerUri: string, queryString: string): Thenable<void>;
-		runQueryAndReturn(ownerUri: string, queryString: string): Thenable<SimpleExecuteResult>;
+		runQueryAndReturn(ownerUri: string, queryString: string, isParse: boolean): Thenable<SimpleExecuteResult>;
 		getQueryRows(rowData: QueryExecuteSubsetParams): Thenable<QueryExecuteSubsetResult>;
 		disposeQuery(ownerUri: string): Thenable<void>;
 		saveResults(requestParams: SaveResultsRequestParams): Thenable<SaveResultRequestResult>;
@@ -761,12 +761,14 @@ declare module 'sqlops' {
 	export interface SimpleExecuteParams {
 		queryString: string;
 		ownerUri: string;
+		isParse: boolean;
 	}
 
 	export interface SimpleExecuteResult {
 		rowCount: number;
 		columnInfo: IDbColumn[];
 		rows: DbCellValue[][];
+		parseable: boolean;
 	}
 
 	// Query Batch Notification -----------------------------------------------------------------------

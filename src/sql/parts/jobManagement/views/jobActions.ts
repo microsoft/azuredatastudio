@@ -11,6 +11,7 @@ import Severity from 'vs/base/common/severity';
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
 import { IJobManagementService } from '../common/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IConnectionManagementService } from '../../connection/common/connectionManagement';
 
 export enum JobActions {
 	Run = 'run',
@@ -94,7 +95,8 @@ export class NewStepAction extends Action {
 
 	constructor(
 		@INotificationService private notificationService: INotificationService,
-		@ICommandService private _commandService: ICommandService
+		@ICommandService private _commandService: ICommandService,
+		@IConnectionManagementService private _connectionService
 	) {
 		super(NewStepAction.ID, NewStepAction.LABEL, 'newStepIcon');
 	}
@@ -102,8 +104,9 @@ export class NewStepAction extends Action {
 	public run(context: JobHistoryComponent): TPromise<boolean> {
 		let ownerUri = context.ownerUri;
 		let jobId = context.agentJobInfo.jobId;
+		let server = context.serverName;
 		return new TPromise<boolean>((resolve, reject) => {
-			resolve(this._commandService.executeCommand('agent.openNewStepDialog', ownerUri, jobId));
+			resolve(this._commandService.executeCommand('agent.openNewStepDialog', ownerUri, jobId, server));
 		});
 	}
 }

@@ -111,8 +111,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			runQueryString(ownerUri: string, queryString: string): Thenable<void> {
 				return self._proxy.$runQueryString(handle, ownerUri, queryString);
 			},
-			runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> {
-				return self._proxy.$runQueryAndReturn(handle, ownerUri, queryString);
+			runQueryAndReturn(ownerUri: string, queryString: string, isParse: boolean): Thenable<sqlops.SimpleExecuteResult> {
+				return self._proxy.$runQueryAndReturn(handle, ownerUri, queryString, isParse);
 			},
 			getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> {
 				return self._proxy.$getQueryRows(handle, rowData);

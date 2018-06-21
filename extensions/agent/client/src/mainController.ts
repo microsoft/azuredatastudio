@@ -38,9 +38,8 @@ export class MainController {
             let dialog = new CreateJobDialog(ownerUri);
             dialog.showDialog();
         });
-
-        vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, jobId: string) => {
-			let dialog = new CreateStepDialog(ownerUri, jobId);
+        vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, jobId: string, server: string) => {
+			let dialog = new CreateStepDialog(ownerUri, jobId, server);
 			dialog.openNewStepDialog();
 		});
 	}
