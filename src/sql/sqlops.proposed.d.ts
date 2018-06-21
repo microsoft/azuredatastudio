@@ -660,6 +660,15 @@ declare module 'sqlops' {
 				 * undefined or the text is empty or undefined. The default level is error.
 				 */
 				message: DialogMessage;
+
+				/**
+				 * Register a callback that will be called when the user tries to click done. Only
+				 * one callback can be registered at once, so each registration call will clear
+				 * the previous registration.
+				 * @param validator The callback that gets executed when the user tries to click
+				 * done. Return true to allow the dialog to close or false to block it from closing
+				 */
+				registerCloseValidator(validator: () => boolean | Thenable<boolean>): void;
 			}
 
 			export interface DialogTab extends ModelViewPanel {

@@ -94,6 +94,7 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdi
 	public cancelButton: sqlops.window.modelviewdialog.Button;
 	public customButtons: sqlops.window.modelviewdialog.Button[];
 	private _message: sqlops.window.modelviewdialog.DialogMessage;
+	private _closeValidator: () => boolean | Thenable<boolean>;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape) {
@@ -114,6 +115,18 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdi
 	public set message(value: sqlops.window.modelviewdialog.DialogMessage) {
 		this._message = value;
 		this._extHostModelViewDialog.updateDialogContent(this);
+	}
+
+	public registerCloseValidator(validator: () => boolean | Thenable<boolean>): void {
+		this._closeValidator = validator;
+	}
+
+	public validateClose(): Thenable<boolean> {
+		if (this._closeValidator) {
+			return Promise.resolve(this._closeValidator());
+		} else {
+			return Promise.resolve(true);
+		}
 	}
 }
 
@@ -372,6 +385,11 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	public $validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean> {
 		let wizard = this._objectsByHandle.get(handle) as WizardImpl;
 		return wizard.validateNavigation(info);
+	}
+
+	public $validateDialogClose(handle: number): Thenable<boolean> {
+		let dialog = this._objectsByHandle.get(handle) as DialogImpl;
+		return dialog.validateClose();
 	}
 
 	public openDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {

@@ -49,6 +49,7 @@ export class Dialog extends ModelViewPane {
 	private _onMessageChange = new Emitter<DialogMessage>();
 	public readonly onMessageChange = this._onMessageChange.event;
 	private _message: DialogMessage;
+	private _closeValidator: () => boolean | Thenable<boolean>;
 
 	constructor(public title: string, content?: string | DialogTab[]) {
 		super();
@@ -65,6 +66,18 @@ export class Dialog extends ModelViewPane {
 		if (this._message && !value || !this._message && value || this._message && value && (this._message.level !== value.level || this._message.text !== value.text)) {
 			this._message = value;
 			this._onMessageChange.fire(this._message);
+		}
+	}
+
+	public registerCloseValidator(validator: () => boolean | Thenable<boolean>): void {
+		this._closeValidator = validator;
+	}
+
+	public validateClose(): Thenable<boolean> {
+		if (this._closeValidator) {
+			return Promise.resolve(this._closeValidator());
+		} else {
+			return Promise.resolve(true);
 		}
 	}
 }
