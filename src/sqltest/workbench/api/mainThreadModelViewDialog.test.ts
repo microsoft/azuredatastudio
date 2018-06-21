@@ -60,7 +60,8 @@ suite('MainThreadModelViewDialog Tests', () => {
 			$onPanelValidityChanged: (handle, valid) => undefined,
 			$onWizardPageChanged: (handle, info) => undefined,
 			$updateWizardPageInfo: (wizardHandle, pageHandles, currentPageIndex) => undefined,
-			$validateNavigation: (handle, info) => undefined
+			$validateNavigation: (handle, info) => undefined,
+			$validateDialogClose: handle => undefined
 		});
 		let extHostContext = <IExtHostContext>{
 			getProxy: proxyType => mockExtHostModelViewDialog.object
@@ -346,5 +347,16 @@ suite('MainThreadModelViewDialog Tests', () => {
 		// Then the message gets changed on the wizard
 		assert.equal(newMessage, wizardDetails.message, 'New message was not included in the fired event');
 		assert.equal(openedWizard.message, wizardDetails.message, 'New message was not set on the wizard');
+	});
+
+	test('Creating a dialog adds a close validation that calls the extension host', () => {
+		mockExtHostModelViewDialog.setup(x => x.$validateDialogClose(It.isAny()));
+
+		// If I call validateClose on the dialog that gets created
+		mainThreadModelViewDialog.$openDialog(dialogHandle);
+		openedDialog.validateClose();
+
+		// Then the call gets forwarded to the extension host
+		mockExtHostModelViewDialog.verify(x => x.$validateDialogClose(It.is(handle => handle === dialogHandle)), Times.once());
 	});
 });

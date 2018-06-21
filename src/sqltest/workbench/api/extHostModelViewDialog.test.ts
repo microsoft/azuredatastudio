@@ -307,4 +307,23 @@ suite('ExtHostModelViewDialog Tests', () => {
 		// Then the main thread gets notified of the new details
 		mockProxy.verify(x => x.$setWizardDetails(It.isAny(), It.is(x => x.message === newMessage)), Times.once());
 	});
+
+	test('Main thread can execute dialog close validation', () => {
+		// Set up the main thread mock to record the dialog handle
+		let dialogHandle: number;
+		mockProxy.setup(x => x.$setDialogDetails(It.isAny(), It.isAny())).callback((handle, details) => dialogHandle = handle);
+
+		// Create the dialog and add a validation that records that it has been called
+		let dialog = extHostModelViewDialog.createDialog('dialog_1');
+		extHostModelViewDialog.updateDialogContent(dialog);
+		let callCount = 0;
+		dialog.registerCloseValidator(() => {
+			callCount++;
+			return true;
+		});
+
+		// If I call the validation from the main thread then it should run
+		extHostModelViewDialog.$validateDialogClose(dialogHandle);
+		assert.equal(callCount, 1);
+	});
 });
