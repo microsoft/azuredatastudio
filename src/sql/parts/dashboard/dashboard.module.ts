@@ -154,7 +154,6 @@ export const DashboardModule = (params, selector: string, instantiationService: 
 			@Inject(ITelemetryService) private telemetryService: ITelemetryService,
 			@Inject(ISelector) private selector: string
 		) {
-			console.log(selector);
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
