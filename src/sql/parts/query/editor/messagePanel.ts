@@ -30,8 +30,12 @@ export interface IResultMessageIntern extends IResultMessage {
 	id?: string;
 }
 
+interface IMessageTemplate {
+	timeStamp: HTMLElement;
+	message: HTMLElement;
+}
+
 const TemplateIds = {
-	TIMESTAMP: 'timestamp',
 	MESSAGE: 'message',
 	MODEL: 'model'
 };
@@ -134,19 +138,22 @@ class MessageRenderer implements IRenderer {
 		}
 	}
 
-	renderTemplate(tree: ITree, templateId: string, container: HTMLElement) {
+	renderTemplate(tree: ITree, templateId: string, container: HTMLElement): IMessageTemplate {
 		if (templateId === TemplateIds.MESSAGE) {
-			const message = $('div .message').getHTMLElement();
-			container.appendChild(message);
-			return message;
+			const timeStamp = $('div.time-stamp').appendTo(container).getHTMLElement();
+			const message = $('div.message').appendTo(container).getHTMLElement();
+			return { timeStamp, message };
 		} else {
 			return undefined;
 		}
 	}
 
-	renderElement(tree: ITree, element: IResultMessage, templateId: string, templateData: HTMLElement): void {
+	renderElement(tree: ITree, element: IResultMessage, templateId: string, templateData: IMessageTemplate): void {
 		if (templateId === TemplateIds.MESSAGE) {
-			templateData.innerText = element.message;
+			if (element.time) {
+				templateData.timeStamp.innerText = element.time;
+			}
+			templateData.message.innerText = element.message;
 		}
 	}
 

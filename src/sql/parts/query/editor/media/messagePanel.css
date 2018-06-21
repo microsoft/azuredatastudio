@@ -9,6 +9,15 @@
 	line-height: 18px;
     user-select: text;
     word-wrap: break-word;
-    white-space: pre-wrap;
+    /* white-space: pre-wrap; */
     word-break: break-all;
+}
+
+.message-tree .time-stamp {
+	width: 100px;
+	display: inline-block;
+}
+
+.message-tree .message {
+	display: inline-block;
 }
