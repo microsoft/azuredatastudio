@@ -6,6 +6,7 @@
 'use strict';
 
 import 'vs/css!./media/firewallRuleDialog';
+
 import { Builder, $ } from 'vs/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
@@ -22,6 +23,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
 
 import * as sqlops from 'sqlops';
+
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { FirewallRuleViewModel } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleViewModel';
@@ -224,7 +226,7 @@ export class FirewallRuleDialog extends Modal {
 		}
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: DOM.Dimension): void {
 		// Nothing currently laid out statically in this class
 	}
 

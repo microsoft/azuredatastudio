@@ -6,6 +6,7 @@
 'use strict';
 
 import 'vs/css!./media/optionsDialog';
+
 import { Button } from 'sql/base/browser/ui/button/button';
 import { FixedCollapsibleView } from 'sql/platform/views/fixedCollapsibleView';
 import * as DialogHelper from './dialogHelper';
@@ -13,8 +14,11 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IModalOptions, Modal } from './modal';
 import * as OptionsDialogHelper from './optionsDialogHelper';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/styler';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { SplitView, CollapsibleState } from 'sql/base/browser/ui/splitview/splitview';
 
 import * as sqlops from 'sqlops';
+
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
@@ -26,10 +30,9 @@ import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/theme
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import * as styler from 'vs/platform/theme/common/styler';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import { SplitView, CollapsibleState } from 'sql/base/browser/ui/splitview/splitview';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { Widget } from 'vs/base/browser/ui/widget';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { Dimension } from 'vs/base/browser/dom';
 
 export class CategoryView extends FixedCollapsibleView {
 	private _treecontainer: HTMLElement;
@@ -256,7 +259,7 @@ export class OptionsDialog extends Modal {
 		firstOptionWidget.focus();
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: Dimension): void {
 		// Nothing currently laid out in this class
 	}
 

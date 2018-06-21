@@ -7,8 +7,8 @@
 
 import 'vs/css!./media/accountDialog';
 import 'vs/css!sql/parts/accountManagement/common/media/accountActions';
+
 import * as DOM from 'vs/base/browser/dom';
-import { SplitView } from 'sql/base/browser/ui/splitview/splitview';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IListService, ListService } from 'vs/platform/list/browser/listService';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
@@ -21,9 +21,10 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import * as sqlops from 'sqlops';
+
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/styler';
@@ -32,7 +33,8 @@ import { AddAccountAction } from 'sql/parts/accountManagement/common/accountActi
 import { AccountListRenderer, AccountListDelegate } from 'sql/parts/accountManagement/common/accountListRenderer';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
 import { FixedListView } from 'sql/platform/views/fixedListView';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { SplitView } from 'sql/base/browser/ui/splitview/splitview';
 
 export interface IProviderViewUiComponent {
 	view: FixedListView<sqlops.Account>;
@@ -108,7 +110,7 @@ export class AccountDialog extends Modal {
 	}
 
 	// MODAL OVERRIDE METHODS //////////////////////////////////////////////
-	protected layout(height?: number): void {
+	protected layout(dimension?: DOM.Dimension): void {
 		// Ignore height as it's a subcomponent being laid out
 		this._splitView.layout(DOM.getContentHeight(this._container));
 	}

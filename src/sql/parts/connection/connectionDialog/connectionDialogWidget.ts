@@ -34,7 +34,6 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as styler from 'vs/platform/theme/common/styler';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 
@@ -376,7 +375,7 @@ export class ConnectionDialogWidget extends Modal {
 		this.initDialog();
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: DOM.Dimension): void {
 		// Height is the overall height. Since we're laying out a specific component, always get its actual height
 		this._recentConnectionTree.layout(DOM.getTotalHeight(this._recentConnectionTree.getHTMLElement()));
 	}

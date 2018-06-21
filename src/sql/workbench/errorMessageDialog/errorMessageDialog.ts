@@ -6,6 +6,7 @@
 'use strict';
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/errorMessageDialog';
+
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
@@ -22,6 +23,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
+import { Dimension } from 'vs/base/browser/dom';
 
 const maxActions = 1;
 
@@ -94,7 +96,7 @@ export class ErrorMessageDialog extends Modal {
 		}
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: Dimension): void {
 		// Nothing to re-layout
 	}
 
@@ -168,7 +170,7 @@ export class ErrorMessageDialog extends Modal {
 
 	private resetActions(): void {
 		this._actions = [];
-		for(let actionButton of this._actionButtons) {
+		for (let actionButton of this._actionButtons) {
 			actionButton.element.style.visibility = 'hidden';
 		}
 	}

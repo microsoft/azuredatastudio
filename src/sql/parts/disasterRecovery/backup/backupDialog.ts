@@ -10,6 +10,7 @@ import { BACKUP_SELECTOR } from 'sql/parts/disasterRecovery/backup/backup.compon
 import { attachModalDialogStyler } from 'sql/common/theme/styler';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -17,7 +18,7 @@ import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Builder } from 'vs/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { Dimension } from 'vs/base/browser/dom';
 
 export class BackupDialog extends Modal {
 	private _bodyBuilder: Builder;
@@ -99,7 +100,7 @@ export class BackupDialog extends Modal {
 		this.show();
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: Dimension): void {
 		// Nothing currently laid out in this class
 	}
 

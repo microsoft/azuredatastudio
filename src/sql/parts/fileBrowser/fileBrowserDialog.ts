@@ -7,6 +7,7 @@
 
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/fileBrowserDialog';
+
 import { Button } from 'sql/base/browser/ui/button/button';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -20,10 +21,8 @@ import { FileBrowserViewModel } from 'sql/parts/fileBrowser/fileBrowserViewModel
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Builder } from 'vs/base/browser/builder';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Event, Emitter } from 'vs/base/common/event';
-import { KeyCode } from 'vs/base/common/keyCodes';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -64,7 +63,7 @@ export class FileBrowserDialog extends Modal {
 		this._viewModel.onPathValidate(args => this.handleOnValidate(args.succeeded, args.message));
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: DOM.Dimension): void {
 	}
 
 	protected renderBody(container: HTMLElement) {

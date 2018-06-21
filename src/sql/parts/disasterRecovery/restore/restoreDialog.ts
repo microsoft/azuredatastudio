@@ -5,6 +5,7 @@
 
 'use strict';
 import 'vs/css!./media/restoreDialog';
+
 import { Builder, $ } from 'vs/base/browser/builder';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -773,7 +774,7 @@ export class RestoreDialog extends Modal {
 		this._restoreFromSelectBox.focus();
 	}
 
-	protected layout(height?: number): void {
+	protected layout(dimension?: DOM.Dimension): void {
 		// Nothing currently laid out statically in this class
 	}
 

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/modal';
+
 import { IThemable } from 'vs/platform/theme/common/styler';
 import { Color } from 'vs/base/common/color';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
@@ -16,11 +17,11 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { localize } from 'vs/nls';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import { localize } from 'vs/nls';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -305,17 +306,21 @@ export abstract class Modal extends Disposable implements IThemable {
 			}
 		});
 		this._resizeListener = DOM.addDisposableListener(window, DOM.EventType.RESIZE, (e: Event) => {
-			this.layout(DOM.getTotalHeight(this._builder.getHTMLElement()));
+			this._layout();
 		});
 
-		this.layout(DOM.getTotalHeight(this._builder.getHTMLElement()));
+		this._layout();
 		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ModalDialogOpened, { name: this._name });
 	}
 
 	/**
 	 * Required to be implemented so that scrolling and other functions operate correctly. Should re-layout controls in the modal
 	 */
-	protected abstract layout(height?: number): void;
+	protected abstract layout(dimension: DOM.Dimension): void;
+
+	protected _layout(): void {
+		this.layout(new DOM.Dimension(DOM.getContentWidth(this._modalBodySection), DOM.getContentHeight(this._modalBodySection)));
+	}
 
 	/**
 	 * Hides the modal and removes key listeners

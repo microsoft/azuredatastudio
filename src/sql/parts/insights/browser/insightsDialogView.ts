@@ -19,7 +19,7 @@ import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectio
 import { error } from 'sql/base/common/log';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { CopyInsightDialogSelectionAction } from 'sql/parts/insights/common/insightDialogActions';
-import { SplitView, ViewSizing } from 'sql/base/browser/ui/splitview/splitview';
+import { SplitView } from 'vs/base/browser/ui/splitview/splitview';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
@@ -39,6 +39,7 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -79,7 +80,7 @@ export class InsightsDialogView extends Modal {
 
 	private _connectionProfile: IConnectionProfile;
 	private _insight: IInsightsConfigDetails;
-	private _splitView: SplitView;
+	private panelView: PanelViewlet;
 	private _container: HTMLElement;
 	private _closeButton: Button;
 	private _topTable: Table<ListResource>;
@@ -166,18 +167,18 @@ export class InsightsDialogView extends Modal {
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
 
-		this._splitView = new SplitView(container);
-
 		const itemsHeaderTitle = nls.localize("insights.dialog.items", "Items");
 		const itemsDetailHeaderTitle = nls.localize("insights.dialog.itemDetails", "Item Details");
 
+		this.panelView = this._instantiationService.createInstance(PanelViewlet, 'insightsView', { showHeaderInTitleWhenSingleView: true });
+		let panelCreation = this.panelView.create(this._container);
 		this._topTableData = new TableDataView();
 		this._bottomTableData = new TableDataView();
-		let topTableView = new TableCollapsibleView(itemsHeaderTitle, { sizing: ViewSizing.Flexible, ariaHeaderLabel: itemsHeaderTitle }, this._topTableData, this._topColumns, { forceFitColumns: true });
+		let topTableView = this._instantiationService.createInstance(TableCollapsibleView, itemsHeaderTitle, { ariaHeaderLabel: itemsHeaderTitle }, this._topTableData, this._topColumns, { forceFitColumns: true }) as TableCollapsibleView<ListResource>;
 		this._topTable = topTableView.table;
 		topTableView.addContainerClass('insights');
 		this._topTable.setSelectionModel(new RowSelectionModel<ListResource>());
-		let bottomTableView = new TableCollapsibleView(itemsDetailHeaderTitle, { sizing: ViewSizing.Flexible, ariaHeaderLabel: itemsDetailHeaderTitle }, this._bottomTableData, this._bottomColumns, { forceFitColumns: true });
+		let bottomTableView = this._instantiationService.createInstance(TableCollapsibleView, itemsDetailHeaderTitle, { ariaHeaderLabel: itemsDetailHeaderTitle }, this._bottomTableData, this._bottomColumns, { forceFitColumns: true }) as TableCollapsibleView<ListResource>;
 		this._bottomTable = bottomTableView.table;
 		this._bottomTable.setSelectionModel(new RowSelectionModel<ListResource>());
 
@@ -214,8 +215,12 @@ export class InsightsDialogView extends Modal {
 			});
 		}));
 
-		this._splitView.addView(topTableView);
-		this._splitView.addView(bottomTableView);
+		panelCreation.then(() => {
+			this.panelView.addPanels([
+				{ index: 0, panel: topTableView, size: 1 },
+				{ index: 1, panel: bottomTableView, size: 1 }
+			]);
+		});
 
 		this._register(attachTableStyler(this._topTable, this._themeService));
 		this._register(attachTableStyler(this._bottomTable, this._themeService));
@@ -261,8 +266,8 @@ export class InsightsDialogView extends Modal {
 		this._register(attachModalDialogStyler(this, this._themeService));
 	}
 
-	protected layout(height?: number): void {
-		this._splitView.layout(DOM.getContentHeight(this._container));
+	protected layout(dimension: DOM.Dimension): void {
+		this.panelView.layout(dimension);
 	}
 
 	// insight object
@@ -313,7 +318,7 @@ export class InsightsDialogView extends Modal {
 				}
 			}
 		}
-		this.layout();
+		this._layout();
 
 		// Select and focus the top row
 		this._topTable.grid.gotoCell(0, 1);
