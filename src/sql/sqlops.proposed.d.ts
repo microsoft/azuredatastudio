@@ -240,6 +240,8 @@ declare module 'sqlops' {
 		componentWidth?: number | string;
 		componentHeight?: number | string;
 		titleFontSize?: number;
+		required?: boolean;
+		info?: string;
 	}
 
 	export interface FormLayout {

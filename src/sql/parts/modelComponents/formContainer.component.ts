@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./formLayout';
+import 'vs/css!sql/media/icons/common-icons';
 
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
@@ -26,6 +27,8 @@ export interface TitledFormItemLayout {
 	componentWidth?: number | string;
 	componentHeight?: number | string;
 	titleFontSize?: number;
+	required?: boolean;
+	info?: string;
 }
 
 export interface FormLayout {
@@ -43,7 +46,10 @@ class FormItem {
 			<div class="form-row" *ngIf="isFormComponent(item)" [style.height]="getRowHeight(item)">
 
 					<ng-container *ngIf="isHorizontal(item)">
-						<div class="form-cell" [style.font-size]="getItemTitleFontSize(item)">{{getItemTitle(item)}}</div>
+						<div class="form-cell" [style.font-size]="getItemTitleFontSize(item)">
+							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
+							<span class="icon info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
+						</div>
 						<div class="form-cell">
 							<div class="form-component-container">
 								<div [style.width]="getComponentWidth(item)" [ngClass]="{'form-input-flex': !getComponentWidth(item)}">
@@ -60,7 +66,10 @@ class FormItem {
 						</div>
 					</ng-container>
 					<div class="form-vertical-container" *ngIf="isVertical(item)" [style.height]="getRowHeight(item)">
-						<div class="form-item-row" [style.font-size]="getItemTitleFontSize(item)">{{getItemTitle(item)}}</div>
+						<div class="form-item-row" [style.font-size]="getItemTitleFontSize(item)">
+							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
+							<span class="icon info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
+						</div>
 						<div class="form-item-row" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							</model-component-wrapper>
@@ -140,6 +149,22 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		return (itemConfig && itemConfig.componentHeight) ? this.convertSize(itemConfig.componentHeight, '') : '';
 	}
 
+	private isItemRequired(item: FormItem): boolean {
+		let itemConfig = item.config;
+		return itemConfig && itemConfig.required;
+	}
+
+	private getItemInfo(item: FormItem): string {
+		let itemConfig = item.config;
+		return itemConfig && itemConfig.info;
+	}
+
+	private itemHasInfo(item: FormItem): boolean {
+		let itemConfig = item.config;
+		return itemConfig && itemConfig.info !== undefined;
+	}
+
+
 	private getItemTitle(item: FormItem): string {
 		let itemConfig = item.config;
 		return itemConfig ? itemConfig.title : '';
@@ -147,7 +172,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 
 	private getItemTitleFontSize(item: FormItem): string {
 		let itemConfig = item.config;
-		return itemConfig && itemConfig.titleFontSize ? this.convertSize(itemConfig.titleFontSize, '13px') : '13px';
+		return itemConfig && itemConfig.titleFontSize ? this.convertSize(itemConfig.titleFontSize, '11px') : '11px';
 	}
 
 	private getActionComponents(item: FormItem): FormItem[] {
