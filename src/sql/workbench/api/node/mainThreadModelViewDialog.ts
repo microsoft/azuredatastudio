@@ -80,6 +80,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			dialog.okButton = okButton;
 			dialog.cancelButton = cancelButton;
 			dialog.onValidityChanged(valid => this._proxy.$onPanelValidityChanged(handle, valid));
+			dialog.registerCloseValidator(() => this.validateDialogClose(handle));
 			this._dialogs.set(handle, dialog);
 		}
 
@@ -261,5 +262,9 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	private validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean> {
 		return this._proxy.$validateNavigation(handle, info);
+	}
+
+	private validateDialogClose(handle: number): Thenable<boolean> {
+		return this._proxy.$validateDialogClose(handle);
 	}
 }

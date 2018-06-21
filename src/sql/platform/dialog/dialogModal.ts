@@ -120,11 +120,13 @@ export class DialogModal extends Modal {
 		this.show();
 	}
 
-	public done(): void {
+	public async done(): Promise<void> {
 		if (this._dialog.okButton.enabled) {
-			this._onDone.fire();
-			this.dispose();
-			this.hide();
+			if (await this._dialog.validateClose()) {
+				this._onDone.fire();
+				this.dispose();
+				this.hide();
+			}
 		}
 	}
 
