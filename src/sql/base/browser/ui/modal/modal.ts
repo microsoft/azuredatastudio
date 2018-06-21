@@ -25,6 +25,9 @@ import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
+const INFO_ALT_TEXT = localize('infoAltText', 'Info');
+const WARNING_ALT_TEXT = localize('warningAltText', 'Warning');
+const ERROR_ALT_TEXT = localize('errorAltText', 'Error');
 
 export interface IModalDialogStyles {
 	dialogForeground?: Color;
@@ -365,10 +368,13 @@ export abstract class Modal extends Disposable implements IThemable {
 			} else {
 				const levelClasses = ['info', 'warning', 'error'];
 				let selectedLevel = levelClasses[2];
+				let altText = ERROR_ALT_TEXT;
 				if (level === MessageLevel.Information) {
 					selectedLevel = levelClasses[0];
+					altText = INFO_ALT_TEXT;
 				} else if (level === MessageLevel.Warning) {
 					selectedLevel = levelClasses[1];
+					altText = WARNING_ALT_TEXT;
 				}
 				levelClasses.forEach(level => {
 					if (selectedLevel === level) {
@@ -378,9 +384,10 @@ export abstract class Modal extends Disposable implements IThemable {
 					}
 				});
 
+				this._errorIconElement.title = altText;
 				this._errorIconElement.style.visibility = 'visible';
 			}
-			this._errorMessage.innerHtml(err);
+			this._errorMessage.text(err);
 		}
 	}
 
