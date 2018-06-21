@@ -9,6 +9,7 @@ import { Mock, It, Times } from 'typemoq';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
 import { MainThreadModelViewDialogShape, ExtHostModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 'use strict';
 
@@ -289,5 +290,21 @@ suite('ExtHostModelViewDialog Tests', () => {
 		assert.notEqual(validationInfo, undefined);
 		assert.equal(validationInfo.lastPage, lastPage);
 		assert.equal(validationInfo.newPage, newPage);
+	});
+
+	test('Changing the wizard message sends the new message to the main thread', () => {
+		// Set up the main thread mock to record the call
+		mockProxy.setup(x => x.$setWizardDetails(It.isAny(), It.isAny()));
+		let wizard = extHostModelViewDialog.createWizard('wizard_1');
+
+		// If I update the wizard's message
+		let newMessage = {
+			level: MessageLevel.Error,
+			text: 'test message'
+		};
+		wizard.message = newMessage;
+
+		// Then the main thread gets notified of the new details
+		mockProxy.verify(x => x.$setWizardDetails(It.isAny(), It.is(x => x.message === newMessage)), Times.once());
 	});
 });

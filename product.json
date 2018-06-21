@@ -27,14 +27,16 @@
 		"reportIssueUrl": "https://github.com/Microsoft/sqlopsstudio/issues/new?labels=customer%20reported%20issue",
 		"requestFeatureUrl": "https://github.com/Microsoft/sqlopsstudio/issues/new?labels=feature-request"
 	},
-	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
+	"gettingStartedUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
+	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=875578",
 	"documentationUrl": "https://go.microsoft.com/fwlink/?linkid=862277",
 	"commit": "9ca6200018fc206d67a47229f991901a8a453781",
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [
 		"Microsoft.agent",
-		"Microsoft.whoisactive",
+		"Microsoft.profiler",
 		"Microsoft.server-report",
+		"Microsoft.whoisactive",
 		"Redgate.sql-search"
 	],
 	"extensionsGallery": {

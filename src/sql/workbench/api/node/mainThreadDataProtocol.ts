@@ -432,6 +432,10 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		this._profilerService.onMoreRows(response);
 	}
 
+	public $onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void {
+		this._profilerService.onSessionStopped(response);
+	}
+
 	public $unregisterProvider(handle: number): TPromise<any> {
 		let capabilitiesRegistration = this._capabilitiesRegistrations[handle];
 		if (capabilitiesRegistration) {

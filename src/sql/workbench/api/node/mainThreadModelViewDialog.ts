@@ -94,6 +94,8 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			dialog.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
 
+		dialog.message = details.message;
+
 		return Promise.resolve();
 	}
 
@@ -169,6 +171,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		if (details.customButtons !== undefined) {
 			wizard.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
+		wizard.message = details.message;
 
 		return Promise.resolve();
 	}

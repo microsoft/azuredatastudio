@@ -518,6 +518,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		this._proxy.$onSessionEventsAvailable(handle, response);
 	}
 
+	/**
+	 * Profiler session stopped unexpectedly notification
+	 */
+	public $onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void {
+		this._proxy.$onSessionStopped(handle, response);
+	}
+
 
 	/**
 	 * Agent Job Provider methods

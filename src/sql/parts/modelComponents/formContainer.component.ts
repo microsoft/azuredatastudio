@@ -16,13 +16,15 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 
 export interface TitledFormItemLayout {
 	title: string;
 	actions?: string[];
 	isFormComponent: Boolean;
 	horizontal: boolean;
-	componentWidth: number;
+	componentWidth?: number | string;
+	componentHeight?: number | string;
 }
 
 export interface FormLayout {
@@ -35,10 +37,10 @@ class FormItem {
 
 @Component({
 	template: `
-		<div #container *ngIf="items" class="form-table" [style.width]="getFormWidth()">
+		<div #container *ngIf="items" class="form-table" [style.width]="getFormWidth()" [style.height]="getFormHeight()">
 			<ng-container *ngFor="let item of items">
-			<div class="form-row" >
-				<ng-container *ngIf="isFormComponent(item)">
+			<div class="form-row" *ngIf="isFormComponent(item)" [style.height]="getRowHeight(item)">
+
 					<ng-container *ngIf="isHorizontal(item)">
 						<div class="form-cell">{{getItemTitle(item)}}</div>
 						<div class="form-cell">
@@ -56,10 +58,10 @@ class FormItem {
 							</div>
 						</div>
 					</ng-container>
-					<div class="form-vertical-container" *ngIf="isVertical(item)">
+					<div class="form-vertical-container" *ngIf="isVertical(item)" [style.height]="getRowHeight(item)">
 						<div class="form-item-row">{{getItemTitle(item)}}</div>
-						<div class="form-item-row" [style.width]="getComponentWidth(item)">
-							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)">
+						<div class="form-item-row" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
+							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							</model-component-wrapper>
 						</div>
 						<div *ngIf="itemHasActions(item)" class="form-item-row form-actions-table form-item-last-row">
@@ -69,7 +71,6 @@ class FormItem {
 								</div>
 							</div>
 					</div>
-				</ng-container>
 			</div>
 			</ng-container>
 		</div>
@@ -102,6 +103,10 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	ngAfterViewInit(): void {
 	}
 
+	public layout(): void {
+		super.layout();
+	}
+
 	/// IComponent implementation
 
 	public get alignItems(): string {
@@ -113,12 +118,21 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	}
 
 	private getFormWidth(): string {
-		return this._formLayout && this._formLayout.width ? +this._formLayout.width + 'px' : '100%';
+		return this.convertSize(this._formLayout && this._formLayout.width, '');
+	}
+
+	private getFormHeight(): string {
+		return this.convertSize(this._formLayout && this._formLayout.height, '');
 	}
 
 	private getComponentWidth(item: FormItem): string {
 		let itemConfig = item.config;
-		return (itemConfig && itemConfig.componentWidth) ? itemConfig.componentWidth + 'px' : '';
+		return (itemConfig && itemConfig.componentWidth) ? this.convertSize(itemConfig.componentWidth, '') : '';
+	}
+
+	private getRowHeight(item: FormItem): string {
+		let itemConfig = item.config;
+		return (itemConfig && itemConfig.componentHeight) ? this.convertSize(itemConfig.componentHeight, '') : '';
 	}
 
 	private getItemTitle(item: FormItem): string {

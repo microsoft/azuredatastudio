@@ -13,8 +13,8 @@ import { Dialog, Wizard, DialogTab } from 'sql/platform/dialog/dialogTypes';
 import { IModalOptions } from 'sql/base/browser/ui/modal/modal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-const defaultOptions: IModalOptions = { hasBackButton: false, isWide: false };
-const defaultWizardOptions: IModalOptions = { hasBackButton: false, isWide: true };
+const defaultOptions: IModalOptions = { hasBackButton: false, isWide: false, hasErrors: true };
+const defaultWizardOptions: IModalOptions = { hasBackButton: false, isWide: true, hasErrors: true };
 
 export class CustomDialogService {
 	private _dialogModals = new Map<Dialog, DialogModal>();

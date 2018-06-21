@@ -202,8 +202,6 @@ export class ProfilerEditor extends BaseEditor {
 		this._register(attachSelectBoxStyler(this._sessionTemplateSelector, this.themeService));
 
 		this._actionBar.setContent([
-			{ action: this._connectAction },
-			{ element: Taskbar.createTaskbarSeparator() },
 			{ action: this._startAction },
 			{ action: this._stopAction },
 			{ element: dropdownContainer },
@@ -228,7 +226,9 @@ export class ProfilerEditor extends BaseEditor {
 			if (data) {
 				this._modelService.updateModel(this._editorModel, data['TextData']);
 				this._detailTableData.clear();
-				this._detailTableData.push(Object.keys(data).map(key => {
+				this._detailTableData.push(Object.keys(data).filter(key => {
+					return data[key] !== ' ';
+				}).map(key => {
 					return {
 						label: key,
 						value: data[key]
@@ -384,21 +384,20 @@ export class ProfilerEditor extends BaseEditor {
 
 		if (e.isConnected) {
 			this._connectAction.connected = this.input.state.isConnected;
-			this._startAction.enabled = this.input.state.isConnected;
-			this._stopAction.enabled = false;
-			this._pauseAction.enabled = false;
-
 			if (this.input.state.isConnected) {
 				this._sessionTemplateSelector.disable();
 			} else {
 				this._sessionTemplateSelector.enable();
+				this._startAction.enabled = this.input.state.isConnected;
+				this._stopAction.enabled = false;
+				this._pauseAction.enabled = false;
+				return;
 			}
-
-			return;
 		}
 
 		if (e.isPaused){
 			this._pauseAction.paused = this.input.state.isPaused;
+			this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
 		}
 
 		if (e.isStopped || e.isRunning) {

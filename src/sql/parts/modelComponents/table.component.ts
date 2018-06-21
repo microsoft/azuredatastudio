@@ -22,7 +22,7 @@ import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectio
 @Component({
 	selector: 'modelview-table',
 	template: `
-		<div #table style="width: 100%"></div>
+		<div #table style="width: 100%;height:100%"></div>
 	`
 })
 export default class TableComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
@@ -91,9 +91,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			let options = <Slick.GridOptions<any>>{
 				syncColumnCellResize: true,
 				enableColumnReorder: false,
-				rowHeight: 45,
 				enableCellNavigation: true,
-				forceFitColumns: true
+				forceFitColumns: true,
 			};
 
 			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, { dataProvider: this._tableData, columns: this._tableColumns }, options);
@@ -126,11 +125,17 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	/// IComponent implementation
 
 	public layout(): void {
-		this._table.layout(new Dimension(
-			this.width ? this.width : getContentWidth(this._inputContainer.nativeElement),
-			this.height ? this.height : getContentHeight(this._inputContainer.nativeElement)));
+		this.layoutTable();
 
 		this._changeRef.detectChanges();
+	}
+
+	private layoutTable(): void {
+		let width: number = this.convertSizeToNumber(this.width);
+		let height: number = this.convertSizeToNumber(this.height);
+		this._table.layout(new Dimension(
+			width && width > 0 ? width : getContentWidth(this._inputContainer.nativeElement),
+			height && height > 0 ? height : getContentHeight(this._inputContainer.nativeElement)));
 	}
 
 	public setLayout(): void {
@@ -148,10 +153,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		if (this.selectedRows) {
 			this._table.setSelectedRows(this.selectedRows);
 		}
-		this._table.layout(new Dimension(
-			this.width ? this.width : getContentWidth(this._inputContainer.nativeElement),
-			this.height ? this.height : getContentHeight(this._inputContainer.nativeElement)));
 
+		this.layoutTable();
 		this.validate();
 	}
 
@@ -179,21 +182,5 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public set selectedRows(newValue: number[]) {
 		this.setPropertyFromUI<sqlops.TableComponentProperties, number[]>((props, value) => props.selectedRows = value, newValue);
-	}
-
-	public get height(): number {
-		return this.getPropertyOrDefault<sqlops.TableComponentProperties, number>((props) => props.height, undefined);
-	}
-
-	public set height(newValue: number) {
-		this.setPropertyFromUI<sqlops.TableComponentProperties, number>((props, value) => props.height = value, newValue);
-	}
-
-	public get width(): number {
-		return this.getPropertyOrDefault<sqlops.TableComponentProperties, number>((props) => props.width, undefined);
-	}
-
-	public set width(newValue: number) {
-		this.setPropertyFromUI<sqlops.TableComponentProperties, number>((props, value) => props.width = value, newValue);
 	}
 }

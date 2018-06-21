@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./flexContainer';
 
-import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
+import {
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList,
 } from '@angular/core';
 
@@ -18,14 +19,14 @@ import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentW
 import types = require('vs/base/common/types');
 
 class FlexItem {
-	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) {}
+	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) { }
 }
 
 @Component({
 	template: `
 		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent"
-				[style.alignItems]="alignItems" [style.alignContent]="alignContent" [style.height]="height">
-			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.order]="getItemOrder(item)" >
+				[style.alignItems]="alignItems" [style.alignContent]="alignContent" [style.height]="height" [style.width]="width">
+			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.textAlign]="textAlign" [style.order]="getItemOrder(item)" >
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
 			</div>
@@ -39,7 +40,9 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	private _justifyContent: string;
 	private _alignItems: string;
 	private _alignContent: string;
+	private _textAlign: string;
 	private _height: string;
+	private _width: string;
 
 	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
 		super(changeRef);
@@ -58,18 +61,15 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 	/// IComponent implementation
 
-	public setLayout (layout: FlexLayout): void {
+	public setLayout(layout: FlexLayout): void {
 		this._flexFlow = layout.flexFlow ? layout.flexFlow : '';
 		this._justifyContent = layout.justifyContent ? layout.justifyContent : '';
 		this._alignItems = layout.alignItems ? layout.alignItems : '';
 		this._alignContent = layout.alignContent ? layout.alignContent : '';
-		if (types.isUndefinedOrNull(layout.height)) {
-			this._height = '';
-		} else if (types.isNumber(layout.height)) {
-			this._height = layout.height + 'px';
-		} else {
-			this._height = layout.height;
-		}
+		this._textAlign = layout.textAlign ? layout.textAlign : '';
+		this._height = this.convertSize(layout.height);
+		this._width = this.convertSize(layout.width);
+
 		this.layout();
 	}
 
@@ -90,8 +90,16 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		return this._height;
 	}
 
+	public get width(): string {
+		return this._width;
+	}
+
 	public get alignContent(): string {
 		return this._alignContent;
+	}
+
+	public get textAlign(): string {
+		return this._textAlign;
 	}
 
 	private getItemFlex(item: FlexItem): string {

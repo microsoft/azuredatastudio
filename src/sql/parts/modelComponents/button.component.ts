@@ -15,7 +15,7 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 import { attachButtonStyler } from 'sql/common/theme/styler';
 import { Button } from 'sql/base/browser/ui/button/button';
 
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { SIDE_BAR_BACKGROUND, SIDE_BAR_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import URI from 'vs/base/common/uri';
@@ -55,13 +55,11 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-
-
 			this._button = new Button(this._inputContainer.nativeElement);
 
 			this._register(this._button);
 			this._register(attachButtonStyler(this._button, this.themeService, {
-				buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND
+				buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_TITLE_FOREGROUND
 			}));
 			this._register(this._button.onDidClick(e => {
 				this._onEventEmitter.fire({
@@ -94,6 +92,12 @@ export default class ButtonComponent extends ComponentBase implements IComponent
 		super.setProperties(properties);
 		this._button.enabled = this.enabled;
 		this._button.label = this.label;
+		if (this.width) {
+			this._button.setWidth(this.convertSize(this.width.toString()));
+		}
+		if (this.height) {
+			this._button.setWidth(this.convertSize(this.height.toString()));
+		}
 		this.updateIcon();
 	}
 

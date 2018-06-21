@@ -237,6 +237,10 @@ export function createApiFactory(
 					extHostDataProvider.$onSessionEventsAvailable(provider.handle, response);
 				});
 
+				provider.registerOnSessionStopped((response: sqlops.ProfilerSessionStoppedParams) => {
+					extHostDataProvider.$onSessionStopped(provider.handle, response);
+				});
+
 				return extHostDataProvider.$registerProfilerProvider(provider);
 			};
 
@@ -311,7 +315,8 @@ export function createApiFactory(
 				},
 				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
 					return extHostModelViewDialog.createWizard(title);
-				}
+				},
+				MessageLevel: sqlExtHostTypes.MessageLevel
 			};
 
 			const window: typeof sqlops.window = {
