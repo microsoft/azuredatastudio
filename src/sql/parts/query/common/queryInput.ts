@@ -4,16 +4,33 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { EditorInput, EditorModel, ConfirmResult, EncodingMode, IEncodingSupport } from 'vs/workbench/common/editor';
-import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { localize } from 'vs/nls';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
-import { ISelectionData, ExecutionPlanOptions } from 'sqlops';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { EditorInput, EditorModel, ConfirmResult, EncodingMode, IEncodingSupport } from 'vs/workbench/common/editor';
+
+import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
+import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
+import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+
+import { ISelectionData, ExecutionPlanOptions } from 'sqlops';
+
+const MAX_SIZE = 13;
+
+function trimTitle(title: string): string {
+	const length = title.length;
+	const diff = length - MAX_SIZE;
+
+	if (Math.sign(diff) <= 0) {
+		return title;
+	} else {
+		const start = (length / 2) - (diff / 2);
+		return title.slice(0, start) + '...' + title.slice(start + diff, length);
+	}
+}
 
 /**
  * Input for the QueryEditor. This input is simply a wrapper around a QueryResultsInput for the QueryResultsEditor
@@ -143,15 +160,21 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	public getName(): string {
 		let profile = this._connectionManagementService.getConnectionProfile(this.uri);
+		let title = '';
+		let user = '';
 		if (profile) {
 			if (profile.userName) {
-				return this._sql.getName() + ` - ${profile.serverName}.${profile.databaseName} (${profile.userName})`;
+				title = `${profile.serverName}.${profile.databaseName}`;
+				user = `(${profile.userName})`;
 			} else {
-				return this._sql.getName() + ` - ${profile.serverName}.${profile.databaseName} (${profile.authenticationType})`;
+				title = `${profile.serverName}.${profile.databaseName}`;
+				user = `(${profile.authenticationType})`;
 			}
 		} else {
-			return this._sql.getName() + ` - disconnected`;
+			title = localize('disconnected', 'disconnected');
 		}
+
+		return this._sql.getName() + ` - ${trimTitle(title)}` + (user ? ' ' + user : '');
 	}
 
 	public get hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }
