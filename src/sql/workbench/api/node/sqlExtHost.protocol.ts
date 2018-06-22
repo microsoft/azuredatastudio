@@ -563,6 +563,7 @@ export interface ExtHostModelViewDialogShape {
 	$onWizardPageChanged(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): void;
 	$updateWizardPageInfo(handle: number, pageHandles: number[], currentPageIndex: number): void;
 	$validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean>;
+	$validateDialogClose(handle: number): Thenable<boolean>;
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {

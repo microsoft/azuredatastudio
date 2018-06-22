@@ -24,6 +24,7 @@ import { localize } from 'vs/nls';
 import { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { DialogMessage, MessageLevel } from '../../workbench/api/common/sqlExtHostTypes';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -52,7 +53,7 @@ export class DialogModal extends Modal {
 	}
 
 	public render() {
-		super.render();
+		super.render(true);
 		attachModalDialogStyler(this, this._themeService);
 
 		if (this.backButton) {
@@ -71,6 +72,17 @@ export class DialogModal extends Modal {
 		this._dialog.okButton.registerClickEvent(this._onDone.event);
 		this._cancelButton = this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
 		this._dialog.cancelButton.registerClickEvent(this._onCancel.event);
+
+		let messageChangeHandler = (message: DialogMessage) => {
+			if (message && message.text) {
+				this.setError(message.text, message.level);
+			} else {
+				this.setError('');
+			}
+		};
+
+		messageChangeHandler(this._dialog.message);
+		this._dialog.onMessageChange(message => messageChangeHandler(message));
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true): Button {
@@ -108,11 +120,13 @@ export class DialogModal extends Modal {
 		this.show();
 	}
 
-	public done(): void {
+	public async done(): Promise<void> {
 		if (this._dialog.okButton.enabled) {
-			this._onDone.fire();
-			this.dispose();
-			this.hide();
+			if (await this._dialog.validateClose()) {
+				this._onDone.fire();
+				this.dispose();
+				this.hide();
+			}
 		}
 	}
 

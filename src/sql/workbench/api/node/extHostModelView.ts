@@ -255,6 +255,9 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 
 	private convertToItemConfig(formComponent: sqlops.FormComponent, itemLayout?: sqlops.FormItemLayout): InternalItemConfig {
 		let componentWrapper = formComponent.component as ComponentWrapper;
+		if (itemLayout && itemLayout.required && componentWrapper) {
+			componentWrapper.required = true;
+		}
 		let actions: string[] = undefined;
 		if (formComponent.actions) {
 			actions = formComponent.actions.map(action => {
@@ -398,6 +401,13 @@ class ComponentWrapper implements sqlops.Component {
 
 	public set width(v: number | string) {
 		this.setProperty('width', v);
+	}
+
+	public get required(): boolean {
+		return this.properties['required'];
+	}
+	public set required(v: boolean) {
+		this.setProperty('required', v);
 	}
 
 	public toComponentShape(): IComponentShape {
