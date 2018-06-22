@@ -85,11 +85,17 @@ export default class QueryRunner {
 		}
 	});
 
-	private _onStartQuery = new Emitter<void>();
-	public readonly onStartQuery: Event<void> = this._onStartQuery.event;
+	private _onQueryStart = new Emitter<void>();
+	public readonly onQueryStart: Event<void> = echo(this._onQueryStart.event);
+
+	private _onQueryEnd = new Emitter<string>();
+	public readonly onQueryEnd: Event<string> = echo(this._onQueryEnd.event);
 
 	private _onBatchStart = new Emitter<sqlops.BatchSummary>();
 	public readonly onBatchStart: Event<sqlops.BatchSummary> = echo(this._onBatchStart.event);
+
+	private _onBatchEnd = new Emitter<sqlops.BatchSummary>();
+	public readonly onBatchEnd: Event<sqlops.BatchSummary> = echo(this._onBatchEnd.event);
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
@@ -183,7 +189,7 @@ export default class QueryRunner {
 
 	private handleSuccessRunQueryResult() {
 		// The query has started, so lets fire up the result pane
-		this._onStartQuery.fire();
+		this._onQueryStart.fire();
 		this._queryManagementService.registerRunner(this, this.uri);
 	}
 
@@ -219,6 +225,7 @@ export default class QueryRunner {
 		});
 
 		// We're done with this query so shut down any waiting mechanisms
+		this._onQueryEnd.fire(Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
 		this._eventEmitter.emit(EventType.COMPLETE, Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
 	}
 
@@ -256,7 +263,8 @@ export default class QueryRunner {
 			// send a time message in the format used for query complete
 			this.sendBatchTimeMessage(batch.id, Utils.parseNumAsTimeString(executionTime));
 		}
-		this._eventEmitter.emit(EventType.BATCH_COMPLETE, batch);
+
+		this._onBatchEnd.fire(batch);
 	}
 
 	/**

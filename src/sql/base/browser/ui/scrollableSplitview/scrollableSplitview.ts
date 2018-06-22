@@ -179,7 +179,6 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		view.render(container, this.orientation);
 		this.relayout(index);
-		this.render(this.scrollable.getScrollPosition().scrollLeft, this.scrollable.getScrollDimensions().height);
 		this.state = State.Idle;
 	}
 
@@ -294,13 +293,13 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		const index = firstIndex(this.sashItems, item => item.sash === sash);
 		const sizes = this.viewItems.map(i => i.size);
 
-		const upIndexes = range(index, -1);
-		const collapseUp = upIndexes.reduce((r, i) => r + (sizes[i] - this.viewItems[i].view.minimumSize), 0);
-		const expandUp = upIndexes.reduce((r, i) => r + (this.viewItems[i].view.maximumSize - sizes[i]), 0);
+		// const upIndexes = range(index, -1);
+		// const collapseUp = upIndexes.reduce((r, i) => r + (sizes[i] - this.viewItems[i].view.minimumSize), 0);
+		// const expandUp = upIndexes.reduce((r, i) => r + (this.viewItems[i].view.maximumSize - sizes[i]), 0);
 
-		const downIndexes = range(index + 1, this.viewItems.length);
-		const collapseDown = downIndexes.reduce((r, i) => r + (sizes[i] - this.viewItems[i].view.minimumSize), 0);
-		const expandDown = downIndexes.reduce((r, i) => r + (this.viewItems[i].view.maximumSize - sizes[i]), 0);
+		// const downIndexes = range(index + 1, this.viewItems.length);
+		// const collapseDown = downIndexes.reduce((r, i) => r + (sizes[i] - this.viewItems[i].view.minimumSize), 0);
+		// const expandDown = downIndexes.reduce((r, i) => r + (this.viewItems[i].view.maximumSize - sizes[i]), 0);
 
 		// const minDelta = -Math.min(collapseUp, expandDown);
 		// const maxDelta = Math.min(collapseDown, expandUp);
@@ -472,22 +471,27 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	}
 
 	private layoutViews(): void {
-		this.viewItems.forEach(item => item.layout());
-		this.sashItems.forEach(item => item.sash.layout());
+		for(let i = this.indexAt(this.lastRenderTop); i <= this.indexAfter(this.lastRenderTop + this.lastRenderHeight) - 1; i++) {
+			this.viewItems[i].layout();
+		}
+
+		for(let i = this.indexAt(this.lastRenderTop); i <= this.indexAfter(this.lastRenderTop + this.lastRenderHeight) - 2; i++) {
+			this.sashItems[i].sash.layout();
+		}
 
 		// Update sashes enablement
-		let previous = false;
-		const collapsesDown = this.viewItems.map(i => previous = (i.size - i.view.minimumSize > 0) || previous);
+		// let previous = false;
+		// const collapsesDown = this.viewItems.map(i => previous = (i.size - i.view.minimumSize > 0) || previous);
 
-		previous = false;
-		const expandsDown = this.viewItems.map(i => previous = (i.view.maximumSize - i.size > 0) || previous);
+		// previous = false;
+		// const expandsDown = this.viewItems.map(i => previous = (i.view.maximumSize - i.size > 0) || previous);
 
-		const reverseViews = [...this.viewItems].reverse();
-		previous = false;
-		const collapsesUp = reverseViews.map(i => previous = (i.size - i.view.minimumSize > 0) || previous).reverse();
+		// const reverseViews = [...this.viewItems].reverse();
+		// previous = false;
+		// const collapsesUp = reverseViews.map(i => previous = (i.size - i.view.minimumSize > 0) || previous).reverse();
 
-		previous = false;
-		const expandsUp = reverseViews.map(i => previous = (i.view.maximumSize - i.size > 0) || previous).reverse();
+		// previous = false;
+		// const expandsUp = reverseViews.map(i => previous = (i.view.maximumSize - i.size > 0) || previous).reverse();
 
 		// this.sashItems.forEach((s, i) => {
 		// 	if ((collapsesDown[i] && expandsUp[i + 1]) || (expandsDown[i] && collapsesUp[i + 1])) {

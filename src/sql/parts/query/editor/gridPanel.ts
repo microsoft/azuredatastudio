@@ -116,7 +116,7 @@ export class GridPanel extends ViewletPanel {
 		this.queryRunnerDisposables = [];
 		this.runner = runner;
 		this.queryRunnerDisposables.push(this.runner.onResultSet(e => this.onResultSet(e)));
-		this.queryRunnerDisposables.push(this.runner.onStartQuery(() => this.reset()));
+		this.queryRunnerDisposables.push(this.runner.onQueryStart(() => this.reset()));
 	}
 
 	private onResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {

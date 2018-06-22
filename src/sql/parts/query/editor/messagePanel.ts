@@ -104,9 +104,10 @@ export class MessagePanel extends ViewletPanel {
 		dispose(this.queryRunnerDisposables);
 		this.queryRunnerDisposables = [];
 		this.reset();
-		this.queryRunnerDisposables.push(runner.onStartQuery(() => this.reset()));
+		this.queryRunnerDisposables.push(runner.onQueryStart(() => this.reset()));
 		this.queryRunnerDisposables.push(runner.onBatchStart(e => this.onBatchStart(e)));
 		this.queryRunnerDisposables.push(runner.onMessage(e => this.onMessage(e)));
+		this.queryRunnerDisposables.push(runner.onQueryEnd(e => this.onQueryEnd(e)));
 	}
 
 	private onMessage(message: IResultMessage | IResultMessage[]) {
@@ -144,6 +145,18 @@ export class MessagePanel extends ViewletPanel {
 		});
 	}
 
+	private onQueryEnd(elapsedTime: string) {
+		this.model.totalExecuteMessage = {
+			message: localize('query.message.executionTime', 'Total execution time: {0}', elapsedTime),
+			isError: false
+		};
+		this.tree.refresh(this.model).then(() => {
+			if (this.tree.getScrollPosition() === 1) {
+				this.tree.setScrollPosition(1);
+			}
+		});
+	}
+
 	private reset() {
 		this.model.messages = [];
 		this.tree.refresh(this.model);
@@ -168,7 +181,11 @@ class MessageDataSource implements IDataSource {
 
 	getChildren(tree: ITree, element: any): TPromise {
 		if (element instanceof Model) {
-			return TPromise.as(element.messages);
+			let messages = element.messages;
+			if (element.totalExecuteMessage) {
+				messages.concat(element.totalExecuteMessage);
+			}
+			return TPromise.as(messages);
 		} else {
 			return TPromise.as(undefined);
 		}
@@ -258,12 +275,14 @@ export class MessageController extends WorkbenchTreeController {
 		if (element.selection) {
 			let selection: ISelectionData = element.selection;
 			// this is a batch statement
-			(<IEditor>this.workbenchEditorService.getActiveEditor().getControl()).setSelection({
-				startColumn: selection.startColumn,
-				endColumn: selection.endColumn,
-				endLineNumber: selection.endLine,
-				startLineNumber: selection.startLine
+			let control = this.workbenchEditorService.getActiveEditor().getControl() as IEditor;
+			control.setSelection({
+				startColumn: selection.startColumn + 1,
+				endColumn: selection.endColumn + 1,
+				endLineNumber: selection.endLine + 1,
+				startLineNumber: selection.startLine + 1
 			});
+			control.focus();
 		}
 
 		return true;
@@ -306,6 +325,7 @@ export class MessageController extends WorkbenchTreeController {
 
 export class Model {
 	public messages: Array<IMessagePanelMessage | IMessagePanelBatchMessage> = [];
+	public totalExecuteMessage: IMessagePanelMessage;
 
 	public uuid = generateUuid();
 
