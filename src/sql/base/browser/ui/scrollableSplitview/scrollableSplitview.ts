@@ -471,11 +471,11 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	}
 
 	private layoutViews(): void {
-		for(let i = this.indexAt(this.lastRenderTop); i <= this.indexAfter(this.lastRenderTop + this.lastRenderHeight) - 1; i++) {
+		for (let i = this.indexAt(this.lastRenderTop); i <= this.indexAfter(this.lastRenderTop + this.lastRenderHeight) - 1; i++) {
 			this.viewItems[i].layout();
 		}
 
-		for(let i = this.indexAt(this.lastRenderTop); i <= this.indexAfter(this.lastRenderTop + this.lastRenderHeight) - 2; i++) {
+		for (let i = this.indexAt(this.lastRenderTop); i <= this.indexAfter(this.lastRenderTop + this.lastRenderHeight) - 2; i++) {
 			this.sashItems[i].sash.layout();
 		}
 

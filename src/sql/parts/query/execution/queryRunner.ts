@@ -226,7 +226,6 @@ export default class QueryRunner {
 
 		// We're done with this query so shut down any waiting mechanisms
 		this._onQueryEnd.fire(Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
-		this._eventEmitter.emit(EventType.COMPLETE, Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
 	}
 
 	/**
@@ -314,7 +313,6 @@ export default class QueryRunner {
 	 * Get more data rows from the current resultSets from the service layer
 	 */
 	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Thenable<sqlops.QueryExecuteSubsetResult> {
-		const self = this;
 		let rowData: sqlops.QueryExecuteSubsetParams = <sqlops.QueryExecuteSubsetParams>{
 			ownerUri: this.uri,
 			resultSetIndex: resultSetIndex,
@@ -323,16 +321,14 @@ export default class QueryRunner {
 			batchIndex: batchIndex
 		};
 
-		return new Promise<sqlops.QueryExecuteSubsetResult>((resolve, reject) => {
-			self._queryManagementService.getQueryRows(rowData).then(result => {
-				resolve(result);
-			}, error => {
-				self._notificationService.notify({
-					severity: Severity.Error,
-					message: nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
-				});
-				reject(error);
+		return this._queryManagementService.getQueryRows(rowData).then(result => {
+			return result;
+		}, error => {
+			this._notificationService.notify({
+				severity: Severity.Error,
+				message: nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
 			});
+			return error;
 		});
 	}
 

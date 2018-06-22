@@ -113,7 +113,7 @@ export class MessagePanel extends ViewletPanel {
 	private onMessage(message: IResultMessage | IResultMessage[]) {
 		if (isArray(message)) {
 			this.model.messages.push(...message.map(c => {
-				return <IMessagePanelMessage> {
+				return <IMessagePanelMessage>{
 					isError: c.isError,
 					message: c.message
 				};
