@@ -6,8 +6,9 @@
 
 import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, SelectAllMessagesAction, CopyMessagesAction } from './actions';
+import QueryRunner from 'sql/parts/query/execution/queryRunner';
 
-import { IResultMessage } from 'sqlops';
+import { IResultMessage, BatchSummary, ISelectionData } from 'sqlops';
 
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IDataSource, ITree, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
@@ -25,18 +26,36 @@ import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { $ } from 'vs/base/browser/builder';
 import { isArray } from 'vs/base/common/types';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { localize } from 'vs/nls';
+import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditor } from 'vs/editor/common/editorCommon';
 
 export interface IResultMessageIntern extends IResultMessage {
 	id?: string;
 }
 
+export interface IMessagePanelMessage {
+	message: string;
+	isError: boolean;
+}
+
+export interface IMessagePanelBatchMessage extends IMessagePanelMessage {
+	selection: ISelectionData;
+	time: string;
+}
+
 interface IMessageTemplate {
-	timeStamp: HTMLElement;
 	message: HTMLElement;
+}
+
+interface IBatchTemplate extends IMessageTemplate {
+	timeStamp: HTMLElement;
 }
 
 const TemplateIds = {
 	MESSAGE: 'message',
+	BATCH: 'batch',
 	MODEL: 'model'
 };
 
@@ -46,6 +65,8 @@ export class MessagePanel extends ViewletPanel {
 	private model = new Model();
 	private controller: MessageController;
 	private container = $('div message-tree').getHTMLElement();
+
+	private queryRunnerDisposables: IDisposable[] = [];
 
 	private tree: ITree;
 
@@ -79,18 +100,51 @@ export class MessagePanel extends ViewletPanel {
 		this.tree.layout(size);
 	}
 
-	public onMessage(message: IResultMessage | IResultMessage[]) {
+	public set queryRunner(runner: QueryRunner) {
+		dispose(this.queryRunnerDisposables);
+		this.queryRunnerDisposables = [];
+		this.reset();
+		this.queryRunnerDisposables.push(runner.onStartQuery(() => this.reset()));
+		this.queryRunnerDisposables.push(runner.onBatchStart(e => this.onBatchStart(e)));
+		this.queryRunnerDisposables.push(runner.onMessage(e => this.onMessage(e)));
+	}
+
+	private onMessage(message: IResultMessage | IResultMessage[]) {
 		if (isArray(message)) {
-			this.model.messages.push(...message);
+			this.model.messages.push(...message.map(c => {
+				return <IMessagePanelMessage> {
+					isError: c.isError,
+					message: c.message
+				};
+			}));
 		} else {
-			this.model.messages.push(message);
+			this.model.messages.push({
+				message: message.message,
+				isError: message.isError
+			});
 		}
 		this.tree.refresh(this.model).then(() => {
-			this.tree.setScrollPosition(1);
+			if (this.tree.getScrollPosition() === 1) {
+				this.tree.setScrollPosition(1);
+			}
 		});
 	}
 
-	public reset() {
+	private onBatchStart(batch: BatchSummary) {
+		this.model.messages.push({
+			message: localize('query.message.startQuery', 'Started executing query at Line {0}', batch.selection.startLine),
+			time: new Date(batch.executionStart).toLocaleTimeString(),
+			selection: batch.selection,
+			isError: false
+		});
+		this.tree.refresh(this.model).then(() => {
+			if (this.tree.getScrollPosition() === 1) {
+				this.tree.setScrollPosition(1);
+			}
+		});
+	}
+
+	private reset() {
 		this.model.messages = [];
 		this.tree.refresh(this.model);
 	}
@@ -133,27 +187,36 @@ class MessageRenderer implements IRenderer {
 	getTemplateId(tree: ITree, element: any): string {
 		if (element instanceof Model) {
 			return TemplateIds.MODEL;
+		} else if (element.selection) {
+			return TemplateIds.BATCH;
 		} else {
 			return TemplateIds.MESSAGE;
 		}
 	}
 
-	renderTemplate(tree: ITree, templateId: string, container: HTMLElement): IMessageTemplate {
+	renderTemplate(tree: ITree, templateId: string, container: HTMLElement): IMessageTemplate | IBatchTemplate {
+
 		if (templateId === TemplateIds.MESSAGE) {
-			const timeStamp = $('div.time-stamp').appendTo(container).getHTMLElement();
+			$('div.time-stamp').appendTo(container);
 			const message = $('div.message').appendTo(container).getHTMLElement();
-			return { timeStamp, message };
+			return { message };
+		} else if (templateId === TemplateIds.BATCH) {
+			const timeStamp = $('div.time-stamp').appendTo(container).getHTMLElement();
+			const message = $('div.batch-start').appendTo(container).getHTMLElement();
+			return { message, timeStamp };
 		} else {
 			return undefined;
 		}
 	}
 
-	renderElement(tree: ITree, element: IResultMessage, templateId: string, templateData: IMessageTemplate): void {
+	renderElement(tree: ITree, element: IResultMessage, templateId: string, templateData: IMessageTemplate | IBatchTemplate): void {
 		if (templateId === TemplateIds.MESSAGE) {
-			if (element.time) {
-				templateData.timeStamp.innerText = element.time;
-			}
-			templateData.message.innerText = element.message;
+			let data: IMessageTemplate = templateData;
+			data.message.innerText = element.message;
+		} else if (templateId === TemplateIds.BATCH) {
+			let data = templateData as IBatchTemplate;
+			data.timeStamp.innerText = element.time;
+			data.message.innerText = element.message;
 		}
 	}
 
@@ -169,6 +232,7 @@ export class MessageController extends WorkbenchTreeController {
 	constructor(
 		options: IControllerOptions,
 		@IConfigurationService configurationService: IConfigurationService,
+		@IWorkbenchEditorService private workbenchEditorService: IWorkbenchEditorService,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
@@ -190,6 +254,17 @@ export class MessageController extends WorkbenchTreeController {
 			this.toFocusOnClick.focus();
 		}
 		this.lastSelectedString = selection.toString();
+
+		if (element.selection) {
+			let selection: ISelectionData = element.selection;
+			// this is a batch statement
+			(<IEditor>this.workbenchEditorService.getActiveEditor().getControl()).setSelection({
+				startColumn: selection.startColumn,
+				endColumn: selection.endColumn,
+				endLineNumber: selection.endLine,
+				startLineNumber: selection.startLine
+			});
+		}
 
 		return true;
 	}
@@ -230,7 +305,7 @@ export class MessageController extends WorkbenchTreeController {
 }
 
 export class Model {
-	public messages: IResultMessageIntern[] = [];
+	public messages: Array<IMessagePanelMessage | IMessagePanelBatchMessage> = [];
 
 	public uuid = generateUuid();
 

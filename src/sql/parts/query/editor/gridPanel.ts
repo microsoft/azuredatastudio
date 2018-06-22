@@ -81,8 +81,9 @@ export class GridPanel extends ViewletPanel {
 	private splitView: ScrollableSplitView;
 	private tables: GridTable[] = [];
 	private tableDisposable: IDisposable[] = [];
+	private queryRunnerDisposables: IDisposable[] = [];
 
-	public runner: QueryRunner;
+	private runner: QueryRunner;
 
 	private maximizedGrid: GridTable;
 
@@ -109,7 +110,16 @@ export class GridPanel extends ViewletPanel {
 		this.splitView.layout(size);
 	}
 
-	public onResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
+	public set queryRunner(runner: QueryRunner) {
+		dispose(this.queryRunnerDisposables);
+		this.reset();
+		this.queryRunnerDisposables = [];
+		this.runner = runner;
+		this.queryRunnerDisposables.push(this.runner.onResultSet(e => this.onResultSet(e)));
+		this.queryRunnerDisposables.push(this.runner.onStartQuery(() => this.reset()));
+	}
+
+	private onResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
 		if (isArray(resultSet)) {
 			resultSet.forEach(c => {
 				this.addResultSet(c);
@@ -144,7 +154,7 @@ export class GridPanel extends ViewletPanel {
 		this.tables.push(table);
 	}
 
-	public reset() {
+	private reset() {
 		for (let i = this.splitView.length - 1; i >= 0; i--) {
 			this.splitView.removeView(i);
 		}

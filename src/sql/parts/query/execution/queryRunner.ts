@@ -88,6 +88,9 @@ export default class QueryRunner {
 	private _onStartQuery = new Emitter<void>();
 	public readonly onStartQuery: Event<void> = this._onStartQuery.event;
 
+	private _onBatchStart = new Emitter<sqlops.BatchSummary>();
+	public readonly onBatchStart: Event<sqlops.BatchSummary> = echo(this._onBatchStart.event);
+
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		public uri: string,
@@ -236,7 +239,7 @@ export default class QueryRunner {
 
 		// Store the batch
 		this.batchSets[batch.id] = batch;
-		this._eventEmitter.emit(EventType.BATCH_START, batch);
+		this._onBatchStart.fire(batch);
 	}
 
 	/**

@@ -58,21 +58,8 @@ class ResultsView implements IPanelView {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
-		dispose(this.queryRunnerDisposable);
-		this.queryRunnerDisposable = [];
-		this.gridPanel.reset();
-		this.messagePanel.reset();
-		this.gridPanel.runner = runner;
-		this.queryRunnerDisposable.push(runner.onResultSet(e => {
-			this.gridPanel.onResultSet(e);
-		}));
-		this.queryRunnerDisposable.push(runner.onMessage(e => {
-			this.messagePanel.onMessage(e);
-		}));
-		this.queryRunnerDisposable.push(runner.onStartQuery(() => {
-			this.gridPanel.reset();
-			this.messagePanel.reset();
-		}));
+		this.gridPanel.queryRunner = runner;
+		this.messagePanel.queryRunner = runner;
 	}
 }
 

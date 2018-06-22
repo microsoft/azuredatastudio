@@ -18,6 +18,15 @@
 	display: inline-block;
 }
 
-.message-tree .message {
+.message-tree .message,
+.message-tree .batch-start {
 	display: inline-block;
+}
+
+.message-tree .batch-start {
+	text-decoration: underline;
+}
+
+.message-tree .batch-start:hover {
+	color: red;
 }
