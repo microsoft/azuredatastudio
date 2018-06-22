@@ -120,9 +120,9 @@ export class CreateStepDialog {
 		this.parseButton.onDidClick(e => {
 			queryProvider.runQueryAndReturn(this.ownerUri, this.commandTextBox.value, true).then(result => {
 				if (result && result.parseable) {
-					// show parsed dialog!
+					this.dialog.message = { text: 'The command was successfully parsed.'};
 				} else if (result && !result.parseable) {
-					// show error dialog !
+					this.dialog.message = { text: 'The command failed.'};
 				}
 			});
 		});
