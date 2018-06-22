@@ -68,6 +68,11 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		}
 	}
 
+	public getClass(): string {
+		return (this.selectable && this.selected || this._hasFocus) ? 'model-card selected' :
+		'model-card unselected';
+	}
+
 	public onCardHoverChanged(event: any) {
 		if (this.selectable) {
 			this._hasFocus = event.type === 'mouseover';
@@ -95,7 +100,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	}
 
 	private get selectable(): boolean {
-		return this.cardType === 'selectableCard';
+		return this.cardType === 'VerticalButton';
 	}
 
 	// CSS-bound properties
@@ -109,7 +114,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	}
 
 	public get cardType(): string {
-		return this.getPropertyOrDefault<CardProperties, string>((props) => props.cardType, 'actionCard');
+		return this.getPropertyOrDefault<CardProperties, string>((props) => props.cardType, 'Details');
 	}
 
 	public get selected(): boolean {
@@ -120,12 +125,12 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		this.setPropertyFromUI<sqlops.CardProperties, boolean>((props, value) => props.selected = value, newValue);
 	}
 
-	public get isActionCard(): boolean {
-		return !this.cardType || this.cardType === 'actionCard';
+	public get isDetailsCard(): boolean {
+		return !this.cardType || this.cardType === 'Details';
 	}
 
-	public get isSelectableCard(): boolean {
-		return this.cardType === 'selectableCard';
+	public get isVerticalButton(): boolean {
+		return this.cardType === 'VerticalButton';
 	}
 
 

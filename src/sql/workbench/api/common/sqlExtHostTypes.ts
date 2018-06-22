@@ -241,6 +241,6 @@ export enum DeclarativeDataType {
 }
 
 export enum CardType {
-	actionCard = 'actionCard',
-	selecableCard = 'selectableCard'
+	VerticalButton  = 'VerticalButton',
+	Details = 'Details'
 }

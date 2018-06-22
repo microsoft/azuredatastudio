@@ -239,7 +239,7 @@ declare module 'sqlops' {
 		horizontal?: boolean;
 		componentWidth?: number | string;
 		componentHeight?: number | string;
-		titleFontSize?: number;
+		titleFontSize?: number | string;
 		required?: boolean;
 		info?: string;
 	}
@@ -301,8 +301,8 @@ declare module 'sqlops' {
 	}
 
 	export enum CardType {
-		actionCard = 'actionCard',
-		selecableCard = 'selectableCard'
+		VerticalButton  = 'VerticalButton',
+		Details = 'Details'
 	}
 
 	/**

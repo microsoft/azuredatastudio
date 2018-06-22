@@ -7,11 +7,25 @@
 	margin: 15px;
 	border-width: 1px;
     border-style: solid;
-    border-color: rgb(214, 214, 214);
+
     text-align: left;
     vertical-align: top;
     box-shadow: rgba(120, 120, 120, 0.75) 0px 0px 6px;
 }
+
+.model-card.selected {
+	border-color: darkblue
+}
+
+.vs-dark .monaco-workbench .model-card.selected,
+.hc-black .monaco-workbench .model-card.selected {
+	border-color: darkblue
+}
+
+.model-card.unselected {
+	border-color: rgb(214, 214, 214);
+}
+
 
 .model-card .card-content {
 	position: relative;
@@ -23,7 +37,7 @@
 	min-width: 30px;
 }
 
-.model-card .card-content2 {
+.model-card .card-vertical-button {
 	position: relative;
 	display: inline-block;
 	height: auto;
