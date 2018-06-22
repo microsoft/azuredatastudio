@@ -11,7 +11,7 @@ export class ToggleDropdownAction extends Action {
 	private static readonly ID = 'dropdownAction.toggle';
 	private static readonly ICON = 'dropdown-arrow';
 
-	constructor(label, private _fn: () => any) {
+	constructor(private _fn: () => any, label: string) {
 		super(ToggleDropdownAction.ID, label, ToggleDropdownAction.ICON);
 	}
 

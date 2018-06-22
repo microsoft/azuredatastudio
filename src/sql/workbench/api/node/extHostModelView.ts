@@ -255,6 +255,9 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 
 	private convertToItemConfig(formComponent: sqlops.FormComponent, itemLayout?: sqlops.FormItemLayout): InternalItemConfig {
 		let componentWrapper = formComponent.component as ComponentWrapper;
+		if (itemLayout && itemLayout.required && componentWrapper) {
+			componentWrapper.required = true;
+		}
 		let actions: string[] = undefined;
 		if (formComponent.actions) {
 			actions = formComponent.actions.map(action => {
@@ -377,7 +380,8 @@ class ComponentWrapper implements sqlops.Component {
 	}
 
 	public get enabled(): boolean {
-		return this.properties['enabled'];
+		let isEnabled = this.properties['enabled'];
+		return (isEnabled === undefined) ? true : isEnabled;
 	}
 
 	public set enabled(value: boolean) {
@@ -398,6 +402,13 @@ class ComponentWrapper implements sqlops.Component {
 
 	public set width(v: number | string) {
 		this.setProperty('width', v);
+	}
+
+	public get required(): boolean {
+		return this.properties['required'];
+	}
+	public set required(v: boolean) {
+		this.setProperty('required', v);
 	}
 
 	public toComponentShape(): IComponentShape {
@@ -772,7 +783,11 @@ class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownCompone
 	}
 
 	public get value(): string | sqlops.CategoryValue {
-		return this.properties['value'];
+		let val = this.properties['value'];
+		if (!val && this.values && this.values.length > 0) {
+			val = this.values[0];
+		}
+		return val;
 	}
 	public set value(v: string | sqlops.CategoryValue) {
 		this.setProperty('value', v);

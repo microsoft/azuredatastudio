@@ -156,6 +156,7 @@ export interface IModelViewDialogDetails {
 	okButton: number;
 	cancelButton: number;
 	customButtons: number[];
+	message: DialogMessage;
 }
 
 export interface IModelViewTabDetails {
@@ -186,6 +187,18 @@ export interface IModelViewWizardDetails {
 	nextButton: number;
 	backButton: number;
 	customButtons: number[];
+	message: DialogMessage;
+}
+
+export enum MessageLevel {
+	Error = 0,
+	Warning = 1,
+	Information = 2
+}
+
+export interface DialogMessage {
+	text: string;
+	level?: MessageLevel;
 }
 
 /// Card-related APIs that need to be here to avoid early load issues

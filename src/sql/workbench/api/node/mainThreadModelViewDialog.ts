@@ -80,6 +80,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			dialog.okButton = okButton;
 			dialog.cancelButton = cancelButton;
 			dialog.onValidityChanged(valid => this._proxy.$onPanelValidityChanged(handle, valid));
+			dialog.registerCloseValidator(() => this.validateDialogClose(handle));
 			this._dialogs.set(handle, dialog);
 		}
 
@@ -93,6 +94,8 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		if (details.customButtons) {
 			dialog.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
+
+		dialog.message = details.message;
 
 		return Promise.resolve();
 	}
@@ -169,6 +172,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		if (details.customButtons !== undefined) {
 			wizard.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
+		wizard.message = details.message;
 
 		return Promise.resolve();
 	}
@@ -258,5 +262,9 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	private validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean> {
 		return this._proxy.$validateNavigation(handle, info);
+	}
+
+	private validateDialogClose(handle: number): Thenable<boolean> {
+		return this._proxy.$validateDialogClose(handle);
 	}
 }
