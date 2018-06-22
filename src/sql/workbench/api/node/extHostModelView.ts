@@ -380,7 +380,8 @@ class ComponentWrapper implements sqlops.Component {
 	}
 
 	public get enabled(): boolean {
-		return this.properties['enabled'];
+		let isEnabled = this.properties['enabled'];
+		return (isEnabled === undefined) ? true : isEnabled;
 	}
 
 	public set enabled(value: boolean) {
@@ -782,7 +783,11 @@ class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownCompone
 	}
 
 	public get value(): string | sqlops.CategoryValue {
-		return this.properties['value'];
+		let val = this.properties['value'];
+		if (!val && this.values && this.values.length > 0) {
+			val = this.values[0];
+		}
+		return val;
 	}
 	public set value(v: string | sqlops.CategoryValue) {
 		this.setProperty('value', v);

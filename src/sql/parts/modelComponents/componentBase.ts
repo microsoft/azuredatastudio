@@ -98,10 +98,6 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		if (enabled === undefined) {
 			enabled = true;
 			properties['enabled'] = enabled;
-			this.fireEvent({
-				eventType: ComponentEventType.PropertiesChanged,
-				args: this.getProperties()
-			});
 		}
 		return <boolean>enabled;
 	}
