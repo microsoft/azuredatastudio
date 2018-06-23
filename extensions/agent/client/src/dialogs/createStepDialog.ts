@@ -7,6 +7,7 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { CreateStepData } from '../data/createStepData';
 import { AgentUtils } from '../agentUtils';
+import { CreateJobData } from '../data/createJobData';
 
 export class CreateStepDialog {
 
@@ -32,8 +33,8 @@ export class CreateStepDialog {
 	// Dropdown options
 	private static readonly TSQLScript: string = 'Transact-SQL script (T-SQL)';
 	private static readonly AgentServiceAccount: string = 'SQL Server Agent Service Account';
-	private static readonly NextStep: string =  'Go to the next step';
-	private static readonly QuitJobReportingSuccess: string =  'Quit the job reporting success';
+	private static readonly NextStep: string = 'Go to the next step';
+	private static readonly QuitJobReportingSuccess: string = 'Quit the job reporting success';
 	private static readonly QuitJobReportingFailure: string = 'Quit the job reporting failure';
 
 	// UI Components
@@ -70,15 +71,19 @@ export class CreateStepDialog {
 	private jobId: string;
 	private server: string;
 
+	private jobModel: CreateJobData;
+
 	constructor(
 		ownerUri: string,
 		jobId: string,
-		server: string
+		server: string,
+		jobModel?: CreateJobData
 	) {
 		this.model = new CreateStepData(ownerUri);
 		this.ownerUri = ownerUri;
 		this.jobId = jobId;
 		this.server = server;
+		this.jobModel = jobModel;
 	}
 
 	private initializeUIComponents() {
@@ -120,9 +125,9 @@ export class CreateStepDialog {
 		this.parseButton.onDidClick(e => {
 			queryProvider.runQueryAndReturn(this.ownerUri, this.commandTextBox.value, true).then(result => {
 				if (result && result.parseable) {
-					this.dialog.message = { text: 'The command was successfully parsed.'};
+					this.dialog.message = { text: 'The command was successfully parsed.' };
 				} else if (result && !result.parseable) {
-					this.dialog.message = { text: 'The command failed.'};
+					this.dialog.message = { text: 'The command failed.' };
 				}
 			});
 		});
@@ -136,9 +141,9 @@ export class CreateStepDialog {
 				alignItems: 'left',
 				height: 300,
 			}).withItems([
-				text, this.openButton, this.selectAllButton , this.copyButton, this.pasteButton, this.parseButton]
-			, { flex: '1 1 50%' }).component();
-			this.commandTextBox = view.modelBuilder.inputBox()
+				text, this.openButton, this.selectAllButton, this.copyButton, this.pasteButton, this.parseButton]
+				, { flex: '1 1 50%' }).component();
+		this.commandTextBox = view.modelBuilder.inputBox()
 			.withProperties({
 				height: 300,
 				width: 350,
@@ -156,8 +161,8 @@ export class CreateStepDialog {
 			}).component();
 
 		this.overallContainer = view.modelBuilder.flexContainer().withLayout(
-				{ flexFlow: 'row', justifyContent: 'center'}
-			).withItems([this.flexButtonsModel, commandContainer]).component();
+			{ flexFlow: 'row', justifyContent: 'center' }
+		).withItems([this.flexButtonsModel, commandContainer]).component();
 	}
 
 	private createGeneralTab(databases: string[], queryProvider: sqlops.QueryProvider) {
@@ -188,36 +193,36 @@ export class CreateStepDialog {
 				}
 			});
 			this.databaseDropdown = view.modelBuilder.dropDown()
-			.withProperties({
-				value: databases[0],
-				values: databases
-			}).component();
+				.withProperties({
+					value: databases[0],
+					values: databases
+				}).component();
 
 			// create the commands section
 			this.createCommands(view, queryProvider);
 
 			this.nextButton = view.modelBuilder.button()
-			.withProperties({
-				label: CreateStepDialog.NextButtonText,
-				enabled: false,
-				width: '100px'
-			}).component();
+				.withProperties({
+					label: CreateStepDialog.NextButtonText,
+					enabled: false,
+					width: '100px'
+				}).component();
 			this.previousButton = view.modelBuilder.button()
-			.withProperties({
-				label: CreateStepDialog.PreviousButtonText,
-				enabled: false,
-				width: '100px'
-			}).component();
+				.withProperties({
+					label: CreateStepDialog.PreviousButtonText,
+					enabled: false,
+					width: '100px'
+				}).component();
 
 			let buttonContainer = view.modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'row',
-				textAlign: 'right',
-				justifyContent: 'flex-end',
-				width: 400
-			}).withItems([this.nextButton, this.previousButton], {
-				flex: '1 1 50%'
-			}).component();
+				.withLayout({
+					flexFlow: 'row',
+					textAlign: 'right',
+					justifyContent: 'flex-end',
+					width: 400
+				}).withItems([this.nextButton, this.previousButton], {
+					flex: '1 1 50%'
+				}).component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -239,9 +244,9 @@ export class CreateStepDialog {
 					component: buttonContainer,
 					title: ''
 				}], {
-					horizontal: false,
-					componentWidth: 420
-				}).component();
+						horizontal: false,
+						componentWidth: 420
+					}).component();
 			let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
 			formWrapper.loading = false;
 			await view.initializeModel(formWrapper);
@@ -252,16 +257,16 @@ export class CreateStepDialog {
 		let userInputBox = view.modelBuilder.inputBox()
 			.withProperties({ inputType: 'text', width: '100px' }).component();
 		let viewButton = view.modelBuilder.button()
-			.withProperties({label: '...', width: '20px'}).component();
+			.withProperties({ label: '...', width: '20px' }).component();
 		let viewButtonContainer = view.modelBuilder.flexContainer()
-			.withLayout({ width: 100, textAlign: 'right'})
-			.withItems([viewButton], { flex: '1 1 50%'}).component();
+			.withLayout({ width: 100, textAlign: 'right' })
+			.withItems([viewButton], { flex: '1 1 50%' }).component();
 		let userInputBoxContainer = view.modelBuilder.flexContainer()
 			.withLayout({ width: 200, textAlign: 'left' })
-			.withItems([userInputBox], { flex: '1 1 50%'}).component();
+			.withItems([userInputBox], { flex: '1 1 50%' }).component();
 		let runAsUserContainer = view.modelBuilder.flexContainer()
-			.withLayout({ width: 200})
-			.withItems([userInputBoxContainer, viewButtonContainer],{ flex: '1 1 50%'})
+			.withLayout({ width: 200 })
+			.withItems([userInputBoxContainer, viewButtonContainer], { flex: '1 1 50%' })
 			.component();
 		let runAsUserForm = view.modelBuilder.formContainer()
 			.withFormItems([{
@@ -285,17 +290,17 @@ export class CreateStepDialog {
 					value: CreateStepDialog.QuitJobReportingFailure,
 					values: [CreateStepDialog.QuitJobReportingFailure, CreateStepDialog.NextStep, CreateStepDialog.QuitJobReportingSuccess]
 				})
-			.component();
+				.component();
 			let optionsGroup = this.createTSQLOptions(view, fileBrowserService);
 			let viewButton = view.modelBuilder.button()
-				.withProperties({ label: 'View', width: '50px'}).component();
+				.withProperties({ label: 'View', width: '50px' }).component();
 			viewButton.enabled = false;
 			this.logToTableCheckbox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: 'Log to table'
 				}).component();
 			let appendToExistingEntryInTableCheckbox = view.modelBuilder.checkBox()
-				.withProperties({ label: 'Append output to existing entry in table'}).component();
+				.withProperties({ label: 'Append output to existing entry in table' }).component();
 			appendToExistingEntryInTableCheckbox.enabled = false;
 			this.logToTableCheckbox.onChanged(e => {
 				viewButton.enabled = e;
@@ -304,40 +309,40 @@ export class CreateStepDialog {
 			let appendCheckboxContainer = view.modelBuilder.groupContainer()
 				.withItems([appendToExistingEntryInTableCheckbox]).component();
 			let logToTableContainer = view.modelBuilder.flexContainer()
-				.withLayout({ flexFlow: 'row', justifyContent: 'space-between', width: 300})
+				.withLayout({ flexFlow: 'row', justifyContent: 'space-between', width: 300 })
 				.withItems([this.logToTableCheckbox, viewButton]).component();
 			let logStepOutputHistoryCheckbox = view.modelBuilder.checkBox()
-				.withProperties({ label: 'Include step output in history'}).component();
+				.withProperties({ label: 'Include step output in history' }).component();
 			let runAsUserOptions = this.createRunAsUserOptions(view);
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems(
-				[{
-					component: this.successActionDropdown,
-					title: CreateStepDialog.SuccessAction
-				}, {
-					component: retryFlexContainer,
-					title: ''
-				}, {
-					component: this.failureActionDropdown,
-					title: CreateStepDialog.FailureAction
-				}, {
-					component: optionsGroup,
-					title: 'Transact-SQL script (T-SQL)'
-				}, {
-					component: logToTableContainer,
-					title: ''
-				}, {
-					component: appendCheckboxContainer,
-					title: '                            '
-				}, {
-					component: logStepOutputHistoryCheckbox,
-					title: ''
-				}, {
-					component: runAsUserOptions,
-					title: ''
-				}], {
-					componentWidth: 400
-				}).component();
+					[{
+						component: this.successActionDropdown,
+						title: CreateStepDialog.SuccessAction
+					}, {
+						component: retryFlexContainer,
+						title: ''
+					}, {
+						component: this.failureActionDropdown,
+						title: CreateStepDialog.FailureAction
+					}, {
+						component: optionsGroup,
+						title: 'Transact-SQL script (T-SQL)'
+					}, {
+						component: logToTableContainer,
+						title: ''
+					}, {
+						component: appendCheckboxContainer,
+						title: '                            '
+					}, {
+						component: logStepOutputHistoryCheckbox,
+						title: ''
+					}, {
+						component: runAsUserOptions,
+						title: ''
+					}], {
+						componentWidth: 400
+					}).component();
 
 			let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
 			formWrapper.loading = false;
@@ -347,10 +352,10 @@ export class CreateStepDialog {
 
 	private createRetryCounters(view) {
 		this.retryAttemptsBox = view.modelBuilder.inputBox()
-		.withProperties({
-			inputType: 'number'
-		})
-		.component();
+			.withProperties({
+				inputType: 'number'
+			})
+			.component();
 		this.retryIntervalBox = view.modelBuilder.inputBox()
 			.withProperties({
 				inputType: 'number'
@@ -364,14 +369,14 @@ export class CreateStepDialog {
 				}], {
 					horizontal: false
 				})
-				.component();
+			.component();
 
 		let retryIntervalContainer = view.modelBuilder.formContainer()
 			.withFormItems(
 				[{
 					component: this.retryIntervalBox,
 					title: 'Retry Attempts'
-					}], {
+				}], {
 					horizontal: false
 				})
 			.component();
@@ -385,18 +390,18 @@ export class CreateStepDialog {
 
 	private createTSQLOptions(view, fileBrowserService: sqlops.FileBrowserProvider) {
 		this.outputFileBrowserButton = view.modelBuilder.button()
-			.withProperties({width: '20px', label: '...'}).component();
+			.withProperties({ width: '20px', label: '...' }).component();
 		this.outputFileBrowserButton.onDidClick(() => {
 			fileBrowserService.openFileBrowser(this.ownerUri,
 				'C:\\Program Files\\Microsoft SQL Server\\MSSQL14.MSSQLSERVER\\MSSQL\\Backup',
-				['*'] , false).then(result => {
-				if (result) {
-					console.log(result);
-					Promise.resolve(result);
-				} else {
-					Promise.reject(false);
-				}
-			});
+				['*'], false).then(result => {
+					if (result) {
+						console.log(result);
+						Promise.resolve(result);
+					} else {
+						Promise.reject(false);
+					}
+				});
 		});
 		this.outputFileNameBox = view.modelBuilder.inputBox()
 			.withProperties({
@@ -414,7 +419,7 @@ export class CreateStepDialog {
 				flexFlow: 'row',
 				textAlign: 'right',
 				width: 120
-			}).withItems([this.outputFileBrowserButton, outputViewButton], { flex: '1 1 50%'}).component();
+			}).withItems([this.outputFileBrowserButton, outputViewButton], { flex: '1 1 50%' }).component();
 		let outputFlexBox = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row',
@@ -436,12 +441,12 @@ export class CreateStepDialog {
 		});
 		let outputFileForm = view.modelBuilder.formContainer()
 			.withFormItems([{
-					component: outputFlexBox,
-					title: 'Output file'
-				}, {
-					component: this.appendToExistingFileCheckbox,
-					title: ''
-				}], { horizontal: true, componentWidth: 200}).component();
+				component: outputFlexBox,
+				title: 'Output file'
+			}, {
+				component: this.appendToExistingFileCheckbox,
+				title: ''
+			}], { horizontal: true, componentWidth: 200 }).component();
 		return outputFileForm;
 	}
 
@@ -468,15 +473,15 @@ export class CreateStepDialog {
 			&& fileBrowserOpenedParams.fileTree
 			&& fileBrowserOpenedParams.fileTree.rootNode
 			&& fileBrowserOpenedParams.fileTree.selectedNode) {
-				this.openFileBrowserDialog(fileBrowserOpenedParams.fileTree.rootNode, fileBrowserOpenedParams.fileTree.selectedNode);
-			}
+			this.openFileBrowserDialog(fileBrowserOpenedParams.fileTree.rootNode, fileBrowserOpenedParams.fileTree.selectedNode);
+		}
 		console.log('no response');
 		return;
 	}
 
 	public async openNewStepDialog() {
 		let databases = await AgentUtils.getDatabases(this.ownerUri);
-		let fileBrowserService =  await AgentUtils.getFileBrowserService(this.ownerUri);
+		let fileBrowserService = await AgentUtils.getFileBrowserService(this.ownerUri);
 		let queryProvider = await AgentUtils.getQueryProvider(this.ownerUri);
 		fileBrowserService.registerOnFileBrowserOpened((response: sqlops.FileBrowserOpenedParams) => {
 			this.onFileBrowserOpened(fileBrowserService.handle, response);
