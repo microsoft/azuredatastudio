@@ -139,7 +139,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Runs a query for a provided query and returns result
 	 */
-	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> { throw ni(); }
+	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string, isParse: boolean): Thenable<sqlops.SimpleExecuteResult> { throw ni(); }
 	/**
 	 * Gets a subset of rows in a result set in order to display in the UI
 	 */
