@@ -1085,6 +1085,13 @@ declare module 'sqlops' {
 		DeleteLevel: JobCompletionActionCondition;
 		OperatorToEmail: string;
 		OperatorToPage: string;
+		JobSteps: AgentJobStepInfo[];
+		JobSchedules: AgentJobScheduleInfo[];
+		Alerts: AgentAlertInfo[];
+	}
+
+	export interface AgentJobScheduleInfo {
+
 	}
 
 	export interface AgentJobStepInfo {

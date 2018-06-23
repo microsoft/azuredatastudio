@@ -110,6 +110,18 @@ export class CreateJobDialog {
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
 		this.dialog.okButton.label = this.OkButtonText;
 		this.dialog.cancelButton.label = this.CancelButtonText;
+
+		this.dialog.registerCloseValidator(() => {
+			this.updateModel();
+			let validationResult = this.model.validate();
+			if (!validationResult.valid) {
+				// TODO: Show Error Messages
+				console.error(validationResult.errorMessages.join(','));
+			}
+
+			return validationResult.valid;
+		});
+
 		sqlops.window.modelviewdialog.openDialog(this.dialog);
 	}
 
@@ -310,17 +322,7 @@ export class CreateJobDialog {
 	}
 
 	private async execute() {
-		this.model.name = this.nameTextBox.value;
-		this.model.owner = this.ownerTextBox.value;
-		this.model.enabled = this.enabledCheckBox.checked;
-		this.model.description = this.descriptionTextBox.value;
-		this.model.category = this.getDropdownValue(this.categoryDropdown);
-		this.model.emailLevel = this.getActualConditionValue(this.emailCheckBox, this.emailConditionDropdown);
-		this.model.operatorToEmail = this.getDropdownValue(this.emailOperatorDropdown);
-		this.model.operatorToPage = this.getDropdownValue(this.pagerOperatorDropdown);
-		this.model.pageLevel = this.getActualConditionValue(this.pagerCheckBox, this.pagerConditionDropdown);
-		this.model.eventLogLevel = this.getActualConditionValue(this.eventLogCheckBox, this.eventLogConditionDropdown);
-		this.model.deleteLevel = this.getActualConditionValue(this.deleteJobCheckBox, this.deleteJobConditionDropdown);
+		this.updateModel();
 		await this.model.save();
 	}
 
@@ -344,5 +346,19 @@ export class CreateJobDialog {
 				break;
 			}
 		}
+	}
+
+	private updateModel() {
+		this.model.name = this.nameTextBox.value;
+		this.model.owner = this.ownerTextBox.value;
+		this.model.enabled = this.enabledCheckBox.checked;
+		this.model.description = this.descriptionTextBox.value;
+		this.model.category = this.getDropdownValue(this.categoryDropdown);
+		this.model.emailLevel = this.getActualConditionValue(this.emailCheckBox, this.emailConditionDropdown);
+		this.model.operatorToEmail = this.getDropdownValue(this.emailOperatorDropdown);
+		this.model.operatorToPage = this.getDropdownValue(this.pagerOperatorDropdown);
+		this.model.pageLevel = this.getActualConditionValue(this.pagerCheckBox, this.pagerConditionDropdown);
+		this.model.eventLogLevel = this.getActualConditionValue(this.eventLogCheckBox, this.eventLogConditionDropdown);
+		this.model.deleteLevel = this.getActualConditionValue(this.deleteJobCheckBox, this.deleteJobConditionDropdown);
 	}
 }

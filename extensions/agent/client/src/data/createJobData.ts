@@ -13,7 +13,9 @@ export class CreateJobData {
 	private readonly JobCompletionActionCondition_Always: string = 'When the job completes';
 	private readonly JobCompletionActionCondition_OnFailure: string = 'When the job fails';
 	private readonly JobCompletionActionCondition_OnSuccess: string = 'When the job succeeds';
-	private readonly JobCompletionActionCondition_Never: string = 'Never';
+
+	// Error Messages
+	private readonly CreateJobErrorMessage_NameIsEmpty = 'Job name must be provided';
 
 	private _ownerUri: string;
 	private _jobCategories: string[];
@@ -34,6 +36,9 @@ export class CreateJobData {
 	public deleteLevel: sqlops.JobCompletionActionCondition = sqlops.JobCompletionActionCondition.OnSuccess;
 	public operatorToEmail: string;
 	public operatorToPage: string;
+	public jobSteps: sqlops.AgentJobStepInfo[];
+	public jobSchedules: sqlops.AgentJobScheduleInfo[];
+	public alerts: sqlops.AgentAlertInfo[];
 
 	constructor(ownerUri: string) {
 		this._ownerUri = ownerUri;
@@ -94,30 +99,49 @@ export class CreateJobData {
 			name: this.name,
 			owner: this.owner,
 			description: this.description,
-			currentExecutionStatus: 0,
-			lastRunOutcome: 0,
-			currentExecutionStep: '',
-			enabled: this.enabled,
-			hasTarget: true,
-			hasSchedule: false,
-			hasStep: false,
-			runnable: true,
-			category: this.category,
-			categoryId: 1,
-			categoryType: 1, // LocalJob
-			lastRun: '',
-			nextRun: '',
-			jobId: '',
 			EmailLevel: this.emailLevel,
 			PageLevel: this.pageLevel,
 			EventLogLevel: this.eventLogLevel,
 			DeleteLevel: this.deleteLevel,
 			OperatorToEmail: this.operatorToEmail,
-			OperatorToPage: this.operatorToPage
+			OperatorToPage: this.operatorToPage,
+			enabled: this.enabled,
+			category: this.category,
+			Alerts: this.alerts,
+			JobSchedules: this.jobSchedules,
+			JobSteps: this.jobSteps,
+			// The properties below are not collected from UI
+			// We could consider using a seperate class for create job request
+			//
+			currentExecutionStatus: 0,
+			lastRunOutcome: 0,
+			currentExecutionStep: '',
+			hasTarget: true,
+			hasSchedule: false,
+			hasStep: false,
+			runnable: true,
+			categoryId: 0,
+			categoryType: 1, // LocalJob, hard-coding the value, corresponds to the target tab in SSMS
+			lastRun: '',
+			nextRun: '',
+			jobId: ''
 		}).then(result => {
 			if (!result.success) {
 				console.info(result.errorMessage);
 			}
 		});
+	}
+
+	public validate(): { valid: boolean, errorMessages: string[] } {
+		let validationErrors: string[] = [];
+
+		if (!(this.name && this.name.trim())) {
+			validationErrors.push(this.CreateJobErrorMessage_NameIsEmpty);
+		}
+
+		return {
+			valid: validationErrors.length > 0,
+			errorMessages: validationErrors
+		}
 	}
 }
