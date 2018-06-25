@@ -215,6 +215,8 @@ export interface CardProperties {
 	value?: string;
 	actions?: ActionDescriptor[];
 	status?: StatusIndicator;
+	selected?: boolean;
+	cardType: CardType;
 }
 
 export interface ActionDescriptor {
@@ -243,4 +245,9 @@ export enum DeclarativeDataType {
 	string = 'string',
 	category = 'category',
 	boolean = 'boolean'
+}
+
+export enum CardType {
+	VerticalButton  = 'VerticalButton',
+	Details = 'Details'
 }

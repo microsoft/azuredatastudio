@@ -392,7 +392,8 @@ export function createApiFactory(
 				workspace,
 				queryeditor: queryEditor,
 				ui: ui,
-				StatusIndicator: sqlExtHostTypes.StatusIndicator
+				StatusIndicator: sqlExtHostTypes.StatusIndicator,
+				CardType: sqlExtHostTypes.CardType
 			};
 		}
 	};

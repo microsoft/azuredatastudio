@@ -13,13 +13,14 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 
 const BrowserAnimationsModule = (<any>require.__$__nodeRequire('@angular/platform-browser/animations')).BrowserAnimationsModule;
 
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 
 import { Registry } from 'vs/platform/registry/common/platform';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 
-import { QueryOutputComponent, QUERY_OUTPUT_SELECTOR } from 'sql/parts/query/views/queryOutput.component';
+import { QueryOutputComponent } from 'sql/parts/query/views/queryOutput.component';
 import { QueryPlanComponent, } from 'sql/parts/queryPlan/queryPlan.component';
 import { QueryComponent } from 'sql/parts/grid/views/query/query.component';
 import { TopOperationsComponent } from 'sql/parts/queryPlan/topOperations.component';
@@ -41,7 +42,7 @@ let baseComponents = [QueryComponent, ComponentHostDirective, QueryOutputCompone
 /* Insights */
 let insightComponents = Registry.as<IInsightRegistry>(Extensions.InsightContribution).getAllCtors();
 
-export const QueryOutputModule = (params: IBootstrapParams, selector: string): Type<any> => {
+export const QueryOutputModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): Type<any> => {
 
 	@NgModule({
 		imports: [
@@ -67,19 +68,22 @@ export const QueryOutputModule = (params: IBootstrapParams, selector: string): T
 			...insightComponents
 		],
 		providers: [
-			{ provide: IBootstrapParams, useValue: params }
+			{ provide: IBootstrapParams, useValue: params },
+			{ provide: ISelector, useValue: selector },
+			...providerIterator(instantiationService)
 		]
 	})
 	class ModuleClass {
 
 		constructor(
-			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver
+			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
+			@Inject(ISelector) private selector: string
 		) {
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
 			const factory = this._resolver.resolveComponentFactory(QueryOutputComponent);
-			(<any>factory).factory.selector = selector;
+			(<any>factory).factory.selector = this.selector;
 			appRef.bootstrap(factory);
 		}
 	}
