@@ -68,8 +68,11 @@ export class DialogModal extends Modal {
 			});
 		}
 
-		this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done(), false);
+		this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done(), false, true);
 		this._dialog.okButton.registerClickEvent(this._onDone.event);
+		this._dialog.onValidityChanged(valid => {
+			this._doneButton.enabled = valid && this._dialog.okButton.enabled;
+		});
 		this._cancelButton = this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
 		this._dialog.cancelButton.registerClickEvent(this._onCancel.event);
 
@@ -85,23 +88,23 @@ export class DialogModal extends Modal {
 		this._dialog.onMessageChange(message => messageChangeHandler(message));
 	}
 
-	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true): Button {
+	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requireDialogValid: boolean = false): Button {
 		let buttonElement = this.addFooterButton(button.label, onSelect);
 		buttonElement.enabled = button.enabled;
 		if (registerClickEvent) {
 			button.registerClickEvent(buttonElement.onDidClick);
 		}
 		button.onUpdate(() => {
-			this.updateButtonElement(buttonElement, button);
+			this.updateButtonElement(buttonElement, button, requireDialogValid);
 		});
 		attachButtonStyler(buttonElement, this._themeService);
-		this.updateButtonElement(buttonElement, button);
+		this.updateButtonElement(buttonElement, button, requireDialogValid);
 		return buttonElement;
 	}
 
-	private updateButtonElement(buttonElement: Button, dialogButton: DialogButton) {
+	private updateButtonElement(buttonElement: Button, dialogButton: DialogButton, requireDialogValid: boolean = false) {
 		buttonElement.label = dialogButton.label;
-		buttonElement.enabled = dialogButton.enabled;
+		buttonElement.enabled = requireDialogValid ? dialogButton.enabled && this._dialog.valid : dialogButton.enabled;
 		dialogButton.hidden ? buttonElement.element.classList.add('dialogModal-hidden') : buttonElement.element.classList.remove('dialogModal-hidden');
 	}
 
@@ -120,11 +123,13 @@ export class DialogModal extends Modal {
 		this.show();
 	}
 
-	public done(): void {
+	public async done(): Promise<void> {
 		if (this._dialog.okButton.enabled) {
-			this._onDone.fire();
-			this.dispose();
-			this.hide();
+			if (await this._dialog.validateClose()) {
+				this._onDone.fire();
+				this.dispose();
+				this.hide();
+			}
 		}
 	}
 

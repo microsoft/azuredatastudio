@@ -145,15 +145,11 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	private getSelectedValue(): string {
 		if (this.values && this.values.length > 0 && this.valuesHaveDisplayName()) {
 			let selectedValue = <sqlops.CategoryValue>this.value || <sqlops.CategoryValue>this.values[0];
-			if (!this.value) {
-				this.value = selectedValue;
-			}
 			let valueCategory = (<sqlops.CategoryValue[]>this.values).find(v => v.name === selectedValue.name);
-
 			return valueCategory && valueCategory.displayName;
 		} else {
 			if (!this.value && this.values && this.values.length > 0) {
-				this.value = <string>this.values[0];
+				return <string>this.values[0];
 			}
 			return <string>this.value;
 		}
@@ -198,11 +194,11 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		this.setPropertyFromUI<sqlops.DropDownProperties, string[] | sqlops.CategoryValue[]>(this.setValuesProperties, newValue);
 	}
 
-	private setValueProperties(properties: sqlops.DropDownProperties, value: string): void {
+	private setValueProperties(properties: sqlops.DropDownProperties, value: string | sqlops.CategoryValue): void {
 		properties.value = value;
 	}
 
-	private setValuesProperties(properties: sqlops.DropDownProperties, values: string[]): void {
+	private setValuesProperties(properties: sqlops.DropDownProperties, values: string[] | sqlops.CategoryValue[]): void {
 		properties.values = values;
 	}
 }

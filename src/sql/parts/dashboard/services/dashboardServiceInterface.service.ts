@@ -4,50 +4,29 @@
  *--------------------------------------------------------------------------------------------*/
 
 /* Node Modules */
-import { Injectable, Inject, forwardRef, OnDestroy } from '@angular/core';
+import { Injectable, Inject, forwardRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
 
 /* SQL imports */
 import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { IMetadataService } from 'sql/services/metadata/metadataService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
-import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { TabSettingConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
-import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
-import { SingleConnectionMetadataService, SingleConnectionManagementService, SingleAdminService, SingleQueryManagementService, CommonServiceInterface }
-from 'sql/services/common/commonServiceInterface.service';
-
-import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'sqlops';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 /* VS imports */
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { ConfigurationEditingService, IConfigurationValue } from 'vs/workbench/services/configuration/node/configurationEditingService';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { IStorageService } from 'vs/platform/storage/common/storage';
 import { Event, Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { deepClone } from 'vs/base/common/objects';
-import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 const DASHBOARD_SETTINGS = 'dashboard';
@@ -85,45 +64,22 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	private _numberOfPageNavigations = 0;
 
 	constructor(
-		@Inject(forwardRef(() => Router)) private _router: Router,
-		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(IMetadataService) metadataService: IMetadataService,
 		@Inject(IConnectionManagementService) connectionManagementService: IConnectionManagementService,
 		@Inject(IAdminService) adminService: IAdminService,
 		@Inject(IQueryManagementService) queryManagementService: IQueryManagementService,
+		@Inject(IBootstrapParams) params: IDashboardComponentParams,
+		@Inject(forwardRef(() => Router)) private _router: Router,
+		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
-		@Inject(IConfigurationService) private _configService: IConfigurationService,
-		@Inject(IBootstrapParams) _params: IDashboardComponentParams
+		@Inject(IConfigurationService) private _configService: IConfigurationService
 	) {
-		super(_params, metadataService, connectionManagementService, adminService, queryManagementService);
-	}
-
-	private get params(): IDashboardComponentParams {
-		return this._params;
-	}
-
-	/**
-	 * Set the selector for this dashboard instance, should only be set once
-	 */
-	public set selector(selector: string) {
-		this._uniqueSelector = selector;
-		this._getbootstrapParams();
-	}
-
-	protected _getbootstrapParams(): void {
-		this.scopedContextKeyService = this.params.scopedContextService;
-		this._connectionContextKey = this.params.connectionContextKey;
-		this.dashboardContextKey = this._dashboardContextKey.bindTo(this.scopedContextKeyService);
-		this.uri = this.params.ownerUri;
-	}
-
-	/**
-	 * Set the uri for this dashboard instance, should only be set once
-	 * Inits all the services that depend on knowing a uri
-	 */
-	protected set uri(uri: string) {
-		super.setUri(uri);
-		this._register(toDisposableSubscription(this.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
+		super(params, metadataService, connectionManagementService, adminService, queryManagementService);
+		// during testing there may not be params
+		if (this._params) {
+			this.dashboardContextKey = this._dashboardContextKey.bindTo(this.scopedContextKeyService);
+			this._register(toDisposableSubscription(this.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
+		}
 	}
 
 	/**

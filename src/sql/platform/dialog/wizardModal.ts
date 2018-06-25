@@ -74,10 +74,10 @@ export class WizardModal extends Modal {
 			});
 		}
 
-		this._previousButton = this.addDialogButton(this._wizard.backButton, () => this.showPage(this.getCurrentPage() - 1));
-		this._nextButton = this.addDialogButton(this._wizard.nextButton, () => this.showPage(this.getCurrentPage() + 1));
+		this._previousButton = this.addDialogButton(this._wizard.backButton, () => this.showPage(this._wizard.currentPage - 1));
+		this._nextButton = this.addDialogButton(this._wizard.nextButton, () => this.showPage(this._wizard.currentPage + 1), true, true);
 		this._generateScriptButton = this.addDialogButton(this._wizard.generateScriptButton, () => undefined);
-		this._doneButton = this.addDialogButton(this._wizard.doneButton, () => this.done(), false);
+		this._doneButton = this.addDialogButton(this._wizard.doneButton, () => this.done(), false, true);
 		this._wizard.doneButton.registerClickEvent(this._onDone.event);
 		this._cancelButton = this.addDialogButton(this._wizard.cancelButton, () => this.cancel(), false);
 		this._wizard.cancelButton.registerClickEvent(this._onCancel.event);
@@ -92,25 +92,34 @@ export class WizardModal extends Modal {
 
 		messageChangeHandler(this._wizard.message);
 		this._wizard.onMessageChange(message => messageChangeHandler(message));
+
+		this._wizard.pages.forEach((page, index) => {
+			page.onValidityChanged(valid => {
+				if (index === this._wizard.currentPage) {
+					this._nextButton.enabled = this._wizard.nextButton.enabled && page.valid;
+					this._doneButton.enabled = this._wizard.doneButton.enabled && page.valid;
+				}
+			});
+		});
 	}
 
-	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true): Button {
+	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requirePageValid: boolean = false): Button {
 		let buttonElement = this.addFooterButton(button.label, onSelect);
 		buttonElement.enabled = button.enabled;
 		if (registerClickEvent) {
 			button.registerClickEvent(buttonElement.onDidClick);
 		}
 		button.onUpdate(() => {
-			this.updateButtonElement(buttonElement, button);
+			this.updateButtonElement(buttonElement, button, requirePageValid);
 		});
 		attachButtonStyler(buttonElement, this._themeService);
-		this.updateButtonElement(buttonElement, button);
+		this.updateButtonElement(buttonElement, button, requirePageValid);
 		return buttonElement;
 	}
 
-	private updateButtonElement(buttonElement: Button, dialogButton: DialogButton) {
+	private updateButtonElement(buttonElement: Button, dialogButton: DialogButton, requirePageValid: boolean = false) {
 		buttonElement.label = dialogButton.label;
-		buttonElement.enabled = dialogButton.enabled;
+		buttonElement.enabled = requirePageValid ? dialogButton.enabled && this._wizard.pages[this._wizard.currentPage].valid : dialogButton.enabled;
 		dialogButton.hidden ? buttonElement.element.classList.add('dialogModal-hidden') : buttonElement.element.classList.remove('dialogModal-hidden');
 	}
 
@@ -124,12 +133,12 @@ export class WizardModal extends Modal {
 		});
 		this._wizard.onPageAdded(page => {
 			this.registerPage(page);
-			this.showPage(this.getCurrentPage(), false);
+			this.showPage(this._wizard.currentPage, false);
 		});
 		this._wizard.onPageRemoved(page => {
 			let dialogPane = this._dialogPanes.get(page);
 			this._dialogPanes.delete(page);
-			this.showPage(this.getCurrentPage(), false);
+			this.showPage(this._wizard.currentPage, false);
 			dialogPane.dispose();
 		});
 	}
@@ -159,6 +168,9 @@ export class WizardModal extends Modal {
 		});
 		this.setButtonsForPage(index);
 		this._wizard.setCurrentPage(index);
+		let currentPageValid = this._wizard.pages[this._wizard.currentPage].valid;
+		this._nextButton.enabled = this._wizard.nextButton.enabled && currentPageValid;
+		this._doneButton.enabled = this._wizard.doneButton.enabled && currentPageValid;
 	}
 
 	private setButtonsForPage(index: number) {
@@ -177,10 +189,6 @@ export class WizardModal extends Modal {
 			this._nextButton.element.parentElement.classList.add('dialogModal-hidden');
 			this._doneButton.element.parentElement.classList.remove('dialogModal-hidden');
 		}
-	}
-
-	private getCurrentPage(): number {
-		return this._wizard.currentPage;
 	}
 
 	public open(): void {

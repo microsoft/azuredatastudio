@@ -6,11 +6,14 @@
 import { NgModule, Inject, forwardRef, ApplicationRef, ComponentFactoryResolver, Type } from '@angular/core';
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { QueryPlanComponent, QUERYPLAN_SELECTOR } from 'sql/parts/queryPlan/queryPlan.component';
+
+import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
+import { QueryPlanComponent } from 'sql/parts/queryPlan/queryPlan.component';
+
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 // Connection Dashboard main angular module
-export const QueryPlanModule = (params: IBootstrapParams, selector: string): Type<any> => {
+export const QueryPlanModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): Type<any> => {
 
 	@NgModule({
 		declarations: [
@@ -23,19 +26,22 @@ export const QueryPlanModule = (params: IBootstrapParams, selector: string): Typ
 		],
 		providers: [
 			{ provide: APP_BASE_HREF, useValue: '/' },
-			{ provide: IBootstrapParams, useValue: params }
+			{ provide: IBootstrapParams, useValue: params },
+			{ provide: ISelector, useValue: selector },
+			...providerIterator(instantiationService)
 		]
 	})
 	class ModuleClass {
 
 		constructor(
-			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver
+			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
+			@Inject(ISelector) private selector: string
 		) {
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
 			const factory = this._resolver.resolveComponentFactory(QueryPlanComponent);
-			(<any>factory).factory.selector = selector;
+			(<any>factory).factory.selector = this.selector;
 			appRef.bootstrap(factory);
 		}
 	}
