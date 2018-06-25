@@ -321,9 +321,7 @@ export default class QueryRunner {
 			batchIndex: batchIndex
 		};
 
-		return this._queryManagementService.getQueryRows(rowData).then(result => {
-			return result;
-		}, error => {
+		return this._queryManagementService.getQueryRows(rowData).then(r => r, error => {
 			this._notificationService.notify({
 				severity: Severity.Error,
 				message: nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
