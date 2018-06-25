@@ -149,6 +149,7 @@ export interface IModelViewDialogDetails {
 	okButton: number;
 	cancelButton: number;
 	customButtons: number[];
+	message: DialogMessage;
 }
 
 export interface IModelViewTabDetails {
@@ -179,6 +180,18 @@ export interface IModelViewWizardDetails {
 	nextButton: number;
 	backButton: number;
 	customButtons: number[];
+	message: DialogMessage;
+}
+
+export enum MessageLevel {
+	Error = 0,
+	Warning = 1,
+	Information = 2
+}
+
+export interface DialogMessage {
+	text: string;
+	level?: MessageLevel;
 }
 
 /// Card-related APIs that need to be here to avoid early load issues
@@ -195,6 +208,8 @@ export interface CardProperties {
 	value?: string;
 	actions?: ActionDescriptor[];
 	status?: StatusIndicator;
+	selected?: boolean;
+	cardType: CardType;
 }
 
 export interface ActionDescriptor {
@@ -223,4 +238,9 @@ export enum DeclarativeDataType {
 	string = 'string',
 	category = 'category',
 	boolean = 'boolean'
+}
+
+export enum CardType {
+	VerticalButton  = 'VerticalButton',
+	Details = 'Details'
 }

@@ -239,11 +239,15 @@ declare module 'sqlops' {
 		horizontal?: boolean;
 		componentWidth?: number | string;
 		componentHeight?: number | string;
+		titleFontSize?: number | string;
+		required?: boolean;
+		info?: string;
 	}
 
 	export interface FormLayout {
 		width?: number | string;
 		height?: number | string;
+		padding?: string;
 	}
 
 	export interface GroupLayout {
@@ -296,15 +300,22 @@ declare module 'sqlops' {
 		Error = 3
 	}
 
+	export enum CardType {
+		VerticalButton  = 'VerticalButton',
+		Details = 'Details'
+	}
+
 	/**
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
 	 */
-	export interface CardProperties {
+	export interface CardProperties extends ComponentWithIcon {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
 		status?: StatusIndicator;
+		selected?: boolean;
+		cardType: CardType;
 	}
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
@@ -312,6 +323,12 @@ declare module 'sqlops' {
 	export interface ComponentProperties {
 		height?: number | string;
 		width?: number | string;
+	}
+
+	export interface ComponentWithIcon {
+		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		iconHeight?: number | string;
+		iconWidth?: number | string;
 	}
 
 	export interface InputBoxProperties extends ComponentProperties {
@@ -389,20 +406,17 @@ declare module 'sqlops' {
 		html?: string;
 	}
 
-	export interface ButtonProperties extends ComponentProperties {
+	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
 		label?: string;
-		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 	}
 
 	export interface LoadingComponentProperties {
 		loading?: boolean;
 	}
 
-	export interface CardComponent extends Component {
-		label: string;
-		value: string;
-		actions?: ActionDescriptor[];
+	export interface CardComponent extends Component, CardProperties {
 		onDidActionClick: vscode.Event<ActionDescriptor>;
+		onCardSelectedChanged: vscode.Event<any>;
 	}
 
 	export interface TextComponent extends Component {
@@ -582,6 +596,24 @@ declare module 'sqlops' {
 			 */
 			export function createWizard(title: string): Wizard;
 
+			/**
+			 * Used to control whether a message in a dialog/wizard is displayed as an error,
+			 * warning, or informational message. Default is error.
+			 */
+			export enum MessageLevel {
+				Error = 0,
+				Warning = 1,
+				Information = 2
+			}
+
+			/**
+			 * A message shown in a dialog. If the level is not set it defaults to error.
+			 */
+			export type DialogMessage = {
+				readonly text: string,
+				readonly level?: MessageLevel
+			};
+
 			export interface ModelViewPanel {
 				/**
 				 * Register model view content for the dialog.
@@ -632,6 +664,21 @@ declare module 'sqlops' {
 				 * Any additional buttons that should be displayed
 				 */
 				customButtons: Button[];
+
+				/**
+				 * Set the informational message shown in the dialog. Hidden when the message is
+				 * undefined or the text is empty or undefined. The default level is error.
+				 */
+				message: DialogMessage;
+
+				/**
+				 * Register a callback that will be called when the user tries to click done. Only
+				 * one callback can be registered at once, so each registration call will clear
+				 * the previous registration.
+				 * @param validator The callback that gets executed when the user tries to click
+				 * done. Return true to allow the dialog to close or false to block it from closing
+				 */
+				registerCloseValidator(validator: () => boolean | Thenable<boolean>): void;
 			}
 
 			export interface DialogTab extends ModelViewPanel {
@@ -798,6 +845,12 @@ declare module 'sqlops' {
 				 * cancel it.
 				 */
 				registerNavigationValidator(validator: (pageChangeInfo: WizardPageChangeInfo) => boolean | Thenable<boolean>): void;
+
+				/**
+				 * Set the informational message shown in the wizard. Hidden when the message is
+				 * undefined or the text is empty or undefined. The default level is error.
+				 */
+				message: DialogMessage
 			}
 		}
 	}

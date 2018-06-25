@@ -315,7 +315,8 @@ export function createApiFactory(
 				},
 				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
 					return extHostModelViewDialog.createWizard(title);
-				}
+				},
+				MessageLevel: sqlExtHostTypes.MessageLevel
 			};
 
 			const window: typeof sqlops.window = {
@@ -390,7 +391,8 @@ export function createApiFactory(
 				workspace,
 				queryeditor: queryEditor,
 				ui: ui,
-				StatusIndicator: sqlExtHostTypes.StatusIndicator
+				StatusIndicator: sqlExtHostTypes.StatusIndicator,
+				CardType: sqlExtHostTypes.CardType
 			};
 		}
 	};

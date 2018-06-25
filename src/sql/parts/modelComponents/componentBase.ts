@@ -18,6 +18,12 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
+import URI from 'vs/base/common/uri';
+import { IdGenerator } from 'vs/base/common/idGenerator';
+import { createCSSRule, removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
+
+
+export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
 export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }
@@ -98,10 +104,6 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		if (enabled === undefined) {
 			enabled = true;
 			properties['enabled'] = enabled;
-			this.fireEvent({
-				eventType: ComponentEventType.PropertiesChanged,
-				args: this.getProperties()
-			});
 		}
 		return <boolean>enabled;
 	}

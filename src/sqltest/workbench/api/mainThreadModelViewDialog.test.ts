@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import { Mock, It, Times } from 'typemoq';
 import { MainThreadModelViewDialog } from 'sql/workbench/api/node/mainThreadModelViewDialog';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { IModelViewButtonDetails, IModelViewTabDetails, IModelViewDialogDetails, IModelViewWizardPageDetails, IModelViewWizardDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IModelViewButtonDetails, IModelViewTabDetails, IModelViewDialogDetails, IModelViewWizardPageDetails, IModelViewWizardDetails, DialogMessage, MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CustomDialogService } from 'sql/platform/dialog/customDialogService';
 import { Dialog, DialogTab, Wizard } from 'sql/platform/dialog/dialogTypes';
 import { ExtHostModelViewDialogShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
@@ -60,7 +60,8 @@ suite('MainThreadModelViewDialog Tests', () => {
 			$onPanelValidityChanged: (handle, valid) => undefined,
 			$onWizardPageChanged: (handle, info) => undefined,
 			$updateWizardPageInfo: (wizardHandle, pageHandles, currentPageIndex) => undefined,
-			$validateNavigation: (handle, info) => undefined
+			$validateNavigation: (handle, info) => undefined,
+			$validateDialogClose: handle => undefined
 		});
 		let extHostContext = <IExtHostContext>{
 			getProxy: proxyType => mockExtHostModelViewDialog.object
@@ -112,7 +113,8 @@ suite('MainThreadModelViewDialog Tests', () => {
 			content: [tab1Handle, tab2Handle],
 			okButton: okButtonHandle,
 			cancelButton: cancelButtonHandle,
-			customButtons: [button1Handle, button2Handle]
+			customButtons: [button1Handle, button2Handle],
+			message: undefined
 		};
 
 		// Set up the wizard details
@@ -152,7 +154,8 @@ suite('MainThreadModelViewDialog Tests', () => {
 			currentPage: undefined,
 			title: 'wizard_title',
 			customButtons: [],
-			pages: [page1Handle, page2Handle]
+			pages: [page1Handle, page2Handle],
+			message: undefined
 		};
 
 		// Register the buttons, tabs, and dialog
@@ -322,10 +325,38 @@ suite('MainThreadModelViewDialog Tests', () => {
 		mockExtHostModelViewDialog.setup(x => x.$validateNavigation(It.isAny(), It.isAny()));
 
 		// If I call validateNavigation on the wizard that gets created
-		let wizard: Wizard = (mainThreadModelViewDialog as any).getWizard(wizardHandle);
-		wizard.validateNavigation(1);
+		mainThreadModelViewDialog.$openWizard(wizardHandle);
+		openedWizard.validateNavigation(1);
 
 		// Then the call gets forwarded to the extension host
 		mockExtHostModelViewDialog.verify(x => x.$validateNavigation(It.is(handle => handle === wizardHandle), It.is(info => info.newPage === 1)), Times.once());
+	});
+
+	test('Adding a message to a wizard fires events on the created wizard', () => {
+		mainThreadModelViewDialog.$openWizard(wizardHandle);
+		let newMessage: DialogMessage;
+		openedWizard.onMessageChange(message => newMessage = message);
+
+		// If I change the wizard's message
+		wizardDetails.message = {
+			level: MessageLevel.Error,
+			text: 'test message'
+		};
+		mainThreadModelViewDialog.$setWizardDetails(wizardHandle, wizardDetails);
+
+		// Then the message gets changed on the wizard
+		assert.equal(newMessage, wizardDetails.message, 'New message was not included in the fired event');
+		assert.equal(openedWizard.message, wizardDetails.message, 'New message was not set on the wizard');
+	});
+
+	test('Creating a dialog adds a close validation that calls the extension host', () => {
+		mockExtHostModelViewDialog.setup(x => x.$validateDialogClose(It.isAny()));
+
+		// If I call validateClose on the dialog that gets created
+		mainThreadModelViewDialog.$openDialog(dialogHandle);
+		openedDialog.validateClose();
+
+		// Then the call gets forwarded to the extension host
+		mockExtHostModelViewDialog.verify(x => x.$validateDialogClose(It.is(handle => handle === dialogHandle)), Times.once());
 	});
 });

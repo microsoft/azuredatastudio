@@ -53,6 +53,10 @@ export interface IDropdownOptions extends IDropdownStyles {
 	 * Value to use as aria-label for the input box
 	 */
 	ariaLabel?: string;
+	/**
+	 * Label for the dropdown action
+	 */
+	actionLabel: string;
 }
 
 export interface IDropdownStyles {
@@ -66,7 +70,8 @@ const defaults: IDropdownOptions = {
 	strictSelection: true,
 	maxHeight: 300,
 	errorMessage: errorMessage,
-	contextBorder: Color.fromHex('#696969')
+	contextBorder: Color.fromHex('#696969'),
+	actionLabel: nls.localize('dropdownAction.toggle', "Toggle dropdown")
 };
 
 interface ListResource {
@@ -115,11 +120,11 @@ export class Dropdown extends Disposable {
 		this.$input = $('.dropdown-input').style('width', '100%').appendTo(this.$el);
 		this.$treeContainer = $('.dropdown-tree');
 
-		this._toggleAction = new ToggleDropdownAction(nls.localize('dropdown.toggle', '{0} Toggle Dropdown', this._options.ariaLabel), () => {
+		this._toggleAction = new ToggleDropdownAction(() => {
 			this._showList();
 			this._tree.domFocus();
 			this._tree.focusFirst();
-		});
+		}, opt.actionLabel);
 
 		this._input = new InputBox(this.$input.getHTMLElement(), contextViewService, {
 			validationOptions: {
