@@ -122,6 +122,15 @@ input#accordion:checked ~ .accordion-content {
 	background-image: url('../common/media/stop.svg');
 }
 
+.vs .action-label.icon.newStepIcon {
+	background-image: url('../common/media/new.svg');
+}
+
+.vs-dark .action-label.icon.newStepIcon,
+.hc-black .action-label.icon.newStepIcon {
+	background-image: url('../common/media/new_inverse.svg');
+}
+
 a.action-label.icon.runJobIcon.non-runnable {
 	opacity: 0.4;
 	cursor: default;

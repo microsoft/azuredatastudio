@@ -224,6 +224,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.QueryProvider>(handle).runQueryAndReturn(ownerUri, queryString);
 	}
 
+	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> {
+		return this._resolveProvider<sqlops.QueryProvider>(handle).parseSyntax(ownerUri, query);
+	}
+
 	$getQueryRows(handle: number, rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> {
 		return this._resolveProvider<sqlops.QueryProvider>(handle).getQueryRows(rowData);
 	}

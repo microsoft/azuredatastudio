@@ -384,6 +384,7 @@ export function createApiFactory(
 				ScriptOperation: sqlExtHostTypes.ScriptOperation,
 				WeekDays: sqlExtHostTypes.WeekDays,
 				NotifyMethods: sqlExtHostTypes.NotifyMethods,
+				JobCompletionActionCondition: sqlExtHostTypes.JobCompletionActionCondition,
 				AlertType: sqlExtHostTypes.AlertType,
 				window,
 				tasks,
