@@ -13,7 +13,7 @@ import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import ContextProvider from './contextProvider';
 import { CredentialStore } from './credentialstore/credentialstore';
-import { AzureResourceProvider } from './resourceProvider/resourceProvider';
+import { AzureResourceProvider } from './resourceprovider/resourceprovider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { TelemetryFeature, AgentServicesFeature } from './features';
