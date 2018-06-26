@@ -96,16 +96,12 @@ let defaultVal = [
 	},
 	{
 		widget: {
-			'backup-history-server-insight': {
-				cacheId: '0c7cba8b-c87a-4bcc-ae54-2f40a5503a90'
-			}
+			'backup-history-server-insight': null
 		}
 	},
 	{
 		widget: {
-			'all-database-size-server-insight': {
-				cacheId: '1d7cba8b-c87a-4bcc-ae54-2f40a5503a90'
-			}
+			'all-database-size-server-insight': null
 		}
 	}
 ];
