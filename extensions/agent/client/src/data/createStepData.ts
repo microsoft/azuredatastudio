@@ -65,7 +65,7 @@ export class CreateStepData {
 			retryInterval: this.retryInterval,
 			proxyName: this.proxyName
 		}).then(result => {
-			console.info(result.step.stepName);
+			console.info(result);
 		});
 	}
 }

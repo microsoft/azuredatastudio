@@ -20,9 +20,6 @@ export class CreateStepDialog {
 	private static readonly GeneralTabText: string = 'General';
 	private static readonly AdvancedTabText: string = 'Advanced';
 	private static readonly OpenCommandText: string = 'Open...';
-	private static readonly SelectAllCommandText: string = 'Select All';
-	private static readonly CopyCommandText: string = 'Copy';
-	private static readonly PasteCommandText: string = 'Paste';
 	private static readonly ParseCommandText: string = 'Parse';
 	private static readonly NextButtonText: string = 'Next';
 	private static readonly PreviousButtonText: string = 'Previous';
@@ -50,9 +47,6 @@ export class CreateStepDialog {
 	private failureActionDropdown: sqlops.DropDownComponent;
 	private commandTextBox: sqlops.InputBoxComponent;
 	private openButton: sqlops.ButtonComponent;
-	private selectAllButton: sqlops.ButtonComponent;
-	private copyButton: sqlops.ButtonComponent;
-	private pasteButton: sqlops.ButtonComponent;
 	private parseButton: sqlops.ButtonComponent;
 	private nextButton: sqlops.ButtonComponent;
 	private previousButton: sqlops.ButtonComponent;
@@ -62,9 +56,6 @@ export class CreateStepDialog {
 	private logToTableCheckbox: sqlops.CheckBoxComponent;
 	private outputFileNameBox: sqlops.InputBoxComponent;
 	private outputFileBrowserButton: sqlops.ButtonComponent;
-
-	private flexButtonsModel;
-	private overallContainer;
 
 	private model: CreateStepData;
 	private ownerUri: string;
@@ -100,69 +91,44 @@ export class CreateStepDialog {
 		this.openButton = view.modelBuilder.button()
 			.withProperties({
 				label: CreateStepDialog.OpenCommandText,
-				width: '55px'
-			}).component();
-		this.selectAllButton = view.modelBuilder.button()
-			.withProperties({
-				label: CreateStepDialog.SelectAllCommandText,
-				width: '55px'
-			}).component();
-		this.copyButton = view.modelBuilder.button()
-			.withProperties({
-				label: CreateStepDialog.CopyCommandText,
-				width: '55px'
-			}).component();
-		this.pasteButton = view.modelBuilder.button()
-			.withProperties({
-				label: CreateStepDialog.PasteCommandText,
-				width: '55px'
+				width: '80px'
 			}).component();
 		this.parseButton = view.modelBuilder.button()
 			.withProperties({
 				label: CreateStepDialog.ParseCommandText,
-				width: '55px'
+				width: '80px'
 			}).component();
 		this.parseButton.onDidClick(e => {
-			queryProvider.runQueryAndReturn(this.ownerUri, this.commandTextBox.value, true).then(result => {
-				if (result && result.parseable) {
-					this.dialog.message = { text: 'The command was successfully parsed.' };
-				} else if (result && !result.parseable) {
-					this.dialog.message = { text: 'The command failed.' };
-				}
-			});
+			if (this.commandTextBox.value) {
+				queryProvider.parseSyntax(this.ownerUri, this.commandTextBox.value).then(result => {
+					if (result && result.parseable) {
+						this.dialog.message = { text: 'The command was successfully parsed.', level: 2};
+					} else if (result && !result.parseable) {
+						this.dialog.message = { text: 'The command failed' };
+					}
+				});
+			}
 		});
-		let text = view.modelBuilder.text()
-			.withProperties({
-				value: 'Command'
-			}).component();
-		this.flexButtonsModel = view.modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'column',
-				alignItems: 'left',
-				height: 300,
-			}).withItems([
-				text, this.openButton, this.selectAllButton, this.copyButton, this.pasteButton, this.parseButton]
-				, { flex: '1 1 50%' }).component();
 		this.commandTextBox = view.modelBuilder.inputBox()
 			.withProperties({
 				height: 300,
-				width: 350,
+				width: 400,
 				multiline: true,
 				inputType: 'text'
 			})
 			.component();
-
-		let commandContainer = view.modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'column',
-				height: 300
-			}).withItems([this.commandTextBox], {
-				flex: '1 1 50%'
+		this.nextButton = view.modelBuilder.button()
+			.withProperties({
+				label: CreateStepDialog.NextButtonText,
+				enabled: false,
+				width: '80px'
 			}).component();
-
-		this.overallContainer = view.modelBuilder.flexContainer().withLayout(
-			{ flexFlow: 'row', justifyContent: 'center' }
-		).withItems([this.flexButtonsModel, commandContainer]).component();
+		this.previousButton = view.modelBuilder.button()
+			.withProperties({
+				label: CreateStepDialog.PreviousButtonText,
+				enabled: false,
+				width: '80px'
+			}).component();
 	}
 
 	private createGeneralTab(databases: string[], queryProvider: sqlops.QueryProvider) {
@@ -201,28 +167,14 @@ export class CreateStepDialog {
 			// create the commands section
 			this.createCommands(view, queryProvider);
 
-			this.nextButton = view.modelBuilder.button()
-				.withProperties({
-					label: CreateStepDialog.NextButtonText,
-					enabled: false,
-					width: '100px'
-				}).component();
-			this.previousButton = view.modelBuilder.button()
-				.withProperties({
-					label: CreateStepDialog.PreviousButtonText,
-					enabled: false,
-					width: '100px'
-				}).component();
-
 			let buttonContainer = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'row',
-					textAlign: 'right',
-					justifyContent: 'flex-end',
-					width: 400
-				}).withItems([this.nextButton, this.previousButton], {
-					flex: '1 1 50%'
-				}).component();
+			.withLayout({
+				flexFlow: 'row',
+				justifyContent: 'space-between',
+				width: 420
+			}).withItems([this.openButton, this.parseButton, this.previousButton, this.nextButton], {
+				flex: '1 1 50%'
+			}).component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -238,11 +190,9 @@ export class CreateStepDialog {
 					component: this.databaseDropdown,
 					title: 'Database'
 				}, {
-					component: this.overallContainer,
-					title: ''
-				}, {
-					component: buttonContainer,
-					title: ''
+					component: this.commandTextBox,
+					title: 'Command',
+					actions: [buttonContainer]
 				}], {
 						horizontal: false,
 						componentWidth: 420
@@ -352,11 +302,13 @@ export class CreateStepDialog {
 
 	private createRetryCounters(view) {
 		this.retryAttemptsBox = view.modelBuilder.inputBox()
-			.withProperties({
-				inputType: 'number'
-			})
-			.component();
+		.withValidation(component => component.value >= 0)
+		.withProperties({
+			inputType: 'number'
+		})
+		.component();
 		this.retryIntervalBox = view.modelBuilder.inputBox()
+			.withValidation(component => component.value >= 0)
 			.withProperties({
 				inputType: 'number'
 			}).component();
@@ -375,8 +327,8 @@ export class CreateStepDialog {
 			.withFormItems(
 				[{
 					component: this.retryIntervalBox,
-					title: 'Retry Attempts'
-				}], {
+					title: 'Retry Interval (minutes)'
+					}], {
 					horizontal: false
 				})
 			.component();
@@ -475,8 +427,6 @@ export class CreateStepDialog {
 			&& fileBrowserOpenedParams.fileTree.selectedNode) {
 			this.openFileBrowserDialog(fileBrowserOpenedParams.fileTree.rootNode, fileBrowserOpenedParams.fileTree.selectedNode);
 		}
-		console.log('no response');
-		return;
 	}
 
 	public async openNewStepDialog() {
