@@ -161,20 +161,17 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public getName(): string {
 		let profile = this._connectionManagementService.getConnectionProfile(this.uri);
 		let title = '';
-		let user = '';
 		if (profile) {
 			if (profile.userName) {
-				title = `${profile.serverName}.${profile.databaseName}`;
-				user = `(${profile.userName})`;
+				title = `${profile.serverName}.${profile.databaseName} (${profile.userName})`;
 			} else {
-				title = `${profile.serverName}.${profile.databaseName}`;
-				user = `(${profile.authenticationType})`;
+				title = `${profile.serverName}.${profile.databaseName} (${profile.authenticationType})`;
 			}
 		} else {
 			title = localize('disconnected', 'disconnected');
 		}
 
-		return this._sql.getName() + ` - ${trimTitle(title)}` + (user ? ' ' + user : '');
+		return this._sql.getName() + ` - ${trimTitle(title)}`;
 	}
 
 	public get hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }
