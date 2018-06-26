@@ -71,7 +71,7 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 
 	@memoize
 	public get connection(): sqlops.connection.Connection {
-		if (!this._commonService.connectionManagementService) {
+		if (!this._commonService.connectionManagementService || !this._commonService.connectionManagementService.connectionInfo) {
 			return undefined;
 		}
 
@@ -86,7 +86,7 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 
 	@memoize
 	public get serverInfo(): sqlops.ServerInfo {
-		if (!this._commonService.connectionManagementService) {
+		if (!this._commonService.connectionManagementService || !this._commonService.connectionManagementService.connectionInfo) {
 			return undefined;
 		}
 
