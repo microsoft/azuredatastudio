@@ -1232,6 +1232,17 @@ declare module 'sqlops' {
 		job: AgentJobInfo;
 	}
 
+	export interface AgentJobCategory
+    {
+        id: string;
+        name: string;
+    }
+
+	export interface AgentJobDefaultsResult extends ResultStatus {
+		owner: string;
+       	categories: AgentJobCategory[];
+	}
+
 	export interface CreateAgentJobStepResult extends ResultStatus {
 		step: AgentJobStepInfo;
 	}
@@ -1292,6 +1303,7 @@ declare module 'sqlops' {
 		createJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<CreateAgentJobResult>;
 		updateJob(ownerUri: string, originalJobName: string, jobInfo: AgentJobInfo): Thenable<UpdateAgentJobResult>;
 		deleteJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<ResultStatus>;
+		getJobDefaults(ownerUri: string): Thenable<AgentJobDefaultsResult>;
 
 		// Job Step management methods
 		createJobStep(ownerUri: string, jobInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;

@@ -19,8 +19,6 @@ export class MainController {
     public constructor(context: vscode.ExtensionContext, apiWrapper?: ApiWrapper) {
         this._apiWrapper = apiWrapper || new ApiWrapper();
         this._context = context;
-
-        console.log('Got: ' + apiWrapper);
     }
 
     /**
@@ -30,10 +28,6 @@ export class MainController {
     }
 
     public activate(): void {
-        this._apiWrapper.registerWebviewProvider('data-management-agent', webview => {
-            webview.html = '<div><h1>SQL Agent</h1></div>';
-        });
-
         vscode.commands.registerCommand('agent.openCreateJobDialog', (ownerUri: string) => {
             let dialog = new CreateJobDialog(ownerUri);
             dialog.showDialog();

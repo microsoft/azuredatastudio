@@ -64,6 +64,10 @@ export interface DeleteAgentJobParams {
 	job: sqlops.AgentJobInfo;
 }
 
+export interface AgentJobDefaultsParams {
+	ownerUri: string;
+}
+
 // Job Step management parameters
 export interface CreateAgentJobStepParams {
 	ownerUri: string;
@@ -167,6 +171,10 @@ export namespace UpdateAgentJobRequest {
 
 export namespace DeleteAgentJobRequest {
 	export const type = new RequestType<DeleteAgentJobParams, sqlops.ResultStatus, void, void>('agent/deletejob');
+}
+
+export namespace AgentJobDefaultsRequest {
+	export const type = new RequestType<AgentJobDefaultsParams, sqlops.AgentJobDefaultsResult, void, void>('agent/jobdefaults');
 }
 
 // Job Step requests

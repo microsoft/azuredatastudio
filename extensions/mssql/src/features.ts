@@ -135,6 +135,20 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		let getJobDefaults = (ownerUri: string): Thenable<sqlops.AgentJobDefaultsResult> => {
+			let params: contracts.AgentJobDefaultsParams = {
+				ownerUri: ownerUri
+			};
+			let requestType = contracts.AgentJobDefaultsRequest.type;
+			return client.sendRequest(requestType, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(requestType, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
 		// Job Step management methods
 		let createJobStep = (ownerUri: string, stepInfo: sqlops.AgentJobStepInfo): Thenable<sqlops.CreateAgentJobStepResult> => {
 			let params: contracts.CreateAgentJobStepParams = {
@@ -373,6 +387,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			createJob,
 			updateJob,
 			deleteJob,
+			getJobDefaults,
 			createJobStep,
 			updateJobStep,
 			deleteJobStep,

@@ -13,7 +13,7 @@ export class CreateJobDialog {
 	// Top level
 	//
 	private readonly DialogTitle: string = 'New Job';
-	private readonly OkButtonText: string = 'Ok';
+	private readonly OkButtonText: string = 'OK';
 	private readonly CancelButtonText: string = 'Cancel';
 	private readonly GeneralTabText: string = 'General';
 	private readonly StepsTabText: string = 'Steps';
