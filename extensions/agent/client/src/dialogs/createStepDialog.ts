@@ -61,6 +61,7 @@ export class CreateStepDialog {
 	private ownerUri: string;
 	private jobName: string;
 	private server: string;
+	private stepId: number;
 
 	private jobModel: CreateJobData;
 
@@ -68,9 +69,11 @@ export class CreateStepDialog {
 		ownerUri: string,
 		jobName: string,
 		server: string,
+		stepId: number,
 		jobModel?: CreateJobData
 	) {
 		this.model = new CreateStepData(ownerUri);
+		this.stepId = stepId;
 		this.ownerUri = ownerUri;
 		this.jobName = jobName;
 		this.server = server;
@@ -393,6 +396,7 @@ export class CreateStepDialog {
 
 	private async execute() {
 		this.model.jobName = this.jobName;
+		this.model.id = this.stepId;
 		this.model.server = this.server;
 		this.model.stepName = this.nameTextBox.value;
 		this.model.subSystem = this.typeDropdown.value as string;

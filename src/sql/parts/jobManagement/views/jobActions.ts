@@ -105,8 +105,12 @@ export class NewStepAction extends Action {
 		let ownerUri = context.ownerUri;
 		let jobName = context.agentJobInfo.name;
 		let server = context.serverName;
+		let stepId = 0;
+		if (context.agentJobHistoryInfo && context.agentJobHistoryInfo.steps) {
+			stepId = context.agentJobHistoryInfo.steps.length + 1;
+		}
 		return new TPromise<boolean>((resolve, reject) => {
-			resolve(this._commandService.executeCommand('agent.openNewStepDialog', ownerUri, jobName, server));
+			resolve(this._commandService.executeCommand('agent.openNewStepDialog', ownerUri, jobName, server, stepId));
 		});
 	}
 }
