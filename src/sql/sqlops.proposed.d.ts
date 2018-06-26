@@ -301,7 +301,7 @@ declare module 'sqlops' {
 	}
 
 	export enum CardType {
-		VerticalButton  = 'VerticalButton',
+		VerticalButton = 'VerticalButton',
 		Details = 'Details'
 	}
 
@@ -314,8 +314,16 @@ declare module 'sqlops' {
 		value?: string;
 		actions?: ActionDescriptor[];
 		status?: StatusIndicator;
+
+		/**
+		 * Returns true if the card is selected
+		 */
 		selected?: boolean;
-		cardType: CardType;
+
+		/**
+		 * Card Type, default: Details
+		 */
+		cardType?: CardType;
 	}
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
