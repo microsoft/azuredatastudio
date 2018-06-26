@@ -316,7 +316,7 @@ declare module 'sqlops' {
 		status?: StatusIndicator;
 
 		/**
-		 * Returns try if the card is selected
+		 * Returns true if the card is selected
 		 */
 		selected?: boolean;
 
