@@ -635,6 +635,7 @@ declare module 'sqlops' {
 		runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 		runQueryString(ownerUri: string, queryString: string): Thenable<void>;
 		runQueryAndReturn(ownerUri: string, queryString: string): Thenable<SimpleExecuteResult>;
+		parseSyntax(ownerUri: string, query: string): Thenable<SyntaxParseResult>;
 		getQueryRows(rowData: QueryExecuteSubsetParams): Thenable<QueryExecuteSubsetResult>;
 		disposeQuery(ownerUri: string): Thenable<void>;
 		saveResults(requestParams: SaveResultsRequestParams): Thenable<SaveResultRequestResult>;
@@ -767,6 +768,11 @@ declare module 'sqlops' {
 		rowCount: number;
 		columnInfo: IDbColumn[];
 		rows: DbCellValue[][];
+	}
+
+	export interface SyntaxParseResult {
+		parseable: boolean;
+		errorMessages: string[];
 	}
 
 	// Query Batch Notification -----------------------------------------------------------------------
@@ -1054,8 +1060,17 @@ declare module 'sqlops' {
 		wmiEvent = 4
 	}
 
+	export enum JobCompletionActionCondition{
+		Never = 0,
+		OnSuccess = 1,
+		OnFailure = 2,
+		Always = 3
+	}
+
 	export interface AgentJobInfo {
 		name: string;
+		owner: string;
+		description: string;
 		currentExecutionStatus: number;
 		lastRunOutcome: number;
 		currentExecutionStep: string;
@@ -1070,15 +1085,55 @@ declare module 'sqlops' {
 		lastRun: string;
 		nextRun: string;
 		jobId: string;
+		EmailLevel: JobCompletionActionCondition;
+		PageLevel: JobCompletionActionCondition;
+		EventLogLevel: JobCompletionActionCondition;
+		DeleteLevel: JobCompletionActionCondition;
+		OperatorToEmail: string;
+		OperatorToPage: string;
+		JobSteps: AgentJobStepInfo[];
+		JobSchedules: AgentJobScheduleInfo[];
+		Alerts: AgentAlertInfo[];
 	}
 
-	export interface AgentJobStepInfo {
+	export interface AgentJobScheduleInfo {
+
+	}
+
+	export interface AgentJobStep {
 		jobId: string;
 		stepId: string;
 		stepName: string;
 		message: string;
 		runDate: string;
 		runStatus: number;
+	}
+
+	export interface AgentJobStepInfo {
+		jobId: string;
+		jobName: string;
+		script: string;
+		scriptName: string;
+		stepName: string;
+		subSystem: string;
+		id: number;
+		failureAction: string;
+		successAction: string;
+		failStepId: number;
+		successStepId: number;
+		command: string;
+		commandExecutionSuccessCode: number;
+		databaseName: string;
+		databaseUserName: string;
+		server: string;
+		outputFileName: string;
+		appendToLogFile: boolean;
+		appendToStepHist: boolean;
+		writeLogToTable: boolean;
+		appendLogToTable: boolean;
+		retryAttempts: number;
+		retryInterval: number;
+		proxyName: string;
 	}
 
 	export interface AgentJobHistoryInfo {
@@ -1098,7 +1153,7 @@ declare module 'sqlops' {
 		operatorPaged: string;
 		retriesAttempted: string;
 		server: string;
-		steps: AgentJobStepInfo[];
+		steps: AgentJobStep[];
 	}
 
 	export interface AgentProxyInfo {
@@ -1173,7 +1228,7 @@ declare module 'sqlops' {
 		job: AgentJobInfo;
 	}
 
-	export interface UpdateAgentJobResult extends ResultStatus  {
+	export interface UpdateAgentJobResult extends ResultStatus {
 		job: AgentJobInfo;
 	}
 
@@ -1181,7 +1236,7 @@ declare module 'sqlops' {
 		step: AgentJobStepInfo;
 	}
 
-	export interface UpdateAgentJobStepResult extends ResultStatus  {
+	export interface UpdateAgentJobStepResult extends ResultStatus {
 		step: AgentJobStepInfo;
 	}
 
@@ -1189,7 +1244,7 @@ declare module 'sqlops' {
 		step: AgentJobStepInfo;
 	}
 
-	export interface UpdateAgentProxyResult extends ResultStatus  {
+	export interface UpdateAgentProxyResult extends ResultStatus {
 		step: AgentJobStepInfo;
 	}
 
@@ -1201,7 +1256,7 @@ declare module 'sqlops' {
 		alert: AgentJobStepInfo;
 	}
 
-	export interface UpdateAgentAlertResult extends ResultStatus  {
+	export interface UpdateAgentAlertResult extends ResultStatus {
 		alert: AgentJobStepInfo;
 	}
 
@@ -1213,7 +1268,7 @@ declare module 'sqlops' {
 		operator: AgentOperatorInfo;
 	}
 
-	export interface UpdateAgentOperatorResult extends ResultStatus  {
+	export interface UpdateAgentOperatorResult extends ResultStatus {
 		operator: AgentOperatorInfo;
 	}
 
@@ -1225,7 +1280,7 @@ declare module 'sqlops' {
 		operator: AgentOperatorInfo;
 	}
 
-	export interface UpdateAgentProxyResult extends ResultStatus  {
+	export interface UpdateAgentProxyResult extends ResultStatus {
 		operator: AgentOperatorInfo;
 	}
 
