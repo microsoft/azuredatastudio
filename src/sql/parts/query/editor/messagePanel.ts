@@ -159,6 +159,7 @@ export class MessagePanel extends ViewletPanel {
 
 	private reset() {
 		this.model.messages = [];
+		this.model.totalExecuteMessage = undefined;
 		this.tree.refresh(this.model);
 	}
 }
@@ -183,7 +184,7 @@ class MessageDataSource implements IDataSource {
 		if (element instanceof Model) {
 			let messages = element.messages;
 			if (element.totalExecuteMessage) {
-				messages.concat(element.totalExecuteMessage);
+				messages = messages.concat(element.totalExecuteMessage);
 			}
 			return TPromise.as(messages);
 		} else {
