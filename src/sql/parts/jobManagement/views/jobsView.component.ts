@@ -44,16 +44,16 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobColumns.name', 'Name'), field: 'name', formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext), width: 200, id: 'name' },
-		{ name: nls.localize('jobColumns.lastRun', 'Last Run'), field: 'lastRun', width: 120, id: 'lastRun' },
-		{ name: nls.localize('jobColumns.nextRun', 'Next Run'), field: 'nextRun', width: 120, id: 'nextRun' },
-		{ name: nls.localize('jobColumns.enabled', 'Enabled'), field: 'enabled', width: 50, id: 'enabled' },
-		{ name: nls.localize('jobColumns.status', 'Status'), field: 'currentExecutionStatus', width: 60, id: 'currentExecutionStatus' },
-		{ name: nls.localize('jobColumns.category', 'Category'), field: 'category', width: 120, id: 'category' },
+		{ name: nls.localize('jobColumns.name', 'Name'), field: 'name', formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext), width: 150, id: 'name' },
+		{ name: nls.localize('jobColumns.lastRun', 'Last Run'), field: 'lastRun', width: 80, id: 'lastRun' },
+		{ name: nls.localize('jobColumns.nextRun', 'Next Run'), field: 'nextRun', width: 80, id: 'nextRun' },
+		{ name: nls.localize('jobColumns.enabled', 'Enabled'), field: 'enabled', width: 60, id: 'enabled' },
+		{ name: nls.localize('jobColumns.status', 'Status'), field: 'currentExecutionStatus', width: 50, id: 'currentExecutionStatus' },
+		{ name: nls.localize('jobColumns.category', 'Category'), field: 'category', width: 100, id: 'category' },
 		{ name: nls.localize('jobColumns.runnable', 'Runnable'), field: 'runnable', width: 70, id: 'runnable' },
 		{ name: nls.localize('jobColumns.schedule', 'Schedule'), field: 'hasSchedule', width: 60, id: 'hasSchedule' },
-		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', width: 120, id: 'lastRunOutcome' },
-		{ name: nls.localize('jobColumns.previousRuns', 'Previous Runs'), formatter: this.renderChartsPostHistory, field: 'previousRuns', width: 80, id: 'previousRuns' }
+		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', width: 100, id: 'lastRunOutcome' },
+		{ name: nls.localize('jobColumns.previousRuns', 'Previous Runs'), formatter: this.renderChartsPostHistory, field: 'previousRuns', width: 100, id: 'previousRuns' }
 	];
 
 
