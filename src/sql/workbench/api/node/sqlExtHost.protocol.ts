@@ -141,6 +141,10 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> { throw ni(); }
 	/**
+	 * Parses a T-SQL string without actually executing it
+	 */
+	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> { throw ni(); }
+	/**
 	 * Gets a subset of rows in a result set in order to display in the UI
 	 */
 	$getQueryRows(handle: number, rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> { throw ni(); }

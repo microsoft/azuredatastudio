@@ -239,3 +239,30 @@ table.jobprevruns {
 table.jobprevruns > tbody {
     vertical-align: bottom;
 }
+
+.jobs-view-toolbar{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    padding: 15px 10px 15px 30px;
+    font-size: 16px;
+    border-bottom: 3px solid #f4f4f4;
+}
+
+.jobs-view-toolbar .vs-dark {
+    border-bottom: 3px solid #444444;
+}
+
+.jobs-view-toolbar > div{
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    margin-right: 25px;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.jobs-view-toolbar span{
+    padding-left: 5px;
+}
+

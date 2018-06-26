@@ -86,6 +86,13 @@ export enum NotifyMethods
 	notifyAll = 7
 }
 
+export enum JobCompletionActionCondition{
+	Never = 0,
+	OnSuccess = 1,
+	OnFailure = 2,
+	Always = 3
+}
+
 export enum AlertType
 {
 	sqlServerEvent = 1,
