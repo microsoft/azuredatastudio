@@ -94,8 +94,8 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 	}
 
 	public layout(): void {
-		if (this.ComponentInstance && this.ComponentInstance.layout) {
-			this.ComponentInstance.layout();
+		if (this.componentInstance && this.componentInstance.layout) {
+			this.componentInstance.layout();
 		}
 	}
 
@@ -110,7 +110,7 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		};
 	}
 
-	private get ComponentInstance(): IComponent {
+	private get componentInstance(): IComponent {
 		if (!this._componentInstance) {
 			this.loadComponent();
 		}
@@ -152,7 +152,6 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		// set widget styles to conform to its box
 		el.style.overflow = 'hidden';
 		el.style.position = 'relative';
-		el.style.height = '100%';
 	}
 
 	private updateTheme(theme: IColorTheme): void {

@@ -314,7 +314,15 @@ declare module 'sqlops' {
 		value?: string;
 		actions?: ActionDescriptor[];
 		status?: StatusIndicator;
+
+		/**
+		 * Returns try if the card is selected
+		 */
 		selected?: boolean;
+
+		/**
+		 * Card Type, default: Details
+		 */
 		cardType?: CardType;
 	}
 
