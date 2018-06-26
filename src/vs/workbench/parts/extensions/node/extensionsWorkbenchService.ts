@@ -246,8 +246,9 @@ class Extension implements IExtension {
 		}
 
 		if (this.type === LocalExtensionType.System) {
+			// {{SQL CARBON EDIT}}
 			return TPromise.as(`# ${this.displayName || this.name}
-**Notice** This is a an extension that is bundled with Visual Studio Code.
+**Notice** This is a an extension that is bundled with SQL Operations Studio.
 
 ${this.description}
 `);
