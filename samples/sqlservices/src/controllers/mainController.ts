@@ -131,7 +131,7 @@ export default class MainController implements vscode.Disposable {
 			});
 			dropdown.onValueChanged((params) => {
 				vscode.window.showInformationMessage(inputBox2.value);
-				inputBox.value = dropdown.value;
+				inputBox.value = dropdown.value.toString();
 			});
 			let radioButton = view.modelBuilder.radioButton()
 				.withProperties({

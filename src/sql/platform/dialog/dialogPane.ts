@@ -93,12 +93,12 @@ export class DialogPane extends Disposable implements IThemable {
 	}
 
 	private getTabDimension(): DOM.Dimension {
-		return new DOM.Dimension(DOM.getContentWidth(this._body), DOM.getContentHeight(this._body));
+		return new DOM.Dimension(DOM.getContentWidth(this._body) - 5, DOM.getContentHeight(this._body) - 5);
 	}
 
 	public layout(): void {
 		if (this._tabbedPanel) {
-			this._tabbedPanel.layout(new DOM.Dimension(DOM.getContentWidth(this._body), DOM.getContentHeight(this._body)));
+			this._tabbedPanel.layout(this.getTabDimension());
 			this._onTabChange.fire(this._selectedTabContent);
 		}
 	}

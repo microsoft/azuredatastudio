@@ -26,7 +26,7 @@ import * as sqlops from 'sqlops';
 	selector: 'modelview-content',
 	template: `
 		<div *ngIf="rootDescriptor" style="width: 100%; height: 100%;">
-			<model-component-wrapper [descriptor]="rootDescriptor" [modelStore]="modelStore">
+		<model-component-wrapper style="display: block; height: 100%" [descriptor]="rootDescriptor" [modelStore]="modelStore">
 			</model-component-wrapper>
 		</div>
 	`
@@ -71,7 +71,8 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 
 	@memoize
 	public get connection(): sqlops.connection.Connection {
-		if (!this._commonService.connectionManagementService) {
+		if (!this._commonService.connectionManagementService
+			|| !this._commonService.connectionManagementService.connectionInfo) {
 			return undefined;
 		}
 
@@ -86,7 +87,7 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 
 	@memoize
 	public get serverInfo(): sqlops.ServerInfo {
-		if (!this._commonService.connectionManagementService) {
+		if (!this._commonService.connectionManagementService || !this._commonService.connectionManagementService.connectionInfo) {
 			return undefined;
 		}
 

@@ -94,8 +94,8 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 	}
 
 	public layout(): void {
-		if (this._componentInstance && this._componentInstance.layout) {
-			this._componentInstance.layout();
+		if (this.ComponentInstance && this.ComponentInstance.layout) {
+			this.ComponentInstance.layout();
 		}
 	}
 
@@ -110,6 +110,12 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		};
 	}
 
+	private get ComponentInstance(): IComponent {
+		if (!this._componentInstance) {
+			this.loadComponent();
+		}
+		return this._componentInstance;
+	}
 
 	private loadComponent(): void {
 		if (!this.descriptor || !this.descriptor.type) {
@@ -146,6 +152,7 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		// set widget styles to conform to its box
 		el.style.overflow = 'hidden';
 		el.style.position = 'relative';
+		el.style.height = '100%';
 	}
 
 	private updateTheme(theme: IColorTheme): void {
