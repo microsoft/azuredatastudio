@@ -136,13 +136,17 @@ export function addProvider<T extends { connectionManagementService: SingleConne
  */
 export function addEdition<T extends { connectionManagementService: SingleConnectionManagementService }>(config: WidgetConfig[], collection: DashboardServiceInterface): Array<WidgetConfig> {
 	let connectionInfo: ConnectionManagementInfo = collection.connectionManagementService.connectionInfo;
-	let edition = connectionInfo.serverInfo.engineEditionId;
-	return config.map((item) => {
-		if (item.edition === undefined) {
-			item.edition = edition;
-		}
-		return item;
-	});
+	if (connectionInfo.serverInfo) {
+		let edition = connectionInfo.serverInfo.engineEditionId;
+		return config.map((item) => {
+			if (item.edition === undefined) {
+				item.edition = edition;
+			}
+			return item;
+		});
+	} else {
+		return config;
+	}
 }
 
 /**
