@@ -133,18 +133,28 @@ export class WizardModal extends Modal {
 		});
 		this._wizard.onPageAdded(page => {
 			this.registerPage(page);
+			this.updatePageNumbers();
 			this.showPage(this._wizard.currentPage, false);
 		});
 		this._wizard.onPageRemoved(page => {
 			let dialogPane = this._dialogPanes.get(page);
 			this._dialogPanes.delete(page);
+			this.updatePageNumbers();
 			this.showPage(this._wizard.currentPage, false);
 			dialogPane.dispose();
+		});
+		this.updatePageNumbers();
+	}
+
+	private updatePageNumbers(): void {
+		this._wizard.pages.forEach((page, index) => {
+			let dialogPane = this._dialogPanes.get(page);
+			dialogPane.pageNumber = index + 1;
 		});
 	}
 
 	private registerPage(page: WizardPage): void {
-		let dialogPane = new DialogPane(page.title, page.content, valid => page.notifyValidityChanged(valid), this._instantiationService);
+		let dialogPane = new DialogPane(page.title, page.content, valid => page.notifyValidityChanged(valid), this._instantiationService, this._wizard.displayPageTitles, page.description);
 		dialogPane.createBody(this._body);
 		this._dialogPanes.set(page, dialogPane);
 		page.onUpdate(() => this.setButtonsForPage(this._wizard.currentPage));
