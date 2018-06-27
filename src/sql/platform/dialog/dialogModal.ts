@@ -115,7 +115,7 @@ export class DialogModal extends Modal {
 		});
 
 		this._dialogPane = new DialogPane(this._dialog.title, this._dialog.content,
-			valid => this._dialog.notifyValidityChanged(valid), this._instantiationService);
+			valid => this._dialog.notifyValidityChanged(valid), this._instantiationService, false);
 		this._dialogPane.createBody(body);
 	}
 
