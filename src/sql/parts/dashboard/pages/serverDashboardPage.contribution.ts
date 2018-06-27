@@ -117,8 +117,7 @@ export const serverDashboardTabsSchema: IJSONSchema = {
 	type: ['array'],
 	description: nls.localize('dashboardServerTabs', 'Customizes the Server dashboard tabs'),
 	items: generateDashboardTabSchema('server'),
-	default: [
-	]
+	default: []
 };
 
 export const SERVER_DASHBOARD_SETTING = 'dashboard.server.widgets';
