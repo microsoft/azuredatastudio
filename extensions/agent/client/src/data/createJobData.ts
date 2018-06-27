@@ -86,6 +86,8 @@ export class CreateJobData {
 			displayName: this.JobCompletionActionCondition_Always,
 			name: sqlops.JobCompletionActionCondition.Always.toString()
 		}];
+
+		this.jobSchedules = [];
 	}
 
 	public async save() {
@@ -137,5 +139,12 @@ export class CreateJobData {
 			valid: validationErrors.length === 0,
 			errorMessages: validationErrors
 		};
+	}
+
+	public addJobSchedule(schedule: sqlops.AgentJobScheduleInfo) {
+		let existingSchedule = this.jobSchedules.find(item => item.name === schedule.name);
+		if (!existingSchedule) {
+			this.jobSchedules.push(schedule);
+		}
 	}
 }

@@ -10,6 +10,7 @@ import { AgentUtils } from '../agentUtils';
 export class PickScheduleData {
 	public ownerUri: string;
 	public schedules: sqlops.AgentJobScheduleInfo[];
+	public selectedSchedule: sqlops.AgentJobScheduleInfo;
 
 	constructor(ownerUri:string) {
 		this.ownerUri = ownerUri;

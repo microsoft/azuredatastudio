@@ -229,18 +229,14 @@ export class CreateJobDialog {
 
 	private initializeSchedulesTab() {
 		this.schedulesTab.registerContent(async view => {
-
 			this.schedulesTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						this.StepsTable_StepColumnString,
-						this.StepsTable_NameColumnString,
-						this.StepsTable_TypeColumnString,
-						this.StepsTable_SuccessColumnString,
-						this.StepsTable_FailureColumnString
+						'Schedule Name'
 					],
 					data: [],
-					height: 400
+					height: 600,
+					width: 400
 				}).component();
 
 			this.pickScheduleButton = view.modelBuilder.button().withProperties({
@@ -250,6 +246,13 @@ export class CreateJobDialog {
 
 			this.pickScheduleButton.onDidClick((e)=>{
 				let pickScheduleDialog = new PickScheduleDialog(this.model.ownerUri);
+				pickScheduleDialog.onSuccess((dialogModel) => {
+					let selectedSchedule = dialogModel.selectedSchedule;
+					if (selectedSchedule) {
+						this.model.addJobSchedule(selectedSchedule);
+						this.populateScheduleTable();
+					}
+				});
 				pickScheduleDialog.showDialog();
 			});
 
@@ -261,7 +264,20 @@ export class CreateJobDialog {
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
+
+			this.populateScheduleTable();
 		});
+	}
+
+	private populateScheduleTable() {
+		if (this.model.jobSchedules) {
+			let data: any[][] = [];
+			for (let i = 0; i < this.model.jobSchedules.length; ++i) {
+				let schedule = this.model.jobSchedules[i];
+				data[i] = [ schedule.name ];
+			}
+			this.schedulesTable.data = data;
+		}
 	}
 
 	private initializeNotificationsTab() {

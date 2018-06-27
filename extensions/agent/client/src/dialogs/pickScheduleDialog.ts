@@ -5,25 +5,27 @@
 
  'use strict';
 import * as sqlops from 'sqlops';
+import * as vscode from 'vscode';
 import { PickScheduleData } from '../data/pickScheduleData';
 
 export class PickScheduleDialog {
 
 	// TODO: localize
 	// Top level
-	//
 	private readonly DialogTitle: string = 'Job Schedules';
 	private readonly OkButtonText: string = 'OK';
 	private readonly CancelButtonText: string = 'Cancel';
 	private readonly SchedulesTabText: string = 'Schedules';
 
 	// UI Components
-	//
 	private dialog: sqlops.window.modelviewdialog.Dialog;
 	private scheduleTab: sqlops.window.modelviewdialog.DialogTab;
-	private schedulesTable: sqlops.TableComponent;
+	private schedulesTable: sqlops.TableComponent;s
 
 	private model: PickScheduleData;
+
+	private _onSuccess: vscode.EventEmitter<PickScheduleData> = new vscode.EventEmitter<PickScheduleData>();
+	public readonly onSuccess: vscode.Event<PickScheduleData> = this._onSuccess.event;
 
 	constructor(ownerUri: string) {
 		this.model = new PickScheduleData(ownerUri);
@@ -34,7 +36,6 @@ export class PickScheduleDialog {
 		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
 		this.scheduleTab = sqlops.window.modelviewdialog.createTab(this.SchedulesTabText);
 		this.initializeContent();
-		this.dialog.content = [this.scheduleTab];
 		this.dialog.okButton.onClick(async () => await this.execute());
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
 		this.dialog.okButton.label = this.OkButtonText;
@@ -44,15 +45,15 @@ export class PickScheduleDialog {
 	}
 
 	private initializeContent() {
-		this.scheduleTab.registerContent(async view => {
+		this.dialog.registerContent(async view => {
 			this.schedulesTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						'Schedule Name',
-						'Description'
+						'Schedule Name'
 					],
 					data: [],
-					height: 400
+					height: 600,
+					width: 400
 				}).component();
 
 			let formModel = view.modelBuilder.formContainer()
@@ -67,9 +68,7 @@ export class PickScheduleDialog {
 				let data: any[][] = [];
 				for (let i = 0; i < this.model.schedules.length; ++i) {
 					let schedule = this.model.schedules[i];
-					data[i] = [ schedule.name, 'bb' ];
-					// let schedule = this.model.schedules[i];
-					// data[i] = [ schedule.name, schedule.isEnabled ? 'true' : 'false'];
+					data[i] = [ schedule.name ];
 				}
 				this.schedulesTable.data = data;
 			}
@@ -79,11 +78,17 @@ export class PickScheduleDialog {
 	private async execute() {
 		this.updateModel();
 		await this.model.save();
+		this._onSuccess.fire(this.model);
 	}
 
 	private async cancel() {
 	}
 
 	private updateModel() {
+		let selectedRows = this.schedulesTable.selectedRows;
+		if (selectedRows && selectedRows.length > 0) {
+			let selectedRow = selectedRows[0];
+			this.model.selectedSchedule = this.model.schedules[selectedRow];
+		}
 	}
 }
