@@ -5,8 +5,10 @@
 import 'vs/css!./dashboardPanel';
 
 import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND, TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER } from 'vs/workbench/common/theme';
-import { activeContrastBorder, focusBorder } from 'vs/platform/theme/common/colorRegistry';
+import { TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_ACTIVE_BORDER, TAB_INACTIVE_BACKGROUND,
+	TAB_INACTIVE_FOREGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND, TAB_BORDER, EDITOR_GROUP_BORDER
+} from 'vs/workbench/common/theme';
+import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 
 registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 
@@ -93,6 +95,16 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 
 			panel.dashboard-panel > .tabbedPanel.vertical > .title {
 				border-right-color: ${tabBorder};
+				border-right-width: 1px;
+				border-right-style: solid;
+			}
+		`);
+	}
+
+	const divider = theme.getColor(EDITOR_GROUP_BORDER);
+	if (divider) {
+		collector.addRule(`
+			panel.dashboard-panel > .tabbedPanel > .title .tabList .tab-header {
 				border-right-width: 1px;
 				border-right-style: solid;
 			}
