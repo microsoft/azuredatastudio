@@ -381,7 +381,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 
 		// Job Schedule management methods
 		let  getJobSchedules = (ownerUri: string): Thenable<sqlops.AgentJobSchedulesResult>  => {
-			let params: contracts.AgentProxiesParams = {
+			let params: contracts.AgentJobScheduleParams = {
 				ownerUri: ownerUri
 			};
 			let requestType = contracts.AgentJobSchedulesRequest.type;

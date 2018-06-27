@@ -264,7 +264,7 @@ export namespace DeleteAgentProxyRequest {
 
 // Job Schedules requests
 export namespace AgentJobSchedulesRequest {
-	export const type = new RequestType<CreateAgentJobScheduleParams, sqlops.AgentJobSchedulesResult, void, void>('agent/schedules');
+	export const type = new RequestType<AgentJobScheduleParams, sqlops.AgentJobSchedulesResult, void, void>('agent/schedules');
 }
 
 export namespace CreateAgentJobScheduleRequest {

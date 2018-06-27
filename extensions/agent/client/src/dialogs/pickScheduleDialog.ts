@@ -20,7 +20,7 @@ export class PickScheduleDialog {
 	// UI Components
 	private dialog: sqlops.window.modelviewdialog.Dialog;
 	private scheduleTab: sqlops.window.modelviewdialog.DialogTab;
-	private schedulesTable: sqlops.TableComponent;s
+	private schedulesTable: sqlops.TableComponent;
 
 	private model: PickScheduleData;
 

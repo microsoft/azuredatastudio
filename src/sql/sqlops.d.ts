@@ -1060,42 +1060,39 @@ declare module 'sqlops' {
 		wmiEvent = 4
 	}
 
-	export enum JobCompletionActionCondition{
+	export enum JobCompletionActionCondition {
 		Never = 0,
 		OnSuccess = 1,
 		OnFailure = 2,
 		Always = 3
 	}
 
-	export enum FrequencyTypes
-    {
-        Unknown ,
-        OneTime = 1 << 1,
-        Daily = 1 << 2,
-        Weekly = 1 << 3,
-        Monthly = 1 << 4,
-        MonthlyRelative = 1 << 5,
-        AutoStart = 1 << 6,
-        OnIdle = 1 << 7
-    }
+	export enum FrequencyTypes {
+		Unknown ,
+		OneTime = 1 << 1,
+		Daily = 1 << 2,
+		Weekly = 1 << 3,
+		Monthly = 1 << 4,
+		MonthlyRelative = 1 << 5,
+		AutoStart = 1 << 6,
+		OnIdle = 1 << 7
+	}
 
-    export enum FrequencySubDayTypes
-    {
-        Unknown = 0,
-        Once = 1,
-        Second = 2,
-        Minute = 4,
-        Hour = 8
-    }
+	export enum FrequencySubDayTypes {
+		Unknown = 0,
+		Once = 1,
+		Second = 2,
+		Minute = 4,
+		Hour = 8
+	}
 
-    export enum FrequencyRelativeIntervals
-    {
-        First = 1,
-        Second = 2,
-        Third = 4,
-        Fourth = 8,
-        Last = 16
-    }
+	export enum FrequencyRelativeIntervals {
+		First = 1,
+		Second = 2,
+		Third = 4,
+		Fourth = 8,
+		Last = 16
+	}
 
 	export interface AgentJobInfo {
 		name: string;
@@ -1128,22 +1125,22 @@ declare module 'sqlops' {
 
 	export interface AgentJobScheduleInfo {
 		id: number;
-        name: string;
-        jobName: string;
-        isEnabled: boolean;
-        frequencyTypes: FrequencyTypes;
-        frequencySubDayTypes: FrequencySubDayTypes;
-        frequencySubDayInterval: number;
-        frequencyRelativeIntervals; FrequencyRelativeIntervals;
-        frequencyRecurrenceFactor: number;
-        frequencyInterval: number;
-        dateCreated: string;
-        activeStartTimeOfDay: string;
-        activeStartDate: string;
-        activeEndTimeOfDay: string;
-        jobCount: number;
-        activeEndDate: string;
-        scheduleUid: string;
+		name: string;
+		jobName: string;
+		isEnabled: boolean;
+		frequencyTypes: FrequencyTypes;
+		frequencySubDayTypes: FrequencySubDayTypes;
+		frequencySubDayInterval: number;
+		frequencyRelativeIntervals; FrequencyRelativeIntervals;
+		frequencyRecurrenceFactor: number;
+		frequencyInterval: number;
+		dateCreated: string;
+		activeStartTimeOfDay: string;
+		activeStartDate: string;
+		activeEndTimeOfDay: string;
+		jobCount: number;
+		activeEndDate: string;
+		scheduleUid: string;
 	}
 
 	export interface AgentJobStep {
@@ -1279,14 +1276,14 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentJobCategory
-    {
-        id: string;
-        name: string;
-    }
+	{
+		id: string;
+		name: string;
+	}
 
 	export interface AgentJobDefaultsResult extends ResultStatus {
 		owner: string;
-       	categories: AgentJobCategory[];
+	   	categories: AgentJobCategory[];
 	}
 
 	export interface CreateAgentJobStepResult extends ResultStatus {
