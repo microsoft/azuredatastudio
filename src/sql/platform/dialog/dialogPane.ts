@@ -10,12 +10,11 @@ import 'vs/css!./media/dialogModal';
 import { NgModuleRef } from '@angular/core';
 
 import { IModalDialogStyles } from 'sql/base/browser/ui/modal/modal';
-import { Dialog, DialogTab } from 'sql/platform/dialog/dialogTypes';
+import { DialogTab } from 'sql/platform/dialog/dialogTypes';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { DialogModule } from 'sql/platform/dialog/dialog.module';
-import { DialogComponentParams, WizardPageMetadata } from 'sql/platform/dialog/dialogContainer.component';
-import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { DialogComponentParams } from 'sql/platform/dialog/dialogContainer.component';
 
 import * as DOM from 'vs/base/browser/dom';
 import { Builder } from 'vs/base/browser/builder';
@@ -35,7 +34,6 @@ export class DialogPane extends Disposable implements IThemable {
 	private _selectedTabIndex: number = 0; //TODO: can be an option
 	private _onTabChange = new Emitter<string>();
 	private _selectedTabContent: string;
-	private _onPageMetadataChange = new Emitter<WizardPageMetadata>();
 	public pageNumber?: number;
 
 	constructor(
@@ -118,7 +116,6 @@ export class DialogPane extends Disposable implements IThemable {
 					}
 				},
 				onLayoutRequested: this._onTabChange.event,
-				onPageMetadataChanged: this._onPageMetadataChange.event,
 				dialogPane: this
 			} as DialogComponentParams,
 			undefined,

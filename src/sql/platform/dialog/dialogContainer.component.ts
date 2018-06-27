@@ -6,18 +6,12 @@
 'use strict';
 
 import 'vs/css!./media/dialogModal';
-import { Component, AfterContentInit, ViewChild, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, AfterContentInit, ViewChild, Input, Inject, forwardRef, ElementRef } from '@angular/core';
 import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Event, Emitter } from 'vs/base/common/event';
-
-export interface WizardPageMetadata {
-	title: string;
-	description?: string;
-	pageNumber?: number;
-}
 
 export interface DialogComponentParams extends IBootstrapParams {
 	modelViewId: string;
@@ -50,7 +44,6 @@ export class DialogContainer implements AfterContentInit {
 	@ViewChild(ModelViewContent) private _modelViewContent: ModelViewContent;
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeDetectorRef: ChangeDetectorRef,
 		@Inject(IBootstrapParams) private _params: DialogComponentParams) {
 		this.modelViewId = this._params.modelViewId;
 		this._params.onLayoutRequested(e => {
