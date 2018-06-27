@@ -75,8 +75,8 @@ export class JobManagementService implements IJobManagementService {
 export class JobCacheObject {
 	_serviceBrand: any;
 	private _jobs: sqlops.AgentJobInfo[] = [];
-	private _jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = {};
-	private _runCharts: { [jobId: string]: string[]; } = {};
+	private _jobHistories: { [jobID: string]: sqlops.AgentJobHistoryInfo[]; } = {};
+	private _runCharts: { [jobID: string]: string[]; } = {};
 	private _prevJobID: string;
 	private _serverName: string;
 	private _dataView: Slick.Data.DataView<any>;
@@ -86,7 +86,7 @@ export class JobCacheObject {
 			return this._jobs;
 		}
 
-		public get jobHistories(): { [jobId: string]: sqlops.AgentJobHistoryInfo[] } {
+		public get jobHistories(): { [jobID: string]: sqlops.AgentJobHistoryInfo[] } {
 			return this._jobHistories;
 		}
 
@@ -115,7 +115,7 @@ export class JobCacheObject {
 			this._jobs = value;
 		}
 
-		public set jobHistories(value: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; }) {
+		public set jobHistories(value: { [jobID: string]: sqlops.AgentJobHistoryInfo[]; }) {
 			this._jobHistories = value;
 		}
 
