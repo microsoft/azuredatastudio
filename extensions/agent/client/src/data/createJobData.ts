@@ -6,7 +6,6 @@
 
 import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
-import { runInThisContext } from 'vm';
 
 export class CreateJobData {
 
@@ -66,21 +65,16 @@ export class CreateJobData {
 
 	public async initialize() {
 		this._agentService = await AgentUtils.getAgentService();
+		let jobDefaults = await this._agentService.getJobDefaults(this.ownerUri);
+		if (jobDefaults && jobDefaults.success) {
+			this._jobCategories = jobDefaults.categories.map((cat) => {
+				return cat.name;
+			});
 
-		// TODO: fetch real data using agent service
-		//
+			this._defaultOwner = jobDefaults.owner;
 
-		this._jobCategories = [
-			'[Uncategorized (Local)]',
-			'Jobs from MSX'
-		];
-
-		// await this._agentService.getOperators(this.ownerUri).then(result => {
-		// 	this._operators = result.operators.map(o => o.name);
-		// });
-
-		this._operators = ['', 'alanren'];
-		this._defaultOwner = 'REDMOND\\alanren';
+			this._operators = ['', this._defaultOwner];
+		}
 
 		this._jobCompletionActionConditions = [{
 			displayName: this.JobCompletionActionCondition_OnSuccess,
@@ -92,6 +86,8 @@ export class CreateJobData {
 			displayName: this.JobCompletionActionCondition_Always,
 			name: sqlops.JobCompletionActionCondition.Always.toString()
 		}];
+
+		this.jobSchedules = [];
 	}
 
 	public async save() {
@@ -140,8 +136,15 @@ export class CreateJobData {
 		}
 
 		return {
-			valid: validationErrors.length > 0,
+			valid: validationErrors.length === 0,
 			errorMessages: validationErrors
+		};
+	}
+
+	public addJobSchedule(schedule: sqlops.AgentJobScheduleInfo) {
+		let existingSchedule = this.jobSchedules.find(item => item.name === schedule.name);
+		if (!existingSchedule) {
+			this.jobSchedules.push(schedule);
 		}
 	}
 }
