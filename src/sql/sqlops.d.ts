@@ -1067,6 +1067,36 @@ declare module 'sqlops' {
 		Always = 3
 	}
 
+	export enum FrequencyTypes
+    {
+        Unknown ,
+        OneTime = 1 << 1,
+        Daily = 1 << 2,
+        Weekly = 1 << 3,
+        Monthly = 1 << 4,
+        MonthlyRelative = 1 << 5,
+        AutoStart = 1 << 6,
+        OnIdle = 1 << 7
+    }
+
+    export enum FrequencySubDayTypes
+    {
+        Unknown = 0,
+        Once = 1,
+        Second = 2,
+        Minute = 4,
+        Hour = 8
+    }
+
+    export enum FrequencyRelativeIntervals
+    {
+        First = 1,
+        Second = 2,
+        Third = 4,
+        Fourth = 8,
+        Last = 16
+    }
+
 	export interface AgentJobInfo {
 		name: string;
 		owner: string;
@@ -1097,7 +1127,23 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentJobScheduleInfo {
-
+		id: number;
+        name: string;
+        jobName: string;
+        isEnabled: boolean;
+        frequencyTypes: FrequencyTypes;
+        frequencySubDayTypes: FrequencySubDayTypes;
+        frequencySubDayInterval: number;
+        frequencyRelativeIntervals; FrequencyRelativeIntervals;
+        frequencyRecurrenceFactor: number;
+        frequencyInterval: number;
+        dateCreated: string;
+        activeStartTimeOfDay: string;
+        activeStartDate: string;
+        activeEndTimeOfDay: string;
+        jobCount: number;
+        activeEndDate: string;
+        scheduleUid: string;
 	}
 
 	export interface AgentJobStep {
@@ -1295,6 +1341,18 @@ declare module 'sqlops' {
 		operator: AgentOperatorInfo;
 	}
 
+	export interface AgentJobSchedulesResult extends ResultStatus {
+		schedules: AgentJobScheduleInfo[];
+	}
+
+	export interface CreateAgentJobScheduleResult extends ResultStatus {
+		schedule: AgentJobScheduleInfo;
+	}
+
+	export interface UpdateAgentJobScheduleResult extends ResultStatus {
+		schedule: AgentJobScheduleInfo;
+	}
+
 	export interface AgentServicesProvider extends DataProvider {
 		// Job management methods
 		getJobs(ownerUri: string): Thenable<AgentJobsResult>;
@@ -1327,6 +1385,13 @@ declare module 'sqlops' {
 		createProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<CreateAgentOperatorResult>;
 		updateProxy(ownerUri: string, originalProxyName: string, proxyInfo: AgentProxyInfo): Thenable<UpdateAgentOperatorResult>;
 		deleteProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<ResultStatus>;
+
+
+		// Job Schedule management methods
+		getJobSchedules(ownerUri: string): Thenable<AgentJobSchedulesResult>;
+		createJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<CreateAgentJobScheduleResult>;
+		updateJobSchedule(ownerUri: string, originalScheduleName: string, scheduleInfo: AgentJobScheduleInfo): Thenable<UpdateAgentJobScheduleResult>;
+		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 	}
 
 	// Task service interfaces ----------------------------------------------------------------------------

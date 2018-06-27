@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import { ApiWrapper } from './apiWrapper';
 import { CreateJobDialog } from './dialogs/createJobDialog';
 import { CreateStepDialog } from './dialogs/createStepDialog';
+import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
 
 /**
  * The main controller class that initializes the extension
@@ -35,7 +36,11 @@ export class MainController {
         vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, jobId: string, server: string, stepId: number) => {
 			let dialog = new CreateStepDialog(ownerUri, jobId, server, stepId);
 			dialog.openNewStepDialog();
-		});
+        });
+        vscode.commands.registerCommand('agent.openPickScheduleDialog', (ownerUri: string) => {
+            let dialog = new PickScheduleDialog(ownerUri);
+            dialog.showDialog();
+        });
 	}
 
 	 private updateJobStepDialog() {

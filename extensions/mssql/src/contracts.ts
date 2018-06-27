@@ -148,6 +148,27 @@ export interface DeleteAgentProxyParams {
 	proxy: sqlops.AgentProxyInfo;
 }
 
+// Job Schedule management parameters
+export interface AgentJobScheduleParams {
+	ownerUri: string;
+}
+
+export interface CreateAgentJobScheduleParams {
+	ownerUri: string;
+	schedule: sqlops.AgentJobScheduleInfo;
+}
+
+export interface UpdateAgentJobScheduleParams {
+	ownerUri: string;
+	originalScheduleName: string;
+	schedule: sqlops.AgentJobScheduleInfo;
+}
+
+export interface DeleteAgentJobScheduleParams {
+	ownerUri: string;
+	schedule: sqlops.AgentJobScheduleInfo;
+}
+
 // Agent Job management requests
 export namespace AgentJobsRequest {
 	export const type = new RequestType<AgentJobsParams, sqlops.AgentJobsResult, void, void>('agent/jobs');
@@ -239,6 +260,23 @@ export namespace UpdateAgentProxyRequest {
 
 export namespace DeleteAgentProxyRequest {
 	export const type = new RequestType<DeleteAgentProxyParams, sqlops.ResultStatus, void, void>('agent/deleteproxy');
+}
+
+// Job Schedules requests
+export namespace AgentJobSchedulesRequest {
+	export const type = new RequestType<CreateAgentJobScheduleParams, sqlops.AgentJobSchedulesResult, void, void>('agent/schedules');
+}
+
+export namespace CreateAgentJobScheduleRequest {
+	export const type = new RequestType<CreateAgentJobScheduleParams, sqlops.CreateAgentJobScheduleResult, void, void>('agent/createschedule');
+}
+
+export namespace UpdateAgentJobScheduleRequest {
+	export const type = new RequestType<UpdateAgentProxyParams, sqlops.UpdateAgentJobScheduleResult, void, void>('agent/updateschedule');
+}
+
+export namespace DeleteAgentJobScheduleRequest {
+	export const type = new RequestType<DeleteAgentProxyParams, sqlops.ResultStatus, void, void>('agent/deleteschedule');
 }
 
 // ------------------------------- < Agent Management > ------------------------------------

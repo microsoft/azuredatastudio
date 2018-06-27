@@ -379,6 +379,67 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		// Job Schedule management methods
+		let  getJobSchedules = (ownerUri: string): Thenable<sqlops.AgentJobSchedulesResult>  => {
+			let params: contracts.AgentProxiesParams = {
+				ownerUri: ownerUri
+			};
+			let requestType = contracts.AgentJobSchedulesRequest.type;
+			return client.sendRequest(requestType, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(requestType, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let createJobSchedule = (ownerUri: string, scheduleInfo: sqlops.AgentJobScheduleInfo): Thenable<sqlops.CreateAgentJobScheduleResult> => {
+			let params: contracts.CreateAgentJobScheduleParams = {
+				ownerUri: ownerUri,
+				schedule: scheduleInfo
+			};
+			let requestType = contracts.CreateAgentJobScheduleRequest.type;
+			return client.sendRequest(requestType, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(requestType, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let updateJobSchedule= (ownerUri: string, originalScheduleName: string, scheduleInfo: sqlops.AgentJobScheduleInfo): Thenable<sqlops.UpdateAgentJobScheduleResult> => {
+			let params: contracts.UpdateAgentJobScheduleParams = {
+				ownerUri: ownerUri,
+				originalScheduleName: originalScheduleName,
+				schedule: scheduleInfo
+			};
+			let requestType = contracts.UpdateAgentJobScheduleRequest.type;
+			return client.sendRequest(requestType, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(requestType, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let deleteJobSchedule = (ownerUri: string, scheduleInfo: sqlops.AgentJobScheduleInfo): Thenable<sqlops.ResultStatus> => {
+			let params: contracts.DeleteAgentJobScheduleParams = {
+				ownerUri: ownerUri,
+				schedule: scheduleInfo
+			};
+			let requestType = contracts.DeleteAgentJobScheduleRequest.type;
+			return client.sendRequest(requestType, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(requestType, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
 		return sqlops.dataprotocol.registerAgentServicesProvider({
 			providerId: client.providerId,
 			getJobs,
@@ -402,7 +463,11 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			getProxies,
 			createProxy,
 			updateProxy,
-			deleteProxy
+			deleteProxy,
+			getJobSchedules,
+			createJobSchedule,
+			updateJobSchedule,
+			deleteJobSchedule
 		});
 	}
 }
