@@ -114,10 +114,6 @@ jobhistory-component {
     color: orangered;
 }
 
-#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.error-row {
-    opacity: 0;
-}
-
 #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row {
     opacity: 1;
 }
@@ -219,8 +215,8 @@ agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.od
     background: #444444 !important;
 }
 
-table.jobprevruns div.bar1, table.jobprevruns div.bar2, table.jobprevruns div.bar3,
-table.jobprevruns div.bar4, table.jobprevruns div.bar5 {
+table.jobprevruns div.bar0, table.jobprevruns div.bar1, table.jobprevruns div.bar2,
+table.jobprevruns div.bar3, table.jobprevruns div.bar4, table.jobprevruns div.bar5 {
     padding-top: 3px;
     padding-left: 5px;
 	width: 10px;
@@ -264,4 +260,3 @@ table.jobprevruns > tbody {
 .jobs-view-toolbar span{
     padding-left: 5px;
 }
-
