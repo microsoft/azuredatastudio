@@ -6,7 +6,6 @@ export class AgentUtils {
 
 	private static _agentService: sqlops.AgentServicesProvider;
 	private static _connectionService: sqlops.ConnectionProvider;
-	private static _fileBrowserService: sqlops.FileBrowserProvider;
 	private static _queryProvider: sqlops.QueryProvider;
 
 	public static async getAgentService(): Promise<sqlops.AgentServicesProvider> {
@@ -29,15 +28,7 @@ export class AgentUtils {
 		});
 	}
 
-	public static async getFileBrowserService(ownerUri: string): Promise<sqlops.FileBrowserProvider> {
-		if (!AgentUtils._fileBrowserService) {
-			let currentConnection = await sqlops.connection.getCurrentConnection();
-			this._fileBrowserService = sqlops.dataprotocol.getProvider<sqlops.FileBrowserProvider>(currentConnection.providerName, sqlops.DataProviderType.FileBrowserProvider);
-		}
-		return this._fileBrowserService;
-	}
-
-	public static async getQueryProvider(ownerUri: string): Promise<sqlops.QueryProvider> {
+	public static async getQueryProvider(): Promise<sqlops.QueryProvider> {
 		if (!AgentUtils._queryProvider) {
 			let currentConnection = await sqlops.connection.getCurrentConnection();
 			this._queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(currentConnection.providerName, sqlops.DataProviderType.QueryProvider);

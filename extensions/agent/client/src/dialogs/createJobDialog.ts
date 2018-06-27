@@ -188,7 +188,7 @@ export class CreateJobDialog {
 			}).component();
 
 			this.newStepButton.onDidClick((e)=>{
-				let stepDialog =new CreateStepDialog(this.model.ownerUri, '', '', this.model);
+				let stepDialog = new CreateStepDialog(this.model.ownerUri, '', '', 1, this.model);
 				stepDialog.openNewStepDialog();
 			});
 

@@ -59,20 +59,23 @@ export class CreateStepDialog {
 
 	private model: CreateStepData;
 	private ownerUri: string;
-	private jobId: string;
+	private jobName: string;
 	private server: string;
+	private stepId: number;
 
 	private jobModel: CreateJobData;
 
 	constructor(
 		ownerUri: string,
-		jobId: string,
+		jobName: string,
 		server: string,
+		stepId: number,
 		jobModel?: CreateJobData
 	) {
 		this.model = new CreateStepData(ownerUri);
+		this.stepId = stepId;
 		this.ownerUri = ownerUri;
-		this.jobId = jobId;
+		this.jobName = jobName;
 		this.server = server;
 		this.jobModel = jobModel;
 	}
@@ -82,8 +85,8 @@ export class CreateStepDialog {
 		this.generalTab = sqlops.window.modelviewdialog.createTab(CreateStepDialog.GeneralTabText);
 		this.advancedTab = sqlops.window.modelviewdialog.createTab(CreateStepDialog.AdvancedTabText);
 		this.dialog.content = [this.generalTab, this.advancedTab];
+		this.dialog.okButton.onClick(async () => await this.execute());
 		this.dialog.okButton.label = CreateStepDialog.OkButtonText;
-		this.dialog.okButton.onClick(() => this.execute());
 		this.dialog.cancelButton.label = CreateStepDialog.CancelButtonText;
 	}
 
@@ -136,6 +139,7 @@ export class CreateStepDialog {
 			this.nameTextBox = view.modelBuilder.inputBox()
 				.withProperties({
 				}).component();
+			this.nameTextBox.required = true;
 			this.typeDropdown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: CreateStepDialog.TSQLScript,
@@ -226,7 +230,7 @@ export class CreateStepDialog {
 		return runAsUserForm;
 	}
 
-	private createAdvancedTab(fileBrowserService: sqlops.FileBrowserProvider) {
+	private createAdvancedTab() {
 		this.advancedTab.registerContent(async (view) => {
 			this.successActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
@@ -241,7 +245,7 @@ export class CreateStepDialog {
 					values: [CreateStepDialog.QuitJobReportingFailure, CreateStepDialog.NextStep, CreateStepDialog.QuitJobReportingSuccess]
 				})
 				.component();
-			let optionsGroup = this.createTSQLOptions(view, fileBrowserService);
+			let optionsGroup = this.createTSQLOptions(view);
 			let viewButton = view.modelBuilder.button()
 				.withProperties({ label: 'View', width: '50px' }).component();
 			viewButton.enabled = false;
@@ -340,21 +344,9 @@ export class CreateStepDialog {
 		return retryFlexContainer;
 	}
 
-	private createTSQLOptions(view, fileBrowserService: sqlops.FileBrowserProvider) {
+	private createTSQLOptions(view) {
 		this.outputFileBrowserButton = view.modelBuilder.button()
 			.withProperties({ width: '20px', label: '...' }).component();
-		this.outputFileBrowserButton.onDidClick(() => {
-			fileBrowserService.openFileBrowser(this.ownerUri,
-				'C:\\Program Files\\Microsoft SQL Server\\MSSQL14.MSSQLSERVER\\MSSQL\\Backup',
-				['*'], false).then(result => {
-					if (result) {
-						console.log(result);
-						Promise.resolve(result);
-					} else {
-						Promise.reject(false);
-					}
-				});
-		});
 		this.outputFileNameBox = view.modelBuilder.inputBox()
 			.withProperties({
 				width: '100px',
@@ -403,7 +395,8 @@ export class CreateStepDialog {
 	}
 
 	private async execute() {
-		this.model.jobId = this.jobId;
+		this.model.jobName = this.jobName;
+		this.model.id = this.stepId;
 		this.model.server = this.server;
 		this.model.stepName = this.nameTextBox.value;
 		this.model.subSystem = this.typeDropdown.value as string;
@@ -417,28 +410,12 @@ export class CreateStepDialog {
 		await this.model.save();
 	}
 
-	private openFileBrowserDialog(rootNode, selectedNode) {
-	}
-
-	private onFileBrowserOpened(handle: number, fileBrowserOpenedParams: sqlops.FileBrowserOpenedParams) {
-		if (fileBrowserOpenedParams.succeeded === true
-			&& fileBrowserOpenedParams.fileTree
-			&& fileBrowserOpenedParams.fileTree.rootNode
-			&& fileBrowserOpenedParams.fileTree.selectedNode) {
-			this.openFileBrowserDialog(fileBrowserOpenedParams.fileTree.rootNode, fileBrowserOpenedParams.fileTree.selectedNode);
-		}
-	}
-
 	public async openNewStepDialog() {
 		let databases = await AgentUtils.getDatabases(this.ownerUri);
-		let fileBrowserService = await AgentUtils.getFileBrowserService(this.ownerUri);
-		let queryProvider = await AgentUtils.getQueryProvider(this.ownerUri);
-		fileBrowserService.registerOnFileBrowserOpened((response: sqlops.FileBrowserOpenedParams) => {
-			this.onFileBrowserOpened(fileBrowserService.handle, response);
-		});
+		let queryProvider = await AgentUtils.getQueryProvider();
 		this.initializeUIComponents();
 		this.createGeneralTab(databases, queryProvider);
-		this.createAdvancedTab(fileBrowserService);
+		this.createAdvancedTab();
 		sqlops.window.modelviewdialog.openDialog(this.dialog);
 	}
 }

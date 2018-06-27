@@ -46,7 +46,7 @@ export class CreateStepData {
 			scriptName: this.scriptName,
 			stepName: this.stepName,
 			subSystem: this.subSystem,
-			id: this.id,
+			id: 1,
 			failureAction: this.failureAction,
 			successAction: this.successAction,
 			failStepId: this.failStepId,
