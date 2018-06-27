@@ -230,9 +230,9 @@ table.step-list tr.step-row td {
 	min-height: 40px !important;
 }
 
-jobhistory-component .history-details .step-table.prev-run-list .monaco-scrollable-element {
+/* jobhistory-component .history-details .step-table.prev-run-list .monaco-scrollable-element {
 	overflow-y: scroll !important;
-}
+} */
 
 jobhistory-component .jobhistory-heading-container {
 	display: -webkit-box;
