@@ -63,7 +63,7 @@ export class MetadataService implements IMetadataService {
 			}
 		}
 
-		return Promise.resolve(undefined);
+		return Promise.resolve([]);
 	}
 
 	public getTableInfo(connectionUri: string, metadata: sqlops.ObjectMetadata): Thenable<sqlops.ColumnMetadata[]> {

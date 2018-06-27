@@ -28,6 +28,7 @@ import { IContextViewService, IContextMenuService } from 'vs/platform/contextvie
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IProgressService } from 'vs/platform/progress/common/progress';
+import * as types from 'vs/base/common/types';
 
 @Component({
 	selector: 'explorer-widget',
@@ -120,6 +121,10 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			let currentProfile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
 			this._register(toDisposableSubscription(this._bootstrap.metadataService.databaseNames.subscribe(
 				data => {
+					// Handle the case where there is no metadata service
+					if (types.isUndefinedOrNull(data)) {
+						data = [];
+					}
 					let profileData = data.map(d => {
 						let profile = new ConnectionProfile(this.capabilitiesService, currentProfile);
 						profile.databaseName = d;
