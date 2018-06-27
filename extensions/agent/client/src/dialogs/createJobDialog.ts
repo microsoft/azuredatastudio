@@ -6,6 +6,7 @@
 import * as sqlops from 'sqlops';
 import { CreateJobData } from '../data/createJobData';
 import { CreateStepDialog } from './createStepDialog';
+import { PickScheduleDialog } from './pickScheduleDialog';
 
 export class CreateJobDialog {
 
@@ -49,6 +50,9 @@ export class CreateJobDialog {
 	private readonly EventLogCheckBoxString: string = 'Write to the Windows Application event log';
 	private readonly DeleteJobCheckBoxString: string = 'Automatically delete job';
 
+	// Schedules tab strings
+	private readonly PickScheduleButtonString: string = 'Pick Schedule';
+
 	// UI Components
 	//
 	private dialog: sqlops.window.modelviewdialog.Dialog;
@@ -74,7 +78,6 @@ export class CreateJobDialog {
 	private deleteStepButton: sqlops.ButtonComponent;
 
 	// Notifications tab controls
-	//
 	private notificationsTabTopLabel: sqlops.TextComponent;
 	private emailCheckBox: sqlops.CheckBoxComponent;
 	private emailOperatorDropdown: sqlops.DropDownComponent;
@@ -86,6 +89,10 @@ export class CreateJobDialog {
 	private eventLogConditionDropdown: sqlops.DropDownComponent;
 	private deleteJobCheckBox: sqlops.CheckBoxComponent;
 	private deleteJobConditionDropdown: sqlops.DropDownComponent;
+
+	// Schedule tab controls
+	private schedulesTable: sqlops.TableComponent;
+	private pickScheduleButton: sqlops.ButtonComponent;
 
 	private model: CreateJobData;
 
@@ -221,6 +228,40 @@ export class CreateJobDialog {
 	}
 
 	private initializeSchedulesTab() {
+		this.schedulesTab.registerContent(async view => {
+
+			this.schedulesTable = view.modelBuilder.table()
+				.withProperties({
+					columns: [
+						this.StepsTable_StepColumnString,
+						this.StepsTable_NameColumnString,
+						this.StepsTable_TypeColumnString,
+						this.StepsTable_SuccessColumnString,
+						this.StepsTable_FailureColumnString
+					],
+					data: [],
+					height: 400
+				}).component();
+
+			this.pickScheduleButton = view.modelBuilder.button().withProperties({
+				label: this.PickScheduleButtonString,
+				width: 80
+			}).component();
+
+			this.pickScheduleButton.onDidClick((e)=>{
+				let pickScheduleDialog = new PickScheduleDialog(this.model.ownerUri);
+				pickScheduleDialog.showDialog();
+			});
+
+			let formModel = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.schedulesTable,
+					title: this.JobStepsTopLabelString,
+					actions: [this.pickScheduleButton]
+				}]).withLayout({ width: '100%' }).component();
+
+			await view.initializeModel(formModel);
+		});
 	}
 
 	private initializeNotificationsTab() {

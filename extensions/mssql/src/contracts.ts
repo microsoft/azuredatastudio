@@ -272,11 +272,11 @@ export namespace CreateAgentJobScheduleRequest {
 }
 
 export namespace UpdateAgentJobScheduleRequest {
-	export const type = new RequestType<UpdateAgentProxyParams, sqlops.UpdateAgentJobScheduleResult, void, void>('agent/updateschedule');
+	export const type = new RequestType<UpdateAgentJobScheduleParams, sqlops.UpdateAgentJobScheduleResult, void, void>('agent/updateschedule');
 }
 
 export namespace DeleteAgentJobScheduleRequest {
-	export const type = new RequestType<DeleteAgentProxyParams, sqlops.ResultStatus, void, void>('agent/deleteschedule');
+	export const type = new RequestType<DeleteAgentJobScheduleParams, sqlops.ResultStatus, void, void>('agent/deleteschedule');
 }
 
 // ------------------------------- < Agent Management > ------------------------------------
