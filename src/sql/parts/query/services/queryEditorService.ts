@@ -113,7 +113,7 @@ export class QueryEditorService implements IQueryEditorService {
 		const self = this;
 		return new Promise<any>((resolve, reject) => {
 			let queryPlanInput: QueryPlanInput = self._instantiationService.createInstance(QueryPlanInput, xmlShowPlan, 'aaa', undefined);
- 			self._editorService.openEditor(queryPlanInput, { pinned: true }, false);
+			self._editorService.openEditor(queryPlanInput, { pinned: true }, false);
 			resolve(true);
 		});
 	}
@@ -222,8 +222,7 @@ export class QueryEditorService implements IQueryEditorService {
 		}
 
 		let uri: URI = QueryEditorService._getEditorChangeUri(editor.input, changingToSql);
-		if(uri.scheme === Schemas.untitled && (editor.input instanceof QueryInput || editor.input instanceof EditDataInput))
-		{
+		if (uri.scheme === Schemas.untitled && (editor.input instanceof QueryInput || editor.input instanceof EditDataInput)) {
 			QueryEditorService.notificationService.notify({
 				severity: Severity.Error,
 				message: QueryEditorService.CHANGE_UNSUPPORTED_ERROR_MESSAGE
@@ -258,15 +257,15 @@ export class QueryEditorService implements IQueryEditorService {
 			}
 
 			// Close the current editor
-			QueryEditorService.editorService.closeEditor(position, editor.input).then(() =>	{
+			QueryEditorService.editorService.closeEditor(position, editor.input).then(() => {
 
 				// Reopen a new editor in the same position/index
-				QueryEditorService.editorService.openEditor(newEditorInput, options, position).then((editor) =>	{
+				QueryEditorService.editorService.openEditor(newEditorInput, options, position).then((editor) => {
 					resolve(QueryEditorService._onEditorOpened(editor, uri.toString(), position, options.pinned));
 				},
-				(error) => {
-					reject(error);
-				});
+					(error) => {
+						reject(error);
+					});
 			});
 		});
 	}
@@ -334,7 +333,7 @@ export class QueryEditorService implements IQueryEditorService {
 			let queryInput: QueryInput = QueryEditorService.instantiationService.createInstance(QueryInput, '', input, queryResultsInput, undefined);
 			newEditorInput = queryInput;
 		} else {
-			let uriCopy: URI = URI.from( { scheme: uri.scheme, authority: uri.authority, path: uri.path, query: uri.query, fragment: uri.fragment } );
+			let uriCopy: URI = URI.from({ scheme: uri.scheme, authority: uri.authority, path: uri.path, query: uri.query, fragment: uri.fragment });
 			newEditorInput = QueryEditorService.instantiationService.createInstance(FileEditorInput, uriCopy, undefined);
 		}
 
@@ -350,7 +349,7 @@ export class QueryEditorService implements IQueryEditorService {
 		// It is assumed that if we got here, !changingToSql is logically equivalent to changingFromSql
 		let changingFromSql = !changingToSql;
 		if (input instanceof QueryInput && changingFromSql) {
-			let queryInput: QueryInput = <QueryInput> input;
+			let queryInput: QueryInput = <QueryInput>input;
 			uriSource = queryInput.sql;
 		}
 		return getSupportedInputResource(uriSource);
@@ -378,7 +377,7 @@ export class QueryEditorService implements IQueryEditorService {
 
 		// Grab and returns the IModel that will be used to resolve the sqlLanguageModeCheck promise.
 		let control = editor.getControl();
-		let codeEditor: CodeEditor = <CodeEditor> control;
+		let codeEditor: CodeEditor = <CodeEditor>control;
 		let newModel = codeEditor ? codeEditor.getModel() : undefined;
 		return newModel;
 	}
