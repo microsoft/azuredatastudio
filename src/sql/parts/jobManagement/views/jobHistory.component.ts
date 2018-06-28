@@ -60,6 +60,9 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _noJobsAvailable: boolean = false;
 	private _serverName: string;
 
+	private static readonly INITIAL_TREE_HEIGHT: number = 780;
+	private static readonly HEADING_HEIGHT: number = 24;
+
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
@@ -125,8 +128,17 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			renderer: this._treeRenderer
 		}, {verticalScrollMode: ScrollbarVisibility.Visible});
 		this._register(attachListStyler(this._tree, this.themeService));
-		this._tree.layout(1024);
+		this._tree.layout(JobHistoryComponent.INITIAL_TREE_HEIGHT);
 		this._initActionBar();
+		$(window).resize(() => {
+			let historyDetails = $('.overview-container').get(0);
+			let statusBar = $('.part.statusbar').get(0);
+			if (historyDetails && statusBar) {
+				let historyBottom = historyDetails.getBoundingClientRect().bottom;
+				let statusTop = statusBar.getBoundingClientRect().top;
+				this._tree.layout(statusTop - historyBottom - JobHistoryComponent.HEADING_HEIGHT);
+			}
+		});
 	}
 
 	ngAfterContentChecked() {
