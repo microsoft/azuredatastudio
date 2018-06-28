@@ -10,6 +10,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { EditorInput, EditorModel, ConfirmResult, EncodingMode, IEncodingSupport } from 'vs/workbench/common/editor';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
@@ -56,17 +57,16 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	private _currentEventCallbacks: IDisposable[];
 
 	constructor(
-		private _name: string,
 		private _description: string,
 		private _sql: UntitledEditorInput,
 		private _results: QueryResultsInput,
 		private _connectionProviderName: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService
+		@IQueryEditorService private _queryEditorService: IQueryEditorService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super();
-		let self = this;
 		this._updateTaskbar = new Emitter<void>();
 		this._showQueryResultsEditor = new Emitter<void>();
 		this._updateSelection = new Emitter<ISelectionData>();
@@ -83,34 +83,42 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 			// Register callbacks for the Actions
 			this._toDispose.push(
 				this._queryModelService.onRunQueryStart(uri => {
-					if (self.uri === uri) {
-						self.onRunQuery();
+					if (this.uri === uri) {
+						this.onRunQuery();
 					}
 				})
 			);
 
 			this._toDispose.push(
 				this._queryModelService.onRunQueryComplete(uri => {
-					if (self.uri === uri) {
-						self.onQueryComplete();
+					if (this.uri === uri) {
+						this.onQueryComplete();
 					}
 				})
 			);
 		}
 
 		if (this._connectionManagementService) {
-			this._toDispose.push(self._connectionManagementService.onDisconnect(result => {
-				if (result.connectionUri === self.uri) {
-					self.onDisconnect();
+			this._toDispose.push(this._connectionManagementService.onDisconnect(result => {
+				if (result.connectionUri === this.uri) {
+					this.onDisconnect();
 				}
 			}));
-			if (self.uri) {
+			if (this.uri) {
 				if (this._connectionProviderName) {
-					this._connectionManagementService.doChangeLanguageFlavor(self.uri, 'sql', this._connectionProviderName);
+					this._connectionManagementService.doChangeLanguageFlavor(this.uri, 'sql', this._connectionProviderName);
 				} else {
-					this._connectionManagementService.ensureDefaultLanguageFlavor(self.uri);
+					this._connectionManagementService.ensureDefaultLanguageFlavor(this.uri);
 				}
 			}
+		}
+
+		if (this._configurationService) {
+			this._configurationService.onDidChangeConfiguration(e => {
+				if (e.affectedKeys.includes('workbench.editor.showConnectionInfoInTitle')) {
+					this._onDidChangeLabel.fire();
+				}
+			});
 		}
 
 		this.onDisconnect();
@@ -159,19 +167,23 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public suggestFileName(): string { return this._sql.suggestFileName(); }
 
 	public getName(): string {
-		let profile = this._connectionManagementService.getConnectionProfile(this.uri);
-		let title = '';
-		if (profile) {
-			if (profile.userName) {
-				title = `${profile.serverName}.${profile.databaseName} (${profile.userName})`;
+		if (this._configurationService.getValue('workbench.editor.showConnectionInfoInTitle')) {
+			let profile = this._connectionManagementService.getConnectionProfile(this.uri);
+			let title = '';
+			if (profile) {
+				if (profile.userName) {
+					title = `${profile.serverName}.${profile.databaseName} (${profile.userName})`;
+				} else {
+					title = `${profile.serverName}.${profile.databaseName} (${profile.authenticationType})`;
+				}
 			} else {
-				title = `${profile.serverName}.${profile.databaseName} (${profile.authenticationType})`;
+				title = localize('disconnected', 'disconnected');
 			}
-		} else {
-			title = localize('disconnected', 'disconnected');
-		}
 
-		return this._sql.getName() + ` - ${trimTitle(title)}`;
+			return this._sql.getName() + ` - ${trimTitle(title)}`;
+		} else {
+			return this._sql.getName();
+		}
 	}
 
 	public get hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }
