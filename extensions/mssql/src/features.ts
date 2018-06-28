@@ -409,7 +409,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let updateJobSchedule= (ownerUri: string, originalScheduleName: string, scheduleInfo: sqlops.AgentJobScheduleInfo): Thenable<sqlops.UpdateAgentJobScheduleResult> => {
+		let updateJobSchedule = (ownerUri: string, originalScheduleName: string, scheduleInfo: sqlops.AgentJobScheduleInfo): Thenable<sqlops.UpdateAgentJobScheduleResult> => {
 			let params: contracts.UpdateAgentJobScheduleParams = {
 				ownerUri: ownerUri,
 				originalScheduleName: originalScheduleName,

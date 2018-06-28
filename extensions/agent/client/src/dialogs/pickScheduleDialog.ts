@@ -19,7 +19,6 @@ export class PickScheduleDialog {
 
 	// UI Components
 	private dialog: sqlops.window.modelviewdialog.Dialog;
-	private scheduleTab: sqlops.window.modelviewdialog.DialogTab;
 	private schedulesTable: sqlops.TableComponent;
 
 	private model: PickScheduleData;
@@ -34,7 +33,6 @@ export class PickScheduleDialog {
 	public async showDialog() {
 		await this.model.initialize();
 		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
-		this.scheduleTab = sqlops.window.modelviewdialog.createTab(this.SchedulesTabText);
 		this.initializeContent();
 		this.dialog.okButton.onClick(async () => await this.execute());
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
