@@ -17,4 +17,12 @@
 			</div>
 		</ng-template>
 	</tab>
+	<tab [title]="" class="fullsize" [identifier]="alertsTabIdentifier"
+		 [iconClass]="jobsIconClass">
+		 <ng-template>
+			<div id="alertsDiv" class="fullsize">
+				<jobalertsview-component></jobalertsview-component>
+			</div>
+		</ng-template>
+	</tab>
 </panel>

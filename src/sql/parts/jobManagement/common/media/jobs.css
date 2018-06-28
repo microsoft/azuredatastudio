@@ -266,3 +266,9 @@ table.jobprevruns > tbody {
     padding-left: 5px;
 }
 
+
+#alertsDiv .jobalertsview-grid {
+    height: 94.7%;
+	width : 100%;
+    display: block;
+}
