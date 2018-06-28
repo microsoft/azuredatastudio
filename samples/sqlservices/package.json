@@ -19,7 +19,7 @@
         "commands": [
             {
                 "command": "sqlservices.openDialog",
-                "title": "openDialog"
+                "title": "sqlservices.openDialog"
             },
             {
                 "command": "sqlservices.openEditor",
@@ -32,6 +32,10 @@
             {
                 "command": "sqlservices.openEditorWithWebView2",
                 "title": "sqlservices.openEditorWithWebView2"
+            },
+            {
+                "command": "sqlservices.openWizard",
+                "title": "sqlservices.openWizard"
             }
         ],
         "dashboard.tabs": [
