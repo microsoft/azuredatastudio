@@ -56,7 +56,7 @@ export class DialogContainer implements AfterContentInit {
 
 	ngAfterContentInit(): void {
 		this._modelViewContent.onEvent(event => {
-			if (event.eventType === ComponentEventType.validityChanged) {
+			if (event.isRootComponent && event.eventType === ComponentEventType.validityChanged) {
 				this._params.validityChangedCallback(event.args);
 			}
 		});

@@ -133,6 +133,7 @@ declare module 'sqlops' {
 		component: Component;
 		title: string;
 		actions?: Component[];
+		required?: boolean;
 	}
 
 	export interface ToolbarComponent {
@@ -240,7 +241,6 @@ declare module 'sqlops' {
 		componentWidth?: number | string;
 		componentHeight?: number | string;
 		titleFontSize?: number | string;
-		required?: boolean;
 		info?: string;
 	}
 
