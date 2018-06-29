@@ -8,6 +8,7 @@ import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import * as sqlops from 'sqlops';
+import { INewProfilerState } from '../editor/profilerState';
 
 const PROFILER_SERVICE_ID = 'profilerService';
 export const IProfilerService = createDecorator<IProfilerService>(PROFILER_SERVICE_ID);
@@ -29,6 +30,10 @@ export interface IProfilerSession {
 	 * Called by the service when the session is closed unexpectedly
 	 */
 	onSessionStopped(events: sqlops.ProfilerSessionStoppedParams);
+	/**
+	 * Called by the service when the session state is changed
+	 */
+	onSessionStateChanged(newState: INewProfilerState);
 }
 
 /**

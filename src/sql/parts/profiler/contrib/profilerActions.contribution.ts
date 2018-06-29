@@ -70,7 +70,6 @@ CommandsRegistry.registerCommand({
 		if (activeEditor instanceof ProfilerEditor) {
 			let profilerInput = activeEditor.input;
 			return profilerService.startSession(profilerInput.id).then(() => {
-				profilerInput.state.change({ isRunning: true, isStopped: false, isPaused: false });
 				return true;
 			});
 		}
@@ -88,7 +87,6 @@ CommandsRegistry.registerCommand({
 		if (activeEditor instanceof ProfilerEditor) {
 			let profilerInput = activeEditor.input;
 			return profilerService.stopSession(profilerInput.id).then(() => {
-				profilerInput.state.change({ isStopped: true, isPaused: false, isRunning: false });
 				return true;
 			});
 		}
