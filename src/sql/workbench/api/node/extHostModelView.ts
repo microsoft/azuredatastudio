@@ -255,7 +255,7 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 
 	private convertToItemConfig(formComponent: sqlops.FormComponent, itemLayout?: sqlops.FormItemLayout): InternalItemConfig {
 		let componentWrapper = formComponent.component as ComponentWrapper;
-		if (itemLayout && itemLayout.required && componentWrapper) {
+		if (formComponent.required && componentWrapper) {
 			componentWrapper.required = true;
 		}
 		let actions: string[] = undefined;
@@ -269,7 +269,8 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 		return new InternalItemConfig(componentWrapper, Object.assign({}, itemLayout, {
 			title: formComponent.title,
 			actions: actions,
-			isFormComponent: true
+			isFormComponent: true,
+			required: componentWrapper.required
 		}));
 	}
 

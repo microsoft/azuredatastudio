@@ -21,6 +21,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { Event, Emitter } from 'vs/base/common/event';
 import * as nls from 'vs/nls';
 import { TextAreaInput } from 'vs/editor/browser/controller/textAreaInput';
+import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
 
 @Component({
 	selector: 'modelview-inputBox',
@@ -34,6 +35,8 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	@Input() modelStore: IModelStore;
 	private _input: InputBox;
 	private _textAreaInput: InputBox;
+	private _inputChanged: boolean = false;
+	private _inputOptions: IInputOptions;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	@ViewChild('textarea', { read: ElementRef }) private _textareaContainer: ElementRef;
@@ -55,7 +58,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 			ariaLabel: '',
 			validationOptions: {
 				validation: () => {
-					if (this.valid) {
+					if (this.valid || !this._inputChanged) {
 						return undefined;
 					} else {
 						return {
@@ -65,17 +68,18 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 					}
 				}
 			},
-			useDefaultValidation: true
+			useDefaultValidation: false
 		};
 		if (this._inputContainer) {
 			this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 			this.registerInput(this._input, () => !this.multiline);
-
+			this._inputOptions = inputOptions;
 		}
 		if (this._textareaContainer) {
 			let textAreaInputOptions = Object.assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
 			this._textAreaInput = new InputBox(this._textareaContainer.nativeElement, this.contextViewService, textAreaInputOptions);
 			this.registerInput(this._textAreaInput, () => this.multiline);
+			this._inputOptions = textAreaInputOptions;
 		}
 	}
 
@@ -88,10 +92,17 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 			this._validations.push(() => !input.inputElement.validationMessage);
 
 			this._register(input);
-			this._register(attachInputBoxStyler(input, this.themeService));
+			this._register(attachInputBoxStyler(input, this.themeService, {
+				inputValidationInfoBackground: inputBackground,
+				inputValidationInfoBorder: inputBorder,
+			}));
 			this._register(input.onDidChange(e => {
 				if (checkOption()) {
 					this.value = input.value;
+					if (!this._inputChanged) {
+						this._inputChanged = true;
+						this._inputOptions.useDefaultValidation = true;
+					}
 					this._onEventEmitter.fire({
 						eventType: ComponentEventType.onDidChange,
 						args: e
