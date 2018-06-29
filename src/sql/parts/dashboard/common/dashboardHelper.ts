@@ -168,11 +168,9 @@ export function addContext(config: WidgetConfig[], collection: any, context: str
  */
 export function filterConfigs<T extends { provider?: string | string[], when?: string }, K extends { contextKeyService: IContextKeyService }>(config: T[], collection: K): Array<T> {
 	return config.filter((item) => {
-		let when = item.when;
-
 		if (!hasCompatibleProvider(item.provider, collection.contextKeyService)) {
 			return false;
-		} else if (!when) {
+		} else if (!item.when) {
 			return true;
 		} else {
 			return collection.contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(item.when));

@@ -44,7 +44,7 @@ const tabSchema: IJSONSchema = {
 			type: 'string'
 		},
 		provider: {
-			description: localize('sqlops.extension.contributes.tab.provider', 'Defines the types of connection can this tab work with. Defaults to "MSSQL" if not set'),
+			description: localize('sqlops.extension.contributes.tab.provider', 'Defines the connection types this tab is compatible with. Defaults to "MSSQL" if not set'),
 			type: ['string', 'array']
 
 		},
