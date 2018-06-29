@@ -94,8 +94,8 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 	}
 
 	public layout(): void {
-		if (this._componentInstance && this._componentInstance.layout) {
-			this._componentInstance.layout();
+		if (this.componentInstance && this.componentInstance.layout) {
+			this.componentInstance.layout();
 		}
 	}
 
@@ -110,6 +110,12 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		};
 	}
 
+	private get componentInstance(): IComponent {
+		if (!this._componentInstance) {
+			this.loadComponent();
+		}
+		return this._componentInstance;
+	}
 
 	private loadComponent(): void {
 		if (!this.descriptor || !this.descriptor.type) {

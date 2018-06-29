@@ -27,7 +27,7 @@ import { IJobManagementService } from '../common/interfaces';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-
+import { ICommandService } from 'vs/platform/commands/common/commands';
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
 
@@ -44,16 +44,28 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _disposables = new Array<vscode.Disposable>();
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobColumns.name','Name'), field: 'name', formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext), width: 200 , id: 'name' },
-		{ name: nls.localize('jobColumns.lastRun','Last Run'), field: 'lastRun', width: 120, id: 'lastRun' },
-		{ name: nls.localize('jobColumns.nextRun','Next Run'), field: 'nextRun', width: 120, id: 'nextRun' },
-		{ name: nls.localize('jobColumns.enabled','Enabled'), field: 'enabled', width: 50, id: 'enabled' },
-		{ name: nls.localize('jobColumns.status','Status'), field: 'currentExecutionStatus', width: 60, id: 'currentExecutionStatus' },
-		{ name: nls.localize('jobColumns.category','Category'), field: 'category', width: 120, id: 'category' },
-		{ name: nls.localize('jobColumns.runnable','Runnable'), field: 'runnable', width: 70, id: 'runnable' },
-		{ name: nls.localize('jobColumns.schedule','Schedule'), field: 'hasSchedule', width: 60, id: 'hasSchedule' },
-		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', width: 120, id: 'lastRunOutcome' },
-		{ name: nls.localize('jobColumns.previousRuns', 'Previous Runs'), formatter: this.renderChartsPostHistory, field: 'previousRuns', width: 80, id: 'previousRuns'}
+		{
+			name: nls.localize('jobColumns.name', 'Name'),
+			field: 'name',
+			formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext),
+			width: 150,
+			id: 'name'
+		},
+		{ name: nls.localize('jobColumns.lastRun', 'Last Run'), field: 'lastRun', width: 80, id: 'lastRun' },
+		{ name: nls.localize('jobColumns.nextRun', 'Next Run'), field: 'nextRun', width: 80, id: 'nextRun' },
+		{ name: nls.localize('jobColumns.enabled', 'Enabled'), field: 'enabled', width: 60, id: 'enabled' },
+		{ name: nls.localize('jobColumns.status', 'Status'), field: 'currentExecutionStatus', width: 50, id: 'currentExecutionStatus' },
+		{ name: nls.localize('jobColumns.category', 'Category'), field: 'category', width: 100, id: 'category' },
+		{ name: nls.localize('jobColumns.runnable', 'Runnable'), field: 'runnable', width: 70, id: 'runnable' },
+		{ name: nls.localize('jobColumns.schedule', 'Schedule'), field: 'hasSchedule', width: 60, id: 'hasSchedule' },
+		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', width: 100, id: 'lastRunOutcome' },
+		{
+			name: nls.localize('jobColumns.previousRuns', 'Previous Runs'),
+			formatter: (row, cell, value, columnDef, dataContext) => this.renderChartsPostHistory(row, cell, value, columnDef, dataContext),
+			field: 'previousRuns',
+			width: 100,
+			id: 'previousRuns'
+		}
 	];
 
 
@@ -79,11 +91,13 @@ export class JobsViewComponent implements AfterContentChecked {
 	private _serverName: string;
 	private _isCloud: boolean;
 	private _showProgressWheel: boolean;
-	private _tabHeight: number;
-	private filterStylingMap: { [columnName: string]: [any] ;} = {};
+	private filterStylingMap: { [columnName: string]: [any]; } = {};
 	private filterStack = ['start'];
-	private filterValueMap: { [columnName: string]: string[] ;} = {};
+	private filterValueMap: { [columnName: string]: string[]; } = {};
 	private sortingStylingMap: { [columnName: string]: any; } = {};
+
+	private NewJobText: string = nls.localize("jobsToolbar-NewJob", "New job");
+	private RefreshText: string = nls.localize("jobsToolbar-Refresh", "Refresh");
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
@@ -91,7 +105,8 @@ export class JobsViewComponent implements AfterContentChecked {
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
-		@Inject(IThemeService) private _themeService: IThemeService
+		@Inject(IThemeService) private _themeService: IThemeService,
+		@Inject(ICommandService) private _commandService: ICommandService
 	) {
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
@@ -241,9 +256,9 @@ export class JobsViewComponent implements AfterContentChecked {
 						}
 						// apply the previous filter styling
 						let currentItems = this.dataView.getFilteredItems();
-						let styledItems = this.filterValueMap[this.filterStack[this.filterStack.length-1]][1];
+						let styledItems = this.filterValueMap[this.filterStack[this.filterStack.length - 1]][1];
 						if (styledItems === currentItems) {
-							let lastColStyle = this.filterStylingMap[this.filterStack[this.filterStack.length-1]];
+							let lastColStyle = this.filterStylingMap[this.filterStack[this.filterStack.length - 1]];
 							for (let i = 0; i < lastColStyle.length; i++) {
 								this._table.grid.setCellCssStyles(lastColStyle[i][0], lastColStyle[i][1]);
 							}
@@ -251,7 +266,7 @@ export class JobsViewComponent implements AfterContentChecked {
 							// style it all over again
 							let seenJobs = 0;
 							for (let i = 0; i < currentItems.length; i++) {
-								this._table.grid.removeCellCssStyles('error-row'+i.toString());
+								this._table.grid.removeCellCssStyles('error-row' + i.toString());
 								let item = this.dataView.getFilteredItems()[i];
 								if (item.lastRunOutcome === 'Failed') {
 									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
@@ -261,7 +276,7 @@ export class JobsViewComponent implements AfterContentChecked {
 									}
 									// one expansion for the row and one for
 									// the error detail
-									seenJobs ++;
+									seenJobs++;
 									i++;
 								}
 								seenJobs++;
@@ -277,7 +292,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				} else {
 					let seenJobs = 0;
 					for (let i = 0; i < this.jobs.length; i++) {
-						this._table.grid.removeCellCssStyles('error-row'+i.toString());
+						this._table.grid.removeCellCssStyles('error-row' + i.toString());
 						let item = this.dataView.getItemByIdx(i);
 						// current filter
 						if (_.contains(filterValues, item[args.column.field])) {
@@ -291,7 +306,7 @@ export class JobsViewComponent implements AfterContentChecked {
 									}
 									// one expansion for the row and one for
 									// the error detail
-									seenJobs ++;
+									seenJobs++;
 									i++;
 								}
 								seenJobs++;
@@ -333,19 +348,14 @@ export class JobsViewComponent implements AfterContentChecked {
 		this._showProgressWheel = false;
 		this._cd.detectChanges();
 		const self = this;
-		this._tabHeight = $('agentview-component #jobsDiv .jobview-grid').get(0).clientHeight;
 		$(window).resize(() => {
-			let currentTab = $('agentview-component #jobsDiv .jobview-grid').get(0);
-			if (currentTab) {
-				let currentTabHeight = currentTab.clientHeight;
-				if (currentTabHeight < self._tabHeight) {
-					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight - 22}px`);
-					self._table.resizeCanvas();
-				} else {
-					$('agentview-component #jobsDiv div.ui-widget').css('height', `${currentTabHeight}px`);
-					self._table.resizeCanvas();
-				}
-				self._tabHeight = currentTabHeight;
+			let jobsViewToolbar = $('jobsview-component .jobs-view-toolbar').get(0);
+			let statusBar = $('.part.statusbar').get(0);
+			if (jobsViewToolbar && statusBar) {
+				let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom;
+				let statusTop = statusBar.getBoundingClientRect().top;
+				$('agentview-component #jobsDiv .jobview-grid').css('height', statusTop - toolbarBottom);
+				self._table.resizeCanvas();
 			}
 		});
 		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
@@ -357,54 +367,63 @@ export class JobsViewComponent implements AfterContentChecked {
 
 			// generate job charts again
 			self.jobs.forEach(job => {
-				let jobId = job.jobId;
 				let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
-				let previousRuns = jobHistories.slice(jobHistories.length-5, jobHistories.length);
+				let previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
 				self.createJobChart(job.jobId, previousRuns);
 			});
 		});
-		$('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e) => {
-			// highlight the error row as well if a failing job row is hovered
-			if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
-				let target = $(e.currentTarget);
-				let targetChildren = $(e.currentTarget.children);
-				let siblings = target.nextAll().toArray();
-				let top = parseInt(target.css('top'), 10);
-				for (let i = 0; i < siblings.length; i++) {
-					let sibling = siblings[i];
-					let siblingTop = parseInt($(sibling).css('top'), 10);
-					if (siblingTop === top + ROW_HEIGHT) {
-						$(sibling.children).addClass('hovered');
-						sibling.onmouseenter = (e) => {
-							targetChildren.addClass('hovered');
-						};
-						sibling.onmouseleave = (e) => {
-							targetChildren.removeClass('hovered');
-						}
-						break;
-					}
-				}
-			}
-		}, (e) => {
-			// switch back to original background
-			if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
-				let target = $(e.currentTarget);
-				let siblings = target.nextAll().toArray();
-				let top = parseInt(target.css('top'), 10);
-				for (let i = 0; i < siblings.length; i++) {
-					let sibling = siblings[i];
-					let siblingTop = parseInt($(sibling).css('top'), 10);
-					if (siblingTop === top + ROW_HEIGHT) {
-						$(sibling.children).removeClass('hovered');
-						break;
-					}
-				}
-			}
+		$('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
+			this.highlightErrorRows(e1), (e2) => this.hightlightNonErrorRows(e2));
+
+		this._table.grid.onScroll.subscribe((e) => {
+			$('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
+				this.highlightErrorRows(e1), (e2) => this.hightlightNonErrorRows(e2));
 		});
 		// cache the dataview for future use
 		this._jobCacheObject.dataView = this.dataView;
 		this.filterValueMap['start'] = [[], this.dataView.getItems()];
 		this.loadJobHistories();
+	}
+
+	private highlightErrorRows(e) {
+		// highlight the error row as well if a failing job row is hovered
+		if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
+			let target = $(e.currentTarget);
+			let targetChildren = $(e.currentTarget.children);
+			let siblings = target.nextAll().toArray();
+			let top = parseInt(target.css('top'), 10);
+			for (let i = 0; i < siblings.length; i++) {
+				let sibling = siblings[i];
+				let siblingTop = parseInt($(sibling).css('top'), 10);
+				if (siblingTop === top + ROW_HEIGHT) {
+					$(sibling.children).addClass('hovered');
+					sibling.onmouseenter = (e) => {
+						targetChildren.addClass('hovered');
+					};
+					sibling.onmouseleave = (e) => {
+						targetChildren.removeClass('hovered');
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	private hightlightNonErrorRows(e) {
+		// switch back to original background
+		if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
+			let target = $(e.currentTarget);
+			let siblings = target.nextAll().toArray();
+			let top = parseInt(target.css('top'), 10);
+			for (let i = 0; i < siblings.length; i++) {
+				let sibling = siblings[i];
+				let siblingTop = parseInt($(sibling).css('top'), 10);
+				if (siblingTop === top + ROW_HEIGHT) {
+					$(sibling.children).removeClass('hovered');
+					break;
+				}
+			}
+		}
 	}
 
 	private setRowWithErrorClass(hash: { [index: number]: { [id: string]: string; } }, row: number, errorClass: string) {
@@ -427,27 +446,27 @@ export class JobsViewComponent implements AfterContentChecked {
 	}
 
 	private addToStyleHash(row: number, start: boolean, map: any, columnName: string) {
-		let hash : {
+		let hash: {
 			[index: number]: {
 				[id: string]: string;
 			}
 		} = {};
 		hash = this.setRowWithErrorClass(hash, row, 'job-with-error');
-		hash = this.setRowWithErrorClass(hash, row+1,  'error-row');
+		hash = this.setRowWithErrorClass(hash, row + 1, 'error-row');
 		if (start) {
 			if (map['start']) {
-				map['start'].push(['error-row'+row.toString(), hash]);
+				map['start'].push(['error-row' + row.toString(), hash]);
 			} else {
-				map['start'] = [['error-row'+row.toString(), hash]];
+				map['start'] = [['error-row' + row.toString(), hash]];
 			}
 		} else {
 			if (map[columnName]) {
-				map[columnName].push(['error-row'+row.toString(), hash]);
+				map[columnName].push(['error-row' + row.toString(), hash]);
 			} else {
-				map[columnName] = [['error-row'+row.toString(), hash]];
+				map[columnName] = [['error-row' + row.toString(), hash]];
 			}
 		}
-		this._table.grid.setCellCssStyles('error-row'+row.toString(), hash);
+		this._table.grid.setCellCssStyles('error-row' + row.toString(), hash);
 	}
 
 	private renderName(row, cell, value, columnDef, dataContext) {
@@ -477,14 +496,28 @@ export class JobsViewComponent implements AfterContentChecked {
 	}
 
 	private renderChartsPostHistory(row, cell, value, columnDef, dataContext) {
-		return `<table class="jobprevruns" id="${dataContext.id}">
+		let runChart = this._jobCacheObject.getRunChart(dataContext.id);
+		if (runChart && runChart.length > 0) {
+			return `<table class="jobprevruns" id="${dataContext.id}">
 				<tr>
-					<td><div class="bar1"></div></td>
-					<td><div class="bar2"></div></td>
-					<td><div class="bar3"></div></td>
-					<td><div class="bar4"></div></td>
+					<td>${runChart[0] ? runChart[0] : '<div></div>' }</td>
+					<td>${runChart[1] ? runChart[1] : '<div></div>' }</td>
+					<td>${runChart[2] ? runChart[2] : '<div></div>' }</td>
+					<td>${runChart[3] ? runChart[3] : '<div></div>' }</td>
+					<td>${runChart[4] ? runChart[4] : '<div></div>' }</td>
 				</tr>
-				</table>`;
+			</table>`;
+		} else {
+			return `<table class="jobprevruns" id="${dataContext.id}">
+			<tr>
+				<td><div class="bar0"></div></td>
+				<td><div class="bar1"></div></td>
+				<td><div class="bar2"></div></td>
+				<td><div class="bar3"></div></td>
+				<td><div class="bar4"></div></td>
+			</tr>
+			</table>`;
+		}
 	}
 
 	private expandJobRowDetails(rowIdx: number, message?: string): void {
@@ -557,13 +590,13 @@ export class JobsViewComponent implements AfterContentChecked {
 					self.jobHistories[job.jobId] = result.jobs;
 					self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
 					let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
-					let previousRuns = jobHistories.slice(jobHistories.length-5, jobHistories.length);
+					let previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
 					self.createJobChart(job.jobId, previousRuns);
 					if (self._agentViewComponent.expanded.has(job.jobId)) {
-						let lastJobHistory = jobHistories[result.jobs.length-1];
+						let lastJobHistory = jobHistories[result.jobs.length - 1];
 						let item = self.dataView.getItemById(job.jobId + '.error');
 						let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
-						let errorMessage = lastJobHistory ? lastJobHistory.message: noStepsMessage;
+						let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
 						item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
 						self._agentViewComponent.setExpanded(job.jobId, item['name']);
 						self.dataView.updateItem(job.jobId + '.error', item);
@@ -575,8 +608,9 @@ export class JobsViewComponent implements AfterContentChecked {
 
 	private createJobChart(jobId: string, jobHistories: sqlops.AgentJobHistoryInfo[]): void {
 		let chartHeights = this.getChartHeights(jobHistories);
+		let runCharts = [];
 		for (let i = 0; i < jobHistories.length; i++) {
-			let runGraph = $(`table#${jobId}.jobprevruns > tbody > tr > td > div.bar${i+1}`);
+			let runGraph = $(`table#${jobId}.jobprevruns > tbody > tr > td > div.bar${i}`);
 			if (jobHistories && jobHistories.length > 0) {
 				runGraph.css('height', chartHeights[i]);
 				let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
@@ -585,6 +619,9 @@ export class JobsViewComponent implements AfterContentChecked {
 					let currentTarget = e.currentTarget;
 					currentTarget.title = jobHistories[i].runDuration;
 				});
+				if (runGraph.get(0)) {
+					runCharts.push(runGraph.get(0).outerHTML);
+				}
 			} else {
 				runGraph.css('height', '5px');
 				runGraph.css('background', 'red');
@@ -594,16 +631,19 @@ export class JobsViewComponent implements AfterContentChecked {
 				});
 			}
 		}
+		if (runCharts.length > 0) {
+			this._jobCacheObject.setRunChart(jobId, runCharts);
+		}
 	}
 
 	// chart height normalization logic
 	private getChartHeights(jobHistories: sqlops.AgentJobHistoryInfo[]): string[] {
 		if (!jobHistories || jobHistories.length === 0) {
-			return ['5px','5px','5px','5px','5px'];
+			return ['5px', '5px', '5px', '5px', '5px'];
 		}
 		let maxDuration: number = 0;
 		jobHistories.forEach(history => {
-			let historyDuration = AgentJobUtilities.convertDurationToSeconds(history.runDuration) ;
+			let historyDuration = AgentJobUtilities.convertDurationToSeconds(history.runDuration);
 			if (historyDuration > maxDuration) {
 				maxDuration = historyDuration;
 			}
@@ -613,7 +653,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		let chartHeights = [];
 		for (let i = 0; i < jobHistories.length; i++) {
 			let duration = jobHistories[i].runDuration;
-			let chartHeight = (maxBarHeight * AgentJobUtilities.convertDurationToSeconds(duration))/maxDuration;
+			let chartHeight = (maxBarHeight * AgentJobUtilities.convertDurationToSeconds(duration)) / maxDuration;
 			chartHeights.push(`${chartHeight}px`);
 		}
 		return chartHeights;
@@ -625,14 +665,14 @@ export class JobsViewComponent implements AfterContentChecked {
 		}
 		let expandedJobs = this._agentViewComponent.expanded;
 		let expansions = 0;
-		for (let i = 0; i < this.jobs.length; i++){
+		for (let i = 0; i < this.jobs.length; i++) {
 			let job = this.jobs[i];
 			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
-				this.expandJobRowDetails(i+expandedJobs.size);
-				this.addToStyleHash(i+expandedJobs.size, start, this.filterStylingMap, undefined);
+				this.expandJobRowDetails(i + expandedJobs.size);
+				this.addToStyleHash(i + expandedJobs.size, start, this.filterStylingMap, undefined);
 				this._agentViewComponent.setExpanded(job.jobId, 'Loading Error...');
 			} else if (job.lastRunOutcome === 0 && expandedJobs.get(job.jobId)) {
-				this.addToStyleHash(i+expansions, start, this.filterStylingMap, undefined);
+				this.addToStyleHash(i + expansions, start, this.filterStylingMap, undefined);
 				expansions++;
 			}
 		}
@@ -648,7 +688,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				if (item._parent) {
 					value = value && _.contains(filterValues, item._parent[col.field]);
 				} else {
-					value = value &&  _.contains(filterValues, item[col.field]);
+					value = value && _.contains(filterValues, item[col.field]);
 				}
 			}
 		}
@@ -661,8 +701,8 @@ export class JobsViewComponent implements AfterContentChecked {
 		let jobItems = items.filter(x => x._parent === undefined);
 		let errorItems = items.filter(x => x._parent !== undefined);
 		this.sortingStylingMap[column] = items;
-		switch(column) {
-			case('Name'): {
+		switch (column) {
+			case ('Name'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => {
@@ -670,13 +710,13 @@ export class JobsViewComponent implements AfterContentChecked {
 				}, isAscending);
 				break;
 			}
-			case('Last Run'): {
+			case ('Last Run'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => this.dateCompare(item1, item2, true), isAscending);
 				break;
 			}
-			case ('Next Run') : {
+			case ('Next Run'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => this.dateCompare(item1, item2, false), isAscending);
@@ -737,7 +777,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			let item = jobItems[i];
 			if (item._child) {
 				let child = errorItems.find(error => error === item._child);
-				jobItems.splice(i+1, 0, child);
+				jobItems.splice(i + 1, 0, child);
 				jobItemsLength++;
 			}
 		}
@@ -751,12 +791,12 @@ export class JobsViewComponent implements AfterContentChecked {
 			}
 		} else {
 			for (let i = 0; i < this.jobs.length; i++) {
-				this._table.grid.removeCellCssStyles('error-row'+i.toString());
+				this._table.grid.removeCellCssStyles('error-row' + i.toString());
 			}
 		}
 		// add new style to the items back again
 		items = this.filterStack.length > 1 ? this.dataView.getFilteredItems() : this.dataView.getItems();
-		for (let i = 0; i < items.length; i ++) {
+		for (let i = 0; i < items.length; i++) {
 			let item = items[i];
 			if (item.lastRunOutcome === 'Failed') {
 				this.addToStyleHash(i, false, this.sortingStylingMap, column);
@@ -783,5 +823,14 @@ export class JobsViewComponent implements AfterContentChecked {
 				return -1;
 			}
 		}
+	}
+
+	private openCreateJobDialog() {
+		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		this._commandService.executeCommand("agent.openCreateJobDialog", ownerUri);
+	}
+
+	private refreshJobs() {
+		this._agentViewComponent.refresh = true;
 	}
 }

@@ -37,7 +37,7 @@ export default class ContextProvider {
 	public onDashboardOpen(e: sqlops.DashboardDocument): void {
 		let iscloud: boolean;
 		let edition: number;
-		if (e.profile.providerName.toLowerCase() === 'mssql' && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
+		if (e.profile.providerName.toLowerCase() === 'mssql' && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
 			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {
 				iscloud = true;
 			} else {

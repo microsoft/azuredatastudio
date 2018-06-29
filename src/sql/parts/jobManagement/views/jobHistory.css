@@ -122,6 +122,15 @@ input#accordion:checked ~ .accordion-content {
 	background-image: url('../common/media/stop.svg');
 }
 
+.vs .action-label.icon.newStepIcon {
+	background-image: url('../common/media/new.svg');
+}
+
+.vs-dark .action-label.icon.newStepIcon,
+.hc-black .action-label.icon.newStepIcon {
+	background-image: url('../common/media/new_inverse.svg');
+}
+
 a.action-label.icon.runJobIcon.non-runnable {
 	opacity: 0.4;
 	cursor: default;
@@ -219,10 +228,6 @@ table.step-list tr.step-row td {
 .steps-tree .monaco-tree .monaco-tree-row {
 	white-space: normal;
 	min-height: 40px !important;
-}
-
-jobhistory-component .history-details .step-table.prev-run-list .monaco-scrollable-element {
-	overflow-y: scroll !important;
 }
 
 jobhistory-component .jobhistory-heading-container {

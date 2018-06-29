@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { InputBox as vsInputBox, IInputOptions, IInputBoxStyles as vsIInputBoxStyles } from 'vs/base/browser/ui/inputbox/inputBox';
+import { InputBox as vsInputBox, IInputOptions, IInputBoxStyles as vsIInputBoxStyles, IMessage } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { Color } from 'vs/base/common/color';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -33,6 +33,7 @@ export class InputBox extends vsInputBox {
 	public onLoseFocus: Event<OnLoseFocusParams> = this._onLoseFocus.event;
 
 	private _isTextAreaInput: boolean;
+	private _hideErrors = false;
 
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, options?: IInputOptions) {
 		super(container, contextViewProvider, options);
@@ -102,5 +103,22 @@ export class InputBox extends vsInputBox {
 
 	public isEnabled(): boolean {
 		return !this.inputElement.hasAttribute('disabled');
+	}
+
+	public get hideErrors(): boolean {
+		return this._hideErrors;
+	}
+
+	public set hideErrors(hideErrors: boolean) {
+		this._hideErrors = hideErrors;
+		if (hideErrors) {
+			this.hideMessage();
+		}
+	}
+
+	public showMessage(message: IMessage, force?: boolean): void {
+		if (!this.hideErrors) {
+			super.showMessage(message, force);
+		}
 	}
 }
