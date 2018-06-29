@@ -115,7 +115,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 		if (this._configurationService) {
 			this._configurationService.onDidChangeConfiguration(e => {
-				if (e.affectedKeys.includes('workbench.editor.showConnectionInfoInTitle')) {
+				if (e.affectedKeys.includes('sql.showConnectionInfoInTitle')) {
 					this._onDidChangeLabel.fire();
 				}
 			});
@@ -167,7 +167,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public suggestFileName(): string { return this._sql.suggestFileName(); }
 
 	public getName(): string {
-		if (this._configurationService.getValue('workbench.editor.showConnectionInfoInTitle')) {
+		if (this._configurationService.getValue('sql.showConnectionInfoInTitle')) {
 			let profile = this._connectionManagementService.getConnectionProfile(this.uri);
 			let title = '';
 			if (profile) {

@@ -288,12 +288,6 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'description': nls.localize('enableNaturalLanguageSettingsSearch', "Controls whether to enable the natural language search mode for settings."),
 			'default': true
-		},
-		// {{SQL CARBON EDIT}}
-		'workbench.editor.showConnectionInfoInTitle': {
-			'type': 'boolean',
-			'description': nls.localize('showConnectionInfoInTitle', "Controls whether to show the connection info for a tab in the title."),
-			'default': false
 		}
 	}
 });
