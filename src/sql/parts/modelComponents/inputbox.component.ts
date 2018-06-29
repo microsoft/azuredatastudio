@@ -18,9 +18,7 @@ import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { Event, Emitter } from 'vs/base/common/event';
 import * as nls from 'vs/nls';
-import { TextAreaInput } from 'vs/editor/browser/controller/textAreaInput';
 import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
 
 @Component({
@@ -35,8 +33,6 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	@Input() modelStore: IModelStore;
 	private _input: InputBox;
 	private _textAreaInput: InputBox;
-	private _inputChanged: boolean = false;
-	private _inputOptions: IInputOptions;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	@ViewChild('textarea', { read: ElementRef }) private _textareaContainer: ElementRef;
@@ -58,7 +54,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 			ariaLabel: '',
 			validationOptions: {
 				validation: () => {
-					if (this.valid || !this._inputChanged) {
+					if (this.valid) {
 						return undefined;
 					} else {
 						return {
@@ -68,19 +64,18 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 					}
 				}
 			},
-			useDefaultValidation: false
+			useDefaultValidation: true
 		};
 		if (this._inputContainer) {
 			this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 			this.registerInput(this._input, () => !this.multiline);
-			this._inputOptions = inputOptions;
 		}
 		if (this._textareaContainer) {
 			let textAreaInputOptions = Object.assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
 			this._textAreaInput = new InputBox(this._textareaContainer.nativeElement, this.contextViewService, textAreaInputOptions);
 			this.registerInput(this._textAreaInput, () => this.multiline);
-			this._inputOptions = textAreaInputOptions;
 		}
+		this.inputElement.hideErrors = true;
 	}
 
 	private get inputElement(): InputBox {
@@ -96,12 +91,12 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 				inputValidationInfoBackground: inputBackground,
 				inputValidationInfoBorder: inputBorder,
 			}));
-			this._register(input.onDidChange(e => {
+			this._register(input.onDidChange(async e => {
 				if (checkOption()) {
 					this.value = input.value;
-					if (!this._inputChanged) {
-						this._inputChanged = true;
-						this._inputOptions.useDefaultValidation = true;
+					await this.validate();
+					if (input.hideErrors) {
+						input.hideErrors = false;
 					}
 					this._onEventEmitter.fire({
 						eventType: ComponentEventType.onDidChange,
