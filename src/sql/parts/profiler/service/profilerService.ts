@@ -96,7 +96,10 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public startSession(id: ProfilerSessionID): Thenable<boolean> {
-		return this._runAction(id, provider => provider.startSession(this._idMap.get(id)));
+		return this._runAction(id, provider => provider.startSession(this._idMap.get(id))).then(() => {
+			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
+			return true;
+		});
 	}
 
 	public pauseSession(id: ProfilerSessionID): Thenable<boolean> {
@@ -104,7 +107,10 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public stopSession(id: ProfilerSessionID): Thenable<boolean> {
-		return this._runAction(id, provider => provider.stopSession(this._idMap.get(id)));
+		return this._runAction(id, provider => provider.stopSession(this._idMap.get(id))).then(() => {
+			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isStopped: true, isPaused: false, isRunning: false });
+			return true;
+		});
 	}
 
 	private _runAction<T>(id: ProfilerSessionID, action: (handler: sqlops.ProfilerProvider) => Thenable<T>): Thenable<T> {

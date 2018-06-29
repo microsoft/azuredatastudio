@@ -32,6 +32,16 @@
         "command": "profiler.newProfiler",
         "title": "New Profiler",
         "category": "Profiler"
+      },
+      {
+        "command": "profiler.start",
+        "title": "Start",
+        "category": "Profiler"
+      },
+      {
+        "command": "profiler.stop",
+        "title": "Stop",
+        "category": "Profiler"
       }
     ],
     "outputChannels": [

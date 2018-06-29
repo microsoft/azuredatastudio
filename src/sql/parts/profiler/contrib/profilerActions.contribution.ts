@@ -23,6 +23,10 @@ import { IObjectExplorerService } from '../../objectExplorer/common/objectExplor
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import { IProfilerService} from '../service/interfaces';
+import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { KeyCode, KeyMod } from 'vs/editor/editor.api';
+import { ProfilerEditor } from '../editor/profilerEditor';
 
 // Contribute Global Actions
 const category = nls.localize('profilerCategory', "Profiler");
@@ -44,5 +48,44 @@ CommandsRegistry.registerCommand({
 		let connectionProfile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionService, editorService);
 		let profilerInput = instantiationService.createInstance(ProfilerInput, connectionProfile);
 		return editorService.openEditor(profilerInput, { pinned: true }, false).then(() => TPromise.as(true));
+	}
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: 'profiler.newProfiler',
+	weight: KeybindingsRegistry.WEIGHT.builtinExtension(),
+	when: undefined,
+	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_P,
+	mac: { primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_P },
+	handler: CommandsRegistry.getCommand('profiler.newProfiler').handler
+});
+
+CommandsRegistry.registerCommand({
+	id: 'profiler.start',
+	handler: (accessor: ServicesAccessor) => {
+		let profilerService: IProfilerService = accessor.get(IProfilerService);
+		let editorService: IWorkbenchEditorService = accessor.get(IWorkbenchEditorService);
+
+		let activeEditor = editorService.getActiveEditor();
+		if (activeEditor instanceof ProfilerEditor) {
+			let profilerInput = activeEditor.input;
+			return profilerService.startSession(profilerInput.id);
+		}
+		return TPromise.as(false);
+	}
+});
+
+CommandsRegistry.registerCommand({
+	id: 'profiler.stop',
+	handler: (accessor: ServicesAccessor) => {
+		let profilerService: IProfilerService = accessor.get(IProfilerService);
+		let editorService: IWorkbenchEditorService = accessor.get(IWorkbenchEditorService);
+
+		let activeEditor = editorService.getActiveEditor();
+		if (activeEditor instanceof ProfilerEditor) {
+			let profilerInput = activeEditor.input;
+			return profilerService.stopSession(profilerInput.id);
+		}
+		return TPromise.as(false);
 	}
 });
