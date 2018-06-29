@@ -207,7 +207,9 @@ export abstract class ContainerBase<T> extends ComponentBase {
 	) {
 		super(_changeRef);
 		this.items = [];
-		this._validations.push(() => this.items.every(item => this.modelStore.getComponent(item.descriptor.id).valid));
+		this._validations.push(() => this.items.every(item => {
+			return this.modelStore.getComponent(item.descriptor.id).valid;
+		}));
 	}
 
 	/// IComponent container-related implementation

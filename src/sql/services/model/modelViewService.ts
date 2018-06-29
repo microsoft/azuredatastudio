@@ -6,12 +6,17 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { Event, Emitter } from 'vs/base/common/event';
+import { IComponentEventArgs } from 'sql/parts/modelComponents/interfaces';
+import { Event } from 'vs/base/common/event';
 
 export interface IView {
 	readonly id: string;
 	readonly connection: sqlops.connection.Connection;
 	readonly serverInfo: sqlops.ServerInfo;
+}
+
+export interface IModelViewEventArgs extends IComponentEventArgs {
+	isRootComponent: boolean;
 }
 
 export interface IModelView extends IView {
@@ -21,7 +26,7 @@ export interface IModelView extends IView {
 	setLayout(componentId: string, layout: any): void;
 	setProperties(componentId: string, properties: { [key: string]: any }): void;
 	registerEvent(componentId: string);
-	onEvent: Event<any>;
+	onEvent: Event<IModelViewEventArgs>;
 	validate(componentId: string): Thenable<boolean>;
 	readonly onDestroy: Event<void>;
 }
