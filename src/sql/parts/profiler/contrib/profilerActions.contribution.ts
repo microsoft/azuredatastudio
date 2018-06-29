@@ -69,9 +69,7 @@ CommandsRegistry.registerCommand({
 		let activeEditor = editorService.getActiveEditor();
 		if (activeEditor instanceof ProfilerEditor) {
 			let profilerInput = activeEditor.input;
-			return profilerService.startSession(profilerInput.id).then(() => {
-				return true;
-			});
+			return profilerService.startSession(profilerInput.id);
 		}
 		return TPromise.as(false);
 	}
@@ -86,9 +84,7 @@ CommandsRegistry.registerCommand({
 		let activeEditor = editorService.getActiveEditor();
 		if (activeEditor instanceof ProfilerEditor) {
 			let profilerInput = activeEditor.input;
-			return profilerService.stopSession(profilerInput.id).then(() => {
-				return true;
-			});
+			return profilerService.stopSession(profilerInput.id);
 		}
 		return TPromise.as(false);
 	}
