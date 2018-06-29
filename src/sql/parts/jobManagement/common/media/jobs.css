@@ -97,7 +97,7 @@ jobhistory-component {
 
 #jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext {
     text-overflow: ellipsis;
-    width: 200px;
+    width: 250px;
     overflow: hidden;
     white-space: nowrap;
     display: inline-block;
@@ -112,10 +112,6 @@ jobhistory-component {
     opacity: 1;
     font-weight: 700;
     color: orangered;
-}
-
-#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.error-row {
-    opacity: 0;
 }
 
 #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row {
@@ -219,8 +215,8 @@ agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.od
     background: #444444 !important;
 }
 
-table.jobprevruns div.bar1, table.jobprevruns div.bar2, table.jobprevruns div.bar3,
-table.jobprevruns div.bar4, table.jobprevruns div.bar5 {
+table.jobprevruns div.bar0, table.jobprevruns div.bar1, table.jobprevruns div.bar2,
+table.jobprevruns div.bar3, table.jobprevruns div.bar4, table.jobprevruns div.bar5 {
     padding-top: 3px;
     padding-left: 5px;
 	width: 10px;
@@ -232,7 +228,6 @@ table.jobprevruns div.bar4, table.jobprevruns div.bar5 {
 }
 
 table.jobprevruns {
-    margin: auto;
     height: 100%;
 }
 

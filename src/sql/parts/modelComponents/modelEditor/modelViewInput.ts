@@ -73,7 +73,7 @@ export class ModelViewInput extends EditorInput {
 
 	private createDialogPane(): void {
 		this._dialogPaneContainer = DOM.$('div.model-view-container');
-		this._dialogPane = new DialogPane(this.title, this.modelViewId, () => undefined, this._instantiationService);
+		this._dialogPane = new DialogPane(this.title, this.modelViewId, () => undefined, this._instantiationService, false);
 		this._dialogPane.createBody(this._dialogPaneContainer);
 	}
 

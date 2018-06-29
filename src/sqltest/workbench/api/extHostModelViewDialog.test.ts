@@ -179,7 +179,8 @@ suite('ExtHostModelViewDialog Tests', () => {
 			return details.title === page2Title;
 		})), Times.atLeastOnce());
 		mockProxy.verify(x => x.$setWizardDetails(It.isAny(), It.is(details => {
-			return details.title === wizardTitle && details.pages.length === 2 && details.customButtons.length === 2;
+			return details.title === wizardTitle && details.pages.length === 2 && details.customButtons.length === 2 &&
+				details.displayPageTitles === true;
 		})), Times.atLeastOnce());
 		mockProxy.verify(x => x.$openWizard(It.isAny()), Times.once());
 	});

@@ -195,6 +195,7 @@ class ButtonImpl implements sqlops.window.modelviewdialog.Button {
 class WizardPageImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.WizardPage {
 	public customButtons: sqlops.window.modelviewdialog.Button[];
 	private _enabled: boolean = true;
+	private _description: string;
 
 	constructor(public title: string, _extHostModelViewDialog: ExtHostModelViewDialog, _extHostModelView: ExtHostModelViewShape) {
 		super('modelViewWizardPage', _extHostModelViewDialog, _extHostModelView);
@@ -215,6 +216,15 @@ class WizardPageImpl extends ModelViewPanelImpl implements sqlops.window.modelvi
 
 	public set content(content: string) {
 		this._modelViewId = content;
+	}
+
+	public get description(): string {
+		return this._description;
+	}
+
+	public set description(description: string) {
+		this._description = description;
+		this._extHostModelViewDialog.updateWizardPage(this);
 	}
 }
 
@@ -242,6 +252,7 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 	public readonly onPageChanged = this._pageChangedEmitter.event;
 	private _navigationValidator: (info: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean | Thenable<boolean>;
 	private _message: sqlops.window.modelviewdialog.DialogMessage;
+	private _displayPageTitles: boolean = true;
 
 	constructor(public title: string, private _extHostModelViewDialog: ExtHostModelViewDialog) {
 		this.doneButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
@@ -264,6 +275,15 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 
 	public set message(value: sqlops.window.modelviewdialog.DialogMessage) {
 		this._message = value;
+		this._extHostModelViewDialog.updateWizard(this);
+	}
+
+	public get displayPageTitles(): boolean {
+		return this._displayPageTitles;
+	}
+
+	public set displayPageTitles(value: boolean) {
+		this._displayPageTitles = value;
 		this._extHostModelViewDialog.updateWizard(this);
 	}
 
@@ -510,7 +530,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			content: page.content,
 			customButtons: page.customButtons ? page.customButtons.map(button => this.getHandle(button)) : undefined,
 			enabled: page.enabled,
-			title: page.title
+			title: page.title,
+			description: page.description
 		});
 	}
 
@@ -535,7 +556,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			doneButton: this.getHandle(wizard.doneButton),
 			nextButton: this.getHandle(wizard.nextButton),
 			customButtons: wizard.customButtons ? wizard.customButtons.map(button => this.getHandle(button)) : undefined,
-			message: wizard.message
+			message: wizard.message,
+			displayPageTitles: wizard.displayPageTitles
 		});
 	}
 
