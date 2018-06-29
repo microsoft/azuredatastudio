@@ -19,9 +19,9 @@ import { WEBVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWebvi
 import { MODELVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardModelViewContainer.contribution';
 import { CONTROLHOST_CONTAINER } from 'sql/parts/dashboard/containers/dashboardControlHostContainer.contribution';
 import { NAV_SECTION } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
-import { IDashboardContainerRegistry, Extensions as DashboardContainerExtensions, IDashboardContainer, registerContainerType } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
-import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { IDashboardContainerRegistry, Extensions as DashboardContainerExtensions } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
+import * as Constants from 'sql/parts/connection/common/constants';
 
 const dashboardcontainerRegistry = Registry.as<IDashboardContainerRegistry>(DashboardContainerExtensions.dashboardContainerContributions);
 const containerTypes = [
@@ -166,14 +166,33 @@ export function addContext(config: WidgetConfig[], collection: any, context: str
  * Returns a filtered version of the widgets passed based on edition and provider
  * @param config widgets to filter
  */
-export function filterConfigs<T extends { when?: string }, K extends { contextKeyService: IContextKeyService }>(config: T[], collection: K): Array<T> {
+export function filterConfigs<T extends { provider?: string | string[], when?: string }, K extends { contextKeyService: IContextKeyService }>(config: T[], collection: K): Array<T> {
 	return config.filter((item) => {
-		if (!item.when) {
+		let when = item.when;
+
+		if (!hasCompatibleProvider(item.provider, collection.contextKeyService)) {
+			return false;
+		} else if (!when) {
 			return true;
 		} else {
 			return collection.contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(item.when));
 		}
 	});
+}
+
+/**
+ * Check whether the listed providers contain '*' indicating any provider will do, or that they are a match
+ * for the currently scoped 'connectionProvider' context key.
+ */
+function hasCompatibleProvider(provider: string | string[], contextKeyService: IContextKeyService): boolean {
+	let isCompatible = true;
+	let connectionProvider = contextKeyService.getContextKeyValue<string>(Constants.connectionProviderContextKey);
+	if (connectionProvider) {
+		let providers = (provider instanceof Array) ? provider : [provider];
+		let matchingProvider = providers.find((p) => p === connectionProvider || p === Constants.anyProviderName);
+		isCompatible = (matchingProvider !== undefined);
+	}	// Else there's no connection context so skip the check
+	return isCompatible;
 }
 
 /**
