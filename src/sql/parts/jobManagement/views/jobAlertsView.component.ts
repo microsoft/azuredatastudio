@@ -126,12 +126,17 @@ export class JobAlertsViewComponent implements AfterContentChecked {
 		this._jobManagementService.getJobs(ownerUri).then((result) => {
 			if (result && result.jobs) {
 				self.jobs = result.jobs;
-				self.onJobsAvailable(result.jobs);
+			//	self.onJobsAvailable(result.jobs);
 			}
 		});
 	}
+/*
+	private onAlertsAvailable(alert: sqlops.AgentAlertInfo[]) {
+		// don't do anything if the view isn't visible
+		if (!this.isVisible) {
+			return;
+		}
 
-	private onJobsAvailable(jobs: sqlops.AgentJobInfo[]) {
 		let jobViews: any;
 		let start: boolean = true;
 
@@ -151,6 +156,7 @@ export class JobAlertsViewComponent implements AfterContentChecked {
 		this._showProgressWheel = false;
 		this._cd.detectChanges();
 	}
+*/
 
 	private renderName(row, cell, value, columnDef, dataContext) {
 		let resultIndicatorClass: string;

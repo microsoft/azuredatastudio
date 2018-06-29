@@ -346,7 +346,11 @@ export class JobsViewComponent implements AfterContentChecked {
 			currentTarget.title = currentTarget.innerText;
 		});
 		this._showProgressWheel = false;
-		this._cd.detectChanges();
+
+		if (this.isVisible) {
+			this._cd.detectChanges();
+		}
+
 		const self = this;
 		$(window).resize(() => {
 			let jobsViewToolbar = $('jobsview-component .jobs-view-toolbar').get(0);
