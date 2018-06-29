@@ -6,32 +6,23 @@
 import 'vs/css!./jobHistory';
 import 'vs/css!sql/media/icons/common-icons';
 import { OnInit, OnChanges, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
-import { AgentJobHistoryInfo, AgentJobInfo } from 'sqlops';
-
+import * as sqlops from 'sqlops';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
-import { RunJobAction, StopJobAction } from 'sql/parts/jobManagement/views/jobHistoryActions';
+import { RunJobAction, StopJobAction, NewStepAction } from 'sql/parts/jobManagement/views/jobActions';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { AgentJobUtilities } from '../common/agentJobUtilities';
-import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IJobManagementService } from '../common/interfaces';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
-import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
 import { JobStepsViewRow } from './jobStepsViewTree';
-
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
-import { localize } from 'vs/nls';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import Severity from 'vs/base/common/severity';
-import { ITreeOptions } from 'vs/base/parts/tree/browser/tree';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 
@@ -55,9 +46,9 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	@ViewChild('table') private _tableContainer: ElementRef;
 	@ViewChild('actionbarContainer') private _actionbarContainer: ElementRef;
 
-	@Input() public agentJobInfo: AgentJobInfo = undefined;
-	@Input() public agentJobHistories: AgentJobHistoryInfo[] = undefined;
-	public agentJobHistoryInfo: AgentJobHistoryInfo = undefined;
+	@Input() public agentJobInfo: sqlops.AgentJobInfo = undefined;
+	@Input() public agentJobHistories: sqlops.AgentJobHistoryInfo[] = undefined;
+	public agentJobHistoryInfo: sqlops.AgentJobHistoryInfo = undefined;
 
 	private _isVisible: boolean = false;
 	private _stepRows: JobStepsViewRow[] = [];
@@ -65,8 +56,12 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _showPreviousRuns: boolean = undefined;
 	private _runStatus: string = undefined;
 	private _jobCacheObject: JobCacheObject;
-	private _agentJobInfo: AgentJobInfo;
+	private _agentJobInfo: sqlops.AgentJobInfo;
 	private _noJobsAvailable: boolean = false;
+	private _serverName: string;
+
+	private static readonly INITIAL_TREE_HEIGHT: number = 780;
+	private static readonly HEADING_HEIGHT: number = 24;
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
@@ -85,14 +80,14 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		this._treeRenderer = new JobHistoryRenderer();
 		this._treeFilter =  new JobHistoryFilter();
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
-		let serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
-		let jobCache = jobCacheObjectMap[serverName];
+		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
+		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
 			this._jobCacheObject = jobCache;
 		} else {
 			this._jobCacheObject = new JobCacheObject();
-			this._jobCacheObject.serverName = serverName;
-			this._jobManagementService.addToCache(serverName, this._jobCacheObject);
+			this._jobCacheObject.serverName = this._serverName;
+			this._jobManagementService.addToCache(this._serverName, this._jobCacheObject);
 		}
 	}
 
@@ -133,8 +128,17 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 			renderer: this._treeRenderer
 		}, {verticalScrollMode: ScrollbarVisibility.Visible});
 		this._register(attachListStyler(this._tree, this.themeService));
-		this._tree.layout(1024);
+		this._tree.layout(JobHistoryComponent.INITIAL_TREE_HEIGHT);
 		this._initActionBar();
+		$(window).resize(() => {
+			let historyDetails = $('.overview-container').get(0);
+			let statusBar = $('.part.statusbar').get(0);
+			if (historyDetails && statusBar) {
+				let historyBottom = historyDetails.getBoundingClientRect().bottom;
+				let statusTop = statusBar.getBoundingClientRect().top;
+				this._tree.layout(statusTop - historyBottom - JobHistoryComponent.HEADING_HEIGHT);
+			}
+		});
 	}
 
 	ngAfterContentChecked() {
@@ -219,7 +223,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		}
 	}
 
-	private buildHistoryTree(self: any, jobHistories: AgentJobHistoryInfo[]) {
+	private buildHistoryTree(self: any, jobHistories: sqlops.AgentJobHistoryInfo[]) {
 		self._treeController.jobHistories = jobHistories;
 		self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, jobHistories);
 		let jobHistoryRows = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
@@ -246,7 +250,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 		this._agentViewComponent.showHistory = false;
 	}
 
-	private convertToJobHistoryRow(historyInfo: AgentJobHistoryInfo): JobHistoryRow {
+	private convertToJobHistoryRow(historyInfo: sqlops.AgentJobHistoryInfo): JobHistoryRow {
 		let jobHistoryRow = new JobHistoryRow();
 		jobHistoryRow.runDate = this.formatTime(historyInfo.runDate);
 		jobHistoryRow.runStatus = AgentJobUtilities.convertToStatusString(historyInfo.runStatus);
@@ -272,12 +276,14 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private _initActionBar() {
 		let runJobAction = this.instantiationService.createInstance(RunJobAction);
 		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
+		let newStepAction = this.instantiationService.createInstance(NewStepAction);
 		let taskbar = <HTMLElement>this._actionbarContainer.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ action: runJobAction },
-			{ action: stopJobAction }
+			{ action: stopJobAction },
+			{ action: newStepAction }
 		]);
 	}
 
@@ -293,6 +299,10 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 
 	public get ownerUri(): string {
 		return this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+	}
+
+	public get serverName(): string {
+		return this._serverName;
 	}
 
 	/** SETTERS */

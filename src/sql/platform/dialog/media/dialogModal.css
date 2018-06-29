@@ -5,7 +5,7 @@
 
 .dialogModal-body {
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
 	height: 100%;
 	width: 100%;
 	min-width: 500px;
@@ -29,4 +29,20 @@
 
 .footer-button.dialogModal-hidden {
 	margin: 0;
+}
+
+.dialogModal-wizardHeader {
+	padding: 10px 30px;
+}
+
+.dialogModal-wizardHeader h1 {
+	margin-top: 10px;
+	margin-bottom: 3px;
+	font-size: 1.5em;
+	font-weight: lighter;
+}
+
+.dialogContainer {
+	display: flex;
+	flex-direction: column
 }

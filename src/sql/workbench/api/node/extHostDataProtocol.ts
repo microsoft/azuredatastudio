@@ -224,6 +224,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.QueryProvider>(handle).runQueryAndReturn(ownerUri, queryString);
 	}
 
+	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> {
+		return this._resolveProvider<sqlops.QueryProvider>(handle).parseSyntax(ownerUri, query);
+	}
+
 	$getQueryRows(handle: number, rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> {
 		return this._resolveProvider<sqlops.QueryProvider>(handle).getQueryRows(rowData);
 	}
@@ -516,6 +520,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	public $onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void {
 		this._proxy.$onSessionEventsAvailable(handle, response);
+	}
+
+	/**
+	 * Profiler session stopped unexpectedly notification
+	 */
+	public $onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void {
+		this._proxy.$onSessionStopped(handle, response);
 	}
 
 

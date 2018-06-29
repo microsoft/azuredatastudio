@@ -11,29 +11,23 @@ import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, Que
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, TabSettingConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
-import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { IPropertiesConfig } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
 import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { AngularEventType, IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
-import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
+import { DashboardTab, IConfigModifierCollection } from 'sql/parts/dashboard/common/interfaces';
 import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
+import * as Constants from 'sql/parts/connection/common/constants';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
-import { ScrollbarVisibility } from 'vs/base/common/scrollable';
-import { addDisposableListener, getContentHeight, EventType } from 'vs/base/browser/dom';
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import * as colors from 'vs/platform/theme/common/colorRegistry';
-import * as themeColors from 'vs/workbench/common/theme';
 import * as objects from 'vs/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
@@ -45,16 +39,11 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
-interface IConfigModifierCollection {
-	connectionManagementService: SingleConnectionManagementService;
-	contextKeyService: IContextKeyService;
-}
-
 @Component({
 	selector: 'dashboard-page',
 	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/common/dashboardPage.component.html'))
 })
-export abstract class DashboardPage extends AngularDisposable {
+export abstract class DashboardPage extends AngularDisposable implements IConfigModifierCollection {
 
 	protected tabs: Array<TabConfig> = [];
 
@@ -147,6 +136,7 @@ export abstract class DashboardPage extends AngularDisposable {
 		// Create home tab
 		let homeTab: TabConfig = {
 			id: 'homeTab',
+			provider: Constants.anyProviderName,
 			publisher: undefined,
 			title: this.homeTabTitle,
 			container: { 'widgets-container': homeWidgets },
@@ -225,7 +215,7 @@ export abstract class DashboardPage extends AngularDisposable {
 				if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
 					let configs = <WidgetConfig[]>Object.values(containerResult.container)[0];
 					this._configModifiers.forEach(cb => {
-						configs = cb.apply(this, [configs, this.dashboardService, this.context]);
+						configs = cb.apply(this, [configs, this, this.context]);
 					});
 					this._gridModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs]);

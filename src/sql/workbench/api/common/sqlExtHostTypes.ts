@@ -63,8 +63,7 @@ export enum ScriptOperation {
 	Alter = 6
 }
 
-export enum WeekDays
-{
+export enum WeekDays {
 	sunday = 1,
 	monday = 2,
 	tuesday = 4,
@@ -77,8 +76,7 @@ export enum WeekDays
 	everyDay = 127
 }
 
-export enum NotifyMethods
-{
+export enum NotifyMethods {
 	none = 0,
 	notifyEmail = 1,
 	pager = 2,
@@ -86,12 +84,45 @@ export enum NotifyMethods
 	notifyAll = 7
 }
 
-export enum AlertType
-{
+export enum JobCompletionActionCondition {
+	Never = 0,
+	OnSuccess = 1,
+	OnFailure = 2,
+	Always = 3
+}
+
+export enum AlertType {
 	sqlServerEvent = 1,
 	sqlServerPerformanceCondition = 2,
 	nonSqlServerEvent = 3,
 	wmiEvent = 4
+}
+
+export enum FrequencyTypes {
+	Unknown ,
+	OneTime = 1 << 1,
+	Daily = 1 << 2,
+	Weekly = 1 << 3,
+	Monthly = 1 << 4,
+	MonthlyRelative = 1 << 5,
+	AutoStart = 1 << 6,
+	OnIdle = 1 << 7
+}
+
+export enum FrequencySubDayTypes {
+	Unknown = 0,
+	Once = 1,
+	Second = 2,
+	Minute = 4,
+	Hour = 8
+}
+
+export enum FrequencyRelativeIntervals {
+	First = 1,
+	Second = 2,
+	Third = 4,
+	Fourth = 8,
+	Last = 16
 }
 
 export enum ModelComponentTypes {
@@ -149,6 +180,7 @@ export interface IModelViewDialogDetails {
 	okButton: number;
 	cancelButton: number;
 	customButtons: number[];
+	message: DialogMessage;
 }
 
 export interface IModelViewTabDetails {
@@ -167,6 +199,7 @@ export interface IModelViewWizardPageDetails {
 	content: string;
 	enabled: boolean;
 	customButtons: number[];
+	description: string;
 }
 
 export interface IModelViewWizardDetails {
@@ -179,6 +212,19 @@ export interface IModelViewWizardDetails {
 	nextButton: number;
 	backButton: number;
 	customButtons: number[];
+	message: DialogMessage;
+	displayPageTitles: boolean;
+}
+
+export enum MessageLevel {
+	Error = 0,
+	Warning = 1,
+	Information = 2
+}
+
+export interface DialogMessage {
+	text: string;
+	level?: MessageLevel;
 }
 
 /// Card-related APIs that need to be here to avoid early load issues
@@ -195,6 +241,8 @@ export interface CardProperties {
 	value?: string;
 	actions?: ActionDescriptor[];
 	status?: StatusIndicator;
+	selected?: boolean;
+	cardType: CardType;
 }
 
 export interface ActionDescriptor {
@@ -223,4 +271,9 @@ export enum DeclarativeDataType {
 	string = 'string',
 	category = 'category',
 	boolean = 'boolean'
+}
+
+export enum CardType {
+	VerticalButton  = 'VerticalButton',
+	Details = 'Details'
 }

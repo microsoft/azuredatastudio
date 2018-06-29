@@ -9,6 +9,7 @@ import { Mock, It, Times } from 'typemoq';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
 import { MainThreadModelViewDialogShape, ExtHostModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 'use strict';
 
@@ -178,7 +179,8 @@ suite('ExtHostModelViewDialog Tests', () => {
 			return details.title === page2Title;
 		})), Times.atLeastOnce());
 		mockProxy.verify(x => x.$setWizardDetails(It.isAny(), It.is(details => {
-			return details.title === wizardTitle && details.pages.length === 2 && details.customButtons.length === 2;
+			return details.title === wizardTitle && details.pages.length === 2 && details.customButtons.length === 2 &&
+				details.displayPageTitles === true;
 		})), Times.atLeastOnce());
 		mockProxy.verify(x => x.$openWizard(It.isAny()), Times.once());
 	});
@@ -289,5 +291,40 @@ suite('ExtHostModelViewDialog Tests', () => {
 		assert.notEqual(validationInfo, undefined);
 		assert.equal(validationInfo.lastPage, lastPage);
 		assert.equal(validationInfo.newPage, newPage);
+	});
+
+	test('Changing the wizard message sends the new message to the main thread', () => {
+		// Set up the main thread mock to record the call
+		mockProxy.setup(x => x.$setWizardDetails(It.isAny(), It.isAny()));
+		let wizard = extHostModelViewDialog.createWizard('wizard_1');
+
+		// If I update the wizard's message
+		let newMessage = {
+			level: MessageLevel.Error,
+			text: 'test message'
+		};
+		wizard.message = newMessage;
+
+		// Then the main thread gets notified of the new details
+		mockProxy.verify(x => x.$setWizardDetails(It.isAny(), It.is(x => x.message === newMessage)), Times.once());
+	});
+
+	test('Main thread can execute dialog close validation', () => {
+		// Set up the main thread mock to record the dialog handle
+		let dialogHandle: number;
+		mockProxy.setup(x => x.$setDialogDetails(It.isAny(), It.isAny())).callback((handle, details) => dialogHandle = handle);
+
+		// Create the dialog and add a validation that records that it has been called
+		let dialog = extHostModelViewDialog.createDialog('dialog_1');
+		extHostModelViewDialog.updateDialogContent(dialog);
+		let callCount = 0;
+		dialog.registerCloseValidator(() => {
+			callCount++;
+			return true;
+		});
+
+		// If I call the validation from the main thread then it should run
+		extHostModelViewDialog.$validateDialogClose(dialogHandle);
+		assert.equal(callCount, 1);
 	});
 });

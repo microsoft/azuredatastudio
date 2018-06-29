@@ -93,6 +93,8 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdi
 	public okButton: sqlops.window.modelviewdialog.Button;
 	public cancelButton: sqlops.window.modelviewdialog.Button;
 	public customButtons: sqlops.window.modelviewdialog.Button[];
+	private _message: sqlops.window.modelviewdialog.DialogMessage;
+	private _closeValidator: () => boolean | Thenable<boolean>;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape) {
@@ -104,6 +106,27 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdi
 	public setModelViewId(value: string) {
 		super.setModelViewId(value);
 		this.content = value;
+	}
+
+	public get message(): sqlops.window.modelviewdialog.DialogMessage {
+		return this._message;
+	}
+
+	public set message(value: sqlops.window.modelviewdialog.DialogMessage) {
+		this._message = value;
+		this._extHostModelViewDialog.updateDialogContent(this);
+	}
+
+	public registerCloseValidator(validator: () => boolean | Thenable<boolean>): void {
+		this._closeValidator = validator;
+	}
+
+	public validateClose(): Thenable<boolean> {
+		if (this._closeValidator) {
+			return Promise.resolve(this._closeValidator());
+		} else {
+			return Promise.resolve(true);
+		}
 	}
 }
 
@@ -172,6 +195,7 @@ class ButtonImpl implements sqlops.window.modelviewdialog.Button {
 class WizardPageImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.WizardPage {
 	public customButtons: sqlops.window.modelviewdialog.Button[];
 	private _enabled: boolean = true;
+	private _description: string;
 
 	constructor(public title: string, _extHostModelViewDialog: ExtHostModelViewDialog, _extHostModelView: ExtHostModelViewShape) {
 		super('modelViewWizardPage', _extHostModelViewDialog, _extHostModelView);
@@ -192,6 +216,15 @@ class WizardPageImpl extends ModelViewPanelImpl implements sqlops.window.modelvi
 
 	public set content(content: string) {
 		this._modelViewId = content;
+	}
+
+	public get description(): string {
+		return this._description;
+	}
+
+	public set description(description: string) {
+		this._description = description;
+		this._extHostModelViewDialog.updateWizardPage(this);
 	}
 }
 
@@ -218,6 +251,8 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 	private _pageChangedEmitter = new Emitter<sqlops.window.modelviewdialog.WizardPageChangeInfo>();
 	public readonly onPageChanged = this._pageChangedEmitter.event;
 	private _navigationValidator: (info: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean | Thenable<boolean>;
+	private _message: sqlops.window.modelviewdialog.DialogMessage;
+	private _displayPageTitles: boolean = true;
 
 	constructor(public title: string, private _extHostModelViewDialog: ExtHostModelViewDialog) {
 		this.doneButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
@@ -232,6 +267,24 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 
 	public get currentPage(): number {
 		return this._currentPage;
+	}
+
+	public get message(): sqlops.window.modelviewdialog.DialogMessage {
+		return this._message;
+	}
+
+	public set message(value: sqlops.window.modelviewdialog.DialogMessage) {
+		this._message = value;
+		this._extHostModelViewDialog.updateWizard(this);
+	}
+
+	public get displayPageTitles(): boolean {
+		return this._displayPageTitles;
+	}
+
+	public set displayPageTitles(value: boolean) {
+		this._displayPageTitles = value;
+		this._extHostModelViewDialog.updateWizard(this);
 	}
 
 	public addPage(page: sqlops.window.modelviewdialog.WizardPage, index?: number): Thenable<void> {
@@ -354,6 +407,11 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return wizard.validateNavigation(info);
 	}
 
+	public $validateDialogClose(handle: number): Thenable<boolean> {
+		let dialog = this._objectsByHandle.get(handle) as DialogImpl;
+		return dialog.validateClose();
+	}
+
 	public openDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
 		let handle = this.getHandle(dialog);
 		this.updateDialogContent(dialog);
@@ -387,7 +445,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			okButton: this.getHandle(dialog.okButton),
 			cancelButton: this.getHandle(dialog.cancelButton),
 			content: dialog.content && typeof dialog.content !== 'string' ? dialog.content.map(tab => this.getHandle(tab)) : dialog.content as string,
-			customButtons: dialog.customButtons ? dialog.customButtons.map(button => this.getHandle(button)) : undefined
+			customButtons: dialog.customButtons ? dialog.customButtons.map(button => this.getHandle(button)) : undefined,
+			message: dialog.message
 		});
 	}
 
@@ -471,7 +530,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			content: page.content,
 			customButtons: page.customButtons ? page.customButtons.map(button => this.getHandle(button)) : undefined,
 			enabled: page.enabled,
-			title: page.title
+			title: page.title,
+			description: page.description
 		});
 	}
 
@@ -495,7 +555,9 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			generateScriptButton: this.getHandle(wizard.generateScriptButton),
 			doneButton: this.getHandle(wizard.doneButton),
 			nextButton: this.getHandle(wizard.nextButton),
-			customButtons: wizard.customButtons ? wizard.customButtons.map(button => this.getHandle(button)) : undefined
+			customButtons: wizard.customButtons ? wizard.customButtons.map(button => this.getHandle(button)) : undefined,
+			message: wizard.message,
+			displayPageTitles: wizard.displayPageTitles
 		});
 	}
 

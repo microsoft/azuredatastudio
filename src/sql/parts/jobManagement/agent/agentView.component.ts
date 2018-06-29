@@ -82,7 +82,6 @@ export class AgentViewComponent {
 
 	public set jobId(value: string) {
 		this._jobId = value;
-		this._cd.detectChanges();
 	}
 
 	public set showHistory(value: boolean) {
@@ -92,7 +91,6 @@ export class AgentViewComponent {
 
 	public set agentJobInfo(value: AgentJobInfo) {
 		this._agentJobInfo = value;
-		this._cd.detectChanges();
 	}
 
 	public set refresh(value: boolean) {
@@ -102,6 +100,10 @@ export class AgentViewComponent {
 
 	public setExpanded(jobId: string, errorMessage: string) {
 		this._expanded.set(jobId, errorMessage);
+	}
+
+	public set expanded(value: Map<string, string>) {
+		this._expanded = value;
 	}
 
 	public layout() {

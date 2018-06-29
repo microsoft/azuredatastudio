@@ -141,6 +141,10 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> { throw ni(); }
 	/**
+	 * Parses a T-SQL string without actually executing it
+	 */
+	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> { throw ni(); }
+	/**
 	 * Gets a subset of rows in a result set in order to display in the UI
 	 */
 	$getQueryRows(handle: number, rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> { throw ni(); }
@@ -416,6 +420,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onFilePathsValidated(handle: number, response: sqlops.FileBrowserValidatedParams): void;
 	$onScriptingComplete(handle: number, message: sqlops.ScriptingCompleteResult): void;
 	$onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void;
+	$onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void;
 
 	/**
 	 * Callback when a session has completed initialization
@@ -562,6 +567,7 @@ export interface ExtHostModelViewDialogShape {
 	$onWizardPageChanged(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): void;
 	$updateWizardPageInfo(handle: number, pageHandles: number[], currentPageIndex: number): void;
 	$validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean>;
+	$validateDialogClose(handle: number): Thenable<boolean>;
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {

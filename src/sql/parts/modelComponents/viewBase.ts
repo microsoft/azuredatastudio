@@ -12,7 +12,7 @@ import nls = require('vs/nls');
 import * as sqlops from 'sqlops';
 import { IModelStore, IComponentDescriptor, IComponent, IComponentEventArgs } from './interfaces';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IModelView } from 'sql/services/model/modelViewService';
+import { IModelView, IModelViewEventArgs } from 'sql/services/model/modelViewService';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { ModelStore } from 'sql/parts/modelComponents/modelStore';
@@ -38,7 +38,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	abstract id: string;
 	abstract connection: sqlops.connection.Connection;
 	abstract serverInfo: sqlops.ServerInfo;
-	private _onEventEmitter = new Emitter<any>();
+	private _onEventEmitter = new Emitter<IModelViewEventArgs>();
 
 	initializeModel(rootComponent: IComponentShape, validationCallback: (componentId: string) => Thenable<boolean>): void {
 		let descriptor = this.defineComponent(rootComponent);
@@ -106,13 +106,16 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	registerEvent(componentId: string) {
 		this.queueAction(componentId, (component) => {
 			this._register(component.registerEventHandler(e => {
-				e.componentId = componentId;
-				this._onEventEmitter.fire(e);
+				let modelViewEvent: IModelViewEventArgs = Object.assign({
+					componentId: componentId,
+					isRootComponent: componentId === this.rootDescriptor.id
+				}, e);
+				this._onEventEmitter.fire(modelViewEvent);
 			}));
 		});
 	}
 
-	public get onEvent(): Event<IComponentEventArgs> {
+	public get onEvent(): Event<IModelViewEventArgs> {
 		return this._onEventEmitter.event;
 	}
 

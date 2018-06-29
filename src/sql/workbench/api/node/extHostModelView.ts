@@ -15,7 +15,7 @@ import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, CardType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
@@ -255,6 +255,9 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 
 	private convertToItemConfig(formComponent: sqlops.FormComponent, itemLayout?: sqlops.FormItemLayout): InternalItemConfig {
 		let componentWrapper = formComponent.component as ComponentWrapper;
+		if (formComponent.required && componentWrapper) {
+			componentWrapper.required = true;
+		}
 		let actions: string[] = undefined;
 		if (formComponent.actions) {
 			actions = formComponent.actions.map(action => {
@@ -266,7 +269,8 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 		return new InternalItemConfig(componentWrapper, Object.assign({}, itemLayout, {
 			title: formComponent.title,
 			actions: actions,
-			isFormComponent: true
+			isFormComponent: true,
+			required: componentWrapper.required
 		}));
 	}
 
@@ -377,7 +381,8 @@ class ComponentWrapper implements sqlops.Component {
 	}
 
 	public get enabled(): boolean {
-		return this.properties['enabled'];
+		let isEnabled = this.properties['enabled'];
+		return (isEnabled === undefined) ? true : isEnabled;
 	}
 
 	public set enabled(value: boolean) {
@@ -398,6 +403,13 @@ class ComponentWrapper implements sqlops.Component {
 
 	public set width(v: number | string) {
 		this.setProperty('width', v);
+	}
+
+	public get required(): boolean {
+		return this.properties['required'];
+	}
+	public set required(v: boolean) {
+		this.setProperty('required', v);
 	}
 
 	public toComponentShape(): IComponentShape {
@@ -512,6 +524,7 @@ class CardWrapper extends ComponentWrapper implements sqlops.CardComponent {
 		super(proxy, handle, ModelComponentTypes.Card, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
 	}
 
 	public get label(): string {
@@ -526,14 +539,50 @@ class CardWrapper extends ComponentWrapper implements sqlops.CardComponent {
 	public set value(v: string) {
 		this.setProperty('value', v);
 	}
+	public get selected(): boolean {
+		return this.properties['selected'];
+	}
+	public set selected(v: boolean) {
+		this.setProperty('selected', v);
+	}
+	public get cardType(): sqlops.CardType {
+		return this.properties['cardType'];
+	}
+	public set cardType(v: sqlops.CardType) {
+		this.setProperty('cardType', v);
+	}
 	public get actions(): sqlops.ActionDescriptor[] {
 		return this.properties['actions'];
 	}
 	public set actions(a: sqlops.ActionDescriptor[]) {
 		this.setProperty('actions', a);
 	}
+	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+		return this.properties['iconPath'];
+	}
+	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+		this.setProperty('iconPath', v);
+	}
+
+	public get iconHeight(): number | string {
+		return this.properties['iconHeight'];
+	}
+	public set iconHeight(v: number | string) {
+		this.setProperty('iconHeight', v);
+	}
+	public get iconWidth(): number | string {
+		return this.properties['iconWidth'];
+	}
+	public set iconWidth(v: number | string) {
+		this.setProperty('iconWidth', v);
+	}
 
 	public get onDidActionClick(): vscode.Event<sqlops.ActionDescriptor> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+
+	public get onCardSelectedChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
@@ -771,10 +820,14 @@ class DropDownWrapper extends ComponentWrapper implements sqlops.DropDownCompone
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
 	}
 
-	public get value(): string {
-		return this.properties['value'];
+	public get value(): string | sqlops.CategoryValue {
+		let val = this.properties['value'];
+		if (!val && this.values && this.values.length > 0) {
+			val = this.values[0];
+		}
+		return val;
 	}
-	public set value(v: string) {
+	public set value(v: string | sqlops.CategoryValue) {
 		this.setProperty('value', v);
 	}
 

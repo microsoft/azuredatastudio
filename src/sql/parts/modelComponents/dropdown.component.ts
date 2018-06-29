@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
+	Component, Input, Inject, ChangeDetectorRef, forwardRef,
+	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
@@ -14,20 +14,17 @@ import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { Event, Emitter } from 'vs/base/common/event';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
 
 @Component({
 	selector: 'modelview-dropdown',
 	template: `
 
-	<div>
+	<div [style.width]="getWidth()">
 		<div [style.display]="getEditableDisplay()"   #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
 	</div>
@@ -60,7 +57,8 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 				strictSelection: false,
 				placeholder: '',
 				maxHeight: 125,
-				ariaLabel: ''
+				ariaLabel: '',
+				actionLabel: ''
 			};
 			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService, this.themeService,
 				dropdownOptions);
@@ -145,18 +143,22 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	}
 
 	private getSelectedValue(): string {
-		if (this.values && this.valuesHaveDisplayName()) {
-			let valueCategory = (<sqlops.CategoryValue[]>this.values).find(v => v.name === this.value);
+		if (this.values && this.values.length > 0 && this.valuesHaveDisplayName()) {
+			let selectedValue = <sqlops.CategoryValue>this.value || <sqlops.CategoryValue>this.values[0];
+			let valueCategory = (<sqlops.CategoryValue[]>this.values).find(v => v.name === selectedValue.name);
 			return valueCategory && valueCategory.displayName;
 		} else {
-			return this.value;
+			if (!this.value && this.values && this.values.length > 0) {
+				return <string>this.values[0];
+			}
+			return <string>this.value;
 		}
 	}
 
 	private setSelectedValue(newValue: string): void {
 		if (this.values && this.valuesHaveDisplayName()) {
 			let valueCategory = (<sqlops.CategoryValue[]>this.values).find(v => v.displayName === newValue);
-			this.value = valueCategory && valueCategory.name;
+			this.value = valueCategory;
 		} else {
 			this.value = newValue;
 		}
@@ -164,8 +166,8 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	// CSS-bound properties
 
-	private get value(): string {
-		return this.getPropertyOrDefault<sqlops.DropDownProperties, string>((props) => props.value, '');
+	private get value(): string | sqlops.CategoryValue {
+		return this.getPropertyOrDefault<sqlops.DropDownProperties, string | sqlops.CategoryValue>((props) => props.value, '');
 	}
 
 	private get editable(): boolean {
@@ -180,8 +182,8 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		return !this.editable ? '' : 'none';
 	}
 
-	private set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.DropDownProperties, string>(this.setValueProperties, newValue);
+	private set value(newValue: string | sqlops.CategoryValue) {
+		this.setPropertyFromUI<sqlops.DropDownProperties, string | sqlops.CategoryValue>(this.setValueProperties, newValue);
 	}
 
 	private get values(): string[] | sqlops.CategoryValue[] {
@@ -192,11 +194,11 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		this.setPropertyFromUI<sqlops.DropDownProperties, string[] | sqlops.CategoryValue[]>(this.setValuesProperties, newValue);
 	}
 
-	private setValueProperties(properties: sqlops.DropDownProperties, value: string): void {
+	private setValueProperties(properties: sqlops.DropDownProperties, value: string | sqlops.CategoryValue): void {
 		properties.value = value;
 	}
 
-	private setValuesProperties(properties: sqlops.DropDownProperties, values: string[]): void {
+	private setValuesProperties(properties: sqlops.DropDownProperties, values: string[] | sqlops.CategoryValue[]): void {
 		properties.values = values;
 	}
 }

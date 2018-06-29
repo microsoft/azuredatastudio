@@ -114,6 +114,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> {
 				return self._proxy.$runQueryAndReturn(handle, ownerUri, queryString);
 			},
+			parseSyntax(ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> {
+				return self._proxy.$parseSyntax(handle, ownerUri, query);
+			},
 			getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> {
 				return self._proxy.$getQueryRows(handle, rowData);
 			},
@@ -430,6 +433,10 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	// Profiler handlers
 	public $onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void {
 		this._profilerService.onMoreRows(response);
+	}
+
+	public $onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void {
+		this._profilerService.onSessionStopped(response);
 	}
 
 	public $unregisterProvider(handle: number): TPromise<any> {

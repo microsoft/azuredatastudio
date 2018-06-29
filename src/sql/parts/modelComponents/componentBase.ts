@@ -18,6 +18,12 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
+import URI from 'vs/base/common/uri';
+import { IdGenerator } from 'vs/base/common/idGenerator';
+import { createCSSRule, removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
+
+
+export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
 export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }
@@ -98,10 +104,6 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		if (enabled === undefined) {
 			enabled = true;
 			properties['enabled'] = enabled;
-			this.fireEvent({
-				eventType: ComponentEventType.PropertiesChanged,
-				args: this.getProperties()
-			});
 		}
 		return <boolean>enabled;
 	}
@@ -138,11 +140,20 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		return +size;
 	}
 
-	protected convertSize(size: number | string): string {
+	protected getWidth(): string {
+		return this.width ? this.convertSize(this.width) : '';
+	}
+
+	protected getHeight(): string {
+		return this.height ? this.convertSize(this.height) : '';
+	}
+
+	protected convertSize(size: number | string, defaultValue?: string): string {
+		defaultValue = defaultValue || '';
 		if (types.isUndefinedOrNull(size)) {
-			return '';
+			return defaultValue;
 		}
-		let convertedSize: string = size ? size.toString() : '100%';
+		let convertedSize: string = size ? size.toString() : defaultValue;
 		if (!convertedSize.toLowerCase().endsWith('px') && !convertedSize.toLowerCase().endsWith('%')) {
 			convertedSize = convertedSize + 'px';
 		}
@@ -196,7 +207,9 @@ export abstract class ContainerBase<T> extends ComponentBase {
 	) {
 		super(_changeRef);
 		this.items = [];
-		this._validations.push(() => this.items.every(item => this.modelStore.getComponent(item.descriptor.id).valid));
+		this._validations.push(() => this.items.every(item => {
+			return this.modelStore.getComponent(item.descriptor.id).valid;
+		}));
 	}
 
 	/// IComponent container-related implementation

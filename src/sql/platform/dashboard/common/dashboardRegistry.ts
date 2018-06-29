@@ -7,7 +7,6 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IConfigurationRegistry, Extensions as ConfigurationExtension } from 'vs/platform/configuration/common/configurationRegistry';
 import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
-import { deepClone } from 'vs/base/common/objects';
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 
 import { ProviderProperties } from 'sql/parts/dashboard/widgets/properties/propertiesWidget.component';
@@ -22,6 +21,7 @@ export const Extensions = {
 export interface IDashboardTab {
 	id: string;
 	title: string;
+	provider: string | string[];
 	publisher: string;
 	description?: string;
 	container?: object;

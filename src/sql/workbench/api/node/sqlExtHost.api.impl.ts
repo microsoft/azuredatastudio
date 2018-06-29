@@ -237,6 +237,10 @@ export function createApiFactory(
 					extHostDataProvider.$onSessionEventsAvailable(provider.handle, response);
 				});
 
+				provider.registerOnSessionStopped((response: sqlops.ProfilerSessionStoppedParams) => {
+					extHostDataProvider.$onSessionStopped(provider.handle, response);
+				});
+
 				return extHostDataProvider.$registerProfilerProvider(provider);
 			};
 
@@ -311,7 +315,8 @@ export function createApiFactory(
 				},
 				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
 					return extHostModelViewDialog.createWizard(title);
-				}
+				},
+				MessageLevel: sqlExtHostTypes.MessageLevel
 			};
 
 			const window: typeof sqlops.window = {
@@ -379,14 +384,19 @@ export function createApiFactory(
 				ScriptOperation: sqlExtHostTypes.ScriptOperation,
 				WeekDays: sqlExtHostTypes.WeekDays,
 				NotifyMethods: sqlExtHostTypes.NotifyMethods,
+				JobCompletionActionCondition: sqlExtHostTypes.JobCompletionActionCondition,
 				AlertType: sqlExtHostTypes.AlertType,
+				FrequencyTypes: sqlExtHostTypes.FrequencyTypes,
+				FrequencySubDayTypes: sqlExtHostTypes.FrequencySubDayTypes,
+				FrequencyRelativeIntervals: sqlExtHostTypes.FrequencyRelativeIntervals,
 				window,
 				tasks,
 				dashboard,
 				workspace,
 				queryeditor: queryEditor,
 				ui: ui,
-				StatusIndicator: sqlExtHostTypes.StatusIndicator
+				StatusIndicator: sqlExtHostTypes.StatusIndicator,
+				CardType: sqlExtHostTypes.CardType
 			};
 		}
 	};

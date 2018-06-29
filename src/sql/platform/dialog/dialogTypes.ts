@@ -8,6 +8,7 @@
 import * as sqlops from 'sqlops';
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
+import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ModelViewPane {
 	private _valid: boolean = true;
@@ -45,11 +46,38 @@ export class Dialog extends ModelViewPane {
 	public okButton: DialogButton = new DialogButton(Dialog.DONE_BUTTON_LABEL, true);
 	public cancelButton: DialogButton = new DialogButton(Dialog.CANCEL_BUTTON_LABEL, true);
 	public customButtons: DialogButton[];
+	private _onMessageChange = new Emitter<DialogMessage>();
+	public readonly onMessageChange = this._onMessageChange.event;
+	private _message: DialogMessage;
+	private _closeValidator: () => boolean | Thenable<boolean>;
 
 	constructor(public title: string, content?: string | DialogTab[]) {
 		super();
 		if (content) {
 			this.content = content;
+		}
+	}
+
+	public get message(): DialogMessage {
+		return this._message;
+	}
+
+	public set message(value: DialogMessage) {
+		if (this._message && !value || !this._message && value || this._message && value && (this._message.level !== value.level || this._message.text !== value.text)) {
+			this._message = value;
+			this._onMessageChange.fire(this._message);
+		}
+	}
+
+	public registerCloseValidator(validator: () => boolean | Thenable<boolean>): void {
+		this._closeValidator = validator;
+	}
+
+	public validateClose(): Thenable<boolean> {
+		if (this._closeValidator) {
+			return Promise.resolve(this._closeValidator());
+		} else {
+			return Promise.resolve(true);
 		}
 	}
 }
@@ -107,6 +135,7 @@ export class DialogButton implements sqlops.window.modelviewdialog.Button {
 export class WizardPage extends DialogTab {
 	public customButtons: DialogButton[];
 	private _enabled: boolean;
+	private _description: string;
 	private _onUpdate: Emitter<void> = new Emitter<void>();
 	public readonly onUpdate: Event<void> = this._onUpdate.event;
 
@@ -120,6 +149,15 @@ export class WizardPage extends DialogTab {
 
 	public set enabled(enabled: boolean) {
 		this._enabled = enabled;
+		this._onUpdate.fire();
+	}
+
+	public get description(): string {
+		return this._description;
+	}
+
+	public set description(description: string) {
+		this._description = description;
 		this._onUpdate.fire();
 	}
 }
@@ -140,6 +178,10 @@ export class Wizard {
 	private _pageRemovedEmitter = new Emitter<WizardPage>();
 	public readonly onPageRemoved = this._pageRemovedEmitter.event;
 	private _navigationValidator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean | Thenable<boolean>;
+	private _onMessageChange = new Emitter<DialogMessage>();
+	public readonly onMessageChange = this._onMessageChange.event;
+	private _message: DialogMessage;
+	public displayPageTitles: boolean;
 
 	constructor(public title: string) { }
 
@@ -205,6 +247,17 @@ export class Wizard {
 			}));
 		} else {
 			return Promise.resolve(true);
+		}
+	}
+
+	public get message(): DialogMessage {
+		return this._message;
+	}
+
+	public set message(value: DialogMessage) {
+		if (this._message && !value || !this._message && value || this._message && value && (this._message.level !== value.level || this._message.text !== value.text)) {
+			this._message = value;
+			this._onMessageChange.fire(this._message);
 		}
 	}
 }
