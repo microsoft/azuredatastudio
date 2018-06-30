@@ -32,9 +32,9 @@
 	border: 1px solid gray;
 }
 
-[role="gridcell"]:focus,
-[role="gridcell"] *:focus,
-[role="grid"] [tabindex="0"]:focus {
+.declarative-table [role="gridcell"]:focus,
+.declarative-table [role="gridcell"] *:focus,
+.declarative-table [role="grid"] [tabindex="0"]:focus {
 	outline: #005a9c;
 	outline-style: dotted;
 	outline-width: 3px;
