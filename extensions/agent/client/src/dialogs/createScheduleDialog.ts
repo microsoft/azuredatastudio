@@ -3,31 +3,30 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
- 'use strict';
+'use strict';
+
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { PickScheduleData } from '../data/pickScheduleData';
+import { CreateScheduleData } from '../data/createScheduleData';
 
-export class PickScheduleDialog {
+export class CreateScheduleDialog {
 
-	// TODO: localize
 	// Top level
-	private readonly DialogTitle: string = 'Job Schedules';
+	private readonly DialogTitle: string = 'New Schedule';
 	private readonly OkButtonText: string = 'OK';
 	private readonly CancelButtonText: string = 'Cancel';
-	private readonly SchedulesTabText: string = 'Schedules';
 
 	// UI Components
 	private dialog: sqlops.window.modelviewdialog.Dialog;
 	private schedulesTable: sqlops.TableComponent;
 
-	private model: PickScheduleData;
+	private model: CreateScheduleData;
 
-	private _onSuccess: vscode.EventEmitter<PickScheduleData> = new vscode.EventEmitter<PickScheduleData>();
-	public readonly onSuccess: vscode.Event<PickScheduleData> = this._onSuccess.event;
+	private _onSuccess: vscode.EventEmitter<CreateScheduleData> = new vscode.EventEmitter<CreateScheduleData>();
+	public readonly onSuccess: vscode.Event<CreateScheduleData> = this._onSuccess.event;
 
 	constructor(ownerUri: string) {
-		this.model = new PickScheduleData(ownerUri);
+		this.model = new CreateScheduleData(ownerUri);
 	}
 
 	public async showDialog() {

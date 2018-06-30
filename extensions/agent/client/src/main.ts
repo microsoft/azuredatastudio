@@ -6,12 +6,10 @@
 
 import vscode = require('vscode');
 import { MainController } from './mainController';
-import { ApiWrapper } from './apiWrapper';
 export let controller: MainController;
 
 export function activate(context: vscode.ExtensionContext) {
-	let apiWrapper = new ApiWrapper();
-	controller = new MainController(context, apiWrapper);
+	controller = new MainController(context);
 	controller.activate();
 }
 

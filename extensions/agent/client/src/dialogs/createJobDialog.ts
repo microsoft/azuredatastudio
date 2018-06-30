@@ -7,12 +7,12 @@ import * as sqlops from 'sqlops';
 import { CreateJobData } from '../data/createJobData';
 import { CreateStepDialog } from './createStepDialog';
 import { PickScheduleDialog } from './pickScheduleDialog';
+import { CreateAlertDialog } from './createAlertDialog';
 
 export class CreateJobDialog {
 
 	// TODO: localize
 	// Top level
-	//
 	private readonly DialogTitle: string = 'New Job';
 	private readonly OkButtonText: string = 'OK';
 	private readonly CancelButtonText: string = 'Cancel';
@@ -23,7 +23,6 @@ export class CreateJobDialog {
 	private readonly NotificationsTabText: string = 'Notifications';
 
 	// General tab strings
-	//
 	private readonly NameTextBoxLabel: string = 'Name';
 	private readonly OwnerTextBoxLabel: string = 'Owner';
 	private readonly CategoryDropdownLabel: string = 'Category';
@@ -43,7 +42,6 @@ export class CreateJobDialog {
 	private readonly DeleteStepButtonString: string = 'Delete';
 
 	// Notifications tab strings
-	//
 	private readonly NotificationsTabTopLabelString: string = 'Actions to perform when the job completes';
 	private readonly EmailCheckBoxString: string = 'Email';
 	private readonly PagerCheckBoxString: string = 'Page';
@@ -51,10 +49,14 @@ export class CreateJobDialog {
 	private readonly DeleteJobCheckBoxString: string = 'Automatically delete job';
 
 	// Schedules tab strings
+	private readonly SchedulesTopLabelString: string = 'Schedules list';
 	private readonly PickScheduleButtonString: string = 'Pick Schedule';
 
+	// Alerts tab strings
+	private readonly AlertsTopLabelString: string = 'Alerts list';
+	private readonly NewAlertButtonString: string = 'New Alert';
+
 	// UI Components
-	//
 	private dialog: sqlops.window.modelviewdialog.Dialog;
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
 	private stepsTab: sqlops.window.modelviewdialog.DialogTab;
@@ -63,7 +65,6 @@ export class CreateJobDialog {
 	private notificationsTab: sqlops.window.modelviewdialog.DialogTab;
 
 	// General tab controls
-	//
 	private nameTextBox: sqlops.InputBoxComponent;
 	private ownerTextBox: sqlops.InputBoxComponent;
 	private categoryDropdown: sqlops.DropDownComponent;
@@ -93,6 +94,10 @@ export class CreateJobDialog {
 	// Schedule tab controls
 	private schedulesTable: sqlops.TableComponent;
 	private pickScheduleButton: sqlops.ButtonComponent;
+
+	// Alert tab controls
+	private alertsTable: sqlops.TableComponent;
+	private newAlertButton: sqlops.ButtonComponent;
 
 	private model: CreateJobData;
 
@@ -225,6 +230,38 @@ export class CreateJobDialog {
 	}
 
 	private initializeAlertsTab() {
+		this.alertsTab.registerContent(async view => {
+			this.alertsTable = view.modelBuilder.table()
+				.withProperties({
+					columns: [
+						'Alert Name'
+					],
+					data: [],
+					height: 600,
+					width: 400
+				}).component();
+
+			this.newAlertButton = view.modelBuilder.button().withProperties({
+				label: this.NewAlertButtonString,
+				width: 80
+			}).component();
+
+			this.newAlertButton.onDidClick((e)=>{
+				let alertDialog = new CreateAlertDialog(this.model.ownerUri);
+				alertDialog.onSuccess((dialogModel) => {
+				});
+				alertDialog.showDialog();
+			});
+
+			let formModel = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.alertsTable,
+					title: this.AlertsTopLabelString,
+					actions: [this.newAlertButton]
+				}]).withLayout({ width: '100%' }).component();
+
+			await view.initializeModel(formModel);
+		});
 	}
 
 	private initializeSchedulesTab() {
@@ -259,7 +296,7 @@ export class CreateJobDialog {
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.schedulesTable,
-					title: this.JobStepsTopLabelString,
+					title: this.SchedulesTopLabelString,
 					actions: [this.pickScheduleButton]
 				}]).withLayout({ width: '100%' }).component();
 

@@ -7,7 +7,6 @@
 
 import * as sqlops from 'sqlops';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { Table } from 'sql/base/browser/ui/table/table';
 import { JobCacheObject } from './jobManagementService';
 
 export const SERVICE_ID = 'jobManagementService';
@@ -20,6 +19,12 @@ export interface IJobManagementService {
 	registerProvider(providerId: string, provider: sqlops.AgentServicesProvider): void;
 
 	getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult>;
+
+	getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult>;
+
+	getOperators(connectionUri: string): Thenable<sqlops.AgentOperatorsResult>;
+
+	getProxies(connectionUri: string): Thenable<sqlops.AgentProxiesResult>;
 
 	getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>;
 

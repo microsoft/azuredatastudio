@@ -29,6 +29,25 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
+	public getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getAlerts(connectionUri);
+		});
+	}
+
+	public getOperators(connectionUri: string): Thenable<sqlops.AgentOperatorsResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getOperators(connectionUri);
+		});
+	}
+
+	public getProxies(connectionUri: string): Thenable<sqlops.AgentProxiesResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getProxies(connectionUri);
+		});
+	}
+
+
 	public getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getJobHistory(connectionUri, jobID);
