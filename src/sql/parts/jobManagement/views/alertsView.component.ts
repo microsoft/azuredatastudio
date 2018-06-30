@@ -31,11 +31,14 @@ export const ROW_HEIGHT: number = 45;
 	templateUrl: decodeURI(require.toUrl('./alertsView.component.html')),
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => AlertsViewComponent) }],
 })
-
 export class AlertsViewComponent implements AfterContentChecked {
 
 	private columns: Array<Slick.Column<any>> = [
 		{ name: nls.localize('jobAlertColumns.name', 'Name'), field: 'name', width: 200, id: 'name' },
+		{ name: nls.localize('jobAlertColumns.lastOccurrenceDate', 'Last Occurrence'), field: 'lastOccurrenceDate', width: 200, id: 'lastOccurrenceDate' },
+		{ name: nls.localize('jobAlertColumns.enabled', 'Enabled'), field: 'enabled', width: 200, id: 'enabled' },
+		{ name: nls.localize('jobAlertColumns.databaseName', 'Database Name'), field: 'databaseName', width: 200, id: 'databaseName' },
+		{ name: nls.localize('jobAlertColumns.categoryName', 'Category Name'), field: 'categoryName', width: 200, id: 'categoryName' },
 	];
 
 	private options: Slick.GridOptions<any> = {
@@ -57,7 +60,6 @@ export class AlertsViewComponent implements AfterContentChecked {
 	private _serverName: string;
 	private _isCloud: boolean;
 	private _showProgressWheel: boolean;
-	//private _tabHeight: number;
 
 	private NewAlertText: string = nls.localize('jobAlertToolbar-NewJob', "New Alert");
 	private RefreshText: string = nls.localize('jobAlertToolbar-Refresh', "Refresh");
@@ -126,15 +128,19 @@ export class AlertsViewComponent implements AfterContentChecked {
 	}
 
 	private onAlertsAvailable(alerts: sqlops.AgentAlertInfo[]) {
-		let alertsViews: any = alerts.map((alert) => {
+		let items: any = alerts.map((item) => {
 			return {
-				id: alert.id,
-				name: alert.name
+				id: item.id,
+				name: item.name,
+				lastOccurrenceDate: item.lastOccurrenceDate,
+				enabled: item.isEnabled,
+				databaseName: item.databaseName,
+				categoryName: item.categoryName
 			};
 		});
 
 		this.dataView.beginUpdate();
-		this.dataView.setItems(alertsViews);
+		this.dataView.setItems(items);
 		this.dataView.endUpdate();
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();

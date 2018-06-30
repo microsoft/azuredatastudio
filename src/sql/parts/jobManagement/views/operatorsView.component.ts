@@ -35,7 +35,9 @@ export const ROW_HEIGHT: number = 45;
 export class OperatorsViewComponent implements AfterContentChecked {
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobAlertColumns.name', 'Name'), field: 'name', width: 200, id: 'name' },
+		{ name: nls.localize('jobOperatorsView.name', 'Name'), field: 'name', width: 200, id: 'name' },
+		{ name: nls.localize('jobOperatorsView.emailAddress', 'Email Address'), field: 'emailAddress', width: 200, id: 'emailAddress' },
+		{ name: nls.localize('jobOperatorsView.enabled', 'Enabled'), field: 'enabled', width: 200, id: 'enabled' },
 	];
 
 	private options: Slick.GridOptions<any> = {
@@ -128,7 +130,9 @@ export class OperatorsViewComponent implements AfterContentChecked {
 		let items: any = operators.map((item) => {
 			return {
 				id: item.id,
-				name: item.name
+				name: item.name,
+				emailAddress: item.emailAddress,
+				enabled: item.enabled
 			};
 		});
 

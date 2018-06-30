@@ -35,7 +35,8 @@ export const ROW_HEIGHT: number = 45;
 export class ProxiesViewComponent implements AfterContentChecked {
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobAlertColumns.name', 'Name'), field: 'name', width: 200, id: 'name' },
+		{ name: nls.localize('jobProxiesView.accountName', 'Account Name'), field: 'accountName', width: 200, id: 'accountName' },
+		{ name: nls.localize('jobProxiesView.credentialName', 'Credential Name'), field: 'credentialName', width: 200, id: 'credentialName' },
 	];
 
 	private options: Slick.GridOptions<any> = {
@@ -128,7 +129,8 @@ export class ProxiesViewComponent implements AfterContentChecked {
 		let items: any = proxies.map((item) => {
 			return {
 				id: item.id,
-				name: item.accountName
+				accountName: item.accountName,
+				credentialName: item.credentialName
 			};
 		});
 
