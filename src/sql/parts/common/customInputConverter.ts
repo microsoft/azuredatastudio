@@ -38,13 +38,13 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		let uri: URI = getQueryEditorFileUri(input);
 		if (uri) {
 			const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, uri.toString());
-			let queryInput: QueryInput = instantiationService.createInstance(QueryInput, input.getName(), '', input, queryResultsInput, undefined);
+			let queryInput: QueryInput = instantiationService.createInstance(QueryInput, '', input, queryResultsInput, undefined);
 			return queryInput;
 		}
 
 		//QueryPlanInput
 		uri = getQueryPlanEditorUri(input);
-		if(uri) {
+		if (uri) {
 			let queryPlanXml: string = fs.readFileSync(uri.fsPath);
 			let queryPlanInput: QueryPlanInput = instantiationService.createInstance(QueryPlanInput, queryPlanXml, 'aaa', undefined);
 			return queryPlanInput;
@@ -60,14 +60,14 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
  */
 export function getSupportedInputResource(input: IEditorInput): URI {
 	if (input instanceof UntitledEditorInput) {
-		let untitledCast: UntitledEditorInput = <UntitledEditorInput> input;
+		let untitledCast: UntitledEditorInput = <UntitledEditorInput>input;
 		if (untitledCast) {
 			return untitledCast.getResource();
 		}
 	}
 
 	if (input instanceof FileEditorInput) {
-		let fileCast: FileEditorInput  = <FileEditorInput> input;
+		let fileCast: FileEditorInput = <FileEditorInput>input;
 		if (fileCast) {
 			return fileCast.getResource();
 		}
@@ -99,7 +99,7 @@ function getQueryEditorFileUri(input: EditorInput): URI {
 		if (uri) {
 			let isValidUri: boolean = !!uri && !!uri.toString;
 
-			if (isValidUri && (hasFileExtension(sqlFileTypes, input, true) || hasSqlFileMode(input)) ) {
+			if (isValidUri && (hasFileExtension(sqlFileTypes, input, true) || hasSqlFileMode(input))) {
 				return uri;
 			}
 		}
@@ -120,7 +120,7 @@ function getQueryPlanEditorUri(input: EditorInput): URI {
 	// If this editor is not already of type queryinput
 	if (!(input instanceof QueryPlanInput)) {
 		let uri: URI = getSupportedInputResource(input);
-		if(uri) {
+		if (uri) {
 			if (hasFileExtension(sqlPlanFileTypes, input, false)) {
 				return uri;
 			}
@@ -136,7 +136,7 @@ function getQueryPlanEditorUri(input: EditorInput): URI {
  */
 function hasSqlFileMode(input: EditorInput): boolean {
 	if (input instanceof UntitledEditorInput) {
-		let untitledCast: UntitledEditorInput = <UntitledEditorInput> input;
+		let untitledCast: UntitledEditorInput = <UntitledEditorInput>input;
 		return untitledCast && (untitledCast.getModeId() === undefined || untitledCast.getModeId() === sqlModeId);
 	}
 
