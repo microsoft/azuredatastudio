@@ -24,8 +24,8 @@ export interface DialogComponentParams extends IBootstrapParams {
 	selector: 'dialog-modelview-container',
 	providers: [],
 	template: `
-		<div class="dialogContainer">
-			<div class="dialogModal-wizardHeader" *ngIf="_dialogPane && _dialogPane.displayPageTitle">
+		<div class="dialogContainer" *ngIf="_dialogPane && _dialogPane.displayPageTitle">
+			<div class="dialogModal-wizardHeader">
 				<div *ngIf="_dialogPane.pageNumber" class="wizardPageNumber">Step {{_dialogPane.pageNumber}}</div>
 				<h1 class="wizardPageTitle">{{_dialogPane.title}}</h1>
 				<div *ngIf="_dialogPane.description">{{_dialogPane.description}}</div>
@@ -33,6 +33,8 @@ export interface DialogComponentParams extends IBootstrapParams {
 			<modelview-content [modelViewId]="modelViewId">
 			</modelview-content>
 		</div>
+		<modelview-content *ngIf="!_dialogPane || !_dialogPane.displayPageTitle" [modelViewId]="modelViewId">
+		</modelview-content>
 	`
 })
 export class DialogContainer implements AfterContentInit {
