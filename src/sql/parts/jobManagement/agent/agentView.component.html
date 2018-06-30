@@ -17,11 +17,19 @@
 			</div>
 		</ng-template>
 	</tab>
-	<tab [title]="" class="fullsize" [identifier]="alertsTabIdentifier"
-		 [iconClass]="jobsIconClass">
+	<tab [title]="alertsComponentTitle" class="fullsize" [identifier]="alertsTabIdentifier"
+		 [iconClass]="alertsIconClass">
 		 <ng-template>
 			<div id="alertsDiv" class="fullsize">
 				<jobalertsview-component></jobalertsview-component>
+			</div>
+		</ng-template>
+	</tab>
+	<tab [title]="proxiesComponentTitle" class="fullsize" [identifier]="proxiesTabIdentifier"
+		 [iconClass]="proxiesIconClass">
+		 <ng-template>
+			<div id="proxiesDiv" class="fullsize">
+				<jobproxiesview-component></jobproxiesview-component>
 			</div>
 		</ng-template>
 	</tab>

@@ -1211,6 +1211,7 @@ declare module 'sqlops' {
 
 	export interface AgentAlertInfo {
 		id: number;
+		name: string;
 		delayBetweenResponses: number;
 		eventDescriptionKeyword: string;
 		eventSource: string;

@@ -51,8 +51,9 @@ import { ControlHostContent } from 'sql/parts/dashboard/contents/controlHostCont
 import { DashboardControlHostContainer } from 'sql/parts/dashboard/containers/dashboardControlHostContainer.component';
 import { JobsViewComponent } from 'sql/parts/jobManagement/views/jobsView.component';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
+import { AlertsViewComponent } from 'sql/parts/jobManagement/views/alertsView.component';
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
-import { JobAlertsViewComponent } from 'sql/parts/jobManagement/views/jobAlertsView.component';
+import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
@@ -60,7 +61,8 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
 	DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
 	ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
-	JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, JobAlertsViewComponent,
+	JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, AlertsViewComponent,
+	ProxiesViewComponent,
 	DashboardModelViewContainer, ModelComponentWrapper, Checkbox, SelectBox, InputBox,];
 
 /* Panel */

@@ -178,6 +178,22 @@ jobhistory-component {
 	background-image: url('./job_inverse.svg');
 }
 
+.alertsview-icon {
+    background-image: url('./alert.svg');
+}
+
+.vs-dark .alertsview-icon {
+	background-image: url('./alert_inverse.svg');
+}
+
+.proxiesview-icon {
+    background-image: url('./proxy.svg');
+}
+
+.vs-dark .proxiesview-icon {
+	background-image: url('./proxy_inverse.svg');
+}
+
 agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.even > .slick-cell,
 agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.odd > .slick-cell {
     cursor: pointer;

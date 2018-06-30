@@ -96,7 +96,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private filterValueMap: { [columnName: string]: string[]; } = {};
 	private sortingStylingMap: { [columnName: string]: any; } = {};
 
-	private NewJobText: string = nls.localize("jobsToolbar-NewJob", "New job");
+	private NewJobText: string = nls.localize("jobsToolbar-NewJob", "New Job");
 	private RefreshText: string = nls.localize("jobsToolbar-Refresh", "Refresh");
 
 	constructor(
@@ -145,13 +145,13 @@ export class JobsViewComponent implements AfterContentChecked {
 			this.onFirstVisible(false);
 			this.isRefreshing = true;
 			this._agentViewComponent.refresh = false;
-		} else if (this.isVisible === true && this._agentViewComponent.refresh === false) {
+		} /*else if (this.isVisible === true && this._agentViewComponent.refresh === false) {
 			if (!this.isRefreshing) {
 				this._showProgressWheel = true;
 				this.onFirstVisible(true);
 			}
 			this.isRefreshing = false;
-		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
+		}*/ else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
 			this.isVisible = false;
 		}
 	}
@@ -831,7 +831,7 @@ export class JobsViewComponent implements AfterContentChecked {
 
 	private openCreateJobDialog() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._commandService.executeCommand("agent.openCreateJobDialog", ownerUri);
+		this._commandService.executeCommand('agent.openCreateJobDialog', ownerUri);
 	}
 
 	private refreshJobs() {

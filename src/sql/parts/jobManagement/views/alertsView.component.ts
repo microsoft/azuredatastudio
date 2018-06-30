@@ -28,11 +28,11 @@ export const ROW_HEIGHT: number = 45;
 
 @Component({
 	selector: VIEW_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./jobAlertsView.component.html')),
-	providers: [{ provide: TabChild, useExisting: forwardRef(() => JobAlertsViewComponent) }],
+	templateUrl: decodeURI(require.toUrl('./alertsView.component.html')),
+	providers: [{ provide: TabChild, useExisting: forwardRef(() => AlertsViewComponent) }],
 })
 
-export class JobAlertsViewComponent implements AfterContentChecked {
+export class AlertsViewComponent implements AfterContentChecked {
 
 	private columns: Array<Slick.Column<any>> = [
 		{ name: nls.localize('jobAlertColumns.name', 'Name'), field: 'name', width: 200, id: 'name' },
@@ -53,13 +53,13 @@ export class JobAlertsViewComponent implements AfterContentChecked {
 	private isInitialized: boolean = false;
 	private isRefreshing: boolean = false;
 	private _table: Table<any>;
-	public jobs: sqlops.AgentJobInfo[];
+	public alerts: sqlops.AgentAlertInfo[];
 	private _serverName: string;
 	private _isCloud: boolean;
 	private _showProgressWheel: boolean;
 	//private _tabHeight: number;
 
-	private NewAlertText: string = nls.localize('jobAlertToolbar-NewJob', "New alert");
+	private NewAlertText: string = nls.localize('jobAlertToolbar-NewJob', "New Alert");
 	private RefreshText: string = nls.localize('jobAlertToolbar-Refresh', "Refresh");
 
 	constructor(
@@ -91,12 +91,6 @@ export class JobAlertsViewComponent implements AfterContentChecked {
 			this.onFirstVisible(false);
 			this.isRefreshing = true;
 			this._agentViewComponent.refresh = false;
-		} else if (this.isVisible === true && this._agentViewComponent.refresh === false) {
-			if (!this.isRefreshing) {
-				this._showProgressWheel = true;
-				this.onFirstVisible(true);
-			}
-			this.isRefreshing = false;
 		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
 			this.isVisible = false;
 		}
@@ -123,32 +117,29 @@ export class JobAlertsViewComponent implements AfterContentChecked {
 		this._table.grid.setData(this.dataView, true);
 
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getJobs(ownerUri).then((result) => {
-			if (result && result.jobs) {
-				self.jobs = result.jobs;
-			//	self.onJobsAvailable(result.jobs);
+		this._jobManagementService.getAlerts(ownerUri).then((result) => {
+			if (result && result.alerts) {
+				self.alerts = result.alerts;
+				self.onAlertsAvailable(result.alerts);
 			}
 		});
 	}
-/*
-	private onAlertsAvailable(alert: sqlops.AgentAlertInfo[]) {
+
+	private onAlertsAvailable(alerts: sqlops.AgentAlertInfo[]) {
 		// don't do anything if the view isn't visible
-		if (!this.isVisible) {
-			return;
-		}
+		// if (!this.isVisible) {
+		// 	return;
+		// }
 
-		let jobViews: any;
-		let start: boolean = true;
-
-		jobViews = jobs.map((job) => {
+		let alertsViews: any = alerts.map((alert) => {
 			return {
-				id: job.jobId,
-				name: job.name
+				id: alert.id,
+				name: alert.name
 			};
 		});
 
 		this.dataView.beginUpdate();
-		this.dataView.setItems(jobViews);
+		this.dataView.setItems(alertsViews);
 		this.dataView.endUpdate();
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
@@ -156,37 +147,10 @@ export class JobAlertsViewComponent implements AfterContentChecked {
 		this._showProgressWheel = false;
 		this._cd.detectChanges();
 	}
-*/
-
-	private renderName(row, cell, value, columnDef, dataContext) {
-		let resultIndicatorClass: string;
-		switch (dataContext.lastRunOutcome) {
-			case ('Succeeded'):
-				resultIndicatorClass = 'jobview-jobnameindicatorsuccess';
-				break;
-			case ('Failed'):
-				resultIndicatorClass = 'jobview-jobnameindicatorfailure';
-				break;
-			case ('Canceled'):
-				resultIndicatorClass = 'jobview-jobnameindicatorcancel';
-				break;
-			case ('Status Unknown'):
-				resultIndicatorClass = 'jobview-jobnameindicatorunknown';
-				break;
-			default:
-				resultIndicatorClass = 'jobview-jobnameindicatorfailure';
-				break;
-		}
-
-		return '<table class="jobview-jobnametable"><tr class="jobview-jobnamerow">' +
-			'<td nowrap class=' + resultIndicatorClass + '></td>' +
-			'<td nowrap class="jobview-jobnametext">' + dataContext.name + '</td>' +
-			'</tr></table>';
-	}
 
 	private openCreateJobDialog() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._commandService.executeCommand('agent.openCreateJobDialog', ownerUri);
+		this._commandService.executeCommand('agent.openCreateAlertDialog', ownerUri);
 	}
 
 	private refreshJobs() {
