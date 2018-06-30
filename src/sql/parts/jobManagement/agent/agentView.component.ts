@@ -35,6 +35,7 @@ export class AgentViewComponent {
 	private readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
 	private readonly alertsComponentTitle: string = nls.localize('jobview.Alerts', "Alerts");
 	private readonly proxiesComponentTitle: string = nls.localize('jobview.Proxies', "Proxies");
+	private readonly operatorsComponentTitle: string = nls.localize('jobview.Operators', "Operators");
 
 	private _showHistory: boolean = false;
 	private _jobId: string = null;
@@ -45,6 +46,7 @@ export class AgentViewComponent {
 	public jobsIconClass: string = 'jobsview-icon';
 	public alertsIconClass: string = 'alertsview-icon';
 	public proxiesIconClass: string = 'proxiesview-icon';
+	public operatorsIconClass: string = 'operatorsview-icon';
 
 	// tslint:disable-next-line:no-unused-variable
 	private readonly panelOpt: IPanelOptions = {

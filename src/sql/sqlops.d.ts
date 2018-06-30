@@ -1328,15 +1328,15 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentProxiesResult extends ResultStatus {
-		operators: AgentOperatorInfo[];
+		proxies: AgentProxyInfo[];
 	}
 
 	export interface CreateAgentProxyResult extends ResultStatus {
-		operator: AgentOperatorInfo;
+		proxy: AgentProxyInfo;
 	}
 
 	export interface UpdateAgentProxyResult extends ResultStatus {
-		operator: AgentOperatorInfo;
+		proxy: AgentProxyInfo;
 	}
 
 	export interface AgentJobSchedulesResult extends ResultStatus {

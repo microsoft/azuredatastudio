@@ -194,6 +194,14 @@ jobhistory-component {
 	background-image: url('./proxy_inverse.svg');
 }
 
+.operatorsview-icon {
+    background-image: url('./operator.svg');
+}
+
+.vs-dark .operatorsview-icon {
+	background-image: url('./operator_inverse.svg');
+}
+
 agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.even > .slick-cell,
 agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.odd > .slick-cell {
     cursor: pointer;
@@ -279,6 +287,18 @@ table.jobprevruns > tbody {
 
 
 #alertsDiv .jobalertsview-grid {
+    height: 94.7%;
+	width : 100%;
+    display: block;
+}
+
+#operatorsDiv .joboperatorsview-grid {
+    height: 94.7%;
+	width : 100%;
+    display: block;
+}
+
+#proxiesDiv .jobproxiesview-grid {
     height: 94.7%;
 	width : 100%;
     display: block;

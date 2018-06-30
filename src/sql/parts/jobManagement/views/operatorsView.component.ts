@@ -23,16 +23,16 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-export const VIEW_SELECTOR: string = 'jobproxiesview-component';
+export const VIEW_SELECTOR: string = 'joboperatorsview-component';
 export const ROW_HEIGHT: number = 45;
 
 @Component({
 	selector: VIEW_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./proxiesView.component.html')),
-	providers: [{ provide: TabChild, useExisting: forwardRef(() => ProxiesViewComponent) }],
+	templateUrl: decodeURI(require.toUrl('./operatorsView.component.html')),
+	providers: [{ provide: TabChild, useExisting: forwardRef(() => OperatorsViewComponent) }],
 })
 
-export class ProxiesViewComponent implements AfterContentChecked {
+export class OperatorsViewComponent implements AfterContentChecked {
 
 	private columns: Array<Slick.Column<any>> = [
 		{ name: nls.localize('jobAlertColumns.name', 'Name'), field: 'name', width: 200, id: 'name' },
@@ -48,18 +48,18 @@ export class ProxiesViewComponent implements AfterContentChecked {
 
 	private dataView: any;
 
-	@ViewChild('proxiesgrid') _gridEl: ElementRef;
+	@ViewChild('operatorsgrid') _gridEl: ElementRef;
 	private isVisible: boolean = false;
 	private isInitialized: boolean = false;
 	private isRefreshing: boolean = false;
 	private _table: Table<any>;
-	public proxies: sqlops.AgentProxyInfo[];
+	public operators: sqlops.AgentOperatorInfo[];
 	private _serverName: string;
 	private _isCloud: boolean;
 	private _showProgressWheel: boolean;
 
-	private NewProxyText: string = nls.localize('jobProxyToolbar-NewItem', "New Proxy");
-	private RefreshText: string = nls.localize('jobProxyToolbar-Refresh', "Refresh");
+	private NewOperatorText: string = nls.localize('jobOperatorToolbar-NewItem', "New Operator");
+	private RefreshText: string = nls.localize('jobOperatorToolbar-Refresh', "Refresh");
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
@@ -116,19 +116,19 @@ export class ProxiesViewComponent implements AfterContentChecked {
 		this._table.grid.setData(this.dataView, true);
 
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getProxies(ownerUri).then((result) => {
-			if (result && result.proxies) {
-				self.proxies = result.proxies;
-				self.onProxiesAvailable(result.proxies);
+		this._jobManagementService.getOperators(ownerUri).then((result) => {
+			if (result && result.operators) {
+				self.operators = result.operators;
+				self.onOperatorsAvailable(result.operators);
 			}
 		});
 	}
 
-	private onProxiesAvailable(proxies: sqlops.AgentProxyInfo[]) {
-		let items: any = proxies.map((item) => {
+	private onOperatorsAvailable(operators: sqlops.AgentOperatorInfo[]) {
+		let items: any = operators.map((item) => {
 			return {
 				id: item.id,
-				name: item.accountName
+				name: item.name
 			};
 		});
 
@@ -142,9 +142,9 @@ export class ProxiesViewComponent implements AfterContentChecked {
 		this._cd.detectChanges();
 	}
 
-	private openCreateProxyDialog() {
+	private openCreateOperatorDialog() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._commandService.executeCommand('agent.openCreateProxyDialog', ownerUri);
+		this._commandService.executeCommand('agent.openCreateOperatorDialog', ownerUri);
 	}
 
 	private refreshJobs() {

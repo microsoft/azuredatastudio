@@ -25,6 +25,14 @@
 			</div>
 		</ng-template>
 	</tab>
+	<tab [title]="operatorsComponentTitle" class="fullsize" [identifier]="operatorsTabIdentifier"
+		 [iconClass]="operatorsIconClass">
+		 <ng-template>
+			<div id="operatorsDiv" class="fullsize">
+				<joboperatorsview-component></joboperatorsview-component>
+			</div>
+		</ng-template>
+	</tab>
 	<tab [title]="proxiesComponentTitle" class="fullsize" [identifier]="proxiesTabIdentifier"
 		 [iconClass]="proxiesIconClass">
 		 <ng-template>

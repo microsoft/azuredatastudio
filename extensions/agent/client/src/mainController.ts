@@ -21,11 +21,8 @@ export class MainController {
     }
 
     /**
-     * Deactivates the extension
+     * Activates the extension
      */
-    public deactivate(): void {
-    }
-
     public activate(): void {
         vscode.commands.registerCommand('agent.openCreateJobDialog', (ownerUri: string) => {
             let dialog = new CreateJobDialog(ownerUri);
@@ -43,9 +40,15 @@ export class MainController {
             let dialog = new CreateAlertDialog(ownerUri);
             dialog.showDialog();
         });
-	}
+        vscode.commands.registerCommand('agent.openCreateOperatorDialog', (ownerUri: string) => {
+        });
+        vscode.commands.registerCommand('agent.openCreateProxyDialog', (ownerUri: string) => {
+        });
+    }
 
-	 private updateJobStepDialog() {
-
-	 }
+    /**
+     * Deactivates the extension
+     */
+    public deactivate(): void {
+    }
 }
