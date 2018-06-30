@@ -27,6 +27,7 @@ export interface IDashboardTab {
 	container?: object;
 	when?: string;
 	alwaysShow?: boolean;
+	isHomeTab?: boolean;
 }
 
 export interface IDashboardRegistry {
