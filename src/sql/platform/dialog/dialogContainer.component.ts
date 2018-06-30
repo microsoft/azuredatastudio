@@ -24,21 +24,13 @@ export interface DialogComponentParams extends IBootstrapParams {
 	selector: 'dialog-modelview-container',
 	providers: [],
 	template: `
-		<div class="dialogContainer">
-			<div class="dialogModal-wizardHeader" *ngIf="_dialogPane && _dialogPane.displayPageTitle">
-				<div *ngIf="_dialogPane.pageNumber" class="wizardPageNumber">Step {{_dialogPane.pageNumber}}</div>
-				<h1 class="wizardPageTitle">{{_dialogPane.title}}</h1>
-				<div *ngIf="_dialogPane.description">{{_dialogPane.description}}</div>
-			</div>
-			<modelview-content [modelViewId]="modelViewId">
-			</modelview-content>
-		</div>
+		<modelview-content [modelViewId]="modelViewId">
+		</modelview-content>
 	`
 })
 export class DialogContainer implements AfterContentInit {
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
-	private _dialogPane: DialogPane;
 
 	public modelViewId: string;
 	@ViewChild(ModelViewContent) private _modelViewContent: ModelViewContent;
@@ -51,7 +43,6 @@ export class DialogContainer implements AfterContentInit {
 				this.layout();
 			}
 		});
-		this._dialogPane = this._params.dialogPane;
 	}
 
 	ngAfterContentInit(): void {

@@ -106,7 +106,7 @@ export class DialogPane extends Disposable implements IThemable {
 		bootstrapAngular(this._instantiationService,
 			DialogModule,
 			bodyContainer,
-			'dialog-modelview-container',
+			this.displayPageTitle ? 'wizard-modelview-container' : 'dialog-modelview-container',
 			{
 				modelViewId: modelViewId,
 				validityChangedCallback: (valid: boolean) => {

@@ -12,7 +12,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { DialogContainer } from 'sql/platform/dialog/dialogContainer.component';
+import { DialogContainer, DialogComponentParams } from 'sql/platform/dialog/dialogContainer.component';
+import { WizardPageContainer } from 'sql/platform/dialog/wizardPageContainer.component';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
@@ -26,7 +27,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
 
-export const DialogModule = (params, selector: string, instantiationService: IInstantiationService): any => {
+export const DialogModule = (params: DialogComponentParams, selector: string, instantiationService: IInstantiationService): any => {
 
 	/* Model-backed components */
 	let extensionComponents = Registry.as<IComponentRegistry>(Extensions.ComponentContribution).getAllCtors();
@@ -37,12 +38,13 @@ export const DialogModule = (params, selector: string, instantiationService: IIn
 			SelectBox,
 			InputBox,
 			DialogContainer,
+			WizardPageContainer,
 			ModelViewContent,
 			ModelComponentWrapper,
 			ComponentHostDirective,
 			...extensionComponents
 		],
-		entryComponents: [DialogContainer, ...extensionComponents],
+		entryComponents: [WizardPageContainer, DialogContainer, ...extensionComponents],
 		imports: [
 			FormsModule,
 			CommonModule,
@@ -65,7 +67,7 @@ export const DialogModule = (params, selector: string, instantiationService: IIn
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
-			const factoryWrapper: any = this._resolver.resolveComponentFactory(DialogContainer);
+			const factoryWrapper: any = this._resolver.resolveComponentFactory(params.dialogPane.displayPageTitle ? WizardPageContainer : DialogContainer);
 			factoryWrapper.factory.selector = this.selector;
 			appRef.bootstrap(factoryWrapper);
 		}
