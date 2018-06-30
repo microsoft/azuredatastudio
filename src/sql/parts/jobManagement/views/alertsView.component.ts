@@ -126,11 +126,6 @@ export class AlertsViewComponent implements AfterContentChecked {
 	}
 
 	private onAlertsAvailable(alerts: sqlops.AgentAlertInfo[]) {
-		// don't do anything if the view isn't visible
-		// if (!this.isVisible) {
-		// 	return;
-		// }
-
 		let alertsViews: any = alerts.map((alert) => {
 			return {
 				id: alert.id,

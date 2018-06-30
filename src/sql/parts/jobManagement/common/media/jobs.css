@@ -31,7 +31,7 @@ jobhistory-component {
     border-bottom: 3px solid #444444;
 }
 
-#jobsDiv .jobview-grid {
+.jobview-grid {
     height: 94.7%;
 	width : 100%;
     display: block;
@@ -42,6 +42,18 @@ jobhistory-component {
 }
 
 #jobsDiv .slick-header-column {
+	background-color: transparent !important;
+	background: white !important;
+    border: 0px !important;
+    font-weight: bold;
+    font-size: larger;
+}
+
+.vs-dark #agentViewDiv .slick-header-column {
+	background: #333333 !important;
+}
+
+#agentViewDiv .slick-header-column {
 	background-color: transparent !important;
 	background: white !important;
     border: 0px !important;
@@ -107,14 +119,14 @@ jobhistory-component {
     border-bottom: none;
 }
 
-#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.l1.r1.error-row {
+.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.l1.r1.error-row {
     width: 100%;
     opacity: 1;
     font-weight: 700;
     color: orangered;
 }
 
-#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row {
+.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row {
     opacity: 1;
 }
 
