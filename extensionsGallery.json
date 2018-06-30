@@ -349,14 +349,14 @@
 				},
 				"versions": [
 				  {
-							"version": "0.2.1",
-							"lastUpdated": "04/21/2018",
+							"version": "0.2.2",
+							"lastUpdated": "06/29/2018",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 							{
 								"assetType": "Microsoft.SQLOps.DownloadPage",
-								"source": "https://github.com/Matticusau/sqlops-mssql-db-insights/releases/tag/0.2.1"
+								"source": "https://github.com/Matticusau/sqlops-mssql-db-insights/releases/tag/0.2.2"
 							},
 				   {
 								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
