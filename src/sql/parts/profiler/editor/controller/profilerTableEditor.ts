@@ -21,12 +21,12 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
-import { Builder } from 'vs/base/browser/builder';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Dimension } from 'vs/base/browser/dom';
+import { textFormatter } from 'sql/parts/grid/services/sharedServices';
 
 export class ProfilerTableEditor extends BaseEditor implements IProfilerController, ITableController {
 
@@ -89,7 +89,10 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 			this._columnListener.dispose();
 		}
 		this._columnListener = input.onColumnsChanged(e => {
-			this._profilerTable.columns = e;
+			this._profilerTable.columns = e.map(e => {
+				e.formatter = textFormatter;
+				return e;
+			});
 			this._profilerTable.autosizeColumns();
 		});
 		if (this._stateListener) {
