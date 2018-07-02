@@ -60,6 +60,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	handler: CommandsRegistry.getCommand('profiler.newProfiler').handler
 });
 
+/*
 CommandsRegistry.registerCommand({
 	id: 'profiler.start',
 	handler: (accessor: ServicesAccessor) => {
@@ -89,9 +90,10 @@ CommandsRegistry.registerCommand({
 		return TPromise.as(false);
 	}
 });
+*/
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: 'profiler.toggleStart',
+	id: 'profiler.toggleStartStop',
 	weight: KeybindingsRegistry.WEIGHT.editorContrib(),
 	when: undefined,
 	primary: KeyMod.Alt | KeyCode.KEY_S,
