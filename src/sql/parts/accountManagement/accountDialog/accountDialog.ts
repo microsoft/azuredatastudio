@@ -130,7 +130,7 @@ export class AccountDialog extends Modal {
 
 		this._noaccountViewContainer = DOM.$('div.no-account-view');
 		let noAccountTitle = DOM.append(this._noaccountViewContainer, DOM.$('.no-account-view-label'));
-		let noAccountLabel = localize('accountDialog.noAccountLabel', 'There is no linked account. Please add an acount.');
+		let noAccountLabel = localize('accountDialog.noAccountLabel', 'There is no linked account. Please add an account.');
 		noAccountTitle.innerHTML = noAccountLabel;
 
 		// Show the add account button for the first provider
