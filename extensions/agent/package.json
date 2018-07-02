@@ -14,7 +14,7 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./client/out/main",
+  "main": "./out/main",
   "repository": {
     "type": "git",
     "url": "https://github.com/Microsoft/sqlopsstudio.git"
