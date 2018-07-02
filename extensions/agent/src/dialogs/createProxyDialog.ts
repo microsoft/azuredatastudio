@@ -7,12 +7,12 @@
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { CreateAlertData } from '../data/createAlertData';
+import { CreateProxyData } from '../data/createProxyData';
 
-export class CreateAlertDialog {
+export class CreateProxyDialog {
 
 	// Top level
-	private readonly DialogTitle: string = 'Create Alert';
+	private readonly DialogTitle: string = 'Create Proxy';
 	private readonly OkButtonText: string = 'OK';
 	private readonly CancelButtonText: string = 'Cancel';
 	private readonly GeneralTabText: string = 'Response';
@@ -52,13 +52,13 @@ export class CreateAlertDialog {
 	// History tab controls
 	private resetCountTextBox: sqlops.InputBoxComponent;
 
-	private model: CreateAlertData;
+	private model: CreateProxyData;
 
-	private _onSuccess: vscode.EventEmitter<CreateAlertData> = new vscode.EventEmitter<CreateAlertData>();
-	public readonly onSuccess: vscode.Event<CreateAlertData> = this._onSuccess.event;
+	private _onSuccess: vscode.EventEmitter<CreateProxyData> = new vscode.EventEmitter<CreateProxyData>();
+	public readonly onSuccess: vscode.Event<CreateProxyData> = this._onSuccess.event;
 
 	constructor(ownerUri: string) {
-		this.model = new CreateAlertData(ownerUri);
+		this.model = new CreateProxyData(ownerUri);
 	}
 
 	public async showDialog() {
