@@ -1131,7 +1131,7 @@ declare module 'sqlops' {
 		frequencyTypes: FrequencyTypes;
 		frequencySubDayTypes: FrequencySubDayTypes;
 		frequencySubDayInterval: number;
-		frequencyRelativeIntervals; FrequencyRelativeIntervals;
+		frequencyRelativeIntervals: FrequencyRelativeIntervals;
 		frequencyRecurrenceFactor: number;
 		frequencyInterval: number;
 		dateCreated: string;
