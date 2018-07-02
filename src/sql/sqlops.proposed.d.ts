@@ -35,6 +35,7 @@ declare module 'sqlops' {
 		groupContainer(): GroupBuilder;
 		toolbarContainer(): ToolbarBuilder;
 		loadingComponent(): LoadingComponentBuilder;
+		fileBrowserTree(): ComponentBuilder<FileBrowserTreeComponent>;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -362,6 +363,10 @@ declare module 'sqlops' {
 		selectedRows?: number[];
 	}
 
+	export interface FileBrowserTreeProperties extends ComponentProperties {
+		ownerUri: string;
+	}
+
 	export interface CheckBoxProperties {
 		checked?: boolean;
 		label?: string;
@@ -469,6 +474,10 @@ declare module 'sqlops' {
 
 	export interface TableComponent extends Component, TableComponentProperties {
 		onRowSelected: vscode.Event<any>;
+	}
+
+	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {
+		ownerUri: string;
 	}
 
 	export interface WebViewComponent extends Component {
