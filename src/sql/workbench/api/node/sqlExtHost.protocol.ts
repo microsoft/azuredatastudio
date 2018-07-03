@@ -337,6 +337,21 @@ export abstract class ExtHostDataProtocolShape {
 	 * Run an action on a Job
 	 */
 	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> { throw ni(); }
+
+	/**
+	 * Get Agent Alerts list
+	 */
+	$getAlerts(handle: number, connectionUri: string): Thenable<sqlops.AgentAlertsResult> { throw ni(); }
+
+	/**
+	 * Get Agent Oeprators list
+	 */
+	$getOperators(handle: number, connectionUri: string): Thenable<sqlops.AgentOperatorsResult> { throw ni(); }
+
+	/**
+	 * Get Agent Proxies list
+	 */
+	$getProxies(handle: number, connectionUri: string): Thenable<sqlops.AgentProxiesResult> { throw ni(); }
 }
 
 /**

@@ -1131,7 +1131,7 @@ declare module 'sqlops' {
 		frequencyTypes: FrequencyTypes;
 		frequencySubDayTypes: FrequencySubDayTypes;
 		frequencySubDayInterval: number;
-		frequencyRelativeIntervals; FrequencyRelativeIntervals;
+		frequencyRelativeIntervals: FrequencyRelativeIntervals;
 		frequencyRecurrenceFactor: number;
 		frequencyInterval: number;
 		dateCreated: string;
@@ -1211,6 +1211,7 @@ declare module 'sqlops' {
 
 	export interface AgentAlertInfo {
 		id: number;
+		name: string;
 		delayBetweenResponses: number;
 		eventDescriptionKeyword: string;
 		eventSource: string;
@@ -1327,15 +1328,15 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentProxiesResult extends ResultStatus {
-		operators: AgentOperatorInfo[];
+		proxies: AgentProxyInfo[];
 	}
 
 	export interface CreateAgentProxyResult extends ResultStatus {
-		operator: AgentOperatorInfo;
+		proxy: AgentProxyInfo;
 	}
 
 	export interface UpdateAgentProxyResult extends ResultStatus {
-		operator: AgentOperatorInfo;
+		proxy: AgentProxyInfo;
 	}
 
 	export interface AgentJobSchedulesResult extends ResultStatus {

@@ -200,6 +200,7 @@ export interface IModelViewWizardPageDetails {
 	content: string;
 	enabled: boolean;
 	customButtons: number[];
+	description: string;
 }
 
 export interface IModelViewWizardDetails {
@@ -213,6 +214,7 @@ export interface IModelViewWizardDetails {
 	backButton: number;
 	customButtons: number[];
 	message: DialogMessage;
+	displayPageTitles: boolean;
 }
 
 export enum MessageLevel {

@@ -4,8 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as vscode from 'vscode';
-import { ApiWrapper } from './apiWrapper';
+import { CreateAlertDialog } from './dialogs/createAlertDialog';
 import { CreateJobDialog } from './dialogs/createJobDialog';
+import { CreateOperatorDialog } from './dialogs/createOperatorDialog';
+import { CreateProxyDialog } from './dialogs/createProxyDialog';
 import { CreateStepDialog } from './dialogs/createStepDialog';
 import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
 
@@ -13,21 +15,16 @@ import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
  * The main controller class that initializes the extension
  */
 export class MainController {
-    protected _apiWrapper: ApiWrapper;
     protected _context: vscode.ExtensionContext;
 
     // PUBLIC METHODS //////////////////////////////////////////////////////
-    public constructor(context: vscode.ExtensionContext, apiWrapper?: ApiWrapper) {
-        this._apiWrapper = apiWrapper || new ApiWrapper();
+    public constructor(context: vscode.ExtensionContext) {
         this._context = context;
     }
 
     /**
-     * Deactivates the extension
+     * Activates the extension
      */
-    public deactivate(): void {
-    }
-
     public activate(): void {
         vscode.commands.registerCommand('agent.openCreateJobDialog', (ownerUri: string) => {
             let dialog = new CreateJobDialog(ownerUri);
@@ -41,9 +38,23 @@ export class MainController {
             let dialog = new PickScheduleDialog(ownerUri);
             dialog.showDialog();
         });
-	}
+        vscode.commands.registerCommand('agent.openCreateAlertDialog', (ownerUri: string) => {
+            let dialog = new CreateAlertDialog(ownerUri);
+            dialog.showDialog();
+        });
+        vscode.commands.registerCommand('agent.openCreateOperatorDialog', (ownerUri: string) => {
+            let dialog = new CreateOperatorDialog(ownerUri);
+            dialog.showDialog();
+        });
+        vscode.commands.registerCommand('agent.openCreateProxyDialog', (ownerUri: string) => {
+            let dialog = new CreateProxyDialog(ownerUri);
+            dialog.showDialog();
+        });
+    }
 
-	 private updateJobStepDialog() {
-
-	 }
+    /**
+     * Deactivates the extension
+     */
+    public deactivate(): void {
+    }
 }

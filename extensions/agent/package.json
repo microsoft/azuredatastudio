@@ -1,8 +1,8 @@
 {
   "name": "agent",
   "displayName": "SQL Server Agent",
-  "description": "Manage and troubleshoot SQL Server Agent jobs (early preview)",
-  "version": "0.29.0",
+  "description": "Manage and troubleshoot SQL Server Agent jobs",
+  "version": "0.31.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt",
@@ -14,7 +14,7 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./client/out/main",
+  "main": "./out/main",
   "repository": {
     "type": "git",
     "url": "https://github.com/Microsoft/sqlopsstudio.git"
@@ -46,5 +46,12 @@
         }
       }
     ]
-  }
+  },
+  "dependencies": {
+    "vscode-nls": "^3.2.1"
+  },
+  "devDependencies": {
+		"mocha-junit-reporter": "^1.17.0",
+		"mocha-multi-reporters": "^1.1.7"
+	}
 }

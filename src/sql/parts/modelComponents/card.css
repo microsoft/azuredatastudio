@@ -6,11 +6,11 @@
 	width: auto;
 	margin: 15px;
 	border-width: 1px;
-    border-style: solid;
+	border-style: solid;
 
-    text-align: left;
-    vertical-align: top;
-    box-shadow: rgba(120, 120, 120, 0.75) 0px 0px 6px;
+	text-align: left;
+	vertical-align: top;
+	box-shadow: rgba(120, 120, 120, 0.75) 0px 0px 6px;
 }
 
 .model-card.selected {
@@ -68,6 +68,9 @@
 	display: inline-block;
 	width: 40px;
 	height: 40px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
 }
 
 .model-card .card-status {

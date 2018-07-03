@@ -19,7 +19,6 @@ export class CreateJobData {
 	private _ownerUri: string;
 	private _jobCategories: string[];
 	private _operators: string[];
-	private _agentService: sqlops.AgentServicesProvider;
 	private _defaultOwner: string;
 	private _jobCompletionActionConditions: sqlops.CategoryValue[];
 
@@ -39,7 +38,7 @@ export class CreateJobData {
 	public jobSchedules: sqlops.AgentJobScheduleInfo[];
 	public alerts: sqlops.AgentAlertInfo[];
 
-	constructor(ownerUri: string) {
+	constructor(ownerUri: string, private _agentService: sqlops.AgentServicesProvider = null) {
 		this._ownerUri = ownerUri;
 	}
 

@@ -134,6 +134,7 @@ declare module 'sqlops' {
 		component: Component;
 		title: string;
 		actions?: Component[];
+		required?: boolean;
 	}
 
 	export interface ToolbarComponent {
@@ -241,7 +242,6 @@ declare module 'sqlops' {
 		componentWidth?: number | string;
 		componentHeight?: number | string;
 		titleFontSize?: number | string;
-		required?: boolean;
 		info?: string;
 	}
 
@@ -766,13 +766,18 @@ declare module 'sqlops' {
 				 * able to advance to it. Defaults to true.
 				 */
 				enabled: boolean;
+
+				/**
+				 * An optional description for the page. If provided it will be displayed underneath the page title.
+				 */
+				description: string;
 			}
 
 			export interface Wizard {
 				/**
 				 * The title of the wizard
 				 */
-				title: string,
+				title: string;
 
 				/**
 				 * The wizard's pages. Pages can be added/removed while the dialog is open by using
@@ -817,6 +822,12 @@ declare module 'sqlops' {
 				 * property on each page.
 				 */
 				customButtons: Button[];
+
+				/**
+				 * When set to false page titles and descriptions will not be displayed at the top
+				 * of each wizard page. The default is true.
+				 */
+				displayPageTitles: boolean;
 
 				/**
 				 * Event fired when the wizard's page changes, containing information about the

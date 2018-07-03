@@ -306,6 +306,11 @@ let registryProperties = {
 		'default': Constants.tabColorModeOff,
 		'description': localize('tabColorMode', "Controls how to color tabs based on the server group of their active connection")
 	},
+	'sql.showConnectionInfoInTitle': {
+		'type': 'boolean',
+		'description': localize('showConnectionInfoInTitle', "Controls whether to show the connection info for a tab in the title."),
+		'default': false
+	},
 	'mssql.intelliSense.enableIntelliSense': {
 		'type': 'boolean',
 		'default': true,

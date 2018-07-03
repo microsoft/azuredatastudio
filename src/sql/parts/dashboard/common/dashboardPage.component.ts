@@ -17,11 +17,12 @@ import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } 
 import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
 import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { AngularEventType, IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
-import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
+import { DashboardTab, IConfigModifierCollection } from 'sql/parts/dashboard/common/interfaces';
 import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
+import * as Constants from 'sql/parts/connection/common/constants';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -38,16 +39,11 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
-interface IConfigModifierCollection {
-	connectionManagementService: SingleConnectionManagementService;
-	contextKeyService: IContextKeyService;
-}
-
 @Component({
 	selector: 'dashboard-page',
 	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/common/dashboardPage.component.html'))
 })
-export abstract class DashboardPage extends AngularDisposable {
+export abstract class DashboardPage extends AngularDisposable implements IConfigModifierCollection {
 
 	protected tabs: Array<TabConfig> = [];
 
@@ -137,21 +133,10 @@ export abstract class DashboardPage extends AngularDisposable {
 		this._tabsDispose.forEach(i => i.dispose());
 		this._tabsDispose = [];
 
-		// Create home tab
-		let homeTab: TabConfig = {
-			id: 'homeTab',
-			publisher: undefined,
-			title: this.homeTabTitle,
-			container: { 'widgets-container': homeWidgets },
-			context: this.context,
-			originalConfig: this._originalConfig,
-			editable: true,
-			canClose: false,
-			actions: []
-		};
-		this.addNewTab(homeTab);
-
 		let allTabs = dashboardHelper.filterConfigs(dashboardRegistry.tabs, this);
+
+		// Before separating tabs into pinned / shown, ensure that the home tab is always set up as expected
+		allTabs = this.setAndRemoveHomeTab(allTabs, homeWidgets);
 
 		// Load tab setting configs
 		this._tabSettingConfigs = this.dashboardService.getSettings<Array<TabSettingConfig>>([this.context, 'tabs'].join('.'));
@@ -199,6 +184,32 @@ export abstract class DashboardPage extends AngularDisposable {
 		}));
 	}
 
+	private setAndRemoveHomeTab(allTabs: IDashboardTab[], homeWidgets: WidgetConfig[]): IDashboardTab[] {
+		let homeTabConfig: TabConfig = {
+			id: 'homeTab',
+			provider: Constants.anyProviderName,
+			publisher: undefined,
+			title: this.homeTabTitle,
+			container: { 'widgets-container': homeWidgets },
+			context: this.context,
+			originalConfig: this._originalConfig,
+			editable: true,
+			canClose: false,
+			actions: []
+		};
+
+		let homeTabIndex = allTabs.findIndex((tab) => tab.isHomeTab === true);
+		if (homeTabIndex !== undefined && homeTabIndex > -1) {
+			// Have a tab: get its information and copy over to the home tab definition
+			let homeTab = allTabs.splice(homeTabIndex, 1)[0];
+			let tabConfig = this.initTabComponents(homeTab);
+			homeTabConfig.id = tabConfig.id;
+			homeTabConfig.container = tabConfig.container;
+		}
+		this.addNewTab(homeTabConfig);
+		return allTabs;
+	}
+
 	private rewriteConfig(): void {
 		let writeableConfig = objects.deepClone(this._tabSettingConfigs);
 
@@ -208,35 +219,12 @@ export abstract class DashboardPage extends AngularDisposable {
 
 	private loadNewTabs(dashboardTabs: IDashboardTab[], openLastTab: boolean = false) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
-			let selectedTabs = dashboardTabs.map(v => {
-				let containerResult = dashboardHelper.getDashboardContainer(v.container);
-				if (!containerResult.result) {
-					return { id: v.id, title: v.title, container: { 'error-container': undefined }, alwaysShow: v.alwaysShow };
-				}
-
-				let key = Object.keys(containerResult.container)[0];
-				if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
-					let configs = <WidgetConfig[]>Object.values(containerResult.container)[0];
-					this._configModifiers.forEach(cb => {
-						configs = cb.apply(this, [configs, this.dashboardService, this.context]);
-					});
-					this._gridModifiers.forEach(cb => {
-						configs = cb.apply(this, [configs]);
-					});
-					if (key === WIDGETS_CONTAINER) {
-						return { id: v.id, title: v.title, container: { 'widgets-container': configs }, alwaysShow: v.alwaysShow };
-
-					} else {
-						return { id: v.id, title: v.title, container: { 'grid-container': configs }, alwaysShow: v.alwaysShow };
-					}
-				}
-				return { id: v.id, title: v.title, container: containerResult.container, alwaysShow: v.alwaysShow };
-			}).map(v => {
+			let selectedTabs = dashboardTabs.map(v => this.initTabComponents(v)).map(v => {
 				let actions = [];
-				let tabConfig = this._tabSettingConfigs.find(i => i.tabId === v.id);
+				let tabSettingConfig = this._tabSettingConfigs.find(i => i.tabId === v.id);
 				let isPinned = false;
-				if (tabConfig) {
-					isPinned = tabConfig.isPinned;
+				if (tabSettingConfig) {
+					isPinned = tabSettingConfig.isPinned;
 				} else if (v.alwaysShow) {
 					isPinned = true;
 				}
@@ -259,6 +247,30 @@ export abstract class DashboardPage extends AngularDisposable {
 				});
 			}
 		}
+	}
+
+	private initTabComponents(value: IDashboardTab): { id: string; title: string; container: object; alwaysShow: boolean; } {
+		let containerResult = dashboardHelper.getDashboardContainer(value.container);
+		if (!containerResult.result) {
+			return { id: value.id, title: value.title, container: { 'error-container': undefined }, alwaysShow: value.alwaysShow };
+		}
+		let key = Object.keys(containerResult.container)[0];
+		if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
+			let configs = <WidgetConfig[]>Object.values(containerResult.container)[0];
+			this._configModifiers.forEach(cb => {
+				configs = cb.apply(this, [configs, this, this.context]);
+			});
+			this._gridModifiers.forEach(cb => {
+				configs = cb.apply(this, [configs]);
+			});
+			if (key === WIDGETS_CONTAINER) {
+				return { id: value.id, title: value.title, container: { 'widgets-container': configs }, alwaysShow: value.alwaysShow };
+			}
+			else {
+				return { id: value.id, title: value.title, container: { 'grid-container': configs }, alwaysShow: value.alwaysShow };
+			}
+		}
+		return { id: value.id, title: value.title, container: containerResult.container, alwaysShow: value.alwaysShow };
 	}
 
 	private getContentType(tab: TabConfig): string {

@@ -137,13 +137,15 @@ suite('MainThreadModelViewDialog Tests', () => {
 			title: 'page1',
 			content: 'content1',
 			enabled: true,
-			customButtons: []
+			customButtons: [],
+			description: 'description1'
 		};
 		page2Details = {
 			title: 'page2',
 			content: 'content2',
 			enabled: true,
-			customButtons: [button1Handle, button2Handle]
+			customButtons: [button1Handle, button2Handle],
+			description: 'description2'
 		};
 		wizardDetails = {
 			backButton: backButtonHandle,
@@ -155,7 +157,8 @@ suite('MainThreadModelViewDialog Tests', () => {
 			title: 'wizard_title',
 			customButtons: [],
 			pages: [page1Handle, page2Handle],
-			message: undefined
+			message: undefined,
+			displayPageTitles: false
 		};
 
 		// Register the buttons, tabs, and dialog
@@ -247,18 +250,21 @@ suite('MainThreadModelViewDialog Tests', () => {
 		assert.equal(openedWizard.customButtons.length, 0);
 		assert.equal(openedWizard.pages.length, 2);
 		assert.equal(openedWizard.currentPage, 0);
+		assert.equal(openedWizard.displayPageTitles, wizardDetails.displayPageTitles);
 		let page1 = openedWizard.pages[0];
 		assert.equal(page1.title, page1Details.title);
 		assert.equal(page1.content, page1Details.content);
 		assert.equal(page1.enabled, page1Details.enabled);
 		assert.equal(page1.valid, true);
 		assert.equal(page1.customButtons.length, 0);
+		assert.equal(page1.description, page1Details.description);
 		let page2 = openedWizard.pages[1];
 		assert.equal(page2.title, page2Details.title);
 		assert.equal(page2.content, page2Details.content);
 		assert.equal(page2.enabled, page2Details.enabled);
 		assert.equal(page2.valid, true);
 		assert.equal(page2.customButtons.length, 2);
+		assert.equal(page2.description, page2Details.description);
 	});
 
 	test('The extension host gets notified when wizard page change events occur', () => {
@@ -292,7 +298,8 @@ suite('MainThreadModelViewDialog Tests', () => {
 			title: 'page_3',
 			content: 'content_3',
 			customButtons: [],
-			enabled: true
+			enabled: true,
+			description: undefined
 		};
 
 		// If I open the wizard and then add a page

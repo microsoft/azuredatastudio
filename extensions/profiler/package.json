@@ -2,7 +2,7 @@
   "name": "profiler",
   "displayName": "SQL Server Profiler",
   "description": "SQL Server Profiler for SQL Operations Studio",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt",
@@ -31,6 +31,16 @@
       {
         "command": "profiler.newProfiler",
         "title": "New Profiler",
+        "category": "Profiler"
+      },
+      {
+        "command": "profiler.start",
+        "title": "Start",
+        "category": "Profiler"
+      },
+      {
+        "command": "profiler.stop",
+        "title": "Stop",
         "category": "Profiler"
       }
     ],

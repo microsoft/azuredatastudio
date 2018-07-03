@@ -79,10 +79,7 @@ export class ProfilerStart extends Action {
 	public run(input: ProfilerInput): TPromise<boolean> {
 		this.enabled = false;
 		input.data.clear();
-		return TPromise.wrap(this._profilerService.startSession(input.id).then(() => {
-			input.state.change({ isRunning: true, isStopped: false, isPaused: false });
-			return true;
-		}));
+		return TPromise.wrap(this._profilerService.startSession(input.id));
 	}
 }
 
@@ -131,10 +128,7 @@ export class ProfilerStop extends Action {
 
 	public run(input: ProfilerInput): TPromise<boolean> {
 		this.enabled = false;
-		return TPromise.wrap(this._profilerService.stopSession(input.id).then(() => {
-			input.state.change({ isStopped: true, isPaused: false, isRunning: false });
-			return true;
-		}));
+		return TPromise.wrap(this._profilerService.stopSession(input.id));
 	}
 }
 

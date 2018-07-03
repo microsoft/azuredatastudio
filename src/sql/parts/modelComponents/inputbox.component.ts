@@ -18,9 +18,8 @@ import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { Event, Emitter } from 'vs/base/common/event';
 import * as nls from 'vs/nls';
-import { TextAreaInput } from 'vs/editor/browser/controller/textAreaInput';
+import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
 
 @Component({
 	selector: 'modelview-inputBox',
@@ -70,13 +69,13 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		if (this._inputContainer) {
 			this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 			this.registerInput(this._input, () => !this.multiline);
-
 		}
 		if (this._textareaContainer) {
 			let textAreaInputOptions = Object.assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
 			this._textAreaInput = new InputBox(this._textareaContainer.nativeElement, this.contextViewService, textAreaInputOptions);
 			this.registerInput(this._textAreaInput, () => this.multiline);
 		}
+		this.inputElement.hideErrors = true;
 	}
 
 	private get inputElement(): InputBox {
@@ -88,10 +87,17 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 			this._validations.push(() => !input.inputElement.validationMessage);
 
 			this._register(input);
-			this._register(attachInputBoxStyler(input, this.themeService));
-			this._register(input.onDidChange(e => {
+			this._register(attachInputBoxStyler(input, this.themeService, {
+				inputValidationInfoBackground: inputBackground,
+				inputValidationInfoBorder: inputBorder,
+			}));
+			this._register(input.onDidChange(async e => {
 				if (checkOption()) {
 					this.value = input.value;
+					await this.validate();
+					if (input.hideErrors) {
+						input.hideErrors = false;
+					}
 					this._onEventEmitter.fire({
 						eventType: ComponentEventType.onDidChange,
 						args: e
