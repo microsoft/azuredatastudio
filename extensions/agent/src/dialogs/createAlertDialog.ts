@@ -96,7 +96,8 @@ export class CreateAlertDialog {
 	];
 
 	// Response tab strings
-	private static readonly ExecuteJobTextBoxLabel: string = localize('createAlert.ExecuteJob', 'Execute Job');
+	private static readonly ExecuteJobCheckBoxLabel: string = localize('createAlert.ExecuteJob', 'Execute Job');
+	private static readonly ExecuteJobTextBoxLabel: string = localize('createAlert.ExecuteJobName', 'Job Name');
 	private static readonly NotifyOperatorsTextBoxLabel: string =  localize('createAlert.NotifyOperators', 'Notify Operators');
 	private static readonly NewJobButtonLabel: string =  localize('createAlert.NewJob', 'New Job');
 	private static readonly OperatorListLabel: string =  localize('createAlert.OperatorList', 'Operator List');
@@ -239,7 +240,7 @@ export class CreateAlertDialog {
 		this.responseTab.registerContent(async view => {
 			this.executeJobCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateAlertDialog.EnabledCheckboxLabel
+					label: CreateAlertDialog.ExecuteJobCheckBoxLabel
 				}).component();
 
 			this.executeJobTextBox = view.modelBuilder.inputBox().component();
@@ -273,7 +274,7 @@ export class CreateAlertDialog {
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.executeJobCheckBox,
-					title: CreateAlertDialog.ExecuteJobTextBoxLabel
+					title: ''
 				}, {
 					component: this.executeJobTextBox,
 					title: CreateAlertDialog.ExecuteJobTextBoxLabel
@@ -282,7 +283,7 @@ export class CreateAlertDialog {
 					title: CreateAlertDialog.NewJobButtonLabel
 				}, {
 					component: this.notifyOperatorsCheckBox,
-					title: CreateAlertDialog.NotifyOperatorsTextBoxLabel
+					title: ''
 				}, {
 					component: this.operatorsTable,
 					title: CreateAlertDialog.OperatorListLabel,
