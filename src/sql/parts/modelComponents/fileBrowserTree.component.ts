@@ -11,23 +11,10 @@ import * as sqlops from 'sqlops';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { FileBrowserDataSource } from 'sql/parts/fileBrowser/fileBrowserDataSource';
-import { FileBrowserRenderer } from 'sql/parts/fileBrowser/fileBrowserRenderer';
-import { FileBrowserController } from 'sql/parts/fileBrowser/fileBrowserController';
-import { DefaultDragAndDrop, DefaultFilter, DefaultAccessibilityProvider } from 'vs/base/parts/tree/browser/treeDefaults';
-import { ITreeConfiguration, ITreeOptions } from 'vs/base/parts/tree/browser/tree';
-import { ScrollbarVisibility } from 'vs/base/common/scrollable';
-import { getContentHeight, getContentWidth } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IFileBrowserService } from '../fileBrowser/common/interfaces';
 import { FileBrowserViewModel } from '../fileBrowser/fileBrowserViewModel';
 import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
-import { CommonServiceInterface } from '../../services/common/commonServiceInterface.service';
 import { FileBrowserTreeView } from '../fileBrowser/fileBrowserTreeView';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IErrorMessageService } from '../connection/common/connectionManagement';
-
 
 @Component({
 	selector: 'modelview-fileBrowserTree',
@@ -40,6 +27,7 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 	@Input() modelStore: IModelStore;
 	private _treeView: FileBrowserTreeView;
 	private _viewModel: FileBrowserViewModel;
+	private _currentPath: string;
 	private _fileFilters: [{label: string, filters: string[]}] = [
 		{ label: 'All Files', filters: ['*'] }
 	];
@@ -64,12 +52,20 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 	public initialize() {
 		this._viewModel.initialize(this.ownerUri, '', this._fileFilters, 'Backup');
 		this._treeView = this._instantiationService.createInstance(FileBrowserTreeView);
-		this._treeView.setOnClickedCallback((arg) => this.onClicked(arg));
+		this._treeView.setOnClickedCallback((arg) => {
+			this.onClicked(arg);
+		});
 		this._treeView.setOnDoubleClickedCallback((arg) => this.onDoubleClicked(arg));
+		this._register(this._treeView);
 		this._viewModel.openFileBrowser(0, false);
 	}
 
 	private onClicked(selectedNode: FileNode) {
+		this._currentPath = selectedNode.fullPath;
+		this._onEventEmitter.fire({
+			eventType: ComponentEventType.onDidChange,
+			args: selectedNode.fullPath
+		});
 	}
 
 	private onDoubleClicked(selectedNode: FileNode) {
@@ -134,6 +130,10 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 	}
 
 	// CSS-bound properties
+	public get currentPath(): string {
+		return this.getPropertyOrDefault<sqlops.FileBrowserTreeProperties, string>((props) => props.currentPath, '');
+	}
+
 	public get ownerUri(): string {
 		return this.getPropertyOrDefault<sqlops.FileBrowserTreeProperties, string>((props) => props.ownerUri, '');
 	}

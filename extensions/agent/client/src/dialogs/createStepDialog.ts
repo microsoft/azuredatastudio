@@ -372,14 +372,18 @@ export class CreateStepDialog {
 			this.selectedPathTextBox = view.modelBuilder.inputBox()
 				.withProperties({ inputType: 'text'})
 				.component();
+			this.fileBrowserTree.onDidChange((filePath) => {
+				this.selectedPathTextBox.value = filePath;
+				this.fileBrowserNameBox.value = filePath.replace(/^.*[\\\/]/, '');
+			});
 			this.fileTypeDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: 'All Files(*)',
-					values: ['All Files(*)']
+					value: 'All Files (*)',
+					values: ['All Files (*)']
 				})
 				.component();
 			this.fileBrowserNameBox = view.modelBuilder.inputBox()
-				.withProperties({ ownerUri: this.ownerUri })
+				.withProperties({})
 				.component();
 			let fileBrowserContainer = view.modelBuilder.formContainer()
 				.withFormItems([{

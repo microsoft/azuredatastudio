@@ -967,9 +967,15 @@ class LoadingComponentWrapper extends ComponentWrapper implements sqlops.Loading
 }
 
 class FileBrowserTreeComponentWrapper extends ComponentWrapper implements sqlops.FileBrowserTreeComponent {
+
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.FileBrowserTree, id);
 		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+	}
+
+	public get currentPath(): string {
+		return this.properties['currentPath'];
 	}
 
 	public get ownerUri(): string {
@@ -978,6 +984,11 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements sqlops
 
 	public set ownerUri(value: string) {
 		this.setProperty('ownerUri', value);
+	}
+
+	public get onDidChange(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
 	}
 }
 

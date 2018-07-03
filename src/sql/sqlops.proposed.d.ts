@@ -365,6 +365,7 @@ declare module 'sqlops' {
 
 	export interface FileBrowserTreeProperties extends ComponentProperties {
 		ownerUri: string;
+		currentPath: string;
 	}
 
 	export interface CheckBoxProperties {
@@ -477,7 +478,7 @@ declare module 'sqlops' {
 	}
 
 	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {
-		ownerUri: string;
+		onDidChange: vscode.Event<any>;
 	}
 
 	export interface WebViewComponent extends Component {
