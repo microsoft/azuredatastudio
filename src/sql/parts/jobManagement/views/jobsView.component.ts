@@ -12,22 +12,23 @@ import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!sql/base/browser/ui/table/media/table';
 
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
 import * as sqlops from 'sqlops';
-import * as vscode from 'vscode';
 import * as nls from 'vs/nls';
+import * as dom from 'vs/base/browser/dom';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked, OnInit } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { AgentJobUtilities } from 'sql/parts/jobManagement/common/agentJobUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
-import * as dom from 'vs/base/browser/dom';
-import { IJobManagementService } from '../common/interfaces';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
 
@@ -37,11 +38,10 @@ export const ROW_HEIGHT: number = 45;
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => JobsViewComponent) }],
 })
 
-export class JobsViewComponent implements AfterContentChecked {
+export class JobsViewComponent extends JobManagementView implements OnInit  {
 
-	private _jobCacheObject: JobCacheObject;
-
-	private _disposables = new Array<vscode.Disposable>();
+	private NewJobText: string = nls.localize("jobsToolbar-NewJob", "New Job");
+	private RefreshText: string = nls.localize("jobsToolbar-Refresh", "Refresh");
 
 	private columns: Array<Slick.Column<any>> = [
 		{
@@ -68,36 +68,22 @@ export class JobsViewComponent implements AfterContentChecked {
 		}
 	];
 
-
-	private options: Slick.GridOptions<any> = {
-		syncColumnCellResize: true,
-		enableColumnReorder: false,
-		rowHeight: 45,
-		enableCellNavigation: true,
-		editable: true
-	};
-
+	private _jobCacheObject: JobCacheObject;
 	private rowDetail: RowDetailView;
 	private filterPlugin: any;
 	private dataView: any;
-
-	@ViewChild('jobsgrid') _gridEl: ElementRef;
-	private isVisible: boolean = false;
-	private isInitialized: boolean = false;
-	private isRefreshing: boolean = false;
 	private _table: Table<any>;
-	public jobs: sqlops.AgentJobInfo[];
-	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
 	private _serverName: string;
 	private _isCloud: boolean;
-	private _showProgressWheel: boolean;
 	private filterStylingMap: { [columnName: string]: [any]; } = {};
 	private filterStack = ['start'];
 	private filterValueMap: { [columnName: string]: string[]; } = {};
 	private sortingStylingMap: { [columnName: string]: any; } = {};
 
-	private NewJobText: string = nls.localize("jobsToolbar-NewJob", "New Job");
-	private RefreshText: string = nls.localize("jobsToolbar-Refresh", "Refresh");
+	public jobs: sqlops.AgentJobInfo[];
+	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
+
+	@ViewChild('jobsgrid') _gridEl: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
@@ -108,6 +94,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService
 	) {
+		super();
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];
@@ -121,43 +108,24 @@ export class JobsViewComponent implements AfterContentChecked {
 		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
+	ngOnInit(){
+		// set base class elements
+		this._visibilityElement = this._gridEl;
+		this._parentComponent = this._agentViewComponent;
+	}
+
 	public layout() {
 		this._table.layout(new dom.Dimension(dom.getContentWidth(this._gridEl.nativeElement), dom.getContentHeight(this._gridEl.nativeElement)));
 	}
 
-	ngAfterContentChecked() {
-		if (this.isVisible === false && this._gridEl.nativeElement.offsetParent !== null) {
-			this.isVisible = true;
-			if (!this.isInitialized) {
-				if (this._jobCacheObject.serverName === this._serverName && this._jobCacheObject.jobs.length > 0) {
-					this._showProgressWheel = true;
-					this.jobs = this._jobCacheObject.jobs;
-					this.onFirstVisible(true);
-					this.isInitialized = true;
-				} else {
-					this._showProgressWheel = true;
-					this.onFirstVisible(false);
-					this.isInitialized = true;
-				}
-			}
-		} else if (this.isVisible === true && this._agentViewComponent.refresh === true) {
-			this._showProgressWheel = true;
-			this.onFirstVisible(false);
-			this.isRefreshing = true;
-			this._agentViewComponent.refresh = false;
-		} /*else if (this.isVisible === true && this._agentViewComponent.refresh === false) {
-			if (!this.isRefreshing) {
-				this._showProgressWheel = true;
-				this.onFirstVisible(true);
-			}
-			this.isRefreshing = false;
-		}*/ else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
-			this.isVisible = false;
-		}
-	}
-
-	onFirstVisible(cached?: boolean) {
+	onFirstVisible() {
 		let self = this;
+		let cached: boolean = false;
+		if (this._jobCacheObject.serverName === this._serverName && this._jobCacheObject.jobs.length > 0) {
+			cached = true;
+			this.jobs = this._jobCacheObject.jobs;
+		}
+
 		let columns = this.columns.map((column) => {
 			column.rerenderOnResize = true;
 			return column;
@@ -184,10 +152,13 @@ export class JobsViewComponent implements AfterContentChecked {
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
+
 		let filterPlugin = new HeaderFilter({}, this._themeService);
 		this.filterPlugin = filterPlugin;
+
 		$(this._gridEl.nativeElement).empty();
-		this._table = new Table(this._gridEl.nativeElement, undefined, columns, this.options);
+
+		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let job = self.getJob(args);
@@ -195,8 +166,13 @@ export class JobsViewComponent implements AfterContentChecked {
 			self._agentViewComponent.agentJobInfo = job;
 			self._agentViewComponent.showHistory = true;
 		});
+
 		if (cached && this._agentViewComponent.refresh !== true) {
 			this.onJobsAvailable(null);
+			this._showProgressWheel = false;
+			if (this.isVisible) {
+				this._cd.detectChanges();
+			}
 		} else {
 			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 			this._jobManagementService.getJobs(ownerUri).then((result) => {
@@ -204,6 +180,13 @@ export class JobsViewComponent implements AfterContentChecked {
 					self.jobs = result.jobs;
 					self._jobCacheObject.jobs = self.jobs;
 					self.onJobsAvailable(result.jobs);
+				} else {
+					// TODO: handle error
+				}
+
+				this._showProgressWheel = false;
+				if (this.isVisible) {
+					this._cd.detectChanges();
 				}
 			});
 		}
@@ -326,6 +309,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				this.expandJobs(false);
 			}
 		});
+
 		this.filterPlugin.onCommand.subscribe((e, args: any) => {
 			this.columnSort(args.column.name, args.command === 'sort-asc');
 		});
@@ -345,11 +329,6 @@ export class JobsViewComponent implements AfterContentChecked {
 			let currentTarget = e.currentTarget;
 			currentTarget.title = currentTarget.innerText;
 		});
-		this._showProgressWheel = false;
-
-		if (this.isVisible) {
-			this._cd.detectChanges();
-		}
 
 		const self = this;
 		$(window).resize(() => {
@@ -362,6 +341,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				self._table.resizeCanvas();
 			}
 		});
+
 		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
 			let nameWidth: number = data.grid.getColumnWidths()[1];
 			// adjust job name when resized
@@ -376,6 +356,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				self.createJobChart(job.jobId, previousRuns);
 			});
 		});
+
 		$('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
 			this.highlightErrorRows(e1), (e2) => this.hightlightNonErrorRows(e2));
 
@@ -383,6 +364,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			$('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
 				this.highlightErrorRows(e1), (e2) => this.hightlightNonErrorRows(e2));
 		});
+
 		// cache the dataview for future use
 		this._jobCacheObject.dataView = this.dataView;
 		this.filterValueMap['start'] = [[], this.dataView.getItems()];

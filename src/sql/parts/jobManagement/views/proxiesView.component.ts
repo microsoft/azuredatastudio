@@ -12,7 +12,7 @@ import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!sql/base/browser/ui/table/media/table';
 
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -23,6 +23,7 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 export const VIEW_SELECTOR: string = 'jobproxiesview-component';
 export const ROW_HEIGHT: number = 45;
 
@@ -32,7 +33,10 @@ export const ROW_HEIGHT: number = 45;
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => ProxiesViewComponent) }],
 })
 
-export class ProxiesViewComponent implements AfterContentChecked {
+export class ProxiesViewComponent extends JobManagementView implements OnInit {
+
+	private NewProxyText: string = nls.localize('jobProxyToolbar-NewItem', "New Proxy");
+	private RefreshText: string = nls.localize('jobProxyToolbar-Refresh', "Refresh");
 
 	private columns: Array<Slick.Column<any>> = [
 		{ name: nls.localize('jobProxiesView.accountName', 'Account Name'), field: 'accountName', width: 200, id: 'accountName' },
@@ -50,17 +54,10 @@ export class ProxiesViewComponent implements AfterContentChecked {
 	private dataView: any;
 
 	@ViewChild('proxiesgrid') _gridEl: ElementRef;
-	private isVisible: boolean = false;
-	private isInitialized: boolean = false;
-	private isRefreshing: boolean = false;
 	private _table: Table<any>;
 	public proxies: sqlops.AgentProxyInfo[];
 	private _serverName: string;
 	private _isCloud: boolean;
-	private _showProgressWheel: boolean;
-
-	private NewProxyText: string = nls.localize('jobProxyToolbar-NewItem', "New Proxy");
-	private RefreshText: string = nls.localize('jobProxyToolbar-Refresh', "Refresh");
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
@@ -71,32 +68,21 @@ export class ProxiesViewComponent implements AfterContentChecked {
 		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService
 	) {
+		super();
 		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+	}
+
+	ngOnInit(){
+		// set base class elements
+		this._visibilityElement = this._gridEl;
+		this._parentComponent = this._agentViewComponent;
 	}
 
 	public layout() {
 		this._table.layout(new dom.Dimension(dom.getContentWidth(this._gridEl.nativeElement), dom.getContentHeight(this._gridEl.nativeElement)));
 	}
 
-	ngAfterContentChecked() {
-		if (this.isVisible === false && this._gridEl.nativeElement.offsetParent !== null) {
-			this.isVisible = true;
-			if (!this.isInitialized) {
-				this._showProgressWheel = true;
-				this.onFirstVisible(false);
-				this.isInitialized = true;
-			}
-		} else if (this.isVisible === true && this._agentViewComponent.refresh === true) {
-			this._showProgressWheel = true;
-			this.onFirstVisible(false);
-			this.isRefreshing = true;
-			this._agentViewComponent.refresh = false;
-		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
-			this.isVisible = false;
-		}
-	}
-
-	onFirstVisible(cached?: boolean) {
+	onFirstVisible() {
 		let self = this;
 		let columns = this.columns.map((column) => {
 			column.rerenderOnResize = true;
@@ -121,6 +107,13 @@ export class ProxiesViewComponent implements AfterContentChecked {
 			if (result && result.proxies) {
 				self.proxies = result.proxies;
 				self.onProxiesAvailable(result.proxies);
+			} else {
+				// TODO: handle error
+			}
+
+			this._showProgressWheel = false;
+			if (this.isVisible) {
+				this._cd.detectChanges();
 			}
 		});
 	}
@@ -139,9 +132,6 @@ export class ProxiesViewComponent implements AfterContentChecked {
 		this.dataView.endUpdate();
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
-
-		this._showProgressWheel = false;
-		this._cd.detectChanges();
 	}
 
 	private openCreateProxyDialog() {
