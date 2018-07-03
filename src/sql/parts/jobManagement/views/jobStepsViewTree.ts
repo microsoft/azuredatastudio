@@ -3,18 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import {
-	NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction, ScriptExecuteAction, ScriptAlterAction,
-	BackupAction, ManageActionContext, BaseActionContext, ManageAction, RestoreAction
-} from 'sql/workbench/common/actions';
+
+import * as DOM from 'vs/base/browser/dom';
 import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { generateUuid } from 'vs/base/common/uuid';
-import * as DOM from 'vs/base/browser/dom';
 import { AgentJobHistoryInfo } from 'sqlops';
-import { AgentJobUtilities } from 'sql/parts/jobManagement/common/agentJobUtilities';
+import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 
 export class JobStepsViewRow {
 	public stepID: string;
@@ -99,7 +96,7 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 	private _statusIcon: HTMLElement;
 
 	public getHeight(tree: tree.ITree, element: JobStepsViewRow): number {
-		return 22 * Math.ceil(element.message.length/AgentJobUtilities.jobMessageLength);
+		return 22 * Math.ceil(element.message.length/JobManagementUtilities.jobMessageLength);
 	}
 
 	public getTemplateId(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): string {

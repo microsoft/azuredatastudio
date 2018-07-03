@@ -12,7 +12,7 @@ import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!sql/base/browser/ui/table/media/table';
 
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -23,6 +23,12 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IAction } from 'vs/base/common/actions';
+import { EditOperator, DeleteOperator } from 'sql/parts/jobManagement/views/jobActions';
 export const VIEW_SELECTOR: string = 'joboperatorsview-component';
 export const ROW_HEIGHT: number = 45;
 
@@ -32,7 +38,10 @@ export const ROW_HEIGHT: number = 45;
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => OperatorsViewComponent) }],
 })
 
-export class OperatorsViewComponent implements AfterContentChecked {
+export class OperatorsViewComponent extends JobManagementView implements OnInit {
+
+	private NewOperatorText: string = nls.localize('jobOperatorToolbar-NewItem', "New Operator");
+	private RefreshText: string = nls.localize('jobOperatorToolbar-Refresh', "Refresh");
 
 	private columns: Array<Slick.Column<any>> = [
 		{ name: nls.localize('jobOperatorsView.name', 'Name'), field: 'name', width: 200, id: 'name' },
@@ -49,19 +58,12 @@ export class OperatorsViewComponent implements AfterContentChecked {
 	};
 
 	private dataView: any;
-
-	@ViewChild('operatorsgrid') _gridEl: ElementRef;
-	private isVisible: boolean = false;
-	private isInitialized: boolean = false;
-	private isRefreshing: boolean = false;
-	private _table: Table<any>;
-	public operators: sqlops.AgentOperatorInfo[];
 	private _serverName: string;
 	private _isCloud: boolean;
-	private _showProgressWheel: boolean;
 
-	private NewOperatorText: string = nls.localize('jobOperatorToolbar-NewItem', "New Operator");
-	private RefreshText: string = nls.localize('jobOperatorToolbar-Refresh', "Refresh");
+	@ViewChild('operatorsgrid') _gridEl: ElementRef;
+
+	public operators: sqlops.AgentOperatorInfo[];
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
@@ -70,34 +72,25 @@ export class OperatorsViewComponent implements AfterContentChecked {
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IThemeService) private _themeService: IThemeService,
-		@Inject(ICommandService) private _commandService: ICommandService
+		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService
 	) {
+		super(contextMenuService, keybindingService);
 		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+	}
+
+	ngOnInit(){
+		// set base class elements
+		this._visibilityElement = this._gridEl;
+		this._parentComponent = this._agentViewComponent;
 	}
 
 	public layout() {
 		this._table.layout(new dom.Dimension(dom.getContentWidth(this._gridEl.nativeElement), dom.getContentHeight(this._gridEl.nativeElement)));
 	}
 
-	ngAfterContentChecked() {
-		if (this.isVisible === false && this._gridEl.nativeElement.offsetParent !== null) {
-			this.isVisible = true;
-			if (!this.isInitialized) {
-				this._showProgressWheel = true;
-				this.onFirstVisible(false);
-				this.isInitialized = true;
-			}
-		} else if (this.isVisible === true && this._agentViewComponent.refresh === true) {
-			this._showProgressWheel = true;
-			this.onFirstVisible(false);
-			this.isRefreshing = true;
-			this._agentViewComponent.refresh = false;
-		} else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
-			this.isVisible = false;
-		}
-	}
-
-	onFirstVisible(cached?: boolean) {
+	onFirstVisible() {
 		let self = this;
 		let columns = this.columns.map((column) => {
 			column.rerenderOnResize = true;
@@ -117,11 +110,22 @@ export class OperatorsViewComponent implements AfterContentChecked {
 		this._table = new Table(this._gridEl.nativeElement, undefined, columns, this.options);
 		this._table.grid.setData(this.dataView, true);
 
+		this._register(this._table.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+			self.openContextMenu(e);
+		}));
+
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getOperators(ownerUri).then((result) => {
 			if (result && result.operators) {
 				self.operators = result.operators;
 				self.onOperatorsAvailable(result.operators);
+			} else {
+				// TODO: handle error
+			}
+
+			this._showProgressWheel = false;
+			if (this.isVisible) {
+				this._cd.detectChanges();
 			}
 		});
 	}
@@ -141,9 +145,13 @@ export class OperatorsViewComponent implements AfterContentChecked {
 		this.dataView.endUpdate();
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
+	}
 
-		this._showProgressWheel = false;
-		this._cd.detectChanges();
+	protected getTableActions(): TPromise<IAction[]> {
+		let actions: IAction[] = [];
+		actions.push(new EditOperator(EditOperator.ID, EditOperator.LABEL));
+		actions.push(new DeleteOperator(DeleteOperator.ID, DeleteOperator.LABEL));
+		return TPromise.as(actions);
 	}
 
 	private openCreateOperatorDialog() {
