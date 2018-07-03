@@ -975,10 +975,6 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements sqlops
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
 	}
 
-	public get currentPath(): string {
-		return this.properties['currentPath'];
-	}
-
 	public get ownerUri(): string {
 		return this.properties['ownerUri'];
 	}

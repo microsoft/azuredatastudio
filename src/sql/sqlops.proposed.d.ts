@@ -365,7 +365,6 @@ declare module 'sqlops' {
 
 	export interface FileBrowserTreeProperties extends ComponentProperties {
 		ownerUri: string;
-		currentPath: string;
 	}
 
 	export interface CheckBoxProperties {

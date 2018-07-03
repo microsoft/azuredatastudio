@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { CreateStepData } from '../data/createStepData';
 import { AgentUtils } from '../agentUtils';
 import { CreateJobData } from '../data/createJobData';
+const path = require('path');
 
 export class CreateStepDialog {
 
@@ -374,7 +375,7 @@ export class CreateStepDialog {
 				.component();
 			this.fileBrowserTree.onDidChange((args) => {
 				this.selectedPathTextBox.value = args.fullPath;
-				this.fileBrowserNameBox.value = args.isFile ? args.fullPath.replace(/^.*[\\\/]/, '') : '';
+				this.fileBrowserNameBox.value = args.isFile ? path.win32.basename(args.fullPath) : '';
 			});
 			this.fileTypeDropdown = view.modelBuilder.dropDown()
 				.withProperties({
@@ -403,7 +404,7 @@ export class CreateStepDialog {
 			view.initializeModel(fileBrowserContainer);
 		});
 		this.fileBrowserDialog.okButton.onClick(() => {
-			this.outputFileNameBox.value = this.selectedPathTextBox.value + '\\' + this.fileBrowserNameBox.value;
+			this.outputFileNameBox.value = path.join(path.dirname(this.selectedPathTextBox.value), this.fileBrowserNameBox.value);
 		});
 		this.fileBrowserDialog.okButton.label = CreateStepDialog.OkButtonText;
 		this.fileBrowserDialog.cancelButton.label = CreateStepDialog.CancelButtonText;

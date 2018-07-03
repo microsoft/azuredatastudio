@@ -27,7 +27,6 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 	@Input() modelStore: IModelStore;
 	private _treeView: FileBrowserTreeView;
 	private _viewModel: FileBrowserViewModel;
-	private _currentPath: string;
 	private _fileFilters: [{label: string, filters: string[]}] = [
 		{ label: 'All Files', filters: ['*'] }
 	];
@@ -61,7 +60,6 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 	}
 
 	private onClicked(selectedNode: FileNode) {
-		this._currentPath = selectedNode.fullPath;
 		this._onEventEmitter.fire({
 			eventType: ComponentEventType.onDidChange,
 			args: { fullPath: selectedNode.fullPath, isFile: selectedNode.isFile }
@@ -128,10 +126,6 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 	}
 
 	// CSS-bound properties
-	public get currentPath(): string {
-		return this.getPropertyOrDefault<sqlops.FileBrowserTreeProperties, string>((props) => props.currentPath, '');
-	}
-
 	public get ownerUri(): string {
 		return this.getPropertyOrDefault<sqlops.FileBrowserTreeProperties, string>((props) => props.ownerUri, '');
 	}
