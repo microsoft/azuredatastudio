@@ -19,7 +19,6 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 
 import * as DOM from 'vs/base/browser/dom';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { Builder } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -44,6 +43,7 @@ import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRe
 import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/find/findController';
 import * as types from 'vs/base/common/types';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { textFormatter } from 'sql/parts/grid/services/sharedServices';
 
 class BasicView extends View {
 	private _previousSize: number;
@@ -271,12 +271,14 @@ export class ProfilerEditor extends BaseEditor {
 			{
 				id: 'label',
 				name: nls.localize('label', "Label"),
-				field: 'label'
+				field: 'label',
+				formatter: textFormatter
 			},
 			{
 				id: 'value',
 				name: nls.localize('profilerEditor.value', "Value"),
-				field: 'value'
+				field: 'value',
+				formatter: textFormatter
 			}
 		], { forceFitColumns: true });
 
