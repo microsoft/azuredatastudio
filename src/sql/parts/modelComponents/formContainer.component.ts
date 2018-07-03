@@ -22,7 +22,7 @@ import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/do
 export interface TitledFormItemLayout {
 	title: string;
 	actions?: string[];
-	isFormComponent: Boolean;
+	isFormComponent: boolean;
 	horizontal: boolean;
 	componentWidth?: number | string;
 	componentHeight?: number | string;
@@ -43,10 +43,13 @@ class FormItem {
 	template: `
 		<div #container *ngIf="items" class="form-table" [style.padding]="getFormPadding()" [style.width]="getFormWidth()" [style.height]="getFormHeight()">
 			<ng-container *ngFor="let item of items">
+			<div class="form-row" *ngIf="isGroupLabel(item)">
+				{{item.config.groupName}}
+			</div>
 			<div class="form-row" *ngIf="isFormComponent(item)" [style.height]="getRowHeight(item)">
 
 					<ng-container *ngIf="isHorizontal(item)">
-						<div class="form-cell" [style.font-size]="getItemTitleFontSize(item)">
+						<div class="form-cell" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
 							<span class="icon info form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
 						</div>
@@ -66,7 +69,7 @@ class FormItem {
 						</div>
 					</ng-container>
 					<div class="form-vertical-container" *ngIf="isVertical(item)" [style.height]="getRowHeight(item)">
-						<div class="form-item-row" [style.font-size]="getItemTitleFontSize(item)">
+						<div class="form-item-row" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
 							<span class="icon info form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
 						</div>
@@ -190,11 +193,19 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		return [];
 	}
 
-	private isFormComponent(item: FormItem): Boolean {
+	private isGroupLabel(item: FormItem): boolean {
+		return item && item.config && (item.config as any).groupName;
+	}
+
+	private isInGroup(item: FormItem): boolean {
+		return item && item.config && (item.config as any).isInGroup;
+	}
+
+	private isFormComponent(item: FormItem): boolean {
 		return item && item.config && item.config.isFormComponent;
 	}
 
-	private itemHasActions(item: FormItem): Boolean {
+	private itemHasActions(item: FormItem): boolean {
 		let itemConfig = item.config;
 		return itemConfig && itemConfig.actions !== undefined && itemConfig.actions.length > 0;
 	}

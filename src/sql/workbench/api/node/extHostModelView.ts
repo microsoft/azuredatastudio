@@ -242,14 +242,8 @@ class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> ext
 }
 
 class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> implements sqlops.FormBuilder {
-	withFormItems(components: sqlops.FormComponent[], itemLayout?: sqlops.FormItemLayout): sqlops.ContainerBuilder<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> {
-		this._component.itemConfigs = components.map(item => {
-			return this.convertToItemConfig(item, itemLayout);
-		});
-
-		components.forEach(formItem => {
-			this.addComponentActions(formItem, itemLayout);
-		});
+	withFormItems(components: (sqlops.FormComponent | sqlops.FormComponentGroup)[], itemLayout?: sqlops.FormItemLayout): sqlops.ContainerBuilder<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> {
+		this.addFormItems(components, itemLayout);
 		return this;
 	}
 
@@ -283,16 +277,28 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 		}
 	}
 
-	addFormItems(formComponents: Array<sqlops.FormComponent>, itemLayout?: sqlops.FormItemLayout): void {
+	addFormItems(formComponents: Array<sqlops.FormComponent | sqlops.FormComponentGroup>, itemLayout?: sqlops.FormItemLayout): void {
 		formComponents.forEach(formComponent => {
 			this.addFormItem(formComponent, itemLayout);
 		});
 	}
 
-	addFormItem(formComponent: sqlops.FormComponent, itemLayout?: sqlops.FormItemLayout): void {
-		let itemImpl = this.convertToItemConfig(formComponent, itemLayout);
-		this._component.addItem(formComponent.component as ComponentWrapper, itemImpl.config);
-		this.addComponentActions(formComponent, itemLayout);
+	addFormItem(formComponent: sqlops.FormComponent | sqlops.FormComponentGroup, itemLayout?: sqlops.FormItemLayout): void {
+		let componentGroup = formComponent as sqlops.FormComponentGroup;
+		if (componentGroup && componentGroup.components !== undefined) {
+			this._component.addItem(undefined, { groupName: componentGroup.title });
+			componentGroup.components.forEach(component => {
+				let itemConfig = this.convertToItemConfig(component, itemLayout);
+				itemConfig.config.isInGroup = true;
+				this._component.addItem(component.component as ComponentWrapper, itemConfig.config);
+				this.addComponentActions(component, itemLayout);
+			});
+		} else {
+			formComponent = formComponent as sqlops.FormComponent;
+			let itemImpl = this.convertToItemConfig(formComponent, itemLayout);
+			this._component.addItem(formComponent.component as ComponentWrapper, itemImpl.config);
+			this.addComponentActions(formComponent, itemLayout);
+		}
 	}
 }
 

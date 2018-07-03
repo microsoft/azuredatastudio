@@ -81,7 +81,7 @@ declare module 'sqlops' {
 	}
 
 	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
-		withFormItems(components: FormComponent[], itemLayout?: FormItemLayout): ContainerBuilder<FormContainer, FormLayout, FormItemLayout>;
+		withFormItems(components: (FormComponent | FormComponentGroup)[], itemLayout?: FormItemLayout): ContainerBuilder<FormContainer, FormLayout, FormItemLayout>;
 
 		/**
 		 * Creates a collection of child components and adds them all to this container
@@ -89,7 +89,7 @@ declare module 'sqlops' {
 		 * @param formComponents the definitions
 		 * @param {*} [itemLayout] Optional layout for the child items
 		 */
-		addFormItems(formComponents: Array<FormComponent>, itemLayout?: FormItemLayout): void;
+		addFormItems(formComponents: Array<FormComponent | FormComponentGroup>, itemLayout?: FormItemLayout): void;
 
 		/**
 		 * Creates a child component and adds it to this container.
@@ -97,7 +97,7 @@ declare module 'sqlops' {
 		 * @param formComponent the component to be added
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
-		addFormItem(formComponent: FormComponent, itemLayout?: FormItemLayout): void;
+		addFormItem(formComponent: FormComponent | FormComponentGroup, itemLayout?: FormItemLayout): void;
 	}
 
 	export interface Component {
@@ -134,6 +134,21 @@ declare module 'sqlops' {
 		title: string;
 		actions?: Component[];
 		required?: boolean;
+	}
+
+	/**
+	 * Used to create a group of components in a form layout
+	 */
+	export interface FormComponentGroup {
+		/**
+		 * The form components to display in the group
+		 */
+		components: FormComponent[];
+
+		/**
+		 * The title of the group, displayed above its components
+		 */
+		title: string;
 	}
 
 	export interface ToolbarComponent {

@@ -56,3 +56,7 @@
 	padding-right: 5px;
 	display: table-cell;
 }
+
+.form-group-item {
+	padding-left: 20px;
+}
