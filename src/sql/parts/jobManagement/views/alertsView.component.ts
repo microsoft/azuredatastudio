@@ -149,7 +149,7 @@ export class AlertsViewComponent implements AfterContentChecked {
 		this._cd.detectChanges();
 	}
 
-	private openCreateJobDialog() {
+	private openCreateAlertDialog() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._commandService.executeCommand('agent.openCreateAlertDialog', ownerUri);
 	}

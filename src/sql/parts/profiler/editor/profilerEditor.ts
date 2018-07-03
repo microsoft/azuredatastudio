@@ -16,10 +16,10 @@ import { ProfilerTableEditor } from './controller/profilerTableEditor';
 import * as Actions from 'sql/parts/profiler/contrib/profilerActions';
 import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from './interfaces';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { textFormatter } from 'sql/parts/grid/services/sharedServices';
 
 import * as DOM from 'vs/base/browser/dom';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { Builder } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -286,12 +286,14 @@ export class ProfilerEditor extends BaseEditor {
 			{
 				id: 'label',
 				name: nls.localize('label', "Label"),
-				field: 'label'
+				field: 'label',
+				formatter: textFormatter
 			},
 			{
 				id: 'value',
 				name: nls.localize('profilerEditor.value', "Value"),
-				field: 'value'
+				field: 'value',
+				formatter: textFormatter
 			}
 		], { forceFitColumns: true });
 
