@@ -8,7 +8,7 @@ import { AlertDialog } from './dialogs/alertDialog';
 import { JobDialog } from './dialogs/jobDialog';
 import { OperatorDialog } from './dialogs/operatorDialog';
 import { ProxyDialog } from './dialogs/proxyDialog';
-import { CreateStepDialog } from './dialogs/createStepDialog';
+import { JobStepDialog } from './dialogs/jobStepDialog';
 import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
 
 /**
@@ -31,7 +31,7 @@ export class MainController {
             dialog.showDialog();
         });
         vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, jobId: string, server: string, stepId: number) => {
-			let dialog = new CreateStepDialog(ownerUri, jobId, server, stepId);
+			let dialog = new JobStepDialog(ownerUri, jobId, server, stepId);
 			dialog.openNewStepDialog();
         });
         vscode.commands.registerCommand('agent.openPickScheduleDialog', (ownerUri: string) => {

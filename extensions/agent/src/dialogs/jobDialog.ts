@@ -5,7 +5,7 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import { CreateJobData } from '../data/createJobData';
-import { CreateStepDialog } from './createStepDialog';
+import { JobStepDialog } from './jobStepDialog';
 import { PickScheduleDialog } from './pickScheduleDialog';
 import { AlertDialog } from './alertDialog';
 
@@ -200,7 +200,7 @@ export class JobDialog {
 			}).component();
 
 			this.newStepButton.onDidClick((e)=>{
-				let stepDialog = new CreateStepDialog(this.model.ownerUri, '', '', 1, this.model);
+				let stepDialog = new JobStepDialog(this.model.ownerUri, '', '', 1, this.model);
 				stepDialog.openNewStepDialog();
 			});
 

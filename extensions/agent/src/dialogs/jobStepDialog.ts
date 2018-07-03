@@ -10,7 +10,7 @@ import { AgentUtils } from '../agentUtils';
 import { CreateJobData } from '../data/createJobData';
 const path = require('path');
 
-export class CreateStepDialog {
+export class JobStepDialog {
 
 	// TODO: localize
 	// Top level
@@ -98,24 +98,24 @@ export class CreateStepDialog {
 	}
 
 	private initializeUIComponents() {
-		this.dialog = sqlops.window.modelviewdialog.createDialog(CreateStepDialog.DialogTitle);
-		this.generalTab = sqlops.window.modelviewdialog.createTab(CreateStepDialog.GeneralTabText);
-		this.advancedTab = sqlops.window.modelviewdialog.createTab(CreateStepDialog.AdvancedTabText);
+		this.dialog = sqlops.window.modelviewdialog.createDialog(JobStepDialog.DialogTitle);
+		this.generalTab = sqlops.window.modelviewdialog.createTab(JobStepDialog.GeneralTabText);
+		this.advancedTab = sqlops.window.modelviewdialog.createTab(JobStepDialog.AdvancedTabText);
 		this.dialog.content = [this.generalTab, this.advancedTab];
 		this.dialog.okButton.onClick(async () => await this.execute());
-		this.dialog.okButton.label = CreateStepDialog.OkButtonText;
-		this.dialog.cancelButton.label = CreateStepDialog.CancelButtonText;
+		this.dialog.okButton.label = JobStepDialog.OkButtonText;
+		this.dialog.cancelButton.label = JobStepDialog.CancelButtonText;
 	}
 
 	private createCommands(view, queryProvider: sqlops.QueryProvider) {
 		this.openButton = view.modelBuilder.button()
 			.withProperties({
-				label: CreateStepDialog.OpenCommandText,
+				label: JobStepDialog.OpenCommandText,
 				width: '80px'
 			}).component();
 		this.parseButton = view.modelBuilder.button()
 			.withProperties({
-				label: CreateStepDialog.ParseCommandText,
+				label: JobStepDialog.ParseCommandText,
 				width: '80px'
 			}).component();
 		this.parseButton.onDidClick(e => {
@@ -139,13 +139,13 @@ export class CreateStepDialog {
 			.component();
 		this.nextButton = view.modelBuilder.button()
 			.withProperties({
-				label: CreateStepDialog.NextButtonText,
+				label: JobStepDialog.NextButtonText,
 				enabled: false,
 				width: '80px'
 			}).component();
 		this.previousButton = view.modelBuilder.button()
 			.withProperties({
-				label: CreateStepDialog.PreviousButtonText,
+				label: JobStepDialog.PreviousButtonText,
 				enabled: false,
 				width: '80px'
 			}).component();
@@ -159,8 +159,8 @@ export class CreateStepDialog {
 			this.nameTextBox.required = true;
 			this.typeDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: CreateStepDialog.TSQLScript,
-					values: [CreateStepDialog.TSQLScript]
+					value: JobStepDialog.TSQLScript,
+					values: [JobStepDialog.TSQLScript]
 				})
 				.component();
 			this.runAsDropdown = view.modelBuilder.dropDown()
@@ -171,8 +171,8 @@ export class CreateStepDialog {
 				.component();
 			this.runAsDropdown.enabled = false;
 			this.typeDropdown.onValueChanged((type) => {
-				if (type.selected !== CreateStepDialog.TSQLScript) {
-					this.runAsDropdown.value = CreateStepDialog.AgentServiceAccount;
+				if (type.selected !== JobStepDialog.TSQLScript) {
+					this.runAsDropdown.value = JobStepDialog.AgentServiceAccount;
 					this.runAsDropdown.values = [this.runAsDropdown.value];
 				} else {
 					this.runAsDropdown.value = '';
@@ -251,15 +251,15 @@ export class CreateStepDialog {
 		this.advancedTab.registerContent(async (view) => {
 			this.successActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: CreateStepDialog.NextStep,
-					values: [CreateStepDialog.NextStep, CreateStepDialog.QuitJobReportingSuccess, CreateStepDialog.QuitJobReportingFailure]
+					value: JobStepDialog.NextStep,
+					values: [JobStepDialog.NextStep, JobStepDialog.QuitJobReportingSuccess, JobStepDialog.QuitJobReportingFailure]
 				})
 				.component();
 			let retryFlexContainer = this.createRetryCounters(view);
 			this.failureActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: CreateStepDialog.QuitJobReportingFailure,
-					values: [CreateStepDialog.QuitJobReportingFailure, CreateStepDialog.NextStep, CreateStepDialog.QuitJobReportingSuccess]
+					value: JobStepDialog.QuitJobReportingFailure,
+					values: [JobStepDialog.QuitJobReportingFailure, JobStepDialog.NextStep, JobStepDialog.QuitJobReportingSuccess]
 				})
 				.component();
 			let optionsGroup = this.createTSQLOptions(view);
@@ -289,13 +289,13 @@ export class CreateStepDialog {
 				.withFormItems(
 					[{
 						component: this.successActionDropdown,
-						title: CreateStepDialog.SuccessAction
+						title: JobStepDialog.SuccessAction
 					}, {
 						component: retryFlexContainer,
 						title: ''
 					}, {
 						component: this.failureActionDropdown,
-						title: CreateStepDialog.FailureAction
+						title: JobStepDialog.FailureAction
 					}, {
 						component: optionsGroup,
 						title: 'Transact-SQL script (T-SQL)'
@@ -362,7 +362,7 @@ export class CreateStepDialog {
 	}
 
 	private openFileBrowserDialog() {
-		let fileBrowserTitle = CreateStepDialog.FileBrowserDialogTitle + `${this.server}`;
+		let fileBrowserTitle = JobStepDialog.FileBrowserDialogTitle + `${this.server}`;
 		this.fileBrowserDialog = sqlops.window.modelviewdialog.createDialog(fileBrowserTitle);
 		let fileBrowserTab = sqlops.window.modelviewdialog.createTab('File Browser');
 		this.fileBrowserDialog.content =  [fileBrowserTab];
@@ -406,8 +406,8 @@ export class CreateStepDialog {
 		this.fileBrowserDialog.okButton.onClick(() => {
 			this.outputFileNameBox.value = path.join(path.dirname(this.selectedPathTextBox.value), this.fileBrowserNameBox.value);
 		});
-		this.fileBrowserDialog.okButton.label = CreateStepDialog.OkButtonText;
-		this.fileBrowserDialog.cancelButton.label = CreateStepDialog.CancelButtonText;
+		this.fileBrowserDialog.okButton.label = JobStepDialog.OkButtonText;
+		this.fileBrowserDialog.cancelButton.label = JobStepDialog.CancelButtonText;
 		sqlops.window.modelviewdialog.openDialog(this.fileBrowserDialog);
 	}
 

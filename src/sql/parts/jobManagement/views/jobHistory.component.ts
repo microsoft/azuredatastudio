@@ -5,18 +5,19 @@
 
 import 'vs/css!./jobHistory';
 import 'vs/css!sql/media/icons/common-icons';
-import { OnInit, OnChanges, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
+
 import * as sqlops from 'sqlops';
-import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
-import { RunJobAction, StopJobAction, NewStepAction } from 'sql/parts/jobManagement/views/jobActions';
+import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
+import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { RunJobAction, StopJobAction, NewStepAction } from 'sql/parts/jobManagement/common/jobActions';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
-import { JobStepsViewRow } from './jobStepsViewTree';
+import { JobStepsViewRow } from 'sql/parts/jobManagement/views/jobStepsViewTree';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';

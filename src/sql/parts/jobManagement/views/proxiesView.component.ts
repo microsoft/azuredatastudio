@@ -19,7 +19,7 @@ import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { EditProxy, DeleteProxy } from 'sql/parts/jobManagement/views/jobActions';
+import { EditProxy, DeleteProxy } from 'sql/parts/jobManagement/common/jobActions';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';

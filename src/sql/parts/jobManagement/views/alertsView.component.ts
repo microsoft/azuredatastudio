@@ -17,18 +17,19 @@ import * as dom from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 import * as sqlops from 'sqlops';
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
+import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { EditAlert, DeleteAlert } from 'sql/parts/jobManagement/common/jobActions';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAction } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { EditAlert, DeleteAlert } from 'sql/parts/jobManagement/views/jobActions';
+
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 
 export const VIEW_SELECTOR: string = 'jobalertsview-component';
