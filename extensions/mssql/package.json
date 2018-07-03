@@ -18,23 +18,6 @@
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
   "contributes": {
-    "commands": [
-      {
-        "category": "MSSQL",
-        "command": "mssql.openTestDialog",
-        "title": "Open test dialog"
-      },
-      {
-        "category": "MSSQL",
-        "command": "mssql.listTasks",
-        "title": "List current tasks"
-      },
-      {
-        "command": "mssql.openTestWizard",
-        "category": "MSSQL",
-        "title": "Open test wizard"
-      }
-    ],
     "languages": [
       {
         "id": "sql",
@@ -675,7 +658,7 @@
     }
   },
   "dependencies": {
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.1.8.2",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.1.9",
     "opener": "^1.4.3",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.2",
     "vscode-extension-telemetry": "^0.0.15"
