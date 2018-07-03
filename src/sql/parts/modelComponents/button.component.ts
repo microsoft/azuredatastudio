@@ -103,6 +103,8 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 					buttonFocusOutline: focusBorder,
 					buttonForeground: foreground
 				}));
+			} else {
+				super.updateIcon();
 			}
 		}
 	}
