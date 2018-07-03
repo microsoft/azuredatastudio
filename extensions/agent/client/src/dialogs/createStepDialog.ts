@@ -372,9 +372,9 @@ export class CreateStepDialog {
 			this.selectedPathTextBox = view.modelBuilder.inputBox()
 				.withProperties({ inputType: 'text'})
 				.component();
-			this.fileBrowserTree.onDidChange((filePath) => {
-				this.selectedPathTextBox.value = filePath;
-				this.fileBrowserNameBox.value = filePath.replace(/^.*[\\\/]/, '');
+			this.fileBrowserTree.onDidChange((args) => {
+				this.selectedPathTextBox.value = args.fullPath;
+				this.fileBrowserNameBox.value = args.isFile ? args.fullPath.replace(/^.*[\\\/]/, '') : '';
 			});
 			this.fileTypeDropdown = view.modelBuilder.dropDown()
 				.withProperties({
@@ -399,11 +399,12 @@ export class CreateStepDialog {
 					component: this.fileBrowserNameBox,
 					title: 'File name:'
 				}
-			])
-				.component();
+			]).component();
 			view.initializeModel(fileBrowserContainer);
 		});
-		// this.fileBrowserDialog.okButton.onClick(async () => await this.execute());
+		this.fileBrowserDialog.okButton.onClick(() => {
+			this.outputFileNameBox.value = this.selectedPathTextBox.value + '\\' + this.fileBrowserNameBox.value;
+		});
 		this.fileBrowserDialog.okButton.label = CreateStepDialog.OkButtonText;
 		this.fileBrowserDialog.cancelButton.label = CreateStepDialog.CancelButtonText;
 		sqlops.window.modelviewdialog.openDialog(this.fileBrowserDialog);
@@ -415,7 +416,7 @@ export class CreateStepDialog {
 		this.outputFileBrowserButton.onDidClick(() => this.openFileBrowserDialog());
 		this.outputFileNameBox = view.modelBuilder.inputBox()
 			.withProperties({
-				width: '100px',
+				width: '150px',
 				inputType: 'text'
 			}).component();
 		let outputViewButton = view.modelBuilder.button()
@@ -473,6 +474,7 @@ export class CreateStepDialog {
 		this.model.retryInterval = +this.retryIntervalBox.value;
 		this.model.failureAction = this.failureActionDropdown.value as string;
 		this.model.outputFileName = this.outputFileNameBox.value;
+		this.model.appendToLogFile = this.appendToExistingFileCheckbox.checked;
 		await this.model.save();
 	}
 

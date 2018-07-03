@@ -64,7 +64,7 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 		this._currentPath = selectedNode.fullPath;
 		this._onEventEmitter.fire({
 			eventType: ComponentEventType.onDidChange,
-			args: selectedNode.fullPath
+			args: { fullPath: selectedNode.fullPath, isFile: selectedNode.isFile }
 		});
 	}
 
