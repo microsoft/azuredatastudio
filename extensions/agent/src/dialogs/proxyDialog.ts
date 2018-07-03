@@ -12,7 +12,7 @@ import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 
-export class CreateProxyDialog {
+export class ProxyDialog {
 
 	// Top level
 	private static readonly DialogTitle: string = localize('createProxy.createAlert', 'Create Alert');
@@ -48,16 +48,16 @@ export class CreateProxyDialog {
 
 	public async showDialog() {
 		await this.model.initialize();
-		this.dialog = sqlops.window.modelviewdialog.createDialog(CreateProxyDialog.DialogTitle);
-		this.generalTab = sqlops.window.modelviewdialog.createTab(CreateProxyDialog.GeneralTabText);
+		this.dialog = sqlops.window.modelviewdialog.createDialog(ProxyDialog.DialogTitle);
+		this.generalTab = sqlops.window.modelviewdialog.createTab(ProxyDialog.GeneralTabText);
 
 		this.initializeGeneralTab();
 
 		this.dialog.content = [this.generalTab];
 		this.dialog.okButton.onClick(async () => await this.execute());
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.okButton.label = CreateProxyDialog.OkButtonText;
-		this.dialog.cancelButton.label = CreateProxyDialog.CancelButtonText;
+		this.dialog.okButton.label = ProxyDialog.OkButtonText;
+		this.dialog.cancelButton.label = ProxyDialog.CancelButtonText;
 
 		sqlops.window.modelviewdialog.openDialog(this.dialog);
 	}
@@ -74,7 +74,7 @@ export class CreateProxyDialog {
 			this.subsystemsTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						CreateProxyDialog.SubsystemNameColumnLabel
+						ProxyDialog.SubsystemNameColumnLabel
 					],
 					data: [],
 					height: 500
@@ -83,16 +83,16 @@ export class CreateProxyDialog {
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.proxyNameTextBox,
-					title: CreateProxyDialog.ProxyNameTextBoxLabel
+					title: ProxyDialog.ProxyNameTextBoxLabel
 				}, {
 					component: this.credentialNameTextBox,
-					title: CreateProxyDialog.CredentialNameTextBoxLabel
+					title: ProxyDialog.CredentialNameTextBoxLabel
 				}, {
 					component: this.descriptionTextBox,
-					title: CreateProxyDialog.DescriptionTextBoxLabel
+					title: ProxyDialog.DescriptionTextBoxLabel
 				}, {
 					component: this.subsystemsTable,
-					title: CreateProxyDialog.SubsystemsTableLabel
+					title: ProxyDialog.SubsystemsTableLabel
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);

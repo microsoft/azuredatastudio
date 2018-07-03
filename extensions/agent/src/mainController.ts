@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as vscode from 'vscode';
-import { CreateAlertDialog } from './dialogs/createAlertDialog';
-import { CreateJobDialog } from './dialogs/createJobDialog';
-import { CreateOperatorDialog } from './dialogs/createOperatorDialog';
-import { CreateProxyDialog } from './dialogs/createProxyDialog';
+import { AlertDialog } from './dialogs/alertDialog';
+import { JobDialog } from './dialogs/jobDialog';
+import { OperatorDialog } from './dialogs/operatorDialog';
+import { ProxyDialog } from './dialogs/proxyDialog';
 import { CreateStepDialog } from './dialogs/createStepDialog';
 import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
 
@@ -27,7 +27,7 @@ export class MainController {
      */
     public activate(): void {
         vscode.commands.registerCommand('agent.openCreateJobDialog', (ownerUri: string) => {
-            let dialog = new CreateJobDialog(ownerUri);
+            let dialog = new JobDialog(ownerUri);
             dialog.showDialog();
         });
         vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, jobId: string, server: string, stepId: number) => {
@@ -39,15 +39,15 @@ export class MainController {
             dialog.showDialog();
         });
         vscode.commands.registerCommand('agent.openCreateAlertDialog', (ownerUri: string) => {
-            let dialog = new CreateAlertDialog(ownerUri);
+            let dialog = new AlertDialog(ownerUri);
             dialog.showDialog();
         });
         vscode.commands.registerCommand('agent.openCreateOperatorDialog', (ownerUri: string) => {
-            let dialog = new CreateOperatorDialog(ownerUri);
+            let dialog = new OperatorDialog(ownerUri);
             dialog.showDialog();
         });
         vscode.commands.registerCommand('agent.openCreateProxyDialog', (ownerUri: string) => {
-            let dialog = new CreateProxyDialog(ownerUri);
+            let dialog = new ProxyDialog(ownerUri);
             dialog.showDialog();
         });
     }

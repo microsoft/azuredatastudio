@@ -7,9 +7,9 @@ import * as sqlops from 'sqlops';
 import { CreateJobData } from '../data/createJobData';
 import { CreateStepDialog } from './createStepDialog';
 import { PickScheduleDialog } from './pickScheduleDialog';
-import { CreateAlertDialog } from './createAlertDialog';
+import { AlertDialog } from './alertDialog';
 
-export class CreateJobDialog {
+export class JobDialog {
 
 	// TODO: localize
 	// Top level
@@ -247,7 +247,7 @@ export class CreateJobDialog {
 			}).component();
 
 			this.newAlertButton.onDidClick((e)=>{
-				let alertDialog = new CreateAlertDialog(this.model.ownerUri);
+				let alertDialog = new AlertDialog(this.model.ownerUri);
 				alertDialog.onSuccess((dialogModel) => {
 				});
 				alertDialog.showDialog();

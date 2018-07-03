@@ -9,7 +9,7 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { CreateScheduleData } from '../data/createScheduleData';
 
-export class CreateScheduleDialog {
+export class ScheduleDialog {
 
 	// Top level
 	private readonly DialogTitle: string = 'New Schedule';
