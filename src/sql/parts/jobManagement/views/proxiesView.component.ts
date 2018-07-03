@@ -12,18 +12,24 @@ import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!sql/base/browser/ui/table/media/table';
 
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
+import * as dom from 'vs/base/browser/dom';
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
-import * as dom from 'vs/base/browser/dom';
-import { IJobManagementService } from '../common/interfaces';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { EditProxy, DeleteProxy } from 'sql/parts/jobManagement/views/jobActions';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { ICommandService } from 'vs/platform/commands/common/commands';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IAction } from 'vs/base/common/actions';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+
 export const VIEW_SELECTOR: string = 'jobproxiesview-component';
 export const ROW_HEIGHT: number = 45;
 
@@ -46,18 +52,18 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 	private options: Slick.GridOptions<any> = {
 		syncColumnCellResize: true,
 		enableColumnReorder: false,
-		rowHeight: 45,
+		rowHeight: ROW_HEIGHT,
 		enableCellNavigation: true,
 		editable: false
 	};
 
 	private dataView: any;
-
-	@ViewChild('proxiesgrid') _gridEl: ElementRef;
-	private _table: Table<any>;
-	public proxies: sqlops.AgentProxyInfo[];
 	private _serverName: string;
 	private _isCloud: boolean;
+
+	public proxies: sqlops.AgentProxyInfo[];
+
+	@ViewChild('proxiesgrid') _gridEl: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
@@ -66,9 +72,11 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IThemeService) private _themeService: IThemeService,
-		@Inject(ICommandService) private _commandService: ICommandService
+		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService
 	) {
-		super();
+		super(contextMenuService, keybindingService);
 		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
@@ -102,6 +110,10 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 		this._table = new Table(this._gridEl.nativeElement, undefined, columns, this.options);
 		this._table.grid.setData(this.dataView, true);
 
+		this._register(this._table.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+			self.openContextMenu(e);
+		}));
+
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getProxies(ownerUri).then((result) => {
 			if (result && result.proxies) {
@@ -132,6 +144,13 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 		this.dataView.endUpdate();
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
+	}
+
+	protected getTableActions(): TPromise<IAction[]> {
+		let actions: IAction[] = [];
+		actions.push(new EditProxy(EditProxy.ID, EditProxy.LABEL));
+		actions.push(new DeleteProxy(DeleteProxy.ID, DeleteProxy.LABEL));
+		return TPromise.as(actions);
 	}
 
 	private openCreateProxyDialog() {

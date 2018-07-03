@@ -114,3 +114,132 @@ export class NewStepAction extends Action {
 		});
 	}
 }
+
+export class EditJob extends Action {
+	public static ID = 'jobaction.editJob';
+	public static LABEL = nls.localize('jobaction.editJob', "Edit Job");
+
+	constructor(
+		id: string,
+		label: string
+	) {
+		super(id, label);
+	}
+
+	public run(info: any): TPromise<boolean> {
+		return TPromise.as(true);
+	}
+}
+
+export class DeleteJob extends Action {
+	public static ID = 'jobaction.deleteJob';
+	public static LABEL = nls.localize('jobaction.deleteJob', "Delete Job");
+
+	constructor(
+		id: string,
+		label: string
+	) {
+		super(id, label);
+	}
+
+	public run(info: any): TPromise<boolean> {
+		return TPromise.as(true);
+	}
+}
+
+export class EditAlert extends Action {
+	public static ID = 'jobaction.editAlert';
+	public static LABEL = nls.localize('jobaction.editAlert', "Edit Alert");
+
+	constructor(
+		id: string,
+		label: string
+	) {
+		super(id, label);
+	}
+
+	public run(info: any): TPromise<boolean> {
+		return TPromise.as(true);
+	}
+}
+
+export class DeleteAlert extends Action {
+	public static ID = 'jobaction.deleteAlert';
+	public static LABEL = nls.localize('jobaction.deleteAlert', "Delete Alert");
+
+	constructor(
+		id: string,
+		label: string
+	) {
+		super(id, label);
+	}
+
+	public run(info: any): TPromise<boolean> {
+		return TPromise.as(true);
+	}
+}
+
+export class EditOperator extends Action {
+	public static ID = 'jobaction.editAlert';
+	public static LABEL = nls.localize('jobaction.editOperator', "Edit Operator");
+
+	constructor(
+		id: string,
+		label: string
+	) {
+		super(id, label);
+	}
+
+	public run(info: any): TPromise<boolean> {
+		return TPromise.as(true);
+	}
+}
+
+export class DeleteOperator extends Action {
+	public static ID = 'jobaction.deleteOperator';
+	public static LABEL = nls.localize('jobaction.deleteOperator', "Delete Operator");
+
+	constructor(
+		id: string,
+		label: string
+	) {
+		super(id, label);
+	}
+
+	public run(info: any): TPromise<boolean> {
+		return TPromise.as(true);
+	}
+}
+
+
+export class EditProxy extends Action {
+	public static ID = 'jobaction.editProxy';
+	public static LABEL = nls.localize('jobaction.editProxy', "Edit Proxy");
+
+	constructor(
+		id: string,
+		label: string
+	) {
+		super(id, label);
+	}
+
+	public run(info: any): TPromise<boolean> {
+		return TPromise.as(true);
+	}
+}
+
+export class DeleteProxy extends Action {
+	public static ID = 'jobaction.deleteOperator';
+	public static LABEL = nls.localize('jobaction.deleteProxy', "Delete Proxy");
+
+	constructor(
+		id: string,
+		label: string
+	) {
+		super(id, label);
+	}
+
+	public run(info: any): TPromise<boolean> {
+		return TPromise.as(true);
+	}
+}

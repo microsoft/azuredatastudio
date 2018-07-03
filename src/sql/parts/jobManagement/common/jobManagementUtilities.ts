@@ -7,7 +7,7 @@
 
 import * as nls from 'vs/nls';
 
-export class AgentJobUtilities {
+export class JobManagementUtilities {
 
 	public static startIconClass: string = 'action-label icon runJobIcon';
 	public static stopIconClass: string = 'action-label icon stopJobIcon';
@@ -63,8 +63,8 @@ export class AgentJobUtilities {
 	}
 
 	public static getActionIconClassName(startIcon: HTMLElement, stopIcon: HTMLElement, executionStatus: number) {
-		this.setRunnable(startIcon, AgentJobUtilities.startIconClass.length);
-		this.setRunnable(stopIcon, AgentJobUtilities.stopIconClass.length);
+		this.setRunnable(startIcon, JobManagementUtilities.startIconClass.length);
+		this.setRunnable(stopIcon, JobManagementUtilities.stopIconClass.length);
 		switch (executionStatus) {
 			case(1): // executing
 				startIcon.className += ' non-runnable';

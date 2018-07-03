@@ -24,6 +24,11 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IAction } from 'vs/base/common/actions';
+import { EditOperator, DeleteOperator } from 'sql/parts/jobManagement/views/jobActions';
 export const VIEW_SELECTOR: string = 'joboperatorsview-component';
 export const ROW_HEIGHT: number = 45;
 
@@ -53,7 +58,6 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 	};
 
 	private dataView: any;
-	private _table: Table<any>;
 	private _serverName: string;
 	private _isCloud: boolean;
 
@@ -68,9 +72,11 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IThemeService) private _themeService: IThemeService,
-		@Inject(ICommandService) private _commandService: ICommandService
+		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService
 	) {
-		super();
+		super(contextMenuService, keybindingService);
 		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
@@ -104,6 +110,10 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 		this._table = new Table(this._gridEl.nativeElement, undefined, columns, this.options);
 		this._table.grid.setData(this.dataView, true);
 
+		this._register(this._table.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+			self.openContextMenu(e);
+		}));
+
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getOperators(ownerUri).then((result) => {
 			if (result && result.operators) {
@@ -135,6 +145,13 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 		this.dataView.endUpdate();
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
+	}
+
+	protected getTableActions(): TPromise<IAction[]> {
+		let actions: IAction[] = [];
+		actions.push(new EditOperator(EditOperator.ID, EditOperator.LABEL));
+		actions.push(new DeleteOperator(DeleteOperator.ID, DeleteOperator.LABEL));
+		return TPromise.as(actions);
 	}
 
 	private openCreateOperatorDialog() {

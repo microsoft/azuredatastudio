@@ -20,7 +20,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
-import { AgentJobUtilities } from 'sql/parts/jobManagement/common/agentJobUtilities';
+import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
@@ -28,6 +28,11 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IAction } from 'vs/base/common/actions';
+import { EditJob, DeleteJob } from 'sql/parts/jobManagement/views/jobActions';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -72,7 +77,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	private rowDetail: RowDetailView;
 	private filterPlugin: any;
 	private dataView: any;
-	private _table: Table<any>;
 	private _serverName: string;
 	private _isCloud: boolean;
 	private filterStylingMap: { [columnName: string]: [any]; } = {};
@@ -92,9 +96,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IThemeService) private _themeService: IThemeService,
-		@Inject(ICommandService) private _commandService: ICommandService
+		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService
 	) {
-		super();
+		super(contextMenuService, keybindingService);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];
@@ -167,6 +173,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 			self._agentViewComponent.showHistory = true;
 		});
 
+		this._register(this._table.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+			self.openContextMenu(e);
+		}));
+
 		if (cached && this._agentViewComponent.refresh !== true) {
 			this.onJobsAvailable(null);
 			this._showProgressWheel = false;
@@ -205,14 +215,14 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 					id: job.jobId,
 					jobId: job.jobId,
 					name: job.name,
-					lastRun: AgentJobUtilities.convertToLastRun(job.lastRun),
-					nextRun: AgentJobUtilities.convertToNextRun(job.nextRun),
-					enabled: AgentJobUtilities.convertToResponse(job.enabled),
-					currentExecutionStatus: AgentJobUtilities.convertToExecutionStatusString(job.currentExecutionStatus),
+					lastRun: JobManagementUtilities.convertToLastRun(job.lastRun),
+					nextRun: JobManagementUtilities.convertToNextRun(job.nextRun),
+					enabled: JobManagementUtilities.convertToResponse(job.enabled),
+					currentExecutionStatus: JobManagementUtilities.convertToExecutionStatusString(job.currentExecutionStatus),
 					category: job.category,
-					runnable: AgentJobUtilities.convertToResponse(job.runnable),
-					hasSchedule: AgentJobUtilities.convertToResponse(job.hasSchedule),
-					lastRunOutcome: AgentJobUtilities.convertToStatusString(job.lastRunOutcome)
+					runnable: JobManagementUtilities.convertToResponse(job.runnable),
+					hasSchedule: JobManagementUtilities.convertToResponse(job.hasSchedule),
+					lastRunOutcome: JobManagementUtilities.convertToStatusString(job.lastRunOutcome)
 				};
 			});
 		}
@@ -542,7 +552,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	private checkPreviousFilters(item): boolean {
 		for (let column in this.filterValueMap) {
 			if (column !== 'start' && this.filterValueMap[column][0].length > 0) {
-				if (!_.contains(this.filterValueMap[column][0], item[AgentJobUtilities.convertColNameToField(column)])) {
+				if (!_.contains(this.filterValueMap[column][0], item[JobManagementUtilities.convertColNameToField(column)])) {
 					return false;
 				}
 			}
@@ -629,7 +639,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		}
 		let maxDuration: number = 0;
 		jobHistories.forEach(history => {
-			let historyDuration = AgentJobUtilities.convertDurationToSeconds(history.runDuration);
+			let historyDuration = JobManagementUtilities.convertDurationToSeconds(history.runDuration);
 			if (historyDuration > maxDuration) {
 				maxDuration = historyDuration;
 			}
@@ -639,7 +649,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		let chartHeights = [];
 		for (let i = 0; i < jobHistories.length; i++) {
 			let duration = jobHistories[i].runDuration;
-			let chartHeight = (maxBarHeight * AgentJobUtilities.convertDurationToSeconds(duration)) / maxDuration;
+			let chartHeight = (maxBarHeight * JobManagementUtilities.convertDurationToSeconds(duration)) / maxDuration;
 			chartHeights.push(`${chartHeight}px`);
 		}
 		return chartHeights;
@@ -809,6 +819,13 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 				return -1;
 			}
 		}
+	}
+
+	protected getTableActions(): TPromise<IAction[]> {
+		let actions: IAction[] = [];
+		actions.push(new EditJob(EditJob.ID, EditJob.LABEL));
+		actions.push(new DeleteJob(DeleteJob.ID, DeleteJob.LABEL));
+		return TPromise.as(actions);
 	}
 
 	private openCreateJobDialog() {
