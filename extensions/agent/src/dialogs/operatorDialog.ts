@@ -12,7 +12,7 @@ import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 
-export class CreateOperatorDialog {
+export class OperatorDialog {
 
 	// Top level
 	private static readonly DialogTitle: string = localize('createOperator.createOperator', 'Create Operator');
@@ -72,9 +72,9 @@ export class CreateOperatorDialog {
 
 	public async showDialog() {
 		await this.model.initialize();
-		this.dialog = sqlops.window.modelviewdialog.createDialog(CreateOperatorDialog.DialogTitle);
-		this.generalTab = sqlops.window.modelviewdialog.createTab(CreateOperatorDialog.GeneralTabText);
-		this.notificationsTab = sqlops.window.modelviewdialog.createTab(CreateOperatorDialog.NotificationsTabText);
+		this.dialog = sqlops.window.modelviewdialog.createDialog(OperatorDialog.DialogTitle);
+		this.generalTab = sqlops.window.modelviewdialog.createTab(OperatorDialog.GeneralTabText);
+		this.notificationsTab = sqlops.window.modelviewdialog.createTab(OperatorDialog.NotificationsTabText);
 
 		this.initializeGeneralTab();
 		this.initializeNotificationTab();
@@ -82,8 +82,8 @@ export class CreateOperatorDialog {
 		this.dialog.content = [this.generalTab, this.notificationsTab];
 		this.dialog.okButton.onClick(async () => await this.execute());
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.okButton.label = CreateOperatorDialog.OkButtonText;
-		this.dialog.cancelButton.label = CreateOperatorDialog.CancelButtonText;
+		this.dialog.okButton.label = OperatorDialog.OkButtonText;
+		this.dialog.cancelButton.label = OperatorDialog.CancelButtonText;
 
 		sqlops.window.modelviewdialog.openDialog(this.dialog);
 	}
@@ -94,7 +94,7 @@ export class CreateOperatorDialog {
 
 			this.enabledCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateOperatorDialog.EnabledCheckboxLabel
+					label: OperatorDialog.EnabledCheckboxLabel
 				}).component();
 
 			this.emailNameTextBox = view.modelBuilder.inputBox().component();
@@ -103,57 +103,57 @@ export class CreateOperatorDialog {
 
 			this.enabledCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateOperatorDialog.EnabledCheckboxLabel
+					label: OperatorDialog.EnabledCheckboxLabel
 				}).component();
 
 			this.pagerMondayCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateOperatorDialog.PagerMondayCheckBoxLabel
+					label: OperatorDialog.PagerMondayCheckBoxLabel
 				}).component();
 
 			this.pagerTuesdayCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateOperatorDialog.PagerTuesdayCheckBoxLabel
+					label: OperatorDialog.PagerTuesdayCheckBoxLabel
 				}).component();
 
 			this.pagerWednesdayCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateOperatorDialog.PagerWednesdayCheckBoxLabel
+					label: OperatorDialog.PagerWednesdayCheckBoxLabel
 				}).component();
 
 			this.pagerThursdayCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateOperatorDialog.PagerThursdayCheckBoxLabel
+					label: OperatorDialog.PagerThursdayCheckBoxLabel
 				}).component();
 
 			this.pagerFridayCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateOperatorDialog.PagerFridayCheckBoxLabel
+					label: OperatorDialog.PagerFridayCheckBoxLabel
 				}).component();
 
 			this.pagerSaturdayCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateOperatorDialog.PagerSaturdayCheckBoxLabel
+					label: OperatorDialog.PagerSaturdayCheckBoxLabel
 				}).component();
 
 			this.pagerSundayCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateOperatorDialog.PagerSundayCheckBoxLabel
+					label: OperatorDialog.PagerSundayCheckBoxLabel
 				}).component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.nameTextBox,
-					title: CreateOperatorDialog.NameLabel
+					title: OperatorDialog.NameLabel
 				}, {
 					component: this.enabledCheckBox,
 					title: ''
 				}, {
 					component: this.emailNameTextBox,
-					title: CreateOperatorDialog.EmailNameTextLabel
+					title: OperatorDialog.EmailNameTextLabel
 				}, {
 					component: this.pagerEmailNameTextBox,
-					title: CreateOperatorDialog.PagerEmailNameTextLabel
+					title: OperatorDialog.PagerEmailNameTextLabel
 				}, {
 					component: this.pagerTuesdayCheckBox,
 					title: ''
@@ -184,9 +184,9 @@ export class CreateOperatorDialog {
 			this.alertsTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						CreateOperatorDialog.AlertNameColumnLabel,
-						CreateOperatorDialog.AlertEmailColumnLabel,
-						CreateOperatorDialog.AlertPagerColumnLabel
+						OperatorDialog.AlertNameColumnLabel,
+						OperatorDialog.AlertEmailColumnLabel,
+						OperatorDialog.AlertPagerColumnLabel
 					],
 					data: [],
 					height: 500
@@ -195,7 +195,7 @@ export class CreateOperatorDialog {
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.alertsTable,
-					title: CreateOperatorDialog.AlertsTableLabel
+					title: OperatorDialog.AlertsTableLabel
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);

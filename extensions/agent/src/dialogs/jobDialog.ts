@@ -5,11 +5,11 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import { CreateJobData } from '../data/createJobData';
-import { CreateStepDialog } from './createStepDialog';
+import { JobStepDialog } from './jobStepDialog';
 import { PickScheduleDialog } from './pickScheduleDialog';
-import { CreateAlertDialog } from './createAlertDialog';
+import { AlertDialog } from './alertDialog';
 
-export class CreateJobDialog {
+export class JobDialog {
 
 	// TODO: localize
 	// Top level
@@ -200,7 +200,7 @@ export class CreateJobDialog {
 			}).component();
 
 			this.newStepButton.onDidClick((e)=>{
-				let stepDialog = new CreateStepDialog(this.model.ownerUri, '', '', 1, this.model);
+				let stepDialog = new JobStepDialog(this.model.ownerUri, '', '', 1, this.model);
 				stepDialog.openNewStepDialog();
 			});
 
@@ -247,7 +247,7 @@ export class CreateJobDialog {
 			}).component();
 
 			this.newAlertButton.onDidClick((e)=>{
-				let alertDialog = new CreateAlertDialog(this.model.ownerUri);
+				let alertDialog = new AlertDialog(this.model.ownerUri);
 				alertDialog.onSuccess((dialogModel) => {
 				});
 				alertDialog.showDialog();

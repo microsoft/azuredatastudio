@@ -13,7 +13,7 @@ import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 
-export class CreateAlertDialog {
+export class AlertDialog {
 
 	// Top level
 	private static readonly DialogTitle: string = localize('createAlert.createAlert', 'Create Alert');
@@ -62,37 +62,37 @@ export class CreateAlertDialog {
 	private static readonly AlertSeverity025Label: string = localize('createAlert.Severity025', '025 - Fatal Error');
 
 	private static readonly AlertTypes: string[]  = [
-		CreateAlertDialog.AlertTypeSqlServerEventString,
-		CreateAlertDialog.AlertTypePerformanceConditionString,
-		CreateAlertDialog.AlertTypeWmiEventString
+		AlertDialog.AlertTypeSqlServerEventString,
+		AlertDialog.AlertTypePerformanceConditionString,
+		AlertDialog.AlertTypeWmiEventString
 	];
 
 	private static readonly AlertSeverities: string[]  = [
-		CreateAlertDialog.AlertSeverity001Label,
-		CreateAlertDialog.AlertSeverity002Label,
-		CreateAlertDialog.AlertSeverity003Label,
-		CreateAlertDialog.AlertSeverity004Label,
-		CreateAlertDialog.AlertSeverity005Label,
-		CreateAlertDialog.AlertSeverity006Label,
-		CreateAlertDialog.AlertSeverity007Label,
-		CreateAlertDialog.AlertSeverity008Label,
-		CreateAlertDialog.AlertSeverity009Label,
-		CreateAlertDialog.AlertSeverity010Label,
-		CreateAlertDialog.AlertSeverity011Label,
-		CreateAlertDialog.AlertSeverity012Label,
-		CreateAlertDialog.AlertSeverity013Label,
-		CreateAlertDialog.AlertSeverity014Label,
-		CreateAlertDialog.AlertSeverity015Label,
-		CreateAlertDialog.AlertSeverity016Label,
-		CreateAlertDialog.AlertSeverity017Label,
-		CreateAlertDialog.AlertSeverity018Label,
-		CreateAlertDialog.AlertSeverity019Label,
-		CreateAlertDialog.AlertSeverity020Label,
-		CreateAlertDialog.AlertSeverity021Label,
-		CreateAlertDialog.AlertSeverity022Label,
-		CreateAlertDialog.AlertSeverity023Label,
-		CreateAlertDialog.AlertSeverity024Label,
-		CreateAlertDialog.AlertSeverity025Label
+		AlertDialog.AlertSeverity001Label,
+		AlertDialog.AlertSeverity002Label,
+		AlertDialog.AlertSeverity003Label,
+		AlertDialog.AlertSeverity004Label,
+		AlertDialog.AlertSeverity005Label,
+		AlertDialog.AlertSeverity006Label,
+		AlertDialog.AlertSeverity007Label,
+		AlertDialog.AlertSeverity008Label,
+		AlertDialog.AlertSeverity009Label,
+		AlertDialog.AlertSeverity010Label,
+		AlertDialog.AlertSeverity011Label,
+		AlertDialog.AlertSeverity012Label,
+		AlertDialog.AlertSeverity013Label,
+		AlertDialog.AlertSeverity014Label,
+		AlertDialog.AlertSeverity015Label,
+		AlertDialog.AlertSeverity016Label,
+		AlertDialog.AlertSeverity017Label,
+		AlertDialog.AlertSeverity018Label,
+		AlertDialog.AlertSeverity019Label,
+		AlertDialog.AlertSeverity020Label,
+		AlertDialog.AlertSeverity021Label,
+		AlertDialog.AlertSeverity022Label,
+		AlertDialog.AlertSeverity023Label,
+		AlertDialog.AlertSeverity024Label,
+		AlertDialog.AlertSeverity025Label
 	];
 
 	// Response tab strings
@@ -158,10 +158,10 @@ export class CreateAlertDialog {
 
 		let databases = await AgentUtils.getDatabases(this.ownerUri);
 		await this.model.initialize();
-		this.dialog = sqlops.window.modelviewdialog.createDialog(CreateAlertDialog.DialogTitle);
-		this.generalTab = sqlops.window.modelviewdialog.createTab(CreateAlertDialog.GeneralTabText);
-		this.responseTab = sqlops.window.modelviewdialog.createTab(CreateAlertDialog.ResponseTabText);
-		this.optionsTab = sqlops.window.modelviewdialog.createTab(CreateAlertDialog.OptionsTabText);
+		this.dialog = sqlops.window.modelviewdialog.createDialog(AlertDialog.DialogTitle);
+		this.generalTab = sqlops.window.modelviewdialog.createTab(AlertDialog.GeneralTabText);
+		this.responseTab = sqlops.window.modelviewdialog.createTab(AlertDialog.ResponseTabText);
+		this.optionsTab = sqlops.window.modelviewdialog.createTab(AlertDialog.OptionsTabText);
 
 		this.initializeGeneralTab(databases);
 		this.initializeResponseTab();
@@ -170,8 +170,8 @@ export class CreateAlertDialog {
 		this.dialog.content = [this.generalTab, this.responseTab, this.optionsTab];
 		this.dialog.okButton.onClick(async () => await this.execute());
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.okButton.label = CreateAlertDialog.OkButtonText;
-		this.dialog.cancelButton.label = CreateAlertDialog.CancelButtonText;
+		this.dialog.okButton.label = AlertDialog.OkButtonText;
+		this.dialog.cancelButton.label = AlertDialog.CancelButtonText;
 
 		sqlops.window.modelviewdialog.openDialog(this.dialog);
 	}
@@ -182,7 +182,7 @@ export class CreateAlertDialog {
 
 			this.enabledCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateAlertDialog.EnabledCheckboxLabel
+					label: AlertDialog.EnabledCheckboxLabel
 				}).component();
 
 			this.databaseDropDown = view.modelBuilder.dropDown()
@@ -193,19 +193,19 @@ export class CreateAlertDialog {
 
 			this.typeDropDown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: CreateAlertDialog.AlertTypes[0],
-					values: CreateAlertDialog.AlertTypes
+					value: AlertDialog.AlertTypes[0],
+					values: AlertDialog.AlertTypes
 				}).component();
 
 			this.severityDropDown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: CreateAlertDialog.AlertSeverities[0],
-					values: CreateAlertDialog.AlertSeverities
+					value: AlertDialog.AlertSeverities[0],
+					values: AlertDialog.AlertSeverities
 				}).component();
 
 			this.raiseAlertMessageCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateAlertDialog.RaiseIfMessageContainsLabel
+					label: AlertDialog.RaiseIfMessageContainsLabel
 				}).component();
 
 			this.raiseAlertMessageTextBox = view.modelBuilder.inputBox().component();
@@ -213,22 +213,22 @@ export class CreateAlertDialog {
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.nameTextBox,
-					title: CreateAlertDialog.NameLabel
+					title: AlertDialog.NameLabel
 				}, {
 					component: this.enabledCheckBox,
 					title: ''
 				}, {
 					component: this.typeDropDown,
-					title: CreateAlertDialog.TypeLabel
+					title: AlertDialog.TypeLabel
 				}, {
 					component: this.databaseDropDown,
-					title: CreateAlertDialog.DatabaseLabel
+					title: AlertDialog.DatabaseLabel
 				}, {
 					component: this.raiseAlertMessageCheckBox,
-					title: CreateAlertDialog.RaiseIfMessageContainsLabel
+					title: AlertDialog.RaiseIfMessageContainsLabel
 				}, {
 					component: this.raiseAlertMessageTextBox,
-					title: CreateAlertDialog.MessageTextLabel
+					title: AlertDialog.MessageTextLabel
 				}
 			]).withLayout({ width: '100%' }).component();
 
@@ -240,27 +240,27 @@ export class CreateAlertDialog {
 		this.responseTab.registerContent(async view => {
 			this.executeJobCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateAlertDialog.ExecuteJobCheckBoxLabel
+					label: AlertDialog.ExecuteJobCheckBoxLabel
 				}).component();
 
 			this.executeJobTextBox = view.modelBuilder.inputBox().component();
 
 			this.newJobButton = view.modelBuilder.button().withProperties({
-					label: CreateAlertDialog.NewJobButtonLabel,
+					label: AlertDialog.NewJobButtonLabel,
 					width: 80
 				}).component();
 
 			this.notifyOperatorsCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateAlertDialog.NotifyOperatorsTextBoxLabel
+					label: AlertDialog.NotifyOperatorsTextBoxLabel
 				}).component();
 
 			this.operatorsTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						CreateAlertDialog.OperatorNameColumnLabel,
-						CreateAlertDialog.OperatorEmailColumnLabel,
-						CreateAlertDialog.OperatorPagerColumnLabel
+						AlertDialog.OperatorNameColumnLabel,
+						AlertDialog.OperatorEmailColumnLabel,
+						AlertDialog.OperatorPagerColumnLabel
 					],
 					data: [],
 					height: 500
@@ -277,16 +277,16 @@ export class CreateAlertDialog {
 					title: ''
 				}, {
 					component: this.executeJobTextBox,
-					title: CreateAlertDialog.ExecuteJobTextBoxLabel
+					title: AlertDialog.ExecuteJobTextBoxLabel
 				}, {
 					component: this.newJobButton,
-					title: CreateAlertDialog.NewJobButtonLabel
+					title: AlertDialog.NewJobButtonLabel
 				}, {
 					component: this.notifyOperatorsCheckBox,
 					title: ''
 				}, {
 					component: this.operatorsTable,
-					title: CreateAlertDialog.OperatorListLabel,
+					title: AlertDialog.OperatorListLabel,
 					actions: [this.newOperatorButton]
 				}]).withLayout({ width: '100%' }).component();
 
@@ -299,12 +299,12 @@ export class CreateAlertDialog {
 
 			this.includeErrorInEmailTextBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateAlertDialog.IncludeErrorInEmailCheckBoxLabel
+					label: AlertDialog.IncludeErrorInEmailCheckBoxLabel
 				}).component();
 
 			this.includeErrorInPagerTextBox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: CreateAlertDialog.IncludeErrorInPagerCheckBoxLabel
+					label: AlertDialog.IncludeErrorInPagerCheckBoxLabel
 				}).component();
 
 			this.additionalMessageTextBox = view.modelBuilder.inputBox().component();
@@ -322,13 +322,13 @@ export class CreateAlertDialog {
 					title: ''
 				}, {
 					component: this.additionalMessageTextBox,
-					title: CreateAlertDialog.AdditionalMessageTextBoxLabel
+					title: AlertDialog.AdditionalMessageTextBoxLabel
 				}, {
 					component: this.delayMinutesTextBox,
-					title: CreateAlertDialog.DelayMinutesTextBoxLabel
+					title: AlertDialog.DelayMinutesTextBoxLabel
 				}, {
 					component: this.delaySecondsTextBox,
-					title: CreateAlertDialog.DelaySecondsTextBoxLabel
+					title: AlertDialog.DelaySecondsTextBoxLabel
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
