@@ -76,6 +76,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 			if (profilerInput.state.isRunning){
 				return profilerService.stopSession(profilerInput.id);
 			} else {
+				// clear data when profiler is started
+				profilerInput.data.clear();
 				return profilerService.startSession(profilerInput.id);
 			}
 		}
