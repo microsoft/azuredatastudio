@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { CreateStepData } from '../data/createStepData';
 import { AgentUtils } from '../agentUtils';
 import { CreateJobData } from '../data/createJobData';
+const path = require('path');
 
 export class CreateStepDialog {
 
@@ -15,6 +16,7 @@ export class CreateStepDialog {
 	// Top level
 	//
 	private static readonly DialogTitle: string = 'New Job Step';
+	private static readonly FileBrowserDialogTitle: string = 'Locate Database Files - ';
 	private static readonly OkButtonText: string = 'OK';
 	private static readonly CancelButtonText: string = 'Cancel';
 	private static readonly GeneralTabText: string = 'General';
@@ -35,35 +37,50 @@ export class CreateStepDialog {
 	private static readonly QuitJobReportingFailure: string = 'Quit the job reporting failure';
 
 	// UI Components
-	//
+
+	// Dialogs
 	private dialog: sqlops.window.modelviewdialog.Dialog;
+	private fileBrowserDialog: sqlops.window.modelviewdialog.Dialog;
+
+	// Dialog tabs
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
 	private advancedTab: sqlops.window.modelviewdialog.DialogTab;
+
+	//Input boxes
 	private nameTextBox: sqlops.InputBoxComponent;
+	private commandTextBox: sqlops.InputBoxComponent;
+	private selectedPathTextBox: sqlops.InputBoxComponent;
+	private retryAttemptsBox: sqlops.InputBoxComponent;
+	private retryIntervalBox: sqlops.InputBoxComponent;
+	private outputFileNameBox: sqlops.InputBoxComponent;
+	private fileBrowserNameBox: sqlops.InputBoxComponent;
+
+	// Dropdowns
 	private typeDropdown: sqlops.DropDownComponent;
 	private runAsDropdown: sqlops.DropDownComponent;
 	private databaseDropdown: sqlops.DropDownComponent;
 	private successActionDropdown: sqlops.DropDownComponent;
 	private failureActionDropdown: sqlops.DropDownComponent;
-	private commandTextBox: sqlops.InputBoxComponent;
+	private fileTypeDropdown: sqlops.DropDownComponent;
+
+	// Buttons
 	private openButton: sqlops.ButtonComponent;
 	private parseButton: sqlops.ButtonComponent;
 	private nextButton: sqlops.ButtonComponent;
 	private previousButton: sqlops.ButtonComponent;
-	private retryAttemptsBox: sqlops.InputBoxComponent;
-	private retryIntervalBox: sqlops.InputBoxComponent;
-	private appendToExistingFileCheckbox: sqlops.CheckBoxComponent;
-	private logToTableCheckbox: sqlops.CheckBoxComponent;
-	private outputFileNameBox: sqlops.InputBoxComponent;
 	private outputFileBrowserButton: sqlops.ButtonComponent;
 
+	// Checkbox
+	private appendToExistingFileCheckbox: sqlops.CheckBoxComponent;
+	private logToTableCheckbox: sqlops.CheckBoxComponent;
+
+	private fileBrowserTree: sqlops.FileBrowserTreeComponent;
+	private jobModel: CreateJobData;
 	private model: CreateStepData;
 	private ownerUri: string;
 	private jobName: string;
 	private server: string;
 	private stepId: number;
-
-	private jobModel: CreateJobData;
 
 	constructor(
 		ownerUri: string,
@@ -344,12 +361,63 @@ export class CreateStepDialog {
 		return retryFlexContainer;
 	}
 
+	private openFileBrowserDialog() {
+		let fileBrowserTitle = CreateStepDialog.FileBrowserDialogTitle + `${this.server}`;
+		this.fileBrowserDialog = sqlops.window.modelviewdialog.createDialog(fileBrowserTitle);
+		let fileBrowserTab = sqlops.window.modelviewdialog.createTab('File Browser');
+		this.fileBrowserDialog.content =  [fileBrowserTab];
+		fileBrowserTab.registerContent(async (view) => {
+			this.fileBrowserTree = view.modelBuilder.fileBrowserTree()
+				.withProperties({ ownerUri: this.ownerUri })
+				.component();
+			this.selectedPathTextBox = view.modelBuilder.inputBox()
+				.withProperties({ inputType: 'text'})
+				.component();
+			this.fileBrowserTree.onDidChange((args) => {
+				this.selectedPathTextBox.value = args.fullPath;
+				this.fileBrowserNameBox.value = args.isFile ? path.win32.basename(args.fullPath) : '';
+			});
+			this.fileTypeDropdown = view.modelBuilder.dropDown()
+				.withProperties({
+					value: 'All Files (*)',
+					values: ['All Files (*)']
+				})
+				.component();
+			this.fileBrowserNameBox = view.modelBuilder.inputBox()
+				.withProperties({})
+				.component();
+			let fileBrowserContainer = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.fileBrowserTree,
+					title: ''
+				}, {
+					component: this.selectedPathTextBox,
+					title: 'Selected path:'
+				}, {
+					component: this.fileTypeDropdown,
+					title: 'Files of type:'
+				}, {
+					component: this.fileBrowserNameBox,
+					title: 'File name:'
+				}
+			]).component();
+			view.initializeModel(fileBrowserContainer);
+		});
+		this.fileBrowserDialog.okButton.onClick(() => {
+			this.outputFileNameBox.value = path.join(path.dirname(this.selectedPathTextBox.value), this.fileBrowserNameBox.value);
+		});
+		this.fileBrowserDialog.okButton.label = CreateStepDialog.OkButtonText;
+		this.fileBrowserDialog.cancelButton.label = CreateStepDialog.CancelButtonText;
+		sqlops.window.modelviewdialog.openDialog(this.fileBrowserDialog);
+	}
+
 	private createTSQLOptions(view) {
 		this.outputFileBrowserButton = view.modelBuilder.button()
 			.withProperties({ width: '20px', label: '...' }).component();
+		this.outputFileBrowserButton.onDidClick(() => this.openFileBrowserDialog());
 		this.outputFileNameBox = view.modelBuilder.inputBox()
 			.withProperties({
-				width: '100px',
+				width: '150px',
 				inputType: 'text'
 			}).component();
 		let outputViewButton = view.modelBuilder.button()
@@ -407,6 +475,7 @@ export class CreateStepDialog {
 		this.model.retryInterval = +this.retryIntervalBox.value;
 		this.model.failureAction = this.failureActionDropdown.value as string;
 		this.model.outputFileName = this.outputFileNameBox.value;
+		this.model.appendToLogFile = this.appendToExistingFileCheckbox.checked;
 		await this.model.save();
 	}
 
