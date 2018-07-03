@@ -6,6 +6,8 @@
 import * as vscode from 'vscode';
 import { CreateAlertDialog } from './dialogs/createAlertDialog';
 import { CreateJobDialog } from './dialogs/createJobDialog';
+import { CreateOperatorDialog } from './dialogs/createOperatorDialog';
+import { CreateProxyDialog } from './dialogs/createProxyDialog';
 import { CreateStepDialog } from './dialogs/createStepDialog';
 import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
 
@@ -41,8 +43,12 @@ export class MainController {
             dialog.showDialog();
         });
         vscode.commands.registerCommand('agent.openCreateOperatorDialog', (ownerUri: string) => {
+            let dialog = new CreateOperatorDialog(ownerUri);
+            dialog.showDialog();
         });
         vscode.commands.registerCommand('agent.openCreateProxyDialog', (ownerUri: string) => {
+            let dialog = new CreateProxyDialog(ownerUri);
+            dialog.showDialog();
         });
     }
 

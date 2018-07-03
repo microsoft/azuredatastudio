@@ -8,49 +8,34 @@
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { CreateProxyData } from '../data/createProxyData';
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 export class CreateProxyDialog {
 
 	// Top level
-	private readonly DialogTitle: string = 'Create Proxy';
-	private readonly OkButtonText: string = 'OK';
-	private readonly CancelButtonText: string = 'Cancel';
-	private readonly GeneralTabText: string = 'Response';
-	private readonly ResponseTabText: string = 'Steps';
-	private readonly OptionsTabText: string = 'Options';
-	private readonly HistoryTabText: string = 'History';
+	private static readonly DialogTitle: string = localize('createProxy.createAlert', 'Create Alert');
+	private static readonly OkButtonText: string = localize('createProxy.OK', 'OK');
+	private static readonly CancelButtonText: string = localize('createProxy.Cancel', 'Cancel');
+	private static readonly GeneralTabText: string = localize('createProxy.General', 'General');
 
 	// General tab strings
-	private readonly NameTextBoxLabel: string = 'Name';
-
-	// Response tab strings
-	private readonly ExecuteJobTextBoxLabel: string = 'Execute Job';
-
-	// Options tab strings
-	private readonly AdditionalMessageTextBoxLabel: string = 'Additional notification message to send';
-
-	// History tab strings
-	private readonly ResetCountTextBoxLabel: string = 'Reset Count';
+	private static readonly ProxyNameTextBoxLabel: string = localize('createProxy.ProxyName', 'Proxy name');
+	private static readonly CredentialNameTextBoxLabel: string = localize('createProxy.CredentialName', 'Credential name');
+	private static readonly DescriptionTextBoxLabel: string = localize('createProxy.Description', 'Description');
+	private static readonly SubsystemsTableLabel: string = localize('createProxy.Subsystems', 'Subsystems');
+	private static readonly SubsystemNameColumnLabel: string = localize('createProxy.SubsystemName', 'Subsystem');
 
 	// UI Components
 	private dialog: sqlops.window.modelviewdialog.Dialog;
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
-	private responseTab: sqlops.window.modelviewdialog.DialogTab;
-	private optionsTab: sqlops.window.modelviewdialog.DialogTab;
-	private historyTab: sqlops.window.modelviewdialog.DialogTab;
-	private schedulesTable: sqlops.TableComponent;
 
 	// General tab controls
-	private nameTextBox: sqlops.InputBoxComponent;
-
-	// Response tab controls
-	private executeJobTextBox: sqlops.InputBoxComponent;
-
-	// Options tab controls
-	private additionalMessageTextBox: sqlops.InputBoxComponent;
-
-	// History tab controls
-	private resetCountTextBox: sqlops.InputBoxComponent;
+	private proxyNameTextBox: sqlops.InputBoxComponent;
+	private credentialNameTextBox: sqlops.InputBoxComponent;
+	private descriptionTextBox: sqlops.InputBoxComponent;
+	private subsystemsTable: sqlops.TableComponent;
 
 	private model: CreateProxyData;
 
@@ -63,72 +48,51 @@ export class CreateProxyDialog {
 
 	public async showDialog() {
 		await this.model.initialize();
-		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
-		this.generalTab = sqlops.window.modelviewdialog.createTab(this.GeneralTabText);
-		this.responseTab = sqlops.window.modelviewdialog.createTab(this.ResponseTabText);
-		this.optionsTab = sqlops.window.modelviewdialog.createTab(this.OptionsTabText);
-		this.historyTab = sqlops.window.modelviewdialog.createTab(this.HistoryTabText);
+		this.dialog = sqlops.window.modelviewdialog.createDialog(CreateProxyDialog.DialogTitle);
+		this.generalTab = sqlops.window.modelviewdialog.createTab(CreateProxyDialog.GeneralTabText);
 
 		this.initializeGeneralTab();
-		this.initializeResponseTab();
-		this.initializeOptionsTab();
-		this.initializeHistoryTab();
 
-		this.dialog.content = [this.generalTab, this.responseTab, this.optionsTab, this.historyTab];
+		this.dialog.content = [this.generalTab];
 		this.dialog.okButton.onClick(async () => await this.execute());
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.okButton.label = this.OkButtonText;
-		this.dialog.cancelButton.label = this.CancelButtonText;
+		this.dialog.okButton.label = CreateProxyDialog.OkButtonText;
+		this.dialog.cancelButton.label = CreateProxyDialog.CancelButtonText;
 
 		sqlops.window.modelviewdialog.openDialog(this.dialog);
 	}
 
 	private initializeGeneralTab() {
 		this.generalTab.registerContent(async view => {
-			this.nameTextBox = view.modelBuilder.inputBox().component();
+
+			this.proxyNameTextBox = view.modelBuilder.inputBox().component();
+
+			this.credentialNameTextBox = view.modelBuilder.inputBox().component();
+
+			this.descriptionTextBox = view.modelBuilder.inputBox().component();
+
+			this.subsystemsTable = view.modelBuilder.table()
+				.withProperties({
+					columns: [
+						CreateProxyDialog.SubsystemNameColumnLabel
+					],
+					data: [],
+					height: 500
+				}).component();
+
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
-					component: this.nameTextBox,
-					title: this.NameTextBoxLabel
-				}]).withLayout({ width: '100%' }).component();
-
-			await view.initializeModel(formModel);
-		});
-	}
-
-	private initializeResponseTab() {
-		this.responseTab.registerContent(async view => {
-			this.executeJobTextBox = view.modelBuilder.inputBox().component();
-			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.executeJobTextBox,
-					title: this.ExecuteJobTextBoxLabel
-				}]).withLayout({ width: '100%' }).component();
-
-			await view.initializeModel(formModel);
-		});
-	}
-
-	private initializeOptionsTab() {
-		this.optionsTab.registerContent(async view => {
-			this.additionalMessageTextBox = view.modelBuilder.inputBox().component();
-			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.additionalMessageTextBox,
-					title: this.AdditionalMessageTextBoxLabel
-				}]).withLayout({ width: '100%' }).component();
-
-			await view.initializeModel(formModel);
-		});
-	}
-
-	private initializeHistoryTab() {
-		this.historyTab.registerContent(async view => {
-			this.resetCountTextBox = view.modelBuilder.inputBox().component();
-			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.resetCountTextBox,
-					title: this.ResetCountTextBoxLabel
+					component: this.proxyNameTextBox,
+					title: CreateProxyDialog.ProxyNameTextBoxLabel
+				}, {
+					component: this.credentialNameTextBox,
+					title: CreateProxyDialog.CredentialNameTextBoxLabel
+				}, {
+					component: this.descriptionTextBox,
+					title: CreateProxyDialog.DescriptionTextBoxLabel
+				}, {
+					component: this.subsystemsTable,
+					title: CreateProxyDialog.SubsystemsTableLabel
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
