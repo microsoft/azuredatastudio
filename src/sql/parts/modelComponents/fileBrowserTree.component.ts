@@ -102,8 +102,6 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 
 	ngOnDestroy(): void {
 		this.baseDestroy();
-		// this._treeView.dispose();
-		// this._viewModel.closeFileBrowser();
 	}
 
 	/// IComponent implementation
