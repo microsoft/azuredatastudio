@@ -12,7 +12,6 @@ import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!sql/base/browser/ui/table/media/table';
 
-
 import * as dom from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 import * as sqlops from 'sqlops';
@@ -21,7 +20,7 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { EditAlert, DeleteAlert } from 'sql/parts/jobManagement/common/jobActions';
+import { EditAlertAction, DeleteAlertAction } from 'sql/parts/jobManagement/common/jobActions';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -31,6 +30,7 @@ import { IAction } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const VIEW_SELECTOR: string = 'jobalertsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -69,17 +69,19 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 	public alerts: sqlops.AgentAlertInfo[];
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
+		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService) {
-		super(contextMenuService, keybindingService);
-		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+		@Inject(IKeybindingService) keybindingService: IKeybindingService
+	) {
+		super(commonService, contextMenuService, keybindingService);
+		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
 	ngOnInit(){
@@ -116,7 +118,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 			self.openContextMenu(e);
 		}));
 
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getAlerts(ownerUri).then((result) => {
 			if (result && result.alerts) {
 				self.alerts = result.alerts;
@@ -153,13 +155,19 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 
 	protected getTableActions(): TPromise<IAction[]> {
 		let actions: IAction[] = [];
-		actions.push(new EditAlert(EditAlert.ID, EditAlert.LABEL));
-		actions.push(new DeleteAlert(DeleteAlert.ID, DeleteAlert.LABEL));
+		actions.push(this._instantiationService.createInstance(EditAlertAction));
+		actions.push(this._instantiationService.createInstance(DeleteAlertAction));
 		return TPromise.as(actions);
 	}
 
+	protected getCurrentTableObject(rowIndex: number): any {
+		return (this.alerts && this.alerts.length >= rowIndex)
+			? this.alerts[rowIndex]
+			: undefined;
+	}
+
 	private openCreateAlertDialog() {
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._commandService.executeCommand('agent.openCreateAlertDialog', ownerUri);
 	}
 

@@ -6,6 +6,7 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
+import * as sqlops from 'sqlops';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
@@ -17,6 +18,11 @@ export enum JobActions {
 	Run = 'run',
 	Stop = 'stop',
 	NewStep = 'newStep'
+}
+
+export interface IJobActionInfo {
+	ownerUri: string;
+	targetObject: any;
 }
 
 export class RunJobAction extends Action {
@@ -115,7 +121,7 @@ export class NewStepAction extends Action {
 	}
 }
 
-export class EditJob extends Action {
+export class EditJobAction extends Action {
 	public static ID = 'jobaction.editJob';
 	public static LABEL = nls.localize('jobaction.editJob', "Edit Job");
 
@@ -131,7 +137,7 @@ export class EditJob extends Action {
 	}
 }
 
-export class DeleteJob extends Action {
+export class DeleteJobAction extends Action {
 	public static ID = 'jobaction.deleteJob';
 	public static LABEL = nls.localize('jobaction.deleteJob', "Delete Job");
 
@@ -147,15 +153,12 @@ export class DeleteJob extends Action {
 	}
 }
 
-export class EditAlert extends Action {
+export class EditAlertAction extends Action {
 	public static ID = 'jobaction.editAlert';
 	public static LABEL = nls.localize('jobaction.editAlert', "Edit Alert");
 
-	constructor(
-		id: string,
-		label: string
-	) {
-		super(id, label);
+	constructor() {
+		super(EditAlertAction.ID, EditAlertAction.LABEL);
 	}
 
 	public run(info: any): TPromise<boolean> {
@@ -163,23 +166,45 @@ export class EditAlert extends Action {
 	}
 }
 
-export class DeleteAlert extends Action {
+export class DeleteAlertAction extends Action {
 	public static ID = 'jobaction.deleteAlert';
 	public static LABEL = nls.localize('jobaction.deleteAlert', "Delete Alert");
+	public static CancelLabel = nls.localize('jobaction.Cancel', "Cancel");
 
 	constructor(
-		id: string,
-		label: string
+		@INotificationService private _notificationService: INotificationService,
+		@IJobManagementService private _jobService: IJobManagementService
 	) {
-		super(id, label);
+		super(DeleteAlertAction.ID, DeleteAlertAction.LABEL);
 	}
 
-	public run(info: any): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+		let self = this;
+		let alert = actionInfo.targetObject as sqlops.AgentAlertInfo;
+		self._notificationService.prompt(
+			Severity.Info,
+			nls.localize('jobaction.deleteAlertConfirm,', "Are you sure you'd like to delete the alert '{0}'?", alert.name),
+			[{
+				label: DeleteAlertAction.LABEL,
+				run: () => {
+					self._jobService.deleteAlert(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
+						if (!result || !result.success) {
+							let errorMessage = nls.localize("jobaction.failedToDeleteAlert", "Could not delete alert '{0}'.\nError: {1}",
+								alert.name, result.errorMessage ? result.errorMessage : 'Unknown error');
+								self._notificationService.error(errorMessage);
+						}
+					});
+				}
+			}, {
+				label: DeleteAlertAction.CancelLabel,
+				run: () => { }
+			}]
+		);
 		return TPromise.as(true);
 	}
 }
 
-export class EditOperator extends Action {
+export class EditOperatorAction extends Action {
 	public static ID = 'jobaction.editAlert';
 	public static LABEL = nls.localize('jobaction.editOperator', "Edit Operator");
 
@@ -195,7 +220,7 @@ export class EditOperator extends Action {
 	}
 }
 
-export class DeleteOperator extends Action {
+export class DeleteOperatorAction extends Action {
 	public static ID = 'jobaction.deleteOperator';
 	public static LABEL = nls.localize('jobaction.deleteOperator', "Delete Operator");
 
@@ -212,7 +237,7 @@ export class DeleteOperator extends Action {
 }
 
 
-export class EditProxy extends Action {
+export class EditProxyAction extends Action {
 	public static ID = 'jobaction.editProxy';
 	public static LABEL = nls.localize('jobaction.editProxy', "Edit Proxy");
 
@@ -228,7 +253,7 @@ export class EditProxy extends Action {
 	}
 }
 
-export class DeleteProxy extends Action {
+export class DeleteProxyAction extends Action {
 	public static ID = 'jobaction.deleteOperator';
 	public static LABEL = nls.localize('jobaction.deleteProxy', "Delete Proxy");
 
