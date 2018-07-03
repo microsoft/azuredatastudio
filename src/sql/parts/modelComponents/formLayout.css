@@ -57,6 +57,11 @@
 	display: table-cell;
 }
 
-.form-group-item {
-	padding-left: 20px;
+.form-group-item .form-item-row,
+.form-group-item.form-cell {
+	padding-left: 30px;
+}
+
+.form-group-label {
+	padding-bottom: 10px;
 }

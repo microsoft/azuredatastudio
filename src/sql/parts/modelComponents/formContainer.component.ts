@@ -44,7 +44,9 @@ class FormItem {
 		<div #container *ngIf="items" class="form-table" [style.padding]="getFormPadding()" [style.width]="getFormWidth()" [style.height]="getFormHeight()">
 			<ng-container *ngFor="let item of items">
 			<div class="form-row" *ngIf="isGroupLabel(item)">
-				{{item.config.groupName}}
+				<div class="form-item-row form-group-label">
+					{{item.config.groupName}}
+				</div>
 			</div>
 			<div class="form-row" *ngIf="isFormComponent(item)" [style.height]="getRowHeight(item)">
 
@@ -68,8 +70,8 @@ class FormItem {
 							</div>
 						</div>
 					</ng-container>
-					<div class="form-vertical-container" *ngIf="isVertical(item)" [style.height]="getRowHeight(item)">
-						<div class="form-item-row" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
+					<div class="form-vertical-container" *ngIf="isVertical(item)" [style.height]="getRowHeight(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
+						<div class="form-item-row" [style.font-size]="getItemTitleFontSize(item)">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
 							<span class="icon info form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
 						</div>

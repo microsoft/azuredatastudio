@@ -286,7 +286,7 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 	addFormItem(formComponent: sqlops.FormComponent | sqlops.FormComponentGroup, itemLayout?: sqlops.FormItemLayout): void {
 		let componentGroup = formComponent as sqlops.FormComponentGroup;
 		if (componentGroup && componentGroup.components !== undefined) {
-			this._component.addItem(undefined, { groupName: componentGroup.title });
+			this._component.addItem(new ComponentWrapper(undefined, undefined, ModelComponentTypes.Text, undefined), { groupName: componentGroup.title });
 			componentGroup.components.forEach(component => {
 				let itemConfig = this.convertToItemConfig(component, itemLayout);
 				itemConfig.config.isInGroup = true;
