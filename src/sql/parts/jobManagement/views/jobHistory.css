@@ -243,7 +243,6 @@ jobhistory-component > .jobhistory-heading-container > .icon.in-progress {
 
 jobhistory-component > .actionbar-container .monaco-action-bar > ul.actions-container {
 	border-top: 3px solid #f4f4f4;
-	padding-top: 10px;
 }
 
 .vs-dark jobhistory-component > .actionbar-container .monaco-action-bar > ul.actions-container {

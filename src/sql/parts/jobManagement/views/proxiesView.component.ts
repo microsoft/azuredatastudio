@@ -19,7 +19,7 @@ import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { EditProxy, DeleteProxy } from 'sql/parts/jobManagement/common/jobActions';
+import { EditProxy, DeleteProxy, NewProxyAction } from 'sql/parts/jobManagement/common/jobActions';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
@@ -28,7 +28,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const VIEW_SELECTOR: string = 'jobproxiesview-component';
 export const ROW_HEIGHT: number = 45;
@@ -62,6 +62,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 	private _isCloud: boolean;
 
 	public proxies: sqlops.AgentProxyInfo[];
+	public readonly contextAction = NewProxyAction;
 
 	@ViewChild('proxiesgrid') _gridEl: ElementRef;
 
@@ -71,12 +72,12 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
-		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IInstantiationService) _instantiationService: IInstantiationService
 	) {
-		super(contextMenuService, keybindingService);
+		super(contextMenuService, keybindingService, _instantiationService);
 		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
@@ -107,6 +108,8 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 		this.dataView = new Slick.Data.DataView();
 
 		$(this._gridEl.nativeElement).empty();
+		$(this.actionBarContainer.nativeElement).empty();
+		this.initActionBar();
 		this._table = new Table(this._gridEl.nativeElement, undefined, columns, this.options);
 		this._table.grid.setData(this.dataView, true);
 
@@ -153,7 +156,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 		return TPromise.as(actions);
 	}
 
-	private openCreateProxyDialog() {
+	public openCreateProxyDialog() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._commandService.executeCommand('agent.openCreateProxyDialog', ownerUri);
 	}

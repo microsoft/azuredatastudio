@@ -19,17 +19,16 @@ import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { EditOperator, DeleteOperator } from 'sql/parts/jobManagement/common/jobActions';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
-
+import { EditOperator, DeleteOperator, NewOperatorAction } from 'sql/parts/jobManagement/common/jobActions';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 export const VIEW_SELECTOR: string = 'joboperatorsview-component';
 export const ROW_HEIGHT: number = 45;
 
@@ -40,9 +39,6 @@ export const ROW_HEIGHT: number = 45;
 })
 
 export class OperatorsViewComponent extends JobManagementView implements OnInit {
-
-	private NewOperatorText: string = nls.localize('jobOperatorToolbar-NewItem', "New Operator");
-	private RefreshText: string = nls.localize('jobOperatorToolbar-Refresh', "Refresh");
 
 	private columns: Array<Slick.Column<any>> = [
 		{ name: nls.localize('jobOperatorsView.name', 'Name'), field: 'name', width: 200, id: 'name' },
@@ -65,6 +61,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 	@ViewChild('operatorsgrid') _gridEl: ElementRef;
 
 	public operators: sqlops.AgentOperatorInfo[];
+	public contextAction = NewOperatorAction;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
@@ -72,12 +69,12 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
-		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IInstantiationService) _instantiationService: IInstantiationService
 	) {
-		super(contextMenuService, keybindingService);
+		super(contextMenuService, keybindingService, _instantiationService);
 		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
@@ -108,6 +105,8 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 		this.dataView = new Slick.Data.DataView();
 
 		$(this._gridEl.nativeElement).empty();
+		$(this.actionBarContainer.nativeElement).empty();
+		this.initActionBar();
 		this._table = new Table(this._gridEl.nativeElement, undefined, columns, this.options);
 		this._table.grid.setData(this.dataView, true);
 
@@ -155,7 +154,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 		return TPromise.as(actions);
 	}
 
-	private openCreateOperatorDialog() {
+	public openCreateOperatorDialog() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._commandService.executeCommand('agent.openCreateOperatorDialog', ownerUri);
 	}

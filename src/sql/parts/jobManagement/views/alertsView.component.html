@@ -9,9 +9,7 @@
 	<h1 class="job-heading" *ngIf="_isCloud === true">No Alerts Available</h1>
 	<div class="icon in-progress" *ngIf="_showProgressWheel === true"></div>
 </div>
-<div class="jobs-view-toolbar">
-	<div (click)="refreshJobs()" tabindex="0"><div class="small icon refresh"></div><span>{{RefreshText}}</span></div>
-	<div (click)="openCreateAlertDialog()" tabindex="0"><div class="small icon new"></div><span>{{NewAlertText}}</span></div>
-</div>
+
+<div #actionbarContainer class="actionbar-container"></div>
 
 <div #jobalertsgrid class="jobview-grid"></div>

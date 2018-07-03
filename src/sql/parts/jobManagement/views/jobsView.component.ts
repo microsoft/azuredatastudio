@@ -21,7 +21,6 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
-import { EditJob, DeleteJob } from 'sql/parts/jobManagement/common/jobActions';
 import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
@@ -33,6 +32,8 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
+import { EditJob, DeleteJob, NewJobAction } from 'sql/parts/jobManagement/common/jobActions';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -44,9 +45,6 @@ export const ROW_HEIGHT: number = 45;
 })
 
 export class JobsViewComponent extends JobManagementView implements OnInit  {
-
-	private NewJobText: string = nls.localize("jobsToolbar-NewJob", "New Job");
-	private RefreshText: string = nls.localize("jobsToolbar-Refresh", "Refresh");
 
 	private columns: Array<Slick.Column<any>> = [
 		{
@@ -86,6 +84,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 
 	public jobs: sqlops.AgentJobInfo[];
 	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
+	public contextAction = NewJobAction;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 
@@ -98,9 +97,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IInstantiationService) _instantiationService: IInstantiationService
 	) {
-		super(contextMenuService, keybindingService);
+		super(contextMenuService, keybindingService, _instantiationService);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];
@@ -161,9 +161,9 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 
 		let filterPlugin = new HeaderFilter({}, this._themeService);
 		this.filterPlugin = filterPlugin;
-
 		$(this._gridEl.nativeElement).empty();
-
+		$(this.actionBarContainer.nativeElement).empty();
+		this.initActionBar();
 		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
@@ -828,12 +828,12 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		return TPromise.as(actions);
 	}
 
-	private openCreateJobDialog() {
+	public openCreateJobDialog() {
 		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
 		this._commandService.executeCommand('agent.openCreateJobDialog', ownerUri);
 	}
 
-	private refreshJobs() {
+	public refreshJobs() {
 		this._agentViewComponent.refresh = true;
 	}
 }
