@@ -10,8 +10,8 @@ import * as sqlops from 'sqlops';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RunJobAction, StopJobAction, NewStepAction } from 'sql/parts/jobManagement/views/jobActions';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
-import { AgentJobUtilities } from '../common/agentJobUtilities';
-import { IJobManagementService } from '../common/interfaces';
+import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { JobHistoryController, JobHistoryDataSource,
@@ -209,8 +209,8 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 				self._stepRows = self.agentJobHistoryInfo.steps.map(step => {
 					let stepViewRow = new JobStepsViewRow();
 					stepViewRow.message = step.message;
-					stepViewRow.runStatus = AgentJobUtilities.convertToStatusString(step.runStatus);
-					self._runStatus = AgentJobUtilities.convertToStatusString(self.agentJobHistoryInfo.runStatus);
+					stepViewRow.runStatus = JobManagementUtilities.convertToStatusString(step.runStatus);
+					self._runStatus = JobManagementUtilities.convertToStatusString(self.agentJobHistoryInfo.runStatus);
 					stepViewRow.stepName = step.stepName;
 					stepViewRow.stepID = step.stepId.toString();
 					return stepViewRow;
@@ -253,7 +253,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private convertToJobHistoryRow(historyInfo: sqlops.AgentJobHistoryInfo): JobHistoryRow {
 		let jobHistoryRow = new JobHistoryRow();
 		jobHistoryRow.runDate = this.formatTime(historyInfo.runDate);
-		jobHistoryRow.runStatus = AgentJobUtilities.convertToStatusString(historyInfo.runStatus);
+		jobHistoryRow.runStatus = JobManagementUtilities.convertToStatusString(historyInfo.runStatus);
 		jobHistoryRow.instanceID = historyInfo.instanceId;
 		return jobHistoryRow;
 	}
@@ -269,7 +269,7 @@ export class JobHistoryComponent extends Disposable implements OnInit {
 	private setActions(): void {
 		let startIcon: HTMLElement = $('.action-label.icon.runJobIcon').get(0);
 		let stopIcon: HTMLElement = $('.action-label.icon.stopJobIcon').get(0);
-		AgentJobUtilities.getActionIconClassName(startIcon, stopIcon, this.agentJobInfo.currentExecutionStatus);
+		JobManagementUtilities.getActionIconClassName(startIcon, stopIcon, this.agentJobInfo.currentExecutionStatus);
 	}
 
 
