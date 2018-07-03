@@ -56,48 +56,16 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingsRegistry.WEIGHT.builtinExtension(),
 	when: undefined,
 	primary: KeyMod.Alt | KeyCode.KEY_P,
-	mac: { primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_P },
+	mac: { primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KEY_P },
 	handler: CommandsRegistry.getCommand('profiler.newProfiler').handler
 });
-
-/*
-CommandsRegistry.registerCommand({
-	id: 'profiler.start',
-	handler: (accessor: ServicesAccessor) => {
-		let profilerService: IProfilerService = accessor.get(IProfilerService);
-		let editorService: IWorkbenchEditorService = accessor.get(IWorkbenchEditorService);
-
-		let activeEditor = editorService.getActiveEditor();
-		if (activeEditor instanceof ProfilerEditor) {
-			let profilerInput = activeEditor.input;
-			return profilerService.startSession(profilerInput.id);
-		}
-		return TPromise.as(false);
-	}
-});
-
-CommandsRegistry.registerCommand({
-	id: 'profiler.stop',
-	handler: (accessor: ServicesAccessor) => {
-		let profilerService: IProfilerService = accessor.get(IProfilerService);
-		let editorService: IWorkbenchEditorService = accessor.get(IWorkbenchEditorService);
-
-		let activeEditor = editorService.getActiveEditor();
-		if (activeEditor instanceof ProfilerEditor) {
-			let profilerInput = activeEditor.input;
-			return profilerService.stopSession(profilerInput.id);
-		}
-		return TPromise.as(false);
-	}
-});
-*/
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: 'profiler.toggleStartStop',
 	weight: KeybindingsRegistry.WEIGHT.editorContrib(),
 	when: undefined,
 	primary: KeyMod.Alt | KeyCode.KEY_S,
-	mac: { primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_S },
+	mac: { primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KEY_S },
 	handler: (accessor: ServicesAccessor) => {
 		let profilerService: IProfilerService = accessor.get(IProfilerService);
 		let editorService: IWorkbenchEditorService = accessor.get(IWorkbenchEditorService);
