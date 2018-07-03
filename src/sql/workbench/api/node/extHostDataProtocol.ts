@@ -556,10 +556,24 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	/**
+	 * Deletes a job
+	 */
+	$deleteJob(handle: number, ownerUri: string, job: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus> {
+		throw this._resolveProvider<sqlops.AgentServicesProvider>(handle).deleteJob(ownerUri, job);
+	}
+
+	/**
 	 * Get Agent Alerts list
 	 */
 	$getAlerts(handle: number, ownerUri: string): Thenable<sqlops.AgentAlertsResult> {
 		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getAlerts(ownerUri);
+	}
+
+	/**
+	 * Deletes an alert
+	 */
+	$deleteAlert(handle: number, ownerUri: string, alert: sqlops.AgentAlertInfo): Thenable<sqlops.ResultStatus> {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).deleteAlert(ownerUri, alert);
 	}
 
 	/**
@@ -570,9 +584,23 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	/**
+	 * Deletes an operator
+	 */
+	$deleteOperator(handle: number, ownerUri: string, operator: sqlops.AgentOperatorInfo): Thenable<sqlops.ResultStatus> {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).deleteOperator(ownerUri, operator);
+	}
+
+	/**
 	 * Get Agent Proxies list
 	 */
 	$getProxies(handle: number, ownerUri: string): Thenable<sqlops.AgentProxiesResult>  {
 		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getProxies(ownerUri);
+	}
+
+	/**
+	 * Deletes a proxy
+	 */
+	$deleteProxy(handle: number, ownerUri: string, proxy: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus> {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).deleteProxy(ownerUri, proxy);
 	}
 }
