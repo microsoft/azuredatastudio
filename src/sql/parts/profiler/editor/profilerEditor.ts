@@ -16,13 +16,14 @@ import { ProfilerTableEditor } from './controller/profilerTableEditor';
 import * as Actions from 'sql/parts/profiler/contrib/profilerActions';
 import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from './interfaces';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { textFormatter } from 'sql/parts/grid/services/sharedServices';
 
 import * as DOM from 'vs/base/browser/dom';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService, VS_DARK_THEME, VS_HC_THEME } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ProfilerResourceEditor } from './profilerResourceEditor';
 import { SplitView, View, Orientation, IViewOptions } from 'sql/base/browser/ui/splitview/splitview';
@@ -43,7 +44,7 @@ import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRe
 import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/find/findController';
 import * as types from 'vs/base/common/types';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
-import { textFormatter } from 'sql/parts/grid/services/sharedServices';
+import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 
 class BasicView extends View {
 	private _previousSize: number;
@@ -219,6 +220,20 @@ export class ProfilerEditor extends BaseEditor {
 		profilerTableContainer.style.height = '100%';
 		profilerTableContainer.style.overflow = 'hidden';
 		profilerTableContainer.style.position = 'relative';
+		let theme = this.themeService.getTheme();
+		if (theme.type === DARK) {
+			DOM.addClass(profilerTableContainer, VS_DARK_THEME);
+		} else if (theme.type === HIGH_CONTRAST) {
+			DOM.addClass(profilerTableContainer, VS_HC_THEME);
+		}
+		this.themeService.onThemeChange(e => {
+			DOM.removeClasses(profilerTableContainer, VS_DARK_THEME, VS_HC_THEME);
+			if (e.type === DARK) {
+				DOM.addClass(profilerTableContainer, VS_DARK_THEME);
+			} else if (e.type === HIGH_CONTRAST) {
+				DOM.addClass(profilerTableContainer, VS_HC_THEME);
+			}
+		});
 		this._profilerTableEditor = this._instantiationService.createInstance(ProfilerTableEditor);
 		this._profilerTableEditor.createEditor(profilerTableContainer);
 		this._profilerTableEditor.onSelectedRowsChanged((e, args) => {
