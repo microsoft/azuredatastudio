@@ -28,7 +28,7 @@ export class MainController {
     public activate(): void {
         vscode.commands.registerCommand('agent.openCreateJobDialog', (ownerUri: string) => {
             let dialog = new JobDialog(ownerUri);
-            dialog.showDialog();
+            dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, jobId: string, server: string, stepId: number) => {
 			let dialog = new JobStepDialog(ownerUri, jobId, server, stepId);
@@ -40,7 +40,7 @@ export class MainController {
         });
         vscode.commands.registerCommand('agent.openCreateAlertDialog', (ownerUri: string) => {
             let dialog = new AlertDialog(ownerUri);
-            dialog.showDialog();
+            dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openCreateOperatorDialog', (ownerUri: string) => {
             let dialog = new OperatorDialog(ownerUri);

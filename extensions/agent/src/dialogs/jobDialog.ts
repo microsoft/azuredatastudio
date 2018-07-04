@@ -8,14 +8,13 @@ import { CreateJobData } from '../data/createJobData';
 import { JobStepDialog } from './jobStepDialog';
 import { PickScheduleDialog } from './pickScheduleDialog';
 import { AlertDialog } from './alertDialog';
+import { AgentDialog } from './agentDialog';
 
-export class JobDialog {
+export class JobDialog extends AgentDialog<CreateJobData>  {
 
 	// TODO: localize
 	// Top level
-	private readonly DialogTitle: string = 'New Job';
-	private readonly OkButtonText: string = 'OK';
-	private readonly CancelButtonText: string = 'Cancel';
+	private static readonly DialogTitle: string = 'New Job';
 	private readonly GeneralTabText: string = 'General';
 	private readonly StepsTabText: string = 'Steps';
 	private readonly SchedulesTabText: string = 'Schedules';
@@ -57,7 +56,6 @@ export class JobDialog {
 	private readonly NewAlertButtonString: string = 'New Alert';
 
 	// UI Components
-	private dialog: sqlops.window.modelviewdialog.Dialog;
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
 	private stepsTab: sqlops.window.modelviewdialog.DialogTab;
 	private alertsTab: sqlops.window.modelviewdialog.DialogTab;
@@ -99,15 +97,11 @@ export class JobDialog {
 	private alertsTable: sqlops.TableComponent;
 	private newAlertButton: sqlops.ButtonComponent;
 
-	private model: CreateJobData;
-
 	constructor(ownerUri: string) {
-		this.model = new CreateJobData(ownerUri);
+		super(ownerUri, new CreateJobData(ownerUri), JobDialog.DialogTitle);
 	}
 
-	public async showDialog() {
-		await this.model.initialize();
-		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
+	protected async initializeDialog() {
 		this.generalTab = sqlops.window.modelviewdialog.createTab(this.GeneralTabText);
 		this.stepsTab = sqlops.window.modelviewdialog.createTab(this.StepsTabText);
 		this.alertsTab = sqlops.window.modelviewdialog.createTab(this.AlertsTabText);
@@ -119,10 +113,6 @@ export class JobDialog {
 		this.initializeSchedulesTab();
 		this.initializeNotificationsTab();
 		this.dialog.content = [this.generalTab, this.stepsTab, this.schedulesTab, this.alertsTab, this.notificationsTab];
-		this.dialog.okButton.onClick(async () => await this.execute());
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.okButton.label = this.OkButtonText;
-		this.dialog.cancelButton.label = this.CancelButtonText;
 
 		this.dialog.registerCloseValidator(() => {
 			this.updateModel();
@@ -134,8 +124,6 @@ export class JobDialog {
 
 			return validationResult.valid;
 		});
-
-		sqlops.window.modelviewdialog.openDialog(this.dialog);
 	}
 
 	private initializeGeneralTab() {
@@ -250,7 +238,7 @@ export class JobDialog {
 				let alertDialog = new AlertDialog(this.model.ownerUri);
 				alertDialog.onSuccess((dialogModel) => {
 				});
-				alertDialog.showDialog();
+				alertDialog.openDialog();
 			});
 
 			let formModel = view.modelBuilder.formContainer()
@@ -421,34 +409,7 @@ export class JobDialog {
 		});
 	}
 
-	private async execute() {
-		this.updateModel();
-		await this.model.save();
-	}
-
-	private async cancel() {
-
-	}
-
-	private getActualConditionValue(checkbox: sqlops.CheckBoxComponent, dropdown: sqlops.DropDownComponent): sqlops.JobCompletionActionCondition {
-		return checkbox.checked ? Number(this.getDropdownValue(dropdown)) : sqlops.JobCompletionActionCondition.Never;
-	}
-
-	private getDropdownValue(dropdown: sqlops.DropDownComponent): string {
-		return (typeof dropdown.value === 'string') ? dropdown.value : dropdown.value.name;
-	}
-
-	private setConditionDropdownSelectedValue(dropdown: sqlops.DropDownComponent, selectedValue: number) {
-		let idx: number = 0;
-		for (idx = 0; idx < dropdown.values.length; idx++) {
-			if (Number((<sqlops.CategoryValue>dropdown.values[idx]).name) === selectedValue) {
-				dropdown.value = dropdown.values[idx];
-				break;
-			}
-		}
-	}
-
-	private updateModel() {
+	protected updateModel() {
 		this.model.name = this.nameTextBox.value;
 		this.model.owner = this.ownerTextBox.value;
 		this.model.enabled = this.enabledCheckBox.checked;

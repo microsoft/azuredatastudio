@@ -6,8 +6,9 @@
 
 import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
+import { IAgentDialogData } from '../interfaces';
 
-export class CreateProxyData {
+export class CreateProxyData implements IAgentDialogData {
 	public ownerUri: string;
 	private _alert: sqlops.AgentProxyInfo;
 

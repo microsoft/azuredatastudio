@@ -6,8 +6,9 @@
 
 import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
+import { IAgentDialogData } from '../interfaces';
 
-export class CreateOperatorData {
+export class CreateOperatorData implements IAgentDialogData {
 	public ownerUri: string;
 	private _alert: sqlops.AgentOperatorInfo;
 

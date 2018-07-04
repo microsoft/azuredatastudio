@@ -6,10 +6,12 @@
 
 import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
+import { IAgentDialogData } from '../interfaces';
 
-export class CreateAlertData {
+export class CreateAlertData implements IAgentDialogData {
 	public ownerUri: string;
-	private _alert: sqlops.AgentAlertInfo;
+
+	public alert: sqlops.AgentAlertInfo;
 
 	constructor(ownerUri:string) {
 		this.ownerUri = ownerUri;

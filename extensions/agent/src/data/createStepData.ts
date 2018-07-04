@@ -5,8 +5,9 @@
 'use strict';
 
 import { AgentUtils } from '../agentUtils';
+import { IAgentDialogData } from '../interfaces';
 
-export class CreateStepData {
+export class CreateStepData implements IAgentDialogData {
 	public ownerUri: string;
 	public jobId: string; //
 	public jobName: string;
@@ -35,6 +36,9 @@ export class CreateStepData {
 
 	constructor(ownerUri:string) {
 		this.ownerUri = ownerUri;
+	}
+
+	public async initialize() {
 	}
 
 	public async save() {

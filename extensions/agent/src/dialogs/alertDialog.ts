@@ -5,20 +5,18 @@
 
 'use strict';
 
+import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
-import * as vscode from 'vscode';
+import { AgentDialog } from './agentDialog';
 import { AgentUtils } from '../agentUtils';
 import { CreateAlertData } from '../data/createAlertData';
-import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 
-export class AlertDialog {
+export class AlertDialog extends AgentDialog<CreateAlertData> {
 
 	// Top level
 	private static readonly DialogTitle: string = localize('createAlert.createAlert', 'Create Alert');
-	private static readonly OkButtonText: string = localize('createAlert.OK', 'OK');
-	private static readonly CancelButtonText: string = localize('createAlert.Cancel', 'Cancel');
 	private static readonly GeneralTabText: string = localize('createAlert.General', 'General');
 	private static readonly ResponseTabText: string = localize('createAlert.Response', 'Response');
 	private static readonly OptionsTabText: string = localize('createAlert.Options', 'Options');
@@ -115,7 +113,6 @@ export class AlertDialog {
 	private static readonly DelaySecondsTextBoxLabel: string =  localize('createAlert.DelaySeconds', 'Delay Seconds');
 
 	// UI Components
-	private dialog: sqlops.window.modelviewdialog.Dialog;
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
 	private responseTab: sqlops.window.modelviewdialog.DialogTab;
 	private optionsTab: sqlops.window.modelviewdialog.DialogTab;
@@ -144,21 +141,12 @@ export class AlertDialog {
 	private delayMinutesTextBox: sqlops.InputBoxComponent;
 	private delaySecondsTextBox: sqlops.InputBoxComponent;
 
-
-	private model: CreateAlertData;
-
-	private _onSuccess: vscode.EventEmitter<CreateAlertData> = new vscode.EventEmitter<CreateAlertData>();
-	public readonly onSuccess: vscode.Event<CreateAlertData> = this._onSuccess.event;
-
-	constructor(public ownerUri: string) {
-		this.model = new CreateAlertData(ownerUri);
+	constructor(ownerUri: string) {
+		super(ownerUri, new CreateAlertData(ownerUri), AlertDialog.DialogTitle);
 	}
 
-	public async showDialog() {
-
+	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
 		let databases = await AgentUtils.getDatabases(this.ownerUri);
-		await this.model.initialize();
-		this.dialog = sqlops.window.modelviewdialog.createDialog(AlertDialog.DialogTitle);
 		this.generalTab = sqlops.window.modelviewdialog.createTab(AlertDialog.GeneralTabText);
 		this.responseTab = sqlops.window.modelviewdialog.createTab(AlertDialog.ResponseTabText);
 		this.optionsTab = sqlops.window.modelviewdialog.createTab(AlertDialog.OptionsTabText);
@@ -167,13 +155,7 @@ export class AlertDialog {
 		this.initializeResponseTab();
 		this.initializeOptionsTab();
 
-		this.dialog.content = [this.generalTab, this.responseTab, this.optionsTab];
-		this.dialog.okButton.onClick(async () => await this.execute());
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.okButton.label = AlertDialog.OkButtonText;
-		this.dialog.cancelButton.label = AlertDialog.CancelButtonText;
-
-		sqlops.window.modelviewdialog.openDialog(this.dialog);
+		dialog.content = [this.generalTab, this.responseTab, this.optionsTab];
 	}
 
 	private initializeGeneralTab(databases: string[]) {
@@ -335,15 +317,8 @@ export class AlertDialog {
 		});
 	}
 
-	private async execute() {
-		this.updateModel();
-		await this.model.save();
-		this._onSuccess.fire(this.model);
-	}
+	protected updateModel() {
+		this.model.alert.name = this.nameTextBox.value;
 
-	private async cancel() {
-	}
-
-	private updateModel() {
 	}
 }
