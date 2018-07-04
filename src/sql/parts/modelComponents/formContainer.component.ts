@@ -29,6 +29,8 @@ export interface TitledFormItemLayout {
 	titleFontSize?: number | string;
 	required?: boolean;
 	info?: string;
+	isInGroup?: boolean;
+	isGroupLabel?: boolean;
 }
 
 export interface FormLayout {
@@ -45,7 +47,8 @@ class FormItem {
 			<ng-container *ngFor="let item of items">
 			<div class="form-row" *ngIf="isGroupLabel(item)">
 				<div class="form-item-row form-group-label">
-					{{item.config.groupName}}
+					<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
+					</model-component-wrapper>
 				</div>
 			</div>
 			<div class="form-row" *ngIf="isFormComponent(item)" [style.height]="getRowHeight(item)">
@@ -196,11 +199,11 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	}
 
 	private isGroupLabel(item: FormItem): boolean {
-		return item && item.config && (item.config as any).groupName;
+		return item && item.config && item.config.isGroupLabel;
 	}
 
 	private isInGroup(item: FormItem): boolean {
-		return item && item.config && (item.config as any).isInGroup;
+		return item && item.config && item.config.isInGroup;
 	}
 
 	private isFormComponent(item: FormItem): boolean {

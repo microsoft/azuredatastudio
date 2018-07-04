@@ -41,7 +41,7 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	formContainer(): sqlops.FormBuilder {
 		let id = this.getNextComponentId();
-		let container = new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id);
+		let container = new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id, this);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -242,7 +242,11 @@ class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> ext
 }
 
 class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> implements sqlops.FormBuilder {
-	withFormItems(components: (sqlops.FormComponent | sqlops.FormComponentGroup)[], itemLayout?: sqlops.FormItemLayout): sqlops.ContainerBuilder<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, private _builder: ModelBuilderImpl) {
+		super(proxy, handle, type, id);
+	}
+
+	withFormItems(components: (sqlops.FormComponent | sqlops.FormComponentGroup)[], itemLayout?: sqlops.FormItemLayout): sqlops.FormBuilder {
 		this.addFormItems(components, itemLayout);
 		return this;
 	}
@@ -286,12 +290,15 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 	addFormItem(formComponent: sqlops.FormComponent | sqlops.FormComponentGroup, itemLayout?: sqlops.FormItemLayout): void {
 		let componentGroup = formComponent as sqlops.FormComponentGroup;
 		if (componentGroup && componentGroup.components !== undefined) {
-			this._component.addItem(new ComponentWrapper(undefined, undefined, ModelComponentTypes.Text, undefined), { groupName: componentGroup.title });
+			let labelComponent = this._builder.text().component();
+			labelComponent.value = componentGroup.title;
+			this._component.addItem(labelComponent, { isGroupLabel: true });
 			componentGroup.components.forEach(component => {
-				let itemConfig = this.convertToItemConfig(component, itemLayout);
+				let layout = component.layout || itemLayout;
+				let itemConfig = this.convertToItemConfig(component, layout);
 				itemConfig.config.isInGroup = true;
 				this._component.addItem(component.component as ComponentWrapper, itemConfig.config);
-				this.addComponentActions(component, itemLayout);
+				this.addComponentActions(component, layout);
 			});
 		} else {
 			formComponent = formComponent as sqlops.FormComponent;
