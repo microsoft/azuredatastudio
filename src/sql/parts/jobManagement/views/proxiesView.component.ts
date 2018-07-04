@@ -29,6 +29,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const VIEW_SELECTOR: string = 'jobproxiesview-component';
 export const ROW_HEIGHT: number = 45;
@@ -72,6 +73,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService)  keybindingService: IKeybindingService
@@ -148,8 +150,8 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 
 	protected getTableActions(): TPromise<IAction[]> {
 		let actions: IAction[] = [];
-		actions.push(new EditProxyAction(EditProxyAction.ID, EditProxyAction.LABEL));
-		actions.push(new DeleteProxyAction(DeleteProxyAction.ID, DeleteProxyAction.LABEL));
+		actions.push(this._instantiationService.createInstance(EditProxyAction));
+		actions.push(this._instantiationService.createInstance(DeleteProxyAction));
 		return TPromise.as(actions);
 	}
 

@@ -33,6 +33,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -97,6 +98,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService)  keybindingService: IKeybindingService
 	) {
@@ -823,9 +825,23 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 
 	protected getTableActions(): TPromise<IAction[]> {
 		let actions: IAction[] = [];
-		actions.push(new EditJobAction(EditJobAction.ID, EditJobAction.LABEL));
-		actions.push(new DeleteJobAction(DeleteJobAction.ID, DeleteJobAction.LABEL));
+		actions.push(this._instantiationService.createInstance(EditJobAction));
+		actions.push(this._instantiationService.createInstance(DeleteJobAction));
 		return TPromise.as(actions);
+	}
+
+	protected getCurrentTableObject(rowIndex: number): any {
+		let data = this._table.grid.getData();
+		if (!data || rowIndex >= data.getLength()) {
+			return undefined;
+		}
+
+		let jobId =  data.getItem(rowIndex).jobId;
+		let job = this.jobs.filter(job => {
+			return job.jobId === jobId;
+		});
+
+		return job && job.length > 0 ? job[0] : undefined;
 	}
 
 	private openCreateJobDialog() {

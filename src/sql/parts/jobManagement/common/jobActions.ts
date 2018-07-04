@@ -125,14 +125,11 @@ export class EditJobAction extends Action {
 	public static ID = 'jobaction.editJob';
 	public static LABEL = nls.localize('jobaction.editJob', "Edit Job");
 
-	constructor(
-		id: string,
-		label: string
-	) {
-		super(id, label);
+	constructor() {
+		super(EditJobAction.ID, EditJobAction.LABEL);
 	}
 
-	public run(info: any): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
 		return TPromise.as(true);
 	}
 }
@@ -142,13 +139,34 @@ export class DeleteJobAction extends Action {
 	public static LABEL = nls.localize('jobaction.deleteJob', "Delete Job");
 
 	constructor(
-		id: string,
-		label: string
+		@INotificationService private _notificationService: INotificationService,
+		@IJobManagementService private _jobService: IJobManagementService
 	) {
-		super(id, label);
+		super(DeleteJobAction.ID, DeleteJobAction.LABEL);
 	}
 
-	public run(info: any): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+		let self = this;
+		let job = actionInfo.targetObject as sqlops.AgentJobInfo;
+		self._notificationService.prompt(
+			Severity.Info,
+			nls.localize('jobaction.deleteJobConfirm,', "Are you sure you'd like to delete the job '{0}'?", job.name),
+			[{
+				label: DeleteJobAction.LABEL,
+				run: () => {
+					self._jobService.deleteJob(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
+						if (!result || !result.success) {
+							let errorMessage = nls.localize("jobaction.failedToDeleteJob", "Could not delete job '{0}'.\nError: {1}",
+								job.name, result.errorMessage ? result.errorMessage : 'Unknown error');
+							self._notificationService.error(errorMessage);
+						}
+					});
+				}
+			}, {
+				label: DeleteAlertAction.CancelLabel,
+				run: () => { }
+			}]
+		);
 		return TPromise.as(true);
 	}
 }
@@ -161,7 +179,7 @@ export class EditAlertAction extends Action {
 		super(EditAlertAction.ID, EditAlertAction.LABEL);
 	}
 
-	public run(info: any): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
 		return TPromise.as(true);
 	}
 }
@@ -191,7 +209,7 @@ export class DeleteAlertAction extends Action {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteAlert", "Could not delete alert '{0}'.\nError: {1}",
 								alert.name, result.errorMessage ? result.errorMessage : 'Unknown error');
-								self._notificationService.error(errorMessage);
+							self._notificationService.error(errorMessage);
 						}
 					});
 				}
@@ -208,11 +226,8 @@ export class EditOperatorAction extends Action {
 	public static ID = 'jobaction.editAlert';
 	public static LABEL = nls.localize('jobaction.editOperator', "Edit Operator");
 
-	constructor(
-		id: string,
-		label: string
-	) {
-		super(id, label);
+	constructor() {
+		super(EditOperatorAction.ID, EditOperatorAction.LABEL);
 	}
 
 	public run(info: any): TPromise<boolean> {
@@ -225,13 +240,34 @@ export class DeleteOperatorAction extends Action {
 	public static LABEL = nls.localize('jobaction.deleteOperator', "Delete Operator");
 
 	constructor(
-		id: string,
-		label: string
+		@INotificationService private _notificationService: INotificationService,
+		@IJobManagementService private _jobService: IJobManagementService
 	) {
-		super(id, label);
+		super(DeleteOperatorAction.ID, DeleteOperatorAction.LABEL);
 	}
 
-	public run(info: any): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+		let self = this;
+		let operator = actionInfo.targetObject as sqlops.AgentOperatorInfo;
+		self._notificationService.prompt(
+			Severity.Info,
+			nls.localize('jobaction.deleteOperatorConfirm,', "Are you sure you'd like to delete the operator '{0}'?", operator.name),
+			[{
+				label: DeleteOperatorAction.LABEL,
+				run: () => {
+					self._jobService.deleteOperator(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
+						if (!result || !result.success) {
+							let errorMessage = nls.localize("jobaction.failedToDeleteOperator", "Could not delete operator '{0}'.\nError: {1}",
+								operator.name, result.errorMessage ? result.errorMessage : 'Unknown error');
+							self._notificationService.error(errorMessage);
+						}
+					});
+				}
+			}, {
+				label: DeleteAlertAction.CancelLabel,
+				run: () => { }
+			}]
+		);
 		return TPromise.as(true);
 	}
 }
@@ -241,11 +277,8 @@ export class EditProxyAction extends Action {
 	public static ID = 'jobaction.editProxy';
 	public static LABEL = nls.localize('jobaction.editProxy', "Edit Proxy");
 
-	constructor(
-		id: string,
-		label: string
-	) {
-		super(id, label);
+	constructor() {
+		super(EditProxyAction.ID, EditProxyAction.LABEL);
 	}
 
 	public run(info: any): TPromise<boolean> {
@@ -254,17 +287,38 @@ export class EditProxyAction extends Action {
 }
 
 export class DeleteProxyAction extends Action {
-	public static ID = 'jobaction.deleteOperator';
+	public static ID = 'jobaction.deleteProxy';
 	public static LABEL = nls.localize('jobaction.deleteProxy', "Delete Proxy");
 
 	constructor(
-		id: string,
-		label: string
+		@INotificationService private _notificationService: INotificationService,
+		@IJobManagementService private _jobService: IJobManagementService
 	) {
-		super(id, label);
+		super(DeleteProxyAction.ID, DeleteProxyAction.LABEL);
 	}
 
-	public run(info: any): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+		let self = this;
+		let proxy = actionInfo.targetObject as sqlops.AgentProxyInfo;
+		self._notificationService.prompt(
+			Severity.Info,
+			nls.localize('jobaction.deleteProxyConfirm,', "Are you sure you'd like to delete the proxy '{0}'?", proxy.accountName),
+			[{
+				label: DeleteProxyAction.LABEL,
+				run: () => {
+					self._jobService.deleteProxy(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
+						if (!result || !result.success) {
+							let errorMessage = nls.localize("jobaction.failedToDeleteProxy", "Could not delete proxy '{0}'.\nError: {1}",
+								proxy.accountName, result.errorMessage ? result.errorMessage : 'Unknown error');
+								self._notificationService.error(errorMessage);
+						}
+					});
+				}
+			}, {
+				label: DeleteAlertAction.CancelLabel,
+				run: () => { }
+			}]
+		);
 		return TPromise.as(true);
 	}
 }
