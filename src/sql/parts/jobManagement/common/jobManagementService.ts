@@ -29,9 +29,21 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
+	public deleteJob(connectionUri: string, job: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.deleteJob(connectionUri, job);
+		});
+	}
+
 	public getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getAlerts(connectionUri);
+		});
+	}
+
+	public deleteAlert(connectionUri: string, alert: sqlops.AgentAlertInfo): Thenable<sqlops.ResultStatus> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.deleteAlert(connectionUri, alert);
 		});
 	}
 
@@ -41,12 +53,23 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
+	public deleteOperator(connectionUri: string, operator: sqlops.AgentOperatorInfo): Thenable<sqlops.ResultStatus> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.deleteOperator(connectionUri, operator);
+		});
+	}
+
 	public getProxies(connectionUri: string): Thenable<sqlops.AgentProxiesResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getProxies(connectionUri);
 		});
 	}
 
+	public deleteProxy(connectionUri: string, proxy: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus>  {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.deleteProxy(connectionUri, proxy);
+		});
+	}
 
 	public getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
 		return this._runAction(connectionUri, (runner) => {
@@ -59,7 +82,6 @@ export class JobManagementService implements IJobManagementService {
 			return runner.jobAction(connectionUri, jobName, action);
 		});
 	}
-
 
 	private _runAction<T>(uri: string, action: (handler: sqlops.AgentServicesProvider) => Thenable<T>): Thenable<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
