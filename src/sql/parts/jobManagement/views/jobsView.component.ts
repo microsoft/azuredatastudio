@@ -21,7 +21,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction } from 'sql/parts/jobManagement/common/jobActions';
+import { EditJobAction, DeleteJobAction, NewJobAction } from 'sql/parts/jobManagement/common/jobActions';
 import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
@@ -45,9 +45,6 @@ export const ROW_HEIGHT: number = 45;
 })
 
 export class JobsViewComponent extends JobManagementView implements OnInit  {
-
-	private NewJobText: string = nls.localize("jobsToolbar-NewJob", "New Job");
-	private RefreshText: string = nls.localize("jobsToolbar-Refresh", "Refresh");
 
 	private columns: Array<Slick.Column<any>> = [
 		{
@@ -87,6 +84,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 
 	public jobs: sqlops.AgentJobInfo[];
 	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
+	public contextAction = NewJobAction;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 
@@ -98,11 +96,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
-		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
+		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
 	) {
-		super(commonService, contextMenuService, keybindingService);
+		super(commonService, contextMenuService, keybindingService, instantiationService);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		this._serverName = commonService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];
@@ -163,9 +161,9 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 
 		let filterPlugin = new HeaderFilter({}, this._themeService);
 		this.filterPlugin = filterPlugin;
-
 		$(this._gridEl.nativeElement).empty();
-
+		$(this.actionBarContainer.nativeElement).empty();
+		this.initActionBar();
 		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
@@ -844,12 +842,12 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		return job && job.length > 0 ? job[0] : undefined;
 	}
 
-	private openCreateJobDialog() {
+	public openCreateJobDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._commandService.executeCommand('agent.openCreateJobDialog', ownerUri);
 	}
 
-	private refreshJobs() {
+	public refreshJobs() {
 		this._agentViewComponent.refresh = true;
 	}
 }
