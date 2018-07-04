@@ -19,7 +19,7 @@ import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { EditProxy, DeleteProxy, NewProxyAction } from 'sql/parts/jobManagement/common/jobActions';
+import { EditProxyAction, DeleteProxyAction, NewProxyAction } from 'sql/parts/jobManagement/common/jobActions';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
@@ -67,18 +67,18 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 	@ViewChild('proxiesgrid') _gridEl: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IInstantiationService) instantiationService: IInstantiationService,
+		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
-		@Inject(IInstantiationService) _instantiationService: IInstantiationService
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService
 	) {
-		super(contextMenuService, keybindingService, _instantiationService);
-		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+		super(commonService, contextMenuService, keybindingService, instantiationService);
+		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
 	ngOnInit(){
@@ -117,7 +117,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 			self.openContextMenu(e);
 		}));
 
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getProxies(ownerUri).then((result) => {
 			if (result && result.proxies) {
 				self.proxies = result.proxies;
@@ -151,13 +151,19 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 
 	protected getTableActions(): TPromise<IAction[]> {
 		let actions: IAction[] = [];
-		actions.push(new EditProxy(EditProxy.ID, EditProxy.LABEL));
-		actions.push(new DeleteProxy(DeleteProxy.ID, DeleteProxy.LABEL));
+		actions.push(this._instantiationService.createInstance(EditProxyAction));
+		actions.push(this._instantiationService.createInstance(DeleteProxyAction));
 		return TPromise.as(actions);
 	}
 
+	protected getCurrentTableObject(rowIndex: number): any {
+		return (this.proxies && this.proxies.length >= rowIndex)
+			? this.proxies[rowIndex]
+			: undefined;
+	}
+
 	public openCreateProxyDialog() {
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._commandService.executeCommand('agent.openCreateProxyDialog', ownerUri);
 	}
 

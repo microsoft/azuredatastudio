@@ -12,7 +12,6 @@ import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!sql/base/browser/ui/table/media/table';
 
-
 import * as dom from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 import * as sqlops from 'sqlops';
@@ -21,13 +20,13 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { EditAlertAction, DeleteAlertAction, NewAlertAction } from 'sql/parts/jobManagement/common/jobActions';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAction } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { EditAlert, DeleteAlert, NewAlertAction } from 'sql/parts/jobManagement/common/jobActions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -66,17 +65,17 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 	public contextAction = NewAlertAction;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IInstantiationService) instantiationService: IInstantiationService,
+		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
-		@Inject(IInstantiationService) _instantiationService: IInstantiationService) {
-		super(contextMenuService, keybindingService, _instantiationService);
-		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService) {
+		super(commonService, contextMenuService, keybindingService, instantiationService);
+		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
 	ngOnInit(){
@@ -115,7 +114,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 			self.openContextMenu(e);
 		}));
 
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getAlerts(ownerUri).then((result) => {
 			if (result && result.alerts) {
 				self.alerts = result.alerts;
@@ -152,13 +151,19 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 
 	protected getTableActions(): TPromise<IAction[]> {
 		let actions: IAction[] = [];
-		actions.push(new EditAlert(EditAlert.ID, EditAlert.LABEL));
-		actions.push(new DeleteAlert(DeleteAlert.ID, DeleteAlert.LABEL));
+		actions.push(this._instantiationService.createInstance(EditAlertAction));
+		actions.push(this._instantiationService.createInstance(DeleteAlertAction));
 		return TPromise.as(actions);
 	}
 
+	protected getCurrentTableObject(rowIndex: number): any {
+		return (this.alerts && this.alerts.length >= rowIndex)
+			? this.alerts[rowIndex]
+			: undefined;
+	}
+
 	public openCreateAlertDialog() {
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._commandService.executeCommand('agent.openCreateAlertDialog', ownerUri);
 	}
 

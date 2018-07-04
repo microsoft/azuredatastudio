@@ -21,6 +21,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
+import { EditJobAction, DeleteJobAction, NewJobAction } from 'sql/parts/jobManagement/common/jobActions';
 import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
@@ -32,7 +33,6 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
-import { EditJob, DeleteJob, NewJobAction } from 'sql/parts/jobManagement/common/jobActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
@@ -89,20 +89,20 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
-		@Inject(IInstantiationService) _instantiationService: IInstantiationService
 	) {
-		super(contextMenuService, keybindingService, _instantiationService);
+		super(commonService, contextMenuService, keybindingService, instantiationService);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
-		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
+		this._serverName = commonService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
 			this._jobCacheObject = jobCache;
@@ -111,7 +111,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 			this._jobCacheObject.serverName = this._serverName;
 			this._jobManagementService.addToCache(this._serverName, this._jobCacheObject);
 		}
-		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
 	ngOnInit(){
@@ -184,7 +184,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 				this._cd.detectChanges();
 			}
 		} else {
-			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 			this._jobManagementService.getJobs(ownerUri).then((result) => {
 				if (result && result.jobs) {
 					self.jobs = result.jobs;
@@ -525,7 +525,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	private loadJobHistories(): void {
 		if (this.jobs) {
 			let erroredJobs = 0;
-			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 			let separatedJobs = this.separateFailingJobs();
 			// grab histories of the failing jobs first
 			// so they can be expanded quicker
@@ -823,13 +823,27 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 
 	protected getTableActions(): TPromise<IAction[]> {
 		let actions: IAction[] = [];
-		actions.push(new EditJob(EditJob.ID, EditJob.LABEL));
-		actions.push(new DeleteJob(DeleteJob.ID, DeleteJob.LABEL));
+		actions.push(this._instantiationService.createInstance(EditJobAction));
+		actions.push(this._instantiationService.createInstance(DeleteJobAction));
 		return TPromise.as(actions);
 	}
 
+	protected getCurrentTableObject(rowIndex: number): any {
+		let data = this._table.grid.getData();
+		if (!data || rowIndex >= data.getLength()) {
+			return undefined;
+		}
+
+		let jobId =  data.getItem(rowIndex).jobId;
+		let job = this.jobs.filter(job => {
+			return job.jobId === jobId;
+		});
+
+		return job && job.length > 0 ? job[0] : undefined;
+	}
+
 	public openCreateJobDialog() {
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._commandService.executeCommand('agent.openCreateJobDialog', ownerUri);
 	}
 
