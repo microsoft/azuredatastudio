@@ -6,12 +6,14 @@
 
 import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
-import { IAgentDialogData } from '../interfaces';
+import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 
 export class AlertData implements IAgentDialogData {
 	ownerUri: string;
+	dialogMode: AgentDialogMode = AgentDialogMode.CREATE;
 	id: number;
 	name: string;
+	originalName: string;
 	delayBetweenResponses: number;
 	eventDescriptionKeyword: string;
 	eventSource: string;
@@ -34,16 +36,50 @@ export class AlertData implements IAgentDialogData {
 	wmiEventNamespace: string;
 	wmiEventQuery: string;
 
-	constructor(ownerUri:string) {
+	constructor(ownerUri:string, alertInfo: sqlops.AgentAlertInfo) {
 		this.ownerUri = ownerUri;
+
+		if (alertInfo) {
+			this.dialogMode = AgentDialogMode.EDIT;
+			this.id = alertInfo.id;
+			this.name = alertInfo.name;
+			this.originalName = alertInfo.name;
+			this.delayBetweenResponses = alertInfo.delayBetweenResponses;
+			this.eventDescriptionKeyword = alertInfo.eventDescriptionKeyword;
+			this.eventSource = alertInfo.eventSource;
+			this.hasNotification = alertInfo.hasNotification;
+			this.includeEventDescription = alertInfo.includeEventDescription.toString();
+			this.isEnabled = alertInfo.isEnabled;
+			this.jobId = alertInfo.jobId;
+			this.jobName = alertInfo.jobName;
+			this.lastOccurrenceDate = alertInfo.lastOccurrenceDate;
+			this.lastResponseDate = alertInfo.lastResponseDate;
+			this.messageId = alertInfo.messageId;
+			this.notificationMessage = alertInfo.notificationMessage;
+			this.occurrenceCount = alertInfo.occurrenceCount;
+			this.performanceCondition = alertInfo.performanceCondition;
+			this.severity = alertInfo.severity;
+			this.databaseName = alertInfo.databaseName;
+			this.countResetDate = alertInfo.countResetDate;
+			this.categoryName = alertInfo.categoryName;
+			this.alertType = alertInfo.alertType.toString();
+			this.wmiEventNamespace = alertInfo.wmiEventNamespace;
+			this.wmiEventQuery = alertInfo.wmiEventQuery;
+		}
 	}
 
 	public async initialize() {
+		if (this.dialogMode === AgentDialogMode.CREATE) {
+			// TODO: set dialog default values here
+		}
 	}
 
 	public async save() {
 		let agentService = await AgentUtils.getAgentService();
-		let result = await agentService.createAlert(this.ownerUri,  this.toAgentAlertInfo());
+		let result = this.dialogMode === AgentDialogMode.CREATE
+			? await agentService.createAlert(this.ownerUri,  this.toAgentAlertInfo())
+			: await agentService.updateAlert(this.ownerUri, this.originalName, this.toAgentAlertInfo());
+
 		if (!result || !result.success) {
 			// TODO handle error here
 		}

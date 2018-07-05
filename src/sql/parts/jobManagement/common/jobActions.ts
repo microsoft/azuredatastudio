@@ -244,11 +244,17 @@ export class EditAlertAction extends Action {
 	public static ID = 'jobaction.editAlert';
 	public static LABEL = nls.localize('jobaction.editAlert', "Edit Alert");
 
-	constructor() {
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
 		super(EditAlertAction.ID, EditAlertAction.LABEL);
 	}
 
 	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+		this._commandService.executeCommand(
+			'agent.openAlertDialog',
+			 actionInfo.ownerUri,
+			 actionInfo.targetObject);
 		return TPromise.as(true);
 	}
 }

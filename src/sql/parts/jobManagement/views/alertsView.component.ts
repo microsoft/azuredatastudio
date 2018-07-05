@@ -164,7 +164,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 
 	public openCreateAlertDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._commandService.executeCommand('agent.openCreateAlertDialog', ownerUri);
+		this._commandService.executeCommand('agent.openAlertDialog', ownerUri);
 	}
 
 	private refreshJobs() {
