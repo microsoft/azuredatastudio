@@ -5,9 +5,9 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { CreateStepData } from '../data/createStepData';
+import { JobStepData } from '../data/jobStepData';
 import { AgentUtils } from '../agentUtils';
-import { CreateJobData } from '../data/createJobData';
+import { JobData } from '../data/jobData';
 const path = require('path');
 
 export class JobStepDialog {
@@ -75,8 +75,8 @@ export class JobStepDialog {
 	private logToTableCheckbox: sqlops.CheckBoxComponent;
 
 	private fileBrowserTree: sqlops.FileBrowserTreeComponent;
-	private jobModel: CreateJobData;
-	private model: CreateStepData;
+	private jobModel: JobData;
+	private model: JobStepData;
 	private ownerUri: string;
 	private jobName: string;
 	private server: string;
@@ -87,9 +87,9 @@ export class JobStepDialog {
 		jobName: string,
 		server: string,
 		stepId: number,
-		jobModel?: CreateJobData
+		jobModel?: JobData
 	) {
-		this.model = new CreateStepData(ownerUri);
+		this.model = new JobStepData(ownerUri);
 		this.stepId = stepId;
 		this.ownerUri = ownerUri;
 		this.jobName = jobName;

@@ -4,22 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
-import { AgentUtils } from '../agentUtils';
-
-export class CreateAlertData {
-	public ownerUri: string;
-	private _alert: sqlops.AgentAlertInfo;
-
-	constructor(ownerUri:string) {
-		this.ownerUri = ownerUri;
-	}
-
-	public async initialize() {
-		let agentService = await AgentUtils.getAgentService();
-
-	}
-
-	public async save() {
-	}
+export interface IAgentDialogData {
+	initialize(): void;
+	save(): void;
 }

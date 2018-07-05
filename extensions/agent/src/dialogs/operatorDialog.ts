@@ -7,17 +7,16 @@
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { CreateOperatorData } from '../data/createOperatorData';
+import { OperatorData } from '../data/operatorData';
 import * as nls from 'vscode-nls';
+import { AgentDialog } from './agentDialog';
 
 const localize = nls.loadMessageBundle();
 
-export class OperatorDialog {
+export class OperatorDialog extends AgentDialog<OperatorData> {
 
 	// Top level
 	private static readonly DialogTitle: string = localize('createOperator.createOperator', 'Create Operator');
-	private static readonly OkButtonText: string = localize('createOperator.OK', 'OK');
-	private static readonly CancelButtonText: string = localize('createOperator.Cancel', 'Cancel');
 	private static readonly GeneralTabText: string = localize('createOperator.General', 'General');
 	private static readonly NotificationsTabText: string = localize('createOperator.Notifications', 'Notifications');
 
@@ -41,7 +40,6 @@ export class OperatorDialog {
 	private static readonly AlertPagerColumnLabel: string = localize('createOperator.AlertPagerColumnLabel', 'Pager');
 
 	// UI Components
-	private dialog: sqlops.window.modelviewdialog.Dialog;
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
 	private notificationsTab: sqlops.window.modelviewdialog.DialogTab;
 
@@ -61,18 +59,11 @@ export class OperatorDialog {
 	// Notification tab controls
 	private alertsTable: sqlops.TableComponent;
 
-	private model: CreateOperatorData;
-
-	private _onSuccess: vscode.EventEmitter<CreateOperatorData> = new vscode.EventEmitter<CreateOperatorData>();
-	public readonly onSuccess: vscode.Event<CreateOperatorData> = this._onSuccess.event;
-
 	constructor(ownerUri: string) {
-		this.model = new CreateOperatorData(ownerUri);
+		super(ownerUri, new OperatorData(ownerUri), OperatorDialog.DialogTitle);
 	}
 
-	public async showDialog() {
-		await this.model.initialize();
-		this.dialog = sqlops.window.modelviewdialog.createDialog(OperatorDialog.DialogTitle);
+	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
 		this.generalTab = sqlops.window.modelviewdialog.createTab(OperatorDialog.GeneralTabText);
 		this.notificationsTab = sqlops.window.modelviewdialog.createTab(OperatorDialog.NotificationsTabText);
 
@@ -80,12 +71,6 @@ export class OperatorDialog {
 		this.initializeNotificationTab();
 
 		this.dialog.content = [this.generalTab, this.notificationsTab];
-		this.dialog.okButton.onClick(async () => await this.execute());
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.okButton.label = OperatorDialog.OkButtonText;
-		this.dialog.cancelButton.label = OperatorDialog.CancelButtonText;
-
-		sqlops.window.modelviewdialog.openDialog(this.dialog);
 	}
 
 	private initializeGeneralTab() {
@@ -202,15 +187,9 @@ export class OperatorDialog {
 		});
 	}
 
-	private async execute() {
-		this.updateModel();
-		await this.model.save();
-		this._onSuccess.fire(this.model);
-	}
-
-	private async cancel() {
-	}
-
-	private updateModel() {
+	protected updateModel() {
+		this.model.name = this.nameTextBox.value;
+		this.model.enabled = this.enabledCheckBox.checked;
+		this.model.emailAddress = this.emailNameTextBox.value;
 	}
 }
