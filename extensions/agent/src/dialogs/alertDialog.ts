@@ -206,6 +206,9 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					component: this.databaseDropDown,
 					title: AlertDialog.DatabaseLabel
 				}, {
+					component: this.severityDropDown,
+					title: AlertDialog.SeverityLabel
+				}, {
 					component: this.raiseAlertMessageCheckBox,
 					title: AlertDialog.RaiseIfMessageContainsLabel
 				}, {
@@ -317,8 +320,29 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		});
 	}
 
-	protected updateModel() {
-		this.model.alert.name = this.nameTextBox.value;
+	private getSeverityNumber(): number {
+		let selected = this.getDropdownValue(this.severityDropDown);
+		let severityNumber: number = 0;
+		if (selected) {
+			let index = AlertDialog.AlertSeverities.indexOf(selected);
+			if (index >= 0) {
+				severityNumber = index;
+			}
+		}
+		return severityNumber;
+	}
 
+	protected updateModel() {
+		this.model.name = this.nameTextBox.value;
+		this.model.isEnabled = this.enabledCheckBox.checked;
+
+		this.model.alertType = this.getDropdownValue(this.typeDropDown);
+		this.model.databaseName = this.getDropdownValue(this.databaseDropDown);
+		this.model.severity = this.getSeverityNumber();
+
+		let raiseIfError = this.raiseAlertMessageCheckBox.checked;
+		if (raiseIfError) {
+			let messageText = this.raiseAlertMessageTextBox.value;
+		}
 	}
 }

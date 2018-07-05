@@ -31,7 +31,7 @@ export interface IJobActionInfo {
 
 export class JobsRefreshAction extends Action {
 	public static ID = 'jobaction.refresh';
-	public static LABEL = nls.localize('jobaction.refresh', "Refresh Jobs");
+	public static LABEL = nls.localize('jobaction.refresh', "Refresh");
 
 	constructor(
 	) {
