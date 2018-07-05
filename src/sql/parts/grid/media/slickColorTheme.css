@@ -9,46 +9,44 @@
  */
 
 .errorMessage {
-    color: var(--color-error);
+	color: var(--color-error);
 }
 
 .batchMessage {
-    padding-left: 20px;
+	padding-left: 20px;
 }
 
 .slick-cell a, a:link {
-  color: var(--color-grid-link);
-  text-decoration: underline;
+	color: var(--color-grid-link);
+	text-decoration: underline;
 }
 
 .slick-cell a:hover {
-  color: var(--color-grid-link-hover);
+	color: var(--color-grid-link-hover);
 }
 
 .resultsMessageValue a, a:link {
-  color: var(--color-grid-link);
-  text-decoration: underline;
+	color: var(--color-grid-link);
+	text-decoration: underline;
 }
 
 .resultsMessageValue a:hover {
-  color: var(--color-grid-link-hover);
+	color: var(--color-grid-link-hover);
 }
 
 .grid .slick-cell.dirtyCell {
-  color: var(--color-grid-dirty-text);
-  background-color: var(--color-grid-dirty-background);
+	color: var(--color-grid-dirty-text);
+	background-color: var(--color-grid-dirty-background);
 }
 
 .grid .slick-cell.dirtyRowHeader {
-  background-color: var(--color-grid-dirty-background);
+	background-color: var(--color-grid-dirty-background);
 }
-
 
 .slick-cell.dirtyRowHeader > .row-number {
-  color: var(--color-grid-dirty-text);
-  font-weight: 500;
+	color: var(--color-grid-dirty-text);
+	font-weight: 500;
 }
-
 
 /*
  * vs theme
@@ -56,123 +54,123 @@
  */
 
 .vs .slickgridContainer {
-  --color-content: #101010;
-  --color-content-disabled: #a9a9a9;
-  --color-error: #E81123;
-  --color-success: #7CD300;
-  --color-bg-header: hsla(0,0%,50%,.2);
-  --color-resize-handle: grey;
-  --color-bg-content-header: #F5F5F5; /* used for color of grid headers */
-  --color-cell-border-active: grey;
-  --color-cell-bg-grid-selected: rgb(173, 214, 255);
-  --color-grid-link: #0078D7;
-  --color-grid-link-hover: #0b93ff;
-  --color-grid-dirty-background: #CCC;
-  --color-grid-dirty-text: #101010;
+	--color-content: #101010;
+	--color-content-disabled: #a9a9a9;
+	--color-error: #E81123;
+	--color-success: #7CD300;
+	--color-bg-header: hsla(0,0%,50%,.2);
+	--color-resize-handle: grey;
+	--color-bg-content-header: #F5F5F5; /* used for color of grid headers */
+	--color-cell-border-active: grey;
+	--color-cell-bg-grid-selected: rgb(173, 214, 255);
+	--color-grid-link: #0078D7;
+	--color-grid-link-hover: #0b93ff;
+	--color-grid-dirty-background: #CCC;
+	--color-grid-dirty-text: #101010;
 }
 /* grid styling */
 
 .vs slick-grid.active .grid .slick-cell.active {
-  border: dotted 1px var(--color-cell-border-active);
+	border: dotted 1px var(--color-cell-border-active);
 }
 
 .vs slick-grid.active .grid .slick-cell.selected {
-  background-color: var(--color-cell-bg-grid-selected);
+	background-color: var(--color-cell-bg-grid-selected);
 }
 
 .vs .grid .slick-cell.selected .grid-cell-value-container.missing-value {
-    color: var(--color-content) !important;
+	color: var(--color-content) !important;
 }
 
 .vs .boxRow.content.horzBox.slickgrid {
-  border: solid 1px #EEEEF2;
+	border: solid 1px #EEEEF2;
 }
 
 /* icons */
 .vs .icon.extendFullScreen {
-  /* ExtendToFullScreen_16x_vscode */
-  background-image: url("extendFullScreen.svg");
+	/* ExtendToFullScreen_16x_vscode */
+	background-image: url("extendFullScreen.svg");
 }
 
 .vs .icon.exitFullScreen {
-  /* ExitFullScreen_16x_vscode */
-  background-image: url("exitFullScreen.svg");
+	/* ExitFullScreen_16x_vscode */
+	background-image: url("exitFullScreen.svg");
 }
 
 .vs .icon.saveJson {
-  /* ResultToJSON_16x_vscode */
-  background-image: url("saveJson.svg");
+	/* ResultToJSON_16x_vscode */
+	background-image: url("saveJson.svg");
 }
 
 .vs .icon.saveCsv {
-  /* ResultToCSV_16x_vscode */
-  background-image: url("saveCsv.svg");
+	/* ResultToCSV_16x_vscode */
+	background-image: url("saveCsv.svg");
 }
 
 .vs .icon.saveExcel {
-  /* ResultToXlsx_16x_vscode */
-  background-image: url("saveExcel.svg");
+	/* ResultToXlsx_16x_vscode */
+	background-image: url("saveExcel.svg");
 }
 
 .vs .icon.viewChart {
-  /* ResultToXlsx_16x_vscode */
-  background-image: url("viewChart.svg");
+	/* ResultToXlsx_16x_vscode */
+	background-image: url("viewChart.svg");
 }
 
 /* headers */
 .vs .resultsMessageHeader {
-  background: var(--color-bg-header);
-  color: var(--color-content);
+	background: var(--color-bg-header);
+	color: var(--color-content);
 }
 
 .vs .resultsViewCollapsible:not(.collapsed) {
-    background-image: url("uncollapsedArrow.svg");
-    background-repeat: no-repeat;
-    background-position: 2px;
+	background-image: url("uncollapsedArrow.svg");
+	background-repeat: no-repeat;
+	background-position: 2px;
 }
 
 .vs .resultsViewCollapsible {
-    background-image: url("collapsedArrow.svg");
-    background-repeat: no-repeat;
-    background-position: 2px;
+	background-image: url("collapsedArrow.svg");
+	background-repeat: no-repeat;
+	background-position: 2px;
 }
 
 .vs .queryResultsShortCut {
-  color: grey;
+	color: grey;
 }
 
 /* scroll bar */
 
 .vs ::-webkit-scrollbar {
-  width: 14px;
-  height: 10px;
+	width: 14px;
+	height: 10px;
 }
 .vs ::-webkit-scrollbar-thumb {
-  background: hsla(0,0%,47%,.4);
+	background: hsla(0,0%,47%,.4);
 }
 
 .vs ::-webkit-scrollbar-thumb:hover {
-  background: hsla(0,0%,39%,.7);
+	background: hsla(0,0%,39%,.7);
 }
 
 .vs ::-webkit-scrollbar-thumb:active {
-  background: rgba(85,85,85,0.8);
+	background: rgba(85,85,85,0.8);
 }
 
 .vs ::-webkit-scrollbar-track {
-  background: var(--background-color);
+	background: var(--background-color);
 }
 
 .vs ::-webkit-scrollbar-corner {
-  background: transparent;
+	background: transparent;
 }
 
 .vs .monaco-workbench input {
-  color: var(--color-content);
+	color: var(--color-content);
 }
 
 .vs .monaco-workbench .input {
-  background-color: white;
+	background-color: white;
 }
 
 /*
@@ -181,139 +179,139 @@
  */
 
 .vs-dark .slickgridContainer {
-  --color-content: #E5E5E5;
-  --color-content-disabled: grey;
-  --color-error: #E81123;
-  --color-success: #7CD300;
-  --color-bg-header: hsla(0,0%,50%,.2); /* used for pane toolbars */
-  --color-resize-handle: #4d4d4d;
-  --color-bg-content-header: #333334; /* used for color of grid headers */
-  --color-cell-border-active: white;
-  --color-cell-bg-grid-selected: rgb(38, 79, 120);
-  --color-grid-link: #FF6000;
-  --color-grid-link-hover: #ff8033;
-  --color-grid-dirty-background: #4d4d4d;
-  --color-grid-dirty-text: #E5E5E5;
+	--color-content: #E5E5E5;
+	--color-content-disabled: grey;
+	--color-error: #E81123;
+	--color-success: #7CD300;
+	--color-bg-header: hsla(0,0%,50%,.2); /* used for pane toolbars */
+	--color-resize-handle: #4d4d4d;
+	--color-bg-content-header: #333334; /* used for color of grid headers */
+	--color-cell-border-active: white;
+	--color-cell-bg-grid-selected: rgb(38, 79, 120);
+	--color-grid-link: #FF6000;
+	--color-grid-link-hover: #ff8033;
+	--color-grid-dirty-background: #4d4d4d;
+	--color-grid-dirty-text: #E5E5E5;
 }
 
 /* grid styling */
 
 .vs-dark slick-grid.active .grid .slick-cell.active {
-  border: dotted 1px var(--color-cell-border-active);
+	border: dotted 1px var(--color-cell-border-active);
 }
 
 .vs-dark slick-grid.active .grid .slick-cell.selected {
-  background-color: var(--color-cell-bg-grid-selected);
+	background-color: var(--color-cell-bg-grid-selected);
 }
 
 .vs-dark .grid .slick-cell.selected .grid-cell-value-container.missing-value {
-    color: var(--color-content) !important;
+	color: var(--color-content) !important;
 }
 
 .vs-dark .boxRow.content.horzBox.slickgrid {
-  border: solid 1px #2D2D30;
+	border: solid 1px #2D2D30;
 }
 
 /* icons */
 .vs-dark .icon.extendFullScreen,
 .hc-black .icon.extendFullScreen {
-  /* ExtendToFullScreen_16x_vscode_inverse.svg */
-  background-image: url("extendFullScreen_inverse.svg");
+	/* ExtendToFullScreen_16x_vscode_inverse.svg */
+	background-image: url("extendFullScreen_inverse.svg");
 }
 
 .vs-dark .icon.exitFullScreen,
 .hc-black .icon.exitFullScreen {
-  /* ExitFullScreen_16x_vscode_inverse.svg */
-  background-image: url("exitFullScreen_inverse.svg");
+	/* ExitFullScreen_16x_vscode_inverse.svg */
+	background-image: url("exitFullScreen_inverse.svg");
 }
 
 .vs-dark .icon.saveJson,
 .hc-black .icon.saveJson {
-  /* ResultToJSON_16x_vscode_inverse.svg */
-  background-image: url("saveJson_inverse.svg");
+	/* ResultToJSON_16x_vscode_inverse.svg */
+	background-image: url("saveJson_inverse.svg");
 }
 
 .vs-dark .icon.saveCsv,
 .hc-black .icon.saveCsv {
-  /* ResultToCSV_16x_vscode_inverse.svg */
-  background-image: url("saveCsv_inverse.svg");
+	/* ResultToCSV_16x_vscode_inverse.svg */
+	background-image: url("saveCsv_inverse.svg");
 }
 
 .vs-dark .icon.saveExcel,
 .hc-black .icon.saveExcel {
-  /* ResultToXlsx_16x_vscode_inverse.svg */
-  background-image: url("saveExcel_inverse.svg");
+	/* ResultToXlsx_16x_vscode_inverse.svg */
+	background-image: url("saveExcel_inverse.svg");
 }
 
 .vs-dark .icon.viewChart,
 .hc-black .icon.viewChart {
-  /* ResultToXlsx_16x_vscode */
-  background-image: url("viewChart_inverse.svg");
+	/* ResultToXlsx_16x_vscode */
+	background-image: url("viewChart_inverse.svg");
 }
 
 .grid-panel .action-label.icon {
-  height: 35px;
-  line-height: 35px;
-  min-width: 28px;
-  background-size: 16px;
-  background-position: center center;
-  background-repeat: no-repeat;
+	height: 35px;
+	line-height: 35px;
+	min-width: 28px;
+	background-size: 16px;
+	background-position: center center;
+	background-repeat: no-repeat;
 }
 
 /* headers */
 .vs-dark .resultsMessageHeader {
-  background: var(--color-bg-header);
-  color: var(--color-content);
+	background: var(--color-bg-header);
+	color: var(--color-content);
 }
 
 .vs-dark .resultsViewCollapsible:not(.collapsed),
 .hc-black .resultsViewCollapsible:not(.collapsed) {
-    background-image:url("uncollapsedArrow_inverse.svg");
-    background-repeat:no-repeat;
-    background-position: 2px;
+	background-image:url("uncollapsedArrow_inverse.svg");
+	background-repeat:no-repeat;
+	background-position: 2px;
 }
 
 .vs-dark .resultsViewCollapsible,
 .hc-black .resultsViewCollapsible {
-    background-image: url("collapsedArrow_inverse.svg");
-    background-repeat:no-repeat;
-    background-position: 2px;
+	background-image: url("collapsedArrow_inverse.svg");
+	background-repeat:no-repeat;
+	background-position: 2px;
 }
 
 .vs-dark .queryResultsShortCut {
-  color: grey;
+	color: grey;
 }
 
 /* scroll bar */
 
 .vs-dark ::-webkit-scrollbar {
-  width: 14px;
-  height: 10px;
+	width: 14px;
+	height: 10px;
 }
 
 .vs-dark ::-webkit-scrollbar-thumb {
-  background: hsla(0,0%,47%,.4);
+	background: hsla(0,0%,47%,.4);
 }
 
 .vs-dark ::-webkit-scrollbar-thumb:hover {
-  background: hsla(0,0%,39%,.7);
+	background: hsla(0,0%,39%,.7);
 }
 
 .vs-dark ::-webkit-scrollbar-thumb:active {
-  background: rgba(85,85,85,0.8);
+	background: rgba(85,85,85,0.8);
 }
 
 .vs-dark ::-webkit-scrollbar-track {
-  background: var(--background-color);
+	background: var(--background-color);
 }
 
 .vs-dark ::-webkit-scrollbar-corner {
-  background: transparent;
+	background: transparent;
 }
 
 .vs-dark .monaco-workbench input, .vs-dark .monaco-workbench .input {
-  color: var(--color-content);
-  background-color: #3C3C3C;
+	color: var(--color-content);
+	background-color: #3C3C3C;
 }
 
 /*
@@ -322,54 +320,54 @@
  */
 
  .hc-black .slickgridContainer {
-  --color-content: #E5E5E5;
-  --color-content-disabled: grey;
-  --color-error: #E81123;
-  --color-success: #7CD300;
-  --color-bg-header: hsla(0,0%,50%,.2); /* used for pane toolbars */
-  --color-resize-handle: #4d4d4d;
-  --color-bg-content-header: #333334; /* used for color of grid headers */
-  --color-cell-border-active: orange;
-  --color-cell-bg-grid-selected: rgb(38, 79, 120);
-  --color-grid-link: #FF6000;
-  --color-grid-link-hover: #ff8033;
-  --color-grid-dirty-background: #FFF;
-  --color-grid-dirty-text: #000;
+	--color-content: #E5E5E5;
+	--color-content-disabled: grey;
+	--color-error: #E81123;
+	--color-success: #7CD300;
+	--color-bg-header: hsla(0,0%,50%,.2); /* used for pane toolbars */
+	--color-resize-handle: #4d4d4d;
+	--color-bg-content-header: #333334; /* used for color of grid headers */
+	--color-cell-border-active: orange;
+	--color-cell-bg-grid-selected: rgb(38, 79, 120);
+	--color-grid-link: #FF6000;
+	--color-grid-link-hover: #ff8033;
+	--color-grid-dirty-background: #FFF;
+	--color-grid-dirty-text: #000;
 }
 
 /* grid styling */
 
 .hc-black slick-grid.active .grid .slick-cell.active {
-  border: solid 1px var(--color-cell-border-active);
+	border: solid 1px var(--color-cell-border-active);
 }
 
 .hc-black slick-grid.active .grid .slick-cell.selected {
-  background-color: var(--color-cell-bg-grid-selected);
+	background-color: var(--color-cell-bg-grid-selected);
 }
 
 .hc-black .grid .slick-cell.selected .grid-cell-value-container.missing-value {
-    color: var(--color-content) !important;
+	color: var(--color-content) !important;
 }
 
 .hc-black .boxRow.content.horzBox.slickgrid {
-  border: solid 1px #2D2D30;
+	border: solid 1px #2D2D30;
 }
 
 /* headers */
 .hc-black .resultsMessageHeader {
-  background: var(--color-bg-header);
-  color: var(--color-content);
+	background: var(--color-bg-header);
+	color: var(--color-content);
 }
 
 .hc-black .queryResultsShortCut {
-  color: grey;
+	color: grey;
 }
 
 /* scroll bar */
 
 .hc-black ::-webkit-scrollbar {
-  width: 14px;
-  height: 10px;
+	width: 14px;
+	height: 10px;
 }
 
 .hc-black ::-webkit-scrollbar-thumb {
@@ -385,14 +383,14 @@
 }
 
 .hc-black ::-webkit-scrollbar-track {
-  background: var(--background-color);
+	background: var(--background-color);
 }
 
 .hc-black ::-webkit-scrollbar-corner {
-  background: transparent;
+	background: transparent;
 }
 
 .hc-black .monaco-workbench input {
-  color: #000;
-  background-color: #FFF;
+	color: #000;
+	background-color: #FFF;
 }

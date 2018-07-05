@@ -263,12 +263,15 @@ class GridTable extends Disposable implements IView {
 		actionBarContainer.style.height = '100%';
 		actionBarContainer.style.verticalAlign = 'top';
 		this.container.appendChild(actionBarContainer);
-		this.actionBar = new ActionBar(actionBarContainer, { orientation: ActionsOrientation.VERTICAL, context: {
-			runner: this.runner,
-			batchId: this.resultSet.batchId,
-			resultId: this.resultSet.id,
-			table: this.table,
-			tableState: this.state }});
+		this.actionBar = new ActionBar(actionBarContainer, {
+			orientation: ActionsOrientation.VERTICAL, context: {
+				runner: this.runner,
+				batchId: this.resultSet.batchId,
+				resultId: this.resultSet.id,
+				table: this.table,
+				tableState: this.state
+			}
+		});
 		this.actionBar.push(actions, { icon: true, label: false });
 	}
 
