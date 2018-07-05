@@ -53,8 +53,7 @@ export abstract class JobManagementView extends Disposable implements AfterConte
 	protected openContextMenu(event): void {
 		let actions = this.getTableActions();
 		if (actions) {
-			let grid = this._table.grid;
-			let rowIndex = grid.getCellFromEvent(event).row;
+			let rowIndex = event.cell.row;
 
 			let actionContext= {
 				rowIndex: rowIndex
