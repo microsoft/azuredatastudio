@@ -44,11 +44,11 @@ export class MainController {
         });
         vscode.commands.registerCommand('agent.openCreateOperatorDialog', (ownerUri: string) => {
             let dialog = new OperatorDialog(ownerUri);
-            dialog.showDialog();
+            dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openCreateProxyDialog', (ownerUri: string) => {
             let dialog = new ProxyDialog(ownerUri);
-            dialog.showDialog();
+            dialog.openDialog();
         });
     }
 
