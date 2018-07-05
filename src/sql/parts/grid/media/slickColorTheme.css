@@ -319,7 +319,7 @@
  *
  */
 
- .hc-black .slickgridContainer {
+.hc-black .slickgridContainer {
 	--color-content: #E5E5E5;
 	--color-content-disabled: grey;
 	--color-error: #E81123;
