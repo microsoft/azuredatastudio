@@ -202,6 +202,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			const sashIndex = Math.max(index - 1, 0);
 			const sashItem = this.sashItems.splice(sashIndex, 1)[0];
 			sashItem.disposable.dispose();
+		} else {
+			this.lastRenderHeight = NaN, this.lastRenderTop = NaN;
 		}
 
 		this.relayout();

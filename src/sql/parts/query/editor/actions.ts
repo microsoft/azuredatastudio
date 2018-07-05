@@ -35,19 +35,23 @@ export interface IMessagesActionContext {
 export class SaveResultAction extends Action {
 	public static SAVECSV_ID = 'grid.saveAsCsv';
 	public static SAVECSV_LABEL = localize('saveAsCsv', 'Save As CSV');
+	public static SAVECSV_ICON = 'saveCsv';
 
 	public static SAVEJSON_ID = 'grid.saveAsJson';
 	public static SAVEJSON_LABEL = localize('saveAsJson', 'Save As JSON');
+	public static SAVEJSON_ICON = 'saveJson';
 
 	public static SAVEEXCEL_ID = 'grid.saveAsExcel';
 	public static SAVEEXCEL_LABEL = localize('saveAsExcel', 'Save As Excel');
+	public static SAVEEXCEL_ICON = 'saveExcel';
 
 	constructor(
 		id: string,
 		label: string,
+		icon: string,
 		private format: SaveFormat
 	) {
-		super(id, label);
+		super(id, label, icon);
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {
@@ -128,9 +132,10 @@ export class SelectAllMessagesAction extends Action {
 export class MaximizeTableAction extends Action {
 	public static ID = 'grid.maximize';
 	public static LABEL = localize('maximize', 'Maximize');
+	public static ICON = 'extendFullScreen';
 
 	constructor() {
-		super(MaximizeTableAction.ID, MaximizeTableAction.LABEL);
+		super(MaximizeTableAction.ID, MaximizeTableAction.LABEL, MaximizeTableAction.ICON);
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {
@@ -142,9 +147,10 @@ export class MaximizeTableAction extends Action {
 export class MinimizeTableAction extends Action {
 	public static ID = 'grid.minimize';
 	public static LABEL = localize('minimize', 'Minimize');
+	public static ICON = 'exitFullScreen';
 
 	constructor() {
-		super(MinimizeTableAction.ID, MinimizeTableAction.LABEL);
+		super(MinimizeTableAction.ID, MinimizeTableAction.LABEL, MinimizeTableAction.ICON);
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {

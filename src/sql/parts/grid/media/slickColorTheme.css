@@ -89,32 +89,32 @@
 }
 
 /* icons */
-.vs .gridIcon.extendFullScreen {
+.vs .icon.extendFullScreen {
   /* ExtendToFullScreen_16x_vscode */
   background-image: url("extendFullScreen.svg");
 }
 
-.vs .gridIcon.exitFullScreen {
+.vs .icon.exitFullScreen {
   /* ExitFullScreen_16x_vscode */
   background-image: url("exitFullScreen.svg");
 }
 
-.vs .gridIcon.saveJson {
+.vs .icon.saveJson {
   /* ResultToJSON_16x_vscode */
   background-image: url("saveJson.svg");
 }
 
-.vs .gridIcon.saveCsv {
+.vs .icon.saveCsv {
   /* ResultToCSV_16x_vscode */
   background-image: url("saveCsv.svg");
 }
 
-.vs .gridIcon.saveExcel {
+.vs .icon.saveExcel {
   /* ResultToXlsx_16x_vscode */
   background-image: url("saveExcel.svg");
 }
 
-.vs .gridIcon.viewChart {
+.vs .icon.viewChart {
   /* ResultToXlsx_16x_vscode */
   background-image: url("viewChart.svg");
 }
@@ -215,42 +215,50 @@
 }
 
 /* icons */
-.vs-dark .gridIcon.extendFullScreen,
-.hc-black .gridIcon.extendFullScreen {
+.vs-dark .icon.extendFullScreen,
+.hc-black .icon.extendFullScreen {
   /* ExtendToFullScreen_16x_vscode_inverse.svg */
   background-image: url("extendFullScreen_inverse.svg");
 }
 
-.vs-dark .gridIcon.exitFullScreen,
-.hc-black .gridIcon.exitFullScreen {
+.vs-dark .icon.exitFullScreen,
+.hc-black .icon.exitFullScreen {
   /* ExitFullScreen_16x_vscode_inverse.svg */
   background-image: url("exitFullScreen_inverse.svg");
 }
 
-.vs-dark .gridIcon.saveJson,
-.hc-black .gridIcon.saveJson {
+.vs-dark .icon.saveJson,
+.hc-black .icon.saveJson {
   /* ResultToJSON_16x_vscode_inverse.svg */
   background-image: url("saveJson_inverse.svg");
 }
 
-.vs-dark .gridIcon.saveCsv,
-.hc-black .gridIcon.saveCsv {
+.vs-dark .icon.saveCsv,
+.hc-black .icon.saveCsv {
   /* ResultToCSV_16x_vscode_inverse.svg */
   background-image: url("saveCsv_inverse.svg");
 }
 
-.vs-dark .gridIcon.saveExcel,
-.hc-black .gridIcon.saveExcel {
+.vs-dark .icon.saveExcel,
+.hc-black .icon.saveExcel {
   /* ResultToXlsx_16x_vscode_inverse.svg */
   background-image: url("saveExcel_inverse.svg");
 }
 
-.vs-dark .gridIcon.viewChart,
-.hc-black .gridIcon.viewChart {
+.vs-dark .icon.viewChart,
+.hc-black .icon.viewChart {
   /* ResultToXlsx_16x_vscode */
   background-image: url("viewChart_inverse.svg");
 }
 
+.grid-panel .action-label.icon {
+  height: 35px;
+  line-height: 35px;
+  min-width: 28px;
+  background-size: 16px;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
 
 /* headers */
 .vs-dark .resultsMessageHeader {

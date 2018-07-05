@@ -31,7 +31,8 @@ import { $ } from 'vs/base/browser/builder';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
+import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { Dimension, getContentWidth, getTotalWidth } from 'vs/base/browser/dom';
 
 const rowHeight = 29;
 const columnHeight = 26;
@@ -92,8 +93,7 @@ export class GridPanel extends ViewletPanel {
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IThemeService private themeService: IThemeService,
-		@IInstantiationService private instantiationService: IInstantiationService
+		@IThemeService private themeService: IThemeService
 	) {
 		super(title, options, keybindingService, contextMenuService, configurationService);
 		this.splitView = new ScrollableSplitView(this.container);
@@ -139,7 +139,7 @@ export class GridPanel extends ViewletPanel {
 
 	private addResultSet(resultSet: sqlops.ResultSetSummary) {
 		let tableState = new GridTableState();
-		let table = new GridTable(this.runner, tableState, resultSet, this.contextMenuService, this.instantiationService);
+		let table = new GridTable(this.runner, tableState, resultSet, this.contextMenuService);
 		tableState.onMaximizedChange(e => {
 			if (e) {
 				this.maximizeTable(table.id);
@@ -192,7 +192,9 @@ export class GridPanel extends ViewletPanel {
 
 class GridTable extends Disposable implements IView {
 	private static BOTTOMPADDING = 5;
+	private static ACTIONBAR_WIDTH = 26;
 	private table: Table<any>;
+	private actionBar: ActionBar;
 	private container = document.createElement('div');
 	private selectionModel = new DragCellSelectionModel();
 
@@ -205,13 +207,19 @@ class GridTable extends Disposable implements IView {
 		private runner: QueryRunner,
 		public state: GridTableState,
 		private resultSet: sqlops.ResultSetSummary,
-		private contextMenuService: IContextMenuService,
-		private instantiationService: IInstantiationService
+		private contextMenuService: IContextMenuService
 	) {
 		super();
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
 		this.container.style.marginBottom = GridTable.BOTTOMPADDING + 'px';
+		this.container.className = 'grid-panel';
+
+		let tableContainer = document.createElement('div');
+		tableContainer.style.display = 'inline-block';
+
+		this.container.appendChild(tableContainer);
+
 		let collection = new VirtualizedCollection(50, resultSet.rowCount,
 			(offset, count) => this.loadData(offset, count),
 			index => this.placeholdGenerator(index)
@@ -227,11 +235,41 @@ class GridTable extends Disposable implements IView {
 				width: 100
 			};
 		});
-		this.table = this._register(new Table(this.container, { dataProvider: new AsyncDataProvider(collection, columns), columns }, { rowHeight, showRowNumber: true }));
+		this.table = this._register(new Table(tableContainer, { dataProvider: new AsyncDataProvider(collection, columns), columns }, { rowHeight, showRowNumber: true }));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
 		this.table.registerPlugin(new AutoColumnSize());
 		this._register(this.table.onContextMenu(this.contextMenu, this));
+
+		let actions = [];
+
+		if (this.state.canBeMaximized) {
+			if (this.state.maximized) {
+				actions.splice(1, 0, new MinimizeTableAction());
+			} else {
+				actions.splice(1, 0, new MaximizeTableAction());
+			}
+		}
+
+		actions.push(
+			new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON)
+		);
+
+		let actionBarContainer = document.createElement('div');
+		actionBarContainer.style.width = GridTable.ACTIONBAR_WIDTH + 'px';
+		actionBarContainer.style.display = 'inline-block';
+		actionBarContainer.style.height = '100%';
+		actionBarContainer.style.verticalAlign = 'top';
+		this.container.appendChild(actionBarContainer);
+		this.actionBar = new ActionBar(actionBarContainer, { orientation: ActionsOrientation.VERTICAL, context: {
+			runner: this.runner,
+			batchId: this.resultSet.batchId,
+			resultId: this.resultSet.id,
+			table: this.table,
+			tableState: this.state }});
+		this.actionBar.push(actions, { icon: true, label: false });
 	}
 
 	public render(container: HTMLElement, orientation: Orientation): void {
@@ -239,7 +277,12 @@ class GridTable extends Disposable implements IView {
 	}
 
 	public layout(size: number): void {
-		this.table.layout(size - GridTable.BOTTOMPADDING, Orientation.VERTICAL);
+		this.table.layout(
+			new Dimension(
+				getContentWidth(this.container) - GridTable.ACTIONBAR_WIDTH,
+				size - GridTable.BOTTOMPADDING
+			)
+		);
 	}
 
 	public get minimumSize(): number {
@@ -274,9 +317,9 @@ class GridTable extends Disposable implements IView {
 				let actions = [
 					new SelectAllGridAction(),
 					new Separator(),
-					new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveFormat.CSV),
-					new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveFormat.EXCEL),
-					new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveFormat.JSON),
+					new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+					new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+					new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
 					new Separator(),
 					new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
 					new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
