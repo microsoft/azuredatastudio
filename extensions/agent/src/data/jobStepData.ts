@@ -7,7 +7,7 @@
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData } from '../interfaces';
 
-export class CreateStepData implements IAgentDialogData {
+export class JobStepData implements IAgentDialogData {
 	public ownerUri: string;
 	public jobId: string; //
 	public jobName: string;

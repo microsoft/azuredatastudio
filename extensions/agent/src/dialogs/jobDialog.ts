@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as sqlops from 'sqlops';
-import { CreateJobData } from '../data/createJobData';
+import { JobData } from '../data/jobData';
 import { JobStepDialog } from './jobStepDialog';
 import { PickScheduleDialog } from './pickScheduleDialog';
 import { AlertDialog } from './alertDialog';
 import { AgentDialog } from './agentDialog';
 
-export class JobDialog extends AgentDialog<CreateJobData>  {
+export class JobDialog extends AgentDialog<JobData>  {
 
 	// TODO: localize
 	// Top level
@@ -98,7 +98,7 @@ export class JobDialog extends AgentDialog<CreateJobData>  {
 	private newAlertButton: sqlops.ButtonComponent;
 
 	constructor(ownerUri: string) {
-		super(ownerUri, new CreateJobData(ownerUri), JobDialog.DialogTitle);
+		super(ownerUri, new JobData(ownerUri), JobDialog.DialogTitle);
 	}
 
 	protected async initializeDialog() {

@@ -9,11 +9,11 @@ import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import { AgentDialog } from './agentDialog';
 import { AgentUtils } from '../agentUtils';
-import { CreateAlertData } from '../data/createAlertData';
+import { AlertData } from '../data/alertData';
 
 const localize = nls.loadMessageBundle();
 
-export class AlertDialog extends AgentDialog<CreateAlertData> {
+export class AlertDialog extends AgentDialog<AlertData> {
 
 	// Top level
 	private static readonly DialogTitle: string = localize('createAlert.createAlert', 'Create Alert');
@@ -142,7 +142,7 @@ export class AlertDialog extends AgentDialog<CreateAlertData> {
 	private delaySecondsTextBox: sqlops.InputBoxComponent;
 
 	constructor(ownerUri: string) {
-		super(ownerUri, new CreateAlertData(ownerUri), AlertDialog.DialogTitle);
+		super(ownerUri, new AlertData(ownerUri), AlertDialog.DialogTitle);
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {

@@ -7,7 +7,7 @@
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { CreateProxyData } from '../data/createProxyData';
+import { ProxyData } from '../data/proxyData';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
@@ -37,13 +37,13 @@ export class ProxyDialog {
 	private descriptionTextBox: sqlops.InputBoxComponent;
 	private subsystemsTable: sqlops.TableComponent;
 
-	private model: CreateProxyData;
+	private model: ProxyData;
 
-	private _onSuccess: vscode.EventEmitter<CreateProxyData> = new vscode.EventEmitter<CreateProxyData>();
-	public readonly onSuccess: vscode.Event<CreateProxyData> = this._onSuccess.event;
+	private _onSuccess: vscode.EventEmitter<ProxyData> = new vscode.EventEmitter<ProxyData>();
+	public readonly onSuccess: vscode.Event<ProxyData> = this._onSuccess.event;
 
 	constructor(ownerUri: string) {
-		this.model = new CreateProxyData(ownerUri);
+		this.model = new ProxyData(ownerUri);
 	}
 
 	public async showDialog() {

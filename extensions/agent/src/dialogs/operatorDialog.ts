@@ -7,7 +7,7 @@
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { CreateOperatorData } from '../data/createOperatorData';
+import { OperatorData } from '../data/operatorData';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
@@ -61,13 +61,13 @@ export class OperatorDialog {
 	// Notification tab controls
 	private alertsTable: sqlops.TableComponent;
 
-	private model: CreateOperatorData;
+	private model: OperatorData;
 
-	private _onSuccess: vscode.EventEmitter<CreateOperatorData> = new vscode.EventEmitter<CreateOperatorData>();
-	public readonly onSuccess: vscode.Event<CreateOperatorData> = this._onSuccess.event;
+	private _onSuccess: vscode.EventEmitter<OperatorData> = new vscode.EventEmitter<OperatorData>();
+	public readonly onSuccess: vscode.Event<OperatorData> = this._onSuccess.event;
 
 	constructor(ownerUri: string) {
-		this.model = new CreateOperatorData(ownerUri);
+		this.model = new OperatorData(ownerUri);
 	}
 
 	public async showDialog() {

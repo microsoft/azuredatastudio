@@ -8,9 +8,10 @@ import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData } from '../interfaces';
 
-export class CreateProxyData implements IAgentDialogData {
+export class ScheduleData implements IAgentDialogData {
 	public ownerUri: string;
-	private _alert: sqlops.AgentProxyInfo;
+	public schedules: sqlops.AgentJobScheduleInfo[];
+	public selectedSchedule: sqlops.AgentJobScheduleInfo;
 
 	constructor(ownerUri:string) {
 		this.ownerUri = ownerUri;
@@ -18,7 +19,10 @@ export class CreateProxyData implements IAgentDialogData {
 
 	public async initialize() {
 		let agentService = await AgentUtils.getAgentService();
-
+		let result = await agentService.getJobSchedules(this.ownerUri);
+		if (result && result.success) {
+			this.schedules = result.schedules;
+		}
 	}
 
 	public async save() {

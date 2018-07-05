@@ -8,9 +8,9 @@ import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData } from '../interfaces';
 
-export class CreateOperatorData implements IAgentDialogData {
+export class ProxyData implements IAgentDialogData {
 	public ownerUri: string;
-	private _alert: sqlops.AgentOperatorInfo;
+	private _alert: sqlops.AgentProxyInfo;
 
 	constructor(ownerUri:string) {
 		this.ownerUri = ownerUri;

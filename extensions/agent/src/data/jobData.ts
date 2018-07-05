@@ -8,7 +8,7 @@ import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData } from '../interfaces';
 
-export class CreateJobData implements IAgentDialogData {
+export class JobData implements IAgentDialogData {
 
 	private readonly JobCompletionActionCondition_Always: string = 'When the job completes';
 	private readonly JobCompletionActionCondition_OnFailure: string = 'When the job fails';

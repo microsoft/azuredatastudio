@@ -8,10 +8,10 @@ import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData } from '../interfaces';
 
-export class CreateScheduleData implements IAgentDialogData {
+export class AlertData implements IAgentDialogData {
 	public ownerUri: string;
-	public schedules: sqlops.AgentJobScheduleInfo[];
-	public selectedSchedule: sqlops.AgentJobScheduleInfo;
+
+	public alert: sqlops.AgentAlertInfo;
 
 	constructor(ownerUri:string) {
 		this.ownerUri = ownerUri;
@@ -19,10 +19,7 @@ export class CreateScheduleData implements IAgentDialogData {
 
 	public async initialize() {
 		let agentService = await AgentUtils.getAgentService();
-		let result = await agentService.getJobSchedules(this.ownerUri);
-		if (result && result.success) {
-			this.schedules = result.schedules;
-		}
+
 	}
 
 	public async save() {
