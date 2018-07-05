@@ -15,7 +15,7 @@ import 'vs/css!sql/base/browser/ui/table/media/table';
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked, OnInit } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
@@ -342,7 +342,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 
 		const self = this;
 		$(window).resize(() => {
-			let jobsViewToolbar = $('jobsview-component .jobs-view-toolbar').get(0);
+			let jobsViewToolbar = $('jobsview-component .actionbar-container').get(0);
 			let statusBar = $('.part.statusbar').get(0);
 			if (jobsViewToolbar && statusBar) {
 				let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom;

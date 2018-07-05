@@ -25,16 +25,16 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private static readonly EnabledCheckboxLabel: string = localize('createOperator.Enabled', 'Enabled');
 	private static readonly EmailNameTextLabel: string = localize('createOperator.EmailName', 'E-mail Name');
 	private static readonly PagerEmailNameTextLabel: string = localize('createOperator.PagerEmailName', 'Pager E-mail Name');
-	private static readonly PagerMondayCheckBoxLabel: string = localize('createOperator.PagerMondayCheckBox', 'Pager on duty Monday');
-	private static readonly PagerTuesdayCheckBoxLabel: string = localize('createOperator.PagerTuesdayCheckBox', 'Pager on duty Tuesday');
-	private static readonly PagerWednesdayCheckBoxLabel: string = localize('createOperator.PagerWednesdayCheckBox', 'Pager on duty Wednesday');
-	private static readonly PagerThursdayCheckBoxLabel: string = localize('createOperator.PagerThursdayCheckBox', 'Pager on duty Thursday');
-	private static readonly PagerFridayCheckBoxLabel: string = localize('createOperator.PagerFridayCheckBox', 'Pager on duty Friday');
-	private static readonly PagerSaturdayCheckBoxLabel: string = localize('createOperator.PagerSaturdayCheckBox', 'Pager on duty Saturday');
-	private static readonly PagerSundayCheckBoxLabel: string = localize('createOperator.PagerSundayCheckBox', 'Pager on duty Sunday');
+	private static readonly PagerMondayCheckBoxLabel: string = localize('createOperator.PagerMondayCheckBox', 'Monday');
+	private static readonly PagerTuesdayCheckBoxLabel: string = localize('createOperator.PagerTuesdayCheckBox', 'Tuesday');
+	private static readonly PagerWednesdayCheckBoxLabel: string = localize('createOperator.PagerWednesdayCheckBox', 'Wednesday');
+	private static readonly PagerThursdayCheckBoxLabel: string = localize('createOperator.PagerThursdayCheckBox', 'Thursday');
+	private static readonly PagerFridayCheckBoxLabel: string = localize('createOperator.PagerFridayCheckBox', 'Friday');
+	private static readonly PagerSaturdayCheckBoxLabel: string = localize('createOperator.PagerSaturdayCheckBox', 'Saturday');
+	private static readonly PagerSundayCheckBoxLabel: string = localize('createOperator.PagerSundayCheckBox', 'Sunday');
 
 	// Notifications tab strings
-	private static readonly AlertsTableLabel: string = localize('createOperator.PagerSundayCheckBox', 'Pager on duty Sunday');
+	private static readonly AlertsTableLabel: string = localize('createOperator.AlertListHeading', 'Alert list');
 	private static readonly AlertNameColumnLabel: string = localize('createOperator.AlertNameColumnLabel', 'Alert name');
 	private static readonly AlertEmailColumnLabel: string = localize('createOperator.AlertEmailColumnLabel', 'E-mail');
 	private static readonly AlertPagerColumnLabel: string = localize('createOperator.AlertPagerColumnLabel', 'Pager');
@@ -75,16 +75,41 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 
 	private initializeGeneralTab() {
 		this.generalTab.registerContent(async view => {
-			this.nameTextBox = view.modelBuilder.inputBox().component();
+			this.nameTextBox = view.modelBuilder.inputBox()
+				.withProperties({ width: 200 })
+				.component();
+			let nameForm = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.nameTextBox,
+					title: OperatorDialog.NameLabel
+				}], {horizontal: true, componentWidth: 240}).component();
 
 			this.enabledCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: OperatorDialog.EnabledCheckboxLabel
 				}).component();
+			this.enabledCheckBox.checked = true;
+			let nameContainer = view.modelBuilder.flexContainer()
+				.withLayout({width: 440 })
+				.withLayout({
+					flexFlow: 'row',
+					alignItems: 'center',
+					textAlign: 'left',
+					alignContent: 'flex-start'
+				}).withItems([nameForm, this.enabledCheckBox], { flex: '1 1 50%' })
+				.component();
+
+			let notificationSeparator = view.modelBuilder.lineSeparator()
+				.withProperties({value: 'Notification options'})
+				.component();
 
 			this.emailNameTextBox = view.modelBuilder.inputBox().component();
 
 			this.pagerEmailNameTextBox = view.modelBuilder.inputBox().component();
+
+			let pagerScheduleSeparator = view.modelBuilder.lineSeparator()
+				.withProperties({value: 'Pager on duty schedule'})
+				.component();
 
 			this.enabledCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
@@ -128,10 +153,10 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
-					component: this.nameTextBox,
-					title: OperatorDialog.NameLabel
+					component: nameContainer,
+					title: ''
 				}, {
-					component: this.enabledCheckBox,
+					component: notificationSeparator,
 					title: ''
 				}, {
 					component: this.emailNameTextBox,
@@ -139,6 +164,12 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 				}, {
 					component: this.pagerEmailNameTextBox,
 					title: OperatorDialog.PagerEmailNameTextLabel
+				}, {
+					component: pagerScheduleSeparator,
+					title: ''
+				}, {
+					component: this.pagerMondayCheckBox,
+					title: ''
 				}, {
 					component: this.pagerTuesdayCheckBox,
 					title: ''

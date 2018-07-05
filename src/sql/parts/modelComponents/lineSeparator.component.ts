@@ -2,8 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-import 'vs/css!./radioButton';
+import 'vs/css!./lineSeparator';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
 	OnDestroy, AfterViewInit
@@ -16,11 +15,11 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelCo
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 @Component({
-	selector: 'modelview-text',
+	selector: 'modelview-lineSeparator',
 	template: `
-		<p>{{getValue()}}</p>`
+		<div class="lineSeparatorContainer"><p class="lineSeparatorText">{{getValue()}}</p><hr class="lineSeparator"></div>`
 })
-export default class TextComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class LineSeparatorComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -53,11 +52,11 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 	}
 
 	public set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.TextComponentProperties, string>((properties, value) => { properties.value = value; }, newValue);
+		this.setPropertyFromUI<sqlops.LineSeparatorComponentProperties, string>((properties, value) => { properties.value = value; }, newValue);
 	}
 
 	public get value(): string {
-		return this.getPropertyOrDefault<sqlops.TextComponentProperties, string>((props) => props.value, '');
+		return this.getPropertyOrDefault<sqlops.LineSeparatorComponentProperties, string>((props) => props.value, '');
 	}
 
 	public getValue(): string {

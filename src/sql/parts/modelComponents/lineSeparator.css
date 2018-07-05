@@ -1,0 +1,12 @@
+.lineSeparatorContainer {
+	display: flex;
+}
+
+.lineSeparatorText {
+	padding-right: 5px;
+}
+
+.lineSeparator {
+	margin: auto;
+	flex: 1 1 50%;
+}

@@ -7,7 +7,6 @@
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
-import { IActionDescriptor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
 import URI from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 
@@ -15,7 +14,7 @@ import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, CardType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType} from 'sql/workbench/api/common/sqlExtHostTypes';
 
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
@@ -77,6 +76,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 	text(): sqlops.ComponentBuilder<sqlops.TextComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.TextComponent> = this.getComponentBuilder(new TextComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	lineSeparator(): sqlops.ComponentBuilder<sqlops.LineSeparatorComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.LineSeparatorComponent> = this.getComponentBuilder(new LineSeparatorComponentWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -773,6 +779,21 @@ class TextComponentWrapper extends ComponentWrapper implements sqlops.TextCompon
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Text, id);
+		this.properties = {};
+	}
+
+	public get value(): string {
+		return this.properties['value'];
+	}
+	public set value(v: string) {
+		this.setProperty('value', v);
+	}
+}
+
+class LineSeparatorComponentWrapper extends ComponentWrapper implements sqlops.LineSeparatorComponentProperties {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.LineSeparatorComponent, id);
 		this.properties = {};
 	}
 
