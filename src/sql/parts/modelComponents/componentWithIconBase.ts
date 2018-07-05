@@ -91,11 +91,11 @@ export abstract class ComponentWithIconBase extends ComponentBase {
 	}
 
 	public get iconHeight(): number | string {
-		return this.getPropertyOrDefault<sqlops.ComponentWithIcon, number | string>((props) => props.iconHeight, '40px');
+		return this.getPropertyOrDefault<sqlops.ComponentWithIcon, number | string>((props) => props.iconHeight, '50px');
 	}
 
 	public get iconWidth(): number | string {
-		return this.getPropertyOrDefault<sqlops.ComponentWithIcon, number | string>((props) => props.iconWidth, '40px');
+		return this.getPropertyOrDefault<sqlops.ComponentWithIcon, number | string>((props) => props.iconWidth, '50px');
 	}
 
 	ngOnDestroy(): void {
