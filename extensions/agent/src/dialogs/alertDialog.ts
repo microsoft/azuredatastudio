@@ -332,7 +332,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		if (selected) {
 			let index = AlertDialog.AlertSeverities.indexOf(selected);
 			if (index >= 0) {
-				severityNumber = index;
+				severityNumber = index + 1;
 			}
 		}
 		return severityNumber;
@@ -345,6 +345,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		this.model.alertType = this.getDropdownValue(this.typeDropDown);
 		this.model.databaseName = this.getDropdownValue(this.databaseDropDown);
 		this.model.severity = this.getSeverityNumber();
+		this.model.messageId = undefined;
 
 		let raiseIfError = this.raiseAlertMessageCheckBox.checked;
 		if (raiseIfError) {
