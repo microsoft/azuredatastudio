@@ -141,6 +141,10 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> { throw ni(); }
 	/**
+	 * Parses a T-SQL string without actually executing it
+	 */
+	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> { throw ni(); }
+	/**
 	 * Gets a subset of rows in a result set in order to display in the UI
 	 */
 	$getQueryRows(handle: number, rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> { throw ni(); }
@@ -333,6 +337,21 @@ export abstract class ExtHostDataProtocolShape {
 	 * Run an action on a Job
 	 */
 	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> { throw ni(); }
+
+	/**
+	 * Get Agent Alerts list
+	 */
+	$getAlerts(handle: number, connectionUri: string): Thenable<sqlops.AgentAlertsResult> { throw ni(); }
+
+	/**
+	 * Get Agent Oeprators list
+	 */
+	$getOperators(handle: number, connectionUri: string): Thenable<sqlops.AgentOperatorsResult> { throw ni(); }
+
+	/**
+	 * Get Agent Proxies list
+	 */
+	$getProxies(handle: number, connectionUri: string): Thenable<sqlops.AgentProxiesResult> { throw ni(); }
 }
 
 /**

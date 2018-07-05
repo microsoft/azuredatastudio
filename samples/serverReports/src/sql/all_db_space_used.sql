@@ -9,7 +9,7 @@ declare @dbsize table
     Free_Space_MB decimal(20,2) default (0))
 insert into @dbsize
     (Dbname,file_Size_MB,Space_Used_MB,Free_Space_MB)
-exec sp_msforeachdb
+exec sp_MSforeachdb
 'use [?];
   select DB_NAME() AS DbName,
 sum(size)/128.0 AS File_Size_MB,
@@ -24,7 +24,7 @@ declare @logsize table
     log_Free_Space_MB decimal(20,2)default (0))
 insert into @logsize
     (Dbname,Log_File_Size_MB,log_Space_Used_MB,log_Free_Space_MB)
-exec sp_msforeachdb
+exec sp_MSforeachdb
 'use [?];
   select DB_NAME() AS DbName,
 sum(size)/128.0 AS Log_File_Size_MB,
@@ -38,7 +38,7 @@ declare @dbfreesize table
     Freespace varchar(50)default (0.00))
 insert into @dbfreesize
     (name,database_size,Freespace)
-exec sp_msforeachdb
+exec sp_MSforeachdb
 'use [?];SELECT database_name = db_name()
     ,database_size = ltrim(str((convert(DECIMAL(15, 2), dbsize) + convert(DECIMAL(15, 2), logsize)) * 8192 / 1048576, 15, 2) + ''MB'')
     ,''unallocated space'' = ltrim(str((

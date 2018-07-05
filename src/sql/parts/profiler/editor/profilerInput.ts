@@ -135,6 +135,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		});
 	}
 
+	public onSessionStateChanged(state: ProfilerState) {
+		this.state.change(state);
+	}
+
 	public onMoreRows(eventMessage: sqlops.ProfilerSessionEvents) {
 		if (eventMessage.eventsLost){
 			this._notificationService.warn(nls.localize("profiler.eventsLost", "The XEvent Profiler session for {0} has lost events.", this._connection.serverName));

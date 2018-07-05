@@ -23,7 +23,7 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 /**
  * Implements tree view for file browser
  */
-export class FileBrowserTreeView {
+export class FileBrowserTreeView implements IDisposable {
 	private _tree: ITree;
 	private _toDispose: IDisposable[] = [];
 

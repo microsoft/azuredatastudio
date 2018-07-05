@@ -158,6 +158,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	fileBrowserTree(): sqlops.ComponentBuilder<sqlops.FileBrowserTreeComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.FileBrowserTreeComponent> = this.getComponentBuilder(new FileBrowserTreeComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	getComponentBuilder<T extends sqlops.Component>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T> {
 		let componentBuilder: ComponentBuilderImpl<T> = new ComponentBuilderImpl<T>(component);
 		this._componentBuilders.set(id, componentBuilder);
@@ -255,7 +262,7 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 
 	private convertToItemConfig(formComponent: sqlops.FormComponent, itemLayout?: sqlops.FormItemLayout): InternalItemConfig {
 		let componentWrapper = formComponent.component as ComponentWrapper;
-		if (itemLayout && itemLayout.required && componentWrapper) {
+		if (formComponent.required && componentWrapper) {
 			componentWrapper.required = true;
 		}
 		let actions: string[] = undefined;
@@ -269,7 +276,8 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 		return new InternalItemConfig(componentWrapper, Object.assign({}, itemLayout, {
 			title: formComponent.title,
 			actions: actions,
-			isFormComponent: true
+			isFormComponent: true,
+			required: componentWrapper.required
 		}));
 	}
 
@@ -956,6 +964,28 @@ class LoadingComponentWrapper extends ComponentWrapper implements sqlops.Loading
 
 	public set component(value: sqlops.Component) {
 		this.addItem(value);
+	}
+}
+
+class FileBrowserTreeComponentWrapper extends ComponentWrapper implements sqlops.FileBrowserTreeComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.FileBrowserTree, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+	}
+
+	public get ownerUri(): string {
+		return this.properties['ownerUri'];
+	}
+
+	public set ownerUri(value: string) {
+		this.setProperty('ownerUri', value);
+	}
+
+	public get onDidChange(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
 	}
 }
 

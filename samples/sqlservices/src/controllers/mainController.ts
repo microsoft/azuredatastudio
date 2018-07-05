@@ -60,7 +60,210 @@ export default class MainController implements vscode.Disposable {
 			this.openEditorWithWebview2();
 		});
 
+		vscode.commands.registerCommand('sqlservices.openWizard', () => {
+			this.openWizard();
+		});
+
 		return Promise.resolve(true);
+	}
+
+	private async getTabContent(view: sqlops.ModelView, customButton1: sqlops.window.modelviewdialog.Button, customButton2: sqlops.window.modelviewdialog.Button, componentWidth: number | string): Promise<void> {
+		let inputBox = view.modelBuilder.inputBox()
+		.withProperties({
+			multiline: true,
+			height: 100
+		}).component();
+		let inputBoxWrapper = view.modelBuilder.loadingComponent().withItem(inputBox).component();
+		inputBoxWrapper.loading = false;
+		customButton1.onClick(() => {
+			inputBoxWrapper.loading = true;
+			setTimeout(() => inputBoxWrapper.loading = false, 5000);
+		});
+		let inputBox2 = view.modelBuilder.inputBox().component();
+		let backupFilesInputBox = view.modelBuilder.inputBox().component();
+
+		let checkbox = view.modelBuilder.checkBox()
+			.withProperties({
+				label: 'Copy-only backup'
+			})
+			.component();
+		checkbox.onChanged(e => {
+			console.info("inputBox.enabled " + inputBox.enabled);
+			inputBox.enabled = !inputBox.enabled;
+		});
+		let button = view.modelBuilder.button()
+			.withProperties({
+				label: '+'
+			}).component();
+		let button3 = view.modelBuilder.button()
+			.withProperties({
+				label: '-'
+
+			}).component();
+		let button2 = view.modelBuilder.button()
+			.component();
+		button.onDidClick(e => {
+			backupFilesInputBox.value = 'Button clicked';
+		});
+		let dropdown = view.modelBuilder.dropDown()
+			.withProperties({
+				value: 'Full',
+				values: ['Full', 'Differential', 'Transaction Log']
+			})
+			.component();
+		let f = 0;
+		inputBox.onTextChanged((params) => {
+			vscode.window.showInformationMessage(inputBox.value);
+			f = f + 1;
+			inputBox2.value = f.toString();
+		});
+		dropdown.onValueChanged((params) => {
+			vscode.window.showInformationMessage(inputBox2.value);
+			inputBox.value = dropdown.value.toString();
+		});
+		let radioButton = view.modelBuilder.radioButton()
+			.withProperties({
+				value: 'option1',
+				name: 'radioButtonOptions',
+				label: 'Option 1',
+				checked: true
+				//width: 300
+			}).component();
+		let radioButton2 = view.modelBuilder.radioButton()
+			.withProperties({
+				value: 'option2',
+				name: 'radioButtonOptions',
+				label: 'Option 2'
+			}).component();
+		let inputBox3 = view.modelBuilder.inputBox().component();
+		let inputBox4 = view.modelBuilder.inputBox().component();
+		let form2Model = view.modelBuilder.formContainer()
+			.withFormItems([{
+				component: inputBox3,
+				title: 'inputBox3'
+			}, {
+				component: inputBox4,
+				title: 'inputBox4'
+			}], {
+				horizontal: true
+			}).component();
+		let groupModel1 = view.modelBuilder.groupContainer()
+			.withLayout({
+			}).withItems([
+				form2Model
+			]).component();
+		radioButton.onDidClick(() => {
+			inputBox.value = radioButton.value;
+			groupModel1.enabled = true;
+		});
+		radioButton2.onDidClick(() => {
+			inputBox.value = radioButton.value;
+			groupModel1.enabled = false;
+		});
+		let table = view.modelBuilder.table().withProperties({
+			data: [
+				['1', '2', '2'],
+				['4', '5', '6'],
+				['7', '8', '9']
+			], columns: ['c1', 'c2', 'c3'],
+			height: 250,
+			selectedRows: [0]
+		}).component();
+		table.onRowSelected(e => {
+			// TODO:
+		});
+		let listBox = view.modelBuilder.listBox().withProperties({
+			values: ['1', '2', '3'],
+			selectedRow: 2
+		}).component();
+
+		let declarativeTable = view.modelBuilder.declarativeTable()
+		.withProperties({
+			columns: [{
+					displayName: 'Column 1',
+					valueType: sqlops.DeclarativeDataType.string,
+					width: '20px',
+					isReadOnly: true
+				}, {
+					displayName: 'Column 2',
+					valueType: sqlops.DeclarativeDataType.string,
+					width: '100px',
+					isReadOnly: false
+				}, {
+					displayName: 'Column 3',
+					valueType: sqlops.DeclarativeDataType.boolean,
+					width: '20px',
+					isReadOnly: false
+				}, {
+					displayName: 'Column 4',
+					valueType: sqlops.DeclarativeDataType.category,
+					isReadOnly: false,
+					width: '120px',
+					categoryValues: [
+						{ name: 'options1', displayName: 'option 1' },
+						{ name: 'options2', displayName: 'option 2' }
+					]
+				}
+			],
+			data: [
+				['Data00', 'Data01', false, 'options2'],
+				['Data10', 'Data11', true, 'options1']
+			]
+		}).component();
+
+		declarativeTable.onDataChanged(e => {
+			inputBox2.value = e.row.toString() + ' ' + e.column.toString() + ' ' + e.value.toString();
+			inputBox3.value = declarativeTable.data[e.row][e.column];
+		});
+
+		let flexRadioButtonsModel = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'column',
+				alignItems: 'left',
+				height: 150
+			}).withItems([
+				radioButton, groupModel1, radioButton2]
+			, { flex: '1 1 50%' }).component();
+		let formModel = view.modelBuilder.formContainer()
+			.withFormItems([{
+				component: inputBoxWrapper,
+				title: 'Backup name'
+			}, {
+				component: inputBox2,
+				title: 'Recovery model'
+			}, {
+				component: dropdown,
+				title: 'Backup type'
+			}, {
+				component: checkbox,
+				title: ''
+			}, {
+				component: backupFilesInputBox,
+				title: 'Backup files',
+				actions: [button, button3]
+			}, {
+				component: flexRadioButtonsModel,
+				title: 'Options'
+			}, {
+				component: declarativeTable,
+				title: 'Declarative Table'
+			}, {
+				component: table,
+				title: 'Table'
+			}, {
+				component: listBox,
+				title: 'List Box'
+			}], {
+				horizontal: false,
+				componentWidth: componentWidth
+			}).component();
+		let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
+		formWrapper.loading = false;
+		customButton2.onClick(() => {
+			formWrapper.loading = true;
+			setTimeout(() => formWrapper.loading = false, 5000);
+		});
+		await view.initializeModel(formWrapper);
 	}
 
 	private openDialog(): void {
@@ -80,205 +283,27 @@ export default class MainController implements vscode.Disposable {
 		customButton2.onClick(() => console.log('button 2 clicked!'));
 		dialog.customButtons = [customButton1, customButton2];
 		tab1.registerContent(async (view) => {
-			let inputBox = view.modelBuilder.inputBox()
-				.withProperties({
-					multiline: true,
-					height: 100
-				}).component();
-			let inputBoxWrapper = view.modelBuilder.loadingComponent().withItem(inputBox).component();
-			inputBoxWrapper.loading = false;
-			customButton1.onClick(() => {
-				inputBoxWrapper.loading = true;
-				setTimeout(() => inputBoxWrapper.loading = false, 5000);
-			});
-			let inputBox2 = view.modelBuilder.inputBox().component();
-			let backupFilesInputBox = view.modelBuilder.inputBox().component();
-
-			let checkbox = view.modelBuilder.checkBox()
-				.withProperties({
-					label: 'Copy-only backup'
-				})
-				.component();
-			checkbox.onChanged(e => {
-				console.info("inputBox.enabled " + inputBox.enabled);
-				inputBox.enabled = !inputBox.enabled;
-			});
-			let button = view.modelBuilder.button()
-				.withProperties({
-					label: '+'
-				}).component();
-			let button3 = view.modelBuilder.button()
-				.withProperties({
-					label: '-'
-
-				}).component();
-			let button2 = view.modelBuilder.button()
-				.component();
-			button.onDidClick(e => {
-				backupFilesInputBox.value = 'Button clicked';
-			});
-			let dropdown = view.modelBuilder.dropDown()
-				.withProperties({
-					value: 'Full',
-					values: ['Full', 'Differential', 'Transaction Log']
-				})
-				.component();
-			let f = 0;
-			inputBox.onTextChanged((params) => {
-				vscode.window.showInformationMessage(inputBox.value);
-				f = f + 1;
-				inputBox2.value = f.toString();
-			});
-			dropdown.onValueChanged((params) => {
-				vscode.window.showInformationMessage(inputBox2.value);
-				inputBox.value = dropdown.value;
-			});
-			let radioButton = view.modelBuilder.radioButton()
-				.withProperties({
-					value: 'option1',
-					name: 'radioButtonOptions',
-					label: 'Option 1',
-					checked: true
-					//width: 300
-				}).component();
-			let radioButton2 = view.modelBuilder.radioButton()
-				.withProperties({
-					value: 'option2',
-					name: 'radioButtonOptions',
-					label: 'Option 2'
-				}).component();
-			let inputBox3 = view.modelBuilder.inputBox().component();
-			let inputBox4 = view.modelBuilder.inputBox().component();
-			let form2Model = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: inputBox3,
-					title: 'inputBox3'
-				}, {
-					component: inputBox4,
-					title: 'inputBox4'
-				}], {
-					horizontal: true
-				}).component();
-			let groupModel1 = view.modelBuilder.groupContainer()
-				.withLayout({
-				}).withItems([
-					form2Model
-				]).component();
-			radioButton.onDidClick(() => {
-				inputBox.value = radioButton.value;
-				groupModel1.enabled = true;
-			});
-			radioButton2.onDidClick(() => {
-				inputBox.value = radioButton.value;
-				groupModel1.enabled = false;
-			});
-			let table = view.modelBuilder.table().withProperties({
-				data: [
-					['1', '2', '2'],
-					['4', '5', '6'],
-					['7', '8', '9']
-				], columns: ['c1', 'c2', 'c3'],
-				height: 250,
-				selectedRows: [0]
-			}).component();
-			table.onRowSelected(e => {
-				// TODO:
-			});
-			let listBox = view.modelBuilder.listBox().withProperties({
-				values: ['1', '2', '3'],
-				selectedRow: 2
-			}).component();
-
-			let declarativeTable = view.modelBuilder.declarativeTable()
-			.withProperties({
-				columns: [{
-						displayName: 'Column 1',
-						valueType: sqlops.DeclarativeDataType.string,
-						width: '20px',
-						isReadOnly: true
-					}, {
-						displayName: 'Column 2',
-						valueType: sqlops.DeclarativeDataType.string,
-						width: '100px',
-						isReadOnly: false
-					}, {
-						displayName: 'Column 3',
-						valueType: sqlops.DeclarativeDataType.boolean,
-						width: '20px',
-						isReadOnly: false
-					}, {
-						displayName: 'Column 4',
-						valueType: sqlops.DeclarativeDataType.category,
-						isReadOnly: false,
-						width: '120px',
-						categoryValues: [
-							{ name: 'options1', displayName: 'option 1' },
-							{ name: 'options2', displayName: 'option 2' }
-						]
-					}
-				],
-				data: [
-					['Data00', 'Data01', false, 'options2'],
-					['Data10', 'Data11', true, 'options1']
-				]
-			}).component();
-
-			declarativeTable.onDataChanged(e => {
-				inputBox2.value = e.row.toString() + ' ' + e.column.toString() + ' ' + e.value.toString();
-				inputBox3.value = declarativeTable.data[e.row][e.column];
-			});
-
-			let flexRadioButtonsModel = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'column',
-					alignItems: 'left',
-					height: 150
-				}).withItems([
-					radioButton, groupModel1, radioButton2]
-				, { flex: '1 1 50%' }).component();
-			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: inputBoxWrapper,
-					title: 'Backup name'
-				}, {
-					component: inputBox2,
-					title: 'Recovery model'
-				}, {
-					component: dropdown,
-					title: 'Backup type'
-				}, {
-					component: checkbox,
-					title: ''
-				}, {
-					component: backupFilesInputBox,
-					title: 'Backup files',
-					actions: [button, button3]
-				}, {
-					component: flexRadioButtonsModel,
-					title: 'Options'
-				}, {
-					component: declarativeTable,
-					title: 'Declarative Table'
-				}, {
-					component: table,
-					title: 'Table'
-				}, {
-					component: listBox,
-					title: 'List Box'
-				}], {
-					horizontal: false,
-					componentWidth: 400
-				}).component();
-			let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
-			formWrapper.loading = false;
-			customButton2.onClick(() => {
-				formWrapper.loading = true;
-				setTimeout(() => formWrapper.loading = false, 5000);
-			});
-			await view.initializeModel(formWrapper);
+			await this.getTabContent(view, customButton1, customButton2, 400);
 		});
 
 		sqlops.window.modelviewdialog.openDialog(dialog);
+	}
+
+	private openWizard(): void {
+		let wizard = sqlops.window.modelviewdialog.createWizard('Test wizard');
+		let page1 = sqlops.window.modelviewdialog.createWizardPage('First wizard page');
+		let page2 = sqlops.window.modelviewdialog.createWizardPage('Second wizard page');
+		page2.content = 'sqlservices';
+		let customButton1 = sqlops.window.modelviewdialog.createButton('Load name');
+		customButton1.onClick(() => console.log('button 1 clicked!'));
+		let customButton2 = sqlops.window.modelviewdialog.createButton('Load all');
+		customButton2.onClick(() => console.log('button 2 clicked!'));
+		wizard.customButtons = [customButton1, customButton2];
+		page1.registerContent(async (view) => {
+			await this.getTabContent(view, customButton1, customButton2, 800);
+		});
+		wizard.pages = [page1, page2];
+		wizard.open();
 	}
 
 	private openEditor(): void {

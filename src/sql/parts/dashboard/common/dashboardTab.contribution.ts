@@ -7,6 +7,7 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 
+import * as Constants from 'sql/parts/connection/common/constants';
 import { registerTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { NAV_SECTION, validateNavSectionContributionAndRegisterIcon } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
@@ -17,9 +18,11 @@ export interface IDashboardTabContrib {
 	id: string;
 	title: string;
 	container: object;
+	provider: string | string[];
 	when?: string;
 	description?: string;
 	alwaysShow?: boolean;
+	isHomeTab?: boolean;
 }
 
 const tabSchema: IJSONSchema = {
@@ -41,6 +44,11 @@ const tabSchema: IJSONSchema = {
 			description: localize('sqlops.extension.contributes.tab.when', 'Condition which must be true to show this item'),
 			type: 'string'
 		},
+		provider: {
+			description: localize('sqlops.extension.contributes.tab.provider', 'Defines the connection types this tab is compatible with. Defaults to "MSSQL" if not set'),
+			type: ['string', 'array']
+
+		},
 		container: {
 			description: localize('sqlops.extension.contributes.dashboard.tab.container', "The container that will be displayed in this tab."),
 			type: 'object',
@@ -48,6 +56,10 @@ const tabSchema: IJSONSchema = {
 		},
 		alwaysShow: {
 			description: localize('sqlops.extension.contributes.dashboard.tab.alwaysShow', "Whether or not this tab should always be shown or only when the user adds it."),
+			type: 'boolean'
+		},
+		isHomeTab: {
+			description: localize('sqlops.extension.contributes.dashboard.tab.isHomeTab', "Whether or not this tab should be used as the Home tab for a connection type."),
 			type: 'boolean'
 		}
 	}
@@ -67,7 +79,7 @@ const tabContributionSchema: IJSONSchema = {
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>('dashboard.tabs', [], tabContributionSchema).setHandler(extensions => {
 
 	function handleCommand(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
-		let { description, container, title, when, id, alwaysShow } = tab;
+		let { description, container, provider, title, when, id, alwaysShow, isHomeTab } = tab;
 
 		// If always show is not specified, set it to true by default.
 		if (!types.isBoolean(alwaysShow)) {
@@ -86,6 +98,13 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		if (!container) {
 			extension.collector.error(localize('dashboardTab.contribution.noContainerError', 'No container specified for extension.'));
 			return;
+		}
+
+		if (!provider) {
+			// Use a default. Consider warning extension developers about this in the future if in development mode
+			provider = Constants.mssqlProviderName;
+			// Cannot be a home tab if it did not specify a provider
+			isHomeTab = false;
 		}
 
 		if (Object.keys(container).length !== 1) {
@@ -110,7 +129,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		}
 
 		if (result) {
-			registerTab({ description, title, container, when, id, alwaysShow, publisher });
+			registerTab({ description, title, container, provider, when, id, alwaysShow, publisher, isHomeTab });
 		}
 	}
 

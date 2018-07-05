@@ -181,7 +181,7 @@ export class TreeUpdateUtils {
 					connectedConnection.options['groupId'] = connection.groupId;
 					connectedConnection.options['databaseDisplayName'] = connection.databaseName;
 
-					var rootNode: TreeNode = objectExplorerService.getObjectExplorerNode(connectedConnection);
+					let rootNode: TreeNode = objectExplorerService.getObjectExplorerNode(connectedConnection);
 					if (!rootNode) {
 						objectExplorerService.updateObjectExplorerNodes(connectedConnection).then(() => {
 							rootNode = objectExplorerService.getObjectExplorerNode(connectedConnection);
@@ -207,7 +207,7 @@ export class TreeUpdateUtils {
 			if (connection.isDisconnecting) {
 				resolve([]);
 			} else {
-				var rootNode = objectExplorerService.getObjectExplorerNode(connection);
+				let rootNode = objectExplorerService.getObjectExplorerNode(connection);
 				if (rootNode) {
 					objectExplorerService.resolveTreeNodeChildren(rootNode.getSession(), rootNode).then(() => {
 						resolve(rootNode.children);
@@ -226,7 +226,7 @@ export class TreeUpdateUtils {
 		if (objectExplorerNode && objectExplorerNode.parent) {
 			// if object explorer node's parent is root, return connection profile
 			if (!objectExplorerNode.parent.parent) {
-				var connectionId = objectExplorerNode.getConnectionProfile().id;
+				let connectionId = objectExplorerNode.getConnectionProfile().id;
 
 				// get connection profile from connection profile groups
 				let root = TreeUpdateUtils.getTreeInput(connectionManagementService);
@@ -268,8 +268,8 @@ export class TreeUpdateUtils {
 	 * Get connection profile with the current database
 	 */
 	public static getConnectionProfile(treeNode: TreeNode): ConnectionProfile {
-		var connectionProfile = treeNode.getConnectionProfile();
-		var databaseName = treeNode.getDatabaseName();
+		let connectionProfile = treeNode.getConnectionProfile();
+		let databaseName = treeNode.getDatabaseName();
 		if (databaseName !== undefined && connectionProfile.databaseName !== databaseName) {
 			connectionProfile = connectionProfile.cloneWithDatabase(databaseName);
 		}

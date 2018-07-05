@@ -96,11 +96,11 @@ export class TreeNode {
 			return undefined;
 		}
 		var currentNode: TreeNode = this;
-		while (currentNode.nodeTypeId !== NodeType.Database && currentNode.nodeTypeId !== NodeType.Server) {
+		while (currentNode.nodeTypeId !== NodeType.Database && currentNode.nodeTypeId !== NodeType.Server && currentNode.parent) {
 			currentNode = currentNode.parent;
 		}
 
-		if (currentNode.nodeTypeId === NodeType.Database) {
+		if (currentNode && currentNode.nodeTypeId === NodeType.Database) {
 			return currentNode.metadata ? currentNode.metadata.name : null;
 		}
 		return undefined;

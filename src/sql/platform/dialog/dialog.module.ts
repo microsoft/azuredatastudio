@@ -26,10 +26,11 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
 
-/* Model-backed components */
-let extensionComponents = Registry.as<IComponentRegistry>(Extensions.ComponentContribution).getAllCtors();
-
 export const DialogModule = (params, selector: string, instantiationService: IInstantiationService): any => {
+
+	/* Model-backed components */
+	let extensionComponents = Registry.as<IComponentRegistry>(Extensions.ComponentContribution).getAllCtors();
+
 	@NgModule({
 		declarations: [
 			Checkbox,

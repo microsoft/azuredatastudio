@@ -128,4 +128,24 @@ suite('ExtHostModelView Validation Tests', () => {
 		});
 		assert.equal(validityFromEvent, false, 'Main thread validityChanged event did not cause component to fire its own event');
 	});
+
+	test('Setting a form component as required initializes the model with the component required', () => {
+		// Set up the input component with required initially set to false
+		let inputComponent = modelView.modelBuilder.inputBox().component();
+		inputComponent.required = false;
+
+		// If I build a form that sets the input component as required
+		let inputFormComponent: sqlops.FormComponent = {
+			component: inputComponent,
+			title: 'test_input',
+			required: true
+		};
+		let requiredFormContainer = modelView.modelBuilder.formContainer().withFormItems([inputFormComponent]).component();
+		modelView.initializeModel(requiredFormContainer);
+
+		// Then the input component is sent to the main thread with required set to true
+		mockProxy.verify(x => x.$initializeModel(It.isAny(), It.is(rootComponent => {
+			return rootComponent.itemConfigs.length === 1 && rootComponent.itemConfigs[0].componentShape.id === inputComponent.id && rootComponent.itemConfigs[0].componentShape.properties['required'] === true;
+		})), Times.once());
+	});
 });

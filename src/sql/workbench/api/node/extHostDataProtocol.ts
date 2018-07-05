@@ -224,6 +224,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.QueryProvider>(handle).runQueryAndReturn(ownerUri, queryString);
 	}
 
+	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> {
+		return this._resolveProvider<sqlops.QueryProvider>(handle).parseSyntax(ownerUri, query);
+	}
+
 	$getQueryRows(handle: number, rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> {
 		return this._resolveProvider<sqlops.QueryProvider>(handle).getQueryRows(rowData);
 	}
@@ -549,5 +553,26 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	public $jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> {
 		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).jobAction(ownerUri, jobName, action);
+	}
+
+	/**
+	 * Get Agent Alerts list
+	 */
+	$getAlerts(handle: number, ownerUri: string): Thenable<sqlops.AgentAlertsResult> {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getAlerts(ownerUri);
+	}
+
+	/**
+	 * Get Agent Oeprators list
+	 */
+	$getOperators(handle: number, ownerUri: string): Thenable<sqlops.AgentOperatorsResult> {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getOperators(ownerUri);
+	}
+
+	/**
+	 * Get Agent Proxies list
+	 */
+	$getProxies(handle: number, ownerUri: string): Thenable<sqlops.AgentProxiesResult>  {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getProxies(ownerUri);
 	}
 }

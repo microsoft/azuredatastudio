@@ -7,11 +7,8 @@
 
 import { localize } from 'vs/nls';
 import * as sqlops from 'sqlops';
-import * as vscode from 'vscode';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Injectable } from '@angular/core';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 
 
@@ -22,8 +19,7 @@ export class JobManagementService implements IJobManagementService {
 	private _jobCacheObject : {[server: string]: JobCacheObject; } = {};
 
 	constructor(
-		@IConnectionManagementService private _connectionService: IConnectionManagementService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
+		@IConnectionManagementService private _connectionService: IConnectionManagementService
 	) {
 	}
 
@@ -32,6 +28,25 @@ export class JobManagementService implements IJobManagementService {
 			return runner.getJobs(connectionUri);
 		});
 	}
+
+	public getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getAlerts(connectionUri);
+		});
+	}
+
+	public getOperators(connectionUri: string): Thenable<sqlops.AgentOperatorsResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getOperators(connectionUri);
+		});
+	}
+
+	public getProxies(connectionUri: string): Thenable<sqlops.AgentProxiesResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getProxies(connectionUri);
+		});
+	}
+
 
 	public getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
 		return this._runAction(connectionUri, (runner) => {
@@ -79,7 +94,8 @@ export class JobManagementService implements IJobManagementService {
 export class JobCacheObject {
 	_serviceBrand: any;
 	private _jobs: sqlops.AgentJobInfo[] = [];
-	private _jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = {};
+	private _jobHistories: { [jobID: string]: sqlops.AgentJobHistoryInfo[]; } = {};
+	private _runCharts: { [jobID: string]: string[]; } = {};
 	private _prevJobID: string;
 	private _serverName: string;
 	private _dataView: Slick.Data.DataView<any>;
@@ -89,7 +105,7 @@ export class JobCacheObject {
 			return this._jobs;
 		}
 
-		public get jobHistories(): { [jobId: string]: sqlops.AgentJobHistoryInfo[] } {
+		public get jobHistories(): { [jobID: string]: sqlops.AgentJobHistoryInfo[] } {
 			return this._jobHistories;
 		}
 
@@ -109,12 +125,16 @@ export class JobCacheObject {
 			return this._dataView;
 		}
 
+		public getRunChart(jobID: string): string[] {
+			return this._runCharts[jobID];
+		}
+
 		/* Setters */
 		public set jobs(value: sqlops.AgentJobInfo[]) {
 			this._jobs = value;
 		}
 
-		public set jobHistories(value: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; }) {
+		public set jobHistories(value: { [jobID: string]: sqlops.AgentJobHistoryInfo[]; }) {
 			this._jobHistories = value;
 		}
 
@@ -124,6 +144,10 @@ export class JobCacheObject {
 
 		public setJobHistory(jobID:string, value: sqlops.AgentJobHistoryInfo[]) {
 			this._jobHistories[jobID] = value;
+		}
+
+		public setRunChart(jobID: string, value: string[]) {
+			this._runCharts[jobID] = value;
 		}
 
 		public set serverName(value: string) {

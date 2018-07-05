@@ -10,12 +10,11 @@ import 'vs/css!./media/dialogModal';
 import { NgModuleRef } from '@angular/core';
 
 import { IModalDialogStyles } from 'sql/base/browser/ui/modal/modal';
-import { Dialog, DialogTab } from 'sql/platform/dialog/dialogTypes';
+import { DialogTab } from 'sql/platform/dialog/dialogTypes';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { DialogModule } from 'sql/platform/dialog/dialog.module';
 import { DialogComponentParams } from 'sql/platform/dialog/dialogContainer.component';
-import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import * as DOM from 'vs/base/browser/dom';
 import { Builder } from 'vs/base/browser/builder';
@@ -31,24 +30,21 @@ export class DialogPane extends Disposable implements IThemable {
 	// Validation
 	private _modelViewValidityMap = new Map<string, boolean>();
 
-	// HTML Elements
 	private _body: HTMLElement;
-	private _tabBar: HTMLElement;
-	private _tabs: HTMLElement[];
-	private _tabContent: HTMLElement[];
 	private _selectedTabIndex: number = 0; //TODO: can be an option
 	private _onTabChange = new Emitter<string>();
 	private _selectedTabContent: string;
+	public pageNumber?: number;
 
 	constructor(
-		private _title: string,
+		public title: string,
 		private _content: string | DialogTab[],
 		private _validityChangedCallback: (valid: boolean) => void,
-		private _instantiationService: IInstantiationService
+		private _instantiationService: IInstantiationService,
+		public displayPageTitle: boolean,
+		public description?: string,
 	) {
 		super();
-		this._tabs = [];
-		this._tabContent = [];
 	}
 
 	public createBody(container: HTMLElement): HTMLElement {
@@ -73,7 +69,7 @@ export class DialogPane extends Disposable implements IThemable {
 					});
 					this._tabbedPanel.pushTab({
 						title: tab.title,
-						identifier: 'dialogPane.' + this._title + '.' + tabIndex,
+						identifier: 'dialogPane.' + this.title + '.' + tabIndex,
 						view: {
 							render: (container) => {
 								if (tabContainer.parentElement === this._body) {
@@ -93,12 +89,12 @@ export class DialogPane extends Disposable implements IThemable {
 	}
 
 	private getTabDimension(): DOM.Dimension {
-		return new DOM.Dimension(DOM.getContentWidth(this._body), DOM.getContentHeight(this._body));
+		return new DOM.Dimension(DOM.getContentWidth(this._body) - 5, DOM.getContentHeight(this._body) - 5);
 	}
 
 	public layout(): void {
 		if (this._tabbedPanel) {
-			this._tabbedPanel.layout(new DOM.Dimension(DOM.getContentWidth(this._body), DOM.getContentHeight(this._body)));
+			this._tabbedPanel.layout(this.getTabDimension());
 			this._onTabChange.fire(this._selectedTabContent);
 		}
 	}
@@ -119,7 +115,8 @@ export class DialogPane extends Disposable implements IThemable {
 						tab.notifyValidityChanged(valid);
 					}
 				},
-				onLayoutRequested: this._onTabChange.event
+				onLayoutRequested: this._onTabChange.event,
+				dialogPane: this
 			} as DialogComponentParams,
 			undefined,
 			(moduleRef) => {

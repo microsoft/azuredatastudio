@@ -141,6 +141,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		page.title = details.title;
 		page.content = details.content;
 		page.enabled = details.enabled;
+		page.description = details.description;
 		if (details.customButtons !== undefined) {
 			page.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
@@ -165,6 +166,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		}
 
 		wizard.title = details.title;
+		wizard.displayPageTitles = details.displayPageTitles;
 		wizard.pages = details.pages.map(handle => this.getWizardPage(handle));
 		if (details.currentPage !== undefined) {
 			wizard.setCurrentPage(details.currentPage);

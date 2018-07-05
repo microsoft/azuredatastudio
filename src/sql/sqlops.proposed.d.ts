@@ -35,6 +35,7 @@ declare module 'sqlops' {
 		groupContainer(): GroupBuilder;
 		toolbarContainer(): ToolbarBuilder;
 		loadingComponent(): LoadingComponentBuilder;
+		fileBrowserTree(): ComponentBuilder<FileBrowserTreeComponent>;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -133,6 +134,7 @@ declare module 'sqlops' {
 		component: Component;
 		title: string;
 		actions?: Component[];
+		required?: boolean;
 	}
 
 	export interface ToolbarComponent {
@@ -240,7 +242,6 @@ declare module 'sqlops' {
 		componentWidth?: number | string;
 		componentHeight?: number | string;
 		titleFontSize?: number | string;
-		required?: boolean;
 		info?: string;
 	}
 
@@ -301,7 +302,7 @@ declare module 'sqlops' {
 	}
 
 	export enum CardType {
-		VerticalButton  = 'VerticalButton',
+		VerticalButton = 'VerticalButton',
 		Details = 'Details'
 	}
 
@@ -314,8 +315,16 @@ declare module 'sqlops' {
 		value?: string;
 		actions?: ActionDescriptor[];
 		status?: StatusIndicator;
+
+		/**
+		 * Returns true if the card is selected
+		 */
 		selected?: boolean;
-		cardType: CardType;
+
+		/**
+		 * Card Type, default: Details
+		 */
+		cardType?: CardType;
 	}
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
@@ -352,6 +361,10 @@ declare module 'sqlops' {
 		data: any[][];
 		columns: string[] | TableColumn[];
 		selectedRows?: number[];
+	}
+
+	export interface FileBrowserTreeProperties extends ComponentProperties {
+		ownerUri: string;
 	}
 
 	export interface CheckBoxProperties {
@@ -461,6 +474,10 @@ declare module 'sqlops' {
 
 	export interface TableComponent extends Component, TableComponentProperties {
 		onRowSelected: vscode.Event<any>;
+	}
+
+	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {
+		onDidChange: vscode.Event<any>;
 	}
 
 	export interface WebViewComponent extends Component {
@@ -748,13 +765,18 @@ declare module 'sqlops' {
 				 * able to advance to it. Defaults to true.
 				 */
 				enabled: boolean;
+
+				/**
+				 * An optional description for the page. If provided it will be displayed underneath the page title.
+				 */
+				description: string;
 			}
 
 			export interface Wizard {
 				/**
 				 * The title of the wizard
 				 */
-				title: string,
+				title: string;
 
 				/**
 				 * The wizard's pages. Pages can be added/removed while the dialog is open by using
@@ -799,6 +821,12 @@ declare module 'sqlops' {
 				 * property on each page.
 				 */
 				customButtons: Button[];
+
+				/**
+				 * When set to false page titles and descriptions will not be displayed at the top
+				 * of each wizard page. The default is true.
+				 */
+				displayPageTitles: boolean;
 
 				/**
 				 * Event fired when the wizard's page changes, containing information about the

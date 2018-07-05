@@ -135,6 +135,7 @@ export class DialogButton implements sqlops.window.modelviewdialog.Button {
 export class WizardPage extends DialogTab {
 	public customButtons: DialogButton[];
 	private _enabled: boolean;
+	private _description: string;
 	private _onUpdate: Emitter<void> = new Emitter<void>();
 	public readonly onUpdate: Event<void> = this._onUpdate.event;
 
@@ -148,6 +149,15 @@ export class WizardPage extends DialogTab {
 
 	public set enabled(enabled: boolean) {
 		this._enabled = enabled;
+		this._onUpdate.fire();
+	}
+
+	public get description(): string {
+		return this._description;
+	}
+
+	public set description(description: string) {
+		this._description = description;
 		this._onUpdate.fire();
 	}
 }
@@ -171,6 +181,7 @@ export class Wizard {
 	private _onMessageChange = new Emitter<DialogMessage>();
 	public readonly onMessageChange = this._onMessageChange.event;
 	private _message: DialogMessage;
+	public displayPageTitles: boolean;
 
 	constructor(public title: string) { }
 

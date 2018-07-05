@@ -635,6 +635,7 @@ declare module 'sqlops' {
 		runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 		runQueryString(ownerUri: string, queryString: string): Thenable<void>;
 		runQueryAndReturn(ownerUri: string, queryString: string): Thenable<SimpleExecuteResult>;
+		parseSyntax(ownerUri: string, query: string): Thenable<SyntaxParseResult>;
 		getQueryRows(rowData: QueryExecuteSubsetParams): Thenable<QueryExecuteSubsetResult>;
 		disposeQuery(ownerUri: string): Thenable<void>;
 		saveResults(requestParams: SaveResultsRequestParams): Thenable<SaveResultRequestResult>;
@@ -767,6 +768,11 @@ declare module 'sqlops' {
 		rowCount: number;
 		columnInfo: IDbColumn[];
 		rows: DbCellValue[][];
+	}
+
+	export interface SyntaxParseResult {
+		parseable: boolean;
+		errorMessages: string[];
 	}
 
 	// Query Batch Notification -----------------------------------------------------------------------
@@ -1054,8 +1060,44 @@ declare module 'sqlops' {
 		wmiEvent = 4
 	}
 
+	export enum JobCompletionActionCondition {
+		Never = 0,
+		OnSuccess = 1,
+		OnFailure = 2,
+		Always = 3
+	}
+
+	export enum FrequencyTypes {
+		Unknown ,
+		OneTime = 1 << 1,
+		Daily = 1 << 2,
+		Weekly = 1 << 3,
+		Monthly = 1 << 4,
+		MonthlyRelative = 1 << 5,
+		AutoStart = 1 << 6,
+		OnIdle = 1 << 7
+	}
+
+	export enum FrequencySubDayTypes {
+		Unknown = 0,
+		Once = 1,
+		Second = 2,
+		Minute = 4,
+		Hour = 8
+	}
+
+	export enum FrequencyRelativeIntervals {
+		First = 1,
+		Second = 2,
+		Third = 4,
+		Fourth = 8,
+		Last = 16
+	}
+
 	export interface AgentJobInfo {
 		name: string;
+		owner: string;
+		description: string;
 		currentExecutionStatus: number;
 		lastRunOutcome: number;
 		currentExecutionStep: string;
@@ -1070,15 +1112,71 @@ declare module 'sqlops' {
 		lastRun: string;
 		nextRun: string;
 		jobId: string;
+		EmailLevel: JobCompletionActionCondition;
+		PageLevel: JobCompletionActionCondition;
+		EventLogLevel: JobCompletionActionCondition;
+		DeleteLevel: JobCompletionActionCondition;
+		OperatorToEmail: string;
+		OperatorToPage: string;
+		JobSteps: AgentJobStepInfo[];
+		JobSchedules: AgentJobScheduleInfo[];
+		Alerts: AgentAlertInfo[];
 	}
 
-	export interface AgentJobStepInfo {
+	export interface AgentJobScheduleInfo {
+		id: number;
+		name: string;
+		jobName: string;
+		isEnabled: boolean;
+		frequencyTypes: FrequencyTypes;
+		frequencySubDayTypes: FrequencySubDayTypes;
+		frequencySubDayInterval: number;
+		frequencyRelativeIntervals: FrequencyRelativeIntervals;
+		frequencyRecurrenceFactor: number;
+		frequencyInterval: number;
+		dateCreated: string;
+		activeStartTimeOfDay: string;
+		activeStartDate: string;
+		activeEndTimeOfDay: string;
+		jobCount: number;
+		activeEndDate: string;
+		scheduleUid: string;
+	}
+
+	export interface AgentJobStep {
 		jobId: string;
 		stepId: string;
 		stepName: string;
 		message: string;
 		runDate: string;
 		runStatus: number;
+	}
+
+	export interface AgentJobStepInfo {
+		jobId: string;
+		jobName: string;
+		script: string;
+		scriptName: string;
+		stepName: string;
+		subSystem: string;
+		id: number;
+		failureAction: string;
+		successAction: string;
+		failStepId: number;
+		successStepId: number;
+		command: string;
+		commandExecutionSuccessCode: number;
+		databaseName: string;
+		databaseUserName: string;
+		server: string;
+		outputFileName: string;
+		appendToLogFile: boolean;
+		appendToStepHist: boolean;
+		writeLogToTable: boolean;
+		appendLogToTable: boolean;
+		retryAttempts: number;
+		retryInterval: number;
+		proxyName: string;
 	}
 
 	export interface AgentJobHistoryInfo {
@@ -1098,7 +1196,7 @@ declare module 'sqlops' {
 		operatorPaged: string;
 		retriesAttempted: string;
 		server: string;
-		steps: AgentJobStepInfo[];
+		steps: AgentJobStep[];
 	}
 
 	export interface AgentProxyInfo {
@@ -1113,6 +1211,7 @@ declare module 'sqlops' {
 
 	export interface AgentAlertInfo {
 		id: number;
+		name: string;
 		delayBetweenResponses: number;
 		eventDescriptionKeyword: string;
 		eventSource: string;
@@ -1173,15 +1272,26 @@ declare module 'sqlops' {
 		job: AgentJobInfo;
 	}
 
-	export interface UpdateAgentJobResult extends ResultStatus  {
+	export interface UpdateAgentJobResult extends ResultStatus {
 		job: AgentJobInfo;
+	}
+
+	export interface AgentJobCategory
+	{
+		id: string;
+		name: string;
+	}
+
+	export interface AgentJobDefaultsResult extends ResultStatus {
+		owner: string;
+	   	categories: AgentJobCategory[];
 	}
 
 	export interface CreateAgentJobStepResult extends ResultStatus {
 		step: AgentJobStepInfo;
 	}
 
-	export interface UpdateAgentJobStepResult extends ResultStatus  {
+	export interface UpdateAgentJobStepResult extends ResultStatus {
 		step: AgentJobStepInfo;
 	}
 
@@ -1189,7 +1299,7 @@ declare module 'sqlops' {
 		step: AgentJobStepInfo;
 	}
 
-	export interface UpdateAgentProxyResult extends ResultStatus  {
+	export interface UpdateAgentProxyResult extends ResultStatus {
 		step: AgentJobStepInfo;
 	}
 
@@ -1201,7 +1311,7 @@ declare module 'sqlops' {
 		alert: AgentJobStepInfo;
 	}
 
-	export interface UpdateAgentAlertResult extends ResultStatus  {
+	export interface UpdateAgentAlertResult extends ResultStatus {
 		alert: AgentJobStepInfo;
 	}
 
@@ -1213,20 +1323,32 @@ declare module 'sqlops' {
 		operator: AgentOperatorInfo;
 	}
 
-	export interface UpdateAgentOperatorResult extends ResultStatus  {
+	export interface UpdateAgentOperatorResult extends ResultStatus {
 		operator: AgentOperatorInfo;
 	}
 
 	export interface AgentProxiesResult extends ResultStatus {
-		operators: AgentOperatorInfo[];
+		proxies: AgentProxyInfo[];
 	}
 
 	export interface CreateAgentProxyResult extends ResultStatus {
-		operator: AgentOperatorInfo;
+		proxy: AgentProxyInfo;
 	}
 
-	export interface UpdateAgentProxyResult extends ResultStatus  {
-		operator: AgentOperatorInfo;
+	export interface UpdateAgentProxyResult extends ResultStatus {
+		proxy: AgentProxyInfo;
+	}
+
+	export interface AgentJobSchedulesResult extends ResultStatus {
+		schedules: AgentJobScheduleInfo[];
+	}
+
+	export interface CreateAgentJobScheduleResult extends ResultStatus {
+		schedule: AgentJobScheduleInfo;
+	}
+
+	export interface UpdateAgentJobScheduleResult extends ResultStatus {
+		schedule: AgentJobScheduleInfo;
 	}
 
 	export interface AgentServicesProvider extends DataProvider {
@@ -1237,6 +1359,7 @@ declare module 'sqlops' {
 		createJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<CreateAgentJobResult>;
 		updateJob(ownerUri: string, originalJobName: string, jobInfo: AgentJobInfo): Thenable<UpdateAgentJobResult>;
 		deleteJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<ResultStatus>;
+		getJobDefaults(ownerUri: string): Thenable<AgentJobDefaultsResult>;
 
 		// Job Step management methods
 		createJobStep(ownerUri: string, jobInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
@@ -1260,6 +1383,13 @@ declare module 'sqlops' {
 		createProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<CreateAgentOperatorResult>;
 		updateProxy(ownerUri: string, originalProxyName: string, proxyInfo: AgentProxyInfo): Thenable<UpdateAgentOperatorResult>;
 		deleteProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<ResultStatus>;
+
+
+		// Job Schedule management methods
+		getJobSchedules(ownerUri: string): Thenable<AgentJobSchedulesResult>;
+		createJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<CreateAgentJobScheduleResult>;
+		updateJobSchedule(ownerUri: string, originalScheduleName: string, scheduleInfo: AgentJobScheduleInfo): Thenable<UpdateAgentJobScheduleResult>;
+		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 	}
 
 	// Task service interfaces ----------------------------------------------------------------------------

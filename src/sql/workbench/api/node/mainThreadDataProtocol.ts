@@ -114,6 +114,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> {
 				return self._proxy.$runQueryAndReturn(handle, ownerUri, queryString);
 			},
+			parseSyntax(ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> {
+				return self._proxy.$parseSyntax(handle, ownerUri, query);
+			},
 			getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> {
 				return self._proxy.$getQueryRows(handle, rowData);
 			},
@@ -341,6 +344,15 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> {
 				return self._proxy.$jobAction(handle, connectionUri, jobName, action);
+			},
+			getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult> {
+				return self._proxy.$getAlerts(handle, connectionUri);
+			},
+			getOperators(connectionUri: string): Thenable<sqlops.AgentOperatorsResult> {
+				return self._proxy.$getOperators(handle, connectionUri);
+			},
+			getProxies(connectionUri: string): Thenable<sqlops.AgentProxiesResult> {
+				return self._proxy.$getProxies(handle, connectionUri);
 			}
 		});
 
