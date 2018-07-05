@@ -6,7 +6,7 @@
 		<ng-container *ngIf="isVerticalButton">
 			<div class="card-vertical-button">
 				<div *ngIf="iconPath" class="iconContainer">
-					<div [class]="iconClass" [style.width]="iconWidth" [style.height]="iconHeight"></div>
+					<div [class]="iconClass" [style.maxWidth]="iconWidth" [style.maxHeight]="iconHeight"></div>
 				</div>
 				<h4 class="card-label">{{label}}</h4>
 			</div>
