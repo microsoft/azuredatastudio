@@ -59,6 +59,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private static readonly AlertSeverity023Label: string = localize('alertDialog.Severity023', '023 - Fatal Error: Database Integrity Suspect');
 	private static readonly AlertSeverity024Label: string = localize('alertDialog.Severity024', '024 - Fatal Error: Hardware Error');
 	private static readonly AlertSeverity025Label: string = localize('alertDialog.Severity025', '025 - Fatal Error');
+	private static readonly AllDatabases: string = localize('alertDialog.AllDatabases', '<all databases>');
 
 	private static readonly AlertTypes: string[]  = [
 		AlertDialog.AlertTypeSqlServerEventString,
@@ -142,6 +143,8 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private delayMinutesTextBox: sqlops.InputBoxComponent;
 	private delaySecondsTextBox: sqlops.InputBoxComponent;
 
+	private databases: string[];
+
 	constructor(ownerUri: string, alertInfo: sqlops.AgentAlertInfo = null) {
 		super(ownerUri,
 			new AlertData(ownerUri, alertInfo),
@@ -149,12 +152,14 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-		let databases = await AgentUtils.getDatabases(this.ownerUri);
+		this.databases = await AgentUtils.getDatabases(this.ownerUri);
+		this.databases.unshift(AlertDialog.AllDatabases);
+
 		this.generalTab = sqlops.window.modelviewdialog.createTab(AlertDialog.GeneralTabText);
 		this.responseTab = sqlops.window.modelviewdialog.createTab(AlertDialog.ResponseTabText);
 		this.optionsTab = sqlops.window.modelviewdialog.createTab(AlertDialog.OptionsTabText);
 
-		this.initializeGeneralTab(databases);
+		this.initializeGeneralTab(this.databases);
 		this.initializeResponseTab();
 		this.initializeOptionsTab();
 
@@ -163,6 +168,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 
 	private initializeGeneralTab(databases: string[]) {
 		this.generalTab.registerContent(async view => {
+			// create controls
 			this.nameTextBox = view.modelBuilder.inputBox().component();
 
 			this.enabledCheckBox = view.modelBuilder.checkBox()
@@ -222,8 +228,19 @@ export class AlertDialog extends AgentDialog<AlertData> {
 
 			await view.initializeModel(formModel);
 
+			// initialize control values
 			this.nameTextBox.value = this.model.name;
 			this.enabledCheckBox.checked = this.model.isEnabled;
+			if (this.model.severity > 0) {
+				this.severityDropDown.value = this.severityDropDown.values[this.model.severity-1];
+			}
+
+			if (this.model.databaseName) {
+				let idx = this.databases.indexOf(this.model.databaseName);
+				if (idx >= 0) {
+					this.databaseDropDown.value = this.databases[idx];
+				}
+			}
 		});
 	}
 
@@ -343,7 +360,8 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		this.model.isEnabled = this.enabledCheckBox.checked;
 
 		this.model.alertType = this.getDropdownValue(this.typeDropDown);
-		this.model.databaseName = this.getDropdownValue(this.databaseDropDown);
+		let databaseName = this.getDropdownValue(this.databaseDropDown);
+		this.model.databaseName = (databaseName !== AlertDialog.AllDatabases) ? databaseName : undefined;
 		this.model.severity = this.getSeverityNumber();
 		this.model.messageId = undefined;
 
