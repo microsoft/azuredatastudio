@@ -45,7 +45,7 @@ class FormItem {
 	template: `
 		<div #container *ngIf="items" class="form-table" [style.padding]="getFormPadding()" [style.width]="getFormWidth()" [style.height]="getFormHeight()">
 			<ng-container *ngFor="let item of items">
-			<div class="form-row" *ngIf="isGroupLabel(item)">
+			<div class="form-row" *ngIf="isGroupLabel(item)" [style.font-size]="getItemTitleFontSize(item)">
 				<div class="form-item-row form-group-label">
 					<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 					</model-component-wrapper>
@@ -179,8 +179,12 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	}
 
 	private getItemTitleFontSize(item: FormItem): string {
+		let defaultFontSize = '14px';
+		if (this.isInGroup(item)) {
+			defaultFontSize = '12px';
+		}
 		let itemConfig = item.config;
-		return itemConfig && itemConfig.titleFontSize ? this.convertSize(itemConfig.titleFontSize, '11px') : '11px';
+		return itemConfig && itemConfig.titleFontSize ? this.convertSize(itemConfig.titleFontSize, defaultFontSize) : defaultFontSize;
 	}
 
 	private getActionComponents(item: FormItem): FormItem[] {
