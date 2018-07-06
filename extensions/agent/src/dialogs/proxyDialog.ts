@@ -84,6 +84,10 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
+
+			this.proxyNameTextBox.value = this.model.accountName;
+			this.credentialNameTextBox.value = this.model.credentialName;
+			this.descriptionTextBox.value = this.model.description;
 		});
 	}
 

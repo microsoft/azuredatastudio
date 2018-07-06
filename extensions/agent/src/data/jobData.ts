@@ -48,6 +48,8 @@ export class JobData implements IAgentDialogData {
 		this._ownerUri = ownerUri;
 		if (jobInfo) {
 			this.dialogMode = AgentDialogMode.EDIT;
+			this.name = jobInfo.name;
+			this.enabled = jobInfo.enabled;
 		}
 	}
 

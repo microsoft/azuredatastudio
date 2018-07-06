@@ -21,6 +21,12 @@ export class ProxyData implements IAgentDialogData {
 
 	constructor(ownerUri:string, proxyInfo: sqlops.AgentProxyInfo) {
 		this.ownerUri = ownerUri;
+
+		if (proxyInfo) {
+			this.accountName = proxyInfo.accountName;
+			this.credentialName = proxyInfo.credentialName;
+			this.description = proxyInfo.description;
+		}
 	}
 
 	public async initialize() {

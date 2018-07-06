@@ -145,11 +145,17 @@ export class EditJobAction extends Action {
 	public static ID = 'jobaction.editJob';
 	public static LABEL = nls.localize('jobaction.editJob', "Edit Job");
 
-	constructor() {
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
 		super(EditJobAction.ID, EditJobAction.LABEL);
 	}
 
 	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+		this._commandService.executeCommand(
+			'agent.openJobDialog',
+			 actionInfo.ownerUri,
+			 actionInfo.targetObject);
 		return TPromise.as(true);
 	}
 }
@@ -404,11 +410,17 @@ export class EditProxyAction extends Action {
 	public static ID = 'jobaction.editProxy';
 	public static LABEL = nls.localize('jobaction.editProxy', "Edit Proxy");
 
-	constructor() {
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
 		super(EditProxyAction.ID, EditProxyAction.LABEL);
 	}
 
-	public run(info: any): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+		this._commandService.executeCommand(
+			'agent.openProxyDialog',
+			 actionInfo.ownerUri,
+			 actionInfo.targetObject);
 		return TPromise.as(true);
 	}
 }

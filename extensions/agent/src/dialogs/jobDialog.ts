@@ -163,6 +163,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			await view.initializeModel(formModel);
 
+			this.nameTextBox.value = this.model.name;
 			this.ownerTextBox.value = this.model.defaultOwner;
 			this.categoryDropdown.values = this.model.jobCategories;
 			this.categoryDropdown.value = this.model.jobCategories[0];
