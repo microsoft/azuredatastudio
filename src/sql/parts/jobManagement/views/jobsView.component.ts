@@ -12,22 +12,29 @@ import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!sql/base/browser/ui/table/media/table';
 
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
 import * as sqlops from 'sqlops';
-import * as vscode from 'vscode';
 import * as nls from 'vs/nls';
+import * as dom from 'vs/base/browser/dom';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
+import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
-import { AgentJobUtilities } from 'sql/parts/jobManagement/common/agentJobUtilities';
+import { EditJobAction, DeleteJobAction, NewJobAction } from 'sql/parts/jobManagement/common/jobActions';
+import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
-import * as dom from 'vs/base/browser/dom';
-import { IJobManagementService } from '../common/interfaces';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IAction } from 'vs/base/common/actions';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
 
@@ -37,11 +44,7 @@ export const ROW_HEIGHT: number = 45;
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => JobsViewComponent) }],
 })
 
-export class JobsViewComponent implements AfterContentChecked {
-
-	private _jobCacheObject: JobCacheObject;
-
-	private _disposables = new Array<vscode.Disposable>();
+export class JobsViewComponent extends JobManagementView implements OnInit  {
 
 	private columns: Array<Slick.Column<any>> = [
 		{
@@ -68,48 +71,38 @@ export class JobsViewComponent implements AfterContentChecked {
 		}
 	];
 
-
-	private options: Slick.GridOptions<any> = {
-		syncColumnCellResize: true,
-		enableColumnReorder: false,
-		rowHeight: 45,
-		enableCellNavigation: true,
-		editable: true
-	};
-
+	private _jobCacheObject: JobCacheObject;
 	private rowDetail: RowDetailView;
 	private filterPlugin: any;
 	private dataView: any;
-
-	@ViewChild('jobsgrid') _gridEl: ElementRef;
-	private isVisible: boolean = false;
-	private isInitialized: boolean = false;
-	private isRefreshing: boolean = false;
-	private _table: Table<any>;
-	public jobs: sqlops.AgentJobInfo[];
-	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
 	private _serverName: string;
 	private _isCloud: boolean;
-	private _showProgressWheel: boolean;
 	private filterStylingMap: { [columnName: string]: [any]; } = {};
 	private filterStack = ['start'];
 	private filterValueMap: { [columnName: string]: string[]; } = {};
 	private sortingStylingMap: { [columnName: string]: any; } = {};
 
-	private NewJobText: string = nls.localize("jobsToolbar-NewJob", "New Job");
-	private RefreshText: string = nls.localize("jobsToolbar-Refresh", "Refresh");
+	public jobs: sqlops.AgentJobInfo[];
+	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
+	public contextAction = NewJobAction;
+
+	@ViewChild('jobsgrid') _gridEl: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
+		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IThemeService) private _themeService: IThemeService,
-		@Inject(ICommandService) private _commandService: ICommandService
+		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IInstantiationService) instantiationService: IInstantiationService,
+		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
 	) {
+		super(commonService, contextMenuService, keybindingService, instantiationService);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
-		this._serverName = _dashboardService.connectionManagementService.connectionInfo.connectionProfile.serverName;
+		this._serverName = commonService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
 			this._jobCacheObject = jobCache;
@@ -118,46 +111,27 @@ export class JobsViewComponent implements AfterContentChecked {
 			this._jobCacheObject.serverName = this._serverName;
 			this._jobManagementService.addToCache(this._serverName, this._jobCacheObject);
 		}
-		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+	}
+
+	ngOnInit(){
+		// set base class elements
+		this._visibilityElement = this._gridEl;
+		this._parentComponent = this._agentViewComponent;
 	}
 
 	public layout() {
 		this._table.layout(new dom.Dimension(dom.getContentWidth(this._gridEl.nativeElement), dom.getContentHeight(this._gridEl.nativeElement)));
 	}
 
-	ngAfterContentChecked() {
-		if (this.isVisible === false && this._gridEl.nativeElement.offsetParent !== null) {
-			this.isVisible = true;
-			if (!this.isInitialized) {
-				if (this._jobCacheObject.serverName === this._serverName && this._jobCacheObject.jobs.length > 0) {
-					this._showProgressWheel = true;
-					this.jobs = this._jobCacheObject.jobs;
-					this.onFirstVisible(true);
-					this.isInitialized = true;
-				} else {
-					this._showProgressWheel = true;
-					this.onFirstVisible(false);
-					this.isInitialized = true;
-				}
-			}
-		} else if (this.isVisible === true && this._agentViewComponent.refresh === true) {
-			this._showProgressWheel = true;
-			this.onFirstVisible(false);
-			this.isRefreshing = true;
-			this._agentViewComponent.refresh = false;
-		} /*else if (this.isVisible === true && this._agentViewComponent.refresh === false) {
-			if (!this.isRefreshing) {
-				this._showProgressWheel = true;
-				this.onFirstVisible(true);
-			}
-			this.isRefreshing = false;
-		}*/ else if (this.isVisible === true && this._gridEl.nativeElement.offsetParent === null) {
-			this.isVisible = false;
-		}
-	}
-
-	onFirstVisible(cached?: boolean) {
+	onFirstVisible() {
 		let self = this;
+		let cached: boolean = false;
+		if (this._jobCacheObject.serverName === this._serverName && this._jobCacheObject.jobs.length > 0) {
+			cached = true;
+			this.jobs = this._jobCacheObject.jobs;
+		}
+
 		let columns = this.columns.map((column) => {
 			column.rerenderOnResize = true;
 			return column;
@@ -184,10 +158,13 @@ export class JobsViewComponent implements AfterContentChecked {
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
+
 		let filterPlugin = new HeaderFilter({}, this._themeService);
 		this.filterPlugin = filterPlugin;
 		$(this._gridEl.nativeElement).empty();
-		this._table = new Table(this._gridEl.nativeElement, undefined, columns, this.options);
+		$(this.actionBarContainer.nativeElement).empty();
+		this.initActionBar();
+		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let job = self.getJob(args);
@@ -195,15 +172,31 @@ export class JobsViewComponent implements AfterContentChecked {
 			self._agentViewComponent.agentJobInfo = job;
 			self._agentViewComponent.showHistory = true;
 		});
+
+		this._register(this._table.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+			self.openContextMenu(e);
+		}));
+
 		if (cached && this._agentViewComponent.refresh !== true) {
 			this.onJobsAvailable(null);
+			this._showProgressWheel = false;
+			if (this.isVisible) {
+				this._cd.detectChanges();
+			}
 		} else {
-			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 			this._jobManagementService.getJobs(ownerUri).then((result) => {
 				if (result && result.jobs) {
 					self.jobs = result.jobs;
 					self._jobCacheObject.jobs = self.jobs;
 					self.onJobsAvailable(result.jobs);
+				} else {
+					// TODO: handle error
+				}
+
+				this._showProgressWheel = false;
+				if (this.isVisible) {
+					this._cd.detectChanges();
 				}
 			});
 		}
@@ -222,14 +215,14 @@ export class JobsViewComponent implements AfterContentChecked {
 					id: job.jobId,
 					jobId: job.jobId,
 					name: job.name,
-					lastRun: AgentJobUtilities.convertToLastRun(job.lastRun),
-					nextRun: AgentJobUtilities.convertToNextRun(job.nextRun),
-					enabled: AgentJobUtilities.convertToResponse(job.enabled),
-					currentExecutionStatus: AgentJobUtilities.convertToExecutionStatusString(job.currentExecutionStatus),
+					lastRun: JobManagementUtilities.convertToLastRun(job.lastRun),
+					nextRun: JobManagementUtilities.convertToNextRun(job.nextRun),
+					enabled: JobManagementUtilities.convertToResponse(job.enabled),
+					currentExecutionStatus: JobManagementUtilities.convertToExecutionStatusString(job.currentExecutionStatus),
 					category: job.category,
-					runnable: AgentJobUtilities.convertToResponse(job.runnable),
-					hasSchedule: AgentJobUtilities.convertToResponse(job.hasSchedule),
-					lastRunOutcome: AgentJobUtilities.convertToStatusString(job.lastRunOutcome)
+					runnable: JobManagementUtilities.convertToResponse(job.runnable),
+					hasSchedule: JobManagementUtilities.convertToResponse(job.hasSchedule),
+					lastRunOutcome: JobManagementUtilities.convertToStatusString(job.lastRunOutcome)
 				};
 			});
 		}
@@ -326,6 +319,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				this.expandJobs(false);
 			}
 		});
+
 		this.filterPlugin.onCommand.subscribe((e, args: any) => {
 			this.columnSort(args.column.name, args.command === 'sort-asc');
 		});
@@ -345,15 +339,10 @@ export class JobsViewComponent implements AfterContentChecked {
 			let currentTarget = e.currentTarget;
 			currentTarget.title = currentTarget.innerText;
 		});
-		this._showProgressWheel = false;
-
-		if (this.isVisible) {
-			this._cd.detectChanges();
-		}
 
 		const self = this;
 		$(window).resize(() => {
-			let jobsViewToolbar = $('jobsview-component .jobs-view-toolbar').get(0);
+			let jobsViewToolbar = $('jobsview-component .actionbar-container').get(0);
 			let statusBar = $('.part.statusbar').get(0);
 			if (jobsViewToolbar && statusBar) {
 				let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom;
@@ -362,6 +351,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				self._table.resizeCanvas();
 			}
 		});
+
 		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
 			let nameWidth: number = data.grid.getColumnWidths()[1];
 			// adjust job name when resized
@@ -376,6 +366,7 @@ export class JobsViewComponent implements AfterContentChecked {
 				self.createJobChart(job.jobId, previousRuns);
 			});
 		});
+
 		$('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
 			this.highlightErrorRows(e1), (e2) => this.hightlightNonErrorRows(e2));
 
@@ -383,6 +374,7 @@ export class JobsViewComponent implements AfterContentChecked {
 			$('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
 				this.highlightErrorRows(e1), (e2) => this.hightlightNonErrorRows(e2));
 		});
+
 		// cache the dataview for future use
 		this._jobCacheObject.dataView = this.dataView;
 		this.filterValueMap['start'] = [[], this.dataView.getItems()];
@@ -533,7 +525,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private loadJobHistories(): void {
 		if (this.jobs) {
 			let erroredJobs = 0;
-			let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 			let separatedJobs = this.separateFailingJobs();
 			// grab histories of the failing jobs first
 			// so they can be expanded quicker
@@ -560,7 +552,7 @@ export class JobsViewComponent implements AfterContentChecked {
 	private checkPreviousFilters(item): boolean {
 		for (let column in this.filterValueMap) {
 			if (column !== 'start' && this.filterValueMap[column][0].length > 0) {
-				if (!_.contains(this.filterValueMap[column][0], item[AgentJobUtilities.convertColNameToField(column)])) {
+				if (!_.contains(this.filterValueMap[column][0], item[JobManagementUtilities.convertColNameToField(column)])) {
 					return false;
 				}
 			}
@@ -647,7 +639,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		}
 		let maxDuration: number = 0;
 		jobHistories.forEach(history => {
-			let historyDuration = AgentJobUtilities.convertDurationToSeconds(history.runDuration);
+			let historyDuration = JobManagementUtilities.convertDurationToSeconds(history.runDuration);
 			if (historyDuration > maxDuration) {
 				maxDuration = historyDuration;
 			}
@@ -657,7 +649,7 @@ export class JobsViewComponent implements AfterContentChecked {
 		let chartHeights = [];
 		for (let i = 0; i < jobHistories.length; i++) {
 			let duration = jobHistories[i].runDuration;
-			let chartHeight = (maxBarHeight * AgentJobUtilities.convertDurationToSeconds(duration)) / maxDuration;
+			let chartHeight = (maxBarHeight * JobManagementUtilities.convertDurationToSeconds(duration)) / maxDuration;
 			chartHeights.push(`${chartHeight}px`);
 		}
 		return chartHeights;
@@ -829,12 +821,33 @@ export class JobsViewComponent implements AfterContentChecked {
 		}
 	}
 
-	private openCreateJobDialog() {
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+	protected getTableActions(): TPromise<IAction[]> {
+		let actions: IAction[] = [];
+		actions.push(this._instantiationService.createInstance(EditJobAction));
+		actions.push(this._instantiationService.createInstance(DeleteJobAction));
+		return TPromise.as(actions);
+	}
+
+	protected getCurrentTableObject(rowIndex: number): any {
+		let data = this._table.grid.getData();
+		if (!data || rowIndex >= data.getLength()) {
+			return undefined;
+		}
+
+		let jobId =  data.getItem(rowIndex).jobId;
+		let job = this.jobs.filter(job => {
+			return job.jobId === jobId;
+		});
+
+		return job && job.length > 0 ? job[0] : undefined;
+	}
+
+	public openCreateJobDialog() {
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._commandService.executeCommand('agent.openCreateJobDialog', ownerUri);
 	}
 
-	private refreshJobs() {
+	public refreshJobs() {
 		this._agentViewComponent.refresh = true;
 	}
 }

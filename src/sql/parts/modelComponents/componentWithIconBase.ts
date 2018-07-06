@@ -5,7 +5,7 @@
 
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, OnInit, QueryList
+	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, OnInit, QueryList, AfterViewInit
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -50,6 +50,7 @@ export abstract class ComponentWithIconBase extends ComponentBase {
 			const iconDark = this.getDarkIconPath(this.iconPath) || icon;
 			createCSSRule(`.icon.${this._iconClass}`, `background-image: url("${icon}")`);
 			createCSSRule(`.vs-dark .icon.${this._iconClass}, .hc-black .icon.${this._iconClass}`, `background-image: url("${iconDark}")`);
+			this._changeRef.detectChanges();
 		}
 	}
 
@@ -90,13 +91,12 @@ export abstract class ComponentWithIconBase extends ComponentBase {
 	}
 
 	public get iconHeight(): number | string {
-		return this.getPropertyOrDefault<sqlops.ComponentWithIcon, number | string>((props) => props.iconHeight, '40px');
+		return this.getPropertyOrDefault<sqlops.ComponentWithIcon, number | string>((props) => props.iconHeight, '50px');
 	}
 
 	public get iconWidth(): number | string {
-		return this.getPropertyOrDefault<sqlops.ComponentWithIcon, number | string>((props) => props.iconWidth, '40px');
+		return this.getPropertyOrDefault<sqlops.ComponentWithIcon, number | string>((props) => props.iconWidth, '50px');
 	}
-
 
 	ngOnDestroy(): void {
 		if (this._iconClass) {

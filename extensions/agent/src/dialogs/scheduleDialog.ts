@@ -7,9 +7,9 @@
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { CreateScheduleData } from '../data/createScheduleData';
+import { ScheduleData } from '../data/scheduleData';
 
-export class CreateScheduleDialog {
+export class ScheduleDialog {
 
 	// Top level
 	private readonly DialogTitle: string = 'New Schedule';
@@ -20,13 +20,13 @@ export class CreateScheduleDialog {
 	private dialog: sqlops.window.modelviewdialog.Dialog;
 	private schedulesTable: sqlops.TableComponent;
 
-	private model: CreateScheduleData;
+	private model: ScheduleData;
 
-	private _onSuccess: vscode.EventEmitter<CreateScheduleData> = new vscode.EventEmitter<CreateScheduleData>();
-	public readonly onSuccess: vscode.Event<CreateScheduleData> = this._onSuccess.event;
+	private _onSuccess: vscode.EventEmitter<ScheduleData> = new vscode.EventEmitter<ScheduleData>();
+	public readonly onSuccess: vscode.Event<ScheduleData> = this._onSuccess.event;
 
 	constructor(ownerUri: string) {
-		this.model = new CreateScheduleData(ownerUri);
+		this.model = new ScheduleData(ownerUri);
 	}
 
 	public async showDialog() {

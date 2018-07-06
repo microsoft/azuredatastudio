@@ -6,11 +6,11 @@
 	width: auto;
 	margin: 15px;
 	border-width: 1px;
-    border-style: solid;
+	border-style: solid;
 
-    text-align: left;
-    vertical-align: top;
-    box-shadow: rgba(120, 120, 120, 0.75) 0px 0px 6px;
+	text-align: left;
+	vertical-align: top;
+	box-shadow: rgba(120, 120, 120, 0.75) 0px 0px 6px;
 }
 
 .model-card.selected {
@@ -39,7 +39,9 @@
 
 .model-card .card-vertical-button {
 	position: relative;
-	display: inline-block;
+	display: flex;
+	flex-direction: column;
+	text-align: center;
 	height: auto;
 	width: auto;
 	padding: 5px 5px 5px 5px;
@@ -58,16 +60,27 @@
 }
 
 .model-card .iconContainer {
-	width: 100%;
-	height: 50px;
-	text-align: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
 	padding: 10px 0px 10px 0px;
+	border-color: rgb(214, 214, 214);
 }
 
 .model-card .cardIcon {
 	display: inline-block;
-	width: 40px;
-	height: 40px;
+	flex-grow: 1;
+	width: 100%;
+	height: 100%;
+	max-width: 50px;
+	max-height: 50px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
 }
 
 .model-card .card-status {

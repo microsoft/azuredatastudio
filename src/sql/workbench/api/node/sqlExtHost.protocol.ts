@@ -339,9 +339,19 @@ export abstract class ExtHostDataProtocolShape {
 	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> { throw ni(); }
 
 	/**
+	 * Deletes a job
+	 */
+	$deleteJob(handle: number, ownerUri: string, job: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
+
+	/**
 	 * Get Agent Alerts list
 	 */
 	$getAlerts(handle: number, connectionUri: string): Thenable<sqlops.AgentAlertsResult> { throw ni(); }
+
+	/**
+	 * Deletes  an alert
+	 */
+	$deleteAlert(handle: number, connectionUri: string, alert: sqlops.AgentAlertInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
 
 	/**
 	 * Get Agent Oeprators list
@@ -349,9 +359,19 @@ export abstract class ExtHostDataProtocolShape {
 	$getOperators(handle: number, connectionUri: string): Thenable<sqlops.AgentOperatorsResult> { throw ni(); }
 
 	/**
+	 * Deletes  an operator
+	 */
+	$deleteOperator(handle: number, connectionUri: string, operator: sqlops.AgentOperatorInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
+
+	/**
 	 * Get Agent Proxies list
 	 */
 	$getProxies(handle: number, connectionUri: string): Thenable<sqlops.AgentProxiesResult> { throw ni(); }
+
+	/**
+	 * Deletes  a proxy
+	 */
+	$deleteProxy(handle: number, connectionUri: string, proxy: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
 }
 
 /**
@@ -436,6 +456,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onScriptingComplete(handle: number, message: sqlops.ScriptingCompleteResult): void;
 	$onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void;
 	$onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void;
+	$onJobDataUpdated(handle: Number): void;
 
 	/**
 	 * Callback when a session has completed initialization

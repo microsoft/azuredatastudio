@@ -265,6 +265,10 @@ export function createApiFactory(
 			};
 
 			let registerAgentServicesProvider = (provider: sqlops.AgentServicesProvider): vscode.Disposable => {
+				provider.registerOnUpdated(() => {
+					extHostDataProvider.$onJobDataUpdated(provider.handle);
+				});
+
 				return extHostDataProvider.$registerAgentServiceProvider(provider);
 			};
 

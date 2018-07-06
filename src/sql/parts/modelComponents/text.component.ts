@@ -5,15 +5,14 @@
 
 import 'vs/css!./radioButton';
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
+	Component, Input, Inject, ChangeDetectorRef, forwardRef,
+	OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
-import { Event, Emitter } from 'vs/base/common/event';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 @Component({

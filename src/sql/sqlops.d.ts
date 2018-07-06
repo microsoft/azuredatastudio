@@ -1384,12 +1384,13 @@ declare module 'sqlops' {
 		updateProxy(ownerUri: string, originalProxyName: string, proxyInfo: AgentProxyInfo): Thenable<UpdateAgentOperatorResult>;
 		deleteProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<ResultStatus>;
 
-
 		// Job Schedule management methods
 		getJobSchedules(ownerUri: string): Thenable<AgentJobSchedulesResult>;
 		createJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<CreateAgentJobScheduleResult>;
 		updateJobSchedule(ownerUri: string, originalScheduleName: string, scheduleInfo: AgentJobScheduleInfo): Thenable<UpdateAgentJobScheduleResult>;
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
+
+		registerOnUpdated(handler: () => any): void;
 	}
 
 	// Task service interfaces ----------------------------------------------------------------------------

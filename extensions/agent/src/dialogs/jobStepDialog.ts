@@ -5,16 +5,18 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { CreateStepData } from '../data/createStepData';
+import { JobStepData } from '../data/jobStepData';
 import { AgentUtils } from '../agentUtils';
-import { CreateJobData } from '../data/createJobData';
+import { JobData } from '../data/jobData';
+const path = require('path');
 
-export class CreateStepDialog {
+export class JobStepDialog {
 
 	// TODO: localize
 	// Top level
 	//
 	private static readonly DialogTitle: string = 'New Job Step';
+	private static readonly FileBrowserDialogTitle: string = 'Locate Database Files - ';
 	private static readonly OkButtonText: string = 'OK';
 	private static readonly CancelButtonText: string = 'Cancel';
 	private static readonly GeneralTabText: string = 'General';
@@ -35,44 +37,59 @@ export class CreateStepDialog {
 	private static readonly QuitJobReportingFailure: string = 'Quit the job reporting failure';
 
 	// UI Components
-	//
+
+	// Dialogs
 	private dialog: sqlops.window.modelviewdialog.Dialog;
+	private fileBrowserDialog: sqlops.window.modelviewdialog.Dialog;
+
+	// Dialog tabs
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
 	private advancedTab: sqlops.window.modelviewdialog.DialogTab;
+
+	//Input boxes
 	private nameTextBox: sqlops.InputBoxComponent;
+	private commandTextBox: sqlops.InputBoxComponent;
+	private selectedPathTextBox: sqlops.InputBoxComponent;
+	private retryAttemptsBox: sqlops.InputBoxComponent;
+	private retryIntervalBox: sqlops.InputBoxComponent;
+	private outputFileNameBox: sqlops.InputBoxComponent;
+	private fileBrowserNameBox: sqlops.InputBoxComponent;
+
+	// Dropdowns
 	private typeDropdown: sqlops.DropDownComponent;
 	private runAsDropdown: sqlops.DropDownComponent;
 	private databaseDropdown: sqlops.DropDownComponent;
 	private successActionDropdown: sqlops.DropDownComponent;
 	private failureActionDropdown: sqlops.DropDownComponent;
-	private commandTextBox: sqlops.InputBoxComponent;
+	private fileTypeDropdown: sqlops.DropDownComponent;
+
+	// Buttons
 	private openButton: sqlops.ButtonComponent;
 	private parseButton: sqlops.ButtonComponent;
 	private nextButton: sqlops.ButtonComponent;
 	private previousButton: sqlops.ButtonComponent;
-	private retryAttemptsBox: sqlops.InputBoxComponent;
-	private retryIntervalBox: sqlops.InputBoxComponent;
-	private appendToExistingFileCheckbox: sqlops.CheckBoxComponent;
-	private logToTableCheckbox: sqlops.CheckBoxComponent;
-	private outputFileNameBox: sqlops.InputBoxComponent;
 	private outputFileBrowserButton: sqlops.ButtonComponent;
 
-	private model: CreateStepData;
+	// Checkbox
+	private appendToExistingFileCheckbox: sqlops.CheckBoxComponent;
+	private logToTableCheckbox: sqlops.CheckBoxComponent;
+
+	private fileBrowserTree: sqlops.FileBrowserTreeComponent;
+	private jobModel: JobData;
+	private model: JobStepData;
 	private ownerUri: string;
 	private jobName: string;
 	private server: string;
 	private stepId: number;
-
-	private jobModel: CreateJobData;
 
 	constructor(
 		ownerUri: string,
 		jobName: string,
 		server: string,
 		stepId: number,
-		jobModel?: CreateJobData
+		jobModel?: JobData
 	) {
-		this.model = new CreateStepData(ownerUri);
+		this.model = new JobStepData(ownerUri);
 		this.stepId = stepId;
 		this.ownerUri = ownerUri;
 		this.jobName = jobName;
@@ -81,24 +98,24 @@ export class CreateStepDialog {
 	}
 
 	private initializeUIComponents() {
-		this.dialog = sqlops.window.modelviewdialog.createDialog(CreateStepDialog.DialogTitle);
-		this.generalTab = sqlops.window.modelviewdialog.createTab(CreateStepDialog.GeneralTabText);
-		this.advancedTab = sqlops.window.modelviewdialog.createTab(CreateStepDialog.AdvancedTabText);
+		this.dialog = sqlops.window.modelviewdialog.createDialog(JobStepDialog.DialogTitle);
+		this.generalTab = sqlops.window.modelviewdialog.createTab(JobStepDialog.GeneralTabText);
+		this.advancedTab = sqlops.window.modelviewdialog.createTab(JobStepDialog.AdvancedTabText);
 		this.dialog.content = [this.generalTab, this.advancedTab];
 		this.dialog.okButton.onClick(async () => await this.execute());
-		this.dialog.okButton.label = CreateStepDialog.OkButtonText;
-		this.dialog.cancelButton.label = CreateStepDialog.CancelButtonText;
+		this.dialog.okButton.label = JobStepDialog.OkButtonText;
+		this.dialog.cancelButton.label = JobStepDialog.CancelButtonText;
 	}
 
 	private createCommands(view, queryProvider: sqlops.QueryProvider) {
 		this.openButton = view.modelBuilder.button()
 			.withProperties({
-				label: CreateStepDialog.OpenCommandText,
+				label: JobStepDialog.OpenCommandText,
 				width: '80px'
 			}).component();
 		this.parseButton = view.modelBuilder.button()
 			.withProperties({
-				label: CreateStepDialog.ParseCommandText,
+				label: JobStepDialog.ParseCommandText,
 				width: '80px'
 			}).component();
 		this.parseButton.onDidClick(e => {
@@ -122,13 +139,13 @@ export class CreateStepDialog {
 			.component();
 		this.nextButton = view.modelBuilder.button()
 			.withProperties({
-				label: CreateStepDialog.NextButtonText,
+				label: JobStepDialog.NextButtonText,
 				enabled: false,
 				width: '80px'
 			}).component();
 		this.previousButton = view.modelBuilder.button()
 			.withProperties({
-				label: CreateStepDialog.PreviousButtonText,
+				label: JobStepDialog.PreviousButtonText,
 				enabled: false,
 				width: '80px'
 			}).component();
@@ -142,8 +159,8 @@ export class CreateStepDialog {
 			this.nameTextBox.required = true;
 			this.typeDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: CreateStepDialog.TSQLScript,
-					values: [CreateStepDialog.TSQLScript]
+					value: JobStepDialog.TSQLScript,
+					values: [JobStepDialog.TSQLScript]
 				})
 				.component();
 			this.runAsDropdown = view.modelBuilder.dropDown()
@@ -154,8 +171,8 @@ export class CreateStepDialog {
 				.component();
 			this.runAsDropdown.enabled = false;
 			this.typeDropdown.onValueChanged((type) => {
-				if (type.selected !== CreateStepDialog.TSQLScript) {
-					this.runAsDropdown.value = CreateStepDialog.AgentServiceAccount;
+				if (type.selected !== JobStepDialog.TSQLScript) {
+					this.runAsDropdown.value = JobStepDialog.AgentServiceAccount;
 					this.runAsDropdown.values = [this.runAsDropdown.value];
 				} else {
 					this.runAsDropdown.value = '';
@@ -234,15 +251,15 @@ export class CreateStepDialog {
 		this.advancedTab.registerContent(async (view) => {
 			this.successActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: CreateStepDialog.NextStep,
-					values: [CreateStepDialog.NextStep, CreateStepDialog.QuitJobReportingSuccess, CreateStepDialog.QuitJobReportingFailure]
+					value: JobStepDialog.NextStep,
+					values: [JobStepDialog.NextStep, JobStepDialog.QuitJobReportingSuccess, JobStepDialog.QuitJobReportingFailure]
 				})
 				.component();
 			let retryFlexContainer = this.createRetryCounters(view);
 			this.failureActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: CreateStepDialog.QuitJobReportingFailure,
-					values: [CreateStepDialog.QuitJobReportingFailure, CreateStepDialog.NextStep, CreateStepDialog.QuitJobReportingSuccess]
+					value: JobStepDialog.QuitJobReportingFailure,
+					values: [JobStepDialog.QuitJobReportingFailure, JobStepDialog.NextStep, JobStepDialog.QuitJobReportingSuccess]
 				})
 				.component();
 			let optionsGroup = this.createTSQLOptions(view);
@@ -272,13 +289,13 @@ export class CreateStepDialog {
 				.withFormItems(
 					[{
 						component: this.successActionDropdown,
-						title: CreateStepDialog.SuccessAction
+						title: JobStepDialog.SuccessAction
 					}, {
 						component: retryFlexContainer,
 						title: ''
 					}, {
 						component: this.failureActionDropdown,
-						title: CreateStepDialog.FailureAction
+						title: JobStepDialog.FailureAction
 					}, {
 						component: optionsGroup,
 						title: 'Transact-SQL script (T-SQL)'
@@ -344,12 +361,63 @@ export class CreateStepDialog {
 		return retryFlexContainer;
 	}
 
+	private openFileBrowserDialog() {
+		let fileBrowserTitle = JobStepDialog.FileBrowserDialogTitle + `${this.server}`;
+		this.fileBrowserDialog = sqlops.window.modelviewdialog.createDialog(fileBrowserTitle);
+		let fileBrowserTab = sqlops.window.modelviewdialog.createTab('File Browser');
+		this.fileBrowserDialog.content =  [fileBrowserTab];
+		fileBrowserTab.registerContent(async (view) => {
+			this.fileBrowserTree = view.modelBuilder.fileBrowserTree()
+				.withProperties({ ownerUri: this.ownerUri, width: 420, height: 700 })
+				.component();
+			this.selectedPathTextBox = view.modelBuilder.inputBox()
+				.withProperties({ inputType: 'text'})
+				.component();
+			this.fileBrowserTree.onDidChange((args) => {
+				this.selectedPathTextBox.value = args.fullPath;
+				this.fileBrowserNameBox.value = args.isFile ? path.win32.basename(args.fullPath) : '';
+			});
+			this.fileTypeDropdown = view.modelBuilder.dropDown()
+				.withProperties({
+					value: 'All Files (*)',
+					values: ['All Files (*)']
+				})
+				.component();
+			this.fileBrowserNameBox = view.modelBuilder.inputBox()
+				.withProperties({})
+				.component();
+			let fileBrowserContainer = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.fileBrowserTree,
+					title: ''
+				}, {
+					component: this.selectedPathTextBox,
+					title: 'Selected path:'
+				}, {
+					component: this.fileTypeDropdown,
+					title: 'Files of type:'
+				}, {
+					component: this.fileBrowserNameBox,
+					title: 'File name:'
+				}
+			]).component();
+			view.initializeModel(fileBrowserContainer);
+		});
+		this.fileBrowserDialog.okButton.onClick(() => {
+			this.outputFileNameBox.value = path.join(path.dirname(this.selectedPathTextBox.value), this.fileBrowserNameBox.value);
+		});
+		this.fileBrowserDialog.okButton.label = JobStepDialog.OkButtonText;
+		this.fileBrowserDialog.cancelButton.label = JobStepDialog.CancelButtonText;
+		sqlops.window.modelviewdialog.openDialog(this.fileBrowserDialog);
+	}
+
 	private createTSQLOptions(view) {
 		this.outputFileBrowserButton = view.modelBuilder.button()
 			.withProperties({ width: '20px', label: '...' }).component();
+		this.outputFileBrowserButton.onDidClick(() => this.openFileBrowserDialog());
 		this.outputFileNameBox = view.modelBuilder.inputBox()
 			.withProperties({
-				width: '100px',
+				width: '150px',
 				inputType: 'text'
 			}).component();
 		let outputViewButton = view.modelBuilder.button()
@@ -407,6 +475,7 @@ export class CreateStepDialog {
 		this.model.retryInterval = +this.retryIntervalBox.value;
 		this.model.failureAction = this.failureActionDropdown.value as string;
 		this.model.outputFileName = this.outputFileNameBox.value;
+		this.model.appendToLogFile = this.appendToExistingFileCheckbox.checked;
 		await this.model.save();
 	}
 

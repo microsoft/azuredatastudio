@@ -345,15 +345,27 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> {
 				return self._proxy.$jobAction(handle, connectionUri, jobName, action);
 			},
+			deleteJob(connectionUri: string, jobInfo: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus> {
+				return self._proxy.$deleteJob(handle, connectionUri, jobInfo);
+			},
 			getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult> {
 				return self._proxy.$getAlerts(handle, connectionUri);
+			},
+			deleteAlert(connectionUri: string, alertInfo: sqlops.AgentAlertInfo): Thenable<sqlops.ResultStatus> {
+				return self._proxy.$deleteAlert(handle, connectionUri, alertInfo);
 			},
 			getOperators(connectionUri: string): Thenable<sqlops.AgentOperatorsResult> {
 				return self._proxy.$getOperators(handle, connectionUri);
 			},
+			deleteOperator(connectionUri: string, operatorInfo: sqlops.AgentOperatorInfo): Thenable<sqlops.ResultStatus> {
+				return self._proxy.$deleteOperator(handle, connectionUri, operatorInfo);
+			},
 			getProxies(connectionUri: string): Thenable<sqlops.AgentProxiesResult> {
 				return self._proxy.$getProxies(handle, connectionUri);
-			}
+			},
+			deleteProxy(connectionUri: string, proxyInfo: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus> {
+				return self._proxy.$deleteProxy(handle, connectionUri, proxyInfo);
+			},
 		});
 
 		return undefined;
@@ -446,6 +458,11 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void {
 		this._profilerService.onSessionStopped(response);
+	}
+
+	// SQL Server Agent handlers
+	public $onJobDataUpdated(handle: Number): void {
+		this._jobManagementService.fireOnDidChange();
 	}
 
 	public $unregisterProvider(handle: number): TPromise<any> {

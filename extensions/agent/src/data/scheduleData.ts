@@ -6,8 +6,10 @@
 
 import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
+import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 
-export class PickScheduleData {
+export class ScheduleData implements IAgentDialogData {
+	public dialogMode: AgentDialogMode = AgentDialogMode.CREATE;
 	public ownerUri: string;
 	public schedules: sqlops.AgentJobScheduleInfo[];
 	public selectedSchedule: sqlops.AgentJobScheduleInfo;

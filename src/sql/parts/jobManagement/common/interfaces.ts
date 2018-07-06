@@ -8,6 +8,7 @@
 import * as sqlops from 'sqlops';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { JobCacheObject } from './jobManagementService';
+import { Event } from 'vs/base/common/event';
 
 export const SERVICE_ID = 'jobManagementService';
 
@@ -15,22 +16,25 @@ export const IJobManagementService = createDecorator<IJobManagementService>(SERV
 
 export interface IJobManagementService {
 	_serviceBrand: any;
+	onDidChange: Event<void>;
 
 	registerProvider(providerId: string, provider: sqlops.AgentServicesProvider): void;
+	fireOnDidChange(): void;
 
 	getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult>;
+	getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>;
+	deleteJob(connectionUri: string, job: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus>;
 
 	getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult>;
+	deleteAlert(connectionUri: string, alert: sqlops.AgentAlertInfo): Thenable<sqlops.ResultStatus>;
 
 	getOperators(connectionUri: string): Thenable<sqlops.AgentOperatorsResult>;
+	deleteOperator(connectionUri: string, operator: sqlops.AgentOperatorInfo): Thenable<sqlops.ResultStatus>;
 
 	getProxies(connectionUri: string): Thenable<sqlops.AgentProxiesResult>;
-
-	getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>;
+	deleteProxy(connectionUri: string, proxy: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus>;
 
 	jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus>;
-
 	addToCache(server: string, cache: JobCacheObject);
-
 	jobCacheObjectMap:  { [server: string]: JobCacheObject; };
 }

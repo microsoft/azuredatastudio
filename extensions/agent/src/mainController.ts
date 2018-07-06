@@ -3,10 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
+import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { CreateAlertDialog } from './dialogs/createAlertDialog';
-import { CreateJobDialog } from './dialogs/createJobDialog';
-import { CreateStepDialog } from './dialogs/createStepDialog';
+import { AlertDialog } from './dialogs/alertDialog';
+import { JobDialog } from './dialogs/jobDialog';
+import { OperatorDialog } from './dialogs/operatorDialog';
+import { ProxyDialog } from './dialogs/proxyDialog';
+import { JobStepDialog } from './dialogs/jobStepDialog';
 import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
 
 /**
@@ -25,24 +28,28 @@ export class MainController {
      */
     public activate(): void {
         vscode.commands.registerCommand('agent.openCreateJobDialog', (ownerUri: string) => {
-            let dialog = new CreateJobDialog(ownerUri);
-            dialog.showDialog();
+            let dialog = new JobDialog(ownerUri);
+            dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, jobId: string, server: string, stepId: number) => {
-			let dialog = new CreateStepDialog(ownerUri, jobId, server, stepId);
+			let dialog = new JobStepDialog(ownerUri, jobId, server, stepId);
 			dialog.openNewStepDialog();
         });
         vscode.commands.registerCommand('agent.openPickScheduleDialog', (ownerUri: string) => {
             let dialog = new PickScheduleDialog(ownerUri);
             dialog.showDialog();
         });
-        vscode.commands.registerCommand('agent.openCreateAlertDialog', (ownerUri: string) => {
-            let dialog = new CreateAlertDialog(ownerUri);
-            dialog.showDialog();
+        vscode.commands.registerCommand('agent.openAlertDialog', (ownerUri: string, alertInfo: sqlops.AgentAlertInfo) => {
+            let dialog = new AlertDialog(ownerUri, alertInfo);
+            dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openCreateOperatorDialog', (ownerUri: string) => {
+            let dialog = new OperatorDialog(ownerUri);
+            dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openCreateProxyDialog', (ownerUri: string) => {
+            let dialog = new ProxyDialog(ownerUri);
+            dialog.openDialog();
         });
     }
 
