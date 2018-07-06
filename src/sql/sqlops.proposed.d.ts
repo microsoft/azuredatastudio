@@ -36,7 +36,6 @@ declare module 'sqlops' {
 		toolbarContainer(): ToolbarBuilder;
 		loadingComponent(): LoadingComponentBuilder;
 		fileBrowserTree(): ComponentBuilder<FileBrowserTreeComponent>;
-		lineSeparator(): ComponentBuilder<LineSeparatorComponent>;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -390,10 +389,6 @@ declare module 'sqlops' {
 		value?: string;
 	}
 
-	export interface LineSeparatorComponentProperties {
-		value?: string;
-	}
-
 	export interface DropDownProperties extends ComponentProperties {
 		value?: string | CategoryValue;
 		values?: string[] | CategoryValue[];
@@ -439,10 +434,6 @@ declare module 'sqlops' {
 
 	export interface TextComponent extends Component {
 		value: string;
-	}
-
-	export interface LineSeparatorComponent extends Component {
-
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {

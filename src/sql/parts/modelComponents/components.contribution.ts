@@ -20,7 +20,6 @@ import TableComponent from './table.component';
 import TextComponent from './text.component';
 import LoadingComponent from './loadingComponent.component';
 import FileBrowserTreeComponent from './fileBrowserTree.component';
-import LineSeparatorComponent from './lineSeparator.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -75,6 +74,3 @@ registerComponentType(LOADING_COMPONENT, ModelComponentTypes.LoadingComponent, L
 
 export const FILEBROWSERTREE_COMPONENT = 'filebrowsertree-component';
 registerComponentType(FILEBROWSERTREE_COMPONENT, ModelComponentTypes.FileBrowserTree, FileBrowserTreeComponent);
-
-export const LINESEPARATOR_COMPONENT = 'lineseparator-component';
-registerComponentType(LINESEPARATOR_COMPONENT, ModelComponentTypes.LineSeparatorComponent, LineSeparatorComponent);

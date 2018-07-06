@@ -145,8 +145,7 @@ export enum ModelComponentTypes {
 	Group,
 	Toolbar,
 	LoadingComponent,
-	FileBrowserTree,
-	LineSeparatorComponent
+	FileBrowserTree
 }
 
 export interface IComponentShape {

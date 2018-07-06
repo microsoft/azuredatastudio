@@ -80,13 +80,6 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
-	lineSeparator(): sqlops.ComponentBuilder<sqlops.LineSeparatorComponent> {
-		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.LineSeparatorComponent> = this.getComponentBuilder(new LineSeparatorComponentWrapper(this._proxy, this._handle, id), id);
-		this._componentBuilders.set(id, builder);
-		return builder;
-	}
-
 	radioButton(): sqlops.ComponentBuilder<sqlops.RadioButtonComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.RadioButtonComponent> = this.getComponentBuilder(new RadioButtonWrapper(this._proxy, this._handle, id), id);
@@ -779,21 +772,6 @@ class TextComponentWrapper extends ComponentWrapper implements sqlops.TextCompon
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Text, id);
-		this.properties = {};
-	}
-
-	public get value(): string {
-		return this.properties['value'];
-	}
-	public set value(v: string) {
-		this.setProperty('value', v);
-	}
-}
-
-class LineSeparatorComponentWrapper extends ComponentWrapper implements sqlops.LineSeparatorComponentProperties {
-
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.LineSeparatorComponent, id);
 		this.properties = {};
 	}
 
