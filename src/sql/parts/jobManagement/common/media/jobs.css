@@ -336,3 +336,7 @@ jobsview-component .actionbar-container {
 .actionbar-container .monaco-action-bar > ul.actions-container > li.action-item {
 	padding-left: 20px;
 }
+
+jobsview-component .jobview-grid .slick-cell.error-row {
+    opacity: 0;
+}
