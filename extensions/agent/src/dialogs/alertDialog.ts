@@ -16,48 +16,49 @@ const localize = nls.loadMessageBundle();
 export class AlertDialog extends AgentDialog<AlertData> {
 
 	// Top level
-	private static readonly DialogTitle: string = localize('createAlert.createAlert', 'Create Alert');
-	private static readonly GeneralTabText: string = localize('createAlert.General', 'General');
-	private static readonly ResponseTabText: string = localize('createAlert.Response', 'Response');
-	private static readonly OptionsTabText: string = localize('createAlert.Options', 'Options');
+	private static readonly CreateDialogTitle: string = localize('alertDialog.createAlert', 'Create Alert');
+	private static readonly EditDialogTitle: string = localize('alertDialog.editAlert', 'Edit Alert');
+	private static readonly GeneralTabText: string = localize('alertDialog.General', 'General');
+	private static readonly ResponseTabText: string = localize('alertDialog.Response', 'Response');
+	private static readonly OptionsTabText: string = localize('alertDialog.Options', 'Options');
 
 	// General tab strings
-	private static readonly NameLabel: string = localize('createAlert.Name', 'Name');
-	private static readonly TypeLabel: string = localize('createAlert.Type', 'Type');
-	private static readonly EnabledCheckboxLabel: string = localize('createAlert.Enabled', 'Enabled');
-	private static readonly DatabaseLabel: string = localize('createAlert.DatabaseName', 'Database name');
-	private static readonly ErrorNumberLabel: string = localize('createAlert.ErrorNumber', 'Error number');
-	private static readonly SeverityLabel: string = localize('createAlert.Severity', 'Severity');
-	private static readonly RaiseIfMessageContainsLabel: string = localize('createAlert.RaiseAlertContains', 'Raise alert when message contains');
-	private static readonly MessageTextLabel: string = localize('createAlert.MessageText', 'Message text');
-	private static readonly AlertTypeSqlServerEventString: string = localize('createAlert.SqlServerEventAlert', 'SQL Server event alert');
-	private static readonly AlertTypePerformanceConditionString: string = localize('createAlert.PerformanceCondition', 'SQL Server performance condition alert');
-	private static readonly AlertTypeWmiEventString: string = localize('createAlert.WmiEvent', 'WMI event alert');
-	private static readonly AlertSeverity001Label: string = localize('createAlert.Severity001', '001 - Miscellaneous System Information');
-	private static readonly AlertSeverity002Label: string = localize('createAlert.Severity002', '002 - Reserved');
-	private static readonly AlertSeverity003Label: string = localize('createAlert.Severity003', '003 - Reserved');
-	private static readonly AlertSeverity004Label: string = localize('createAlert.Severity004', '004 - Reserved');
-	private static readonly AlertSeverity005Label: string = localize('createAlert.Severity005', '005 - Reserved');
-	private static readonly AlertSeverity006Label: string = localize('createAlert.Severity006', '006 - Reserved');
-	private static readonly AlertSeverity007Label: string = localize('createAlert.Severity007', '007 - Notification: Status Information');
-	private static readonly AlertSeverity008Label: string = localize('createAlert.Severity008', '008 - Notification: User Intervention Required');
-	private static readonly AlertSeverity009Label: string = localize('createAlert.Severity009', '009 - User Defined');
-	private static readonly AlertSeverity010Label: string = localize('createAlert.Severity010', '010 - Information');
-	private static readonly AlertSeverity011Label: string = localize('createAlert.Severity011', '011 - Specified Database Object Not Found');
-	private static readonly AlertSeverity012Label: string = localize('createAlert.Severity012', '012 - Unused');
-	private static readonly AlertSeverity013Label: string = localize('createAlert.Severity013', '013 - User Transaction Syntax Error');
-	private static readonly AlertSeverity014Label: string = localize('createAlert.Severity014', '014 - Insufficient Permission');
-	private static readonly AlertSeverity015Label: string = localize('createAlert.Severity015', '015 - Syntax Error in SQL Statements');
-	private static readonly AlertSeverity016Label: string = localize('createAlert.Severity016', '016 - Miscellaneous User Error');
-	private static readonly AlertSeverity017Label: string = localize('createAlert.Severity017', '017 - Insufficient Resources');
-	private static readonly AlertSeverity018Label: string = localize('createAlert.Severity018', '018 - Nonfatal Internal Error');
-	private static readonly AlertSeverity019Label: string = localize('createAlert.Severity019', '019 - Fatal Error in Resource');
-	private static readonly AlertSeverity020Label: string = localize('createAlert.Severity020', '020 - Fatal Error in Current Process');
-	private static readonly AlertSeverity021Label: string = localize('createAlert.Severity021', '021 - Fatal Error in Database Processes');
-	private static readonly AlertSeverity022Label: string = localize('createAlert.Severity022', '022 - Fatal Error: Table Integrity Suspect');
-	private static readonly AlertSeverity023Label: string = localize('createAlert.Severity023', '023 - Fatal Error: Database Integrity Suspect');
-	private static readonly AlertSeverity024Label: string = localize('createAlert.Severity024', '024 - Fatal Error: Hardware Error');
-	private static readonly AlertSeverity025Label: string = localize('createAlert.Severity025', '025 - Fatal Error');
+	private static readonly NameLabel: string = localize('alertDialog.Name', 'Name');
+	private static readonly TypeLabel: string = localize('alertDialog.Type', 'Type');
+	private static readonly EnabledCheckboxLabel: string = localize('alertDialog.Enabled', 'Enabled');
+	private static readonly DatabaseLabel: string = localize('alertDialog.DatabaseName', 'Database name');
+	private static readonly ErrorNumberLabel: string = localize('alertDialog.ErrorNumber', 'Error number');
+	private static readonly SeverityLabel: string = localize('alertDialog.Severity', 'Severity');
+	private static readonly RaiseIfMessageContainsLabel: string = localize('alertDialog.RaiseAlertContains', 'Raise alert when message contains');
+	private static readonly MessageTextLabel: string = localize('alertDialog.MessageText', 'Message text');
+	private static readonly AlertTypeSqlServerEventString: string = localize('alertDialog.SqlServerEventAlert', 'SQL Server event alert');
+	private static readonly AlertTypePerformanceConditionString: string = localize('alertDialog.PerformanceCondition', 'SQL Server performance condition alert');
+	private static readonly AlertTypeWmiEventString: string = localize('alertDialog.WmiEvent', 'WMI event alert');
+	private static readonly AlertSeverity001Label: string = localize('alertDialog.Severity001', '001 - Miscellaneous System Information');
+	private static readonly AlertSeverity002Label: string = localize('alertDialog.Severity002', '002 - Reserved');
+	private static readonly AlertSeverity003Label: string = localize('alertDialog.Severity003', '003 - Reserved');
+	private static readonly AlertSeverity004Label: string = localize('alertDialog.Severity004', '004 - Reserved');
+	private static readonly AlertSeverity005Label: string = localize('alertDialog.Severity005', '005 - Reserved');
+	private static readonly AlertSeverity006Label: string = localize('alertDialog.Severity006', '006 - Reserved');
+	private static readonly AlertSeverity007Label: string = localize('alertDialog.Severity007', '007 - Notification: Status Information');
+	private static readonly AlertSeverity008Label: string = localize('alertDialog.Severity008', '008 - Notification: User Intervention Required');
+	private static readonly AlertSeverity009Label: string = localize('alertDialog.Severity009', '009 - User Defined');
+	private static readonly AlertSeverity010Label: string = localize('alertDialog.Severity010', '010 - Information');
+	private static readonly AlertSeverity011Label: string = localize('alertDialog.Severity011', '011 - Specified Database Object Not Found');
+	private static readonly AlertSeverity012Label: string = localize('alertDialog.Severity012', '012 - Unused');
+	private static readonly AlertSeverity013Label: string = localize('alertDialog.Severity013', '013 - User Transaction Syntax Error');
+	private static readonly AlertSeverity014Label: string = localize('alertDialog.Severity014', '014 - Insufficient Permission');
+	private static readonly AlertSeverity015Label: string = localize('alertDialog.Severity015', '015 - Syntax Error in SQL Statements');
+	private static readonly AlertSeverity016Label: string = localize('alertDialog.Severity016', '016 - Miscellaneous User Error');
+	private static readonly AlertSeverity017Label: string = localize('alertDialog.Severity017', '017 - Insufficient Resources');
+	private static readonly AlertSeverity018Label: string = localize('alertDialog.Severity018', '018 - Nonfatal Internal Error');
+	private static readonly AlertSeverity019Label: string = localize('alertDialog.Severity019', '019 - Fatal Error in Resource');
+	private static readonly AlertSeverity020Label: string = localize('alertDialog.Severity020', '020 - Fatal Error in Current Process');
+	private static readonly AlertSeverity021Label: string = localize('alertDialog.Severity021', '021 - Fatal Error in Database Processes');
+	private static readonly AlertSeverity022Label: string = localize('alertDialog.Severity022', '022 - Fatal Error: Table Integrity Suspect');
+	private static readonly AlertSeverity023Label: string = localize('alertDialog.Severity023', '023 - Fatal Error: Database Integrity Suspect');
+	private static readonly AlertSeverity024Label: string = localize('alertDialog.Severity024', '024 - Fatal Error: Hardware Error');
+	private static readonly AlertSeverity025Label: string = localize('alertDialog.Severity025', '025 - Fatal Error');
 
 	private static readonly AlertTypes: string[]  = [
 		AlertDialog.AlertTypeSqlServerEventString,
@@ -94,23 +95,23 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	];
 
 	// Response tab strings
-	private static readonly ExecuteJobCheckBoxLabel: string = localize('createAlert.ExecuteJob', 'Execute Job');
-	private static readonly ExecuteJobTextBoxLabel: string = localize('createAlert.ExecuteJobName', 'Job Name');
-	private static readonly NotifyOperatorsTextBoxLabel: string =  localize('createAlert.NotifyOperators', 'Notify Operators');
-	private static readonly NewJobButtonLabel: string =  localize('createAlert.NewJob', 'New Job');
-	private static readonly OperatorListLabel: string =  localize('createAlert.OperatorList', 'Operator List');
-	private static readonly OperatorNameColumnLabel: string =  localize('createAlert.OperatorName', 'Operator');
-	private static readonly OperatorEmailColumnLabel: string =  localize('createAlert.OperatorEmail', 'E-mail');
-	private static readonly OperatorPagerColumnLabel: string =  localize('createAlert.OperatorPager', 'Pager');
-	private static readonly NewOperatorButtonLabel: string =  localize('createAlert.NewOperator', 'New Operator');
+	private static readonly ExecuteJobCheckBoxLabel: string = localize('alertDialog.ExecuteJob', 'Execute Job');
+	private static readonly ExecuteJobTextBoxLabel: string = localize('alertDialog.ExecuteJobName', 'Job Name');
+	private static readonly NotifyOperatorsTextBoxLabel: string =  localize('alertDialog.NotifyOperators', 'Notify Operators');
+	private static readonly NewJobButtonLabel: string =  localize('alertDialog.NewJob', 'New Job');
+	private static readonly OperatorListLabel: string =  localize('alertDialog.OperatorList', 'Operator List');
+	private static readonly OperatorNameColumnLabel: string =  localize('alertDialog.OperatorName', 'Operator');
+	private static readonly OperatorEmailColumnLabel: string =  localize('alertDialog.OperatorEmail', 'E-mail');
+	private static readonly OperatorPagerColumnLabel: string =  localize('alertDialog.OperatorPager', 'Pager');
+	private static readonly NewOperatorButtonLabel: string =  localize('alertDialog.NewOperator', 'New Operator');
 
 	// Options tab strings
-	private static readonly IncludeErrorInEmailCheckBoxLabel: string =  localize('createAlert.IncludeErrorInEmail', 'Include alert error text in e-mail');
-	private static readonly IncludeErrorInPagerCheckBoxLabel: string =  localize('createAlert.IncludeErrorInPager', 'Include alert error text in pager');
-	private static readonly AdditionalMessageTextBoxLabel: string =  localize('createAlert.AdditionalNotification', 'Additional notification message to send');
-	private static readonly DelayBetweenResponsesTextBoxLabel: string =  localize('createAlert.DelayBetweenResponse', 'Delay between responses');
-	private static readonly DelayMinutesTextBoxLabel: string =  localize('createAlert.DelayMinutes', 'Delay Minutes');
-	private static readonly DelaySecondsTextBoxLabel: string =  localize('createAlert.DelaySeconds', 'Delay Seconds');
+	private static readonly IncludeErrorInEmailCheckBoxLabel: string =  localize('alertDialog.IncludeErrorInEmail', 'Include alert error text in e-mail');
+	private static readonly IncludeErrorInPagerCheckBoxLabel: string =  localize('alertDialog.IncludeErrorInPager', 'Include alert error text in pager');
+	private static readonly AdditionalMessageTextBoxLabel: string =  localize('alertDialog.AdditionalNotification', 'Additional notification message to send');
+	private static readonly DelayBetweenResponsesTextBoxLabel: string =  localize('alertDialog.DelayBetweenResponse', 'Delay between responses');
+	private static readonly DelayMinutesTextBoxLabel: string =  localize('alertDialog.DelayMinutes', 'Delay Minutes');
+	private static readonly DelaySecondsTextBoxLabel: string =  localize('alertDialog.DelaySeconds', 'Delay Seconds');
 
 	// UI Components
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
@@ -141,8 +142,10 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private delayMinutesTextBox: sqlops.InputBoxComponent;
 	private delaySecondsTextBox: sqlops.InputBoxComponent;
 
-	constructor(ownerUri: string) {
-		super(ownerUri, new AlertData(ownerUri), AlertDialog.DialogTitle);
+	constructor(ownerUri: string, alertInfo: sqlops.AgentAlertInfo = null) {
+		super(ownerUri,
+			new AlertData(ownerUri, alertInfo),
+			alertInfo ? AlertDialog.EditDialogTitle : AlertDialog.CreateDialogTitle);
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
@@ -210,7 +213,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					title: AlertDialog.SeverityLabel
 				}, {
 					component: this.raiseAlertMessageCheckBox,
-					title: AlertDialog.RaiseIfMessageContainsLabel
+					title: ''
 				}, {
 					component: this.raiseAlertMessageTextBox,
 					title: AlertDialog.MessageTextLabel
@@ -218,6 +221,9 @@ export class AlertDialog extends AgentDialog<AlertData> {
 			]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
+
+			this.nameTextBox.value = this.model.name;
+			this.enabledCheckBox.checked = this.model.isEnabled;
 		});
 	}
 
@@ -326,7 +332,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		if (selected) {
 			let index = AlertDialog.AlertSeverities.indexOf(selected);
 			if (index >= 0) {
-				severityNumber = index;
+				severityNumber = index + 1;
 			}
 		}
 		return severityNumber;
@@ -339,6 +345,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		this.model.alertType = this.getDropdownValue(this.typeDropDown);
 		this.model.databaseName = this.getDropdownValue(this.databaseDropDown);
 		this.model.severity = this.getSeverityNumber();
+		this.model.messageId = undefined;
 
 		let raiseIfError = this.raiseAlertMessageCheckBox.checked;
 		if (raiseIfError) {

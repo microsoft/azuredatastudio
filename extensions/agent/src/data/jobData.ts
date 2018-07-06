@@ -6,7 +6,7 @@
 
 import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
-import { IAgentDialogData } from '../interfaces';
+import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 
 export class JobData implements IAgentDialogData {
 
@@ -23,6 +23,7 @@ export class JobData implements IAgentDialogData {
 	private _defaultOwner: string;
 	private _jobCompletionActionConditions: sqlops.CategoryValue[];
 
+	public dialogMode: AgentDialogMode = AgentDialogMode.CREATE;
 	public name: string;
 	public enabled: boolean = true;
 	public description: string;

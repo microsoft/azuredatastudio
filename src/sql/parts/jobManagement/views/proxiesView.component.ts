@@ -136,7 +136,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 	private onProxiesAvailable(proxies: sqlops.AgentProxyInfo[]) {
 		let items: any = proxies.map((item) => {
 			return {
-				id: item.id,
+				id: item.accountName,
 				accountName: item.accountName,
 				credentialName: item.credentialName
 			};

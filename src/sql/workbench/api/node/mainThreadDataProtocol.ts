@@ -460,6 +460,11 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		this._profilerService.onSessionStopped(response);
 	}
 
+	// SQL Server Agent handlers
+	public $onJobDataUpdated(handle: Number): void {
+		this._jobManagementService.fireOnDidChange();
+	}
+
 	public $unregisterProvider(handle: number): TPromise<any> {
 		let capabilitiesRegistration = this._capabilitiesRegistrations[handle];
 		if (capabilitiesRegistration) {
