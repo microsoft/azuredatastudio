@@ -603,4 +603,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	$deleteProxy(handle: number, ownerUri: string, proxy: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus> {
 		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).deleteProxy(ownerUri, proxy);
 	}
+
+	/**
+	 * SQL Agent job data update notification
+	 */
+	public $onJobDataUpdated(handle: Number): void {
+		this._proxy.$onJobDataUpdated(handle);
+	}
 }

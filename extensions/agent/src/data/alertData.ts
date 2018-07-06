@@ -4,9 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import * as nls from 'vscode-nls';
+import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
+
+const localize = nls.loadMessageBundle();
 
 export class AlertData implements IAgentDialogData {
 	ownerUri: string;
@@ -69,9 +73,6 @@ export class AlertData implements IAgentDialogData {
 	}
 
 	public async initialize() {
-		if (this.dialogMode === AgentDialogMode.CREATE) {
-			// TODO: set dialog default values here
-		}
 	}
 
 	public async save() {
@@ -81,7 +82,8 @@ export class AlertData implements IAgentDialogData {
 			: await agentService.updateAlert(this.ownerUri, this.originalName, this.toAgentAlertInfo());
 
 		if (!result || !result.success) {
-			// TODO handle error here
+			vscode.window.showErrorMessage(
+				localize('alertData.saveErrorMessage', "Alert update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
 		}
 	}
 

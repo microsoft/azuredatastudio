@@ -213,7 +213,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					title: AlertDialog.SeverityLabel
 				}, {
 					component: this.raiseAlertMessageCheckBox,
-					title: AlertDialog.RaiseIfMessageContainsLabel
+					title: ''
 				}, {
 					component: this.raiseAlertMessageTextBox,
 					title: AlertDialog.MessageTextLabel

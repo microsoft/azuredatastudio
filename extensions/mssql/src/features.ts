@@ -35,6 +35,8 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		contracts.AgentJobActionRequest.type
 	];
 
+	private onUpdatedHandlers: any[] = [];
+
 	constructor(client: SqlOpsDataClient) {
 		super(client, AgentServicesFeature.messagesTypes);
 	}
@@ -53,6 +55,18 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
+		let self = this;
+
+		// On updated registration
+		let registerOnUpdated = (handler: () => any): void => {
+			self.onUpdatedHandlers.push(handler);
+		};
+
+		let fireOnUpdated = (): void => {
+			for (let i = 0; i < self.onUpdatedHandlers.length; ++i) {
+				self.onUpdatedHandlers[i]();
+			}
+		};
 
 		// Job management methods
 		let getJobs = (ownerUri: string): Thenable<sqlops.AgentJobsResult> => {
@@ -218,7 +232,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.CreateAgentAlertRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -467,7 +484,8 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			getJobSchedules,
 			createJobSchedule,
 			updateJobSchedule,
-			deleteJobSchedule
+			deleteJobSchedule,
+			registerOnUpdated
 		});
 	}
 }
