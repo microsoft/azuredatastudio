@@ -19,7 +19,7 @@ import { FileBrowserTreeView } from '../fileBrowser/fileBrowserTreeView';
 @Component({
 	selector: 'modelview-fileBrowserTree',
 	template: `
-		<div #fileBrowserTree style="width:420px;height:700px"></div>
+		<div #fileBrowserTree [style.width]="getWidth()" [style.height]="getHeight()"></div>
 	`
 })
 export default class FileBrowserTreeComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {

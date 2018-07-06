@@ -368,7 +368,7 @@ export class JobStepDialog {
 		this.fileBrowserDialog.content =  [fileBrowserTab];
 		fileBrowserTab.registerContent(async (view) => {
 			this.fileBrowserTree = view.modelBuilder.fileBrowserTree()
-				.withProperties({ ownerUri: this.ownerUri })
+				.withProperties({ ownerUri: this.ownerUri, width: 420, height: 700 })
 				.component();
 			this.selectedPathTextBox = view.modelBuilder.inputBox()
 				.withProperties({ inputType: 'text'})
