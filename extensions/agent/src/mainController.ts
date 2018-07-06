@@ -38,8 +38,8 @@ export class MainController {
             let dialog = new PickScheduleDialog(ownerUri);
             dialog.showDialog();
         });
-        vscode.commands.registerCommand('agent.openCreateAlertDialog', (ownerUri: string) => {
-            let dialog = new AlertDialog(ownerUri);
+        vscode.commands.registerCommand('agent.openCreateAlertDialog', (ownerUri: string, jobs: string[]) => {
+            let dialog = new AlertDialog(ownerUri, jobs);
             dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openCreateOperatorDialog', (ownerUri: string) => {

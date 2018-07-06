@@ -121,13 +121,16 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private nameTextBox: sqlops.InputBoxComponent;
 	private typeDropDown: sqlops.DropDownComponent;
 	private severityDropDown: sqlops.DropDownComponent;
+	private errorNumberTextBox: sqlops.InputBoxComponent;
 	private databaseDropDown: sqlops.DropDownComponent;
 	private enabledCheckBox: sqlops.CheckBoxComponent;
 	private raiseAlertMessageCheckBox: sqlops.CheckBoxComponent;
 	private raiseAlertMessageTextBox: sqlops.InputBoxComponent;
+	private severityRadioButton: sqlops.RadioButtonComponent;
+	private errorNumberRadioButton: sqlops.RadioButtonComponent;
 
 	// Response tab controls
-	private executeJobTextBox: sqlops.InputBoxComponent;
+	private executeJobDropdown: sqlops.DropDownComponent;
 	private executeJobCheckBox: sqlops.CheckBoxComponent;
 	private newJobButton: sqlops.ButtonComponent;
 	private notifyOperatorsCheckBox: sqlops.CheckBoxComponent;
@@ -141,8 +144,11 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private delayMinutesTextBox: sqlops.InputBoxComponent;
 	private delaySecondsTextBox: sqlops.InputBoxComponent;
 
-	constructor(ownerUri: string) {
+	private jobs: string[];
+
+	constructor(ownerUri: string, jobs: string[]) {
 		super(ownerUri, new AlertData(ownerUri), AlertDialog.DialogTitle);
+		this.jobs = jobs;
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
@@ -167,6 +173,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					label: AlertDialog.EnabledCheckboxLabel
 				}).component();
 
+			this.enabledCheckBox.checked = true;
 			this.databaseDropDown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: databases[0],
@@ -182,15 +189,92 @@ export class AlertDialog extends AgentDialog<AlertData> {
 			this.severityDropDown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: AlertDialog.AlertSeverities[0],
-					values: AlertDialog.AlertSeverities
+					values: AlertDialog.AlertSeverities,
+					width: 320
 				}).component();
+
+			let severityFormContainer = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.severityDropDown,
+					title: ''
+				}]).component();
+
+			this.severityRadioButton = view.modelBuilder.radioButton()
+				.withProperties({
+					value: 'Severity',
+					name: 'radioButtonOptions',
+					label: AlertDialog.SeverityLabel
+				}).component();
+
+			this.severityRadioButton.checked = true;
+			this.severityDropDown.enabled = true;
+
+			this.severityRadioButton.onDidClick(() => {
+				this.errorNumberTextBox.enabled = false;
+				this.errorNumberRadioButton.checked = false;
+				this.severityDropDown.enabled = true;
+			});
+
+			this.errorNumberTextBox = view.modelBuilder.inputBox()
+				.withProperties({
+					inputType: 'text',
+					placeHolder: '1',
+					width: 320
+				}).component();
+
+			let errorNumberFormContainer = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.errorNumberTextBox,
+					title: ''
+				}]).component();
+
+			this.errorNumberRadioButton = view.modelBuilder.radioButton()
+				.withProperties({
+					value: 'Error Number',
+					name: 'radioButtonOptions',
+					label: 'Error number'
+				}).component();
+
+			this.errorNumberRadioButton.checked = false;
+
+			this.errorNumberRadioButton.onDidClick(() => {
+				this.severityRadioButton.checked = false;
+				this.errorNumberTextBox.enabled = true;
+				this.severityDropDown.enabled = false;
+			});
 
 			this.raiseAlertMessageCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: AlertDialog.RaiseIfMessageContainsLabel
 				}).component();
 
-			this.raiseAlertMessageTextBox = view.modelBuilder.inputBox().component();
+			this.raiseAlertMessageTextBox = view.modelBuilder.inputBox()
+				.withProperties({
+					width: 320
+				})
+				.component();
+			this.raiseAlertMessageTextBox.enabled = false;
+			let raiseAlertMessageContainer = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.raiseAlertMessageTextBox,
+					title: AlertDialog.MessageTextLabel
+				}])
+				.component();
+
+			this.raiseAlertMessageCheckBox.onChanged(() => {
+				if (this.raiseAlertMessageCheckBox.checked) {
+					this.raiseAlertMessageTextBox.enabled = true;
+				} else {
+					this.raiseAlertMessageTextBox.enabled = false;
+				}
+			});
+			let flexRadioButtonContainer = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'column'
+			}).withItems([this.errorNumberRadioButton, errorNumberFormContainer,
+				this.severityRadioButton, severityFormContainer, this.raiseAlertMessageCheckBox,
+				raiseAlertMessageContainer])
+			.component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -206,14 +290,8 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					component: this.databaseDropDown,
 					title: AlertDialog.DatabaseLabel
 				}, {
-					component: this.severityDropDown,
-					title: AlertDialog.SeverityLabel
-				}, {
-					component: this.raiseAlertMessageCheckBox,
-					title: AlertDialog.RaiseIfMessageContainsLabel
-				}, {
-					component: this.raiseAlertMessageTextBox,
-					title: AlertDialog.MessageTextLabel
+					component: flexRadioButtonContainer,
+					title: ''
 				}
 			]).withLayout({ width: '100%' }).component();
 
@@ -228,12 +306,39 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					label: AlertDialog.ExecuteJobCheckBoxLabel
 				}).component();
 
-			this.executeJobTextBox = view.modelBuilder.inputBox().component();
+			this.executeJobDropdown = view.modelBuilder.dropDown()
+				.withProperties({
+					value: this.jobs[0],
+					values: this.jobs,
+					width: 380
+				}).component();
 
+			this.executeJobDropdown.editable = true;
+			this.executeJobDropdown.enabled = false;
 			this.newJobButton = view.modelBuilder.button().withProperties({
 					label: AlertDialog.NewJobButtonLabel,
 					width: 80
 				}).component();
+			this.newJobButton.enabled = false;
+
+			let executeJobContainer = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.executeJobDropdown,
+					title: AlertDialog.ExecuteJobTextBoxLabel
+				},{ component: this.newJobButton,
+					title: ''
+				}])
+				.component();
+
+			this.executeJobCheckBox.onChanged(() => {
+				if (this.executeJobCheckBox.checked) {
+					this.executeJobDropdown.enabled = true;
+					this.newJobButton.enabled = true;
+				} else {
+					this.executeJobDropdown.enabled = false;
+					this.newJobButton.enabled = false;
+				}
+			});
 
 			this.notifyOperatorsCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
@@ -248,31 +353,48 @@ export class AlertDialog extends AgentDialog<AlertData> {
 						AlertDialog.OperatorPagerColumnLabel
 					],
 					data: [],
-					height: 500
+					height: 500,
+					width: 380
 				}).component();
 
+
+
 			this.newOperatorButton = view.modelBuilder.button().withProperties({
-					label: this.newOperatorButton,
+					label: AlertDialog.NewOperatorButtonLabel,
 					width: 80
 				}).component();
 
+			this.operatorsTable.enabled = false;
+			this.newOperatorButton.enabled = false;
+
+			let operatorContainer = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.operatorsTable,
+					title: AlertDialog.OperatorListLabel
+				}, {
+					component: this.newOperatorButton,
+					title: ''
+				}])
+				.component();
+
+			this.notifyOperatorsCheckBox.onChanged(() => {
+				if (this.notifyOperatorsCheckBox.checked) {
+					this.operatorsTable.enabled = true;
+					this.newOperatorButton.enabled = true;
+				}
+			});
+
+			let flexModel = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'column'
+				})
+				.withItems([this.executeJobCheckBox, executeJobContainer, this.notifyOperatorsCheckBox, operatorContainer])
+				.component();
+
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
-					component: this.executeJobCheckBox,
+					component: flexModel,
 					title: ''
-				}, {
-					component: this.executeJobTextBox,
-					title: AlertDialog.ExecuteJobTextBoxLabel
-				}, {
-					component: this.newJobButton,
-					title: AlertDialog.NewJobButtonLabel
-				}, {
-					component: this.notifyOperatorsCheckBox,
-					title: ''
-				}, {
-					component: this.operatorsTable,
-					title: AlertDialog.OperatorListLabel,
-					actions: [this.newOperatorButton]
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
@@ -294,9 +416,19 @@ export class AlertDialog extends AgentDialog<AlertData> {
 
 			this.additionalMessageTextBox = view.modelBuilder.inputBox().component();
 
-			this.delayMinutesTextBox = view.modelBuilder.inputBox().component();
+			this.delayMinutesTextBox = view.modelBuilder.inputBox()
+				.withValidation(component => +component.value >= 0)
+				.withProperties({
+					inputType: 'number'
+				})
+				.component();
 
-			this.delaySecondsTextBox = view.modelBuilder.inputBox().component();
+			this.delaySecondsTextBox = view.modelBuilder.inputBox()
+				.withValidation(component => +component.value >= 0)
+				.withProperties({
+					inputType: 'number'
+				})
+				.component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -328,6 +460,11 @@ export class AlertDialog extends AgentDialog<AlertData> {
 			if (index >= 0) {
 				severityNumber = index;
 			}
+		} else {
+			let errorNumber = +this.errorNumberTextBox.value;
+			if (errorNumber) {
+				severityNumber = errorNumber;
+			}
 		}
 		return severityNumber;
 	}
@@ -344,5 +481,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		if (raiseIfError) {
 			let messageText = this.raiseAlertMessageTextBox.value;
 		}
+		this.model.notificationMessage = this.additionalMessageTextBox.value;
+		this.model.delayBetweenResponses = +this.delayMinutesTextBox.value * 60 + +this.delaySecondsTextBox.value;
 	}
 }
