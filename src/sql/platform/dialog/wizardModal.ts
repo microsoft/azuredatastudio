@@ -25,6 +25,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DialogMessage, MessageLevel } from '../../workbench/api/common/sqlExtHostTypes';
+import { DialogModule } from './dialog.module';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -128,6 +129,8 @@ export class WizardModal extends Modal {
 			this._body = bodyBuilder.getHTMLElement();
 		});
 
+		this.initializeNavigation(this._body);
+
 		this._wizard.pages.forEach(page => {
 			this.registerPage(page);
 		});
@@ -199,6 +202,19 @@ export class WizardModal extends Modal {
 			this._nextButton.element.parentElement.classList.add('dialogModal-hidden');
 			this._doneButton.element.parentElement.classList.remove('dialogModal-hidden');
 		}
+	}
+
+	/**
+	 * Bootstrap angular for the wizard's left nav bar
+	 */
+	private initializeNavigation(bodyContainer: HTMLElement) {
+		bootstrapAngular(this._instantiationService,
+			DialogModule,
+			bodyContainer,
+			'wizard-navigation',
+			undefined,
+			undefined,
+			() => undefined);
 	}
 
 	public open(): void {

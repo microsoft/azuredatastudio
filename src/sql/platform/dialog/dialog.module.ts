@@ -25,6 +25,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { WizardNavigation } from './wizardNavigation.component';
 
 export const DialogModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 
@@ -37,12 +38,13 @@ export const DialogModule = (params, selector: string, instantiationService: IIn
 			SelectBox,
 			InputBox,
 			DialogContainer,
+			WizardNavigation,
 			ModelViewContent,
 			ModelComponentWrapper,
 			ComponentHostDirective,
 			...extensionComponents
 		],
-		entryComponents: [DialogContainer, ...extensionComponents],
+		entryComponents: [DialogContainer, WizardNavigation, ...extensionComponents],
 		imports: [
 			FormsModule,
 			CommonModule,
@@ -65,7 +67,8 @@ export const DialogModule = (params, selector: string, instantiationService: IIn
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
-			const factoryWrapper: any = this._resolver.resolveComponentFactory(DialogContainer);
+			let componentClass = this.selector.startsWith('wizard-navigation') ? WizardNavigation : DialogContainer;
+			const factoryWrapper: any = this._resolver.resolveComponentFactory(componentClass as any);
 			factoryWrapper.factory.selector = this.selector;
 			appRef.bootstrap(factoryWrapper);
 		}
