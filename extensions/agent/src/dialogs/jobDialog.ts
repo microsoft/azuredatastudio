@@ -14,7 +14,8 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	// TODO: localize
 	// Top level
-	private static readonly DialogTitle: string = 'New Job';
+	private static readonly CreateDialogTitle: string = 'New Job';
+	private static readonly EditDialogTitle: string = 'Edit Job';
 	private readonly GeneralTabText: string = 'General';
 	private readonly StepsTabText: string = 'Steps';
 	private readonly SchedulesTabText: string = 'Schedules';
@@ -97,8 +98,11 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private alertsTable: sqlops.TableComponent;
 	private newAlertButton: sqlops.ButtonComponent;
 
-	constructor(ownerUri: string) {
-		super(ownerUri, new JobData(ownerUri), JobDialog.DialogTitle);
+	constructor(ownerUri: string, jobInfo: sqlops.AgentJobInfo = undefined) {
+		super(
+			ownerUri,
+			new JobData(ownerUri),
+			jobInfo ? JobDialog.EditDialogTitle : JobDialog.CreateDialogTitle);
 	}
 
 	protected async initializeDialog() {

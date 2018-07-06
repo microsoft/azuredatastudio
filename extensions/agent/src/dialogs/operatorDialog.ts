@@ -66,11 +66,11 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	// Notification tab controls
 	private alertsTable: sqlops.TableComponent;
 
-	constructor(ownerUri: string, operatorInfo: sqlops.AgentOperatorInfo = null) {
+	constructor(ownerUri: string, operatorInfo: sqlops.AgentOperatorInfo = undefined) {
 		super(
 			ownerUri,
 			new OperatorData(ownerUri, operatorInfo),
-			operatorInfo ? OperatorDialog.EditDialogTitle : OperatorDialog.EditDialogTitle);
+			operatorInfo ? OperatorDialog.EditDialogTitle : OperatorDialog.CreateDialogTitle);
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {

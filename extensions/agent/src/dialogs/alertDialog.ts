@@ -145,7 +145,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 
 	private databases: string[];
 
-	constructor(ownerUri: string, alertInfo: sqlops.AgentAlertInfo = null) {
+	constructor(ownerUri: string, alertInfo: sqlops.AgentAlertInfo = undefined) {
 		super(ownerUri,
 			new AlertData(ownerUri, alertInfo),
 			alertInfo ? AlertDialog.EditDialogTitle : AlertDialog.CreateDialogTitle);

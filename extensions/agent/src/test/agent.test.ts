@@ -15,7 +15,7 @@ const testOwnerUri = 'agent://testuri';
 suite('Agent extension', () => {
 	test('Create Job Data', async () => {
 		let testAgentService = new TestAgentService();
-		let data = new JobData(testOwnerUri, testAgentService);
+		let data = new JobData(testOwnerUri, undefined, testAgentService);
 		data.save();
 	});
 });

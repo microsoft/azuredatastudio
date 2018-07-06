@@ -35,7 +35,7 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 	private descriptionTextBox: sqlops.InputBoxComponent;
 	private subsystemsTable: sqlops.TableComponent;
 
-	constructor(ownerUri: string, proxyInfo: sqlops.AgentProxyInfo = null) {
+	constructor(ownerUri: string, proxyInfo: sqlops.AgentProxyInfo = undefined) {
 		super(
 			ownerUri,
 			new ProxyData(ownerUri, proxyInfo),
