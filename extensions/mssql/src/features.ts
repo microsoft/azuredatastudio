@@ -110,7 +110,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.CreateAgentJobRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -126,7 +129,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.UpdateAgentJobRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -141,7 +147,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.DeleteAgentJobRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -171,7 +180,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.CreateAgentJobStepRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -187,7 +199,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.UpdateAgentJobStepRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -202,7 +217,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.DeleteAgentJobStepRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -251,7 +269,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.UpdateAgentAlertRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -266,7 +287,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.DeleteAgentAlertRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -296,7 +320,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.CreateAgentOperatorRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -312,7 +339,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.UpdateAgentOperatorRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -327,7 +357,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.DeleteAgentOperatorRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -357,7 +390,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.CreateAgentProxyRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -373,7 +409,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.UpdateAgentProxyRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -388,7 +427,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.DeleteAgentProxyRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -418,7 +460,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.CreateAgentJobScheduleRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -434,7 +479,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.UpdateAgentJobScheduleRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
@@ -449,7 +497,10 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			};
 			let requestType = contracts.DeleteAgentJobScheduleRequest.type;
 			return client.sendRequest(requestType, params).then(
-				r => r,
+				r => {
+					fireOnUpdated();
+					return r;
+				},
 				e => {
 					client.logFailedRequest(requestType, e);
 					return Promise.resolve(undefined);
