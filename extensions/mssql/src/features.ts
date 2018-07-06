@@ -63,7 +63,9 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		let fireOnUpdated = (): void => {
-			self.onUpdatedHandler();
+			if (self.onUpdatedHandler) {
+				self.onUpdatedHandler();
+			}
 		};
 
 		// Job management methods
