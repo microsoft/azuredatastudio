@@ -37,7 +37,7 @@ export class ObjectExplorerActionsContext {
 	public isConnectionNode: boolean = false;
 }
 
-async function getTreeNode(context: ObjectExplorerActionsContext, objectExplorerService: IObjectExplorerService): Promise<TreeNode> {
+async function getTreeNode(context: ObjectExplorerActionsContext, objectExplorerService: IObjectExplorerService): TPromise<TreeNode> {
 	if (context.isConnectionNode) {
 		return Promise.resolve(undefined);
 	}
@@ -102,19 +102,20 @@ export class ManageConnectionAction extends Action {
 	run(actionContext: ObjectExplorerActionsContext): TPromise<any> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._treeSelectionHandler.onTreeActionStateChange(true);
+		let self = this;
 		let promise = new TPromise<boolean>((resolve, reject) => {
-			this.doManage(actionContext).then((success) => {
-				this.done();
+			self.doManage(actionContext).then((success) => {
+				self.done();
 				resolve(success);
 			}, error => {
-				this.done();
+				self.done();
 				reject(error);
 			});
 		});
 		return promise;
 	}
 
-	private async doManage(actionContext: ObjectExplorerActionsContext): Promise<boolean> {
+	private async doManage(actionContext: ObjectExplorerActionsContext): TPromise<boolean> {
 		let treeNode: TreeNode = undefined;
 		let connectionProfile: IConnectionProfile = undefined;
 		if (actionContext instanceof ObjectExplorerActionsContext) {
@@ -131,7 +132,7 @@ export class ManageConnectionAction extends Action {
 		if (!connectionProfile) {
 			// This should never happen. There should be always a valid connection if the manage action is called for
 			// an OE node or a database node
-			return TPromise.wrap(true);
+			return true;
 		}
 
 		let options: IConnectionCompletionOptions = {
