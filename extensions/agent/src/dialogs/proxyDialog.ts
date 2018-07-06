@@ -15,7 +15,8 @@ const localize = nls.loadMessageBundle();
 export class ProxyDialog extends AgentDialog<ProxyData>  {
 
 	// Top level
-	private static readonly DialogTitle: string = localize('createProxy.createAlert', 'Create Alert');
+	private static readonly CreateDialogTitle: string = localize('createProxy.createAlert', 'Create Alert');
+	private static readonly EditDialogTitle: string = localize('createProxy.createAlert', 'Create Alert');
 	private static readonly GeneralTabText: string = localize('createProxy.General', 'General');
 
 	// General tab strings
@@ -34,8 +35,11 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 	private descriptionTextBox: sqlops.InputBoxComponent;
 	private subsystemsTable: sqlops.TableComponent;
 
-	constructor(ownerUri: string) {
-		super(ownerUri, new ProxyData(ownerUri), ProxyDialog.DialogTitle);
+	constructor(ownerUri: string, proxyInfo: sqlops.AgentProxyInfo = null) {
+		super(
+			ownerUri,
+			new ProxyData(ownerUri, proxyInfo),
+			proxyInfo ? ProxyDialog.EditDialogTitle : ProxyDialog.CreateDialogTitle);
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {

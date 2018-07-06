@@ -29,7 +29,7 @@ export class OperatorData implements IAgentDialogData {
 	weekdayPagerStartTime: string;
 	weekdayPagerEndTime: string;
 
-	constructor(ownerUri:string) {
+	constructor(ownerUri:string, operatorInfo: sqlops.AgentOperatorInfo) {
 		this.ownerUri = ownerUri;
 	}
 

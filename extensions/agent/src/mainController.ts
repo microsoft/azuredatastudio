@@ -43,8 +43,8 @@ export class MainController {
             let dialog = new AlertDialog(ownerUri, alertInfo);
             dialog.openDialog();
         });
-        vscode.commands.registerCommand('agent.openCreateOperatorDialog', (ownerUri: string) => {
-            let dialog = new OperatorDialog(ownerUri);
+        vscode.commands.registerCommand('agent.openOperatorDialog', (ownerUri: string, operatorInfo: sqlops.AgentOperatorInfo) => {
+            let dialog = new OperatorDialog(ownerUri, operatorInfo);
             dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openCreateProxyDialog', (ownerUri: string) => {
