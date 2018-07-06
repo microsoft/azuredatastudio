@@ -35,7 +35,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		contracts.AgentJobActionRequest.type
 	];
 
-	private onUpdatedHandlers: any[] = [];
+	private onUpdatedHandler: () => any;
 
 	constructor(client: SqlOpsDataClient) {
 		super(client, AgentServicesFeature.messagesTypes);
@@ -59,13 +59,11 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 
 		// On updated registration
 		let registerOnUpdated = (handler: () => any): void => {
-			self.onUpdatedHandlers.push(handler);
+			self.onUpdatedHandler = handler;
 		};
 
 		let fireOnUpdated = (): void => {
-			for (let i = 0; i < self.onUpdatedHandlers.length; ++i) {
-				self.onUpdatedHandlers[i]();
-			}
+			self.onUpdatedHandler();
 		};
 
 		// Job management methods
