@@ -31,9 +31,6 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private static readonly SeverityLabel: string = localize('alertDialog.Severity', 'Severity');
 	private static readonly RaiseIfMessageContainsLabel: string = localize('alertDialog.RaiseAlertContains', 'Raise alert when message contains');
 	private static readonly MessageTextLabel: string = localize('alertDialog.MessageText', 'Message text');
-	private static readonly AlertTypeSqlServerEventString: string = localize('alertDialog.SqlServerEventAlert', 'SQL Server event alert');
-	private static readonly AlertTypePerformanceConditionString: string = localize('alertDialog.PerformanceCondition', 'SQL Server performance condition alert');
-	private static readonly AlertTypeWmiEventString: string = localize('alertDialog.WmiEvent', 'WMI event alert');
 	private static readonly AlertSeverity001Label: string = localize('alertDialog.Severity001', '001 - Miscellaneous System Information');
 	private static readonly AlertSeverity002Label: string = localize('alertDialog.Severity002', '002 - Reserved');
 	private static readonly AlertSeverity003Label: string = localize('alertDialog.Severity003', '003 - Reserved');
@@ -62,9 +59,9 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private static readonly AllDatabases: string = localize('alertDialog.AllDatabases', '<all databases>');
 
 	private static readonly AlertTypes: string[]  = [
-		AlertDialog.AlertTypeSqlServerEventString,
-		AlertDialog.AlertTypePerformanceConditionString,
-		AlertDialog.AlertTypeWmiEventString
+		AlertData.AlertTypeSqlServerEventString,
+		AlertData.AlertTypePerformanceConditionString,
+		AlertData.AlertTypeWmiEventString
 	];
 
 	private static readonly AlertSeverities: string[]  = [
@@ -125,6 +122,10 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private severityDropDown: sqlops.DropDownComponent;
 	private databaseDropDown: sqlops.DropDownComponent;
 	private enabledCheckBox: sqlops.CheckBoxComponent;
+	private errorNumberRadioButton: sqlops.RadioButtonComponent;
+	private severityRadioButton: sqlops.RadioButtonComponent;
+	private errorNumberTextBox: sqlops.InputBoxComponent;
+
 	private raiseAlertMessageCheckBox: sqlops.CheckBoxComponent;
 	private raiseAlertMessageTextBox: sqlops.InputBoxComponent;
 
@@ -188,11 +189,39 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					values: AlertDialog.AlertTypes
 				}).component();
 
+
+			this.severityRadioButton = view.modelBuilder.radioButton()
+				.withProperties({
+					value: 'serverity',
+					name: 'alertTypeOptions',
+					label: AlertDialog.SeverityLabel,
+					checked: true
+				}).component();
+
 			this.severityDropDown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: AlertDialog.AlertSeverities[0],
 					values: AlertDialog.AlertSeverities
 				}).component();
+
+			this.errorNumberRadioButton = view.modelBuilder.radioButton()
+				.withProperties({
+					value: 'errorNumber',
+					name: 'alertTypeOptions',
+					label: AlertDialog.ErrorNumberLabel
+				}).component();
+
+			this.errorNumberTextBox = view.modelBuilder.inputBox().component();
+
+			this.errorNumberRadioButton.onDidClick(() => {
+				this.errorNumberTextBox.enabled = true;
+				this.severityDropDown.enabled = false;
+			});
+
+			this.severityRadioButton.onDidClick(() => {
+				this.errorNumberTextBox.enabled = false;
+				this.severityDropDown.enabled = true;
+			});
 
 			this.raiseAlertMessageCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
@@ -200,6 +229,11 @@ export class AlertDialog extends AgentDialog<AlertData> {
 				}).component();
 
 			this.raiseAlertMessageTextBox = view.modelBuilder.inputBox().component();
+			this.raiseAlertMessageTextBox.enabled = false;
+
+			this.raiseAlertMessageCheckBox.onChanged(() => {
+				this.raiseAlertMessageTextBox.enabled = this.raiseAlertMessageCheckBox.checked;
+			});
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -214,10 +248,24 @@ export class AlertDialog extends AgentDialog<AlertData> {
 				}, {
 					component: this.databaseDropDown,
 					title: AlertDialog.DatabaseLabel
-				}, {
+				},
+				{
+					component: this.severityRadioButton,
+					title: ''
+				},
+				{
 					component: this.severityDropDown,
-					title: AlertDialog.SeverityLabel
-				}, {
+					title: ''
+				},
+				{
+					component: this.errorNumberRadioButton,
+					title: ''
+				},
+				{
+					component: this.errorNumberTextBox,
+					title: ''
+				},
+				{
 					component: this.raiseAlertMessageCheckBox,
 					title: ''
 				}, {
@@ -230,8 +278,17 @@ export class AlertDialog extends AgentDialog<AlertData> {
 
 			// initialize control values
 			this.nameTextBox.value = this.model.name;
+			this.raiseAlertMessageTextBox.value = this.model.eventDescriptionKeyword;
+			this.typeDropDown.value = this.model.alertType;
 			this.enabledCheckBox.checked = this.model.isEnabled;
+
+			if (this.model.messageId > 0) {
+				this.errorNumberRadioButton.checked = true;
+				this.errorNumberTextBox.value = this.model.messageId.toString();
+			}
+
 			if (this.model.severity > 0) {
+				this.severityRadioButton.checked = true;
 				this.severityDropDown.value = this.severityDropDown.values[this.model.severity-1];
 			}
 
@@ -355,6 +412,29 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		return severityNumber;
 	}
 
+	protected updateControls() {
+		this.model.name = this.nameTextBox.value;
+		this.model.isEnabled = this.enabledCheckBox.checked;
+
+		this.model.alertType = this.getDropdownValue(this.typeDropDown);
+		let databaseName = this.getDropdownValue(this.databaseDropDown);
+		this.model.databaseName = (databaseName !== AlertDialog.AllDatabases) ? databaseName : undefined;
+
+		if (this.severityRadioButton.checked) {
+			this.model.severity = this.getSeverityNumber();
+			this.model.messageId = 0;
+		} else {
+			this.model.severity = 0;
+			this.model.messageId = +this.errorNumberTextBox.value;
+		}
+
+		if (this.raiseAlertMessageCheckBox.checked) {
+			this.model.eventDescriptionKeyword = this.raiseAlertMessageTextBox.value;
+		} else {
+			this.model.eventDescriptionKeyword = '';
+		}
+	}
+
 	protected updateModel() {
 		this.model.name = this.nameTextBox.value;
 		this.model.isEnabled = this.enabledCheckBox.checked;
@@ -362,12 +442,19 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		this.model.alertType = this.getDropdownValue(this.typeDropDown);
 		let databaseName = this.getDropdownValue(this.databaseDropDown);
 		this.model.databaseName = (databaseName !== AlertDialog.AllDatabases) ? databaseName : undefined;
-		this.model.severity = this.getSeverityNumber();
-		this.model.messageId = undefined;
 
-		let raiseIfError = this.raiseAlertMessageCheckBox.checked;
-		if (raiseIfError) {
-			let messageText = this.raiseAlertMessageTextBox.value;
+		if (this.severityRadioButton.checked) {
+			this.model.severity = this.getSeverityNumber();
+			this.model.messageId = 0;
+		} else {
+			this.model.severity = 0;
+			this.model.messageId = +this.errorNumberTextBox.value;
+		}
+
+		if (this.raiseAlertMessageCheckBox.checked) {
+			this.model.eventDescriptionKeyword = this.raiseAlertMessageTextBox.value;
+		} else {
+			this.model.eventDescriptionKeyword = '';
 		}
 	}
 }
