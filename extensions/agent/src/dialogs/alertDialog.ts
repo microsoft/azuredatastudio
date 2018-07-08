@@ -412,29 +412,6 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		return severityNumber;
 	}
 
-	protected updateControls() {
-		this.model.name = this.nameTextBox.value;
-		this.model.isEnabled = this.enabledCheckBox.checked;
-
-		this.model.alertType = this.getDropdownValue(this.typeDropDown);
-		let databaseName = this.getDropdownValue(this.databaseDropDown);
-		this.model.databaseName = (databaseName !== AlertDialog.AllDatabases) ? databaseName : undefined;
-
-		if (this.severityRadioButton.checked) {
-			this.model.severity = this.getSeverityNumber();
-			this.model.messageId = 0;
-		} else {
-			this.model.severity = 0;
-			this.model.messageId = +this.errorNumberTextBox.value;
-		}
-
-		if (this.raiseAlertMessageCheckBox.checked) {
-			this.model.eventDescriptionKeyword = this.raiseAlertMessageTextBox.value;
-		} else {
-			this.model.eventDescriptionKeyword = '';
-		}
-	}
-
 	protected updateModel() {
 		this.model.name = this.nameTextBox.value;
 		this.model.isEnabled = this.enabledCheckBox.checked;
