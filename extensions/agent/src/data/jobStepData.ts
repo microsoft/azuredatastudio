@@ -5,9 +5,10 @@
 'use strict';
 
 import { AgentUtils } from '../agentUtils';
-import { IAgentDialogData } from '../interfaces';
+import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 
 export class JobStepData implements IAgentDialogData {
+	public dialogMode: AgentDialogMode = AgentDialogMode.CREATE;
 	public ownerUri: string;
 	public jobId: string; //
 	public jobName: string;

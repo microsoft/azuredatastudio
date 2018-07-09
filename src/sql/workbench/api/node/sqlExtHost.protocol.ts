@@ -456,6 +456,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onScriptingComplete(handle: number, message: sqlops.ScriptingCompleteResult): void;
 	$onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void;
 	$onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void;
+	$onJobDataUpdated(handle: Number): void;
 
 	/**
 	 * Callback when a session has completed initialization

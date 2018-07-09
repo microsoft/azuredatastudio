@@ -235,7 +235,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 			}).component();
 
 			this.newAlertButton.onDidClick((e)=>{
-				let alertDialog = new AlertDialog(this.model.ownerUri, []);
+				let alertDialog = new AlertDialog(this.model.ownerUri, null, []);
 				alertDialog.onSuccess((dialogModel) => {
 				});
 				alertDialog.openDialog();

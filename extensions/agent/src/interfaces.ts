@@ -4,7 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+export enum AgentDialogMode {
+	CREATE = 1,
+	EDIT = 2,
+	VIEW = 3
+}
+
 export interface IAgentDialogData {
+	dialogMode: AgentDialogMode;
 	initialize(): void;
 	save(): void;
 }

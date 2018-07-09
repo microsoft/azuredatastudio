@@ -10,6 +10,7 @@ import * as nls from 'vs/nls';
 import { Component, Inject, forwardRef, ChangeDetectorRef, ViewChild, Injectable } from '@angular/core';
 import { AgentJobInfo } from 'sqlops';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 
 
 export const DASHBOARD_SELECTOR: string = 'agentview-component';
@@ -42,8 +43,15 @@ export class AgentViewComponent {
 	};
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef) {
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
+		@Inject(IJobManagementService) jobManagementService: IJobManagementService) {
 		this._expanded = new Map<string, string>();
+
+		let self = this;
+		jobManagementService.onDidChange((args) => {
+			self.refresh = true;
+			self._cd.detectChanges();
+		});
 	}
 
 	/**

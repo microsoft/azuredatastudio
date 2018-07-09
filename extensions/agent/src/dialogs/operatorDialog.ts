@@ -81,9 +81,9 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 
 	private initializeGeneralTab() {
 		this.generalTab.registerContent(async view => {
-			this.nameTextBox = view.modelBuilder.inputBox()
-				.withProperties({ width: '100%' })
-				.component();
+
+			this.nameTextBox = view.modelBuilder.inputBox().component();
+
 			this.enabledCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: OperatorDialog.EnabledCheckboxLabel

@@ -6,9 +6,10 @@
 
 import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
-import { IAgentDialogData } from '../interfaces';
+import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 
 export class OperatorData implements IAgentDialogData {
+	public dialogMode: AgentDialogMode = AgentDialogMode.CREATE;
 	ownerUri: string;
 	name: string;
 	id: number;

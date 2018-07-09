@@ -7,20 +7,24 @@
 import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { IAgentDialogData } from '../interfaces';
+import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 
 const localize = nls.loadMessageBundle();
 
 export abstract class AgentDialog<T extends IAgentDialogData> {
 
-	private static readonly OkButtonText: string = localize('createAlert.OK', 'OK');
-	private static readonly CancelButtonText: string = localize('createAlert.Cancel', 'Cancel');
+	private static readonly OkButtonText: string = localize('agentDialog.OK', 'OK');
+	private static readonly CancelButtonText: string = localize('agentDialog.Cancel', 'Cancel');
 
 	protected _onSuccess: vscode.EventEmitter<T> = new vscode.EventEmitter<T>();
 	public readonly onSuccess: vscode.Event<T> = this._onSuccess.event;
 	public dialog: sqlops.window.modelviewdialog.Dialog;
 
 	constructor(public ownerUri: string, public model: T, public title: string) {
+	}
+
+	public get dialogMode(): AgentDialogMode {
+		return this.model.dialogMode;
 	}
 
 	protected abstract async updateModel();
