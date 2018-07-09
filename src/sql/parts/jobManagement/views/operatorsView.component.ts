@@ -163,7 +163,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 
 	public openCreateOperatorDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._commandService.executeCommand('agent.openCreateOperatorDialog', ownerUri);
+		this._commandService.executeCommand('agent.openOperatorDialog', ownerUri);
 	}
 
 	private refreshJobs() {

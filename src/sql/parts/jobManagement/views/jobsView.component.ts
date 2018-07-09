@@ -844,7 +844,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 
 	public openCreateJobDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._commandService.executeCommand('agent.openCreateJobDialog', ownerUri);
+		this._commandService.executeCommand('agent.openJobDialog', ownerUri);
 	}
 
 	public refreshJobs() {
