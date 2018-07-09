@@ -20,6 +20,9 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import * as nls from 'vs/nls';
 import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
+import * as DomUtils from 'vs/base/browser/dom';
+import { StandardKeyboardEvent, IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 @Component({
 	selector: 'modelview-inputBox',
@@ -73,9 +76,29 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		if (this._textareaContainer) {
 			let textAreaInputOptions = Object.assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
 			this._textAreaInput = new InputBox(this._textareaContainer.nativeElement, this.contextViewService, textAreaInputOptions);
+			this.onkeydown(this._textAreaInput.inputElement, (e: StandardKeyboardEvent) => {
+				if (this.tryHandleKeyEvent(e)) {
+					e.stopPropagation();
+				}
+				// Else assume that keybinding service handles routing this to a command
+			});
+
 			this.registerInput(this._textAreaInput, () => this.multiline);
 		}
 		this.inputElement.hideErrors = true;
+	}
+
+	private onkeydown(domNode: HTMLElement, listener: (e: IKeyboardEvent) => void): void {
+		this._register(DomUtils.addDisposableListener(domNode, DomUtils.EventType.KEY_DOWN, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
+	}
+
+	private tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {
+		let handled: boolean = false;
+
+		if (this.multiline && e.keyCode === KeyCode.Enter) {
+			handled = true;
+		}
+		return handled;
 	}
 
 	private get inputElement(): InputBox {
