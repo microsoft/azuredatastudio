@@ -47,8 +47,8 @@ export class MainController {
             let dialog = new OperatorDialog(ownerUri);
             dialog.openDialog();
         });
-        vscode.commands.registerCommand('agent.openCreateProxyDialog', (ownerUri: string) => {
-            let dialog = new ProxyDialog(ownerUri);
+        vscode.commands.registerCommand('agent.openCreateProxyDialog', (ownerUri: string, credentials: string[]) => {
+            let dialog = new ProxyDialog(ownerUri, credentials);
             dialog.openDialog();
         });
     }
