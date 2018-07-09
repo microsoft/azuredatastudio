@@ -130,11 +130,13 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		this.setPropertyFromUI<sqlops.ComponentProperties, number | string>((props, value) => props.width = value, newValue);
 	}
 
-	protected convertSizeToNumber(size: number | string): number {
+	public convertSizeToNumber(size: number | string): number {
 		if (size && typeof (size) === 'string') {
 			if (size.toLowerCase().endsWith('px')) {
 				return +size.replace('px', '');
 			}
+
+		} else if (!size) {
 			return 0;
 		}
 		return +size;
@@ -148,7 +150,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		return this.height ? this.convertSize(this.height) : '';
 	}
 
-	protected convertSize(size: number | string, defaultValue?: string): string {
+	public convertSize(size: number | string, defaultValue?: string): string {
 		defaultValue = defaultValue || '';
 		if (types.isUndefinedOrNull(size)) {
 			return defaultValue;
