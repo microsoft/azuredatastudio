@@ -27,8 +27,9 @@ import { error } from 'sql/base/common/log';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { clone, mixin } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { escape } from 'sql/base/common/strings';
 
-import * as strings from 'vs/base/common/strings';
+import { format } from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
@@ -60,7 +61,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 
 	// create a function alias to use inside query.component
 	// tslint:disable-next-line:no-unused-variable
-	private stringsFormat: any = strings.format;
+	private stringsFormat: any = format;
 
 	// tslint:disable-next-line:no-unused-variable
 	private dataIcons: IGridIcon[] = [
@@ -302,7 +303,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 						// Push row values onto end of gridData for slickgrid
 						gridData.push({
 							values: rows.rows[row].map(c => {
-								return mixin({ ariaLabel: c.displayValue }, c);
+								return mixin({ ariaLabel: escape(c.displayValue) }, c);
 							})
 						});
 					}

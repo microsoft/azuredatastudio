@@ -5,19 +5,18 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
-import * as vscode from 'vscode';
-import { CreateProxyData } from '../data/createProxyData';
 import * as nls from 'vscode-nls';
+import * as sqlops from 'sqlops';
+import { AgentDialog } from './agentDialog';
+import { ProxyData } from '../data/proxyData';
 
 const localize = nls.loadMessageBundle();
 
-export class ProxyDialog {
+export class ProxyDialog extends AgentDialog<ProxyData>  {
 
 	// Top level
-	private static readonly DialogTitle: string = localize('createProxy.createAlert', 'Create Alert');
-	private static readonly OkButtonText: string = localize('createProxy.OK', 'OK');
-	private static readonly CancelButtonText: string = localize('createProxy.Cancel', 'Cancel');
+	private static readonly CreateDialogTitle: string = localize('createProxy.createAlert', 'Create Alert');
+	private static readonly EditDialogTitle: string = localize('createProxy.createAlert', 'Create Alert');
 	private static readonly GeneralTabText: string = localize('createProxy.General', 'General');
 
 	// General tab strings
@@ -28,7 +27,6 @@ export class ProxyDialog {
 	private static readonly SubsystemNameColumnLabel: string = localize('createProxy.SubsystemName', 'Subsystem');
 
 	// UI Components
-	private dialog: sqlops.window.modelviewdialog.Dialog;
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
 
 	// General tab controls
@@ -37,29 +35,19 @@ export class ProxyDialog {
 	private descriptionTextBox: sqlops.InputBoxComponent;
 	private subsystemsTable: sqlops.TableComponent;
 
-	private model: CreateProxyData;
-
-	private _onSuccess: vscode.EventEmitter<CreateProxyData> = new vscode.EventEmitter<CreateProxyData>();
-	public readonly onSuccess: vscode.Event<CreateProxyData> = this._onSuccess.event;
-
-	constructor(ownerUri: string) {
-		this.model = new CreateProxyData(ownerUri);
+	constructor(ownerUri: string, proxyInfo: sqlops.AgentProxyInfo = undefined) {
+		super(
+			ownerUri,
+			new ProxyData(ownerUri, proxyInfo),
+			proxyInfo ? ProxyDialog.EditDialogTitle : ProxyDialog.CreateDialogTitle);
 	}
 
-	public async showDialog() {
-		await this.model.initialize();
-		this.dialog = sqlops.window.modelviewdialog.createDialog(ProxyDialog.DialogTitle);
+	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
 		this.generalTab = sqlops.window.modelviewdialog.createTab(ProxyDialog.GeneralTabText);
 
 		this.initializeGeneralTab();
 
 		this.dialog.content = [this.generalTab];
-		this.dialog.okButton.onClick(async () => await this.execute());
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.okButton.label = ProxyDialog.OkButtonText;
-		this.dialog.cancelButton.label = ProxyDialog.CancelButtonText;
-
-		sqlops.window.modelviewdialog.openDialog(this.dialog);
 	}
 
 	private initializeGeneralTab() {
@@ -96,18 +84,16 @@ export class ProxyDialog {
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
+
+			this.proxyNameTextBox.value = this.model.accountName;
+			this.credentialNameTextBox.value = this.model.credentialName;
+			this.descriptionTextBox.value = this.model.description;
 		});
 	}
 
-	private async execute() {
-		this.updateModel();
-		await this.model.save();
-		this._onSuccess.fire(this.model);
-	}
-
-	private async cancel() {
-	}
-
-	private updateModel() {
+	protected updateModel() {
+		this.model.accountName = this.proxyNameTextBox.value;
+		this.model.credentialName = this.credentialNameTextBox.value;
+		this.model.description = this.descriptionTextBox.value;
 	}
 }

@@ -5,13 +5,12 @@
 import 'vs/css!sql/parts/grid/views/query/chartViewer';
 
 import {
-	Component, Inject, ViewContainerRef, forwardRef, OnInit,
-	ComponentFactoryResolver, ViewChild, OnDestroy, Input, ElementRef, ChangeDetectorRef
+	Component, Inject, forwardRef, OnInit, ComponentFactoryResolver, ViewChild,
+	OnDestroy, Input, ElementRef, ChangeDetectorRef
 } from '@angular/core';
 import { NgGridItemConfig } from 'angular2-grid';
 
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { IInsightData, IInsightsView, IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
@@ -32,7 +31,6 @@ import {
 } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import Severity from 'vs/base/common/severity';
 import URI from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
@@ -87,21 +85,17 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	private _saveAction: SaveImageAction;
 	private _chartConfig: ILineConfig;
 	private _disposables: Array<IDisposable> = [];
-	private _dataSet: IGridDataSet;
 	private _executeResult: IInsightData;
 	private _chartComponent: ChartInsight;
 
-	private localizedStrings = LocalizedStrings;
-	private insightRegistry = insightRegistry;
+	protected localizedStrings = LocalizedStrings;
+	protected insightRegistry = insightRegistry;
 
 	@ViewChild(ComponentHostDirective) private componentHost: ComponentHostDirective;
 	@ViewChild('taskbarContainer', { read: ElementRef }) private taskbarContainer;
-	@ViewChild('chartTypesContainer', { read: ElementRef }) private chartTypesElement;
-	@ViewChild('legendContainer', { read: ElementRef }) private legendElement;
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
-		@Inject(forwardRef(() => ViewContainerRef)) private _viewContainerRef: ViewContainerRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(INotificationService) private notificationService: INotificationService,
@@ -123,15 +117,25 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	}
 
 	private setDefaultChartConfig() {
-		this._chartConfig = <ILineConfig>{
-			dataDirection: 'vertical',
-			dataType: 'number',
-			legendPosition: 'none',
-			labelFirstColumn: false
-		};
+		let defaultChart = this.getDefaultChartType();
+		if (defaultChart === 'timeSeries') {
+			this._chartConfig = <ILineConfig>{
+				dataDirection: 'vertical',
+				dataType: 'point',
+				legendPosition: 'none',
+				labelFirstColumn: false
+			};
+		} else {
+			this._chartConfig = <ILineConfig>{
+				dataDirection: 'vertical',
+				dataType: 'number',
+				legendPosition: 'none',
+				labelFirstColumn: false
+			};
+		}
 	}
 
-	private getDefaultChartType(): string {
+	protected getDefaultChartType(): string {
 		let defaultChartType = Constants.chartTypeHorizontalBar;
 		if (this.configurationService) {
 			let chartSettings = WorkbenchUtils.getSqlConfigSection(this.configurationService, 'chart');
@@ -300,20 +304,16 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		return undefined;
 	}
 
-	private get showDataDirection(): boolean {
+	protected get showDataDirection(): boolean {
 		return ['pie', 'horizontalBar', 'bar', 'doughnut'].some(item => item === this.chartTypesSelectBox.value) || (this.chartTypesSelectBox.value === 'line' && this.dataType === 'number');
 	}
 
-	private get showLabelFirstColumn(): boolean {
+	protected get showLabelFirstColumn(): boolean {
 		return this.dataDirection === 'horizontal' && this.dataType !== 'point';
 	}
 
-	private get showColumnsAsLabels(): boolean {
+	protected get showColumnsAsLabels(): boolean {
 		return this.dataDirection === 'vertical' && this.dataType !== 'point';
-	}
-
-	private get showDataType(): boolean {
-		return this.chartTypesSelectBox.value === 'line';
 	}
 
 	public get dataDirection(): DataDirection {
@@ -326,7 +326,6 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 
 	@Input() set dataSet(dataSet: IGridDataSet) {
 		// Setup the execute result
-		this._dataSet = dataSet;
 		this._executeResult = <IInsightData>{};
 		this._executeResult.columns = dataSet.columnDefinitions.map(def => def.name);
 		this._executeResult.rows = dataSet.dataRows.getRange(0, dataSet.dataRows.getLength()).map(gridRow => {

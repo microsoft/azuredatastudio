@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import 'mocha';
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
-import { CreateJobData } from '../data/createJobData';
+import { JobData } from '../data/jobData';
 import { TestAgentService } from './testAgentService';
 
 const testOwnerUri = 'agent://testuri';
@@ -15,7 +15,7 @@ const testOwnerUri = 'agent://testuri';
 suite('Agent extension', () => {
 	test('Create Job Data', async () => {
 		let testAgentService = new TestAgentService();
-		let data = new CreateJobData(testOwnerUri, testAgentService);
+		let data = new JobData(testOwnerUri, undefined, testAgentService);
 		data.save();
 	});
 });

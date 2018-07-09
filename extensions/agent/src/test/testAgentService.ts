@@ -99,4 +99,7 @@ export class TestAgentService implements sqlops.AgentServicesProvider {
 	deleteJobSchedule(ownerUri: string, scheduleInfo: sqlops.AgentJobScheduleInfo): Thenable<sqlops.ResultStatus> {
 		return undefined;
 	}
+
+	registerOnUpdated(handler: () => any): void {
+	}
 }

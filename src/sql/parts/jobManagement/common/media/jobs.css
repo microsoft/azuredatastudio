@@ -22,7 +22,7 @@ jobhistory-component {
 }
 
 .job-heading-container {
-    height: 49px;
+    height: 50px;
     border-bottom: 3px solid #f4f4f4;
     display: -webkit-box;
 }
@@ -314,4 +314,29 @@ table.jobprevruns > tbody {
     height: 94.7%;
 	width : 100%;
     display: block;
+}
+
+.vs .action-label.icon.refreshIcon {
+	background-image: url('refresh.svg');
+}
+
+.vs-dark .action-label.icon.refreshIcon,
+.hc-black .action-label.icon.refreshIcon  {
+	background-image: url('refresh_inverse.svg');
+}
+
+.actionbar-container .monaco-action-bar > ul.actions-container {
+	padding-top: 10px;
+}
+
+jobsview-component .actionbar-container {
+    height: 40px;
+}
+
+.actionbar-container .monaco-action-bar > ul.actions-container > li.action-item {
+	padding-left: 20px;
+}
+
+jobsview-component .jobview-grid .slick-cell.error-row {
+    opacity: 0;
 }

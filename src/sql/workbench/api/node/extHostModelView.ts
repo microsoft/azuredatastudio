@@ -7,7 +7,6 @@
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
-import { IActionDescriptor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
 import URI from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 
@@ -15,7 +14,7 @@ import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, CardType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType} from 'sql/workbench/api/common/sqlExtHostTypes';
 
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
@@ -41,7 +40,7 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	formContainer(): sqlops.FormBuilder {
 		let id = this.getNextComponentId();
-		let container = new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id);
+		let container = new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id, this);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -249,14 +248,12 @@ class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> ext
 }
 
 class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> implements sqlops.FormBuilder {
-	withFormItems(components: sqlops.FormComponent[], itemLayout?: sqlops.FormItemLayout): sqlops.ContainerBuilder<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> {
-		this._component.itemConfigs = components.map(item => {
-			return this.convertToItemConfig(item, itemLayout);
-		});
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, private _builder: ModelBuilderImpl) {
+		super(proxy, handle, type, id);
+	}
 
-		components.forEach(formItem => {
-			this.addComponentActions(formItem, itemLayout);
-		});
+	withFormItems(components: (sqlops.FormComponent | sqlops.FormComponentGroup)[], itemLayout?: sqlops.FormItemLayout): sqlops.FormBuilder {
+		this.addFormItems(components, itemLayout);
 		return this;
 	}
 
@@ -290,16 +287,31 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 		}
 	}
 
-	addFormItems(formComponents: Array<sqlops.FormComponent>, itemLayout?: sqlops.FormItemLayout): void {
+	addFormItems(formComponents: Array<sqlops.FormComponent | sqlops.FormComponentGroup>, itemLayout?: sqlops.FormItemLayout): void {
 		formComponents.forEach(formComponent => {
 			this.addFormItem(formComponent, itemLayout);
 		});
 	}
 
-	addFormItem(formComponent: sqlops.FormComponent, itemLayout?: sqlops.FormItemLayout): void {
-		let itemImpl = this.convertToItemConfig(formComponent, itemLayout);
-		this._component.addItem(formComponent.component as ComponentWrapper, itemImpl.config);
-		this.addComponentActions(formComponent, itemLayout);
+	addFormItem(formComponent: sqlops.FormComponent | sqlops.FormComponentGroup, itemLayout?: sqlops.FormItemLayout): void {
+		let componentGroup = formComponent as sqlops.FormComponentGroup;
+		if (componentGroup && componentGroup.components !== undefined) {
+			let labelComponent = this._builder.text().component();
+			labelComponent.value = componentGroup.title;
+			this._component.addItem(labelComponent, { isGroupLabel: true });
+			componentGroup.components.forEach(component => {
+				let layout = component.layout || itemLayout;
+				let itemConfig = this.convertToItemConfig(component, layout);
+				itemConfig.config.isInGroup = true;
+				this._component.addItem(component.component as ComponentWrapper, itemConfig.config);
+				this.addComponentActions(component, layout);
+			});
+		} else {
+			formComponent = formComponent as sqlops.FormComponent;
+			let itemImpl = this.convertToItemConfig(formComponent, itemLayout);
+			this._component.addItem(formComponent.component as ComponentWrapper, itemImpl.config);
+			this.addComponentActions(formComponent, itemLayout);
+		}
 	}
 }
 

@@ -3,15 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ElementRef, AfterContentChecked } from '@angular/core';
+import { ElementRef, AfterContentChecked, ViewChild } from '@angular/core';
+import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
-import { IAction } from 'vs/base/common/actions';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { IAction, Action } from 'vs/base/common/actions';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
+import { Disposable } from 'vs/base/common/lifecycle';
+import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { Disposable } from 'vs/base/common/lifecycle';
-import { Table } from 'sql/base/browser/ui/table/table';
-import { TPromise } from 'vs/base/common/winjs.base';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Taskbar } from '../../../base/browser/ui/taskbar/taskbar';
+import { JobsRefreshAction } from 'sql/parts/jobManagement/common/jobActions';
 
 export abstract class JobManagementView extends Disposable implements AfterContentChecked {
 	protected isVisible: boolean = false;
@@ -21,10 +25,16 @@ export abstract class JobManagementView extends Disposable implements AfterConte
 	protected _visibilityElement: ElementRef;
 	protected _parentComponent: AgentViewComponent;
 	protected _table: Table<any>;
+	protected _actionBar: Taskbar;
+	public contextAction: any;
+
+	@ViewChild('actionbarContainer') protected actionBarContainer: ElementRef;
 
 	constructor(
+		protected _commonService: CommonServiceInterface,
 		protected _contextMenuService: IContextMenuService,
-		protected _keybindingService: IKeybindingService) {
+		protected _keybindingService: IKeybindingService,
+		protected _instantiationService: IInstantiationService) {
 		super();
 	}
 
@@ -51,16 +61,19 @@ export abstract class JobManagementView extends Disposable implements AfterConte
 	abstract onFirstVisible();
 
 	protected openContextMenu(event): void {
+		let grid = this._table.grid;
+		let rowIndex = grid.getCellFromEvent(event).row;
+
+		let targetObject = this.getCurrentTableObject(rowIndex);
 		let actions = this.getTableActions();
 		if (actions) {
-			let rowIndex = event.cell.row;
-
+			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 			let actionContext= {
-				rowIndex: rowIndex
+				ownerUri: ownerUri,
+				targetObject: targetObject
 			};
 
 			let anchor = { x: event.pageX + 1, y: event.pageY };
-
 			this._contextMenuService.showContextMenu({
 				getAnchor: () => anchor,
 				getActions: () => actions,
@@ -77,5 +90,21 @@ export abstract class JobManagementView extends Disposable implements AfterConte
 
 	protected getTableActions(): TPromise<IAction[]> {
 		return undefined;
+	}
+
+	protected getCurrentTableObject(rowIndex: number): any {
+		return undefined;
+	}
+
+	protected initActionBar() {
+		let refreshAction = this._instantiationService.createInstance(JobsRefreshAction);
+		let newAction: Action = this._instantiationService.createInstance(this.contextAction);
+		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
+		this._actionBar = new Taskbar(taskbar, this._contextMenuService);
+		this._actionBar.context = this;
+		this._actionBar.setContent([
+			{ action: refreshAction },
+			{ action: newAction }
+		]);
 	}
 }

@@ -12,7 +12,6 @@ import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!sql/base/browser/ui/table/media/table';
 
-
 import * as dom from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 import * as sqlops from 'sqlops';
@@ -21,16 +20,15 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { EditAlert, DeleteAlert } from 'sql/parts/jobManagement/common/jobActions';
+import { EditAlertAction, DeleteAlertAction, NewAlertAction } from 'sql/parts/jobManagement/common/jobActions';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAction } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
-
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const VIEW_SELECTOR: string = 'jobalertsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -41,9 +39,6 @@ export const ROW_HEIGHT: number = 45;
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => AlertsViewComponent) }],
 })
 export class AlertsViewComponent extends JobManagementView implements OnInit {
-
-	private NewAlertText: string = nls.localize('jobAlertToolbar-NewJob', "New Alert");
-	private RefreshText: string = nls.localize('jobAlertToolbar-Refresh', "Refresh");
 
 	private columns: Array<Slick.Column<any>> = [
 		{ name: nls.localize('jobAlertColumns.name', 'Name'), field: 'name', width: 200, id: 'name' },
@@ -67,19 +62,20 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 	@ViewChild('jobalertsgrid') _gridEl: ElementRef;
 
 	public alerts: sqlops.AgentAlertInfo[];
+	public contextAction = NewAlertAction;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
-		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IInstantiationService) instantiationService: IInstantiationService,
+		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService)  keybindingService: IKeybindingService) {
-		super(contextMenuService, keybindingService);
-		this._isCloud = this._dashboardService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+		super(commonService, contextMenuService, keybindingService, instantiationService);
+		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
 	ngOnInit(){
@@ -109,14 +105,16 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 		this.dataView = new Slick.Data.DataView();
 
 		$(this._gridEl.nativeElement).empty();
-		this._table = new Table(this._gridEl.nativeElement, {columns}, options);
+		$(this.actionBarContainer.nativeElement).empty();
+		this.initActionBar();
+		this._table = new Table(this._gridEl.nativeElement, {columns}, this.options);
 		this._table.grid.setData(this.dataView, true);
 
 		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));
 
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._jobManagementService.getAlerts(ownerUri).then((result) => {
 			if (result && result.alerts) {
 				self.alerts = result.alerts;
@@ -153,14 +151,20 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 
 	protected getTableActions(): TPromise<IAction[]> {
 		let actions: IAction[] = [];
-		actions.push(new EditAlert(EditAlert.ID, EditAlert.LABEL));
-		actions.push(new DeleteAlert(DeleteAlert.ID, DeleteAlert.LABEL));
+		actions.push(this._instantiationService.createInstance(EditAlertAction));
+		actions.push(this._instantiationService.createInstance(DeleteAlertAction));
 		return TPromise.as(actions);
 	}
 
-	private openCreateAlertDialog() {
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
-		this._commandService.executeCommand('agent.openCreateAlertDialog', ownerUri);
+	protected getCurrentTableObject(rowIndex: number): any {
+		return (this.alerts && this.alerts.length >= rowIndex)
+			? this.alerts[rowIndex]
+			: undefined;
+	}
+
+	public openCreateAlertDialog() {
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+		this._commandService.executeCommand('agent.openAlertDialog', ownerUri);
 	}
 
 	private refreshJobs() {

@@ -31,6 +31,8 @@ export const IQueryModelService = createDecorator<IQueryModelService>(SERVICE_ID
 export interface IQueryModelService {
 	_serviceBrand: any;
 
+	getQueryRunner(uri: string): QueryRunner;
+
 	getConfig(): Promise<{ [key: string]: any }>;
 	getShortcuts(): Promise<any>;
 	getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Thenable<ResultSetSubset>;

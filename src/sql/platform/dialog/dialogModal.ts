@@ -124,7 +124,7 @@ export class DialogModal extends Modal {
 	}
 
 	public async done(): Promise<void> {
-		if (this._dialog.okButton.enabled) {
+		if (this._doneButton.enabled) {
 			if (await this._dialog.validateClose()) {
 				this._onDone.fire();
 				this.dispose();

@@ -4,22 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
-import { AgentUtils } from '../agentUtils';
+export enum AgentDialogMode {
+	CREATE = 1,
+	EDIT = 2,
+	VIEW = 3
+}
 
-export class CreateOperatorData {
-	public ownerUri: string;
-	private _alert: sqlops.AgentOperatorInfo;
-
-	constructor(ownerUri:string) {
-		this.ownerUri = ownerUri;
-	}
-
-	public async initialize() {
-		let agentService = await AgentUtils.getAgentService();
-
-	}
-
-	public async save() {
-	}
+export interface IAgentDialogData {
+	dialogMode: AgentDialogMode;
+	initialize(): void;
+	save(): void;
 }
