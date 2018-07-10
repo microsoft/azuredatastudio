@@ -2,6 +2,9 @@
 // heavily modified
 
 import { clone } from 'sql/base/common/objects';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 export class DragCellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slick.Range>> {
 	private readonly keyColResizeIncr = 5;
@@ -15,8 +18,7 @@ export class DragCellSelectionModel<T> implements Slick.SelectionModel<T, Array<
 
 	public init(grid: Slick.Grid<T>): void {
 		this._grid = grid;
-		this._handler.subscribe(this._grid.onActiveCellChanged, (e: Event, data: Slick.OnActiveCellChangedEventArgs<T>) => this.handleActiveCellChange(e, data));
-		this._handler.subscribe(this._grid.onKeyDown, (e: JQueryInputEventObject) => this.handleKeyDown(e));
+		this._handler.subscribe(this._grid.onKeyDown, (e: KeyboardEvent) => this.handleKeyDown(e));
 		this._handler.subscribe(this._grid.onClick, (e: MouseEvent) => this.handleClick(e));
 		this._handler.subscribe(this._grid.onDrag, (e: MouseEvent) => this.handleDrag(e));
 		this._handler.subscribe(this._grid.onDragInit, (e: MouseEvent) => this.handleDragInit(e));
@@ -65,170 +67,162 @@ export class DragCellSelectionModel<T> implements Slick.SelectionModel<T, Array<
 		return this._ranges;
 	}
 
-	private handleActiveCellChange(e: Event, data: Slick.OnActiveCellChangedEventArgs<T>) { }
-
-	private isNavigationKey(e: BaseJQueryEventObject) {
-		// Nave keys (home, end, arrows) are all in sequential order so use a
-		switch (e.which) {
-			case $.ui.keyCode.HOME:
-			case $.ui.keyCode.END:
-			case $.ui.keyCode.LEFT:
-			case $.ui.keyCode.UP:
-			case $.ui.keyCode.RIGHT:
-			case $.ui.keyCode.DOWN:
-				return true;
-			default:
-				return false;
-		}
+	/**
+	 * Navigate and replace selection
+	 * @param cell The cell to navigate to
+	 */
+	private navigateTo(cell: Slick.Cell) {
+		let ranges = [new Slick.Range(cell.row, cell.cell - 1)];
+		this.setSelectedRanges(ranges);
+		this._grid.setActiveCell(cell.row, cell.cell);
 	}
 
-	private navigateLeft(e: JQueryInputEventObject, activeCell: Slick.Cell) {
-		if (activeCell.cell > 1) {
-			let isHome = e.which === $.ui.keyCode.HOME;
-			let newActiveCellColumn = isHome ? 1 : activeCell.cell - 1;
-			// Unsure why but for range, must record 1 index less than expected
-			let newRangeColumn = newActiveCellColumn - 1;
-
-			if (e.shiftKey) {
-				let last = this._ranges.pop();
-
-				// If we are on the rightmost edge of the range and we navigate left,
-				// we want to deselect the rightmost cell
-				if (last.fromCell <= newRangeColumn) { last.toCell -= 1; }
-
-				let fromRow = Math.min(activeCell.row, last.fromRow);
-				let fromCell = Math.min(newRangeColumn, last.fromCell);
-				let toRow = Math.max(activeCell.row, last.toRow);
-				let toCell = Math.max(newRangeColumn, last.toCell);
-				this._ranges = [new Slick.Range(fromRow, fromCell, toRow, toCell)];
-			} else {
-				this._ranges = [new Slick.Range(activeCell.row, newRangeColumn, activeCell.row, newRangeColumn)];
-			}
-
-			this._grid.setActiveCell(activeCell.row, newActiveCellColumn);
-			this.setSelectedRanges(this._ranges);
+	/**
+	 * Navigate and add to selection
+	 * @param cell The cell to navigate to
+	 * @param inclusive Whether all cell between current cell and target cell should be selected
+	 */
+	private navigateWithSelection(cell: Slick.Cell, inclusive = true) {
+		let rangesToPush: Array<Slick.Range> = this.getSelectedRanges();
+		if (inclusive) {
+			let selectedRange = rangesToPush.pop();
+			let fromRow = Math.min(selectedRange.fromRow, cell.row);
+			let fromCell = Math.min(selectedRange.fromCell, cell.cell - 1);
+			let toRow = Math.max(selectedRange.toRow, cell.row);
+			let toCell = Math.max(selectedRange.toCell, cell.cell - 1);
+			rangesToPush.push(new Slick.Range(fromRow, fromCell, toRow, toCell));
+		} else {
+			rangesToPush.push(new Slick.Range(cell.row, cell.cell - 1));
 		}
+		this.setSelectedRanges(rangesToPush);
+		this._grid.setActiveCell(cell.row, cell.cell);
 	}
 
-	private navigateRight(e: JQueryInputEventObject, activeCell: Slick.Cell) {
-		let columnLength = this._grid.getColumns().length;
-		if (activeCell.cell < columnLength) {
-			let isEnd = e.which === $.ui.keyCode.END;
-			let newActiveCellColumn = isEnd ? columnLength : activeCell.cell + 1;
-			// Unsure why but for range, must record 1 index less than expected
-			let newRangeColumn = newActiveCellColumn - 1;
-			if (e.shiftKey) {
-				let last = this._ranges.pop();
-
-				// If we are on the leftmost edge of the range and we navigate right,
-				// we want to deselect the leftmost cell
-				if (newRangeColumn <= last.toCell) { last.fromCell += 1; }
-
-				let fromRow = Math.min(activeCell.row, last.fromRow);
-				let fromCell = Math.min(newRangeColumn, last.fromCell);
-				let toRow = Math.max(activeCell.row, last.toRow);
-				let toCell = Math.max(newRangeColumn, last.toCell);
-
-				this._ranges = [new Slick.Range(fromRow, fromCell, toRow, toCell)];
-			} else {
-				this._ranges = [new Slick.Range(activeCell.row, newRangeColumn, activeCell.row, newRangeColumn)];
-			}
-			this._grid.setActiveCell(activeCell.row, newActiveCellColumn);
-			this.setSelectedRanges(this._ranges);
-		}
-	}
-
-	private handleKeyDown(e: JQueryInputEventObject) {
+	/**
+	 * Rules: If the row colum is active, (assumed to always be true), cells are 1 based; if not they are 0 based
+	 * 		  However, selection is still done 0 base when there is a row column
+	 * @param e
+	 */
+	private handleKeyDown(e: KeyboardEvent): boolean {
 		let activeCell = this._grid.getActiveCell();
+		let hasRowColumn = this._grid.getOptions().showRowNumber;
 
 		if (activeCell) {
-			// navigation keys
-			if (this.isNavigationKey(e)) {
-				e.stopImmediatePropagation();
-				if (e.ctrlKey || e.metaKey) {
-					let event = new CustomEvent('gridnav', {
-						detail: {
-							which: e.which,
-							ctrlKey: e.ctrlKey,
-							metaKey: e.metaKey,
-							shiftKey: e.shiftKey,
-							altKey: e.altKey
+			let event = new StandardKeyboardEvent(e);
+			let cell: number;
+			let row: number;
+			switch (event.keyCode) {
+				case KeyCode.LeftArrow:
+					if (event.ctrlKey || event.metaKey) {
+						// same as Home
+					} else {
+						// navigate left if it is possible
+						if ((hasRowColumn && activeCell.cell > 1) || (!hasRowColumn && activeCell.cell > 0)) {
+							cell = activeCell.cell - 1;
+							row = activeCell.row;
 						}
-					});
-					window.dispatchEvent(event);
-					return;
-				}
-				// end key
-				if (e.which === $.ui.keyCode.END) {
-					this.navigateRight(e, activeCell);
-				}
-				// home key
-				if (e.which === $.ui.keyCode.HOME) {
-					this.navigateLeft(e, activeCell);
-				}
-				// left arrow
-				if (e.which === $.ui.keyCode.LEFT) {
-					// column resize
-					if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
-						let allColumns = clone(this._grid.getColumns());
-						allColumns[activeCell.cell - 1].width = allColumns[activeCell.cell - 1].width - this.keyColResizeIncr;
-						this._grid.setColumnWidths(allColumns);
-					} else {
-						this.navigateLeft(e, activeCell);
 					}
-					// up arrow
-				} else if (e.which === $.ui.keyCode.UP && activeCell.row > 0) {
-					if (e.shiftKey) {
-						let last = this._ranges.pop();
-
-						// If we are on the bottommost edge of the range and we navigate up,
-						// we want to deselect the bottommost row
-						let newRangeRow = activeCell.row - 1;
-						if (last.fromRow <= newRangeRow) { last.toRow -= 1; }
-
-						let fromRow = Math.min(activeCell.row - 1, last.fromRow);
-						let fromCell = Math.min(activeCell.cell - 1, last.fromCell);
-						let toRow = Math.max(newRangeRow, last.toRow);
-						let toCell = Math.max(activeCell.cell - 1, last.toCell);
-						this._ranges = [new Slick.Range(fromRow, fromCell, toRow, toCell)];
+					break;
+				case KeyCode.RightArrow:
+					if (event.ctrlKey || event.metaKey) {
+						// same as End
 					} else {
-						this._ranges = [new Slick.Range(activeCell.row - 1, activeCell.cell - 1, activeCell.row - 1, activeCell.cell - 1)];
+						// navigate right if it is possible
+						if ((hasRowColumn && activeCell.cell < this._grid.getColumns().length) || (!hasRowColumn && activeCell.cell < this._grid.getColumns().length - 1)) {
+							cell = activeCell.cell + 1;
+							row = activeCell.row;
+						}
 					}
-					this._grid.setActiveCell(activeCell.row - 1, activeCell.cell);
-					this.setSelectedRanges(this._ranges);
-					// right arrow
-				} else if (e.which === $.ui.keyCode.RIGHT) {
-					// column resize
-					if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
-						let allColumns = clone(this._grid.getColumns());
-						allColumns[activeCell.cell - 1].width = allColumns[activeCell.cell - 1].width + this.keyColResizeIncr;
-						this._grid.setColumnWidths(allColumns);
+					break;
+				case KeyCode.UpArrow:
+					if (event.ctrlKey || event.metaKey) {
+						// same as PgUp
 					} else {
-						this.navigateRight(e, activeCell);
+						// navigate up if possible
+						if (activeCell.row > 0) {
+							cell = activeCell.cell;
+							row = activeCell.row - 1;
+						}
 					}
-					// down arrow
-				} else if (e.which === $.ui.keyCode.DOWN && activeCell.row < this._grid.getDataLength() - 1) {
-					if (e.shiftKey) {
-						let last = this._ranges.pop();
-
-						// If we are on the topmost edge of the range and we navigate down,
-						// we want to deselect the topmost row
-						let newRangeRow = activeCell.row + 1;
-						if (newRangeRow <= last.toRow) { last.fromRow += 1; }
-
-						let fromRow = Math.min(activeCell.row + 1, last.fromRow);
-						let fromCell = Math.min(activeCell.cell - 1, last.fromCell);
-						let toRow = Math.max(activeCell.row + 1, last.toRow);
-						let toCell = Math.max(activeCell.cell - 1, last.toCell);
-						this._ranges = [new Slick.Range(fromRow, fromCell, toRow, toCell)];
+					break;
+				case KeyCode.DownArrow:
+					if (event.ctrlKey || event.metaKey) {
+						// same as PgDown
 					} else {
-						this._ranges = [new Slick.Range(activeCell.row + 1, activeCell.cell - 1, activeCell.row + 1, activeCell.cell - 1)];
+						// navigate down if possible
+						if (activeCell.row < this._grid.getDataLength() - 1) {
+							cell = activeCell.cell;
+							row = activeCell.row + 1;
+						}
 					}
-					this._grid.setActiveCell(activeCell.row + 1, activeCell.cell);
-					this.setSelectedRanges(this._ranges);
+					break;
+				case KeyCode.Home:
+					if (event.ctrlKey || event.metaKey) {
+						// navigate to the first cell of the first row
+						cell = hasRowColumn ? 1 : 0;
+						row = 0;
+					} else {
+						// navigate to the first cell of the current row
+						cell = hasRowColumn ? 1 : 0;
+						row = activeCell.row;
+					}
+					break;
+				case KeyCode.End:
+					if (event.ctrlKey || event.metaKey) {
+						// navigate to the last cell of the last row
+						cell = hasRowColumn ? this._grid.getColumns().length : this._grid.getColumns().length - 1;
+						row = this._grid.getDataLength() - 1;
+					} else {
+						// navigate to the last cell of the current row
+						cell = hasRowColumn ? this._grid.getColumns().length : this._grid.getColumns().length - 1;
+						row = activeCell.row;
+					}
+					break;
+				case KeyCode.PageDown:
+					if (event.ctrlKey || event.metaKey) {
+						// IDK
+					} else {
+						// Page down
+						let windowSize = Math.abs(this._grid.getViewport().top - this._grid.getViewport().bottom);
+						if (activeCell.row + windowSize >= this._grid.getDataLength()) {
+							cell = activeCell.cell;
+							row = this._grid.getDataLength() - 1;
+						} else {
+							cell = activeCell.cell;
+							row = activeCell.row + windowSize;
+						}
+					}
+					break;
+				case KeyCode.PageUp:
+					if (event.ctrlKey || event.metaKey) {
+						// IDK
+					} else {
+						// Page up
+						let windowSize = Math.abs(this._grid.getViewport().top - this._grid.getViewport().bottom);
+						if (activeCell.row - windowSize < 0) {
+							cell = activeCell.cell;
+							row = 0;
+						} else {
+							cell = activeCell.cell;
+							row = activeCell.row - windowSize;
+						}
+					}
+					break;
+			}
+
+			if (!isUndefinedOrNull(cell) && !isUndefinedOrNull(row)) {
+				if (event.shiftKey) {
+					this.navigateWithSelection({ cell, row });
+				} else {
+					this.navigateTo({ cell, row });
 				}
 			}
 		}
+
+		e.stopImmediatePropagation();
+		e.stopPropagation();
+		e.preventDefault();
+		return true;
 	}
 
 	private handleHeaderClick(e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>) {
