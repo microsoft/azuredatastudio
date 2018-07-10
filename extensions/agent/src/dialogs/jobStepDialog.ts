@@ -304,17 +304,19 @@ export class JobStepDialog {
 
 	private createRetryCounters(view) {
 		this.retryAttemptsBox = view.modelBuilder.inputBox()
-		.withValidation(component => component.value >= 0)
-		.withProperties({
-			inputType: 'number',
-			width: '100%'
-		})
-		.component();
+			.withValidation(component => component.value >= 0)
+			.withProperties({
+				inputType: 'number',
+				width: '100%',
+				placeHolder: '0'
+			})
+			.component();
 		this.retryIntervalBox = view.modelBuilder.inputBox()
 			.withValidation(component => component.value >= 0)
 			.withProperties({
 				inputType: 'number',
-				width: '100%'
+				width: '100%',
+				placeHolder: '0'
 			}).component();
 
 		let retryAttemptsContainer = view.modelBuilder.formContainer()
