@@ -40,8 +40,17 @@ export class JobData implements IAgentDialogData {
 	public jobSchedules: sqlops.AgentJobScheduleInfo[];
 	public alerts: sqlops.AgentAlertInfo[];
 
-	constructor(ownerUri: string, private _agentService: sqlops.AgentServicesProvider = null) {
+	constructor(
+		ownerUri: string,
+		jobInfo: sqlops.AgentJobInfo = undefined,
+		private _agentService: sqlops.AgentServicesProvider = undefined) {
+
 		this._ownerUri = ownerUri;
+		if (jobInfo) {
+			this.dialogMode = AgentDialogMode.EDIT;
+			this.name = jobInfo.name;
+			this.enabled = jobInfo.enabled;
+		}
 	}
 
 	public get jobCategories(): string[] {

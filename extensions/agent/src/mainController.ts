@@ -27,8 +27,8 @@ export class MainController {
      * Activates the extension
      */
     public activate(): void {
-        vscode.commands.registerCommand('agent.openCreateJobDialog', (ownerUri: string) => {
-            let dialog = new JobDialog(ownerUri);
+        vscode.commands.registerCommand('agent.openJobDialog', (ownerUri: string, jobInfo: sqlops.AgentJobInfo) => {
+            let dialog = new JobDialog(ownerUri, jobInfo);
             dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, jobId: string, server: string, stepId: number) => {
@@ -43,12 +43,12 @@ export class MainController {
             let dialog = new AlertDialog(ownerUri, alertInfo, jobs);
             dialog.openDialog();
         });
-        vscode.commands.registerCommand('agent.openCreateOperatorDialog', (ownerUri: string) => {
-            let dialog = new OperatorDialog(ownerUri);
+        vscode.commands.registerCommand('agent.openOperatorDialog', (ownerUri: string, operatorInfo: sqlops.AgentOperatorInfo) => {
+            let dialog = new OperatorDialog(ownerUri, operatorInfo);
             dialog.openDialog();
         });
-        vscode.commands.registerCommand('agent.openCreateProxyDialog', (ownerUri: string) => {
-            let dialog = new ProxyDialog(ownerUri);
+        vscode.commands.registerCommand('agent.openProxyDialog', (ownerUri: string, proxyInfo: sqlops.AgentProxyInfo) => {
+            let dialog = new ProxyDialog(ownerUri, proxyInfo);
             dialog.openDialog();
         });
     }

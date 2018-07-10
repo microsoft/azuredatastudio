@@ -74,15 +74,21 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		}
 	}
 
-	transformData(rows: string[][], columns: any[]): { [key: string]: string }[] {
-		return rows.map(row => {
-			let object: { [key: string]: string } = {};
-			row.forEach((val, index) => {
-				let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
-				object[columnName] = val;
+	public static transformData(rows: string[][], columns: any[]): { [key: string]: string }[] {
+		if (rows && columns) {
+			return rows.map(row => {
+				let object: { [key: string]: string } = {};
+				if (row.forEach) {
+					row.forEach((val, index) => {
+						let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
+						object[columnName] = val;
+					});
+				}
+				return object;
 			});
-			return object;
-		});
+		} else {
+			return [];
+		}
 	}
 
 	ngAfterViewInit(): void {
@@ -147,7 +153,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._tableData.clear();
-		this._tableData.push(this.transformData(this.data, this.columns));
+		this._tableData.push(TableComponent.transformData(this.data, this.columns));
 		this._tableColumns = this.transformColumns(this.columns);
 		this._table.columns = this._tableColumns;
 		this._table.setData(this._tableData);
