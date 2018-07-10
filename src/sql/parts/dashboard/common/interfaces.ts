@@ -33,18 +33,18 @@ export abstract class DashboardTab extends TabChild implements OnDestroy {
 		// no op
 	}
 
-	private _toDispose: IDisposable[] = [];
+	private _dispose: IDisposable[] = [];
 
 	constructor() {
 		super();
 	}
 
 	public dispose(): void {
-		this._toDispose = dispose(this._toDispose);
+		this._dispose = dispose(this._dispose);
 	}
 
 	protected _register<T extends IDisposable>(t: T): T {
-		this._toDispose.push(t);
+		this._dispose.push(t);
 		return t;
 	}
 

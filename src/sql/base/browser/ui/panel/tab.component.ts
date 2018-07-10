@@ -5,8 +5,9 @@
 import { Component, Input, ContentChild, OnDestroy, TemplateRef, ChangeDetectorRef, forwardRef, Inject } from '@angular/core';
 
 import { Action } from 'vs/base/common/actions';
+import { Disposable } from 'vs/base/common/lifecycle';
 
-export abstract class TabChild {
+export abstract class TabChild extends Disposable {
 	public abstract layout(): void;
 }
 
@@ -19,7 +20,7 @@ export abstract class TabChild {
 	`
 })
 export class TabComponent implements OnDestroy {
-	@ContentChild(TabChild) private _child: TabChild;
+	private _child: TabChild;
 	@ContentChild(TemplateRef) templateRef;
 	@Input() public title: string;
 	@Input() public canClose: boolean;
@@ -29,6 +30,14 @@ export class TabComponent implements OnDestroy {
 	@Input() public identifier: string;
 	@Input() private visibilityType: 'if' | 'visibility' = 'if';
 	private rendered = false;
+
+
+	@ContentChild(TabChild) private set child(tab: TabChild) {
+		this._child = tab;
+		if (this.active && this._child) {
+			this._child.layout();
+		}
+	}
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef

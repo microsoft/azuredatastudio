@@ -71,6 +71,7 @@ export class DashboardEditor extends BaseEditor {
 	 * To be called when the container of this editor changes size.
 	 */
 	public layout(dimension: DOM.Dimension): void {
+		this._dashboardService.layout(dimension);
 	}
 
 	public setInput(input: DashboardInput, options: EditorOptions): TPromise<void> {

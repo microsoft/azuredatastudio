@@ -16,8 +16,9 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Taskbar } from '../../../base/browser/ui/taskbar/taskbar';
 import { JobsRefreshAction } from 'sql/parts/jobManagement/common/jobActions';
+import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
-export abstract class JobManagementView extends Disposable implements AfterContentChecked {
+export abstract class JobManagementView extends TabChild implements AfterContentChecked {
 	protected isVisible: boolean = false;
 	protected isInitialized: boolean = false;
 	protected isRefreshing: boolean = false;

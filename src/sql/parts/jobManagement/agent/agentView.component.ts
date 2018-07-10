@@ -19,6 +19,7 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { AgentJobInfo, AgentJobHistoryInfo } from 'sqlops';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 
 
 export const DASHBOARD_SELECTOR: string = 'agentview-component';
@@ -58,13 +59,18 @@ export class AgentViewComponent {
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(IJobManagementService) jobManagementService: IJobManagementService) {
+		@Inject(IJobManagementService) jobManagementService: IJobManagementService,
+		@Inject(IDashboardService) dashboardService: IDashboardService,) {
 		this._expanded = new Map<string, string>();
 
 		let self = this;
 		jobManagementService.onDidChange((args) => {
 			self.refresh = true;
 			self._cd.detectChanges();
+		});
+
+		dashboardService.onLayout((d) => {
+			self.layout();
 		});
 	}
 
