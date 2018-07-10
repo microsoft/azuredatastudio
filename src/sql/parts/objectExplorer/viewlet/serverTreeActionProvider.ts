@@ -135,8 +135,8 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		let scopedContextService = this._contextKeyService.createScoped();
 		let connectionContextKey = new ConnectionContextkey(scopedContextService);
 		connectionContextKey.set(context.profile);
+		let treeNodeContextKey = new TreeNodeContextKey(scopedContextService);
 		if (context.treeNode) {
-			let treeNodeContextKey = new TreeNodeContextKey(scopedContextService);
 			treeNodeContextKey.set(context.treeNode);
 		}
 		return scopedContextService;
