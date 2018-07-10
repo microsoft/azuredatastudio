@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
+import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import { JobData } from '../data/jobData';
 import { JobStepDialog } from './jobStepDialog';
@@ -10,51 +11,53 @@ import { PickScheduleDialog } from './pickScheduleDialog';
 import { AlertDialog } from './alertDialog';
 import { AgentDialog } from './agentDialog';
 
+const localize = nls.loadMessageBundle();
+
 export class JobDialog extends AgentDialog<JobData>  {
 
 	// TODO: localize
 	// Top level
-	private static readonly CreateDialogTitle: string = 'New Job';
-	private static readonly EditDialogTitle: string = 'Edit Job';
-	private readonly GeneralTabText: string = 'General';
-	private readonly StepsTabText: string = 'Steps';
-	private readonly SchedulesTabText: string = 'Schedules';
-	private readonly AlertsTabText: string = 'Alerts';
-	private readonly NotificationsTabText: string = 'Notifications';
+	private static readonly CreateDialogTitle: string = localize('jobDialog.newJob', 'New Job');
+	private static readonly EditDialogTitle: string = localize('jobDialog.editJob', 'Edit Job');
+	private readonly GeneralTabText: string = localize('jobDialog.general', 'General');
+	private readonly StepsTabText: string = localize('jobDialog.steps', 'Steps');
+	private readonly SchedulesTabText: string = localize('jobDialog.schedules', 'Schedules');
+	private readonly AlertsTabText: string = localize('jobDialog.alerts', 'Alerts');
+	private readonly NotificationsTabText: string = localize('jobDialog.notifications', 'Notifications');
+	private readonly BlankJobNameErrorText: string = localize('jobDialog.blankJobNameError', 'The name of the job cannot be blank.');
 
 	// General tab strings
-	private readonly NameTextBoxLabel: string = 'Name';
-	private readonly OwnerTextBoxLabel: string = 'Owner';
-	private readonly CategoryDropdownLabel: string = 'Category';
-	private readonly DescriptionTextBoxLabel: string = 'Description';
-	private readonly EnabledCheckboxLabel: string = 'Enabled';
+	private readonly NameTextBoxLabel: string = localize('jobDialog.name', 'Name');
+	private readonly OwnerTextBoxLabel: string = localize('jobDialog.owner', 'Owner');
+	private readonly CategoryDropdownLabel: string = localize('jobDialog.category', 'Category');
+	private readonly DescriptionTextBoxLabel: string = localize('jobDialog.description', 'Description');
+	private readonly EnabledCheckboxLabel: string = localize('jobDialog.enabled', 'Enabled');
 
 	// Steps tab strings
-	private readonly JobStepsTopLabelString: string = 'Job step list';
-	private readonly StepsTable_StepColumnString: string = 'Step';
-	private readonly StepsTable_NameColumnString: string = 'Name';
-	private readonly StepsTable_TypeColumnString: string = 'Type';
-	private readonly StepsTable_SuccessColumnString: string = 'On Success';
-	private readonly StepsTable_FailureColumnString: string = 'On Failure';
-	private readonly NewStepButtonString: string = 'New...';
-	private readonly InsertStepButtonString: string = 'Insert...';
-	private readonly EditStepButtonString: string = 'Edit';
-	private readonly DeleteStepButtonString: string = 'Delete';
+	private readonly JobStepsTopLabelString: string = localize('jobDialog.jobStepList', 'Job step list');
+	private readonly StepsTable_StepColumnString: string = localize('jobDialog.step', 'Step');
+	private readonly StepsTable_NameColumnString: string = localize('jobDialog.name', 'Name');
+	private readonly StepsTable_TypeColumnString: string = localize('jobDialog.type', 'Type');
+	private readonly StepsTable_SuccessColumnString: string = localize('jobDialog.onSuccess', 'On Success');
+	private readonly StepsTable_FailureColumnString: string = localize('jobDialog.onFailure', 'On Failure');
+	private readonly NewStepButtonString: string = localize('jobDialog.new', 'New...');
+	private readonly EditStepButtonString: string = localize('jobDialog.edit', 'Edit');
+	private readonly DeleteStepButtonString: string = localize('jobDialog.delete', 'Delete');
 
 	// Notifications tab strings
-	private readonly NotificationsTabTopLabelString: string = 'Actions to perform when the job completes';
-	private readonly EmailCheckBoxString: string = 'Email';
-	private readonly PagerCheckBoxString: string = 'Page';
-	private readonly EventLogCheckBoxString: string = 'Write to the Windows Application event log';
-	private readonly DeleteJobCheckBoxString: string = 'Automatically delete job';
+	private readonly NotificationsTabTopLabelString: string = localize('jobDialog.notificationsTabTop', 'Actions to perform when the job completes');
+	private readonly EmailCheckBoxString: string = localize('jobDialog.email', 'Email');
+	private readonly PagerCheckBoxString: string = localize('jobDialog.page', 'Page');
+	private readonly EventLogCheckBoxString: string = localize('jobDialog.eventLogCheckBoxLabel', 'Write to the Windows Application event log');
+	private readonly DeleteJobCheckBoxString: string = localize('jobDialog.deleteJobLabel', 'Automatically delete job');
 
 	// Schedules tab strings
-	private readonly SchedulesTopLabelString: string = 'Schedules list';
-	private readonly PickScheduleButtonString: string = 'Pick Schedule';
+	private readonly SchedulesTopLabelString: string = localize('jobDialog.schedulesaLabel', 'Schedules list');
+	private readonly PickScheduleButtonString: string = localize('jobDialog.pickSchedule', 'Pick Schedule');
 
 	// Alerts tab strings
-	private readonly AlertsTopLabelString: string = 'Alerts list';
-	private readonly NewAlertButtonString: string = 'New Alert';
+	private readonly AlertsTopLabelString: string = localize('jobDialog.alertsList', 'Alerts list');
+	private readonly NewAlertButtonString: string = localize('jobDialog.newAlert', 'New Alert');
 
 	// UI Components
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
@@ -73,7 +76,8 @@ export class JobDialog extends AgentDialog<JobData>  {
 	// Steps tab controls
 	private stepsTable: sqlops.TableComponent;
 	private newStepButton: sqlops.ButtonComponent;
-	private insertStepButton: sqlops.ButtonComponent;
+	private moveStepUpButton: sqlops.ButtonComponent;
+	private moveStepDownButton: sqlops.ButtonComponent;
 	private editStepButton: sqlops.ButtonComponent;
 	private deleteStepButton: sqlops.ButtonComponent;
 
@@ -133,6 +137,12 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private initializeGeneralTab() {
 		this.generalTab.registerContent(async view => {
 			this.nameTextBox = view.modelBuilder.inputBox().component();
+			this.nameTextBox.required = true;
+			this.nameTextBox.onTextChanged(() => {
+				if (this.nameTextBox.value && this.nameTextBox.value.length > 0) {
+					this.dialog.message = null;
+				}
+			});
 			this.ownerTextBox = view.modelBuilder.inputBox().component();
 			this.categoryDropdown = view.modelBuilder.dropDown().component();
 			this.descriptionTextBox = view.modelBuilder.inputBox().withProperties({
@@ -187,20 +197,31 @@ export class JobDialog extends AgentDialog<JobData>  {
 					height: 800
 				}).component();
 
+			this.moveStepUpButton = view.modelBuilder.button()
+				.withProperties({
+					label: 'Move Up',
+					width: 80
+				}).component();
+
+			this.moveStepDownButton = view.modelBuilder.button()
+				.withProperties({
+					label: 'Move Down',
+					width: 80
+				}).component();
+
 			this.newStepButton = view.modelBuilder.button().withProperties({
 				label: this.NewStepButtonString,
 				width: 80
 			}).component();
 
 			this.newStepButton.onDidClick((e)=>{
-				let stepDialog = new JobStepDialog(this.model.ownerUri, '', '', 1, this.model);
-				stepDialog.openNewStepDialog();
+				if (this.nameTextBox.value && this.nameTextBox.value.length > 0) {
+					let stepDialog = new JobStepDialog(this.model.ownerUri, this.nameTextBox.value, '' , 1, this.model);
+					stepDialog.openNewStepDialog();
+				} else {
+					this.dialog.message = { text: this.BlankJobNameErrorText };
+				}
 			});
-
-			this.insertStepButton = view.modelBuilder.button().withProperties({
-				label: this.InsertStepButtonString,
-				width: 80
-			}).component();
 
 			this.editStepButton = view.modelBuilder.button().withProperties({
 				label: this.EditStepButtonString,
@@ -216,7 +237,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 				.withFormItems([{
 					component: this.stepsTable,
 					title: this.JobStepsTopLabelString,
-					actions: [this.newStepButton, this.insertStepButton, this.editStepButton, this.deleteStepButton]
+					actions: [this.moveStepUpButton, this.moveStepDownButton, this.newStepButton, this.editStepButton, this.deleteStepButton]
 				}]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
 		});

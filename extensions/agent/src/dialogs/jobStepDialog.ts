@@ -3,12 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
+import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { JobStepData } from '../data/jobStepData';
 import { AgentUtils } from '../agentUtils';
 import { JobData } from '../data/jobData';
 const path = require('path');
+
+const localize = nls.loadMessageBundle();
 
 export class JobStepDialog {
 
@@ -27,6 +30,7 @@ export class JobStepDialog {
 	private static readonly PreviousButtonText: string = 'Previous';
 	private static readonly SuccessAction: string = 'On success action';
 	private static readonly FailureAction: string = 'On failure action';
+	private static readonly RunAsUser: string = 'Run as user';
 
 
 	// Dropdown options
@@ -54,6 +58,7 @@ export class JobStepDialog {
 	private retryIntervalBox: sqlops.InputBoxComponent;
 	private outputFileNameBox: sqlops.InputBoxComponent;
 	private fileBrowserNameBox: sqlops.InputBoxComponent;
+	private userInputBox: sqlops.InputBoxComponent;
 
 	// Dropdowns
 	private typeDropdown: sqlops.DropDownComponent;
@@ -224,38 +229,17 @@ export class JobStepDialog {
 		});
 	}
 
-	private createRunAsUserOptions(view) {
-		let userInputBox = view.modelBuilder.inputBox()
-			.withProperties({ inputType: 'text', width: '100px' }).component();
-		let viewButton = view.modelBuilder.button()
-			.withProperties({ label: '...', width: '20px' }).component();
-		let viewButtonContainer = view.modelBuilder.flexContainer()
-			.withLayout({ width: 100, textAlign: 'right' })
-			.withItems([viewButton], { flex: '1 1 50%' }).component();
-		let userInputBoxContainer = view.modelBuilder.flexContainer()
-			.withLayout({ width: 200, textAlign: 'left' })
-			.withItems([userInputBox], { flex: '1 1 50%' }).component();
-		let runAsUserContainer = view.modelBuilder.flexContainer()
-			.withLayout({ width: 200 })
-			.withItems([userInputBoxContainer, viewButtonContainer], { flex: '1 1 50%' })
-			.component();
-		let runAsUserForm = view.modelBuilder.formContainer()
-			.withFormItems([{
-				component: runAsUserContainer,
-				title: 'Run as user'
-			}], { horizontal: true, componentWidth: 200 }).component();
-		return runAsUserForm;
-	}
-
 	private createAdvancedTab() {
 		this.advancedTab.registerContent(async (view) => {
 			this.successActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
+					width: '100%',
 					value: JobStepDialog.NextStep,
 					values: [JobStepDialog.NextStep, JobStepDialog.QuitJobReportingSuccess, JobStepDialog.QuitJobReportingFailure]
 				})
 				.component();
 			let retryFlexContainer = this.createRetryCounters(view);
+
 			this.failureActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: JobStepDialog.QuitJobReportingFailure,
@@ -263,9 +247,6 @@ export class JobStepDialog {
 				})
 				.component();
 			let optionsGroup = this.createTSQLOptions(view);
-			let viewButton = view.modelBuilder.button()
-				.withProperties({ label: 'View', width: '50px' }).component();
-			viewButton.enabled = false;
 			this.logToTableCheckbox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: 'Log to table'
@@ -274,17 +255,17 @@ export class JobStepDialog {
 				.withProperties({ label: 'Append output to existing entry in table' }).component();
 			appendToExistingEntryInTableCheckbox.enabled = false;
 			this.logToTableCheckbox.onChanged(e => {
-				viewButton.enabled = e;
 				appendToExistingEntryInTableCheckbox.enabled = e;
 			});
 			let appendCheckboxContainer = view.modelBuilder.groupContainer()
 				.withItems([appendToExistingEntryInTableCheckbox]).component();
 			let logToTableContainer = view.modelBuilder.flexContainer()
 				.withLayout({ flexFlow: 'row', justifyContent: 'space-between', width: 300 })
-				.withItems([this.logToTableCheckbox, viewButton]).component();
+				.withItems([this.logToTableCheckbox]).component();
 			let logStepOutputHistoryCheckbox = view.modelBuilder.checkBox()
 				.withProperties({ label: 'Include step output in history' }).component();
-			let runAsUserOptions = this.createRunAsUserOptions(view);
+			this.userInputBox = view.modelBuilder.inputBox()
+				.withProperties({ inputType: 'text', width: '100%' }).component();
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems(
 					[{
@@ -309,8 +290,8 @@ export class JobStepDialog {
 						component: logStepOutputHistoryCheckbox,
 						title: ''
 					}, {
-						component: runAsUserOptions,
-						title: ''
+						component: this.userInputBox,
+						title: JobStepDialog.RunAsUser
 					}], {
 						componentWidth: 400
 					}).component();
@@ -325,23 +306,26 @@ export class JobStepDialog {
 		this.retryAttemptsBox = view.modelBuilder.inputBox()
 		.withValidation(component => component.value >= 0)
 		.withProperties({
-			inputType: 'number'
+			inputType: 'number',
+			width: '100%'
 		})
 		.component();
 		this.retryIntervalBox = view.modelBuilder.inputBox()
 			.withValidation(component => component.value >= 0)
 			.withProperties({
-				inputType: 'number'
+				inputType: 'number',
+				width: '100%'
 			}).component();
 
 		let retryAttemptsContainer = view.modelBuilder.formContainer()
 			.withFormItems(
-				[{
-					component: this.retryAttemptsBox,
-					title: 'Retry Attempts'
-				}], {
-					horizontal: false
-				})
+			[{
+				component: this.retryAttemptsBox,
+				title: 'Retry Attempts'
+			}], {
+				horizontal: false,
+				componentWidth: '100%'
+			})
 			.component();
 
 		let retryIntervalContainer = view.modelBuilder.formContainer()
@@ -417,21 +401,15 @@ export class JobStepDialog {
 		this.outputFileBrowserButton.onDidClick(() => this.openFileBrowserDialog());
 		this.outputFileNameBox = view.modelBuilder.inputBox()
 			.withProperties({
-				width: '150px',
+				width: 250,
 				inputType: 'text'
 			}).component();
-		let outputViewButton = view.modelBuilder.button()
-			.withProperties({
-				width: '50px',
-				label: 'View'
-			}).component();
-		outputViewButton.enabled = false;
 		let outputButtonContainer = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row',
 				textAlign: 'right',
-				width: 120
-			}).withItems([this.outputFileBrowserButton, outputViewButton], { flex: '1 1 50%' }).component();
+				width: '100%'
+			}).withItems([this.outputFileBrowserButton], { flex: '1 1 50%' }).component();
 		let outputFlexBox = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row',
@@ -458,7 +436,7 @@ export class JobStepDialog {
 			}, {
 				component: this.appendToExistingFileCheckbox,
 				title: ''
-			}], { horizontal: true, componentWidth: 200 }).component();
+			}], { horizontal: false, componentWidth: 200 }).component();
 		return outputFileForm;
 	}
 
@@ -471,8 +449,8 @@ export class JobStepDialog {
 		this.model.databaseName = this.databaseDropdown.value as string;
 		this.model.script = this.commandTextBox.value;
 		this.model.successAction = this.successActionDropdown.value as string;
-		this.model.retryAttempts = +this.retryAttemptsBox.value;
-		this.model.retryInterval = +this.retryIntervalBox.value;
+		this.model.retryAttempts = this.retryAttemptsBox.value ? +this.retryAttemptsBox.value : 0;
+		this.model.retryInterval = +this.retryIntervalBox.value ? +this.retryIntervalBox.value : 0;
 		this.model.failureAction = this.failureActionDropdown.value as string;
 		this.model.outputFileName = this.outputFileNameBox.value;
 		this.model.appendToLogFile = this.appendToExistingFileCheckbox.checked;
