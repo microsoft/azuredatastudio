@@ -29,13 +29,12 @@ import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtil
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
 import { NewQueryAction } from 'sql/workbench/common/actions';
-import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
+import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { TreeNodeContextKey } from './treeNodeContextKey';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import * as constants from 'sql/common/constants';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 /**
  *  Provides actions for the server tree elements
@@ -133,7 +132,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 	private getContextKeyService(context: ObjectExplorerContext): IContextKeyService {
 		let scopedContextService = this._contextKeyService.createScoped();
-		let connectionContextKey = new ConnectionContextkey(scopedContextService);
+		let connectionContextKey = new ConnectionContextKey(scopedContextService);
 		connectionContextKey.set(context.profile);
 		let treeNodeContextKey = new TreeNodeContextKey(scopedContextService);
 		if (context.treeNode) {
@@ -171,7 +170,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 			}
 		}
 
-		// TODO: shouldn't New Query only be on Server / Database nodes, not on all nodes in the tree?
 		this.addNewQueryAction(context, actions);
 		this.addScriptingActions(context, actions);
 		actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, treeNode));

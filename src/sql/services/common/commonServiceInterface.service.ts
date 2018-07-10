@@ -17,7 +17,7 @@ import { IAdminService } from 'sql/parts/admin/common/adminService';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
-import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
+import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
 
 import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'sqlops';
 
@@ -47,7 +47,7 @@ export class SingleConnectionManagementService {
 	constructor(
 		private _connectionService: IConnectionManagementService,
 		private _uri: string,
-		private _contextKey: ConnectionContextkey
+		private _contextKey: ConnectionContextKey
 	) { }
 
 	public changeDatabase(name: string): Thenable<boolean> {
@@ -104,7 +104,7 @@ export class CommonServiceInterface extends AngularDisposable {
 	protected _singleQueryManagementService: SingleQueryManagementService;
 	public scopedContextKeyService: IContextKeyService;
 
-	protected _connectionContextKey: ConnectionContextkey;
+	protected _connectionContextKey: ConnectionContextKey;
 
 	constructor(
 		@Inject(IBootstrapParams) protected _params: IDefaultComponentParams,

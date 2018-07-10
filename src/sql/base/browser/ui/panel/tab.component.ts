@@ -29,7 +29,7 @@ export class TabComponent implements OnDestroy {
 	@Input() public identifier: string;
 	@Input() private visibilityType: 'if' | 'visibility' = 'if';
 	private rendered = false;
-	private destroyed: boolean = false;;
+	private destroyed: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef
