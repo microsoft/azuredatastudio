@@ -13,6 +13,11 @@ import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 const localize = nls.loadMessageBundle();
 
 export class AlertData implements IAgentDialogData {
+	public static readonly AlertTypeSqlServerEventString: string = localize('alertData.DefaultAlertTypString', 'SQL Server event alert');
+	public static readonly AlertTypePerformanceConditionString: string = localize('alertDialog.PerformanceCondition', 'SQL Server performance condition alert');
+	public static readonly AlertTypeWmiEventString: string = localize('alertDialog.WmiEvent', 'WMI event alert');
+	public static readonly DefaultAlertTypeString: string =  AlertData.AlertTypeSqlServerEventString;
+
 	ownerUri: string;
 	dialogMode: AgentDialogMode = AgentDialogMode.CREATE;
 	id: number;
@@ -23,7 +28,7 @@ export class AlertData implements IAgentDialogData {
 	eventSource: string;
 	hasNotification: number;
 	includeEventDescription: string;
-	isEnabled: boolean;
+	isEnabled: boolean = true;
 	jobId: string;
 	jobName: string;
 	lastOccurrenceDate: string;
@@ -36,7 +41,7 @@ export class AlertData implements IAgentDialogData {
 	databaseName: string;
 	countResetDate: string;
 	categoryName: string;
-	alertType: string;
+	alertType: string = AlertData.DefaultAlertTypeString;
 	wmiEventNamespace: string;
 	wmiEventQuery: string;
 
@@ -109,9 +114,19 @@ export class AlertData implements IAgentDialogData {
 			databaseName: this.databaseName,
 			countResetDate: this.countResetDate,
 			categoryName: this.categoryName,
-			alertType: sqlops.AlertType.sqlServerEvent, //this.alertType,
+			alertType: AlertData.getAlertTypeFromString(this.alertType),
 			wmiEventNamespace: this.wmiEventNamespace,
 			wmiEventQuery: this.wmiEventQuery
 		};
+	}
+
+	private static getAlertTypeFromString(alertTypeString: string): sqlops.AlertType {
+		if (alertTypeString === AlertData.AlertTypePerformanceConditionString) {
+			return sqlops.AlertType.sqlServerPerformanceCondition;
+		} else if (alertTypeString === AlertData.AlertTypeWmiEventString) {
+			return sqlops.AlertType.wmiEvent;
+		} else {
+			return sqlops.AlertType.sqlServerEvent;
+		}
 	}
 }

@@ -16,6 +16,8 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 
 	// Top level
 	private static readonly DialogTitle: string = localize('createProxy.createProxy', 'Create Proxy');
+	private static readonly CreateDialogTitle: string = localize('createProxy.createAlert', 'Create Alert');
+	private static readonly EditDialogTitle: string = localize('createProxy.createAlert', 'Create Alert');
 	private static readonly GeneralTabText: string = localize('createProxy.General', 'General');
 
 	// General tab strings
@@ -57,8 +59,11 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 
 	private credentials: string[];
 
-	constructor(ownerUri: string, credentials: string[]) {
-		super(ownerUri, new ProxyData(ownerUri), ProxyDialog.DialogTitle);
+	constructor(ownerUri: string, proxyInfo: sqlops.AgentProxyInfo = undefined, credentials: string[]) {
+		super(
+			ownerUri,
+			new ProxyData(ownerUri, proxyInfo),
+			proxyInfo ? ProxyDialog.EditDialogTitle : ProxyDialog.CreateDialogTitle);
 		this.credentials = credentials;
 	}
 
@@ -197,6 +202,10 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 				}]).withLayout({ width: 420 }).component();
 
 			await view.initializeModel(formModel);
+
+			this.proxyNameTextBox.value = this.model.accountName;
+			this.credentialNameDropDown.value = this.model.credentialName;
+			this.descriptionTextBox.value = this.model.description;
 		});
 	}
 

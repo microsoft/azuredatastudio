@@ -187,7 +187,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	}
 
 	private get values(): string[] | sqlops.CategoryValue[] {
-		return this.getPropertyOrDefault<sqlops.DropDownProperties, string[] | sqlops.CategoryValue[]>((props) => props.values, undefined);
+		return this.getPropertyOrDefault<sqlops.DropDownProperties, string[] | sqlops.CategoryValue[]>((props) => props.values, []);
 	}
 
 	private set values(newValue: string[] | sqlops.CategoryValue[]) {
