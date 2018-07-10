@@ -29,19 +29,22 @@ export class TabComponent implements OnDestroy {
 	@Input() public identifier: string;
 	@Input() private visibilityType: 'if' | 'visibility' = 'if';
 	private rendered = false;
+	private destroyed: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef
 	) { }
 
 	public set active(val: boolean) {
-		this._active = val;
-		if (this.active) {
-			this.rendered = true;
-		}
-		this._cd.detectChanges();
-		if (this.active && this._child) {
-			this._child.layout();
+		if (!this.destroyed) {
+			this._active = val;
+			if (this.active) {
+				this.rendered = true;
+			}
+			this._cd.detectChanges();
+			if (this.active && this._child) {
+				this._child.layout();
+			}
 		}
 	}
 
@@ -50,6 +53,7 @@ export class TabComponent implements OnDestroy {
 	}
 
 	ngOnDestroy() {
+		this.destroyed = true;
 		if (this.actions && this.actions.length > 0) {
 			this.actions.forEach((action) => action.dispose());
 		}
