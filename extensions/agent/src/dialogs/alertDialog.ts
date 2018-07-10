@@ -180,15 +180,16 @@ export class AlertDialog extends AgentDialog<AlertData> {
 			this.databaseDropDown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: databases[0],
-					values: databases
+					values: databases,
+					width: '100%'
 				}).component();
 
 			this.typeDropDown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: AlertDialog.AlertTypes[0],
-					values: AlertDialog.AlertTypes
+					values: AlertDialog.AlertTypes,
+					width: '100%'
 				}).component();
-
 
 			this.severityRadioButton = view.modelBuilder.radioButton()
 				.withProperties({
@@ -201,7 +202,8 @@ export class AlertDialog extends AgentDialog<AlertData> {
 			this.severityDropDown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: AlertDialog.AlertSeverities[0],
-					values: AlertDialog.AlertSeverities
+					values: AlertDialog.AlertSeverities,
+					width: '100%'
 				}).component();
 
 			this.errorNumberRadioButton = view.modelBuilder.radioButton()
@@ -211,7 +213,11 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					label: AlertDialog.ErrorNumberLabel
 				}).component();
 
-			this.errorNumberTextBox = view.modelBuilder.inputBox().component();
+			this.errorNumberTextBox = view.modelBuilder.inputBox()
+				.withProperties({
+					width: '100%'
+				})
+				.component();
 
 			this.errorNumberRadioButton.onDidClick(() => {
 				this.errorNumberTextBox.enabled = true;
@@ -246,31 +252,34 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					component: this.typeDropDown,
 					title: AlertDialog.TypeLabel
 				}, {
-					component: this.databaseDropDown,
-					title: AlertDialog.DatabaseLabel
-				},
-				{
-					component: this.severityRadioButton,
-					title: ''
-				},
-				{
-					component: this.severityDropDown,
-					title: ''
-				},
-				{
-					component: this.errorNumberRadioButton,
-					title: ''
-				},
-				{
-					component: this.errorNumberTextBox,
-					title: ''
-				},
-				{
-					component: this.raiseAlertMessageCheckBox,
-					title: ''
-				}, {
-					component: this.raiseAlertMessageTextBox,
-					title: AlertDialog.MessageTextLabel
+					components: [{
+						component: this.databaseDropDown,
+						title: AlertDialog.DatabaseLabel
+					},
+					{
+						component: this.severityRadioButton,
+						title: ''
+					},
+					{
+						component: this.severityDropDown,
+						title: ''
+					},
+					{
+						component: this.errorNumberRadioButton,
+						title: ''
+					},
+					{
+						component: this.errorNumberTextBox,
+						title: ''
+					},
+					{
+						component: this.raiseAlertMessageCheckBox,
+						title: ''
+					}, {
+						component: this.raiseAlertMessageTextBox,
+						title: AlertDialog.MessageTextLabel
+					}],
+					title: 'Event alert definition'
 				}
 			]).withLayout({ width: '100%' }).component();
 
