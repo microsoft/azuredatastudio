@@ -56,7 +56,7 @@ class FormItem {
 					<ng-container *ngIf="isHorizontal(item)">
 						<div class="form-cell" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
-							<span class="icon info form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
+							<span class="icon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
 						</div>
 						<div class="form-cell">
 							<div class="form-component-container">
@@ -76,7 +76,7 @@ class FormItem {
 					<div class="form-vertical-container" *ngIf="isVertical(item)" [style.height]="getRowHeight(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 						<div class="form-item-row" [style.font-size]="getItemTitleFontSize(item)">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
-							<span class="icon info form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
+							<span class="icon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
 						</div>
 						<div class="form-item-row" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
