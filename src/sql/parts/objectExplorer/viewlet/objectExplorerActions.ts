@@ -31,7 +31,7 @@ import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesServ
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 
 
-export class ObjectExplorerActionsContext {
+export class ObjectExplorerActionsContext implements sqlops.ObjectExplorerContext {
 	public connectionProfile: IConnectionProfile;
 	public nodeInfo: sqlops.NodeInfo;
 	public isConnectionNode: boolean = false;
