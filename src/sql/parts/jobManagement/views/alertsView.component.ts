@@ -29,7 +29,6 @@ import { IAction } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { DRAG_OVER_REJECT } from 'vs/base/parts/tree/browser/tree';
 
 export const VIEW_SELECTOR: string = 'jobalertsview-component';
 export const ROW_HEIGHT: number = 45;
