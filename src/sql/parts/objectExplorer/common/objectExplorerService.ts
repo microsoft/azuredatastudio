@@ -5,7 +5,7 @@
 'use strict';
 
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
-import { TreeNode, TreeItemCollapsibleState, ObjectExplorerCallbacks } from 'sql/parts/objectExplorer/common/treeNode';
+import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -20,7 +20,6 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import * as vscode from 'vscode';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -402,7 +401,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		return new TreeNode(nodeInfo.nodeType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
-			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata, {
+			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, {
 				getChildren: treeNode => this.getChildren(treeNode),
 				isExpanded: treeNode => this.isExpanded(treeNode),
 				setNodeExpandedState: (treeNode, expandedState) => this.setNodeExpandedState(treeNode, expandedState),
