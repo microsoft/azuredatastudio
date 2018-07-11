@@ -39,8 +39,8 @@ export class MainController {
             let dialog = new PickScheduleDialog(ownerUri);
             dialog.showDialog();
         });
-        vscode.commands.registerCommand('agent.openAlertDialog', (ownerUri: string, alertInfo: sqlops.AgentAlertInfo) => {
-            let dialog = new AlertDialog(ownerUri, alertInfo);
+        vscode.commands.registerCommand('agent.openAlertDialog', (ownerUri: string, alertInfo: sqlops.AgentAlertInfo, jobs: string[]) => {
+            let dialog = new AlertDialog(ownerUri, alertInfo, jobs);
             dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openOperatorDialog', (ownerUri: string, operatorInfo: sqlops.AgentOperatorInfo) => {

@@ -7,16 +7,8 @@ import 'vs/css!../common/media/jobs';
 import 'sql/parts/dashboard/common/dashboardPanelStyles';
 
 import * as nls from 'vs/nls';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable } from '@angular/core';
-import * as Utils from 'sql/parts/connection/common/utils';
-import { RefreshWidgetAction, EditDashboardAction } from 'sql/parts/dashboard/common/actions';
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IDisposable } from 'vs/base/common/lifecycle';
-import * as themeColors from 'vs/workbench/common/theme';
-import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
-import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { AgentJobInfo, AgentJobHistoryInfo } from 'sqlops';
+import { Component, Inject, forwardRef, ChangeDetectorRef, ViewChild, Injectable } from '@angular/core';
+import { AgentJobInfo } from 'sqlops';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 
@@ -32,12 +24,6 @@ export class AgentViewComponent {
 
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 
-	// tslint:disable:no-unused-variable
-	private readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
-	private readonly alertsComponentTitle: string = nls.localize('jobview.Alerts', "Alerts");
-	private readonly proxiesComponentTitle: string = nls.localize('jobview.Proxies', "Proxies");
-	private readonly operatorsComponentTitle: string = nls.localize('jobview.Operators', "Operators");
-
 	private _showHistory: boolean = false;
 	private _jobId: string = null;
 	private _agentJobInfo: AgentJobInfo = null;
@@ -48,6 +34,11 @@ export class AgentViewComponent {
 	public alertsIconClass: string = 'alertsview-icon';
 	public proxiesIconClass: string = 'proxiesview-icon';
 	public operatorsIconClass: string = 'operatorsview-icon';
+
+	private readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
+	private readonly alertsComponentTitle: string = nls.localize('jobview.Alerts', "Alerts");
+	private readonly proxiesComponentTitle: string = nls.localize('jobview.Proxies', "Proxies");
+	private readonly operatorsComponentTitle: string = nls.localize('jobview.Operators', "Operators");
 
 	// tslint:disable-next-line:no-unused-variable
 	private readonly panelOpt: IPanelOptions = {
