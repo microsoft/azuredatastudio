@@ -174,7 +174,7 @@ export interface IConnectionManagementService {
 
 	disconnectEditor(owner: IConnectableInput, force?: boolean): Promise<boolean>;
 
-	disconnect(connection: ConnectionProfile): Promise<void>;
+	disconnect(connection: IConnectionProfile): Promise<void>;
 
 	disconnect(ownerUri: string): Promise<void>;
 
@@ -208,7 +208,7 @@ export interface IConnectionManagementService {
 	 */
 	cancelEditorConnection(owner: IConnectableInput): Thenable<boolean>;
 
-	showDashboard(connection: ConnectionProfile): Thenable<boolean>;
+	showDashboard(connection: IConnectionProfile): Thenable<boolean>;
 
 	closeDashboard(uri: string): void;
 
@@ -216,7 +216,7 @@ export interface IConnectionManagementService {
 
 	hasRegisteredServers(): boolean;
 
-	canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean;
+	canChangeConnectionConfig(profile: IConnectionProfile, newGroupID: string): boolean;
 
 	getTabColorForUri(uri: string): string;
 

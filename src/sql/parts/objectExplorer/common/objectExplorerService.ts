@@ -162,10 +162,16 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			error(expandResponse.errorMessage);
 		}
 
-		let nodeStatus = this._sessions[expandResponse.sessionId].nodes[expandResponse.nodePath];
-		if (nodeStatus && nodeStatus.expandEmitter) {
-			nodeStatus.expandEmitter.fire(expandResponse);
-		} else {
+		let sessionStatus = this._sessions[expandResponse.sessionId];
+		let foundSession = false;
+		if (sessionStatus) {
+			let nodeStatus = this._sessions[expandResponse.sessionId].nodes[expandResponse.nodePath];
+			foundSession = !!nodeStatus;
+			if (foundSession && nodeStatus.expandEmitter) {
+				nodeStatus.expandEmitter.fire(expandResponse);
+			}
+		}
+		if (!foundSession) {
 			warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
 		}
 	}

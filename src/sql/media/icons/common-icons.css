@@ -81,6 +81,15 @@
 	content: url("status_info.svg");
 }
 
+.vs .icon.help {
+	content: url("help.svg");
+}
+
+.vs-dark .icon.help,
+.hc-black .icon.help {
+	content: url("help_inverse.svg");
+}
+
 .vs .icon.success,
 .vs-dark .icon.success,
 .hc-black .icon.success {
