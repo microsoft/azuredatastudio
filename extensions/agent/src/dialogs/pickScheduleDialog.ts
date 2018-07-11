@@ -15,7 +15,6 @@ export class PickScheduleDialog {
 	private readonly DialogTitle: string = 'Job Schedules';
 	private readonly OkButtonText: string = 'OK';
 	private readonly CancelButtonText: string = 'Cancel';
-	private readonly SchedulesTabText: string = 'Schedules';
 
 	// UI Components
 	private dialog: sqlops.window.modelviewdialog.Dialog;
@@ -38,7 +37,6 @@ export class PickScheduleDialog {
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
 		this.dialog.okButton.label = this.OkButtonText;
 		this.dialog.cancelButton.label = this.CancelButtonText;
-
 		sqlops.window.modelviewdialog.openDialog(this.dialog);
 	}
 
@@ -50,8 +48,8 @@ export class PickScheduleDialog {
 						'Schedule Name'
 					],
 					data: [],
-					height: 600,
-					width: 400
+					height: '80em',
+					width: '40em'
 				}).component();
 
 			let formModel = view.modelBuilder.formContainer()

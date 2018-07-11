@@ -134,8 +134,9 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		if (size && typeof (size) === 'string') {
 			if (size.toLowerCase().endsWith('px')) {
 				return +size.replace('px', '');
+			} else if (size.toLowerCase().endsWith('em')) {
+				return +size.replace('em', '') * 11;
 			}
-
 		} else if (!size) {
 			return 0;
 		}

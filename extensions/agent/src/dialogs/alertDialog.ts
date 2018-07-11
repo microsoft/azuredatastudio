@@ -232,6 +232,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					width: '100%'
 				})
 				.component();
+			this.errorNumberTextBox.enabled = false;
 
 			this.errorNumberRadioButton.onDidClick(() => {
 				this.errorNumberTextBox.enabled = true;
@@ -448,9 +449,19 @@ export class AlertDialog extends AgentDialog<AlertData> {
 
 			this.additionalMessageTextBox = view.modelBuilder.inputBox().component();
 
-			this.delayMinutesTextBox = view.modelBuilder.inputBox().component();
+			this.delayMinutesTextBox = view.modelBuilder.inputBox()
+				.withProperties({
+					inputType: 'number',
+					placeHolder: 0
+				})
+				.component();
 
-			this.delaySecondsTextBox = view.modelBuilder.inputBox().component();
+			this.delaySecondsTextBox = view.modelBuilder.inputBox()
+				.withProperties({
+					inputType: 'number',
+					placeHolder: 0
+				})
+				.component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -507,5 +518,9 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		} else {
 			this.model.eventDescriptionKeyword = '';
 		}
+		let minutes  = this.delayMinutesTextBox.value ? +this.delayMinutesTextBox.value : 0;
+		let seconds = this.delaySecondsTextBox.value ? +this.delaySecondsTextBox : 0;
+		this.model.delayBetweenResponses = minutes + seconds;
+
 	}
 }

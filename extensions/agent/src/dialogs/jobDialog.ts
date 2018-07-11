@@ -287,7 +287,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 					],
 					data: [],
 					height: 600,
-					width: 400
+					width: 420
 				}).component();
 
 			this.pickScheduleButton = view.modelBuilder.button().withProperties({
