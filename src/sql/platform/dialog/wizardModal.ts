@@ -212,7 +212,10 @@ export class WizardModal extends Modal {
 			DialogModule,
 			bodyContainer,
 			'wizard-navigation',
-			undefined,
+			{
+				wizard: this._wizard,
+				navigationHandler: (index: number) => this.showPage(index, index > this._wizard.currentPage)
+			},
 			undefined,
 			() => undefined);
 	}
