@@ -942,9 +942,10 @@ declare module 'sqlops' {
 		metadata: ObjectMetadata;
 		errorMessage: string;
 		/**
-		 * Optional iconType used
-		 * This is different from iconPath used elsewhere in Sqlops / VSCode since
-		 * it references
+		 * Optional iconType for the object in the tree. Currently this only supports
+		 * an icon name or SqlThemeIcon name, rather than a path to an icon.
+		 * If not defined, the nodeType + nodeStatus / nodeSubType values
+		 * will be used instead.
 		 */
 		iconType?: string | SqlThemeIcon;
 	}
