@@ -34,6 +34,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -99,8 +100,9 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IDashboardService) _dashboardService: IDashboardService
 	) {
-		super(commonService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		this._serverName = commonService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];
@@ -121,7 +123,15 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	}
 
 	public layout() {
-		this._table.layout(new dom.Dimension(dom.getContentWidth(this._gridEl.nativeElement), dom.getContentHeight(this._gridEl.nativeElement)));
+		let jobsViewToolbar = $('jobsview-component .actionbar-container').get(0);
+		let statusBar = $('.part.statusbar').get(0);
+		if (jobsViewToolbar && statusBar) {
+			let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom;
+			let statusTop = statusBar.getBoundingClientRect().top;
+			this._table.layout(new dom.Dimension(
+				dom.getContentWidth(this._gridEl.nativeElement),
+				statusTop - toolbarBottom));
+		}
 	}
 
 	onFirstVisible() {
@@ -141,7 +151,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 			enableColumnReorder: false,
 			rowHeight: ROW_HEIGHT,
 			enableCellNavigation: true,
-			forceFitColumns: true
+			forceFitColumns: false
 		};
 
 		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
@@ -328,7 +338,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		this.dataView.beginUpdate();
 		this.dataView.setItems(jobViews);
 		this.dataView.setFilter((item) => this.filter(item));
-
 		this.dataView.endUpdate();
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
@@ -341,17 +350,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		});
 
 		const self = this;
-		$(window).resize(() => {
-			let jobsViewToolbar = $('jobsview-component .actionbar-container').get(0);
-			let statusBar = $('.part.statusbar').get(0);
-			if (jobsViewToolbar && statusBar) {
-				let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom;
-				let statusTop = statusBar.getBoundingClientRect().top;
-				$('agentview-component #jobsDiv .jobview-grid').css('height', statusTop - toolbarBottom);
-				self._table.resizeCanvas();
-			}
-		});
-
 		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
 			let nameWidth: number = data.grid.getColumnWidths()[1];
 			// adjust job name when resized

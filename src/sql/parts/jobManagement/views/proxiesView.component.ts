@@ -29,6 +29,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 
 export const VIEW_SELECTOR: string = 'jobproxiesview-component';
 export const ROW_HEIGHT: number = 45;
@@ -75,9 +76,10 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IDashboardService) _dashboardService: IDashboardService
 	) {
-		super(commonService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
@@ -88,7 +90,14 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 	}
 
 	public layout() {
-		this._table.layout(new dom.Dimension(dom.getContentWidth(this._gridEl.nativeElement), dom.getContentHeight(this._gridEl.nativeElement)));
+		let height = dom.getContentHeight(this._gridEl.nativeElement) - 10;
+		if (height < 0) {
+			height = 0;
+		}
+
+		this._table.layout(new dom.Dimension(
+			dom.getContentWidth(this._gridEl.nativeElement),
+			height));
 	}
 
 	onFirstVisible() {
