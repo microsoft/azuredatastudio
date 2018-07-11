@@ -17,6 +17,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Taskbar } from '../../../base/browser/ui/taskbar/taskbar';
 import { JobsRefreshAction } from 'sql/parts/jobManagement/common/jobActions';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 
 export abstract class JobManagementView extends TabChild implements AfterContentChecked {
 	protected isVisible: boolean = false;
@@ -33,10 +34,16 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 
 	constructor(
 		protected _commonService: CommonServiceInterface,
+		protected _dashboardService: IDashboardService,
 		protected _contextMenuService: IContextMenuService,
 		protected _keybindingService: IKeybindingService,
 		protected _instantiationService: IInstantiationService) {
 		super();
+
+		let self = this;
+		this._dashboardService.onLayout((d) => {
+			self.layout();
+		});
 	}
 
 	ngAfterContentChecked() {

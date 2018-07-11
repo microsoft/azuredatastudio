@@ -59,10 +59,6 @@ export class AgentViewComponent {
 			self.refresh = true;
 			self._cd.detectChanges();
 		});
-
-		dashboardService.onLayout((d) => {
-			self.layout();
-		});
 	}
 
 	/**

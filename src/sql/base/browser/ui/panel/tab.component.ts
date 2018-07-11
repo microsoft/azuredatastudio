@@ -87,6 +87,8 @@ export class TabComponent implements OnDestroy {
 	}
 
 	public layout() {
-		this._child.layout();
+		if (this._child) {
+			this._child.layout();
+		}
 	}
 }
