@@ -151,7 +151,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 			enableColumnReorder: false,
 			rowHeight: ROW_HEIGHT,
 			enableCellNavigation: true,
-			forceFitColumns: true
+			forceFitColumns: false
 		};
 
 		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
