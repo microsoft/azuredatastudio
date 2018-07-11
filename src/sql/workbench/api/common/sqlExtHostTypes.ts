@@ -278,3 +278,101 @@ export enum CardType {
 	VerticalButton  = 'VerticalButton',
 	Details = 'Details'
 }
+export class SqlThemeIcon {
+
+	static readonly Folder = new SqlThemeIcon('Folder');
+	static readonly Root = new SqlThemeIcon('root');
+	static readonly Database = new SqlThemeIcon('Database');
+	static readonly Server = new SqlThemeIcon('Server');
+	static readonly ScalarValuedFunction = new SqlThemeIcon('ScalarValuedFunction');
+	static readonly TableValuedFunction = new SqlThemeIcon('TableValuedFunction');
+	static readonly AggregateFunction = new SqlThemeIcon('AggregateFunction');
+	static readonly FileGroup = new SqlThemeIcon('FileGroup');
+	static readonly StoredProcedure = new SqlThemeIcon('StoredProcedure');
+	static readonly UserDefinedTableType = new SqlThemeIcon('UserDefinedTableType');
+	static readonly View = new SqlThemeIcon('View');
+	static readonly Table = new SqlThemeIcon('Table');
+	static readonly HistoryTable = new SqlThemeIcon('HistoryTable');
+	static readonly ServerLevelLinkedServerLogin = new SqlThemeIcon('ServerLevelLinkedServerLogin');
+	static readonly ServerLevelServerAudit = new SqlThemeIcon('ServerLevelServerAudit');
+	static readonly ServerLevelCryptographicProvider = new SqlThemeIcon('ServerLevelCryptographicProvider');
+	static readonly ServerLevelCredential = new SqlThemeIcon('ServerLevelCredential');
+	static readonly ServerLevelServerRole = new SqlThemeIcon('ServerLevelServerRole');
+	static readonly ServerLevelLogin = new SqlThemeIcon('ServerLevelLogin');
+	static readonly ServerLevelServerAuditSpecification = new SqlThemeIcon('ServerLevelServerAuditSpecification');
+	static readonly ServerLevelServerTrigger = new SqlThemeIcon('ServerLevelServerTrigger');
+	static readonly ServerLevelLinkedServer = new SqlThemeIcon('ServerLevelLinkedServer');
+	static readonly ServerLevelEndpoint = new SqlThemeIcon('ServerLevelEndpoint');
+	static readonly Synonym = new SqlThemeIcon('Synonym');
+	static readonly DatabaseTrigger = new SqlThemeIcon('DatabaseTrigger');
+	static readonly Assembly = new SqlThemeIcon('Assembly');
+	static readonly MessageType = new SqlThemeIcon('MessageType');
+	static readonly Contract = new SqlThemeIcon('Contract');
+	static readonly Queue = new SqlThemeIcon('Queue');
+	static readonly Service = new SqlThemeIcon('Service');
+	static readonly Route = new SqlThemeIcon('Route');
+	static readonly DatabaseAndQueueEventNotification = new SqlThemeIcon('DatabaseAndQueueEventNotification');
+	static readonly RemoteServiceBinding = new SqlThemeIcon('RemoteServiceBinding');
+	static readonly BrokerPriority = new SqlThemeIcon('BrokerPriority');
+	static readonly FullTextCatalog = new SqlThemeIcon('FullTextCatalog');
+	static readonly FullTextStopList = new SqlThemeIcon('FullTextStopList');
+	static readonly SqlLogFile = new SqlThemeIcon('SqlLogFile');
+	static readonly PartitionFunction = new SqlThemeIcon('PartitionFunction');
+	static readonly PartitionScheme = new SqlThemeIcon('PartitionScheme');
+	static readonly SearchPropertyList = new SqlThemeIcon('SearchPropertyList');
+	static readonly User = new SqlThemeIcon('User');
+	static readonly Schema = new SqlThemeIcon('Schema');
+	static readonly AsymmetricKey = new SqlThemeIcon('AsymmetricKey');
+	static readonly Certificate = new SqlThemeIcon('Certificate');
+	static readonly SymmetricKey = new SqlThemeIcon('SymmetricKey');
+	static readonly DatabaseEncryptionKey = new SqlThemeIcon('DatabaseEncryptionKey');
+	static readonly MasterKey = new SqlThemeIcon('MasterKey');
+	static readonly DatabaseAuditSpecification = new SqlThemeIcon('DatabaseAuditSpecification');
+	static readonly Column = new SqlThemeIcon('Column');
+	static readonly Key = new SqlThemeIcon('Key');
+	static readonly Constraint = new SqlThemeIcon('Constraint');
+	static readonly Trigger = new SqlThemeIcon('Trigger');
+	static readonly Index = new SqlThemeIcon('Index');
+	static readonly Statistic = new SqlThemeIcon('Statistic');
+	static readonly UserDefinedDataType = new SqlThemeIcon('UserDefinedDataType');
+	static readonly UserDefinedType = new SqlThemeIcon('UserDefinedType');
+	static readonly XmlSchemaCollection = new SqlThemeIcon('XmlSchemaCollection');
+	static readonly SystemExactNumeric = new SqlThemeIcon('SystemExactNumeric');
+	static readonly SystemApproximateNumeric = new SqlThemeIcon('SystemApproximateNumeric');
+	static readonly SystemDateAndTime = new SqlThemeIcon('SystemDateAndTime');
+	static readonly SystemCharacterString = new SqlThemeIcon('SystemCharacterString');
+	static readonly SystemUnicodeCharacterString = new SqlThemeIcon('SystemUnicodeCharacterString');
+	static readonly SystemBinaryString = new SqlThemeIcon('SystemBinaryString');
+	static readonly SystemOtherDataType = new SqlThemeIcon('SystemOtherDataType');
+	static readonly SystemClrDataType = new SqlThemeIcon('SystemClrDataType');
+	static readonly SystemSpatialDataType = new SqlThemeIcon('SystemSpatialDataType');
+	static readonly UserDefinedTableTypeColumn = new SqlThemeIcon('UserDefinedTableTypeColumn');
+	static readonly UserDefinedTableTypeKey = new SqlThemeIcon('UserDefinedTableTypeKey');
+	static readonly UserDefinedTableTypeConstraint = new SqlThemeIcon('UserDefinedTableTypeConstraint');
+	static readonly StoredProcedureParameter = new SqlThemeIcon('StoredProcedureParameter');
+	static readonly TableValuedFunctionParameter = new SqlThemeIcon('TableValuedFunctionParameter');
+	static readonly ScalarValuedFunctionParameter = new SqlThemeIcon('ScalarValuedFunctionParameter');
+	static readonly AggregateFunctionParameter = new SqlThemeIcon('AggregateFunctionParameter');
+	static readonly DatabaseRole = new SqlThemeIcon('DatabaseRole');
+	static readonly ApplicationRole = new SqlThemeIcon('ApplicationRole');
+	static readonly FileGroupFile = new SqlThemeIcon('FileGroupFile');
+	static readonly SystemMessageType = new SqlThemeIcon('SystemMessageType');
+	static readonly SystemContract = new SqlThemeIcon('SystemContract');
+	static readonly SystemService = new SqlThemeIcon('SystemService');
+	static readonly SystemQueue = new SqlThemeIcon('SystemQueue');
+	static readonly Sequence = new SqlThemeIcon('Sequence');
+	static readonly SecurityPolicy = new SqlThemeIcon('SecurityPolicy');
+	static readonly DatabaseScopedCredential = new SqlThemeIcon('DatabaseScopedCredential');
+	static readonly ExternalResource = new SqlThemeIcon('ExternalResource');
+	static readonly ExternalDataSource = new SqlThemeIcon('ExternalDataSource');
+	static readonly ExternalFileFormat = new SqlThemeIcon('ExternalFileFormat');
+	static readonly ExternalTable = new SqlThemeIcon('ExternalTable');
+	static readonly ColumnMasterKey = new SqlThemeIcon('ColumnMasterKey');
+	static readonly ColumnEncryptionKey = new SqlThemeIcon('ColumnEncryptionKey');
+
+	public readonly id: string;
+
+	private constructor(id: string) {
+		this.id = id;
+	}
+}

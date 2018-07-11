@@ -400,7 +400,8 @@ export function createApiFactory(
 				queryeditor: queryEditor,
 				ui: ui,
 				StatusIndicator: sqlExtHostTypes.StatusIndicator,
-				CardType: sqlExtHostTypes.CardType
+				CardType: sqlExtHostTypes.CardType,
+				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon
 			};
 		}
 	};
