@@ -770,6 +770,11 @@ declare module 'sqlops' {
 		rows: DbCellValue[][];
 	}
 
+	export interface SyntaxParseParams {
+		ownerUri: string;
+		query: string;
+	}
+
 	export interface SyntaxParseResult {
 		parseable: boolean;
 		errorMessages: string[];
