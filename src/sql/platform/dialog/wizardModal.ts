@@ -223,7 +223,7 @@ export class WizardModal extends Modal {
 	}
 
 	public async done(validate: boolean = true): Promise<void> {
-		if (this._wizard.doneButton.enabled) {
+		if (this._doneButton.enabled) {
 			if (validate && !await this._wizard.validateNavigation(undefined)) {
 				return;
 			}
@@ -258,7 +258,13 @@ export class WizardModal extends Modal {
 	 * Overridable to change behavior of enter key
 	 */
 	protected onAccept(e: StandardKeyboardEvent) {
-		this.done();
+		if (this._wizard.currentPage === this._wizard.pages.length - 1) {
+			this.done();
+		} else {
+			if (this._nextButton.enabled) {
+				this.showPage(this._wizard.currentPage + 1);
+			}
+		}
 	}
 
 	public dispose(): void {

@@ -164,7 +164,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 
 	public openCreateProxyDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._commandService.executeCommand('agent.openCreateProxyDialog', ownerUri);
+		this._commandService.executeCommand('agent.openProxyDialog', ownerUri);
 	}
 
 	private refreshJobs() {
