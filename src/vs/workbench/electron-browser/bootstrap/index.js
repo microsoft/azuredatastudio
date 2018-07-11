@@ -140,6 +140,9 @@ const Slick = window.Slick;
 require('slickgrid/slick.grid');
 require('slickgrid/slick.editors');
 require('slickgrid/slick.dataview');
+require('slickgrid/plugins/slick.cellrangedecorator')
+require('slickgrid/plugins/slick.cellrangeselector')
+require('slickgrid/plugins/slick.cellselectionmodel')
 require('reflect-metadata');
 require('zone.js');
 

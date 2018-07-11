@@ -43,7 +43,8 @@ export abstract class GridParentComponent {
 	// CONSTANTS
 	// tslint:disable:no-unused-variable
 	protected get selectionModel(): DragCellSelectionModel<any> {
-		return new DragCellSelectionModel<any>();
+		return new (<any>Slick).CellSelectionModel();
+		// return new DragCellSelectionModel<any>();
 	}
 	protected get slickgridPlugins(): Array<any> {
 		return [
