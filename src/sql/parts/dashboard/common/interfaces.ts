@@ -32,20 +32,8 @@ export abstract class DashboardTab extends TabChild implements OnDestroy {
 	public enableEdit(): void {
 		// no op
 	}
-
-	private _dispose: IDisposable[] = [];
-
 	constructor() {
 		super();
-	}
-
-	public dispose(): void {
-		this._dispose = dispose(this._dispose);
-	}
-
-	protected _register<T extends IDisposable>(t: T): T {
-		this._dispose.push(t);
-		return t;
 	}
 
 	ngOnDestroy() {
