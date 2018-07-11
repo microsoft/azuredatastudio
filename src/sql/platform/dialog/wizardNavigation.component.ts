@@ -20,7 +20,7 @@ export class WizardNavigationParams implements IBootstrapParams {
 }
 
 @Component({
-	selector: 'wizard-navigation',
+	selector: WizardNavigation.SELECTOR,
 	providers: [],
 	template: `
 		<div #container class="wizardNavigation-container">
@@ -37,6 +37,8 @@ export class WizardNavigationParams implements IBootstrapParams {
 	`
 })
 export class WizardNavigation implements AfterViewInit {
+	public static readonly SELECTOR = 'wizard-navigation';
+
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
 

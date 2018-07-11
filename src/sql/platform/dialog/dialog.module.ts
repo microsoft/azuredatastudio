@@ -13,6 +13,7 @@ import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { DialogContainer } from 'sql/platform/dialog/dialogContainer.component';
+import { WizardNavigation } from 'sql/platform/dialog/wizardNavigation.component';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
@@ -25,7 +26,6 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { WizardNavigation } from './wizardNavigation.component';
 
 export const DialogModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 
@@ -67,8 +67,8 @@ export const DialogModule = (params, selector: string, instantiationService: IIn
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
-			let componentClass = this.selector.startsWith('wizard-navigation') ? WizardNavigation : DialogContainer;
-			const factoryWrapper: any = this._resolver.resolveComponentFactory(componentClass as any);
+			let componentClass = this.selector.startsWith(WizardNavigation.SELECTOR) ? WizardNavigation : DialogContainer;
+			const factoryWrapper: any = this._resolver.resolveComponentFactory<WizardNavigation | DialogContainer>(componentClass);
 			factoryWrapper.factory.selector = this.selector;
 			appRef.bootstrap(factoryWrapper);
 		}
