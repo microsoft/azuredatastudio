@@ -167,7 +167,7 @@ table.step-list tr.step-row td {
 }
 
 .vs-dark .history-details > .job-steps {
-	display: inline-block;
+	display: block;
 	border-left: 3px solid #444444;
 	padding-left: 10px;
 	height: 100%;
@@ -176,10 +176,12 @@ table.step-list tr.step-row td {
 }
 
 .history-details > .job-steps {
-	display: inline-block;
+	display: block;
 	border-left: 3px solid #f4f4f4;
 	padding-left: 10px;
 	height: 100%;
+	width: 90%;
+	overflow-y: scroll;
 }
 
 .history-details > .job-steps > .step-list {

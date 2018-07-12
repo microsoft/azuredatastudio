@@ -73,26 +73,21 @@ export class ServerTreeController extends treedefaults.DefaultController {
 		event.stopPropagation();
 
 		tree.setFocus(element);
-		let parent: ConnectionProfileGroup = undefined;
-		if (element instanceof ConnectionProfileGroup) {
-			parent = <ConnectionProfileGroup>element;
-		}
-		else if (element instanceof ConnectionProfile) {
-			parent = (<ConnectionProfile>element).parent;
-		}
 
 		var actionContext: any;
 		if (element instanceof TreeNode) {
-			actionContext = new ObjectExplorerActionsContext();
-			actionContext.container = event.target;
-			actionContext.treeNode = <TreeNode>element;
-			actionContext.tree = tree;
+			let context = new ObjectExplorerActionsContext();
+			context.nodeInfo = element.toNodeInfo();
+			context.connectionProfile = element.getConnectionProfile().toIConnectionProfile();
+			actionContext = context;
 		} else if (element instanceof ConnectionProfile) {
-			actionContext = new ObjectExplorerActionsContext();
-			actionContext.container = event.target;
-			actionContext.connectionProfile = <ConnectionProfile>element;
-			actionContext.tree = tree;
+			let context = new ObjectExplorerActionsContext();
+			context.connectionProfile = element.toIConnectionProfile();
+			context.isConnectionNode = true;
+			actionContext = context;
 		} else {
+			// TODO: because the connection group is used as a context object and isn't serializable,
+			// the Group-level context menu is not currently extensible
 			actionContext = element;
 		}
 

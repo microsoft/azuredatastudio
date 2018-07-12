@@ -770,6 +770,11 @@ declare module 'sqlops' {
 		rows: DbCellValue[][];
 	}
 
+	export interface SyntaxParseParams {
+		ownerUri: string;
+		query: string;
+	}
+
 	export interface SyntaxParseResult {
 		parseable: boolean;
 		errorMessages: string[];
@@ -928,6 +933,10 @@ declare module 'sqlops' {
 		subset: EditRow[];
 	}
 
+	/**
+	 * A NodeInfo object represents an element in the Object Explorer tree under
+	 * a connection.
+	 */
 	export interface NodeInfo {
 		nodePath: string;
 		nodeType: string;
@@ -937,6 +946,116 @@ declare module 'sqlops' {
 		isLeaf: boolean;
 		metadata: ObjectMetadata;
 		errorMessage: string;
+		/**
+		 * Optional iconType for the object in the tree. Currently this only supports
+		 * an icon name or SqlThemeIcon name, rather than a path to an icon.
+		 * If not defined, the nodeType + nodeStatus / nodeSubType values
+		 * will be used instead.
+		 */
+		iconType?: string | SqlThemeIcon;
+	}
+
+	/**
+	 * A reference to a named icon. Currently only a subset of the SQL icons are available.
+	 * Using a theme icon is preferred over a custom icon as it gives theme authors the possibility to change the icons.
+	 */
+	export class SqlThemeIcon {
+		static readonly Folder: SqlThemeIcon;
+		static readonly Root: SqlThemeIcon;
+		static readonly Database: SqlThemeIcon;
+		static readonly Server: SqlThemeIcon;
+		static readonly ScalarValuedFunction: SqlThemeIcon;
+		static readonly TableValuedFunction: SqlThemeIcon;
+		static readonly AggregateFunction: SqlThemeIcon;
+		static readonly FileGroup: SqlThemeIcon;
+		static readonly StoredProcedure: SqlThemeIcon;
+		static readonly UserDefinedTableType: SqlThemeIcon;
+		static readonly View: SqlThemeIcon;
+		static readonly Table: SqlThemeIcon;
+		static readonly HistoryTable: SqlThemeIcon;
+		static readonly ServerLevelLinkedServerLogin: SqlThemeIcon;
+		static readonly ServerLevelServerAudit: SqlThemeIcon;
+		static readonly ServerLevelCryptographicProvider: SqlThemeIcon;
+		static readonly ServerLevelCredential: SqlThemeIcon;
+		static readonly ServerLevelServerRole: SqlThemeIcon;
+		static readonly ServerLevelLogin: SqlThemeIcon;
+		static readonly ServerLevelServerAuditSpecification: SqlThemeIcon;
+		static readonly ServerLevelServerTrigger: SqlThemeIcon;
+		static readonly ServerLevelLinkedServer: SqlThemeIcon;
+		static readonly ServerLevelEndpoint: SqlThemeIcon;
+		static readonly Synonym: SqlThemeIcon;
+		static readonly DatabaseTrigger: SqlThemeIcon;
+		static readonly Assembly: SqlThemeIcon;
+		static readonly MessageType: SqlThemeIcon;
+		static readonly Contract: SqlThemeIcon;
+		static readonly Queue: SqlThemeIcon;
+		static readonly Service: SqlThemeIcon;
+		static readonly Route: SqlThemeIcon;
+		static readonly DatabaseAndQueueEventNotification: SqlThemeIcon;
+		static readonly RemoteServiceBinding: SqlThemeIcon;
+		static readonly BrokerPriority: SqlThemeIcon;
+		static readonly FullTextCatalog: SqlThemeIcon;
+		static readonly FullTextStopList: SqlThemeIcon;
+		static readonly SqlLogFile: SqlThemeIcon;
+		static readonly PartitionFunction: SqlThemeIcon;
+		static readonly PartitionScheme: SqlThemeIcon;
+		static readonly SearchPropertyList: SqlThemeIcon;
+		static readonly User: SqlThemeIcon;
+		static readonly Schema: SqlThemeIcon;
+		static readonly AsymmetricKey: SqlThemeIcon;
+		static readonly Certificate: SqlThemeIcon;
+		static readonly SymmetricKey: SqlThemeIcon;
+		static readonly DatabaseEncryptionKey: SqlThemeIcon;
+		static readonly MasterKey: SqlThemeIcon;
+		static readonly DatabaseAuditSpecification: SqlThemeIcon;
+		static readonly Column: SqlThemeIcon;
+		static readonly Key: SqlThemeIcon;
+		static readonly Constraint: SqlThemeIcon;
+		static readonly Trigger: SqlThemeIcon;
+		static readonly Index: SqlThemeIcon;
+		static readonly Statistic: SqlThemeIcon;
+		static readonly UserDefinedDataType: SqlThemeIcon;
+		static readonly UserDefinedType: SqlThemeIcon;
+		static readonly XmlSchemaCollection: SqlThemeIcon;
+		static readonly SystemExactNumeric: SqlThemeIcon;
+		static readonly SystemApproximateNumeric: SqlThemeIcon;
+		static readonly SystemDateAndTime: SqlThemeIcon;
+		static readonly SystemCharacterString: SqlThemeIcon;
+		static readonly SystemUnicodeCharacterString: SqlThemeIcon;
+		static readonly SystemBinaryString: SqlThemeIcon;
+		static readonly SystemOtherDataType: SqlThemeIcon;
+		static readonly SystemClrDataType: SqlThemeIcon;
+		static readonly SystemSpatialDataType: SqlThemeIcon;
+		static readonly UserDefinedTableTypeColumn: SqlThemeIcon;
+		static readonly UserDefinedTableTypeKey: SqlThemeIcon;
+		static readonly UserDefinedTableTypeConstraint: SqlThemeIcon;
+		static readonly StoredProcedureParameter: SqlThemeIcon;
+		static readonly TableValuedFunctionParameter: SqlThemeIcon;
+		static readonly ScalarValuedFunctionParameter: SqlThemeIcon;
+		static readonly AggregateFunctionParameter: SqlThemeIcon;
+		static readonly DatabaseRole: SqlThemeIcon;
+		static readonly ApplicationRole: SqlThemeIcon;
+		static readonly FileGroupFile: SqlThemeIcon;
+		static readonly SystemMessageType: SqlThemeIcon;
+		static readonly SystemContract: SqlThemeIcon;
+		static readonly SystemService: SqlThemeIcon;
+		static readonly SystemQueue: SqlThemeIcon;
+		static readonly Sequence: SqlThemeIcon;
+		static readonly SecurityPolicy: SqlThemeIcon;
+		static readonly DatabaseScopedCredential: SqlThemeIcon;
+		static readonly ExternalResource: SqlThemeIcon;
+		static readonly ExternalDataSource: SqlThemeIcon;
+		static readonly ExternalFileFormat: SqlThemeIcon;
+		static readonly ExternalTable: SqlThemeIcon;
+		static readonly ColumnMasterKey: SqlThemeIcon;
+		static readonly ColumnEncryptionKey: SqlThemeIcon;
+
+		private constructor(id: string);
+
+		/**
+		 * Gets the ID for the theme icon for help in cases where string comparison is needed
+		 */
+		public readonly id: string;
 	}
 
 	// Object Explorer interfaces  -----------------------------------------------------------------------

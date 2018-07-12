@@ -33,6 +33,8 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private static readonly PagerFridayCheckBoxLabel: string = localize('createOperator.PagerFridayCheckBox', 'Friday  ');
 	private static readonly PagerSaturdayCheckBoxLabel: string = localize('createOperator.PagerSaturdayCheckBox', 'Saturday');
 	private static readonly PagerSundayCheckBoxLabel: string = localize('createOperator.PagerSundayCheckBox', 'Sunday');
+	private static readonly WorkdayBeginLabel: string = localize('createOperator.workdayBegin', 'Workday begin');
+	private static readonly WorkdayEndLabel: string = localize('createOperator.workdayEnd', 'Workday end');
 
 	// Notifications tab strings
 	private static readonly AlertsTableLabel: string = localize('createOperator.AlertListHeading', 'Alert list');
@@ -184,7 +186,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			let weekdayStartInputContainer = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.weekdayPagerStartTimeInput,
-					title: 'Workday begin'
+					title: OperatorDialog.WorkdayBeginLabel
 				}]).component();
 
 			this.weekdayPagerEndTimeInput = view.modelBuilder.inputBox()
@@ -196,7 +198,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			let weekdayEndInputContainer = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.weekdayPagerEndTimeInput,
-					title: 'Workday end'
+					title: OperatorDialog.WorkdayEndLabel
 				}]).component();
 
 			this.pagerFridayCheckBox = view.modelBuilder.checkBox()
@@ -249,7 +251,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			let saturdayStartInputContainer = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.saturdayPagerStartTimeInput,
-					title: 'Workday begin'
+					title: OperatorDialog.WorkdayBeginLabel
 				}]).component();
 
 			this.saturdayPagerEndTimeInput = view.modelBuilder.inputBox()
@@ -261,7 +263,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			let saturdayEndInputContainer = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.saturdayPagerEndTimeInput,
-					title: 'Workday end'
+					title: OperatorDialog.WorkdayEndLabel
 				}]).component();
 
 			let pagerSaturdayCheckboxContainer = view.modelBuilder.flexContainer()
@@ -296,7 +298,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			let sundayStartInputContainer = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.sundayPagerStartTimeInput,
-					title: 'Workday begin'
+					title: OperatorDialog.WorkdayBeginLabel
 				}]).component();
 
 			this.sundayPagerEndTimeInput = view.modelBuilder.inputBox()
@@ -308,7 +310,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			let sundayEndInputContainer = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.sundayPagerEndTimeInput,
-					title: 'Workday end'
+					title: OperatorDialog.WorkdayEndLabel
 				}]).component();
 
 			let pagerSundayCheckboxContainer = view.modelBuilder.flexContainer()

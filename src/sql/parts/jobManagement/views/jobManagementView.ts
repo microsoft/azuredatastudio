@@ -16,8 +16,10 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Taskbar } from '../../../base/browser/ui/taskbar/taskbar';
 import { JobsRefreshAction } from 'sql/parts/jobManagement/common/jobActions';
+import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 
-export abstract class JobManagementView extends Disposable implements AfterContentChecked {
+export abstract class JobManagementView extends TabChild implements AfterContentChecked {
 	protected isVisible: boolean = false;
 	protected isInitialized: boolean = false;
 	protected isRefreshing: boolean = false;
@@ -32,10 +34,16 @@ export abstract class JobManagementView extends Disposable implements AfterConte
 
 	constructor(
 		protected _commonService: CommonServiceInterface,
+		protected _dashboardService: IDashboardService,
 		protected _contextMenuService: IContextMenuService,
 		protected _keybindingService: IKeybindingService,
 		protected _instantiationService: IInstantiationService) {
 		super();
+
+		let self = this;
+		this._dashboardService.onLayout((d) => {
+			self.layout();
+		});
 	}
 
 	ngAfterContentChecked() {
@@ -49,8 +57,8 @@ export abstract class JobManagementView extends Disposable implements AfterConte
 				}
 			} else if (this.isVisible === true && this._parentComponent.refresh === true) {
 				this._showProgressWheel = true;
-				this.onFirstVisible();
 				this.isRefreshing = true;
+				this.onFirstVisible();
 				this._parentComponent.refresh = false;
 			} else if (this.isVisible === true && this._visibilityElement.nativeElement.offsetParent === null) {
 				this.isVisible = false;

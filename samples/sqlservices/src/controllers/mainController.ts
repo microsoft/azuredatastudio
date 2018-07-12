@@ -285,7 +285,6 @@ export default class MainController implements vscode.Disposable {
 		tab1.registerContent(async (view) => {
 			await this.getTabContent(view, customButton1, customButton2, 400);
 		});
-
 		sqlops.window.modelviewdialog.openDialog(dialog);
 	}
 

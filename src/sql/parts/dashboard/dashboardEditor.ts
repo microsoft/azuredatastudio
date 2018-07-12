@@ -18,7 +18,7 @@ import { DashboardModule } from './dashboard.module';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { DASHBOARD_SELECTOR } from 'sql/parts/dashboard/dashboard.component';
-import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
+import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -71,6 +71,7 @@ export class DashboardEditor extends BaseEditor {
 	 * To be called when the container of this editor changes size.
 	 */
 	public layout(dimension: DOM.Dimension): void {
+		this._dashboardService.layout(dimension);
 	}
 
 	public setInput(input: DashboardInput, options: EditorOptions): TPromise<void> {
@@ -110,7 +111,7 @@ export class DashboardEditor extends BaseEditor {
 		let serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
 		this._dashboardService.changeToDashboard({ profile, serverInfo });
 		let scopedContextService = this._contextKeyService.createScoped(input.container);
-		let connectionContextKey = new ConnectionContextkey(scopedContextService);
+		let connectionContextKey = new ConnectionContextKey(scopedContextService);
 		connectionContextKey.set(input.connectionProfile);
 
 		let params: IDashboardComponentParams = {

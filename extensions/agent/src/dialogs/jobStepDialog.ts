@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
+import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { JobStepData } from '../data/jobStepData';
@@ -10,31 +11,57 @@ import { AgentUtils } from '../agentUtils';
 import { JobData } from '../data/jobData';
 const path = require('path');
 
+const localize = nls.loadMessageBundle();
+
 export class JobStepDialog {
 
 	// TODO: localize
 	// Top level
 	//
-	private static readonly DialogTitle: string = 'New Job Step';
-	private static readonly FileBrowserDialogTitle: string = 'Locate Database Files - ';
-	private static readonly OkButtonText: string = 'OK';
-	private static readonly CancelButtonText: string = 'Cancel';
-	private static readonly GeneralTabText: string = 'General';
-	private static readonly AdvancedTabText: string = 'Advanced';
-	private static readonly OpenCommandText: string = 'Open...';
-	private static readonly ParseCommandText: string = 'Parse';
-	private static readonly NextButtonText: string = 'Next';
-	private static readonly PreviousButtonText: string = 'Previous';
-	private static readonly SuccessAction: string = 'On success action';
-	private static readonly FailureAction: string = 'On failure action';
+	private readonly DialogTitle: string = localize('jobStepDialog.newJobStep', 'New Job Step');
+	private readonly FileBrowserDialogTitle: string = localize('jobStepDialog.fileBrowserTitle', 'Locate Database Files - ');
+	private readonly OkButtonText: string = localize('jobStepDialog.ok', 'OK');
+	private readonly CancelButtonText: string = localize('jobStepDialog.cancel', 'Cancel');
+	private readonly GeneralTabText: string = localize('jobStepDialog.general', 'General');
+	private readonly AdvancedTabText: string = localize('jobStepDialog.advanced', 'Advanced');
+	private readonly OpenCommandText: string = localize('jobStepDialog.open', 'Open...');
+	private readonly ParseCommandText: string = localize('jobStepDialog.parse','Parse');
+	private readonly NextButtonText: string = localize('jobStepDialog.next', 'Next');
+	private readonly PreviousButtonText: string = localize('jobStepDialog.previous','Previous');
+	private readonly SuccessfulParseText: string = localize('jobStepDialog.successParse', 'The command was successfully parsed.');
+	private readonly FailureParseText: string = localize('jobStepDialog.failParse', 'The command failed.');
 
+	// General Control Titles
+	private readonly StepNameLabelString: string = localize('jobStepDialog.stepNameLabel', 'Step Name');
+	private readonly TypeLabelString: string = localize('jobStepDialog.typeLabel', 'Type');
+	private readonly RunAsLabelString: string = localize('jobStepDialog.runAsLabel', 'Run as');
+	private readonly DatabaseLabelString: string = localize('jobStepDialog.databaseLabel', 'Database');
+	private readonly CommandLabelString: string = localize('jobStepDialog.commandLabel', 'Command');
+
+	// Advanced Control Titles
+	private readonly SuccessActionLabel: string = localize('jobStepDialog.successAction', 'On success action');
+	private readonly FailureActionLabel: string = localize('jobStepDialog.failureAction', 'On failure action');
+	private readonly RunAsUserLabel: string = localize('jobStepDialog.runAsUser', 'Run as user');
+	private readonly RetryAttemptsLabel: string = localize('jobStepDialog.retryAttempts', 'Retry Attempts');
+	private readonly RetryIntervalLabel: string = localize('jobStepDialog.retryInterval', 'Retry Interval (minutes)');
+	private readonly LogToTableLabel: string = localize('jobStepDialog.logToTable', 'Log to table');
+	private readonly AppendExistingTableEntryLabel: string = localize('jobStepDialog.appendExistingTableEntry', 'Append output to exisiting entry in table');
+	private readonly IncludeStepOutputHistoryLabel: string = localize('jobStepDialog.includeStepOutputHistory', 'Include step output in history');
+	private readonly OutputFileNameLabel: string = localize('jobStepDialog.outputFile', 'Output File');
+	private readonly AppendOutputToFileLabel: string = localize('jobStepDialog.appendOutputToFile', 'Append output to existing file');
+
+	// File Browser Control Titles
+	private readonly SelectedPathLabelString: string = localize('jobStepDialog.selectedPath', 'Selected path');
+	private readonly FilesOfTypeLabelString: string = localize('jobStepDialog.filesOfType', 'Files of type');
+	private readonly FileNameLabelString: string = localize('jobStepDialog.fileName', 'File name');
+	private readonly AllFilesLabelString: string = localize('jobStepDialog.allFiles', 'All Files (*)');
 
 	// Dropdown options
-	private static readonly TSQLScript: string = 'Transact-SQL script (T-SQL)';
-	private static readonly AgentServiceAccount: string = 'SQL Server Agent Service Account';
-	private static readonly NextStep: string = 'Go to the next step';
-	private static readonly QuitJobReportingSuccess: string = 'Quit the job reporting success';
-	private static readonly QuitJobReportingFailure: string = 'Quit the job reporting failure';
+	private readonly TSQLScript: string = localize('jobStepDialog.TSQL', 'Transact-SQL script (T-SQL)');
+	private readonly AgentServiceAccount: string = localize('jobStepDialog.agentServiceAccount', 'SQL Server Agent Service Account');
+	private readonly NextStep: string = localize('jobStepDialog.nextStep', 'Go to the next step');
+	private readonly QuitJobReportingSuccess: string = localize('jobStepDialog.quitJobSuccess', 'Quit the job reporting success');
+	private readonly QuitJobReportingFailure: string = localize('jobStepDialog.quitJobFailure', 'Quit the job reporting failure');
 
 	// UI Components
 
@@ -54,6 +81,7 @@ export class JobStepDialog {
 	private retryIntervalBox: sqlops.InputBoxComponent;
 	private outputFileNameBox: sqlops.InputBoxComponent;
 	private fileBrowserNameBox: sqlops.InputBoxComponent;
+	private userInputBox: sqlops.InputBoxComponent;
 
 	// Dropdowns
 	private typeDropdown: sqlops.DropDownComponent;
@@ -98,33 +126,33 @@ export class JobStepDialog {
 	}
 
 	private initializeUIComponents() {
-		this.dialog = sqlops.window.modelviewdialog.createDialog(JobStepDialog.DialogTitle);
-		this.generalTab = sqlops.window.modelviewdialog.createTab(JobStepDialog.GeneralTabText);
-		this.advancedTab = sqlops.window.modelviewdialog.createTab(JobStepDialog.AdvancedTabText);
+		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
+		this.generalTab = sqlops.window.modelviewdialog.createTab(this.GeneralTabText);
+		this.advancedTab = sqlops.window.modelviewdialog.createTab(this.AdvancedTabText);
 		this.dialog.content = [this.generalTab, this.advancedTab];
 		this.dialog.okButton.onClick(async () => await this.execute());
-		this.dialog.okButton.label = JobStepDialog.OkButtonText;
-		this.dialog.cancelButton.label = JobStepDialog.CancelButtonText;
+		this.dialog.okButton.label = this.OkButtonText;
+		this.dialog.cancelButton.label = this.CancelButtonText;
 	}
 
 	private createCommands(view, queryProvider: sqlops.QueryProvider) {
 		this.openButton = view.modelBuilder.button()
 			.withProperties({
-				label: JobStepDialog.OpenCommandText,
+				label: this.OpenCommandText,
 				width: '80px'
 			}).component();
 		this.parseButton = view.modelBuilder.button()
 			.withProperties({
-				label: JobStepDialog.ParseCommandText,
+				label: this.ParseCommandText,
 				width: '80px'
 			}).component();
 		this.parseButton.onDidClick(e => {
 			if (this.commandTextBox.value) {
 				queryProvider.parseSyntax(this.ownerUri, this.commandTextBox.value).then(result => {
 					if (result && result.parseable) {
-						this.dialog.message = { text: 'The command was successfully parsed.', level: 2};
+						this.dialog.message = { text: this.SuccessfulParseText, level: 2};
 					} else if (result && !result.parseable) {
-						this.dialog.message = { text: 'The command failed' };
+						this.dialog.message = { text: this.FailureParseText };
 					}
 				});
 			}
@@ -139,13 +167,13 @@ export class JobStepDialog {
 			.component();
 		this.nextButton = view.modelBuilder.button()
 			.withProperties({
-				label: JobStepDialog.NextButtonText,
+				label: this.NextButtonText,
 				enabled: false,
 				width: '80px'
 			}).component();
 		this.previousButton = view.modelBuilder.button()
 			.withProperties({
-				label: JobStepDialog.PreviousButtonText,
+				label: this.PreviousButtonText,
 				enabled: false,
 				width: '80px'
 			}).component();
@@ -159,8 +187,8 @@ export class JobStepDialog {
 			this.nameTextBox.required = true;
 			this.typeDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: JobStepDialog.TSQLScript,
-					values: [JobStepDialog.TSQLScript]
+					value: this.TSQLScript,
+					values: [this.TSQLScript]
 				})
 				.component();
 			this.runAsDropdown = view.modelBuilder.dropDown()
@@ -171,8 +199,8 @@ export class JobStepDialog {
 				.component();
 			this.runAsDropdown.enabled = false;
 			this.typeDropdown.onValueChanged((type) => {
-				if (type.selected !== JobStepDialog.TSQLScript) {
-					this.runAsDropdown.value = JobStepDialog.AgentServiceAccount;
+				if (type.selected !== this.TSQLScript) {
+					this.runAsDropdown.value = this.AgentServiceAccount;
 					this.runAsDropdown.values = [this.runAsDropdown.value];
 				} else {
 					this.runAsDropdown.value = '';
@@ -200,19 +228,19 @@ export class JobStepDialog {
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.nameTextBox,
-					title: 'Step name'
+					title: this.StepNameLabelString
 				}, {
 					component: this.typeDropdown,
-					title: 'Type'
+					title: this.TypeLabelString
 				}, {
 					component: this.runAsDropdown,
-					title: 'Run as'
+					title: this.RunAsLabelString
 				}, {
 					component: this.databaseDropdown,
-					title: 'Database'
+					title: this.DatabaseLabelString
 				}, {
 					component: this.commandTextBox,
-					title: 'Command',
+					title: this.CommandLabelString,
 					actions: [buttonContainer]
 				}], {
 						horizontal: false,
@@ -224,81 +252,57 @@ export class JobStepDialog {
 		});
 	}
 
-	private createRunAsUserOptions(view) {
-		let userInputBox = view.modelBuilder.inputBox()
-			.withProperties({ inputType: 'text', width: '100px' }).component();
-		let viewButton = view.modelBuilder.button()
-			.withProperties({ label: '...', width: '20px' }).component();
-		let viewButtonContainer = view.modelBuilder.flexContainer()
-			.withLayout({ width: 100, textAlign: 'right' })
-			.withItems([viewButton], { flex: '1 1 50%' }).component();
-		let userInputBoxContainer = view.modelBuilder.flexContainer()
-			.withLayout({ width: 200, textAlign: 'left' })
-			.withItems([userInputBox], { flex: '1 1 50%' }).component();
-		let runAsUserContainer = view.modelBuilder.flexContainer()
-			.withLayout({ width: 200 })
-			.withItems([userInputBoxContainer, viewButtonContainer], { flex: '1 1 50%' })
-			.component();
-		let runAsUserForm = view.modelBuilder.formContainer()
-			.withFormItems([{
-				component: runAsUserContainer,
-				title: 'Run as user'
-			}], { horizontal: true, componentWidth: 200 }).component();
-		return runAsUserForm;
-	}
-
 	private createAdvancedTab() {
 		this.advancedTab.registerContent(async (view) => {
 			this.successActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: JobStepDialog.NextStep,
-					values: [JobStepDialog.NextStep, JobStepDialog.QuitJobReportingSuccess, JobStepDialog.QuitJobReportingFailure]
+					width: '100%',
+					value: this.NextStep,
+					values: [this.NextStep, this.QuitJobReportingSuccess, this.QuitJobReportingFailure]
 				})
 				.component();
 			let retryFlexContainer = this.createRetryCounters(view);
+
 			this.failureActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: JobStepDialog.QuitJobReportingFailure,
-					values: [JobStepDialog.QuitJobReportingFailure, JobStepDialog.NextStep, JobStepDialog.QuitJobReportingSuccess]
+					value: this.QuitJobReportingFailure,
+					values: [this.QuitJobReportingFailure, this.NextStep, this.QuitJobReportingSuccess]
 				})
 				.component();
 			let optionsGroup = this.createTSQLOptions(view);
-			let viewButton = view.modelBuilder.button()
-				.withProperties({ label: 'View', width: '50px' }).component();
-			viewButton.enabled = false;
 			this.logToTableCheckbox = view.modelBuilder.checkBox()
 				.withProperties({
-					label: 'Log to table'
+					label: this.LogToTableLabel
 				}).component();
 			let appendToExistingEntryInTableCheckbox = view.modelBuilder.checkBox()
-				.withProperties({ label: 'Append output to existing entry in table' }).component();
+				.withProperties({ label: this.AppendExistingTableEntryLabel }).component();
 			appendToExistingEntryInTableCheckbox.enabled = false;
 			this.logToTableCheckbox.onChanged(e => {
-				viewButton.enabled = e;
 				appendToExistingEntryInTableCheckbox.enabled = e;
 			});
 			let appendCheckboxContainer = view.modelBuilder.groupContainer()
 				.withItems([appendToExistingEntryInTableCheckbox]).component();
 			let logToTableContainer = view.modelBuilder.flexContainer()
 				.withLayout({ flexFlow: 'row', justifyContent: 'space-between', width: 300 })
-				.withItems([this.logToTableCheckbox, viewButton]).component();
+				.withItems([this.logToTableCheckbox]).component();
 			let logStepOutputHistoryCheckbox = view.modelBuilder.checkBox()
-				.withProperties({ label: 'Include step output in history' }).component();
-			let runAsUserOptions = this.createRunAsUserOptions(view);
+				.withProperties({ label: this.IncludeStepOutputHistoryLabel }).component();
+			this.userInputBox = view.modelBuilder.inputBox()
+				.withProperties({ inputType: 'text', width: '100%' }).component();
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems(
 					[{
 						component: this.successActionDropdown,
-						title: JobStepDialog.SuccessAction
+						title: this.SuccessActionLabel
 					}, {
 						component: retryFlexContainer,
 						title: ''
 					}, {
 						component: this.failureActionDropdown,
-						title: JobStepDialog.FailureAction
+						title: this.FailureActionLabel
 					}, {
 						component: optionsGroup,
-						title: 'Transact-SQL script (T-SQL)'
+						title: this.TSQLScript
 					}, {
 						component: logToTableContainer,
 						title: ''
@@ -309,8 +313,8 @@ export class JobStepDialog {
 						component: logStepOutputHistoryCheckbox,
 						title: ''
 					}, {
-						component: runAsUserOptions,
-						title: ''
+						component: this.userInputBox,
+						title: this.RunAsUserLabel
 					}], {
 						componentWidth: 400
 					}).component();
@@ -323,32 +327,37 @@ export class JobStepDialog {
 
 	private createRetryCounters(view) {
 		this.retryAttemptsBox = view.modelBuilder.inputBox()
-		.withValidation(component => component.value >= 0)
-		.withProperties({
-			inputType: 'number'
-		})
-		.component();
+			.withValidation(component => component.value >= 0)
+			.withProperties({
+				inputType: 'number',
+				width: '100%',
+				placeHolder: '0'
+			})
+			.component();
 		this.retryIntervalBox = view.modelBuilder.inputBox()
 			.withValidation(component => component.value >= 0)
 			.withProperties({
-				inputType: 'number'
+				inputType: 'number',
+				width: '100%',
+				placeHolder: '0'
 			}).component();
 
 		let retryAttemptsContainer = view.modelBuilder.formContainer()
 			.withFormItems(
-				[{
-					component: this.retryAttemptsBox,
-					title: 'Retry Attempts'
-				}], {
-					horizontal: false
-				})
+			[{
+				component: this.retryAttemptsBox,
+				title: this.RetryAttemptsLabel
+			}], {
+				horizontal: false,
+				componentWidth: '100%'
+			})
 			.component();
 
 		let retryIntervalContainer = view.modelBuilder.formContainer()
 			.withFormItems(
 				[{
 					component: this.retryIntervalBox,
-					title: 'Retry Interval (minutes)'
+					title: this.RetryIntervalLabel
 					}], {
 					horizontal: false
 				})
@@ -362,7 +371,7 @@ export class JobStepDialog {
 	}
 
 	private openFileBrowserDialog() {
-		let fileBrowserTitle = JobStepDialog.FileBrowserDialogTitle + `${this.server}`;
+		let fileBrowserTitle = this.FileBrowserDialogTitle + `${this.server}`;
 		this.fileBrowserDialog = sqlops.window.modelviewdialog.createDialog(fileBrowserTitle);
 		let fileBrowserTab = sqlops.window.modelviewdialog.createTab('File Browser');
 		this.fileBrowserDialog.content =  [fileBrowserTab];
@@ -379,8 +388,8 @@ export class JobStepDialog {
 			});
 			this.fileTypeDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: 'All Files (*)',
-					values: ['All Files (*)']
+					value: this.AllFilesLabelString,
+					values: [this.AllFilesLabelString]
 				})
 				.component();
 			this.fileBrowserNameBox = view.modelBuilder.inputBox()
@@ -392,13 +401,13 @@ export class JobStepDialog {
 					title: ''
 				}, {
 					component: this.selectedPathTextBox,
-					title: 'Selected path:'
+					title: this.SelectedPathLabelString
 				}, {
 					component: this.fileTypeDropdown,
-					title: 'Files of type:'
+					title: this.FilesOfTypeLabelString
 				}, {
 					component: this.fileBrowserNameBox,
-					title: 'File name:'
+					title: this.FileNameLabelString
 				}
 			]).component();
 			view.initializeModel(fileBrowserContainer);
@@ -406,8 +415,8 @@ export class JobStepDialog {
 		this.fileBrowserDialog.okButton.onClick(() => {
 			this.outputFileNameBox.value = path.join(path.dirname(this.selectedPathTextBox.value), this.fileBrowserNameBox.value);
 		});
-		this.fileBrowserDialog.okButton.label = JobStepDialog.OkButtonText;
-		this.fileBrowserDialog.cancelButton.label = JobStepDialog.CancelButtonText;
+		this.fileBrowserDialog.okButton.label = this.OkButtonText;
+		this.fileBrowserDialog.cancelButton.label = this.CancelButtonText;
 		sqlops.window.modelviewdialog.openDialog(this.fileBrowserDialog);
 	}
 
@@ -417,21 +426,15 @@ export class JobStepDialog {
 		this.outputFileBrowserButton.onDidClick(() => this.openFileBrowserDialog());
 		this.outputFileNameBox = view.modelBuilder.inputBox()
 			.withProperties({
-				width: '150px',
+				width: 250,
 				inputType: 'text'
 			}).component();
-		let outputViewButton = view.modelBuilder.button()
-			.withProperties({
-				width: '50px',
-				label: 'View'
-			}).component();
-		outputViewButton.enabled = false;
 		let outputButtonContainer = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row',
 				textAlign: 'right',
-				width: 120
-			}).withItems([this.outputFileBrowserButton, outputViewButton], { flex: '1 1 50%' }).component();
+				width: '100%'
+			}).withItems([this.outputFileBrowserButton], { flex: '1 1 50%' }).component();
 		let outputFlexBox = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row',
@@ -441,7 +444,7 @@ export class JobStepDialog {
 			}).component();
 		this.appendToExistingFileCheckbox = view.modelBuilder.checkBox()
 			.withProperties({
-				label: 'Append output to existing file'
+				label: this.AppendOutputToFileLabel
 			}).component();
 		this.appendToExistingFileCheckbox.enabled = false;
 		this.outputFileNameBox.onTextChanged((input) => {
@@ -454,11 +457,11 @@ export class JobStepDialog {
 		let outputFileForm = view.modelBuilder.formContainer()
 			.withFormItems([{
 				component: outputFlexBox,
-				title: 'Output file'
+				title: this.OutputFileNameLabel
 			}, {
 				component: this.appendToExistingFileCheckbox,
 				title: ''
-			}], { horizontal: true, componentWidth: 200 }).component();
+			}], { horizontal: false, componentWidth: 200 }).component();
 		return outputFileForm;
 	}
 
@@ -471,8 +474,8 @@ export class JobStepDialog {
 		this.model.databaseName = this.databaseDropdown.value as string;
 		this.model.script = this.commandTextBox.value;
 		this.model.successAction = this.successActionDropdown.value as string;
-		this.model.retryAttempts = +this.retryAttemptsBox.value;
-		this.model.retryInterval = +this.retryIntervalBox.value;
+		this.model.retryAttempts = this.retryAttemptsBox.value ? +this.retryAttemptsBox.value : 0;
+		this.model.retryInterval = +this.retryIntervalBox.value ? +this.retryIntervalBox.value : 0;
 		this.model.failureAction = this.failureActionDropdown.value as string;
 		this.model.outputFileName = this.outputFileNameBox.value;
 		this.model.appendToLogFile = this.appendToExistingFileCheckbox.checked;
