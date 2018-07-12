@@ -18,6 +18,7 @@ import { ServerTreeActionProvider } from 'sql/parts/objectExplorer/viewlet/serve
 import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import { OpenMode } from 'vs/base/parts/tree/browser/treeDefaults';
+import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 
 /**
  * Extends the tree controller to handle clicks on the tree elements
@@ -78,7 +79,10 @@ export class ServerTreeController extends treedefaults.DefaultController {
 		if (element instanceof TreeNode) {
 			let context = new ObjectExplorerActionsContext();
 			context.nodeInfo = element.toNodeInfo();
+			// Note: getting DB name before, but intentionally not using treeUpdateUtils.getConnectionProfile as it replaces
+			// the connection ID with a new one. This breaks a number of internal tasks
 			context.connectionProfile = element.getConnectionProfile().toIConnectionProfile();
+			context.connectionProfile.databaseName = element.getDatabaseName();
 			actionContext = context;
 		} else if (element instanceof ConnectionProfile) {
 			let context = new ObjectExplorerActionsContext();
