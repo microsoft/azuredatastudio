@@ -15,7 +15,7 @@ export const IProfilerService = createDecorator<IProfilerService>(PROFILER_SERVI
 
 export type ProfilerSessionID = string;
 
-export const PROFILER_SESSION_TEMPLATE_SETTINGS = 'profiler.sessionTemplates';
+export const PROFILER_VIEW_TEMPLATE_SETTINGS = 'profiler.viewTemplates';
 export const PROFILER_SETTINGS = 'profiler';
 
 /**
@@ -84,7 +84,7 @@ export interface IProfilerService {
 	 * @returns An array of session templates that match the provider passed, if passed, and generic ones (no provider specified),
 	 * otherwise returns all session templates
 	 */
-	getSessionTemplates(providerId?: string): Array<IProfilerSessionTemplate>;
+	getViewTemplates(providerId?: string): Array<IProfilerViewTemplate>;
 	/**
 	 * Launches the dialog for editing the view columns of a profiler session template for the given input
 	 * @param input input object that contains the necessary information which will be modified based on used input
@@ -93,25 +93,16 @@ export interface IProfilerService {
 }
 
 export interface IProfilerSettings {
-	sessionTemplates: Array<IProfilerSessionTemplate>;
+	viewTemplates: Array<IProfilerViewTemplate>;
 }
 
-export interface IEventTemplate {
+export interface IColumnViewTemplate {
 	name: string;
-	optionalColumns: Array<string>;
+	width: string;
+	eventsMapped: Array<string>;
 }
 
-export interface IEventViewTemplate {
+export interface IProfilerViewTemplate {
 	name: string;
-	columns: Array<string>;
-}
-
-export interface ISessionViewTemplate {
-	events: Array<IEventViewTemplate>;
-}
-
-export interface IProfilerSessionTemplate {
-	name: string;
-	events: Array<IEventTemplate>;
-	view: ISessionViewTemplate;
+	columns: Array<IColumnViewTemplate>;
 }
