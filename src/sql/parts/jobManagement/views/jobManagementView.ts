@@ -57,8 +57,8 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 				}
 			} else if (this.isVisible === true && this._parentComponent.refresh === true) {
 				this._showProgressWheel = true;
-				this.onFirstVisible();
 				this.isRefreshing = true;
+				this.onFirstVisible();
 				this._parentComponent.refresh = false;
 			} else if (this.isVisible === true && this._visibilityElement.nativeElement.offsetParent === null) {
 				this.isVisible = false;
