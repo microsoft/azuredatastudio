@@ -43,6 +43,8 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private readonly NewStepButtonString: string = localize('jobDialog.new', 'New...');
 	private readonly EditStepButtonString: string = localize('jobDialog.edit', 'Edit');
 	private readonly DeleteStepButtonString: string = localize('jobDialog.delete', 'Delete');
+	private readonly MoveStepUpButtonString: string = localize('jobDialog.moveUp', 'Move Step Up');
+	private readonly MoveStepDownButtonString: string = localize('jobDialog.moveDown', 'Move Step Up');
 
 	// Notifications tab strings
 	private readonly NotificationsTabTopLabelString: string = localize('jobDialog.notificationsTabTop', 'Actions to perform when the job completes');
@@ -54,10 +56,12 @@ export class JobDialog extends AgentDialog<JobData>  {
 	// Schedules tab strings
 	private readonly SchedulesTopLabelString: string = localize('jobDialog.schedulesaLabel', 'Schedules list');
 	private readonly PickScheduleButtonString: string = localize('jobDialog.pickSchedule', 'Pick Schedule');
+	private readonly ScheduleNameLabelString: string = localize('jobDialog.scheduleNameLabel', 'Schedule Name');
 
 	// Alerts tab strings
 	private readonly AlertsTopLabelString: string = localize('jobDialog.alertsList', 'Alerts list');
 	private readonly NewAlertButtonString: string = localize('jobDialog.newAlert', 'New Alert');
+	private readonly AlertNameLabelString: string = localize('jobDialog.alertNameLabel', 'Alert Name');
 
 	// UI Components
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
@@ -199,13 +203,13 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			this.moveStepUpButton = view.modelBuilder.button()
 				.withProperties({
-					label: 'Move Up',
+					label: this.MoveStepUpButtonString,
 					width: 80
 				}).component();
 
 			this.moveStepDownButton = view.modelBuilder.button()
 				.withProperties({
-					label: 'Move Down',
+					label: this.MoveStepDownButtonString,
 					width: 80
 				}).component();
 
@@ -248,7 +252,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.alertsTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						'Alert Name'
+						this.AlertNameLabelString
 					],
 					data: [],
 					height: 600,
@@ -283,7 +287,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.schedulesTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						'Schedule Name'
+						this.ScheduleNameLabelString
 					],
 					data: [],
 					height: 600,

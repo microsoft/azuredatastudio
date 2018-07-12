@@ -23,6 +23,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private static readonly GeneralTabText: string = localize('alertDialog.General', 'General');
 	private static readonly ResponseTabText: string = localize('alertDialog.Response', 'Response');
 	private static readonly OptionsTabText: string = localize('alertDialog.Options', 'Options');
+	private static readonly EventAlertText: string = localize('alertDialog.eventAlert', 'Event alert definition');
 
 	// General tab strings
 	private static readonly NameLabel: string = localize('alertDialog.Name', 'Name');
@@ -294,7 +295,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 						component: this.raiseAlertMessageTextBox,
 						title: AlertDialog.MessageTextLabel
 					}],
-					title: 'Event alert definition'
+					title: AlertDialog.EventAlertText
 				}
 			]).withLayout({ width: '100%' }).component();
 
