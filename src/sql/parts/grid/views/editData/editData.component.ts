@@ -354,7 +354,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				this.loadDataFunction,
 				index => { return { values: [] }; }
 			),
-			columnDefinitions:  [new RowNumberColumn({ numberOfRows: resultSet.rowCount }).getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
+			columnDefinitions: [new RowNumberColumn({ numberOfRows: resultSet.rowCount }).getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let isLinked = c.isXml || c.isJson;
 				let linkType = c.isXml ? 'xml' : 'json';
 				return {
