@@ -125,6 +125,7 @@ export class ProfilerEditor extends BaseEditor {
 	private _autoscrollAction: Actions.ProfilerAutoScroll;
 	private _collapsedPanelAction: Actions.ProfilerCollapsablePanelAction;
 
+
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
@@ -205,11 +206,11 @@ export class ProfilerEditor extends BaseEditor {
 		this._actionBar.setContent([
 			{ action: this._startAction },
 			{ action: this._stopAction },
-			{ element: dropdownContainer },
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ action: this._pauseAction },
 			{ action: this._autoscrollAction },
-			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) }
+			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) },
+			{ element: dropdownContainer },
 		]);
 	}
 

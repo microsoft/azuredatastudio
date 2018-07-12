@@ -87,14 +87,6 @@ const profilerViewTemplateSchema: IJSONSchema = {
 					{
 						name: 'Duration',
 						eventsMapped: ['duration']
-					},
-					{
-						name: 'EndTime',
-						eventsMapped: []
-					},
-					{
-						name: 'BinaryData',
-						eventsMapped: []
 					}
 				]
 			},
@@ -116,10 +108,6 @@ const profilerViewTemplateSchema: IJSONSchema = {
 					{
 						name: 'StartTime',
 						eventsMapped: ['timestamp']
-					},
-					{
-						name: 'BinaryData',
-						eventsMapped: []
 					}
 				]
 			},
@@ -136,7 +124,7 @@ const profilerViewTemplateSchema: IJSONSchema = {
 					},
 					{
 						name: 'Duration',
-						eventsMapped: []
+						eventsMapped: ['duration']
 					},
 					{
 						name: 'SPID',
@@ -144,64 +132,19 @@ const profilerViewTemplateSchema: IJSONSchema = {
 					},
 					{
 						name: 'DatabaseID',
-						eventsMapped: []
+						eventsMapped: ['database_id']
 					},
 					{
 						name: 'DatabaseName',
-						eventsMapped: []
+						eventsMapped: ['database_name']
 					},
 					{
 						name: 'ObjectType',
-						eventsMapped: []
+						eventsMapped: ['object_type']
 					},
 					{
 						name: 'LoginName',
 						eventsMapped: ['server_principal_name']
-					}
-				]
-			},
-			{
-				name: 'TSQL_SPs View',
-				columns: [
-					{
-						name: 'EventClass',
-						eventsMapped: ['name']
-					},
-					{
-						name: 'TextData',
-						eventsMapped: ['options_text', 'batch_text']
-					},
-					{
-						name: 'DatabaseID',
-						eventsMapped: []
-					},
-					{
-						name: 'DatabaseName',
-						eventsMapped: []
-					},
-					{
-						name: 'ObjectID',
-						eventsMapped: []
-					},
-					{
-						name: 'ObjectName',
-						eventsMapped: []
-					},
-					{
-						name: 'ServerName',
-						eventsMapped: []
-					},
-					{
-						name: 'BinaryData',
-						eventsMapped: []
-					},
-					{
-						name: 'SPID',
-						eventsMapped: ['session_id']
-					},
-					{
-						name: 'StartTime',
-						eventsMapped: ['timestamp']
 					}
 				]
 			},
@@ -255,55 +198,6 @@ const profilerViewTemplateSchema: IJSONSchema = {
 					{
 						name: 'Duration',
 						eventsMapped: ['duration']
-					},
-					{
-						name: 'EndTime',
-						eventsMapped: []
-					},
-					{
-						name: 'BinaryData',
-						eventsMapped: []
-					}
-				]
-			},
-			{
-				name: 'TSQL_Grouped View',
-				columns: [
-					{
-						name: 'ApplicationName',
-						eventsMapped: ['client_app_name']
-					},
-					{
-						name: 'NTUserName',
-						eventsMapped: ['nt_username']
-					},
-					{
-						name: 'LoginName',
-						eventsMapped: ['server_principal_name']
-					},
-					{
-						name: 'ClientProcessID',
-						eventsMapped: ['client_pid']
-					},
-					{
-						name: 'EventClass',
-						eventsMapped: ['name']
-					},
-					{
-						name: 'TextData',
-						eventsMapped: ['options_text', 'batch_text']
-					},
-					{
-						name: 'SPID',
-						eventsMapped: ['session_id']
-					},
-					{
-						name: 'StartTime',
-						eventsMapped: ['timestamp']
-					},
-					{
-						name: 'BinaryData',
-						eventsMapped: []
 					}
 				]
 			},
@@ -325,10 +219,6 @@ const profilerViewTemplateSchema: IJSONSchema = {
 					{
 						name: 'SPID',
 						eventsMapped: ['session_id']
-					},
-					{
-						name: 'BinaryData',
-						eventsMapped: []
 					}
 				]
 			}
