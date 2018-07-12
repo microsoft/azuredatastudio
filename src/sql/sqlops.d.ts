@@ -1188,7 +1188,7 @@ declare module 'sqlops' {
 	}
 
 	export enum FrequencyTypes {
-		Unknown ,
+		Unknown,
 		OneTime = 1 << 1,
 		Daily = 1 << 2,
 		Weekly = 1 << 3,
@@ -1396,15 +1396,14 @@ declare module 'sqlops' {
 		job: AgentJobInfo;
 	}
 
-	export interface AgentJobCategory
-	{
+	export interface AgentJobCategory {
 		id: string;
 		name: string;
 	}
 
 	export interface AgentJobDefaultsResult extends ResultStatus {
 		owner: string;
-	   	categories: AgentJobCategory[];
+		categories: AgentJobCategory[];
 	}
 
 	export interface CreateAgentJobStepResult extends ResultStatus {
