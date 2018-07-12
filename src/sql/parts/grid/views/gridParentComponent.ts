@@ -26,6 +26,8 @@ import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
 import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/parts/query/common/queryContext';
 import { error } from 'sql/base/common/log';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
+import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 
 import { IAction } from 'vs/base/common/actions';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
@@ -34,7 +36,6 @@ import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/c
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
-import { DragCellSelectionModel } from 'sql/base/browser/ui/table/plugins/dragCellSelectionModel.plugin';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -42,15 +43,9 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 export abstract class GridParentComponent {
 	// CONSTANTS
 	// tslint:disable:no-unused-variable
-	protected get selectionModel(): DragCellSelectionModel<any> {
-		return new (<any>Slick).CellSelectionModel();
-		// return new DragCellSelectionModel<any>();
-	}
-	protected get slickgridPlugins(): Array<any> {
-		return [
-			new AutoColumnSize<any>({})
-		];
-	}
+
+	protected get selectionModel() { return new CellSelectionModel(); }
+	protected readonly slickgridPlugins = [new AutoColumnSize<any>({})];
 	protected _rowHeight = 29;
 	protected _defaultNumShowingRows = 8;
 	protected Constants = Constants;
@@ -95,7 +90,6 @@ export abstract class GridParentComponent {
 	public onRowEditBegin: (event: { row: number }) => void;
 	public onRowEditEnd: (event: { row: number }) => void;
 	public onIsCellEditValid: (row: number, column: number, newValue: any) => boolean;
-	public onIsColumnEditable: (column: number) => boolean;
 	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
 	public loadDataFunction: (offset: number, count: number) => Promise<IGridDataRow[]>;
 
@@ -424,7 +418,9 @@ export abstract class GridParentComponent {
 		let self = this;
 		return (gridIndex: number) => {
 			self.activeGrid = gridIndex;
-			self.slickgrids.toArray()[this.activeGrid].selection = true;
+			let grid = self.slickgrids.toArray()[self.activeGrid];
+			grid.setActive();
+			grid.selection = true;
 		};
 	}
 
@@ -432,22 +428,6 @@ export abstract class GridParentComponent {
 		if (this.activeGrid >= 0 && this.slickgrids.length > this.activeGrid) {
 			this.slickgrids.toArray()[this.activeGrid].selection = true;
 		}
-	}
-
-	/**
-	 * Used to convert the string to a enum compatible with SlickGrid
-	 */
-	protected stringToFieldType(input: string): FieldType {
-		let fieldtype: FieldType;
-		switch (input) {
-			case 'string':
-				fieldtype = FieldType.String;
-				break;
-			default:
-				fieldtype = FieldType.String;
-				break;
-		}
-		return fieldtype;
 	}
 
 	/**

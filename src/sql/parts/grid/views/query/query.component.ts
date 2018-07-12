@@ -39,6 +39,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { RowNumberColumn } from '../../../../base/browser/ui/table/plugins/rowNumberColumn.plugin';
 
 export const QUERY_SELECTOR: string = 'query-component';
 
@@ -302,9 +303,9 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 					for (let row = 0; row < rows.rows.length; row++) {
 						// Push row values onto end of gridData for slickgrid
 						gridData.push({
-							values: rows.rows[row].map(c => {
+							values: [{}].concat(rows.rows[row].map(c => {
 								return mixin({ ariaLabel: escape(c.displayValue) }, c);
-							})
+							}))
 						});
 					}
 
@@ -345,7 +346,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 				loadDataFunction,
 				index => { return { values: [] }; }
 			),
-			columnDefinitions: resultSet.columnInfo.map((c, i) => {
+			columnDefinitions: [new RowNumberColumn({ numberOfRows: resultSet.rowCount }).getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let isLinked = c.isXml || c.isJson;
 				let linkType = c.isXml ? 'xml' : 'json';
 				return {
@@ -353,11 +354,11 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 					name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 						? 'XML Showplan'
 						: c.columnName,
-					type: self.stringToFieldType('string'),
+					field: i.toString(),
 					formatter: isLinked ? Services.hyperLinkFormatter : Services.textFormatter,
 					asyncPostRender: isLinked ? self.linkHandler(linkType) : undefined
 				};
-			})
+			}))
 		};
 		self.dataSets.push(dataSet);
 

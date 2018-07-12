@@ -24,6 +24,7 @@ import { error } from 'sql/base/common/log';
 import { clone, mixin } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
@@ -166,17 +167,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		this.onRowEditEnd = (event: { row: number }): void => { };
 
-		this.onIsColumnEditable = (column: number): boolean => {
-			let result = false;
-			// Check that our variables exist
-			if (column !== undefined && !!this.dataSet && !!this.dataSet.columnDefinitions[column]) {
-				result = this.dataSet.columnDefinitions[column].isEditable;
-			}
-
-			// If no column definition exists then the row is not editable
-			return result;
-		};
-
 		this.overrideCellFn = (rowNumber, columnId, value?, data?): string => {
 			let returnVal = '';
 			if (Services.DBCellValue.isDBCellValue(value)) {
@@ -196,9 +186,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 						self.idMapping[rowIndex] = row.id;
 						rowIndex++;
 						return {
-							values: row.cells.map(c => {
+							values: [{}].concat(row.cells.map(c => {
 								return mixin({ ariaLabel: c.displayValue }, c);
-							}), row: row.id
+							})), row: row.id
 						};
 					});
 
@@ -364,7 +354,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				this.loadDataFunction,
 				index => { return { values: [] }; }
 			),
-			columnDefinitions: resultSet.columnInfo.map((c, i) => {
+			columnDefinitions:  [new RowNumberColumn({ numberOfRows: resultSet.rowCount }).getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let isLinked = c.isXml || c.isJson;
 				let linkType = c.isXml ? 'xml' : 'json';
 				return {
@@ -372,12 +362,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 						? 'XML Showplan'
 						: c.columnName,
-					type: self.stringToFieldType('string'),
+					field: i.toString(),
 					formatter: isLinked ? Services.hyperLinkFormatter : Services.textFormatter,
 					asyncPostRender: isLinked ? self.linkHandler(linkType) : undefined,
 					isEditable: c.isUpdatable
 				};
-			})
+			}))
 		};
 		self.dataSet = dataSet;
 
