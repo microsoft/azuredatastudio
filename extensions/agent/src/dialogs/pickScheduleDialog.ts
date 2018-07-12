@@ -4,18 +4,22 @@
  *--------------------------------------------------------------------------------------------*/
 
  'use strict';
+import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { PickScheduleData } from '../data/pickScheduleData';
+
+const localize = nls.loadMessageBundle();
 
 export class PickScheduleDialog {
 
 	// TODO: localize
 	// Top level
-	private readonly DialogTitle: string = 'Job Schedules';
-	private readonly OkButtonText: string = 'OK';
-	private readonly CancelButtonText: string = 'Cancel';
-	private readonly SchedulesTabText: string = 'Schedules';
+	private readonly DialogTitle: string = localize('pickSchedule.jobSchedules', 'Job Schedules');
+	private readonly OkButtonText: string = localize('pickSchedule.ok', 'OK');
+	private readonly CancelButtonText: string = localize('pickSchedule.cancel', 'Cancel');
+	private readonly ScheduleNameLabelText: string = localize('pickSchedule.scheduleName', 'Schedule Name');
+	private readonly SchedulesLabelText: string = localize('pickSchedule.schedules', 'Schedules');
 
 	// UI Components
 	private dialog: sqlops.window.modelviewdialog.Dialog;
@@ -38,7 +42,6 @@ export class PickScheduleDialog {
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
 		this.dialog.okButton.label = this.OkButtonText;
 		this.dialog.cancelButton.label = this.CancelButtonText;
-
 		sqlops.window.modelviewdialog.openDialog(this.dialog);
 	}
 
@@ -47,17 +50,17 @@ export class PickScheduleDialog {
 			this.schedulesTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						'Schedule Name'
+						this.ScheduleNameLabelText
 					],
 					data: [],
-					height: 600,
-					width: 400
+					height: '80em',
+					width: '40em'
 				}).component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.schedulesTable,
-					title: 'Schedules'
+					title: this.SchedulesLabelText
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);

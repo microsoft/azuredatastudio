@@ -10,6 +10,8 @@ import * as sqlops from 'sqlops';
 import { AgentDialog } from './agentDialog';
 import { AgentUtils } from '../agentUtils';
 import { AlertData } from '../data/alertData';
+import { OperatorDialog } from './operatorDialog';
+import { JobDialog } from './jobDialog';
 
 const localize = nls.loadMessageBundle();
 
@@ -21,6 +23,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private static readonly GeneralTabText: string = localize('alertDialog.General', 'General');
 	private static readonly ResponseTabText: string = localize('alertDialog.Response', 'Response');
 	private static readonly OptionsTabText: string = localize('alertDialog.Options', 'Options');
+	private static readonly EventAlertText: string = localize('alertDialog.eventAlert', 'Event alert definition');
 
 	// General tab strings
 	private static readonly NameLabel: string = localize('alertDialog.Name', 'Name');
@@ -111,89 +114,26 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private static readonly DelayMinutesTextBoxLabel: string =  localize('alertDialog.DelayMinutes', 'Delay Minutes');
 	private static readonly DelaySecondsTextBoxLabel: string =  localize('alertDialog.DelaySeconds', 'Delay Seconds');
 
-	// Object dropdown strings
-	private static readonly AccessMethodsLabel: string = localize('alertDialog.AccessMethods', 'Access Methods');
-	private static readonly AdvancedAnalyticsLabel: string = localize('alertDialog.AdvancedAnalyticsLabel', 'Advanced Analytics');
-	private static readonly AvailabilityReplicaLabel: string = localize('alertDialog.AvailabilityReplica', 'Availability Replica');
-	private static readonly BatchRespStatisticsLabel: string = localize('alertDialog.BatchRespStatistics', 'Batch Resp Statistics');
-	private static readonly BrokerActivationLabel: string = localize('alertDialog.BrokerActivation', 'Broker Activation');
-	private static readonly BrokerStatisticsLabel: string = localize('alertDialog.BrokerStatistics', 'Broker Statistics');
-	private static readonly BrokerTOStatisticsLabel: string = localize('alertDialog.BrokerTOStatistics', 'Broker TO Statistics');
-	private static readonly BrokerDBMTransportLabel: string = localize('alertDialog.BrokerDBMTransport', 'Broker/DBM Transport');
-	private static readonly BufferManagerLabel: string = localize('alertDialog.BufferManager', 'Buffer Manager');
-	private static readonly BufferNodeLabel: string = localize('alertDialog.BufferNode', 'Buffer Node');
-	private static readonly CatalogMetadataLabel: string = localize('alertDialog.CatalogMetadata', 'Catalog Metadata');
-	private static readonly CLRLabel: string = localize('alertDialog.CLR', 'CLR');
-	private static readonly ColumnstoreLabel: string = localize('alertDialog.Columnstore', 'Columnstore');
-	private static readonly CursorManagerLabel: string = localize('alertDialog.CursorManagerLabel', 'Cursor Manager by Type');
-	private static readonly CursorManagerTotalLabel: string = localize('alertDialog.CursorManagerTotalLabel', 'Cursor Manager Total');
-	private static readonly DatabaseReplicaLabel: string = localize('alertDialog.DatabaseReplica', 'Database Replica');
-	private static readonly DatabasesLabel: string = localize('alertDialog.DatabasesLabel', 'Databases');
-	private static readonly DeprecatedFeaturesLabel: string = localize('alertDialog.DeprecatedFeatures', 'Deprecated Features');
-	private static readonly ExecStatisticsLabel: string = localize('alertDialog.ExecStatistics', 'Exec Statistics');
-	private static readonly ExternalScriptsLabel: string = localize('alertDialog.ExternalScripts', 'External Scripts');
-	private static readonly FileTableLabel: string = localize('alertDialog.FileTable', 'File Table');
-	private static readonly GeneralStatisticsLabel: string = localize('alertDialog.GeneralStatistics', 'General Statistics');
-	private static readonly HTTPStorageLabel: string = localize('alertDialog.HTTPStorage', 'HTTP Storage');
-	private static readonly LatchesLabel: string = localize('alertDialog.Latches', 'Latches');
-	private static readonly LocksLabel: string = localize('alertDialog.Locks', 'Locks');
-	private static readonly LogPoolFreePoolLabel: string = localize('alertDialog.LogPoolFreePool', 'LogPool FreePool');
-	private static readonly MemoryBrokerClerksLabel: string = localize('alertDialog.MemoryBrokerClerks', 'Memory Broker Clerks');
-	private static readonly MemoryManagerLabel: string = localize('alertDialog.MemoryManager', 'Memory Manager');
-	private static readonly MemoryNodeLabel: string = localize('alertDialog.MemoryNode', 'Memory Node');
-	private static readonly PlanCacheLabel: string = localize('alertDialog.PlanCache', 'Plan Cache');
-	private static readonly QueryStoreLabel: string = localize('alertDialog.QueryStore', 'Query Store');
-	private static readonly ResourcePoolStatsLabel: string = localize('alertDialog.ResourcePoolStats', 'Resource Pool Stats');
-	private static readonly SQLErrorsLabel: string = localize('alertDialog.SQLErrors', 'SQL Errors');
-	private static readonly SQLServer2017XTPCursorsLabel: string = localize('alertDialog.SQLServer2017XTPCursors', 'SQL Server 2017 XTP Cursors');
-	private static readonly SQLServer2017XTPGarbageCollectionLabel: string = localize('alertDialog.SQLServer2017XTPGarbageCollection', 'SQL Server 2017 XTP Garbage Collection');
-	private static readonly SQLServer2017XTPIOGovernerLabel: string = localize('alertDialog.SQLServer2017XTPIOGoverner', 'SQL Server 2017 XTP IO Governer');
-	private static readonly SQLServer2017XTPPhantomProcessorLabel: string = localize('alertDialog.SQLServer2017XTPPhantomProcessor', 'SQL Server 2017 XTP Phantom Processor');
-	private static readonly SQLServer2017XTPStorageLabel: string = localize('alertDialog.SQLServer2017XTPStorage', 'SQL Server 2017 XTP Storage');
-	private static readonly SQLServer2017XTPTransactionLogLabel: string = localize('alertDialog.SQLServer2017XTPTransactionLog', 'SQL Server 2017 XTP Transaction Log');
-	private static readonly SQLServer2017XTPTransactionsLabel: string = localize('alertDialog.SQLServer2017XTPTransactions', 'SQL Server 2017 XTP Transactions');
-	private static readonly TransactionsLabel: string = localize('alertDialog.Transactions', 'Transactions');
-	private static readonly UserSettableLabel: string = localize('alertDialog.UserSettable', 'User Settable');
-	private static readonly WaitStatisticsLabel: string = localize('alertDialog.WaitStatistics', 'Wait Statistics');
-	private static readonly WorkloadGroupStats: string = localize('alertDialog.WorkloadGroupStats', 'Workload Group Stats');
-	private static readonly ObjectDropdownOptions: string[] = [AlertDialog.AccessMethodsLabel, AlertDialog.AdvancedAnalyticsLabel, AlertDialog.AvailabilityReplicaLabel,
-		AlertDialog.BatchRespStatisticsLabel, AlertDialog.BrokerActivationLabel, AlertDialog.BrokerStatisticsLabel, AlertDialog.BrokerTOStatisticsLabel, AlertDialog.BrokerDBMTransportLabel,
-		AlertDialog.BufferManagerLabel, AlertDialog.BufferNodeLabel, AlertDialog.CatalogMetadataLabel, AlertDialog.CLRLabel, AlertDialog.ColumnstoreLabel,
-		AlertDialog.CursorManagerLabel, AlertDialog.CursorManagerTotalLabel, AlertDialog.DatabaseReplicaLabel, AlertDialog.DatabasesLabel, AlertDialog.DeprecatedFeaturesLabel,
-		AlertDialog.ExecStatisticsLabel, AlertDialog.ExternalScriptsLabel, AlertDialog.FileTableLabel, AlertDialog.GeneralStatisticsLabel, AlertDialog.HTTPStorageLabel,
-		AlertDialog.LatchesLabel, AlertDialog.LocksLabel, AlertDialog.LogPoolFreePoolLabel, AlertDialog.MemoryBrokerClerksLabel, AlertDialog.MemoryManagerLabel,
-		AlertDialog.MemoryNodeLabel, AlertDialog.PlanCacheLabel, AlertDialog.QueryStoreLabel, AlertDialog.ResourcePoolStatsLabel, AlertDialog.SQLErrorsLabel,
-		AlertDialog.SQLServer2017XTPCursorsLabel, AlertDialog.SQLServer2017XTPGarbageCollectionLabel, AlertDialog.SQLServer2017XTPIOGovernerLabel,
-		AlertDialog.SQLServer2017XTPPhantomProcessorLabel, AlertDialog.SQLServer2017XTPStorageLabel, AlertDialog.SQLServer2017XTPTransactionLogLabel,
-		AlertDialog.SQLServer2017XTPTransactionsLabel, AlertDialog.TransactionsLabel, AlertDialog.UserSettableLabel, AlertDialog.WaitStatisticsLabel,
-		AlertDialog.WorkloadGroupStats];
-
 	// UI Components
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
 	private responseTab: sqlops.window.modelviewdialog.DialogTab;
 	private optionsTab: sqlops.window.modelviewdialog.DialogTab;
 
-	// Form Models
-	private eventAlertFormModel: sqlops.FormContainer;
-	private performanceConditionAlertFormModel: sqlops.FormContainer;
-	private wmiEventFormModel: sqlops.FormContainer;
-
 	// General tab controls
 	private nameTextBox: sqlops.InputBoxComponent;
 	private typeDropDown: sqlops.DropDownComponent;
 	private severityDropDown: sqlops.DropDownComponent;
-	private errorNumberTextBox: sqlops.InputBoxComponent;
 	private databaseDropDown: sqlops.DropDownComponent;
 	private enabledCheckBox: sqlops.CheckBoxComponent;
+	private errorNumberRadioButton: sqlops.RadioButtonComponent;
+	private severityRadioButton: sqlops.RadioButtonComponent;
+	private errorNumberTextBox: sqlops.InputBoxComponent;
 
 	private raiseAlertMessageCheckBox: sqlops.CheckBoxComponent;
 	private raiseAlertMessageTextBox: sqlops.InputBoxComponent;
-	private severityRadioButton: sqlops.RadioButtonComponent;
-	private errorNumberRadioButton: sqlops.RadioButtonComponent;
-	private objectDropDown: sqlops.DropDownComponent;
 
 	// Response tab controls
-	private executeJobDropdown: sqlops.DropDownComponent;
+	private executeJobTextBox: sqlops.InputBoxComponent;
 	private executeJobCheckBox: sqlops.CheckBoxComponent;
 	private newJobButton: sqlops.ButtonComponent;
 	private notifyOperatorsCheckBox: sqlops.CheckBoxComponent;
@@ -244,7 +184,6 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					dialog.okButton.enabled = false;
 				}
 			});
-
 			this.enabledCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: AlertDialog.EnabledCheckboxLabel
@@ -252,123 +191,116 @@ export class AlertDialog extends AgentDialog<AlertData> {
 
 			this.enabledCheckBox.checked = true;
 
+			this.databaseDropDown = view.modelBuilder.dropDown()
+				.withProperties({
+					value: databases[0],
+					values: databases,
+					width: '100%'
+				}).component();
+
 			this.typeDropDown = view.modelBuilder.dropDown()
-			.withProperties({
-				value: '',
-				values: AlertDialog.AlertTypes
-			}).component();
+				.withProperties({
+					value: '',
+					values: AlertDialog.AlertTypes,
+					width: '100%'
+				}).component();
 
-			this.initializeSqlServerEventAlert(view, databases);
-		});
-	}
+			this.severityRadioButton = view.modelBuilder.radioButton()
+				.withProperties({
+					value: 'serverity',
+					name: 'alertTypeOptions',
+					label: AlertDialog.SeverityLabel,
+					checked: true
+				}).component();
+			this.severityRadioButton.checked = true;
 
-	private async initializeSqlServerPerformanceConditionAlert(view: sqlops.ModelView) {
-		this.objectDropDown = view.modelBuilder.dropDown()
-			.withProperties({
-				value: '',
-				values: AlertDialog.ObjectDropdownOptions
-			}).component();
-		this.performanceConditionAlertFormModel = view.modelBuilder.formContainer()
-			.withFormItems([{
-				component: this.nameTextBox,
-				title: AlertDialog.NameLabel
-			}, {
-				component: this.typeDropDown,
-				title: AlertDialog.TypeLabel
-			}, {
-				component: this.objectDropDown,
-				title: 'Object'
-			}]).component();
-	}
+			this.severityDropDown = view.modelBuilder.dropDown()
+				.withProperties({
+					value: AlertDialog.AlertSeverities[0],
+					values: AlertDialog.AlertSeverities,
+					width: '100%'
+				}).component();
 
-	private async initializeSqlServerEventAlert(view: sqlops.ModelView, databases: string[]) {
-		this.databaseDropDown = view.modelBuilder.dropDown()
-		.withProperties({
-			value: databases[0],
-			values: databases
-		}).component();
+			this.errorNumberRadioButton = view.modelBuilder.radioButton()
+				.withProperties({
+					value: 'errorNumber',
+					name: 'alertTypeOptions',
+					label: AlertDialog.ErrorNumberLabel
+				}).component();
 
-		this.severityDropDown = view.modelBuilder.dropDown()
-			.withProperties({
-				value: AlertDialog.AlertSeverities[0],
-				values: AlertDialog.AlertSeverities,
-				width: 320
-			}).component();
-
-		let severityFormContainer = view.modelBuilder.formContainer()
-			.withFormItems([{
-				component: this.severityDropDown,
-				title: ''
-			}]).component();
-
-		this.severityRadioButton = view.modelBuilder.radioButton()
-			.withProperties({
-				value: 'Severity',
-				name: 'radioButtonOptions',
-				label: AlertDialog.SeverityLabel
-			}).component();
-
-		this.severityRadioButton.checked = true;
-		this.severityDropDown.enabled = true;
-
-		this.severityRadioButton.onDidClick(() => {
+			this.errorNumberTextBox = view.modelBuilder.inputBox()
+				.withProperties({
+					width: '100%'
+				})
+				.component();
 			this.errorNumberTextBox.enabled = false;
-			this.errorNumberRadioButton.checked = false;
-			this.severityDropDown.enabled = true;
-		});
 
-		this.errorNumberTextBox = view.modelBuilder.inputBox()
-			.withProperties({
-				inputType: 'text',
-				placeHolder: '1',
-				width: 320
-			}).component();
+			this.errorNumberRadioButton.onDidClick(() => {
+				this.errorNumberTextBox.enabled = true;
+				this.severityDropDown.enabled = false;
+			});
 
-		let errorNumberFormContainer = view.modelBuilder.formContainer()
-			.withFormItems([{
-				component: this.errorNumberTextBox,
-				title: ''
-			}]).component();
+			this.severityRadioButton.onDidClick(() => {
+				this.errorNumberTextBox.enabled = false;
+				this.severityDropDown.enabled = true;
+			});
 
-		this.errorNumberRadioButton = view.modelBuilder.radioButton()
-			.withProperties({
-				value: 'Error Number',
-				name: 'radioButtonOptions',
-				label: AlertDialog.ErrorNumberLabel
-			}).component();
+			this.raiseAlertMessageCheckBox = view.modelBuilder.checkBox()
+				.withProperties({
+					label: AlertDialog.RaiseIfMessageContainsLabel
+				}).component();
 
-		this.errorNumberRadioButton.checked = false;
+			this.raiseAlertMessageTextBox = view.modelBuilder.inputBox().component();
+			this.raiseAlertMessageTextBox.enabled = false;
 
-		this.errorNumberRadioButton.onDidClick(() => {
-			this.severityRadioButton.checked = false;
-			this.errorNumberTextBox.enabled = true;
-			this.severityDropDown.enabled = false;
-		});
+			this.raiseAlertMessageCheckBox.onChanged(() => {
+				this.raiseAlertMessageTextBox.enabled = this.raiseAlertMessageCheckBox.checked;
+			});
 
-		this.raiseAlertMessageCheckBox = view.modelBuilder.checkBox()
-			.withProperties({
-				label: AlertDialog.RaiseIfMessageContainsLabel
-			}).component();
+			let formModel = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.nameTextBox,
+					title: AlertDialog.NameLabel
+				}, {
+					component: this.enabledCheckBox,
+					title: ''
+				}, {
+					component: this.typeDropDown,
+					title: AlertDialog.TypeLabel
+				}, {
+					components: [{
+						component: this.databaseDropDown,
+						title: AlertDialog.DatabaseLabel
+					},
+					{
+						component: this.severityRadioButton,
+						title: ''
+					},
+					{
+						component: this.severityDropDown,
+						title: ''
+					},
+					{
+						component: this.errorNumberRadioButton,
+						title: ''
+					},
+					{
+						component: this.errorNumberTextBox,
+						title: ''
+					},
+					{
+						component: this.raiseAlertMessageCheckBox,
+						title: ''
+					}, {
+						component: this.raiseAlertMessageTextBox,
+						title: AlertDialog.MessageTextLabel
+					}],
+					title: AlertDialog.EventAlertText
+				}
+			]).withLayout({ width: '100%' }).component();
 
-		this.raiseAlertMessageTextBox = view.modelBuilder.inputBox()
-			.withProperties({
-				width: 320
-			})
-			.component();
-		this.raiseAlertMessageTextBox.enabled = false;
-		let raiseAlertMessageContainer = view.modelBuilder.formContainer()
-			.withFormItems([{
-				component: this.raiseAlertMessageTextBox,
-				title: AlertDialog.MessageTextLabel
-			}])
-			.component();
+			await view.initializeModel(formModel);
 
-		this.raiseAlertMessageCheckBox.onChanged(() => {
-			if (this.raiseAlertMessageCheckBox.checked) {
-				this.raiseAlertMessageTextBox.enabled = true;
-			} else {
-				this.raiseAlertMessageTextBox.enabled = false;
-			}
 			// initialize control values
 			this.nameTextBox.value = this.model.name;
 			this.raiseAlertMessageTextBox.value = this.model.eventDescriptionKeyword;
@@ -392,40 +324,6 @@ export class AlertDialog extends AgentDialog<AlertData> {
 				}
 			}
 		});
-		let flexRadioButtonContainer = view.modelBuilder.flexContainer()
-		.withLayout({
-			flexFlow: 'column'
-		}).withItems([this.errorNumberRadioButton, errorNumberFormContainer,
-			this.severityRadioButton, severityFormContainer, this.raiseAlertMessageCheckBox,
-			raiseAlertMessageContainer])
-		.component();
-
-		this.eventAlertFormModel = view.modelBuilder.formContainer()
-			.withFormItems([{
-				component: this.nameTextBox,
-				title: AlertDialog.NameLabel
-			}, {
-				component: this.enabledCheckBox,
-				title: ''
-			}, {
-				component: this.typeDropDown,
-				title: AlertDialog.TypeLabel
-			}, {
-				component: this.databaseDropDown,
-				title: AlertDialog.DatabaseLabel
-			}, {
-				component: flexRadioButtonContainer,
-				title: ''
-			}
-		]).withLayout({ width: '100%' }).component();
-
-		let flexModel = view.modelBuilder.flexContainer()
-			.withItems([this.eventAlertFormModel]).component();
-
-		await view.initializeModel(flexModel);
-
-		this.nameTextBox.value = this.model.name;
-		this.enabledCheckBox.checked = this.model.isEnabled;
 	}
 
 	private initializeResponseTab() {
@@ -435,39 +333,38 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					label: AlertDialog.ExecuteJobCheckBoxLabel
 				}).component();
 
-			this.executeJobDropdown = view.modelBuilder.dropDown()
-				.withProperties({
-					value: this.jobs[0],
-					values: this.jobs,
-					width: 380
-				}).component();
-
-			this.executeJobDropdown.editable = true;
-			this.executeJobDropdown.enabled = false;
+			this.executeJobTextBox = view.modelBuilder.inputBox()
+				.withProperties({ width: 375 })
+				.component();
+			this.executeJobTextBox.enabled = false;
 			this.newJobButton = view.modelBuilder.button().withProperties({
 					label: AlertDialog.NewJobButtonLabel,
 					width: 80
 				}).component();
 			this.newJobButton.enabled = false;
-
-			let executeJobContainer = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.executeJobDropdown,
-					title: AlertDialog.ExecuteJobTextBoxLabel
-				},{ component: this.newJobButton,
-					title: ''
-				}])
-				.component();
+			this.newJobButton.onDidClick(() => {
+				let jobDialog = new JobDialog(this.ownerUri);
+				jobDialog.openDialog();
+			});
 
 			this.executeJobCheckBox.onChanged(() => {
 				if (this.executeJobCheckBox.checked) {
-					this.executeJobDropdown.enabled = true;
+					this.executeJobTextBox.enabled = true;
 					this.newJobButton.enabled = true;
 				} else {
-					this.executeJobDropdown.enabled = false;
+					this.executeJobTextBox.enabled = false;
 					this.newJobButton.enabled = false;
 				}
 			});
+
+			let executeJobContainer = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.executeJobTextBox,
+					title: AlertDialog.ExecuteJobTextBoxLabel
+				}, {
+					component: this.newJobButton,
+					title: AlertDialog.NewJobButtonLabel
+				}], { componentWidth: '100%'}).component();
 
 			this.notifyOperatorsCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
@@ -483,7 +380,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					],
 					data: [],
 					height: 500,
-					width: 380
+					width: 375
 				}).component();
 
 			this.newOperatorButton = view.modelBuilder.button().withProperties({
@@ -494,15 +391,10 @@ export class AlertDialog extends AgentDialog<AlertData> {
 			this.operatorsTable.enabled = false;
 			this.newOperatorButton.enabled = false;
 
-			let operatorContainer = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.operatorsTable,
-					title: AlertDialog.OperatorListLabel
-				}, {
-					component: this.newOperatorButton,
-					title: ''
-				}])
-				.component();
+			this.newOperatorButton.onDidClick(() => {
+				let operatorDialog = new OperatorDialog(this.ownerUri);
+				operatorDialog.openDialog();
+			});
 
 			this.notifyOperatorsCheckBox.onChanged(() => {
 				if (this.notifyOperatorsCheckBox.checked) {
@@ -514,18 +406,30 @@ export class AlertDialog extends AgentDialog<AlertData> {
 				}
 			});
 
-			let flexModel = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'column'
-				})
-				.withItems([this.executeJobCheckBox, executeJobContainer, this.notifyOperatorsCheckBox, operatorContainer])
-				.component();
+			let notifyOperatorContainer = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.operatorsTable,
+					title: AlertDialog.OperatorListLabel
+				}, {
+					component: this.newOperatorButton,
+					title: ''
+				}], { componentWidth: '100%'}).component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
-					component: flexModel,
+					component: this.executeJobCheckBox,
 					title: ''
-				}]).withLayout({ width: '100%' }).component();
+				}, {
+					component: executeJobContainer,
+					title: ''
+				}, {
+					component: this.notifyOperatorsCheckBox,
+					title: ''
+				}, {
+					component: notifyOperatorContainer,
+					title: ''
+				}])
+				.withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
 		});
@@ -544,29 +448,21 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					label: AlertDialog.IncludeErrorInPagerCheckBoxLabel
 				}).component();
 
-			this.additionalMessageTextBox = view.modelBuilder.inputBox()
-				.withProperties({
-					multiline: true,
-					height: 150,
-					inputType: 'text'
-				})
-				.component();
+			this.additionalMessageTextBox = view.modelBuilder.inputBox().component();
 
 			this.delayMinutesTextBox = view.modelBuilder.inputBox()
-				.withValidation(component => +component.value >= 0)
 				.withProperties({
-					inputType: 'number'
+					inputType: 'number',
+					placeHolder: 0
 				})
 				.component();
-			this.delayMinutesTextBox.required = true;
 
 			this.delaySecondsTextBox = view.modelBuilder.inputBox()
-				.withValidation(component => +component.value >= 0)
 				.withProperties({
-					inputType: 'number'
+					inputType: 'number',
+					placeHolder: 0
 				})
 				.component();
-			this.delaySecondsTextBox.required = true;
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -598,11 +494,6 @@ export class AlertDialog extends AgentDialog<AlertData> {
 			if (index >= 0) {
 				severityNumber = index + 1;
 			}
-		} else {
-			let errorNumber = +this.errorNumberTextBox.value;
-			if (errorNumber) {
-				severityNumber = errorNumber;
-			}
 		}
 		return severityNumber;
 	}
@@ -610,6 +501,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	protected updateModel() {
 		this.model.name = this.nameTextBox.value;
 		this.model.isEnabled = this.enabledCheckBox.checked;
+
 		this.model.alertType = this.getDropdownValue(this.typeDropDown);
 		let databaseName = this.getDropdownValue(this.databaseDropDown);
 		this.model.databaseName = (databaseName !== AlertDialog.AllDatabases) ? databaseName : undefined;
@@ -627,7 +519,9 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		} else {
 			this.model.eventDescriptionKeyword = '';
 		}
-		this.model.notificationMessage = this.additionalMessageTextBox.value;
-		this.model.delayBetweenResponses = +this.delayMinutesTextBox.value * 60 + +this.delaySecondsTextBox.value;
+		let minutes  = this.delayMinutesTextBox.value ? +this.delayMinutesTextBox.value : 0;
+		let seconds = this.delaySecondsTextBox.value ? +this.delaySecondsTextBox : 0;
+		this.model.delayBetweenResponses = minutes + seconds;
+
 	}
 }
