@@ -45,7 +45,6 @@ export abstract class GridParentComponent {
 	// tslint:disable:no-unused-variable
 
 	protected get selectionModel() { return new CellSelectionModel(); }
-	protected readonly slickgridPlugins = [new AutoColumnSize<any>({})];
 	protected _rowHeight = 29;
 	protected _defaultNumShowingRows = 8;
 	protected Constants = Constants;

@@ -25,6 +25,7 @@ import { clone, mixin } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
+import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
@@ -66,6 +67,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
+	protected plugins = new Array<Array<Slick.Plugin<any>>>();
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: { row: number, column: number }) => void;
@@ -340,6 +342,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let maxHeight = this.getMaxHeight(resultSet.rowCount);
 		let minHeight = this.getMinHeight(resultSet.rowCount);
 
+		let rowNumberColumn = new RowNumberColumn({ numberOfRows: resultSet.rowCount });
+
 		// Store the result set from the event
 		let dataSet: IGridDataSet = {
 			resized: undefined,
@@ -354,7 +358,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				this.loadDataFunction,
 				index => { return { values: [] }; }
 			),
-			columnDefinitions: [new RowNumberColumn({ numberOfRows: resultSet.rowCount }).getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
+			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let isLinked = c.isXml || c.isJson;
 				let linkType = c.isXml ? 'xml' : 'json';
 				return {
@@ -369,6 +373,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				};
 			}))
 		};
+		self.plugins.push([rowNumberColumn, new AutoColumnSize()]);
 		self.dataSet = dataSet;
 
 		// Create a dataSet to render without rows to reduce DOM size

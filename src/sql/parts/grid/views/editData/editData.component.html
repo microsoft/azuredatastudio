@@ -17,7 +17,7 @@
 						showDataTypeIcon="false"
 						showHeader="true"
 						[resized]="dataSet.resized"
-						[plugins]="slickgridPlugins"
+						[plugins]="plugins[i]"
 						(activeCellChanged)="onActiveCellChanged($event)"
 						(cellEditBegin)="onCellEditBegin($event)"
 						(cellEditExit)="onCellEditEnd($event)"

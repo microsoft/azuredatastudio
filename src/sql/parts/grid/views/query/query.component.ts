@@ -28,6 +28,8 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { clone, mixin } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { escape } from 'sql/base/common/strings';
+import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
+import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 
 import { format } from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
@@ -39,7 +41,6 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { RowNumberColumn } from '../../../../base/browser/ui/table/plugins/rowNumberColumn.plugin';
 
 export const QUERY_SELECTOR: string = 'query-component';
 
@@ -62,7 +63,9 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 
 	// create a function alias to use inside query.component
 	// tslint:disable-next-line:no-unused-variable
-	private stringsFormat: any = format;
+	protected stringsFormat: any = format;
+
+	protected plugins = new Array<Array<Slick.Plugin<any>>>();
 
 	// tslint:disable-next-line:no-unused-variable
 	private dataIcons: IGridIcon[] = [
@@ -332,6 +335,8 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			minHeight = minHeightNumber.toString() + 'px';
 		}
 
+		let rowNumberColumn = new RowNumberColumn({ numberOfRows: resultSet.rowCount });
+
 		// Store the result set from the event
 		let dataSet: IGridDataSet = {
 			resized: undefined,
@@ -346,7 +351,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 				loadDataFunction,
 				index => { return { values: [] }; }
 			),
-			columnDefinitions: [new RowNumberColumn({ numberOfRows: resultSet.rowCount }).getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
+			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let isLinked = c.isXml || c.isJson;
 				let linkType = c.isXml ? 'xml' : 'json';
 				return {
@@ -360,6 +365,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 				};
 			}))
 		};
+		self.plugins.push([rowNumberColumn, new AutoColumnSize()]);
 		self.dataSets.push(dataSet);
 
 		// check if the resultset is for a query plan
