@@ -49,6 +49,9 @@ export class JobData implements IAgentDialogData {
 		if (jobInfo) {
 			this.dialogMode = AgentDialogMode.EDIT;
 			this.name = jobInfo.name;
+			this.owner = jobInfo.owner;
+			this.category = jobInfo.category;
+			this.description = jobInfo.description;
 			this.enabled = jobInfo.enabled;
 		}
 	}
