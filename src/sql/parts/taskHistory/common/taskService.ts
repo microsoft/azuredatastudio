@@ -27,6 +27,8 @@ export interface ITaskService {
 	getAllTasks(): TaskNode;
 	getNumberOfInProgressTasks(): number;
 	onNewTaskCreated(handle: number, taskInfo: sqlops.TaskInfo);
+	createNewTask(taskInfo: sqlops.TaskInfo);
+	updateTask(taskProgressInfo: sqlops.TaskProgressInfo);
 	onTaskStatusChanged(handle: number, taskProgressInfo: sqlops.TaskProgressInfo);
 	cancelTask(providerId: string, taskId: string): Thenable<boolean>;
 	/**
@@ -70,12 +72,16 @@ export class TaskService implements ITaskService {
 	}
 
 	public onNewTaskCreated(handle: number, taskInfo: sqlops.TaskInfo) {
+		this.createNewTask(taskInfo);
+	}
+
+	public createNewTask(taskInfo: sqlops.TaskInfo) {
 		let node: TaskNode = new TaskNode(taskInfo.name, taskInfo.serverName, taskInfo.databaseName, taskInfo.taskId, taskInfo.taskExecutionMode, taskInfo.isCancelable);
 		node.providerName = taskInfo.providerName;
 		this.handleNewTask(node);
 	}
 
-	public onTaskStatusChanged(handle: number, taskProgressInfo: sqlops.TaskProgressInfo) {
+	public updateTask(taskProgressInfo: sqlops.TaskProgressInfo) {
 		this.handleTaskComplete({
 			taskId: taskProgressInfo.taskId,
 			status: taskProgressInfo.status,
@@ -84,15 +90,23 @@ export class TaskService implements ITaskService {
 		});
 	}
 
+	public onTaskStatusChanged(handle: number, taskProgressInfo: sqlops.TaskProgressInfo) {
+		this.updateTask(taskProgressInfo);
+	}
+
 	public cancelTask(providerId: string, taskId: string): Thenable<boolean> {
 		let task = this.getTaskInQueue(taskId);
 		task.status = TaskStatus.canceling;
 		this._onTaskComplete.fire(task);
-		let provider = this._providers[providerId];
-		if (provider) {
-			return provider.cancelTask({
-				taskId: taskId
-			});
+		if (providerId) {
+			let provider = this._providers[providerId];
+			if (provider && provider.cancelTask) {
+				return provider.cancelTask({
+					taskId: taskId
+				});
+			}
+		} else {
+			return Promise.resolve(true);
 		}
 		return Promise.resolve(undefined);
 	}

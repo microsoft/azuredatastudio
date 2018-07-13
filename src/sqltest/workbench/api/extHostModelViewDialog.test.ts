@@ -37,7 +37,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		extHostModelView = Mock.ofInstance(<ExtHostModelViewShape>{
 			$registerProvider: (widget, handler) => undefined
 		});
-		extHostModelViewDialog = new ExtHostModelViewDialog(mainContext, extHostModelView.object);
+		extHostModelViewDialog = new ExtHostModelViewDialog(mainContext, extHostModelView.object, undefined);
 	});
 
 	test('Creating a dialog returns a dialog with initialized ok and cancel buttons and the given title', () => {
