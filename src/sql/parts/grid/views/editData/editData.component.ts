@@ -367,11 +367,16 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			columnDefinitions: resultSet.columnInfo.map((c, i) => {
 				let isLinked = c.isXml || c.isJson;
 				let linkType = c.isXml ? 'xml' : 'json';
+
+				// Ensure that the column names are rendered as text and not HTML
+				let columnNameElement = document.createElement('div');
+				columnNameElement.textContent = c.columnName;
+
 				return {
 					id: i.toString(),
 					name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 						? 'XML Showplan'
-						: c.columnName,
+						: columnNameElement.innerHTML,
 					type: self.stringToFieldType('string'),
 					formatter: isLinked ? Services.hyperLinkFormatter : Services.textFormatter,
 					asyncPostRender: isLinked ? self.linkHandler(linkType) : undefined,
