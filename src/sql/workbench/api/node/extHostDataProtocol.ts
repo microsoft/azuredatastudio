@@ -605,6 +605,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	/**
+	 * Gets Agent Credentials from server
+	 */
+	$getCredentials(handle: number, ownerUri: string): Thenable<sqlops.AgentCredentialsResult> {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getCredentials(ownerUri);
+	}
+
+	/**
 	 * SQL Agent job data update notification
 	 */
 	public $onJobDataUpdated(handle: Number): void {

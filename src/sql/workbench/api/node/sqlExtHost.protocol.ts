@@ -372,6 +372,11 @@ export abstract class ExtHostDataProtocolShape {
 	 * Deletes  a proxy
 	 */
 	$deleteProxy(handle: number, connectionUri: string, proxy: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
+
+	/**
+	 * Get Agent Credentials list
+	 */
+	$getCredentials(handle: number, connectionUri: string): Thenable<sqlops.AgentCredentialsResult> { throw ni(); }
 }
 
 /**

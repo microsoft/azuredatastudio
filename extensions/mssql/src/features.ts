@@ -438,6 +438,22 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		// Agent Credential Method
+		let  getCredentials = (ownerUri: string): Thenable<sqlops.AgentCredentialsResult>  => {
+			let params: contracts.AgentCredentialsParams = {
+				ownerUri: ownerUri
+			};
+			let requestType = contracts.AgentCredentialsRequest.type;
+			return client.sendRequest(requestType, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(requestType, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+
 		// Job Schedule management methods
 		let  getJobSchedules = (ownerUri: string): Thenable<sqlops.AgentJobSchedulesResult>  => {
 			let params: contracts.AgentJobScheduleParams = {
@@ -532,6 +548,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			createProxy,
 			updateProxy,
 			deleteProxy,
+			getCredentials,
 			getJobSchedules,
 			createJobSchedule,
 			updateJobSchedule,

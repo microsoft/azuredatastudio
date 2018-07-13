@@ -15,9 +15,8 @@ const localize = nls.loadMessageBundle();
 export class ProxyDialog extends AgentDialog<ProxyData>  {
 
 	// Top level
-	private static readonly DialogTitle: string = localize('createProxy.createProxy', 'Create Proxy');
-	private static readonly CreateDialogTitle: string = localize('createProxy.createAlert', 'Create Alert');
-	private static readonly EditDialogTitle: string = localize('createProxy.createAlert', 'Create Alert');
+	private static readonly CreateDialogTitle: string = localize('createProxy.createProxy', 'Create Proxy');
+	private static readonly EditDialogTitle: string = localize('createProxy.editProxy', 'Edit Proxy');
 	private static readonly GeneralTabText: string = localize('createProxy.General', 'General');
 
 	// General tab strings
@@ -35,8 +34,7 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 	private static readonly SSASCommandLabel: string = localize('createProxy.SSASCommandLabel', 'SQL Server Analysis Services Command');
 	private static readonly SSISPackageLabel: string = localize('createProxy.SSISPackage', 'SQL Server Integration Services Package');
 	private static readonly PowerShellLabel: string = localize('createProxy.PowerShell', 'PowerShell');
-
-
+	private static readonly SubSystemHeadingLabel: string = localize('createProxy.subSystemHeading', 'Active to the following subsytems');
 
 	// UI Components
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
@@ -52,14 +50,14 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 	private replicationDistributorCheckBox: sqlops.CheckBoxComponent;
 	private replicationMergeCheckbox: sqlops.CheckBoxComponent;
 	private replicationQueueReaderCheckbox: sqlops.CheckBoxComponent;
-	private SQLQueryCheckBox: sqlops.CheckBoxComponent;
-	private SQLCommandCheckBox: sqlops.CheckBoxComponent;
-	private SQLIntegrationServicesPackageCheckbox: sqlops.CheckBoxComponent;
+	private sqlQueryCheckBox: sqlops.CheckBoxComponent;
+	private sqlCommandCheckBox: sqlops.CheckBoxComponent;
+	private sqlIntegrationServicesPackageCheckbox: sqlops.CheckBoxComponent;
 	private powershellCheckBox: sqlops.CheckBoxComponent;
 
-	private credentials: string[];
+	private credentials: sqlops.AgentCredential[];
 
-	constructor(ownerUri: string, proxyInfo: sqlops.AgentProxyInfo = undefined, credentials: string[]) {
+	constructor(ownerUri: string, proxyInfo: sqlops.AgentProxyInfo = undefined, credentials: sqlops.AgentCredential[]) {
 		super(
 			ownerUri,
 			new ProxyData(ownerUri, proxyInfo),
@@ -85,14 +83,19 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 
 			this.credentialNameDropDown = view.modelBuilder.dropDown()
 				.withProperties({
-					width: 420,
+					width: 432,
 					value: '',
-					values: this.credentials
+					editable: true,
+					values: this.credentials.length > 0 ? this.credentials.map(c => c.credentialName) : ['']
 				})
 				.component();
 
 			this.descriptionTextBox = view.modelBuilder.inputBox()
-				.withProperties({width: 420})
+				.withProperties({
+					width: 420,
+					multiline: true,
+					height: 300
+				})
 				.component();
 
 			this.subsystemCheckBox = view.modelBuilder.checkBox()
@@ -108,9 +111,9 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 					this.replicationDistributorCheckBox.checked = true;
 					this.replicationMergeCheckbox.checked = true;
 					this.replicationQueueReaderCheckbox.checked = true;
-					this.SQLQueryCheckBox.checked = true;
-					this.SQLCommandCheckBox.checked = true;
-					this.SQLIntegrationServicesPackageCheckbox.checked = true;
+					this.sqlQueryCheckBox.checked = true;
+					this.sqlCommandCheckBox.checked = true;
+					this.sqlIntegrationServicesPackageCheckbox.checked = true;
 					this.powershellCheckBox.checked = true;
 				} else {
 					this.operatingSystemCheckBox.checked = false;
@@ -119,9 +122,9 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 					this.replicationDistributorCheckBox.checked = false;
 					this.replicationMergeCheckbox.checked = false;
 					this.replicationQueueReaderCheckbox.checked = false;
-					this.SQLQueryCheckBox.checked = false;
-					this.SQLCommandCheckBox.checked = false;
-					this.SQLIntegrationServicesPackageCheckbox.checked = false;
+					this.sqlQueryCheckBox.checked = false;
+					this.sqlCommandCheckBox.checked = false;
+					this.sqlIntegrationServicesPackageCheckbox.checked = false;
 					this.powershellCheckBox.checked = false;
 				}
 			});
@@ -156,17 +159,17 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 					label: ProxyDialog.ReplicationQueueReaderLabel
 				}).component();
 
-			this.SQLQueryCheckBox = view.modelBuilder.checkBox()
+			this.sqlQueryCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: ProxyDialog.SSASQueryLabel
 				}).component();
 
-			this.SQLCommandCheckBox = view.modelBuilder.checkBox()
+			this.sqlCommandCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: ProxyDialog.SSASCommandLabel
 				}).component();
 
-			this.SQLIntegrationServicesPackageCheckbox = view.modelBuilder.checkBox()
+			this.sqlIntegrationServicesPackageCheckbox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: ProxyDialog.SSISPackageLabel
 				}).component();
@@ -179,7 +182,7 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 			let checkBoxContainer = view.modelBuilder.groupContainer()
 				.withItems([this.operatingSystemCheckBox, this.replicationSnapshotCheckBox,
 				this.replicationTransactionLogCheckBox, this.replicationDistributorCheckBox, this.replicationMergeCheckbox,
-				this.replicationQueueReaderCheckbox, this.SQLQueryCheckBox, this.SQLCommandCheckBox, this.SQLIntegrationServicesPackageCheckbox,
+				this.replicationQueueReaderCheckbox, this.sqlQueryCheckBox, this.sqlCommandCheckBox, this.sqlIntegrationServicesPackageCheckbox,
 				this.powershellCheckBox])
 				.component();
 
@@ -193,12 +196,6 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 				}, {
 					component: this.descriptionTextBox,
 					title: ProxyDialog.DescriptionTextBoxLabel
-				}, {
-					component: this.subsystemCheckBox,
-					title: ''
-				}, {
-					component: checkBoxContainer,
-					title: ''
 				}]).withLayout({ width: 420 }).component();
 
 			await view.initializeModel(formModel);
@@ -213,6 +210,10 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 	protected updateModel() {
 		this.model.accountName = this.proxyNameTextBox.value;
 		this.model.credentialName = this.credentialNameDropDown.value as string;
+		this.model.credentialId = this.credentials.find(
+			c => c.credentialName === this.model.credentialName).credentialId;
+		this.model.credentialIdentity = this.credentials.find(
+			c => c.credentialName === this.model.credentialName).credentialIdentity;
 		this.model.description = this.descriptionTextBox.value;
 	}
 }

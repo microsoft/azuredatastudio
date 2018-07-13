@@ -1450,6 +1450,16 @@ declare module 'sqlops' {
 		proxies: AgentProxyInfo[];
 	}
 
+	export interface AgentCredential {
+		credentialId: number;
+		credentialIdentity: string;
+		credentialName: string;
+	}
+
+	export interface AgentCredentialsResult extends ResultStatus {
+		credentials: AgentCredential[];
+	}
+
 	export interface CreateAgentProxyResult extends ResultStatus {
 		proxy: AgentProxyInfo;
 	}
@@ -1502,6 +1512,9 @@ declare module 'sqlops' {
 		createProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<CreateAgentOperatorResult>;
 		updateProxy(ownerUri: string, originalProxyName: string, proxyInfo: AgentProxyInfo): Thenable<UpdateAgentOperatorResult>;
 		deleteProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<ResultStatus>;
+
+		// Agent Credentials method
+		getCredentials(ownerUri: string): Thenable<AgentCredentialsResult>;
 
 		// Job Schedule management methods
 		getJobSchedules(ownerUri: string): Thenable<AgentJobSchedulesResult>;

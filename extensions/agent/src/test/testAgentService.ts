@@ -86,6 +86,11 @@ export class TestAgentService implements sqlops.AgentServicesProvider {
 		return undefined;
 	}
 
+	// Agent Credential method
+	getCredentials(ownerUri: string): Thenable<sqlops.AgentCredentialsResult> {
+		return undefined;
+	}
+
 	// Job Schedule management methods
 	getJobSchedules(ownerUri: string): Thenable<sqlops.AgentJobSchedulesResult> {
 		return undefined;
