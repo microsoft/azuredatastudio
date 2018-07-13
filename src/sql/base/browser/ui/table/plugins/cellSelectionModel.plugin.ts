@@ -43,6 +43,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		this.grid = grid;
 		this.grid.onActiveCellChanged.subscribe((e, args) => this.handleActiveCellChange(e, args));
 		this.grid.onKeyDown.subscribe(e => this.handleKeyDown(e));
+		this.grid.onHeaderClick.subscribe((e, args) => this.handleHeaderClick(e, args));
 		this.grid.registerPlugin(this.selector);
 		this.selector.onCellRangeSelected.subscribe((e, args) => this.handleCellRangeSelected(e, args));
 		this.selector.onBeforeCellRangeSelected.subscribe((e, args) => this.handleBeforeCellRangeSelected(e, args));
@@ -105,6 +106,16 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		} else if (!this.options.selectActiveCell) {
 			// clear the previous selection once the cell changes
 			this.setSelectedRanges([]);
+		}
+	}
+
+	private handleHeaderClick(e, args: Slick.OnHeaderClickEventArgs<T>) {
+		if (!isUndefinedOrNull(args.column)) {
+			let columnIndex = this.grid.getColumnIndex(args.column.id);
+			if (this.grid.canCellBeSelected(0, columnIndex)) {
+				this.grid.setActiveCell(0, columnIndex);
+				this.setSelectedRanges([new Slick.Range(0, columnIndex, this.grid.getDataLength() - 1, columnIndex)]);
+			}
 		}
 	}
 
