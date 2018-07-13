@@ -87,7 +87,7 @@ export class TestAgentService implements sqlops.AgentServicesProvider {
 	}
 
 	// Agent Credential method
-	getCredentials(ownerUri: string): Thenable<sqlops.AgentCredentialsResult> {
+	getCredentials(ownerUri: string): Thenable<sqlops.GetCredentialsResult> {
 		return undefined;
 	}
 

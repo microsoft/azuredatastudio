@@ -34,7 +34,7 @@ export interface IJobManagementService {
 	getProxies(connectionUri: string): Thenable<sqlops.AgentProxiesResult>;
 	deleteProxy(connectionUri: string, proxy: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus>;
 
-	getCredentials(connectionUri: string): Thenable<sqlops.AgentCredentialsResult>;
+	getCredentials(connectionUri: string): Thenable<sqlops.GetCredentialsResult>;
 
 	jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus>;
 	addToCache(server: string, cache: JobCacheObject);

@@ -439,8 +439,8 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Agent Credential Method
-		let  getCredentials = (ownerUri: string): Thenable<sqlops.AgentCredentialsResult>  => {
-			let params: contracts.AgentCredentialsParams = {
+		let  getCredentials = (ownerUri: string): Thenable<sqlops.GetCredentialsResult>  => {
+			let params: contracts.GetCredentialsParams = {
 				ownerUri: ownerUri
 			};
 			let requestType = contracts.AgentCredentialsRequest.type;

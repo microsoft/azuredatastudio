@@ -78,7 +78,7 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
-	public getCredentials(connectionUri: string): Thenable<sqlops.AgentCredentialsResult> {
+	public getCredentials(connectionUri: string): Thenable<sqlops.GetCredentialsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getCredentials(connectionUri);
 		});

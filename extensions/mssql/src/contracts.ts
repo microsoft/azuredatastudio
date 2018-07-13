@@ -149,7 +149,7 @@ export interface DeleteAgentProxyParams {
 }
 
 // Agent Credentials parameters
-export interface AgentCredentialsParams {
+export interface GetCredentialsParams {
 	ownerUri: string;
 }
 
@@ -269,7 +269,7 @@ export namespace DeleteAgentProxyRequest {
 
 // Agent Credentials request
 export namespace AgentCredentialsRequest {
-	export const type = new RequestType<AgentCredentialsParams, sqlops.AgentCredentialsResult, void, void>('agent/credentials');
+	export const type = new RequestType<GetCredentialsParams, sqlops.GetCredentialsResult, void, void>('security/credentials');
 }
 
 // Job Schedules requests

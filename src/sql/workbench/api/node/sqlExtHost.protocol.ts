@@ -376,7 +376,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Get Agent Credentials list
 	 */
-	$getCredentials(handle: number, connectionUri: string): Thenable<sqlops.AgentCredentialsResult> { throw ni(); }
+	$getCredentials(handle: number, connectionUri: string): Thenable<sqlops.GetCredentialsResult> { throw ni(); }
 }
 
 /**

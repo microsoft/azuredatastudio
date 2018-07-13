@@ -55,9 +55,9 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 	private sqlIntegrationServicesPackageCheckbox: sqlops.CheckBoxComponent;
 	private powershellCheckBox: sqlops.CheckBoxComponent;
 
-	private credentials: sqlops.AgentCredential[];
+	private credentials: sqlops.CredentialInfo[];
 
-	constructor(ownerUri: string, proxyInfo: sqlops.AgentProxyInfo = undefined, credentials: sqlops.AgentCredential[]) {
+	constructor(ownerUri: string, proxyInfo: sqlops.AgentProxyInfo = undefined, credentials: sqlops.CredentialInfo[]) {
 		super(
 			ownerUri,
 			new ProxyData(ownerUri, proxyInfo),
@@ -86,7 +86,7 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 					width: 432,
 					value: '',
 					editable: true,
-					values: this.credentials.length > 0 ? this.credentials.map(c => c.credentialName) : ['']
+					values: this.credentials.length > 0 ? this.credentials.map(c => c.name) : ['']
 				})
 				.component();
 
@@ -211,9 +211,9 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 		this.model.accountName = this.proxyNameTextBox.value;
 		this.model.credentialName = this.credentialNameDropDown.value as string;
 		this.model.credentialId = this.credentials.find(
-			c => c.credentialName === this.model.credentialName).credentialId;
+			c => c.name === this.model.credentialName).id;
 		this.model.credentialIdentity = this.credentials.find(
-			c => c.credentialName === this.model.credentialName).credentialIdentity;
+			c => c.name === this.model.credentialName).identity;
 		this.model.description = this.descriptionTextBox.value;
 	}
 }
