@@ -4,18 +4,22 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
+import * as vscode from 'vscode';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 
+const localize = nls.loadMessageBundle();
+
 export class JobData implements IAgentDialogData {
 
-	private readonly JobCompletionActionCondition_Always: string = 'When the job completes';
-	private readonly JobCompletionActionCondition_OnFailure: string = 'When the job fails';
-	private readonly JobCompletionActionCondition_OnSuccess: string = 'When the job succeeds';
+	private readonly JobCompletionActionCondition_Always: string =  localize('jobData.whenJobCompletes', 'When the job completes');
+	private readonly JobCompletionActionCondition_OnFailure: string = localize('jobData.whenJobFails', 'When the job fails');
+	private readonly JobCompletionActionCondition_OnSuccess: string = localize('jobData.whenJobSucceeds', 'When the job succeeds');
 
 	// Error Messages
-	private readonly CreateJobErrorMessage_NameIsEmpty = 'Job name must be provided';
+	private readonly CreateJobErrorMessage_NameIsEmpty = localize('jobData.jobNameRequired', 'Job name must be provided');
 
 	private _ownerUri: string;
 	private _jobCategories: string[];
@@ -25,6 +29,7 @@ export class JobData implements IAgentDialogData {
 
 	public dialogMode: AgentDialogMode = AgentDialogMode.CREATE;
 	public name: string;
+	public originalName: string;
 	public enabled: boolean = true;
 	public description: string;
 	public category: string;
@@ -49,6 +54,7 @@ export class JobData implements IAgentDialogData {
 		if (jobInfo) {
 			this.dialogMode = AgentDialogMode.EDIT;
 			this.name = jobInfo.name;
+			this.originalName = jobInfo.name;
 			this.owner = jobInfo.owner;
 			this.category = jobInfo.category;
 			this.description = jobInfo.description;
@@ -104,7 +110,39 @@ export class JobData implements IAgentDialogData {
 	}
 
 	public async save() {
-		await this._agentService.createJob(this.ownerUri, {
+		let jobInfo: sqlops.AgentJobInfo = this.toAgentJobInfo();
+		let result = this.dialogMode === AgentDialogMode.CREATE
+			? await this._agentService.createJob(this.ownerUri,  jobInfo)
+			: await this._agentService.updateJob(this.ownerUri, this.originalName, jobInfo);
+
+		if (!result || !result.success) {
+			vscode.window.showErrorMessage(
+				localize('alertData.saveErrorMessage', "Alert update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+		}
+	}
+
+	public validate(): { valid: boolean, errorMessages: string[] } {
+		let validationErrors: string[] = [];
+
+		if (!(this.name && this.name.trim())) {
+			validationErrors.push(this.CreateJobErrorMessage_NameIsEmpty);
+		}
+
+		return {
+			valid: validationErrors.length === 0,
+			errorMessages: validationErrors
+		};
+	}
+
+	public addJobSchedule(schedule: sqlops.AgentJobScheduleInfo) {
+		let existingSchedule = this.jobSchedules.find(item => item.name === schedule.name);
+		if (!existingSchedule) {
+			this.jobSchedules.push(schedule);
+		}
+	}
+
+	public toAgentJobInfo(): sqlops.AgentJobInfo {
+		return {
 			name: this.name,
 			owner: this.owner,
 			description: this.description,
@@ -134,30 +172,6 @@ export class JobData implements IAgentDialogData {
 			lastRun: '',
 			nextRun: '',
 			jobId: ''
-		}).then(result => {
-			if (!result.success) {
-				console.info(result.errorMessage);
-			}
-		});
-	}
-
-	public validate(): { valid: boolean, errorMessages: string[] } {
-		let validationErrors: string[] = [];
-
-		if (!(this.name && this.name.trim())) {
-			validationErrors.push(this.CreateJobErrorMessage_NameIsEmpty);
-		}
-
-		return {
-			valid: validationErrors.length === 0,
-			errorMessages: validationErrors
 		};
-	}
-
-	public addJobSchedule(schedule: sqlops.AgentJobScheduleInfo) {
-		let existingSchedule = this.jobSchedules.find(item => item.name === schedule.name);
-		if (!existingSchedule) {
-			this.jobSchedules.push(schedule);
-		}
 	}
 }
