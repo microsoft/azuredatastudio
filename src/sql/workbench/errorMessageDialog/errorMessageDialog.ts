@@ -168,7 +168,7 @@ export class ErrorMessageDialog extends Modal {
 
 	private resetActions(): void {
 		this._actions = [];
-		for(let actionButton of this._actionButtons) {
+		for (let actionButton of this._actionButtons) {
 			actionButton.element.style.visibility = 'hidden';
 		}
 	}
