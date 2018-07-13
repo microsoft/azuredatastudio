@@ -170,7 +170,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				}
 				modalHeader.div({ class: 'modal-title' }, (modalTitle) => {
 					this._modalTitle = modalTitle;
-					modalTitle.innerHtml(this._title);
+					modalTitle.text(this._title);
 				});
 			});
 			parts.push(this._modalHeaderSection.getHTMLElement());
@@ -433,7 +433,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected set title(title: string) {
 		if (this._title !== undefined) {
-			this._modalTitle.innerHtml(title);
+			this._modalTitle.text(title);
 		}
 	}
 

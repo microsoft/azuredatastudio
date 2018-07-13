@@ -35,6 +35,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private static readonly PagerSundayCheckBoxLabel: string = localize('createOperator.PagerSundayCheckBox', 'Sunday');
 	private static readonly WorkdayBeginLabel: string = localize('createOperator.workdayBegin', 'Workday begin');
 	private static readonly WorkdayEndLabel: string = localize('createOperator.workdayEnd', 'Workday end');
+	private static readonly PagerDutyScheduleLabel: string = localize('createOperator.PagerDutySchedule', 'Pager on duty schdule');
 
 	// Notifications tab strings
 	private static readonly AlertsTableLabel: string = localize('createOperator.AlertListHeading', 'Alert list');
@@ -180,7 +181,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			this.weekdayPagerStartTimeInput = view.modelBuilder.inputBox()
 				.withProperties({
 					inputType: 'time',
-					placeHolder: '08:00:00'
+					placeHolder: '08:00:00',
 				}).component();
 			this.weekdayPagerStartTimeInput.enabled = false;
 			let weekdayStartInputContainer = view.modelBuilder.formContainer()
@@ -222,7 +223,8 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			let pagerFridayCheckboxContainer = view.modelBuilder.flexContainer()
 				.withLayout({
 					flexFlow: 'row',
-					alignItems: 'baseline'
+					alignItems: 'baseline',
+					width: '100%'
 				}).withItems([this.pagerFridayCheckBox, weekdayStartInputContainer, weekdayEndInputContainer])
 				.component();
 
@@ -320,36 +322,6 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 				}).withItems([this.pagerSundayCheckBox, sundayStartInputContainer, sundayEndInputContainer])
 				.component();
 
-			let checkBoxContainer = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.pagerMondayCheckBox,
-					title: ''
-				}, {
-					component: this.pagerTuesdayCheckBox,
-					title: ''
-				}, {
-					component: this.pagerWednesdayCheckBox,
-					title: ''
-				}, {
-					component: this.pagerThursdayCheckBox,
-					title: ''
-				}, {
-					component: pagerFridayCheckboxContainer,
-					title: ''
-				}, {
-					component: pagerSaturdayCheckboxContainer,
-					title: ''
-				}, {
-					component: pagerSundayCheckboxContainer,
-					title: ''
-				}]).component();
-
-			let pagerContainer = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'row'
-				}).withItems([checkBoxContainer])
-				.component();
-
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.nameTextBox,
@@ -364,8 +336,29 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 					component: this.pagerEmailNameTextBox,
 					title: OperatorDialog.PagerEmailNameTextLabel
 				}, {
-					component: pagerContainer,
-					title: ''
+					components: [{
+						component: this.pagerMondayCheckBox,
+						title: ''
+					}, {
+						component: this.pagerTuesdayCheckBox,
+						title: ''
+					}, {
+						component: this.pagerWednesdayCheckBox,
+						title: ''
+					}, {
+						component: this.pagerThursdayCheckBox,
+						title: ''
+					}, {
+						component: pagerFridayCheckboxContainer,
+						title: ''
+					}, {
+						component: pagerSaturdayCheckboxContainer,
+						title: ''
+					}, {
+						component: pagerSundayCheckboxContainer,
+						title: ''
+					}] ,
+					title: OperatorDialog.PagerDutyScheduleLabel
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);

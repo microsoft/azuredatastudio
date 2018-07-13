@@ -24,6 +24,7 @@ import { error } from 'sql/base/common/log';
 import { clone, mixin } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { escape } from 'sql/base/common/strings';
 
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
@@ -367,11 +368,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			columnDefinitions: resultSet.columnInfo.map((c, i) => {
 				let isLinked = c.isXml || c.isJson;
 				let linkType = c.isXml ? 'xml' : 'json';
+
 				return {
 					id: i.toString(),
 					name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 						? 'XML Showplan'
-						: c.columnName,
+						: escape(c.columnName),
 					type: self.stringToFieldType('string'),
 					formatter: isLinked ? Services.hyperLinkFormatter : Services.textFormatter,
 					asyncPostRender: isLinked ? self.linkHandler(linkType) : undefined,
