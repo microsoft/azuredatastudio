@@ -391,21 +391,23 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			let formModel = view.modelBuilder.formContainer().withFormItems([
 				{
-					component: this.notificationsTabTopLabel,
-					title: ''
-				}, {
-					component: emailContainer,
-					title: ''
-				}, {
-					component: pagerContainer,
-					title: ''
-				}, {
-					component: eventLogContainer,
-					title: ''
-				}, {
-					component: deleteJobContainer,
-					title: ''
-				}]).withLayout({ width: '100%' }).component();
+					components:
+					[{
+						component: emailContainer,
+						title: ''
+					},
+					{
+						component: pagerContainer,
+						title: ''
+					},
+					{
+						component: eventLogContainer,
+						title: ''
+					},
+					{
+						component: deleteJobContainer,
+						title: ''
+					}], title: this.NotificationsTabTopLabelString}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
 			this.emailConditionDropdown.values = this.model.JobCompletionActionConditions;
