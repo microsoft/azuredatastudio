@@ -26,6 +26,7 @@ import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
+import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
@@ -37,7 +38,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
 @Component({
@@ -373,7 +373,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				};
 			}))
 		};
-		self.plugins.push([rowNumberColumn, new AutoColumnSize()]);
+		self.plugins.push([rowNumberColumn, new AutoColumnSize(), new AdditionalKeyBindings()]);
 		self.dataSet = dataSet;
 
 		// Create a dataSet to render without rows to reduce DOM size

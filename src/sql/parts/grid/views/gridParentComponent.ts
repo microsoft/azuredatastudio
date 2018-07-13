@@ -27,7 +27,6 @@ import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocus
 import { error } from 'sql/base/common/log';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
-import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 
 import { IAction } from 'vs/base/common/actions';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
@@ -35,7 +34,6 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';

@@ -30,6 +30,7 @@ import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { escape } from 'sql/base/common/strings';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
+import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 
 import { format } from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
@@ -365,7 +366,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 				};
 			}))
 		};
-		self.plugins.push([rowNumberColumn, new AutoColumnSize()]);
+		self.plugins.push([rowNumberColumn, new AutoColumnSize(), new AdditionalKeyBindings()]);
 		self.dataSets.push(dataSet);
 
 		// check if the resultset is for a query plan

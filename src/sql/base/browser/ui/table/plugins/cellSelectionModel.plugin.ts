@@ -66,7 +66,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 				result.push(r);
 			} else if (this.grid.canCellBeSelected(r.fromRow, r.fromCell + 1) && this.grid.canCellBeSelected(r.toRow, r.toCell)) {
 				// account for number row
-				result.push(new Slick.Range(r.fromRow, r.fromCell + 1, r.toRow, r.toCell))
+				result.push(new Slick.Range(r.fromRow, r.fromCell + 1, r.toRow, r.toCell));
 			}
 		}
 
@@ -118,7 +118,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 					ranges = this.getSelectedRanges();
 					ranges.push(new Slick.Range(0, columnIndex, this.grid.getDataLength() - 1, columnIndex));
 				} else {
-					ranges = [new Slick.Range(0, columnIndex, this.grid.getDataLength() - 1, columnIndex)]
+					ranges = [new Slick.Range(0, columnIndex, this.grid.getDataLength() - 1, columnIndex)];
 				}
 				this.grid.setActiveCell(0, columnIndex);
 				this.setSelectedRanges(ranges);
