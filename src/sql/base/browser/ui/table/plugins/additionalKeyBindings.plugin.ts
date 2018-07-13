@@ -37,6 +37,10 @@ export class AdditionalKeyBindings<T> implements Slick.Plugin<T> {
 			} else {
 				this.grid.setActiveCell(args.row, 1);
 			}
+		} else if (event.equals(KeyCode.UpArrow | KeyMod.CtrlCmd)) {
+			this.grid.setActiveCell(0, args.cell);
+		} else if (event.equals(KeyCode.DownArrow | KeyMod.CtrlCmd)) {
+			this.grid.setActiveCell(this.grid.getDataLength() - 1, args.cell);
 		} else if (event.equals(KeyCode.Home | KeyMod.CtrlCmd)) {
 			// account for row column
 			if (this.grid.canCellBeActive(0, 0)) {
