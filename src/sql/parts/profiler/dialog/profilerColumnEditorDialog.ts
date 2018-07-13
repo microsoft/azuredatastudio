@@ -360,7 +360,10 @@ export class ProfilerColumnEditorDialog extends Modal {
 		super.onAccept(e);
 	}
 
+	// currently not used, this dialog is a work in progress
+	// tracked in issue #1545 https://github.com/Microsoft/sqlopsstudio/issues/1545
 	private _updateInput(): void {
+		/*
 		this._element.getUnsortedChildren().forEach(e => {
 			let origEvent = this._input.sessionTemplate.view.events.find(i => i.name === e.id);
 			if (e.indeterminate) {
@@ -387,9 +390,13 @@ export class ProfilerColumnEditorDialog extends Modal {
 		}, []);
 		newColumns.unshift('EventClass');
 		this._input.setColumns(newColumns);
+		*/
 	}
 
+	// currently not used, this dialog is a work in progress
+	// tracked in issue #1545 https://github.com/Microsoft/sqlopsstudio/issues/1545
 	private _updateList(): void {
+		/*
 		this._element = new SessionItem(this._input.sessionTemplate.name, this._selectedValue === 0 ? 'event' : 'column');
 		this._input.sessionTemplate.events.forEach(item => {
 			let event = new EventItem(item.name, this._element);
@@ -402,6 +409,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 		});
 		this._tree.setInput(this._element);
 		this._tree.layout(DOM.getTotalHeight(this._treeContainer));
+		*/
 	}
 
 	protected layout(height?: number): void {

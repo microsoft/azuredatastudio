@@ -5,7 +5,7 @@
 
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
 import {
-	ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerSessionTemplate,
+	ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate,
 	PROFILER_SETTINGS, IProfilerSettings
 } from './interfaces';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -128,13 +128,13 @@ export class ProfilerService implements IProfilerService {
 		}
 	}
 
-	public getSessionTemplates(provider?: string): Array<IProfilerSessionTemplate> {
+	public getViewTemplates(provider?: string): Array<IProfilerViewTemplate> {
 		let config = <IProfilerSettings>this._configurationService.getValue(PROFILER_SETTINGS);
 
 		if (provider) {
-			return config.sessionTemplates;
+			return config.viewTemplates;
 		} else {
-			return config.sessionTemplates;
+			return config.viewTemplates;
 		}
 	}
 
