@@ -40,7 +40,7 @@ export class DashboardErrorContainer extends DashboardTab implements AfterViewIn
 
 	ngAfterViewInit() {
 		let errorMessage = this._errorMessageContainer.nativeElement as HTMLElement;
-		errorMessage.innerHTML = nls.localize('dashboardNavSection_loadTabError', 'The "{0}" section has invalid content. Please contact extension owner.', this.tab.title);
+		errorMessage.innerText = nls.localize('dashboardNavSection_loadTabError', 'The "{0}" section has invalid content. Please contact extension owner.', this.tab.title);
 	}
 
 	public get id(): string {
