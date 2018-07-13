@@ -13,14 +13,26 @@ export interface IRowNumberColumnOptions {
 const sizePerDigit = 15;
 
 export class RowNumberColumn<T> implements Slick.Plugin<T> {
+	private handler = new Slick.EventHandler();
+	private grid: Slick.Grid<T>;
+
 
 	constructor(private options: IRowNumberColumnOptions) {
 	}
 
 	public init(grid: Slick.Grid<T>) {
+		this.grid = grid;
+		this.handler
+			.subscribe(this.grid.onClick, (e, args) => this.handleClick(e, args))
 	}
 
 	public destroy() {
+	}
+
+	private handleClick(e: MouseEvent, args: Slick.OnClickEventArgs<T>): void {
+		if (this.grid.getColumns()[args.cell].id === 'rowNumber') {
+			this.grid.setSelectedRows([args.row]);
+		}
 	}
 
 	public getColumnDefinition(): Slick.Column<T> {
