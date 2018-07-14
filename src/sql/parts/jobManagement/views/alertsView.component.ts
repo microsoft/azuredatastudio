@@ -32,7 +32,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 
 export const VIEW_SELECTOR: string = 'jobalertsview-component';
-export const ROW_HEIGHT: number = 45;
+export const ROW_HEIGHT: number = 30;
 
 @Component({
 	selector: VIEW_SELECTOR,
@@ -103,13 +103,6 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 			column.rerenderOnResize = true;
 			return column;
 		});
-		let options = <Slick.GridOptions<any>>{
-			syncColumnCellResize: true,
-			enableColumnReorder: false,
-			rowHeight: ROW_HEIGHT,
-			enableCellNavigation: true,
-			forceFitColumns: true
-		};
 
 		this.dataView = new Slick.Data.DataView();
 
