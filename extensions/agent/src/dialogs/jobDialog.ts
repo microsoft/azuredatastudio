@@ -109,7 +109,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 	constructor(ownerUri: string, jobInfo: sqlops.AgentJobInfo = undefined) {
 		super(
 			ownerUri,
-			new JobData(ownerUri),
+			new JobData(ownerUri, jobInfo),
 			jobInfo ? JobDialog.EditDialogTitle : JobDialog.CreateDialogTitle);
 	}
 
@@ -180,9 +180,15 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.nameTextBox.value = this.model.name;
 			this.ownerTextBox.value = this.model.defaultOwner;
 			this.categoryDropdown.values = this.model.jobCategories;
-			this.categoryDropdown.value = this.model.jobCategories[0];
+
+			let idx: number = undefined;
+			if (this.model.category && this.model.category !== '') {
+				idx = this.model.jobCategories.indexOf(this.model.category);
+			}
+			this.categoryDropdown.value = this.model.jobCategories[idx > 0 ? idx : 0];
+
 			this.enabledCheckBox.checked = this.model.enabled;
-			this.descriptionTextBox.value = '';
+			this.descriptionTextBox.value = this.model.description;
 		});
 	}
 
@@ -198,7 +204,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.StepsTable_FailureColumnString
 					],
 					data: [],
-					height: 800
+					height: 300
 				}).component();
 
 			this.moveStepUpButton = view.modelBuilder.button()
@@ -255,7 +261,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.AlertNameLabelString
 					],
 					data: [],
-					height: 600,
+					height: 300,
 					width: 400
 				}).component();
 
@@ -290,7 +296,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.ScheduleNameLabelString
 					],
 					data: [],
-					height: 600,
+					height: 300,
 					width: 420
 				}).component();
 
