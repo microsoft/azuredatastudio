@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerSessionTemplate } from 'sql/parts/profiler/service/interfaces';
+import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate } from 'sql/parts/profiler/service/interfaces';
 import { ProfilerState } from './profilerState';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
@@ -28,7 +28,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	private _id: ProfilerSessionID;
 	private _state: ProfilerState;
 	private _columns: string[] = [];
-	private _sessionTemplate: IProfilerSessionTemplate;
+	private _viewTemplate: IProfilerViewTemplate;
+	// mapping of event categories to what column they display under
+	// used for coallescing multiple events with different names to the same column
+	private _columnMapping: { [event: string]: string } = {};
 
 	private _onColumnsChanged = new Emitter<Slick.Column<Slick.SlickData>[]>();
 	public onColumnsChanged: Event<Slick.Column<Slick.SlickData>[]> = this._onColumnsChanged.event;
@@ -63,22 +66,26 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this._data = new TableDataView<Slick.SlickData>(undefined, searchFn);
 	}
 
-	public set sessionTemplate(template: IProfilerSessionTemplate) {
-		this._sessionTemplate = template;
-		let newColumns = this.sessionTemplate.view.events.reduce<Array<string>>((p, e) => {
-			e.columns.forEach(c => {
-				if (!p.includes(c)) {
-					p.push(c);
-				}
-			});
+	public set viewTemplate(template: IProfilerViewTemplate) {
+		this._data.clear();
+		this._viewTemplate = template;
+
+		let newColumns = this._viewTemplate.columns.reduce<Array<string>>((p, e) => {
+			p.push(e.name);
 			return p;
 		}, []);
-		newColumns.unshift('EventClass');
-		this.setColumns(newColumns);
+
+		let newMapping: { [event: string]: string } = {};
+		this._viewTemplate.columns.forEach(c => {
+			c.eventsMapped.forEach(e => {
+				newMapping[e] = c.name;
+			});
+		});
+		this.setColumnMapping(newColumns, newMapping);
 	}
 
-	public get sessionTemplate(): IProfilerSessionTemplate {
-		return this._sessionTemplate;
+	public get viewTemplate(): IProfilerViewTemplate {
+		return this._viewTemplate;
 	}
 
 	public getTypeId(): string {
@@ -117,6 +124,12 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this._onColumnsChanged.fire(this.columns);
 	}
 
+	public setColumnMapping(columns: Array<string>, mapping: { [event: string]: string }) {
+		this._columns = columns;
+		this._columnMapping = mapping;
+		this._onColumnsChanged.fire(this.columns);
+	}
+
 	public get id(): ProfilerSessionID {
 		return this._id;
 	}
@@ -140,51 +153,22 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public onMoreRows(eventMessage: sqlops.ProfilerSessionEvents) {
-		if (eventMessage.eventsLost){
+		if (eventMessage.eventsLost) {
 			this._notificationService.warn(nls.localize("profiler.eventsLost", "The XEvent Profiler session for {0} has lost events.", this._connection.serverName));
 		}
 
-		for (let i: number  = 0; i < eventMessage.events.length && i < 500; ++i) {
+		for (let i: number = 0; i < eventMessage.events.length && i < 500; ++i) {
 			let e: sqlops.ProfilerEvent = eventMessage.events[i];
 			let data = {};
-			data['EventClass'] =  e.name;
+			data['EventClass'] = e.name;
 			data['StartTime'] = e.timestamp;
-			const columns = [
-				'TextData',
-				'ApplicationName',
-				'NTUserName',
-				'LoginName',
-				'CPU',
-				'Reads',
-				'Writes',
-				'Duration',
-				'ClientProcessID',
-				'SPID',
-				'StartTime',
-				'EndTime',
-				'BinaryData'
-			];
-
-			let columnNameMap: Map<string, string> = new Map<string, string>();
-			columnNameMap['client_app_name'] = 'ApplicationName';
-			columnNameMap['nt_username'] = 'NTUserName';
-			columnNameMap['options_text'] = 'TextData';
-			columnNameMap['server_principal_name'] = 'LoginName';
-			columnNameMap['session_id'] = 'SPID';
-			columnNameMap['batch_text'] = 'TextData';
-			columnNameMap['cpu_time'] = 'CPU';
-			columnNameMap['duration'] = 'Duration';
-			columnNameMap['logical_reads'] = 'Reads';
-			columnNameMap['event_sequence'] = 'EventSequence';
-			columnNameMap['client_pid'] = 'ClientProcessID';
-			columnNameMap['writes'] = 'Writes';
 
 			// Using ' ' instead of '' fixed the error where clicking through events
 			// with empty text fields causes future text panes to be highlighted.
-			// This is a temporary fix, and should be changed before the July release
+			// This is a temporary fix
 			data['TextData'] = ' ';
 			for (let key in e.values) {
-				let columnName = columnNameMap[key];
+				let columnName = this._columnMapping[key];
 				if (columnName) {
 					let value = e.values[key];
 					data[columnName] = value;

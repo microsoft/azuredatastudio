@@ -17,7 +17,7 @@ export function appendRow(container: Builder, label: string, labelClass: string,
 	container.element('tr', {}, (rowContainer) => {
 		rowContainer.element('td', { class: labelClass }, (labelCellContainer) => {
 			labelCellContainer.div({}, (labelContainer) => {
-				labelContainer.innerHtml(label);
+				labelContainer.text(label);
 			});
 		});
 		rowContainer.element('td', { class: cellContainerClass }, (inputCellContainer) => {
