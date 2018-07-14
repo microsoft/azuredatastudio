@@ -31,12 +31,10 @@ export class ServerTreeDataSource implements IDataSource {
 	 * No more than one element may use a given identifier.
 	 */
 	public getId(tree: ITree, element: any): string {
-		if (element instanceof ConnectionProfile) {
-			return (<ConnectionProfile>element).id;
-		} else if (element instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>element).id;
-		} else if (element instanceof TreeNode) {
-			return (<TreeNode>element).id;
+		if (element instanceof ConnectionProfile
+			|| element instanceof ConnectionProfileGroup
+			|| element instanceof TreeNode) {
+			return element.id;
 		} else {
 			return undefined;
 		}
@@ -49,9 +47,9 @@ export class ServerTreeDataSource implements IDataSource {
 		if (element instanceof ConnectionProfile) {
 			return true;
 		} else if (element instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>element).hasChildren();
+			return element.hasChildren();
 		} else if (element instanceof TreeNode) {
-			return !(<TreeNode>element).isAlwaysLeaf;
+			return !element.isAlwaysLeaf;
 		}
 		return false;
 	}
@@ -70,7 +68,7 @@ export class ServerTreeDataSource implements IDataSource {
 			} else if (element instanceof ConnectionProfileGroup) {
 				resolve((<ConnectionProfileGroup>element).getChildren());
 			} else if (element instanceof TreeNode) {
-				var node = <TreeNode>element;
+				var node = element;
 				if (node.children) {
 					resolve(node.children);
 				} else {
@@ -92,11 +90,11 @@ export class ServerTreeDataSource implements IDataSource {
 	 */
 	public getParent(tree: ITree, element: any): TPromise<any> {
 		if (element instanceof ConnectionProfile) {
-			return TPromise.as((<ConnectionProfile>element).getParent());
+			return TPromise.as(element.getParent());
 		} else if (element instanceof ConnectionProfileGroup) {
-			return TPromise.as((<ConnectionProfileGroup>element).getParent());
+			return TPromise.as(element.getParent());
 		} else if (element instanceof TreeNode) {
-			return TPromise.as(TreeUpdateUtils.getObjectExplorerParent(<TreeNode>element, this._connectionManagementService));
+			return TPromise.as(TreeUpdateUtils.getObjectExplorerParent(element, this._connectionManagementService));
 		} else {
 			return TPromise.as(null);
 		}

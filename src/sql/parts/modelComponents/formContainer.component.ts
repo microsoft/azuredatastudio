@@ -45,7 +45,7 @@ class FormItem {
 	template: `
 		<div #container *ngIf="items" class="form-table" [style.padding]="getFormPadding()" [style.width]="getFormWidth()" [style.height]="getFormHeight()">
 			<ng-container *ngFor="let item of items">
-			<div class="form-row" *ngIf="isGroupLabel(item)">
+			<div class="form-row" *ngIf="isGroupLabel(item)" [style.font-size]="getItemTitleFontSize(item)">
 				<div class="form-item-row form-group-label">
 					<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 					</model-component-wrapper>
@@ -56,7 +56,7 @@ class FormItem {
 					<ng-container *ngIf="isHorizontal(item)">
 						<div class="form-cell" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
-							<span class="icon info form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
+							<span class="icon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
 						</div>
 						<div class="form-cell">
 							<div class="form-component-container">
@@ -76,7 +76,7 @@ class FormItem {
 					<div class="form-vertical-container" *ngIf="isVertical(item)" [style.height]="getRowHeight(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 						<div class="form-item-row" [style.font-size]="getItemTitleFontSize(item)">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
-							<span class="icon info form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
+							<span class="icon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
 						</div>
 						<div class="form-item-row" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
@@ -179,8 +179,12 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	}
 
 	private getItemTitleFontSize(item: FormItem): string {
+		let defaultFontSize = '14px';
+		if (this.isInGroup(item)) {
+			defaultFontSize = '12px';
+		}
 		let itemConfig = item.config;
-		return itemConfig && itemConfig.titleFontSize ? this.convertSize(itemConfig.titleFontSize, '11px') : '11px';
+		return itemConfig && itemConfig.titleFontSize ? this.convertSize(itemConfig.titleFontSize, defaultFontSize) : defaultFontSize;
 	}
 
 	private getActionComponents(item: FormItem): FormItem[] {

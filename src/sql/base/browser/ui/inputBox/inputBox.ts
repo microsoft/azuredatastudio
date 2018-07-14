@@ -63,13 +63,13 @@ export class InputBox extends vsInputBox {
 		this.enabledInputBorder = this.inputBorder;
 		this.disabledInputBackground = styles.disabledInputBackground;
 		this.disabledInputForeground = styles.disabledInputForeground;
+		this.updateInputEnabledDisabledColors();
+		this.applyStyles();
 	}
 
 	public enable(): void {
 		super.enable();
-		this.inputBackground = this.enabledInputBackground;
-		this.inputForeground = this.enabledInputForeground;
-		this.inputBorder = this.enabledInputBorder;
+		this.updateInputEnabledDisabledColors();
 		this.applyStyles();
 	}
 
@@ -89,9 +89,7 @@ export class InputBox extends vsInputBox {
 
 	public disable(): void {
 		super.disable();
-		this.inputBackground = this.disabledInputBackground;
-		this.inputForeground = this.disabledInputForeground;
-		this.inputBorder = this.disabledInputBorder;
+		this.updateInputEnabledDisabledColors();
 		this.applyStyles();
 	}
 
@@ -120,5 +118,12 @@ export class InputBox extends vsInputBox {
 		if (!this.hideErrors) {
 			super.showMessage(message, force);
 		}
+	}
+
+	private updateInputEnabledDisabledColors(): void {
+		let enabled = this.isEnabled();
+		this.inputBackground = enabled ? this.enabledInputBackground : this.disabledInputBackground;
+		this.inputForeground = enabled ? this.enabledInputForeground : this.disabledInputForeground;
+		this.inputBorder = enabled ? this.enabledInputBorder : this.disabledInputBorder;
 	}
 }

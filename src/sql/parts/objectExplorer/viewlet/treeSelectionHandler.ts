@@ -104,7 +104,7 @@ export class TreeSelectionHandler {
 				});
 			}
 		} else if (isDoubleClick && selection && selection.length > 0 && (selection[0] instanceof TreeNode)) {
-			let treeNode = <TreeNode>selection[0];
+			let treeNode = selection[0];
 			if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
 				connectionProfile = TreeUpdateUtils.getConnectionProfile(treeNode);
 				if (connectionProfile) {

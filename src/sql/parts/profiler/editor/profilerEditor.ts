@@ -8,7 +8,7 @@ import { ProfilerInput } from './profilerInput';
 import { TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { IProfilerService, IProfilerSessionTemplate } from 'sql/parts/profiler/service/interfaces';
+import { IProfilerService, IProfilerViewTemplate } from 'sql/parts/profiler/service/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import { IProfilerStateChangedEvent } from './profilerState';
@@ -114,8 +114,8 @@ export class ProfilerEditor extends BaseEditor {
 
 	private _profilerEditorContextKey: IContextKey<boolean>;
 
-	private _sessionTemplateSelector: SelectBox;
-	private _sessionTemplates: Array<IProfilerSessionTemplate>;
+	private _viewTemplateSelector: SelectBox;
+	private _viewTemplates: Array<IProfilerViewTemplate>;
 
 	// Actions
 	private _connectAction: Actions.ProfilerConnect;
@@ -124,6 +124,7 @@ export class ProfilerEditor extends BaseEditor {
 	private _stopAction: Actions.ProfilerStop;
 	private _autoscrollAction: Actions.ProfilerAutoScroll;
 	private _collapsedPanelAction: Actions.ProfilerCollapsablePanelAction;
+
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -189,27 +190,27 @@ export class ProfilerEditor extends BaseEditor {
 		this._connectAction = this._instantiationService.createInstance(Actions.ProfilerConnect, Actions.ProfilerConnect.ID, Actions.ProfilerConnect.LABEL);
 		this._autoscrollAction = this._instantiationService.createInstance(Actions.ProfilerAutoScroll, Actions.ProfilerAutoScroll.ID, Actions.ProfilerAutoScroll.LABEL);
 
-		this._sessionTemplates = this._profilerService.getSessionTemplates();
-		this._sessionTemplateSelector = new SelectBox(this._sessionTemplates.map(i => i.name), 'Standard', this._contextViewService);
-		this._register(this._sessionTemplateSelector.onDidSelect(e => {
+		this._viewTemplates = this._profilerService.getViewTemplates();
+		this._viewTemplateSelector = new SelectBox(this._viewTemplates.map(i => i.name), 'Standard View', this._contextViewService);
+		this._register(this._viewTemplateSelector.onDidSelect(e => {
 			if (this.input) {
-				this.input.sessionTemplate = this._sessionTemplates.find(i => i.name === e.selected);
+				this.input.viewTemplate = this._viewTemplates.find(i => i.name === e.selected);
 			}
 		}));
 		let dropdownContainer = document.createElement('div');
 		dropdownContainer.style.width = '150px';
-		this._sessionTemplateSelector.render(dropdownContainer);
+		this._viewTemplateSelector.render(dropdownContainer);
 
-		this._register(attachSelectBoxStyler(this._sessionTemplateSelector, this.themeService));
+		this._register(attachSelectBoxStyler(this._viewTemplateSelector, this.themeService));
 
 		this._actionBar.setContent([
 			{ action: this._startAction },
 			{ action: this._stopAction },
-			{ element: dropdownContainer },
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ action: this._pauseAction },
 			{ action: this._autoscrollAction },
-			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) }
+			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) },
+			{ element: dropdownContainer },
 		]);
 	}
 
@@ -340,10 +341,10 @@ export class ProfilerEditor extends BaseEditor {
 		return super.setInput(input, options).then(() => {
 			this._profilerTableEditor.setInput(input);
 
-			if (input.sessionTemplate) {
-				this._sessionTemplateSelector.selectWithOptionName(input.sessionTemplate.name);
+			if (input.viewTemplate) {
+				this._viewTemplateSelector.selectWithOptionName(input.viewTemplate.name);
 			} else {
-				input.sessionTemplate = this._sessionTemplates.find(i => i.name === 'Standard');
+				input.viewTemplate = this._viewTemplates.find(i => i.name === 'Standard View');
 			}
 
 			this._actionBar.context = input;
@@ -401,10 +402,7 @@ export class ProfilerEditor extends BaseEditor {
 
 		if (e.isConnected) {
 			this._connectAction.connected = this.input.state.isConnected;
-			if (this.input.state.isConnected) {
-				this._sessionTemplateSelector.disable();
-			} else {
-				this._sessionTemplateSelector.enable();
+			if (!this.input.state.isConnected) {
 				this._startAction.enabled = this.input.state.isConnected;
 				this._stopAction.enabled = false;
 				this._pauseAction.enabled = false;

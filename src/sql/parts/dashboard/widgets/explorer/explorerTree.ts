@@ -15,7 +15,6 @@ import {
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import * as Constants from 'sql/parts/connection/common/constants';
-import { OEAction } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 

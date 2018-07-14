@@ -240,7 +240,7 @@ export class ConnectionStore {
 				return connectionProfile;
 			} else {
 				return undefined;
-			};
+			}
 		});
 	}
 
@@ -352,7 +352,7 @@ export class ConnectionStore {
 		list.unshift(savedProfile);
 
 		let newList = list.map(c => {
-			let connectionProfile = c ? c.toIConnectionProfile() : undefined;;
+			let connectionProfile = c ? c.toIConnectionProfile() : undefined;
 			return connectionProfile;
 		});
 		return newList.filter(n => n !== undefined);
@@ -372,7 +372,7 @@ export class ConnectionStore {
 		});
 
 		let newList = list.map(c => {
-			let connectionProfile = c ? c.toIConnectionProfile() : undefined;;
+			let connectionProfile = c ? c.toIConnectionProfile() : undefined;
 			return connectionProfile;
 		});
 		return newList.filter(n => n !== undefined);

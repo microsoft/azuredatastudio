@@ -154,8 +154,9 @@
 				</td>
 			</tr>
 		</table>
-		<jobstepsview-component *ngIf="showSteps === true"></jobstepsview-component>
+		<div #jobsteps>
+			<jobstepsview-component *ngIf="showSteps === true"></jobstepsview-component>
+		</div>
 		<h3 *ngIf="showSteps === false">No Steps Available</h3>
 	</div>
 </div>
-

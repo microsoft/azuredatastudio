@@ -10,6 +10,8 @@ import * as sqlops from 'sqlops';
 import { AgentDialog } from './agentDialog';
 import { AgentUtils } from '../agentUtils';
 import { AlertData } from '../data/alertData';
+import { OperatorDialog } from './operatorDialog';
+import { JobDialog } from './jobDialog';
 
 const localize = nls.loadMessageBundle();
 
@@ -21,6 +23,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private static readonly GeneralTabText: string = localize('alertDialog.General', 'General');
 	private static readonly ResponseTabText: string = localize('alertDialog.Response', 'Response');
 	private static readonly OptionsTabText: string = localize('alertDialog.Options', 'Options');
+	private static readonly EventAlertText: string = localize('alertDialog.eventAlert', 'Event alert definition');
 
 	// General tab strings
 	private static readonly NameLabel: string = localize('alertDialog.Name', 'Name');
@@ -144,12 +147,14 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private delayMinutesTextBox: sqlops.InputBoxComponent;
 	private delaySecondsTextBox: sqlops.InputBoxComponent;
 
+	private jobs: string[];
 	private databases: string[];
 
-	constructor(ownerUri: string, alertInfo: sqlops.AgentAlertInfo = undefined) {
+	constructor(ownerUri: string, alertInfo: sqlops.AgentAlertInfo = undefined, jobs: string[]) {
 		super(ownerUri,
 			new AlertData(ownerUri, alertInfo),
 			alertInfo ? AlertDialog.EditDialogTitle : AlertDialog.CreateDialogTitle);
+			this.jobs = jobs;
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
@@ -160,35 +165,45 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		this.responseTab = sqlops.window.modelviewdialog.createTab(AlertDialog.ResponseTabText);
 		this.optionsTab = sqlops.window.modelviewdialog.createTab(AlertDialog.OptionsTabText);
 
-		this.initializeGeneralTab(this.databases);
+		this.initializeGeneralTab(this.databases, dialog);
 		this.initializeResponseTab();
 		this.initializeOptionsTab();
 
 		dialog.content = [this.generalTab, this.responseTab, this.optionsTab];
 	}
 
-	private initializeGeneralTab(databases: string[]) {
+	private initializeGeneralTab(databases: string[], dialog: sqlops.window.modelviewdialog.Dialog) {
 		this.generalTab.registerContent(async view => {
 			// create controls
 			this.nameTextBox = view.modelBuilder.inputBox().component();
-
+			this.nameTextBox.required = true;
+			this.nameTextBox.onTextChanged(() => {
+				if (this.nameTextBox.value.length > 0) {
+					dialog.okButton.enabled = true;
+				} else {
+					dialog.okButton.enabled = false;
+				}
+			});
 			this.enabledCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: AlertDialog.EnabledCheckboxLabel
 				}).component();
 
+			this.enabledCheckBox.checked = true;
+
 			this.databaseDropDown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: databases[0],
-					values: databases
+					values: databases,
+					width: '100%'
 				}).component();
 
 			this.typeDropDown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: AlertDialog.AlertTypes[0],
-					values: AlertDialog.AlertTypes
+					value: '',
+					values: AlertDialog.AlertTypes,
+					width: '100%'
 				}).component();
-
 
 			this.severityRadioButton = view.modelBuilder.radioButton()
 				.withProperties({
@@ -197,11 +212,13 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					label: AlertDialog.SeverityLabel,
 					checked: true
 				}).component();
+			this.severityRadioButton.checked = true;
 
 			this.severityDropDown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: AlertDialog.AlertSeverities[0],
-					values: AlertDialog.AlertSeverities
+					values: AlertDialog.AlertSeverities,
+					width: '100%'
 				}).component();
 
 			this.errorNumberRadioButton = view.modelBuilder.radioButton()
@@ -211,7 +228,12 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					label: AlertDialog.ErrorNumberLabel
 				}).component();
 
-			this.errorNumberTextBox = view.modelBuilder.inputBox().component();
+			this.errorNumberTextBox = view.modelBuilder.inputBox()
+				.withProperties({
+					width: '100%'
+				})
+				.component();
+			this.errorNumberTextBox.enabled = false;
 
 			this.errorNumberRadioButton.onDidClick(() => {
 				this.errorNumberTextBox.enabled = true;
@@ -246,31 +268,34 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					component: this.typeDropDown,
 					title: AlertDialog.TypeLabel
 				}, {
-					component: this.databaseDropDown,
-					title: AlertDialog.DatabaseLabel
-				},
-				{
-					component: this.severityRadioButton,
-					title: ''
-				},
-				{
-					component: this.severityDropDown,
-					title: ''
-				},
-				{
-					component: this.errorNumberRadioButton,
-					title: ''
-				},
-				{
-					component: this.errorNumberTextBox,
-					title: ''
-				},
-				{
-					component: this.raiseAlertMessageCheckBox,
-					title: ''
-				}, {
-					component: this.raiseAlertMessageTextBox,
-					title: AlertDialog.MessageTextLabel
+					components: [{
+						component: this.databaseDropDown,
+						title: AlertDialog.DatabaseLabel
+					},
+					{
+						component: this.severityRadioButton,
+						title: ''
+					},
+					{
+						component: this.severityDropDown,
+						title: ''
+					},
+					{
+						component: this.errorNumberRadioButton,
+						title: ''
+					},
+					{
+						component: this.errorNumberTextBox,
+						title: ''
+					},
+					{
+						component: this.raiseAlertMessageCheckBox,
+						title: ''
+					}, {
+						component: this.raiseAlertMessageTextBox,
+						title: AlertDialog.MessageTextLabel
+					}],
+					title: AlertDialog.EventAlertText
 				}
 			]).withLayout({ width: '100%' }).component();
 
@@ -308,12 +333,38 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					label: AlertDialog.ExecuteJobCheckBoxLabel
 				}).component();
 
-			this.executeJobTextBox = view.modelBuilder.inputBox().component();
-
+			this.executeJobTextBox = view.modelBuilder.inputBox()
+				.withProperties({ width: 375 })
+				.component();
+			this.executeJobTextBox.enabled = false;
 			this.newJobButton = view.modelBuilder.button().withProperties({
 					label: AlertDialog.NewJobButtonLabel,
 					width: 80
 				}).component();
+			this.newJobButton.enabled = false;
+			this.newJobButton.onDidClick(() => {
+				let jobDialog = new JobDialog(this.ownerUri);
+				jobDialog.openDialog();
+			});
+
+			this.executeJobCheckBox.onChanged(() => {
+				if (this.executeJobCheckBox.checked) {
+					this.executeJobTextBox.enabled = true;
+					this.newJobButton.enabled = true;
+				} else {
+					this.executeJobTextBox.enabled = false;
+					this.newJobButton.enabled = false;
+				}
+			});
+
+			let executeJobContainer = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.executeJobTextBox,
+					title: AlertDialog.ExecuteJobTextBoxLabel
+				}, {
+					component: this.newJobButton,
+					title: AlertDialog.NewJobButtonLabel
+				}], { componentWidth: '100%'}).component();
 
 			this.notifyOperatorsCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
@@ -328,32 +379,57 @@ export class AlertDialog extends AgentDialog<AlertData> {
 						AlertDialog.OperatorPagerColumnLabel
 					],
 					data: [],
-					height: 500
+					height: 500,
+					width: 375
 				}).component();
 
 			this.newOperatorButton = view.modelBuilder.button().withProperties({
-					label: this.newOperatorButton,
+					label: AlertDialog.NewOperatorButtonLabel,
 					width: 80
 				}).component();
+
+			this.operatorsTable.enabled = false;
+			this.newOperatorButton.enabled = false;
+
+			this.newOperatorButton.onDidClick(() => {
+				let operatorDialog = new OperatorDialog(this.ownerUri);
+				operatorDialog.openDialog();
+			});
+
+			this.notifyOperatorsCheckBox.onChanged(() => {
+				if (this.notifyOperatorsCheckBox.checked) {
+					this.operatorsTable.enabled = true;
+					this.newOperatorButton.enabled = true;
+				} else {
+					this.operatorsTable.enabled = false;
+					this.newOperatorButton.enabled = false;
+				}
+			});
+
+			let notifyOperatorContainer = view.modelBuilder.formContainer()
+				.withFormItems([{
+					component: this.operatorsTable,
+					title: AlertDialog.OperatorListLabel
+				}, {
+					component: this.newOperatorButton,
+					title: ''
+				}], { componentWidth: '100%'}).component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.executeJobCheckBox,
 					title: ''
 				}, {
-					component: this.executeJobTextBox,
-					title: AlertDialog.ExecuteJobTextBoxLabel
-				}, {
-					component: this.newJobButton,
-					title: AlertDialog.NewJobButtonLabel
+					component: executeJobContainer,
+					title: ''
 				}, {
 					component: this.notifyOperatorsCheckBox,
 					title: ''
 				}, {
-					component: this.operatorsTable,
-					title: AlertDialog.OperatorListLabel,
-					actions: [this.newOperatorButton]
-				}]).withLayout({ width: '100%' }).component();
+					component: notifyOperatorContainer,
+					title: ''
+				}])
+				.withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
 		});
@@ -374,9 +450,19 @@ export class AlertDialog extends AgentDialog<AlertData> {
 
 			this.additionalMessageTextBox = view.modelBuilder.inputBox().component();
 
-			this.delayMinutesTextBox = view.modelBuilder.inputBox().component();
+			this.delayMinutesTextBox = view.modelBuilder.inputBox()
+				.withProperties({
+					inputType: 'number',
+					placeHolder: 0
+				})
+				.component();
 
-			this.delaySecondsTextBox = view.modelBuilder.inputBox().component();
+			this.delaySecondsTextBox = view.modelBuilder.inputBox()
+				.withProperties({
+					inputType: 'number',
+					placeHolder: 0
+				})
+				.component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -433,5 +519,9 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		} else {
 			this.model.eventDescriptionKeyword = '';
 		}
+		let minutes  = this.delayMinutesTextBox.value ? +this.delayMinutesTextBox.value : 0;
+		let seconds = this.delaySecondsTextBox.value ? +this.delaySecondsTextBox : 0;
+		this.model.delayBetweenResponses = minutes + seconds;
+
 	}
 }
