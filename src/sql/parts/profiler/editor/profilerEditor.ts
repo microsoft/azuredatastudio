@@ -175,10 +175,6 @@ export class ProfilerEditor extends BaseEditor {
 		);
 		this._panelView.headerSize = 35;
 		this._splitView.addView(this._panelView);
-
-		this._editorInput.onDispose(()=> {
-
-		})
 	}
 
 	private _createHeader(): void {

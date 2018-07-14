@@ -9,6 +9,7 @@ import { ProfilerState } from './profilerState';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 import * as sqlops from 'sqlops';
+import * as nls from 'vs/nls';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput } from 'vs/workbench/common/editor';
@@ -17,9 +18,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
-
-import * as nls from 'vs/nls';
-import { SaveReason } from 'vs/workbench/services/textfile/common/textfiles';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
@@ -152,7 +150,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	public get connectionName(): string {
 		if (this._connection !== null) {
-			return `${this._connection.serverName} ${this._connection.databaseName}`;
+			return `${ this._connection.serverName } ${ this._connection.databaseName }`;
 		}
 		else {
 			return nls.localize('profilerInput.notConnected', "Not connected");
