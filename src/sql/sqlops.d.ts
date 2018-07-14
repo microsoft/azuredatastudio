@@ -1503,6 +1503,9 @@ declare module 'sqlops' {
 		updateProxy(ownerUri: string, originalProxyName: string, proxyInfo: AgentProxyInfo): Thenable<UpdateAgentOperatorResult>;
 		deleteProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<ResultStatus>;
 
+		// Credential method
+		getCredentials(ownerUri: string): Thenable<GetCredentialsResult>;
+
 		// Job Schedule management methods
 		getJobSchedules(ownerUri: string): Thenable<AgentJobSchedulesResult>;
 		createJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<CreateAgentJobScheduleResult>;
@@ -1510,6 +1513,20 @@ declare module 'sqlops' {
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 
 		registerOnUpdated(handler: () => any): void;
+	}
+
+	// Security service interfaces ------------------------------------------------------------------------
+	export interface CredentialInfo {
+		id: number;
+		identity: string;
+		name: string;
+		dateLastModified: string;
+		createDate: string;
+		providerName: string;
+	}
+
+	export interface GetCredentialsResult extends ResultStatus {
+		credentials: CredentialInfo[];
 	}
 
 	// Task service interfaces ----------------------------------------------------------------------------

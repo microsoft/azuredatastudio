@@ -366,6 +366,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			deleteProxy(connectionUri: string, proxyInfo: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus> {
 				return self._proxy.$deleteProxy(handle, connectionUri, proxyInfo);
 			},
+			getCredentials(connectionUri: string): Thenable<sqlops.GetCredentialsResult> {
+				return self._proxy.$getCredentials(handle, connectionUri);
+			}
 		});
 
 		return undefined;
