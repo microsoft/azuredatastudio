@@ -35,7 +35,6 @@ export class ProxyData implements IAgentDialogData {
 	public async save() {
 		let agentService = await AgentUtils.getAgentService();
 		let result = await agentService.createProxy(this.ownerUri,  this.toAgentProxyInfo());
-		console.log(result);
 		if (!result || !result.success) {
 			// TODO handle error here
 		}

@@ -204,7 +204,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.StepsTable_FailureColumnString
 					],
 					data: [],
-					height: 300
+					height: 430
 				}).component();
 
 			this.moveStepUpButton = view.modelBuilder.button()
@@ -261,7 +261,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.AlertNameLabelString
 					],
 					data: [],
-					height: 300,
+					height: 430,
 					width: 400
 				}).component();
 
@@ -296,7 +296,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.ScheduleNameLabelString
 					],
 					data: [],
-					height: 300,
+					height: 430,
 					width: 420
 				}).component();
 

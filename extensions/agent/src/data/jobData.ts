@@ -117,7 +117,7 @@ export class JobData implements IAgentDialogData {
 
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
-				localize('alertData.saveErrorMessage', "Alert update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+				localize('jobData.saveErrorMessage', "Job update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
 		}
 	}
 
