@@ -352,6 +352,14 @@ jobsview-component .jobview-grid .slick-cell.error-row {
     background: #444444 !important;
 }
 
+.vs-dark .jobalertsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted white;
+}
+
+.jobalertsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted #444444;
+}
+
 .vs-dark #operatorsDiv joboperatorsview-component .joboperatorsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
     background:#333333;
 }
@@ -375,6 +383,14 @@ jobsview-component .jobview-grid .slick-cell.error-row {
     background: #444444 !important;
 }
 
+.vs-dark .joboperatorsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted white;
+}
+
+.joboperatorsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted #444444;
+}
+
 .vs-dark #proxiesDiv jobproxiesview-component .jobproxiesview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
     background:#333333;
 }
@@ -396,4 +412,12 @@ jobsview-component .jobview-grid .slick-cell.error-row {
 .vs-dark #proxiesDiv .jobproxiesview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
 .vs-dark #proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
     background: #444444 !important;
+}
+
+.vs-dark .jobproxiesview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted white;
+}
+
+.jobproxiesview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted #444444;
 }
