@@ -19,6 +19,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
+import { escape } from 'sql/base/common/strings';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
@@ -198,7 +199,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 				let columnName = this._columnMapping[key];
 				if (columnName) {
 					let value = e.values[key];
-					data[columnName] = value;
+					data[columnName] = escape(value);
 				}
 			}
 			this._data.push(data);
