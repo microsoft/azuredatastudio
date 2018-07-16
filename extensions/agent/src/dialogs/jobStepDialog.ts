@@ -30,6 +30,7 @@ export class JobStepDialog {
 	private readonly PreviousButtonText: string = localize('jobStepDialog.previous','Previous');
 	private readonly SuccessfulParseText: string = localize('jobStepDialog.successParse', 'The command was successfully parsed.');
 	private readonly FailureParseText: string = localize('jobStepDialog.failParse', 'The command failed.');
+	private readonly BlankStepNameErrorText: string = localize('jobStepDialog.blankStepName', 'The step name cannot be left blank');
 
 	// General Control Titles
 	private readonly StepNameLabelString: string = localize('jobStepDialog.stepNameLabel', 'Step Name');
@@ -139,12 +140,15 @@ export class JobStepDialog {
 		this.openButton = view.modelBuilder.button()
 			.withProperties({
 				label: this.OpenCommandText,
-				width: '80px'
+				width: '80px',
+				isFile: true
 			}).component();
+		this.openButton.enabled = false;
 		this.parseButton = view.modelBuilder.button()
 			.withProperties({
 				label: this.ParseCommandText,
-				width: '80px'
+				width: '80px',
+				isFile: false
 			}).component();
 		this.parseButton.onDidClick(e => {
 			if (this.commandTextBox.value) {
@@ -185,6 +189,12 @@ export class JobStepDialog {
 				.withProperties({
 				}).component();
 			this.nameTextBox.required = true;
+			this.nameTextBox.onTextChanged(() => {
+				if (this.nameTextBox.value.length > 0) {
+					this.dialog.message = null;
+				}
+			});
+
 			this.typeDropdown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: this.TSQLScript,
@@ -465,7 +475,12 @@ export class JobStepDialog {
 		return outputFileForm;
 	}
 
-	private async execute() {
+	protected execute() {
+		this.model.stepName = this.nameTextBox.value;
+		if (!this.model.stepName || this.model.stepName.length === 0) {
+			this.dialog.message = this.dialog.message = { text: this.BlankStepNameErrorText };
+			return;
+		}
 		this.model.jobName = this.jobName;
 		this.model.id = this.stepId;
 		this.model.server = this.server;
@@ -479,7 +494,6 @@ export class JobStepDialog {
 		this.model.failureAction = this.failureActionDropdown.value as string;
 		this.model.outputFileName = this.outputFileNameBox.value;
 		this.model.appendToLogFile = this.appendToExistingFileCheckbox.checked;
-		await this.model.save();
 	}
 
 	public async openNewStepDialog() {

@@ -14,6 +14,7 @@ import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { SIDE_BAR_BACKGROUND, SIDE_BAR_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
@@ -25,7 +26,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 	template: `
 
 	<div [style.width]="getWidth()">
-		<div [style.display]="getEditableDisplay()"   #editableDropDown style="width: 100%;"></div>
+		<div [style.display]="getEditableDisplay()" #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
 	</div>
 	`
@@ -79,7 +80,6 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 			this._selectBox = new SelectBox(this.getValues(), this.getSelectedValue(), this.contextViewService, this._dropDownContainer.nativeElement);
 			this._selectBox.render(this._dropDownContainer.nativeElement);
 			this._register(this._selectBox);
-
 			this._register(attachSelectBoxStyler(this._selectBox, this.themeService));
 			this._register(this._selectBox.onDidSelect(e => {
 				if (!this.editable) {
