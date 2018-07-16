@@ -11,6 +11,8 @@ import DropDownComponent from './dropdown.component';
 import ButtonComponent from './button.component';
 import CheckBoxComponent from './checkbox.component';
 import RadioButtonComponent from './radioButton.component';
+import WebViewComponent from './webview.component';
+import TextComponent from './text.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -38,3 +40,9 @@ registerComponentType(CHECKBOX_COMPONENT, ModelComponentTypes.CheckBox, CheckBox
 
 export const RADIOBUTTON_COMPONENT = 'radiobutton-component';
 registerComponentType(RADIOBUTTON_COMPONENT, ModelComponentTypes.RadioButton, RadioButtonComponent);
+
+export const WEBVIEW_COMPONENT = 'webview-component';
+registerComponentType(WEBVIEW_COMPONENT, ModelComponentTypes.WebView, WebViewComponent);
+
+export const TEXT_COMPONENT = 'text-component';
+registerComponentType(TEXT_COMPONENT, ModelComponentTypes.Text, TextComponent);

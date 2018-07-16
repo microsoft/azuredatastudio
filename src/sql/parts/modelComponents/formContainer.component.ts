@@ -22,18 +22,22 @@ export interface TitledFormItemLayout {
 	actions?: string[];
 	isFormComponent: Boolean;
 	horizontal: boolean;
-	width: number;
 	componentWidth: number;
 }
+
+export interface FormLayout {
+	width: number;
+}
+
 class FormItem {
 	constructor(public descriptor: IComponentDescriptor, public config: TitledFormItemLayout) { }
 }
 
 @Component({
 	template: `
-		<div #container *ngIf="items" class="form-table" >
+		<div #container *ngIf="items" class="form-table" [style.width]="getFormWidth()">
 			<ng-container *ngFor="let item of items">
-			<div class="form-row" [style.width]="getFormWidth(item)">
+			<div class="form-row" >
 				<ng-container *ngIf="isFormComponent(item)">
 					<ng-container *ngIf="isHorizontal(item)">
 						<div class="form-cell">{{getItemTitle(item)}}</div>
@@ -77,6 +81,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 
 	private _alignItems: string;
 	private _alignContent: string;
+	private _formLayout: FormLayout;
 
 	@ViewChildren(ModelComponentWrapper) private _componentWrappers: QueryList<ModelComponentWrapper>;
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
@@ -116,9 +121,8 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		return this._alignContent;
 	}
 
-	private getFormWidth(item: FormItem): string {
-		let itemConfig = item.config;
-		return itemConfig && itemConfig.width ? +itemConfig.width + 'px' : '100%';
+	private getFormWidth(): string {
+		return this._formLayout && this._formLayout.width ? +this._formLayout.width + 'px' : '100%';
 	}
 
 	private getComponentWidth(item: FormItem): string {
@@ -155,7 +159,8 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		return itemConfig && itemConfig.actions !== undefined && itemConfig.actions.length > 0;
 	}
 
-	public setLayout(layout: any): void {
+	public setLayout(layout: FormLayout): void {
+		this._formLayout = layout;
 		this.layout();
 	}
 

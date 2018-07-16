@@ -72,6 +72,8 @@ export enum ModelComponentTypes {
 	Button,
 	CheckBox,
 	RadioButton,
+	WebView,
+	Text,
 	DashboardWidget,
 	DashboardWebview,
 	Form
@@ -94,7 +96,8 @@ export enum ComponentEventType {
 	PropertiesChanged,
 	onDidChange,
 	onDidClick,
-	validityChanged
+	validityChanged,
+	onMessage
 }
 
 export interface IComponentEventArgs {
@@ -119,6 +122,25 @@ export interface IModelViewButtonDetails {
 	label: string;
 	enabled: boolean;
 	hidden: boolean;
+}
+
+export interface IModelViewWizardPageDetails {
+	title: string;
+	content: string;
+	enabled: boolean;
+	customButtons: number[];
+}
+
+export interface IModelViewWizardDetails {
+	title: string;
+	pages: number[];
+	currentPage: number;
+	doneButton: number;
+	cancelButton: number;
+	generateScriptButton: number;
+	nextButton: number;
+	backButton: number;
+	customButtons: number[];
 }
 
 /// Card-related APIs that need to be here to avoid early load issues

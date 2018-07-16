@@ -34,18 +34,21 @@ export class DialogContainer implements AfterContentInit {
 	public modelViewId: string;
 	@ViewChild(ModelViewContent) private _modelViewContent: ModelViewContent;
 	constructor(
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService) {
-		this._params = bootstrapService.getBootstrapParams(el.nativeElement.tagName) as DialogComponentParams;
+		this._params = bootstrapService.getBootstrapParams(_el.nativeElement.tagName) as DialogComponentParams;
 		this.modelViewId = this._params.modelViewId;
 	}
 
 	ngAfterContentInit(): void {
 		this._modelViewContent.onEvent(event => {
-		if (event.eventType === ComponentEventType.validityChanged) {
-			this._params.validityChangedCallback(event.args);
-		}
-	});
+			if (event.eventType === ComponentEventType.validityChanged) {
+				this._params.validityChangedCallback(event.args);
+			}
+		});
+		let element = <HTMLElement>this._el.nativeElement;
+		element.style.height = '100%';
+		element.style.width = '100%';
 	}
 
 	public layout(): void {
