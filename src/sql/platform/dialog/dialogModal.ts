@@ -10,7 +10,7 @@ import { Modal, IModalOptions } from 'sql/base/browser/ui/modal/modal';
 import { attachModalDialogStyler } from 'sql/common/theme/styler';
 import { Dialog, DialogButton } from 'sql/platform/dialog/dialogTypes';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+
 import { Builder } from 'vs/base/browser/builder';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -21,8 +21,10 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { localize } from 'vs/nls';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { DialogMessage, MessageLevel } from '../../workbench/api/common/sqlExtHostTypes';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -41,17 +43,17 @@ export class DialogModal extends Modal {
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IBootstrapService private _bootstrapService: IBootstrapService
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(_dialog.title, name, partService, telemetryService, contextKeyService, options);
 	}
 
 	public layout(): void {
-
+		this._dialogPane.layout();
 	}
 
 	public render() {
-		super.render();
+		super.render(true);
 		attachModalDialogStyler(this, this._themeService);
 
 		if (this.backButton) {
@@ -66,29 +68,43 @@ export class DialogModal extends Modal {
 			});
 		}
 
-		this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done(), false);
+		this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done(), false, true);
 		this._dialog.okButton.registerClickEvent(this._onDone.event);
+		this._dialog.onValidityChanged(valid => {
+			this._doneButton.enabled = valid && this._dialog.okButton.enabled;
+		});
 		this._cancelButton = this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
 		this._dialog.cancelButton.registerClickEvent(this._onCancel.event);
+
+		let messageChangeHandler = (message: DialogMessage) => {
+			if (message && message.text) {
+				this.setError(message.text, message.level);
+			} else {
+				this.setError('');
+			}
+		};
+
+		messageChangeHandler(this._dialog.message);
+		this._dialog.onMessageChange(message => messageChangeHandler(message));
 	}
 
-	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true): Button {
+	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requireDialogValid: boolean = false): Button {
 		let buttonElement = this.addFooterButton(button.label, onSelect);
 		buttonElement.enabled = button.enabled;
 		if (registerClickEvent) {
 			button.registerClickEvent(buttonElement.onDidClick);
 		}
 		button.onUpdate(() => {
-			this.updateButtonElement(buttonElement, button);
+			this.updateButtonElement(buttonElement, button, requireDialogValid);
 		});
 		attachButtonStyler(buttonElement, this._themeService);
-		this.updateButtonElement(buttonElement, button);
+		this.updateButtonElement(buttonElement, button, requireDialogValid);
 		return buttonElement;
 	}
 
-	private updateButtonElement(buttonElement: Button, dialogButton: DialogButton) {
+	private updateButtonElement(buttonElement: Button, dialogButton: DialogButton, requireDialogValid: boolean = false) {
 		buttonElement.label = dialogButton.label;
-		buttonElement.enabled = dialogButton.enabled;
+		buttonElement.enabled = requireDialogValid ? dialogButton.enabled && this._dialog.valid : dialogButton.enabled;
 		dialogButton.hidden ? buttonElement.element.classList.add('dialogModal-hidden') : buttonElement.element.classList.remove('dialogModal-hidden');
 	}
 
@@ -98,7 +114,8 @@ export class DialogModal extends Modal {
 			body = bodyBuilder.getHTMLElement();
 		});
 
-		this._dialogPane = new DialogPane(this._dialog, this._bootstrapService);
+		this._dialogPane = new DialogPane(this._dialog.title, this._dialog.content,
+			valid => this._dialog.notifyValidityChanged(valid), this._instantiationService, false);
 		this._dialogPane.createBody(body);
 	}
 
@@ -106,11 +123,13 @@ export class DialogModal extends Modal {
 		this.show();
 	}
 
-	public done(): void {
-		if (this._dialog.okButton.enabled) {
-			this._onDone.fire();
-			this.dispose();
-			this.hide();
+	public async done(): Promise<void> {
+		if (this._doneButton.enabled) {
+			if (await this._dialog.validateClose()) {
+				this._onDone.fire();
+				this.dispose();
+				this.hide();
+			}
 		}
 	}
 

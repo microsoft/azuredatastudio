@@ -1,8 +1,7 @@
 
 .form-table {
-	width: 100%;
 	display: table;
-	padding: 10px 30px 0px 30px;
+	padding: 5px 30px 0px 30px;
 	box-sizing: border-box;
 }
 
@@ -19,12 +18,12 @@
 }
 
 .form-vertical-container {
-	padding-bottom: 15px;
+	padding-bottom: 5px;
 	width: 100%;
 }
 
 .form-cell {
-	padding-bottom: 20px;
+	padding-bottom: 10px;
 	padding-right: 5px;
 	display: table-cell;
 }
@@ -38,6 +37,16 @@
 	flex: 1;
 }
 
+.form-required {
+	color: red;
+	padding-left: 5px;
+}
+
+.form-info {
+	width: 15px;
+	height: 15px;
+}
+
 .form-component-actions {
 	padding-left: 5px;
 }
@@ -46,4 +55,10 @@
 	padding-top: 5px;
 	padding-right: 5px;
 	display: table-cell;
+}
+
+.form-group-label {
+	padding-top: 3px;
+	padding-bottom: 0px;
+	font-weight: bold;
 }

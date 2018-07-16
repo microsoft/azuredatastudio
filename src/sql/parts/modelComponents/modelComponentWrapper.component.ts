@@ -13,12 +13,11 @@ import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost
 import { error } from 'sql/base/common/log';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IComponent, IComponentConfig, IComponentDescriptor, IModelStore, COMPONENT_CONFIG } from './interfaces';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
 import { Action } from 'vs/base/common/actions';
@@ -26,9 +25,17 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { Event, Emitter } from 'vs/base/common/event';
 import * as nls from 'vs/nls';
 
 const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
+
+export interface ModelComponentParams extends IBootstrapParams {
+
+	onLayoutRequested: Event<string>;
+	modelViewId: string;
+}
 
 @Component({
 	selector: 'model-component-wrapper',
@@ -47,28 +54,38 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 	}
 
 	private _componentInstance: IComponent;
+	private _modelViewId: string;
 
 	@ViewChild(ComponentHostDirective) componentHost: ComponentHostDirective;
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
 		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
-		@Inject(forwardRef(() => Injector)) private _injector: Injector
+		@Inject(forwardRef(() => Injector)) private _injector: Injector,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IBootstrapParams) private _params: ModelComponentParams
 	) {
 		super();
+		if (_params && _params.onLayoutRequested) {
+			this._modelViewId = _params.modelViewId;
+			_params.onLayoutRequested(modelViewId => {
+				if (modelViewId === this._modelViewId) {
+					this.layout();
+				}
+			});
+		}
 	}
 
 	ngOnInit() {
 		let self = this;
-		this._register(self._bootstrap.themeService.onDidColorThemeChange((event: IColorTheme) => {
+		this._register(self.themeService.onDidColorThemeChange((event: IColorTheme) => {
 			self.updateTheme(event);
 		}));
 	}
 
 	ngAfterViewInit() {
-		this.updateTheme(this._bootstrap.themeService.getColorTheme());
+		this.updateTheme(this.themeService.getColorTheme());
 		if (this.componentHost) {
 			this.loadComponent();
 		}
@@ -77,8 +94,8 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 	}
 
 	public layout(): void {
-		if (this._componentInstance && this._componentInstance.layout) {
-			this._componentInstance.layout();
+		if (this.componentInstance && this.componentInstance.layout) {
+			this.componentInstance.layout();
 		}
 	}
 
@@ -93,6 +110,12 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		};
 	}
 
+	private get componentInstance(): IComponent {
+		if (!this._componentInstance) {
+			this.loadComponent();
+		}
+		return this._componentInstance;
+	}
 
 	private loadComponent(): void {
 		if (!this.descriptor || !this.descriptor.type) {

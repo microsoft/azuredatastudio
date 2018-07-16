@@ -21,6 +21,7 @@ export interface IQueryManagementService {
 	_serviceBrand: any;
 
 	addQueryRequestHandler(queryType: string, runner: IQueryRequestHandler): IDisposable;
+	isProviderRegistered(providerId: string): boolean;
 	registerRunner(runner: QueryRunner, uri: string): void;
 
 	cancelQuery(ownerUri: string): Thenable<sqlops.QueryCancelResult>;
@@ -28,6 +29,7 @@ export interface IQueryManagementService {
 	runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 	runQueryString(ownerUri: string, queryString: string): Thenable<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult>;
+	parseSyntax(ownerUri:string, query: string): Thenable<sqlops.SyntaxParseResult>;
 	getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult>;
 	disposeQuery(ownerUri: string): Thenable<void>;
 	saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult>;
@@ -63,6 +65,7 @@ export interface IQueryRequestHandler {
 	runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 	runQueryString(ownerUri: string, queryString: string): Thenable<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult>;
+	parseSyntax(ownerUri:string, query: string): Thenable<sqlops.SyntaxParseResult>;
 	getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult>;
 	disposeQuery(ownerUri: string): Thenable<void>;
 	saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult>;
@@ -80,7 +83,6 @@ export interface IQueryRequestHandler {
 }
 
 export class QueryManagementService implements IQueryManagementService {
-	public static readonly DefaultQueryType = 'MSSQL';
 	public _serviceBrand: any;
 
 	private _requestHandlers = new Map<string, IQueryRequestHandler>();
@@ -141,6 +143,11 @@ export class QueryManagementService implements IQueryManagementService {
 		};
 	}
 
+	public isProviderRegistered(providerId: string): boolean {
+		let handler = this._requestHandlers.get(providerId);
+		return !!handler;
+	}
+
 	private addTelemetry(eventName: string, ownerUri: string, runOptions?: sqlops.ExecutionPlanOptions): void {
 		let providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
 		let data: TelemetryUtils.IConnectionTelemetryData = {
@@ -195,6 +202,11 @@ export class QueryManagementService implements IQueryManagementService {
 	public runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQueryAndReturn(ownerUri, queryString);
+		});
+	}
+	public parseSyntax(ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> {
+		return this._runAction(ownerUri, (runner) => {
+			return runner.parseSyntax(ownerUri, query);
 		});
 	}
 	public getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> {

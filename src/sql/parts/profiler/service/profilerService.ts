@@ -5,7 +5,7 @@
 
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
 import {
-	ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerSessionTemplate,
+	ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate,
 	PROFILER_SETTINGS, IProfilerSettings
 } from './interfaces';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -17,6 +17,7 @@ import * as sqlops from 'sqlops';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;
@@ -52,7 +53,8 @@ export class ProfilerService implements IProfilerService {
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IConfigurationService public _configurationService: IConfigurationService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@INotificationService private _notificationService: INotificationService
 	) { }
 
 	public registerProvider(providerId: string, provider: sqlops.ProfilerProvider): void {
@@ -82,6 +84,11 @@ export class ProfilerService implements IProfilerService {
 		this._sessionMap.get(this._idMap.reverseGet(params.sessionId)).onMoreRows(params);
 	}
 
+	public onSessionStopped(params: sqlops.ProfilerSessionStoppedParams): void {
+
+		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onSessionStopped(params);
+	}
+
 	public connectSession(id: ProfilerSessionID): Thenable<boolean> {
 		return this._runAction(id, provider => provider.connectSession(this._idMap.get(id)));
 	}
@@ -91,7 +98,12 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public startSession(id: ProfilerSessionID): Thenable<boolean> {
-		return this._runAction(id, provider => provider.startSession(this._idMap.get(id)));
+		return this._runAction(id, provider => provider.startSession(this._idMap.get(id))).then(() => {
+			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
+			return true;
+		}, (reason) => {
+			this._notificationService.error(reason.message);
+		});
 	}
 
 	public pauseSession(id: ProfilerSessionID): Thenable<boolean> {
@@ -99,7 +111,12 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public stopSession(id: ProfilerSessionID): Thenable<boolean> {
-		return this._runAction(id, provider => provider.stopSession(this._idMap.get(id)));
+		return this._runAction(id, provider => provider.stopSession(this._idMap.get(id))).then(() => {
+			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isStopped: true, isPaused: false, isRunning: false });
+			return true;
+		}, (reason) => {
+			this._notificationService.error(reason.message);
+		});
 	}
 
 	private _runAction<T>(id: ProfilerSessionID, action: (handler: sqlops.ProfilerProvider) => Thenable<T>): Thenable<T> {
@@ -117,13 +134,13 @@ export class ProfilerService implements IProfilerService {
 		}
 	}
 
-	public getSessionTemplates(provider?: string): Array<IProfilerSessionTemplate> {
+	public getViewTemplates(provider?: string): Array<IProfilerViewTemplate> {
 		let config = <IProfilerSettings>this._configurationService.getValue(PROFILER_SETTINGS);
 
 		if (provider) {
-			return config.sessionTemplates;
+			return config.viewTemplates;
 		} else {
-			return config.sessionTemplates;
+			return config.viewTemplates;
 		}
 	}
 

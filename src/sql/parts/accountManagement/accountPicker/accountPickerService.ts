@@ -5,7 +5,7 @@
 
 'use strict';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import * as sqlops from 'sqlops';
 
 import { IAccountPickerService } from 'sql/parts/accountManagement/common/interfaces';

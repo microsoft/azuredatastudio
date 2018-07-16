@@ -4,20 +4,22 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerSessionTemplate } from 'sql/parts/profiler/service/interfaces';
+import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate } from 'sql/parts/profiler/service/interfaces';
 import { ProfilerState } from './profilerState';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 import * as sqlops from 'sqlops';
+import * as nls from 'vs/nls';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import Event, { Emitter } from 'vs/base/common/event';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
-
-import * as nls from 'vs/nls';
+import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
+import { escape } from 'sql/base/common/strings';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
@@ -27,7 +29,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	private _id: ProfilerSessionID;
 	private _state: ProfilerState;
 	private _columns: string[] = [];
-	private _sessionTemplate: IProfilerSessionTemplate;
+	private _viewTemplate: IProfilerViewTemplate;
+	// mapping of event categories to what column they display under
+	// used for coallescing multiple events with different names to the same column
+	private _columnMapping: { [event: string]: string } = {};
 
 	private _onColumnsChanged = new Emitter<Slick.Column<Slick.SlickData>[]>();
 	public onColumnsChanged: Event<Slick.Column<Slick.SlickData>[]> = this._onColumnsChanged.event;
@@ -35,14 +40,16 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	constructor(
 		private _connection: IConnectionProfile,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IProfilerService private _profilerService: IProfilerService
+		@IProfilerService private _profilerService: IProfilerService,
+		@INotificationService private _notificationService: INotificationService,
+		@IDialogService private _dialogService: IDialogService
 	) {
 		super();
 		this._state = new ProfilerState();
 		// set inital state
 		this.state.change({
 			isConnected: true,
-			isStopped: false,
+			isStopped: true,
 			isPaused: false,
 			isRunning: false,
 			autoscroll: true
@@ -59,24 +66,45 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			return ret;
 		};
 		this._data = new TableDataView<Slick.SlickData>(undefined, searchFn);
+
+		this.onDispose(() => {
+			if (this._state.isRunning || this.state.isPaused) {
+				let confirm: IConfirmation = {
+					message: nls.localize('confirmStopProfilerSession', "Would you like to stop the running XEvent session?"),
+					primaryButton: nls.localize('profilerClosingActions.yes', 'Yes'),
+					secondaryButton: nls.localize('profilerClosingActions.no', 'No'),
+					type: 'question'
+				};
+
+				this._dialogService.confirm(confirm).then(result => {
+					if (result.confirmed) {
+						this._profilerService.stopSession(this.id);
+					}
+				});
+			}
+		});
 	}
 
-	public set sessionTemplate(template: IProfilerSessionTemplate) {
-		this._sessionTemplate = template;
-		let newColumns = this.sessionTemplate.view.events.reduce<Array<string>>((p, e) => {
-			e.columns.forEach(c => {
-				if (!p.includes(c)) {
-					p.push(c);
-				}
-			});
+	public set viewTemplate(template: IProfilerViewTemplate) {
+		this._data.clear();
+		this._viewTemplate = template;
+
+		let newColumns = this._viewTemplate.columns.reduce<Array<string>>((p, e) => {
+			p.push(e.name);
 			return p;
 		}, []);
-		newColumns.unshift('EventClass');
-		this.setColumns(newColumns);
+
+		let newMapping: { [event: string]: string } = {};
+		this._viewTemplate.columns.forEach(c => {
+			c.eventsMapped.forEach(e => {
+				newMapping[e] = c.name;
+			});
+		});
+		this.setColumnMapping(newColumns, newMapping);
 	}
 
-	public get sessionTemplate(): IProfilerSessionTemplate {
-		return this._sessionTemplate;
+	public get viewTemplate(): IProfilerViewTemplate {
+		return this._viewTemplate;
 	}
 
 	public getTypeId(): string {
@@ -115,6 +143,21 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this._onColumnsChanged.fire(this.columns);
 	}
 
+	public setColumnMapping(columns: Array<string>, mapping: { [event: string]: string }) {
+		this._columns = columns;
+		this._columnMapping = mapping;
+		this._onColumnsChanged.fire(this.columns);
+	}
+
+	public get connectionName(): string {
+		if (this._connection !== null) {
+			return `${ this._connection.serverName } ${ this._connection.databaseName }`;
+		}
+		else {
+			return nls.localize('profilerInput.notConnected', "Not connected");
+		}
+	}
+
 	public get id(): ProfilerSessionID {
 		return this._id;
 	}
@@ -123,50 +166,40 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._state;
 	}
 
+	public onSessionStopped(notification: sqlops.ProfilerSessionStoppedParams) {
+		this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this._connection.serverName));
+
+		this.state.change({
+			isStopped: true,
+			isPaused: false,
+			isRunning: false
+		});
+	}
+
+	public onSessionStateChanged(state: ProfilerState) {
+		this.state.change(state);
+	}
+
 	public onMoreRows(eventMessage: sqlops.ProfilerSessionEvents) {
-		for (let i: number  = 0; i < eventMessage.events.length && i < 500; ++i) {
+		if (eventMessage.eventsLost) {
+			this._notificationService.warn(nls.localize("profiler.eventsLost", "The XEvent Profiler session for {0} has lost events.", this._connection.serverName));
+		}
+
+		for (let i: number = 0; i < eventMessage.events.length && i < 500; ++i) {
 			let e: sqlops.ProfilerEvent = eventMessage.events[i];
 			let data = {};
-			data['EventClass'] =  e.name;
+			data['EventClass'] = e.name;
 			data['StartTime'] = e.timestamp;
-			data['EndTime'] = e.timestamp;
-			const columns = [
-				'TextData',
-				'ApplicationName',
-				'NTUserName',
-				'LoginName',
-				'CPU',
-				'Reads',
-				'Writes',
-				'Duration',
-				'ClientProcessID',
-				'SPID',
-				'StartTime',
-				'EndTime',
-				'BinaryData'
-			];
 
-			let columnNameMap: Map<string, string> = new Map<string, string>();
-			columnNameMap['client_app_name'] = 'ApplicationName';
-			columnNameMap['nt_username'] = 'NTUserName';
-			columnNameMap['options_text'] = 'TextData';
-			columnNameMap['server_principal_name'] = 'LoginName';
-			columnNameMap['session_id'] = 'SPID';
-			columnNameMap['batch_text'] = 'TextData';
-			columnNameMap['cpu_time'] = 'CPU';
-			columnNameMap['duration'] = 'Duration';
-			columnNameMap['logical_reads'] = 'Reads';
-
-			for (let idx = 0; idx < columns.length; ++idx) {
-				let columnName = columns[idx];
-				data[columnName] = '';
-			}
-
+			// Using ' ' instead of '' fixed the error where clicking through events
+			// with empty text fields causes future text panes to be highlighted.
+			// This is a temporary fix
+			data['TextData'] = ' ';
 			for (let key in e.values) {
-				let columnName = columnNameMap[key];
+				let columnName = this._columnMapping[key];
 				if (columnName) {
 					let value = e.values[key];
-					data[columnName] = value;
+					data[columnName] = escape(value);
 				}
 			}
 			this._data.push(data);

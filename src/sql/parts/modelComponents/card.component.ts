@@ -9,20 +9,20 @@ import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFacto
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
+
 import { ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
+import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
+import { ComponentWithIconBase } from 'sql/parts/modelComponents/componentWithIconBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { BOOTSTRAP_SERVICE_ID, IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { StatusIndicator, CardProperties, ActionDescriptor } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('sql/parts/modelComponents/card.component.html'))
 })
-export default class CardComponent extends ComponentBase implements IComponent, OnDestroy {
+export default class CardComponent extends ComponentWithIconBase implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -30,15 +30,15 @@ export default class CardComponent extends ComponentBase implements IComponent, 
 
 	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 	) {
 		super(changeRef);
 	}
 
 	ngOnInit(): void {
 		this.baseInit();
-		this._register(this._bootstrapService.themeService.onDidColorThemeChange(this.updateTheme, this));
-		this.updateTheme(this._bootstrapService.themeService.getColorTheme());
+		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
+		this.updateTheme(this.themeService.getColorTheme());
 
 	}
 
@@ -46,6 +46,39 @@ export default class CardComponent extends ComponentBase implements IComponent, 
 		this.baseDestroy();
 	}
 
+	private _defaultBorderColor = 'rgb(214, 214, 214)';
+	private _hasFocus: boolean;
+
+	public onCardClick() {
+		if (this.selectable) {
+			this.selected = !this.selected;
+			this._changeRef.detectChanges();
+			this._onEventEmitter.fire({
+				eventType: ComponentEventType.onDidClick,
+				args: this.selected
+			});
+		}
+	}
+
+	public getBorderColor() {
+		if (this.selectable && this.selected || this._hasFocus) {
+			return 'Blue';
+		} else {
+			return this._defaultBorderColor;
+		}
+	}
+
+	public getClass(): string {
+		return (this.selectable && this.selected || this._hasFocus) ? 'model-card selected' :
+		'model-card unselected';
+	}
+
+	public onCardHoverChanged(event: any) {
+		if (this.selectable) {
+			this._hasFocus = event.type === 'mouseover';
+			this._changeRef.detectChanges();
+		}
+	}
 	/// IComponent implementation
 
 	public layout(): void {
@@ -57,6 +90,19 @@ export default class CardComponent extends ComponentBase implements IComponent, 
 		this.layout();
 	}
 
+	public setProperties(properties: { [key: string]: any; }): void {
+		super.setProperties(properties);
+		this.updateIcon();
+	}
+
+	public get iconClass(): string {
+		return this._iconClass + ' icon' + ' cardIcon';
+	}
+
+	private get selectable(): boolean {
+		return this.cardType === 'VerticalButton';
+	}
+
 	// CSS-bound properties
 
 	public get label(): string {
@@ -66,6 +112,27 @@ export default class CardComponent extends ComponentBase implements IComponent, 
 	public get value(): string {
 		return this.getPropertyOrDefault<CardProperties, string>((props) => props.value, '');
 	}
+
+	public get cardType(): string {
+		return this.getPropertyOrDefault<CardProperties, string>((props) => props.cardType, 'Details');
+	}
+
+	public get selected(): boolean {
+		return this.getPropertyOrDefault<sqlops.CardProperties, boolean>((props) => props.selected, false);
+	}
+
+	public set selected(newValue: boolean) {
+		this.setPropertyFromUI<sqlops.CardProperties, boolean>((props, value) => props.selected = value, newValue);
+	}
+
+	public get isDetailsCard(): boolean {
+		return !this.cardType || this.cardType === 'Details';
+	}
+
+	public get isVerticalButton(): boolean {
+		return this.cardType === 'VerticalButton';
+	}
+
 
 	public get actions(): ActionDescriptor[] {
 		return this.getPropertyOrDefault<CardProperties, ActionDescriptor[]>((props) => props.actions, []);

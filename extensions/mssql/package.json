@@ -658,7 +658,7 @@
     }
   },
   "dependencies": {
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.1.7",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.1.9",
     "opener": "^1.4.3",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.2",
     "vscode-extension-telemetry": "^0.0.15"

@@ -16,7 +16,7 @@ import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -101,7 +101,7 @@ export class ErrorMessageDialog extends Modal {
 	private updateDialogBody(): void {
 		let builder = new Builder(this._body).empty();
 		builder.div({ class: 'error-message' }, (errorContainer) => {
-			errorContainer.innerHtml(this._message);
+			errorContainer.getHTMLElement().innerText = this._message;
 		});
 	}
 
@@ -168,7 +168,7 @@ export class ErrorMessageDialog extends Modal {
 
 	private resetActions(): void {
 		this._actions = [];
-		for(let actionButton of this._actionButtons) {
+		for (let actionButton of this._actionButtons) {
 			actionButton.element.style.visibility = 'hidden';
 		}
 	}

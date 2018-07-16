@@ -14,16 +14,28 @@ import 'vs/css!./media/editData';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
 import { IGridDataRow, VirtualizedCollection } from 'angular2-slickgrid';
+
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import * as Services from 'sql/parts/grid/services/sharedServices';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { EditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDataGridActions';
 import { error } from 'sql/base/common/log';
-import { clone } from 'sql/base/common/objects';
+import { clone, mixin } from 'sql/base/common/objects';
+import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { escape } from 'sql/base/common/strings';
+
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
@@ -55,8 +67,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private removingNewRow: boolean;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 
-	private notificationService: INotificationService;
-
 	// Edit Data functions
 	public onActiveCellChanged: (event: { row: number, column: number }) => void;
 	public onCellEditEnd: (event: { row: number, column: number, newValue: any }) => void;
@@ -71,14 +81,20 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
-		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService
+		@Inject(IBootstrapParams) params: IEditDataComponentParams,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(INotificationService) private notificationService: INotificationService,
+		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
+		@Inject(IKeybindingService) keybindingService: IKeybindingService,
+		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
+		@Inject(IConfigurationService) configurationService: IConfigurationService,
+		@Inject(IClipboardService) clipboardService: IClipboardService,
+		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService
 	) {
-		super(el, cd, bootstrapService);
+		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService);
 		this._el.nativeElement.className = 'slickgridContainer';
-		let editDataParameters: EditDataComponentParams = this._bootstrapService.getBootstrapParams(this._el.nativeElement.tagName);
-		this.dataService = editDataParameters.dataService;
-		this.actionProvider = this._bootstrapService.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
-		this.notificationService = bootstrapService.notificationService;
+		this.dataService = params.dataService;
+		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
 	}
 
 	/**
@@ -180,7 +196,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					let gridData: IGridDataRow[] = result.subset.map(row => {
 						self.idMapping[rowIndex] = row.id;
 						rowIndex++;
-						return { values: row.cells, row: row.id };
+						return {
+							values: row.cells.map(c => {
+								return mixin({ ariaLabel: c.displayValue }, c);
+							}), row: row.id
+						};
 					});
 
 					// Append a NULL row to the end of gridData
@@ -195,23 +215,21 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	onDeleteRow(): (index: number) => void {
 		const self = this;
 		return (index: number): void => {
-			self.dataService.deleteRow(index)
-				.then(() => self.dataService.commitEdit())
-				.then(() => self.removeRow(index));
+			// If the user is deleting a new row that hasn't been committed yet then use the revert code
+			if (self.newRowVisible && index === self.dataSet.dataRows.getLength() - 2) {
+				self.revertCurrentRow();
+			} else {
+				self.dataService.deleteRow(index)
+					.then(() => self.dataService.commitEdit())
+					.then(() => self.removeRow(index));
+			}
 		};
 	}
 
-	onRevertRow(): (index: number) => void {
+	onRevertRow(): () => void {
 		const self = this;
-		return (index: number): void => {
-			// Force focus to the first cell (completing any active edit operation)
-			self.focusCell(index, 0, false);
-			this.currentEditCellValue = null;
-			// Perform a revert row operation
-			self.dataService.revertRow(index)
-				.then(() => {
-					self.refreshResultsets();
-				});
+		return (): void => {
+			self.revertCurrentRow();
 		};
 	}
 
@@ -260,24 +278,27 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		}
 
 		if (this.currentCell.row !== row) {
-			// We're changing row, commit the changes
-			cellSelectTasks = cellSelectTasks.then(() => {
-				return self.dataService.commitEdit()
-					.then(
-					result => {
+			// If we're currently adding a new row, only commit it if it has changes or the user is trying to add another new row
+			if (this.newRowVisible && this.currentCell.row === this.dataSet.dataRows.getLength() - 2 && !this.isNullRow(row) && this.currentEditCellValue === null) {
+				cellSelectTasks = cellSelectTasks.then(() => {
+					return this.revertCurrentRow().then(() => this.focusCell(row, column));
+				});
+			} else {
+				// We're changing row, commit the changes
+				cellSelectTasks = cellSelectTasks.then(() => {
+					return self.dataService.commitEdit().then(result => {
 						// Committing was successful, clean the grid
 						self.setGridClean();
 						self.rowIdMappings = {};
 						self.newRowVisible = false;
 						return Promise.resolve();
-					},
-					error => {
+					}, error => {
 						// Committing failed, jump back to the last selected cell
 						self.focusCell(self.currentCell.row, self.currentCell.column);
 						return Promise.reject(null);
-					}
-					);
-			});
+					});
+				});
+			}
 		}
 
 		if (this.isNullRow(row) && !this.removingNewRow) {
@@ -347,11 +368,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			columnDefinitions: resultSet.columnInfo.map((c, i) => {
 				let isLinked = c.isXml || c.isJson;
 				let linkType = c.isXml ? 'xml' : 'json';
+
 				return {
 					id: i.toString(),
 					name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 						? 'XML Showplan'
-						: c.columnName,
+						: escape(c.columnName),
 					type: self.stringToFieldType('string'),
 					formatter: isLinked ? Services.hyperLinkFormatter : Services.textFormatter,
 					asyncPostRender: isLinked ? self.linkHandler(linkType) : undefined,
@@ -408,12 +430,23 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		}, self.scrollTimeOutTime);
 	}
 
-	protected tryHandleKeyEvent(e): boolean {
+	protected tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {
 		let handled: boolean = false;
 		// If the esc key was pressed while in a create session
 		let currentNewRowIndex = this.dataSet.totalRows - 2;
 
-		if (e.keyCode === jQuery.ui.keyCode.ESCAPE && this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
+		if (e.keyCode === KeyCode.Escape) {
+			this.revertCurrentRow();
+			handled = true;
+		}
+		return handled;
+	}
+
+	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
+
+	private async revertCurrentRow(): Promise<void> {
+		let currentNewRowIndex = this.dataSet.totalRows - 2;
+		if (this.newRowVisible && this.currentCell.row === currentNewRowIndex) {
 			// revert our last new row
 			this.removingNewRow = true;
 
@@ -422,16 +455,20 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					this.removeRow(currentNewRowIndex);
 					this.newRowVisible = false;
 				});
-			handled = true;
-		} else if (e.keyCode === jQuery.ui.keyCode.ESCAPE) {
-			this.currentEditCellValue = null;
-			this.onRevertRow()(this.currentCell.row);
-			handled = true;
+		} else {
+			try {
+				// Perform a revert row operation
+				if (this.currentCell) {
+					await this.dataService.revertRow(this.currentCell.row);
+				}
+			} finally {
+				// The operation may fail if there were no changes sent to the service to revert,
+				// so clear any existing client-side edit and refresh the table regardless
+				this.currentEditCellValue = null;
+				this.refreshResultsets();
+			}
 		}
-		return handled;
 	}
-
-	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
 
 	// Checks if input row is our NULL new row
 	private isNullRow(row: number): boolean {
@@ -520,9 +557,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		// refresh results view
 		this.onScroll(0);
 
-		// Set focus to the row index column of the removed row
+		// Set focus to the row index column of the removed row if the current selection is in the removed row
 		setTimeout(() => {
-			this.focusCell(row, 0);
+			if (this.currentCell.row === row) {
+				this.focusCell(row, 0);
+			}
 			this.removingNewRow = false;
 		}, this.scrollTimeOutTime);
 	}

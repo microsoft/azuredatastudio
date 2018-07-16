@@ -10,7 +10,8 @@ import { ExtHostModelView } from 'sql/workbench/api/node/extHostModelView';
 import { MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Deferred } from 'sql/base/common/promise';
-import { IComponentShape, IItemConfig, ComponentEventType, IComponentEventArgs } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IComponentShape, IItemConfig, ComponentEventType, IComponentEventArgs, ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TitledFormItemLayout } from 'sql/parts/modelComponents/formContainer.component';
 
 'use strict';
 
@@ -35,7 +36,8 @@ suite('ExtHostModelView Validation Tests', () => {
 			$setLayout: (handle: number, componentId: string, layout: any) => undefined,
 			$setProperties: (handle: number, componentId: string, properties: { [key: string]: any }) => undefined,
 			$registerEvent: (handle: number, componentId: string) => undefined,
-			dispose: () => undefined
+			dispose: () => undefined,
+			$validate: (handle: number, componentId: string) => undefined
 		}, MockBehavior.Loose);
 		let mainContext = <IMainContext>{
 			getProxy: proxyType => mockProxy.object
@@ -117,5 +119,98 @@ suite('ExtHostModelView Validation Tests', () => {
 			args: true
 		});
 		assert.equal(inputBox.valid, true, 'Input box did not update validity to true based on the validityChanged event');
+	});
+
+	test('Main thread validityChanged events cause component to fire validity changed events', () => {
+		let validityFromEvent: boolean = undefined;
+		inputBox.onValidityChanged(valid => validityFromEvent = valid);
+		extHostModelView.$handleEvent(handle, inputBox.id, {
+			eventType: ComponentEventType.validityChanged,
+			args: false
+		});
+		assert.equal(validityFromEvent, false, 'Main thread validityChanged event did not cause component to fire its own event');
+	});
+
+	test('Setting a form component as required initializes the model with the component required', () => {
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+
+		// Set up the input component with required initially set to false
+		let inputComponent = modelView.modelBuilder.inputBox().component();
+		inputComponent.required = false;
+
+		// If I build a form that sets the input component as required
+		let inputFormComponent: sqlops.FormComponent = {
+			component: inputComponent,
+			title: 'test_input',
+			required: true
+		};
+		let requiredFormContainer = modelView.modelBuilder.formContainer().withFormItems([inputFormComponent]).component();
+		modelView.initializeModel(requiredFormContainer);
+
+		// Then the input component is sent to the main thread with required set to true
+		mockProxy.verify(x => x.$initializeModel(It.isAny(), It.is(rootComponent => {
+			return rootComponent.itemConfigs.length === 1 && rootComponent.itemConfigs[0].componentShape.id === inputComponent.id && rootComponent.itemConfigs[0].componentShape.properties['required'] === true;
+		})), Times.once());
+	});
+
+	test('Form component groups are handled correctly by adding each item in the group and a label to the form', () => {
+		// Set up the mock proxy to save the component that gets initialized so that it can be verified
+		let rootComponent: IComponentShape;
+		mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => rootComponent = componentShape);
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+
+		// Set up the form with a top level component and a group
+		let topLevelList = modelView.modelBuilder.listBox().component();
+		let groupInput = modelView.modelBuilder.inputBox().component();
+		let groupDropdown = modelView.modelBuilder.dropDown().component();
+
+		let topLevelInputFormComponent: sqlops.FormComponent = { component: topLevelList, title: 'top_level_input' };
+		let groupInputFormComponent: sqlops.FormComponent = { component: groupInput, title: 'group_input' };
+		let groupDropdownFormComponent: sqlops.FormComponent = { component: groupDropdown, title: 'group_dropdown' };
+
+		let groupTitle = 'group_title';
+
+		// Give the group a default layout and add one just for the input component too
+		let defaultLayout: sqlops.FormItemLayout = {
+			horizontal: true
+		};
+		let groupInputLayout: sqlops.FormItemLayout = {
+			horizontal: false
+		};
+
+		// If I build a form that has a group with a default layout where one item in the group has its own layout
+		let formContainer = modelView.modelBuilder.formContainer().withFormItems([
+			topLevelInputFormComponent,
+			{
+				components: [
+					Object.assign(groupInputFormComponent, { layout: groupInputLayout }),
+					groupDropdownFormComponent
+				],
+				title: groupTitle
+			}
+		], defaultLayout).component();
+		modelView.initializeModel(formContainer);
+
+		// Then all the items plus a group label are added and have the correct layouts
+		assert.equal(rootComponent.itemConfigs.length, 4);
+		let listBoxConfig = rootComponent.itemConfigs[0];
+		let groupLabelConfig = rootComponent.itemConfigs[1];
+		let inputBoxConfig = rootComponent.itemConfigs[2];
+		let dropdownConfig = rootComponent.itemConfigs[3];
+
+		// Verify that the correct items were added
+		assert.equal(listBoxConfig.componentShape.type, ModelComponentTypes.ListBox);
+		assert.equal(groupLabelConfig.componentShape.type, ModelComponentTypes.Text);
+		assert.equal(inputBoxConfig.componentShape.type, ModelComponentTypes.InputBox);
+		assert.equal(dropdownConfig.componentShape.type, ModelComponentTypes.DropDown);
+
+		// Verify that the group title was set up correctly
+		assert.equal(groupLabelConfig.componentShape.properties['value'], groupTitle);
+		assert.equal((groupLabelConfig.config as TitledFormItemLayout).isGroupLabel, true);
+
+		// Verify that the components' layouts are correct
+		assert.equal((listBoxConfig.config as sqlops.FormItemLayout).horizontal, defaultLayout.horizontal);
+		assert.equal((inputBoxConfig.config as sqlops.FormItemLayout).horizontal, groupInputLayout.horizontal);
+		assert.equal((dropdownConfig.config as sqlops.FormItemLayout).horizontal, defaultLayout.horizontal);
 	});
 });

@@ -5,7 +5,7 @@
 import { InjectionToken } from '@angular/core';
 
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 /**
@@ -23,6 +23,7 @@ export interface IComponent {
 	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any) => void;
 	setLayout?: (layout: any) => void;
 	setProperties?: (properties: { [key: string]: any; }) => void;
+	enabled: boolean;
 	readonly valid?: boolean;
 	validate(): Thenable<boolean>;
 }
@@ -63,7 +64,9 @@ export enum ComponentEventType {
 	PropertiesChanged,
 	onDidChange,
 	onDidClick,
-	validityChanged
+	validityChanged,
+	onMessage,
+	onSelectedRowChanged
 }
 
 export interface IModelStore {

@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 
 
-import { ApplicationRef, ComponentFactoryResolver, forwardRef, NgModule, Inject } from '@angular/core';
+import { ApplicationRef, ComponentFactoryResolver, forwardRef, NgModule, Inject, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -13,13 +13,14 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 
 const BrowserAnimationsModule = (<any>require.__$__nodeRequire('@angular/platform-browser/animations')).BrowserAnimationsModule;
 
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 
 import { Registry } from 'vs/platform/registry/common/platform';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 
-import { QueryOutputComponent, QUERY_OUTPUT_SELECTOR } from 'sql/parts/query/views/queryOutput.component';
+import { QueryOutputComponent } from 'sql/parts/query/views/queryOutput.component';
 import { QueryPlanComponent, } from 'sql/parts/queryPlan/queryPlan.component';
 import { QueryComponent } from 'sql/parts/grid/views/query/query.component';
 import { TopOperationsComponent } from 'sql/parts/queryPlan/topOperations.component';
@@ -41,42 +42,51 @@ let baseComponents = [QueryComponent, ComponentHostDirective, QueryOutputCompone
 /* Insights */
 let insightComponents = Registry.as<IInsightRegistry>(Extensions.InsightContribution).getAllCtors();
 
-@NgModule({
-	imports: [
-		CommonModule,
-		BrowserModule,
-		FormsModule,
-		BrowserAnimationsModule,
-		ChartsModule,
-		PanelModule
-	],
-	declarations: [
-		...baseComponents,
-		...insightComponents,
-		SlickGrid,
-		ScrollDirective,
-		MouseDownDirective,
-		Checkbox,
-		SelectBox,
-		InputBox
-	],
-	entryComponents: [
-		QueryOutputComponent,
-		...insightComponents
-	]
-})
-export class QueryOutputModule {
+export const QueryOutputModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): Type<any> => {
 
-	constructor(
-		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService
-	) {
+	@NgModule({
+		imports: [
+			CommonModule,
+			BrowserModule,
+			FormsModule,
+			BrowserAnimationsModule,
+			ChartsModule,
+			PanelModule
+		],
+		declarations: [
+			...baseComponents,
+			...insightComponents,
+			SlickGrid,
+			ScrollDirective,
+			MouseDownDirective,
+			Checkbox,
+			SelectBox,
+			InputBox
+		],
+		entryComponents: [
+			QueryOutputComponent,
+			...insightComponents
+		],
+		providers: [
+			{ provide: IBootstrapParams, useValue: params },
+			{ provide: ISelector, useValue: selector },
+			...providerIterator(instantiationService)
+		]
+	})
+	class ModuleClass {
+
+		constructor(
+			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
+			@Inject(ISelector) private selector: string
+		) {
+		}
+
+		ngDoBootstrap(appRef: ApplicationRef) {
+			const factory = this._resolver.resolveComponentFactory(QueryOutputComponent);
+			(<any>factory).factory.selector = this.selector;
+			appRef.bootstrap(factory);
+		}
 	}
 
-	ngDoBootstrap(appRef: ApplicationRef) {
-		const factory = this._resolver.resolveComponentFactory(QueryOutputComponent);
-		const uniqueSelector: string = this._bootstrapService.getUniqueSelector(QUERY_OUTPUT_SELECTOR);
-		(<any>factory).factory.selector = uniqueSelector;
-		appRef.bootstrap(factory);
-	}
-}
+	return ModuleClass;
+};

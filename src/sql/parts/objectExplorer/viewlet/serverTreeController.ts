@@ -18,6 +18,7 @@ import { ServerTreeActionProvider } from 'sql/parts/objectExplorer/viewlet/serve
 import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import { OpenMode } from 'vs/base/parts/tree/browser/treeDefaults';
+import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 
 /**
  * Extends the tree controller to handle clicks on the tree elements
@@ -73,26 +74,24 @@ export class ServerTreeController extends treedefaults.DefaultController {
 		event.stopPropagation();
 
 		tree.setFocus(element);
-		let parent: ConnectionProfileGroup = undefined;
-		if (element instanceof ConnectionProfileGroup) {
-			parent = <ConnectionProfileGroup>element;
-		}
-		else if (element instanceof ConnectionProfile) {
-			parent = (<ConnectionProfile>element).parent;
-		}
 
 		var actionContext: any;
 		if (element instanceof TreeNode) {
-			actionContext = new ObjectExplorerActionsContext();
-			actionContext.container = event.target;
-			actionContext.treeNode = <TreeNode>element;
-			actionContext.tree = tree;
+			let context = new ObjectExplorerActionsContext();
+			context.nodeInfo = element.toNodeInfo();
+			// Note: getting DB name before, but intentionally not using treeUpdateUtils.getConnectionProfile as it replaces
+			// the connection ID with a new one. This breaks a number of internal tasks
+			context.connectionProfile = element.getConnectionProfile().toIConnectionProfile();
+			context.connectionProfile.databaseName = element.getDatabaseName();
+			actionContext = context;
 		} else if (element instanceof ConnectionProfile) {
-			actionContext = new ObjectExplorerActionsContext();
-			actionContext.container = event.target;
-			actionContext.connectionProfile = <ConnectionProfile>element;
-			actionContext.tree = tree;
+			let context = new ObjectExplorerActionsContext();
+			context.connectionProfile = element.toIConnectionProfile();
+			context.isConnectionNode = true;
+			actionContext = context;
 		} else {
+			// TODO: because the connection group is used as a context object and isn't serializable,
+			// the Group-level context menu is not currently extensible
 			actionContext = element;
 		}
 
@@ -103,7 +102,7 @@ export class ServerTreeController extends treedefaults.DefaultController {
 			getKeyBinding: (action) => this.keybindingService.lookupKeybinding(action.id),
 			onHide: (wasCancelled?: boolean) => {
 				if (wasCancelled) {
-					tree.DOMFocus();
+					tree.domFocus();
 				}
 			},
 			getActionsContext: () => (actionContext)

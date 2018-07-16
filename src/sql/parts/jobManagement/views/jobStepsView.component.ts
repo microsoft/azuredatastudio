@@ -6,30 +6,31 @@
 import 'vs/css!./jobStepsView';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable, AfterContentChecked } from '@angular/core';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { IJobManagementService } from '../common/interfaces';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { AgentJobHistoryInfo } from 'sqlops';
-import { JobStepsViewController, JobStepsViewDataSource, JobStepsViewFilter,
-	JobStepsViewRenderer, JobStepsViewRow, JobStepsViewModel} from 'sql/parts/jobManagement/views/jobStepsViewTree';
-import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { JobStepsViewController, JobStepsViewDataSource, JobStepsViewFilter,
+	JobStepsViewRenderer, JobStepsViewModel} from 'sql/parts/jobManagement/views/jobStepsViewTree';
+import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
+import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
+import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import * as dom from 'vs/base/browser/dom';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
 @Component({
 	selector: JOBSTEPSVIEW_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./jobStepsView.component.html'))
+	templateUrl: decodeURI(require.toUrl('./jobStepsView.component.html')),
+	providers: [{ provide: TabChild, useExisting: forwardRef(() => JobStepsViewComponent) }],
 })
-export class JobStepsViewComponent extends Disposable implements OnInit, AfterContentChecked {
+export class JobStepsViewComponent extends JobManagementView  implements OnInit, AfterContentChecked {
 
-	private _jobManagementService: IJobManagementService;
 	private _tree: Tree;
 	private _treeController = new JobStepsViewController();
 	private _treeDataSource = new JobStepsViewDataSource();
@@ -39,16 +40,18 @@ export class JobStepsViewComponent extends Disposable implements OnInit, AfterCo
 
 	@ViewChild('table') private _tableContainer: ElementRef;
 
-
 	constructor(
-		@Inject(BOOTSTRAP_SERVICE_ID) private bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
-		@Inject(forwardRef(() => JobHistoryComponent)) private _jobHistoryComponent: JobHistoryComponent
+		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
+		@Inject(forwardRef(() => JobHistoryComponent)) private _jobHistoryComponent: JobHistoryComponent,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IInstantiationService) instantiationService: IInstantiationService,
+		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IDashboardService) dashboardService: IDashboardService
 	) {
-		super();
-		this._jobManagementService = bootstrapService.jobManagementService;
+		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService);
 	}
 
 	ngAfterContentChecked() {
@@ -61,7 +64,7 @@ export class JobStepsViewComponent extends Disposable implements OnInit, AfterCo
 					filter: this._treeFilter,
 					renderer: this._treeRenderer
 				}, { verticalScrollMode: ScrollbarVisibility.Visible });
-				this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
+				this._register(attachListStyler(this._tree, this.themeService));
 			}
 			this._tree.layout(JobStepsViewComponent._pageSize);
 			this._tree.setInput(new JobStepsViewModel());
@@ -71,14 +74,29 @@ export class JobStepsViewComponent extends Disposable implements OnInit, AfterCo
 	}
 
 	ngOnInit() {
-		let ownerUri: string = this._dashboardService.connectionManagementService.connectionInfo.ownerUri;
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._tree = new Tree(this._tableContainer.nativeElement, {
 			controller: this._treeController,
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
 		}, {verticalScrollMode: ScrollbarVisibility.Visible});
-		this._register(attachListStyler(this._tree, this.bootstrapService.themeService));
+		this._register(attachListStyler(this._tree, this.themeService));
+	}
+
+	public onFirstVisible() {
+	}
+
+	public layout() {
+		let jobsViewToolbar = $('jobhistory-component .actionbar-container').get(0);
+		let statusBar = $('.part.statusbar').get(0);
+		if (jobsViewToolbar && statusBar) {
+			let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom;
+			let statusTop = statusBar.getBoundingClientRect().top;
+			this._table.layout(new dom.Dimension(
+				dom.getContentWidth(this._tableContainer.nativeElement),
+				statusTop - toolbarBottom));
+		}
 	}
 }
 

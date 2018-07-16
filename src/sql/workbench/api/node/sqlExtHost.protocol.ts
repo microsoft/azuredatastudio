@@ -7,7 +7,8 @@
 import {
 	createMainContextProxyIdentifier as createMainId,
 	createExtHostContextProxyIdentifier as createExtId,
-	ProxyIdentifier, IRPCProtocol } from 'vs/workbench/services/extensions/node/proxyIdentifier';
+	ProxyIdentifier, IRPCProtocol
+} from 'vs/workbench/services/extensions/node/proxyIdentifier';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -16,8 +17,11 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
-import Event, { Emitter } from 'vs/base/common/event';
+import {
+	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
+	IModelViewWizardDetails, IModelViewWizardPageDetails
+} from 'sql/workbench/api/common/sqlExtHostTypes';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -136,6 +140,10 @@ export abstract class ExtHostDataProtocolShape {
 	 * Runs a query for a provided query and returns result
 	 */
 	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> { throw ni(); }
+	/**
+	 * Parses a T-SQL string without actually executing it
+	 */
+	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> { throw ni(); }
 	/**
 	 * Gets a subset of rows in a result set in order to display in the UI
 	 */
@@ -309,21 +317,66 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$stopSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
 
+	/**
+	 * Pause a profiler session
+	 */
+	$pauseSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
+
 
 	/**
 	 * Get Agent Job list
 	 */
-	$getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult>{ throw ni(); }
+	$getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult> { throw ni(); }
 
 	/**
 	 * Get a Agent Job's history
 	 */
-	$getJobHistory(handle: number, ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>{ throw ni(); }
+	$getJobHistory(handle: number, ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> { throw ni(); }
 
 	/**
 	 * Run an action on a Job
 	 */
-	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult>{ throw ni(); }
+	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> { throw ni(); }
+
+	/**
+	 * Deletes a job
+	 */
+	$deleteJob(handle: number, ownerUri: string, job: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
+
+	/**
+	 * Get Agent Alerts list
+	 */
+	$getAlerts(handle: number, connectionUri: string): Thenable<sqlops.AgentAlertsResult> { throw ni(); }
+
+	/**
+	 * Deletes  an alert
+	 */
+	$deleteAlert(handle: number, connectionUri: string, alert: sqlops.AgentAlertInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
+
+	/**
+	 * Get Agent Oeprators list
+	 */
+	$getOperators(handle: number, connectionUri: string): Thenable<sqlops.AgentOperatorsResult> { throw ni(); }
+
+	/**
+	 * Deletes  an operator
+	 */
+	$deleteOperator(handle: number, connectionUri: string, operator: sqlops.AgentOperatorInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
+
+	/**
+	 * Get Agent Proxies list
+	 */
+	$getProxies(handle: number, connectionUri: string): Thenable<sqlops.AgentProxiesResult> { throw ni(); }
+
+	/**
+	 * Deletes  a proxy
+	 */
+	$deleteProxy(handle: number, connectionUri: string, proxy: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
+
+	/**
+	 * Get Agent Credentials list
+	 */
+	$getCredentials(handle: number, connectionUri: string): Thenable<sqlops.GetCredentialsResult> { throw ni(); }
 }
 
 /**
@@ -407,6 +460,8 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onFilePathsValidated(handle: number, response: sqlops.FileBrowserValidatedParams): void;
 	$onScriptingComplete(handle: number, message: sqlops.ScriptingCompleteResult): void;
 	$onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void;
+	$onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void;
+	$onJobDataUpdated(handle: Number): void;
 
 	/**
 	 * Callback when a session has completed initialization
@@ -530,7 +585,7 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$addToContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
-	$registerEvent(handle: number, componentId: string):  Thenable<void>;
+	$registerEvent(handle: number, componentId: string): Thenable<void>;
 	$validate(handle: number, componentId: string): Thenable<boolean>;
 }
 
@@ -539,7 +594,7 @@ export interface ExtHostObjectExplorerShape {
 
 export interface MainThreadObjectExplorerShape extends IDisposable {
 	$getNode(connectionId: string, nodePath?: string): Thenable<sqlops.NodeInfo>;
-	$getActiveConnectionNodes(): Thenable<{ nodeInfo: sqlops.NodeInfo, connectionId: string}[]>;
+	$getActiveConnectionNodes(): Thenable<{ nodeInfo: sqlops.NodeInfo, connectionId: string }[]>;
 	$setExpandedState(connectionId: string, nodePath: string, expandedState: vscode.TreeItemCollapsibleState): Thenable<void>;
 	$setSelected(connectionId: string, nodePath: string, selected: boolean, clearOtherSelections?: boolean): Thenable<void>;
 	$getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]>;
@@ -549,16 +604,27 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 
 export interface ExtHostModelViewDialogShape {
 	$onButtonClick(handle: number): void;
-	$onDialogValidityChanged(handle: number, valid: boolean): void;
+	$onPanelValidityChanged(handle: number, valid: boolean): void;
+	$onWizardPageChanged(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): void;
+	$updateWizardPageInfo(handle: number, pageHandles: number[], currentPageIndex: number): void;
+	$validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean>;
+	$validateDialogClose(handle: number): Thenable<boolean>;
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
-	$openEditor(modelViewId: string, title: string, position?: vscode.ViewColumn): Thenable<void>;
-	$open(handle: number): Thenable<void>;
-	$close(handle: number): Thenable<void>;
+	$openEditor(modelViewId: string, title: string, options?: sqlops.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
+	$openDialog(handle: number): Thenable<void>;
+	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
 	$setTabDetails(handle: number, details: IModelViewTabDetails): Thenable<void>;
 	$setButtonDetails(handle: number, details: IModelViewButtonDetails): Thenable<void>;
+	$openWizard(handle: number): Thenable<void>;
+	$closeWizard(handle: number): Thenable<void>;
+	$setWizardPageDetails(handle: number, details: IModelViewWizardPageDetails): Thenable<void>;
+	$setWizardDetails(handle: number, details: IModelViewWizardDetails): Thenable<void>;
+	$addWizardPage(wizardHandle: number, pageHandle: number, pageIndex: number): Thenable<void>;
+	$removeWizardPage(wizardHandle: number, pageIndex: number): Thenable<void>;
+	$setWizardPage(wizardHandle: number, pageIndex: number): Thenable<void>;
 }
 export interface ExtHostQueryEditorShape {
 }

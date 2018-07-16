@@ -3,43 +3,56 @@
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { ApplicationRef, ComponentFactoryResolver, ModuleWithProviders, NgModule,
-	Inject, forwardRef } from '@angular/core';
+import {
+	ApplicationRef, ComponentFactoryResolver, NgModule,
+	Inject, forwardRef, Type
+} from '@angular/core';
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { BackupComponent, BACKUP_SELECTOR } from 'sql/parts/disasterRecovery/backup/backup.component';
+
+import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
+import { BackupComponent } from 'sql/parts/disasterRecovery/backup/backup.component';
+
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 // work around
-const BrowserAnimationsModule = (<any> require.__$__nodeRequire('@angular/platform-browser/animations')).BrowserAnimationsModule;
+const BrowserAnimationsModule = (<any>require.__$__nodeRequire('@angular/platform-browser/animations')).BrowserAnimationsModule;
 
 // Backup wizard main angular module
-@NgModule({
-	declarations: [
-		BackupComponent
-	],
-	entryComponents: [BackupComponent],
-	imports: [
-		FormsModule,
-		CommonModule,
-		BrowserModule,
-		BrowserAnimationsModule,
-	],
-	providers: [{ provide: APP_BASE_HREF, useValue: '/' }]
-})
-export class BackupModule {
+export const BackupModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): Type<any> => {
+	@NgModule({
+		declarations: [
+			BackupComponent
+		],
+		entryComponents: [BackupComponent],
+		imports: [
+			FormsModule,
+			CommonModule,
+			BrowserModule,
+			BrowserAnimationsModule,
+		],
+		providers: [
+			{ provide: APP_BASE_HREF, useValue: '/' },
+			{ provide: IBootstrapParams, useValue: params },
+			{ provide: ISelector, useValue: selector },
+			...providerIterator(instantiationService)
+		]
+	})
+	class ModuleClass {
 
-	constructor(
-		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService
-	) {
+		constructor(
+			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
+			@Inject(ISelector) private selector: string
+		) {
+		}
+
+		ngDoBootstrap(appRef: ApplicationRef) {
+			const factory = this._resolver.resolveComponentFactory(BackupComponent);
+			(<any>factory).factory.selector = this.selector;
+			appRef.bootstrap(factory);
+		}
 	}
 
-	ngDoBootstrap(appRef: ApplicationRef) {
-		const factory = this._resolver.resolveComponentFactory(BackupComponent);
-		const uniqueSelector: string = this._bootstrapService.getUniqueSelector(BACKUP_SELECTOR);
-		(<any>factory).factory.selector = uniqueSelector;
-		appRef.bootstrap(factory);
-	}
-}
+	return ModuleClass;
+};

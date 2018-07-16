@@ -1,18 +1,25 @@
-import { Dimension, Builder } from 'vs/base/browser/builder';
+/*---------------------------------------------------------------------------------------------
+*  Copyright (c) Microsoft Corporation. All rights reserved.
+*  Licensed under the Source EULA. See License.txt in the project root for license information.
+*--------------------------------------------------------------------------------------------*/
+
+import * as DOM from 'vs/base/browser/dom';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Builder } from 'vs/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { getZoomLevel } from 'vs/base/browser/browser';
 import { Configuration } from 'vs/editor/browser/config/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
-import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { BareResultsGridInfo } from 'sql/parts/query/editor/queryResultsEditor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import * as dom from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
-import { EditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+
+import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { BareResultsGridInfo } from 'sql/parts/query/editor/queryResultsEditor';
+import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { EditDataModule } from 'sql/parts/grid/views/editData/editData.module';
 import { EDITDATA_SELECTOR } from 'sql/parts/grid/views/editData/editData.component';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
@@ -28,8 +35,8 @@ export class EditDataResultsEditor extends BaseEditor {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IBootstrapService private _bootstrapService: IBootstrapService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(EditDataResultsEditor.ID, telemetryService, themeService);
 		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
@@ -45,14 +52,14 @@ export class EditDataResultsEditor extends BaseEditor {
 		return this._input;
 	}
 
-	public createEditor(parent: Builder): void {
+	public createEditor(parent: HTMLElement): void {
 	}
 
 	public dispose(): void {
 		super.dispose();
 	}
 
-	public layout(dimension: Dimension): void {
+	public layout(dimension: DOM.Dimension): void {
 	}
 
 	public setInput(input: EditDataResultsInput, options: EditorOptions): TPromise<void> {
@@ -66,9 +73,9 @@ export class EditDataResultsEditor extends BaseEditor {
 
 	private _applySettings() {
 		if (this.input && this.input.container) {
-			Configuration.applyFontInfoSlow(this.getContainer().getHTMLElement(), this._rawOptions);
+			Configuration.applyFontInfoSlow(this.getContainer(), this._rawOptions);
 			if (!this.input.css) {
-				this.input.css = dom.createStyleSheet(this.input.container);
+				this.input.css = DOM.createStyleSheet(this.input.container);
 			}
 			let cssRuleText = '';
 			if (types.isNumber(this._rawOptions.cellPadding)) {
@@ -102,8 +109,8 @@ export class EditDataResultsEditor extends BaseEditor {
 		// Otherwise many components will be left around and be subscribed
 		// to events from the backing data service
 		const parent = input.container;
-		let params: EditDataComponentParams = { dataService: dataService };
-		this._bootstrapService.bootstrap(
+		let params: IEditDataComponentParams = { dataService: dataService };
+		bootstrapAngular(this._instantiationService,
 			EditDataModule,
 			parent,
 			EDITDATA_SELECTOR,

@@ -4,23 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
+	Component, Input, Inject, ChangeDetectorRef, forwardRef,
+	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Checkbox, ICheckboxOptions } from 'sql/base/browser/ui/checkbox/checkbox';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 
 @Component({
-	selector: 'checkbox',
+	selector: 'modelview-checkbox',
 	template: `
-		<div #input style="width: 100%"></div>
+		<div #input [style.width]="getWidth()"></div>
 	`
 })
 export default class CheckBoxComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
@@ -50,7 +48,7 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 
 			this._register(this._input);
 			this._register(this._input.onChange(e => {
-				this.value = this._input.checked;
+				this.checked = this._input.checked;
 				this._onEventEmitter.fire({
 					eventType: ComponentEventType.onDidChange,
 					args: e
@@ -88,10 +86,10 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	// CSS-bound properties
 
 	public get checked(): boolean {
-		return this.getPropertyOrDefault<sqlops.CheckBoxProperties, boolean>((props) => props.value, false);
+		return this.getPropertyOrDefault<sqlops.CheckBoxProperties, boolean>((props) => props.checked, false);
 	}
 
-	public set value(newValue: boolean) {
+	public set checked(newValue: boolean) {
 		this.setPropertyFromUI<sqlops.CheckBoxProperties, boolean>((properties, value) => { properties.checked = value; }, newValue);
 	}
 

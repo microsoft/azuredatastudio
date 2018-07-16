@@ -7,7 +7,6 @@ import 'vs/css!sql/parts/query/editor/media/queryEditor';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
-import { Builder, Dimension, withElementById } from 'vs/base/browser/builder';
 
 import { EditorInput, EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
@@ -65,7 +64,7 @@ export class QueryEditor extends BaseEditor {
 	private _sash: IFlexibleSash;
 	private _editorTopOffset: number;
 	private _orientation: Orientation;
-	private _dimension: Dimension;
+	private _dimension: DOM.Dimension;
 
 	private _resultsEditor: QueryResultsEditor;
 	private _resultsEditorContainer: HTMLElement;
@@ -137,10 +136,10 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	/**
-	 * Called to create the editor in the parent builder.
+	 * Called to create the editor in the parent element.
 	 */
-	public createEditor(parent: Builder): void {
-		const parentElement = parent.getHTMLElement();
+	public createEditor(parent: HTMLElement): void {
+		const parentElement = parent;
 		DOM.addClass(parentElement, 'side-by-side-editor');
 		this._createTaskbar(parentElement);
 	}
@@ -244,7 +243,7 @@ export class QueryEditor extends BaseEditor {
 	 * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
 	 * To be called when the container of this editor changes size.
 	 */
-	public layout(dimension: Dimension): void {
+	public layout(dimension: DOM.Dimension): void {
 		this._dimension = dimension;
 
 		if (this._sash) {
@@ -301,7 +300,7 @@ export class QueryEditor extends BaseEditor {
 
 		this._createEditor(<QueryResultsInput>input.results, this._resultsEditorContainer)
 			.then(result => {
-				this._onResultsEditorCreated(<QueryResultsEditor>result, input.results, this.options);
+				this._onResultsEditorCreated(<any>result, input.results, this.options);
 				this.resultsEditorVisibility = true;
 				this.hideQueryResultsView = false;
 				this._doLayout(true);
@@ -571,7 +570,7 @@ export class QueryEditor extends BaseEditor {
 		}
 
 		let editor = descriptor.instantiate(this._instantiationService);
-		editor.create(new Builder(container));
+		editor.create(container);
 		editor.setVisible(this.isVisible(), this.position);
 		return TPromise.as(editor);
 	}
@@ -596,7 +595,7 @@ export class QueryEditor extends BaseEditor {
 	 * Appends the HTML for the SQL editor. Creates new HTML every time.
 	 */
 	private _createSqlEditorContainer() {
-		const parentElement = this.getContainer().getHTMLElement();
+		const parentElement = this.getContainer();
 		this._sqlEditorContainer = DOM.append(parentElement, DOM.$('.details-editor-container'));
 		this._sqlEditorContainer.style.position = 'absolute';
 	}
@@ -609,7 +608,7 @@ export class QueryEditor extends BaseEditor {
 	private _createResultsEditorContainer() {
 		this._createSash();
 
-		const parentElement = this.getContainer().getHTMLElement();
+		const parentElement = this.getContainer();
 		let input = <QueryInput>this.input;
 
 		if (!input.results.container) {
@@ -632,7 +631,7 @@ export class QueryEditor extends BaseEditor {
 	 */
 	private _createSash(): void {
 		if (!this._sash) {
-			let parentElement: HTMLElement = this.getContainer().getHTMLElement();
+			let parentElement: HTMLElement = this.getContainer();
 
 			if (this._orientation === Orientation.HORIZONTAL) {
 				this._sash = this._register(new HorizontalFlexibleSash(parentElement, this._minEditorSize));
@@ -655,7 +654,7 @@ export class QueryEditor extends BaseEditor {
 		if (this._orientation === Orientation.HORIZONTAL) {
 			this._sash.setDimenesion(this._dimension);
 		} else {
-			this._sash.setDimenesion(new Dimension(this._dimension.width, this._dimension.height - this.getTaskBarHeight()));
+			this._sash.setDimenesion(new DOM.Dimension(this._dimension.width, this._dimension.height - this.getTaskBarHeight()));
 		}
 
 	}
@@ -692,13 +691,13 @@ export class QueryEditor extends BaseEditor {
 
 	private _doLayoutHorizontal(): void {
 		let splitPointTop: number = this._sash.getSplitPoint();
-		let parent: ClientRect = this.getContainer().getHTMLElement().getBoundingClientRect();
+		let parent: ClientRect = this.getContainer().getBoundingClientRect();
 
 		let sqlEditorHeight = splitPointTop - (parent.top + this.getTaskBarHeight());
 
-		let titleBar = withElementById('workbench.parts.titlebar');
+		let titleBar = document.getElementById('workbench.parts.titlebar');
 		if (titleBar) {
-			sqlEditorHeight += DOM.getContentHeight(titleBar.getHTMLElement());
+			sqlEditorHeight += DOM.getContentHeight(titleBar);
 		}
 
 		let queryResultsEditorHeight = parent.bottom - splitPointTop;
@@ -711,13 +710,13 @@ export class QueryEditor extends BaseEditor {
 		this._resultsEditorContainer.style.width = `${this._dimension.width}px`;
 		this._resultsEditorContainer.style.top = `${splitPointTop}px`;
 
-		this._sqlEditor.layout(new Dimension(this._dimension.width, sqlEditorHeight));
-		this._resultsEditor.layout(new Dimension(this._dimension.width, queryResultsEditorHeight));
+		this._sqlEditor.layout(new DOM.Dimension(this._dimension.width, sqlEditorHeight));
+		this._resultsEditor.layout(new DOM.Dimension(this._dimension.width, queryResultsEditorHeight));
 	}
 
 	private _doLayoutVertical(): void {
 		let splitPointLeft: number = this._sash.getSplitPoint();
-		let parent: ClientRect = this.getContainer().getHTMLElement().getBoundingClientRect();
+		let parent: ClientRect = this.getContainer().getBoundingClientRect();
 
 		let sqlEditorWidth = splitPointLeft;
 		let queryResultsEditorWidth = parent.width - splitPointLeft;
@@ -732,8 +731,8 @@ export class QueryEditor extends BaseEditor {
 		this._resultsEditorContainer.style.height = `${this._dimension.height - taskbarHeight}px`;
 		this._resultsEditorContainer.style.left = `${splitPointLeft}px`;
 
-		this._sqlEditor.layout(new Dimension(sqlEditorWidth, this._dimension.height - taskbarHeight));
-		this._resultsEditor.layout(new Dimension(queryResultsEditorWidth, this._dimension.height - taskbarHeight));
+		this._sqlEditor.layout(new DOM.Dimension(sqlEditorWidth, this._dimension.height - taskbarHeight));
+		this._resultsEditor.layout(new DOM.Dimension(queryResultsEditorWidth, this._dimension.height - taskbarHeight));
 	}
 
 	private _doLayoutSql() {
@@ -745,7 +744,7 @@ export class QueryEditor extends BaseEditor {
 		}
 
 		if (this._dimension) {
-			this._sqlEditor.layout(new Dimension(this._dimension.width, this._dimension.height - this.getTaskBarHeight()));
+			this._sqlEditor.layout(new DOM.Dimension(this._dimension.width, this._dimension.height - this.getTaskBarHeight()));
 		}
 	}
 
@@ -769,7 +768,7 @@ export class QueryEditor extends BaseEditor {
 			this._resultsEditor = null;
 		}
 
-		let thisEditorParent: HTMLElement = this.getContainer().getHTMLElement();
+		let thisEditorParent: HTMLElement = this.getContainer();
 
 		if (this._sqlEditorContainer) {
 			let sqlEditorParent: HTMLElement = this._sqlEditorContainer.parentElement;

@@ -22,11 +22,20 @@ declare module 'sqlops' {
 		inputBox(): ComponentBuilder<InputBoxComponent>;
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
 		radioButton(): ComponentBuilder<RadioButtonComponent>;
+		webView(): ComponentBuilder<WebViewComponent>;
+		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
-		dashboardWidget(widgetId: string): ComponentBuilder<WidgetComponent>;
-		dashboardWebview(webviewId: string): ComponentBuilder<WebviewComponent>;
+		listBox(): ComponentBuilder<ListBoxComponent>;
+		table(): ComponentBuilder<TableComponent>;
+		declarativeTable(): ComponentBuilder<DeclarativeTableComponent>;
+		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent>;
+		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent>;
 		formContainer(): FormBuilder;
+		groupContainer(): GroupBuilder;
+		toolbarContainer(): ToolbarBuilder;
+		loadingComponent(): LoadingComponentBuilder;
+		fileBrowserTree(): ComponentBuilder<FileBrowserTreeComponent>;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -43,8 +52,37 @@ declare module 'sqlops' {
 
 	}
 
+	export interface GroupBuilder extends ContainerBuilder<GroupContainer, GroupLayout, GroupItemLayout> {
+	}
+
+	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, any, any> {
+		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, any, any>;
+
+		/**
+		 * Creates a collection of child components and adds them all to this container
+		 *
+		 * @param toolbarComponents the definitions
+		 */
+		addToolbarItems(toolbarComponents: Array<ToolbarComponent>): void;
+
+		/**
+		 * Creates a child component and adds it to this container.
+		 *
+		 * @param toolbarComponent the component to be added
+		 */
+		addToolbarItem(toolbarComponent: ToolbarComponent): void;
+	}
+
+	export interface LoadingComponentBuilder extends ComponentBuilder<LoadingComponent> {
+		/**
+		 * Set the component wrapped by the LoadingComponent
+		 * @param component The component to wrap
+		 */
+		withItem(component: Component): LoadingComponentBuilder;
+	}
+
 	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
-		withFormItems(components: FormComponent[], itemLayout?: FormItemLayout): ContainerBuilder<FormContainer, FormLayout, FormItemLayout>;
+		withFormItems(components: (FormComponent | FormComponentGroup)[], itemLayout?: FormItemLayout): FormBuilder;
 
 		/**
 		 * Creates a collection of child components and adds them all to this container
@@ -52,7 +90,7 @@ declare module 'sqlops' {
 		 * @param formComponents the definitions
 		 * @param {*} [itemLayout] Optional layout for the child items
 		 */
-		addFormItems(formComponents: Array<FormComponent>, itemLayout?: FormItemLayout): void;
+		addFormItems(formComponents: Array<FormComponent | FormComponentGroup>, itemLayout?: FormItemLayout): void;
 
 		/**
 		 * Creates a child component and adds it to this container.
@@ -60,7 +98,7 @@ declare module 'sqlops' {
 		 * @param formComponent the component to be added
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
-		addFormItem(formComponent: FormComponent, itemLayout?: FormItemLayout): void;
+		addFormItem(formComponent: FormComponent | FormComponentGroup, itemLayout?: FormItemLayout): void;
 	}
 
 	export interface Component {
@@ -69,11 +107,11 @@ declare module 'sqlops' {
 		/**
 		 * Sends any updated properties of the component to the UI
 		 *
-		 * @returns {Thenable<boolean>} Thenable that completes once the update
+		 * @returns {Thenable<void>} Thenable that completes once the update
 		 * has been applied in the UI
 		 * @memberof Component
 		 */
-		updateProperties(properties: { [key: string]: any }): Thenable<boolean>;
+		updateProperties(properties: { [key: string]: any }): Thenable<void>;
 
 		enabled: boolean;
 		/**
@@ -96,6 +134,27 @@ declare module 'sqlops' {
 		component: Component;
 		title: string;
 		actions?: Component[];
+		required?: boolean;
+	}
+
+	/**
+	 * Used to create a group of components in a form layout
+	 */
+	export interface FormComponentGroup {
+		/**
+		 * The form components to display in the group along with optional layouts for each item
+		 */
+		components: (FormComponent & { layout?: FormItemLayout })[];
+
+		/**
+		 * The title of the group, displayed above its components
+		 */
+		title: string;
+	}
+
+	export interface ToolbarComponent {
+		component: Component;
+		title?: string;
 	}
 
 	/**
@@ -165,7 +224,20 @@ declare module 'sqlops' {
 		 */
 		alignContent?: string;
 
-		height? : number;
+		/**
+		 * Container Height
+		 */
+		height?: number | string;
+
+		/**
+		 * Container Width
+		 */
+		width?: number | string;
+
+		/**
+		 *
+		 */
+		textAlign?: string
 	}
 
 	export interface FlexItemLayout {
@@ -181,13 +253,25 @@ declare module 'sqlops' {
 	}
 
 	export interface FormItemLayout {
-		horizontal: boolean;
-		width: number;
-		componentWidth: number;
+		horizontal?: boolean;
+		componentWidth?: number | string;
+		componentHeight?: number | string;
+		titleFontSize?: number | string;
+		info?: string;
 	}
 
 	export interface FormLayout {
+		width?: number | string;
+		height?: number | string;
+		padding?: string;
+	}
 
+	export interface GroupLayout {
+		width?: number | string;
+		header?: string;
+	}
+
+	export interface GroupItemLayout {
 	}
 
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
@@ -196,6 +280,11 @@ declare module 'sqlops' {
 	export interface FormContainer extends Container<FormLayout, FormItemLayout> {
 	}
 
+	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout> {
+	}
+
+	export interface ToolbarContainer extends Container<any, any> {
+	}
 
 	/**
 	 * Describes an action to be shown in the UI, with a user-readable label
@@ -227,32 +316,81 @@ declare module 'sqlops' {
 		Error = 3
 	}
 
+	export enum CardType {
+		VerticalButton = 'VerticalButton',
+		Details = 'Details'
+	}
+
 	/**
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
 	 */
-	export interface CardProperties {
+	export interface CardProperties extends ComponentWithIcon {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
 		status?: StatusIndicator;
+
+		/**
+		 * Returns true if the card is selected
+		 */
+		selected?: boolean;
+
+		/**
+		 * Card Type, default: Details
+		 */
+		cardType?: CardType;
 	}
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
 
-	export interface InputBoxProperties {
+	export interface ComponentProperties {
+		height?: number | string;
+		width?: number | string;
+	}
+
+	export interface ComponentWithIcon {
+		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		iconHeight?: number | string;
+		iconWidth?: number | string;
+	}
+
+	export interface InputBoxProperties extends ComponentProperties {
 		value?: string;
 		ariaLabel?: string;
 		placeHolder?: string;
-		height: number;
-		width: number;
 		inputType?: InputBoxInputType;
 		required?: boolean;
+		multiline?: boolean;
+		rows?: number;
+		columns?: number;
+		min?: number;
+		max?: number;
+	}
+
+	export interface TableColumn {
+		value: string
+	}
+
+	export interface TableComponentProperties extends ComponentProperties {
+		data: any[][];
+		columns: string[] | TableColumn[];
+		selectedRows?: number[];
+	}
+
+	export interface FileBrowserTreeProperties extends ComponentProperties {
+		ownerUri: string;
 	}
 
 	export interface CheckBoxProperties {
 		checked?: boolean;
 		label?: string;
+	}
+
+	export enum DeclarativeDataType {
+		string = 'string',
+		category = 'category',
+		boolean = 'boolean'
 	}
 
 	export interface RadioButtonProperties {
@@ -262,20 +400,55 @@ declare module 'sqlops' {
 		checked?: boolean;
 	}
 
-	export interface DropDownProperties {
+	export interface TextComponentProperties {
 		value?: string;
-		values?: string[];
 	}
 
-	export interface ButtonProperties {
+	export interface DropDownProperties extends ComponentProperties {
+		value?: string | CategoryValue;
+		values?: string[] | CategoryValue[];
+		editable?: boolean;
+	}
+
+	export interface DeclarativeTableColumn {
+		displayName: string;
+		categoryValues: CategoryValue[];
+		valueType: DeclarativeDataType;
+		isReadOnly: boolean;
+		width: number | string;
+	}
+
+	export interface DeclarativeTableProperties {
+		data: any[][];
+		columns: DeclarativeTableColumn[];
+	}
+
+	export interface ListBoxProperties {
+		selectedRow?: number;
+		values?: string[];
+
+	}
+
+	export interface WebViewProperties {
+		message?: any;
+		html?: string;
+	}
+
+	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
 		label?: string;
 	}
 
-	export interface CardComponent extends Component {
-		label: string;
-		value: string;
-		actions?: ActionDescriptor[];
+	export interface LoadingComponentProperties {
+		loading?: boolean;
+	}
+
+	export interface CardComponent extends Component, CardProperties {
 		onDidActionClick: vscode.Event<ActionDescriptor>;
+		onCardSelectedChanged: vscode.Event<any>;
+	}
+
+	export interface TextComponent extends Component {
+		value: string;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
@@ -292,23 +465,70 @@ declare module 'sqlops' {
 		onChanged: vscode.Event<any>;
 	}
 
-	export interface DropDownComponent extends Component {
-		value: string;
-		values: string[];
+	export interface DropDownComponent extends Component, DropDownProperties {
+		value: string | CategoryValue;
+		values: string[] | CategoryValue[];
 		onValueChanged: vscode.Event<any>;
+	}
+
+	export interface TableCell {
+		row: number;
+		column: number;
+		value: any;
+	}
+
+	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
+		onDataChanged: vscode.Event<any>;
+	}
+
+	export interface ListBoxComponent extends Component, ListBoxProperties {
+		selectedRow?: number;
+		values: string[];
+		onRowSelected: vscode.Event<any>;
+	}
+
+	export interface TableComponent extends Component, TableComponentProperties {
+		onRowSelected: vscode.Event<any>;
+	}
+
+	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {
+		onDidChange: vscode.Event<any>;
+	}
+
+	export interface WebViewComponent extends Component {
+		html: string;
+		message: any;
+		onMessage: vscode.Event<any>;
 	}
 
 	export interface ButtonComponent extends Component {
 		label: string;
+		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 		onDidClick: vscode.Event<any>;
 	}
 
-	export interface WidgetComponent extends Component {
+	export interface DashboardWidgetComponent extends Component {
 		widgetId: string;
 	}
 
-	export interface WebviewComponent extends Component {
+	export interface DashboardWebviewComponent extends Component {
 		webviewId: string;
+	}
+
+	/**
+	 * Component used to wrap another component that needs to be loaded, and show a loading spinner
+	 * while the contained component is loading
+	 */
+	export interface LoadingComponent extends Component {
+		/**
+		 * Whether to show the loading spinner instead of the contained component. True by default
+		 */
+		loading: boolean;
+
+		/**
+		 * The component displayed when the loading property is false
+		 */
+		component: Component;
 	}
 
 	/**
@@ -396,6 +616,36 @@ declare module 'sqlops' {
 			 */
 			export function closeDialog(dialog: Dialog): void;
 
+			/**
+			 * Create a wizard page with the given title, for inclusion in a wizard
+			 * @param title The title of the page
+			 */
+			export function createWizardPage(title: string): WizardPage;
+
+			/**
+			 * Create a wizard with the given title and pages
+			 * @param title The title of the wizard
+			 */
+			export function createWizard(title: string): Wizard;
+
+			/**
+			 * Used to control whether a message in a dialog/wizard is displayed as an error,
+			 * warning, or informational message. Default is error.
+			 */
+			export enum MessageLevel {
+				Error = 0,
+				Warning = 1,
+				Information = 2
+			}
+
+			/**
+			 * A message shown in a dialog. If the level is not set it defaults to error.
+			 */
+			export type DialogMessage = {
+				readonly text: string,
+				readonly level?: MessageLevel
+			};
+
 			export interface ModelViewPanel {
 				/**
 				 * Register model view content for the dialog.
@@ -407,6 +657,16 @@ declare module 'sqlops' {
 				 * Returns the model view content if registered. Returns undefined if model review is not registered
 				 */
 				readonly modelView: ModelView;
+
+				/**
+				 * Whether the panel's content is valid
+				 */
+				readonly valid: boolean;
+
+				/**
+				 * Fired whenever the panel's valid property changes
+				 */
+				readonly onValidityChanged: vscode.Event<boolean>;
 			}
 
 			// Model view dialog classes
@@ -438,14 +698,19 @@ declare module 'sqlops' {
 				customButtons: Button[];
 
 				/**
-				 * Whether the dialog's content is valid
+				 * Set the informational message shown in the dialog. Hidden when the message is
+				 * undefined or the text is empty or undefined. The default level is error.
 				 */
-				readonly valid: boolean;
+				message: DialogMessage;
 
 				/**
-				 * Fired whenever the dialog's valid property changes
+				 * Register a callback that will be called when the user tries to click done. Only
+				 * one callback can be registered at once, so each registration call will clear
+				 * the previous registration.
+				 * @param validator The callback that gets executed when the user tries to click
+				 * done. Return true to allow the dialog to close or false to block it from closing
 				 */
-				readonly onValidityChanged: vscode.Event<boolean>;
+				registerCloseValidator(validator: () => boolean | Thenable<boolean>): void;
 			}
 
 			export interface DialogTab extends ModelViewPanel {
@@ -481,6 +746,155 @@ declare module 'sqlops' {
 				 */
 				readonly onClick: vscode.Event<void>;
 			}
+
+			export interface WizardPageChangeInfo {
+				/**
+				 * The page number that the wizard changed from
+				 */
+				lastPage: number,
+
+				/**
+				 * The new page number or undefined if the user is closing the wizard
+				 */
+				newPage: number
+			}
+
+			export interface WizardPage extends ModelViewPanel {
+				/**
+				 * The title of the page
+				 */
+				title: string;
+
+				/**
+				 * A string giving the ID of the page's model view content
+				 */
+				content: string;
+
+				/**
+				 * Any additional buttons that should be displayed while the page is open
+				 */
+				customButtons: Button[];
+
+				/**
+				 * Whether the page is enabled. If the page is not enabled, the user will not be
+				 * able to advance to it. Defaults to true.
+				 */
+				enabled: boolean;
+
+				/**
+				 * An optional description for the page. If provided it will be displayed underneath the page title.
+				 */
+				description: string;
+			}
+
+			export interface Wizard {
+				/**
+				 * The title of the wizard
+				 */
+				title: string;
+
+				/**
+				 * The wizard's pages. Pages can be added/removed while the dialog is open by using
+				 * the addPage and removePage methods
+				 */
+				pages: WizardPage[];
+
+				/**
+				 * The index in the pages array of the active page, or undefined if the wizard is
+				 * not currently visible
+				 */
+				readonly currentPage: number;
+
+				/**
+				 * The done button
+				 */
+				doneButton: Button;
+
+				/**
+				 * The cancel button
+				 */
+				cancelButton: Button;
+
+				/**
+				 * The generate script button
+				 */
+				generateScriptButton: Button;
+
+				/**
+				 * The next button
+				 */
+				nextButton: Button;
+
+				/**
+				 * The back button
+				 */
+				backButton: Button;
+
+				/**
+				 * Any additional buttons that should be displayed for all pages of the dialog. If
+				 * buttons are needed for specific pages they can be added using the customButtons
+				 * property on each page.
+				 */
+				customButtons: Button[];
+
+				/**
+				 * When set to false page titles and descriptions will not be displayed at the top
+				 * of each wizard page. The default is true.
+				 */
+				displayPageTitles: boolean;
+
+				/**
+				 * Event fired when the wizard's page changes, containing information about the
+				 * previous page and the new page
+				 */
+				onPageChanged: vscode.Event<WizardPageChangeInfo>;
+
+				/**
+				 * Add a page to the wizard at the given index
+				 * @param page The page to add
+				 * @param index The index in the pages array to add the page at, or undefined to
+				 * add it at the end
+				 */
+				addPage(page: WizardPage, index?: number): Thenable<void>;
+
+				/**
+				 * Remove the page at the given index from the wizard
+				 * @param index The index in the pages array to remove
+				 */
+				removePage(index: number): Thenable<void>;
+
+				/**
+				 * Go to the page at the given index in the pages array.
+				 * @param index The index of the page to go to
+				 */
+				setCurrentPage(index: number): Thenable<void>;
+
+				/**
+				 * Open the wizard. Does nothing if the wizard is already open.
+				 */
+				open(): Thenable<void>;
+
+				/**
+				 * Close the wizard. Does nothing if the wizard is not open.
+				 */
+				close(): Thenable<void>;
+
+				/**
+				 * Register a callback that will be called when the user tries to navigate by
+				 * changing pages or clicking done. Only one callback can be registered at once, so
+				 * each registration call will clear the previous registration.
+				 * @param validator The callback that gets executed when the user tries to
+				 * navigate. Return true to allow the navigation to proceed, or false to
+				 * cancel it.
+				 */
+				registerNavigationValidator(validator: (pageChangeInfo: WizardPageChangeInfo) => boolean | Thenable<boolean>): void;
+
+				/**
+				 * Set the informational message shown in the wizard. Hidden when the message is
+				 * undefined or the text is empty or undefined. The default level is error.
+				 */
+				message: DialogMessage
+			}
 		}
 	}
 
@@ -511,7 +925,7 @@ declare module 'sqlops' {
 		/**
 		 * Create a new model view editor
 		 */
-		export function createModelViewEditor(title: string): ModelViewEditor;
+		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions): ModelViewEditor;
 
 		export interface ModelViewEditor extends window.modelviewdialog.ModelViewPanel {
 
@@ -521,4 +935,69 @@ declare module 'sqlops' {
 			openEditor(position?: vscode.ViewColumn): Thenable<void>;
 		}
 	}
+
+	export interface ModelViewEditorOptions {
+		/**
+		 * Should the model view editor's context be kept around even when the editor is no longer visible? It is false by default
+		 */
+		readonly retainContextWhenHidden?: boolean;
+	}
+
+	export enum DataProviderType {
+		ConnectionProvider = 'ConnectionProvider',
+		BackupProvider = 'BackupProvider',
+		RestoreProvider = 'RestoreProvider',
+		ScriptingProvider = 'ScriptingProvider',
+		ObjectExplorerProvider = 'ObjectExplorerProvider',
+		TaskServicesProvider = 'TaskServicesProvider',
+		FileBrowserProvider = 'FileBrowserProvider',
+		ProfilerProvider = 'ProfilerProvider',
+		MetadataProvider = 'MetadataProvider',
+		QueryProvider = 'QueryProvider',
+		AdminServicesProvider = 'AdminServicesProvider',
+		AgentServicesProvider = 'AgentServicesProvider',
+		CapabilitiesProvider = 'CapabilitiesProvider'
+	}
+
+	export namespace dataprotocol {
+		/**
+		 * Get the provider corresponding to the given provider ID and type
+		 * @param providerId The ID that the provider was registered with
+		 * @param providerType The type of the provider
+		 */
+		export function getProvider<T extends DataProvider>(providerId: string, providerType: DataProviderType): T;
+
+		/**
+		 * Get all registered providers of the given type
+		 * @param providerType The type of the providers
+		 */
+		export function getProvidersByType<T extends DataProvider>(providerType: DataProviderType): T[];
+	}
+
+	/**
+	 * Context object passed as an argument to command callbacks.
+	 * Defines the key properties required to identify a node in the object
+	 * explorer tree and take action against it.
+	 */
+	export interface ObjectExplorerContext {
+
+		/**
+		 * The connection information for the selected object.
+		 * Note that the connection is not guaranteed to be in a connected
+		 * state on click.
+		 */
+		connectionProfile: IConnectionProfile;
+		/**
+		 * Defines whether this is a Connection-level object.
+		 * If not, the object is expected to be a child object underneath
+		 * one of the connections.
+		 */
+		isConnectionNode: boolean;
+		/**
+		 * Node info for objects below a specific connection. This
+		 * may be null for a Connection-level object
+		 */
+		nodeInfo: NodeInfo;
+	}
+
 }

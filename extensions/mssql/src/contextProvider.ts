@@ -6,12 +6,15 @@
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
+import * as types from './types';
+
 export enum BuiltInCommands {
-    SetContext = 'setContext',
+	SetContext = 'setContext',
 }
 
 export enum ContextKeys {
-	ISCLOUD = 'mssql:iscloud'
+	ISCLOUD = 'mssql:iscloud',
+	EDITIONID = 'mssql:engineedition'
 }
 
 const isCloudEditions = [
@@ -20,7 +23,7 @@ const isCloudEditions = [
 ];
 
 export function setCommandContext(key: ContextKeys | string, value: any) {
-    return vscode.commands.executeCommand(BuiltInCommands.SetContext, key, value);
+	return vscode.commands.executeCommand(BuiltInCommands.SetContext, key, value);
 }
 
 export default class ContextProvider {
@@ -33,16 +36,23 @@ export default class ContextProvider {
 
 	public onDashboardOpen(e: sqlops.DashboardDocument): void {
 		let iscloud: boolean;
-		if (e.profile.providerName.toLowerCase() === 'mssql' && e.serverInfo.engineEditionId) {
+		let edition: number;
+		if (e.profile.providerName.toLowerCase() === 'mssql' && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
 			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {
 				iscloud = true;
 			} else {
 				iscloud = false;
 			}
+
+			edition = e.serverInfo.engineEditionId;
 		}
 
 		if (iscloud === true || iscloud === false) {
 			setCommandContext(ContextKeys.ISCLOUD, iscloud);
+		}
+
+		if (!types.isUndefinedOrNull(edition)) {
+			setCommandContext(ContextKeys.EDITIONID, edition);
 		}
 	}
 

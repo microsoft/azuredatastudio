@@ -11,7 +11,7 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { mixin } from 'vs/base/common/objects';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { Builder, $, withElementById } from 'vs/base/browser/builder';
+import { Builder, $ } from 'vs/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -21,9 +21,13 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { localize } from 'vs/nls';
+import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
+const INFO_ALT_TEXT = localize('infoAltText', 'Info');
+const WARNING_ALT_TEXT = localize('warningAltText', 'Warning');
+const ERROR_ALT_TEXT = localize('errorAltText', 'Error');
 
 export interface IModalDialogStyles {
 	dialogForeground?: Color;
@@ -145,7 +149,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Build and render the modal, will call {@link Modal#renderBody}
 	 */
-	public render() {
+	public render(errorMessagesInFooter: boolean = false) {
 		let modalBodyClass = (this._modalOptions.isAngular === false ? 'modal-body' : 'modal-body-and-footer');
 		let parts: Array<HTMLElement> = [];
 		// This modal header section refers to the header of of the dialog
@@ -166,7 +170,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				}
 				modalHeader.div({ class: 'modal-title' }, (modalTitle) => {
 					this._modalTitle = modalTitle;
-					modalTitle.innerHtml(this._title);
+					modalTitle.text(this._title);
 				});
 			});
 			parts.push(this._modalHeaderSection.getHTMLElement());
@@ -182,17 +186,6 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		this.renderBody(body.getHTMLElement());
 
-		if (this._modalOptions.isAngular === false && this._modalOptions.hasErrors) {
-			body.div({ class: 'dialogErrorMessage', id: 'dialogErrorMessage' }, (errorMessageContainer) => {
-				errorMessageContainer.div({ class: 'icon error' }, (iconContainer) => {
-					this._errorIconElement = iconContainer.getHTMLElement();
-					this._errorIconElement.style.visibility = 'hidden';
-				});
-				errorMessageContainer.div({ class: 'errorMessage' }, (messageContainer) => {
-					this._errorMessage = messageContainer;
-				});
-			});
-		}
 		// This modal footer section refers to the footer of of the dialog
 		if (this._modalOptions.isAngular === false) {
 			this._modalFooterSection = $().div({ class: 'modal-footer' }, (modelFooter) => {
@@ -219,6 +212,19 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 		if (this._modalOptions.isWide) {
 			builderClass += ' wide';
+		}
+
+		if (this._modalOptions.isAngular === false && this._modalOptions.hasErrors) {
+			let builder = errorMessagesInFooter ? this._leftFooter : body;
+			builder.div({ class: 'dialogErrorMessage', id: 'dialogErrorMessage' }, (errorMessageContainer) => {
+				errorMessageContainer.div({ class: 'icon error' }, (iconContainer) => {
+					this._errorIconElement = iconContainer.getHTMLElement();
+					this._errorIconElement.style.visibility = 'hidden';
+				});
+				errorMessageContainer.div({ class: 'errorMessage' }, (messageContainer) => {
+					this._errorMessage = messageContainer;
+				});
+			});
 		}
 
 		// The builder builds the dialog. It append header, body and footer sections.
@@ -285,7 +291,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected show() {
 		this._modalShowingContext.get().push(this._staticKey);
-		this._builder.appendTo(withElementById(this._partService.getWorkbenchElementId()).getHTMLElement().parentElement);
+		this._builder.appendTo(document.getElementById(this._partService.getWorkbenchElementId()).parentElement);
 
 		this.setFocusableElements();
 
@@ -355,14 +361,33 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Show an error in the error message element
 	 * @param err Text to show in the error message
 	 */
-	protected setError(err: string) {
+	protected setError(err: string, level: MessageLevel = MessageLevel.Error) {
 		if (this._modalOptions.hasErrors) {
 			if (err === '') {
 				this._errorIconElement.style.visibility = 'hidden';
 			} else {
+				const levelClasses = ['info', 'warning', 'error'];
+				let selectedLevel = levelClasses[2];
+				let altText = ERROR_ALT_TEXT;
+				if (level === MessageLevel.Information) {
+					selectedLevel = levelClasses[0];
+					altText = INFO_ALT_TEXT;
+				} else if (level === MessageLevel.Warning) {
+					selectedLevel = levelClasses[1];
+					altText = WARNING_ALT_TEXT;
+				}
+				levelClasses.forEach(level => {
+					if (selectedLevel === level) {
+						this._errorIconElement.classList.add(level);
+					} else {
+						this._errorIconElement.classList.remove(level);
+					}
+				});
+
+				this._errorIconElement.title = altText;
 				this._errorIconElement.style.visibility = 'visible';
 			}
-			this._errorMessage.innerHtml(err);
+			this._errorMessage.text(err);
 		}
 	}
 
@@ -408,7 +433,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected set title(title: string) {
 		if (this._title !== undefined) {
-			this._modalTitle.innerHtml(title);
+			this._modalTitle.text(title);
 		}
 	}
 

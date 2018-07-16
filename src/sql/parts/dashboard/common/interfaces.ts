@@ -5,11 +5,13 @@
 
 import { OnDestroy } from '@angular/core';
 
-import Event from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
 
 export enum Conditional {
 	'equals',
@@ -30,23 +32,16 @@ export abstract class DashboardTab extends TabChild implements OnDestroy {
 	public enableEdit(): void {
 		// no op
 	}
-
-	private _toDispose: IDisposable[] = [];
-
 	constructor() {
 		super();
-	}
-
-	public dispose(): void {
-		this._toDispose = dispose(this._toDispose);
-	}
-
-	protected _register<T extends IDisposable>(t: T): T {
-		this._toDispose.push(t);
-		return t;
 	}
 
 	ngOnDestroy() {
 		this.dispose();
 	}
+}
+
+export interface IConfigModifierCollection {
+	connectionManagementService: SingleConnectionManagementService;
+	contextKeyService: IContextKeyService;
 }

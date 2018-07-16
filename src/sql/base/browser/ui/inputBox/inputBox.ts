@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { InputBox as vsInputBox, IInputOptions, IInputBoxStyles as vsIInputBoxStyles } from 'vs/base/browser/ui/inputbox/inputBox';
+import { InputBox as vsInputBox, IInputOptions, IInputBoxStyles as vsIInputBoxStyles, IMessage } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { Color } from 'vs/base/common/color';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export interface OnLoseFocusParams {
 	value: string;
@@ -32,6 +32,8 @@ export class InputBox extends vsInputBox {
 	private _onLoseFocus = this._register(new Emitter<OnLoseFocusParams>());
 	public onLoseFocus: Event<OnLoseFocusParams> = this._onLoseFocus.event;
 
+	private _isTextAreaInput: boolean;
+	private _hideErrors = false;
 
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, options?: IInputOptions) {
 		super(container, contextViewProvider, options);
@@ -48,6 +50,10 @@ export class InputBox extends vsInputBox {
 			self._onLoseFocus.fire({ value: self.value, hasChanged: self._lastLoseFocusValue !== self.value });
 			self._lastLoseFocusValue = self.value;
 		});
+
+		if (options && options.type === 'textarea') {
+			this._isTextAreaInput = true;
+		}
 	}
 
 	public style(styles: IInputBoxStyles): void {
@@ -57,25 +63,67 @@ export class InputBox extends vsInputBox {
 		this.enabledInputBorder = this.inputBorder;
 		this.disabledInputBackground = styles.disabledInputBackground;
 		this.disabledInputForeground = styles.disabledInputForeground;
+		this.updateInputEnabledDisabledColors();
+		this.applyStyles();
 	}
 
 	public enable(): void {
 		super.enable();
-		this.inputBackground = this.enabledInputBackground;
-		this.inputForeground = this.enabledInputForeground;
-		this.inputBorder = this.enabledInputBorder;
+		this.updateInputEnabledDisabledColors();
 		this.applyStyles();
+	}
+
+	public set rows(value: number) {
+		this.inputElement.setAttribute('rows', value.toString());
+	}
+
+	public set columns(value: number) {
+		this.inputElement.setAttribute('cols', value.toString());
+	}
+
+	public layout(): void {
+		if (!this._isTextAreaInput) {
+			super.layout();
+		}
 	}
 
 	public disable(): void {
 		super.disable();
-		this.inputBackground = this.disabledInputBackground;
-		this.inputForeground = this.disabledInputForeground;
-		this.inputBorder = this.disabledInputBorder;
+		this.updateInputEnabledDisabledColors();
 		this.applyStyles();
+	}
+
+	public setHeight(value: string) {
+		if (this._isTextAreaInput) {
+			this.inputElement.style.height = value;
+		}
 	}
 
 	public isEnabled(): boolean {
 		return !this.inputElement.hasAttribute('disabled');
+	}
+
+	public get hideErrors(): boolean {
+		return this._hideErrors;
+	}
+
+	public set hideErrors(hideErrors: boolean) {
+		this._hideErrors = hideErrors;
+		if (hideErrors) {
+			this.hideMessage();
+		}
+	}
+
+	public showMessage(message: IMessage, force?: boolean): void {
+		if (!this.hideErrors) {
+			super.showMessage(message, force);
+		}
+	}
+
+	private updateInputEnabledDisabledColors(): void {
+		let enabled = this.isEnabled();
+		this.inputBackground = enabled ? this.enabledInputBackground : this.disabledInputBackground;
+		this.inputForeground = enabled ? this.enabledInputForeground : this.disabledInputForeground;
+		this.inputBorder = enabled ? this.enabledInputBorder : this.disabledInputBorder;
 	}
 }

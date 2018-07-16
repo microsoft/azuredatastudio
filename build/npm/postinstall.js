@@ -23,20 +23,15 @@ function yarnInstall(location, opts) {
 // {{SQL CARBON EDIT}}
 yarnInstall('extensions'); // node modules shared by all extensions
 
-const extensions = [
-	'vscode-colorize-tests',
-	'json',
-  'mssql',
-	'configuration-editing',
-	'extension-editing',
-	'markdown',
-	'markdown-basics',
-	'git',
-	'merge-conflict',
-	'insights-default',
-	'account-provider-azure',
-	'agent'
-];
+const allExtensionFolders = fs.readdirSync('extensions');
+const extensions = allExtensionFolders.filter(e => {
+	try {
+		let packageJSON = JSON.parse(fs.readFileSync(path.join('extensions', e, 'package.json')).toString());
+		return packageJSON && (packageJSON.dependencies || packageJSON.devDependencies);
+	} catch (e) {
+		return false;
+	}
+});
 
 extensions.forEach(extension => yarnInstall(`extensions/${extension}`));
 

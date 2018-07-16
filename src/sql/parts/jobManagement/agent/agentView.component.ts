@@ -7,18 +7,11 @@ import 'vs/css!../common/media/jobs';
 import 'sql/parts/dashboard/common/dashboardPanelStyles';
 
 import * as nls from 'vs/nls';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable} from '@angular/core';
-import * as Utils from 'sql/parts/connection/common/utils';
-import { RefreshWidgetAction, EditDashboardAction } from 'sql/parts/dashboard/common/actions';
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IDisposable } from 'vs/base/common/lifecycle';
-import * as themeColors from 'vs/workbench/common/theme';
-import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
-import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { AgentJobInfo, AgentJobHistoryInfo } from 'sqlops';
+import { Component, Inject, forwardRef, ChangeDetectorRef, ViewChild, Injectable } from '@angular/core';
+import { AgentJobInfo } from 'sqlops';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 
 
 export const DASHBOARD_SELECTOR: string = 'agentview-component';
@@ -32,8 +25,6 @@ export class AgentViewComponent {
 
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 
-	// tslint:disable:no-unused-variable
-	private readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
 	private _showHistory: boolean = false;
 	private _jobId: string = null;
 	private _agentJobInfo: AgentJobInfo = null;
@@ -41,6 +32,14 @@ export class AgentViewComponent {
 	private _expanded: Map<string, string>;
 
 	public jobsIconClass: string = 'jobsview-icon';
+	public alertsIconClass: string = 'alertsview-icon';
+	public proxiesIconClass: string = 'proxiesview-icon';
+	public operatorsIconClass: string = 'operatorsview-icon';
+
+	private readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
+	private readonly alertsComponentTitle: string = nls.localize('jobview.Alerts', "Alerts");
+	private readonly proxiesComponentTitle: string = nls.localize('jobview.Proxies', "Proxies");
+	private readonly operatorsComponentTitle: string = nls.localize('jobview.Operators', "Operators");
 
 	// tslint:disable-next-line:no-unused-variable
 	private readonly panelOpt: IPanelOptions = {
@@ -50,8 +49,16 @@ export class AgentViewComponent {
 	};
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef){
-			this._expanded = new Map<string, string>();
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
+		@Inject(IJobManagementService) jobManagementService: IJobManagementService,
+		@Inject(IDashboardService) dashboardService: IDashboardService,) {
+		this._expanded = new Map<string, string>();
+
+		let self = this;
+		jobManagementService.onDidChange((args) => {
+			self.refresh = true;
+			self._cd.detectChanges();
+		});
 	}
 
 	/**
@@ -83,7 +90,6 @@ export class AgentViewComponent {
 
 	public set jobId(value: string) {
 		this._jobId = value;
-		this._cd.detectChanges();
 	}
 
 	public set showHistory(value: boolean) {
@@ -93,7 +99,6 @@ export class AgentViewComponent {
 
 	public set agentJobInfo(value: AgentJobInfo) {
 		this._agentJobInfo = value;
-		this._cd.detectChanges();
 	}
 
 	public set refresh(value: boolean) {
@@ -103,5 +108,13 @@ export class AgentViewComponent {
 
 	public setExpanded(jobId: string, errorMessage: string) {
 		this._expanded.set(jobId, errorMessage);
+	}
+
+	public set expanded(value: Map<string, string>) {
+		this._expanded = value;
+	}
+
+	public layout() {
+		this._panel.layout();
 	}
 }

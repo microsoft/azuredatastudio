@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -18,7 +18,7 @@ import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 @Component({
-	selector: 'radioButton',
+	selector: 'modelview-radioButton',
 	template: `
 		<div #input class="modelview-radiobutton-container">
 
@@ -50,6 +50,7 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 
 			this._register(this._input);
 			this._register(this._input.onClicked(e => {
+				this.checked = this._input.checked;
 				this._onEventEmitter.fire({
 					eventType: ComponentEventType.onDidClick,
 					args: e
@@ -89,8 +90,12 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 		return this.getPropertyOrDefault<sqlops.RadioButtonProperties, boolean>((props) => props.checked, false);
 	}
 
+	public set checked(newValue: boolean) {
+		this.setPropertyFromUI<sqlops.RadioButtonProperties, boolean>((properties, value) => { properties.checked = value; }, newValue);
+	}
+
 	public set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.RadioButtonProperties, string>((properties, value) => { properties.checked = value; }, newValue);
+		this.setPropertyFromUI<sqlops.RadioButtonProperties, string>((properties, value) => { properties.value = value; }, newValue);
 	}
 
 	public get value(): string {

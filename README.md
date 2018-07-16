@@ -4,16 +4,16 @@
 
 SQL Operations Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download SQL Operations Studio May Public Preview**
+**Download SQL Operations Studio June Public Preview**
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=873386
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=873387
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=873388
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=873389
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=873390
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=873391
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=875602
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=875603
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=875604
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=875605
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=875606
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=875607
 
 Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instructions.
 
@@ -61,6 +61,7 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* lanceklinger `Fix for double clicking column handle in results table #1504`
 * westerncj for `Removed duplicate contribution from README.md (#753)`
 * ntovas for `Fix for duplicate extensions shown in "Save File" dialog. (#779)`
 * SebastianPfliegel for `Add cursor snippet (#475)`

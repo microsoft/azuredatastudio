@@ -4,64 +4,91 @@
  *--------------------------------------------------------------------------------------------*/
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
+	Component, Input, Inject, ChangeDetectorRef, forwardRef,
+	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
-import Event, { Emitter } from 'vs/base/common/event';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/dropdown';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
+import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 
 @Component({
-	selector: 'dropdown',
+	selector: 'modelview-dropdown',
 	template: `
-		<div #input style="width: 100%"></div>
+
+	<div [style.width]="getWidth()">
+		<div [style.display]="getEditableDisplay()"   #editableDropDown style="width: 100%;"></div>
+		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
+	</div>
 	`
 })
 export default class DropDownComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
-	private _dropdown: Dropdown;
+	private _editableDropdown: Dropdown;
+	private _selectBox: SelectBox;
 
-	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
+	@ViewChild('editableDropDown', { read: ElementRef }) private _editableDropDownContainer: ElementRef;
+	@ViewChild('dropDown', { read: ElementRef }) private _dropDownContainer: ElementRef;
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IContextViewService) private contextViewService: IContextViewService
+	) {
 		super(changeRef);
 	}
 
 	ngOnInit(): void {
 		this.baseInit();
-
 	}
 
 	ngAfterViewInit(): void {
-		if (this._inputContainer) {
+		if (this._editableDropDownContainer) {
 			let dropdownOptions: IDropdownOptions = {
 				values: [],
 				strictSelection: false,
 				placeholder: '',
 				maxHeight: 125,
-				ariaLabel: ''
+				ariaLabel: '',
+				actionLabel: ''
 			};
-
-			this._dropdown = new Dropdown(this._inputContainer.nativeElement, this._commonService.contextViewService, this._commonService.themeService,
+			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService, this.themeService,
 				dropdownOptions);
 
-			this._register(this._dropdown);
-			this._register(attachEditableDropdownStyler(this._dropdown, this._commonService.themeService));
-			this._register(this._dropdown.onValueChange(e => {
-				this.value = this._dropdown.value;
-				this._onEventEmitter.fire({
-					eventType: ComponentEventType.onDidChange,
-					args: e
-				});
+			this._register(this._editableDropdown);
+			this._register(attachEditableDropdownStyler(this._editableDropdown, this.themeService));
+			this._register(this._editableDropdown.onValueChange(e => {
+				if (this.editable) {
+					this.setSelectedValue(this._editableDropdown.value);
+					this._onEventEmitter.fire({
+						eventType: ComponentEventType.onDidChange,
+						args: e
+					});
+				}
+			}));
+		}
+		if (this._dropDownContainer) {
+			this._selectBox = new SelectBox(this.getValues(), this.getSelectedValue(), this.contextViewService, this._dropDownContainer.nativeElement);
+			this._selectBox.render(this._dropDownContainer.nativeElement);
+			this._register(this._selectBox);
+
+			this._register(attachSelectBoxStyler(this._selectBox, this.themeService));
+			this._register(this._selectBox.onDidSelect(e => {
+				if (!this.editable) {
+					this.setSelectedValue(this._selectBox.value);
+					this._onEventEmitter.fire({
+						eventType: ComponentEventType.onDidChange,
+						args: e
+					});
+				}
 			}));
 		}
 	}
@@ -83,36 +110,95 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._dropdown.values = this.values ? this.values : [];
-		if (this.value) {
-			this._dropdown.value = this.value;
+		if (this.editable) {
+			this._editableDropdown.values = this.getValues();
+			if (this.value) {
+				this._editableDropdown.value = this.getSelectedValue();
+			}
+			this._editableDropdown.enabled = this.enabled;
+		} else {
+			this._selectBox.setOptions(this.getValues());
+			this._selectBox.selectWithOptionName(this.getSelectedValue());
+			if (this.enabled) {
+				this._selectBox.enable();
+			} else {
+				this._selectBox.disable();
+			}
 		}
-		this._dropdown.enabled = this.enabled;
+	}
+
+	private getValues(): string[] {
+		if (this.values && this.values.length > 0) {
+			if (!this.valuesHaveDisplayName()) {
+				return this.values as string[];
+			} else {
+				return (<sqlops.CategoryValue[]>this.values).map(v => v.displayName);
+			}
+		}
+		return [];
+	}
+
+	private valuesHaveDisplayName(): boolean {
+		return typeof (this.values[0]) !== 'string';
+	}
+
+	private getSelectedValue(): string {
+		if (this.values && this.values.length > 0 && this.valuesHaveDisplayName()) {
+			let selectedValue = <sqlops.CategoryValue>this.value || <sqlops.CategoryValue>this.values[0];
+			let valueCategory = (<sqlops.CategoryValue[]>this.values).find(v => v.name === selectedValue.name);
+			return valueCategory && valueCategory.displayName;
+		} else {
+			if (!this.value && this.values && this.values.length > 0) {
+				return <string>this.values[0];
+			}
+			return <string>this.value;
+		}
+	}
+
+	private setSelectedValue(newValue: string): void {
+		if (this.values && this.valuesHaveDisplayName()) {
+			let valueCategory = (<sqlops.CategoryValue[]>this.values).find(v => v.displayName === newValue);
+			this.value = valueCategory;
+		} else {
+			this.value = newValue;
+		}
 	}
 
 	// CSS-bound properties
 
-	private get value(): string {
-		return this.getPropertyOrDefault<sqlops.DropDownProperties, string>((props) => props.value, '');
+	private get value(): string | sqlops.CategoryValue {
+		return this.getPropertyOrDefault<sqlops.DropDownProperties, string | sqlops.CategoryValue>((props) => props.value, '');
 	}
 
-	private set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.DropDownProperties, string>(this.setValueProperties, newValue);
+	private get editable(): boolean {
+		return this.getPropertyOrDefault<sqlops.DropDownProperties, boolean>((props) => props.editable, false);
 	}
 
-	private get values(): string[] {
-		return this.getPropertyOrDefault<sqlops.DropDownProperties, string[]>((props) => props.values, undefined);
+	public getEditableDisplay(): string {
+		return this.editable ? '' : 'none';
 	}
 
-	private set values(newValue: string[]) {
-		this.setPropertyFromUI<sqlops.DropDownProperties, string[]>(this.setValuesProperties, newValue);
+	public getNotEditableDisplay(): string {
+		return !this.editable ? '' : 'none';
 	}
 
-	private setValueProperties(properties: sqlops.DropDownProperties, value: string): void {
+	private set value(newValue: string | sqlops.CategoryValue) {
+		this.setPropertyFromUI<sqlops.DropDownProperties, string | sqlops.CategoryValue>(this.setValueProperties, newValue);
+	}
+
+	private get values(): string[] | sqlops.CategoryValue[] {
+		return this.getPropertyOrDefault<sqlops.DropDownProperties, string[] | sqlops.CategoryValue[]>((props) => props.values, []);
+	}
+
+	private set values(newValue: string[] | sqlops.CategoryValue[]) {
+		this.setPropertyFromUI<sqlops.DropDownProperties, string[] | sqlops.CategoryValue[]>(this.setValuesProperties, newValue);
+	}
+
+	private setValueProperties(properties: sqlops.DropDownProperties, value: string | sqlops.CategoryValue): void {
 		properties.value = value;
 	}
 
-	private setValuesProperties(properties: sqlops.DropDownProperties, values: string[]): void {
+	private setValuesProperties(properties: sqlops.DropDownProperties, values: string[] | sqlops.CategoryValue[]): void {
 		properties.values = values;
 	}
 }

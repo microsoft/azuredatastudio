@@ -29,9 +29,9 @@ import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElemen
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { $, Builder } from 'vs/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
-import { CommandsRegistry, ICommand } from 'vs/platform/commands/common/commands';
+import { CommandsRegistry, ICommand, ICommandService } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
@@ -62,7 +62,9 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => DomSanitizer)) private _sanitizer: DomSanitizer,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
-		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig
+		@Inject(ICommandService) private commandService: ICommandService,
+		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
+		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
 		super();
 		this._profile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
@@ -76,7 +78,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 						return i;
 					}
 				} else {
-					if (tasks.includes(i.name) && _bootstrap.contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(i.when))) {
+					if (tasks.includes(i.name) && contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(i.when))) {
 						return i.name;
 					}
 				}
@@ -84,7 +86,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 			}).filter(i => !!i);
 		}
 
-		this._tasks = tasks.map(i => MenuRegistry.getCommand(i));
+		this._tasks = tasks.map(i => MenuRegistry.getCommand(i)).filter(v => !!v);
 	}
 
 	ngOnInit() {
@@ -164,8 +166,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	}
 
 	public runTask(task: ICommandAction) {
-		let serverInfo = this._bootstrap.connectionManagementService.connectionInfo.serverInfo;
-		this._bootstrap.commandService.executeCommand(task.id, this._profile);
+		this.commandService.executeCommand(task.id, this._profile);
 	}
 
 	public layout(): void {

@@ -122,6 +122,15 @@ input#accordion:checked ~ .accordion-content {
 	background-image: url('../common/media/stop.svg');
 }
 
+.vs .action-label.icon.newStepIcon {
+	background-image: url('../common/media/new.svg');
+}
+
+.vs-dark .action-label.icon.newStepIcon,
+.hc-black .action-label.icon.newStepIcon {
+	background-image: url('../common/media/new_inverse.svg');
+}
+
 a.action-label.icon.runJobIcon.non-runnable {
 	opacity: 0.4;
 	cursor: default;
@@ -158,7 +167,7 @@ table.step-list tr.step-row td {
 }
 
 .vs-dark .history-details > .job-steps {
-	display: inline-block;
+	display: block;
 	border-left: 3px solid #444444;
 	padding-left: 10px;
 	height: 100%;
@@ -167,10 +176,12 @@ table.step-list tr.step-row td {
 }
 
 .history-details > .job-steps {
-	display: inline-block;
+	display: block;
 	border-left: 3px solid #f4f4f4;
 	padding-left: 10px;
 	height: 100%;
+	width: 90%;
+	overflow-y: scroll;
 }
 
 .history-details > .job-steps > .step-list {
@@ -221,10 +232,6 @@ table.step-list tr.step-row td {
 	min-height: 40px !important;
 }
 
-jobhistory-component .history-details .step-table.prev-run-list .monaco-scrollable-element {
-	overflow-y: scroll !important;
-}
-
 jobhistory-component .jobhistory-heading-container {
 	display: -webkit-box;
 }
@@ -238,13 +245,9 @@ jobhistory-component > .jobhistory-heading-container > .icon.in-progress {
 
 jobhistory-component > .actionbar-container .monaco-action-bar > ul.actions-container {
 	border-top: 3px solid #f4f4f4;
-	padding-top: 10px;
 }
 
 .vs-dark jobhistory-component > .actionbar-container .monaco-action-bar > ul.actions-container {
 	border-top: 3px solid #444444;
 }
-
-
-
 

@@ -4,19 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnInit } from '@angular/core';
 
-import { getContentHeight, getContentWidth } from 'vs/base/browser/dom';
-import { Dimension } from 'vs/base/browser/builder';
+import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 import { IInsightsView, IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { DragCellSelectionModel } from 'sql/base/browser/ui/table/plugins/dragCellSelectionModel.plugin';
 import { attachTableStyler} from 'sql/common/theme/styler';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 @Component({
-	template: '<span></span>'
+	template: ''
 })
 export default class TableInsight extends Disposable implements IInsightsView, OnInit {
 	private table: Table<any>;
@@ -26,7 +25,7 @@ export default class TableInsight extends Disposable implements IInsightsView, O
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _elementRef: ElementRef,
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super();
 		this._elementRef.nativeElement.className = 'slickgridContainer';
@@ -65,7 +64,7 @@ export default class TableInsight extends Disposable implements IInsightsView, O
 		if (!this.table) {
 			this.table = new Table(this._elementRef.nativeElement, this.dataView, this.columns, { showRowNumber: true });
 			this.table.setSelectionModel(new DragCellSelectionModel());
-			this._register(attachTableStyler(this.table, this._bootstrap.themeService));
+			this._register(attachTableStyler(this.table, this.themeService));
 		}
 	}
 }

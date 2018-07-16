@@ -114,6 +114,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> {
 				return self._proxy.$runQueryAndReturn(handle, ownerUri, queryString);
 			},
+			parseSyntax(ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> {
+				return self._proxy.$parseSyntax(handle, ownerUri, query);
+			},
 			getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> {
 				return self._proxy.$getQueryRows(handle, rowData);
 			},
@@ -296,7 +299,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 				return self._proxy.$stopSession(handle, sessionId);
 			},
 			pauseSession(sessionId: string): Thenable<boolean> {
-				return TPromise.as(true);
+				return self._proxy.$pauseSession(handle, sessionId);
 			},
 			connectSession(sessionId: string): Thenable<boolean> {
 				return TPromise.as(true);
@@ -339,8 +342,32 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
 				return self._proxy.$getJobHistory(handle, connectionUri, jobID);
 			},
-			jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.AgentJobActionResult> {
+			jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> {
 				return self._proxy.$jobAction(handle, connectionUri, jobName, action);
+			},
+			deleteJob(connectionUri: string, jobInfo: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus> {
+				return self._proxy.$deleteJob(handle, connectionUri, jobInfo);
+			},
+			getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult> {
+				return self._proxy.$getAlerts(handle, connectionUri);
+			},
+			deleteAlert(connectionUri: string, alertInfo: sqlops.AgentAlertInfo): Thenable<sqlops.ResultStatus> {
+				return self._proxy.$deleteAlert(handle, connectionUri, alertInfo);
+			},
+			getOperators(connectionUri: string): Thenable<sqlops.AgentOperatorsResult> {
+				return self._proxy.$getOperators(handle, connectionUri);
+			},
+			deleteOperator(connectionUri: string, operatorInfo: sqlops.AgentOperatorInfo): Thenable<sqlops.ResultStatus> {
+				return self._proxy.$deleteOperator(handle, connectionUri, operatorInfo);
+			},
+			getProxies(connectionUri: string): Thenable<sqlops.AgentProxiesResult> {
+				return self._proxy.$getProxies(handle, connectionUri);
+			},
+			deleteProxy(connectionUri: string, proxyInfo: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus> {
+				return self._proxy.$deleteProxy(handle, connectionUri, proxyInfo);
+			},
+			getCredentials(connectionUri: string): Thenable<sqlops.GetCredentialsResult> {
+				return self._proxy.$getCredentials(handle, connectionUri);
 			}
 		});
 
@@ -430,6 +457,15 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	// Profiler handlers
 	public $onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void {
 		this._profilerService.onMoreRows(response);
+	}
+
+	public $onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void {
+		this._profilerService.onSessionStopped(response);
+	}
+
+	// SQL Server Agent handlers
+	public $onJobDataUpdated(handle: Number): void {
+		this._jobManagementService.fireOnDidChange();
 	}
 
 	public $unregisterProvider(handle: number): TPromise<any> {

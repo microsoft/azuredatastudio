@@ -12,7 +12,7 @@ import { SplitView } from 'sql/base/browser/ui/splitview/splitview';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IListService, ListService } from 'vs/platform/list/browser/listService';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import Event, { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -130,8 +130,8 @@ export class AccountDialog extends Modal {
 
 		this._noaccountViewContainer = DOM.$('div.no-account-view');
 		let noAccountTitle = DOM.append(this._noaccountViewContainer, DOM.$('.no-account-view-label'));
-		let noAccountLabel = localize('accountDialog.noAccountLabel', 'There is no linked account. Please add an acount.');
-		noAccountTitle.innerHTML = noAccountLabel;
+		let noAccountLabel = localize('accountDialog.noAccountLabel', 'There is no linked account. Please add an account.');
+		noAccountTitle.innerText = noAccountLabel;
 
 		// Show the add account button for the first provider
 		// Todo: If we have more than 1 provider, need to show all add account buttons for all providers
