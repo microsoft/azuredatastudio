@@ -126,12 +126,9 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		actions.push(this._instantiationService.createInstance(DeleteConnectionAction, DeleteConnectionAction.ID, DeleteConnectionAction.DELETE_CONNECTION_LABEL, context.profile));
 		actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.profile));
 
-		this._extensionManagementService.getInstalled().then(extensions => {
-			let profilerExtension = extensions.find((e) => {return e.manifest.name === 'profiler';});
-			if(profilerExtension && this._extensionEnablementService.isEnabled(profilerExtension)) {
-				actions.push(this._instantiationService.createInstance(OEAction, NewProfilerAction.ID, NewProfilerAction.LABEL));
-			}
-		});
+		if (process.env['VSCODE_DEV'] && constants.MssqlProviderId === context.profile.providerName) {
+			actions.push(this._instantiationService.createInstance(OEAction, NewProfilerAction.ID, NewProfilerAction.LABEL));
+		}
 
 		return actions;
 	}

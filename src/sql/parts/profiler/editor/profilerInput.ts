@@ -150,7 +150,12 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	public get connectionName(): string {
 		if (this._connection !== null) {
-			return `${ this._connection.serverName } ${ this._connection.databaseName }`;
+			if (this._connection.databaseName) {
+				return `${ this._connection.serverName } ${ this._connection.databaseName }`;
+			} else {
+				return `${ this._connection.serverName }`;
+			}
+
 		}
 		else {
 			return nls.localize('profilerInput.notConnected', "Not connected");
