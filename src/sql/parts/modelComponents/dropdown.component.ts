@@ -14,7 +14,6 @@ import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { SIDE_BAR_BACKGROUND, SIDE_BAR_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
