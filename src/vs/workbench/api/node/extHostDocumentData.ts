@@ -13,7 +13,6 @@ import * as vscode from 'vscode';
 import { getWordAtText, ensureValidWordDefinition } from 'vs/editor/common/model/wordHelper';
 import { MainThreadDocumentsShape } from './extHost.protocol';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Schemas } from 'vs/base/common/network';
 
 const _modeId2WordDefinition = new Map<string, RegExp>();
 export function setWordDefinitionFor(modeId: string, wordDefinition: RegExp): void {
@@ -69,7 +68,9 @@ export class ExtHostDocumentData extends MirrorTextModel {
 			this._document = {
 				get uri() { return data._uri; },
 				get fileName() { return data._uri.fsPath; },
-				get isUntitled() { return data._uri.scheme === Schemas.untitled; },
+				// todo@remote
+				// documents from other fs-provider must not be untitled
+				get isUntitled() { return data._uri.scheme !== 'file'; },
 				get languageId() { return data._languageId; },
 				get version() { return data._versionId; },
 				get isClosed() { return data._isDisposed; },

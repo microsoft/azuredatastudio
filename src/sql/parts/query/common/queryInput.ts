@@ -4,34 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { localize } from 'vs/nls';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { Event, Emitter } from 'vs/base/common/event';
-import URI from 'vs/base/common/uri';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { EditorInput, EditorModel, ConfirmResult, EncodingMode, IEncodingSupport } from 'vs/workbench/common/editor';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import Event, { Emitter } from 'vs/base/common/event';
+import URI from 'vs/base/common/uri';
 import { ISelectionData, ExecutionPlanOptions } from 'sqlops';
-
-const MAX_SIZE = 13;
-
-function trimTitle(title: string): string {
-	const length = title.length;
-	const diff = length - MAX_SIZE;
-
-	if (Math.sign(diff) <= 0) {
-		return title;
-	} else {
-		const start = (length / 2) - (diff / 2);
-		return title.slice(0, start) + '...' + title.slice(start + diff, length);
-	}
-}
+import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 
 /**
  * Input for the QueryEditor. This input is simply a wrapper around a QueryResultsInput for the QueryResultsEditor
@@ -57,16 +39,17 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	private _currentEventCallbacks: IDisposable[];
 
 	constructor(
+		private _name: string,
 		private _description: string,
 		private _sql: UntitledEditorInput,
 		private _results: QueryResultsInput,
 		private _connectionProviderName: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IQueryEditorService private _queryEditorService: IQueryEditorService
 	) {
 		super();
+		let self = this;
 		this._updateTaskbar = new Emitter<void>();
 		this._showQueryResultsEditor = new Emitter<void>();
 		this._updateSelection = new Emitter<ISelectionData>();
@@ -83,42 +66,34 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 			// Register callbacks for the Actions
 			this._toDispose.push(
 				this._queryModelService.onRunQueryStart(uri => {
-					if (this.uri === uri) {
-						this.onRunQuery();
+					if (self.uri === uri) {
+						self.onRunQuery();
 					}
 				})
 			);
 
 			this._toDispose.push(
 				this._queryModelService.onRunQueryComplete(uri => {
-					if (this.uri === uri) {
-						this.onQueryComplete();
+					if (self.uri === uri) {
+						self.onQueryComplete();
 					}
 				})
 			);
 		}
 
 		if (this._connectionManagementService) {
-			this._toDispose.push(this._connectionManagementService.onDisconnect(result => {
-				if (result.connectionUri === this.uri) {
-					this.onDisconnect();
+			this._toDispose.push(self._connectionManagementService.onDisconnect(result => {
+				if (result.connectionUri === self.uri) {
+					self.onDisconnect();
 				}
 			}));
-			if (this.uri) {
+			if (self.uri) {
 				if (this._connectionProviderName) {
-					this._connectionManagementService.doChangeLanguageFlavor(this.uri, 'sql', this._connectionProviderName);
+					this._connectionManagementService.doChangeLanguageFlavor(self.uri, 'sql', this._connectionProviderName);
 				} else {
-					this._connectionManagementService.ensureDefaultLanguageFlavor(this.uri);
+					this._connectionManagementService.ensureDefaultLanguageFlavor(self.uri);
 				}
 			}
-		}
-
-		if (this._configurationService) {
-			this._configurationService.onDidChangeConfiguration(e => {
-				if (e.affectedKeys.includes('sql.showConnectionInfoInTitle')) {
-					this._onDidChangeLabel.fire();
-				}
-			});
 		}
 
 		this.onDisconnect();
@@ -161,31 +136,11 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public resolve(refresh?: boolean): TPromise<EditorModel> { return this._sql.resolve(); }
 	public save(): TPromise<boolean> { return this._sql.save(); }
 	public isDirty(): boolean { return this._sql.isDirty(); }
-	public confirmSave(): TPromise<ConfirmResult> { return this._sql.confirmSave(); }
+	public confirmSave(): TPromise<ConfirmResult>  { return this._sql.confirmSave(); }
 	public getResource(): URI { return this._sql.getResource(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }
 	public suggestFileName(): string { return this._sql.suggestFileName(); }
-
-	public getName(): string {
-		if (this._configurationService.getValue('sql.showConnectionInfoInTitle')) {
-			let profile = this._connectionManagementService.getConnectionProfile(this.uri);
-			let title = '';
-			if (profile) {
-				if (profile.userName) {
-					title = `${profile.serverName}.${profile.databaseName} (${profile.userName})`;
-				} else {
-					title = `${profile.serverName}.${profile.databaseName} (${profile.authenticationType})`;
-				}
-			} else {
-				title = localize('disconnected', 'disconnected');
-			}
-
-			return this._sql.getName() + ` - ${trimTitle(title)}`;
-		} else {
-			return this._sql.getName();
-		}
-	}
-
+	public getName(): string { return this._sql.getName(); }
 	public get hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }
 
 	public setEncoding(encoding: string, mode: EncodingMode /* ignored, we only have Encode */): void {

@@ -2,14 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+/// <amd-dependency path="vs/css!./folding" />
 
 'use strict';
 
-import 'vs/css!./folding';
 import * as nls from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { escapeRegExpCharacters } from 'vs/base/common/strings';
-import { RunOnceScheduler, Delayer, asWinJsPromise } from 'vs/base/common/async';
+import { RunOnceScheduler, Delayer } from 'vs/base/common/async';
 import { KeyCode, KeyMod, KeyChord } from 'vs/base/common/keyCodes';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -28,14 +28,13 @@ import { IRange } from 'vs/editor/common/core/range';
 import { LanguageConfigurationRegistry } from 'vs/editor/common/modes/languageConfigurationRegistry';
 import { IndentRangeProvider } from 'vs/editor/contrib/folding/indentRangeProvider';
 import { IPosition } from 'vs/editor/common/core/position';
-import { FoldingRangeProviderRegistry, FoldingRangeKind } from 'vs/editor/common/modes';
+import { FoldingProviderRegistry, FoldingRangeType } from 'vs/editor/common/modes';
 import { SyntaxRangeProvider } from './syntaxRangeProvider';
-import { CancellationToken } from 'vs/base/common/cancellation';
 
 export const ID = 'editor.contrib.folding';
 
 export interface RangeProvider {
-	compute(editorModel: ITextModel, cancelationToken: CancellationToken): Thenable<FoldingRegions>;
+	compute(editorModel: ITextModel): TPromise<FoldingRegions>;
 }
 
 export class FoldingController implements IEditorContribution {
@@ -50,7 +49,6 @@ export class FoldingController implements IEditorContribution {
 	private editor: ICodeEditor;
 	private _isEnabled: boolean;
 	private _autoHideFoldingControls: boolean;
-	private _useFoldingProviders: boolean;
 
 	private foldingDecorationProvider: FoldingDecorationProvider;
 
@@ -58,7 +56,6 @@ export class FoldingController implements IEditorContribution {
 	private hiddenRangeModel: HiddenRangeModel;
 
 	private rangeProvider: RangeProvider;
-	private foldingRegionPromise: TPromise<FoldingRegions>;
 
 	private foldingModelPromise: TPromise<FoldingModel>;
 	private updateScheduler: Delayer<FoldingModel>;
@@ -73,7 +70,6 @@ export class FoldingController implements IEditorContribution {
 		this.editor = editor;
 		this._isEnabled = this.editor.getConfiguration().contribInfo.folding;
 		this._autoHideFoldingControls = this.editor.getConfiguration().contribInfo.showFoldingControls === 'mouseover';
-		this._useFoldingProviders = this.editor.getConfiguration().contribInfo.foldingStrategy !== 'indentation';
 
 		this.globalToDispose = [];
 		this.localToDispose = [];
@@ -82,7 +78,7 @@ export class FoldingController implements IEditorContribution {
 		this.foldingDecorationProvider.autoHideFoldingControls = this._autoHideFoldingControls;
 
 		this.globalToDispose.push(this.editor.onDidChangeModel(() => this.onModelChanged()));
-		this.globalToDispose.push(FoldingRangeProviderRegistry.onDidChange(() => this.onFoldingStrategyChanged()));
+		this.globalToDispose.push(FoldingProviderRegistry.onDidChange(() => this.onModelChanged()));
 
 		this.globalToDispose.push(this.editor.onDidChangeConfiguration((e: IConfigurationChangedEvent) => {
 			if (e.contribInfo) {
@@ -96,11 +92,6 @@ export class FoldingController implements IEditorContribution {
 				if (oldShowFoldingControls !== this._autoHideFoldingControls) {
 					this.foldingDecorationProvider.autoHideFoldingControls = this._autoHideFoldingControls;
 					this.onModelContentChanged();
-				}
-				let oldUseFoldingProviders = this._useFoldingProviders;
-				this._useFoldingProviders = this.editor.getConfiguration().contribInfo.foldingStrategy !== 'indentation';
-				if (oldUseFoldingProviders !== this._useFoldingProviders) {
-					this.onFoldingStrategyChanged();
 				}
 			}
 		}));
@@ -180,10 +171,6 @@ export class FoldingController implements IEditorContribution {
 		this.localToDispose.push(this.editor.onMouseUp(e => this.onEditorMouseUp(e)));
 		this.localToDispose.push({
 			dispose: () => {
-				if (this.foldingRegionPromise) {
-					this.foldingRegionPromise.cancel();
-					this.foldingRegionPromise = null;
-				}
 				this.updateScheduler.cancel();
 				this.updateScheduler = null;
 				this.foldingModel = null;
@@ -191,22 +178,16 @@ export class FoldingController implements IEditorContribution {
 				this.hiddenRangeModel = null;
 				this.cursorChangedScheduler = null;
 				this.rangeProvider = null;
-
 			}
 		});
 		this.onModelContentChanged();
 	}
 
-	private onFoldingStrategyChanged() {
-		this.rangeProvider = null;
-		this.onModelContentChanged();
-	}
-
 	private getRangeProvider(): RangeProvider {
 		if (!this.rangeProvider) {
-			if (this._useFoldingProviders) {
-				let foldingProviders = FoldingRangeProviderRegistry.ordered(this.foldingModel.textModel);
-				this.rangeProvider = foldingProviders.length ? new SyntaxRangeProvider(foldingProviders) : new IndentRangeProvider();
+			let foldingProviders = FoldingProviderRegistry.ordered(this.foldingModel.textModel);
+			if (foldingProviders.length) {
+				this.rangeProvider = new SyntaxRangeProvider(foldingProviders);
 			} else {
 				this.rangeProvider = new IndentRangeProvider();
 			}
@@ -220,24 +201,19 @@ export class FoldingController implements IEditorContribution {
 
 	private onModelContentChanged() {
 		if (this.updateScheduler) {
-			if (this.foldingRegionPromise) {
-				this.foldingRegionPromise.cancel();
-				this.foldingRegionPromise = null;
-			}
 			this.foldingModelPromise = this.updateScheduler.trigger(() => {
-				if (!this.foldingModel) { // null if editor has been disposed, or folding turned off
-					return null;
+				if (this.foldingModel) { // null if editor has been disposed, or folding turned off
+					// some cursors might have moved into hidden regions, make sure they are in expanded regions
+					let selections = this.editor.getSelections();
+					let selectionLineNumbers = selections ? selections.map(s => s.startLineNumber) : [];
+					return this.getRangeProvider().compute(this.foldingModel.textModel).then(foldingRanges => {
+						if (this.foldingModel) { // null if editor has been disposed, or folding turned off
+							this.foldingModel.update(foldingRanges, selectionLineNumbers);
+						}
+						return this.foldingModel;
+					});
 				}
-				let foldingRegionPromise = this.foldingRegionPromise = asWinJsPromise<FoldingRegions>(token => this.getRangeProvider().compute(this.foldingModel.textModel, token));
-				return foldingRegionPromise.then(foldingRanges => {
-					if (foldingRanges && foldingRegionPromise === this.foldingRegionPromise) { // new request or cancelled in the meantime?
-						// some cursors might have moved into hidden regions, make sure they are in expanded regions
-						let selections = this.editor.getSelections();
-						let selectionLineNumbers = selections ? selections.map(s => s.startLineNumber) : [];
-						this.foldingModel.update(foldingRanges, selectionLineNumbers);
-					}
-					return this.foldingModel;
-				});
+				return null;
 			});
 		}
 	}
@@ -449,7 +425,7 @@ class UnfoldAction extends FoldingAction<FoldingArguments> {
 			alias: 'Unfold',
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.US_CLOSE_SQUARE_BRACKET,
 				mac: {
 					primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.US_CLOSE_SQUARE_BRACKET
@@ -492,7 +468,7 @@ class UnFoldRecursivelyAction extends FoldingAction<void> {
 			alias: 'Unfold Recursively',
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.US_CLOSE_SQUARE_BRACKET)
 			}
 		});
@@ -512,7 +488,7 @@ class FoldAction extends FoldingAction<FoldingArguments> {
 			alias: 'Fold',
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.US_OPEN_SQUARE_BRACKET,
 				mac: {
 					primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.US_OPEN_SQUARE_BRACKET
@@ -555,7 +531,7 @@ class FoldRecursivelyAction extends FoldingAction<void> {
 			alias: 'Fold Recursively',
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.US_OPEN_SQUARE_BRACKET)
 			}
 		});
@@ -576,7 +552,7 @@ class FoldAllBlockCommentsAction extends FoldingAction<void> {
 			alias: 'Fold All Block Comments',
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.US_SLASH)
 			}
 		});
@@ -584,7 +560,7 @@ class FoldAllBlockCommentsAction extends FoldingAction<void> {
 
 	invoke(foldingController: FoldingController, foldingModel: FoldingModel, editor: ICodeEditor): void {
 		if (foldingModel.regions.hasTypes()) {
-			setCollapseStateForType(foldingModel, FoldingRangeKind.Comment.value, true);
+			setCollapseStateForType(foldingModel, FoldingRangeType.Comment, true);
 		} else {
 			let comments = LanguageConfigurationRegistry.getComments(editor.getModel().getLanguageIdentifier().id);
 			if (comments && comments.blockCommentStartToken) {
@@ -604,7 +580,7 @@ class FoldAllRegionsAction extends FoldingAction<void> {
 			alias: 'Fold All Regions',
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_8)
 			}
 		});
@@ -612,7 +588,7 @@ class FoldAllRegionsAction extends FoldingAction<void> {
 
 	invoke(foldingController: FoldingController, foldingModel: FoldingModel, editor: ICodeEditor): void {
 		if (foldingModel.regions.hasTypes()) {
-			setCollapseStateForType(foldingModel, FoldingRangeKind.Region.value, true);
+			setCollapseStateForType(foldingModel, FoldingRangeType.Region, true);
 		} else {
 			let foldingRules = LanguageConfigurationRegistry.getFoldingRules(editor.getModel().getLanguageIdentifier().id);
 			if (foldingRules && foldingRules.markers && foldingRules.markers.start) {
@@ -632,7 +608,7 @@ class UnfoldAllRegionsAction extends FoldingAction<void> {
 			alias: 'Unfold All Regions',
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_9)
 			}
 		});
@@ -640,7 +616,7 @@ class UnfoldAllRegionsAction extends FoldingAction<void> {
 
 	invoke(foldingController: FoldingController, foldingModel: FoldingModel, editor: ICodeEditor): void {
 		if (foldingModel.regions.hasTypes()) {
-			setCollapseStateForType(foldingModel, FoldingRangeKind.Region.value, false);
+			setCollapseStateForType(foldingModel, FoldingRangeType.Region, false);
 		} else {
 			let foldingRules = LanguageConfigurationRegistry.getFoldingRules(editor.getModel().getLanguageIdentifier().id);
 			if (foldingRules && foldingRules.markers && foldingRules.markers.start) {
@@ -660,7 +636,7 @@ class FoldAllAction extends FoldingAction<void> {
 			alias: 'Fold All',
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_0)
 			}
 		});
@@ -680,7 +656,7 @@ class UnfoldAllAction extends FoldingAction<void> {
 			alias: 'Unfold All',
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_J)
 			}
 		});
@@ -723,7 +699,7 @@ for (let i = 1; i <= 7; i++) {
 			alias: `Fold Level ${i}`,
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | (KeyCode.KEY_0 + i))
 			}
 		})

@@ -14,7 +14,7 @@ import numbers = require('vs/base/common/numbers');
 import sash = require('vs/base/browser/ui/sash/sash');
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { Color } from 'vs/base/common/color';
 
 export enum Orientation {

@@ -6,7 +6,7 @@
 'use strict';
 
 import 'vs/css!./media/activityaction';
-import * as DOM from 'vs/base/browser/dom';
+import DOM = require('vs/base/browser/dom');
 import { EventType as TouchEventType, GestureEvent } from 'vs/base/browser/touch';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
@@ -22,7 +22,6 @@ import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ActivityAction, ActivityActionItem, ICompositeBarColors } from 'vs/workbench/browser/parts/compositebar/compositeBarActions';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 export class ViewletActivityAction extends ActivityAction {
 
@@ -33,8 +32,7 @@ export class ViewletActivityAction extends ActivityAction {
 	constructor(
 		activity: IActivity,
 		@IViewletService private viewletService: IViewletService,
-		@IPartService private partService: IPartService,
-		@ITelemetryService private telemetryService: ITelemetryService
+		@IPartService private partService: IPartService
 	) {
 		super(activity);
 	}
@@ -56,22 +54,10 @@ export class ViewletActivityAction extends ActivityAction {
 
 		// Hide sidebar if selected viewlet already visible
 		if (sideBarVisible && activeViewlet && activeViewlet.getId() === this.activity.id) {
-			this.logAction('hide');
 			return this.partService.setSideBarHidden(true);
 		}
 
-		this.logAction('show');
 		return this.viewletService.openViewlet(this.activity.id, true).then(() => this.activate());
-	}
-
-	private logAction(action: string) {
-		/* __GDPR__
-			"activityBarAction" : {
-				"viewletId": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-				"action": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-			}
-		*/
-		this.telemetryService.publicLog('activityBarAction', { viewletId: this.activity.id, action });
 	}
 }
 

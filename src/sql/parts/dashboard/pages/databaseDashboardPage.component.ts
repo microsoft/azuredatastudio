@@ -10,14 +10,11 @@ import { BreadcrumbClass } from 'sql/parts/dashboard/services/breadcrumb.service
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
+import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as nls from 'vs/nls';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -29,6 +26,7 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 		background_color: colors.editorBackground,
 		border: 'none',
 		fontSize: '14px',
+		fontWeight: '200',
 		padding: '5px 0 0 0',
 		provider: undefined,
 		edition: undefined
@@ -40,12 +38,9 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 		@Inject(forwardRef(() => IBreadcrumbService)) private _breadcrumbService: IBreadcrumbService,
 		@Inject(forwardRef(() => CommonServiceInterface)) dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(IInstantiationService) instantiationService: IInstantiationService,
-		@Inject(INotificationService) notificationService: INotificationService,
-		@Inject(IAngularEventingService) angularEventingService: IAngularEventingService
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
-		super(dashboardService, el, _cd, instantiationService, notificationService, angularEventingService);
+		super(dashboardService, el, _cd);
 		this._register(dashboardService.onUpdatePage(() => {
 			this.refresh(true);
 			this._cd.detectChanges();

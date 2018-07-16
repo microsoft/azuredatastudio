@@ -23,20 +23,20 @@ const NLS_NEXT_MATCH_BTN_LABEL = nls.localize('label.nextMatchButton', "Next mat
 const NLS_CLOSE_BTN_LABEL = nls.localize('label.closeButton', "Close");
 
 export abstract class SimpleFindWidget extends Widget {
-	private _findInput: FindInput;
-	private _domNode: HTMLElement;
-	private _innerDomNode: HTMLElement;
-	private _isVisible: boolean;
-	private _focusTracker: dom.IFocusTracker;
-	private _findInputFocusTracker: dom.IFocusTracker;
-	private _findHistory: HistoryNavigator<string>;
-	private _updateHistoryDelayer: Delayer<void>;
+	protected _findInput: FindInput;
+	protected _domNode: HTMLElement;
+	protected _innerDomNode: HTMLElement;
+	protected _isVisible: boolean;
+	protected _focusTracker: dom.IFocusTracker;
+	protected _findInputFocusTracker: dom.IFocusTracker;
+	protected _findHistory: HistoryNavigator<string>;
+	protected _updateHistoryDelayer: Delayer<void>;
 
 	constructor(
-		@IContextViewService private readonly _contextViewService: IContextViewService
+		@IContextViewService private readonly _contextViewService: IContextViewService,
+		private animate: boolean = true
 	) {
 		super();
-
 		this._findInput = this._register(new FindInput(null, this._contextViewService, {
 			label: NLS_FIND_INPUT_LABEL,
 			placeholder: NLS_FIND_INPUT_PLACEHOLDER,
@@ -65,28 +65,31 @@ export abstract class SimpleFindWidget extends Widget {
 			}
 		}));
 
-		const prevBtn = new SimpleButton({
+		let prevBtn = new SimpleButton({
 			label: NLS_PREVIOUS_MATCH_BTN_LABEL,
 			className: 'previous',
 			onTrigger: () => {
 				this.find(true);
-			}
+			},
+			onKeyDown: (e) => { }
 		});
 
-		const nextBtn = new SimpleButton({
+		let nextBtn = new SimpleButton({
 			label: NLS_NEXT_MATCH_BTN_LABEL,
 			className: 'next',
 			onTrigger: () => {
 				this.find(false);
-			}
+			},
+			onKeyDown: (e) => { }
 		});
 
-		const closeBtn = new SimpleButton({
+		let closeBtn = new SimpleButton({
 			label: NLS_CLOSE_BTN_LABEL,
 			className: 'close-fw',
 			onTrigger: () => {
 				this.hide();
-			}
+			},
+			onKeyDown: (e) => { }
 		});
 
 		this._innerDomNode = document.createElement('div');
@@ -133,8 +136,8 @@ export abstract class SimpleFindWidget extends Widget {
 		return this._findInput.getValue();
 	}
 
-	public updateTheme(theme: ITheme): void {
-		const inputStyles = {
+	public updateTheme(theme?: ITheme): void {
+		let inputStyles = {
 			inputActiveOptionBorder: theme.getColor(inputActiveOptionBorder),
 			inputBackground: theme.getColor(inputBackground),
 			inputForeground: theme.getColor(inputForeground),
@@ -147,14 +150,6 @@ export abstract class SimpleFindWidget extends Widget {
 			inputValidationErrorBorder: theme.getColor(inputValidationErrorBorder)
 		};
 		this._findInput.style(inputStyles);
-	}
-
-	dipose() {
-		super.dispose();
-
-		if (this._domNode && this._domNode.parentElement) {
-			this._domNode.parentElement.removeChild(this._domNode);
-		}
 	}
 
 	public getDomNode(): HTMLElement {
@@ -176,7 +171,11 @@ export abstract class SimpleFindWidget extends Widget {
 		setTimeout(() => {
 			dom.addClass(this._innerDomNode, 'visible');
 			this._innerDomNode.setAttribute('aria-hidden', 'false');
+			if (!this.animate) {
+				dom.addClass(this._innerDomNode, 'noanimation');
+			}
 			setTimeout(() => {
+				dom.removeClass(this._innerDomNode, 'noanimation');
 				this._findInput.select();
 			}, 200);
 		}, 0);
@@ -202,14 +201,14 @@ export abstract class SimpleFindWidget extends Widget {
 	}
 
 	public showNextFindTerm() {
-		const next = this._findHistory.next();
+		let next = this._findHistory.next();
 		if (next) {
 			this._findInput.setValue(next);
 		}
 	}
 
 	public showPreviousFindTerm() {
-		const previous = this._findHistory.previous();
+		let previous = this._findHistory.previous();
 		if (previous) {
 			this._findInput.setValue(previous);
 		}
@@ -223,7 +222,7 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.monaco-workbench .simple-find-part { background-color: ${findWidgetBGColor} !important; }`);
 	}
 
-	const widgetShadowColor = theme.getColor(widgetShadow);
+	let widgetShadowColor = theme.getColor(widgetShadow);
 	if (widgetShadowColor) {
 		collector.addRule(`.monaco-workbench .simple-find-part { box-shadow: 0 2px 8px ${widgetShadowColor}; }`);
 	}

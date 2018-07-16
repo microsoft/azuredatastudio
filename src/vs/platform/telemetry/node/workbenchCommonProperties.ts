@@ -14,9 +14,9 @@ import * as Utils from 'sql/common/telemetryUtilities';
 
 export function resolveWorkbenchCommonProperties(storageService: IStorageService, commit: string, version: string, machineId: string, installSourcePath: string): TPromise<{ [name: string]: string }> {
 	return resolveCommonProperties(commit, version, machineId, installSourcePath).then(result => {
-		// __GDPR__COMMON__ "common.version.shell" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+		// __GDPR__COMMON__ "common.version.shell" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 		result['common.version.shell'] = process.versions && (<any>process).versions['electron'];
-		// __GDPR__COMMON__ "common.version.renderer" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+		// __GDPR__COMMON__ "common.version.renderer" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 		result['common.version.renderer'] = process.versions && (<any>process).versions['chrome'];
 		// {{SQL CARBON EDIT}}
 		result['common.application.name'] = product.nameLong;

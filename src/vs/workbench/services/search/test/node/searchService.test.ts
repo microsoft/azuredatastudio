@@ -6,7 +6,8 @@
 'use strict';
 
 import * as assert from 'assert';
-import * as path from 'path';
+import { normalize } from 'path';
+import path = require('path');
 
 import { IProgress, IUncachedSearchStats } from 'vs/platform/search/common/search';
 import { ISearchEngine, IRawSearch, IRawFileMatch, ISerializedFileMatch, ISerializedSearchComplete, IFolderSearch } from 'vs/workbench/services/search/node/search';
@@ -14,7 +15,7 @@ import { SearchService as RawSearchService } from 'vs/workbench/services/search/
 import { DiskSearch } from 'vs/workbench/services/search/node/searchService';
 
 const TEST_FOLDER_QUERIES = [
-	{ folder: path.normalize('/some/where') }
+	{ folder: normalize('/some/where') }
 ];
 
 const TEST_FIXTURES = path.normalize(require.toUrl('./fixtures'));
@@ -84,14 +85,14 @@ suite('SearchService', () => {
 	};
 
 	const rawMatch: IRawFileMatch = {
-		base: path.normalize('/some'),
+		base: normalize('/some'),
 		relativePath: 'where',
 		basename: 'where',
 		size: 123
 	};
 
 	const match: ISerializedFileMatch = {
-		path: path.normalize('/some/where')
+		path: normalize('/some/where')
 	};
 
 	test('Individual results', function () {
@@ -109,7 +110,7 @@ suite('SearchService', () => {
 					assert.deepStrictEqual(value, match);
 					results++;
 				} else {
-					assert.fail(JSON.stringify(value));
+					assert.fail(value);
 				}
 			});
 	});
@@ -131,7 +132,7 @@ suite('SearchService', () => {
 					});
 					results.push(value.length);
 				} else {
-					assert.fail(JSON.stringify(value));
+					assert.fail(value);
 				}
 			});
 	});
@@ -197,7 +198,7 @@ suite('SearchService', () => {
 		this.timeout(testTimeout);
 		const paths = ['bab', 'bbc', 'abb'];
 		const matches: IRawFileMatch[] = paths.map(relativePath => ({
-			base: path.normalize('/some/where'),
+			base: normalize('/some/where'),
 			relativePath,
 			basename: relativePath,
 			size: 3
@@ -213,12 +214,12 @@ suite('SearchService', () => {
 			maxResults: 2
 		}, 1).then(() => {
 			assert.notStrictEqual(typeof TestSearchEngine.last.config.maxResults, 'number');
-			assert.deepStrictEqual(results, [path.normalize('/some/where/bbc'), path.normalize('/some/where/bab')]);
+			assert.deepStrictEqual(results, [normalize('/some/where/bbc'), normalize('/some/where/bab')]);
 		}, null, value => {
 			if (Array.isArray(value)) {
 				results.push(...value.map(v => v.path));
 			} else {
-				assert.fail(JSON.stringify(value));
+				assert.fail(value);
 			}
 		});
 	});
@@ -245,7 +246,7 @@ suite('SearchService', () => {
 					});
 					results.push(value.length);
 				} else {
-					assert.fail(JSON.stringify(value));
+					assert.fail(value);
 				}
 			});
 	});
@@ -254,7 +255,7 @@ suite('SearchService', () => {
 		this.timeout(testTimeout);
 		const paths = ['bcb', 'bbc', 'aab'];
 		const matches: IRawFileMatch[] = paths.map(relativePath => ({
-			base: path.normalize('/some/where'),
+			base: normalize('/some/where'),
 			relativePath,
 			basename: relativePath,
 			size: 3
@@ -270,12 +271,12 @@ suite('SearchService', () => {
 			cacheKey: 'x'
 		}, -1).then(complete => {
 			assert.strictEqual(complete.stats.fromCache, false);
-			assert.deepStrictEqual(results, [path.normalize('/some/where/bcb'), path.normalize('/some/where/bbc'), path.normalize('/some/where/aab')]);
+			assert.deepStrictEqual(results, [normalize('/some/where/bcb'), normalize('/some/where/bbc'), normalize('/some/where/aab')]);
 		}, null, value => {
 			if (Array.isArray(value)) {
 				results.push(...value.map(v => v.path));
 			} else {
-				assert.fail(JSON.stringify(value));
+				assert.fail(value);
 			}
 		}).then(() => {
 			const results = [];
@@ -286,19 +287,19 @@ suite('SearchService', () => {
 				cacheKey: 'x'
 			}, -1).then(complete => {
 				assert.ok(complete.stats.fromCache);
-				assert.deepStrictEqual(results, [path.normalize('/some/where/bcb'), path.normalize('/some/where/bbc')]);
+				assert.deepStrictEqual(results, [normalize('/some/where/bcb'), normalize('/some/where/bbc')]);
 			}, null, value => {
 				if (Array.isArray(value)) {
 					results.push(...value.map(v => v.path));
 				} else {
-					assert.fail(JSON.stringify(value));
+					assert.fail(value);
 				}
 			});
 		}).then(() => {
 			return service.clearCache('x');
 		}).then(() => {
 			matches.push({
-				base: path.normalize('/some/where'),
+				base: normalize('/some/where'),
 				relativePath: 'bc',
 				basename: 'bc',
 				size: 3
@@ -311,12 +312,12 @@ suite('SearchService', () => {
 				cacheKey: 'x'
 			}, -1).then(complete => {
 				assert.strictEqual(complete.stats.fromCache, false);
-				assert.deepStrictEqual(results, [path.normalize('/some/where/bc')]);
+				assert.deepStrictEqual(results, [normalize('/some/where/bc')]);
 			}, null, value => {
 				if (Array.isArray(value)) {
 					results.push(...value.map(v => v.path));
 				} else {
-					assert.fail(JSON.stringify(value));
+					assert.fail(value);
 				}
 			});
 		});

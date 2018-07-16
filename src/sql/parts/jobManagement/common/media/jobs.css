@@ -22,7 +22,7 @@ jobhistory-component {
 }
 
 .job-heading-container {
-    height: 50px;
+    height: 49px;
     border-bottom: 3px solid #f4f4f4;
     display: -webkit-box;
 }
@@ -31,29 +31,30 @@ jobhistory-component {
     border-bottom: 3px solid #444444;
 }
 
-.jobview-grid {
-    height: calc(100% - 75px);
+#jobsDiv .jobview-grid {
+    height: 94.7%;
 	width : 100%;
     display: block;
 }
 
-.vs-dark #agentViewDiv .slick-header-column {
+.vs-dark #jobsDiv .slick-header-column {
 	background: #333333 !important;
 }
 
-#agentViewDiv .slick-header-column {
+#jobsDiv .slick-header-column {
 	background-color: transparent !important;
 	background: white !important;
     border: 0px !important;
     font-weight: bold;
+    font-size: larger;
 }
 
-.vs-dark #jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background:#333333;
+.vs-dark #jobsDiv .slick-cell {
+	background:#333333 !important;
 }
 
-#jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: white;
+#jobsDiv .slick-cell {
+    background: white !important;
     border-right: transparent !important;
     border-left: transparent !important;
     line-height: 33px !important;
@@ -75,7 +76,7 @@ jobhistory-component {
     background: green;
 }
 
-#jobsDiv .slick-cell.l1.r1 .jobview-jobnameindicatorfailure {
+#jobsDiv .jobview-jobnameindicatorfailure {
     width: 5px;
     background: red;
 }
@@ -85,35 +86,31 @@ jobhistory-component {
     background: orange;
 }
 
-#jobsDiv .jobview-grid .jobview-jobnameindicatorunknown {
+#jobsDiv .jobview-jobnameindicatorunknown {
     width: 5px;
-    background: grey;
+    background: yellow;
 }
 
-#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext {
+#jobsDiv .jobview-jobnametext {
     width: 100%;
-}
-
-#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext {
-    text-overflow: ellipsis;
-    width: 250px;
-    overflow: hidden;
-    white-space: nowrap;
-    display: inline-block;
 }
 
 #jobsDiv .job-with-error {
     border-bottom: none;
 }
 
-.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.l1.r1.error-row {
+#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.l1.r1.error-row {
     width: 100%;
     opacity: 1;
     font-weight: 700;
     color: orangered;
 }
 
-.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row {
+#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.error-row {
+    opacity: 0;
+}
+
+#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row {
     opacity: 1;
 }
 
@@ -151,7 +148,7 @@ jobhistory-component {
 }
 
 #jobsDiv .preload {
-  font-size: 13px;
+  font-size: 18px;
 }
 
 #jobsDiv .dynamic-cell-detail > :first-child {
@@ -177,30 +174,6 @@ jobhistory-component {
 	background-image: url('./job_inverse.svg');
 }
 
-.alertsview-icon {
-    background-image: url('./alert.svg');
-}
-
-.vs-dark .alertsview-icon {
-	background-image: url('./alert_inverse.svg');
-}
-
-.proxiesview-icon {
-    background-image: url('./proxy.svg');
-}
-
-.vs-dark .proxiesview-icon {
-	background-image: url('./proxy_inverse.svg');
-}
-
-.operatorsview-icon {
-    background-image: url('./operator.svg');
-}
-
-.vs-dark .operatorsview-icon {
-	background-image: url('./operator_inverse.svg');
-}
-
 agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.even > .slick-cell,
 agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.odd > .slick-cell {
     cursor: pointer;
@@ -219,205 +192,4 @@ agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.od
     width: 20px;
     padding-top: 16px;
     padding-left: 15px;
-}
-
-#jobsDiv jobsview-component .jobview-grid .slick-cell.l1.r1.error-row td.jobview-jobnameindicatorfailure {
-    width: 0;
-    background: none;
-}
-
-#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
-#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
-    background: #dcdcdc !important;
-}
-
-.vs-dark #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-.vs-dark #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
-.vs-dark #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
-    background: #444444 !important;
-}
-
-table.jobprevruns div.bar0, table.jobprevruns div.bar1, table.jobprevruns div.bar2,
-table.jobprevruns div.bar3, table.jobprevruns div.bar4, table.jobprevruns div.bar5 {
-    padding-top: 3px;
-    padding-left: 5px;
-	width: 10px;
-}
-
-.jobview-grid .slick-cell.l10.r10 {
-    text-align: center;
-    display: inline-flex;
-}
-
-table.jobprevruns {
-    height: 100%;
-}
-
-table.jobprevruns > tbody {
-    vertical-align: bottom;
-}
-
-.jobs-view-toolbar{
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    padding: 15px 10px 15px 30px;
-    font-size: 16px;
-    border-bottom: 3px solid #f4f4f4;
-}
-
-.jobs-view-toolbar .vs-dark {
-    border-bottom: 3px solid #444444;
-}
-
-.jobs-view-toolbar > div{
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: flex-start;
-    margin-right: 25px;
-    cursor: pointer;
-    padding: 2px;
-}
-
-.jobs-view-toolbar span{
-    padding-left: 5px;
-}
-
-
-#alertsDiv .jobalertsview-grid {
-    height: calc(100% - 75px);
-	width : 100%;
-    display: block;
-}
-
-#operatorsDiv .joboperatorsview-grid {
-    height: calc(100% - 75px);
-	width : 100%;
-    display: block;
-    overflow: scroll;
-}
-
-#proxiesDiv .jobproxiesview-grid {
-    height: calc(100% - 75px);
-	width : 100%;
-    display: block;
-}
-
-.vs .action-label.icon.refreshIcon {
-	background-image: url('refresh.svg');
-}
-
-.vs-dark .action-label.icon.refreshIcon,
-.hc-black .action-label.icon.refreshIcon  {
-	background-image: url('refresh_inverse.svg');
-}
-
-.actionbar-container .monaco-action-bar > ul.actions-container {
-	padding-top: 10px;
-}
-
-jobsview-component .actionbar-container {
-    height: 40px;
-}
-
-.actionbar-container .monaco-action-bar > ul.actions-container > li.action-item {
-	padding-left: 20px;
-}
-
-jobsview-component .jobview-grid .slick-cell.error-row {
-    opacity: 0;
-}
-
-.vs-dark #alertsDiv jobalertsview-component .jobalertsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background:#333333;
-}
-
-#alertsDiv jobalertsview-component .jobalertsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: white;
-    border-right: transparent !important;
-    border-left: transparent !important;
-    line-height: 33px !important;
-}
-
-#alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-#alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
-#alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
-    background: #dcdcdc !important;
-}
-
-.vs-dark #alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-.vs-dark #alertsDiv .jobalertsview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
-.vs-dark #alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
-    background: #444444 !important;
-}
-
-.vs-dark .jobalertsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
-    border-left: 1px dotted white;
-}
-
-.jobalertsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
-    border-left: 1px dotted #444444;
-}
-
-.vs-dark #operatorsDiv joboperatorsview-component .joboperatorsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background:#333333;
-}
-
-#operatorsDiv joboperatorsview-component .joboperatorsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: white;
-    border-right: transparent !important;
-    border-left: transparent !important;
-    line-height: 33px !important;
-}
-
-#operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-#operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
-#operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
-    background: #dcdcdc !important;
-}
-
-.vs-dark #operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-.vs-dark #operatorsDiv .joboperatorsview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
-.vs-dark #operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
-    background: #444444 !important;
-}
-
-.vs-dark .joboperatorsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
-    border-left: 1px dotted white;
-}
-
-.joboperatorsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
-    border-left: 1px dotted #444444;
-}
-
-.vs-dark #proxiesDiv jobproxiesview-component .jobproxiesview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background:#333333;
-}
-
-#proxiesDiv jobproxiesview-component .jobproxiesview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: white;
-    border-right: transparent !important;
-    border-left: transparent !important;
-    line-height: 33px !important;
-}
-
-#proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-#proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
-#proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
-    background: #dcdcdc !important;
-}
-
-.vs-dark #proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-.vs-dark #proxiesDiv .jobproxiesview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
-.vs-dark #proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
-    background: #444444 !important;
-}
-
-.vs-dark .jobproxiesview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
-    border-left: 1px dotted white;
-}
-
-.jobproxiesview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
-    border-left: 1px dotted #444444;
 }

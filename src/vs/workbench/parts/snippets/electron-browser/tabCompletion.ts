@@ -144,7 +144,7 @@ registerEditorCommand(new TabCompletionCommand({
 	kbOpts: {
 		weight: KeybindingsRegistry.WEIGHT.editorContrib(),
 		kbExpr: ContextKeyExpr.and(
-			EditorContextKeys.editorTextFocus,
+			EditorContextKeys.textFocus,
 			EditorContextKeys.tabDoesNotMoveFocus,
 			SnippetController2.InSnippetMode.toNegated()
 		),

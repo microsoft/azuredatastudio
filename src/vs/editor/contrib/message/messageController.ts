@@ -6,10 +6,9 @@
 'use strict';
 
 import 'vs/css!./messageController';
-import * as nls from 'vs/nls';
 import { setDisposableTimeout } from 'vs/base/common/async';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { Range } from 'vs/editor/common/core/range';
 import * as editorCommon from 'vs/editor/common/editorCommon';
@@ -21,11 +20,11 @@ import { registerThemingParticipant, HIGH_CONTRAST } from 'vs/platform/theme/com
 import { inputValidationInfoBorder, inputValidationInfoBackground } from 'vs/platform/theme/common/colorRegistry';
 import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRegistry';
 
-export class MessageController extends Disposable implements editorCommon.IEditorContribution {
+export class MessageController implements editorCommon.IEditorContribution {
 
 	private static readonly _id = 'editor.contrib.messageController';
 
-	static MESSAGE_VISIBLE = new RawContextKey<boolean>('messageVisible', false);
+	static CONTEXT_SNIPPET_MODE = new RawContextKey<boolean>('messageVisible', false);
 
 	static get(editor: ICodeEditor): MessageController {
 		return editor.getContribution<MessageController>(MessageController._id);
@@ -44,14 +43,11 @@ export class MessageController extends Disposable implements editorCommon.IEdito
 		editor: ICodeEditor,
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super();
 		this._editor = editor;
-		this._visible = MessageController.MESSAGE_VISIBLE.bindTo(contextKeyService);
-		this._register(this._editor.onDidAttemptReadOnlyEdit(() => this._onDidAttemptReadOnlyEdit()));
+		this._visible = MessageController.CONTEXT_SNIPPET_MODE.bindTo(contextKeyService);
 	}
 
 	dispose(): void {
-		super.dispose();
 		this._visible.reset();
 	}
 
@@ -100,10 +96,6 @@ export class MessageController extends Disposable implements editorCommon.IEdito
 		this._messageListeners = dispose(this._messageListeners);
 		this._messageListeners.push(MessageWidget.fadeOut(this._messageWidget));
 	}
-
-	private _onDidAttemptReadOnlyEdit(): void {
-		this.showMessage(nls.localize('editor.readonly', "Cannot edit in read-only editor"), this._editor.getPosition());
-	}
 }
 
 const MessageCommand = EditorCommand.bindToContribution<MessageController>(MessageController.get);
@@ -111,7 +103,7 @@ const MessageCommand = EditorCommand.bindToContribution<MessageController>(Messa
 
 registerEditorCommand(new MessageCommand({
 	id: 'leaveEditorMessage',
-	precondition: MessageController.MESSAGE_VISIBLE,
+	precondition: MessageController.CONTEXT_SNIPPET_MODE,
 	handler: c => c.closeMessage(),
 	kbOpts: {
 		weight: KeybindingsRegistry.WEIGHT.editorContrib(30),

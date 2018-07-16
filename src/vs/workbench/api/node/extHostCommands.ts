@@ -54,7 +54,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		this._argumentProcessors.push(processor);
 	}
 
-	registerCommand(global: boolean, id: string, callback: <T>(...args: any[]) => T | Thenable<T>, thisArg?: any, description?: ICommandHandlerDescription): extHostTypes.Disposable {
+	registerCommand(id: string, callback: <T>(...args: any[]) => T | Thenable<T>, thisArg?: any, description?: ICommandHandlerDescription): extHostTypes.Disposable {
 		this._logService.trace('ExtHostCommands#registerCommand', id);
 
 		if (!id.trim().length) {
@@ -66,15 +66,11 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		}
 
 		this._commands.set(id, { callback, thisArg, description });
-		if (global) {
-			this._proxy.$registerCommand(id);
-		}
+		this._proxy.$registerCommand(id);
 
 		return new extHostTypes.Disposable(() => {
 			if (this._commands.delete(id)) {
-				if (global) {
-					this._proxy.$unregisterCommand(id);
-				}
+				this._proxy.$unregisterCommand(id);
 			}
 		});
 	}
@@ -116,7 +112,6 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 				try {
 					validateConstraint(args[i], description.args[i].constraint);
 				} catch (err) {
-					// {{ SQL CARBON EDIT }} - Add type assertion to fix build break
 					return <any>Promise.reject(new Error(`Running the contributed command:'${id}' failed. Illegal argument '${description.args[i].name}' - ${description.args[i].description}`));
 				}
 			}
@@ -127,14 +122,12 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 			return Promise.resolve(result);
 		} catch (err) {
 			this._logService.error(err, id);
-			// {{ SQL CARBON EDIT }} - Add type assertion to fix build break
 			return <any>Promise.reject(new Error(`Running the contributed command:'${id}' failed.`));
 		}
 	}
 
 	$executeContributedCommand<T>(id: string, ...args: any[]): Thenable<T> {
 		if (!this._commands.has(id)) {
-			// {{ SQL CARBON EDIT }} - Add type assertion to fix build break
 			return <any>Promise.reject(new Error(`Contributed command '${id}' does not exist.`));
 		} else {
 			args = args.map(arg => this._argumentProcessors.reduce((r, p) => p.processArgument(r), arg));
@@ -168,16 +161,15 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 
 export class CommandsConverter {
 
-	private readonly _delegatingCommandId: string;
 	private _commands: ExtHostCommands;
 	private _heap: ExtHostHeapService;
 
 	// --- conversion between internal and api commands
 	constructor(commands: ExtHostCommands, heap: ExtHostHeapService) {
-		this._delegatingCommandId = `_internal_command_delegation_${Date.now()}`;
+
 		this._commands = commands;
 		this._heap = heap;
-		this._commands.registerCommand(true, this._delegatingCommandId, this._executeConvertedCommand, this);
+		this._commands.registerCommand('_internal_command_delegation', this._executeConvertedCommand, this);
 	}
 
 	toInternal(command: vscode.Command): modes.Command {
@@ -198,7 +190,7 @@ export class CommandsConverter {
 			const id = this._heap.keep(command);
 			ObjectIdentifier.mixin(result, id);
 
-			result.id = this._delegatingCommandId;
+			result.id = '_internal_command_delegation';
 			result.arguments = [id];
 		}
 

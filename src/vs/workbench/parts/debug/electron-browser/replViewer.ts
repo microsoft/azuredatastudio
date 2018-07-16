@@ -107,16 +107,11 @@ export class ReplExpressionsRenderer implements IRenderer {
 			return 2 * ReplExpressionsRenderer.LINE_HEIGHT_PX;
 		}
 
-		let availableWidth = this.width;
-		if (element instanceof SimpleReplElement && element.sourceData) {
-			availableWidth -= `${element.sourceData.source.name}:${element.sourceData.lineNumber}`.length * this.characterWidth;
-		}
-
-		return this.getHeightForString(element.value, availableWidth) + (element instanceof Expression ? this.getHeightForString(element.name, availableWidth) : 0);
+		return this.getHeightForString(element.value) + (element instanceof Expression ? this.getHeightForString(element.name) : 0);
 	}
 
-	private getHeightForString(s: string, availableWidth: number): number {
-		if (!s || !s.length || !availableWidth || availableWidth <= 0 || !this.characterWidth || this.characterWidth <= 0) {
+	private getHeightForString(s: string): number {
+		if (!s || !s.length || !this.width || this.width <= 0 || !this.characterWidth || this.characterWidth <= 0) {
 			return ReplExpressionsRenderer.LINE_HEIGHT_PX;
 		}
 
@@ -131,7 +126,7 @@ export class ReplExpressionsRenderer implements IRenderer {
 				lineLength += isFullWidthCharacter(line.charCodeAt(i)) ? 2 : 1;
 			}
 
-			return lineCount + Math.floor(lineLength * this.characterWidth / availableWidth);
+			return lineCount + Math.floor(lineLength * this.characterWidth / this.width);
 		}, lines.length);
 
 		return ReplExpressionsRenderer.LINE_HEIGHT_PX * numLines;
@@ -342,8 +337,6 @@ export class ReplExpressionsRenderer implements IRenderer {
 								token.className += 'code' + parsedMode;
 							} else if (parsedMode === 1) {
 								token.className += 'code-bold';
-							} else if (parsedMode === 4) {
-								token.className += 'code-underline';
 							}
 						}
 
@@ -359,13 +352,7 @@ export class ReplExpressionsRenderer implements IRenderer {
 						}
 
 						currentToken = token;
-
-						// get child until deepest nested node is found
-						let childPointer: Node = tokensContainer;
-						while (childPointer.hasChildNodes() && childPointer.firstChild.nodeName !== '#text') {
-							childPointer = childPointer.firstChild;
-						}
-						childPointer.appendChild(token);
+						tokensContainer.appendChild(token);
 
 						i = index;
 					}

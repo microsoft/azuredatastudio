@@ -5,42 +5,47 @@
 
 'use strict';
 
-import * as assert from 'assert';
+import assert = require('assert');
 
-import * as stream from 'vs/base/node/stream';
+import stream = require('vs/base/node/stream');
 
 suite('Stream', () => {
-	test('readExactlyByFile - ANSI', function () {
+	test('readExactlyByFile - ANSI', function (done: (err?) => void) {
 		const file = require.toUrl('./fixtures/file.css');
 
-		return stream.readExactlyByFile(file, 10).then(({ buffer, bytesRead }) => {
+		stream.readExactlyByFile(file, 10).then(({ buffer, bytesRead }) => {
 			assert.equal(bytesRead, 10);
 			assert.equal(buffer.toString(), '/*--------');
-		});
+			done();
+		}, done);
 	});
 
-	test('readExactlyByFile - empty', function () {
+	test('readExactlyByFile - empty', function (done: (err?: any) => void) {
 		const file = require.toUrl('./fixtures/empty.txt');
 
-		return stream.readExactlyByFile(file, 10).then(({ bytesRead }) => {
+		stream.readExactlyByFile(file, 10).then(({ bytesRead }) => {
 			assert.equal(bytesRead, 0);
-		});
+			done();
+		}, done);
 	});
 
-	test('readToMatchingString - ANSI', function () {
+	test('readToMatchingString - ANSI', function (done: (err?: any) => void) {
 		const file = require.toUrl('./fixtures/file.css');
 
-		return stream.readToMatchingString(file, '\n', 10, 100).then((result: string) => {
+		stream.readToMatchingString(file, '\n', 10, 100).then((result: string) => {
 			// \r may be present on Windows
 			assert.equal(result.replace('\r', ''), '/*---------------------------------------------------------------------------------------------');
-		});
+			done();
+		}, done);
 	});
 
-	test('readToMatchingString - empty', function () {
+	test('readToMatchingString - empty', function (done: (err?: any) => void) {
 		const file = require.toUrl('./fixtures/empty.txt');
 
-		return stream.readToMatchingString(file, '\n', 10, 100).then((result: string) => {
+		stream.readToMatchingString(file, '\n', 10, 100).then((result: string) => {
 			assert.equal(result, null);
-		});
+
+			done();
+		}, done);
 	});
 });

@@ -5,7 +5,6 @@
 		"editor.background": "#000000",
 		"editor.foreground": "#FFFFFF",
 		"editorIndentGuide.background": "#FFFFFF",
-		"editorIndentGuide.activeBackground": "#FFFFFF",
 		"sideBarTitle.foreground": "#FFFFFF"
 	},
 	"settings": [

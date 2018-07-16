@@ -6,7 +6,7 @@
 'use strict';
 
 import * as nls from 'vs/nls';
-import { illegalArgument } from 'vs/base/common/errors';
+import { isPromiseCanceledError, illegalArgument, onUnexpectedExternalError } from 'vs/base/common/errors';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -22,8 +22,8 @@ import RenameInputField from './renameInputField';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { asWinJsPromise } from 'vs/base/common/async';
-import { WorkspaceEdit, RenameProviderRegistry, RenameProvider, RenameLocation } from 'vs/editor/common/modes';
+import { sequence, asWinJsPromise } from 'vs/base/common/async';
+import { WorkspaceEdit, RenameProviderRegistry, RenameInitialValue } from 'vs/editor/common/modes';
 import { Position } from 'vs/editor/common/core/position';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { Range } from 'vs/editor/common/core/range';
@@ -32,65 +32,67 @@ import { EditorState, CodeEditorStateFlag } from 'vs/editor/browser/core/editorS
 import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
-class RenameSkeleton {
 
-	private _provider: RenameProvider[];
+export function rename(model: ITextModel, position: Position, newName: string): TPromise<WorkspaceEdit> {
 
-	constructor(
-		readonly model: ITextModel,
-		readonly position: Position
-	) {
-		this._provider = RenameProviderRegistry.ordered(model);
-	}
+	const supports = RenameProviderRegistry.ordered(model);
+	const rejects: string[] = [];
+	let hasResult = false;
 
-	hasProvider() {
-		return this._provider.length > 0;
-	}
-
-	async resolveRenameLocation(): TPromise<RenameLocation> {
-
-		let [provider] = this._provider;
-		let res: RenameLocation;
-
-		if (provider.resolveRenameLocation) {
-			res = await asWinJsPromise(token => provider.resolveRenameLocation(this.model, this.position, token));
-		}
-
-		if (!res) {
-			let word = this.model.getWordAtPosition(this.position);
-			if (word) {
-				res = {
-					range: new Range(this.position.lineNumber, word.startColumn, this.position.lineNumber, word.endColumn),
-					text: word.word
-				};
+	const factory = supports.map(support => {
+		return (): TPromise<WorkspaceEdit> => {
+			if (!hasResult) {
+				return asWinJsPromise((token) => {
+					return support.provideRenameEdits(model, position, newName, token);
+				}).then(result => {
+					if (!result) {
+						// ignore
+					} else if (!result.rejectReason) {
+						hasResult = true;
+						return result;
+					} else {
+						rejects.push(result.rejectReason);
+					}
+					return undefined;
+				});
 			}
-		}
+			return undefined;
+		};
+	});
 
-		return res;
-	}
-
-	async provideRenameEdits(newName: string, i: number = 0, rejects: string[] = [], position: Position = this.position): TPromise<WorkspaceEdit> {
-
-		if (i >= this._provider.length) {
+	return sequence(factory).then((values): WorkspaceEdit => {
+		let result = values[0];
+		if (rejects.length > 0) {
 			return {
 				edits: undefined,
 				rejectReason: rejects.join('\n')
 			};
+		} else if (!result) {
+			return {
+				edits: undefined,
+				rejectReason: nls.localize('no result', "No result.")
+			};
+		} else {
+			return result;
 		}
-
-		let provider = this._provider[i];
-		let result = await asWinJsPromise((token) => provider.provideRenameEdits(this.model, this.position, newName, token));
-		if (!result) {
-			return this.provideRenameEdits(newName, i + 1, rejects.concat(nls.localize('no result', "No result.")));
-		} else if (result.rejectReason) {
-			return this.provideRenameEdits(newName, i + 1, rejects.concat(result.rejectReason));
-		}
-		return result;
-	}
+	});
 }
 
-export async function rename(model: ITextModel, position: Position, newName: string): TPromise<WorkspaceEdit> {
-	return new RenameSkeleton(model, position).provideRenameEdits(newName);
+// TODO@joh
+// merge this into above function to make we always
+// use the same provider for resolving and renamin
+function resolveInitialRenameValue(model: ITextModel, position: Position): TPromise<RenameInitialValue> {
+	const [first] = RenameProviderRegistry.ordered(model);
+	if (!first || typeof first.resolveInitialRenameValue !== 'function') {
+		return TPromise.as(null);
+	}
+	//Use first rename provider so that we always use the same for resolving the location and for the actual rename
+	return asWinJsPromise(token => first.resolveInitialRenameValue(model, position, token)).then(result => {
+		return !result ? undefined : result;
+	}, err => {
+		onUnexpectedExternalError(err);
+		return TPromise.wrapError<RenameInitialValue>(new Error('provider failed'));
+	});
 }
 
 // ---  register actions and commands
@@ -130,48 +132,70 @@ class RenameController implements IEditorContribution {
 	}
 
 	public async run(): TPromise<void> {
+		const selection = this.editor.getSelection();
 
-		const position = this.editor.getPosition();
-		const skeleton = new RenameSkeleton(this.editor.getModel(), position);
+		let lineNumber = selection.startLineNumber,
+			selectionStart = 0,
+			selectionEnd = 0,
+			wordRange: Range,
+			word: string;
 
-		let loc: RenameLocation;
-		try {
-			loc = await skeleton.resolveRenameLocation();
-		} catch (e) {
-			MessageController.get(this.editor).showMessage(e, position);
-			return undefined;
+		let initialValue = await resolveInitialRenameValue(this.editor.getModel(), this.editor.getPosition());
+
+		if (initialValue) {
+			lineNumber = initialValue.range.startLineNumber;
+			if (initialValue.text) {
+				word = initialValue.text;
+			}
+			else {
+				word = this.editor.getModel().getValueInRange(initialValue.range);
+			}
+			selectionEnd = word.length;
+
+			if (!selection.isEmpty() && selection.startLineNumber === selection.endLineNumber) {
+				selectionStart = Math.max(0, selection.startColumn - initialValue.range.startColumn);
+				selectionEnd = Math.min(initialValue.range.endColumn, selection.endColumn) - initialValue.range.startColumn;
+			}
+
+			wordRange = new Range(
+				lineNumber,
+				initialValue.range.startColumn,
+				lineNumber,
+				initialValue.range.endColumn
+			);
+
 		}
+		else {
+			const wordAtPosition = this.editor.getModel().getWordAtPosition(selection.getStartPosition());
 
-		if (!loc) {
-			return undefined;
-		}
+			if (!wordAtPosition) {
+				return undefined;
+			}
+			word = wordAtPosition.word;
+			selectionEnd = word.length;
 
-		let selection = this.editor.getSelection();
-		let selectionStart = 0;
-		let selectionEnd = loc.text.length;
+			if (!selection.isEmpty() && selection.startLineNumber === selection.endLineNumber) {
+				selectionStart = Math.max(0, selection.startColumn - wordAtPosition.startColumn);
+				selectionEnd = Math.min(wordAtPosition.endColumn, selection.endColumn) - wordAtPosition.startColumn;
+			}
 
-		if (!Range.isEmpty(selection) && !Range.spansMultipleLines(selection) && Range.containsRange(loc.range, selection)) {
-			selectionStart = Math.max(0, selection.startColumn - loc.range.startColumn);
-			selectionEnd = Math.min(loc.range.endColumn, selection.endColumn) - loc.range.startColumn;
+			wordRange = new Range(
+				lineNumber,
+				wordAtPosition.startColumn,
+				lineNumber,
+				wordAtPosition.endColumn
+			);
 		}
 
 		this._renameInputVisible.set(true);
-		return this._renameInputField.getInput(loc.range, loc.text, selectionStart, selectionEnd).then(newNameOrFocusFlag => {
+		return this._renameInputField.getInput(wordRange, word, selectionStart, selectionEnd).then(newName => {
 			this._renameInputVisible.reset();
-
-			if (typeof newNameOrFocusFlag === 'boolean') {
-				if (newNameOrFocusFlag) {
-					this.editor.focus();
-				}
-				return undefined;
-			}
-
 			this.editor.focus();
 
 			const edit = new BulkEdit(this.editor, null, this._textModelResolverService, this._fileService);
 			const state = new EditorState(this.editor, CodeEditorStateFlag.Position | CodeEditorStateFlag.Value | CodeEditorStateFlag.Selection | CodeEditorStateFlag.Scroll);
 
-			const renameOperation = skeleton.provideRenameEdits(newNameOrFocusFlag, 0, [], Range.lift(loc.range).getStartPosition()).then(result => {
+			const renameOperation = rename(this.editor.getModel(), this.editor.getPosition(), newName).then(result => {
 				if (result.rejectReason) {
 					if (state.validate(this.editor)) {
 						MessageController.get(this.editor).showMessage(result.rejectReason, this.editor.getPosition());
@@ -187,7 +211,7 @@ class RenameController implements IEditorContribution {
 						this.editor.setSelection(selection);
 					}
 					// alert
-					alert(nls.localize('aria', "Successfully renamed '{0}' to '{1}'. Summary: {2}", loc.text, newNameOrFocusFlag, edit.ariaMessage()));
+					alert(nls.localize('aria', "Successfully renamed '{0}' to '{1}'. Summary: {2}", word, newName, edit.ariaMessage()));
 				});
 
 			}, err => {
@@ -200,7 +224,12 @@ class RenameController implements IEditorContribution {
 
 		}, err => {
 			this._renameInputVisible.reset();
-			return TPromise.wrapError(err);
+			this.editor.focus();
+
+			if (!isPromiseCanceledError(err)) {
+				return TPromise.wrapError(err);
+			}
+			return undefined;
 		});
 	}
 
@@ -209,7 +238,7 @@ class RenameController implements IEditorContribution {
 	}
 
 	public cancelRenameInput(): void {
-		this._renameInputField.cancelInput(true);
+		this._renameInputField.cancelInput();
 	}
 }
 
@@ -224,7 +253,7 @@ export class RenameAction extends EditorAction {
 			alias: 'Rename Symbol',
 			precondition: ContextKeyExpr.and(EditorContextKeys.writable, EditorContextKeys.hasRenameProvider),
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyCode.F2
 			},
 			menuOpts: {

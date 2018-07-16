@@ -15,7 +15,6 @@ import { EventType as GestureEventType } from 'vs/base/browser/touch';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { Builder } from 'vs/base/browser/builder';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
@@ -59,9 +58,9 @@ export class DropdownList extends Dropdown {
 			attachButtonStyler(button, this._themeService);
 		}
 
-		DOM.append(this.element, DOM.$('div.dropdown-icon'));
+		DOM.append(this.element.getHTMLElement(), DOM.$('div.dropdown-icon'));
 
-		this.toDispose.push(new Builder(this.element).on([DOM.EventType.CLICK, DOM.EventType.MOUSE_DOWN, GestureEventType.Tap], (e: Event) => {
+		this.toDispose.push(this.element.on([DOM.EventType.CLICK, DOM.EventType.MOUSE_DOWN, GestureEventType.Tap], (e: Event) => {
 			DOM.EventHelper.stop(e, true); // prevent default click behaviour to trigger
 		}).on([DOM.EventType.MOUSE_DOWN, GestureEventType.Tap], (e: Event) => {
 			// We want to show the context menu on dropdown so that as a user you can press and hold the
@@ -83,11 +82,11 @@ export class DropdownList extends Dropdown {
 
 		this.toDispose.push(this._list.onSelectionChange(() => {
 			// focus on the dropdown label then hide the dropdown list
-			this.element.focus();
+			this.element.getHTMLElement().focus();
 			this.hide();
 		}));
 
-		this.element.setAttribute('tabindex', '0');
+		this.element.getHTMLElement().setAttribute('tabindex', '0');
 	}
 
 	/**
@@ -95,7 +94,7 @@ export class DropdownList extends Dropdown {
 	 */
 	protected renderContents(container: HTMLElement): IDisposable {
 		let div = DOM.append(container, this._contentContainer);
-		div.style.width = DOM.getTotalWidth(this.element) + 'px';
+		div.style.width = DOM.getTotalWidth(this.element.getHTMLElement()) + 'px';
 		return null;
 	}
 
@@ -104,22 +103,22 @@ export class DropdownList extends Dropdown {
 	 */
 	public renderLabel(): void {
 		if (this._options.labelRenderer) {
-			this._options.labelRenderer(this.label);
+			this._options.labelRenderer(this.label.getHTMLElement());
 		}
 	}
 
 	protected onEvent(e: Event, activeElement: HTMLElement): void {
 		// If there is an event outside dropdown label and dropdown list, hide the dropdown list
-		if (!DOM.isAncestor(<HTMLElement>e.target, this.element) && !DOM.isAncestor(<HTMLElement>e.target, this._contentContainer)) {
+		if (!DOM.isAncestor(<HTMLElement>e.target, this.element.getHTMLElement()) && !DOM.isAncestor(<HTMLElement>e.target, this._contentContainer)) {
 			// focus on the dropdown label then hide the dropdown list
-			this.element.focus();
+			this.element.getHTMLElement().focus();
 			this.hide();
 			// If there is an keyboard event inside the list and key code is escape, hide the dropdown list
 		} else if (DOM.isAncestor(<HTMLElement>e.target, this._list.getHTMLElement()) && e instanceof KeyboardEvent) {
 			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Escape)) {
 				// focus on the dropdown label then hide the dropdown list
-				this.element.focus();
+				this.element.getHTMLElement().focus();
 				this.hide();
 				e.stopPropagation();
 			}
@@ -139,7 +138,7 @@ export class DropdownList extends Dropdown {
 		const border = this.borderColor ? this.borderColor.toString() : null;
 		this.applyStylesOnElement(this._contentContainer, background, foreground, border);
 		if (this.label) {
-			this.applyStylesOnElement(this.element, background, foreground, border);
+			this.applyStylesOnElement(this.element.getHTMLElement(), background, foreground, border);
 		}
 	}
 

@@ -15,60 +15,39 @@ import { EditOperation } from 'vs/editor/common/core/editOperation';
 
 export class EditOperationsCommand implements editorCommon.ICommand {
 
-	static _handleEolEdits(editor: ICodeEditor, edits: TextEdit[]): ISingleEditOperation[] {
-		let newEol: EndOfLineSequence = undefined;
-		let singleEdits: ISingleEditOperation[] = [];
-
-		for (let edit of edits) {
-			if (typeof edit.eol === 'number') {
-				newEol = edit.eol;
-			}
-			if (edit.range && typeof edit.text === 'string') {
-				singleEdits.push(edit);
-			}
-		}
-
-		if (typeof newEol === 'number') {
-			editor.getModel().setEOL(newEol);
-		}
-
-		return singleEdits;
-	}
-
-	static executeAsCommand(editor: ICodeEditor, _edits: TextEdit[]) {
-		let edits = this._handleEolEdits(editor, _edits);
+	static execute(editor: ICodeEditor, edits: TextEdit[], asCommand: boolean) {
 		const cmd = new EditOperationsCommand(edits, editor.getSelection());
+		if (typeof cmd._newEol === 'number') {
+			editor.getModel().setEOL(cmd._newEol);
+		}
 		editor.pushUndoStop();
-		editor.executeCommand('formatEditsCommand', cmd);
-		editor.pushUndoStop();
-	}
-
-	static isFullModelReplaceEdit(editor: ICodeEditor, edit: ISingleEditOperation): boolean {
-		const model = editor.getModel();
-		const editRange = model.validateRange(edit.range);
-		const fullModelRange = model.getFullModelRange();
-		return fullModelRange.equalsRange(editRange);
-	}
-
-	static execute(editor: ICodeEditor, _edits: TextEdit[]) {
-		let edits = this._handleEolEdits(editor, _edits);
-		editor.pushUndoStop();
-		if (edits.length === 1 && EditOperationsCommand.isFullModelReplaceEdit(editor, edits[0])) {
-			// We use replace semantics and hope that markers stay put...
-			editor.executeEdits('formatEditsCommand', edits.map(edit => EditOperation.replace(Range.lift(edit.range), edit.text)));
+		if (!asCommand) {
+			editor.executeEdits('formatEditsCommand', cmd._edits.map(edit => EditOperation.replace(Range.lift(edit.range), edit.text)));
 		} else {
-			editor.executeEdits('formatEditsCommand', edits.map(edit => EditOperation.replaceMove(Range.lift(edit.range), edit.text)));
+			editor.executeCommand('formatEditsCommand', cmd);
 		}
 		editor.pushUndoStop();
 	}
 
-	private _edits: ISingleEditOperation[];
+	private _edits: TextEdit[];
+	private _newEol: EndOfLineSequence;
+
 	private _initialSelection: Selection;
 	private _selectionId: string;
 
-	constructor(edits: ISingleEditOperation[], initialSelection: Selection) {
+	constructor(edits: TextEdit[], initialSelection: Selection) {
 		this._initialSelection = initialSelection;
-		this._edits = edits;
+		this._edits = [];
+		this._newEol = undefined;
+
+		for (let edit of edits) {
+			if (typeof edit.eol === 'number') {
+				this._newEol = edit.eol;
+			}
+			if (edit.range && typeof edit.text === 'string') {
+				this._edits.push(edit);
+			}
+		}
 	}
 
 	public getEditOperations(model: ITextModel, builder: editorCommon.IEditOperationBuilder): void {

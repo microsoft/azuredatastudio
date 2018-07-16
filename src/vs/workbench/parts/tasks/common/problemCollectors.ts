@@ -6,13 +6,13 @@
 
 import { IStringDictionary, INumberDictionary } from 'vs/base/common/collections';
 import URI from 'vs/base/common/uri';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 import { IModelService } from 'vs/editor/common/services/modelService';
 
 import { ILineMatcher, createLineMatcher, ProblemMatcher, ProblemMatch, ApplyToKind, WatchingPattern, getResource } from 'vs/workbench/parts/tasks/common/problemMatcher';
-import { IMarkerService, IMarkerData, MarkerSeverity } from 'vs/platform/markers/common/markers';
+import { IMarkerService, IMarkerData } from 'vs/platform/markers/common/markers';
 import { generateUuid } from 'vs/base/common/uuid';
 
 export enum ProblemCollectorEventKind {
@@ -39,7 +39,6 @@ export class AbstractProblemCollector implements IDisposable {
 	private matchers: INumberDictionary<ILineMatcher[]>;
 	private activeMatcher: ILineMatcher;
 	private _numberOfMatches: number;
-	private _maxMarkerSeverity: MarkerSeverity;
 	private buffer: string[];
 	private bufferLength: number;
 	private openModels: IStringDictionary<boolean>;
@@ -74,7 +73,6 @@ export class AbstractProblemCollector implements IDisposable {
 		this.buffer = [];
 		this.activeMatcher = null;
 		this._numberOfMatches = 0;
-		this._maxMarkerSeverity = undefined;
 		this.openModels = Object.create(null);
 		this.modelListeners = [];
 		this.applyToByOwner = new Map<string, ApplyToKind>();
@@ -112,16 +110,12 @@ export class AbstractProblemCollector implements IDisposable {
 		return this._numberOfMatches;
 	}
 
-	public get maxMarkerSeverity(): MarkerSeverity {
-		return this._maxMarkerSeverity;
-	}
-
 	protected tryFindMarker(line: string): ProblemMatch {
 		let result: ProblemMatch = null;
 		if (this.activeMatcher) {
 			result = this.activeMatcher.next(line);
 			if (result) {
-				this.captureMatch(result);
+				this._numberOfMatches++;
 				return result;
 			}
 			this.clearBuffer();
@@ -176,7 +170,7 @@ export class AbstractProblemCollector implements IDisposable {
 				let matcher = candidates[i];
 				let result = matcher.handle(this.buffer, startIndex);
 				if (result.match) {
-					this.captureMatch(result.match);
+					this._numberOfMatches++;
 					if (result.continue) {
 						this.activeMatcher = matcher;
 					}
@@ -185,13 +179,6 @@ export class AbstractProblemCollector implements IDisposable {
 			}
 		}
 		return null;
-	}
-
-	private captureMatch(match: ProblemMatch): void {
-		this._numberOfMatches++;
-		if (this._maxMarkerSeverity === void 0 || match.marker.severity > this._maxMarkerSeverity) {
-			this._maxMarkerSeverity = match.marker.severity;
-		}
 	}
 
 	private clearBuffer(): void {
@@ -313,8 +300,6 @@ export class AbstractProblemCollector implements IDisposable {
 	}
 
 	protected cleanMarkerCaches(): void {
-		this._numberOfMatches = 0;
-		this._maxMarkerSeverity = undefined;
 		this.markers.clear();
 		this.deliveredMarkers.clear();
 	}
@@ -479,10 +464,10 @@ export class WatchingProblemCollector extends AbstractProblemCollector implement
 			if (matches) {
 				if (this._activeBackgroundMatchers.has(background.key)) {
 					this._activeBackgroundMatchers.delete(background.key);
-					this.resetCurrentResource();
 					this._onDidStateChange.fire(ProblemCollectorEvent.create(ProblemCollectorEventKind.BackgroundProcessingEnds));
 					result = true;
 					let owner = background.matcher.owner;
+					this.resetCurrentResource();
 					this.cleanMarkers(owner);
 					this.cleanMarkerCaches();
 				}

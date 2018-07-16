@@ -9,6 +9,5 @@
 	"output": "Ausgabe",
 	"logViewer": "Protokollanzeige",
 	"viewCategory": "Anzeigen",
-	"clearOutput.label": "Ausgabe löschen",
-	"openActiveLogOutputFile": "Ansicht: Aktive Protokollausgabedatei öffnen"
+	"clearOutput.label": "Ausgabe löschen"
 }

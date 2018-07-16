@@ -42,7 +42,7 @@ declare let self: any;
 export const LANGUAGE_DEFAULT = 'en';
 
 // OS detection
-if (typeof process === 'object' && typeof process.nextTick === 'function' && typeof process.platform === 'string') {
+if (typeof process === 'object' && typeof process.nextTick === 'function') {
 	_isWindows = (process.platform === 'win32');
 	_isMacintosh = (process.platform === 'darwin');
 	_isLinux = (process.platform === 'linux');
@@ -119,20 +119,6 @@ export const translationsConfigFile = _translationsConfigFile;
 
 const _globals = (typeof self === 'object' ? self : typeof global === 'object' ? global : {} as any);
 export const globals: any = _globals;
-
-let _setImmediate: (callback: (...args: any[]) => void) => number = null;
-export function setImmediate(callback: (...args: any[]) => void): number {
-	if (_setImmediate === null) {
-		if (globals.setImmediate) {
-			_setImmediate = globals.setImmediate.bind(globals);
-		} else if (typeof process !== 'undefined' && typeof process.nextTick === 'function') {
-			_setImmediate = process.nextTick.bind(process);
-		} else {
-			_setImmediate = globals.setTimeout.bind(globals);
-		}
-	}
-	return _setImmediate(callback);
-}
 
 export const enum OperatingSystem {
 	Windows = 1,

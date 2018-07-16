@@ -8,14 +8,13 @@ import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import * as sqlops from 'sqlops';
-import { INewProfilerState } from '../editor/profilerState';
 
 const PROFILER_SERVICE_ID = 'profilerService';
 export const IProfilerService = createDecorator<IProfilerService>(PROFILER_SERVICE_ID);
 
 export type ProfilerSessionID = string;
 
-export const PROFILER_VIEW_TEMPLATE_SETTINGS = 'profiler.viewTemplates';
+export const PROFILER_SESSION_TEMPLATE_SETTINGS = 'profiler.sessionTemplates';
 export const PROFILER_SETTINGS = 'profiler';
 
 /**
@@ -26,14 +25,6 @@ export interface IProfilerSession {
 	 * Called by the service when more rows are available to render
 	 */
 	onMoreRows(events: sqlops.ProfilerSessionEvents);
-	/**
-	 * Called by the service when the session is closed unexpectedly
-	 */
-	onSessionStopped(events: sqlops.ProfilerSessionStoppedParams);
-	/**
-	 * Called by the service when the session state is changed
-	 */
-	onSessionStateChanged(newState: INewProfilerState);
 }
 
 /**
@@ -75,16 +66,12 @@ export interface IProfilerService {
 	 */
 	onMoreRows(params: sqlops.ProfilerSessionEvents): void;
 	/**
-	 * The method called by the service provider for when more rows are available to render
-	 */
-	onSessionStopped(params: sqlops.ProfilerSessionStoppedParams): void;
-	/**
 	 * Gets a list of the session templates that are specified in the settings
 	 * @param provider An optional string to limit the session template to a specific
 	 * @returns An array of session templates that match the provider passed, if passed, and generic ones (no provider specified),
 	 * otherwise returns all session templates
 	 */
-	getViewTemplates(providerId?: string): Array<IProfilerViewTemplate>;
+	getSessionTemplates(providerId?: string): Array<IProfilerSessionTemplate>;
 	/**
 	 * Launches the dialog for editing the view columns of a profiler session template for the given input
 	 * @param input input object that contains the necessary information which will be modified based on used input
@@ -93,16 +80,25 @@ export interface IProfilerService {
 }
 
 export interface IProfilerSettings {
-	viewTemplates: Array<IProfilerViewTemplate>;
+	sessionTemplates: Array<IProfilerSessionTemplate>;
 }
 
-export interface IColumnViewTemplate {
+export interface IEventTemplate {
 	name: string;
-	width: string;
-	eventsMapped: Array<string>;
+	optionalColumns: Array<string>;
 }
 
-export interface IProfilerViewTemplate {
+export interface IEventViewTemplate {
 	name: string;
-	columns: Array<IColumnViewTemplate>;
+	columns: Array<string>;
+}
+
+export interface ISessionViewTemplate {
+	events: Array<IEventViewTemplate>;
+}
+
+export interface IProfilerSessionTemplate {
+	name: string;
+	events: Array<IEventTemplate>;
+	view: ISessionViewTemplate;
 }

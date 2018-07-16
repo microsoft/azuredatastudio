@@ -7,9 +7,9 @@
 
 import 'vs/css!./progressbar';
 import { TPromise, ValueCallback } from 'vs/base/common/winjs.base';
-import * as assert from 'vs/base/common/assert';
+import assert = require('vs/base/common/assert');
 import { Builder, $ } from 'vs/base/browser/builder';
-import * as DOM from 'vs/base/browser/dom';
+import DOM = require('vs/base/browser/dom');
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
 import { mixin } from 'vs/base/common/objects';
@@ -18,7 +18,7 @@ const css_done = 'done';
 const css_active = 'active';
 const css_infinite = 'infinite';
 const css_discrete = 'discrete';
-const css_progress_container = 'monaco-progress-container';
+const css_progress_container = 'progress-container';
 const css_progress_bit = 'progress-bit';
 
 export interface IProgressBarOptions extends IProgressBarStyles {
@@ -45,7 +45,9 @@ export class ProgressBar {
 	private animationStopToken: ValueCallback;
 	private progressBarBackground: Color;
 
-	constructor(container: HTMLElement, options?: IProgressBarOptions) {
+	constructor(container: Builder, options?: IProgressBarOptions);
+	constructor(container: HTMLElement, options?: IProgressBarOptions);
+	constructor(container: any, options?: IProgressBarOptions) {
 		this.options = options || Object.create(null);
 		mixin(this.options, defaultOpts, false);
 
@@ -57,8 +59,10 @@ export class ProgressBar {
 		this.create(container);
 	}
 
-	private create(container: HTMLElement): void {
-		$(container).div({ 'class': css_progress_container }, builder => {
+	private create(container: Builder): void;
+	private create(container: HTMLElement): void;
+	private create(container: any): void {
+		$(container).div({ 'class': css_progress_container }, (builder) => {
 			this.element = builder.clone();
 
 			builder.div({ 'class': css_progress_bit }).on([DOM.EventType.ANIMATION_START, DOM.EventType.ANIMATION_END, DOM.EventType.ANIMATION_ITERATION], (e: Event) => {
@@ -197,20 +201,11 @@ export class ProgressBar {
 		return this;
 	}
 
-	public getContainer(): HTMLElement {
-		return this.element.getHTMLElement();
-	}
-
-	public show(delay?: number): void {
-		if (typeof delay === 'number') {
-			this.element.showDelayed(delay);
-		} else {
-			this.element.show();
-		}
-	}
-
-	public hide(): void {
-		this.element.hide();
+	/**
+	 * Returns the builder this progress bar is building in.
+	 */
+	public getContainer(): Builder {
+		return $(this.element);
 	}
 
 	public style(styles: IProgressBarStyles): void {

@@ -9,7 +9,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder, Dimension, withElementById } from 'vs/base/browser/builder';
 
 import { EditorOptions, EditorInput } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
@@ -33,6 +33,10 @@ import { IConnectionManagementService } from 'sql/parts/connection/common/connec
 import {
 	RefreshTableAction, StopRefreshTableAction, ChangeMaxRowsAction, ChangeMaxRowsActionItem, ShowQueryPaneAction
 } from 'sql/parts/editData/execution/editDataActions';
+import { EditDataModule } from 'sql/parts/grid/views/editData/editData.module';
+import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import { EDITDATA_SELECTOR } from 'sql/parts/grid/views/editData/editData.component';
+import { EditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResourceEditor';
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -58,7 +62,7 @@ export class EditDataEditor extends BaseEditor {
 	private readonly _minEditorSize: number = 220;
 
 	private _sash: IFlexibleSash;
-	private _dimension: DOM.Dimension;
+	private _dimension: Dimension;
 
 	private _resultsEditor: EditDataResultsEditor;
 	private _resultsEditorContainer: HTMLElement;
@@ -89,7 +93,8 @@ export class EditDataEditor extends BaseEditor {
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IEditorGroupService private _editorGroupService: IEditorGroupService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IBootstrapService private _bootstrapService: IBootstrapService
 	) {
 		super(EditDataEditor.ID, _telemetryService, themeService);
 
@@ -142,10 +147,10 @@ export class EditDataEditor extends BaseEditor {
 	}
 
 	/**
-	 * Called to create the editor in the parent element.
+	 * Called to create the editor in the parent builder.
 	 */
-	public createEditor(parent: HTMLElement): void {
-		const parentElement = parent;
+	public createEditor(parent: Builder): void {
+		const parentElement = parent.getHTMLElement();
 		DOM.addClass(parentElement, 'side-by-side-editor');
 		this._createTaskbar(parentElement);
 	}
@@ -197,7 +202,7 @@ export class EditDataEditor extends BaseEditor {
 	 * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
 	 * To be called when the container of this editor changes size.
 	 */
-	public layout(dimension: DOM.Dimension): void {
+	public layout(dimension: Dimension): void {
 		this._dimension = dimension;
 
 		if (this._sash) {
@@ -274,7 +279,7 @@ export class EditDataEditor extends BaseEditor {
 		}
 
 		let editor = descriptor.instantiate(this._instantiationService);
-		editor.create(container);
+		editor.create(new Builder(container));
 		editor.setVisible(this.isVisible(), this.position);
 		return TPromise.as(editor);
 	}
@@ -287,7 +292,7 @@ export class EditDataEditor extends BaseEditor {
 	private _createResultsEditorContainer() {
 		this._createSash();
 
-		const parentElement = this.getContainer();
+		const parentElement = this.getContainer().getHTMLElement();
 		let input = <EditDataInput>this.input;
 
 		if (!input.results.container) {
@@ -305,7 +310,7 @@ export class EditDataEditor extends BaseEditor {
 	 */
 	private _createSash(): void {
 		if (!this._sash) {
-			let parentElement: HTMLElement = this.getContainer();
+			let parentElement: HTMLElement = this.getContainer().getHTMLElement();
 
 			this._sash = this._register(new HorizontalFlexibleSash(parentElement, this._minEditorSize));
 			this._setSashDimension();
@@ -320,7 +325,7 @@ export class EditDataEditor extends BaseEditor {
 	 * Appends the HTML for the SQL editor. Creates new HTML every time.
 	 */
 	private _createSqlEditorContainer() {
-		const parentElement = this.getContainer();
+		const parentElement = this.getContainer().getHTMLElement();
 		this._sqlEditorContainer = DOM.append(parentElement, DOM.$('.details-editor-container'));
 		this._sqlEditorContainer.style.position = 'absolute';
 	}
@@ -382,7 +387,7 @@ export class EditDataEditor extends BaseEditor {
 			this._resultsEditor = null;
 		}
 
-		let thisEditorParent: HTMLElement = this.getContainer();
+		let thisEditorParent: HTMLElement = this.getContainer().getHTMLElement();
 
 		if (this._sqlEditorContainer) {
 			let sqlEditorParent: HTMLElement = this._sqlEditorContainer.parentElement;
@@ -420,7 +425,7 @@ export class EditDataEditor extends BaseEditor {
 
 	private _doLayoutHorizontal(): void {
 		let splitPointTop: number = this._sash.getSplitPoint();
-		let parent: ClientRect = this.getContainer().getBoundingClientRect();
+		let parent: ClientRect = this.getContainer().getHTMLElement().getBoundingClientRect();
 
 		let sqlEditorHeight: number;
 		let sqlEditorTop: number;
@@ -431,7 +436,7 @@ export class EditDataEditor extends BaseEditor {
 
 		this._resultsEditorContainer.hidden = false;
 
-		let titleBar = document.getElementById('workbench.parts.titlebar');
+		let titleBar = withElementById('workbench.parts.titlebar');
 		if (this.queryPaneEnabled()) {
 			this._sqlEditorContainer.hidden = false;
 
@@ -442,7 +447,7 @@ export class EditDataEditor extends BaseEditor {
 			resultsEditorHeight = parent.bottom - resultsEditorTop;
 
 			if (titleBar) {
-				sqlEditorHeight += DOM.getContentHeight(titleBar);
+				sqlEditorHeight += DOM.getContentHeight(titleBar.getHTMLElement());
 			}
 		} else {
 			this._sqlEditorContainer.hidden = true;
@@ -454,7 +459,7 @@ export class EditDataEditor extends BaseEditor {
 			resultsEditorHeight = parent.bottom - resultsEditorTop;
 
 			if (titleBar) {
-				resultsEditorHeight += DOM.getContentHeight(titleBar);
+				resultsEditorHeight += DOM.getContentHeight(titleBar.getHTMLElement());
 			}
 		}
 
@@ -466,8 +471,8 @@ export class EditDataEditor extends BaseEditor {
 		this._resultsEditorContainer.style.width = `${this._dimension.width}px`;
 		this._resultsEditorContainer.style.top = `${resultsEditorTop}px`;
 
-		this._sqlEditor.layout(new DOM.Dimension(this._dimension.width, sqlEditorHeight));
-		this._resultsEditor.layout(new DOM.Dimension(this._dimension.width, resultsEditorHeight));
+		this._sqlEditor.layout(new Dimension(this._dimension.width, sqlEditorHeight));
+		this._resultsEditor.layout(new Dimension(this._dimension.width, resultsEditorHeight));
 	}
 
 	private _doLayoutSql() {
@@ -492,7 +497,7 @@ export class EditDataEditor extends BaseEditor {
 			this._sqlEditorContainer.style.height = `${sqlEditorHeight}px`;
 			this._sqlEditorContainer.style.width = `${this._dimension.width}px`;
 
-			this._sqlEditor.layout(new DOM.Dimension(this._dimension.width, sqlEditorHeight));
+			this._sqlEditor.layout(new Dimension(this._dimension.width, sqlEditorHeight));
 		}
 	}
 

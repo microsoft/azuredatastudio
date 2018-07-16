@@ -1,7 +1,7 @@
 [
 	{
 		"c": "#",
-		"t": "text.html.markdown markup.heading.markdown heading.1.markdown punctuation.definition.heading.markdown",
+		"t": "text.html.markdown markup.heading.markdown punctuation.definition.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -12,7 +12,7 @@
 	},
 	{
 		"c": " ",
-		"t": "text.html.markdown markup.heading.markdown heading.1.markdown",
+		"t": "text.html.markdown markup.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -23,29 +23,7 @@
 	},
 	{
 		"c": "Header 1",
-		"t": "text.html.markdown markup.heading.markdown heading.1.markdown entity.name.section.markdown",
-		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
-			"hc_black": "markup.heading: #6796E6"
-		}
-	},
-	{
-		"c": " #",
-		"t": "text.html.markdown markup.heading.markdown heading.1.markdown punctuation.definition.heading.markdown",
-		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
-			"hc_black": "markup.heading: #6796E6"
-		}
-	},
-	{
-		"c": "##",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
+		"t": "text.html.markdown markup.heading.markdown entity.name.section.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -56,7 +34,40 @@
 	},
 	{
 		"c": " ",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown",
+		"t": "text.html.markdown markup.heading.markdown",
+		"r": {
+			"dark_plus": "markup.heading: #569CD6",
+			"light_plus": "markup.heading: #800000",
+			"dark_vs": "markup.heading: #569CD6",
+			"light_vs": "markup.heading: #800000",
+			"hc_black": "markup.heading: #6796E6"
+		}
+	},
+	{
+		"c": "#",
+		"t": "text.html.markdown markup.heading.markdown punctuation.definition.heading.markdown",
+		"r": {
+			"dark_plus": "markup.heading: #569CD6",
+			"light_plus": "markup.heading: #800000",
+			"dark_vs": "markup.heading: #569CD6",
+			"light_vs": "markup.heading: #800000",
+			"hc_black": "markup.heading: #6796E6"
+		}
+	},
+	{
+		"c": "##",
+		"t": "text.html.markdown markup.heading.markdown punctuation.definition.heading.markdown",
+		"r": {
+			"dark_plus": "markup.heading: #569CD6",
+			"light_plus": "markup.heading: #800000",
+			"dark_vs": "markup.heading: #569CD6",
+			"light_vs": "markup.heading: #800000",
+			"hc_black": "markup.heading: #6796E6"
+		}
+	},
+	{
+		"c": " ",
+		"t": "text.html.markdown markup.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -67,29 +78,7 @@
 	},
 	{
 		"c": "Header 2",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown entity.name.section.markdown",
-		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
-			"hc_black": "markup.heading: #6796E6"
-		}
-	},
-	{
-		"c": " ##",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
-		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
-			"hc_black": "markup.heading: #6796E6"
-		}
-	},
-	{
-		"c": "###",
-		"t": "text.html.markdown markup.heading.markdown heading.3.markdown punctuation.definition.heading.markdown",
+		"t": "text.html.markdown markup.heading.markdown entity.name.section.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -100,18 +89,7 @@
 	},
 	{
 		"c": " ",
-		"t": "text.html.markdown markup.heading.markdown heading.3.markdown",
-		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
-			"hc_black": "markup.heading: #6796E6"
-		}
-	},
-	{
-		"c": "Header 3 ###             (Hashes on right are optional)",
-		"t": "text.html.markdown markup.heading.markdown heading.3.markdown entity.name.section.markdown",
+		"t": "text.html.markdown markup.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -122,7 +100,18 @@
 	},
 	{
 		"c": "##",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
+		"t": "text.html.markdown markup.heading.markdown punctuation.definition.heading.markdown",
+		"r": {
+			"dark_plus": "markup.heading: #569CD6",
+			"light_plus": "markup.heading: #800000",
+			"dark_vs": "markup.heading: #569CD6",
+			"light_vs": "markup.heading: #800000",
+			"hc_black": "markup.heading: #6796E6"
+		}
+	},
+	{
+		"c": "###",
+		"t": "text.html.markdown markup.heading.markdown punctuation.definition.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -133,7 +122,40 @@
 	},
 	{
 		"c": " ",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown",
+		"t": "text.html.markdown markup.heading.markdown",
+		"r": {
+			"dark_plus": "markup.heading: #569CD6",
+			"light_plus": "markup.heading: #800000",
+			"dark_vs": "markup.heading: #569CD6",
+			"light_vs": "markup.heading: #800000",
+			"hc_black": "markup.heading: #6796E6"
+		}
+	},
+	{
+		"c": "Header 3 ###             (Hashes on right are optional)",
+		"t": "text.html.markdown markup.heading.markdown entity.name.section.markdown",
+		"r": {
+			"dark_plus": "markup.heading: #569CD6",
+			"light_plus": "markup.heading: #800000",
+			"dark_vs": "markup.heading: #569CD6",
+			"light_vs": "markup.heading: #800000",
+			"hc_black": "markup.heading: #6796E6"
+		}
+	},
+	{
+		"c": "##",
+		"t": "text.html.markdown markup.heading.markdown punctuation.definition.heading.markdown",
+		"r": {
+			"dark_plus": "markup.heading: #569CD6",
+			"light_plus": "markup.heading: #800000",
+			"dark_vs": "markup.heading: #569CD6",
+			"light_vs": "markup.heading: #800000",
+			"hc_black": "markup.heading: #6796E6"
+		}
+	},
+	{
+		"c": " ",
+		"t": "text.html.markdown markup.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -144,7 +166,7 @@
 	},
 	{
 		"c": "Markdown plus h2 with a custom ID ##   {#id-goes-here}",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown entity.name.section.markdown",
+		"t": "text.html.markdown markup.heading.markdown entity.name.section.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -221,7 +243,7 @@
 	},
 	{
 		"c": "###",
-		"t": "text.html.markdown markup.heading.markdown heading.3.markdown punctuation.definition.heading.markdown",
+		"t": "text.html.markdown markup.heading.markdown punctuation.definition.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -232,7 +254,7 @@
 	},
 	{
 		"c": " ",
-		"t": "text.html.markdown markup.heading.markdown heading.3.markdown",
+		"t": "text.html.markdown markup.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -243,7 +265,7 @@
 	},
 	{
 		"c": "Alternate heading styles:",
-		"t": "text.html.markdown markup.heading.markdown heading.3.markdown entity.name.section.markdown",
+		"t": "text.html.markdown markup.heading.markdown entity.name.section.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -2003,7 +2025,7 @@
 	},
 	{
 		"c": "###",
-		"t": "text.html.markdown markup.heading.markdown heading.3.markdown punctuation.definition.heading.markdown",
+		"t": "text.html.markdown markup.heading.markdown punctuation.definition.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -2014,7 +2036,7 @@
 	},
 	{
 		"c": " ",
-		"t": "text.html.markdown markup.heading.markdown heading.3.markdown",
+		"t": "text.html.markdown markup.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -2025,7 +2047,7 @@
 	},
 	{
 		"c": "Horizontal rules",
-		"t": "text.html.markdown markup.heading.markdown heading.3.markdown entity.name.section.markdown",
+		"t": "text.html.markdown markup.heading.markdown entity.name.section.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -2179,7 +2201,7 @@
 	},
 	{
 		"c": "##",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
+		"t": "text.html.markdown markup.heading.markdown punctuation.definition.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -2190,7 +2212,7 @@
 	},
 	{
 		"c": " ",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown",
+		"t": "text.html.markdown markup.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -2201,7 +2223,7 @@
 	},
 	{
 		"c": "Markdown plus tables",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown entity.name.section.markdown",
+		"t": "text.html.markdown markup.heading.markdown entity.name.section.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -2211,8 +2233,19 @@
 		}
 	},
 	{
-		"c": " ##",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
+		"c": " ",
+		"t": "text.html.markdown markup.heading.markdown",
+		"r": {
+			"dark_plus": "markup.heading: #569CD6",
+			"light_plus": "markup.heading: #800000",
+			"dark_vs": "markup.heading: #569CD6",
+			"light_vs": "markup.heading: #800000",
+			"hc_black": "markup.heading: #6796E6"
+		}
+	},
+	{
+		"c": "##",
+		"t": "text.html.markdown markup.heading.markdown punctuation.definition.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -2333,7 +2366,7 @@
 	},
 	{
 		"c": "##",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
+		"t": "text.html.markdown markup.heading.markdown punctuation.definition.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -2344,7 +2377,7 @@
 	},
 	{
 		"c": " ",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown",
+		"t": "text.html.markdown markup.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -2355,7 +2388,7 @@
 	},
 	{
 		"c": "Markdown plus definition lists",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown entity.name.section.markdown",
+		"t": "text.html.markdown markup.heading.markdown entity.name.section.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",
@@ -2365,8 +2398,19 @@
 		}
 	},
 	{
-		"c": " ##",
-		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
+		"c": " ",
+		"t": "text.html.markdown markup.heading.markdown",
+		"r": {
+			"dark_plus": "markup.heading: #569CD6",
+			"light_plus": "markup.heading: #800000",
+			"dark_vs": "markup.heading: #569CD6",
+			"light_vs": "markup.heading: #800000",
+			"hc_black": "markup.heading: #6796E6"
+		}
+	},
+	{
+		"c": "##",
+		"t": "text.html.markdown markup.heading.markdown punctuation.definition.heading.markdown",
 		"r": {
 			"dark_plus": "markup.heading: #569CD6",
 			"light_plus": "markup.heading: #800000",

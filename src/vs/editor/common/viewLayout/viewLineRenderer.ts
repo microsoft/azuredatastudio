@@ -36,8 +36,7 @@ export class RenderLineInput {
 
 	public readonly useMonospaceOptimizations: boolean;
 	public readonly lineContent: string;
-	public readonly isBasicASCII: boolean;
-	public readonly containsRTL: boolean;
+	public readonly mightContainRTL: boolean;
 	public readonly fauxIndentLength: number;
 	public readonly lineTokens: IViewLineTokens;
 	public readonly lineDecorations: LineDecoration[];
@@ -51,8 +50,7 @@ export class RenderLineInput {
 	constructor(
 		useMonospaceOptimizations: boolean,
 		lineContent: string,
-		isBasicASCII: boolean,
-		containsRTL: boolean,
+		mightContainRTL: boolean,
 		fauxIndentLength: number,
 		lineTokens: IViewLineTokens,
 		lineDecorations: LineDecoration[],
@@ -65,8 +63,7 @@ export class RenderLineInput {
 	) {
 		this.useMonospaceOptimizations = useMonospaceOptimizations;
 		this.lineContent = lineContent;
-		this.isBasicASCII = isBasicASCII;
-		this.containsRTL = containsRTL;
+		this.mightContainRTL = mightContainRTL;
 		this.fauxIndentLength = fauxIndentLength;
 		this.lineTokens = lineTokens;
 		this.lineDecorations = lineDecorations;
@@ -88,8 +85,7 @@ export class RenderLineInput {
 		return (
 			this.useMonospaceOptimizations === other.useMonospaceOptimizations
 			&& this.lineContent === other.lineContent
-			&& this.isBasicASCII === other.isBasicASCII
-			&& this.containsRTL === other.containsRTL
+			&& this.mightContainRTL === other.mightContainRTL
 			&& this.fauxIndentLength === other.fauxIndentLength
 			&& this.tabSize === other.tabSize
 			&& this.spaceWidth === other.spaceWidth
@@ -221,20 +217,14 @@ export class CharacterMapping {
 	}
 }
 
-export const enum ForeignElementType {
-	None = 0,
-	Before = 1,
-	After = 2
-}
-
 export class RenderLineOutput {
 	_renderLineOutputBrand: void;
 
 	readonly characterMapping: CharacterMapping;
 	readonly containsRTL: boolean;
-	readonly containsForeignElements: ForeignElementType;
+	readonly containsForeignElements: boolean;
 
-	constructor(characterMapping: CharacterMapping, containsRTL: boolean, containsForeignElements: ForeignElementType) {
+	constructor(characterMapping: CharacterMapping, containsRTL: boolean, containsForeignElements: boolean) {
 		this.characterMapping = characterMapping;
 		this.containsRTL = containsRTL;
 		this.containsForeignElements = containsForeignElements;
@@ -244,7 +234,7 @@ export class RenderLineOutput {
 export function renderViewLine(input: RenderLineInput, sb: IStringBuilder): RenderLineOutput {
 	if (input.lineContent.length === 0) {
 
-		let containsForeignElements = ForeignElementType.None;
+		let containsForeignElements = false;
 
 		// This is basically for IE's hit test to work
 		let content: string = '<span><span>\u00a0</span></span>';
@@ -254,17 +244,13 @@ export function renderViewLine(input: RenderLineInput, sb: IStringBuilder): Rend
 			let classNames: string[] = [];
 			for (let i = 0, len = input.lineDecorations.length; i < len; i++) {
 				const lineDecoration = input.lineDecorations[i];
-				if (lineDecoration.type === InlineDecorationType.Before) {
+				if (lineDecoration.type !== InlineDecorationType.Regular) {
 					classNames.push(input.lineDecorations[i].className);
-					containsForeignElements |= ForeignElementType.Before;
-				}
-				if (lineDecoration.type === InlineDecorationType.After) {
-					classNames.push(input.lineDecorations[i].className);
-					containsForeignElements |= ForeignElementType.After;
+					containsForeignElements = true;
 				}
 			}
 
-			if (containsForeignElements !== ForeignElementType.None) {
+			if (containsForeignElements) {
 				content = `<span><span class="${classNames.join(' ')}"></span></span>`;
 			}
 		}
@@ -285,7 +271,7 @@ export class RenderLineOutput2 {
 		public readonly characterMapping: CharacterMapping,
 		public readonly html: string,
 		public readonly containsRTL: boolean,
-		public readonly containsForeignElements: ForeignElementType
+		public readonly containsForeignElements: boolean
 	) {
 	}
 }
@@ -303,7 +289,7 @@ class ResolvedRenderLineInput {
 		public readonly len: number,
 		public readonly isOverflowing: boolean,
 		public readonly parts: LinePart[],
-		public readonly containsForeignElements: ForeignElementType,
+		public readonly containsForeignElements: boolean,
 		public readonly tabSize: number,
 		public readonly containsRTL: boolean,
 		public readonly spaceWidth: number,
@@ -333,22 +319,22 @@ function resolveRenderLineInput(input: RenderLineInput): ResolvedRenderLineInput
 	if (input.renderWhitespace === RenderWhitespace.All || input.renderWhitespace === RenderWhitespace.Boundary) {
 		tokens = _applyRenderWhitespace(lineContent, len, tokens, input.fauxIndentLength, input.tabSize, useMonospaceOptimizations, input.renderWhitespace === RenderWhitespace.Boundary);
 	}
-	let containsForeignElements = ForeignElementType.None;
+	let containsForeignElements = false;
 	if (input.lineDecorations.length > 0) {
 		for (let i = 0, len = input.lineDecorations.length; i < len; i++) {
 			const lineDecoration = input.lineDecorations[i];
-			if (lineDecoration.type === InlineDecorationType.RegularAffectingLetterSpacing) {
-				// Pretend there are foreign elements... although not 100% accurate.
-				containsForeignElements |= ForeignElementType.Before;
-			} else if (lineDecoration.type === InlineDecorationType.Before) {
-				containsForeignElements |= ForeignElementType.Before;
-			} else if (lineDecoration.type === InlineDecorationType.After) {
-				containsForeignElements |= ForeignElementType.After;
+			if (lineDecoration.type !== InlineDecorationType.Regular) {
+				containsForeignElements = true;
+				break;
 			}
 		}
 		tokens = _applyInlineDecorations(lineContent, len, tokens, input.lineDecorations);
 	}
-	if (input.isBasicASCII && !input.fontLigatures) {
+	let containsRTL = false;
+	if (input.mightContainRTL) {
+		containsRTL = strings.containsRTL(lineContent);
+	}
+	if (!containsRTL && !input.fontLigatures) {
 		tokens = splitLargeTokens(lineContent, tokens);
 	}
 
@@ -360,7 +346,7 @@ function resolveRenderLineInput(input: RenderLineInput): ResolvedRenderLineInput
 		tokens,
 		containsForeignElements,
 		input.tabSize,
-		input.containsRTL,
+		containsRTL,
 		input.spaceWidth,
 		input.renderWhitespace,
 		input.renderControlCharacters
@@ -420,6 +406,11 @@ function splitLargeTokens(lineContent: string, tokens: LinePart[]): LinePart[] {
 			const piecesCount = Math.ceil(diff / Constants.LongToken);
 			for (let j = 1; j < piecesCount; j++) {
 				let pieceEndIndex = lastTokenEndIndex + (j * Constants.LongToken);
+				let lastCharInPiece = lineContent.charCodeAt(pieceEndIndex - 1);
+				if (strings.isHighSurrogate(lastCharInPiece)) {
+					// Don't cut in the middle of a surrogate pair
+					pieceEndIndex--;
+				}
 				result[resultLen++] = new LinePart(pieceEndIndex, tokenType);
 			}
 			result[resultLen++] = new LinePart(tokenEndIndex, tokenType);

@@ -9,16 +9,12 @@ import uri from 'vs/base/common/uri';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 
 export function basenameOrAuthority(resource: uri): string {
-	return paths.basename(resource.path) || resource.authority;
+	return paths.basename(resource.fsPath) || resource.authority;
 }
 
 export function isEqualOrParent(resource: uri, candidate: uri, ignoreCase?: boolean): boolean {
 	if (resource.scheme === candidate.scheme && resource.authority === candidate.authority) {
-		if (resource.scheme === 'file') {
-			return paths.isEqualOrParent(resource.fsPath, candidate.fsPath, ignoreCase);
-		}
-
-		return paths.isEqualOrParent(resource.path, candidate.path, ignoreCase);
+		return paths.isEqualOrParent(resource.fsPath, candidate.fsPath, ignoreCase);
 	}
 
 	return false;

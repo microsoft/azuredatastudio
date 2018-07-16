@@ -7,11 +7,9 @@
 
 import * as assert from 'assert';
 import { Range } from 'vs/editor/common/core/range';
-import { PieceTreeTextBuffer, IValidatedEditOperation } from 'vs/editor/common/model/pieceTreeTextBuffer/pieceTreeTextBuffer';
-import { createTextBufferFactory } from 'vs/editor/common/model/textModel';
-import { DefaultEndOfLine } from 'vs/editor/common/model';
+import { LinesTextBuffer, IValidatedEditOperation } from 'vs/editor/common/model/linesTextBuffer/linesTextBuffer';
 
-suite('PieceTreeTextBuffer._getInverseEdits', () => {
+suite('LinesTextBuffer._getInverseEdits', () => {
 
 	function editOp(startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, text: string[]): IValidatedEditOperation {
 		return {
@@ -31,7 +29,7 @@ suite('PieceTreeTextBuffer._getInverseEdits', () => {
 	}
 
 	function assertInverseEdits(ops: IValidatedEditOperation[], expected: Range[]): void {
-		var actual = PieceTreeTextBuffer._getInverseEditRanges(ops);
+		var actual = LinesTextBuffer._getInverseEditRanges(ops);
 		assert.deepEqual(actual, expected);
 	}
 
@@ -262,7 +260,7 @@ suite('PieceTreeTextBuffer._getInverseEdits', () => {
 	});
 });
 
-suite('PieceTreeTextBuffer._toSingleEditOperation', () => {
+suite('LinesTextBuffer._toSingleEditOperation', () => {
 
 	function editOp(startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, rangeOffset: number, rangeLength: number, text: string[]): IValidatedEditOperation {
 		return {
@@ -278,7 +276,13 @@ suite('PieceTreeTextBuffer._toSingleEditOperation', () => {
 	}
 
 	function testToSingleEditOperation(original: string[], edits: IValidatedEditOperation[], expected: IValidatedEditOperation): void {
-		const textBuffer = <PieceTreeTextBuffer>createTextBufferFactory(original.join('\n')).create(DefaultEndOfLine.LF);
+		const textBuffer = new LinesTextBuffer({
+			BOM: '',
+			EOL: '\n',
+			containsRTL: false,
+			isBasicASCII: true,
+			lines: original
+		});
 
 		const actual = textBuffer._toSingleEditOperation(edits);
 		assert.deepEqual(actual, expected);

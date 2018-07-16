@@ -12,7 +12,7 @@ import LanguageFeatureRegistry from 'vs/editor/common/modes/languageFeatureRegis
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { Position } from 'vs/editor/common/core/position';
 import { Range, IRange } from 'vs/editor/common/core/range';
-import { Event } from 'vs/base/common/event';
+import Event from 'vs/base/common/event';
 import { TokenizationRegistryImpl } from 'vs/editor/common/modes/tokenizationRegistry';
 import { Color } from 'vs/base/common/color';
 import { IMarkerData } from 'vs/platform/markers/common/markers';
@@ -230,7 +230,7 @@ export interface Hover {
 	 * editor will use the range at the current position or the
 	 * current position itself.
 	 */
-	range?: IRange;
+	range: IRange;
 }
 
 /**
@@ -364,11 +364,6 @@ export interface CodeActionProvider {
 	 * Provide commands for the given document and range.
 	 */
 	provideCodeActions(model: model.ITextModel, range: Range, context: CodeActionContext, token: CancellationToken): CodeAction[] | Thenable<CodeAction[]>;
-
-	/**
-	 * Optional list of of CodeActionKinds that this provider returns.
-	 */
-	providedCodeActionKinds?: string[];
 }
 
 /**
@@ -830,60 +825,66 @@ export interface DocumentColorProvider {
 	 */
 	provideColorPresentations(model: model.ITextModel, colorInfo: IColorInformation, token: CancellationToken): IColorPresentation[] | Thenable<IColorPresentation[]>;
 }
-export interface FoldingContext {
-}
+
 /**
  * A provider of colors for editor models.
  */
-export interface FoldingRangeProvider {
+/**
+ * @internal
+ */
+export interface FoldingProvider {
 	/**
 	 * Provides the color ranges for a specific model.
 	 */
-	provideFoldingRanges(model: model.ITextModel, context: FoldingContext, token: CancellationToken): FoldingRange[] | Thenable<FoldingRange[]>;
+	provideFoldingRanges(model: model.ITextModel, token: CancellationToken): IFoldingRangeList | Thenable<IFoldingRangeList>;
 }
+/**
+ * @internal
+ */
+export interface IFoldingRangeList {
 
-export interface FoldingRange {
-
-	/**
-	 * The zero-based start line of the range to fold. The folded area starts after the line's last character.
-	 */
-	start: number;
-
-	/**
-	 * The zero-based end line of the range to fold. The folded area ends with the line's last character.
-	 */
-	end: number;
-
-	/**
-	 * Describes the [Kind](#FoldingRangeKind) of the folding range such as [Comment](#FoldingRangeKind.Comment) or
-	 * [Region](#FoldingRangeKind.Region). The kind is used to categorize folding ranges and used by commands
-	 * like 'Fold all comments'. See
-	 * [FoldingRangeKind](#FoldingRangeKind) for an enumeration of standardized kinds.
-	 */
-	kind?: FoldingRangeKind;
+	ranges: IFoldingRange[];
 }
-export class FoldingRangeKind {
-	/**
-	 * Kind for folding range representing a comment. The value of the kind is 'comment'.
-	 */
-	static readonly Comment = new FoldingRangeKind('comment');
-	/**
-	 * Kind for folding range representing a import. The value of the kind is 'imports'.
-	 */
-	static readonly Imports = new FoldingRangeKind('imports');
-	/**
-	 * Kind for folding range representing regions (for example marked by `#region`, `#endregion`).
-	 * The value of the kind is 'region'.
-	 */
-	static readonly Region = new FoldingRangeKind('region');
+/**
+ * @internal
+ */
+export interface IFoldingRange {
 
 	/**
-	 * Creates a new [FoldingRangeKind](#FoldingRangeKind).
-	 *
-	 * @param value of the kind.
+	 * The start line number
 	 */
-	public constructor(public value: string) {
-	}
+	startLineNumber: number;
+
+	/**
+	 * The end line number
+	 */
+	endLineNumber: number;
+
+	/**
+	 * The optional type of the folding range
+	 */
+	type?: FoldingRangeType | string;
+
+	// auto-collapse
+	// header span
+
+}
+/**
+ * @internal
+ */
+export enum FoldingRangeType {
+	/**
+	 * Folding range for a comment
+	 */
+	Comment = 'comment',
+	/**
+	 * Folding range for a imports or includes
+	 */
+	Imports = 'imports',
+	/**
+	 * Folding range for a region (e.g. `#region`)
+	 */
+	Region = 'region'
 }
 
 /**
@@ -916,14 +917,14 @@ export interface WorkspaceEdit {
 	rejectReason?: string; // TODO@joh, move to rename
 }
 
-export interface RenameLocation {
+export interface RenameInitialValue {
 	range: IRange;
-	text: string;
+	text?: string;
 }
 
 export interface RenameProvider {
 	provideRenameEdits(model: model.ITextModel, position: Position, newName: string, token: CancellationToken): WorkspaceEdit | Thenable<WorkspaceEdit>;
-	resolveRenameLocation?(model: model.ITextModel, position: Position, token: CancellationToken): RenameLocation | Thenable<RenameLocation>;
+	resolveInitialRenameValue?(model: model.ITextModel, position: Position, token: CancellationToken): RenameInitialValue | Thenable<RenameInitialValue>;
 }
 
 
@@ -1034,7 +1035,7 @@ export const ColorProviderRegistry = new LanguageFeatureRegistry<DocumentColorPr
 /**
  * @internal
  */
-export const FoldingRangeProviderRegistry = new LanguageFeatureRegistry<FoldingRangeProvider>();
+export const FoldingProviderRegistry = new LanguageFeatureRegistry<FoldingProvider>();
 
 /**
  * @internal

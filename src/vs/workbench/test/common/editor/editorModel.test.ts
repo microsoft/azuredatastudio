@@ -36,7 +36,7 @@ suite('Workbench - EditorModel', () => {
 		modeService = instantiationService.stub(IModeService, ModeServiceImpl);
 	});
 
-	test('EditorModel', function () {
+	test('EditorModel', function (done) {
 		let counter = 0;
 
 		let m = new MyEditorModel();
@@ -46,25 +46,26 @@ suite('Workbench - EditorModel', () => {
 			counter++;
 		});
 
-		return m.load().then(model => {
+		m.load().then(model => {
 			assert(model === m);
 			assert.strictEqual(m.isResolved(), true);
 			m.dispose();
 			assert.equal(counter, 1);
-		});
+		}).done(() => done());
 	});
 
-	test('BaseTextEditorModel', function () {
+	test('BaseTextEditorModel', function (done) {
 		let modelService = stubModelService(instantiationService);
 
 		let m = new MyTextEditorModel(modelService, modeService);
-		return m.load().then((model: MyTextEditorModel) => {
+		m.load().then((model: MyTextEditorModel) => {
 			assert(model === m);
 			return model.createTextEditorModel(createTextBufferFactory('foo'), null, 'text/plain').then(() => {
 				assert.strictEqual(m.isResolved(), true);
 			});
-		}).then(() => {
+		}).done(() => {
 			m.dispose();
+			done();
 		});
 	});
 

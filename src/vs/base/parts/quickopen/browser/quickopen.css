@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.monaco-quick-open-widget {
+.quick-open-widget {
 	position: absolute;
 	width: 600px;
 	z-index: 2000;
@@ -12,7 +12,7 @@
 	margin-left: -300px;
 }
 
-.monaco-quick-open-widget .monaco-progress-container {
+.quick-open-widget .progress-container {
 	position: absolute;
 	left: 0;
 	top: 38px;
@@ -20,34 +20,34 @@
 	height: 2px;
 }
 
-.monaco-quick-open-widget .monaco-progress-container .progress-bit {
+.quick-open-widget .progress-container .progress-bit {
 	height: 2px;
 }
 
-.monaco-quick-open-widget .quick-open-input {
+.quick-open-widget .quick-open-input {
 	width: 588px;
 	border: none;
 	margin: 6px;
 }
 
-.monaco-quick-open-widget .quick-open-input .monaco-inputbox {
+.quick-open-widget .quick-open-input .monaco-inputbox {
 	width: 100%;
 	height: 25px;
 }
 
-.monaco-quick-open-widget .quick-open-tree {
+.quick-open-widget .quick-open-tree {
 	line-height: 22px;
 }
 
-.monaco-quick-open-widget .quick-open-tree .monaco-tree-row  > .content > .sub-content {
+.quick-open-widget .quick-open-tree .monaco-tree-row  > .content > .sub-content {
 	overflow: hidden;
 }
 
-.monaco-quick-open-widget.content-changing .quick-open-tree .monaco-scrollable-element .slider {
+.quick-open-widget.content-changing .quick-open-tree .monaco-scrollable-element .slider {
 	display: none; /* scrollbar slider causes some hectic updates when input changes quickly, so hide it while quick open changes */
 }
 
-.monaco-quick-open-widget .quick-open-tree .quick-open-entry {
+.quick-open-widget .quick-open-tree .quick-open-entry {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	display: flex;
@@ -55,12 +55,12 @@
 	height: 100%;
 }
 
-.monaco-quick-open-widget .quick-open-tree .quick-open-entry > .quick-open-row {
+.quick-open-widget .quick-open-tree .quick-open-entry > .quick-open-row {
 	display: flex;
 	align-items: center;
 }
 
-.monaco-quick-open-widget .quick-open-tree .quick-open-entry .quick-open-entry-icon {
+.quick-open-widget .quick-open-tree .quick-open-entry .quick-open-entry-icon {
 	overflow: hidden;
 	width: 16px;
 	height: 16px;
@@ -70,39 +70,39 @@
 	flex-shrink: 0;
 }
 
-.monaco-quick-open-widget .quick-open-tree .monaco-icon-label,
-.monaco-quick-open-widget .quick-open-tree .monaco-icon-label .monaco-icon-label-description-container {
+.quick-open-widget .quick-open-tree .monaco-icon-label,
+.quick-open-widget .quick-open-tree .monaco-icon-label .monaco-icon-label-description-container {
 	flex: 1; /* make sure the icon label grows within the row */
 }
 
-.monaco-quick-open-widget .quick-open-tree .quick-open-entry .monaco-highlighted-label span {
+.quick-open-widget .quick-open-tree .quick-open-entry .monaco-highlighted-label span {
 	opacity: 1;
 }
 
-.monaco-quick-open-widget .quick-open-tree .quick-open-entry-meta {
+.quick-open-widget .quick-open-tree .quick-open-entry-meta {
 	opacity: 0.7;
 	line-height: normal;
 }
 
-.monaco-quick-open-widget .quick-open-tree .content.has-group-label .quick-open-entry-keybinding {
+.quick-open-widget .quick-open-tree .content.has-group-label .quick-open-entry-keybinding {
 	margin-right: 8px;
 }
 
-.monaco-quick-open-widget .quick-open-tree .quick-open-entry-keybinding .monaco-keybinding-key {
+.quick-open-widget .quick-open-tree .quick-open-entry-keybinding .monaco-keybinding-key {
 	vertical-align: text-bottom;
 }
 
-.monaco-quick-open-widget .quick-open-tree .results-group {
+.quick-open-widget .quick-open-tree .results-group {
 	margin-right: 18px;
 }
 
-.monaco-quick-open-widget .quick-open-tree .monaco-tree-row.focused > .content.has-actions > .results-group,
-.monaco-quick-open-widget .quick-open-tree .monaco-tree-row:hover:not(.highlighted) > .content.has-actions > .results-group,
-.monaco-quick-open-widget .quick-open-tree .focused .monaco-tree-row.focused > .content.has-actions > .results-group {
+.quick-open-widget .quick-open-tree .monaco-tree-row.focused > .content.has-actions > .results-group,
+.quick-open-widget .quick-open-tree .monaco-tree-row:hover:not(.highlighted) > .content.has-actions > .results-group,
+.quick-open-widget .quick-open-tree .focused .monaco-tree-row.focused > .content.has-actions > .results-group {
 	margin-right: 0px;
 }
 
-.monaco-quick-open-widget .quick-open-tree .results-group-separator {
+.quick-open-widget .quick-open-tree .results-group-separator {
 	border-top-width: 1px;
 	border-top-style: solid;
 	box-sizing: border-box;
@@ -154,6 +154,6 @@
 	height: 16px;
 }
 
-.monaco-quick-open-widget .quick-open-tree .monaco-highlighted-label .highlight {
+.quick-open-widget .quick-open-tree .monaco-highlighted-label .highlight {
 	font-weight: bold;
 }

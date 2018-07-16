@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as nls from 'vs/nls';
+import nls = require('vs/nls');
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { assign, deepClone } from 'vs/base/common/objects';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -27,7 +27,7 @@ export interface ICrashReporterConfig {
 	enableCrashReporter: boolean;
 }
 
-const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
+const configurationRegistry = <IConfigurationRegistry>Registry.as(Extensions.Configuration);
 configurationRegistry.registerConfiguration({
 	'id': TELEMETRY_SECTION_ID,
 	'order': 110,
@@ -119,7 +119,7 @@ export class CrashReporterService implements ICrashReporterService {
 		// Experimental crash reporting support for child processes on Mac only for now
 		if (this.isEnabled && isMacintosh) {
 			const childProcessOptions = deepClone(this.options);
-			(<any>childProcessOptions.extra).processName = name;
+			childProcessOptions.extra.processName = name;
 			childProcessOptions.crashesDirectory = os.tmpdir();
 
 			return childProcessOptions;

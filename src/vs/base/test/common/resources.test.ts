@@ -42,12 +42,13 @@ suite('Resources', () => {
 		assert.equal(distinct[2].toString(), resources[4].toString());
 	});
 
-	test('dirname', () => {
+	test('dirname', (done) => {
 		const f = URI.file('/some/file/test.txt');
 		const d = dirname(f);
 		assert.equal(d.fsPath, normalize('/some/file', true));
 
 		// does not explode (https://github.com/Microsoft/vscode/issues/41987)
 		dirname(URI.from({ scheme: 'file', authority: '/users/someone/portal.h' }));
+		done();
 	});
 });

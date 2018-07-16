@@ -13,16 +13,13 @@ import { toObject } from 'sql/base/common/map';
 
 import * as sqlops from 'sqlops';
 
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
 import { Memento } from 'vs/workbench/common/memento';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'sqlops';
@@ -104,9 +101,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
 
 	constructor(
-		@IStorageService private _storageService: IStorageService,
-		@IExtensionService extensionService: IExtensionService,
-		@IExtensionManagementService extentionManagementService: IExtensionManagementService
+		@IStorageService private _storageService: IStorageService
 	) {
 		super();
 
@@ -119,35 +114,12 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 			this.handleConnectionProvider({ id: v[0], properties: v[1] });
 		});
 		// register for when new extensions are added
-		this._register(connectionRegistry.onNewProvider(this.handleConnectionProvider, this));
+		connectionRegistry.onNewProvider(this.handleConnectionProvider, this);
 
 		// handle adding already known capabilities (could have caching problems)
 		Object.entries(this.capabilities.connectionProviderCache).map(v => {
 			this.handleConnectionProvider({ id: v[0], properties: v[1] }, false);
 		});
-
-		extensionService.whenInstalledExtensionsRegistered().then(() => {
-			this.cleanupProviders();
-		});
-
-		this._register(extentionManagementService.onDidUninstallExtension(({ identifier }) => {
-			let extensionid = getIdFromLocalExtensionId(identifier.id);
-			extensionService.getExtensions().then(i => {
-				let extension = i.find(c => c.id === extensionid);
-				let id = extension.contributes['connectionProvider'].providerId;
-				delete this.capabilities.connectionProviderCache[id];
-			});
-		}));
-	}
-
-	private cleanupProviders(): void {
-		let knownProviders = Object.keys(connectionRegistry.providers);
-		for (let key in this.capabilities.connectionProviderCache) {
-			if (!knownProviders.includes(key)) {
-				this._providers.delete(key);
-				delete this.capabilities.connectionProviderCache[key];
-			}
-		}
 	}
 
 	private handleConnectionProvider(e: { id: string, properties: ConnectionProviderProperties }, isNew = true): void {

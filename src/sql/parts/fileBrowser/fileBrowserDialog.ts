@@ -22,7 +22,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Builder } from 'vs/base/browser/builder';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';

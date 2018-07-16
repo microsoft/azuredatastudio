@@ -6,7 +6,7 @@
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
-import { Event } from 'vs/base/common/event';
+import Event from 'vs/base/common/event';
 
 export enum Parts {
 	ACTIVITYBAR_PART,
@@ -28,7 +28,7 @@ export interface ILayoutOptions {
 	source?: Parts;
 }
 
-export interface IDimension {
+export interface Dimension {
 	readonly width: number;
 	readonly height: number;
 }
@@ -46,7 +46,7 @@ export interface IPartService {
 	/**
 	 * Emits when the editor part's layout changes.
 	 */
-	onEditorLayout: Event<IDimension>;
+	onEditorLayout: Event<Dimension>;
 
 	/**
 	 * Asks the part service to layout all parts.
@@ -135,9 +135,9 @@ export interface IPartService {
 	isEditorLayoutCentered(): boolean;
 
 	/**
-	 * Sets the workbench in and out of centered editor layout.
+	 * Toggles the workbench in and out of centered editor layout.
 	 */
-	centerEditorLayout(active: boolean): void;
+	toggleCenteredEditorLayout(): void;
 
 	/**
 	 * Resizes currently focused part on main access

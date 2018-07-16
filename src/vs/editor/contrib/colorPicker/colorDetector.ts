@@ -16,7 +16,6 @@ import { ColorProviderRegistry } from 'vs/editor/common/modes';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { getColors, IColorData } from 'vs/editor/contrib/colorPicker/color';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
 
 const MAX_DECORATORS = 500;
 
@@ -154,7 +153,7 @@ export class ColorDetector implements IEditorContribution {
 				endLineNumber: c.colorInfo.range.endLineNumber,
 				endColumn: c.colorInfo.range.endColumn
 			},
-			options: ModelDecorationOptions.EMPTY
+			options: {}
 		}));
 
 		this._decorationsIds = this._editor.deltaDecorations(this._decorationsIds, decorations);

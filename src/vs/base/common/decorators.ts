@@ -33,10 +33,6 @@ export function memoize(target: any, key: string, descriptor: any) {
 	if (typeof descriptor.value === 'function') {
 		fnKey = 'value';
 		fn = descriptor.value;
-
-		if (fn.length !== 0) {
-			console.warn('Memoize should only be used in functions with zero parameters');
-		}
 	} else if (typeof descriptor.get === 'function') {
 		fnKey = 'get';
 		fn = descriptor.get;
@@ -62,27 +58,13 @@ export function memoize(target: any, key: string, descriptor: any) {
 	};
 }
 
-export interface IDebouceReducer<T> {
-	(previousValue: T, ...args: any[]): T;
-}
-
-export function debounce<T>(delay: number, reducer?: IDebouceReducer<T>, initialValueProvider?: () => T): Function {
+export function debounce(delay: number): Function {
 	return createDecorator((fn, key) => {
 		const timerKey = `$debounce$${key}`;
-		let result = initialValueProvider ? initialValueProvider() : void 0;
 
 		return function (this: any, ...args: any[]) {
 			clearTimeout(this[timerKey]);
-
-			if (reducer) {
-				result = reducer(result, ...args);
-				args = [result];
-			}
-
-			this[timerKey] = setTimeout(() => {
-				fn.apply(this, args);
-				result = initialValueProvider ? initialValueProvider() : void 0;
-			}, delay);
+			this[timerKey] = setTimeout(() => fn.apply(this, args), delay);
 		};
 	});
 }

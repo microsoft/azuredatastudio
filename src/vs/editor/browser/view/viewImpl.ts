@@ -8,13 +8,14 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as dom from 'vs/base/browser/dom';
 import { FastDomNode, createFastDomNode } from 'vs/base/browser/fastDomNode';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import { Range } from 'vs/editor/common/core/range';
 import { ViewEventHandler } from 'vs/editor/common/viewModel/viewEventHandler';
 import { Configuration } from 'vs/editor/browser/config/configuration';
 import { TextAreaHandler, ITextAreaHandlerHelper } from 'vs/editor/browser/controller/textAreaHandler';
 import { PointerHandler } from 'vs/editor/browser/controller/pointerHandler';
 import * as editorBrowser from 'vs/editor/browser/editorBrowser';
-import { ViewController, ExecCoreEditorCommandFunc, ICommandDelegate } from 'vs/editor/browser/view/viewController';
+import { ViewController, ExecCoreEditorCommandFunc } from 'vs/editor/browser/view/viewController';
 import { ViewEventDispatcher } from 'vs/editor/common/view/viewEventDispatcher';
 import { ContentViewOverlays, MarginViewOverlays } from 'vs/editor/browser/view/viewOverlays';
 import { ViewContentWidgets } from 'vs/editor/browser/viewParts/contentWidgets/contentWidgets';
@@ -92,7 +93,7 @@ export class View extends ViewEventHandler {
 	private _renderAnimationFrame: IDisposable;
 
 	constructor(
-		commandDelegate: ICommandDelegate,
+		commandService: ICommandService,
 		configuration: Configuration,
 		themeService: IThemeService,
 		model: IViewModel,
@@ -104,7 +105,7 @@ export class View extends ViewEventHandler {
 		this._renderAnimationFrame = null;
 		this.outgoingEvents = new ViewOutgoingEvents(model);
 
-		let viewController = new ViewController(configuration, model, execCoreEditorCommandFunc, this.outgoingEvents, commandDelegate);
+		let viewController = new ViewController(configuration, model, execCoreEditorCommandFunc, this.outgoingEvents, commandService);
 
 		// The event dispatcher will always go through _renderOnce before dispatching any events
 		this.eventDispatcher = new ViewEventDispatcher((callback: () => void) => this._renderOnce(callback));
@@ -177,8 +178,8 @@ export class View extends ViewEventHandler {
 		this.viewParts.push(contentViewOverlays);
 		contentViewOverlays.addDynamicOverlay(new CurrentLineHighlightOverlay(this._context));
 		contentViewOverlays.addDynamicOverlay(new SelectionsOverlay(this._context));
-		contentViewOverlays.addDynamicOverlay(new IndentGuidesOverlay(this._context));
 		contentViewOverlays.addDynamicOverlay(new DecorationsOverlay(this._context));
+		contentViewOverlays.addDynamicOverlay(new IndentGuidesOverlay(this._context));
 
 		let marginViewOverlays = new MarginViewOverlays(this._context);
 		this.viewParts.push(marginViewOverlays);
@@ -321,7 +322,6 @@ export class View extends ViewEventHandler {
 	}
 	public onFocusChanged(e: viewEvents.ViewFocusChangedEvent): boolean {
 		this.domNode.setClassName(this.getEditorClassName());
-		this._context.model.setHasFocus(e.isFocused);
 		if (e.isFocused) {
 			this.outgoingEvents.emitViewFocusGained();
 		} else {

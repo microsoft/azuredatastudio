@@ -6,20 +6,22 @@
 'use strict';
 
 import 'vs/css!./media/compositepart';
-import * as nls from 'vs/nls';
+import nls = require('vs/nls');
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { Builder, $ } from 'vs/base/browser/builder';
-import * as strings from 'vs/base/common/strings';
+import { Dimension, Builder, $ } from 'vs/base/browser/builder';
+import strings = require('vs/base/common/strings');
 import { Emitter } from 'vs/base/common/event';
-import * as types from 'vs/base/common/types';
-import * as errors from 'vs/base/common/errors';
+import types = require('vs/base/common/types');
+import errors = require('vs/base/common/errors');
+import * as DOM from 'vs/base/browser/dom';
+import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import { ToolBar } from 'vs/base/browser/ui/toolbar/toolbar';
 import { IActionItem, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { ProgressBar } from 'vs/base/browser/ui/progressbar/progressbar';
 import { prepareActions } from 'vs/workbench/browser/actions';
-import { Action, IAction } from 'vs/base/common/actions';
+import { Action, IAction, IRunEvent } from 'vs/base/common/actions';
 import { Part, IPartOptions } from 'vs/workbench/browser/part';
 import { Composite, CompositeRegistry } from 'vs/workbench/browser/composite';
 import { IComposite } from 'vs/workbench/common/composite';
@@ -35,7 +37,6 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachProgressBarStyler } from 'vs/platform/theme/common/styler';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { Dimension } from 'vs/base/browser/dom';
 
 export interface ICompositeTitleLabel {
 
@@ -73,10 +74,10 @@ export abstract class CompositePart<T extends Composite> extends Part {
 		private telemetryService: ITelemetryService,
 		protected contextMenuService: IContextMenuService,
 		protected partService: IPartService,
-		protected keybindingService: IKeybindingService,
+		private keybindingService: IKeybindingService,
 		protected instantiationService: IInstantiationService,
 		themeService: IThemeService,
-		protected readonly registry: CompositeRegistry<T>,
+		private registry: CompositeRegistry<T>,
 		private activeCompositeSettingsKey: string,
 		private defaultCompositeId: string,
 		private nameForTelemetry: string,
@@ -222,8 +223,8 @@ export abstract class CompositePart<T extends Composite> extends Part {
 			compositeContainer = $().div({
 				'class': ['composite', this.compositeCSSClass],
 				id: composite.getId()
-			}, div => {
-				createCompositePromise = composite.create(div.getHTMLElement()).then(() => {
+			}, (div: Builder) => {
+				createCompositePromise = composite.create(div).then(() => {
 					composite.updateStyles();
 				});
 			});
@@ -278,7 +279,7 @@ export abstract class CompositePart<T extends Composite> extends Part {
 			}
 
 			// Action Run Handling
-			this.telemetryActionsListener = this.toolBar.actionRunner.onDidRun(e => {
+			this.telemetryActionsListener = this.toolBar.actionRunner.onDidRun((e: IRunEvent) => {
 
 				// Check for Error
 				if (e.error && !errors.isPromiseCanceledError(e.error)) {
@@ -310,7 +311,7 @@ export abstract class CompositePart<T extends Composite> extends Part {
 					composite.layout(this.contentAreaSize);
 				}
 			});
-		}, error => this.onError(error));
+		}, (error: any) => this.onError(error));
 	}
 
 	protected onTitleAreaUpdate(compositeId: string): void {
@@ -390,7 +391,7 @@ export abstract class CompositePart<T extends Composite> extends Part {
 			compositeContainer.hide();
 
 			// Clear any running Progress
-			this.progressBar.stop().hide();
+			this.progressBar.stop().getContainer().hide();
 
 			// Empty Actions
 			this.toolBar.setActions([])();
@@ -400,37 +401,39 @@ export abstract class CompositePart<T extends Composite> extends Part {
 		});
 	}
 
-	public createTitleArea(parent: HTMLElement): HTMLElement {
+	public createTitleArea(parent: Builder): Builder {
 
 		// Title Area Container
 		const titleArea = $(parent).div({
 			'class': ['composite', 'title']
 		});
 
+		$(titleArea).on(DOM.EventType.CONTEXT_MENU, (e: MouseEvent) => this.onTitleAreaContextMenu(new StandardMouseEvent(e)));
+
 		// Left Title Label
-		this.titleLabel = this.createTitleLabel(titleArea.getHTMLElement());
+		this.titleLabel = this.createTitleLabel(titleArea);
 
 		// Right Actions Container
 		$(titleArea).div({
 			'class': 'title-actions'
-		}, div => {
+		}, (div) => {
 
 			// Toolbar
 			this.toolBar = new ToolBar(div.getHTMLElement(), this.contextMenuService, {
-				actionItemProvider: action => this.actionItemProvider(action as Action),
+				actionItemProvider: (action: Action) => this.actionItemProvider(action),
 				orientation: ActionsOrientation.HORIZONTAL,
-				getKeyBinding: action => this.keybindingService.lookupKeybinding(action.id)
+				getKeyBinding: (action) => this.keybindingService.lookupKeybinding(action.id)
 			});
 		});
 
-		return titleArea.getHTMLElement();
+		return titleArea;
 	}
 
-	protected createTitleLabel(parent: HTMLElement): ICompositeTitleLabel {
+	protected createTitleLabel(parent: Builder): ICompositeTitleLabel {
 		let titleLabel: Builder;
 		$(parent).div({
 			'class': 'title-label'
-		}, div => {
+		}, (div) => {
 			titleLabel = div.span();
 		});
 
@@ -453,8 +456,27 @@ export abstract class CompositePart<T extends Composite> extends Part {
 		this.titleLabel.updateStyles();
 	}
 
-	protected actionItemProvider(action: Action): IActionItem {
+	private onTitleAreaContextMenu(event: StandardMouseEvent): void {
+		if (this.activeComposite) {
+			const contextMenuActions = this.getTitleAreaContextMenuActions();
+			if (contextMenuActions.length) {
+				const anchor: { x: number, y: number } = { x: event.posx, y: event.posy };
+				this.contextMenuService.showContextMenu({
+					getAnchor: () => anchor,
+					getActions: () => TPromise.as(contextMenuActions),
+					getActionItem: (action: Action) => this.actionItemProvider(action),
+					actionRunner: this.activeComposite.getActionRunner(),
+					getKeyBinding: (action) => this.keybindingService.lookupKeybinding(action.id)
+				});
+			}
+		}
+	}
 
+	protected getTitleAreaContextMenuActions(): IAction[] {
+		return this.activeComposite ? this.activeComposite.getContextMenuActions() : [];
+	}
+
+	private actionItemProvider(action: Action): IActionItem {
 		// Check Active Composite
 		if (this.activeComposite) {
 			return this.activeComposite.getActionItem(action);
@@ -463,14 +485,14 @@ export abstract class CompositePart<T extends Composite> extends Part {
 		return undefined;
 	}
 
-	public createContentArea(parent: HTMLElement): HTMLElement {
+	public createContentArea(parent: Builder): Builder {
 		return $(parent).div({
 			'class': 'content'
-		}, div => {
-			this.progressBar = new ProgressBar(div.getHTMLElement());
+		}, (div: Builder) => {
+			this.progressBar = new ProgressBar(div);
 			this.toUnbind.push(attachProgressBarStyler(this.progressBar, this.themeService));
-			this.progressBar.hide();
-		}).getHTMLElement();
+			this.progressBar.getContainer().hide();
+		});
 	}
 
 	private onError(error: any): void {

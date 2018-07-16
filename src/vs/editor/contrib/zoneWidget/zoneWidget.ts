@@ -210,7 +210,6 @@ export abstract class ZoneWidget implements IHorizontalSashLayoutProvider {
 		}
 
 		this.editor.deltaDecorations(this._positionMarkerId, []);
-		this._positionMarkerId = [];
 	}
 
 	public create(): void {
@@ -281,14 +280,10 @@ export abstract class ZoneWidget implements IHorizontalSashLayoutProvider {
 
 	public get position(): Position {
 		const [id] = this._positionMarkerId;
-		if (!id) {
-			return undefined;
+		if (id) {
+			return this.editor.getModel().getDecorationRange(id).getStartPosition();
 		}
-		const range = this.editor.getModel().getDecorationRange(id);
-		if (!range) {
-			return undefined;
-		}
-		return range.getStartPosition();
+		return undefined;
 	}
 
 	protected _isShowing: boolean = false;

@@ -8,16 +8,18 @@ import * as assert from 'assert';
 import { Position } from 'vs/editor/common/core/position';
 import { Range } from 'vs/editor/common/core/range';
 import { TextModel, createTextBuffer } from 'vs/editor/common/model/textModel';
+import { DefaultEndOfLine } from 'vs/editor/common/model';
 import { UTF8_BOM_CHARACTER } from 'vs/base/common/strings';
-import { createTextModel } from 'vs/editor/test/common/editorTestUtils';
 
 function testGuessIndentation(defaultInsertSpaces: boolean, defaultTabSize: number, expectedInsertSpaces: boolean, expectedTabSize: number, text: string[], msg?: string): void {
-	var m = createTextModel(
+	var m = TextModel.createFromString(
 		text.join('\n'),
 		{
 			tabSize: defaultTabSize,
 			insertSpaces: defaultInsertSpaces,
-			detectIndentation: true
+			detectIndentation: true,
+			defaultEOL: DefaultEndOfLine.LF,
+			trimAutoWhitespace: true
 		}
 	);
 	var r = m.getOptions();
@@ -703,9 +705,13 @@ suite('Editor Model - TextModel', () => {
 	});
 
 	test('normalizeIndentation 1', () => {
-		let model = createTextModel('',
+		let model = TextModel.createFromString('',
 			{
-				insertSpaces: false
+				detectIndentation: false,
+				tabSize: 4,
+				insertSpaces: false,
+				trimAutoWhitespace: true,
+				defaultEOL: DefaultEndOfLine.LF
 			}
 		);
 
@@ -735,7 +741,15 @@ suite('Editor Model - TextModel', () => {
 	});
 
 	test('normalizeIndentation 2', () => {
-		let model = createTextModel('');
+		let model = TextModel.createFromString('',
+			{
+				detectIndentation: false,
+				tabSize: 4,
+				insertSpaces: true,
+				trimAutoWhitespace: true,
+				defaultEOL: DefaultEndOfLine.LF
+			}
+		);
 
 		assert.equal(model.normalizeIndentation('\ta'), '    a');
 		assert.equal(model.normalizeIndentation('    a'), '    a');

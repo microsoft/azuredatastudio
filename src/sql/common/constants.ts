@@ -13,6 +13,3 @@ export const SerializationDisabled = 'Saving results into different format disab
  */
 export const RestoreFeatureName = 'restore';
 export const BackupFeatureName = 'backup';
-
-export const MssqlProviderId = 'MSSQL';
-

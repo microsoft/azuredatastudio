@@ -6,7 +6,7 @@ import 'vs/css!./dashboardControlHostContainer';
 
 import { Component, forwardRef, Input, AfterContentInit, ViewChild, OnChanges } from '@angular/core';
 
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';

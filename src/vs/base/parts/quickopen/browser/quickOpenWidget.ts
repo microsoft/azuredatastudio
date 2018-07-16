@@ -5,22 +5,22 @@
 'use strict';
 
 import 'vs/css!./quickopen';
-import * as nls from 'vs/nls';
+import nls = require('vs/nls');
 import { TPromise } from 'vs/base/common/winjs.base';
-import * as platform from 'vs/base/common/platform';
-import * as types from 'vs/base/common/types';
-import * as errors from 'vs/base/common/errors';
+import platform = require('vs/base/common/platform');
+import types = require('vs/base/common/types');
+import errors = require('vs/base/common/errors');
 import { IQuickNavigateConfiguration, IAutoFocus, IEntryRunContext, IModel, Mode, IKeyMods } from 'vs/base/parts/quickopen/common/quickOpen';
 import { Filter, Renderer, DataSource, IModelProvider, AccessibilityProvider } from 'vs/base/parts/quickopen/browser/quickOpenViewer';
-import { Builder, $ } from 'vs/base/browser/builder';
-import { ITree, ContextMenuEvent, IActionProvider, ITreeStyles, ITreeOptions, ITreeConfiguration } from 'vs/base/parts/tree/browser/tree';
+import { Dimension, Builder, $ } from 'vs/base/browser/builder';
+import { ISelectionEvent, IFocusEvent, ITree, ContextMenuEvent, IActionProvider, ITreeStyles, ITreeOptions, ITreeConfiguration } from 'vs/base/parts/tree/browser/tree';
 import { InputBox, MessageType, IInputBoxStyles, IRange } from 'vs/base/browser/ui/inputbox/inputBox';
 import Severity from 'vs/base/common/severity';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { ProgressBar } from 'vs/base/browser/ui/progressbar/progressbar';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { DefaultController, ClickBehavior } from 'vs/base/parts/tree/browser/treeDefaults';
-import * as DOM from 'vs/base/browser/dom';
+import DOM = require('vs/base/browser/dom');
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -113,7 +113,7 @@ export class QuickOpenWidget implements IModelProvider {
 	private container: HTMLElement;
 	private treeElement: HTMLElement;
 	private inputElement: HTMLElement;
-	private layoutDimensions: DOM.Dimension;
+	private layoutDimensions: Dimension;
 	private model: IModel<any>;
 	private inputChangingTimeoutHandle: number;
 	private styles: IQuickOpenStyles;
@@ -130,8 +130,8 @@ export class QuickOpenWidget implements IModelProvider {
 		this.model = null;
 	}
 
-	public getElement(): HTMLElement {
-		return $(this.builder).getHTMLElement();
+	public getElement(): Builder {
+		return $(this.builder);
 	}
 
 	public getModel(): IModel<any> {
@@ -143,10 +143,10 @@ export class QuickOpenWidget implements IModelProvider {
 	}
 
 	public create(): HTMLElement {
-		this.builder = $().div(div => {
+		this.builder = $().div((div: Builder) => {
 
 			// Eventing
-			div.on(DOM.EventType.KEY_DOWN, e => {
+			div.on(DOM.EventType.KEY_DOWN, (e) => {
 				const keyboardEvent: StandardKeyboardEvent = new StandardKeyboardEvent(e as KeyboardEvent);
 				if (keyboardEvent.keyCode === KeyCode.Escape) {
 					DOM.EventHelper.stop(e, true);
@@ -160,10 +160,10 @@ export class QuickOpenWidget implements IModelProvider {
 
 			// Progress Bar
 			this.progressBar = new ProgressBar(div.clone(), { progressBarBackground: this.styles.progressBarBackground });
-			this.progressBar.hide();
+			this.progressBar.getContainer().hide();
 
 			// Input Field
-			div.div({ 'class': 'quick-open-input' }, inputContainer => {
+			div.div({ 'class': 'quick-open-input' }, (inputContainer) => {
 				this.inputContainer = inputContainer;
 				this.inputBox = new InputBox(inputContainer.getHTMLElement(), null, {
 					placeholder: this.options.inputPlaceHolder || '',
@@ -226,7 +226,7 @@ export class QuickOpenWidget implements IModelProvider {
 			// Tree
 			this.treeContainer = div.div({
 				'class': 'quick-open-tree'
-			}, div => {
+			}, (div: Builder) => {
 				const createTree = this.options.treeCreator || ((container, config, opts) => new Tree(container, config, opts));
 
 				this.tree = createTree(div.getHTMLElement(), {
@@ -240,7 +240,6 @@ export class QuickOpenWidget implements IModelProvider {
 						indentPixels: 0,
 						alwaysFocused: true,
 						verticalScrollMode: ScrollbarVisibility.Visible,
-						horizontalScrollMode: ScrollbarVisibility.Hidden,
 						ariaLabel: nls.localize('treeAriaLabel', "Quick Picker"),
 						keyboardSupport: this.options.keyboardSupport,
 						preventRootFocus: true
@@ -249,11 +248,11 @@ export class QuickOpenWidget implements IModelProvider {
 				this.treeElement = this.tree.getHTMLElement();
 
 				// Handle Focus and Selection event
-				this.toUnbind.push(this.tree.onDidChangeFocus(event => {
+				this.toUnbind.push(this.tree.onDidChangeFocus((event: IFocusEvent) => {
 					this.elementFocused(event.focus, event);
 				}));
 
-				this.toUnbind.push(this.tree.onDidChangeSelection(event => {
+				this.toUnbind.push(this.tree.onDidChangeSelection((event: ISelectionEvent) => {
 					if (event.selection && event.selection.length > 0) {
 						const mouseEvent: StandardMouseEvent = event.payload && event.payload.originalEvent instanceof StandardMouseEvent ? event.payload.originalEvent : void 0;
 						const shouldOpenInBackground = mouseEvent ? this.shouldOpenInBackground(mouseEvent) : false;
@@ -262,7 +261,7 @@ export class QuickOpenWidget implements IModelProvider {
 					}
 				}));
 			}).
-				on(DOM.EventType.KEY_DOWN, e => {
+				on(DOM.EventType.KEY_DOWN, (e) => {
 					const keyboardEvent: StandardKeyboardEvent = new StandardKeyboardEvent(e as KeyboardEvent);
 
 					// Only handle when in quick navigation mode
@@ -277,7 +276,7 @@ export class QuickOpenWidget implements IModelProvider {
 						this.navigateInTree(keyboardEvent.keyCode);
 					}
 				}).
-				on(DOM.EventType.KEY_UP, e => {
+				on(DOM.EventType.KEY_UP, (e) => {
 					const keyboardEvent: StandardKeyboardEvent = new StandardKeyboardEvent(e as KeyboardEvent);
 					const keyCode = keyboardEvent.keyCode;
 
@@ -288,7 +287,7 @@ export class QuickOpenWidget implements IModelProvider {
 
 					// Select element when keys are pressed that signal it
 					const quickNavKeys = this.quickNavigateConfiguration.keybindings;
-					const wasTriggerKeyPressed = keyCode === KeyCode.Enter || quickNavKeys.some(k => {
+					const wasTriggerKeyPressed = keyCode === KeyCode.Enter || quickNavKeys.some((k) => {
 						const [firstPart, chordPart] = k.getParts();
 						if (chordPart) {
 							return false;
@@ -328,7 +327,7 @@ export class QuickOpenWidget implements IModelProvider {
 		})
 
 			// Widget Attributes
-			.addClass('monaco-quick-open-widget')
+			.addClass('quick-open-widget')
 			.build(this.container);
 
 		// Support layout
@@ -448,7 +447,7 @@ export class QuickOpenWidget implements IModelProvider {
 			// Transition into quick navigate mode if not yet done
 			if (!this.quickNavigateConfiguration && quickNavigate) {
 				this.quickNavigateConfiguration = quickNavigate;
-				this.tree.domFocus();
+				this.tree.DOMFocus();
 			}
 
 			// Navigate
@@ -559,7 +558,7 @@ export class QuickOpenWidget implements IModelProvider {
 		if (this.quickNavigateConfiguration) {
 			this.inputContainer.hide();
 			this.builder.show();
-			this.tree.domFocus();
+			this.tree.DOMFocus();
 		}
 
 		// Otherwise use normal UI
@@ -780,11 +779,11 @@ export class QuickOpenWidget implements IModelProvider {
 		this.treeContainer.style({ height: (this.options.minItemsToShow ? this.options.minItemsToShow * 22 : 0) + 'px' });
 
 		// Clear any running Progress
-		this.progressBar.stop().hide();
+		this.progressBar.stop().getContainer().hide();
 
 		// Clear Focus
 		if (this.tree.isDOMFocused()) {
-			this.tree.domBlur();
+			this.tree.DOMBlur();
 		} else if (this.inputBox.hasFocus()) {
 			this.inputBox.blur();
 		}
@@ -811,13 +810,11 @@ export class QuickOpenWidget implements IModelProvider {
 		}
 	}
 
-	public setValue(value: string, selectionOrStableHint?: [number, number] | null): void {
+	public setValue(value: string, selection?: [number, number]): void {
 		if (this.inputBox) {
 			this.inputBox.value = value;
-			if (selectionOrStableHint === null) {
-				// null means stable-selection
-			} else if (Array.isArray(selectionOrStableHint)) {
-				const [start, end] = selectionOrStableHint;
+			if (Array.isArray(selection)) {
+				const [start, end] = selection;
 				this.inputBox.select({ start, end });
 			} else {
 				this.inputBox.select();
@@ -921,7 +918,7 @@ export class QuickOpenWidget implements IModelProvider {
 		return this.visible;
 	}
 
-	public layout(dimension: DOM.Dimension): void {
+	public layout(dimension: Dimension): void {
 		this.layoutDimensions = dimension;
 
 		// Apply to quick open width (height is dynamic by number of items to show)

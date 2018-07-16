@@ -496,7 +496,7 @@ export class ExtensionScanner {
 	/**
 	 * Read the extension defined in `absoluteFolderPath`
 	 */
-	public static scanExtension(version: string, log: ILog, absoluteFolderPath: string, isBuiltin: boolean, nlsConfig: NlsConfiguration): TPromise<IExtensionDescription> {
+	private static scanExtension(version: string, log: ILog, absoluteFolderPath: string, isBuiltin: boolean, nlsConfig: NlsConfiguration): TPromise<IExtensionDescription> {
 		absoluteFolderPath = normalize(absoluteFolderPath);
 
 		let parser = new ExtensionManifestParser(version, log, absoluteFolderPath, isBuiltin);
@@ -550,13 +550,11 @@ export class ExtensionScanner {
 				const gallery: IExtensionReference[] = [];
 
 				refs.forEach(ref => {
-					if (ref.name.indexOf('.') !== 0) { // Do not consider user extension folder starting with `.`
-						const { id, version } = getIdAndVersionFromLocalExtensionId(ref.name);
-						if (!id || !version) {
-							nonGallery.push(ref);
-						} else {
-							gallery.push(ref);
-						}
+					const { id, version } = getIdAndVersionFromLocalExtensionId(ref.name);
+					if (!id || !version) {
+						nonGallery.push(ref);
+					} else {
+						gallery.push(ref);
 					}
 				});
 				refs = [...nonGallery, ...gallery];

@@ -5,15 +5,15 @@
 
 'use strict';
 
-import * as fs from 'fs';
-import { isAbsolute, sep, join } from 'path';
+import fs = require('fs');
+import { isAbsolute, sep } from 'path';
 
-import * as gracefulFs from 'graceful-fs';
+import gracefulFs = require('graceful-fs');
 gracefulFs.gracefulify(fs);
 
-import * as arrays from 'vs/base/common/arrays';
-import * as objects from 'vs/base/common/objects';
-import * as strings from 'vs/base/common/strings';
+import arrays = require('vs/base/common/arrays');
+import objects = require('vs/base/common/objects');
+import strings = require('vs/base/common/strings');
 import { PPromise, TPromise } from 'vs/base/common/winjs.base';
 import { FileWalker, Engine as FileSearchEngine } from 'vs/workbench/services/search/node/fileSearch';
 import { MAX_FILE_SIZE } from 'vs/platform/files/node/files';
@@ -22,6 +22,7 @@ import { Engine as TextSearchEngine } from 'vs/workbench/services/search/node/te
 import { TextSearchWorkerProvider } from 'vs/workbench/services/search/node/textSearchWorkerProvider';
 import { IRawSearchService, IRawSearch, IRawFileMatch, ISerializedFileMatch, ISerializedSearchProgressItem, ISerializedSearchComplete, ISearchEngine, IFileSearchProgressItem, ITelemetryEvent } from './search';
 import { ICachedSearchStats, IProgress } from 'vs/platform/search/common/search';
+import { fuzzyContains } from 'vs/base/common/strings';
 import { compareItemsByScore, IItemAccessor, ScorerCache, prepareQuery } from 'vs/base/parts/quickopen/common/quickOpenScorer';
 
 export class SearchService implements IRawSearchService {
@@ -132,7 +133,7 @@ export class SearchService implements IRawSearchService {
 	}
 
 	private rawMatchToSearchItem(match: IRawFileMatch): ISerializedFileMatch {
-		return { path: match.base ? join(match.base, match.relativePath) : match.relativePath };
+		return { path: match.base ? [match.base, match.relativePath].join(sep) : match.relativePath };
 	}
 
 	private doSortedSearch(engine: ISearchEngine<IRawFileMatch>, config: IRawSearch): PPromise<[ISerializedSearchComplete, IRawFileMatch[]], IProgress> {
@@ -143,7 +144,6 @@ export class SearchService implements IRawSearchService {
 				.then(result => {
 					c([result, results]);
 					if (this.telemetryPipe) {
-						// __GDPR__TODO__ classify event
 						this.telemetryPipe({
 							eventName: 'fileSearch',
 							data: result.stats
@@ -310,7 +310,7 @@ export class SearchService implements IRawSearchService {
 					let entry = cachedEntries[i];
 
 					// Check if this entry is a match for the search value
-					if (!strings.fuzzyContains(entry.relativePath, normalizedSearchValueLowercase)) {
+					if (!fuzzyContains(entry.relativePath, normalizedSearchValueLowercase)) {
 						continue;
 					}
 

@@ -780,9 +780,6 @@ function createModel(text: string): ISimpleModel {
 		getLineContent: (lineNumber: number) => {
 			return text;
 		},
-		getLineLength: (lineNumber: number) => {
-			return text.length;
-		},
 		getLineMinColumn: (lineNumber: number) => {
 			return 1;
 		},

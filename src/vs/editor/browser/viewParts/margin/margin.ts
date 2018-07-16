@@ -14,7 +14,6 @@ import * as viewEvents from 'vs/editor/common/view/viewEvents';
 export class Margin extends ViewPart {
 
 	public static readonly CLASS_NAME = 'glyph-margin';
-	public static readonly OUTER_CLASS_NAME = 'margin';
 
 	private _domNode: FastDomNode<HTMLElement>;
 	private _canUseLayerHinting: boolean;
@@ -43,7 +42,7 @@ export class Margin extends ViewPart {
 
 	private _createDomNode(): FastDomNode<HTMLElement> {
 		let domNode = createFastDomNode(document.createElement('div'));
-		domNode.setClassName(Margin.OUTER_CLASS_NAME);
+		domNode.setClassName('margin');
 		domNode.setPosition('absolute');
 		domNode.setAttribute('role', 'presentation');
 		domNode.setAttribute('aria-hidden', 'true');

@@ -22,23 +22,16 @@ import * as Services from 'sql/parts/grid/services/sharedServices';
 import { IGridIcon, IMessage, IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { GridActionProvider } from 'sql/parts/grid/views/gridActions';
-import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { error } from 'sql/base/common/log';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { clone, mixin } from 'sql/base/common/objects';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { escape } from 'sql/base/common/strings';
+import { clone } from 'sql/base/common/objects';
 
-import { format } from 'vs/base/common/strings';
+import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export const QUERY_SELECTOR: string = 'query-component';
 
@@ -61,7 +54,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 
 	// create a function alias to use inside query.component
 	// tslint:disable-next-line:no-unused-variable
-	private stringsFormat: any = format;
+	private stringsFormat: any = strings.format;
 
 	// tslint:disable-next-line:no-unused-variable
 	private dataIcons: IGridIcon[] = [
@@ -156,7 +149,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	public showChartRequested: EventEmitter<IGridDataSet> = new EventEmitter<IGridDataSet>();
 	public goToNextQueryOutputTabRequested: EventEmitter<void> = new EventEmitter<void>();
 
-	@Input() public queryParameters: IQueryComponentParams;
+	@Input() public queryParameters: QueryComponentParams;
 
 	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
 	// tslint:disable-next-line:no-unused-variable
@@ -166,20 +159,14 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService) keybindingService: IKeybindingService,
-		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
-		@Inject(IConfigurationService) configurationService: IConfigurationService,
-		@Inject(IClipboardService) clipboardService: IClipboardService,
-		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService
+		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService
 	) {
-		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService);
+		super(el, cd, bootstrapService);
 		this._el.nativeElement.className = 'slickgridContainer';
-		this.rowHeight = configurationService.getValue<any>('resultsGrid').rowHeight;
-		configurationService.onDidChangeConfiguration(e => {
+		this.rowHeight = bootstrapService.configurationService.getValue<any>('resultsGrid').rowHeight;
+		bootstrapService.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('resultsGrid')) {
-				this.rowHeight = configurationService.getValue<any>('resultsGrid').rowHeight;
+				this.rowHeight = bootstrapService.configurationService.getValue<any>('resultsGrid').rowHeight;
 				this.slickgrids.forEach(i => {
 					i.rowHeight = this.rowHeight;
 				});
@@ -195,7 +182,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		const self = this;
 
 		this.dataService = this.queryParameters.dataService;
-		this.actionProvider = this.instantiationService.createInstance(GridActionProvider, this.dataService, this.onGridSelectAll());
+		this.actionProvider = this._bootstrapService.instantiationService.createInstance(GridActionProvider, this.dataService, this.onGridSelectAll());
 
 		this.baseInit();
 		this.setupResizeBind();
@@ -302,9 +289,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 					for (let row = 0; row < rows.rows.length; row++) {
 						// Push row values onto end of gridData for slickgrid
 						gridData.push({
-							values: rows.rows[row].map(c => {
-								return mixin({ ariaLabel: escape(c.displayValue) }, c);
-							})
+							values: rows.rows[row]
 						});
 					}
 
@@ -348,12 +333,11 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			columnDefinitions: resultSet.columnInfo.map((c, i) => {
 				let isLinked = c.isXml || c.isJson;
 				let linkType = c.isXml ? 'xml' : 'json';
-
 				return {
 					id: i.toString(),
 					name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 						? 'XML Showplan'
-						: escape(c.columnName),
+						: c.columnName,
 					type: self.stringToFieldType('string'),
 					formatter: isLinked ? Services.hyperLinkFormatter : Services.textFormatter,
 					asyncPostRender: isLinked ? self.linkHandler(linkType) : undefined

@@ -6,15 +6,15 @@
 
 import 'vs/css!./inputBox';
 
-import * as nls from 'vs/nls';
+import nls = require('vs/nls');
 import * as Bal from 'vs/base/browser/browser';
 import * as dom from 'vs/base/browser/dom';
 import { RenderOptions, renderFormattedText, renderText } from 'vs/base/browser/htmlContentRenderer';
-import * as aria from 'vs/base/browser/ui/aria/aria';
+import aria = require('vs/base/browser/ui/aria/aria');
 import { IAction } from 'vs/base/common/actions';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { Color } from 'vs/base/common/color';
 import { mixin } from 'vs/base/common/objects';
@@ -112,10 +112,10 @@ export class InputBox extends Widget {
 	private inputValidationErrorBackground: Color;
 
 	private _onDidChange = this._register(new Emitter<string>());
-	public readonly onDidChange: Event<string> = this._onDidChange.event;
+	public onDidChange: Event<string> = this._onDidChange.event;
 
 	private _onDidHeightChange = this._register(new Emitter<number>());
-	public readonly onDidHeightChange: Event<number> = this._onDidHeightChange.event;
+	public onDidHeightChange: Event<number> = this._onDidHeightChange.event;
 
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, options?: IInputOptions) {
 		super();
@@ -351,31 +351,30 @@ export class InputBox extends Widget {
 	}
 
 	public validate(): boolean {
-		let errorMsg: IMessage = null;
+		let result: IMessage = null;
 
 		if (this.validation) {
-			errorMsg = this.validation(this.value);
+			result = this.validation(this.value);
 
 			// {{SQL CARBON EDIT}}
-			if (!errorMsg && this.options.useDefaultValidation && this.inputElement.validationMessage) {
-				errorMsg = {
+			if (!result && this.options.useDefaultValidation && this.inputElement.validationMessage) {
+				result = {
 					content: this.inputElement.validationMessage,
 					type: MessageType.ERROR
 				};
 			}
 
-			if (errorMsg) {
-				this.inputElement.setAttribute('aria-invalid', 'true');
-				this.showMessage(errorMsg);
-			}
-			else if (this.inputElement.hasAttribute('aria-invalid')) {
+			if (!result) {
 				this.inputElement.removeAttribute('aria-invalid');
 				this.hideMessage();
+			} else {
+				this.inputElement.setAttribute('aria-invalid', 'true');
+				this.showMessage(result);
 			}
 		}
 
 		// {{SQL CARBON EDIT}} Canidate for addition to vscode
-		return errorMsg ? errorMsg.type !== MessageType.ERROR : true;
+		return result ? result.type !== MessageType.ERROR : true;
 	}
 
 	private stylesForType(type: MessageType): { border: Color; background: Color } {

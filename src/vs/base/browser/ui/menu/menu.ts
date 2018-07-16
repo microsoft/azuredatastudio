@@ -7,11 +7,11 @@
 
 import 'vs/css!./menu';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { $ } from 'vs/base/browser/builder';
 import { IActionRunner, IAction } from 'vs/base/common/actions';
 import { ActionBar, IActionItemProvider, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
-import { Event } from 'vs/base/common/event';
-import { addClass } from 'vs/base/browser/dom';
+import Event from 'vs/base/common/event';
 
 export interface IMenuOptions {
 	context?: any;
@@ -26,13 +26,11 @@ export class Menu {
 	private listener: IDisposable;
 
 	constructor(container: HTMLElement, actions: IAction[], options: IMenuOptions = {}) {
-		addClass(container, 'monaco-menu-container');
+		$(container).addClass('monaco-menu-container');
 
-		let menuContainer = document.createElement('div');
-		addClass(menuContainer, 'monaco-menu');
-		container.appendChild(menuContainer);
+		let $menu = $('.monaco-menu').appendTo(container);
 
-		this.actionBar = new ActionBar(menuContainer, {
+		this.actionBar = new ActionBar($menu, {
 			orientation: ActionsOrientation.VERTICAL,
 			actionItemProvider: options.actionItemProvider,
 			context: options.context,

@@ -33,7 +33,7 @@ export class RefreshAction extends Action {
 		id: string,
 		label: string,
 		tree: ITree,
-		private element: IConnectionProfile | TreeNode,
+		private element: ConnectionProfile | TreeNode,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService
@@ -88,31 +88,80 @@ export class DisconnectConnectionAction extends Action {
 	public static ID = 'objectExplorer.disconnect';
 	public static LABEL = localize('DisconnectAction', 'Disconnect');
 
+	private _disposables: IDisposable[] = [];
+	private _connectionProfile: ConnectionProfile;
+
+	private _container: HTMLElement;
+
 	constructor(
 		id: string,
 		label: string,
-		private _connectionProfile: ConnectionProfile,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService
 	) {
 		super(id, label);
+		const self = this;
+		this._disposables.push(this._connectionManagementService.onConnect(() => {
+			self.setLabel();
+		})
+		);
+		this._disposables.push(this._connectionManagementService.onDisconnect((disconnectParams) => {
+			if (this._connectionProfile) {
+				this._connectionProfile.isDisconnecting = false;
+			}
+			self.setLabel();
+			self._connectionManagementService.closeDashboard(disconnectParams.connectionUri);
+		})
+		);
+		if (this._objectExplorerService && this._objectExplorerService.onUpdateObjectExplorerNodes) {
+			this._disposables.push(this._objectExplorerService.onUpdateObjectExplorerNodes((args) => {
+				self.removeSpinning(args.connection);
+				if (args.errorMessage !== undefined) {
+					self.showError(args.errorMessage);
+				}
+			})
+			);
+		}
+	}
+
+	private showError(errorMessage: string) {
+		if (this._errorMessageService) {
+			this._errorMessageService.showDialog(Severity.Error, '', errorMessage);
+		}
+	}
+
+	private setLabel(): void {
+		if (!this._connectionProfile) {
+			this.label = 'Connect';
+			return;
+		}
+		this.label = this._connectionManagementService.isProfileConnected(this._connectionProfile) ? 'Disconnect' : 'Connect';
+	}
+
+	private removeSpinning(connection: IConnectionProfile): void {
+		if (this._connectionProfile) {
+			if (connection.id === this._connectionProfile.id && this._container) {
+				ObjectExplorerActionUtilities.hideLoadingIcon(this._container, ObjectExplorerActionUtilities.connectionElementClass);
+			}
+		}
 	}
 
 	run(actionContext: ObjectExplorerActionsContext): TPromise<any> {
 		return new TPromise<boolean>((resolve, reject) => {
+			if (actionContext instanceof ObjectExplorerActionsContext) {
+				//set objectExplorerTreeNode for context menu clicks
+				this._connectionProfile = actionContext.connectionProfile;
+				this._container = actionContext.container;
+				resolve(true);
+			}
+
 			if (!this._connectionProfile) {
 				resolve(true);
 			}
 			if (this._connectionManagementService.isProfileConnected(this._connectionProfile)) {
-				let profileImpl = this._connectionProfile as ConnectionProfile;
-				if (profileImpl) {
-					profileImpl.isDisconnecting = true;
-				}
+				this._connectionProfile.isDisconnecting = true;
 				this._connectionManagementService.disconnect(this._connectionProfile).then((value) => {
-					if (profileImpl) {
-						profileImpl.isDisconnecting = false;
-					}
 					resolve(true);
 				}
 				).catch(disconnectError => {
@@ -122,6 +171,11 @@ export class DisconnectConnectionAction extends Action {
 				resolve(true);
 			}
 		});
+	}
+
+	dispose(): void {
+		super.dispose();
+		this._disposables = dispose(this._disposables);
 	}
 }
 
@@ -308,11 +362,11 @@ export class RecentConnectionsFilterAction extends Action {
 export class NewQueryAction extends Action {
 	public static ID = 'registeredServers.newQuery';
 	public static LABEL = localize('registeredServers.newQuery', 'New Query');
-	private _connectionProfile: IConnectionProfile;
-	get connectionProfile(): IConnectionProfile {
+	private _connectionProfile: ConnectionProfile;
+	get connectionProfile(): ConnectionProfile {
 		return this._connectionProfile;
 	}
-	set connectionProfile(profile: IConnectionProfile) {
+	set connectionProfile(profile: ConnectionProfile) {
 		this._connectionProfile = profile;
 	}
 
@@ -349,7 +403,7 @@ export class DeleteConnectionAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private element: IConnectionProfile | ConnectionProfileGroup,
+		private element: ConnectionProfile | ConnectionProfileGroup,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super(id, label);
@@ -359,6 +413,7 @@ export class DeleteConnectionAction extends Action {
 		}
 
 		if (element instanceof ConnectionProfile) {
+			element = <ConnectionProfile>element;
 			let parent: ConnectionProfileGroup = element.parent;
 			if (parent && parent.id === Constants.unsavedGroupId) {
 				this.enabled = false;

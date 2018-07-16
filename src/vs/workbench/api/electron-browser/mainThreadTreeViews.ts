@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ExtHostContext, MainThreadTreeViewsShape, ExtHostTreeViewsShape, MainContext, IExtHostContext } from '../node/extHost.protocol';
-import { ITreeViewDataProvider, ITreeItem, IViewsService } from 'vs/workbench/common/views';
+import { ITreeViewDataProvider, ITreeItem, ICustomViewsService } from 'vs/workbench/common/views';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { distinct } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -21,7 +21,7 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@IViewsService private viewsService: IViewsService,
+		@ICustomViewsService private viewsService: ICustomViewsService,
 		@INotificationService private notificationService: INotificationService
 	) {
 		super();
@@ -31,12 +31,7 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 	$registerTreeViewDataProvider(treeViewId: string): void {
 		const dataProvider = this._register(new TreeViewDataProvider(treeViewId, this._proxy, this.notificationService));
 		this._dataProviders.set(treeViewId, dataProvider);
-		const treeViewer = this.viewsService.getTreeViewer(treeViewId);
-		if (treeViewer) {
-			treeViewer.dataProvider = dataProvider;
-		} else {
-			this.notificationService.error('No view is registered with id: ' + treeViewId);
-		}
+		this.viewsService.getTreeViewer(treeViewId).dataProvider = dataProvider;
 	}
 
 	$reveal(treeViewId: string, item: ITreeItem, parentChain: ITreeItem[], options?: { select?: boolean }): TPromise<void> {
@@ -64,10 +59,10 @@ type TreeItemHandle = string;
 
 class TreeViewDataProvider implements ITreeViewDataProvider {
 
-	private readonly _onDidChange: Emitter<ITreeItem[] | undefined | null> = new Emitter<ITreeItem[] | undefined | null>();
+	private _onDidChange: Emitter<ITreeItem[] | undefined | null> = new Emitter<ITreeItem[] | undefined | null>();
 	readonly onDidChange: Event<ITreeItem[] | undefined | null> = this._onDidChange.event;
 
-	private readonly _onDispose: Emitter<void> = new Emitter<void>();
+	private _onDispose: Emitter<void> = new Emitter<void>();
 	readonly onDispose: Event<void> = this._onDispose.event;
 
 	private itemsMap: Map<TreeItemHandle, ITreeItem> = new Map<TreeItemHandle, ITreeItem>();
@@ -92,8 +87,8 @@ class TreeViewDataProvider implements ITreeViewDataProvider {
 	}
 
 	refresh(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeItem }) {
-		const itemsToRefresh: ITreeItem[] = [];
 		if (itemsToRefreshByHandle) {
+			const itemsToRefresh: ITreeItem[] = [];
 			for (const treeItemHandle of Object.keys(itemsToRefreshByHandle)) {
 				const currentTreeItem = this.itemsMap.get(treeItemHandle);
 				if (currentTreeItem) { // Refresh only if the item exists
@@ -106,16 +101,13 @@ class TreeViewDataProvider implements ITreeViewDataProvider {
 						// Update maps when handle is changed and refresh parent
 						this.itemsMap.delete(treeItemHandle);
 						this.itemsMap.set(currentTreeItem.handle, currentTreeItem);
-						const parent = treeItem.parentHandle ? this.itemsMap.get(treeItem.parentHandle) : null;
-						if (parent) {
-							itemsToRefresh.push(parent);
-						}
+						itemsToRefresh.push(this.itemsMap.get(treeItem.parentHandle));
 					}
 				}
+				if (itemsToRefresh.length) {
+					this._onDidChange.fire(itemsToRefresh);
+				}
 			}
-		}
-		if (itemsToRefresh.length) {
-			this._onDidChange.fire(itemsToRefresh);
 		} else {
 			this._onDidChange.fire();
 		}

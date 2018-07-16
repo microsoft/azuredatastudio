@@ -146,11 +146,12 @@ export function renderRenameBox(debugService: IDebugService, contextViewService:
 	const wrapUp = once((renamed: boolean) => {
 		if (!disposed) {
 			disposed = true;
-			debugService.getViewModel().setSelectedExpression(undefined);
 			if (element instanceof Expression && renamed && inputBox.value) {
 				debugService.renameWatchExpression(element.getId(), inputBox.value);
+				debugService.getViewModel().setSelectedExpression(undefined);
 			} else if (element instanceof Expression && !element.name) {
 				debugService.removeWatchExpressions(element.getId());
+				debugService.getViewModel().setSelectedExpression(undefined);
 			} else if (element instanceof Variable) {
 				element.errorMessage = null;
 				if (renamed && element.value !== inputBox.value) {
@@ -164,7 +165,7 @@ export function renderRenameBox(debugService: IDebugService, contextViewService:
 				}
 			}
 
-			tree.domFocus();
+			tree.DOMFocus();
 			tree.setFocus(element);
 
 			// need to remove the input box since this template will be reused.
@@ -228,7 +229,7 @@ export class BaseDebugController extends WorkbenchTreeController {
 				}),
 				onHide: (wasCancelled?: boolean) => {
 					if (wasCancelled) {
-						tree.domFocus();
+						tree.DOMFocus();
 					}
 				},
 				getActionsContext: () => element

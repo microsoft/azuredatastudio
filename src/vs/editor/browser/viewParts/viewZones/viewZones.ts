@@ -99,11 +99,7 @@ export class ViewZones extends ViewPart {
 	}
 
 	public onLineMappingChanged(e: viewEvents.ViewLineMappingChangedEvent): boolean {
-		const hadAChange = this._recomputeWhitespacesProps();
-		if (hadAChange) {
-			this._context.viewLayout.onHeightMaybeChanged();
-		}
-		return hadAChange;
+		return this._recomputeWhitespacesProps();
 	}
 
 	public onLinesDeleted(e: viewEvents.ViewLinesDeletedEvent): boolean {

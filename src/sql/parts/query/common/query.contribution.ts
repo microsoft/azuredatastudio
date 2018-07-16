@@ -275,11 +275,6 @@ let registryProperties = {
 		'description': localize('sql.saveAsCsv.includeHeaders', '[Optional] When true, column headers are included when saving results as CSV'),
 		'default': true
 	},
-	'sql.saveAsCsv.delimiter': {
-		'type': 'string',
-		'description': localize('sql.saveAsCsv.delimiter', '[Optional] The custom delimiter to use between values when saving as CSV'),
-		'default': ','
-	},
 	'sql.copyIncludeHeaders': {
 		'type': 'boolean',
 		'description': localize('sql.copyIncludeHeaders', '[Optional] Configuration options for copying results from the Results View'),
@@ -310,11 +305,6 @@ let registryProperties = {
 		],
 		'default': Constants.tabColorModeOff,
 		'description': localize('tabColorMode', "Controls how to color tabs based on the server group of their active connection")
-	},
-	'sql.showConnectionInfoInTitle': {
-		'type': 'boolean',
-		'description': localize('showConnectionInfoInTitle', "Controls whether to show the connection info for a tab in the title."),
-		'default': false
 	},
 	'mssql.intelliSense.enableIntelliSense': {
 		'type': 'boolean',

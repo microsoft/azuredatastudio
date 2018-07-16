@@ -5,7 +5,7 @@
 
 import * as DOM from 'vs/base/browser/dom';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { $ } from 'vs/base/browser/builder';
+import { Dimension, Builder, $ } from 'vs/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -15,10 +15,10 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { DashboardInput } from './dashboardInput';
 import { DashboardModule } from './dashboard.module';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
-import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { DASHBOARD_SELECTOR } from 'sql/parts/dashboard/dashboard.component';
-import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
+import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -34,6 +34,7 @@ export class DashboardEditor extends BaseEditor {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
+		@IBootstrapService private _bootstrapService: IBootstrapService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IDashboardService private _dashboardService: IDashboardService,
 		@IConnectionManagementService private _connMan: IConnectionManagementService
@@ -46,9 +47,9 @@ export class DashboardEditor extends BaseEditor {
 	}
 
 	/**
-	 * Called to create the editor in the parent element.
+	 * Called to create the editor in the parent builder.
 	 */
-	public createEditor(parent: HTMLElement): void {
+	public createEditor(parent: Builder): void {
 	}
 
 	/**
@@ -70,8 +71,7 @@ export class DashboardEditor extends BaseEditor {
 	 * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
 	 * To be called when the container of this editor changes size.
 	 */
-	public layout(dimension: DOM.Dimension): void {
-		this._dashboardService.layout(dimension);
+	public layout(dimension: Dimension): void {
 	}
 
 	public setInput(input: DashboardInput, options: EditorOptions): TPromise<void> {
@@ -79,7 +79,7 @@ export class DashboardEditor extends BaseEditor {
 			return TPromise.as(undefined);
 		}
 
-		const parentElement = this.getContainer();
+		const parentElement = this.getContainer().getHTMLElement();
 
 		super.setInput(input, options);
 
@@ -111,10 +111,10 @@ export class DashboardEditor extends BaseEditor {
 		let serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
 		this._dashboardService.changeToDashboard({ profile, serverInfo });
 		let scopedContextService = this._contextKeyService.createScoped(input.container);
-		let connectionContextKey = new ConnectionContextKey(scopedContextService);
+		let connectionContextKey = new ConnectionContextkey(scopedContextService);
 		connectionContextKey.set(input.connectionProfile);
 
-		let params: IDashboardComponentParams = {
+		let params: DashboardComponentParams = {
 			connection: input.connectionProfile,
 			ownerUri: input.uri,
 			scopedContextService,
@@ -123,7 +123,7 @@ export class DashboardEditor extends BaseEditor {
 
 		input.hasBootstrapped = true;
 
-		let uniqueSelector = bootstrapAngular(this.instantiationService,
+		let uniqueSelector = this._bootstrapService.bootstrap(
 			DashboardModule,
 			this._dashboardContainer,
 			DASHBOARD_SELECTOR,

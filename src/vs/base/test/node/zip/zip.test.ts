@@ -12,7 +12,6 @@ import URI from 'vs/base/common/uri';
 import { extract } from 'vs/base/node/zip';
 import { generateUuid } from 'vs/base/common/uuid';
 import { rimraf, exists } from 'vs/base/node/pfs';
-import { NullLogService } from '../../../../platform/log/common/log';
 
 const fixtures = URI.parse(require.toUrl('./fixtures')).fsPath;
 
@@ -22,7 +21,7 @@ suite('Zip', () => {
 		const fixture = path.join(fixtures, 'extract.zip');
 		const target = path.join(os.tmpdir(), generateUuid());
 
-		return extract(fixture, target, {}, new NullLogService())
+		return extract(fixture, target)
 			.then(() => exists(path.join(target, 'extension')))
 			.then(exists => assert(exists))
 			.then(() => rimraf(target));

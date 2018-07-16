@@ -6,7 +6,7 @@
 'use strict';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder, Dimension } from 'vs/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -16,16 +16,15 @@ import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
 import { getZoomLevel } from 'vs/base/browser/browser';
 import { Configuration } from 'vs/editor/browser/config/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import * as DOM from 'vs/base/browser/dom';
+import * as dom from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
-import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { QueryOutputModule } from 'sql/parts/query/views/queryOutput.module';
 import { QUERY_OUTPUT_SELECTOR } from 'sql/parts/query/views/queryOutput.component';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const RESULTS_GRID_DEFAULTS = {
 	cellPadding: [6, 10, 5],
@@ -100,8 +99,8 @@ export class QueryResultsEditor extends BaseEditor {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IConfigurationService private _configurationService: IConfigurationService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IBootstrapService private _bootstrapService: IBootstrapService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super(QueryResultsEditor.ID, telemetryService, themeService);
 		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
@@ -120,7 +119,7 @@ export class QueryResultsEditor extends BaseEditor {
 	private applySettings() {
 		if (this.input && this.input.container) {
 			if (!this.input.css) {
-				this.input.css = DOM.createStyleSheet(this.input.container);
+				this.input.css = dom.createStyleSheet(this.input.container);
 			}
 			let cssRuleText = '';
 			if (types.isNumber(this._rawOptions.cellPadding)) {
@@ -134,10 +133,10 @@ export class QueryResultsEditor extends BaseEditor {
 		}
 	}
 
-	createEditor(parent: HTMLElement): void {
+	createEditor(parent: Builder): void {
 	}
 
-	layout(dimension: DOM.Dimension): void {
+	layout(dimension: Dimension): void {
 	}
 
 	setInput(input: QueryResultsInput, options: EditorOptions): TPromise<void> {
@@ -169,10 +168,10 @@ export class QueryResultsEditor extends BaseEditor {
 		// Note: pass in input so on disposal this is cleaned up.
 		// Otherwise many components will be left around and be subscribed
 		// to events from the backing data service
-		let params: IQueryComponentParams = { dataService: dataService };
-		bootstrapAngular(this._instantiationService,
+		let params: QueryComponentParams = { dataService: dataService };
+		this._bootstrapService.bootstrap(
 			QueryOutputModule,
-			this.getContainer(),
+			this.getContainer().getHTMLElement(),
 			QUERY_OUTPUT_SELECTOR,
 			params,
 			input);

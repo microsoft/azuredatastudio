@@ -18,13 +18,6 @@ declare module 'vscode-xterm' {
 	 */
 	export interface ITerminalOptions {
 		/**
-		 * Whether background should support non-opaque color. It must be set before
-		 * executing open() method and can't be changed later without excuting it again.
-		 * Warning: Enabling this option can reduce performances somewhat.
-		 */
-		allowTransparency?: boolean;
-
-		/**
 		 * A data uri of the sound to use for the bell (needs bellStyle = 'sound').
 		 */
 		bellSound?: string;
@@ -56,8 +49,6 @@ declare module 'vscode-xterm' {
 
 		/**
 		 * Whether to enable the rendering of bold text.
-		 *
-		 * @deprecated Use fontWeight and fontWeightBold instead.
 		 */
 		enableBold?: boolean;
 
@@ -190,8 +181,8 @@ declare module 'vscode-xterm' {
 		matchIndex?: number;
 
 		/**
-		 * A callback that validates whether to create an individual link, pass
-		 * whether the link is valid to the callback.
+		 * A callback that validates an individual link, returning true if valid and
+		 * false if invalid.
 		 */
 		validationCallback?: (uri: string, callback: (isValid: boolean) => void) => void;
 
@@ -223,35 +214,29 @@ declare module 'vscode-xterm' {
 	}
 
 	export interface IEventEmitter {
-		on(type: string, listener: (...args: any[]) => void): void;
-		off(type: string, listener: (...args: any[]) => void): void;
-		emit(type: string, data?: any): void;
-		addDisposableListener(type: string, handler: (...args: any[]) => void): IDisposable;
+	  on(type: string, listener: (...args: any[]) => void): void;
+	  off(type: string, listener: (...args: any[]) => void): void;
+	  emit(type: string, data?: any): void;
+	  addDisposableListener(type: string, handler: (...args: any[]) => void): IDisposable;
 	}
 
 	/**
 	 * An object that can be disposed via a dispose function.
 	 */
 	export interface IDisposable {
-		dispose(): void;
-	}
-
-	export interface IMarker extends IDisposable {
-		readonly id: number;
-		readonly isDisposed: boolean;
-		readonly line: number;
+	  dispose(): void;
 	}
 
 	export interface ILocalizableStrings {
-		blankLine: string;
-		promptLabel: string;
-		tooMuchOutput: string;
+	  blankLine: string;
+	  promptLabel: string;
+	  tooMuchOutput: string;
 	}
 
 	/**
 	 * The class that represents an xterm.js terminal.
 	 */
-	export class Terminal implements IEventEmitter {
+	export class Terminal {
 		/**
 		 * The element containing the terminal.
 		 */
@@ -271,12 +256,6 @@ declare module 'vscode-xterm' {
 		 * The number of columns in the terminal's viewport.
 		 */
 		cols: number;
-
-		/**
-		 * (EXPERIMENTAL) Get all markers registered against the buffer. If the alt
-		 * buffer is active this will always return [].
-		 */
-		markers: IMarker[];
 
 		/**
 		 * Natural language strings that can be localized.
@@ -311,7 +290,7 @@ declare module 'vscode-xterm' {
 		 * @param type The type of the event.
 		 * @param listener The listener.
 		 */
-		on(type: 'data', listener: (...args: any[]) => void): void;
+		on(type: 'data', listener: (data?: string) => void): void;
 		/**
 		 * Registers an event listener.
 		 * @param type The type of the event.
@@ -329,13 +308,13 @@ declare module 'vscode-xterm' {
 		 * @param type The type of the event.
 		 * @param listener The listener.
 		 */
-		on(type: 'refresh', listener: (data?: { start: number, end: number }) => void): void;
+		on(type: 'refresh', listener: (data?: {start: number, end: number}) => void): void;
 		/**
 		 * Registers an event listener.
 		 * @param type The type of the event.
 		 * @param listener The listener.
 		 */
-		on(type: 'resize', listener: (data?: { cols: number, rows: number }) => void): void;
+		on(type: 'resize', listener: (data?: {cols: number, rows: number}) => void): void;
 		/**
 		 * Registers an event listener.
 		 * @param type The type of the event.
@@ -361,10 +340,6 @@ declare module 'vscode-xterm' {
 		 * @param listener The listener.
 		 */
 		off(type: 'blur' | 'focus' | 'linefeed' | 'selection' | 'data' | 'key' | 'keypress' | 'keydown' | 'refresh' | 'resize' | 'scroll' | 'title' | string, listener: (...args: any[]) => void): void;
-
-		emit(type: string, data?: any): void;
-
-		addDisposableListener(type: string, handler: (...args: any[]) => void): IDisposable;
 
 		/**
 		 * Resizes the terminal.
@@ -408,20 +383,13 @@ declare module 'vscode-xterm' {
 		 * @param options Options for the link matcher.
 		 * @return The ID of the new matcher, this can be used to deregister.
 		 */
-		registerLinkMatcher(regex: RegExp, handler: (event: MouseEvent, uri: string) => void, options?: ILinkMatcherOptions): number;
+		registerLinkMatcher(regex: RegExp, handler: (event: MouseEvent, uri: string) => boolean | void, options?: ILinkMatcherOptions): number;
 
 		/**
 		 * (EXPERIMENTAL) Deregisters a link matcher if it has been registered.
 		 * @param matcherId The link matcher's ID (returned after register)
 		 */
 		deregisterLinkMatcher(matcherId: number): void;
-
-		/**
-		 * (EXPERIMENTAL) Adds a marker to the normal buffer and returns it. If the
-		 * alt buffer is active, undefined is returned.
-		 * @param cursorYOffset The y position offset of the marker from the cursor.
-		 */
-		addMarker(cursorYOffset: number): IMarker;
 
 		/**
 		 * Gets whether the terminal has an active selection.
@@ -444,12 +412,21 @@ declare module 'vscode-xterm' {
 		 */
 		selectAll(): void;
 
-		/**
-		 * Selects text in the buffer between 2 lines.
-		 * @param start The 0-based line index to select from (inclusive).
-		 * @param end The 0-based line index to select to (inclusive).
-		 */
-		selectLines(start: number, end: number): void;
+		// /**
+		//  * Find the next instance of the term, then scroll to and select it. If it
+		//  * doesn't exist, do nothing.
+		//  * @param term Tne search term.
+		//  * @return Whether a result was found.
+		//  */
+		// findNext(term: string): boolean;
+
+		// /**
+		//  * Find the previous instance of the term, then scroll to and select it. If it
+		//  * doesn't exist, do nothing.
+		//  * @param term Tne search term.
+		//  * @return Whether a result was found.
+		//  */
+		// findPrevious(term: string): boolean;
 
 		/**
 		 * Destroys the terminal and detaches it from the DOM.
@@ -479,12 +456,6 @@ declare module 'vscode-xterm' {
 		scrollToBottom(): void;
 
 		/**
-		 * Scrolls to a line within the buffer.
-		 * @param line The 0-based line index to scroll to.
-		 */
-		scrollToLine(line: number): void;
-
-		/**
 		 * Clear the entire buffer, making the prompt line the new first line.
 		 */
 		clear(): void;
@@ -499,7 +470,7 @@ declare module 'vscode-xterm' {
 		 * Retrieves an option's value from the terminal.
 		 * @param key The option key.
 		 */
-		getOption(key: 'bellSound' | 'bellStyle' | 'cursorStyle' | 'fontFamily' | 'fontWeight' | 'fontWeightBold' | 'termName'): string;
+		getOption(key: 'bellSound' | 'bellStyle' | 'cursorStyle' | 'fontFamily' | 'termName'): string;
 		/**
 		 * Retrieves an option's value from the terminal.
 		 * @param key The option key.
@@ -532,12 +503,6 @@ declare module 'vscode-xterm' {
 		 * @param value The option value.
 		 */
 		setOption(key: 'fontFamily' | 'termName' | 'bellSound', value: string): void;
-		/**
-		* Sets an option on the terminal.
-		* @param key The option key.
-		* @param value The option value.
-		*/
-		setOption(key: 'fontWeight' | 'fontWeightBold', value: null | 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900'): void;
 		/**
 		 * Sets an option on the terminal.
 		 * @param key The option key.
@@ -585,12 +550,6 @@ declare module 'vscode-xterm' {
 		 * @param key The option key.
 		 * @param value The option value.
 		 */
-		setOption(key: 'cols' | 'rows', value: number): void;
-		/**
-		 * Sets an option on the terminal.
-		 * @param key The option key.
-		 * @param value The option value.
-		 */
 		setOption(key: string, value: any): void;
 
 		/**
@@ -612,17 +571,16 @@ declare module 'vscode-xterm' {
 		 * @param addon The addon to apply.
 		 */
 		static applyAddon(addon: any): void;
-	}
-}
 
-// Modifications to official .d.ts below
-declare module 'vscode-xterm' {
-	interface Terminal {
+
+
+		// Modifications to official .d.ts below
+
 		buffer: {
-			y: number;
-			ybase: number;
+			/**
+			 * The viewport position.
+			 */
 			ydisp: number;
-			x: number;
 		};
 
 		/**
@@ -648,6 +606,6 @@ declare module 'vscode-xterm' {
 
 		webLinksInit(handler?: (event: MouseEvent, uri: string) => void, options?: ILinkMatcherOptions): void;
 		winptyCompatInit(): void;
-		charMeasure?: { height: number, width: number };
+		charMeasure?: { height: number, width: number }
 	}
 }

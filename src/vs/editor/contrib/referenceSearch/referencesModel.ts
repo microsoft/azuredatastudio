@@ -5,7 +5,7 @@
 'use strict';
 
 import { localize } from 'vs/nls';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { basename, dirname } from 'vs/base/common/paths';
 import { IDisposable, dispose, IReference } from 'vs/base/common/lifecycle';
 import * as strings from 'vs/base/common/strings';
@@ -253,32 +253,20 @@ export class ReferencesModel implements IDisposable {
 		}
 	}
 
-	public nextOrPreviousReference(reference: OneReference, next: boolean): OneReference {
+	public nextReference(reference: OneReference): OneReference {
 
-		let { parent } = reference;
+		var idx = reference.parent.children.indexOf(reference),
+			len = reference.parent.children.length,
+			totalLength = reference.parent.parent.groups.length;
 
-		let idx = parent.children.indexOf(reference);
-		let childCount = parent.children.length;
-		let groupCount = parent.parent.groups.length;
-
-		if (groupCount === 1 || next && idx + 1 < childCount || !next && idx > 0) {
-			// cycling within one file
-			if (next) {
-				idx = (idx + 1) % childCount;
-			} else {
-				idx = (idx + childCount - 1) % childCount;
-			}
-			return parent.children[idx];
+		if (idx + 1 < len || totalLength === 1) {
+			return reference.parent.children[(idx + 1) % len];
 		}
 
-		idx = parent.parent.groups.indexOf(parent);
-		if (next) {
-			idx = (idx + 1) % groupCount;
-			return parent.parent.groups[idx].children[0];
-		} else {
-			idx = (idx + groupCount - 1) % groupCount;
-			return parent.parent.groups[idx].children[parent.parent.groups[idx].children.length - 1];
-		}
+		idx = reference.parent.parent.groups.indexOf(reference.parent);
+		idx = (idx + 1) % totalLength;
+
+		return reference.parent.parent.groups[idx].children[0];
 	}
 
 	public nearestReference(resource: URI, position: Position): OneReference {

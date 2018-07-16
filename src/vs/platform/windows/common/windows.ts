@@ -7,7 +7,7 @@
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { Event, latch, anyEvent } from 'vs/base/common/event';
+import Event from 'vs/base/common/event';
 import { ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
 import { IProcessEnvironment } from 'vs/base/common/platform';
 import { ParsedArgs } from 'vs/platform/environment/common/environment';
@@ -16,7 +16,6 @@ import { IRecentlyOpened } from 'vs/platform/history/common/history';
 import { ICommandAction } from 'vs/platform/actions/common/actions';
 import { PerformanceEntry } from 'vs/base/common/performance';
 import { LogLevel } from 'vs/platform/log/common/log';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 export const IWindowsService = createDecorator<IWindowsService>('windowsService');
 
@@ -214,7 +213,6 @@ export interface IWindowsConfiguration {
 export interface IWindowSettings {
 	openFilesInNewWindow: 'on' | 'off' | 'default';
 	openFoldersInNewWindow: 'on' | 'off' | 'default';
-	openWithoutArgumentsInNewWindow: 'on' | 'off';
 	restoreWindows: 'all' | 'folders' | 'one' | 'none';
 	restoreFullscreen: boolean;
 	zoomLevel: number;
@@ -225,8 +223,6 @@ export interface IWindowSettings {
 	nativeTabs: boolean;
 	enableMenuBarMnemonics: boolean;
 	closeWhenEmpty: boolean;
-	smoothScrollingWorkaround: boolean;
-	clickThroughInactive: boolean;
 }
 
 export enum OpenContext {
@@ -295,7 +291,6 @@ export interface IOpenFileRequest {
 	filesToCreate?: IPath[];
 	filesToDiff?: IPath[];
 	filesToWait?: IPathsToWaitFor;
-	termProgram?: string;
 }
 
 export interface IAddFoldersRequest {
@@ -335,27 +330,4 @@ export interface IWindowConfiguration extends ParsedArgs, IOpenFileRequest {
 export interface IRunActionInWindowRequest {
 	id: string;
 	from: 'menu' | 'touchbar' | 'mouse';
-}
-
-export class ActiveWindowManager implements IDisposable {
-
-	private disposables: IDisposable[] = [];
-	private _activeWindowId: number;
-
-	constructor(@IWindowsService windowsService: IWindowsService) {
-		const onActiveWindowChange = latch(anyEvent(windowsService.onWindowOpen, windowsService.onWindowFocus));
-		onActiveWindowChange(this.setActiveWindow, this, this.disposables);
-	}
-
-	private setActiveWindow(windowId: number) {
-		this._activeWindowId = windowId;
-	}
-
-	get activeClientId(): string {
-		return `window:${this._activeWindowId}`;
-	}
-
-	dispose() {
-		this.disposables = dispose(this.disposables);
-	}
 }

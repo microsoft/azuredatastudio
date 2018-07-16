@@ -17,16 +17,15 @@
 	margin-right: 7px;
 }
 
-.monaco-workbench .debug-actions-widget .monaco-action-bar .action-item .monaco-select-box {
+.monaco-workbench .debug-actions-widget .monaco-action-bar .action-item .select-box {
 	margin-top: 6px;
 }
 
 .monaco-workbench .debug-actions-widget .drag-area {
 	cursor: -webkit-grab;
 	height: 32px;
-	width: 16px;
+	width: 10px;
 	background: url('drag.svg') center center no-repeat;
-	background-size: 16px 16px;
 }
 
 .monaco-workbench .debug-actions-widget .drag-area.dragged {

@@ -68,16 +68,7 @@ suite('Editor Model - Model Edit Operation', () => {
 		assert.equal(model.getLineContent(4), LINE4);
 		assert.equal(model.getLineContent(5), LINE5);
 
-		const simplifyEdit = (edit: IIdentifiedSingleEditOperation) => {
-			return {
-				identifier: edit.identifier,
-				range: edit.range,
-				text: edit.text,
-				forceMoveMarkers: edit.forceMoveMarkers,
-				isAutoWhitespaceEdit: edit.isAutoWhitespaceEdit
-			};
-		};
-		assert.deepEqual(originalOp.map(simplifyEdit), editOp.map(simplifyEdit));
+		assert.deepEqual(originalOp, editOp);
 	}
 
 	test('Insert inline', () => {

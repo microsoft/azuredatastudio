@@ -145,56 +145,25 @@ export class ExtensionsListView extends ViewsViewletPanel {
 			case 'name': options = assign(options, { sortBy: SortBy.Title }); break;
 		}
 
-		if (/@builtin/i.test(value)) {
-			const showThemesOnly = /@builtin:themes/i.test(value);
-			if (showThemesOnly) {
-				value = value.replace(/@builtin:themes/g, '');
-			}
-			const showBasicsOnly = /@builtin:basics/i.test(value);
-			if (showBasicsOnly) {
-				value = value.replace(/@builtin:basics/g, '');
-			}
-			const showFeaturesOnly = /@builtin:features/i.test(value);
-			if (showFeaturesOnly) {
-				value = value.replace(/@builtin:features/g, '');
-			}
+		if (!value || ExtensionsListView.isBuiltInExtensionsQuery(value)) {
+			// Show installed extensions
+			value = value ? value.replace(/@builtin/g, '').replace(/@sort:(\w+)(-\w*)?/g, '').trim().toLowerCase() : '';
 
-			value = value.replace(/@builtin/g, '').replace(/@sort:(\w+)(-\w*)?/g, '').trim().toLowerCase();
 			let result = await this.extensionsWorkbenchService.queryLocal();
 
 			result = result
 				.filter(e => e.type === LocalExtensionType.System && (e.name.toLowerCase().indexOf(value) > -1 || e.displayName.toLowerCase().indexOf(value) > -1));
 
-			if (showThemesOnly) {
-				const themesExtensions = result.filter(e => {
-					return e.local.manifest
-						&& e.local.manifest.contributes
-						&& Array.isArray(e.local.manifest.contributes.themes)
-						&& e.local.manifest.contributes.themes.length;
-				});
-				return new PagedModel(this.sortExtensions(themesExtensions, options));
-			}
-			if (showBasicsOnly) {
-				const basics = result.filter(e => {
-					return e.local.manifest
-						&& e.local.manifest.contributes
-						&& Array.isArray(e.local.manifest.contributes.languages)
-						&& e.local.manifest.contributes.languages.length
-						&& e.local.identifier.id !== 'git';
-				});
-				return new PagedModel(this.sortExtensions(basics, options));
-			}
-			if (showFeaturesOnly) {
-				const others = result.filter(e => {
-					return e.local.manifest
-						&& e.local.manifest.contributes
-						&& (!Array.isArray(e.local.manifest.contributes.languages) || e.local.identifier.id === 'git')
-						&& !Array.isArray(e.local.manifest.contributes.themes);
-				});
-				return new PagedModel(this.sortExtensions(others, options));
-			}
+			const themesExtensions = result.filter(e => {
+				return e.local.manifest
+					&& e.local.manifest.contributes
+					&& Array.isArray(e.local.manifest.contributes.themes)
+					&& e.local.manifest.contributes.themes.length;
+			});
+			const themesExtensionsIds = themesExtensions.map(e => e.id);
+			const others = result.filter(e => themesExtensionsIds.indexOf(e.id) === -1);
 
-			return new PagedModel(this.sortExtensions(result, options));
+			return new PagedModel([...this.sortExtensions(others, options), ...this.sortExtensions(themesExtensions, options)]);
 		}
 
 		if (!value || ExtensionsListView.isInstalledExtensionsQuery(value)) {
@@ -204,12 +173,12 @@ export class ExtensionsListView extends ViewsViewletPanel {
 			let result = await this.extensionsWorkbenchService.queryLocal();
 
 			result = result
-				.filter(e => e.type === LocalExtensionType.User && (e.name.toLowerCase().indexOf(value) > -1 || e.displayName.toLowerCase().indexOf(value) > -1));
+				.filter(e => e.type === LocalExtensionType.User && e.name.toLowerCase().indexOf(value) > -1);
 
 			return new PagedModel(this.sortExtensions(result, options));
 		}
 
-		const idMatch = /@id:(([a-z0-9A-Z][a-z0-9\-A-Z]*)\.([a-z0-9A-Z][a-z0-9\-A-Z]*))/.exec(value);
+		const idMatch = /@id:([a-z0-9][a-z0-9\-]*\.[a-z0-9][a-z0-9\-]*)/.exec(value);
 
 		if (idMatch) {
 			const name = idMatch[1];
@@ -224,7 +193,7 @@ export class ExtensionsListView extends ViewsViewletPanel {
 			const local = await this.extensionsWorkbenchService.queryLocal();
 			const result = local
 				.sort((e1, e2) => e1.displayName.localeCompare(e2.displayName))
-				.filter(extension => extension.outdated && (extension.name.toLowerCase().indexOf(value) > -1 || extension.displayName.toLowerCase().indexOf(value) > -1));
+				.filter(extension => extension.outdated && extension.name.toLowerCase().indexOf(value) > -1);
 
 			return new PagedModel(this.sortExtensions(result, options));
 		}
@@ -237,7 +206,7 @@ export class ExtensionsListView extends ViewsViewletPanel {
 
 			const result = local
 				.sort((e1, e2) => e1.displayName.localeCompare(e2.displayName))
-				.filter(e => runningExtensions.every(r => !areSameExtensions(r, e)) && (e.name.toLowerCase().indexOf(value) > -1 || e.displayName.toLowerCase().indexOf(value) > -1));
+				.filter(e => runningExtensions.every(r => !areSameExtensions(r, e)) && e.name.toLowerCase().indexOf(value) > -1);
 
 			return new PagedModel(this.sortExtensions(result, options));
 		}
@@ -251,7 +220,7 @@ export class ExtensionsListView extends ViewsViewletPanel {
 				.sort((e1, e2) => e1.displayName.localeCompare(e2.displayName))
 				.filter(e => e.type === LocalExtensionType.User &&
 					(e.enablementState === EnablementState.Enabled || e.enablementState === EnablementState.WorkspaceEnabled) &&
-					(e.name.toLowerCase().indexOf(value) > -1 || e.displayName.toLowerCase().indexOf(value) > -1)
+					e.name.toLowerCase().indexOf(value) > -1
 				);
 
 			return new PagedModel(this.sortExtensions(result, options));
@@ -341,7 +310,7 @@ export class ExtensionsListView extends ViewsViewletPanel {
 
 						/* __GDPR__
 							"extensionAllRecommendations:open" : {
-								"count" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
+								"count" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 							}
 						*/
 						this.telemetryService.publicLog('extensionAllRecommendations:open', { count: names.length });
@@ -379,7 +348,7 @@ export class ExtensionsListView extends ViewsViewletPanel {
 
 						/* __GDPR__
 							"extensionRecommendations:open" : {
-								"count" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
+								"count" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 							}
 						*/
 						this.telemetryService.publicLog('extensionRecommendations:open', { count: names.length });
@@ -469,7 +438,7 @@ export class ExtensionsListView extends ViewsViewletPanel {
 				const names = recommendations.filter(name => name.toLowerCase().indexOf(value) > -1);
 				/* __GDPR__
 			"extensionWorkspaceRecommendations:open" : {
-				"count" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
+				"count" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 			}
 		*/
 				this.telemetryService.publicLog('extensionWorkspaceRecommendations:open', { count: names.length });
@@ -560,7 +529,7 @@ export class ExtensionsListView extends ViewsViewletPanel {
 	}
 
 	static isBuiltInExtensionsQuery(query: string): boolean {
-		return /^\s*@builtin\s*$/i.test(query);
+		return /@builtin/i.test(query);
 	}
 
 	static isInstalledExtensionsQuery(query: string): boolean {
@@ -603,7 +572,7 @@ export class ExtensionsListView extends ViewsViewletPanel {
 
 export class InstalledExtensionsView extends ExtensionsListView {
 
-	public static isInstalledExtensionsQuery(query: string): boolean {
+	public static isInsalledExtensionsQuery(query: string): boolean {
 		return ExtensionsListView.isInstalledExtensionsQuery(query)
 			|| ExtensionsListView.isOutdatedExtensionsQuery(query)
 			|| ExtensionsListView.isDisabledExtensionsQuery(query)
@@ -611,7 +580,7 @@ export class InstalledExtensionsView extends ExtensionsListView {
 	}
 
 	async show(query: string): TPromise<IPagedModel<IExtension>> {
-		if (InstalledExtensionsView.isInstalledExtensionsQuery(query)) {
+		if (InstalledExtensionsView.isInsalledExtensionsQuery(query)) {
 			return super.show(query);
 		}
 		let searchInstalledQuery = '@installed';
@@ -623,22 +592,12 @@ export class InstalledExtensionsView extends ExtensionsListView {
 export class BuiltInExtensionsView extends ExtensionsListView {
 
 	async show(query: string): TPromise<IPagedModel<IExtension>> {
-		return super.show(query.replace('@builtin', '@builtin:features'));
-	}
-
-}
-
-export class BuiltInThemesExtensionsView extends ExtensionsListView {
-
-	async show(query: string): TPromise<IPagedModel<IExtension>> {
-		return super.show(query.replace('@builtin', '@builtin:themes'));
-	}
-}
-
-export class BuiltInBasicsExtensionsView extends ExtensionsListView {
-
-	async show(query: string): TPromise<IPagedModel<IExtension>> {
-		return super.show(query.replace('@builtin', '@builtin:basics'));
+		if (!ExtensionsListView.isBuiltInExtensionsQuery(query)) {
+			return super.show(query);
+		}
+		let searchBuiltInQuery = '@builtin';
+		searchBuiltInQuery = query ? searchBuiltInQuery + ' ' + query : searchBuiltInQuery;
+		return super.show(searchBuiltInQuery);
 	}
 }
 

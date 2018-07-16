@@ -10,7 +10,6 @@ export interface IViewItem {
 	model: Item;
 	top: number;
 	height: number;
-	width: number;
 }
 
 export class HeightMap {
@@ -23,7 +22,7 @@ export class HeightMap {
 		this.indexes = {};
 	}
 
-	public getContentHeight(): number {
+	public getTotalHeight(): number {
 		var last = this.heightMap[this.heightMap.length - 1];
 		return !last ? 0 : last.top + last.height;
 	}

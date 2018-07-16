@@ -28,16 +28,6 @@ import { IProgressService2, ProgressLocation } from 'vs/platform/progress/common
 import { localize } from 'vs/nls';
 import { isFalsyOrEmpty } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
-import { shouldSynchronizeModel } from 'vs/editor/common/services/modelService';
-import { SnippetController2 } from 'vs/editor/contrib/snippet/snippetController2';
-import { ITextModelService } from 'vs/editor/common/services/resolverService';
-import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IFileService } from 'vs/platform/files/common/files';
-import { CodeActionKind } from 'vs/editor/contrib/codeAction/codeActionTrigger';
-import { CodeAction } from 'vs/editor/common/modes';
-import { applyCodeAction } from 'vs/editor/contrib/codeAction/codeActionCommands';
-import { getCodeActions } from 'vs/editor/contrib/codeAction/codeAction';
-import { ICodeActionsOnSaveOptions } from 'vs/editor/common/config/editorOptions';
 
 export interface ISaveParticipantParticipant extends ISaveParticipant {
 	// progressMessage: string;
@@ -59,7 +49,7 @@ class TrimWhitespaceParticipant implements ISaveParticipantParticipant {
 	}
 
 	private doTrimTrailingWhitespace(model: ITextModel, isAutoSaved: boolean): void {
-		let prevSelection: Selection[] = [];
+		let prevSelection: Selection[] = [new Selection(1, 1, 1, 1)];
 		const cursors: Position[] = [];
 
 		let editor = findEditor(model, this.codeEditorService);
@@ -69,12 +59,6 @@ class TrimWhitespaceParticipant implements ISaveParticipantParticipant {
 			prevSelection = editor.getSelections();
 			if (isAutoSaved) {
 				cursors.push(...prevSelection.map(s => new Position(s.positionLineNumber, s.positionColumn)));
-				const snippetsRange = SnippetController2.get(editor).getSessionEnclosingRange();
-				if (snippetsRange) {
-					for (let lineNumber = snippetsRange.startLineNumber; lineNumber <= snippetsRange.endLineNumber; lineNumber++) {
-						cursors.push(new Position(lineNumber, model.getLineMaxColumn(lineNumber)));
-					}
-				}
 			}
 		}
 
@@ -129,7 +113,7 @@ export class FinalNewLineParticipant implements ISaveParticipantParticipant {
 			return;
 		}
 
-		let prevSelection: Selection[] = [];
+		let prevSelection: Selection[] = [new Selection(1, 1, 1, 1)];
 		const editor = findEditor(model, this.codeEditorService);
 		if (editor) {
 			prevSelection = editor.getSelections();
@@ -166,7 +150,7 @@ export class TrimFinalNewLinesParticipant implements ISaveParticipantParticipant
 			return;
 		}
 
-		let prevSelection: Selection[] = [];
+		let prevSelection: Selection[] = [new Selection(1, 1, 1, 1)];
 		const editor = findEditor(model, this.codeEditorService);
 		if (editor) {
 			prevSelection = editor.getSelections();
@@ -181,7 +165,7 @@ export class TrimFinalNewLinesParticipant implements ISaveParticipantParticipant
 			currentLineIsEmptyOrWhitespace = strings.lastNonWhitespaceIndex(currentLine) === -1;
 		}
 
-		const deletionRange = model.validateRange(new Range(currentLineNumber + 1, 1, lineCount + 1, 1));
+		const deletionRange = new Range(currentLineNumber + 1, 1, lineCount + 1, 1);
 		if (!deletionRange.isEmpty()) {
 			model.pushEditOperations(prevSelection, [EditOperation.delete(deletionRange)], edits => prevSelection);
 		}
@@ -213,10 +197,8 @@ class FormatOnSaveParticipant implements ISaveParticipantParticipant {
 		const versionNow = model.getVersionId();
 		const { tabSize, insertSpaces } = model.getOptions();
 
-		const timeout = this._configurationService.getValue('editor.formatOnSaveTimeout', { overrideIdentifier: model.getLanguageIdentifier().language, resource: editorModel.getResource() });
-
 		return new Promise<ISingleEditOperation[]>((resolve, reject) => {
-			setTimeout(() => reject(localize('timeout.formatOnSave', "Aborted format on save after {0}ms", timeout)), timeout);
+			setTimeout(reject, 750);
 			getDocumentFormattingEdits(model, { tabSize, insertSpaces })
 				.then(edits => this._editorWorkerService.computeMoreMinimalEdits(model.uri, edits))
 				.then(resolve, err => {
@@ -240,7 +222,7 @@ class FormatOnSaveParticipant implements ISaveParticipantParticipant {
 	}
 
 	private _editsWithEditor(editor: ICodeEditor, edits: ISingleEditOperation[]): void {
-		EditOperationsCommand.execute(editor, edits);
+		EditOperationsCommand.execute(editor, edits, false);
 	}
 
 	private _editWithModel(model: ITextModel, edits: ISingleEditOperation[]): void {
@@ -267,59 +249,6 @@ class FormatOnSaveParticipant implements ISaveParticipantParticipant {
 	}
 }
 
-class CodeActionOnParticipant implements ISaveParticipant {
-
-	constructor(
-		@ITextModelService private readonly _textModelService: ITextModelService,
-		@IFileService private readonly _fileService: IFileService,
-		@ICommandService private readonly _commandService: ICommandService,
-		@ICodeEditorService private readonly _codeEditorService: ICodeEditorService,
-		@IConfigurationService private readonly _configurationService: IConfigurationService
-	) { }
-
-	async participate(editorModel: ITextFileEditorModel, env: { reason: SaveReason }): Promise<void> {
-		if (env.reason === SaveReason.AUTO) {
-			return undefined;
-		}
-
-		const model = editorModel.textEditorModel;
-		const editor = findEditor(model, this._codeEditorService);
-		if (!editor) {
-			return undefined;
-		}
-
-		const settingsOverrides = { overrideIdentifier: model.getLanguageIdentifier().language, resource: editorModel.getResource() };
-		const setting = this._configurationService.getValue<ICodeActionsOnSaveOptions>('editor.codeActionsOnSave', settingsOverrides);
-		if (!setting) {
-			return undefined;
-		}
-
-		const codeActionsOnSave = Object.keys(setting).filter(x => setting[x]).map(x => new CodeActionKind(x));
-		if (!codeActionsOnSave.length) {
-			return undefined;
-		}
-
-		const timeout = this._configurationService.getValue<number>('editor.codeActionsOnSaveTimeout', settingsOverrides);
-
-		return new Promise<CodeAction[]>((resolve, reject) => {
-			setTimeout(() => reject(localize('codeActionsOnSave.didTimeout', "Aborted codeActionsOnSave after {0}ms", timeout)), timeout);
-			this.getActionsToRun(model, codeActionsOnSave).then(resolve);
-		}).then(actionsToRun => this.applyCodeActions(actionsToRun, editor));
-	}
-
-	private async applyCodeActions(actionsToRun: CodeAction[], editor: ICodeEditor) {
-		for (const action of actionsToRun) {
-			await applyCodeAction(action, this._textModelService, this._fileService, this._commandService, editor);
-		}
-	}
-
-	private async getActionsToRun(model: ITextModel, codeActionsOnSave: CodeActionKind[]) {
-		const actions = await getCodeActions(model, model.getFullModelRange(), { kind: CodeActionKind.Source, includeSourceActions: true });
-		const actionsToRun = actions.filter(returnedAction => returnedAction.kind && codeActionsOnSave.some(onSaveKind => onSaveKind.contains(returnedAction.kind)));
-		return actionsToRun;
-	}
-}
-
 class ExtHostSaveParticipant implements ISaveParticipantParticipant {
 
 	private _proxy: ExtHostDocumentSaveParticipantShape;
@@ -330,14 +259,14 @@ class ExtHostSaveParticipant implements ISaveParticipantParticipant {
 
 	participate(editorModel: ITextFileEditorModel, env: { reason: SaveReason }): Promise<void> {
 
-		if (!shouldSynchronizeModel(editorModel.textEditorModel)) {
+		if (editorModel.textEditorModel.isTooLargeForHavingARichMode()) {
 			// the model never made it to the extension
 			// host meaning we cannot participate in its save
 			return undefined;
 		}
 
 		return new Promise<any>((resolve, reject) => {
-			setTimeout(() => reject(localize('timeout.onWillSave', "Aborted onWillSaveTextDocument-event after 1750ms")), 1750);
+			setTimeout(reject, 1750);
 			this._proxy.$participateInSave(editorModel.getResource(), env.reason).then(values => {
 				for (const success of values) {
 					if (!success) {
@@ -364,7 +293,6 @@ export class SaveParticipant implements ISaveParticipant {
 	) {
 		this._saveParticipants = [
 			instantiationService.createInstance(TrimWhitespaceParticipant),
-			instantiationService.createInstance(CodeActionOnParticipant),
 			instantiationService.createInstance(FormatOnSaveParticipant),
 			instantiationService.createInstance(FinalNewLineParticipant),
 			instantiationService.createInstance(TrimFinalNewLinesParticipant),
@@ -384,7 +312,7 @@ export class SaveParticipant implements ISaveParticipant {
 			const promiseFactory = this._saveParticipants.map(p => () => {
 				return Promise.resolve(p.participate(model, env));
 			});
-			return sequence(promiseFactory).then(() => { }, err => this._logService.warn(err));
+			return sequence(promiseFactory).then(() => { }, err => this._logService.error(err));
 		});
 	}
 }

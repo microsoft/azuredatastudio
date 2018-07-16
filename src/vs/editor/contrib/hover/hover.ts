@@ -19,11 +19,10 @@ import { ICodeEditor, IEditorMouseEvent, MouseTargetType } from 'vs/editor/brows
 import { ModesContentHoverWidget } from './modesContentHover';
 import { ModesGlyphHoverWidget } from './modesGlyphHover';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { registerThemingParticipant, IThemeService } from 'vs/platform/theme/common/themeService';
+import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { editorHoverHighlight, editorHoverBackground, editorHoverBorder, textLinkForeground, textCodeBlockBackground } from 'vs/platform/theme/common/colorRegistry';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import { MarkdownRenderer } from 'vs/editor/contrib/markdown/markdownRenderer';
-import { IEmptyContentData } from 'vs/editor/browser/controller/mouseTarget';
 
 export class ModesHoverController implements editorCommon.IEditorContribution {
 
@@ -58,8 +57,7 @@ export class ModesHoverController implements editorCommon.IEditorContribution {
 
 	constructor(editor: ICodeEditor,
 		@IOpenerService private readonly _openerService: IOpenerService,
-		@IModeService private readonly _modeService: IModeService,
-		@IThemeService private readonly _themeService: IThemeService
+		@IModeService private readonly _modeService: IModeService
 	) {
 		this._editor = editor;
 
@@ -115,8 +113,8 @@ export class ModesHoverController implements editorCommon.IEditorContribution {
 	}
 
 	private _onEditorMouseMove(mouseEvent: IEditorMouseEvent): void {
-		let targetType = mouseEvent.target.type;
-		let stopKey = platform.isMacintosh ? 'metaKey' : 'ctrlKey';
+		var targetType = mouseEvent.target.type;
+		var stopKey = platform.isMacintosh ? 'metaKey' : 'ctrlKey';
 
 		if (this._isMouseDown && this._hoverClicked && this.contentWidget.isColorPickerVisible()) {
 			return;
@@ -130,15 +128,6 @@ export class ModesHoverController implements editorCommon.IEditorContribution {
 		if (targetType === MouseTargetType.OVERLAY_WIDGET && mouseEvent.target.detail === ModesGlyphHoverWidget.ID && !mouseEvent.event[stopKey]) {
 			// mouse moved on top of overlay hover widget
 			return;
-		}
-
-		if (targetType === MouseTargetType.CONTENT_EMPTY) {
-			const epsilon = this._editor.getConfiguration().fontInfo.typicalHalfwidthCharacterWidth / 2;
-			const data = <IEmptyContentData>mouseEvent.target.detail;
-			if (data && !data.isAfterLines && typeof data.horizontalDistanceToText === 'number' && data.horizontalDistanceToText < epsilon) {
-				// Let hover kick in even when the mouse is technically in the empty area after a line, given the distance is small enough
-				targetType = MouseTargetType.CONTENT_TEXT;
-			}
 		}
 
 		if (this._editor.getConfiguration().contribInfo.hover && targetType === MouseTargetType.CONTENT_TEXT) {
@@ -170,7 +159,7 @@ export class ModesHoverController implements editorCommon.IEditorContribution {
 
 	private _createHoverWidget() {
 		const renderer = new MarkdownRenderer(this._editor, this._modeService, this._openerService);
-		this._contentWidget = new ModesContentHoverWidget(this._editor, renderer, this._themeService);
+		this._contentWidget = new ModesContentHoverWidget(this._editor, renderer);
 		this._glyphWidget = new ModesGlyphHoverWidget(this._editor, renderer);
 	}
 
@@ -200,17 +189,11 @@ class ShowHoverAction extends EditorAction {
 	constructor() {
 		super({
 			id: 'editor.action.showHover',
-			label: nls.localize({
-				key: 'showHover',
-				comment: [
-					'Label for action that will trigger the showing of a hover in the editor.',
-					'This allows for users to show the hover without using the mouse.'
-				]
-			}, "Show Hover"),
+			label: nls.localize('showHover', "Show Hover"),
 			alias: 'Show Hover',
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_I)
 			}
 		});

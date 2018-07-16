@@ -5,60 +5,50 @@
 
 import * as nls from 'vs/nls';
 import * as platform from 'vs/base/common/platform';
-import * as cp from 'child_process';
+import cp = require('child_process');
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { ITerminalService, ITerminalInstance } from 'vs/workbench/parts/terminal/common/terminal';
+import { ITerminalService, ITerminalInstance, ITerminalConfiguration } from 'vs/workbench/parts/terminal/common/terminal';
 import { ITerminalService as IExternalTerminalService } from 'vs/workbench/parts/execution/common/execution';
-import { ITerminalLauncher, ITerminalSettings } from 'vs/workbench/parts/debug/common/debug';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const enum ShellType { cmd, powershell, bash }
 
-export class TerminalLauncher implements ITerminalLauncher {
+export class TerminalSupport {
 
-	private integratedTerminalInstance: ITerminalInstance;
-	private terminalDisposedListener: IDisposable;
+	private static integratedTerminalInstance: ITerminalInstance;
+	private static terminalDisposedListener: IDisposable;
 
-	constructor(
-		@ITerminalService private terminalService: ITerminalService,
-		@IExternalTerminalService private nativeTerminalService: IExternalTerminalService
-	) {
-	}
-
-	runInTerminal(args: DebugProtocol.RunInTerminalRequestArguments, config: ITerminalSettings): TPromise<void> {
+	public static runInTerminal(terminalService: ITerminalService, nativeTerminalService: IExternalTerminalService, configurationService: IConfigurationService, args: DebugProtocol.RunInTerminalRequestArguments, response: DebugProtocol.RunInTerminalResponse): TPromise<void> {
 
 		if (args.kind === 'external') {
-			return this.nativeTerminalService.runInTerminal(args.title, args.cwd, args.args, args.env || {});
+			return nativeTerminalService.runInTerminal(args.title, args.cwd, args.args, args.env || {});
 		}
 
-		if (!this.terminalDisposedListener) {
+		if (!TerminalSupport.terminalDisposedListener) {
 			// React on terminal disposed and check if that is the debug terminal #12956
-			this.terminalDisposedListener = this.terminalService.onInstanceDisposed(terminal => {
-				if (this.integratedTerminalInstance && this.integratedTerminalInstance.id === terminal.id) {
-					this.integratedTerminalInstance = null;
+			TerminalSupport.terminalDisposedListener = terminalService.onInstanceDisposed(terminal => {
+				if (TerminalSupport.integratedTerminalInstance && TerminalSupport.integratedTerminalInstance.id === terminal.id) {
+					TerminalSupport.integratedTerminalInstance = null;
 				}
 			});
 		}
 
-		let t = this.integratedTerminalInstance;
+		let t = TerminalSupport.integratedTerminalInstance;
 		if ((t && this.isBusy(t)) || !t) {
-			t = this.terminalService.createTerminal({ name: args.title || nls.localize('debug.terminal.title', "debuggee") });
-			this.integratedTerminalInstance = t;
+			t = terminalService.createInstance({ name: args.title || nls.localize('debug.terminal.title', "debuggee") });
+			TerminalSupport.integratedTerminalInstance = t;
 		}
-		this.terminalService.setActiveInstance(t);
-		this.terminalService.showPanel(true);
+		terminalService.setActiveInstance(t);
+		terminalService.showPanel(true);
 
-		const command = this.prepareCommand(args, config);
+		const command = this.prepareCommand(args, configurationService);
+		t.sendText(command, true);
 
-		return new TPromise((resolve, error) => {
-			setTimeout(_ => {
-				t.sendText(command, true);
-				resolve(void 0);
-			}, 500);
-		});
+		return TPromise.as(void 0);
 	}
 
-	private isBusy(t: ITerminalInstance): boolean {
+	private static isBusy(t: ITerminalInstance): boolean {
 		if (t.processId) {
 			try {
 				// if shell has at least one child process, assume that shell is busy
@@ -88,13 +78,13 @@ export class TerminalLauncher implements ITerminalLauncher {
 		return true;
 	}
 
-	private prepareCommand(args: DebugProtocol.RunInTerminalRequestArguments, config: ITerminalSettings): string {
+	private static prepareCommand(args: DebugProtocol.RunInTerminalRequestArguments, configurationService: IConfigurationService): string {
 
 		let shellType: ShellType;
 
 		// get the shell configuration for the current platform
 		let shell: string;
-		const shell_config = config.integrated.shell;
+		const shell_config = (<ITerminalConfiguration>configurationService.getValue<any>().terminal.integrated).shell;
 		if (platform.isWindows) {
 			shell = shell_config.windows;
 			shellType = ShellType.cmd;

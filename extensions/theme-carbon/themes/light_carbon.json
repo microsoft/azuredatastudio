@@ -61,7 +61,6 @@
 		"editorLink.activeForeground": "#3062D6",
 		"editorGroup.border": "#f4f4f4",
 		"editorGroup.background": "#fffffe",
-		"editorIndentGuide.activeBackground": "#939393",
 
 		// Workbench: Tabs
 		"tab.activeBackground": "#FFFFFE",

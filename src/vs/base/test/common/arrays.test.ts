@@ -6,31 +6,32 @@
 
 import * as assert from 'assert';
 import { TPromise } from 'vs/base/common/winjs.base';
-import * as arrays from 'vs/base/common/arrays';
+import arrays = require('vs/base/common/arrays');
+import { coalesce } from 'vs/base/common/arrays';
 
 suite('Arrays', () => {
 	test('findFirst', function () {
 		const array = [1, 4, 5, 7, 55, 59, 60, 61, 64, 69];
 
-		let idx = arrays.findFirstInSorted(array, e => e >= 0);
+		let idx = arrays.findFirst(array, e => e >= 0);
 		assert.equal(array[idx], 1);
 
-		idx = arrays.findFirstInSorted(array, e => e > 1);
+		idx = arrays.findFirst(array, e => e > 1);
 		assert.equal(array[idx], 4);
 
-		idx = arrays.findFirstInSorted(array, e => e >= 8);
+		idx = arrays.findFirst(array, e => e >= 8);
 		assert.equal(array[idx], 55);
 
-		idx = arrays.findFirstInSorted(array, e => e >= 61);
+		idx = arrays.findFirst(array, e => e >= 61);
 		assert.equal(array[idx], 61);
 
-		idx = arrays.findFirstInSorted(array, e => e >= 69);
+		idx = arrays.findFirst(array, e => e >= 69);
 		assert.equal(array[idx], 69);
 
-		idx = arrays.findFirstInSorted(array, e => e >= 70);
+		idx = arrays.findFirst(array, e => e >= 70);
 		assert.equal(idx, array.length);
 
-		idx = arrays.findFirstInSorted([], e => e >= 0);
+		idx = arrays.findFirst([], e => e >= 0);
 		assert.equal(array[idx], 1);
 	});
 
@@ -75,7 +76,7 @@ suite('Arrays', () => {
 			for (let i = 1; i < array.length; i++) {
 				let n = array[i];
 				if (last > n) {
-					assert.fail(JSON.stringify(array.slice(i - 10, i + 10)));
+					assert.fail(array.slice(i - 10, i + 10));
 				}
 			}
 		}
@@ -217,17 +218,18 @@ suite('Arrays', () => {
 		assert.deepEqual(arrays.top([4, 6, 2, 7, 8, 3, 5, 1], cmp, 3), [1, 2, 3]);
 	});
 
-	test('topAsync', function () {
+	test('topAsync', function (done) {
 		const cmp = (a: number, b: number) => {
 			assert.strictEqual(typeof a, 'number', 'typeof a');
 			assert.strictEqual(typeof b, 'number', 'typeof b');
 			return a - b;
 		};
 
-		return testTopAsync(cmp, 1)
+		testTopAsync(cmp, 1)
 			.then(() => {
 				return testTopAsync(cmp, 2);
-			});
+			})
+			.then(done, done);
 	});
 
 	function testTopAsync(cmp: any, m: number) {
@@ -270,13 +272,13 @@ suite('Arrays', () => {
 	}
 
 	test('coalesce', function () {
-		let a = arrays.coalesce([null, 1, null, 2, 3]);
+		let a = coalesce([null, 1, null, 2, 3]);
 		assert.equal(a.length, 3);
 		assert.equal(a[0], 1);
 		assert.equal(a[1], 2);
 		assert.equal(a[2], 3);
 
-		arrays.coalesce([null, 1, null, void 0, undefined, 2, 3]);
+		coalesce([null, 1, null, void 0, undefined, 2, 3]);
 		assert.equal(a.length, 3);
 		assert.equal(a[0], 1);
 		assert.equal(a[1], 2);
@@ -286,7 +288,7 @@ suite('Arrays', () => {
 		b[10] = 1;
 		b[20] = 2;
 		b[30] = 3;
-		b = arrays.coalesce(b);
+		b = coalesce(b);
 		assert.equal(b.length, 3);
 		assert.equal(b[0], 1);
 		assert.equal(b[1], 2);
@@ -301,7 +303,7 @@ suite('Arrays', () => {
 
 		assert.equal(sparse.length, 1002);
 
-		sparse = arrays.coalesce(sparse);
+		sparse = coalesce(sparse);
 		assert.equal(sparse.length, 5);
 	});
 });

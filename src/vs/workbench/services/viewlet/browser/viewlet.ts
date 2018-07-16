@@ -7,7 +7,7 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IViewlet } from 'vs/workbench/common/viewlet';
 import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
-import { Event } from 'vs/base/common/event';
+import Event from 'vs/base/common/event';
 import { ViewletDescriptor } from 'vs/workbench/browser/viewlet';
 import { IProgressService } from 'vs/platform/progress/common/progress';
 
@@ -16,7 +16,6 @@ export const IViewletService = createDecorator<IViewletService>('viewletService'
 export interface IViewletService {
 	_serviceBrand: ServiceIdentifier<any>;
 
-	onDidViewletRegister: Event<ViewletDescriptor>;
 	onDidViewletOpen: Event<IViewlet>;
 	onDidViewletClose: Event<IViewlet>;
 	onDidViewletEnablementChange: Event<{ id: string, enabled: boolean }>;

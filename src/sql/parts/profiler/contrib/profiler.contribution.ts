@@ -13,7 +13,7 @@ import * as nls from 'vs/nls';
 
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { ProfilerEditor } from 'sql/parts/profiler/editor/profilerEditor';
-import { PROFILER_VIEW_TEMPLATE_SETTINGS, IProfilerViewTemplate } from 'sql/parts/profiler/service/interfaces';
+import { PROFILER_SESSION_TEMPLATE_SETTINGS, IProfilerSessionTemplate } from 'sql/parts/profiler/service/interfaces';
 
 const profilerDescriptor = new EditorDescriptor(
 	ProfilerEditor,
@@ -24,213 +24,111 @@ const profilerDescriptor = new EditorDescriptor(
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(profilerDescriptor, [new SyncDescriptor(ProfilerInput)]);
 
-const profilerViewTemplateSchema: IJSONSchema = {
-		description: nls.localize('profiler.settings.viewTemplates', "Specifies view templates"),
-		type: 'array',
-		items: <IJSONSchema>{
-			type: 'object',
-			properties: {
-				name: {
-					type: 'string'
+const profilerSessionTemplateSchema: IJSONSchema = {
+	description: nls.localize('profiler.settings.sessionTemplates', "Specifies session templates"),
+	type: 'array',
+	items: <IJSONSchema>{
+		type: 'object',
+		properties: {
+			name: {
+				type: 'string'
+			}
+		}
+	},
+	default: <Array<IProfilerSessionTemplate>>[
+		{
+			name: 'Standard',
+			events: [
+				{
+					name: 'Audit Login',
+					optionalColumns: ['TextData', 'ApplicationName', 'NTUserName', 'LoginName', 'ClientProcessID', 'SPID', 'StartTime', 'BinaryData']
+				},
+				{
+					name: 'Audit Logout',
+					optionalColumns: ['ApplicationName', 'NTUserName', 'LoginName', 'CPU', 'Reads', 'Writes', 'Duration', 'ClientProcessID', 'SPID', 'StartTime', 'EndTime']
+				},
+				{
+					name: 'ExistingConnection',
+					optionalColumns: ['TextData', 'ApplicationName', 'NTUserName', 'LoginName', 'Duration', 'ClientProcessID', 'SPID', 'StartTime', 'EndTime', 'BinaryData']
+				},
+				{
+					name: 'RPC:Completed',
+					optionalColumns: ['TextData', 'ApplicationName', 'NTUserName', 'LoginName', 'CPU', 'Reads', 'Writes', 'Duration', 'ClientProcessID', 'SPID', 'StartTime', 'EndTime', 'BinaryData']
+				},
+				{
+					name: 'SQL:BatchCompleted',
+					optionalColumns: ['TextData', 'ApplicationName', 'NTUserName', 'LoginName', 'CPU', 'Reads', 'Writes', 'Duration', 'ClientProcessID', 'SPID', 'StartTime', 'EndTime', 'BinaryData']
+				},
+				{
+					name: 'SQL:BatchStarting',
+					optionalColumns: ['TextData', 'ApplicationName', 'NTUserName', 'LoginName', 'ClientProcessID', 'SPID', 'StartTime']
 				}
+			],
+			view: {
+				events: [
+					{
+						name: 'Audit Login',
+						columns: ['TextData', 'ApplicationName', 'NTUserName', 'LoginName', 'ClientProcessID', 'SPID', 'StartTime']
+					},
+					{
+						name: 'Audit Logout',
+						columns: ['ApplicationName', 'NTUserName', 'LoginName', 'CPU', 'Reads', 'Writes', 'Duration', 'ClientProcessID', 'SPID', 'StartTime', 'EndTime']
+					},
+					{
+						name: 'ExistingConnection',
+						columns: ['TextData', 'ApplicationName', 'NTUserName', 'LoginName', 'ClientProcessID', 'SPID', 'StartTime']
+					},
+					{
+						name: 'RPC:Completed',
+						columns: ['ApplicationName', 'NTUserName', 'LoginName', 'CPU', 'Reads', 'Writes', 'Duration', 'ClientProcessID', 'SPID', 'StartTime', 'EndTime', 'BinaryData']
+					},
+					{
+						name: 'SQL:BatchCompleted',
+						columns: ['TextData', 'ApplicationName', 'NTUserName', 'LoginName', 'CPU', 'Reads', 'Writes', 'Duration', 'ClientProcessID', 'SPID', 'StartTime', 'EndTime', 'BinaryData']
+					},
+					{
+						name: 'SQL:BatchStarting',
+						columns: ['TextData', 'ApplicationName', 'NTUserName', 'LoginName', 'ClientProcessID', 'SPID', 'StartTime']
+					}
+				]
 			}
 		},
-		default: <Array<IProfilerViewTemplate>>[
-			{
-				name: 'Standard View',
-				columns: [
-					{
-						name: 'EventClass',
-						eventsMapped: ['name']
-					},
-					{
-						name: 'TextData',
-						eventsMapped: ['options_text', 'batch_text']
-					},
-					{
-						name: 'ApplicationName',
-						width: '1',
-						eventsMapped: ['client_app_name']
-					},
-					{
-						name: 'NTUserName',
-						eventsMapped: ['nt_username']
-					},
-					{
-						name: 'LoginName',
-						eventsMapped: ['server_principal_name']
-					},
-					{
-						name: 'ClientProcessID',
-						eventsMapped: ['client_pid']
-					},
-					{
-						name: 'SPID',
-						eventsMapped: ['session_id']
-					},
-					{
-						name: 'StartTime',
-						eventsMapped: ['timestamp']
-					},
-					{
-						name: 'CPU',
-						eventsMapped: ['cpu_time']
-					},
-					{
-						name: 'Reads',
-						eventsMapped: ['logical_reads']
-					},
-					{
-						name: 'Writes',
-						eventsMapped: ['writes']
-					},
-					{
-						name: 'Duration',
-						eventsMapped: ['duration']
-					}
-				]
-			},
-			{
-				name: 'TSQL View',
-				columns: [
-					{
-						name: 'EventClass',
-						eventsMapped: ['name']
-					},
-					{
-						name: 'TextData',
-						eventsMapped: ['options_text', 'batch_text']
-					},
-					{
-						name: 'SPID',
-						eventsMapped: ['session_id']
-					},
-					{
-						name: 'StartTime',
-						eventsMapped: ['timestamp']
-					}
-				]
-			},
-			{
-				name: 'Tuning View',
-				columns: [
-					{
-						name: 'EventClass',
-						eventsMapped: ['name']
-					},
-					{
-						name: 'TextData',
-						eventsMapped: ['options_text', 'batch_text']
-					},
-					{
-						name: 'Duration',
-						eventsMapped: ['duration']
-					},
-					{
-						name: 'SPID',
-						eventsMapped: ['session_id']
-					},
-					{
-						name: 'DatabaseID',
-						eventsMapped: ['database_id']
-					},
-					{
-						name: 'DatabaseName',
-						eventsMapped: ['database_name']
-					},
-					{
-						name: 'ObjectType',
-						eventsMapped: ['object_type']
-					},
-					{
-						name: 'LoginName',
-						eventsMapped: ['server_principal_name']
-					}
-				]
-			},
-			{
-				name: 'TSQL_Locks View',
-				columns: [
-					{
-						name: 'EventClass',
-						eventsMapped: ['name']
-					},
-					{
-						name: 'TextData',
-						eventsMapped: ['options_text', 'batch_text']
-					},
-					{
-						name: 'ApplicationName',
-						eventsMapped: ['client_app_name']
-					},
-					{
-						name: 'NTUserName',
-						eventsMapped: ['nt_username']
-					},
-					{
-						name: 'LoginName',
-						eventsMapped: ['server_principal_name']
-					},
-					{
-						name: 'ClientProcessID',
-						eventsMapped: ['client_pid']
-					},
-					{
-						name: 'SPID',
-						eventsMapped: ['session_id']
-					},
-					{
-						name: 'StartTime',
-						eventsMapped: ['timestamp']
-					},
-					{
-						name: 'CPU',
-						eventsMapped: ['cpu_time']
-					},
-					{
-						name: 'Reads',
-						eventsMapped: ['logical_reads']
-					},
-					{
-						name: 'Writes',
-						eventsMapped: ['writes']
-					},
-					{
-						name: 'Duration',
-						eventsMapped: ['duration']
-					}
-				]
-			},
-			{
-				name: 'TSQL_Duration View',
-				columns: [
-					{
-						name: 'EventClass',
-						eventsMapped: ['name']
-					},
-					{
-						name: 'Duration',
-						eventsMapped: ['duration']
-					},
-					{
-						name: 'TextData',
-						eventsMapped: ['options_text', 'batch_text']
-					},
-					{
-						name: 'SPID',
-						eventsMapped: ['session_id']
-					}
-				]
-			}
-		]
-	};
+		{
+			name: 'TSQL'
+		},
+		{
+			name: 'Blank'
+		},
+		{
+			name: 'SP_Counts'
+		},
+		{
+			name: 'TQL_Duration'
+		},
+		{
+			name: 'TSQL_Grouped'
+		},
+		{
+			name: 'TSQL_Locks'
+		},
+		{
+			name: 'TSQL_Replay'
+		},
+		{
+			name: 'TSQL_SPs'
+		},
+		{
+			name: 'Tuning'
+		}
+	]
+};
 
 const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
 const dashboardConfig: IConfigurationNode = {
 	id: 'Profiler',
 	type: 'object',
 	properties: {
-		[PROFILER_VIEW_TEMPLATE_SETTINGS]: profilerViewTemplateSchema
+		[PROFILER_SESSION_TEMPLATE_SETTINGS]: profilerSessionTemplateSchema
 	}
 };
 

@@ -12,7 +12,6 @@ import { MetadataConsts } from 'vs/editor/common/modes';
 import { LineDecoration } from 'vs/editor/common/viewLayout/lineDecorations';
 import { InlineDecorationType } from 'vs/editor/common/viewModel/viewModel';
 import { IViewLineTokens } from 'vs/editor/common/core/lineTokens';
-import * as strings from 'vs/base/common/strings';
 
 function createViewLineTokens(viewLineTokens: ViewLineToken[]): IViewLineTokens {
 	return new ViewLineTokens(viewLineTokens);
@@ -30,7 +29,6 @@ suite('viewLineRenderer.renderLine', () => {
 		let _actual = renderViewLine(new RenderLineInput(
 			false,
 			lineContent,
-			strings.isBasicASCII(lineContent),
 			false,
 			0,
 			createViewLineTokens([new ViewLineToken(lineContent.length, 0)]),
@@ -77,7 +75,6 @@ suite('viewLineRenderer.renderLine', () => {
 		let _actual = renderViewLine(new RenderLineInput(
 			false,
 			lineContent,
-			true,
 			false,
 			0,
 			createViewLineTokens(parts),
@@ -114,7 +111,6 @@ suite('viewLineRenderer.renderLine', () => {
 		let _actual = renderViewLine(new RenderLineInput(
 			false,
 			'Hello world!',
-			true,
 			false,
 			0,
 			createViewLineTokens([
@@ -216,7 +212,6 @@ suite('viewLineRenderer.renderLine', () => {
 		let _actual = renderViewLine(new RenderLineInput(
 			false,
 			lineText,
-			true,
 			false,
 			0,
 			lineParts,
@@ -276,7 +271,6 @@ suite('viewLineRenderer.renderLine', () => {
 		let _actual = renderViewLine(new RenderLineInput(
 			false,
 			lineText,
-			true,
 			false,
 			0,
 			lineParts,
@@ -336,7 +330,6 @@ suite('viewLineRenderer.renderLine', () => {
 		let _actual = renderViewLine(new RenderLineInput(
 			false,
 			lineText,
-			true,
 			false,
 			0,
 			lineParts,
@@ -373,7 +366,6 @@ suite('viewLineRenderer.renderLine', () => {
 		let _actual = renderViewLine(new RenderLineInput(
 			false,
 			lineText,
-			false,
 			true,
 			0,
 			lineParts,
@@ -401,7 +393,6 @@ suite('viewLineRenderer.renderLine', () => {
 			let actual = renderViewLine(new RenderLineInput(
 				false,
 				lineText,
-				true,
 				false,
 				0,
 				lineParts,
@@ -499,7 +490,6 @@ suite('viewLineRenderer.renderLine', () => {
 			let actual = renderViewLine(new RenderLineInput(
 				false,
 				lineText,
-				true,
 				false,
 				0,
 				lineParts,
@@ -534,7 +524,6 @@ suite('viewLineRenderer.renderLine', () => {
 			false,
 			lineText,
 			false,
-			false,
 			0,
 			lineParts,
 			[],
@@ -546,7 +535,11 @@ suite('viewLineRenderer.renderLine', () => {
 			false
 		));
 		let expectedOutput = [
-			'<span class="mtk1">a𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷</span>',
+			'<span class="mtk1">a𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷</span>',
+			'<span class="mtk1">𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷</span>',
+			'<span class="mtk1">𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷</span>',
+			'<span class="mtk1">𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷</span>',
+			'<span class="mtk1">𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷𠮷</span>',
 		];
 		assert.equal(actual.html, '<span>' + expectedOutput.join('') + '</span>');
 	});
@@ -560,7 +553,6 @@ suite('viewLineRenderer.renderLine', () => {
 		let actual = renderViewLine(new RenderLineInput(
 			false,
 			lineText,
-			false,
 			true,
 			0,
 			lineParts,
@@ -604,7 +596,6 @@ suite('viewLineRenderer.renderLine', () => {
 		let _actual = renderViewLine(new RenderLineInput(
 			true,
 			lineText,
-			true,
 			false,
 			4,
 			lineParts,
@@ -685,7 +676,6 @@ suite('viewLineRenderer.renderLine 2', () => {
 		let actual = renderViewLine(new RenderLineInput(
 			fontIsMonospace,
 			lineContent,
-			true,
 			false,
 			fauxIndentLength,
 			createViewLineTokens(tokens),
@@ -708,7 +698,6 @@ suite('viewLineRenderer.renderLine 2', () => {
 		let actual = renderViewLine(new RenderLineInput(
 			false,
 			lineContent,
-			true,
 			false,
 			0,
 			createViewLineTokens([createPart(21, 3)]),
@@ -737,7 +726,6 @@ suite('viewLineRenderer.renderLine 2', () => {
 		let actual = renderViewLine(new RenderLineInput(
 			true,
 			lineContent,
-			true,
 			false,
 			0,
 			createViewLineTokens([
@@ -1002,7 +990,6 @@ suite('viewLineRenderer.renderLine 2', () => {
 		let actual = renderViewLine(new RenderLineInput(
 			false,
 			'Hello world',
-			true,
 			false,
 			0,
 			createViewLineTokens([createPart(11, 0)]),
@@ -1044,7 +1031,6 @@ suite('viewLineRenderer.renderLine 2', () => {
 		let actual = renderViewLine(new RenderLineInput(
 			false,
 			lineContent,
-			true,
 			false,
 			0,
 			createViewLineTokens([createPart(4, 3)]),
@@ -1074,7 +1060,6 @@ suite('viewLineRenderer.renderLine 2', () => {
 		let actual = renderViewLine(new RenderLineInput(
 			false,
 			lineContent,
-			true,
 			false,
 			0,
 			createViewLineTokens([createPart(4, 3)]),
@@ -1105,7 +1090,6 @@ suite('viewLineRenderer.renderLine 2', () => {
 		let actual = renderViewLine(new RenderLineInput(
 			false,
 			lineContent,
-			true,
 			false,
 			0,
 			createViewLineTokens([createPart(0, 3)]),
@@ -1133,7 +1117,6 @@ suite('viewLineRenderer.renderLine 2', () => {
 			true,
 			'  1. 🙏',
 			false,
-			false,
 			0,
 			createViewLineTokens([createPart(7, 3)]),
 			[new LineDecoration(7, 8, 'inline-folded', InlineDecorationType.After)],
@@ -1160,7 +1143,6 @@ suite('viewLineRenderer.renderLine 2', () => {
 		let actual = renderViewLine(new RenderLineInput(
 			true,
 			'',
-			true,
 			false,
 			0,
 			createViewLineTokens([createPart(0, 3)]),
@@ -1190,7 +1172,6 @@ suite('viewLineRenderer.renderLine 2', () => {
 		let actual = renderViewLine(new RenderLineInput(
 			true,
 			'\t}',
-			true,
 			false,
 			0,
 			createViewLineTokens([createPart(2, 3)]),
@@ -1222,7 +1203,6 @@ suite('viewLineRenderer.renderLine 2', () => {
 			true,
 			'asd = "擦"\t\t#asd',
 			false,
-			false,
 			0,
 			createViewLineTokens([createPart(15, 3)]),
 			[],
@@ -1248,7 +1228,6 @@ suite('viewLineRenderer.renderLine 2', () => {
 		let actual = renderViewLine(new RenderLineInput(
 			true,
 			'asd = "擦"\t\t#asd',
-			false,
 			false,
 			0,
 			createViewLineTokens([createPart(15, 3)]),
@@ -1276,96 +1255,10 @@ suite('viewLineRenderer.renderLine 2', () => {
 		assert.deepEqual(actual.html, expected);
 	});
 
-	test('issue #22352: COMBINING ACUTE ACCENT (U+0301)', () => {
-
-		let actual = renderViewLine(new RenderLineInput(
-			true,
-			'12345689012345678901234568901234567890123456890abába',
-			false,
-			false,
-			0,
-			createViewLineTokens([createPart(53, 3)]),
-			[],
-			4,
-			10,
-			10000,
-			'none',
-			false,
-			false
-		));
-
-		let expected = [
-			'<span>',
-			'<span class="mtk3">12345689012345678901234568901234567890123456890abába</span>',
-			'</span>'
-		].join('');
-
-		assert.deepEqual(actual.html, expected);
-	});
-
-	test('issue #22352: Partially Broken Complex Script Rendering of Tamil', () => {
-
-		let actual = renderViewLine(new RenderLineInput(
-			true,
-			' JoyShareல் பின்தொடர்ந்து, விடீயோ, ஜோக்குகள், அனிமேசன், நகைச்சுவை படங்கள் மற்றும் செய்திகளை பெறுவீர்',
-			false,
-			false,
-			0,
-			createViewLineTokens([createPart(100, 3)]),
-			[],
-			4,
-			10,
-			10000,
-			'none',
-			false,
-			false
-		));
-
-		let expected = [
-			'<span>',
-			'<span class="mtk3">\u00a0JoyShareல்\u00a0பின்தொடர்ந்து,\u00a0விடீயோ,\u00a0ஜோக்குகள்,\u00a0அனிமேசன்,\u00a0நகைச்சுவை\u00a0படங்கள்\u00a0மற்றும்\u00a0செய்திகளை\u00a0பெறுவீர்</span>',
-			'</span>'
-		].join('');
-
-		let _expected = expected.split('').map(c => c.charCodeAt(0));
-		let _actual = actual.html.split('').map(c => c.charCodeAt(0));
-		assert.deepEqual(_actual, _expected);
-
-		assert.deepEqual(actual.html, expected);
-	});
-
-	test('issue #42700: Hindi characters are not being rendered properly', () => {
-
-		let actual = renderViewLine(new RenderLineInput(
-			true,
-			' वो ऐसा क्या है जो हमारे अंदर भी है और बाहर भी है। जिसकी वजह से हम सब हैं। जिसने इस सृष्टि की रचना की है।',
-			false,
-			false,
-			0,
-			createViewLineTokens([createPart(105, 3)]),
-			[],
-			4,
-			10,
-			10000,
-			'none',
-			false,
-			false
-		));
-
-		let expected = [
-			'<span>',
-			'<span class="mtk3">\u00a0वो\u00a0ऐसा\u00a0क्या\u00a0है\u00a0जो\u00a0हमारे\u00a0अंदर\u00a0भी\u00a0है\u00a0और\u00a0बाहर\u00a0भी\u00a0है।\u00a0जिसकी\u00a0वजह\u00a0से\u00a0हम\u00a0सब\u00a0हैं।\u00a0जिसने\u00a0इस\u00a0सृष्टि\u00a0की\u00a0रचना\u00a0की\u00a0है।</span>',
-			'</span>'
-		].join('');
-
-		assert.deepEqual(actual.html, expected);
-	});
-
 	function createTestGetColumnOfLinePartOffset(lineContent: string, tabSize: number, parts: ViewLineToken[], expectedPartLengths: number[]): (partIndex: number, partLength: number, offset: number, expected: number) => void {
 		let renderLineOutput = renderViewLine(new RenderLineInput(
 			false,
 			lineContent,
-			true,
 			false,
 			0,
 			createViewLineTokens(parts),

@@ -105,45 +105,38 @@ export class ServerTreeRenderer implements IRenderer {
 	 */
 	public renderElement(tree: ITree, element: any, templateId: string, templateData: any): void {
 		if (templateId === ServerTreeRenderer.CONNECTION_TEMPLATE_ID) {
-			this.renderConnection(element, templateData);
+			this.renderConnection(tree, element, templateData);
 		} else if (templateId === ServerTreeRenderer.CONNECTION_GROUP_TEMPLATE_ID) {
-			this.renderConnectionProfileGroup(element, templateData);
+			this.renderConnectionProfileGroup(tree, element, templateData);
 		} else {
-			this.renderObjectExplorer(element, templateData);
+			this.renderObjectExplorer(tree, element, templateData);
 		}
 	}
 
-	private renderObjectExplorer(treeNode: TreeNode, templateData: IObjectExplorerTemplateData): void {
-		// Use an explicitly defined iconType first. If not defined, fall back to using nodeType and
-		// other compount indicators instead.
-		let iconName: string = undefined;
-		if (treeNode.iconType) {
-			iconName = (typeof treeNode.iconType === 'string') ? treeNode.iconType : treeNode.iconType.id;
-		} else {
-			iconName = treeNode.nodeTypeId;
-			if (treeNode.nodeStatus) {
-				iconName = treeNode.nodeTypeId + '_' + treeNode.nodeStatus;
-			}
-			if (treeNode.nodeSubType) {
-				iconName = treeNode.nodeTypeId + '_' + treeNode.nodeSubType;
-			}
+	private renderObjectExplorer(tree: ITree, treeNode: TreeNode, templateData: IObjectExplorerTemplateData): void {
+		var iconName = treeNode.nodeTypeId;
+		if (treeNode.nodeStatus) {
+			iconName = treeNode.nodeTypeId + '_' + treeNode.nodeStatus;
+		}
+		if (treeNode.nodeSubType) {
+			iconName = treeNode.nodeTypeId + '_' + treeNode.nodeSubType;
 		}
 
 		let tokens: string[] = [];
-		for (let index = 1; index < templateData.icon.classList.length; index++) {
+		for (var index = 1; index < templateData.icon.classList.length; index++) {
 			tokens.push(templateData.icon.classList.item(index));
 		}
 		templateData.icon.classList.remove(...tokens);
 		templateData.icon.classList.add('icon');
-		let iconLowerCaseName = iconName.toLocaleLowerCase();
-		templateData.icon.classList.add(iconLowerCaseName);
+		let iconLoweCaseName = iconName.toLocaleLowerCase();
+		templateData.icon.classList.add(iconLoweCaseName);
 
 		templateData.label.textContent = treeNode.label;
 		templateData.root.title = treeNode.label;
 	}
 
 
-	private renderConnection(connection: ConnectionProfile, templateData: IConnectionTemplateData): void {
+	private renderConnection(tree: ITree, connection: ConnectionProfile, templateData: IConnectionTemplateData): void {
 		if (!this._isCompact) {
 			if (this._connectionManagementService.isConnected(undefined, connection)) {
 				templateData.icon.classList.remove('disconnected');
@@ -164,9 +157,9 @@ export class ServerTreeRenderer implements IRenderer {
 		templateData.connectionProfile = connection;
 	}
 
-	private renderConnectionProfileGroup(connectionProfileGroup: ConnectionProfileGroup, templateData: IConnectionProfileGroupTemplateData): void {
+	private renderConnectionProfileGroup(tree: ITree, connectionProfileGroup: ConnectionProfileGroup, templateData: IConnectionProfileGroupTemplateData): void {
 
-		let rowElement = this.findParentElement(templateData.root, 'monaco-tree-row');
+		var rowElement = this.findParentElement(templateData.root, 'monaco-tree-row');
 		if (rowElement) {
 			if (connectionProfileGroup.color) {
 				rowElement.style.background = connectionProfileGroup.color;
@@ -186,7 +179,7 @@ export class ServerTreeRenderer implements IRenderer {
 	 * Returns the first parent which contains the className
 	 */
 	private findParentElement(container: HTMLElement, className: string): HTMLElement {
-		let currentElement = container;
+		var currentElement = container;
 		while (currentElement) {
 			if (currentElement.className.includes(className)) {
 				break;

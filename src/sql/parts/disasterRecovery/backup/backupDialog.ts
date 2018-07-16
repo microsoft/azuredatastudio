@@ -7,6 +7,7 @@ import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { BackupModule } from 'sql/parts/disasterRecovery/backup/backup.module';
 import { BACKUP_SELECTOR } from 'sql/parts/disasterRecovery/backup/backup.component';
+import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
 import { attachModalDialogStyler } from 'sql/common/theme/styler';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
@@ -16,8 +17,6 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Builder } from 'vs/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 
 export class BackupDialog extends Modal {
 	private _bodyBuilder: Builder;
@@ -26,12 +25,12 @@ export class BackupDialog extends Modal {
 	private _moduleRef: any;
 
 	constructor(
+		@IBootstrapService private _bootstrapService: IBootstrapService,
 		@IThemeService private _themeService: IThemeService,
 		@IPartService partService: IPartService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super('', TelemetryKeys.Backup, partService, telemetryService, contextKeyService, { isAngular: true, hasErrors: true });
 	}
@@ -54,7 +53,7 @@ export class BackupDialog extends Modal {
 	 * Get the bootstrap params and perform the bootstrap
 	 */
 	private bootstrapAngular(bodyContainer: HTMLElement) {
-		this._uniqueSelector = bootstrapAngular(this._instantiationService,
+		this._uniqueSelector = this._bootstrapService.bootstrap(
 			BackupModule,
 			bodyContainer,
 			BACKUP_SELECTOR,

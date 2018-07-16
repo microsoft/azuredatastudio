@@ -40,7 +40,6 @@ import { createSpdLogService } from 'vs/platform/log/node/spdlogService';
 import { LogLevelSetterChannelClient, FollowerLogService } from 'vs/platform/log/common/logIpc';
 import { ILogService, getLogLevel } from 'vs/platform/log/common/log';
 import { OcticonLabel } from 'vs/base/browser/ui/octiconLabel/octiconLabel';
-import { normalizeGitHubIssuesUrl } from 'vs/code/electron-browser/issue/issueReporterUtil';
 
 const MAX_URL_LENGTH = platform.isWindows ? 2081 : 5400;
 
@@ -70,7 +69,6 @@ export class IssueReporter extends Disposable {
 	private numberOfSearchResultsDisplayed = 0;
 	private receivedSystemInfo = false;
 	private receivedPerformanceInfo = false;
-	private shouldQueueSearch = false;
 
 	constructor(configuration: IssueReporterConfiguration) {
 		super();
@@ -107,9 +105,7 @@ export class IssueReporter extends Disposable {
 		});
 
 		ipcRenderer.send('issueSystemInfoRequest');
-		if (configuration.data.issueType === IssueType.PerformanceIssue) {
-			ipcRenderer.send('issuePerformanceInfoRequest');
-		}
+		ipcRenderer.send('issuePerformanceInfoRequest');
 		this.logService.trace('issueReporter: Sent data requests');
 
 		if (window.document.documentElement.lang !== 'en') {
@@ -164,7 +160,7 @@ export class IssueReporter extends Disposable {
 		}
 
 		if (styles.inputActiveBorder) {
-			content.push(`input[type='text']:focus, textarea:focus, select:focus, summary:focus, button:focus, a:focus, .workbenchCommand:focus  { border: 1px solid ${styles.inputActiveBorder}; outline-style: none; }`);
+			content.push(`input[type='text']:focus, textarea:focus, select:focus, summary:focus, button:focus  { border: 1px solid ${styles.inputActiveBorder}; outline-style: none; }`);
 		}
 
 		if (styles.textLinkColor) {
@@ -212,14 +208,14 @@ export class IssueReporter extends Disposable {
 		});
 
 		const numberOfThemeExtesions = themes && themes.length;
-		this.issueReporterModel.update({ numberOfThemeExtesions, enabledNonThemeExtesions: nonThemes, allExtensions: extensions });
+		this.issueReporterModel.update({ numberOfThemeExtesions, enabledNonThemeExtesions: nonThemes });
 		this.updateExtensionTable(nonThemes, numberOfThemeExtesions);
 
 		if (this.environmentService.disableExtensions || extensions.length === 0) {
 			(<HTMLButtonElement>document.getElementById('disableExtensions')).disabled = true;
+			(<HTMLInputElement>document.getElementById('reproducesWithoutExtensions')).checked = true;
+			this.issueReporterModel.update({ reprosWithoutExtensions: true });
 		}
-
-		this.updateExtensionSelector(extensions);
 	}
 
 	private handleSettingsSearchData(data: ISettingsSearchIssueReporterData): void {
@@ -296,11 +292,7 @@ export class IssueReporter extends Disposable {
 
 	private setEventHandlers(): void {
 		this.addEventListener('issue-type', 'change', (event: Event) => {
-			const issueType = parseInt((<HTMLInputElement>event.target).value);
-			this.issueReporterModel.update({ issueType: issueType });
-			if (issueType === IssueType.PerformanceIssue && !this.receivedPerformanceInfo) {
-				ipcRenderer.send('issuePerformanceInfoRequest');
-			}
+			this.issueReporterModel.update({ issueType: parseInt((<HTMLInputElement>event.target).value) });
 			this.updatePreviewButtonState();
 			this.render();
 		});
@@ -330,33 +322,30 @@ export class IssueReporter extends Disposable {
 			});
 		}
 
-		this.addEventListener('issue-source', 'change', (event: Event) => {
-			const fileOnExtension = JSON.parse((<HTMLInputElement>event.target).value);
-			this.issueReporterModel.update({ fileOnExtension: fileOnExtension, includeExtensions: !fileOnExtension });
-			this.render();
+		this.addEventListener('reproducesWithoutExtensions', 'click', (e) => {
+			this.issueReporterModel.update({ reprosWithoutExtensions: true });
+		});
 
-			const title = (<HTMLInputElement>document.getElementById('issue-title')).value;
-			if (fileOnExtension) {
-				this.searchExtensionIssues(title);
-			} else {
-				const description = this.issueReporterModel.getData().issueDescription;
-				this.searchVSCodeIssues(title, description);
-			}
+		this.addEventListener('reproducesWithExtensions', 'click', (e) => {
+			this.issueReporterModel.update({ reprosWithoutExtensions: false });
 		});
 
 		this.addEventListener('description', 'input', (event: Event) => {
 			const issueDescription = (<HTMLInputElement>event.target).value;
 			this.issueReporterModel.update({ issueDescription });
 
-			// Only search for extension issues on title change
-			if (!this.issueReporterModel.fileOnExtension()) {
-				const title = (<HTMLInputElement>document.getElementById('issue-title')).value;
-				this.searchVSCodeIssues(title, issueDescription);
+			const title = (<HTMLInputElement>document.getElementById('issue-title')).value;
+			if (title || issueDescription) {
+				this.searchDuplicates(title, issueDescription);
+			} else {
+				this.clearSearchResults();
 			}
 		});
 
 		this.addEventListener('issue-title', 'input', (e) => {
+			const description = this.issueReporterModel.getData().issueDescription;
 			const title = (<HTMLInputElement>event.target).value;
+
 			const lengthValidationMessage = document.getElementById('issue-title-length-validation-error');
 			if (title && this.getIssueUrlWithTitle(title).length > MAX_URL_LENGTH) {
 				show(lengthValidationMessage);
@@ -364,11 +353,10 @@ export class IssueReporter extends Disposable {
 				hide(lengthValidationMessage);
 			}
 
-			if (this.issueReporterModel.fileOnExtension()) {
-				this.searchExtensionIssues(title);
+			if (title || description) {
+				this.searchDuplicates(title, description);
 			} else {
-				const description = this.issueReporterModel.getData().issueDescription;
-				this.searchVSCodeIssues(title, description);
+				this.clearSearchResults();
 			}
 		});
 
@@ -379,32 +367,43 @@ export class IssueReporter extends Disposable {
 		});
 
 		this.addEventListener('disableExtensions', 'keydown', (e: KeyboardEvent) => {
-			e.stopPropagation();
 			if (e.keyCode === 13 || e.keyCode === 32) {
 				ipcRenderer.send('workbenchCommand', 'workbench.extensions.action.disableAll');
 				ipcRenderer.send('workbenchCommand', 'workbench.action.reloadWindow');
 			}
 		});
 
-		document.onkeydown = (e: KeyboardEvent) => {
-			const cmdOrCtrlKey = platform.isMacintosh ? e.metaKey : e.ctrlKey;
-			// Cmd/Ctrl+Enter previews issue and closes window
-			if (cmdOrCtrlKey && e.keyCode === 13) {
-				if (this.createIssue()) {
-					remote.getCurrentWindow().close();
+		this.addEventListener('showRunning', 'click', () => {
+			ipcRenderer.send('workbenchCommand', 'workbench.action.showRuntimeExtensions');
+		});
+
+		this.addEventListener('showRunning', 'keydown', (e: KeyboardEvent) => {
+			if (e.keyCode === 13 || e.keyCode === 32) {
+				ipcRenderer.send('workbenchCommand', 'workbench.action.showRuntimeExtensions');
+			}
+		});
+
+		// Cmd+Enter or Mac or Ctrl+Enter on other platforms previews issue and closes window
+		if (platform.isMacintosh) {
+			let prevKeyWasCommand = false;
+			document.onkeydown = (e: KeyboardEvent) => {
+				if (prevKeyWasCommand && e.keyCode === 13) {
+					if (this.createIssue()) {
+						remote.getCurrentWindow().close();
+					}
 				}
-			}
 
-			// Cmd/Ctrl + zooms in
-			if (cmdOrCtrlKey && e.keyCode === 187) {
-				this.applyZoom(webFrame.getZoomLevel() + 1);
-			}
-
-			// Cmd/Ctrl - zooms out
-			if (cmdOrCtrlKey && e.keyCode === 189) {
-				this.applyZoom(webFrame.getZoomLevel() - 1);
-			}
-		};
+				prevKeyWasCommand = e.keyCode === 91 || e.keyCode === 93;
+			};
+		} else {
+			document.onkeydown = (e: KeyboardEvent) => {
+				if (e.ctrlKey && e.keyCode === 13) {
+					if (this.createIssue()) {
+						remote.getCurrentWindow().close();
+					}
+				}
+			};
+		}
 	}
 
 	private updatePreviewButtonState() {
@@ -439,75 +438,10 @@ export class IssueReporter extends Disposable {
 		return false;
 	}
 
-	private getExtensionRepositoryUrl(): string {
-		const selectedExtension = this.issueReporterModel.getData().selectedExtension;
-		return selectedExtension && selectedExtension.manifest && selectedExtension.manifest.repository && selectedExtension.manifest.repository.url;
-	}
-
-	private getExtensionBugsUrl(): string {
-		const selectedExtension = this.issueReporterModel.getData().selectedExtension;
-		return selectedExtension && selectedExtension.manifest && selectedExtension.manifest.bugs && selectedExtension.manifest.bugs.url;
-	}
-
-	private searchVSCodeIssues(title: string, issueDescription: string): void {
-		if (title) {
-			this.searchDuplicates(title, issueDescription);
-		} else {
-			this.clearSearchResults();
-		}
-	}
-
-	private searchExtensionIssues(title: string): void {
-		const url = this.getExtensionRepositoryUrl();
-		if (title) {
-			const matches = /^https?:\/\/github\.com\/(.*)(?:.git)/.exec(url);
-			if (matches && matches.length) {
-				const repo = matches[1];
-				return this.searchGitHub(repo, title);
-			}
-		}
-
-		this.clearSearchResults();
-	}
-
 	private clearSearchResults(): void {
 		const similarIssues = document.getElementById('similar-issues');
 		similarIssues.innerHTML = '';
 		this.numberOfSearchResultsDisplayed = 0;
-	}
-
-	@debounce(300)
-	private searchGitHub(repo: string, title: string): void {
-		const query = `is:issue+repo:${repo}+${title}`;
-		const similarIssues = document.getElementById('similar-issues');
-
-		window.fetch(`https://api.github.com/search/issues?q=${query}`).then((response) => {
-			response.json().then(result => {
-				similarIssues.innerHTML = '';
-				if (result && result.items) {
-					this.displaySearchResults(result.items);
-				} else {
-					// If the items property isn't present, the rate limit has been hit
-					const message = $('div.list-title');
-					message.textContent = localize('rateLimited', "GitHub query limit exceeded. Please wait.");
-					similarIssues.appendChild(message);
-
-					const resetTime = response.headers.get('X-RateLimit-Reset');
-					const timeToWait = parseInt(resetTime) - Math.floor(Date.now() / 1000);
-					if (this.shouldQueueSearch) {
-						this.shouldQueueSearch = false;
-						setTimeout(() => {
-							this.searchGitHub(repo, title);
-							this.shouldQueueSearch = true;
-						}, timeToWait * 1000);
-					}
-				}
-			}).catch(e => {
-				this.logSearchError(e);
-			});
-		}).catch(e => {
-			this.logSearchError(e);
-		});
 	}
 
 	@debounce(300)
@@ -582,7 +516,7 @@ export class IssueReporter extends Disposable {
 			similarIssues.appendChild(issues);
 		} else {
 			const message = $('div.list-title');
-			message.textContent = localize('noSimilarIssues', "No similar issues found");
+			message.textContent = localize('noResults', "No results found");
 			similarIssues.appendChild(message);
 		}
 	}
@@ -608,8 +542,8 @@ export class IssueReporter extends Disposable {
 		} else {
 			typeSelect.innerHTML = [
 				makeOption(IssueType.Bug, localize('bugReporter', "Bug Report")),
-				makeOption(IssueType.FeatureRequest, localize('featureRequest', "Feature Request")),
-				makeOption(IssueType.PerformanceIssue, localize('performanceIssue', "Performance Issue"))
+				makeOption(IssueType.PerformanceIssue, localize('performanceIssue', "Performance Issue")),
+				makeOption(IssueType.FeatureRequest, localize('featureRequest', "Feature Request"))
 			].join('\n');
 		}
 
@@ -618,8 +552,7 @@ export class IssueReporter extends Disposable {
 
 	private renderBlocks(): void {
 		// Depending on Issue Type, we render different blocks and text
-		const { issueType, fileOnExtension } = this.issueReporterModel.getData();
-		const blockContainer = document.getElementById('block-container');
+		const { issueType } = this.issueReporterModel.getData();
 		const systemBlock = document.querySelector('.block-system');
 		const processBlock = document.querySelector('.block-process');
 		const workspaceBlock = document.querySelector('.block-workspace');
@@ -627,64 +560,39 @@ export class IssueReporter extends Disposable {
 		const searchedExtensionsBlock = document.querySelector('.block-searchedExtensions');
 		const settingsSearchResultsBlock = document.querySelector('.block-settingsSearchResults');
 
-		const problemSource = document.getElementById('problem-source');
-		const problemSourceHelpText = document.getElementById('problem-source-help-text');
+		const disabledExtensions = document.getElementById('disabledExtensions');
 		const descriptionTitle = document.getElementById('issue-description-label');
 		const descriptionSubtitle = document.getElementById('issue-description-subtitle');
-		const extensionSelector = document.getElementById('extension-selection');
 
 		// Hide all by default
-		hide(blockContainer);
 		hide(systemBlock);
 		hide(processBlock);
 		hide(workspaceBlock);
 		hide(extensionsBlock);
 		hide(searchedExtensionsBlock);
 		hide(settingsSearchResultsBlock);
-		hide(problemSource);
-		hide(problemSourceHelpText);
-		hide(extensionSelector);
+		hide(disabledExtensions);
 
 		if (issueType === IssueType.Bug) {
-			show(blockContainer);
 			show(systemBlock);
-			show(problemSource);
-
-			if (fileOnExtension) {
-				show(extensionSelector);
-			} else {
-				show(extensionsBlock);
-				show(problemSourceHelpText);
-			}
+			show(extensionsBlock);
+			show(disabledExtensions);
 
 			descriptionTitle.innerHTML = `${localize('stepsToReproduce', "Steps to Reproduce")} <span class="required-input">*</span>`;
 			descriptionSubtitle.innerHTML = localize('bugDescription', "Share the steps needed to reliably reproduce the problem. Please include actual and expected results. We support GitHub-flavored Markdown. You will be able to edit your issue and add screenshots when we preview it on GitHub.");
 		} else if (issueType === IssueType.PerformanceIssue) {
-			show(blockContainer);
 			show(systemBlock);
 			show(processBlock);
 			show(workspaceBlock);
-			show(problemSource);
-
-			if (fileOnExtension) {
-				show(extensionSelector);
-			} else {
-				show(extensionsBlock);
-				show(problemSourceHelpText);
-			}
+			show(extensionsBlock);
+			show(disabledExtensions);
 
 			descriptionTitle.innerHTML = `${localize('stepsToReproduce', "Steps to Reproduce")} <span class="required-input">*</span>`;
 			descriptionSubtitle.innerHTML = localize('performanceIssueDesciption', "When did this performance issue happen? Does it occur on startup or after a specific series of actions? We support GitHub-flavored Markdown. You will be able to edit your issue and add screenshots when we preview it on GitHub.");
 		} else if (issueType === IssueType.FeatureRequest) {
 			descriptionTitle.innerHTML = `${localize('description', "Description")} <span class="required-input">*</span>`;
 			descriptionSubtitle.innerHTML = localize('featureRequestDescription', "Please describe the feature you would like to see. We support GitHub-flavored Markdown. You will be able to edit your issue and add screenshots when we preview it on GitHub.");
-			show(problemSource);
-
-			if (fileOnExtension) {
-				show(extensionSelector);
-			}
 		} else if (issueType === IssueType.SettingsSearchIssue) {
-			show(blockContainer);
 			show(searchedExtensionsBlock);
 			show(settingsSearchResultsBlock);
 
@@ -706,13 +614,10 @@ export class IssueReporter extends Disposable {
 
 	private validateInputs(): boolean {
 		let isValid = true;
-		['issue-title', 'description', 'issue-source'].forEach(elementId => {
+		['issue-title', 'description'].forEach(elementId => {
 			isValid = this.validateInput(elementId) && isValid;
-		});
 
-		if (this.issueReporterModel.fileOnExtension()) {
-			isValid = this.validateInput('extension-selector') && isValid;
-		}
+		});
 
 		return isValid;
 	}
@@ -721,10 +626,7 @@ export class IssueReporter extends Disposable {
 		if (!this.validateInputs()) {
 			// If inputs are invalid, set focus to the first one and add listeners on them
 			// to detect further changes
-			const invalidInput = document.getElementsByClassName('invalid-input');
-			if (invalidInput.length) {
-				(<HTMLInputElement>invalidInput[0]).focus();
-			}
+			(<HTMLInputElement>document.getElementsByClassName('invalid-input')[0]).focus();
 
 			document.getElementById('issue-title').addEventListener('input', (event) => {
 				this.validateInput('issue-title');
@@ -739,8 +641,8 @@ export class IssueReporter extends Disposable {
 
 		/* __GDPR__
 			"issueReporterSubmit" : {
-				"issueType" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
-				"numSimilarIssuesDisplayed" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
+				"issueType" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+				"numSimilarIssuesDisplayed" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 			}
 		*/
 		this.telemetryService.publicLog('issueReporterSubmit', { issueType: this.issueReporterModel.getData().issueType, numSimilarIssuesDisplayed: this.numberOfSearchResultsDisplayed });
@@ -758,87 +660,22 @@ export class IssueReporter extends Disposable {
 		return true;
 	}
 
-	private getIssueUrlWithTitle(issueTitle: string): string {
-		let repositoryUrl = product.reportIssueUrl;
-		if (this.issueReporterModel.fileOnExtension()) {
-			const bugsUrl = this.getExtensionBugsUrl();
-			const extensionUrl = this.getExtensionRepositoryUrl();
-			// If given, try to match the extension's bug url
-			if (bugsUrl && bugsUrl.match(/^https?:\/\/github\.com\/(.*)/)) {
-				repositoryUrl = normalizeGitHubIssuesUrl(bugsUrl);
-			} else if (extensionUrl && extensionUrl.match(/^https?:\/\/github\.com\/(.*)/)) {
-				repositoryUrl = normalizeGitHubIssuesUrl(extensionUrl);
-			}
-		}
-
-		// {{SQL CARBON EDIT}}
-		const queryStringPrefix = repositoryUrl.indexOf('?') === -1 ? '?' : '&';
-		return `${repositoryUrl}${queryStringPrefix}title=${encodeURIComponent(issueTitle)}`;
+	private getIssueUrlWithTitle(issueTitle: string) {
+		const queryStringPrefix = product.reportIssueUrl.indexOf('?') === -1 ? '?' : '&';
+		return `${product.reportIssueUrl}${queryStringPrefix}title=${encodeURIComponent(issueTitle)}`;
 	}
 
 	private updateSystemInfo = (state) => {
 		const target = document.querySelector('.block-system .block-info');
 		let tableHtml = '';
 		Object.keys(state.systemInfo).forEach(k => {
-			const data = typeof state.systemInfo[k] === 'object'
-				? Object.keys(state.systemInfo[k]).map(key => `${key}: ${state.systemInfo[k][key]}`).join('<br>')
-				: state.systemInfo[k];
-
 			tableHtml += `
 				<tr>
 					<td>${k}</td>
-					<td>${data}</td>
+					<td>${state.systemInfo[k]}</td>
 				</tr>`;
 		});
 		target.innerHTML = `<table>${tableHtml}</table>`;
-	}
-
-	private updateExtensionSelector(extensions: ILocalExtension[]): void {
-		interface IOption {
-			name: string;
-			id: string;
-		}
-
-		const extensionOptions: IOption[] = extensions.map(extension => {
-			return {
-				name: extension.manifest.displayName || extension.manifest.name || '',
-				id: extension.identifier.id
-			};
-		});
-
-		// Sort extensions by name
-		extensionOptions.sort((a, b) => {
-			const aName = a.name.toLowerCase();
-			const bName = b.name.toLowerCase();
-			if (aName > bName) {
-				return 1;
-			}
-
-			if (aName < bName) {
-				return -1;
-			}
-
-			return 0;
-		});
-
-		const makeOption = (extension: IOption) => `<option value="${extension.id}">${escape(extension.name)}</option>`;
-		const extensionsSelector = document.getElementById('extension-selector');
-		extensionsSelector.innerHTML = '<option></option>' + extensionOptions.map(makeOption).join('\n');
-
-		this.addEventListener('extension-selector', 'change', (e: Event) => {
-			const selectedExtensionId = (<HTMLInputElement>e.target).value;
-			const extensions = this.issueReporterModel.getData().allExtensions;
-			const matches = extensions.filter(extension => extension.identifier.id === selectedExtensionId);
-			if (matches.length) {
-				this.issueReporterModel.update({ selectedExtension: matches[0] });
-
-				const title = (<HTMLInputElement>document.getElementById('issue-title')).value;
-				this.searchExtensionIssues(title);
-			} else {
-				this.issueReporterModel.update({ selectedExtension: null });
-				this.clearSearchResults();
-			}
-		});
 	}
 
 	private updateProcessInfo = (state) => {

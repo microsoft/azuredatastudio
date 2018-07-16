@@ -9,6 +9,5 @@
 	"output": "Salida",
 	"logViewer": "Visor de registros",
 	"viewCategory": "Ver",
-	"clearOutput.label": "Borrar salida",
-	"openActiveLogOutputFile": "Ver: abrir el archivo de salida del registro activo"
+	"clearOutput.label": "Borrar salida"
 }

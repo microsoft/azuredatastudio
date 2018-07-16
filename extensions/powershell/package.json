@@ -10,7 +10,6 @@
 			"id": "powershell",
 			"extensions": [ ".ps1", ".psm1", ".psd1", ".pssc", ".psrc" ],
 			"aliases": [ "PowerShell", "powershell", "ps", "ps1" ],
-			"firstLine": "^#!/.*\\bpwsh\\b",
 			"configuration": "./language-configuration.json"
 		}],
 		"grammars": [{

@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as path from 'path';
+import path = require('path');
 import * as cp from 'child_process';
 import { fork } from 'vs/base/node/stdFork';
-import * as nls from 'vs/nls';
+import nls = require('vs/nls');
 import { PPromise, TPromise, TValueCallback, TProgressCallback, ErrorCallback } from 'vs/base/common/winjs.base';
 import * as Types from 'vs/base/common/types';
 import { IStringDictionary } from 'vs/base/common/collections';
@@ -153,7 +153,7 @@ export abstract class AbstractProcess<TProgressData> {
 
 	public start(): PPromise<SuccessData, TProgressData> {
 		if (Platform.isWindows && ((this.options && this.options.cwd && TPath.isUNC(this.options.cwd)) || !this.options && !this.options.cwd && TPath.isUNC(process.cwd()))) {
-			return TPromise.wrapError(new Error(nls.localize('TaskRunner.UNC', 'Can\'t execute a shell command on a UNC drive.')));
+			return TPromise.wrapError(new Error(nls.localize('TaskRunner.UNC', 'Can\'t execute a shell command on an UNC drive.')));
 		}
 		return this.useExec().then((useExec) => {
 			let cc: TValueCallback<SuccessData>;
@@ -381,7 +381,7 @@ export interface IQueuedSender {
 // queue is free again to consume messages.
 // On Windows we always wait for the send() method to return before sending the next message
 // to workaround https://github.com/nodejs/node/issues/7657 (IPC can freeze process)
-export function createQueuedSender(childProcess: cp.ChildProcess): IQueuedSender {
+export function createQueuedSender(childProcess: cp.ChildProcess | NodeJS.Process): IQueuedSender {
 	let msgQueue: string[] = [];
 	let useQueue = false;
 

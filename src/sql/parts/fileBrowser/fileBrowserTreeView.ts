@@ -23,7 +23,7 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 /**
  * Implements tree view for file browser
  */
-export class FileBrowserTreeView implements IDisposable {
+export class FileBrowserTreeView {
 	private _tree: ITree;
 	private _toDispose: IDisposable[] = [];
 
@@ -45,7 +45,7 @@ export class FileBrowserTreeView implements IDisposable {
 			this._toDispose.push(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 			this._toDispose.push(this._fileBrowserService.onExpandFolder(fileNode => this._tree.refresh(fileNode)));
 			this._toDispose.push(attachListStyler(this._tree, this._themeService));
-			this._tree.domFocus();
+			this._tree.DOMFocus();
 		}
 
 		if (rootNode) {
@@ -91,7 +91,7 @@ export class FileBrowserTreeView implements IDisposable {
 		let targetsToExpand: any[];
 
 		// Focus
-		this._tree.domFocus();
+		this._tree.DOMFocus();
 
 		if (this._tree) {
 			let selection = this._tree.getSelection();

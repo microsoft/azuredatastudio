@@ -13,11 +13,10 @@ import { IDisposable, toDisposable, IReference, ReferenceCollection, ImmortalRef
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import * as network from 'vs/base/common/network';
+import network = require('vs/base/common/network');
 import { ITextModelService, ITextModelContentProvider, ITextEditorModel } from 'vs/editor/common/services/resolverService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
-import { IFileService } from 'vs/platform/files/common/files';
 
 class ResourceModelCollection extends ReferenceCollection<TPromise<ITextEditorModel>> {
 
@@ -25,15 +24,19 @@ class ResourceModelCollection extends ReferenceCollection<TPromise<ITextEditorMo
 
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@ITextFileService private textFileService: ITextFileService,
-		@IFileService private fileService: IFileService
+		@ITextFileService private textFileService: ITextFileService
 	) {
 		super();
 	}
 
 	public createReferencedObject(key: string): TPromise<ITextEditorModel> {
 		const resource = URI.parse(key);
-		if (this.fileService.canHandleResource(resource)) {
+
+		if (resource.scheme === network.Schemas.file) {
+			return this.textFileService.models.loadOrCreate(resource);
+		}
+		if (!this.providers[resource.scheme]) {
+			// TODO@remote
 			return this.textFileService.models.loadOrCreate(resource);
 		}
 		return this.resolveTextModelContent(key).then(() => this.instantiationService.createInstance(ResourceEditorModel, resource));

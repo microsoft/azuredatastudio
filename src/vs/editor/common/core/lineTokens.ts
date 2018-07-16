@@ -13,7 +13,6 @@ export interface IViewLineTokens {
 	getEndOffset(tokenIndex: number): number;
 	getClassName(tokenIndex: number): string;
 	getInlineStyle(tokenIndex: number, colorMap: string[]): string;
-	findTokenIndexAtOffset(offset: number): number;
 }
 
 export class LineTokens implements IViewLineTokens {
@@ -207,9 +206,5 @@ export class SlicedLineTokens implements IViewLineTokens {
 
 	public getInlineStyle(tokenIndex: number, colorMap: string[]): string {
 		return this._source.getInlineStyle(this._firstTokenIndex + tokenIndex, colorMap);
-	}
-
-	public findTokenIndexAtOffset(offset: number): number {
-		return this._source.findTokenIndexAtOffset(offset + this._startOffset - this._deltaOffset) - this._firstTokenIndex;
 	}
 }

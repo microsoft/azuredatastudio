@@ -82,7 +82,7 @@ suite('TextAreaState', () => {
 		textArea._value = 'Hello world!';
 		textArea._selectionStart = 1;
 		textArea._selectionEnd = 12;
-		let actual = TextAreaState.readFromTextArea(textArea);
+		let actual = TextAreaState.EMPTY.readFromTextArea(textArea);
 
 		assertTextAreaState(actual, 'Hello world!', 1, 12);
 		assert.equal(actual.value, 'Hello world!');
@@ -124,7 +124,7 @@ suite('TextAreaState', () => {
 		textArea.dispose();
 	});
 
-	function testDeduceInput(prevState: TextAreaState, value: string, selectionStart: number, selectionEnd: number, couldBeEmojiInput: boolean, couldBeTypingAtOffset0: boolean, expected: string, expectedCharReplaceCnt: number): void {
+	function testDeduceInput(prevState: TextAreaState, value: string, selectionStart: number, selectionEnd: number, expected: string, expectedCharReplaceCnt: number): void {
 		prevState = prevState || TextAreaState.EMPTY;
 
 		let textArea = new MockTextAreaWrapper();
@@ -132,8 +132,8 @@ suite('TextAreaState', () => {
 		textArea._selectionStart = selectionStart;
 		textArea._selectionEnd = selectionEnd;
 
-		let newState = TextAreaState.readFromTextArea(textArea);
-		let actual = TextAreaState.deduceInput(prevState, newState, couldBeEmojiInput, couldBeTypingAtOffset0);
+		let newState = prevState.readFromTextArea(textArea);
+		let actual = TextAreaState.deduceInput(prevState, newState, true);
 
 		assert.equal(actual.text, expected);
 		assert.equal(actual.replaceCharCnt, expectedCharReplaceCnt);
@@ -154,7 +154,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			TextAreaState.EMPTY,
 			'ｓ',
-			0, 1, true, false,
+			0, 1,
 			'ｓ', 0
 		);
 
@@ -164,7 +164,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('ｓ', 0, 1, null, null),
 			'せ',
-			0, 1, true, false,
+			0, 1,
 			'せ', 1
 		);
 
@@ -174,7 +174,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('せ', 0, 1, null, null),
 			'せｎ',
-			0, 2, true, false,
+			0, 2,
 			'せｎ', 1
 		);
 
@@ -184,7 +184,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('せｎ', 0, 2, null, null),
 			'せん',
-			0, 2, true, false,
+			0, 2,
 			'せん', 2
 		);
 
@@ -194,7 +194,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('せん', 0, 2, null, null),
 			'せんｓ',
-			0, 3, true, false,
+			0, 3,
 			'せんｓ', 2
 		);
 
@@ -204,7 +204,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('せんｓ', 0, 3, null, null),
 			'せんせ',
-			0, 3, true, false,
+			0, 3,
 			'せんせ', 3
 		);
 
@@ -214,7 +214,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('せんせ', 0, 3, null, null),
 			'せんせ',
-			0, 3, true, false,
+			0, 3,
 			'せんせ', 3
 		);
 
@@ -224,7 +224,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('せんせ', 0, 3, null, null),
 			'せんせい',
-			0, 4, true, false,
+			0, 4,
 			'せんせい', 3
 		);
 
@@ -234,7 +234,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('せんせい', 0, 4, null, null),
 			'せんせい',
-			4, 4, true, false,
+			4, 4,
 			'', 0
 		);
 	});
@@ -253,7 +253,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('せんせい', 0, 4, null, null),
 			'せんせい',
-			0, 4, true, false,
+			0, 4,
 			'せんせい', 4
 		);
 
@@ -263,7 +263,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('せんせい', 0, 4, null, null),
 			'先生',
-			0, 2, true, false,
+			0, 2,
 			'先生', 4
 		);
 
@@ -273,7 +273,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('先生', 0, 2, null, null),
 			'先生',
-			2, 2, true, false,
+			2, 2,
 			'', 0
 		);
 	});
@@ -282,7 +282,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			null,
 			'a',
-			0, 1, true, false,
+			0, 1,
 			'a', 0
 		);
 	});
@@ -291,7 +291,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState(']\n', 1, 2, null, null),
 			']\n',
-			2, 2, true, false,
+			2, 2,
 			'\n', 0
 		);
 	});
@@ -300,7 +300,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			null,
 			'a',
-			1, 1, true, false,
+			1, 1,
 			'a', 0
 		);
 	});
@@ -309,7 +309,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			TextAreaState.EMPTY,
 			'a',
-			0, 1, true, false,
+			0, 1,
 			'a', 0
 		);
 	});
@@ -318,7 +318,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			TextAreaState.EMPTY,
 			'a',
-			1, 1, true, false,
+			1, 1,
 			'a', 0
 		);
 	});
@@ -327,7 +327,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('Hello world!', 0, 12, null, null),
 			'H',
-			1, 1, true, false,
+			1, 1,
 			'H', 0
 		);
 	});
@@ -336,7 +336,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('Hello world!', 12, 12, null, null),
 			'Hello world!a',
-			13, 13, true, false,
+			13, 13,
 			'a', 0
 		);
 	});
@@ -345,7 +345,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('Hello world!', 0, 0, null, null),
 			'aHello world!',
-			1, 1, true, false,
+			1, 1,
 			'a', 0
 		);
 	});
@@ -354,7 +354,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('Hello world!', 6, 11, null, null),
 			'Hello other!',
-			11, 11, true, false,
+			11, 11,
 			'other', 0
 		);
 	});
@@ -363,7 +363,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			TextAreaState.EMPTY,
 			'これは',
-			3, 3, true, false,
+			3, 3,
 			'これは', 0
 		);
 	});
@@ -372,7 +372,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('Hello world!', 0, 0, null, null),
 			'Aello world!',
-			1, 1, true, false,
+			1, 1,
 			'A', 0
 		);
 	});
@@ -381,7 +381,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('Hello world!', 5, 5, null, null),
 			'Hellö world!',
-			4, 5, true, false,
+			4, 5,
 			'ö', 0
 		);
 	});
@@ -390,7 +390,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('Hello world!', 5, 5, null, null),
 			'Hellöö world!',
-			5, 5, true, false,
+			5, 5,
 			'öö', 1
 		);
 	});
@@ -399,7 +399,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('Hello world!', 5, 5, null, null),
 			'Helöö world!',
-			5, 5, true, false,
+			5, 5,
 			'öö', 2
 		);
 	});
@@ -408,7 +408,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('Hello world!', 5, 5, null, null),
 			'Hellö world!',
-			5, 5, true, false,
+			5, 5,
 			'ö', 1
 		);
 	});
@@ -417,7 +417,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('a', 0, 1, null, null),
 			'a',
-			1, 1, true, false,
+			1, 1,
 			'a', 0
 		);
 	});
@@ -426,7 +426,7 @@ suite('TextAreaState', () => {
 		testDeduceInput(
 			new TextAreaState('x x', 0, 1, null, null),
 			'x x',
-			1, 1, true, false,
+			1, 1,
 			'x', 0
 		);
 	});
@@ -456,7 +456,7 @@ suite('TextAreaState', () => {
 				'some6  text',
 				'some7  text'
 			].join('\n'),
-			4, 4, true, false,
+			4, 4,
 			'📅', 0
 		);
 	});
@@ -470,7 +470,7 @@ suite('TextAreaState', () => {
 				null, null
 			),
 			'some💊1  text',
-			6, 6, true, false,
+			6, 6,
 			'💊', 0
 		);
 	});
@@ -484,7 +484,7 @@ suite('TextAreaState', () => {
 				null, null
 			),
 			'qwertyu\nasdfghj\nzxcvbnm🎈',
-			25, 25, true, false,
+			25, 25,
 			'🎈', 0
 		);
 	});
@@ -499,22 +499,8 @@ suite('TextAreaState', () => {
 				null, null
 			),
 			'some⌨️1  text',
-			6, 6, true, false,
+			6, 6,
 			'⌨️', 0
-		);
-	});
-
-	test('issue #42251: Minor issue, character swapped when typing', () => {
-		// Typing on OSX occurs at offset 0 after moving the window using the custom (non-native) titlebar.
-		testDeduceInput(
-			new TextAreaState(
-				'ab',
-				2, 2,
-				null, null
-			),
-			'cab',
-			1, 1, true, true,
-			'c', 0
 		);
 	});
 

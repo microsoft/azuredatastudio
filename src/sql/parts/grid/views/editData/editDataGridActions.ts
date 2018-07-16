@@ -19,7 +19,7 @@ export class EditDataGridActionProvider extends GridActionProvider {
 		dataService: DataService,
 		selectAllCallback: (index: number) => void,
 		private _deleteRowCallback: (index: number) => void,
-		private _revertRowCallback: () => void,
+		private _revertRowCallback: (index: number) => void,
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
 		super(dataService, selectAllCallback, instantiationService);
@@ -56,18 +56,18 @@ export class DeleteRowAction extends Action {
 
 export class RevertRowAction extends Action {
 	public static ID = 'grid.revertRow';
-	public static LABEL = localize('revertRow', 'Revert Current Row');
+	public static LABEL = localize('revertRow', 'Revert Row');
 
 	constructor(
 		id: string,
 		label: string,
-		private callback: () => void
+		private callback: (index: number) => void
 	) {
 		super(id, label);
 	}
 
 	public run(gridInfo: IGridInfo): TPromise<boolean> {
-		this.callback();
+		this.callback(gridInfo.rowIndex);
 		return TPromise.as(true);
 	}
 }

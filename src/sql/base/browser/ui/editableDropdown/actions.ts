@@ -9,10 +9,11 @@ import * as nls from 'vs/nls';
 
 export class ToggleDropdownAction extends Action {
 	private static readonly ID = 'dropdownAction.toggle';
+	private static readonly LABEL = nls.localize('dropdownAction.toggle', "Toggle dropdown");
 	private static readonly ICON = 'dropdown-arrow';
 
-	constructor(private _fn: () => any, label: string) {
-		super(ToggleDropdownAction.ID, label, ToggleDropdownAction.ICON);
+	constructor(private _fn: () => any) {
+		super(ToggleDropdownAction.ID, ToggleDropdownAction.LABEL, ToggleDropdownAction.ICON);
 	}
 
 	public run(): TPromise<boolean> {

@@ -3,24 +3,27 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// import { Application } from '../../application';
+// import { SpectronApplication } from '../../spectron/application';
 
-export function setup() {
-	describe('Terminal', () => {
-		// it(`opens terminal, runs 'echo' and verifies the output`, async function () {
-		// 	const app = this.app as Application;
+describe('Terminal', () => {
+	// let app: SpectronApplication;
+	// before(() => { app = new SpectronApplication(); return app.start('Terminal'); });
+	// after(() => app.stop());
 
-		// 	const expected = new Date().getTime().toString();
-		// 	await app.workbench.terminal.showTerminal();
-		// 	await app.workbench.terminal.runCommand(`echo ${expected}`);
-		// 	await app.workbench.terminal.waitForTerminalText(terminalText => {
-		// 		for (let index = terminalText.length - 2; index >= 0; index--) {
-		// 			if (!!terminalText[index] && terminalText[index].trim() === expected) {
-		// 				return true;
-		// 			}
-		// 		}
-		// 		return false;
-		// 	});
-		// });
-	});
-}
+	// it(`opens terminal, runs 'echo' and verifies the output`, async function () {
+	// 	const expected = new Date().getTime().toString();
+	// 	await app.workbench.terminal.showTerminal();
+
+	// 	await app.workbench.terminal.runCommand(`echo ${expected}`);
+
+	// 	await app.workbench.terminal.waitForTerminalText(terminalText => {
+	// 		// Last line will not contain the output
+	// 		for (let index = terminalText.length - 2; index >= 0; index--) {
+	// 			if (!!terminalText[index] && terminalText[index].trim() === expected) {
+	// 				return true;
+	// 			}
+	// 		}
+	// 		return false;
+	// 	});
+	// });
+});

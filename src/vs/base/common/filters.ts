@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as strings from 'vs/base/common/strings';
+import strings = require('vs/base/common/strings');
 import { LRUCache } from 'vs/base/common/map';
 import { CharCode } from 'vs/base/common/charCode';
 
@@ -50,7 +50,7 @@ function _matchesPrefix(ignoreCase: boolean, word: string, wordToMatchAgainst: s
 
 	let matches: boolean;
 	if (ignoreCase) {
-		matches = strings.startsWithIgnoreCase(wordToMatchAgainst, word);
+		matches = strings.beginsWithIgnoreCase(wordToMatchAgainst, word);
 	} else {
 		matches = wordToMatchAgainst.indexOf(word) === 0;
 	}

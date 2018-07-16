@@ -7,9 +7,9 @@
 
 import 'vs/css!./splitview';
 import { IDisposable, combinedDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import { Event, mapEvent, Emitter } from 'vs/base/common/event';
-import * as types from 'vs/base/common/types';
-import * as dom from 'vs/base/browser/dom';
+import Event, { mapEvent, Emitter } from 'vs/base/common/event';
+import types = require('vs/base/common/types');
+import dom = require('vs/base/browser/dom');
 import { clamp } from 'vs/base/common/numbers';
 import { range, firstIndex } from 'vs/base/common/arrays';
 import { Sash, Orientation, ISashEvent as IBaseSashEvent } from 'vs/base/browser/ui/sash/sash';
@@ -82,7 +82,6 @@ export class SplitView implements IDisposable {
 
 	private orientation: Orientation;
 	private el: HTMLElement;
-	private viewContainer: HTMLElement;
 	private size = 0;
 	private contentSize = 0;
 	private viewItems: IViewItem[] = [];
@@ -106,10 +105,6 @@ export class SplitView implements IDisposable {
 		dom.addClass(this.el, 'monaco-split-view2');
 		dom.addClass(this.el, this.orientation === Orientation.VERTICAL ? 'vertical' : 'horizontal');
 		container.appendChild(this.el);
-
-		this.viewContainer = document.createElement('div');
-		dom.addClass(this.viewContainer, 'split-view-container');
-		this.el.appendChild(this.viewContainer);
 	}
 
 	addView(view: IView, size: number, index = this.viewItems.length): void {
@@ -123,13 +118,13 @@ export class SplitView implements IDisposable {
 		const container = dom.$('.split-view-view');
 
 		if (index === this.viewItems.length) {
-			this.viewContainer.appendChild(container);
+			this.el.appendChild(container);
 		} else {
-			this.viewContainer.insertBefore(container, this.viewContainer.children.item(index));
+			this.el.insertBefore(container, this.el.children.item(index));
 		}
 
 		const onChangeDisposable = view.onDidChange(size => this.onViewChange(item, size));
-		const containerDisposable = toDisposable(() => this.viewContainer.removeChild(container));
+		const containerDisposable = toDisposable(() => this.el.removeChild(container));
 		const disposable = combinedDisposable([onChangeDisposable, containerDisposable]);
 
 		const layoutContainer = this.orientation === Orientation.VERTICAL
@@ -223,9 +218,9 @@ export class SplitView implements IDisposable {
 		this.viewItems.splice(to, 0, viewItem);
 
 		if (to + 1 < this.viewItems.length) {
-			this.viewContainer.insertBefore(viewItem.container, this.viewItems[to + 1].container);
+			this.el.insertBefore(viewItem.container, this.viewItems[to + 1].container);
 		} else {
-			this.viewContainer.appendChild(viewItem.container);
+			this.el.appendChild(viewItem.container);
 		}
 
 		this.layoutViews();

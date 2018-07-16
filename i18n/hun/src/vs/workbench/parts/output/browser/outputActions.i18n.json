@@ -9,6 +9,5 @@
 	"toggleOutput": "Kimenet be- és kikapcsolása",
 	"clearOutput": "Kimenet törlése",
 	"toggleOutputScrollLock": "Kimenet görgetési zárának be- és kikapcsolása",
-	"switchToOutput.label": "Váltás a kimenetre",
-	"openInLogViewer": "Naplófájl megnyitása"
+	"switchToOutput.label": "Váltás a kimenetre"
 }

@@ -8,5 +8,7 @@
 	],
 	"disableOtherKeymapsConfirmation": "Letiltja a többi billentyűkonfigurációt ({0}) a billentyűparancsok közötti konfliktusok megelőzése érdekében?",
 	"yes": "Igen",
-	"no": "Nem"
+	"no": "Nem",
+	"betterMergeDisabled": "A Better Merge kiegészítő most már be van építve. A telepített kiegészítő le lett tiltva és eltávolítható.",
+	"uninstall": "Eltávolítás"
 }

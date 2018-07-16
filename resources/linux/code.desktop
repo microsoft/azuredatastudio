@@ -15,4 +15,4 @@ Keywords=sqlops;
 [Desktop Action new-empty-window]
 Name=New Empty Window
 Exec=/usr/share/@@NAME@@/@@NAME@@ --new-window %F
-Icon=@@ICON@@
+Icon=@@NAME@@

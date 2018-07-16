@@ -90,7 +90,7 @@ export class Win32UpdateService extends AbstractUpdateService {
 				if (!update || !update.url || !update.version) {
 					/* __GDPR__
 							"update:notAvailable" : {
-								"explicit" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
+								"explicit" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 							}
 						*/
 					this.telemetryService.publicLog('update:notAvailable', { explicit: !!context });
@@ -135,7 +135,7 @@ export class Win32UpdateService extends AbstractUpdateService {
 				this.logService.error(err);
 				/* __GDPR__
 					"update:notAvailable" : {
-						"explicit" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
+					"explicit" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 					}
 					*/
 				this.telemetryService.publicLog('update:notAvailable', { explicit: !!context });

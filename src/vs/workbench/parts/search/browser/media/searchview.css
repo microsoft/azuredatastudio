@@ -18,7 +18,13 @@
 	left: 0;
 	width: 16px;
 	height: 100%;
+
+	-webkit-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
 	box-sizing: border-box;
+
 	background-position: center center;
 	background-repeat: no-repeat;
 	cursor: pointer;
@@ -51,10 +57,6 @@
 
 .search-view .search-widget .replace-container .monaco-action-bar {
 	margin-left: 3px;
-}
-
-.search-view .search-widget .replace-container .monaco-action-bar {
-	height: 25px;
 }
 
 .search-view .search-widget .replace-container .monaco-action-bar .action-item .icon {
@@ -164,6 +166,7 @@
 	margin-top: 0px;
 	margin-bottom: 0px;
 	padding-bottom: 4px;
+	-webkit-user-select: text;
 	user-select: text;
 }
 
@@ -179,15 +182,8 @@
 	padding: 0;
 }
 
-.search-view:not(.wide) .foldermatch .monaco-icon-label,
-.search-view:not(.wide) .filematch .monaco-icon-label {
-	flex: 1;
-}
-
-.search-view:not(.wide) .monaco-tree .monaco-tree-row:hover:not(.highlighted) .foldermatch .monaco-icon-label,
-.search-view:not(.wide) .monaco-tree .monaco-tree-row.focused .foldermatch .monaco-icon-label,
-.search-view:not(.wide) .monaco-tree .monaco-tree-row:hover:not(.highlighted) .filematch .monaco-icon-label,
-.search-view:not(.wide) .monaco-tree .monaco-tree-row.focused .filematch .monaco-icon-label {
+.search-view .foldermatch .monaco-icon-label,
+.search-view .filematch .monaco-icon-label {
 	flex: 1;
 }
 
@@ -196,11 +192,6 @@
 	opacity: 0.7;
 	font-size: 0.9em;
 	margin-left: 0.8em;
-}
-
-.search-view.wide .foldermatch .badge,
-.search-view.wide .filematch .badge {
-	margin-left: 10px;
 }
 
 .search-view .linematch {
@@ -282,22 +273,13 @@
 	margin-right: 12px;
 }
 
-.search-view:not(.wide) > .results > .monaco-tree .monaco-tree-row:hover .content .filematch .monaco-count-badge,
-.search-view:not(.wide) > .results > .monaco-tree .monaco-tree-row:hover .content .foldermatch .monaco-count-badge,
-.search-view:not(.wide) > .results > .monaco-tree .monaco-tree-row:hover .content .linematch .monaco-count-badge,
-.search-view:not(.wide) > .results > .monaco-tree .monaco-tree-row.focused .content .filematch .monaco-count-badge,
-.search-view:not(.wide) > .results > .monaco-tree .monaco-tree-row.focused .content .foldermatch .monaco-count-badge,
-.search-view:not(.wide) > .results > .monaco-tree .monaco-tree-row.focused .content .linematch .monaco-count-badge {
+.search-view > .results > .monaco-tree .monaco-tree-row:hover .content .filematch .monaco-count-badge,
+.search-view > .results > .monaco-tree .monaco-tree-row:hover .content .foldermatch .monaco-count-badge,
+.search-view > .results > .monaco-tree .monaco-tree-row:hover .content .linematch .monaco-count-badge,
+.search-view > .results > .monaco-tree.focused .monaco-tree-row.focused .content .filematch .monaco-count-badge,
+.search-view > .results > .monaco-tree.focused .monaco-tree-row.focused .content .foldermatch .monaco-count-badge,
+.search-view > .results > .monaco-tree.focused .monaco-tree-row.focused .content .linematch .monaco-count-badge {
 	display: none;
-}
-
-.search-view.wide > .results > .monaco-tree .monaco-tree-row:hover .content .filematch .badge,
-.search-view.wide > .results > .monaco-tree .monaco-tree-row:hover .content .foldermatch .badge,
-.search-view.wide > .results > .monaco-tree .monaco-tree-row:hover .content .linematch .badge,
-.search-view.wide > .results > .monaco-tree .monaco-tree-row.focused .content .filematch .badge,
-.search-view.wide > .results > .monaco-tree .monaco-tree-row.focused .content .foldermatch .badge,
-.search-view.wide > .results > .monaco-tree .monaco-tree-row.focused .content .linematch .badge {
-	flex: 1;
 }
 
 .search-view .focused .monaco-tree-row.selected:not(.highlighted) > .content.actions .action-remove,
@@ -380,11 +362,11 @@
 
 /* Theming */
 
-.vs .search-view .search-widget .toggle-replace-button:hover {
+.vs .viewlet .search-view .search-widget .toggle-replace-button:hover {
 	background-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-.vs-dark .search-view .search-widget .toggle-replace-button:hover {
+.vs-dark .viewlet .search-view .search-widget .toggle-replace-button:hover {
 	background-color: rgba(255, 255, 255, 0.1) !important;
 }
 

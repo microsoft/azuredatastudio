@@ -10,14 +10,14 @@ import { PlanXmlParser, PlanNode } from 'sql/parts/queryPlan/planXmlParser';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/common/theme/styler';
-import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+import { QueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
 import { DataService } from 'sql/parts/grid/services/dataService';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
 
 import { localize } from 'vs/nls';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 export const TOP_OPERATIONS_SELECTOR: string = 'top-operations-component';
 
@@ -50,13 +50,14 @@ export class TopOperationsComponent extends TabChild implements OnDestroy, OnIni
 		{ name: localize('topOperations.partitioned', 'Partitioned'), field: 'partitioned' }
 	];
 
-	@Input() public queryParameters: IQueryComponentParams;
+	@Input() public queryParameters: QueryComponentParams;
 
 	private _disposables: Array<IDisposable> = [];
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
+		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService,
+
 	) {
 		super();
 	}
@@ -104,7 +105,7 @@ export class TopOperationsComponent extends TabChild implements OnDestroy, OnIni
 				return column;
 			});
 			this._table = new Table(this._el.nativeElement, data, columns);
-			this._disposables.push(attachTableStyler(this._table, this.themeService));
+			this._disposables.push(attachTableStyler(this._table, this._bootstrapService.themeService));
 		}
 	}
 

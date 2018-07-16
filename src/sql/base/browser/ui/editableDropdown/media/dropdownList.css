@@ -12,13 +12,13 @@
 	background-image: url("dropdownarrow_inverse.svg");
 }
 
-.monaco-dropdown .monaco-action-bar .action-label.icon.dropdown-arrow {
+.dropdown .monaco-action-bar .action-label.icon.dropdown-arrow {
 	padding: 0;
 	background-size: 10px;
 	background-position: 50%;
 }
 
-.monaco-dropdown .monaco-action-bar .action-item {
+.dropdown .monaco-action-bar .action-item {
 	margin: 0;
 }
 
@@ -38,7 +38,7 @@
 	overflow: hidden;
 }
 
-.connection-input .monaco-dropdown .monaco-action-bar .action-label.icon.dropdown-arrow {
+.connection-input .dropdown .monaco-action-bar .action-label.icon.dropdown-arrow {
 	background-position: 50%;
 	background-size: cover;
 }

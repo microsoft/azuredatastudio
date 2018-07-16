@@ -12,12 +12,13 @@ import { IWorkbenchContributionsRegistry, IWorkbenchContribution, Extensions as 
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { FileChangeType, IFileService } from 'vs/platform/files/common/files';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import pkg from 'vs/platform/node/package';
 import product, { ISurveyData } from 'vs/platform/node/product';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { Severity, INotificationService } from 'vs/platform/notification/common/notification';
-import { ITextFileService, StateChange } from 'vs/workbench/services/textfile/common/textfiles';
+import { IChoiceService, Choice } from 'vs/platform/dialogs/common/dialogs';
+import { Severity } from 'vs/platform/notification/common/notification';
 
 class LanguageSurvey {
 
@@ -25,10 +26,10 @@ class LanguageSurvey {
 		data: ISurveyData,
 		instantiationService: IInstantiationService,
 		storageService: IStorageService,
-		notificationService: INotificationService,
+		choiceService: IChoiceService,
 		telemetryService: ITelemetryService,
-		modelService: IModelService,
-		textFileService: ITextFileService
+		fileService: IFileService,
+		modelService: IModelService
 	) {
 		const SESSION_COUNT_KEY = `${data.surveyId}.sessionCount`;
 		const LAST_SESSION_DATE_KEY = `${data.surveyId}.lastSessionDate`;
@@ -44,9 +45,9 @@ class LanguageSurvey {
 		const date = new Date().toDateString();
 
 		if (storageService.getInteger(EDITED_LANGUAGE_COUNT_KEY, StorageScope.GLOBAL, 0) < data.editCount) {
-			textFileService.models.onModelsSaved(e => {
-				e.forEach(event => {
-					if (event.kind === StateChange.SAVED) {
+			fileService.onFileChanges(e => {
+				e.getUpdated().forEach(event => {
+					if (event.type === FileChangeType.UPDATED) {
 						const model = modelService.getModel(event.resource);
 						if (model && model.getModeId() === data.languageId && date !== storageService.get(EDITED_LANGUAGE_DATE_KEY, StorageScope.GLOBAL)) {
 							const editedCount = storageService.getInteger(EDITED_LANGUAGE_COUNT_KEY, StorageScope.GLOBAL, 0) + 1;
@@ -87,36 +88,30 @@ class LanguageSurvey {
 		// __GDPR__TODO__ Need to move away from dynamic event names as those cannot be registered statically
 		telemetryService.publicLog(`${data.surveyId}.survey/userAsked`);
 
-		notificationService.prompt(
-			Severity.Info,
-			nls.localize('helpUs', "Help us improve our support for {0}", data.languageId),
-			[{
-				label: nls.localize('takeShortSurvey', "Take Short Survey"),
-				run: () => {
+		const choices: Choice[] = [nls.localize('takeShortSurvey', "Take Short Survey"), nls.localize('remindLater', "Remind Me later"), { label: nls.localize('neverAgain', "Don't Show Again") }];
+		choiceService.choose(Severity.Info, nls.localize('helpUs', "Help us improve our support for {0}", data.languageId), choices).then(choice => {
+			switch (choice) {
+				case 0 /* Take Survey */:
 					telemetryService.publicLog(`${data.surveyId}.survey/takeShortSurvey`);
 					telemetryService.getTelemetryInfo().then(info => {
 						window.open(`${data.surveyUrl}?o=${encodeURIComponent(process.platform)}&v=${encodeURIComponent(pkg.version)}&m=${encodeURIComponent(info.machineId)}`);
 						storageService.store(IS_CANDIDATE_KEY, false, StorageScope.GLOBAL);
 						storageService.store(SKIP_VERSION_KEY, pkg.version, StorageScope.GLOBAL);
 					});
-				}
-			}, {
-				label: nls.localize('remindLater', "Remind Me later"),
-				run: () => {
+					break;
+				case 1 /* Remind Later */:
 					telemetryService.publicLog(`${data.surveyId}.survey/remindMeLater`);
 					storageService.store(SESSION_COUNT_KEY, sessionCount - 3, StorageScope.GLOBAL);
-				}
-			}, {
-				label: nls.localize('neverAgain', "Don't Show Again"),
-				isSecondary: true,
-				run: () => {
+					break;
+				case 2 /* Never show again */:
 					telemetryService.publicLog(`${data.surveyId}.survey/dontShowAgain`);
 					storageService.store(IS_CANDIDATE_KEY, false, StorageScope.GLOBAL);
 					storageService.store(SKIP_VERSION_KEY, pkg.version, StorageScope.GLOBAL);
-				}
-			}]
-		);
+					break;
+			}
+		});
 	}
+
 }
 
 class LanguageSurveysContribution implements IWorkbenchContribution {
@@ -124,17 +119,17 @@ class LanguageSurveysContribution implements IWorkbenchContribution {
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IStorageService storageService: IStorageService,
-		@INotificationService notificationService: INotificationService,
+		@IChoiceService choiceService: IChoiceService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IModelService modelService: IModelService,
-		@ITextFileService textFileService: ITextFileService
+		@IFileService fileService: IFileService,
+		@IModelService modelService: IModelService
 	) {
 		product.surveys.filter(surveyData => surveyData.surveyId && surveyData.editCount && surveyData.languageId && surveyData.surveyUrl && surveyData.userProbability).map(surveyData =>
-			new LanguageSurvey(surveyData, instantiationService, storageService, notificationService, telemetryService, modelService, textFileService));
+			new LanguageSurvey(surveyData, instantiationService, storageService, choiceService, telemetryService, fileService, modelService));
 	}
 }
 
 if (language === 'en' && product.surveys && product.surveys.length) {
-	const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
+	const workbenchRegistry = <IWorkbenchContributionsRegistry>Registry.as(WorkbenchExtensions.Workbench);
 	workbenchRegistry.registerWorkbenchContribution(LanguageSurveysContribution, LifecyclePhase.Running);
 }

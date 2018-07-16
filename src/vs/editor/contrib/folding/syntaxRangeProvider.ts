@@ -5,66 +5,51 @@
 
 'use strict';
 
-import { FoldingRangeProvider, FoldingRange, FoldingContext } from 'vs/editor/common/modes';
+import { FoldingProvider, IFoldingRange } from 'vs/editor/common/modes';
 import { onUnexpectedExternalError } from 'vs/base/common/errors';
-import { toThenable } from 'vs/base/common/async';
+import { asWinJsPromise } from 'vs/base/common/async';
 import { ITextModel } from 'vs/editor/common/model';
 import { RangeProvider } from './folding';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { MAX_LINE_NUMBER, FoldingRegions } from './foldingRanges';
-import { CancellationToken } from 'vs/base/common/cancellation';
 
 const MAX_FOLDING_REGIONS_FOR_INDENT_LIMIT = 5000;
 
-export interface IFoldingRangeData extends FoldingRange {
+export interface IFoldingRangeData extends IFoldingRange {
 	rank: number;
 }
 
-const foldingContext: FoldingContext = {
-	maxRanges: MAX_FOLDING_REGIONS_FOR_INDENT_LIMIT
-};
-
 export class SyntaxRangeProvider implements RangeProvider {
 
-	constructor(private providers: FoldingRangeProvider[]) {
+	constructor(private providers: FoldingProvider[]) {
 	}
 
-	compute(model: ITextModel, cancellationToken: CancellationToken): Thenable<FoldingRegions> {
-		return collectSyntaxRanges(this.providers, model, cancellationToken).then(ranges => {
-			if (ranges) {
-				let res = sanitizeRanges(ranges);
-				return res;
-			}
-			return null;
+	compute(model: ITextModel): TPromise<FoldingRegions> {
+		return collectSyntaxRanges(this.providers, model).then(ranges => {
+			let res = sanitizeRanges(ranges);
+			//console.log(res.toString());
+			return res;
 		});
 	}
 
 }
 
-function collectSyntaxRanges(providers: FoldingRangeProvider[], model: ITextModel, cancellationToken: CancellationToken): Thenable<IFoldingRangeData[] | null> {
-	let promises = providers.map(provider => toThenable(provider.provideFoldingRanges(model, foldingContext, cancellationToken)));
-	return TPromise.join(promises).then(results => {
-		let rangeData: IFoldingRangeData[] = null;
-		if (cancellationToken.isCancellationRequested) {
-			return null;
-		}
-		for (let i = 0; i < results.length; i++) {
-			let ranges = results[i];
-			if (Array.isArray(ranges)) {
-				if (!Array.isArray(rangeData)) {
-					rangeData = [];
-				}
-				let nLines = model.getLineCount();
-				for (let r of ranges) {
-					if (r.start > 0 && r.end > r.start && r.end <= nLines) {
-						rangeData.push({ start: r.start, end: r.end, rank: i, kind: r.kind });
-					}
+function collectSyntaxRanges(providers: FoldingProvider[], model: ITextModel): TPromise<IFoldingRangeData[]> {
+	const rangeData: IFoldingRangeData[] = [];
+	let promises = providers.map((provider, rank) => asWinJsPromise(token => provider.provideFoldingRanges(model, token)).then(list => {
+		if (list && Array.isArray(list.ranges)) {
+			let nLines = model.getLineCount();
+			for (let r of list.ranges) {
+				if (r.startLineNumber > 0 && r.endLineNumber > r.startLineNumber && r.endLineNumber <= nLines) {
+					rangeData.push({ startLineNumber: r.startLineNumber, endLineNumber: r.endLineNumber, rank, type: r.type });
 				}
 			}
 		}
-		return rangeData;
+	}, onUnexpectedExternalError));
 
-	}, onUnexpectedExternalError);
+	return TPromise.join(promises).then(() => {
+		return rangeData;
+	});
 }
 
 export class RangesCollector {
@@ -145,7 +130,7 @@ export class RangesCollector {
 export function sanitizeRanges(rangeData: IFoldingRangeData[]): FoldingRegions {
 
 	let sorted = rangeData.sort((d1, d2) => {
-		let diff = d1.start - d2.start;
+		let diff = d1.startLineNumber - d2.startLineNumber;
 		if (diff === 0) {
 			diff = d1.rank - d2.rank;
 		}
@@ -158,20 +143,20 @@ export function sanitizeRanges(rangeData: IFoldingRangeData[]): FoldingRegions {
 	for (let entry of sorted) {
 		if (!top) {
 			top = entry;
-			collector.add(entry.start, entry.end, entry.kind && entry.kind.value, previous.length);
+			collector.add(entry.startLineNumber, entry.endLineNumber, entry.type, previous.length);
 		} else {
-			if (entry.start > top.start) {
-				if (entry.end <= top.end) {
+			if (entry.startLineNumber > top.startLineNumber) {
+				if (entry.endLineNumber <= top.endLineNumber) {
 					previous.push(top);
 					top = entry;
-					collector.add(entry.start, entry.end, entry.kind && entry.kind.value, previous.length);
-				} else if (entry.start > top.end) {
+					collector.add(entry.startLineNumber, entry.endLineNumber, entry.type, previous.length);
+				} else if (entry.startLineNumber > top.endLineNumber) {
 					do {
 						top = previous.pop();
-					} while (top && entry.start > top.end);
+					} while (top && entry.startLineNumber > top.endLineNumber);
 					previous.push(top);
 					top = entry;
-					collector.add(entry.start, entry.end, entry.kind && entry.kind.value, previous.length);
+					collector.add(entry.startLineNumber, entry.endLineNumber, entry.type, previous.length);
 				}
 			}
 		}

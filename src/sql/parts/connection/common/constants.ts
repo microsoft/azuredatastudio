@@ -21,8 +21,6 @@ export const capabilitiesOptions = 'OPTIONS_METADATA';
 export const configMaxRecentConnections = 'maxRecentConnections';
 
 export const mssqlProviderName = 'MSSQL';
-export const anyProviderName = '*';
-export const connectionProviderContextKey = 'connectionProvider';
 
 export const applicationName = 'sqlops';
 

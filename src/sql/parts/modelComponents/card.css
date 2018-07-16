@@ -6,26 +6,12 @@
 	width: auto;
 	margin: 15px;
 	border-width: 1px;
-	border-style: solid;
-
-	text-align: left;
-	vertical-align: top;
-	box-shadow: rgba(120, 120, 120, 0.75) 0px 0px 6px;
+    border-style: solid;
+    border-color: rgb(214, 214, 214);
+    text-align: left;
+    vertical-align: top;
+    box-shadow: rgba(120, 120, 120, 0.75) 0px 0px 6px;
 }
-
-.model-card.selected {
-	border-color: darkblue
-}
-
-.vs-dark .monaco-workbench .model-card.selected,
-.hc-black .monaco-workbench .model-card.selected {
-	border-color: darkblue
-}
-
-.model-card.unselected {
-	border-color: rgb(214, 214, 214);
-}
-
 
 .model-card .card-content {
 	position: relative;
@@ -37,18 +23,6 @@
 	min-width: 30px;
 }
 
-.model-card .card-vertical-button {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	text-align: center;
-	height: auto;
-	width: auto;
-	padding: 5px 5px 5px 5px;
-	min-height: 130px;
-	min-width: 130px;
-}
-
 .model-card .card-label {
 	font-size: 12px;
 	font-weight: bold;
@@ -57,30 +31,6 @@
 .model-card .card-value {
 	font-size: 12px;
 	line-height: 18px;
-}
-
-.model-card .iconContainer {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	flex-grow: 1;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	padding: 10px 0px 10px 0px;
-	border-color: rgb(214, 214, 214);
-}
-
-.model-card .cardIcon {
-	display: inline-block;
-	flex-grow: 1;
-	width: 100%;
-	height: 100%;
-	max-width: 50px;
-	max-height: 50px;
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: contain;
 }
 
 .model-card .card-status {

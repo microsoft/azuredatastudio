@@ -15,39 +15,33 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { tokenizeToString } from 'vs/editor/common/modes/textToHtmlTokenizer';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
-import { Event, Emitter } from 'vs/base/common/event';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-
-export interface IMarkdownRenderResult extends IDisposable {
-	element: HTMLElement;
-}
+import Event, { Emitter } from 'vs/base/common/event';
 
 export class MarkdownRenderer {
 
 	private _onDidRenderCodeBlock = new Emitter<void>();
 	readonly onDidRenderCodeBlock: Event<void> = this._onDidRenderCodeBlock.event;
 
+	private readonly _options: RenderOptions;
+
 	constructor(
-		private readonly _editor: ICodeEditor,
+		editor: ICodeEditor,
 		@IModeService private readonly _modeService: IModeService,
 		@optional(IOpenerService) private readonly _openerService: IOpenerService = NullOpenerService,
 	) {
-	}
-
-	private getOptions(disposeables: IDisposable[]): RenderOptions {
-		return {
+		this._options = {
 			codeBlockRenderer: (languageAlias, value): TPromise<string> => {
 				// In markdown,
 				// it is possible that we stumble upon language aliases (e.g.js instead of javascript)
 				// it is possible no alias is given in which case we fall back to the current editor lang
 				const modeId = languageAlias
 					? this._modeService.getModeIdForLanguageName(languageAlias)
-					: this._editor.getModel().getLanguageIdentifier().language;
+					: editor.getModel().getLanguageIdentifier().language;
 
 				return this._modeService.getOrCreateMode(modeId).then(_ => {
 					return tokenizeToString(value, modeId);
 				}).then(code => {
-					return `<span style="font-family: ${this._editor.getConfiguration().fontInfo.fontFamily}">${code}</span>`;
+					return `<span style="font-family: ${editor.getConfiguration().fontInfo.fontFamily}">${code}</span>`;
 				});
 			},
 			codeBlockRenderCallback: () => this._onDidRenderCodeBlock.fire(),
@@ -55,24 +49,16 @@ export class MarkdownRenderer {
 				callback: (content) => {
 					this._openerService.open(URI.parse(content)).then(void 0, onUnexpectedError);
 				},
-				disposeables
+				disposeables: [] // TODO
 			}
 		};
 	}
 
-	render(markdown: IMarkdownString): IMarkdownRenderResult {
-		let disposeables: IDisposable[] = [];
-
-		let element: HTMLElement;
+	render(markdown: IMarkdownString): HTMLElement {
 		if (!markdown) {
-			element = document.createElement('span');
-		} else {
-			element = renderMarkdown(markdown, this.getOptions(disposeables));
+			return document.createElement('span');
 		}
 
-		return {
-			element,
-			dispose: () => dispose(disposeables)
-		};
+		return renderMarkdown(markdown, this._options);
 	}
 }

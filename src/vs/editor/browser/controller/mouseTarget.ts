@@ -16,7 +16,6 @@ import { PartFingerprint, PartFingerprints } from 'vs/editor/browser/view/viewPa
 import { IViewModel } from 'vs/editor/common/viewModel/viewModel';
 import { EditorLayoutInfo } from 'vs/editor/common/config/editorOptions';
 import { ViewLine } from 'vs/editor/browser/viewParts/lines/viewLine';
-import { HorizontalRange } from 'vs/editor/common/view/renderingContext';
 
 export interface IViewZoneData {
 	viewZoneId: number;
@@ -35,7 +34,6 @@ export interface IMarginData {
 
 export interface IEmptyContentData {
 	isAfterLines: boolean;
-	horizontalDistanceToText?: number;
 }
 
 interface IETextRange {
@@ -176,14 +174,6 @@ class ElementPath {
 		);
 	}
 
-	public static isStrictChildOfViewLines(path: Uint8Array): boolean {
-		return (
-			path.length > 4
-			&& path[0] === PartFingerprint.OverflowGuard
-			&& path[3] === PartFingerprint.ViewLines
-		);
-	}
-
 	public static isChildOfScrollableElement(path: Uint8Array): boolean {
 		return (
 			path.length >= 2
@@ -224,7 +214,7 @@ class ElementPath {
 	}
 }
 
-export class HitTestContext {
+class HitTestContext {
 
 	public readonly model: IViewModel;
 	public readonly layoutInfo: EditorLayoutInfo;
@@ -248,16 +238,12 @@ export class HitTestContext {
 	}
 
 	public getZoneAtCoord(mouseVerticalOffset: number): IViewZoneData {
-		return HitTestContext.getZoneAtCoord(this._context, mouseVerticalOffset);
-	}
-
-	public static getZoneAtCoord(context: ViewContext, mouseVerticalOffset: number): IViewZoneData {
 		// The target is either a view zone or the empty space after the last view-line
-		let viewZoneWhitespace = context.viewLayout.getWhitespaceAtVerticalOffset(mouseVerticalOffset);
+		let viewZoneWhitespace = this._context.viewLayout.getWhitespaceAtVerticalOffset(mouseVerticalOffset);
 
 		if (viewZoneWhitespace) {
 			let viewZoneMiddle = viewZoneWhitespace.verticalOffset + viewZoneWhitespace.height / 2,
-				lineCount = context.model.getLineCount(),
+				lineCount = this._context.model.getLineCount(),
 				positionBefore: Position = null,
 				position: Position,
 				positionAfter: Position = null;
@@ -268,7 +254,7 @@ export class HitTestContext {
 			}
 			if (viewZoneWhitespace.afterLineNumber > 0) {
 				// There are more lines above this view zone
-				positionBefore = new Position(viewZoneWhitespace.afterLineNumber, context.model.getLineMaxColumn(viewZoneWhitespace.afterLineNumber));
+				positionBefore = new Position(viewZoneWhitespace.afterLineNumber, this._context.model.getLineMaxColumn(viewZoneWhitespace.afterLineNumber));
 			}
 
 			if (positionAfter === null) {
@@ -344,7 +330,7 @@ export class HitTestContext {
 		return this._viewHelper.getLineWidth(lineNumber);
 	}
 
-	public visibleRangeForPosition2(lineNumber: number, column: number): HorizontalRange {
+	public visibleRangeForPosition2(lineNumber: number, column: number) {
 		return this._viewHelper.visibleRangeForPosition2(lineNumber, column);
 	}
 
@@ -416,13 +402,7 @@ class HitTestRequest extends BareHitTestRequest {
 }
 
 const EMPTY_CONTENT_AFTER_LINES: IEmptyContentData = { isAfterLines: true };
-
-function createEmptyContentDataInLines(horizontalDistanceToText: number): IEmptyContentData {
-	return {
-		isAfterLines: false,
-		horizontalDistanceToText: horizontalDistanceToText
-	};
-}
+const EMPTY_CONTENT_IN_LINES: IEmptyContentData = { isAfterLines: false };
 
 export class MouseTargetFactory {
 
@@ -641,17 +621,6 @@ export class MouseTargetFactory {
 		}
 
 		if (domHitTestExecuted) {
-			// Check if we are hitting a view-line (can happen in the case of inline decorations on empty lines)
-			// See https://github.com/Microsoft/vscode/issues/46942
-			if (ElementPath.isStrictChildOfViewLines(request.targetPath)) {
-				const lineNumber = ctx.getLineNumberAtVerticalOffset(request.mouseVerticalOffset);
-				if (ctx.model.getLineLength(lineNumber) === 0) {
-					const lineWidth = ctx.getLineWidth(lineNumber);
-					const detail = createEmptyContentDataInLines(request.mouseContentHorizontalOffset - lineWidth);
-					return request.fulfill(MouseTargetType.CONTENT_EMPTY, new Position(lineNumber, 1), void 0, detail);
-				}
-			}
-
 			// We have already executed hit test...
 			return request.fulfill(MouseTargetType.UNKNOWN);
 		}
@@ -722,11 +691,9 @@ export class MouseTargetFactory {
 		if (request.mouseContentHorizontalOffset > lineWidth) {
 			if (browser.isEdge && pos.column === 1) {
 				// See https://github.com/Microsoft/vscode/issues/10875
-				const detail = createEmptyContentDataInLines(request.mouseContentHorizontalOffset - lineWidth);
-				return request.fulfill(MouseTargetType.CONTENT_EMPTY, new Position(lineNumber, ctx.model.getLineMaxColumn(lineNumber)), void 0, detail);
+				return request.fulfill(MouseTargetType.CONTENT_EMPTY, new Position(lineNumber, ctx.model.getLineMaxColumn(lineNumber)), void 0, EMPTY_CONTENT_IN_LINES);
 			}
-			const detail = createEmptyContentDataInLines(request.mouseContentHorizontalOffset - lineWidth);
-			return request.fulfill(MouseTargetType.CONTENT_EMPTY, pos, void 0, detail);
+			return request.fulfill(MouseTargetType.CONTENT_EMPTY, pos, void 0, EMPTY_CONTENT_IN_LINES);
 		}
 
 		const visibleRange = ctx.visibleRangeForPosition2(lineNumber, column);

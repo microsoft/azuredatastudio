@@ -4,53 +4,42 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { ApplicationRef, ComponentFactoryResolver, NgModule, Inject, forwardRef, Type } from '@angular/core';
+import { ApplicationRef, ComponentFactoryResolver, NgModule, Inject, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
+import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
+
+import { EditDataComponent, EDITDATA_SELECTOR } from 'sql/parts/grid/views/editData/editData.component';
 import { SlickGrid } from 'angular2-slickgrid';
 
-import { EditDataComponent } from 'sql/parts/grid/views/editData/editData.component';
-import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
+@NgModule({
 
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+	imports: [
+		CommonModule,
+		BrowserModule
+	],
 
-export const EditDataModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): Type<any> => {
+	declarations: [
+		EditDataComponent,
+		SlickGrid
+	],
 
-	@NgModule({
+	entryComponents: [
+		EditDataComponent
+	]
+})
+export class EditDataModule {
 
-		imports: [
-			CommonModule,
-			BrowserModule
-		],
-
-		declarations: [
-			EditDataComponent,
-			SlickGrid
-		],
-
-		entryComponents: [
-			EditDataComponent
-		],
-		providers: [
-			{ provide: IBootstrapParams, useValue: params },
-			{ provide: ISelector, useValue: selector },
-			...providerIterator(instantiationService)
-		]
-	})
-	class ModuleClass {
-
-		constructor(
-			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-			@Inject(ISelector) private selector: string
-		) {
-		}
-
-		ngDoBootstrap(appRef: ApplicationRef) {
-			const factory = this._resolver.resolveComponentFactory(EditDataComponent);
-			(<any>factory).factory.selector = this.selector;
-			appRef.bootstrap(factory);
-		}
+	constructor(
+		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
+		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService
+	) {
 	}
 
-	return ModuleClass;
-};
+	ngDoBootstrap(appRef: ApplicationRef) {
+		const factory = this._resolver.resolveComponentFactory(EditDataComponent);
+		const uniqueSelector: string = this._bootstrapService.getUniqueSelector(EDITDATA_SELECTOR);
+		(<any>factory).factory.selector = uniqueSelector;
+		appRef.bootstrap(factory);
+	}
+}

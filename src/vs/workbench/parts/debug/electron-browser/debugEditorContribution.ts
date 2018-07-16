@@ -11,7 +11,6 @@ import * as lifecycle from 'vs/base/common/lifecycle';
 import * as env from 'vs/base/common/platform';
 import uri from 'vs/base/common/uri';
 import { visit } from 'vs/base/common/json';
-import severity from 'vs/base/common/severity';
 import { Constants } from 'vs/editor/common/core/uint';
 import { IAction, Action } from 'vs/base/common/actions';
 import { KeyCode } from 'vs/base/common/keyCodes';
@@ -31,9 +30,9 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { DebugHoverWidget } from 'vs/workbench/parts/debug/electron-browser/debugHover';
-import { RemoveBreakpointAction } from 'vs/workbench/parts/debug/browser/debugActions';
-import { IDebugEditorContribution, IDebugService, State, IBreakpoint, EDITOR_CONTRIBUTION_ID, CONTEXT_BREAKPOINT_WIDGET_VISIBLE, IStackFrame, IDebugConfiguration, IExpression, IExceptionInfo, BreakpointWidgetContext } from 'vs/workbench/parts/debug/common/debug';
-import { BreakpointWidget } from 'vs/workbench/parts/debug/electron-browser/breakpointWidget';
+import { RemoveBreakpointAction, EditConditionalBreakpointAction, EnableBreakpointAction, DisableBreakpointAction, AddConditionalBreakpointAction } from 'vs/workbench/parts/debug/browser/debugActions';
+import { IDebugEditorContribution, IDebugService, State, IBreakpoint, EDITOR_CONTRIBUTION_ID, CONTEXT_BREAKPOINT_WIDGET_VISIBLE, IStackFrame, IDebugConfiguration, IExpression, IExceptionInfo } from 'vs/workbench/parts/debug/common/debug';
+import { BreakpointWidget } from 'vs/workbench/parts/debug/browser/breakpointWidget';
 import { ExceptionWidget } from 'vs/workbench/parts/debug/browser/exceptionWidget';
 import { FloatingClickWidget } from 'vs/workbench/parts/preferences/browser/preferencesWidgets';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -43,12 +42,10 @@ import { first } from 'vs/base/common/arrays';
 import { IMarginData } from 'vs/editor/browser/controller/mouseTarget';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ContextSubMenu } from 'vs/base/browser/contextmenu';
-import { memoize } from 'vs/base/common/decorators';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
-import { getHover } from 'vs/editor/contrib/hover/getHover';
 
 const HOVER_DELAY = 300;
 const LAUNCH_JSON_REGEX = /launch\.json$/;
+const REMOVE_INLINE_VALUES_DELAY = 100;
 const INLINE_VALUE_DECORATION_KEY = 'inlinevaluedecoration';
 const MAX_NUM_INLINE_VALUES = 100; // JS Global scope can have 700+ entries. We want to limit ourselves for perf reasons
 const MAX_INLINE_DECORATOR_LENGTH = 150; // Max string length of each inline decorator when debugging. If exceeded ... is added
@@ -58,7 +55,9 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 
 	private toDispose: lifecycle.IDisposable[];
 	private hoverWidget: DebugHoverWidget;
-	private nonDebugHoverPosition: Position;
+	private showHoverScheduler: RunOnceScheduler;
+	private hideHoverScheduler: RunOnceScheduler;
+	private removeInlineValuesScheduler: RunOnceScheduler;
 	private hoverRange: Range;
 
 	private breakpointHintDecoration: string[];
@@ -81,12 +80,14 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 		@ITelemetryService private telemetryService: ITelemetryService,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IThemeService themeService: IThemeService,
-		@IKeybindingService private keybindingService: IKeybindingService,
-		@IDialogService private dialogService: IDialogService,
+		@IKeybindingService private keybindingService: IKeybindingService
 	) {
 		this.breakpointHintDecoration = [];
 		this.hoverWidget = new DebugHoverWidget(this.editor, this.debugService, this.instantiationService, themeService);
 		this.toDispose = [];
+		this.showHoverScheduler = new RunOnceScheduler(() => this.showHover(this.hoverRange, false), HOVER_DELAY);
+		this.hideHoverScheduler = new RunOnceScheduler(() => this.hoverWidget.hide(), HOVER_DELAY);
+		this.removeInlineValuesScheduler = new RunOnceScheduler(() => this.editor.removeDecorations(INLINE_VALUE_DECORATION_KEY), REMOVE_INLINE_VALUES_DELAY);
 		this.registerListeners();
 		this.breakpointWidgetVisible = CONTEXT_BREAKPOINT_WIDGET_VISIBLE.bindTo(contextKeyService);
 		this.updateConfigurationWidgetVisibility();
@@ -97,23 +98,13 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 	private getContextMenuActions(breakpoints: IBreakpoint[], uri: uri, lineNumber: number): TPromise<(IAction | ContextSubMenu)[]> {
 		const actions: (IAction | ContextSubMenu)[] = [];
 		if (breakpoints.length === 1) {
-			const breakpointType = breakpoints[0].logMessage ? nls.localize('logPoint', "Logpoint") : nls.localize('breakpoint', "Breakpoint");
-			actions.push(new RemoveBreakpointAction(RemoveBreakpointAction.ID, nls.localize('removeBreakpoint', "Remove {0}", breakpointType), this.debugService, this.keybindingService));
-			actions.push(new Action(
-				'workbench.debug.action.editBreakpointAction',
-				nls.localize('editBreakpoint', "Edit {0}...", breakpointType),
-				undefined,
-				true,
-				() => TPromise.as(this.editor.getContribution<IDebugEditorContribution>(EDITOR_CONTRIBUTION_ID).showBreakpointWidget(breakpoints[0].lineNumber, breakpoints[0].column))
-			));
-
-			actions.push(new Action(
-				`workbench.debug.viewlet.action.toggleBreakpoint`,
-				breakpoints[0].enabled ? nls.localize('disableBreakpoint', "Disable {0}", breakpointType) : nls.localize('enableBreakpoint', "Enable {0}", breakpointType),
-				undefined,
-				true,
-				() => this.debugService.enableOrDisableBreakpoints(!breakpoints[0].enabled, breakpoints[0])
-			));
+			actions.push(new RemoveBreakpointAction(RemoveBreakpointAction.ID, RemoveBreakpointAction.LABEL, this.debugService, this.keybindingService));
+			actions.push(new EditConditionalBreakpointAction(EditConditionalBreakpointAction.ID, EditConditionalBreakpointAction.LABEL, this.editor, this.debugService, this.keybindingService));
+			if (breakpoints[0].enabled) {
+				actions.push(new DisableBreakpointAction(DisableBreakpointAction.ID, DisableBreakpointAction.LABEL, this.debugService, this.keybindingService));
+			} else {
+				actions.push(new EnableBreakpointAction(EnableBreakpointAction.ID, EnableBreakpointAction.LABEL, this.debugService, this.keybindingService));
+			}
 		} else if (breakpoints.length > 1) {
 			const sorted = breakpoints.sort((first, second) => first.column - second.column);
 			actions.push(new ContextSubMenu(nls.localize('removeBreakpoints', "Remove Breakpoints"), sorted.map(bp => new Action(
@@ -149,20 +140,7 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 				true,
 				() => this.debugService.addBreakpoints(uri, [{ lineNumber }])
 			));
-			actions.push(new Action(
-				'addConditionalBreakpoint',
-				nls.localize('addConditionalBreakpoint', "Add Conditional Breakpoint..."),
-				null,
-				true,
-				() => TPromise.as(this.editor.getContribution<IDebugEditorContribution>(EDITOR_CONTRIBUTION_ID).showBreakpointWidget(lineNumber, undefined))
-			));
-			actions.push(new Action(
-				'addLogPoint',
-				nls.localize('addLogPoint', "Add Logpoint..."),
-				null,
-				true,
-				() => TPromise.as(this.editor.getContribution<IDebugEditorContribution>(EDITOR_CONTRIBUTION_ID).showBreakpointWidget(lineNumber, undefined, BreakpointWidgetContext.LOG_MESSAGE))
-			));
+			actions.push(new AddConditionalBreakpointAction(AddConditionalBreakpointAction.ID, AddConditionalBreakpointAction.LABEL, this.editor, lineNumber, this.debugService, this.keybindingService));
 		}
 
 		return TPromise.as(actions);
@@ -196,25 +174,7 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 					.filter(bp => bp.uri.toString() === uri.toString() && bp.lineNumber === lineNumber);
 
 				if (breakpoints.length) {
-					if (breakpoints.some(bp => !!bp.condition || !!bp.logMessage || !!bp.hitCondition)) {
-						const logPoint = breakpoints.every(bp => !!bp.logMessage);
-						const breakpointType = logPoint ? nls.localize('logPoint', "Logpoint") : nls.localize('breakpoint', "Breakpoint");
-						this.dialogService.show(severity.Info, nls.localize('breakpointHasCondition', "This {0} has a {1} that will get lost on remove. Consider disabling the {0} instead.",
-							breakpointType.toLowerCase(), logPoint ? nls.localize('message', "message") : nls.localize('condition', "condition")), [
-								nls.localize('removeLogPoint', "Remove {0}", breakpointType),
-								nls.localize('disableLogPoint', "Disable {0}", breakpointType),
-								nls.localize('cancel', "Cancel")
-							], { cancelId: 2 }).then(choice => {
-								if (choice === 0) {
-									breakpoints.forEach(bp => this.debugService.removeBreakpoints(bp.getId()));
-								}
-								if (choice === 1) {
-									breakpoints.forEach(bp => this.debugService.enableOrDisableBreakpoints(false, bp));
-								}
-							});
-					} else {
-						breakpoints.forEach(bp => this.debugService.removeBreakpoints(bp.getId()));
-					}
+					breakpoints.forEach(bp => this.debugService.removeBreakpoints(bp.getId()));
 				} else if (canSetBreakpoints) {
 					this.debugService.addBreakpoints(uri, [{ lineNumber }]);
 				}
@@ -241,7 +201,6 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 		this.toDispose.push(this.editor.onMouseDown((e: IEditorMouseEvent) => this.onEditorMouseDown(e)));
 		this.toDispose.push(this.editor.onMouseMove((e: IEditorMouseEvent) => this.onEditorMouseMove(e)));
 		this.toDispose.push(this.editor.onMouseLeave((e: IEditorMouseEvent) => {
-			this.provideNonDebugHoverScheduler.cancel();
 			const hoverDomNode = this.hoverWidget.getDomNode();
 			if (!hoverDomNode) {
 				return;
@@ -256,18 +215,17 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 		this.toDispose.push(this.editor.onKeyDown((e: IKeyboardEvent) => this.onKeyDown(e)));
 		this.toDispose.push(this.editor.onDidChangeModelContent(() => {
 			this.wordToLineNumbersMap = null;
-			this.updateInlineValuesScheduler.schedule();
 		}));
 		this.toDispose.push(this.editor.onDidChangeModel(() => {
-			const stackFrame = this.debugService.getViewModel().focusedStackFrame;
+			const sf = this.debugService.getViewModel().focusedStackFrame;
 			const model = this.editor.getModel();
-			this.editor.updateOptions({ hover: !stackFrame || !model || model.uri.toString() !== stackFrame.source.uri.toString() });
+			this.editor.updateOptions({ hover: !sf || !model || model.uri.toString() !== sf.source.uri.toString() });
 			this.closeBreakpointWidget();
 			this.toggleExceptionWidget();
 			this.hideHoverWidget();
 			this.updateConfigurationWidgetVisibility();
 			this.wordToLineNumbersMap = null;
-			this.updateInlineValueDecorations(stackFrame);
+			this.updateInlineDecorations(sf);
 		}));
 		this.toDispose.push(this.editor.onDidScrollChange(() => this.hideHoverWidget));
 		this.toDispose.push(this.debugService.onDidChangeState((state: State) => {
@@ -330,33 +288,7 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 			this.hideHoverWidget();
 		}
 
-		this.updateInlineValueDecorations(sf);
-	}
-
-	@memoize
-	private get showHoverScheduler(): RunOnceScheduler {
-		const scheduler = new RunOnceScheduler(() => this.showHover(this.hoverRange, false), HOVER_DELAY);
-		this.toDispose.push(scheduler);
-
-		return scheduler;
-	}
-
-	@memoize
-	private get hideHoverScheduler(): RunOnceScheduler {
-		const scheduler = new RunOnceScheduler(() => this.hoverWidget.hide(), HOVER_DELAY);
-		this.toDispose.push(scheduler);
-
-		return scheduler;
-	}
-
-	@memoize
-	private get provideNonDebugHoverScheduler(): RunOnceScheduler {
-		const scheduler = new RunOnceScheduler(() => {
-			getHover(this.editor.getModel(), this.nonDebugHoverPosition);
-		}, HOVER_DELAY);
-		this.toDispose.push(scheduler);
-
-		return scheduler;
+		this.updateInlineDecorations(sf);
 	}
 
 	private hideHoverWidget(): void {
@@ -364,7 +296,6 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 			this.hideHoverScheduler.schedule();
 		}
 		this.showHoverScheduler.cancel();
-		this.provideNonDebugHoverScheduler.cancel();
 	}
 
 	// hover business
@@ -382,10 +313,6 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 			return;
 		}
 
-		if (!this.configurationService.getValue<IDebugConfiguration>('debug').enableAllHovers) {
-			this.nonDebugHoverPosition = mouseEvent.target.position;
-			this.provideNonDebugHoverScheduler.schedule();
-		}
 		const targetType = mouseEvent.target.type;
 		const stopKey = env.isMacintosh ? 'metaKey' : 'ctrlKey';
 
@@ -414,12 +341,12 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 	// end hover business
 
 	// breakpoint widget
-	public showBreakpointWidget(lineNumber: number, column: number, context?: BreakpointWidgetContext): void {
+	public showBreakpointWidget(lineNumber: number, column: number): void {
 		if (this.breakpointWidget) {
 			this.breakpointWidget.dispose();
 		}
 
-		this.breakpointWidget = this.instantiationService.createInstance(BreakpointWidget, this.editor, lineNumber, context);
+		this.breakpointWidget = this.instantiationService.createInstance(BreakpointWidget, this.editor, lineNumber, column);
 		this.breakpointWidget.show({ lineNumber, column: 1 }, 2);
 		this.breakpointWidgetVisible.set(true);
 	}
@@ -547,24 +474,7 @@ export class DebugEditorContribution implements IDebugEditorContribution {
 	};
 
 	// Inline Decorations
-
-	@memoize
-	private get removeInlineValuesScheduler(): RunOnceScheduler {
-		return new RunOnceScheduler(
-			() => this.editor.removeDecorations(INLINE_VALUE_DECORATION_KEY),
-			100
-		);
-	}
-
-	@memoize
-	private get updateInlineValuesScheduler(): RunOnceScheduler {
-		return new RunOnceScheduler(
-			() => this.updateInlineValueDecorations(this.debugService.getViewModel().focusedStackFrame),
-			200
-		);
-	}
-
-	private updateInlineValueDecorations(stackFrame: IStackFrame): void {
+	private updateInlineDecorations(stackFrame: IStackFrame): void {
 		const model = this.editor.getModel();
 		if (!this.configurationService.getValue<IDebugConfiguration>('debug').inlineValues ||
 			!model || !stackFrame || model.uri.toString() !== stackFrame.source.uri.toString()) {

@@ -5,8 +5,8 @@
 
 'use strict';
 
-import * as nls from 'vs/nls';
-import * as paths from 'vs/base/common/paths';
+import nls = require('vs/nls');
+import paths = require('vs/base/common/paths');
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as labels from 'vs/base/common/labels';
 import URI from 'vs/base/common/uri';
@@ -22,6 +22,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
+import { basename } from 'vs/base/common/paths';
 import { IListService } from 'vs/platform/list/browser/listService';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
@@ -41,7 +42,6 @@ import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common
 import { getMultiSelectedEditorContexts } from 'vs/workbench/browser/parts/editor/editorCommands';
 import { Schemas } from 'vs/base/common/network';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 
 // {{SQL CARBON EDIT}}
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
@@ -254,7 +254,7 @@ function saveAll(saveAllArguments: any, editorService: IWorkbenchEditorService, 
 
 CommandsRegistry.registerCommand({
 	id: REVERT_FILE_COMMAND_ID,
-	handler: (accessor, resource: URI | object) => {
+	handler: (accessor, resource: URI) => {
 		const editorService = accessor.get(IWorkbenchEditorService);
 		const textFileService = accessor.get(ITextFileService);
 		const notificationService = accessor.get(INotificationService);
@@ -263,7 +263,7 @@ CommandsRegistry.registerCommand({
 
 		if (resources.length) {
 			return textFileService.revertAll(resources, { force: true }).then(null, error => {
-				notificationService.error(nls.localize('genericRevertError', "Failed to revert '{0}': {1}", resources.map(r => paths.basename(r.fsPath)).join(', '), toErrorMessage(error, false)));
+				notificationService.error(nls.localize('genericRevertError', "Failed to revert '{0}': {1}", resources.map(r => basename(r.fsPath)).join(', '), toErrorMessage(error, false)));
 			});
 		}
 
@@ -278,7 +278,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	mac: {
 		primary: KeyMod.WinCtrl | KeyCode.Enter
 	},
-	id: OPEN_TO_SIDE_COMMAND_ID, handler: (accessor, resource: URI | object) => {
+	id: OPEN_TO_SIDE_COMMAND_ID, handler: (accessor, resource: URI) => {
 		const editorService = accessor.get(IWorkbenchEditorService);
 		const editorGroupService = accessor.get(IEditorGroupService);
 		const listService = accessor.get(IListService);
@@ -322,7 +322,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: undefined,
 	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(),
 	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyCode.KEY_D),
-	handler: (accessor, resource: URI | object) => {
+	handler: (accessor, resource: URI) => {
 		if (!provider) {
 			const instantiationService = accessor.get(IInstantiationService);
 			const textModelService = accessor.get(ITextModelService);
@@ -331,13 +331,13 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		}
 
 		const editorService = accessor.get(IWorkbenchEditorService);
-		const uri = getResourceForCommand(resource, accessor.get(IListService), editorService);
+		resource = getResourceForCommand(resource, accessor.get(IListService), editorService);
 
-		if (uri && uri.scheme === Schemas.file /* only files on disk supported for now */) {
-			const name = paths.basename(uri.fsPath);
+		if (resource && resource.scheme === Schemas.file /* only files on disk supported for now */) {
+			const name = paths.basename(resource.fsPath);
 			const editorLabel = nls.localize('modifiedLabel', "{0} (on disk) ↔ {1}", name, name);
 
-			return editorService.openEditor({ leftResource: URI.from({ scheme: COMPARE_WITH_SAVED_SCHEMA, path: uri.fsPath }), rightResource: uri, label: editorLabel }).then(() => void 0);
+			return editorService.openEditor({ leftResource: URI.from({ scheme: COMPARE_WITH_SAVED_SCHEMA, path: resource.fsPath }), rightResource: resource, label: editorLabel }).then(() => void 0);
 		}
 
 		return TPromise.as(true);
@@ -348,13 +348,13 @@ let globalResourceToCompare: URI;
 let resourceSelectedForCompareContext: IContextKey<boolean>;
 CommandsRegistry.registerCommand({
 	id: SELECT_FOR_COMPARE_COMMAND_ID,
-	handler: (accessor, resource: URI | object) => {
+	handler: (accessor, resource: URI) => {
 		const listService = accessor.get(IListService);
 		const tree = listService.lastFocusedList;
 		// Remove highlight
 		if (tree instanceof Tree) {
 			tree.clearHighlight();
-			tree.domFocus();
+			tree.DOMFocus();
 		}
 
 		globalResourceToCompare = getResourceForCommand(resource, listService, accessor.get(IWorkbenchEditorService));
@@ -367,7 +367,7 @@ CommandsRegistry.registerCommand({
 
 CommandsRegistry.registerCommand({
 	id: COMPARE_SELECTED_COMMAND_ID,
-	handler: (accessor, resource: URI | object) => {
+	handler: (accessor, resource: URI) => {
 		const editorService = accessor.get(IWorkbenchEditorService);
 		const resources = getMultiSelectedResources(resource, accessor.get(IListService), editorService);
 
@@ -384,7 +384,7 @@ CommandsRegistry.registerCommand({
 
 CommandsRegistry.registerCommand({
 	id: COMPARE_RESOURCE_COMMAND_ID,
-	handler: (accessor, resource: URI | object) => {
+	handler: (accessor, resource: URI) => {
 		const editorService = accessor.get(IWorkbenchEditorService);
 		const listService = accessor.get(IListService);
 		const tree = listService.lastFocusedList;
@@ -401,11 +401,9 @@ CommandsRegistry.registerCommand({
 	}
 });
 
-function revealResourcesInOS(resources: URI[], windowsService: IWindowsService, notificationService: INotificationService, workspaceContextService: IWorkspaceContextService): void {
+function revealResourcesInOS(resources: URI[], windowsService: IWindowsService, notificationService: INotificationService): void {
 	if (resources.length) {
 		sequence(resources.map(r => () => windowsService.showItemInFolder(paths.normalize(r.fsPath, true))));
-	} else if (workspaceContextService.getWorkspace().folders.length) {
-		windowsService.showItemInFolder(paths.normalize(workspaceContextService.getWorkspace().folders[0].uri.fsPath, true));
 	} else {
 		notificationService.info(nls.localize('openFileToReveal', "Open a file first to reveal"));
 	}
@@ -413,14 +411,14 @@ function revealResourcesInOS(resources: URI[], windowsService: IWindowsService, 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: REVEAL_IN_OS_COMMAND_ID,
 	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(),
-	when: EditorContextKeys.editorTextFocus.toNegated(),
+	when: ExplorerFocusCondition,
 	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_R,
 	win: {
 		primary: KeyMod.Shift | KeyMod.Alt | KeyCode.KEY_R
 	},
-	handler: (accessor: ServicesAccessor, resource: URI | object) => {
+	handler: (accessor: ServicesAccessor, resource: URI) => {
 		const resources = getMultiSelectedResources(resource, accessor.get(IListService), accessor.get(IWorkbenchEditorService));
-		revealResourcesInOS(resources, accessor.get(IWindowsService), accessor.get(INotificationService), accessor.get(IWorkspaceContextService));
+		revealResourcesInOS(resources, accessor.get(IWindowsService), accessor.get(INotificationService));
 	}
 });
 KeybindingsRegistry.registerCommandAndKeybindingRule({
@@ -428,11 +426,11 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: undefined,
 	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyCode.KEY_R),
 	id: 'workbench.action.files.revealActiveFileInWindows',
-	handler: (accessor: ServicesAccessor) => {
+	handler: (accessor: ServicesAccessor, resource: URI) => {
 		const editorService = accessor.get(IWorkbenchEditorService);
 		const activeInput = editorService.getActiveEditorInput();
 		const resources = activeInput && activeInput.getResource() ? [activeInput.getResource()] : [];
-		revealResourcesInOS(resources, accessor.get(IWindowsService), accessor.get(INotificationService), accessor.get(IWorkspaceContextService));
+		revealResourcesInOS(resources, accessor.get(IWindowsService), accessor.get(INotificationService));
 	}
 });
 
@@ -447,13 +445,13 @@ function resourcesToClipboard(resources: URI[], clipboardService: IClipboardServ
 }
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(),
-	when: EditorContextKeys.editorTextFocus.toNegated(),
+	when: ExplorerFocusCondition,
 	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_C,
 	win: {
 		primary: KeyMod.Shift | KeyMod.Alt | KeyCode.KEY_C
 	},
 	id: COPY_PATH_COMMAND_ID,
-	handler: (accessor, resource: URI | object) => {
+	handler: (accessor, resource: URI) => {
 		const resources = getMultiSelectedResources(resource, accessor.get(IListService), accessor.get(IWorkbenchEditorService));
 		resourcesToClipboard(resources, accessor.get(IClipboardService), accessor.get(INotificationService));
 	}
@@ -464,7 +462,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	when: undefined,
 	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyCode.KEY_P),
 	id: 'workbench.action.files.copyPathOfActiveFile',
-	handler: (accessor) => {
+	handler: (accessor, resource: URI) => {
 		const editorService = accessor.get(IWorkbenchEditorService);
 		const activeInput = editorService.getActiveEditorInput();
 		const resources = activeInput && activeInput.getResource() ? [activeInput.getResource()] : [];
@@ -474,18 +472,18 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 CommandsRegistry.registerCommand({
 	id: REVEAL_IN_EXPLORER_COMMAND_ID,
-	handler: (accessor, resource: URI | object) => {
+	handler: (accessor, resource: URI) => {
 		const viewletService = accessor.get(IViewletService);
 		const contextService = accessor.get(IWorkspaceContextService);
-		const uri = getResourceForCommand(resource, accessor.get(IListService), accessor.get(IWorkbenchEditorService));
+		resource = getResourceForCommand(resource, accessor.get(IListService), accessor.get(IWorkbenchEditorService));
 
 		viewletService.openViewlet(VIEWLET_ID, false).then((viewlet: ExplorerViewlet) => {
-			const isInsideWorkspace = contextService.isInsideWorkspace(uri);
+			const isInsideWorkspace = contextService.isInsideWorkspace(resource);
 			if (isInsideWorkspace) {
 				const explorerView = viewlet.getExplorerView();
 				if (explorerView) {
 					explorerView.setExpanded(true);
-					explorerView.select(uri, true);
+					explorerView.select(resource, true);
 				}
 			} else {
 				const openEditorsView = viewlet.getOpenEditorsView();
@@ -502,15 +500,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(),
 	when: undefined,
 	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_S,
-	handler: (accessor, resourceOrObject: URI | object | { from: string }) => {
+	handler: (accessor, resource: URI) => {
 		const editorService = accessor.get(IWorkbenchEditorService);
-		let resource: URI = undefined;
-		if (resourceOrObject && 'from' in resourceOrObject && resourceOrObject.from === 'menu') {
-			resource = toResource(editorService.getActiveEditorInput());
-		} else {
-			resource = getResourceForCommand(resourceOrObject, accessor.get(IListService), editorService);
-		}
-
+		resource = getResourceForCommand(resource, accessor.get(IListService), editorService);
 		// {{SQL CARBON EDIT}}
 		return save(resource, true, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupService), accessor.get(IQueryEditorService));
 	}
@@ -521,7 +513,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(),
 	primary: KeyMod.CtrlCmd | KeyCode.KEY_S,
 	id: SAVE_FILE_COMMAND_ID,
-	handler: (accessor, resource: URI | object) => {
+	handler: (accessor, resource: URI) => {
 		const editorService = accessor.get(IWorkbenchEditorService);
 		const resources = getMultiSelectedResources(resource, accessor.get(IListService), editorService);
 
@@ -543,7 +535,7 @@ CommandsRegistry.registerCommand({
 
 CommandsRegistry.registerCommand({
 	id: SAVE_ALL_IN_GROUP_COMMAND_ID,
-	handler: (accessor, resource: URI | object, editorContext: IEditorCommandsContext) => {
+	handler: (accessor, resource: URI, editorContext: IEditorCommandsContext) => {
 		const contexts = getMultiSelectedEditorContexts(editorContext, accessor.get(IListService));
 		const editorGroupService = accessor.get(IEditorGroupService);
 		let saveAllArg: any;
@@ -576,7 +568,7 @@ CommandsRegistry.registerCommand({
 
 CommandsRegistry.registerCommand({
 	id: REMOVE_ROOT_FOLDER_COMMAND_ID,
-	handler: (accessor, resource: URI | object) => {
+	handler: (accessor, resource: URI) => {
 		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
 		const contextService = accessor.get(IWorkspaceContextService);
 		const workspace = contextService.getWorkspace();

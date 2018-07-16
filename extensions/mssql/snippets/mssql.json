@@ -8,9 +8,9 @@
 			"GO",
 			"-- Create the new database if it does not exist already",
 			"IF NOT EXISTS (",
-			"\tSELECT [name]",
+			"\tSELECT name",
 			"\t\tFROM sys.databases",
-			"\t\tWHERE [name] = N'${1:DatabaseName}'",
+			"\t\tWHERE name = N'${1:DatabaseName}'",
 			")",
 			"CREATE DATABASE ${1:DatabaseName}",
 			"GO"
@@ -29,9 +29,9 @@
 			"-- ALTER DATABASE ${1:DatabaseName} SET SINGLE_USER WITH ROLLBACK IMMEDIATE;",
 			"-- Drop the database if it exists",
 			"IF EXISTS (",
-			"  SELECT [name]",
+			"  SELECT name",
 			"   FROM sys.databases",
-			"   WHERE [name] = N'${1:DatabaseName}'",
+			"   WHERE name = N'${1:DatabaseName}'",
 			")",
 			"DROP DATABASE ${1:DatabaseName}",
 			"GO"
@@ -42,33 +42,38 @@
 	"Create a new Table": {
 		"prefix": "sqlCreateTable",
 		"body": [
-			"-- Create a new table called '[${1:TableName}]' in schema '[${2:SchemaName}]' in database '[${3:DatabaseName}]'",
+			"-- Create a new table called '${1:TableName}' in schema '${2:SchemaName}'",
 			"-- Drop the table if it already exists",
-			"IF OBJECT_ID('[${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}]', 'U') IS NOT NULL",
-			"DROP TABLE [${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}]",
+			"IF OBJECT_ID('${2:SchemaName}.${1:TableName}', 'U') IS NOT NULL",
+			"DROP TABLE ${2:SchemaName}.${1:TableName}",
 			"GO",
-			"-- Create the table in the specified database and schema",
-			"CREATE TABLE [${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}]",
+			"-- Create the table in the specified schema",
+			"CREATE TABLE ${2:SchemaName}.${1:TableName}",
 			"(",
-			"\t[${4:ColumnName}]Id INT NOT NULL PRIMARY KEY, -- Primary Key column",
-			"\t[${5:ColumnName1}] [NVARCHAR](50) NOT NULL,",
-			"\t[${6:ColumnName2}] [NVARCHAR](50) NOT NULL",
-			"\t-- Specify more columns here",
+			"\t${1:TableName}Id INT NOT NULL PRIMARY KEY, -- primary key column",
+			"\t$3Column1 [NVARCHAR](50) NOT NULL,",
+			"\t$4Column2 [NVARCHAR](50) NOT NULL",
+			"\t-- specify more columns here",
 			");",
 			"GO"
 		],
 		"description": "Create a new Table"
 	},
 
-
 	"Drop a Table": {
 		"prefix": "sqlDropTable",
 		"body": [
-				"-- Drop a table called '${3:TableName}' in schema '${2:SchemaName}' in Database '${1:DatabaseName}'",
-				"-- Drop the table if it already exists",
-				"IF OBJECT_ID('[${1:DatabaseName}].[${2:SchemaName}].[${3:TableName}]', 'U') IS NOT NULL",
-				"DROP TABLE [${1:DatabaseName}].[${2:SchemaName}].[${3:TableName}]",
-				"GO"
+			"-- Drop the table '${1:TableName}' in schema '${2:SchemaName}'",
+			"IF EXISTS (",
+			"\tSELECT *",
+			"\t\tFROM sys.tables",
+			"\t\tJOIN sys.schemas",
+			"\t\t\tON sys.tables.schema_id = sys.schemas.schema_id",
+			"\tWHERE sys.schemas.name = N'${2:SchemaName}'",
+			"\t\tAND sys.tables.name = N'${1:TableName}'",
+			")",
+			"\tDROP TABLE ${2:SchemaName}.${1:TableName}",
+			"GO"
 		],
 		"description": "Drop a Table"
 	},
@@ -76,9 +81,9 @@
 	"Add a new column to a Table": {
 		"prefix": "sqlAddColumn",
 		"body": [
-			"-- Add a new column '[${1:NewColumnName}]' to table '[${2:TableName}]' in schema '[${3:SchemaName}]' in database '[${4:DatabaseName}]'",
-			"ALTER TABLE [${4:DatabaseName}].[${3:SchemaName}].[${2:TableName}]",
-			"\tADD [${1:NewColumnName}] /*new_column_name*/ ${5:int} /*new_column_datatype*/ ${6:NULL} /*new_column_nullability*/",
+			"-- Add a new column '${1:NewColumnName}' to table '${2:TableName}' in schema '${3:SchemaName}'",
+			"ALTER TABLE ${3:SchemaName}.${2:TableName}",
+			"\tADD ${1:NewColumnName} /*new_column_name*/ int /*new_column_datatype*/ NULL /*new_column_nullability*/",
 			"GO"
 		],
 		"description": "Add a new column to a Table"
@@ -87,9 +92,9 @@
 	"Drop a column from a Table": {
 		"prefix": "sqlDropColumn",
 		"body": [
-			"-- Drop '[${1:ColumnName}]' from table '[${2:TableName}]' in schema '[${3:SchemaName}]' in database '[${4:DatabaseName}]'",
-			"ALTER TABLE [${4:DatabaseName}].[${3:SchemaName}].[${2:TableName}]",
-			"\tDROP COLUMN [${1:ColumnName}]",
+			"-- Drop '${1:ColumnName}' from table '${2:TableName}' in schema '${3:SchemaName}'",
+			"ALTER TABLE ${3:SchemaName}.${2:TableName}",
+			"\tDROP COLUMN ${1:ColumnName}",
 			"GO"
 		],
 		"description": "Add a new column to a Table"
@@ -98,9 +103,9 @@
 	"Select rows from a Table or a View": {
 		"prefix": "sqlSelect",
 		"body": [
-			"-- Select rows from a Table or View '[${1:TableOrViewName}]' in schema '[${2:SchemaName}]' in database '[${3:DatabaseName}]'",
-			"SELECT * FROM [${3:DatabaseName}].[${2:SchemaName}].[${1:TableOrViewName}]",
-			"WHERE ${4:/* add search conditions here */}",
+			"-- Select rows from a Table or View '${1:TableOrViewName}' in schema '${2:SchemaName}'",
+			"SELECT * FROM ${2:SchemaName}.${1:TableOrViewName}",
+			"WHERE $3\t/* add search conditions here */",
 			"GO"
 		],
 		"description": "Select rows from a Table or a View"
@@ -109,19 +114,19 @@
 	"Insert rows into a Table": {
 		"prefix": "sqlInsertRows",
 		"body": [
-			"-- Insert rows into table '${1:TableName}' in schema '[${2:SchemaName}]' in database '[${3:DatabaseName}]'",
-			"INSERT INTO [${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}]",
-			"( -- Columns to insert data into",
-			" ${4:[ColumnName1], [ColumnName2], [ColumnName3]}",
+			"-- Insert rows into table '${1:TableName}'",
+			"INSERT INTO ${1:TableName}",
+			"( -- columns to insert data into",
+			" $2[Column1], [Column2], [Column3]",
 			")",
 			"VALUES",
-			"( -- First row: values for the columns in the list above",
-			" ${5:ColumnValue1, ColumnValue2, ColumnValue3}",
+			"( -- first row: values for the columns in the list above",
+			" $3Column1_Value, Column2_Value, Column3_Value",
 			"),",
-			"( -- Second row: values for the columns in the list above",
-			" ${6:ColumnValue1, ColumnValue2, ColumnValue3}",
+			"( -- second row: values for the columns in the list above",
+			" $4Column1_Value, Column2_Value, Column3_Value",
 			")",
-			"-- Add more rows here",
+			"-- add more rows here",
 			"GO"
 		],
 		"description": "Insert rows into a Table"
@@ -130,9 +135,9 @@
 	"Delete rows from a Table": {
 		"prefix": "sqlDeleteRows",
 		"body": [
-			"-- Delete rows from table '[${1:TableName}]' in schema '[${2:SchemaName}]' in database '[${3:DatabaseName}]'",
-			"DELETE FROM [${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}]",
-			"WHERE ${4:/* add search conditions here */}",
+			"-- Delete rows from table '${1:TableName}'",
+			"DELETE FROM ${1:TableName}",
+			"WHERE $2\t/* add search conditions here */",
 			"GO"
 		],
 		"description": "Delete rows from a Table"
@@ -141,13 +146,13 @@
 	"Update rows in a Table": {
 		"prefix": "sqlUpdateRows",
 		"body": [
-			"-- Update rows in table '[${1:TableName}]' in schema '[${2:SchemaName}]' in database '[${3:DatabaseName}]'",
-			"UPDATE [${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}]",
+			"-- Update rows in table '${1:TableName}'",
+			"UPDATE ${1:TableName}",
 			"SET",
-			"\t[${4:ColumnName1}] = ${5:ColumnValue1},",
-			"\t[${6:ColumnName2}] = ${7:ColumnValue2}",
-			"\t-- Add more columns and values here",
-			"WHERE ${8:/* add search conditions here */}",
+			"\t$2[Colum1] = Colum1_Value,",
+			"\t$3[Colum2] = Colum2_Value",
+			"\t-- add more columns and values here",
+			"WHERE $4\t/* add search conditions here */",
 			"GO"
 		],
 		"description": "Update rows in a Table"
@@ -202,8 +207,8 @@
 		"prefix": "sqlListTablesAndViews",
 		"body": [
 			"-- Get a list of tables and views in the current database",
-			"SELECT table_catalog [database], table_schema [schema], table_name [name], table_type [type]",
-			"FROM INFORMATION_SCHEMA.TABLES",
+			"SELECT table_catalog [database], table_schema [schema], table_name name, table_type type",
+			"FROM information_schema.tables",
 			"GO"
 		],
 		"description": "List tables and vies in the current database"
@@ -213,7 +218,7 @@
 		"prefix": "sqlListDatabases",
 		"body": [
 			"-- Get a list of databases",
-			"SELECT [name] FROM sys.databases",
+			"SELECT name FROM sys.databases",
 			"GO"
 		],
 		"description": "List databases"
@@ -227,8 +232,8 @@
 			"\tTableName = tbl.table_schema + '.' + tbl.table_name, ",
 			"\tColumnName = col.column_name, ",
 			"\tColumnDataType = col.data_type",
-			"FROM INFORMATION_SCHEMA.TABLES tbl",
-			"INNER JOIN INFORMATION_SCHEMA.COLUMNS col ",
+			"FROM information_schema.tables tbl",
+			"INNER JOIN information_schema.columns col ",
 			"\tON col.table_name = tbl.table_name",
 			"\tAND col.table_schema = tbl.table_schema",
 			"",
@@ -242,20 +247,20 @@
 		"prefix": "sqlCursor",
 		"body": [
 			"-- Declare a cursor for a Table or a View '${1:TableOrViewName}' in schema '${2:SchemaName}'",
-			"DECLARE @ColumnName1 NVARCHAR(50), @ColumnName2 NVARCHAR(50)",
+			"DECLARE @Column1 NVARCHAR(50), @Column2 NVARCHAR(50)",
 			"",
 			"DECLARE db_cursor CURSOR FOR",
-			"SELECT ColumnName1, Column2",
+			"SELECT Column1, Column2",
 			"FROM $2.$1",
 			"",
 			"OPEN db_cursor",
-			"FETCH NEXT FROM db_cursor INTO @ColumnName1, @ColumnName2",
+			"FETCH NEXT FROM db_cursor INTO @Column1, @Column2",
 			"",
 			"WHILE @@FETCH_STATUS = 0",
 			"BEGIN",
 			"\t-- add instructions to be executed for every row",
 			"\t$3",
-			"\tFETCH NEXT FROM db_cursor INTO @ColumnName1, @ColumnName2",
+			"\tFETCH NEXT FROM db_cursor INTO @Column1, @Column2",
 			"END",
 			"",
 			"CLOSE db_cursor",
@@ -298,34 +303,5 @@
 			"GO"
 		],
 		"description": "Get Space Used by Tables"
-	},
-
-	"Create a new Index": {
-		"prefix": "sqlCreateIndex",
-		"body": [
-			"-- Create a nonclustered index with or without a unique constraint",
-			"-- Or create a clustered index on table '[${1:TableName}]' in schema '[${2:SchemaName}]' in database '[${3:DatabaseName}]'",
-			"CREATE ${5:/*UNIQUE or CLUSTERED*/} INDEX IX_${4:IndexName} ON [${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}] ([${6:ColumnName1}] DESC /*Change sort order as needed*/",
-			"GO"
-		],
-		"description": "Create a new Index"
-	},
-
-	"Create a new Temporary Table": {
-		"prefix": "sqlCreateTempTable",
-		"body": [
-			"-- Drop a temporary table called '#${1:TableName}'",
-			"-- Drop the table if it already exists",
-			"IF OBJECT_ID('tempDB..#${1:TableName}', 'U') IS NOT NULL",
-			"DROP TABLE #${1:TableName}",
-			"GO",
-			"-- Create the temporary table from a physical table called '${4:TableName}' in schema '${3:SchemaName}' in database '${2:DatabaseName}'",
-			"SELECT *",
-			"INTO #${1:TableName}",
-			"FROM [${2:DatabaseName}].[${3:[SchemaName}].[${4:TableName}]",
-			"WHERE ${5:/* add search conditions here */}"
-		],
-		"description": "Create a new Temporary Table"
-	},
-
+	}
 }

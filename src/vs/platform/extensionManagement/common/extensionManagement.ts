@@ -7,7 +7,7 @@
 
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Event } from 'vs/base/common/event';
+import Event from 'vs/base/common/event';
 import { IPager } from 'vs/base/common/paging';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { ILocalization } from 'vs/platform/localizations/common/localizations';
@@ -118,12 +118,6 @@ export interface IExtensionManifest {
 	activationEvents?: string[];
 	extensionDependencies?: string[];
 	contributes?: IExtensionContributions;
-	repository?: {
-		url: string;
-	};
-	bugs?: {
-		url: string;
-	};
 }
 
 export interface IGalleryExtensionProperties {
@@ -155,12 +149,6 @@ export function isIExtensionIdentifier(thing: any): thing is IExtensionIdentifie
 		&& (!thing.uuid || typeof thing.uuid === 'string');
 }
 
-/* __GDPR__FRAGMENT__
-	"ExtensionIdentifier" : {
-		"id" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-		"uuid": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-	}
- */
 export interface IExtensionIdentifier {
 	id: string;
 	uuid?: string;
@@ -286,10 +274,10 @@ export interface IExtensionManagementService {
 	onUninstallExtension: Event<IExtensionIdentifier>;
 	onDidUninstallExtension: Event<DidUninstallExtensionEvent>;
 
-	install(zipPath: string): TPromise<ILocalExtension>;
-	installFromGallery(extension: IGalleryExtension): TPromise<ILocalExtension>;
+	install(zipPath: string): TPromise<void>;
+	installFromGallery(extension: IGalleryExtension): TPromise<void>;
 	uninstall(extension: ILocalExtension, force?: boolean): TPromise<void>;
-	reinstallFromGallery(extension: ILocalExtension): TPromise<ILocalExtension>;
+	reinstall(extension: ILocalExtension): TPromise<void>;
 	getInstalled(type?: LocalExtensionType): TPromise<ILocalExtension[]>;
 	getExtensionsReport(): TPromise<IReportedExtension[]>;
 
@@ -323,7 +311,7 @@ export interface IExtensionEnablementService {
 	/**
 	 * Returns the enablement state for the given extension
 	 */
-	getEnablementState(extension: ILocalExtension): EnablementState;
+	getEnablementState(identifier: IExtensionIdentifier): EnablementState;
 
 	/**
 	 * Returns `true` if the enablement can be changed.
@@ -333,7 +321,7 @@ export interface IExtensionEnablementService {
 	/**
 	 * Returns `true` if the given extension identifier is enabled.
 	 */
-	isEnabled(extension: ILocalExtension): boolean;
+	isEnabled(identifier: IExtensionIdentifier): boolean;
 
 	/**
 	 * Enable or disable the given extension.
@@ -345,6 +333,12 @@ export interface IExtensionEnablementService {
 	 * Throws error if enablement is requested for workspace and there is no workspace
 	 */
 	setEnablement(extension: ILocalExtension, state: EnablementState): TPromise<boolean>;
+	/**
+	 * TODO: @Sandy. Use setEnablement(extension: ILocalExtension, state: EnablementState): TPromise<boolean>. Use one model for extension management and runtime
+	 */
+	setEnablement(identifier: IExtensionIdentifier, state: EnablementState): TPromise<boolean>;
+
+	migrateToIdentifiers(installed: IExtensionIdentifier[]): void;
 }
 
 export const IExtensionTipsService = createDecorator<IExtensionTipsService>('extensionTipsService');

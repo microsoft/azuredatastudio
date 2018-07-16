@@ -16,6 +16,6 @@ suite('Job Management service tests', () => {
 
 	test('Construction - Job Service Initialization', () => {
 		// ... Create instance of the service and reder account picker
-		let service = new JobManagementService(undefined);
+		let service = new JobManagementService(undefined, undefined);
 	});
 });

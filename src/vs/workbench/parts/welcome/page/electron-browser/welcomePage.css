@@ -22,19 +22,10 @@
 	flex-flow: row;
 }
 
-.monaco-workbench > .part.editor > .content .welcomePage .row .section {
-	overflow: hidden;
-}
-
-.monaco-workbench > .part.editor > .content .welcomePage .row .splash {
-	overflow: hidden;
-}
-
-.monaco-workbench > .part.editor > .content .welcomePage .row .commands {
-	overflow: hidden;
-}
-
-.monaco-workbench > .part.editor > .content .welcomePage .row .commands ul {
+.monaco-workbench > .part.editor > .content .welcomePage .row * {
+	min-width: 0;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 	overflow: hidden;
 }
 
@@ -104,13 +95,6 @@
 	padding: 0;
 }
 
-.monaco-workbench > .part.editor > .content .welcomePage .splash li {
-	min-width: 0;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
 .monaco-workbench > .part.editor > .content .welcomePage.emptyRecent .splash .recent .list {
 	display: none;
 }
@@ -125,19 +109,22 @@
 	margin-top: 5px;
 }
 
+.monaco-workbench > .part.editor > .content .welcomePage .splash .recent li {
+	min-width: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 .monaco-workbench > .part.editor > .content .welcomePage .splash .recent .path {
 	padding-left: 1em;
 }
 
 .monaco-workbench > .part.editor > .content .welcomePage .splash .title,
 .monaco-workbench > .part.editor > .content .welcomePage .splash .showOnStartup {
-	min-width: 0;
 	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 
-.monaco-workbench > .part.editor > .content .welcomePage .splash .showOnStartup > .checkbox {
+.monaco-workbench > .part.editor > .content .welcomePage .splash .showOnStartup input[type=checkbox] {
 	vertical-align: bottom;
 }
 
@@ -163,10 +150,6 @@
 .monaco-workbench > .part.editor > .content .welcomePage .commands li button > span {
 	display: inline-block;
 	width:100%;
-	min-width: 0;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 
 .monaco-workbench > .part.editor > .content .welcomePage .commands li button h3 {
@@ -174,10 +157,6 @@
 	font-size: 1em;
 	margin: 0;
 	margin-bottom: .25em;
-	min-width: 0;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 
 .monaco-workbench > .part.editor > .content .welcomePage .commands li button {

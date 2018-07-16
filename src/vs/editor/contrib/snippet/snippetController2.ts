@@ -14,7 +14,6 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { showSimpleSuggestions } from 'vs/editor/contrib/suggest/suggest';
 import { ISuggestion } from 'vs/editor/common/modes';
 import { Selection } from 'vs/editor/common/core/selection';
-import { Range } from 'vs/editor/common/core/range';
 import { Choice } from 'vs/editor/contrib/snippet/snippetParser';
 import { repeat } from 'vs/base/common/strings';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
@@ -204,13 +203,6 @@ export class SnippetController2 implements IEditorContribution {
 		this._session.next();
 		this._updateState();
 	}
-
-	getSessionEnclosingRange(): Range {
-		if (this._session) {
-			return this._session.getEnclosingRange();
-		}
-		return undefined;
-	}
 }
 
 
@@ -224,7 +216,7 @@ registerEditorCommand(new CommandCtor({
 	handler: ctrl => ctrl.next(),
 	kbOpts: {
 		weight: KeybindingsRegistry.WEIGHT.editorContrib(30),
-		kbExpr: EditorContextKeys.editorTextFocus,
+		kbExpr: EditorContextKeys.textFocus,
 		primary: KeyCode.Tab
 	}
 }));
@@ -234,7 +226,7 @@ registerEditorCommand(new CommandCtor({
 	handler: ctrl => ctrl.prev(),
 	kbOpts: {
 		weight: KeybindingsRegistry.WEIGHT.editorContrib(30),
-		kbExpr: EditorContextKeys.editorTextFocus,
+		kbExpr: EditorContextKeys.textFocus,
 		primary: KeyMod.Shift | KeyCode.Tab
 	}
 }));
@@ -244,7 +236,7 @@ registerEditorCommand(new CommandCtor({
 	handler: ctrl => ctrl.cancel(),
 	kbOpts: {
 		weight: KeybindingsRegistry.WEIGHT.editorContrib(30),
-		kbExpr: EditorContextKeys.editorTextFocus,
+		kbExpr: EditorContextKeys.textFocus,
 		primary: KeyCode.Escape,
 		secondary: [KeyMod.Shift | KeyCode.Escape]
 	}

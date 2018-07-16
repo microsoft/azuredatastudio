@@ -57,7 +57,6 @@ export interface ParsedArgs {
 	'file-write'?: boolean;
 	'file-chmod'?: boolean;
 	'upload-logs'?: string;
-	'driver'?: string;
 }
 
 export const IEnvironmentService = createDecorator<IEnvironmentService>('environmentService');
@@ -131,6 +130,4 @@ export interface IEnvironmentService {
 	installSourcePath: string;
 	disableUpdates: boolean;
 	disableCrashReporter: boolean;
-
-	driverHandle: string;
 }

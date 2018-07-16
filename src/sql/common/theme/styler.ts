@@ -72,7 +72,6 @@ export function attachInputBoxStyler(widget: IThemable, themeService: IThemeServ
 export function attachSelectBoxStyler(widget: IThemable, themeService: IThemeService, style?:
 	{
 		selectBackground?: cr.ColorIdentifier,
-		selectListBackground?: cr.ColorIdentifier,
 		selectForeground?: cr.ColorIdentifier,
 		selectBorder?: cr.ColorIdentifier,
 		disabledSelectBackground?: cr.ColorIdentifier,
@@ -82,17 +81,10 @@ export function attachSelectBoxStyler(widget: IThemable, themeService: IThemeSer
 		inputValidationWarningBorder?: cr.ColorIdentifier,
 		inputValidationWarningBackground?: cr.ColorIdentifier,
 		inputValidationErrorBorder?: cr.ColorIdentifier,
-		inputValidationErrorBackground?: cr.ColorIdentifier,
-		focusBorder?: cr.ColorIdentifier,
-		listFocusBackground?: cr.ColorIdentifier,
-		listFocusForeground?: cr.ColorIdentifier,
-		listFocusOutline?: cr.ColorIdentifier,
-		listHoverBackground?: cr.ColorIdentifier,
-		listHoverForeground?: cr.ColorIdentifier
+		inputValidationErrorBackground?: cr.ColorIdentifier
 	}): IDisposable {
 	return attachStyler(themeService, {
 		selectBackground: (style && style.selectBackground) || cr.selectBackground,
-		selectListBackground: (style && style.selectListBackground) || cr.selectListBackground,
 		selectForeground: (style && style.selectForeground) || cr.selectForeground,
 		selectBorder: (style && style.selectBorder) || cr.selectBorder,
 		disabledSelectBackground: (style && style.disabledSelectBackground) || sqlcolors.disabledInputBackground,
@@ -102,14 +94,7 @@ export function attachSelectBoxStyler(widget: IThemable, themeService: IThemeSer
 		inputValidationWarningBorder: (style && style.inputValidationWarningBorder) || cr.inputValidationWarningBorder,
 		inputValidationWarningBackground: (style && style.inputValidationWarningBackground) || cr.inputValidationWarningBackground,
 		inputValidationErrorBorder: (style && style.inputValidationErrorBorder) || cr.inputValidationErrorBorder,
-		inputValidationErrorBackground: (style && style.inputValidationErrorBackground) || cr.inputValidationErrorBackground,
-		focusBorder: (style && style.focusBorder) || cr.focusBorder,
-		listFocusBackground: (style && style.listFocusBackground) || cr.listFocusBackground,
-		listFocusForeground: (style && style.listFocusForeground) || cr.listFocusForeground,
-		listFocusOutline: (style && style.listFocusOutline) || cr.activeContrastBorder,
-		listHoverBackground: (style && style.listHoverBackground) || cr.listHoverBackground,
-		listHoverForeground: (style && style.listHoverForeground) || cr.listHoverForeground,
-		listHoverOutline: (style && style.listFocusOutline) || cr.activeContrastBorder
+		inputValidationErrorBackground: (style && style.inputValidationErrorBackground) || cr.inputValidationErrorBackground
 	}, widget);
 }
 

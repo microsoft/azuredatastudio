@@ -8,7 +8,7 @@
 import * as assert from 'assert';
 import { BoundModelReferenceCollection } from 'vs/workbench/api/electron-browser/mainThreadDocuments';
 import { TextModel } from 'vs/editor/common/model/textModel';
-import { timeout } from 'vs/base/common/async';
+import { TPromise } from 'vs/base/common/winjs.base';
 
 suite('BoundModelReferenceCollection', () => {
 
@@ -29,7 +29,7 @@ suite('BoundModelReferenceCollection', () => {
 			}
 		});
 
-		return timeout(30).then(() => {
+		return TPromise.timeout(30).then(() => {
 			assert.equal(didDispose, true);
 		});
 	});

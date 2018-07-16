@@ -24,7 +24,7 @@ import { TestExtensionEnablementService } from 'vs/platform/extensionManagement/
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/node/extensionGalleryService';
 import { IURLService } from 'vs/platform/url/common/url';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { IPager } from 'vs/base/common/paging';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
@@ -35,9 +35,7 @@ import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { IProgressService2 } from 'vs/platform/progress/common/progress';
 import { ProgressService2 } from 'vs/workbench/services/progress/browser/progressService2';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import { URLService } from 'vs/platform/url/common/urlService';
+import { IChoiceService } from 'vs/platform/dialogs/common/dialogs';
 
 suite('ExtensionsWorkbenchService Test', () => {
 
@@ -56,13 +54,13 @@ suite('ExtensionsWorkbenchService Test', () => {
 		didUninstallEvent = new Emitter<DidUninstallExtensionEvent>();
 
 		instantiationService = new TestInstantiationService();
+		instantiationService.stub(IURLService, { onOpenURL: new Emitter().event });
 		instantiationService.stub(ITelemetryService, NullTelemetryService);
 		instantiationService.stub(ILogService, NullLogService);
 		instantiationService.stub(IWindowService, TestWindowService);
 		instantiationService.stub(IProgressService2, ProgressService2);
 
 		instantiationService.stub(IExtensionGalleryService, ExtensionGalleryService);
-		instantiationService.stub(IURLService, URLService);
 
 		instantiationService.stub(IWorkspaceContextService, new TestContextService());
 		instantiationService.stub(IConfigurationService, { onDidUpdateConfiguration: () => { }, onDidChangeConfiguration: () => { }, getConfiguration: () => ({}) });
@@ -78,16 +76,14 @@ suite('ExtensionsWorkbenchService Test', () => {
 		instantiationService.stub(IExtensionTipsService, ExtensionTipsService);
 		instantiationService.stub(IExtensionTipsService, 'getKeymapRecommendations', () => []);
 
-		instantiationService.stub(INotificationService, { prompt: () => null });
-		instantiationService.stub(IDialogService, { show: () => TPromise.as(0) });
+		instantiationService.stub(IChoiceService, { choose: () => null });
 	});
 
 	setup(() => {
 		instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', []);
 		instantiationService.stubPromise(IExtensionManagementService, 'getExtensionsReport', []);
 		instantiationService.stubPromise(IExtensionGalleryService, 'query', aPage());
-		instantiationService.stub(IDialogService, { show: () => TPromise.as(0) });
-		instantiationService.stubPromise(INotificationService, 'prompt', 0);
+		instantiationService.stubPromise(IChoiceService, 'choose', 0);
 		(<TestExtensionEnablementService>instantiationService.get(IExtensionEnablementService)).reset();
 	});
 
@@ -858,7 +854,7 @@ suite('ExtensionsWorkbenchService Test', () => {
 			.then(() => instantiationService.get(IExtensionEnablementService).setEnablement(extensionC, EnablementState.Enabled))
 			.then(() => {
 				instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', [extensionA, extensionB, extensionC]);
-				instantiationService.stubPromise(IDialogService, 'show', 1);
+				instantiationService.stubPromise(IChoiceService, 'choose', 1);
 				testObject = instantiationService.createInstance(ExtensionsWorkbenchService);
 
 				return testObject.setEnablement(testObject.local[0], EnablementState.Disabled)
@@ -913,7 +909,7 @@ suite('ExtensionsWorkbenchService Test', () => {
 			.then(() => instantiationService.get(IExtensionEnablementService).setEnablement(extensionC, EnablementState.Enabled))
 			.then(() => {
 				instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', [extensionA, extensionB, extensionC]);
-				instantiationService.stubPromise(IDialogService, 'show', 1);
+				instantiationService.stubPromise(IChoiceService, 'choose', 1);
 				testObject = instantiationService.createInstance(ExtensionsWorkbenchService);
 				return testObject.setEnablement(testObject.local[0], EnablementState.Disabled).then(() => assert.fail('Should fail'), error => assert.ok(true));
 			});
@@ -929,7 +925,7 @@ suite('ExtensionsWorkbenchService Test', () => {
 			.then(() => instantiationService.get(IExtensionEnablementService).setEnablement(extensionC, EnablementState.Disabled))
 			.then(() => {
 				instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', [extensionA, extensionB, extensionC]);
-				instantiationService.stubPromise(IDialogService, 'show', 1);
+				instantiationService.stubPromise(IChoiceService, 'choose', 1);
 
 				testObject = instantiationService.createInstance(ExtensionsWorkbenchService);
 
@@ -951,7 +947,7 @@ suite('ExtensionsWorkbenchService Test', () => {
 			.then(() => instantiationService.get(IExtensionEnablementService).setEnablement(extensionC, EnablementState.Enabled))
 			.then(() => {
 				instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', [extensionA, extensionB, extensionC]);
-				instantiationService.stubPromise(IDialogService, 'show', 1);
+				instantiationService.stubPromise(IChoiceService, 'choose', 1);
 
 				testObject = instantiationService.createInstance(ExtensionsWorkbenchService);
 
@@ -973,7 +969,7 @@ suite('ExtensionsWorkbenchService Test', () => {
 			.then(() => instantiationService.get(IExtensionEnablementService).setEnablement(extensionC, EnablementState.Enabled))
 			.then(() => {
 				instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', [extensionA, extensionB, extensionC]);
-				instantiationService.stubPromise(IDialogService, 'show', 1);
+				instantiationService.stubPromise(IChoiceService, 'choose', 1);
 
 				testObject = instantiationService.createInstance(ExtensionsWorkbenchService);
 
@@ -992,7 +988,7 @@ suite('ExtensionsWorkbenchService Test', () => {
 			.then(() => instantiationService.get(IExtensionEnablementService).setEnablement(extensionC, EnablementState.Enabled))
 			.then(() => {
 				instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', [extensionA, extensionB, extensionC]);
-				instantiationService.stubPromise(IDialogService, 'show', 1);
+				instantiationService.stubPromise(IChoiceService, 'choose', 1);
 
 				testObject = instantiationService.createInstance(ExtensionsWorkbenchService);
 

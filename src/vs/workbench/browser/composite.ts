@@ -4,17 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TPromise } from 'vs/base/common/winjs.base';
+import { Dimension, Builder } from 'vs/base/browser/builder';
 import { IAction, IActionRunner, ActionRunner } from 'vs/base/common/actions';
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Component } from 'vs/workbench/common/component';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IComposite } from 'vs/workbench/common/composite';
 import { IEditorControl } from 'vs/platform/editor/common/editor';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IConstructorSignature0, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import DOM = require('vs/base/browser/dom');
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { IFocusTracker, trackFocus, Dimension } from 'vs/base/browser/dom';
 
 /**
  * Composites are layed out in the sidebar and panel part of the workbench. At a time only one composite
@@ -27,14 +28,14 @@ import { IFocusTracker, trackFocus, Dimension } from 'vs/base/browser/dom';
  * layout and focus call, but only one create and dispose call.
  */
 export abstract class Composite extends Component implements IComposite {
-	private readonly _onTitleAreaUpdate: Emitter<void>;
-	private readonly _onDidFocus: Emitter<void>;
+	private _onTitleAreaUpdate: Emitter<void>;
+	private _onDidFocus: Emitter<void>;
 
-	private _focusTracker?: IFocusTracker;
+	private _focusTracker?: DOM.IFocusTracker;
 	private _focusListenerDisposable?: IDisposable;
 
 	private visible: boolean;
-	private parent: HTMLElement;
+	private parent: Builder;
 
 	protected actionRunner: IActionRunner;
 
@@ -74,7 +75,7 @@ export abstract class Composite extends Component implements IComposite {
 	 * Note that DOM-dependent calculations should be performed from the setVisible()
 	 * call. Only then the composite will be part of the DOM.
 	 */
-	public create(parent: HTMLElement): TPromise<void> {
+	public create(parent: Builder): TPromise<void> {
 		this.parent = parent;
 
 		return TPromise.as(null);
@@ -87,12 +88,12 @@ export abstract class Composite extends Component implements IComposite {
 	/**
 	 * Returns the container this composite is being build in.
 	 */
-	public getContainer(): HTMLElement {
+	public getContainer(): Builder {
 		return this.parent;
 	}
 
 	public get onDidFocus(): Event<any> {
-		this._focusTracker = trackFocus(this.getContainer());
+		this._focusTracker = DOM.trackFocus(this.getContainer().getHTMLElement());
 		this._focusListenerDisposable = this._focusTracker.onDidFocus(() => {
 			this._onDidFocus.fire();
 		});
@@ -242,10 +243,6 @@ export abstract class CompositeDescriptor<T extends Composite> {
 }
 
 export abstract class CompositeRegistry<T extends Composite> {
-
-	private readonly _onDidRegister: Emitter<CompositeDescriptor<T>> = new Emitter<CompositeDescriptor<T>>();
-	readonly onDidRegister: Event<CompositeDescriptor<T>> = this._onDidRegister.event;
-
 	private composites: CompositeDescriptor<T>[];
 
 	constructor() {
@@ -258,7 +255,6 @@ export abstract class CompositeRegistry<T extends Composite> {
 		}
 
 		this.composites.push(descriptor);
-		this._onDidRegister.fire(descriptor);
 	}
 
 	public getComposite(id: string): CompositeDescriptor<T> {

@@ -9,8 +9,9 @@ import { Schemas } from 'vs/base/common/network';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { isEmptyObject } from 'vs/base/common/types';
 import URI from 'vs/base/common/uri';
-import { Event, Emitter, debounceEvent } from 'vs/base/common/event';
-import { IMarkerService, IMarkerData, IResourceMarker, IMarker, MarkerStatistics, MarkerSeverity } from './markers';
+import Event, { Emitter, debounceEvent } from 'vs/base/common/event';
+import Severity from 'vs/base/common/severity';
+import { IMarkerService, IMarkerData, IResourceMarker, IMarker, MarkerStatistics } from './markers';
 
 interface MapMap<V> {
 	[key: string]: { [key: string]: V };
@@ -87,11 +88,11 @@ class MarkerStats implements MarkerStatistics {
 		}
 
 		for (const { severity } of this._service.read({ resource })) {
-			if (severity === MarkerSeverity.Error) {
+			if (severity === Severity.Error) {
 				result.errors += 1;
-			} else if (severity === MarkerSeverity.Warning) {
+			} else if (severity === Severity.Warning) {
 				result.warnings += 1;
-			} else if (severity === MarkerSeverity.Info) {
+			} else if (severity === Severity.Info) {
 				result.infos += 1;
 			} else {
 				result.unknowns += 1;
@@ -179,12 +180,7 @@ export class MarkerService implements IMarkerService {
 	}
 
 	private static _toMarker(owner: string, resource: URI, data: IMarkerData): IMarker {
-		let {
-			code, severity,
-			message, source,
-			startLineNumber, startColumn, endLineNumber, endColumn,
-			relatedInformation
-		} = data;
+		let { code, severity, message, source, startLineNumber, startColumn, endLineNumber, endColumn } = data;
 
 		if (!message) {
 			return undefined;
@@ -207,8 +203,7 @@ export class MarkerService implements IMarkerService {
 			startLineNumber,
 			startColumn,
 			endLineNumber,
-			endColumn,
-			relatedInformation
+			endColumn
 		};
 	}
 
@@ -262,9 +257,9 @@ export class MarkerService implements IMarkerService {
 		}
 	}
 
-	read(filter: { owner?: string; resource?: URI; severities?: number, take?: number; } = Object.create(null)): IMarker[] {
+	read(filter: { owner?: string; resource?: URI; take?: number; } = Object.create(null)): IMarker[] {
 
-		let { owner, resource, severities, take } = filter;
+		let { owner, resource, take } = filter;
 
 		if (!take || take < 0) {
 			take = -1;
@@ -272,20 +267,11 @@ export class MarkerService implements IMarkerService {
 
 		if (owner && resource) {
 			// exactly one owner AND resource
-			const data = MapMap.get(this._byResource, resource.toString(), owner);
-			if (!data) {
+			const result = MapMap.get(this._byResource, resource.toString(), owner);
+			if (!result) {
 				return [];
 			} else {
-				const result: IMarker[] = [];
-				for (const marker of data) {
-					if (MarkerService._accept(marker, severities)) {
-						const newLen = result.push(marker);
-						if (take > 0 && newLen === take) {
-							break;
-						}
-					}
-				}
-				return result;
+				return result.slice(0, take > 0 ? take : undefined);
 			}
 
 		} else if (!owner && !resource) {
@@ -294,11 +280,10 @@ export class MarkerService implements IMarkerService {
 			for (const key1 in this._byResource) {
 				for (const key2 in this._byResource[key1]) {
 					for (const data of this._byResource[key1][key2]) {
-						if (MarkerService._accept(data, severities)) {
-							const newLen = result.push(data);
-							if (take > 0 && newLen === take) {
-								return result;
-							}
+						const newLen = result.push(data);
+
+						if (take > 0 && newLen === take) {
+							return result;
 						}
 					}
 				}
@@ -318,20 +303,15 @@ export class MarkerService implements IMarkerService {
 			const result: IMarker[] = [];
 			for (const key in map) {
 				for (const data of map[key]) {
-					if (MarkerService._accept(data, severities)) {
-						const newLen = result.push(data);
-						if (take > 0 && newLen === take) {
-							return result;
-						}
+					const newLen = result.push(data);
+
+					if (take > 0 && newLen === take) {
+						return result;
 					}
 				}
 			}
 			return result;
 		}
-	}
-
-	private static _accept(marker: IMarker, severities?: number): boolean {
-		return severities === void 0 || (severities & marker.severity) === marker.severity;
 	}
 
 	// --- event debounce logic

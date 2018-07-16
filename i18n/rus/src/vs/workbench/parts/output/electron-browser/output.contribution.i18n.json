@@ -9,6 +9,5 @@
 	"output": "Вывод",
 	"logViewer": "Средство просмотра журналов",
 	"viewCategory": "Просмотр",
-	"clearOutput.label": "Очистить выходные данные",
-	"openActiveLogOutputFile": "Просмотр: открыть активный выходной файл журнала"
+	"clearOutput.label": "Очистить выходные данные"
 }

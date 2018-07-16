@@ -308,8 +308,7 @@ class Widget {
 	private _layoutBoxInPage(topLeft: Coordinate, width: number, height: number, ctx: RenderingContext): IBoxLayoutResult {
 		let left0 = topLeft.left - ctx.scrollLeft;
 
-		if (left0 < 0 || left0 > this._contentWidth) {
-			// Don't render if position is scrolled outside viewport
+		if (left0 + width < 0 || left0 > this._contentWidth) {
 			return null;
 		}
 

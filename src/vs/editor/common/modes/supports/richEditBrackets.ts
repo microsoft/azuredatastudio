@@ -85,14 +85,14 @@ function once<T, R>(keyFn: (input: T) => string, computeFn: (input: T) => R): (i
 const getRegexForBracketPair = once<ISimpleInternalBracket, RegExp>(
 	(input) => `${input.open};${input.close}`,
 	(input) => {
-		return createBracketOrRegExp([input.open, input.close]);
+		return createOrRegex([input.open, input.close]);
 	}
 );
 
 const getReversedRegexForBracketPair = once<ISimpleInternalBracket, RegExp>(
 	(input) => `${input.open};${input.close}`,
 	(input) => {
-		return createBracketOrRegExp([toReversedString(input.open), toReversedString(input.close)]);
+		return createOrRegex([toReversedString(input.open), toReversedString(input.close)]);
 	}
 );
 
@@ -104,7 +104,7 @@ const getRegexForBrackets = once<ISimpleInternalBracket[], RegExp>(
 			pieces.push(b.open);
 			pieces.push(b.close);
 		});
-		return createBracketOrRegExp(pieces);
+		return createOrRegex(pieces);
 	}
 );
 
@@ -116,19 +116,12 @@ const getReversedRegexForBrackets = once<ISimpleInternalBracket[], RegExp>(
 			pieces.push(toReversedString(b.open));
 			pieces.push(toReversedString(b.close));
 		});
-		return createBracketOrRegExp(pieces);
+		return createOrRegex(pieces);
 	}
 );
 
-function prepareBracketForRegExp(str: string): string {
-	// This bracket pair uses letters like e.g. "begin" - "end"
-	const insertWordBoundaries = (/^[\w]+$/.test(str));
-	str = strings.escapeRegExpCharacters(str);
-	return (insertWordBoundaries ? `\\b${str}\\b` : str);
-}
-
-function createBracketOrRegExp(pieces: string[]): RegExp {
-	let regexStr = `(${pieces.map(prepareBracketForRegExp).join(')|(')})`;
+function createOrRegex(pieces: string[]): RegExp {
+	let regexStr = `(${pieces.map(strings.escapeRegExpCharacters).join(')|(')})`;
 	return strings.createRegExp(regexStr, true);
 }
 

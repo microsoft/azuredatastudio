@@ -5,13 +5,13 @@
 'use strict';
 
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
-import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
+import { TreeNode, TreeItemCollapsibleState, ObjectExplorerCallbacks } from 'sql/parts/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
@@ -20,6 +20,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import * as vscode from 'vscode';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -161,16 +162,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			error(expandResponse.errorMessage);
 		}
 
-		let sessionStatus = this._sessions[expandResponse.sessionId];
-		let foundSession = false;
-		if (sessionStatus) {
-			let nodeStatus = this._sessions[expandResponse.sessionId].nodes[expandResponse.nodePath];
-			foundSession = !!nodeStatus;
-			if (foundSession && nodeStatus.expandEmitter) {
-				nodeStatus.expandEmitter.fire(expandResponse);
-			}
-		}
-		if (!foundSession) {
+		let nodeStatus = this._sessions[expandResponse.sessionId].nodes[expandResponse.nodePath];
+		if (nodeStatus && nodeStatus.expandEmitter) {
+			nodeStatus.expandEmitter.fire(expandResponse);
+		} else {
 			warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
 		}
 	}
@@ -401,7 +396,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		return new TreeNode(nodeInfo.nodeType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
-			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, {
+			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata, {
 				getChildren: treeNode => this.getChildren(treeNode),
 				isExpanded: treeNode => this.isExpanded(treeNode),
 				setNodeExpandedState: (treeNode, expandedState) => this.setNodeExpandedState(treeNode, expandedState),

@@ -4,19 +4,15 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { Routes, RouterModule } from '@angular/router';
-import {
-	ApplicationRef, ComponentFactoryResolver, ModuleWithProviders, NgModule,
-	Inject, forwardRef, Type
-} from '@angular/core';
+import { ApplicationRef, ComponentFactoryResolver, ModuleWithProviders, NgModule,
+	Inject, forwardRef } from '@angular/core';
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-
-import { TaskDialogComponent } from 'sql/parts/tasks/dialog/taskDialog.component';
+import { TaskDialogComponent, TASKDIALOG_SELECTOR } from 'sql/parts/tasks/dialog/taskDialog.component';
 import { CreateDatabaseComponent } from 'sql/parts/admin/database/create/createDatabase.component';
-import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
 
 // Setup routes for various child components
 const appRoutes: Routes = [
@@ -29,40 +25,33 @@ const appRoutes: Routes = [
 	{ path: '**', component: CreateDatabaseComponent }
 ];
 
-export const TaskDialogModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): Type<any> => {
-	@NgModule({
-		declarations: [
-			TaskDialogComponent,
-			CreateDatabaseComponent
-		],
-		entryComponents: [TaskDialogComponent],
-		imports: [
-			FormsModule,
-			CommonModule,
-			BrowserModule,
-			<ModuleWithProviders>RouterModule.forRoot(appRoutes)
-		],
-		providers: [
-			{ provide: APP_BASE_HREF, useValue: '/' },
-			{ provide: IBootstrapParams, useValue: params },
-			{ provide: ISelector, useValue: selector },
-			...providerIterator(instantiationService)
-		]
-	})
-	class ModuleClass {
 
-		constructor(
-			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
-			@Inject(ISelector) private selector: string
-		) {
-		}
+@NgModule({
+	declarations: [
+		TaskDialogComponent,
+		CreateDatabaseComponent
+	],
+	entryComponents: [TaskDialogComponent],
+	imports: [
+		FormsModule,
+		CommonModule,
+		BrowserModule,
+		<ModuleWithProviders>RouterModule.forRoot(appRoutes)
+	],
+	providers: [{ provide: APP_BASE_HREF, useValue: '/' }]
+})
+export class TaskDialogModule {
 
-		ngDoBootstrap(appRef: ApplicationRef) {
-			const factory = this._resolver.resolveComponentFactory(TaskDialogComponent);
-			(<any>factory).factory.selector = this.selector;
-			appRef.bootstrap(factory);
-		}
+	constructor(
+		@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
+		@Inject(BOOTSTRAP_SERVICE_ID) private _bootstrapService: IBootstrapService
+	) {
 	}
 
-	return ModuleClass;
-};
+	ngDoBootstrap(appRef: ApplicationRef) {
+		const factory = this._resolver.resolveComponentFactory(TaskDialogComponent);
+		const uniqueSelector: string = this._bootstrapService.getUniqueSelector(TASKDIALOG_SELECTOR);
+		(<any>factory).factory.selector = uniqueSelector;
+		appRef.bootstrap(factory);
+	}
+}

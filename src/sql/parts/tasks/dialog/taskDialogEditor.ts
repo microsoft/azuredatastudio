@@ -4,20 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!sql/parts/query/editor/media/queryEditor';
-
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Dimension } from 'vs/base/browser/dom';
+import { Dimension, Builder } from 'vs/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-
 import { TaskDialogInput } from './taskDialogInput';
-import { ITaskDialogComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import { TaskDialogComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { TaskDialogModule } from 'sql/parts/tasks/dialog/taskDialog.module';
 import { TASKDIALOG_SELECTOR } from 'sql/parts/tasks/dialog/taskDialog.component';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 
 export class TaskDialogEditor extends BaseEditor {
 
@@ -26,15 +24,16 @@ export class TaskDialogEditor extends BaseEditor {
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
-		@IInstantiationService private instantiationService: IInstantiationService
+		@IInstantiationService private instantiationService: IInstantiationService,
+		@IBootstrapService private _bootstrapService: IBootstrapService
 	) {
 		super(TaskDialogEditor.ID, telemetryService, themeService);
 	}
 
 	/**
-	 * Called to create the editor in the parent element.
+	 * Called to create the editor in the parent builder.
 	 */
-	public createEditor(parent: HTMLElement): void {
+	public createEditor(parent: Builder): void {
 	}
 
 	/**
@@ -58,7 +57,7 @@ export class TaskDialogEditor extends BaseEditor {
 		if (!input.hasInitialized) {
 			this.bootstrapAngular(input);
 		}
-		this.revealElementWithTagName(input.uniqueSelector, this.getContainer());
+		this.revealElementWithTagName(input.uniqueSelector, this.getContainer().getHTMLElement());
 
 		return super.setInput(input, options);
 	}
@@ -69,7 +68,7 @@ export class TaskDialogEditor extends BaseEditor {
 	private revealElementWithTagName(tagName: string, parent: HTMLElement): void {
 		let elementToReveal: HTMLElement;
 
-		for (let i = 0; i < parent.children.length; i++) {
+		for(let i = 0; i < parent.children.length; i++) {
 			let child: HTMLElement = <HTMLElement>parent.children[i];
 			if (child.tagName && child.tagName.toLowerCase() === tagName && !elementToReveal) {
 				elementToReveal = child;
@@ -89,12 +88,12 @@ export class TaskDialogEditor extends BaseEditor {
 	private bootstrapAngular(input: TaskDialogInput): void {
 
 		// Get the bootstrap params and perform the bootstrap
-		let params: ITaskDialogComponentParams = {
+		let params: TaskDialogComponentParams = {
 			ownerUri: input.getUri()
 		};
-		let uniqueSelector = bootstrapAngular(this.instantiationService,
+		let uniqueSelector = this._bootstrapService.bootstrap(
 			TaskDialogModule,
-			this.getContainer(),
+			this.getContainer().getHTMLElement(),
 			TASKDIALOG_SELECTOR,
 			params);
 		input.setUniqueSelector(uniqueSelector);

@@ -32,29 +32,14 @@ function getRgArgs(config: IRawSearch, folderQuery: IFolderSearch, includePatter
 
 	// includePattern can't have siblingClauses
 	foldersToIncludeGlobs([folderQuery], includePattern, false).forEach(globArg => {
-		const inclusion = anchor(globArg);
-		args.push('-g', inclusion);
-		if (isMac) {
-			const normalized = normalizeNFD(inclusion);
-			if (normalized !== inclusion) {
-				args.push('-g', normalized);
-			}
-		}
+		args.push('-g', anchor(isMac ? normalizeNFD(globArg) : globArg));
 	});
 
 	let siblingClauses: glob.IExpression;
 
 	const rgGlobs = foldersToRgExcludeGlobs([folderQuery], excludePattern, undefined, false);
-	rgGlobs.globArgs.forEach(globArg => {
-		const exclusion = `!${anchor(globArg)}`;
-		args.push('-g', exclusion);
-		if (isMac) {
-			const normalized = normalizeNFD(exclusion);
-			if (normalized !== exclusion) {
-				args.push('-g', normalized);
-			}
-		}
-	});
+	rgGlobs.globArgs
+		.forEach(rgGlob => args.push('-g', `!${anchor(isMac ? normalizeNFD(rgGlob) : rgGlob)}`));
 	siblingClauses = rgGlobs.siblingClauses;
 
 	if (folderQuery.disregardIgnoreFiles !== false) {

@@ -34,7 +34,7 @@ export class InsertCursorAbove extends EditorAction {
 			alias: 'Add Cursor Above',
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.UpArrow,
 				linux: {
 					primary: KeyMod.Shift | KeyMod.Alt | KeyCode.UpArrow,
@@ -70,7 +70,7 @@ export class InsertCursorBelow extends EditorAction {
 			alias: 'Add Cursor Below',
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.DownArrow,
 				linux: {
 					primary: KeyMod.Shift | KeyMod.Alt | KeyCode.DownArrow,
@@ -107,31 +107,35 @@ class InsertCursorAtEndOfEachLineSelected extends EditorAction {
 			alias: 'Add Cursors to Line Ends',
 			precondition: null,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyMod.Shift | KeyMod.Alt | KeyCode.KEY_I
 			}
 		});
 	}
 
-	private getCursorsForSelection(selection: Selection, model: ITextModel, result: Selection[]): void {
+	private getCursorsForSelection(selection: Selection, editor: ICodeEditor): Selection[] {
 		if (selection.isEmpty()) {
-			return;
+			return [];
 		}
 
+		let model = editor.getModel();
+		let newSelections: Selection[] = [];
 		for (let i = selection.startLineNumber; i < selection.endLineNumber; i++) {
 			let currentLineMaxColumn = model.getLineMaxColumn(i);
-			result.push(new Selection(i, currentLineMaxColumn, i, currentLineMaxColumn));
+			newSelections.push(new Selection(i, currentLineMaxColumn, i, currentLineMaxColumn));
 		}
 		if (selection.endColumn > 1) {
-			result.push(new Selection(selection.endLineNumber, selection.endColumn, selection.endLineNumber, selection.endColumn));
+			newSelections.push(new Selection(selection.endLineNumber, selection.endColumn, selection.endLineNumber, selection.endColumn));
 		}
+
+		return newSelections;
 	}
 
 	public run(accessor: ServicesAccessor, editor: ICodeEditor): void {
-		const model = editor.getModel();
-		const selections = editor.getSelections();
-		let newSelections: Selection[] = [];
-		selections.forEach((sel) => this.getCursorsForSelection(sel, model, newSelections));
+		let selections = editor.getSelections();
+		let newSelections = selections
+			.map((selection) => this.getCursorsForSelection(selection, editor))
+			.reduce((prev, curr) => { return prev.concat(curr); });
 
 		if (newSelections.length > 0) {
 			editor.setSelections(newSelections);
@@ -599,7 +603,7 @@ export class CompatChangeAll extends MultiCursorSelectionControllerAction {
 			alias: 'Change All Occurrences',
 			precondition: EditorContextKeys.writable,
 			kbOpts: {
-				kbExpr: EditorContextKeys.editorTextFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: KeyMod.CtrlCmd | KeyCode.F2
 			},
 			menuOpts: {
@@ -799,7 +803,9 @@ export class SelectionHighlighter extends Disposable implements IEditorContribut
 		this.state = state;
 
 		if (!this.state) {
-			this.decorations = this.editor.deltaDecorations(this.decorations, []);
+			if (this.decorations.length > 0) {
+				this.decorations = this.editor.deltaDecorations(this.decorations, []);
+			}
 			return;
 		}
 

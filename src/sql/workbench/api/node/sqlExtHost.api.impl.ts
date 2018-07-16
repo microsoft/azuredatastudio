@@ -237,10 +237,6 @@ export function createApiFactory(
 					extHostDataProvider.$onSessionEventsAvailable(provider.handle, response);
 				});
 
-				provider.registerOnSessionStopped((response: sqlops.ProfilerSessionStoppedParams) => {
-					extHostDataProvider.$onSessionStopped(provider.handle, response);
-				});
-
 				return extHostDataProvider.$registerProfilerProvider(provider);
 			};
 
@@ -265,10 +261,6 @@ export function createApiFactory(
 			};
 
 			let registerAgentServicesProvider = (provider: sqlops.AgentServicesProvider): vscode.Disposable => {
-				provider.registerOnUpdated(() => {
-					extHostDataProvider.$onJobDataUpdated(provider.handle);
-				});
-
 				return extHostDataProvider.$registerAgentServiceProvider(provider);
 			};
 
@@ -289,12 +281,6 @@ export function createApiFactory(
 				registerCapabilitiesServiceProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
-				},
-				getProvider<T extends sqlops.DataProvider>(providerId: string, providerType: sqlops.DataProviderType) {
-					return extHostDataProvider.getProvider<T>(providerId, providerType);
-				},
-				getProvidersByType<T extends sqlops.DataProvider>(providerType: sqlops.DataProviderType) {
-					return extHostDataProvider.getProvidersByType<T>(providerType);
 				}
 			};
 
@@ -309,18 +295,11 @@ export function createApiFactory(
 					return extHostModelViewDialog.createButton(label);
 				},
 				openDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					return extHostModelViewDialog.openDialog(dialog);
+					return extHostModelViewDialog.open(dialog);
 				},
 				closeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					return extHostModelViewDialog.closeDialog(dialog);
-				},
-				createWizardPage(title: string): sqlops.window.modelviewdialog.WizardPage {
-					return extHostModelViewDialog.createWizardPage(title);
-				},
-				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
-					return extHostModelViewDialog.createWizard(title);
-				},
-				MessageLevel: sqlExtHostTypes.MessageLevel
+					return extHostModelViewDialog.close(dialog);
+				}
 			};
 
 			const window: typeof sqlops.window = {
@@ -340,8 +319,8 @@ export function createApiFactory(
 			const workspace: typeof sqlops.workspace = {
 				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
 				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
-				createModelViewEditor(title: string, options?: sqlops.ModelViewEditorOptions): sqlops.workspace.ModelViewEditor {
-					return extHostModelViewDialog.createModelViewEditor(title, options);
+				createModelViewEditor(title: string): sqlops.workspace.ModelViewEditor {
+					return extHostModelViewDialog.createModelViewEditor(title);
 				}
 			};
 
@@ -377,8 +356,6 @@ export function createApiFactory(
 				resources,
 				serialization,
 				dataprotocol,
-				DataProviderType: sqlExtHostTypes.DataProviderType,
-				DeclarativeDataType: sqlExtHostTypes.DeclarativeDataType,
 				ServiceOptionType: sqlExtHostTypes.ServiceOptionType,
 				ConnectionOptionSpecialType: sqlExtHostTypes.ConnectionOptionSpecialType,
 				EditRowState: sqlExtHostTypes.EditRowState,
@@ -386,22 +363,13 @@ export function createApiFactory(
 				TaskStatus: sqlExtHostTypes.TaskStatus,
 				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode,
 				ScriptOperation: sqlExtHostTypes.ScriptOperation,
-				WeekDays: sqlExtHostTypes.WeekDays,
-				NotifyMethods: sqlExtHostTypes.NotifyMethods,
-				JobCompletionActionCondition: sqlExtHostTypes.JobCompletionActionCondition,
-				AlertType: sqlExtHostTypes.AlertType,
-				FrequencyTypes: sqlExtHostTypes.FrequencyTypes,
-				FrequencySubDayTypes: sqlExtHostTypes.FrequencySubDayTypes,
-				FrequencyRelativeIntervals: sqlExtHostTypes.FrequencyRelativeIntervals,
 				window,
 				tasks,
 				dashboard,
 				workspace,
 				queryeditor: queryEditor,
 				ui: ui,
-				StatusIndicator: sqlExtHostTypes.StatusIndicator,
-				CardType: sqlExtHostTypes.CardType,
-				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon
+				StatusIndicator: sqlExtHostTypes.StatusIndicator
 			};
 		}
 	};

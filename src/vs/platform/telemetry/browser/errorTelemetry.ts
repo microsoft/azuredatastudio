@@ -9,40 +9,25 @@ import { binarySearch } from 'vs/base/common/arrays';
 import { globals } from 'vs/base/common/platform';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IDisposable, toDisposable, dispose } from 'vs/base/common/lifecycle';
-import * as Errors from 'vs/base/common/errors';
+import Errors = require('vs/base/common/errors');
 import { safeStringify } from 'vs/base/common/objects';
 
-/* __GDPR__FRAGMENT__
-	"ErrorEvent" : {
-		"stack": { "classification": "CustomerContent", "purpose": "PerformanceAndHealth" },
-		"message" : { "classification": "CustomerContent", "purpose": "PerformanceAndHealth" },
-		"filename" : { "classification": "CustomerContent", "purpose": "PerformanceAndHealth" },
-		"callstack": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
-		"msg" : { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
-		"file" : { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
-		"line": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth", "isMeasurement": true },
-		"column": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth", "isMeasurement": true },
-		"uncaught_error_name": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
-		"uncaught_error_msg": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
-		"count": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth", "isMeasurement": true }
-	}
- */
 interface ErrorEvent {
-	callstack: string;
-	msg?: string;
-	file?: string;
+	stack: string;
+	message?: string;
+	filename?: string;
 	line?: number;
 	column?: number;
-	uncaught_error_name?: string;
-	uncaught_error_msg?: string;
+	error?: { name: string; message: string; };
+
 	count?: number;
 }
 
 namespace ErrorEvent {
 	export function compare(a: ErrorEvent, b: ErrorEvent) {
-		if (a.callstack < b.callstack) {
+		if (a.stack < b.stack) {
 			return -1;
-		} else if (a.callstack > b.callstack) {
+		} else if (a.stack > b.stack) {
 			return 1;
 		}
 		return 0;
@@ -104,35 +89,32 @@ export default class ErrorTelemetry {
 		}
 
 		// work around behavior in workerServer.ts that breaks up Error.stack
-		let callstack = Array.isArray(err.stack) ? err.stack.join('\n') : err.stack;
-		let msg = err.message ? err.message : safeStringify(err);
+		let stack = Array.isArray(err.stack) ? err.stack.join('\n') : err.stack;
+		let message = err.message ? err.message : safeStringify(err);
 
 		// errors without a stack are not useful telemetry
-		if (!callstack) {
+		if (!stack) {
 			return;
 		}
 
-		this._enqueue({ msg, callstack });
+		this._enqueue({ message, stack });
 	}
 
-	private _onUncaughtError(msg: string, file: string, line: number, column?: number, err?: any): void {
+	private _onUncaughtError(message: string, filename: string, line: number, column?: number, err?: any): void {
 
 		let data: ErrorEvent = {
-			callstack: msg,
-			msg,
-			file,
+			stack: message,
+			message,
+			filename,
 			line,
 			column
 		};
 
 		if (err) {
 			let { name, message, stack } = err;
-			data.uncaught_error_name = name;
-			if (message) {
-				data.uncaught_error_msg = message;
-			}
+			data.error = { name, message };
 			if (stack) {
-				data.callstack = Array.isArray(err.stack)
+				data.stack = Array.isArray(err.stack)
 					? err.stack = err.stack.join('\n')
 					: err.stack;
 			}
@@ -163,10 +145,16 @@ export default class ErrorTelemetry {
 		for (let error of this._buffer) {
 			/* __GDPR__
 			"UnhandledError" : {
-					"${include}": [ "${ErrorEvent}" ]
+					"message" : { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
+					"name": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
+					"stack": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
+					"id": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
+					"line": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" },
+					"column": { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" }
 				}
 			*/
-			this._telemetryService.publicLog('UnhandledError', error, true);
+			// __GDPR__TODO__ what's the complete set of properties?
+			this._telemetryService.publicLog('UnhandledError', error);
 		}
 		this._buffer.length = 0;
 	}

@@ -17,7 +17,7 @@ import { subscriptionToDisposable, AngularDisposable } from 'sql/base/common/lif
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import * as objects from 'vs/base/common/objects';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { getContentHeight, addDisposableListener, EventType } from 'vs/base/browser/dom';

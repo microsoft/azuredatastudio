@@ -6,20 +6,17 @@ import 'vs/css!./webviewContent';
 
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef } from '@angular/core';
 
-import { Event, Emitter } from 'vs/base/common/event';
-import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
+import Event, { Emitter } from 'vs/base/common/event';
+import { Webview } from 'vs/workbench/parts/html/browser/webview';
+import { Parts } from 'vs/workbench/services/part/common/partService';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
 
 import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IDashboardWebview, IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
+import { IDashboardWebview } from 'sql/services/dashboard/common/dashboardViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import * as sqlops from 'sqlops';
@@ -37,24 +34,19 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	public readonly onMessage: Event<string> = this._onMessage.event;
 
 	private _onMessageDisposable: IDisposable;
-	private _webview: WebviewElement;
+	private _webview: Webview;
 	private _html: string;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(IDashboardViewService) private dashboardViewService: IDashboardViewService,
-		@Inject(IPartService) private partService: IPartService,
-		@Inject(IEnvironmentService) private environmentService: IEnvironmentService
+		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
 	) {
 		super();
 	}
 
 	ngOnInit() {
-		this.dashboardViewService.registerWebview(this);
+		this._dashboardService.dashboardViewService.registerWebview(this);
 		this._createWebview();
 		this._register(addDisposableListener(window, EventType.RESIZE, e => {
 			this.layout();
@@ -108,11 +100,11 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 			this._onMessageDisposable.dispose();
 		}
 
-		this._webview = new WebviewElement(
-			this.partService.getContainer(Parts.EDITOR_PART),
-			this.themeService,
-			this.environmentService,
-			this.contextViewService,
+		this._webview = new Webview(this._el.nativeElement,
+			this._dashboardService.partService.getContainer(Parts.EDITOR_PART),
+			this._dashboardService.themeService,
+			this._dashboardService.environmentService,
+			this._dashboardService.contextViewService,
 			undefined,
 			undefined,
 			{
@@ -120,12 +112,12 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 				enableWrappedPostMessage: true
 			}
 		);
-		this._webview.mountTo(this._el.nativeElement);
+
 
 		this._onMessageDisposable = this._webview.onMessage(e => {
 			this._onMessage.fire(e);
 		});
-		this._webview.style(this.themeService.getTheme());
+		this._webview.style(this._dashboardService.themeService.getTheme());
 		if (this._html) {
 			this._webview.contents = this._html;
 		}

@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IModelService, shouldSynchronizeModel } from 'vs/editor/common/services/modelService';
+import { IModelService } from 'vs/editor/common/services/modelService';
 import { ITextModel } from 'vs/editor/common/model';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { ExtHostContext, ExtHostDocumentsAndEditorsShape, IModelAddedData, ITextEditorAddData, IDocumentsAndEditorsDelta, IExtHostContext, MainContext } from '../node/extHost.protocol';
 import { MainThreadTextEditor } from './mainThreadEditor';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
@@ -192,7 +192,7 @@ class MainThreadDocumentAndEditorStateComputer {
 	}
 
 	private _updateStateOnModelAdd(model: ITextModel): void {
-		if (!shouldSynchronizeModel(model)) {
+		if (model.isTooLargeForHavingARichMode()) {
 			// ignore
 			return;
 		}
@@ -222,7 +222,7 @@ class MainThreadDocumentAndEditorStateComputer {
 		// models: ignore too large models
 		const models = new Set<ITextModel>();
 		for (const model of this._modelService.getModels()) {
-			if (shouldSynchronizeModel(model)) {
+			if (!model.isTooLargeForHavingARichMode()) {
 				models.add(model);
 			}
 		}
@@ -233,11 +233,8 @@ class MainThreadDocumentAndEditorStateComputer {
 		let activeEditor: string = null;
 
 		for (const editor of this._codeEditorService.listCodeEditors()) {
-			if (editor.isSimpleWidget) {
-				continue;
-			}
 			const model = editor.getModel();
-			if (model && shouldSynchronizeModel(model)
+			if (model && !model.isTooLargeForHavingARichMode()
 				&& !model.isDisposed() // model disposed
 				&& Boolean(this._modelService.getModel(model.uri)) // model disposing, the flag didn't flip yet but the model service already removed it
 			) {

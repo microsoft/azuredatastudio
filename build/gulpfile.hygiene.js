@@ -46,9 +46,10 @@ const indentationFilter = [
 	'!src/vs/nls.js',
 	'!src/vs/css.js',
 	'!src/vs/loader.js',
-	'!src/vs/base/common/marked/marked.js',
-	'!src/vs/base/common/winjs.base.js',
+	'!src/vs/base/common/marked/raw.marked.js',
+	'!src/vs/base/common/winjs.base.raw.js',
 	'!src/vs/base/node/terminateProcess.sh',
+	'!src/vs/base/node/ps-win.ps1',
 	'!test/assert.js',
 
 	// except specific folders
@@ -61,7 +62,6 @@ const indentationFilter = [
 	// except multiple specific files
 	'!**/package.json',
 	'!**/yarn.lock',
-	'!**/yarn-error.log',
 
 	// except multiple specific folders
 	'!**/octicons/**',
@@ -104,9 +104,8 @@ const copyrightFilter = [
 	'!build/**/*.init',
 	'!resources/linux/snap/snapcraft.yaml',
 	'!resources/win32/bin/code.js',
-	'!extensions/markdown-language-features/media/tomorrow.css',
-	'!extensions/html-language-features/server/src/modes/typescript/*',
-	'!extensions/*/server/bin/*'
+	'!extensions/markdown/media/tomorrow.css',
+	'!extensions/html/server/src/modes/typescript/*'
 ];
 
 const eslintFilter = [
@@ -117,8 +116,8 @@ const eslintFilter = [
 	'!src/vs/nls.js',
 	'!src/vs/css.build.js',
 	'!src/vs/nls.build.js',
-	'!src/**/winjs.base.js',
-	'!src/**/marked.js',
+	'!src/**/winjs.base.raw.js',
+	'!src/**/raw.marked.js',
 	'!**/test/**'
 ];
 
@@ -133,15 +132,15 @@ const tslintFilter = [
 	'!extensions/vscode-api-tests/testWorkspace/**',
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!extensions/**/*.test.ts',
-	'!extensions/html-language-features/server/lib/jquery.d.ts'
+	'!extensions/html/server/lib/jquery.d.ts'
 ];
 
-const copyrightHeaderLines = [
+const copyrightHeader = [
 	'/*---------------------------------------------------------------------------------------------',
 	' *  Copyright (c) Microsoft Corporation. All rights reserved.',
 	' *  Licensed under the Source EULA. See License.txt in the project root for license information.',
 	' *--------------------------------------------------------------------------------------------*/'
-];
+].join('\n');
 
 gulp.task('eslint', () => {
 	return vfs.src(all, { base: '.', follow: true, allowEmpty: true })
@@ -203,17 +202,12 @@ function hygiene(some) {
 		tsfmt.processString(file.path, file.contents.toString('utf8'), {
 			verify: false,
 			tsfmt: true,
-			// verbose: true,
+			// verbose: true
 			// keep checkJS happy
 			editorconfig: undefined,
 			replace: undefined,
 			tsconfig: undefined,
-			tsconfigFile: undefined,
-			tslint: undefined,
-			tslintFile: undefined,
-			tsfmtFile: undefined,
-			vscode: undefined,
-			vscodeFile: undefined
+			tslint: undefined
 		}).then(result => {
 			let original = result.src.replace(/\r\n/gm, '\n');
 			let formatted = result.dest.replace(/\r\n/gm, '\n');

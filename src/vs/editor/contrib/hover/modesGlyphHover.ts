@@ -10,7 +10,6 @@ import { GlyphHoverWidget } from './hoverWidgets';
 import { $ } from 'vs/base/browser/dom';
 import { MarkdownRenderer } from 'vs/editor/contrib/markdown/markdownRenderer';
 import { IMarkdownString, isEmptyMarkdownString } from 'vs/base/common/htmlContent';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 export interface IHoverMessage {
 	value: IMarkdownString;
@@ -92,7 +91,6 @@ export class ModesGlyphHoverWidget extends GlyphHoverWidget {
 	private _markdownRenderer: MarkdownRenderer;
 	private _computer: MarginComputer;
 	private _hoverOperation: HoverOperation<IHoverMessage[]>;
-	private _renderDisposeables: IDisposable[];
 
 	constructor(editor: ICodeEditor, markdownRenderer: MarkdownRenderer) {
 		super(ModesGlyphHoverWidget.ID, editor);
@@ -112,7 +110,6 @@ export class ModesGlyphHoverWidget extends GlyphHoverWidget {
 	}
 
 	public dispose(): void {
-		this._renderDisposeables = dispose(this._renderDisposeables);
 		this._hoverOperation.cancel();
 		super.dispose();
 	}
@@ -159,15 +156,12 @@ export class ModesGlyphHoverWidget extends GlyphHoverWidget {
 	}
 
 	private _renderMessages(lineNumber: number, messages: IHoverMessage[]): void {
-		dispose(this._renderDisposeables);
-		this._renderDisposeables = [];
 
 		const fragment = document.createDocumentFragment();
 
 		messages.forEach((msg) => {
 			const renderedContents = this._markdownRenderer.render(msg.value);
-			this._renderDisposeables.push(renderedContents);
-			fragment.appendChild($('div.hover-row', null, renderedContents.element));
+			fragment.appendChild($('div.hover-row', null, renderedContents));
 		});
 
 		this.updateContents(fragment);

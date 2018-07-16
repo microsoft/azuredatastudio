@@ -7,7 +7,7 @@
 import URI from 'vs/base/common/uri';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { Event } from 'vs/base/common/event';
+import Event from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 export const IEditorService = createDecorator<IEditorService>('editorService');
@@ -259,28 +259,28 @@ export interface IEditorOptions {
 	 * Tells the editor to not receive keyboard focus when the editor is being opened. By default,
 	 * the editor will receive keyboard focus on open.
 	 */
-	readonly preserveFocus?: boolean;
+	preserveFocus?: boolean;
 
 	/**
 	 * Tells the editor to replace the editor input in the editor even if it is identical to the one
 	 * already showing. By default, the editor will not replace the input if it is identical to the
 	 * one showing.
 	 */
-	readonly forceOpen?: boolean;
+	forceOpen?: boolean;
 
 	/**
 	 * Will reveal the editor if it is already opened and visible in any of the opened editor groups. Note
 	 * that this option is just a hint that might be ignored if the user wants to open an editor explicitly
 	 * to the side of another one.
 	 */
-	readonly revealIfVisible?: boolean;
+	revealIfVisible?: boolean;
 
 	/**
 	 * Will reveal the editor if it is already opened (even when not visible) in any of the opened editor groups. Note
 	 * that this option is just a hint that might be ignored if the user wants to open an editor explicitly
 	 * to the side of another one.
 	 */
-	readonly revealIfOpened?: boolean;
+	revealIfOpened?: boolean;
 
 	/**
 	 * An editor that is pinned remains in the editor stack even when another editor is being opened.
@@ -291,13 +291,13 @@ export interface IEditorOptions {
 	/**
 	 * The index in the document stack where to insert the editor into when opening.
 	 */
-	readonly index?: number;
+	index?: number;
 
 	/**
 	 * An active editor that is opened will show its contents directly. Set to true to open an editor
 	 * in the background.
 	 */
-	readonly inactive?: boolean;
+	inactive?: boolean;
 }
 
 export interface ITextEditorSelection {

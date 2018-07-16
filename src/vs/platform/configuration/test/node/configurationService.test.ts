@@ -5,19 +5,20 @@
 
 'use strict';
 
-import * as assert from 'assert';
-import * as os from 'os';
-import * as path from 'path';
-import * as fs from 'fs';
+import assert = require('assert');
+import os = require('os');
+import path = require('path');
+import fs = require('fs');
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
 import { ParsedArgs } from 'vs/platform/environment/common/environment';
 import { parseArgs } from 'vs/platform/environment/node/argv';
 import { EnvironmentService } from 'vs/platform/environment/node/environmentService';
-import * as uuid from 'vs/base/common/uuid';
+import extfs = require('vs/base/node/extfs');
+import uuid = require('vs/base/common/uuid');
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions } from 'vs/platform/configuration/common/configurationRegistry';
-import { testFile } from 'vs/base/test/node/utils';
+import { mkdirp } from 'vs/base/node/pfs';
 
 class SettingsTestEnvironmentService extends EnvironmentService {
 
@@ -30,11 +31,22 @@ class SettingsTestEnvironmentService extends EnvironmentService {
 
 suite('ConfigurationService - Node', () => {
 
-	test('simple', () => {
-		return testFile('config', 'config.json').then(res => {
-			fs.writeFileSync(res.testFile, '{ "foo": "bar" }');
+	function testFile(callback: (path: string, cleanUp: (callback: () => void) => void) => void): void {
+		const id = uuid.generateUuid();
+		const parentDir = path.join(os.tmpdir(), 'vsctests', id);
+		const newDir = path.join(parentDir, 'config', id);
+		const testFile = path.join(newDir, 'config.json');
 
-			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, res.testFile));
+		const onMkdirp = error => callback(testFile, (callback) => extfs.del(parentDir, os.tmpdir(), () => { }, callback));
+
+		mkdirp(newDir, 493).done(() => onMkdirp(null), error => onMkdirp(error));
+	}
+
+	test('simple', (done: () => void) => {
+		testFile((testFile, cleanUp) => {
+			fs.writeFileSync(testFile, '{ "foo": "bar" }');
+
+			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, testFile));
 
 			const config = service.getValue<{ foo: string }>();
 			assert.ok(config);
@@ -42,15 +54,15 @@ suite('ConfigurationService - Node', () => {
 
 			service.dispose();
 
-			return res.cleanUp();
+			cleanUp(done);
 		});
 	});
 
-	test('config gets flattened', () => {
-		return testFile('config', 'config.json').then(res => {
-			fs.writeFileSync(res.testFile, '{ "testworkbench.editor.tabs": true }');
+	test('config gets flattened', (done: () => void) => {
+		testFile((testFile, cleanUp) => {
+			fs.writeFileSync(testFile, '{ "testworkbench.editor.tabs": true }');
 
-			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, res.testFile));
+			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, testFile));
 
 			const config = service.getValue<{ testworkbench: { editor: { tabs: boolean } } }>();
 			assert.ok(config);
@@ -60,22 +72,22 @@ suite('ConfigurationService - Node', () => {
 
 			service.dispose();
 
-			return res.cleanUp();
+			cleanUp(done);
 		});
 	});
 
-	test('error case does not explode', () => {
-		return testFile('config', 'config.json').then(res => {
-			fs.writeFileSync(res.testFile, ',,,,');
+	test('error case does not explode', (done: () => void) => {
+		testFile((testFile, cleanUp) => {
+			fs.writeFileSync(testFile, ',,,,');
 
-			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, res.testFile));
+			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, testFile));
 
 			const config = service.getValue<{ foo: string }>();
 			assert.ok(config);
 
 			service.dispose();
 
-			return res.cleanUp();
+			cleanUp(done);
 		});
 	});
 
@@ -93,17 +105,17 @@ suite('ConfigurationService - Node', () => {
 		service.dispose();
 	});
 
-	test('reloadConfiguration', () => {
-		return testFile('config', 'config.json').then(res => {
-			fs.writeFileSync(res.testFile, '{ "foo": "bar" }');
+	test('reloadConfiguration', (done: () => void) => {
+		testFile((testFile, cleanUp) => {
+			fs.writeFileSync(testFile, '{ "foo": "bar" }');
 
-			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, res.testFile));
+			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, testFile));
 
 			let config = service.getValue<{ foo: string }>();
 			assert.ok(config);
 			assert.equal(config.foo, 'bar');
 
-			fs.writeFileSync(res.testFile, '{ "foo": "changed" }');
+			fs.writeFileSync(testFile, '{ "foo": "changed" }');
 
 			// still outdated
 			config = service.getValue<{ foo: string }>();
@@ -111,19 +123,19 @@ suite('ConfigurationService - Node', () => {
 			assert.equal(config.foo, 'bar');
 
 			// force a reload to get latest
-			return service.reloadConfiguration().then(() => {
+			service.reloadConfiguration().then(() => {
 				config = service.getValue<{ foo: string }>();
 				assert.ok(config);
 				assert.equal(config.foo, 'changed');
 
 				service.dispose();
 
-				return res.cleanUp();
+				cleanUp(done);
 			});
 		});
 	});
 
-	test('model defaults', () => {
+	test('model defaults', (done: () => void) => {
 		interface ITestSetting {
 			configuration: {
 				service: {
@@ -132,7 +144,7 @@ suite('ConfigurationService - Node', () => {
 			};
 		}
 
-		const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
+		const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigurationExtensions.Configuration);
 		configurationRegistry.registerConfiguration({
 			'id': '_test',
 			'type': 'object',
@@ -150,19 +162,19 @@ suite('ConfigurationService - Node', () => {
 		assert.ok(setting);
 		assert.equal(setting.configuration.service.testSetting, 'isSet');
 
-		return testFile('config', 'config.json').then(res => {
-			fs.writeFileSync(res.testFile, '{ "testworkbench.editor.tabs": true }');
+		testFile((testFile, cleanUp) => {
+			fs.writeFileSync(testFile, '{ "testworkbench.editor.tabs": true }');
 
-			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, res.testFile));
+			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, testFile));
 
 			let setting = service.getValue<ITestSetting>();
 
 			assert.ok(setting);
 			assert.equal(setting.configuration.service.testSetting, 'isSet');
 
-			fs.writeFileSync(res.testFile, '{ "configuration.service.testSetting": "isChanged" }');
+			fs.writeFileSync(testFile, '{ "configuration.service.testSetting": "isChanged" }');
 
-			return service.reloadConfiguration().then(() => {
+			service.reloadConfiguration().then(() => {
 				let setting = service.getValue<ITestSetting>();
 
 				assert.ok(setting);
@@ -171,13 +183,13 @@ suite('ConfigurationService - Node', () => {
 				service.dispose();
 				serviceWithoutFile.dispose();
 
-				return res.cleanUp();
+				cleanUp(done);
 			});
 		});
 	});
 
-	test('lookup', () => {
-		const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
+	test('lookup', (done: () => void) => {
+		const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigurationExtensions.Configuration);
 		configurationRegistry.registerConfiguration({
 			'id': '_test',
 			'type': 'object',
@@ -189,8 +201,8 @@ suite('ConfigurationService - Node', () => {
 			}
 		});
 
-		return testFile('config', 'config.json').then(r => {
-			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, r.testFile));
+		testFile((testFile, cleanUp) => {
+			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, testFile));
 
 			let res = service.inspect('something.missing');
 			assert.strictEqual(res.value, void 0);
@@ -202,7 +214,7 @@ suite('ConfigurationService - Node', () => {
 			assert.strictEqual(res.value, 'isSet');
 			assert.strictEqual(res.user, void 0);
 
-			fs.writeFileSync(r.testFile, '{ "lookup.service.testSetting": "bar" }');
+			fs.writeFileSync(testFile, '{ "lookup.service.testSetting": "bar" }');
 
 			return service.reloadConfiguration().then(() => {
 				res = service.inspect('lookup.service.testSetting');
@@ -212,13 +224,13 @@ suite('ConfigurationService - Node', () => {
 
 				service.dispose();
 
-				return r.cleanUp();
+				cleanUp(done);
 			});
 		});
 	});
 
-	test('lookup with null', () => {
-		const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
+	test('lookup with null', (done: () => void) => {
+		const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigurationExtensions.Configuration);
 		configurationRegistry.registerConfiguration({
 			'id': '_testNull',
 			'type': 'object',
@@ -229,15 +241,15 @@ suite('ConfigurationService - Node', () => {
 			}
 		});
 
-		return testFile('config', 'config.json').then(r => {
-			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, r.testFile));
+		testFile((testFile, cleanUp) => {
+			const service = new ConfigurationService(new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, testFile));
 
 			let res = service.inspect('lookup.service.testNullSetting');
 			assert.strictEqual(res.default, null);
 			assert.strictEqual(res.value, null);
 			assert.strictEqual(res.user, void 0);
 
-			fs.writeFileSync(r.testFile, '{ "lookup.service.testNullSetting": null }');
+			fs.writeFileSync(testFile, '{ "lookup.service.testNullSetting": null }');
 
 			return service.reloadConfiguration().then(() => {
 				res = service.inspect('lookup.service.testNullSetting');
@@ -247,7 +259,7 @@ suite('ConfigurationService - Node', () => {
 
 				service.dispose();
 
-				return r.cleanUp();
+				cleanUp(done);
 			});
 		});
 	});

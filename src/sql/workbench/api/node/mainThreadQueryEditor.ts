@@ -9,7 +9,9 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectableInput, IConnectionManagementService, IConnectionCompletionOptions,
+	ConnectionType , RunQueryOnConnectionMode
+} from 'sql/parts/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -39,13 +41,12 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 
 	public $connect(fileUri: string, connectionId: string): Thenable<void> {
 		return new Promise<void>((resolve, reject) => {
-			let editor = this._editorService.getVisibleEditors().find(editor => editor.input.getResource().toString() === fileUri);
 			let options: IConnectionCompletionOptions = {
-				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: editor ? editor.input as any : undefined },
+				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none },
 				saveTheConnection: false,
 				showDashboard: false,
 				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true,
+				showFirewallRuleOnError: true
 			};
 			if (connectionId) {
 				let connection = this._connectionManagementService.getActiveConnections().filter(c => c.id === connectionId);
@@ -53,7 +54,7 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 					this._connectionManagementService.connect(connection[0], fileUri, options).then(() => {
 						resolve();
 					}).catch(error => {
-						reject(error);
+						reject();
 					});
 				} else {
 					resolve();

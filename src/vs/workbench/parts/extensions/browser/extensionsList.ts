@@ -15,7 +15,7 @@ import { IPagedRenderer } from 'vs/base/browser/ui/list/listPaging';
 import { once } from 'vs/base/common/event';
 import { domEvent } from 'vs/base/browser/event';
 import { IExtension, IExtensionsWorkbenchService } from 'vs/workbench/parts/extensions/common/extensions';
-import { InstallAction, UpdateAction, ManageExtensionAction, ReloadAction, extensionButtonProminentBackground, extensionButtonProminentForeground, MaliciousStatusLabelAction, DisabledStatusLabelAction } from 'vs/workbench/parts/extensions/browser/extensionsActions';
+import { InstallAction, UpdateAction, ManageExtensionAction, ReloadAction, extensionButtonProminentBackground, extensionButtonProminentForeground, MaliciousStatusLabelAction } from 'vs/workbench/parts/extensions/browser/extensionsActions';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { Label, RatingsWidget, InstallCountWidget } from 'vs/workbench/parts/extensions/browser/extensionsWidgets';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -28,9 +28,8 @@ export interface ITemplateData {
 	element: HTMLElement;
 	icon: HTMLImageElement;
 	name: HTMLElement;
-	// {{SQL CARBON EDIT}}
-	//installCount: HTMLElement;
-	//ratings: HTMLElement;
+	installCount: HTMLElement;
+	ratings: HTMLElement;
 	author: HTMLElement;
 	description: HTMLElement;
 	extension: IExtension;
@@ -98,27 +97,22 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		const ratingsWidget = this.instantiationService.createInstance(RatingsWidget, ratings, { small: true });
 
 		const maliciousStatusAction = this.instantiationService.createInstance(MaliciousStatusLabelAction, false);
-		const disabledStatusAction = this.instantiationService.createInstance(DisabledStatusLabelAction);
 		const installAction = this.instantiationService.createInstance(InstallAction);
 		const updateAction = this.instantiationService.createInstance(UpdateAction);
 		const reloadAction = this.instantiationService.createInstance(ReloadAction);
 		const manageAction = this.instantiationService.createInstance(ManageExtensionAction);
 
-		// {{SQL CARBON EDIT}}
-		actionbar.push([updateAction, reloadAction, installAction, disabledStatusAction, maliciousStatusAction, manageAction], actionOptions);
-		const disposables = [versionWidget, /*installCountWidget, ratingsWidget*/, maliciousStatusAction, disabledStatusAction, updateAction, reloadAction, manageAction, actionbar, bookmarkStyler];
+		actionbar.push([reloadAction, updateAction, installAction, maliciousStatusAction, manageAction], actionOptions);
+		const disposables = [versionWidget, installCountWidget, ratingsWidget, maliciousStatusAction, updateAction, reloadAction, manageAction, actionbar, bookmarkStyler];
 
 		return {
-			// {{SQL CARBON EDIT}}
-			root, element, icon, name, /*installCount, ratings,*/ author, description, disposables,
+			root, element, icon, name, installCount, ratings, author, description, disposables,
 			extensionDisposables: [],
 			set extension(extension: IExtension) {
 				versionWidget.extension = extension;
-				// {{SQL CARBON EDIT}}
-				//installCountWidget.extension = extension;
-				//ratingsWidget.extension = extension;
+				installCountWidget.extension = extension;
+				ratingsWidget.extension = extension;
 				maliciousStatusAction.extension = extension;
-				disabledStatusAction.extension = extension;
 				installAction.extension = extension;
 				updateAction.extension = extension;
 				reloadAction.extension = extension;
@@ -136,8 +130,8 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		data.name.textContent = '';
 		data.author.textContent = '';
 		data.description.textContent = '';
-		//data.installCount.style.display = 'none';
-		//data.ratings.style.display = 'none';
+		data.installCount.style.display = 'none';
+		data.ratings.style.display = 'none';
 		data.extension = null;
 	}
 
@@ -177,9 +171,8 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		data.name.textContent = extension.displayName;
 		data.author.textContent = extension.publisherDisplayName;
 		data.description.textContent = extension.description;
-		// {{SQL CARBON EDIT}}
-		//data.installCount.style.display = '';
-		//data.ratings.style.display = '';
+		data.installCount.style.display = '';
+		data.ratings.style.display = '';
 		data.extension = extension;
 	}
 

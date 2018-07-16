@@ -6,36 +6,43 @@
 
 import { TPromise } from 'vs/base/common/winjs.base';
 
-import * as assert from 'assert';
-import * as os from 'os';
+import assert = require('assert');
+import os = require('os');
 
-import * as path from 'path';
-import * as fs from 'fs';
+import path = require('path');
+import fs = require('fs');
 
-import * as uuid from 'vs/base/common/uuid';
+import uuid = require('vs/base/common/uuid');
+import extfs = require('vs/base/node/extfs');
+import { onError } from 'vs/base/test/common/utils';
 import * as pfs from 'vs/base/node/pfs';
-import { timeout } from 'vs/base/common/async';
 
 suite('PFS', () => {
 
-	test('writeFile', function () {
+	test('writeFile', function (done: () => void) {
 		const id = uuid.generateUuid();
 		const parentDir = path.join(os.tmpdir(), 'vsctests', id);
 		const newDir = path.join(parentDir, 'pfs', id);
 		const testFile = path.join(newDir, 'writefile.txt');
 
-		return pfs.mkdirp(newDir, 493).then(() => {
+		const onMkdirp = error => {
+			if (error) {
+				return onError(error, done);
+			}
+
 			assert.ok(fs.existsSync(newDir));
 
-			return pfs.writeFile(testFile, 'Hello World', null).then(() => {
+			pfs.writeFile(testFile, 'Hello World', null).done(() => {
 				assert.equal(fs.readFileSync(testFile), 'Hello World');
 
-				return pfs.del(parentDir, os.tmpdir());
-			});
-		});
+				extfs.del(parentDir, os.tmpdir(), () => { }, done);
+			}, error => onError(error, done));
+		};
+
+		pfs.mkdirp(newDir, 493).done(() => onMkdirp(null), error => onMkdirp(error));
 	});
 
-	test('writeFile - parallel write on different files works', function () {
+	test('writeFile - parallel write on different files works', function (done: () => void) {
 		const id = uuid.generateUuid();
 		const parentDir = path.join(os.tmpdir(), 'vsctests', id);
 		const newDir = path.join(parentDir, 'pfs', id);
@@ -45,80 +52,106 @@ suite('PFS', () => {
 		const testFile4 = path.join(newDir, 'writefile4.txt');
 		const testFile5 = path.join(newDir, 'writefile5.txt');
 
-		return pfs.mkdirp(newDir, 493).then(() => {
+		const onMkdirp = error => {
+			if (error) {
+				return onError(error, done);
+			}
+
 			assert.ok(fs.existsSync(newDir));
 
-			return TPromise.join([
+			TPromise.join([
 				pfs.writeFile(testFile1, 'Hello World 1', null),
 				pfs.writeFile(testFile2, 'Hello World 2', null),
 				pfs.writeFile(testFile3, 'Hello World 3', null),
 				pfs.writeFile(testFile4, 'Hello World 4', null),
 				pfs.writeFile(testFile5, 'Hello World 5', null)
-			]).then(() => {
+			]).done(() => {
 				assert.equal(fs.readFileSync(testFile1), 'Hello World 1');
 				assert.equal(fs.readFileSync(testFile2), 'Hello World 2');
 				assert.equal(fs.readFileSync(testFile3), 'Hello World 3');
 				assert.equal(fs.readFileSync(testFile4), 'Hello World 4');
 				assert.equal(fs.readFileSync(testFile5), 'Hello World 5');
 
-				return pfs.del(parentDir, os.tmpdir());
-			});
-		});
+				extfs.del(parentDir, os.tmpdir(), () => { }, done);
+			}, error => onError(error, done));
+		};
+
+		pfs.mkdirp(newDir, 493).done(() => onMkdirp(null), error => onMkdirp(error));
 	});
 
-	test('writeFile - parallel write on same files works and is sequentalized', function () {
+	test('writeFile - parallel write on same files works and is sequentalized', function (done: () => void) {
 		const id = uuid.generateUuid();
 		const parentDir = path.join(os.tmpdir(), 'vsctests', id);
 		const newDir = path.join(parentDir, 'pfs', id);
 		const testFile = path.join(newDir, 'writefile.txt');
 
-		return pfs.mkdirp(newDir, 493).then(() => {
+		const onMkdirp = error => {
+			if (error) {
+				return onError(error, done);
+			}
+
 			assert.ok(fs.existsSync(newDir));
 
-			return TPromise.join([
+			TPromise.join([
 				pfs.writeFile(testFile, 'Hello World 1', null),
 				pfs.writeFile(testFile, 'Hello World 2', null),
-				timeout(10).then(() => pfs.writeFile(testFile, 'Hello World 3', null)),
+				TPromise.timeout(10).then(() => pfs.writeFile(testFile, 'Hello World 3', null)),
 				pfs.writeFile(testFile, 'Hello World 4', null),
-				timeout(10).then(() => pfs.writeFile(testFile, 'Hello World 5', null))
-			]).then(() => {
+				TPromise.timeout(10).then(() => pfs.writeFile(testFile, 'Hello World 5', null))
+			]).done(() => {
 				assert.equal(fs.readFileSync(testFile), 'Hello World 5');
 
-				return pfs.del(parentDir, os.tmpdir());
-			});
-		});
+				extfs.del(parentDir, os.tmpdir(), () => { }, done);
+			}, error => onError(error, done));
+		};
+
+		pfs.mkdirp(newDir, 493).done(() => onMkdirp(null), error => onMkdirp(error));
 	});
 
-	test('rimraf - simple', function () {
+	test('rimraf - simple', function (done: () => void) {
 		const id = uuid.generateUuid();
 		const parentDir = path.join(os.tmpdir(), 'vsctests', id);
 		const newDir = path.join(parentDir, 'extfs', id);
 
-		return pfs.mkdirp(newDir, 493).then(() => {
+		const onMkdirp = error => {
+			if (error) {
+				return onError(error, done);
+			}
+
 			fs.writeFileSync(path.join(newDir, 'somefile.txt'), 'Contents');
 			fs.writeFileSync(path.join(newDir, 'someOtherFile.txt'), 'Contents');
 
-			return pfs.rimraf(newDir).then(() => {
+			pfs.rimraf(newDir).then(() => {
 				assert.ok(!fs.existsSync(newDir));
-			});
-		});
+				done();
+			}, error => onError(error, done));
+		};
+
+		pfs.mkdirp(newDir, 493).done(() => onMkdirp(null), error => onMkdirp(error));
 	});
 
-	test('rimraf - recursive folder structure', function () {
+	test('rimraf - recursive folder structure', function (done: () => void) {
 		const id = uuid.generateUuid();
 		const parentDir = path.join(os.tmpdir(), 'vsctests', id);
 		const newDir = path.join(parentDir, 'extfs', id);
 
-		return pfs.mkdirp(newDir, 493).then(() => {
+		const onMkdirp = error => {
+			if (error) {
+				return onError(error, done);
+			}
+
 			fs.writeFileSync(path.join(newDir, 'somefile.txt'), 'Contents');
 			fs.writeFileSync(path.join(newDir, 'someOtherFile.txt'), 'Contents');
 
 			fs.mkdirSync(path.join(newDir, 'somefolder'));
 			fs.writeFileSync(path.join(newDir, 'somefolder', 'somefile.txt'), 'Contents');
 
-			return pfs.rimraf(newDir).then(() => {
+			pfs.rimraf(newDir).then(() => {
 				assert.ok(!fs.existsSync(newDir));
-			});
-		});
+				done();
+			}, error => onError(error, done));
+		};
+
+		pfs.mkdirp(newDir, 493).done(() => onMkdirp(null), error => onMkdirp(error));
 	});
 });

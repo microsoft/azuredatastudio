@@ -19,7 +19,6 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { ModelServiceImpl } from 'vs/editor/common/services/modelServiceImpl';
-import { timeout } from 'vs/base/common/async';
 
 const nullEvent = new class {
 
@@ -102,7 +101,7 @@ suite('SearchModel', () => {
 		assert.ok(new Range(2, 1, 2, 2).equalsRange(actuaMatches[0].range()));
 	});
 
-	test('Search Model: Search adds to results during progress', function () {
+	test('Search Model: Search adds to results during progress', function (done) {
 		let results = [aRawMatch('file://c:/1', aLineMatch('preview 1', 1, [[1, 3], [4, 7]])), aRawMatch('file://c:/2', aLineMatch('preview 2'))];
 		let promise = new DeferredPPromise<ISearchComplete, ISearchProgressItem>();
 		instantiationService.stub(ISearchService, 'search', promise);
@@ -114,7 +113,7 @@ suite('SearchModel', () => {
 		promise.progress(results[1]);
 		promise.complete({ results: [], stats: testSearchStats });
 
-		return result.then(() => {
+		result.done(() => {
 			let actual = testObject.searchResult.matches();
 
 			assert.equal(2, actual.length);
@@ -131,6 +130,8 @@ suite('SearchModel', () => {
 			assert.equal(1, actuaMatches.length);
 			assert.equal('preview 2', actuaMatches[0].text());
 			assert.ok(new Range(2, 1, 2, 2).equalsRange(actuaMatches[0].range()));
+
+			done();
 		});
 	});
 
@@ -148,7 +149,7 @@ suite('SearchModel', () => {
 		assert.deepEqual(['searchResultsShown', { count: 3, fileCount: 2, options: {}, duration: -1, useRipgrep: undefined }], data);
 	});
 
-	test('Search Model: Search reports timed telemetry on search when progress is not called', function () {
+	test('Search Model: Search reports timed telemetry on search when progress is not called', function (done) {
 		let target2 = sinon.spy();
 		stub(nullEvent, 'stop', target2);
 		let target1 = sinon.stub().returns(nullEvent);
@@ -159,16 +160,17 @@ suite('SearchModel', () => {
 		let testObject = instantiationService.createInstance(SearchModel);
 		const result = testObject.search({ contentPattern: { pattern: 'somestring' }, type: 1, folderQueries });
 
-		return timeout(1).then(() => {
-			return result.then(() => {
+		setTimeout(() => {
+			result.done(() => {
 				assert.ok(target1.calledWith('searchResultsFirstRender'));
 				assert.ok(target1.calledWith('searchResultsFinished'));
-			});
 
-		});
+				done();
+			});
+		}, 0);
 	});
 
-	test('Search Model: Search reports timed telemetry on search when progress is called', function () {
+	test('Search Model: Search reports timed telemetry on search when progress is called', function (done) {
 		let target2 = sinon.spy();
 		stub(nullEvent, 'stop', target2);
 		let target1 = sinon.stub().returns(nullEvent);
@@ -183,16 +185,18 @@ suite('SearchModel', () => {
 		promise.progress(aRawMatch('file://c:/1', aLineMatch('some preview')));
 		promise.complete({ results: [], stats: testSearchStats });
 
-		return timeout(1).then(() => {
-			return result.then(() => {
+		setTimeout(() => {
+			result.done(() => {
 				assert.ok(target1.calledWith('searchResultsFirstRender'));
 				assert.ok(target1.calledWith('searchResultsFinished'));
 				// assert.equal(1, target2.callCount);
+
+				done();
 			});
-		});
+		}, 0);
 	});
 
-	test('Search Model: Search reports timed telemetry on search when error is called', function () {
+	test('Search Model: Search reports timed telemetry on search when error is called', function (done) {
 		let target2 = sinon.spy();
 		stub(nullEvent, 'stop', target2);
 		let target1 = sinon.stub().returns(nullEvent);
@@ -206,16 +210,18 @@ suite('SearchModel', () => {
 
 		promise.error('error');
 
-		return timeout(1).then(() => {
-			return result.then(() => { }, () => {
+		setTimeout(() => {
+			result.done(() => { }, () => {
 				assert.ok(target1.calledWith('searchResultsFirstRender'));
 				assert.ok(target1.calledWith('searchResultsFinished'));
 				// assert.ok(target2.calledOnce);
+
+				done();
 			});
-		});
+		}, 0);
 	});
 
-	test('Search Model: Search reports timed telemetry on search when error is cancelled error', function () {
+	test('Search Model: Search reports timed telemetry on search when error is cancelled error', function (done) {
 		let target2 = sinon.spy();
 		stub(nullEvent, 'stop', target2);
 		let target1 = sinon.stub().returns(nullEvent);
@@ -229,13 +235,14 @@ suite('SearchModel', () => {
 
 		promise.cancel();
 
-		return timeout(1).then(() => {
-			return result.then(() => { }, () => {
+		setTimeout(() => {
+			result.done(() => { }, () => {
 				assert.ok(target1.calledWith('searchResultsFirstRender'));
 				assert.ok(target1.calledWith('searchResultsFinished'));
 				// assert.ok(target2.calledOnce);
+				done();
 			});
-		});
+		}, 0);
 	});
 
 	test('Search Model: Search results are cleared during search', function () {

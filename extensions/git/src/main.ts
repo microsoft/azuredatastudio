@@ -17,7 +17,6 @@ import { Askpass } from './askpass';
 import { toDisposable, filterEvent, eventToPromise } from './util';
 import TelemetryReporter from 'vscode-extension-telemetry';
 import { API, createApi } from './api';
-import { GitProtocolHandler } from './protocolHandler';
 
 let telemetryReporter: TelemetryReporter;
 
@@ -52,8 +51,7 @@ async function init(context: ExtensionContext, outputChannel: OutputChannel, dis
 	disposables.push(
 		new CommandCenter(git, model, outputChannel, telemetryReporter),
 		new GitContentProvider(model),
-		new GitDecorations(model),
-		new GitProtocolHandler()
+		new GitDecorations(model)
 	);
 
 	await checkGitVersion(info);

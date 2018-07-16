@@ -6,14 +6,16 @@
 'use strict';
 
 import * as fs from 'fs';
-import * as gracefulFs from 'graceful-fs';
+import gracefulFs = require('graceful-fs');
 gracefulFs.gracefulify(fs);
 
 import { onUnexpectedError } from 'vs/base/common/errors';
 import * as strings from 'vs/base/common/strings';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { LineMatch, FileMatch } from '../search';
-import { UTF16le, UTF16be, UTF8, UTF8_with_bom, encodingExists, decode, bomLength, detectEncodingFromBuffer } from 'vs/base/node/encoding';
+import * as baseMime from 'vs/base/common/mime';
+import { UTF16le, UTF16be, UTF8, UTF8_with_bom, encodingExists, decode, bomLength } from 'vs/base/node/encoding';
+import { detectMimeAndEncodingFromBuffer } from 'vs/base/node/mime';
 
 import { ISearchWorker, ISearchWorkerSearchArgs, ISearchWorkerSearchResult } from './searchWorkerIpc';
 
@@ -206,13 +208,13 @@ export class SearchWorkerEngine {
 
 						// Detect encoding and mime when this is the beginning of the file
 						if (isFirstRead) {
-							const detected = detectEncodingFromBuffer({ buffer, bytesRead }, false);
-							if (detected.seemsBinary) {
+							const mimeAndEncoding = detectMimeAndEncodingFromBuffer({ buffer, bytesRead }, false);
+							if (mimeAndEncoding.mimes[mimeAndEncoding.mimes.length - 1] !== baseMime.MIME_TEXT) {
 								return clb(null); // skip files that seem binary
 							}
 
 							// Check for BOM offset
-							switch (detected.encoding) {
+							switch (mimeAndEncoding.encoding) {
 								case UTF8:
 									pos = i = bomLength(UTF8);
 									options.encoding = UTF8;

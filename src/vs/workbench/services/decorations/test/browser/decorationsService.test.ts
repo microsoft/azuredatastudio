@@ -9,9 +9,8 @@ import * as assert from 'assert';
 import { FileDecorationsService } from 'vs/workbench/services/decorations/browser/decorationsService';
 import { IDecorationsProvider, IDecorationData } from 'vs/workbench/services/decorations/browser/decorations';
 import URI from 'vs/base/common/uri';
-import { Event, toPromise, Emitter } from 'vs/base/common/event';
+import Event, { toPromise } from 'vs/base/common/event';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 suite('DecorationsService', function () {
 
@@ -34,7 +33,7 @@ suite('DecorationsService', function () {
 			readonly onDidChange: Event<URI[]> = Event.None;
 			provideDecorations(uri: URI) {
 				callCounter += 1;
-				return new TPromise<IDecorationData>(resolve => {
+				return new Promise<IDecorationData>(resolve => {
 					setTimeout(() => resolve({
 						color: 'someBlue',
 						tooltip: 'T'
@@ -76,7 +75,7 @@ suite('DecorationsService', function () {
 		assert.equal(callCounter, 1);
 	});
 
-	test('Clear decorations on provider dispose', async function () {
+	test('Clear decorations on provider dispose', function () {
 		let uri = URI.parse('foo:bar');
 		let callCounter = 0;
 
@@ -95,14 +94,13 @@ suite('DecorationsService', function () {
 
 		// un-register -> ensure good event
 		let didSeeEvent = false;
-		let p = toPromise(service.onDidChangeDecorations).then(e => {
+		service.onDidChangeDecorations(e => {
 			assert.equal(e.affectsResource(uri), true);
 			assert.deepEqual(service.getDecoration(uri, false), undefined);
 			assert.equal(callCounter, 1);
 			didSeeEvent = true;
 		});
 		reg.dispose();
-		await p;
 		assert.equal(didSeeEvent, true);
 	});
 
@@ -167,44 +165,6 @@ suite('DecorationsService', function () {
 
 		deco = service.getDecoration(someUri, false, { source: 'foo', tooltip: 'O' });
 		assert.equal(deco.tooltip, 'O');
-
-		reg.dispose();
-	});
-
-	test('Decorations not showing up for second root folder #48502', async function () {
-
-		let cancelCount = 0;
-		let callCount = 0;
-
-		let provider = new class implements IDecorationsProvider {
-
-			_onDidChange = new Emitter<URI[]>();
-			onDidChange: Event<URI[]> = this._onDidChange.event;
-
-			label: string = 'foo';
-
-			provideDecorations(uri): TPromise<IDecorationData> {
-				return new TPromise(resolve => {
-					callCount += 1;
-					setTimeout(() => {
-						resolve({ letter: 'foo' });
-					}, 10);
-				}, () => {
-					cancelCount += 1;
-				});
-			}
-		};
-
-		let reg = service.registerDecorationsProvider(provider);
-
-		const uri = URI.parse('foo://bar');
-		service.getDecoration(uri, false);
-
-		provider._onDidChange.fire([uri]);
-		service.getDecoration(uri, false);
-
-		assert.equal(cancelCount, 1);
-		assert.equal(callCount, 2);
 
 		reg.dispose();
 	});

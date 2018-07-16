@@ -48,10 +48,6 @@ export class ProfilerTestBackend implements sqlops.ProfilerProvider {
 		return;
 	}
 
-	registerOnSessionStopped(handler: (response: sqlops.ProfilerSessionStoppedParams) => any) {
-		return;
-	}
-
 	private intervalFn(guid: string): number {
 		return setTimeout(() => {
 			let data = this.testData[this.index++];

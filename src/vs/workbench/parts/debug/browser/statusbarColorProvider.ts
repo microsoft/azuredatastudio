@@ -56,7 +56,7 @@ export class StatusBarColorProvider extends Themable implements IWorkbenchContri
 		super.updateStyles();
 
 		const container = this.partService.getContainer(Parts.STATUSBAR_PART);
-		if (isStatusbarInDebugMode(this.debugService)) {
+		if (this.isDebugging()) {
 			addClass(container, 'debugging');
 		} else {
 			removeClass(container, 'debugging');
@@ -84,7 +84,7 @@ export class StatusBarColorProvider extends Themable implements IWorkbenchContri
 	private getColorKey(noFolderColor: string, debuggingColor: string, normalColor: string): string {
 
 		// Not debugging
-		if (!isStatusbarInDebugMode(this.debugService)) {
+		if (!this.isDebugging()) {
 			if (this.contextService.getWorkbenchState() !== WorkbenchState.EMPTY) {
 				return normalColor;
 			}
@@ -95,20 +95,24 @@ export class StatusBarColorProvider extends Themable implements IWorkbenchContri
 		// Debugging
 		return debuggingColor;
 	}
-}
 
-export function isStatusbarInDebugMode(debugService: IDebugService): boolean {
-	if (debugService.state === State.Inactive || debugService.state === State.Initializing) {
-		return false;
+	private isDebugging(): boolean {
+		if (this.debugService.state === State.Inactive || this.debugService.state === State.Initializing) {
+			return false;
+		}
+
+		if (this.isRunningWithoutDebug()) {
+			return false;
+		}
+
+		return true;
 	}
 
-	const process = debugService.getViewModel().focusedProcess;
-	const isRunningWithoutDebug = process && process.configuration && process.configuration.noDebug;
-	if (isRunningWithoutDebug) {
-		return false;
-	}
+	private isRunningWithoutDebug(): boolean {
+		const process = this.debugService.getViewModel().focusedProcess;
 
-	return true;
+		return process && process.configuration && process.configuration.noDebug;
+	}
 }
 
 registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {

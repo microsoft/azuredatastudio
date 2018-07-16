@@ -81,7 +81,6 @@ suite('ContextKeyExpr', () => {
 			testExpression(expr + ' != 5', value != <any>'5');
 			testExpression('!' + expr, !value);
 			testExpression(expr + ' =~ /d.*/', /d.*/.test(value));
-			testExpression(expr + ' =~ /D/i', /D/i.test(value));
 		}
 
 		testBatch('a', true);
@@ -93,7 +92,7 @@ suite('ContextKeyExpr', () => {
 		testExpression('a && !b', true && !false);
 		testExpression('a && b', true && false);
 		testExpression('a && !b && c == 5', true && !false && '5' == '5');
-		testExpression('d =~ /e.*/', false);
+		testExpression('dddd =~ d.*', false);
 		/* tslint:enable:triple-equals */
 	});
 });

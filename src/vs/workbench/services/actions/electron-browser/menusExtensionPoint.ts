@@ -40,8 +40,6 @@ namespace schema {
 			case 'scm/change/title': return MenuId.SCMChangeContext;
 			case 'view/title': return MenuId.ViewTitle;
 			case 'view/item/context': return MenuId.ViewItemContext;
-			// {{SQL CARBON EDIT}}
-			case 'objectExplorer/item/context': return MenuId.ObjectExplorerItemContext;
 		}
 
 		return void 0;

@@ -6,7 +6,7 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Command } from 'vs/editor/common/modes';
 import { UriComponents } from 'vs/base/common/uri';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { ITreeViewDataProvider } from 'vs/workbench/common/views';
 import { localize } from 'vs/nls';
@@ -17,24 +17,24 @@ import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 
 export class ViewLocation {
 
-	private static locations: Map<string, ViewLocation> = new Map<string, ViewLocation>();
-	static register(id: string): ViewLocation {
-		const viewLocation = new ViewLocation(id);
-		ViewLocation.locations.set(id, viewLocation);
-		return viewLocation;
-	}
-	static get(value: string): ViewLocation {
-		return ViewLocation.locations.get(value);
+	static readonly Explorer = new ViewLocation('workbench.view.explorer');
+	static readonly Debug = new ViewLocation('workbench.view.debug');
+	static readonly Extensions = new ViewLocation('workbench.view.extensions');
+
+	constructor(private _id: string) {
 	}
 
-	static readonly Explorer: ViewLocation = ViewLocation.register('workbench.view.explorer');
-	static readonly Debug: ViewLocation = ViewLocation.register('workbench.view.debug');
-	static readonly Extensions: ViewLocation = ViewLocation.register('workbench.view.extensions');
-	static readonly SCM: ViewLocation = ViewLocation.register('workbench.view.scm.views.contributed');
+	get id(): string {
+		return this._id;
+	}
 
-	private constructor(private _id: string) { }
-	get id(): string { return this._id; }
-
+	static getContributedViewLocation(value: string): ViewLocation {
+		switch (value) {
+			case 'explorer': return ViewLocation.Explorer;
+			case 'debug': return ViewLocation.Debug;
+		}
+		return void 0;
+	}
 }
 
 export interface IViewDescriptor {
@@ -79,10 +79,10 @@ export interface IViewsRegistry {
 
 export const ViewsRegistry: IViewsRegistry = new class implements IViewsRegistry {
 
-	private readonly _onViewsRegistered: Emitter<IViewDescriptor[]> = new Emitter<IViewDescriptor[]>();
+	private _onViewsRegistered: Emitter<IViewDescriptor[]> = new Emitter<IViewDescriptor[]>();
 	readonly onViewsRegistered: Event<IViewDescriptor[]> = this._onViewsRegistered.event;
 
-	private readonly _onViewsDeregistered: Emitter<IViewDescriptor[]> = new Emitter<IViewDescriptor[]>();
+	private _onViewsDeregistered: Emitter<IViewDescriptor[]> = new Emitter<IViewDescriptor[]>();
 	readonly onViewsDeregistered: Event<IViewDescriptor[]> = this._onViewsDeregistered.event;
 
 	private _viewLocations: ViewLocation[] = [];
@@ -182,9 +182,9 @@ export interface ICustomViewDescriptor extends IViewDescriptor {
 
 }
 
-export const IViewsService = createDecorator<IViewsService>('viewsService');
+export const ICustomViewsService = createDecorator<ICustomViewsService>('customViewsService');
 
-export interface IViewsService {
+export interface ICustomViewsService {
 	_serviceBrand: any;
 
 	getTreeViewer(id: string): ITreeViewer;

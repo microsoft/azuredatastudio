@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { INotificationService, INotification, INotificationHandle, Severity, NotificationMessage, INotificationActions, IPromptChoice } from 'vs/platform/notification/common/notification';
 import { INotificationsModel, NotificationsModel } from 'vs/workbench/common/notifications';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';

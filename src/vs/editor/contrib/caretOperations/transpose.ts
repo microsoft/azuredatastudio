@@ -6,55 +6,14 @@
 
 import * as nls from 'vs/nls';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
-import { isLowSurrogate, isHighSurrogate } from 'vs/base/common/strings';
 import { Range } from 'vs/editor/common/core/range';
-import { Position, IPosition } from 'vs/editor/common/core/position';
 import { ICommand } from 'vs/editor/common/editorCommon';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import { registerEditorAction, EditorAction, ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 import { ReplaceCommand } from 'vs/editor/common/commands/replaceCommand';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { ITextModel } from 'vs/editor/common/model';
 
 class TransposeLettersAction extends EditorAction {
-
-	private positionLeftOf(start: IPosition, model: ITextModel): Position {
-		let column = start.column;
-		let lineNumber = start.lineNumber;
-
-		if (column > model.getLineMinColumn(lineNumber)) {
-			if (isLowSurrogate(model.getLineContent(lineNumber).charCodeAt(column - 2))) {
-				// character before column is a low surrogate
-				column = column - 2;
-			} else {
-				column = column - 1;
-			}
-		} else if (lineNumber > 1) {
-			lineNumber = lineNumber - 1;
-			column = model.getLineMaxColumn(lineNumber);
-		}
-
-		return new Position(lineNumber, column);
-	}
-
-	private positionRightOf(start: IPosition, model: ITextModel): Position {
-		let column = start.column;
-		let lineNumber = start.lineNumber;
-
-		if (column < model.getLineMaxColumn(lineNumber)) {
-			if (isHighSurrogate(model.getLineContent(lineNumber).charCodeAt(column - 1))) {
-				// character after column is a high surrogate
-				column = column + 2;
-			} else {
-				column = column + 1;
-			}
-		} else if (lineNumber < model.getLineCount()) {
-			lineNumber = lineNumber + 1;
-			column = 0;
-		}
-
-		return new Position(lineNumber, column);
-	}
 
 	constructor() {
 		super({
@@ -63,7 +22,7 @@ class TransposeLettersAction extends EditorAction {
 			alias: 'Transpose Letters',
 			precondition: EditorContextKeys.writable,
 			kbOpts: {
-				kbExpr: EditorContextKeys.textInputFocus,
+				kbExpr: EditorContextKeys.textFocus,
 				primary: 0,
 				mac: {
 					primary: KeyMod.WinCtrl | KeyCode.KEY_T
@@ -77,35 +36,30 @@ class TransposeLettersAction extends EditorAction {
 		let commands: ICommand[] = [];
 		let selections = editor.getSelections();
 
-		for (let selection of selections) {
+		for (let i = 0; i < selections.length; i++) {
+			let selection = selections[i];
 			if (!selection.isEmpty()) {
 				continue;
 			}
-
 			let lineNumber = selection.startLineNumber;
 			let column = selection.startColumn;
-
-			let lastColumn = model.getLineMaxColumn(lineNumber);
-
-			if (lineNumber === 1 && (column === 1 || (column === 2 && lastColumn === 2))) {
-				// at beginning of file, nothing to do
+			if (column === 1) {
+				// at the beginning of line
+				continue;
+			}
+			let maxColumn = model.getLineMaxColumn(lineNumber);
+			if (column === maxColumn) {
+				// at the end of line
 				continue;
 			}
 
-			// handle special case: when at end of line, transpose left two chars
-			// otherwise, transpose left and right chars
-			let endPosition = (column === lastColumn) ?
-				selection.getPosition() :
-				this.positionRightOf(selection.getPosition(), model);
+			let lineContent = model.getLineContent(lineNumber);
+			let charToTheLeft = lineContent.charAt(column - 2);
+			let charToTheRight = lineContent.charAt(column - 1);
 
-			let middlePosition = this.positionLeftOf(endPosition, model);
-			let beginPosition = this.positionLeftOf(middlePosition, model);
+			let replaceRange = new Range(lineNumber, column - 1, lineNumber, column + 1);
 
-			let leftChar = model.getValueInRange(Range.fromPositions(beginPosition, middlePosition));
-			let rightChar = model.getValueInRange(Range.fromPositions(middlePosition, endPosition));
-
-			let replaceRange = Range.fromPositions(beginPosition, endPosition);
-			commands.push(new ReplaceCommand(replaceRange, rightChar + leftChar));
+			commands.push(new ReplaceCommand(replaceRange, charToTheRight + charToTheLeft));
 		}
 
 		if (commands.length > 0) {

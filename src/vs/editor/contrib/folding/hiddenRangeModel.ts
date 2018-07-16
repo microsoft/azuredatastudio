@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { Range, IRange } from 'vs/editor/common/core/range';
 import { FoldingModel, CollapseMemento } from 'vs/editor/contrib/folding/foldingModel';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { Selection } from 'vs/editor/common/core/selection';
-import { findFirstInSorted } from 'vs/base/common/arrays';
+import { findFirst } from 'vs/base/common/arrays';
 
 export class HiddenRangeModel {
 	private _foldingModel: FoldingModel;
@@ -149,7 +149,7 @@ function isInside(line: number, range: IRange) {
 	return line >= range.startLineNumber && line <= range.endLineNumber;
 }
 function findRange(ranges: IRange[], line: number): IRange {
-	let i = findFirstInSorted(ranges, r => line < r.startLineNumber) - 1;
+	let i = findFirst(ranges, r => line < r.startLineNumber) - 1;
 	if (i >= 0 && ranges[i].endLineNumber >= line) {
 		return ranges[i];
 	}

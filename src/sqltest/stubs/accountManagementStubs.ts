@@ -6,7 +6,7 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import { Event } from 'vs/base/common/event';
+import Event from 'vs/base/common/event';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
 import { TPromise } from 'vs/base/common/winjs.base';

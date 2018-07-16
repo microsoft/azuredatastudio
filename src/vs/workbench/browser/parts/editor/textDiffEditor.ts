@@ -7,11 +7,12 @@
 
 import 'vs/css!./media/textdiffeditor';
 import { TPromise } from 'vs/base/common/winjs.base';
-import * as nls from 'vs/nls';
-import * as objects from 'vs/base/common/objects';
+import nls = require('vs/nls');
+import objects = require('vs/base/common/objects');
+import { Builder } from 'vs/base/browser/builder';
 import { Action, IAction } from 'vs/base/common/actions';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import * as types from 'vs/base/common/types';
+import types = require('vs/base/common/types');
 import { IDiffEditor } from 'vs/editor/browser/editorBrowser';
 import { IDiffEditorOptions, IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { BaseTextEditor, IEditorConfiguration } from 'vs/workbench/browser/parts/editor/textEditor';
@@ -31,13 +32,10 @@ import { IWorkbenchEditorService, DelegatingWorkbenchEditorService } from 'vs/wo
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { ScrollType, IDiffEditorViewState, IDiffEditorModel } from 'vs/editor/common/editorCommon';
+import { ScrollType } from 'vs/editor/common/editorCommon';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
-import URI from 'vs/base/common/uri';
-import { getCodeOrDiffEditor } from 'vs/editor/browser/services/codeEditorService';
-import { once } from 'vs/base/common/event';
 
 /**
  * The text editor that leverages the diff text editor for the editing experience.
@@ -47,10 +45,10 @@ export class TextDiffEditor extends BaseTextEditor {
 	public static readonly ID = TEXT_DIFF_EDITOR_ID;
 
 	private diffNavigator: DiffNavigator;
-	private diffNavigatorDisposables: IDisposable[];
 	private nextDiffAction: NavigateAction;
 	private previousDiffAction: NavigateAction;
 	private toggleIgnoreTrimWhitespaceAction: ToggleIgnoreTrimWhitespaceAction;
+	private _configurationListener: IDisposable;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -65,12 +63,11 @@ export class TextDiffEditor extends BaseTextEditor {
 	) {
 		super(TextDiffEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, textFileService, editorGroupService);
 
-		this.diffNavigatorDisposables = [];
-		this.toUnbind.push(this._actualConfigurationService.onDidChangeConfiguration((e) => {
+		this._configurationListener = this._actualConfigurationService.onDidChangeConfiguration((e) => {
 			if (e.affectsConfiguration('diffEditor.ignoreTrimWhitespace')) {
 				this.updateIgnoreTrimWhitespaceAction();
 			}
-		}));
+		});
 	}
 
 	public getTitle(): string {
@@ -81,7 +78,7 @@ export class TextDiffEditor extends BaseTextEditor {
 		return nls.localize('textDiffEditor', "Text Diff Editor");
 	}
 
-	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): IDiffEditor {
+	public createEditorControl(parent: Builder, configuration: IEditorOptions): IDiffEditor {
 
 		// Actions
 		this.nextDiffAction = new NavigateAction(this, true);
@@ -121,7 +118,7 @@ export class TextDiffEditor extends BaseTextEditor {
 		// Create a special child of instantiator that will delegate all calls to openEditor() to the same diff editor if the input matches with the modified one
 		const diffEditorInstantiator = this.instantiationService.createChild(new ServiceCollection([IWorkbenchEditorService, delegatingEditorService]));
 
-		return diffEditorInstantiator.createInstance(DiffEditorWidget, parent, configuration);
+		return diffEditorInstantiator.createInstance(DiffEditorWidget, parent.getHTMLElement(), configuration);
 	}
 
 	public setInput(input: EditorInput, options?: EditorOptions): TPromise<void> {
@@ -140,10 +137,9 @@ export class TextDiffEditor extends BaseTextEditor {
 		}
 
 		// Dispose previous diff navigator
-		this.diffNavigatorDisposables = dispose(this.diffNavigatorDisposables);
-
-		// Remember view settings if input changes
-		this.saveTextDiffEditorViewState(this.input);
+		if (this.diffNavigator) {
+			this.diffNavigator.dispose();
+		}
 
 		// Set input and resolve
 		return super.setInput(input, options).then(() => {
@@ -159,32 +155,27 @@ export class TextDiffEditor extends BaseTextEditor {
 					return null;
 				}
 
-				// Set Editor Model
+				// Editor
 				const diffEditor = <IDiffEditor>this.getControl();
 				diffEditor.setModel((<TextDiffEditorModel>resolvedModel).textDiffEditorModel);
 
-				// Apply Options from TextOptions
-				let optionsGotApplied = false;
+				// Handle TextOptions
+				let alwaysRevealFirst = true;
 				if (options && types.isFunction((<TextEditorOptions>options).apply)) {
-					optionsGotApplied = (<TextEditorOptions>options).apply(<IDiffEditor>diffEditor, ScrollType.Immediate);
+					const hadOptions = (<TextEditorOptions>options).apply(<IDiffEditor>diffEditor, ScrollType.Immediate);
+					if (hadOptions) {
+						alwaysRevealFirst = false; // Do not reveal if we are instructed to open specific line/col
+					}
 				}
 
-				// Otherwise restore View State
-				let hasPreviousViewState = false;
-				if (!optionsGotApplied) {
-					hasPreviousViewState = this.restoreTextDiffEditorViewState(input);
-				}
-
+				// Listen on diff updated changes to reveal the first change
 				this.diffNavigator = new DiffNavigator(diffEditor, {
-					alwaysRevealFirst: !optionsGotApplied && !hasPreviousViewState // only reveal first change if we had no options or viewstate
+					alwaysRevealFirst
 				});
-				this.diffNavigatorDisposables.push(this.diffNavigator);
-
-				this.diffNavigatorDisposables.push(this.diffNavigator.onDidUpdate(() => {
+				this.diffNavigator.onDidUpdate(() => {
 					this.nextDiffAction.updateEnablement();
 					this.previousDiffAction.updateEnablement();
-				}));
-
+				});
 				this.updateIgnoreTrimWhitespaceAction();
 			}, error => {
 
@@ -197,26 +188,6 @@ export class TextDiffEditor extends BaseTextEditor {
 				return TPromise.wrapError(error);
 			});
 		});
-	}
-
-	public supportsCenteredLayout(): boolean {
-		return false;
-	}
-
-	private restoreTextDiffEditorViewState(input: EditorInput): boolean {
-		if (input instanceof DiffEditorInput) {
-			const resource = this.toDiffEditorViewStateResource(input);
-			if (resource) {
-				const viewState = this.loadTextEditorViewState(resource);
-				if (viewState) {
-					this.getControl().restoreViewState(viewState);
-
-					return true;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	private updateIgnoreTrimWhitespaceAction(): void {
@@ -307,10 +278,9 @@ export class TextDiffEditor extends BaseTextEditor {
 	public clearInput(): void {
 
 		// Dispose previous diff navigator
-		this.diffNavigatorDisposables = dispose(this.diffNavigatorDisposables);
-
-		// Keep editor view state in settings to restore when coming back
-		this.saveTextDiffEditorViewState(this.input);
+		if (this.diffNavigator) {
+			this.diffNavigator.dispose();
+		}
 
 		// Clear Model
 		this.getControl().setModel(null);
@@ -335,85 +305,14 @@ export class TextDiffEditor extends BaseTextEditor {
 		return super.getControl() as IDiffEditor;
 	}
 
-	protected loadTextEditorViewState(resource: URI): IDiffEditorViewState {
-		return super.loadTextEditorViewState(resource) as IDiffEditorViewState;  // overridden for text diff editor support
-	}
-
-	private saveTextDiffEditorViewState(input: EditorInput): void {
-		if (!(input instanceof DiffEditorInput)) {
-			return; // only supported for diff editor inputs
-		}
-
-		const resource = this.toDiffEditorViewStateResource(input);
-		if (!resource) {
-			return; // unable to retrieve input resource
-		}
-
-		// Clear view state if input is disposed
-		if (input.isDisposed()) {
-			super.clearTextEditorViewState([resource]);
-		}
-
-		// Otherwise save it
-		else {
-			super.saveTextEditorViewState(resource);
-
-			// Make sure to clean up when the input gets disposed
-			once(input.onDispose)(() => {
-				super.clearTextEditorViewState([resource]);
-			});
-		}
-	}
-
-	protected retrieveTextEditorViewState(resource: URI): IDiffEditorViewState {
-		return this.retrieveTextDiffEditorViewState(resource); // overridden for text diff editor support
-	}
-
-	private retrieveTextDiffEditorViewState(resource: URI): IDiffEditorViewState {
-		const editor = getCodeOrDiffEditor(this).diffEditor;
-		if (!editor) {
-			return null; // not supported for non-diff editors
-		}
-
-		const model = editor.getModel();
-		if (!model || !model.modified || !model.original) {
-			return null; // view state always needs a model
-		}
-
-		const modelUri = this.toDiffEditorViewStateResource(model);
-		if (!modelUri) {
-			return null; // model URI is needed to make sure we save the view state correctly
-		}
-
-		if (modelUri.toString() !== resource.toString()) {
-			return null; // prevent saving view state for a model that is not the expected one
-		}
-
-		return editor.saveViewState();
-	}
-
-	private toDiffEditorViewStateResource(modelOrInput: IDiffEditorModel | DiffEditorInput): URI {
-		let original: URI;
-		let modified: URI;
-
-		if (modelOrInput instanceof DiffEditorInput) {
-			original = modelOrInput.originalInput.getResource();
-			modified = modelOrInput.modifiedInput.getResource();
-		} else {
-			original = modelOrInput.original.uri;
-			modified = modelOrInput.modified.uri;
-		}
-
-		if (!original || !modified) {
-			return null;
-		}
-
-		// create a URI that is the Base64 concatenation of original + modified resource
-		return URI.from({ scheme: 'diff', path: `${btoa(original.toString())}${btoa(modified.toString())}` });
-	}
-
 	public dispose(): void {
-		this.diffNavigatorDisposables = dispose(this.diffNavigatorDisposables);
+
+		// Dispose previous diff navigator
+		if (this.diffNavigator) {
+			this.diffNavigator.dispose();
+		}
+
+		this._configurationListener.dispose();
 
 		super.dispose();
 	}

@@ -6,31 +6,33 @@
 import { DataService } from 'sql/parts/grid/services/dataService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
-import { IBootstrapParams } from './bootstrapService';
+import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
 
-export interface IQueryComponentParams extends IBootstrapParams {
+export interface BootstrapParams {
+}
+
+export interface QueryComponentParams extends BootstrapParams {
 	dataService: DataService;
 }
 
-export interface IEditDataComponentParams extends IBootstrapParams {
+export interface EditDataComponentParams extends BootstrapParams {
 	dataService: DataService;
 }
 
-export interface IDefaultComponentParams extends IBootstrapParams {
+export interface DefaultComponentParams extends BootstrapParams {
 	connection: IConnectionProfile;
 	ownerUri: string;
 	scopedContextService: IContextKeyService;
-	connectionContextKey: ConnectionContextKey;
+	connectionContextKey: ConnectionContextkey;
 }
 
-export interface IDashboardComponentParams extends IDefaultComponentParams {
+export interface DashboardComponentParams extends DefaultComponentParams {
 }
 
-export interface ITaskDialogComponentParams extends IBootstrapParams {
+export interface TaskDialogComponentParams extends BootstrapParams {
 	ownerUri: string;
 }
 
-export interface IQueryPlanParams extends IBootstrapParams {
+export interface QueryPlanParams extends BootstrapParams {
 	planXml: string;
 }

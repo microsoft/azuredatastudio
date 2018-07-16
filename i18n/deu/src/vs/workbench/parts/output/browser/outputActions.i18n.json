@@ -9,6 +9,5 @@
 	"toggleOutput": "Ausgabe umschalten",
 	"clearOutput": "Ausgabe löschen",
 	"toggleOutputScrollLock": "Ausgabe-Bildlaufsperre umschalten",
-	"switchToOutput.label": "Zur Ausgabe wechseln",
-	"openInLogViewer": "Protokolldatei öffnen"
+	"switchToOutput.label": "Zur Ausgabe wechseln"
 }

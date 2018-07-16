@@ -5,15 +5,16 @@
 
 'use strict';
 
-import * as nls from 'vs/nls';
+import nls = require('vs/nls');
 import { TPromise } from 'vs/base/common/winjs.base';
 import URI from 'vs/base/common/uri';
-import * as objects from 'vs/base/common/objects';
-import * as types from 'vs/base/common/types';
-import * as errors from 'vs/base/common/errors';
-import * as DOM from 'vs/base/browser/dom';
+import { Dimension, Builder } from 'vs/base/browser/builder';
+import objects = require('vs/base/common/objects');
+import types = require('vs/base/common/types');
+import errors = require('vs/base/common/errors');
+import DOM = require('vs/base/browser/dom');
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
-import { EditorInput, EditorOptions, EditorViewStateMemento } from 'vs/workbench/common/editor';
+import { EditorInput, EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IEditorViewState, IEditor } from 'vs/editor/common/editorCommon';
 import { Position } from 'vs/platform/editor/common/editor';
@@ -42,24 +43,21 @@ export interface IEditorConfiguration {
  */
 export abstract class BaseTextEditor extends BaseEditor {
 	private editorControl: IEditor;
-	private _editorContainer: HTMLElement;
+	private _editorContainer: Builder;
 	private hasPendingConfigurationChange: boolean;
 	private lastAppliedEditorOptions: IEditorOptions;
-	private editorViewStateMemento: EditorViewStateMemento<IEditorViewState>;
 
 	constructor(
 		id: string,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
-		@IStorageService storageService: IStorageService,
+		@IStorageService private storageService: IStorageService,
 		@ITextResourceConfigurationService private readonly _configurationService: ITextResourceConfigurationService,
 		@IThemeService protected themeService: IThemeService,
 		@ITextFileService private readonly _textFileService: ITextFileService,
 		@IEditorGroupService protected editorGroupService: IEditorGroupService
 	) {
 		super(id, telemetryService, themeService);
-
-		this.editorViewStateMemento = new EditorViewStateMemento<IEditorViewState>(this.getMemento(storageService, Scope.WORKSPACE), TEXT_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
 
 		this.toUnbind.push(this.configurationService.onDidChangeConfiguration(e => this.handleConfigurationChangeEvent(this.configurationService.getValue<IEditorConfiguration>(this.getResource()))));
 	}
@@ -125,7 +123,7 @@ export abstract class BaseTextEditor extends BaseEditor {
 		return overrides;
 	}
 
-	protected createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: Builder): void {
 
 		// Editor for Text
 		this._editorContainer = parent;
@@ -179,10 +177,10 @@ export abstract class BaseTextEditor extends BaseEditor {
 	 *
 	 * The passed in configuration object should be passed to the editor control when creating it.
 	 */
-	protected createEditorControl(parent: HTMLElement, configuration: IEditorOptions): IEditor {
+	protected createEditorControl(parent: Builder, configuration: IEditorOptions): IEditor {
 
 		// Use a getter for the instantiation service since some subclasses might use scoped instantiation services
-		return this.instantiationService.createInstance(CodeEditor, parent, configuration);
+		return this.instantiationService.createInstance(CodeEditor, parent.getHTMLElement(), configuration);
 	}
 
 	public setInput(input: EditorInput, options?: EditorOptions): TPromise<void> {
@@ -191,7 +189,7 @@ export abstract class BaseTextEditor extends BaseEditor {
 			// Update editor options after having set the input. We do this because there can be
 			// editor input specific options (e.g. an ARIA label depending on the input showing)
 			this.updateEditorConfiguration();
-			this._editorContainer.setAttribute('aria-label', this.computeAriaLabel());
+			this._editorContainer.getHTMLElement().setAttribute('aria-label', this.computeAriaLabel());
 		});
 	}
 
@@ -221,7 +219,7 @@ export abstract class BaseTextEditor extends BaseEditor {
 		this.editorControl.focus();
 	}
 
-	public layout(dimension: DOM.Dimension): void {
+	public layout(dimension: Dimension): void {
 
 		// Pass on to Editor
 		this.editorControl.layout(dimension);
@@ -235,51 +233,69 @@ export abstract class BaseTextEditor extends BaseEditor {
 	 * Saves the text editor view state for the given resource.
 	 */
 	protected saveTextEditorViewState(resource: URI): void {
-		const editorViewState = this.retrieveTextEditorViewState(resource);
-		if (!editorViewState) {
-			return;
-		}
-
-		this.editorViewStateMemento.saveState(resource, this.position, editorViewState);
-	}
-
-	protected retrieveTextEditorViewState(resource: URI): IEditorViewState {
 		const editor = getCodeOrDiffEditor(this).codeEditor;
 		if (!editor) {
-			return null; // not supported for diff editors
+			return; // not supported for diff editors
 		}
 
 		const model = editor.getModel();
 		if (!model) {
-			return null; // view state always needs a model
+			return; // view state always needs a model
 		}
 
 		const modelUri = model.uri;
 		if (!modelUri) {
-			return null; // model URI is needed to make sure we save the view state correctly
+			return; // model URI is needed to make sure we save the view state correctly
 		}
 
 		if (modelUri.toString() !== resource.toString()) {
-			return null; // prevent saving view state for a model that is not the expected one
+			return; // prevent saving view state for a model that is not the expected one
 		}
 
-		return editor.saveViewState();
+		const memento = this.getMemento(this.storageService, Scope.WORKSPACE);
+
+		let textEditorViewStateMemento: { [key: string]: { [position: number]: IEditorViewState } } = memento[TEXT_EDITOR_VIEW_STATE_PREFERENCE_KEY];
+		if (!textEditorViewStateMemento) {
+			textEditorViewStateMemento = Object.create(null);
+			memento[TEXT_EDITOR_VIEW_STATE_PREFERENCE_KEY] = textEditorViewStateMemento;
+		}
+
+		let lastKnownViewState = textEditorViewStateMemento[resource.toString()];
+		if (!lastKnownViewState) {
+			lastKnownViewState = Object.create(null);
+			textEditorViewStateMemento[resource.toString()] = lastKnownViewState;
+		}
+
+		if (typeof this.position === 'number') {
+			lastKnownViewState[this.position] = editor.saveViewState();
+		}
 	}
 
 	/**
 	 * Clears the text editor view state for the given resources.
 	 */
 	protected clearTextEditorViewState(resources: URI[]): void {
-		resources.forEach(resource => {
-			this.editorViewStateMemento.clearState(resource);
-		});
+		const memento = this.getMemento(this.storageService, Scope.WORKSPACE);
+		const textEditorViewStateMemento: { [key: string]: { [position: number]: IEditorViewState } } = memento[TEXT_EDITOR_VIEW_STATE_PREFERENCE_KEY];
+		if (textEditorViewStateMemento) {
+			resources.forEach(resource => delete textEditorViewStateMemento[resource.toString()]);
+		}
 	}
 
 	/**
 	 * Loads the text editor view state for the given resource and returns it.
 	 */
 	protected loadTextEditorViewState(resource: URI): IEditorViewState {
-		return this.editorViewStateMemento.loadState(resource, this.position);
+		const memento = this.getMemento(this.storageService, Scope.WORKSPACE);
+		const textEditorViewStateMemento: { [key: string]: { [position: number]: IEditorViewState } } = memento[TEXT_EDITOR_VIEW_STATE_PREFERENCE_KEY];
+		if (textEditorViewStateMemento) {
+			const viewState = textEditorViewStateMemento[resource.toString()];
+			if (viewState) {
+				return viewState[this.position];
+			}
+		}
+
+		return null;
 	}
 
 	private updateEditorConfiguration(configuration = this.configurationService.getValue<IEditorConfiguration>(this.getResource())): void {
@@ -320,14 +336,6 @@ export abstract class BaseTextEditor extends BaseEditor {
 	}
 
 	protected abstract getAriaLabel(): string;
-
-	protected saveMemento(): void {
-
-		// ensure to first save our view state memento
-		this.editorViewStateMemento.save();
-
-		super.saveMemento();
-	}
 
 	public dispose(): void {
 		this.lastAppliedEditorOptions = void 0;

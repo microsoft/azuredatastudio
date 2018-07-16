@@ -9,6 +9,5 @@
 	"output": "Kimenet",
 	"logViewer": "Naplófájl-megjelenítő",
 	"viewCategory": "Nézet",
-	"clearOutput.label": "Kimenet törlése",
-	"openActiveLogOutputFile": "Nézet: Aktív napló kimeneti fájljának megnyitása"
+	"clearOutput.label": "Kimenet törlése"
 }

@@ -34,7 +34,3 @@ let buildPackage = function(packageName) {
     console.log(command);
     return exec(command);
 };
-
-gulp.task('package', async () => {
-    await buildPackage('out/sqlservices.vsix');
-});

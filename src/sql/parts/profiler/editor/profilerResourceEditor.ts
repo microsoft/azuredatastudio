@@ -5,7 +5,7 @@
 
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import * as nls from 'vs/nls';
-import * as DOM from 'vs/base/browser/dom';
+import { Dimension, Builder } from 'vs/base/browser/builder';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
@@ -56,8 +56,8 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 		super(ProfilerResourceEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, textFileService, editorGroupService);
 	}
 
-	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
-		return this.instantiationService.createInstance(ProfilerResourceCodeEditor, parent, configuration);
+	public createEditorControl(parent: Builder, configuration: IEditorOptions): editorCommon.IEditor {
+		return this.instantiationService.createInstance(ProfilerResourceCodeEditor, parent.getHTMLElement(), configuration);
 	}
 
 	protected getConfigurationOverrides(): IEditorOptions {
@@ -90,7 +90,7 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 		return nls.localize('profilerTextEditorAriaLabel', 'Profiler editor for event text. Readonly');
 	}
 
-	public layout(dimension: DOM.Dimension) {
+	public layout(dimension: Dimension) {
 		this.getControl().layout(dimension);
 	}
 }

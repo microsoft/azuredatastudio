@@ -9,7 +9,7 @@ import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
 import { $ } from 'vs/base/browser/builder';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export interface Template {
@@ -101,17 +101,8 @@ export class DropdownController extends TreeDefaults.DefaultController {
 	private _onSelectionChange = new Emitter<Resource>();
 	public readonly onSelectionChange: Event<Resource> = this._onSelectionChange.event;
 
-	private _onDropdownEscape = new Emitter<void>();
-	public readonly onDropdownEscape: Event<void> = this._onDropdownEscape.event;
-
 	constructor() {
 		super();
-	}
-
-	protected onEscape(tree: tree.ITree, event: IKeyboardEvent): boolean {
-		let response = super.onEscape(tree, event);
-		this._onDropdownEscape.fire();
-		return response;
 	}
 
 	protected onLeftClick(tree: tree.ITree, element: any, eventish: TreeDefaults.ICancelableEvent, origin: string): boolean {

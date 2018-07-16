@@ -8,7 +8,7 @@
 import { IViewlet } from 'vs/workbench/common/viewlet';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Event } from 'vs/base/common/event';
+import Event from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
 import Severity from 'vs/base/common/severity';
 import * as sqlops from 'sqlops';
@@ -174,7 +174,7 @@ export interface IConnectionManagementService {
 
 	disconnectEditor(owner: IConnectableInput, force?: boolean): Promise<boolean>;
 
-	disconnect(connection: IConnectionProfile): Promise<void>;
+	disconnect(connection: ConnectionProfile): Promise<void>;
 
 	disconnect(ownerUri: string): Promise<void>;
 
@@ -208,7 +208,7 @@ export interface IConnectionManagementService {
 	 */
 	cancelEditorConnection(owner: IConnectableInput): Thenable<boolean>;
 
-	showDashboard(connection: IConnectionProfile): Thenable<boolean>;
+	showDashboard(connection: ConnectionProfile): Thenable<boolean>;
 
 	closeDashboard(uri: string): void;
 
@@ -216,7 +216,7 @@ export interface IConnectionManagementService {
 
 	hasRegisteredServers(): boolean;
 
-	canChangeConnectionConfig(profile: IConnectionProfile, newGroupID: string): boolean;
+	canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean;
 
 	getTabColorForUri(uri: string): string;
 

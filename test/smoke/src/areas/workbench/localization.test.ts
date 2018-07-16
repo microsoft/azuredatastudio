@@ -3,12 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Application, Quality } from '../../application';
+import * as assert from 'assert';
+
+import { SpectronApplication, Quality } from '../../spectron/application';
 
 export function setup() {
 	describe('Localization', () => {
 		before(async function () {
-			const app = this.app as Application;
+			const app = this.app as SpectronApplication;
+			this.app.suiteName = 'Localization';
 
 			if (app.quality === Quality.Dev) {
 				return;
@@ -18,26 +21,36 @@ export function setup() {
 		});
 
 		it(`starts with 'DE' locale and verifies title and viewlets text is in German`, async function () {
-			const app = this.app as Application;
+			const app = this.app as SpectronApplication;
 
 			if (app.quality === Quality.Dev) {
 				this.skip();
 				return;
 			}
 
-			await app.workbench.explorer.waitForOpenEditorsViewTitle(title => /geöffnete editoren/i.test(title));
+			let text = await app.workbench.explorer.getOpenEditorsViewTitle();
+			await app.screenCapturer.capture('Open editors title');
+			assert(/geöffnete editoren/i.test(text));
 
 			await app.workbench.search.openSearchViewlet();
-			await app.workbench.search.waitForTitle(title => /suchen/i.test(title));
+			text = await app.workbench.search.getTitle();
+			await app.screenCapturer.capture('Search title');
+			assert(/suchen/i.test(text));
 
 			await app.workbench.scm.openSCMViewlet();
-			await app.workbench.scm.waitForTitle(title => /quellcodeverwaltung/i.test(title));
+			text = await app.workbench.scm.getTitle();
+			await app.screenCapturer.capture('Scm title');
+			assert(/quellcodeverwaltung/i.test(text));
 
 			await app.workbench.debug.openDebugViewlet();
-			await app.workbench.debug.waitForTitle(title => /debuggen/i.test(title));
+			text = await app.workbench.debug.getTitle();
+			await app.screenCapturer.capture('Debug title');
+			assert(/debuggen/i.test(text));
 
 			await app.workbench.extensions.openExtensionsViewlet();
-			await app.workbench.extensions.waitForTitle(title => /erweiterungen/i.test(title));
+			text = await app.workbench.extensions.getTitle();
+			await app.screenCapturer.capture('Extensions title');
+			assert(/erweiterungen/i.test(text));
 		});
 	});
 }

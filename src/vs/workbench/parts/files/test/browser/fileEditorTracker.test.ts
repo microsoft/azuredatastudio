@@ -184,16 +184,16 @@ suite('Files - FileEditorTracker', () => {
 		tracker.dispose();
 	});
 
-	test('file change event updates model', function () {
+	test('file change event updates model', function (done) {
 		const tracker = instantiationService.createInstance(FileEditorTracker);
 
 		const resource = toResource(this, '/path/index.txt');
 
-		return accessor.textFileService.models.loadOrCreate(resource).then((model: TextFileEditorModel) => {
+		accessor.textFileService.models.loadOrCreate(resource).then((model: TextFileEditorModel) => {
 			model.textEditorModel.setValue('Super Good');
 			assert.equal(snapshotToString(model.createSnapshot()), 'Super Good');
 
-			return model.save().then(() => {
+			model.save().then(() => {
 
 				// change event (watcher)
 				accessor.fileService.fireFileChanges(new FileChangesEvent([{ resource, type: FileChangeType.UPDATED }]));
@@ -201,6 +201,8 @@ suite('Files - FileEditorTracker', () => {
 				assert.equal(snapshotToString(model.createSnapshot()), 'Hello Html');
 
 				tracker.dispose();
+
+				done();
 			});
 		});
 	});

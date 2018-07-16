@@ -18,7 +18,7 @@ import { IPager } from 'vs/base/common/paging';
 import { IRequestOptions, IRequestContext, download, asJson, asText } from 'vs/base/node/request';
 import pkg from 'vs/platform/node/package';
 import product from 'vs/platform/node/product';
-import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
+import { isVersionValid } from 'vs/platform/extensions/node/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { readFile } from 'vs/base/node/pfs';
 import { writeFileAndFlushSync } from 'vs/base/node/extfs';
@@ -324,7 +324,7 @@ function toExtension(galleryExtension: IRawGalleryExtension, extensionsGalleryUr
 		},
 		/* __GDPR__FRAGMENT__
 			"GalleryExtensionTelemetryData2" : {
-				"index" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
+				"index" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 				"searchText": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 				"querySource": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 			}
@@ -586,7 +586,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				const startTime = new Date().getTime();
 				/* __GDPR__
 					"galleryService:downloadVSIX" : {
-						"duration": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
+						"duration": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
 						"${include}": [
 							"${GalleryExtensionTelemetryData}"
 						]
@@ -622,7 +622,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	}
 
 	loadCompatibleVersion(extension: IGalleryExtension): TPromise<IGalleryExtension> {
-		if (extension.properties.engine && isEngineValid(extension.properties.engine)) {
+		if (extension.properties.engine && this.isEngineValid(extension.properties.engine)) {
 			return TPromise.wrap(extension);
 		}
 
@@ -738,7 +738,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					/* __GDPR__
 						"galleryService:requestError" : {
 							"url" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-							"cdn": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
+							"cdn": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 							"message": { "classification": "CallstackOrException", "purpose": "FeatureInsight" }
 						}
 					*/
@@ -786,7 +786,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (!engine) {
 				return null;
 			}
-			if (isEngineValid(engine)) {
+			if (this.isEngineValid(engine)) {
 				return TPromise.wrap(version);
 			}
 		}
@@ -807,7 +807,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			.then(manifest => {
 				const engine = manifest.engines.vscode;
 
-				if (!isEngineValid(engine)) {
+				if (!this.isEngineValid(engine)) {
 					return this.getLastValidExtensionVersionReccursively(extension, versions.slice(1));
 				}
 
@@ -815,6 +815,11 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				version.properties.push({ key: PropertyType.Engine, value: manifest.engines.vscode });
 				return version;
 			});
+	}
+
+	private isEngineValid(engine: string): boolean {
+		// TODO@joao: discuss with alex '*' doesn't seem to be a valid engine version
+		return engine === '*' || isVersionValid(pkg.version, engine);
 	}
 
 	private static hasExtensionByName(extensions: IGalleryExtension[], name: string): boolean {

@@ -115,7 +115,8 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public enable(): void {
-		this.selectElement.disabled = false;
+		//@SQLTODO
+		//this.selectElement.disabled = false;
 		this.selectBackground = this.enabledSelectBackground;
 		this.selectForeground = this.enabledSelectForeground;
 		this.selectBorder = this.enabledSelectBorder;
@@ -123,7 +124,8 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public disable(): void {
-		this.selectElement.disabled = true;
+		//@SQLTODO
+		//this.selectElement.disabled = true;
 		this.selectBackground = this.disabledSelectBackground;
 		this.selectForeground = this.disabledSelectForeground;
 		this.selectBorder = this.disabledSelectBorder;

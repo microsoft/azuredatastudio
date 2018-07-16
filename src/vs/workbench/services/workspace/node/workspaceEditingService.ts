@@ -27,6 +27,7 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { distinct } from 'vs/base/common/arrays';
 import { isLinux } from 'vs/base/common/platform';
 import { isEqual } from 'vs/base/common/resources';
+import { IChoiceService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 
 export class WorkspaceEditingService implements IWorkspaceEditingService {
@@ -41,6 +42,7 @@ export class WorkspaceEditingService implements IWorkspaceEditingService {
 		@IStorageService private storageService: IStorageService,
 		@IExtensionService private extensionService: IExtensionService,
 		@IBackupFileService private backupFileService: IBackupFileService,
+		@IChoiceService private choiceService: IChoiceService,
 		@INotificationService private notificationService: INotificationService,
 		@ICommandService private commandService: ICommandService
 	) {
@@ -155,33 +157,31 @@ export class WorkspaceEditingService implements IWorkspaceEditingService {
 	private handleWorkspaceConfigurationEditingError(error: JSONEditingError): TPromise<void> {
 		switch (error.code) {
 			case JSONEditingErrorCode.ERROR_INVALID_FILE:
-				this.onInvalidWorkspaceConfigurationFileError();
-				return TPromise.as(void 0);
+				return this.onInvalidWorkspaceConfigurationFileError();
 			case JSONEditingErrorCode.ERROR_FILE_DIRTY:
-				this.onWorkspaceConfigurationFileDirtyError();
-				return TPromise.as(void 0);
+				return this.onWorkspaceConfigurationFileDirtyError();
 		}
 		this.notificationService.error(error.message);
 		return TPromise.as(void 0);
 	}
 
-	private onInvalidWorkspaceConfigurationFileError(): void {
+	private onInvalidWorkspaceConfigurationFileError(): TPromise<void> {
 		const message = nls.localize('errorInvalidTaskConfiguration', "Unable to write into workspace configuration file. Please open the file to correct errors/warnings in it and try again.");
-		this.askToOpenWorkspaceConfigurationFile(message);
+		return this.askToOpenWorkspaceConfigurationFile(message);
 	}
 
-	private onWorkspaceConfigurationFileDirtyError(): void {
+	private onWorkspaceConfigurationFileDirtyError(): TPromise<void> {
 		const message = nls.localize('errorWorkspaceConfigurationFileDirty', "Unable to write into workspace configuration file because the file is dirty. Please save it and try again.");
-		this.askToOpenWorkspaceConfigurationFile(message);
+		return this.askToOpenWorkspaceConfigurationFile(message);
 	}
 
-	private askToOpenWorkspaceConfigurationFile(message: string): void {
-		this.notificationService.prompt(Severity.Error, message,
-			[{
-				label: nls.localize('openWorkspaceConfigurationFile', "Open Workspace Configuration"),
-				run: () => this.commandService.executeCommand('workbench.action.openWorkspaceConfigFile')
-			}]
-		);
+	private askToOpenWorkspaceConfigurationFile(message: string): TPromise<void> {
+		return this.choiceService.choose(Severity.Error, message, [nls.localize('openWorkspaceConfigurationFile', "Open Workspace Configuration")])
+			.then(option => {
+				if (option === 0) {
+					this.commandService.executeCommand('workbench.action.openWorkspaceConfigFile');
+				}
+			});
 	}
 
 	private doEnterWorkspace(mainSidePromise: () => TPromise<IEnterWorkspaceResult>): TPromise<void> {

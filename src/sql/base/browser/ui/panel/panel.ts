@@ -5,9 +5,8 @@
 
 import { IThemable } from 'vs/platform/theme/common/styler';
 import * as objects from 'sql/base/common/objects';
-import { Event, Emitter } from 'vs/base/common/event';
-import { Dimension } from 'vs/base/browser/dom';
-import { $, Builder } from 'vs/base/browser/builder';
+import Event, { Emitter } from 'vs/base/common/event';
+import { Dimension, $, Builder } from 'vs/base/browser/builder';
 import { EventType } from 'vs/base/browser/dom';
 import { IAction } from 'vs/base/common/actions';
 import { IActionOptions, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -63,7 +62,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this.$tabList.style('height', this.headersize + 'px');
 		this.$header.append(this.$tabList);
 		let actionbarcontainer = $('.title-actions');
-		this._actionbar = new ActionBar(actionbarcontainer.getHTMLElement());
+		this._actionbar = new ActionBar(actionbarcontainer);
 		this.$header.append(actionbarcontainer);
 		this.$parent.append(this.$header);
 		this.$body = $('tabBody');

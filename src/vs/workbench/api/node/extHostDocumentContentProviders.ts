@@ -14,7 +14,6 @@ import { asWinJsPromise } from 'vs/base/common/async';
 import { MainContext, ExtHostDocumentContentProvidersShape, MainThreadDocumentContentProvidersShape, IMainContext } from './extHost.protocol';
 import { ExtHostDocumentsAndEditors } from './extHostDocumentsAndEditors';
 import { Schemas } from 'vs/base/common/network';
-import { ILogService } from 'vs/platform/log/common/log';
 
 export class ExtHostDocumentContentProvider implements ExtHostDocumentContentProvidersShape {
 
@@ -22,13 +21,11 @@ export class ExtHostDocumentContentProvider implements ExtHostDocumentContentPro
 
 	private readonly _documentContentProviders = new Map<number, vscode.TextDocumentContentProvider>();
 	private readonly _proxy: MainThreadDocumentContentProvidersShape;
+	private readonly _documentsAndEditors: ExtHostDocumentsAndEditors;
 
-	constructor(
-		mainContext: IMainContext,
-		private readonly _documentsAndEditors: ExtHostDocumentsAndEditors,
-		private readonly _logService: ILogService,
-	) {
+	constructor(mainContext: IMainContext, documentsAndEditors: ExtHostDocumentsAndEditors) {
 		this._proxy = mainContext.getProxy(MainContext.MainThreadDocumentContentProviders);
+		this._documentsAndEditors = documentsAndEditors;
 	}
 
 	dispose(): void {
@@ -50,10 +47,6 @@ export class ExtHostDocumentContentProvider implements ExtHostDocumentContentPro
 		let subscription: IDisposable;
 		if (typeof provider.onDidChange === 'function') {
 			subscription = provider.onDidChange(uri => {
-				if (uri.scheme !== scheme) {
-					this._logService.warn(`Provider for scheme '${scheme}' is firing event for schema '${uri.scheme}' which will be IGNORED`);
-					return;
-				}
 				if (this._documentsAndEditors.getDocument(uri.toString())) {
 					this.$provideTextDocumentContent(handle, uri).then(value => {
 

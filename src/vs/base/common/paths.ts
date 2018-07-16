@@ -5,7 +5,7 @@
 'use strict';
 
 import { isWindows } from 'vs/base/common/platform';
-import { startsWithIgnoreCase, equalsIgnoreCase } from 'vs/base/common/strings';
+import { beginsWithIgnoreCase, equalsIgnoreCase } from 'vs/base/common/strings';
 import { CharCode } from 'vs/base/common/charCode';
 
 /**
@@ -27,8 +27,6 @@ export function dirname(path: string): string {
 		return '.';
 	} else if (~idx === 0) {
 		return path[0];
-	} else if (~idx === path.length - 1) {
-		return dirname(path.substring(0, path.length - 1));
 	} else {
 		let res = path.substring(0, ~idx);
 		if (isWindows && res[res.length - 1] === ':') {
@@ -342,7 +340,7 @@ export function isEqualOrParent(path: string, candidate: string, ignoreCase?: bo
 	}
 
 	if (ignoreCase) {
-		const beginsWith = startsWithIgnoreCase(path, candidate);
+		const beginsWith = beginsWithIgnoreCase(path, candidate);
 		if (!beginsWith) {
 			return false;
 		}

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
+import * as lifecycle from 'vs/base/common/lifecycle';
 import * as errors from 'vs/base/common/errors';
 import { IAction, IActionRunner } from 'vs/base/common/actions';
 import { KeyCode } from 'vs/base/common/keyCodes';
@@ -20,7 +21,6 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { selectBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 const $ = dom.$;
 
@@ -33,7 +33,7 @@ export class StartDebugActionItem implements IActionItem {
 	private start: HTMLElement;
 	private selectBox: SelectBox;
 	private options: { label: string, handler: (() => boolean) }[];
-	private toDispose: IDisposable[];
+	private toDispose: lifecycle.IDisposable[];
 	private selected: number;
 
 	constructor(
@@ -48,7 +48,6 @@ export class StartDebugActionItem implements IActionItem {
 	) {
 		this.toDispose = [];
 		this.selectBox = new SelectBox([], -1, contextViewService);
-		this.toDispose.push(this.selectBox);
 		this.toDispose.push(attachSelectBoxStyler(this.selectBox, themeService, {
 			selectBackground: SIDE_BAR_BACKGROUND
 		}));
@@ -60,6 +59,14 @@ export class StartDebugActionItem implements IActionItem {
 		this.toDispose.push(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('launch')) {
 				this.updateOptions();
+			}
+		}));
+		this.toDispose.push(this.selectBox.onDidSelect(e => {
+			if (this.options[e.index].handler()) {
+				this.selected = e.index;
+			} else {
+				// Some select options should not remain selected https://github.com/Microsoft/vscode/issues/31526
+				this.selectBox.select(this.selected);
 			}
 		}));
 		this.toDispose.push(this.debugService.getConfigurationManager().onDidSelectConfiguration(() => {
@@ -101,15 +108,6 @@ export class StartDebugActionItem implements IActionItem {
 				event.stopPropagation();
 			}
 		}));
-		this.toDispose.push(this.selectBox.onDidSelect(e => {
-			const shouldBeSelected = this.options[e.index].handler();
-			if (shouldBeSelected) {
-				this.selected = e.index;
-			} else {
-				// Some select options should not remain selected https://github.com/Microsoft/vscode/issues/31526
-				this.selectBox.select(this.selected);
-			}
-		}));
 
 		const selectBoxContainer = $('.configuration');
 		this.selectBox.render(dom.append(container, selectBoxContainer));
@@ -149,7 +147,7 @@ export class StartDebugActionItem implements IActionItem {
 	}
 
 	public dispose(): void {
-		this.toDispose = dispose(this.toDispose);
+		this.toDispose = lifecycle.dispose(this.toDispose);
 	}
 
 	private updateOptions(): void {

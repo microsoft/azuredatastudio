@@ -3,6 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.monaco-builder-hidden {
+.builder-hidden {
 	display: none !important;
+	visibility: hidden !important;
+}
+
+.builder-visible {
+	display: inherit;
+	visibility: visible;
 }

@@ -49,7 +49,7 @@ class TestContainer extends ContainerBase<TestComponent> {
 	}
 }
 
-suite('ComponentBase Tests', () => {
+suite('ComponentBase Validation Tests', () => {
 	let testComponent: TestComponent;
 	let testContainer: TestContainer;
 	let modelStore: IModelStore;
@@ -129,51 +129,4 @@ suite('ComponentBase Tests', () => {
 		testContainer.addToContainer(testComponent.descriptor, undefined);
 		testComponent.validate();
 	});
-
-	test('Component convert size should add px', done => {
-		let expected = '100px';
-		let actual = testComponent.convertSize(100);
-		assert.equal(expected, actual);
-
-		actual = testComponent.convertSize('100px');
-		assert.equal(expected, actual);
-
-		expected = '100%';
-		actual = testComponent.convertSize('100%');
-		assert.equal(expected, actual);
-		done();
-	});
-
-	test('Component convert size should keep value if ends with %', done => {
-		let expected = '100%';
-		let actual = testComponent.convertSize('100%');
-		assert.equal(expected, actual);
-		done();
-	});
-
-	test('Component convert size should return the default value given undefined value %', done => {
-		let expected = '200';
-		let actual = testComponent.convertSize(undefined, '200');
-		assert.equal(expected, actual);
-		done();
-	});
-
-	test('Component convert to number should return size without px', done => {
-		let expected = 200;
-		let actual = testComponent.convertSizeToNumber('200px');
-		assert.equal(expected, actual);
-
-		actual = testComponent.convertSizeToNumber('200');
-		assert.equal(expected, actual);
-		done();
-	});
-
-	test('Component convert to number should return 0 given undefined', done => {
-		let expected = 0;
-		let actual = testComponent.convertSizeToNumber(undefined);
-		assert.equal(expected, actual);
-
-		done();
-	});
-
 });

@@ -5,27 +5,28 @@
 
 import 'vs/css!./dashboardNavSection';
 
-import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, OnChanges, AfterContentInit } from '@angular/core';
+import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter, OnChanges, AfterContentInit } from '@angular/core';
 
-import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
+import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, NavSectionConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { DashboardTab, IConfigModifierCollection } from 'sql/parts/dashboard/common/interfaces';
+import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 
-import { Event, Emitter } from 'vs/base/common/event';
+import { Registry } from 'vs/platform/registry/common/platform';
+import Event, { Emitter } from 'vs/base/common/event';
 import * as nls from 'vs/nls';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 @Component({
 	selector: 'dashboard-nav-section',
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardNavSection) }],
 	templateUrl: decodeURI(require.toUrl('sql/parts/dashboard/containers/dashboardNavSection.component.html'))
 })
-export class DashboardNavSection extends DashboardTab implements OnDestroy, OnChanges, AfterContentInit, IConfigModifierCollection {
+export class DashboardNavSection extends DashboardTab implements OnDestroy, OnChanges, AfterContentInit {
 	@Input() private tab: TabConfig;
 	protected tabs: Array<TabConfig> = [];
 	private _onResize = new Emitter<void>();
@@ -37,7 +38,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	};
 
 	// a set of config modifiers
-	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, collection: IConfigModifierCollection, context: string) => Array<WidgetConfig>> = [
+	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, dashboardServer: DashboardServiceInterface, context: string) => Array<WidgetConfig>> = [
 		dashboardHelper.removeEmpty,
 		dashboardHelper.initExtensionConfigs,
 		dashboardHelper.addProvider,
@@ -102,7 +103,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 				if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
 					let configs = <WidgetConfig[]>Object.values(containerResult.container)[0];
 					this._configModifiers.forEach(cb => {
-						configs = cb.apply(this, [configs, this, this.tab.context]);
+						configs = cb.apply(this, [configs, this.dashboardService, this.tab.context]);
 					});
 					this._gridModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs]);
@@ -167,13 +168,5 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 				tabContent.enableEdit();
 			});
 		}
-	}
-
-	public get connectionManagementService(): SingleConnectionManagementService {
-		return this.dashboardService.connectionManagementService;
-	}
-
-	public get contextKeyService(): IContextKeyService {
-		return this.dashboardService.scopedContextKeyService;
 	}
 }

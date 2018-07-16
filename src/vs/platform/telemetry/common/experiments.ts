@@ -11,6 +11,7 @@ import { deepClone } from 'vs/base/common/objects';
 
 /* __GDPR__FRAGMENT__
 	"IExperiments" : {
+		"deployToAzureQuickLink" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	}
 */
 export interface IExperiments {

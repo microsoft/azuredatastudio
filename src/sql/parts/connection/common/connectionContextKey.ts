@@ -8,7 +8,7 @@
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IConnectionProfile } from 'sqlops';
 
-export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
+export class ConnectionContextkey implements IContextKey<IConnectionProfile> {
 
 	static Provider = new RawContextKey<string>('connectionProvider', undefined);
 	static Server = new RawContextKey<string>('serverName', undefined);
@@ -23,10 +23,10 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 	constructor(
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		this._providerKey = ConnectionContextKey.Provider.bindTo(contextKeyService);
-		this._serverKey = ConnectionContextKey.Server.bindTo(contextKeyService);
-		this._databaseKey = ConnectionContextKey.Database.bindTo(contextKeyService);
-		this._connectionKey = ConnectionContextKey.Connection.bindTo(contextKeyService);
+		this._providerKey = ConnectionContextkey.Provider.bindTo(contextKeyService);
+		this._serverKey = ConnectionContextkey.Server.bindTo(contextKeyService);
+		this._databaseKey = ConnectionContextkey.Database.bindTo(contextKeyService);
+		this._connectionKey = ConnectionContextkey.Connection.bindTo(contextKeyService);
 	}
 
 	set(value: IConnectionProfile) {

@@ -57,7 +57,7 @@ export class ProfilerConnect extends Action {
 	public set connected(value: boolean) {
 		this._connected = value;
 		this._setClass(value ? 'disconnect' : 'connect');
-		this._setLabel(value ? nls.localize('profilerAction.disconnect', 'Disconnect') : nls.localize('profilerAction.connect', "Connect"));
+		this._setLabel(value ? nls.localize('profilerAction.disconnect', 'Disconnected') : nls.localize('profilerAction.connect', "Connect"));
 	}
 
 	public get connected(): boolean {
@@ -77,16 +77,18 @@ export class ProfilerStart extends Action {
 	}
 
 	public run(input: ProfilerInput): TPromise<boolean> {
-		input.data.clear();
-		return TPromise.wrap(this._profilerService.startSession(input.id));
+		this.enabled = false;
+		return TPromise.wrap(this._profilerService.startSession(input.id).then(() => {
+			input.state.change({ isRunning: true, isStopped: false, isPaused: false });
+			return true;
+		}));
 	}
+
 }
 
 export class ProfilerPause extends Action {
 	public static ID = 'profiler.pause';
-	public static LABEL = nls.localize('profiler.capture', "Pause Capture");
-
-	private _paused: boolean = false;
+	public static LABEL = nls.localize('pause', "Pause");
 
 	constructor(
 		id: string, label: string,
@@ -96,21 +98,11 @@ export class ProfilerPause extends Action {
 	}
 
 	public run(input: ProfilerInput): TPromise<boolean> {
+		this.enabled = false;
 		return TPromise.wrap(this._profilerService.pauseSession(input.id).then(() => {
-			this.paused = !this._paused;
-			input.state.change({ isPaused: this.paused, isStopped: false, isRunning: !this.paused });
+			input.state.change({ isPaused: true, isStopped: false, isRunning: false });
 			return true;
 		}));
-	}
-
-	public set paused(value: boolean) {
-		this._paused = value;
-		this._setClass(value ? 'start' : 'stop');
-		this._setLabel(value ? nls.localize('profilerAction.resumeCapture', "Resume Capture") : nls.localize('profilerAction.pauseCapture', "Pause Capture"));
-	}
-
-	public get paused(): boolean {
-		return this._paused;
 	}
 }
 
@@ -126,7 +118,11 @@ export class ProfilerStop extends Action {
 	}
 
 	public run(input: ProfilerInput): TPromise<boolean> {
-		return TPromise.wrap(this._profilerService.stopSession(input.id));
+		this.enabled = false;
+		return TPromise.wrap(this._profilerService.stopSession(input.id).then(() => {
+			input.state.change({ isStopped: true, isPaused: false, isRunning: false });
+			return true;
+		}));
 	}
 }
 
@@ -135,7 +131,7 @@ export class ProfilerClear extends Action {
 	public static LABEL = nls.localize('profiler.clear', "Clear Data");
 
 	constructor(id: string, label: string) {
-		super(id, label);
+		super(id, label, 'stop');
 	}
 
 	run(input: ProfilerInput): TPromise<void> {
@@ -146,15 +142,14 @@ export class ProfilerClear extends Action {
 
 export class ProfilerAutoScroll extends Action {
 	public static ID = 'profiler.autoscroll';
-	public static LABEL = nls.localize('profiler.autoscrollOn', "Auto Scroll: On");
+	public static LABEL = nls.localize('profiler.toggleAutoscroll', "Toggle Auto Scroll");
 
 	constructor(id: string, label: string) {
-		super(id, label);
+		super(id, label, 'stop');
 	}
 
 	run(input: ProfilerInput): TPromise<boolean> {
 		this.checked = !this.checked;
-		this._setLabel(this.checked ? nls.localize('profilerAction.autoscrollOn', "Auto Scroll: On") : nls.localize('profilerAction.autoscrollOff', "Auto Scroll: Off"));
 		input.state.change({ autoscroll: this.checked });
 		return TPromise.as(true);
 	}
@@ -233,7 +228,7 @@ export class ProfilerFindPrevious implements IEditorAction {
 }
 
 export class NewProfilerAction extends Task {
-	public static readonly ID = 'profiler.newProfiler';
+	public static readonly ID = 'newProfiler';
 	public static readonly LABEL = nls.localize('profilerAction.newProfiler', 'New Profiler');
 	public static readonly ICON = 'profile';
 

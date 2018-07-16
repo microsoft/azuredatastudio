@@ -8,7 +8,7 @@ import { ProfilerInput } from './profilerInput';
 import { TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { IProfilerService, IProfilerViewTemplate } from 'sql/parts/profiler/service/interfaces';
+import { IProfilerService, IProfilerSessionTemplate } from 'sql/parts/profiler/service/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import { IProfilerStateChangedEvent } from './profilerState';
@@ -16,14 +16,14 @@ import { ProfilerTableEditor } from './controller/profilerTableEditor';
 import * as Actions from 'sql/parts/profiler/contrib/profilerActions';
 import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from './interfaces';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { textFormatter } from 'sql/parts/grid/services/sharedServices';
 
 import * as DOM from 'vs/base/browser/dom';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { Dimension, Builder } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IWorkbenchThemeService, VS_DARK_THEME, VS_HC_THEME } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ProfilerResourceEditor } from './profilerResourceEditor';
 import { SplitView, View, Orientation, IViewOptions } from 'sql/base/browser/ui/splitview/splitview';
@@ -44,7 +44,6 @@ import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRe
 import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/find/findController';
 import * as types from 'vs/base/common/types';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
-import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 
 class BasicView extends View {
 	private _previousSize: number;
@@ -114,9 +113,8 @@ export class ProfilerEditor extends BaseEditor {
 
 	private _profilerEditorContextKey: IContextKey<boolean>;
 
-	private _viewTemplateSelector: SelectBox;
-	private _viewTemplates: Array<IProfilerViewTemplate>;
-	private _connectionInfoText: HTMLElement;
+	private _sessionTemplateSelector: SelectBox;
+	private _sessionTemplates: Array<IProfilerSessionTemplate>;
 
 	// Actions
 	private _connectAction: Actions.ProfilerConnect;
@@ -125,7 +123,6 @@ export class ProfilerEditor extends BaseEditor {
 	private _stopAction: Actions.ProfilerStop;
 	private _autoscrollAction: Actions.ProfilerAutoScroll;
 	private _collapsedPanelAction: Actions.ProfilerCollapsablePanelAction;
-
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -141,13 +138,13 @@ export class ProfilerEditor extends BaseEditor {
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
 	}
 
-	protected createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: Builder): void {
 		// test backend
 		//this._profilerService.registerProvider('default', this._instantiationService.createInstance(ProfilerTestBackend));
 
 		this._container = document.createElement('div');
 		this._container.className = 'carbon-profiler';
-		parent.appendChild(this._container);
+		parent.append(this._container);
 
 		this._createHeader();
 
@@ -162,7 +159,7 @@ export class ProfilerEditor extends BaseEditor {
 			300,
 			tableContainer,
 			() => this._profilerTableEditor.focus(),
-			size => this._profilerTableEditor.layout(new DOM.Dimension(parseFloat(DOM.getComputedStyle(this._body).width), size)),
+			size => this._profilerTableEditor.layout(new Dimension(parseFloat(DOM.getComputedStyle(this._body).width), size)),
 			{}
 		));
 
@@ -170,7 +167,7 @@ export class ProfilerEditor extends BaseEditor {
 			300,
 			paneContainer,
 			() => this._tabbedPanel.focus(),
-			size => this._tabbedPanel.layout(new DOM.Dimension(DOM.getTotalWidth(this._body), size)),
+			size => this._tabbedPanel.layout(new Dimension(DOM.getTotalWidth(this._body), size)),
 			{ minimumSize: 35 }
 		);
 		this._panelView.headerSize = 35;
@@ -191,37 +188,29 @@ export class ProfilerEditor extends BaseEditor {
 		this._connectAction = this._instantiationService.createInstance(Actions.ProfilerConnect, Actions.ProfilerConnect.ID, Actions.ProfilerConnect.LABEL);
 		this._autoscrollAction = this._instantiationService.createInstance(Actions.ProfilerAutoScroll, Actions.ProfilerAutoScroll.ID, Actions.ProfilerAutoScroll.LABEL);
 
-		this._viewTemplates = this._profilerService.getViewTemplates();
-		this._viewTemplateSelector = new SelectBox(this._viewTemplates.map(i => i.name), 'Standard View', this._contextViewService);
-		this._register(this._viewTemplateSelector.onDidSelect(e => {
+		this._sessionTemplates = this._profilerService.getSessionTemplates();
+		this._sessionTemplateSelector = new SelectBox(this._sessionTemplates.map(i => i.name), 'Standard', this._contextViewService);
+		this._register(this._sessionTemplateSelector.onDidSelect(e => {
 			if (this.input) {
-				this.input.viewTemplate = this._viewTemplates.find(i => i.name === e.selected);
+				this.input.sessionTemplate = this._sessionTemplates.find(i => i.name === e.selected);
 			}
 		}));
 		let dropdownContainer = document.createElement('div');
 		dropdownContainer.style.width = '150px';
-		dropdownContainer.style.paddingRight = '5px';
-		this._viewTemplateSelector.render(dropdownContainer);
+		this._sessionTemplateSelector.render(dropdownContainer);
 
-		this._connectionInfoText = document.createElement('div');
-		this._connectionInfoText.style.paddingRight = '5px';
-		this._connectionInfoText.innerText = '';
-		this._connectionInfoText.style.textAlign = 'center';
-		this._connectionInfoText.style.display = 'flex';
-		this._connectionInfoText.style.alignItems = 'center';
-
-		this._register(attachSelectBoxStyler(this._viewTemplateSelector, this.themeService));
+		this._register(attachSelectBoxStyler(this._sessionTemplateSelector, this.themeService));
 
 		this._actionBar.setContent([
 			{ action: this._startAction },
-			{ action: this._stopAction },
-			{ element: Taskbar.createTaskbarSeparator() },
 			{ action: this._pauseAction },
+			{ action: this._stopAction },
+			{ action: this._connectAction },
+			{ element: Taskbar.createTaskbarSeparator() },
 			{ action: this._autoscrollAction },
 			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) },
 			{ element: dropdownContainer },
-			{ element: Taskbar.createTaskbarSeparator() },
-			{ element: this._connectionInfoText }
+			{ action: this._instantiationService.createInstance(Actions.ProfilerEditColumns, Actions.ProfilerEditColumns.ID, Actions.ProfilerEditColumns.LABEL) }
 		]);
 	}
 
@@ -232,30 +221,14 @@ export class ProfilerEditor extends BaseEditor {
 		profilerTableContainer.style.height = '100%';
 		profilerTableContainer.style.overflow = 'hidden';
 		profilerTableContainer.style.position = 'relative';
-		let theme = this.themeService.getTheme();
-		if (theme.type === DARK) {
-			DOM.addClass(profilerTableContainer, VS_DARK_THEME);
-		} else if (theme.type === HIGH_CONTRAST) {
-			DOM.addClass(profilerTableContainer, VS_HC_THEME);
-		}
-		this.themeService.onThemeChange(e => {
-			DOM.removeClasses(profilerTableContainer, VS_DARK_THEME, VS_HC_THEME);
-			if (e.type === DARK) {
-				DOM.addClass(profilerTableContainer, VS_DARK_THEME);
-			} else if (e.type === HIGH_CONTRAST) {
-				DOM.addClass(profilerTableContainer, VS_HC_THEME);
-			}
-		});
 		this._profilerTableEditor = this._instantiationService.createInstance(ProfilerTableEditor);
-		this._profilerTableEditor.createEditor(profilerTableContainer);
+		this._profilerTableEditor.createEditor(new Builder(profilerTableContainer));
 		this._profilerTableEditor.onSelectedRowsChanged((e, args) => {
 			let data = this.input.data.getItem(args.rows[0]);
 			if (data) {
 				this._modelService.updateModel(this._editorModel, data['TextData']);
 				this._detailTableData.clear();
-				this._detailTableData.push(Object.keys(data).filter(key => {
-					return data[key] !== ' ';
-				}).map(key => {
+				this._detailTableData.push(Object.keys(data).map(key => {
 					return {
 						label: key,
 						value: data[key]
@@ -298,14 +271,12 @@ export class ProfilerEditor extends BaseEditor {
 			{
 				id: 'label',
 				name: nls.localize('label', "Label"),
-				field: 'label',
-				formatter: textFormatter
+				field: 'label'
 			},
 			{
 				id: 'value',
 				name: nls.localize('profilerEditor.value', "Value"),
-				field: 'value',
-				formatter: textFormatter
+				field: 'value'
 			}
 		], { forceFitColumns: true });
 
@@ -331,7 +302,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._editor = this._instantiationService.createInstance(ProfilerResourceEditor);
 		let editorContainer = document.createElement('div');
 		editorContainer.className = 'profiler-editor';
-		this._editor.create(editorContainer);
+		this._editor.create(new Builder(editorContainer));
 		this._editor.setVisible(true);
 		this._editorInput = this._instantiationService.createInstance(UntitledEditorInput, URI.from({ scheme: Schemas.untitled }), false, 'sql', '', '');
 		this._editor.setInput(this._editorInput, undefined);
@@ -352,10 +323,10 @@ export class ProfilerEditor extends BaseEditor {
 		return super.setInput(input, options).then(() => {
 			this._profilerTableEditor.setInput(input);
 
-			if (input.viewTemplate) {
-				this._viewTemplateSelector.selectWithOptionName(input.viewTemplate.name);
+			if (input.sessionTemplate) {
+				this._sessionTemplateSelector.selectWithOptionName(input.sessionTemplate.name);
 			} else {
-				input.viewTemplate = this._viewTemplates.find(i => i.name === 'Standard View');
+				input.sessionTemplate = this._sessionTemplates.find(i => i.name === 'Standard');
 			}
 
 			this._actionBar.context = input;
@@ -372,7 +343,6 @@ export class ProfilerEditor extends BaseEditor {
 				autoscroll: true,
 				isPanelCollapsed: true
 			});
-			this._connectionInfoText.innerText = input.connectionName;
 			this._profilerTableEditor.updateState();
 			this._splitView.layout();
 			this._profilerTableEditor.focus();
@@ -414,27 +384,33 @@ export class ProfilerEditor extends BaseEditor {
 
 		if (e.isConnected) {
 			this._connectAction.connected = this.input.state.isConnected;
-			if (!this.input.state.isConnected) {
-				this._startAction.enabled = this.input.state.isConnected;
-				this._stopAction.enabled = false;
-				this._pauseAction.enabled = false;
-				return;
+			this._startAction.enabled = this.input.state.isConnected;
+			this._stopAction.enabled = false;
+			this._pauseAction.enabled = false;
+
+			if (this.input.state.isConnected) {
+				this._sessionTemplateSelector.disable();
+			} else {
+				this._sessionTemplateSelector.enable();
 			}
+
+			return;
 		}
 
-		if (e.isPaused){
-			this._pauseAction.paused = this.input.state.isPaused;
-			this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
+		if (e.isRunning) {
+			this._startAction.enabled = !this.input.state.isRunning;
 		}
 
 		if (e.isStopped || e.isRunning) {
-			this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused;
-			this._stopAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
-			this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
+			this._stopAction.enabled = !this.input.state.isStopped && this.input.state.isRunning;
+		}
+
+		if (e.isPaused || e.isRunning) {
+			this._pauseAction.enabled = !this.input.state.isPaused && this.input.state.isRunning;
 		}
 	}
 
-	public layout(dimension: DOM.Dimension): void {
+	public layout(dimension: Dimension): void {
 		this._container.style.width = dimension.width + 'px';
 		this._container.style.height = dimension.height + 'px';
 		this._body.style.width = dimension.width + 'px';

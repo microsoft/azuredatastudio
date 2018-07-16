@@ -12,9 +12,10 @@ import { ViewLocation, ViewsRegistry, ICustomViewDescriptor } from 'vs/workbench
 import { CustomTreeViewPanel } from 'vs/workbench/browser/parts/views/customViewPanel';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { coalesce, } from 'vs/base/common/arrays';
-import { viewsContainersExtensionPoint } from 'vs/workbench/api/browser/viewsContainersExtensionPoint';
 
 namespace schema {
+
+	// --views contribution point
 
 	export interface IUserFriendlyViewDescriptor {
 		id: string;
@@ -69,49 +70,20 @@ namespace schema {
 		type: 'object',
 		properties: {
 			'explorer': {
-				description: localize('views.explorer', "Contributes views to Explorer container in the Activity bar"),
+				description: localize('views.explorer', "Explorer View"),
 				type: 'array',
-				items: viewDescriptor,
-				default: []
+				items: viewDescriptor
 			},
 			'debug': {
-				description: localize('views.debug', "Contributes views to Debug container in the Activity bar"),
+				description: localize('views.debug', "Debug View"),
 				type: 'array',
-				items: viewDescriptor,
-				default: []
-			},
-			'scm': {
-				description: localize('views.scm', "Contributes views to SCM container in the Activity bar"),
-				type: 'array',
-				items: viewDescriptor,
-				default: []
-			},
-			'test': {
-				description: localize('views.test', "Contributes views to Test container in the Activity bar"),
-				type: 'array',
-				items: viewDescriptor,
-				default: []
+				items: viewDescriptor
 			}
-		},
-		additionalProperties: {
-			description: localize('views.contributed', "Contributes views to contributed views container"),
-			type: 'array',
-			items: viewDescriptor,
-			default: []
 		}
 	};
 }
 
-function getViewLocation(value: string): ViewLocation {
-	switch (value) {
-		case 'explorer': return ViewLocation.Explorer;
-		case 'debug': return ViewLocation.Debug;
-		case 'scm': return ViewLocation.SCM;
-		default: return ViewLocation.get(`workbench.view.extension.${value}`);
-	}
-}
-
-ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: schema.IUserFriendlyViewDescriptor[] }>('views', [viewsContainersExtensionPoint], schema.viewsContribution)
+ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: schema.IUserFriendlyViewDescriptor[] }>('views', [], schema.viewsContribution)
 	.setHandler((extensions) => {
 		for (let extension of extensions) {
 			const { value, collector } = extension;
@@ -121,11 +93,12 @@ ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: schema.IUserFriendlyV
 					return;
 				}
 
-				let location = getViewLocation(entry.key);
+				const location = ViewLocation.getContributedViewLocation(entry.key);
 				if (!location) {
-					collector.warn(localize('ViewContainerDoesnotExist', "View container '{0}' does not exist and all views registered to it will be added to 'Explorer'.", entry.key));
-					location = ViewLocation.Explorer;
+					collector.warn(localize('locationId.invalid', "`{0}` is not a valid view location", entry.key));
+					return;
 				}
+
 				const registeredViews = ViewsRegistry.getViews(location);
 				const viewIds = [];
 				const viewDescriptors = coalesce(entry.value.map(item => {

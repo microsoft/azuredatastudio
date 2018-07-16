@@ -119,8 +119,7 @@
 	color:  #3C3C3C;
 }
 
-.modal .select-box,
-.modal .monaco-select-box {
+.modal .select-box {
 	width: 100%;
 	height: 25px;
 	color: #6C6C6C;
@@ -172,22 +171,4 @@
 	margin-right: 10px;
 	width: 20px;
 	height: 20px;
-}
-
-.modal .modal-footer .dialogErrorMessage {
-	align-items: center;
-	max-height: 30px;
-	margin-right: 5px;
-}
-
-.modal .dialogErrorMessage .icon {
-	float: left;
-	margin-right: 10px;
-	width: auto;
-	height: 20px;
-}
-
-.modal .modal-footer .dialogErrorMessage .errorMessage {
-	max-height: 100%;
-	overflow-y: scroll;
 }

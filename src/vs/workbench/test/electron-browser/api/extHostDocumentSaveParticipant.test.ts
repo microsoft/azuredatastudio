@@ -19,7 +19,6 @@ import { mock } from 'vs/workbench/test/electron-browser/api/mock';
 import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { isResourceTextEdit, ResourceTextEdit } from 'vs/editor/common/modes';
-import { timeout } from 'vs/base/common/async';
 
 suite('ExtHostDocumentSaveParticipant', () => {
 
@@ -167,12 +166,12 @@ suite('ExtHostDocumentSaveParticipant', () => {
 		let callCount = 0;
 		let sub1 = participant.getOnWillSaveTextDocumentEvent(nullExtensionDescription)(function (event) {
 			callCount += 1;
-			event.waitUntil(timeout(17));
+			event.waitUntil(TPromise.timeout(17));
 		});
 
 		let sub2 = participant.getOnWillSaveTextDocumentEvent(nullExtensionDescription)(function (event) {
 			callCount += 1;
-			event.waitUntil(timeout(17));
+			event.waitUntil(TPromise.timeout(17));
 		});
 
 		let sub3 = participant.getOnWillSaveTextDocumentEvent(nullExtensionDescription)(function (event) {
@@ -194,9 +193,9 @@ suite('ExtHostDocumentSaveParticipant', () => {
 
 		let sub = participant.getOnWillSaveTextDocumentEvent(nullExtensionDescription)(function (event) {
 
-			event.waitUntil(timeout(10));
-			event.waitUntil(timeout(10));
-			event.waitUntil(timeout(10));
+			event.waitUntil(TPromise.timeout(10));
+			event.waitUntil(TPromise.timeout(10));
+			event.waitUntil(TPromise.timeout(10));
 		});
 
 		return participant.$participateInSave(resource, SaveReason.EXPLICIT).then(() => {
@@ -213,7 +212,7 @@ suite('ExtHostDocumentSaveParticipant', () => {
 			event.waitUntil(new TPromise((resolve, reject) => {
 				setTimeout(() => {
 					try {
-						assert.throws(() => event.waitUntil(timeout(10)));
+						assert.throws(() => event.waitUntil(TPromise.timeout(10)));
 						resolve(void 0);
 					} catch (e) {
 						reject(e);
@@ -232,7 +231,7 @@ suite('ExtHostDocumentSaveParticipant', () => {
 		const participant = new ExtHostDocumentSaveParticipant(nullLogService, documents, mainThreadEditors, { timeout: 5, errors: 3 });
 
 		let sub = participant.getOnWillSaveTextDocumentEvent(nullExtensionDescription)(function (event) {
-			event.waitUntil(timeout(15));
+			event.waitUntil(TPromise.timeout(15));
 		});
 
 		return participant.$participateInSave(resource, SaveReason.EXPLICIT).then(values => {
@@ -302,7 +301,6 @@ suite('ExtHostDocumentSaveParticipant', () => {
 			documents.$acceptModelChanged(resource, {
 				changes: [{
 					range: { startLineNumber: 1, startColumn: 1, endLineNumber: 1, endColumn: 1 },
-					rangeOffset: undefined,
 					rangeLength: undefined,
 					text: 'bar'
 				}],
@@ -338,7 +336,6 @@ suite('ExtHostDocumentSaveParticipant', () => {
 							changes: [{
 								range,
 								text,
-								rangeOffset: undefined,
 								rangeLength: undefined,
 							}],
 							eol: undefined,

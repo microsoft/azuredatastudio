@@ -24,18 +24,6 @@
             {
                 "command": "sqlservices.openEditor",
                 "title": "sqlservices.openEditor"
-            },
-            {
-                "command": "sqlservices.openEditorWithWebView",
-                "title": "sqlservices.openEditorWithWebView"
-            },
-            {
-                "command": "sqlservices.openEditorWithWebView2",
-                "title": "sqlservices.openEditorWithWebView2"
-            },
-            {
-                "command": "sqlservices.openWizard",
-                "title": "sqlservices.openWizard"
             }
         ],
         "dashboard.tabs": [
@@ -103,9 +91,5 @@
         "vscode": "^1.1.14",
         "@types/handlebars": "^4.0.11",
         "vsce": "1.36.2"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Microsoft/sqlopsstudio/tree/master/samples/sqlservices"
     }
 }

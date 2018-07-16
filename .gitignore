@@ -6,7 +6,6 @@ node_modules/
 out/
 out-build/
 out-editor/
-out-editor-esm/
 out-editor-min/
 out-monaco-editor-core/
 out-vscode/

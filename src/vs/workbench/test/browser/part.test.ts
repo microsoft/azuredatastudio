@@ -6,7 +6,7 @@
 'use strict';
 
 import * as assert from 'assert';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Build, Builder } from 'vs/base/browser/builder';
 import { Part } from 'vs/workbench/browser/part';
 import * as Types from 'vs/base/common/types';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -16,16 +16,16 @@ import { TestWorkspace } from 'vs/platform/workspace/test/common/testWorkspace';
 
 class MyPart extends Part {
 
-	constructor(private expectedParent: HTMLElement) {
+	constructor(private expectedParent: Builder) {
 		super('myPart', { hasTitle: true }, new TestThemeService());
 	}
 
-	public createTitleArea(parent: HTMLElement): HTMLElement {
+	public createTitleArea(parent: Builder): Builder {
 		assert.strictEqual(parent, this.expectedParent);
 		return super.createTitleArea(parent);
 	}
 
-	public createContentArea(parent: HTMLElement): HTMLElement {
+	public createContentArea(parent: Builder): Builder {
 		assert.strictEqual(parent, this.expectedParent);
 		return super.createContentArea(parent);
 	}
@@ -41,22 +41,22 @@ class MyPart2 extends Part {
 		super('myPart2', { hasTitle: true }, new TestThemeService());
 	}
 
-	public createTitleArea(parent: HTMLElement): HTMLElement {
-		return $(parent).div(function (div) {
+	public createTitleArea(parent: Builder): Builder {
+		return parent.div(function (div) {
 			div.span({
 				id: 'myPart.title',
 				innerHtml: 'Title'
 			});
-		}).getHTMLElement();
+		});
 	}
 
-	public createContentArea(parent: HTMLElement): HTMLElement {
-		return $(parent).div(function (div) {
+	public createContentArea(parent: Builder): Builder {
+		return parent.div(function (div) {
 			div.span({
 				id: 'myPart.content',
 				innerHtml: 'Content'
 			});
-		}).getHTMLElement();
+		});
 	}
 }
 
@@ -66,17 +66,17 @@ class MyPart3 extends Part {
 		super('myPart2', { hasTitle: false }, new TestThemeService());
 	}
 
-	public createTitleArea(parent: HTMLElement): HTMLElement {
+	public createTitleArea(parent: Builder): Builder {
 		return null;
 	}
 
-	public createContentArea(parent: HTMLElement): HTMLElement {
-		return $(parent).div(function (div) {
+	public createContentArea(parent: Builder): Builder {
+		return parent.div(function (div) {
 			div.span({
 				id: 'myPart.content',
 				innerHtml: 'Content'
 			});
-		}).getHTMLElement();
+		});
 	}
 }
 
@@ -97,13 +97,14 @@ suite('Workbench Part', () => {
 	});
 
 	test('Creation', function () {
-		let b = new Builder(document.getElementById(fixtureId));
+		let b = Build.withElementById(fixtureId);
 		b.div().hide();
 
-		let part = new MyPart(b.getHTMLElement());
-		part.create(b.getHTMLElement());
+		let part = new MyPart(b);
+		part.create(b);
 
 		assert.strictEqual(part.getId(), 'myPart');
+		assert.strictEqual(part.getContainer(), b);
 
 		// Memento
 		let memento = part.getMemento(storage);
@@ -114,7 +115,7 @@ suite('Workbench Part', () => {
 		part.shutdown();
 
 		// Re-Create to assert memento contents
-		part = new MyPart(b.getHTMLElement());
+		part = new MyPart(b);
 
 		memento = part.getMemento(storage);
 		assert(memento);
@@ -126,31 +127,31 @@ suite('Workbench Part', () => {
 		delete memento.bar;
 
 		part.shutdown();
-		part = new MyPart(b.getHTMLElement());
+		part = new MyPart(b);
 		memento = part.getMemento(storage);
 		assert(memento);
 		assert.strictEqual(Types.isEmptyObject(memento), true);
 	});
 
 	test('Part Layout with Title and Content', function () {
-		let b = new Builder(document.getElementById(fixtureId));
+		let b = Build.withElementById(fixtureId);
 		b.div().hide();
 
 		let part = new MyPart2();
-		part.create(b.getHTMLElement());
+		part.create(b);
 
-		assert(document.getElementById('myPart.title'));
-		assert(document.getElementById('myPart.content'));
+		assert(Build.withElementById('myPart.title'));
+		assert(Build.withElementById('myPart.content'));
 	});
 
 	test('Part Layout with Content only', function () {
-		let b = new Builder(document.getElementById(fixtureId));
+		let b = Build.withElementById(fixtureId);
 		b.div().hide();
 
 		let part = new MyPart3();
-		part.create(b.getHTMLElement());
+		part.create(b);
 
-		assert(!document.getElementById('myPart.title'));
-		assert(document.getElementById('myPart.content'));
+		assert(!Build.withElementById('myPart.title'));
+		assert(Build.withElementById('myPart.content'));
 	});
 });

@@ -38,17 +38,8 @@ const HOVER_MESSAGE_COMMAND_META = new MarkdownString().appendText(
 		: nls.localize('links.command', "Ctrl + click to execute command")
 );
 
-const HOVER_MESSAGE_GENERAL_ALT = new MarkdownString().appendText(
-	platform.isMacintosh
-		? nls.localize('links.navigate.al.mac', "Option + click to follow link")
-		: nls.localize('links.navigate.al', "Alt + click to follow link")
-);
-
-const HOVER_MESSAGE_COMMAND_ALT = new MarkdownString().appendText(
-	platform.isMacintosh
-		? nls.localize('links.command.al.mac', "Option + click to execute command")
-		: nls.localize('links.command.al', "Alt + click to execute command")
-);
+const HOVER_MESSAGE_GENERAL_ALT = new MarkdownString().appendText(nls.localize('links.navigate.al', "Alt + click to follow link"));
+const HOVER_MESSAGE_COMMAND_ALT = new MarkdownString().appendText(nls.localize('links.command.al', "Alt + click to execute command"));
 
 const decoration = {
 	meta: ModelDecorationOptions.register({
@@ -251,30 +242,32 @@ class LinkDetector implements editorCommon.IEditorContribution {
 
 	private updateDecorations(links: Link[]): void {
 		const useMetaKey = (this.editor.getConfiguration().multiCursorModifier === 'altKey');
-		let oldDecorations: string[] = [];
-		let keys = Object.keys(this.currentOccurrences);
-		for (let i = 0, len = keys.length; i < len; i++) {
-			let decorationId = keys[i];
-			let occurance = this.currentOccurrences[decorationId];
-			oldDecorations.push(occurance.decorationId);
-		}
-
-		let newDecorations: IModelDeltaDecoration[] = [];
-		if (links) {
-			// Not sure why this is sometimes null
-			for (let i = 0; i < links.length; i++) {
-				newDecorations.push(LinkOccurrence.decoration(links[i], useMetaKey));
+		this.editor.changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
+			var oldDecorations: string[] = [];
+			let keys = Object.keys(this.currentOccurrences);
+			for (let i = 0, len = keys.length; i < len; i++) {
+				let decorationId = keys[i];
+				let occurance = this.currentOccurrences[decorationId];
+				oldDecorations.push(occurance.decorationId);
 			}
-		}
 
-		let decorations = this.editor.deltaDecorations(oldDecorations, newDecorations);
+			var newDecorations: IModelDeltaDecoration[] = [];
+			if (links) {
+				// Not sure why this is sometimes null
+				for (var i = 0; i < links.length; i++) {
+					newDecorations.push(LinkOccurrence.decoration(links[i], useMetaKey));
+				}
+			}
 
-		this.currentOccurrences = {};
-		this.activeLinkDecorationId = null;
-		for (let i = 0, len = decorations.length; i < len; i++) {
-			let occurance = new LinkOccurrence(links[i], decorations[i]);
-			this.currentOccurrences[occurance.decorationId] = occurance;
-		}
+			var decorations = changeAccessor.deltaDecorations(oldDecorations, newDecorations);
+
+			this.currentOccurrences = {};
+			this.activeLinkDecorationId = null;
+			for (let i = 0, len = decorations.length; i < len; i++) {
+				var occurance = new LinkOccurrence(links[i], decorations[i]);
+				this.currentOccurrences[occurance.decorationId] = occurance;
+			}
+		});
 	}
 
 	private _onEditorMouseMove(mouseEvent: ClickLinkMouseEvent, withKey?: ClickLinkKeyboardEvent): void {

@@ -7,15 +7,13 @@
 
 import * as path from 'path';
 import { ILogService, LogLevel, NullLogService, AbstractLogService } from 'vs/platform/log/common/log';
-import * as spdlog from 'spdlog';
+import { RotatingLogger, setAsyncMode } from 'spdlog';
 
 export function createSpdLogService(processName: string, logLevel: LogLevel, logsFolder: string): ILogService {
-	// Do not crash if spdlog cannot be loaded
 	try {
-		const _spdlog: typeof spdlog = require.__$__nodeRequire('spdlog');
-		_spdlog.setAsyncMode(8192, 2000);
+		setAsyncMode(8192, 2000);
 		const logfilePath = path.join(logsFolder, `${processName}.log`);
-		const logger = new _spdlog.RotatingLogger(processName, logfilePath, 1024 * 1024 * 5, 6);
+		const logger = new RotatingLogger(processName, logfilePath, 1024 * 1024 * 5, 6);
 		logger.setLevel(0);
 
 		return new SpdLogService(logger, logLevel);
@@ -30,7 +28,7 @@ class SpdLogService extends AbstractLogService implements ILogService {
 	_serviceBrand: any;
 
 	constructor(
-		private readonly logger: spdlog.RotatingLogger,
+		private readonly logger: RotatingLogger,
 		level: LogLevel = LogLevel.Error
 	) {
 		super();

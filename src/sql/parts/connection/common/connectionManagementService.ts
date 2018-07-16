@@ -51,7 +51,7 @@ import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionPro
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
 import { EditorGroup } from 'vs/workbench/common/editor/editorStacksModel';
 import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
@@ -553,7 +553,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	public showDashboard(connection: IConnectionProfile): Thenable<boolean> {
+	public showDashboard(connection: ConnectionProfile): Thenable<boolean> {
 		return this.showDashboardForConnectionManagementInfo(connection);
 	}
 

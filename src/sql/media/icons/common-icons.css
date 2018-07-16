@@ -81,15 +81,6 @@
 	content: url("status_info.svg");
 }
 
-.vs .icon.help {
-	content: url("help.svg");
-}
-
-.vs-dark .icon.help,
-.hc-black .icon.help {
-	content: url("help_inverse.svg");
-}
-
 .vs .icon.success,
 .vs-dark .icon.success,
 .hc-black .icon.success {
@@ -225,19 +216,4 @@
 
 .vs .icon.unpin {
 	background: url('unpin.svg') center center no-repeat;
-}
-
-.small {
-	width: 16px;
-	height: 16px;
-}
-
-.medium {
-	width: 24px;
-	height: 24px;
-}
-
-.large {
-	width: 32px;
-	height: 32px;
 }

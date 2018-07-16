@@ -7,6 +7,10 @@
   "engines": {
     "vscode": "^1.0.0"
   },
+  "categories": [
+    "Languages",
+    "Other"
+  ],
   "activationEvents": [
     "onLanguage:json",
     "onLanguage:jsonc"

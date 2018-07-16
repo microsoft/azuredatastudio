@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import Severity from 'vs/base/common/severity';
 import * as modes from 'vs/editor/common/modes';
 import * as types from './extHostTypes';
 import { Position as EditorPosition, ITextEditorOptions } from 'vs/platform/editor/common/editor';
@@ -20,7 +21,6 @@ import * as htmlContent from 'vs/base/common/htmlContent';
 import { IRelativePattern } from 'vs/base/common/glob';
 import { LanguageSelector, LanguageFilter } from 'vs/editor/common/modes/languageSelector';
 import { WorkspaceEditDto, ResourceTextEditDto } from 'vs/workbench/api/node/extHost.protocol';
-import { MarkerSeverity, IRelatedInformation, IMarkerData } from 'vs/platform/markers/common/markers';
 
 export interface PositionLike {
 	line: number;
@@ -83,57 +83,33 @@ export function fromPosition(position: types.Position): IPosition {
 	return { lineNumber: position.line + 1, column: position.character + 1 };
 }
 
-export function fromDiagnostic(value: vscode.Diagnostic): IMarkerData {
-	return {
-		...fromRange(value.range),
-		message: value.message,
-		source: value.source,
-		code: String(value.code),
-		severity: fromDiagnosticSeverity(value.severity),
-		relatedInformation: value.relatedInformation && value.relatedInformation.map(fromDiagnosticRelatedInformation)
-	};
-}
-
-export function fromDiagnosticRelatedInformation(value: types.DiagnosticRelatedInformation): IRelatedInformation {
-	return {
-		...fromRange(value.location.range),
-		message: value.message,
-		resource: value.location.uri
-	};
-}
-
-export function toDiagnosticRelatedInformation(value: IRelatedInformation): types.DiagnosticRelatedInformation {
-	return new types.DiagnosticRelatedInformation(new types.Location(value.resource, toRange(value)), value.message);
-}
-
-export function fromDiagnosticSeverity(value: number): MarkerSeverity {
+export function fromDiagnosticSeverity(value: number): Severity {
 	switch (value) {
 		case types.DiagnosticSeverity.Error:
-			return MarkerSeverity.Error;
+			return Severity.Error;
 		case types.DiagnosticSeverity.Warning:
-			return MarkerSeverity.Warning;
+			return Severity.Warning;
 		case types.DiagnosticSeverity.Information:
-			return MarkerSeverity.Info;
+			return Severity.Info;
 		case types.DiagnosticSeverity.Hint:
-			return MarkerSeverity.Hint;
+			return Severity.Ignore;
 	}
-	return MarkerSeverity.Error;
+	return Severity.Error;
 }
 
-export function toDiagnosticSeverty(value: MarkerSeverity): types.DiagnosticSeverity {
+export function toDiagnosticSeverty(value: Severity): types.DiagnosticSeverity {
 	switch (value) {
-		case MarkerSeverity.Info:
+		case Severity.Info:
 			return types.DiagnosticSeverity.Information;
-		case MarkerSeverity.Warning:
+		case Severity.Warning:
 			return types.DiagnosticSeverity.Warning;
-		case MarkerSeverity.Error:
+		case Severity.Error:
 			return types.DiagnosticSeverity.Error;
-		case MarkerSeverity.Hint:
+		case Severity.Ignore:
 			return types.DiagnosticSeverity.Hint;
 	}
 	return types.DiagnosticSeverity.Error;
 }
-
 
 export function fromViewColumn(column?: vscode.ViewColumn): EditorPosition {
 	let editorColumn = EditorPosition.ONE;
@@ -244,7 +220,7 @@ export const TextEdit = {
 			range: fromRange(edit.range)
 		};
 	},
-	to(edit: modes.TextEdit): types.TextEdit {
+	to(edit: modes.TextEdit): vscode.TextEdit {
 		let result = new types.TextEdit(toRange(edit.range), edit.text);
 		result.newEol = EndOfLine.to(edit.eol);
 		return result;
@@ -546,15 +522,12 @@ export namespace DocumentLink {
 }
 
 export namespace ColorPresentation {
-	export function to(colorPresentation: modes.IColorPresentation): types.ColorPresentation {
-		let cp = new types.ColorPresentation(colorPresentation.label);
-		if (colorPresentation.textEdit) {
-			cp.textEdit = TextEdit.to(colorPresentation.textEdit);
-		}
-		if (colorPresentation.additionalTextEdits) {
-			cp.additionalTextEdits = colorPresentation.additionalTextEdits.map(value => TextEdit.to(value));
-		}
-		return cp;
+	export function to(colorPresentation: modes.IColorPresentation): vscode.ColorPresentation {
+		return {
+			label: colorPresentation.label,
+			textEdit: colorPresentation.textEdit ? TextEdit.to(colorPresentation.textEdit) : undefined,
+			additionalTextEdits: colorPresentation.additionalTextEdits ? colorPresentation.additionalTextEdits.map(value => TextEdit.to(value)) : undefined
+		};
 	}
 
 	export function from(colorPresentation: vscode.ColorPresentation): modes.IColorPresentation {
@@ -563,15 +536,6 @@ export namespace ColorPresentation {
 			textEdit: colorPresentation.textEdit ? TextEdit.from(colorPresentation.textEdit) : undefined,
 			additionalTextEdits: colorPresentation.additionalTextEdits ? colorPresentation.additionalTextEdits.map(value => TextEdit.from(value)) : undefined
 		};
-	}
-}
-
-export namespace Color {
-	export function to(c: [number, number, number, number]): types.Color {
-		return new types.Color(c[0], c[1], c[2], c[3]);
-	}
-	export function from(color: types.Color): [number, number, number, number] {
-		return [color.red, color.green, color.blue, color.alpha];
 	}
 }
 
@@ -617,35 +581,16 @@ export namespace ProgressLocation {
 		switch (loc) {
 			case types.ProgressLocation.SourceControl: return MainProgressLocation.Scm;
 			case types.ProgressLocation.Window: return MainProgressLocation.Window;
-			case types.ProgressLocation.Notification: return MainProgressLocation.Notification;
 		}
 		return undefined;
 	}
 }
 
-export namespace FoldingRange {
-	export function from(r: vscode.FoldingRange): modes.FoldingRange {
-		let range: modes.FoldingRange = { start: r.start + 1, end: r.end + 1 };
-		if (r.kind) {
-			range.kind = FoldingRangeKind.from(r.kind);
-		}
-		return range;
-	}
-}
-
-export namespace FoldingRangeKind {
-	export function from(kind: vscode.FoldingRangeKind | undefined): modes.FoldingRangeKind | undefined {
-		if (kind) {
-			switch (kind) {
-				case types.FoldingRangeKind.Comment:
-					return modes.FoldingRangeKind.Comment;
-				case types.FoldingRangeKind.Imports:
-					return modes.FoldingRangeKind.Imports;
-				case types.FoldingRangeKind.Region:
-					return modes.FoldingRangeKind.Region;
-			}
-		}
-		return void 0;
+export namespace FoldingRangeList {
+	export function from(rangeList: vscode.FoldingRangeList): modes.IFoldingRangeList {
+		return {
+			ranges: rangeList.ranges.map(r => ({ startLineNumber: r.startLine + 1, endLineNumber: r.endLine + 1, type: r.type }))
+		};
 	}
 }
 
@@ -696,8 +641,7 @@ function doToLanguageSelector(selector: string | vscode.DocumentFilter): string 
 		return {
 			language: selector.language,
 			scheme: selector.scheme,
-			pattern: toGlobPattern(selector.pattern),
-			exclusive: selector.exclusive
+			pattern: toGlobPattern(selector.pattern)
 		};
 	}
 

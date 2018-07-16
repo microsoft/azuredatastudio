@@ -6,10 +6,10 @@
 'use strict';
 
 import 'vs/css!./media/activitybarpart';
-import * as nls from 'vs/nls';
+import nls = require('vs/nls');
 import { TPromise } from 'vs/base/common/winjs.base';
 import { illegalArgument } from 'vs/base/common/errors';
-import { $ } from 'vs/base/browser/builder';
+import { Builder, $, Dimension } from 'vs/base/browser/builder';
 import { Action } from 'vs/base/common/actions';
 import { ActionsOrientation, ActionBar, Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { GlobalActivityExtensions, IGlobalActivityRegistry } from 'vs/workbench/common/activity';
@@ -30,10 +30,8 @@ import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { CompositeBar } from 'vs/workbench/browser/parts/compositebar/compositeBar';
 import { ToggleCompositePinnedAction } from 'vs/workbench/browser/parts/compositebar/compositeBarActions';
 // {{SQL CARBON EDIT}}
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { ViewLocation, ViewsRegistry } from 'vs/workbench/common/views';
 import { ViewletDescriptor } from 'vs/workbench/browser/viewlet';
-import { Dimension } from 'vs/base/browser/dom';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 
 export class ActivitybarPart extends Part {
 
@@ -68,7 +66,6 @@ export class ActivitybarPart extends Part {
 		super(id, { hasTitle: false }, themeService);
 
 		this.globalActivityIdToActions = Object.create(null);
-
 		this.compositeBar = this.instantiationService.createInstance(CompositeBar, {
 			icon: true,
 			storageId: ActivitybarPart.PINNED_VIEWLETS,
@@ -83,9 +80,7 @@ export class ActivitybarPart extends Part {
 			colors: ActivitybarPart.COLORS,
 			overflowActionSize: ActivitybarPart.ACTION_HEIGHT
 		});
-
 		this.registerListeners();
-		this.updateCompositebar();
 	}
 
 	// {{SQL CARBON EDIT}}
@@ -102,10 +97,6 @@ export class ActivitybarPart extends Part {
 
 	private registerListeners(): void {
 
-		this.toUnbind.push(this.viewletService.onDidViewletRegister(() => this.updateCompositebar()));
-		this.toUnbind.push(ViewsRegistry.onViewsRegistered(() => this.updateCompositebar()));
-		this.toUnbind.push(ViewsRegistry.onViewsDeregistered(() => this.updateCompositebar()));
-
 		// Activate viewlet action on opening of a viewlet
 		this.toUnbind.push(this.viewletService.onDidViewletOpen(viewlet => this.compositeBar.activateComposite(viewlet.getId())));
 
@@ -114,7 +105,7 @@ export class ActivitybarPart extends Part {
 		this.toUnbind.push(this.compositeBar.onDidContextMenu(e => this.showContextMenu(e)));
 		this.toUnbind.push(this.viewletService.onDidViewletEnablementChange(({ id, enabled }) => {
 			if (enabled) {
-				this.compositeBar.addComposite(this.viewletService.getViewlet(id), true);
+				this.compositeBar.addComposite(this.viewletService.getViewlet(id));
 			} else {
 				this.compositeBar.removeComposite(id);
 			}
@@ -144,7 +135,7 @@ export class ActivitybarPart extends Part {
 		return toDisposable(() => action.setBadge(undefined));
 	}
 
-	public createContentArea(parent: HTMLElement): HTMLElement {
+	public createContentArea(parent: Builder): Builder {
 		const $el = $(parent);
 		const $result = $('.content').appendTo($el);
 
@@ -154,14 +145,14 @@ export class ActivitybarPart extends Part {
 		// Top Actionbar with action items for each viewlet action
 		this.createGlobalActivityActionBar($('.global-activity').appendTo($result).getHTMLElement());
 
-		return $result.getHTMLElement();
+		return $result;
 	}
 
 	public updateStyles(): void {
 		super.updateStyles();
 
 		// Part container
-		const container = $(this.getContainer());
+		const container = this.getContainer();
 		const background = this.getColor(ACTIVITY_BAR_BACKGROUND);
 		container.style('background-color', background);
 
@@ -179,9 +170,7 @@ export class ActivitybarPart extends Part {
 	private showContextMenu(e: MouseEvent): void {
 		const event = new StandardMouseEvent(e);
 
-		const actions: Action[] = this.viewletService.getViewlets()
-			.filter(viewlet => this.canShow(viewlet))
-			.map(viewlet => this.instantiationService.createInstance(ToggleCompositePinnedAction, viewlet, this.compositeBar));
+		const actions: Action[] = this.viewletService.getViewlets().map(viewlet => this.instantiationService.createInstance(ToggleCompositePinnedAction, viewlet, this.compositeBar));
 		actions.push(new Separator());
 		actions.push(this.instantiationService.createInstance(ToggleActivityBarVisibilityAction, ToggleActivityBarVisibilityAction.ID, nls.localize('hideActivitBar', "Hide Activity Bar")));
 
@@ -213,26 +202,6 @@ export class ActivitybarPart extends Part {
 		});
 	}
 
-	private updateCompositebar(): void {
-		const viewlets = this.viewletService.getViewlets();
-		for (const viewlet of viewlets) {
-			const canShow = this.canShow(viewlet);
-			if (canShow) {
-				this.compositeBar.addComposite(viewlet, false);
-			} else {
-				this.compositeBar.removeComposite(viewlet.id);
-			}
-		}
-	}
-
-	private canShow(viewlet: ViewletDescriptor): boolean {
-		const viewLocation = ViewLocation.get(viewlet.id);
-		if (viewLocation) {
-			return ViewsRegistry.getViews(viewLocation).length > 0;
-		}
-		return true;
-	}
-
 	public getPinned(): string[] {
 		return this.viewletService.getViewlets().map(v => v.id).filter(id => this.compositeBar.isPinned(id));
 	}
@@ -258,11 +227,6 @@ export class ActivitybarPart extends Part {
 		this.compositeBar.layout(new Dimension(dimension.width, availableHeight));
 
 		return sizes;
-	}
-
-	public shutdown(): void {
-		this.compositeBar.shutdown();
-		super.shutdown();
 	}
 
 	public dispose(): void {

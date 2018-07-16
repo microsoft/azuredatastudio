@@ -3,22 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import {
-	Component, ContentChildren, QueryList, Inject, forwardRef, NgZone,
-	Input, EventEmitter, Output, ViewChild, ElementRef
-} from '@angular/core';
-
-import './panelStyles';
+import { Component, ContentChildren, QueryList, AfterContentInit, Inject, forwardRef, NgZone, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, OnChanges, OnDestroy, ViewChildren, AfterViewInit } from '@angular/core';
 
 import { TabComponent } from './tab.component';
+import { TabHeaderComponent } from './tabHeader.component';
 import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
-import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
+import './panelStyles';
 
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';
 import { mixin } from 'vs/base/common/objects';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IPanelOptions {
@@ -40,6 +37,9 @@ const defaultOptions: IPanelOptions = {
 	layout: NavigationBarLayout.horizontal,
 	showIcon: false
 };
+
+const verticalLayout = 'vertical';
+const horizontalLayout = 'horizontal';
 
 let idPool = 0;
 
@@ -72,6 +72,7 @@ export class PanelComponent extends Disposable {
 	@Input() public options: IPanelOptions;
 	@Input() public actions: Array<Action>;
 	@ContentChildren(TabComponent) private _tabs: QueryList<TabComponent>;
+	@ViewChildren(TabHeaderComponent) private _headerTabs: QueryList<TabHeaderComponent>;
 	@ViewChild(ScrollableDirective) private scrollable: ScrollableDirective;
 
 	@Output() public onTabChange = new EventEmitter<TabComponent>();
@@ -81,8 +82,8 @@ export class PanelComponent extends Disposable {
 	private _actionbar: ActionBar;
 	private _mru: TabComponent[];
 
-	protected ScrollbarVisibility = ScrollbarVisibility;
-	protected NavigationBarLayout = NavigationBarLayout;
+	private ScrollbarVisibility = ScrollbarVisibility;
+	private NavigationBarLayout = NavigationBarLayout;
 
 	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 	constructor( @Inject(forwardRef(() => NgZone)) private _zone: NgZone) {
@@ -97,13 +98,14 @@ export class PanelComponent extends Disposable {
 	ngAfterContentInit(): void {
 		if (this._tabs && this._tabs.length > 0) {
 			this.selectTab(this._tabs.first);
+		} else {
+			const sub = this._tabs.changes.subscribe(() => {
+				if (this._tabs && this._tabs.length > 0) {
+					this.selectTab(this._tabs.first);
+					sub.unsubscribe();
+				}
+			});
 		}
-
-		this._register(subscriptionToDisposable(this._tabs.changes.subscribe(() => {
-			if (this._tabs && this._tabs.length > 0) {
-				this.selectTab(this._tabs.first);
-			}
-		})));
 	}
 
 	ngOnChanges(): void {
@@ -134,7 +136,6 @@ export class PanelComponent extends Disposable {
 		if (this.actions && this.actions.length > 0) {
 			this.actions.forEach((action) => action.dispose());
 		}
-		this.dispose();
 	}
 
 	/**
@@ -238,9 +239,5 @@ export class PanelComponent extends Disposable {
 		if (this._mru.length > 0) {
 			this.selectTab(this._mru[0]);
 		}
-	}
-
-	public layout() {
-		this._activeTab.layout();
 	}
 }

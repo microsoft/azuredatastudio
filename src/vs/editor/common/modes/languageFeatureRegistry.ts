@@ -5,11 +5,10 @@
 
 'use strict';
 
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { ITextModel } from 'vs/editor/common/model';
 import { LanguageSelector, score } from 'vs/editor/common/modes/languageSelector';
-import { shouldSynchronizeModel } from 'vs/editor/common/services/modelService';
 
 interface Entry<T> {
 	selector: LanguageSelector;
@@ -18,21 +17,11 @@ interface Entry<T> {
 	_time: number;
 }
 
-function isExclusive(selector: LanguageSelector): boolean {
-	if (typeof selector === 'string') {
-		return false;
-	} else if (Array.isArray(selector)) {
-		return selector.every(isExclusive);
-	} else {
-		return selector.exclusive;
-	}
-}
-
 export default class LanguageFeatureRegistry<T> {
 
 	private _clock: number = 0;
 	private _entries: Entry<T>[] = [];
-	private readonly _onDidChange: Emitter<number> = new Emitter<number>();
+	private _onDidChange: Emitter<number> = new Emitter<number>();
 
 	constructor() {
 	}
@@ -74,7 +63,7 @@ export default class LanguageFeatureRegistry<T> {
 	}
 
 	all(model: ITextModel): T[] {
-		if (!model) {
+		if (!model || model.isTooLargeForHavingARichMode()) {
 			return [];
 		}
 
@@ -117,7 +106,7 @@ export default class LanguageFeatureRegistry<T> {
 
 	private _orderedForEach(model: ITextModel, callback: (provider: Entry<T>) => any): void {
 
-		if (!model) {
+		if (!model || model.isTooLargeForHavingARichMode()) {
 			return;
 		}
 
@@ -151,17 +140,7 @@ export default class LanguageFeatureRegistry<T> {
 		this._lastCandidate = candidate;
 
 		for (let entry of this._entries) {
-			entry._score = score(entry.selector, model.uri, model.getLanguageIdentifier().language, shouldSynchronizeModel(model));
-
-			if (isExclusive(entry.selector) && entry._score > 0) {
-				// support for one exclusive selector that overwrites
-				// any other selector
-				for (let entry of this._entries) {
-					entry._score = 0;
-				}
-				entry._score = 1000;
-				break;
-			}
+			entry._score = score(entry.selector, model.uri, model.getLanguageIdentifier().language);
 		}
 
 		// needs sorting

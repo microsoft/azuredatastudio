@@ -5,7 +5,7 @@
 'use strict';
 
 import * as json from 'vs/base/common/json';
-import { ResourceMap } from 'vs/base/common/map';
+import { StrictResourceMap } from 'vs/base/common/map';
 import * as arrays from 'vs/base/common/arrays';
 import * as types from 'vs/base/common/types';
 import * as objects from 'vs/base/common/objects';
@@ -85,7 +85,7 @@ export class ConfigurationModel implements IConfigurationModel {
 				if (override) {
 					this.mergeContents(override.contents, otherOverride.contents);
 				} else {
-					overrides.push(objects.deepClone(otherOverride));
+					overrides.push(otherOverride);
 				}
 			}
 			for (const key of other.keys) {
@@ -279,16 +279,15 @@ export class ConfigurationModelParser {
 export class Configuration {
 
 	private _workspaceConsolidatedConfiguration: ConfigurationModel = null;
-	private _foldersConsolidatedConfigurations: ResourceMap<ConfigurationModel> = new ResourceMap<ConfigurationModel>();
+	private _foldersConsolidatedConfigurations: StrictResourceMap<ConfigurationModel> = new StrictResourceMap<ConfigurationModel>();
 
 	constructor(
 		private _defaultConfiguration: ConfigurationModel,
 		private _userConfiguration: ConfigurationModel,
 		private _workspaceConfiguration: ConfigurationModel = new ConfigurationModel(),
-		private _folderConfigurations: ResourceMap<ConfigurationModel> = new ResourceMap<ConfigurationModel>(),
+		private _folderConfigurations: StrictResourceMap<ConfigurationModel> = new StrictResourceMap<ConfigurationModel>(),
 		private _memoryConfiguration: ConfigurationModel = new ConfigurationModel(),
-		private _memoryConfigurationByResource: ResourceMap<ConfigurationModel> = new ResourceMap<ConfigurationModel>(),
-		private _freeze: boolean = true) {
+		private _memoryConfigurationByResource: StrictResourceMap<ConfigurationModel> = new StrictResourceMap<ConfigurationModel>()) {
 	}
 
 	getValue(section: string, overrides: IConfigurationOverrides, workspace: Workspace): any {
@@ -395,7 +394,7 @@ export class Configuration {
 		return this._workspaceConfiguration;
 	}
 
-	protected get folders(): ResourceMap<ConfigurationModel> {
+	protected get folders(): StrictResourceMap<ConfigurationModel> {
 		return this._folderConfigurations;
 	}
 
@@ -423,10 +422,7 @@ export class Configuration {
 
 	private getWorkspaceConsolidatedConfiguration(): ConfigurationModel {
 		if (!this._workspaceConsolidatedConfiguration) {
-			this._workspaceConsolidatedConfiguration = this._defaultConfiguration.merge(this._userConfiguration, this._workspaceConfiguration, this._memoryConfiguration);
-			if (this._freeze) {
-				this._workspaceConfiguration = this._workspaceConfiguration.freeze();
-			}
+			this._workspaceConsolidatedConfiguration = this._defaultConfiguration.merge(this._userConfiguration).merge(this._workspaceConfiguration).merge(this._memoryConfiguration).freeze();
 		}
 		return this._workspaceConsolidatedConfiguration;
 	}
@@ -437,10 +433,7 @@ export class Configuration {
 			const workspaceConsolidateConfiguration = this.getWorkspaceConsolidatedConfiguration();
 			const folderConfiguration = this._folderConfigurations.get(folder);
 			if (folderConfiguration) {
-				folderConsolidatedConfiguration = workspaceConsolidateConfiguration.merge(folderConfiguration);
-				if (this._freeze) {
-					folderConsolidatedConfiguration = folderConsolidatedConfiguration.freeze();
-				}
+				folderConsolidatedConfiguration = workspaceConsolidateConfiguration.merge(folderConfiguration).freeze();
 				this._foldersConsolidatedConfigurations.set(folder, folderConsolidatedConfiguration);
 			} else {
 				folderConsolidatedConfiguration = workspaceConsolidateConfiguration;
@@ -480,8 +473,7 @@ export class Configuration {
 				const { contents, overrides, keys } = this._folderConfigurations.get(folder);
 				result[folder.toString()] = { contents, overrides, keys };
 				return result;
-			}, Object.create({})),
-			isComplete: true
+			}, Object.create({}))
 		};
 	}
 
@@ -501,6 +493,21 @@ export class Configuration {
 			addKeys(this.folders.get(resource).keys);
 		}
 		return all;
+	}
+
+	public static parse(data: IConfigurationData): Configuration {
+		const defaultConfiguration = Configuration.parseConfigurationModel(data.defaults);
+		const userConfiguration = Configuration.parseConfigurationModel(data.user);
+		const workspaceConfiguration = Configuration.parseConfigurationModel(data.workspace);
+		const folders: StrictResourceMap<ConfigurationModel> = Object.keys(data.folders).reduce((result, key) => {
+			result.set(URI.parse(key), Configuration.parseConfigurationModel(data.folders[key]));
+			return result;
+		}, new StrictResourceMap<ConfigurationModel>());
+		return new Configuration(defaultConfiguration, userConfiguration, workspaceConfiguration, folders);
+	}
+
+	private static parseConfigurationModel(model: IConfigurationModel): ConfigurationModel {
+		return new ConfigurationModel(model.contents, model.keys, model.overrides).freeze();
 	}
 }
 
@@ -535,7 +542,7 @@ export class ConfigurationChangeEvent extends AbstractConfigurationChangeEvent i
 
 	constructor(
 		private _changedConfiguration: ConfigurationModel = new ConfigurationModel(),
-		private _changedConfigurationByResource: ResourceMap<ConfigurationModel> = new ResourceMap<ConfigurationModel>()) {
+		private _changedConfigurationByResource: StrictResourceMap<ConfigurationModel> = new StrictResourceMap<ConfigurationModel>()) {
 		super();
 	}
 
@@ -543,7 +550,7 @@ export class ConfigurationChangeEvent extends AbstractConfigurationChangeEvent i
 		return this._changedConfiguration;
 	}
 
-	get changedConfigurationByResource(): ResourceMap<IConfigurationModel> {
+	get changedConfigurationByResource(): StrictResourceMap<IConfigurationModel> {
 		return this._changedConfigurationByResource;
 	}
 

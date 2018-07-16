@@ -6,7 +6,7 @@
 import 'vs/css!./selectBox';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { Event } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { Color } from 'vs/base/common/color';
 import { deepClone, mixin } from 'vs/base/common/objects';
@@ -34,10 +34,6 @@ export interface ISelectBoxDelegate {
 	applyStyles(): void;
 }
 
-export interface ISelectBoxOptions {
-	minBottomMargin?: number;
-}
-
 export interface ISelectBoxStyles extends IListStyles {
 	selectBackground?: Color;
 	selectListBackground?: Color;
@@ -58,16 +54,21 @@ export interface ISelectData {
 }
 
 export class SelectBox extends Widget implements ISelectBoxDelegate {
+	protected options: string[];
+	private selected: number;
+	private _onDidSelect: Emitter<ISelectData>;
+
 	// {{SQL CARBON EDIT}}
 	protected selectElement: HTMLSelectElement;
 	protected selectBackground: Color;
 	protected selectForeground: Color;
 	protected selectBorder: Color;
 	private toDispose: IDisposable[];
+
 	private styles: ISelectBoxStyles;
 	private selectBoxDelegate: ISelectBoxDelegate;
 
-	constructor(options: string[], selected: number, contextViewProvider: IContextViewProvider, styles: ISelectBoxStyles = deepClone(defaultStyles), selectBoxOptions?: ISelectBoxOptions) {
+	constructor(options: string[], selected: number, contextViewProvider: IContextViewProvider, styles: ISelectBoxStyles = deepClone(defaultStyles)) {
 		super();
 
 		this.toDispose = [];
@@ -78,7 +79,7 @@ export class SelectBox extends Widget implements ISelectBoxDelegate {
 		if (isMacintosh) {
 			this.selectBoxDelegate = new SelectBoxNative(options, selected, styles);
 		} else {
-			this.selectBoxDelegate = new SelectBoxList(options, selected, contextViewProvider, styles, selectBoxOptions);
+			this.selectBoxDelegate = new SelectBoxList(options, selected, contextViewProvider, styles);
 		}
 
 		// {{SQL CARBON EDIT}}

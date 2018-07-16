@@ -6,9 +6,9 @@
 'use strict';
 
 import 'vs/css!./media/part';
+import { Dimension, Builder } from 'vs/base/browser/builder';
 import { Component } from 'vs/workbench/common/component';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
-import { Dimension, size } from 'vs/base/browser/dom';
 
 export interface IPartOptions {
 	hasTitle?: boolean;
@@ -20,9 +20,9 @@ export interface IPartOptions {
  * and mandatory content area to show content.
  */
 export abstract class Part extends Component {
-	private parent: HTMLElement;
-	private titleArea: HTMLElement;
-	private contentArea: HTMLElement;
+	private parent: Builder;
+	private titleArea: Builder;
+	private contentArea: Builder;
 	private partLayout: PartLayout;
 
 	constructor(
@@ -47,7 +47,7 @@ export abstract class Part extends Component {
 	 *
 	 * Called to create title and content area of the part.
 	 */
-	public create(parent: HTMLElement): void {
+	public create(parent: Builder): void {
 		this.parent = parent;
 		this.titleArea = this.createTitleArea(parent);
 		this.contentArea = this.createContentArea(parent);
@@ -60,35 +60,35 @@ export abstract class Part extends Component {
 	/**
 	 * Returns the overall part container.
 	 */
-	public getContainer(): HTMLElement {
+	public getContainer(): Builder {
 		return this.parent;
 	}
 
 	/**
 	 * Subclasses override to provide a title area implementation.
 	 */
-	protected createTitleArea(parent: HTMLElement): HTMLElement {
+	protected createTitleArea(parent: Builder): Builder {
 		return null;
 	}
 
 	/**
 	 * Returns the title area container.
 	 */
-	protected getTitleArea(): HTMLElement {
+	protected getTitleArea(): Builder {
 		return this.titleArea;
 	}
 
 	/**
 	 * Subclasses override to provide a content area implementation.
 	 */
-	protected createContentArea(parent: HTMLElement): HTMLElement {
+	protected createContentArea(parent: Builder): Builder {
 		return null;
 	}
 
 	/**
 	 * Returns the content area container.
 	 */
-	protected getContentArea(): HTMLElement {
+	protected getContentArea(): Builder {
 		return this.contentArea;
 	}
 
@@ -104,7 +104,8 @@ const TITLE_HEIGHT = 35;
 
 export class PartLayout {
 
-	constructor(container: HTMLElement, private options: IPartOptions, titleArea: HTMLElement, private contentArea: HTMLElement) { }
+	constructor(container: Builder, private options: IPartOptions, titleArea: Builder, private contentArea: Builder) {
+	}
 
 	public layout(dimension: Dimension): Dimension[] {
 		const { width, height } = dimension;
@@ -132,7 +133,7 @@ export class PartLayout {
 
 		// Content
 		if (this.contentArea) {
-			size(this.contentArea, contentSize.width, contentSize.height);
+			this.contentArea.size(contentSize.width, contentSize.height);
 		}
 
 		return sizes;

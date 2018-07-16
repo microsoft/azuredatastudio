@@ -5,6 +5,7 @@
 'use strict';
 
 import { TPromise } from 'vs/base/common/winjs.base';
+import { Builder } from 'vs/base/browser/builder';
 import { Panel } from 'vs/workbench/browser/panel';
 import { EditorInput, EditorOptions } from 'vs/workbench/common/editor';
 import { IEditor, Position } from 'vs/platform/editor/common/editor';
@@ -63,9 +64,9 @@ export abstract class BaseEditor extends Panel implements IEditor {
 		this._options = null;
 	}
 
-	public create(parent: HTMLElement): void; // create is sync for editors
-	public create(parent: HTMLElement): TPromise<void>;
-	public create(parent: HTMLElement): TPromise<void> {
+	public create(parent: Builder): void; // create is sync for editors
+	public create(parent: Builder): TPromise<void>;
+	public create(parent: Builder): TPromise<void> {
 		const res = super.create(parent);
 
 		// Create Editor
@@ -75,16 +76,9 @@ export abstract class BaseEditor extends Panel implements IEditor {
 	}
 
 	/**
-	 * Called to create the editor in the parent HTMLElement.
+	 * Called to create the editor in the parent builder.
 	 */
-	protected abstract createEditor(parent: HTMLElement): void;
-
-	/**
-	 * Subclasses can set this to false if it does not make sense to center editor input.
-	 */
-	public supportsCenteredLayout(): boolean {
-		return true;
-	}
+	protected abstract createEditor(parent: Builder): void;
 
 	/**
 	 * Overload this function to allow for passing in a position argument.

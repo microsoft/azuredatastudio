@@ -21,7 +21,7 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import * as objects from 'vs/base/common/objects';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 
 export interface GridCellConfig {
 	id?: string;

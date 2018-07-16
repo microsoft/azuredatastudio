@@ -8,7 +8,7 @@
 import { ServiceIdentifier, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { Position, IEditorInput } from 'vs/platform/editor/common/editor';
 import { IEditorStacksModel, IEditorGroup, EditorInput, IEditorOpeningEvent } from 'vs/workbench/common/editor';
-import { Event } from 'vs/base/common/event';
+import Event from 'vs/base/common/event';
 import { IEditorTabOptions, GroupArrangement, GroupOrientation, IEditorGroupService, IMoveOptions } from 'vs/workbench/services/group/common/groupService';
 import { EditorGroup } from 'vs/workbench/common/editor/editorStacksModel';
 

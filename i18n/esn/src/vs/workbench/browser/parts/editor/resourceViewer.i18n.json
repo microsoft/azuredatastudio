@@ -11,11 +11,9 @@
 	"sizeMB": "{0} MB",
 	"sizeGB": "{0} GB",
 	"sizeTB": "{0} TB",
-	"largeImageError": "La imagen no se muestra en el editor porque es demasiado grande ({0}). ",
+	"largeImageError": "El tamaño del archivo de la imagen es demasiado grande (> 1MB) para mostrarlo en el editor.",
 	"resourceOpenExternalButton": "¿Abrir la imagen mediante un programa externo?",
-	"nativeFileTooLargeError": "El archivo no se muestra en el editor porque es demasiado grande ({0}). ",
-	"nativeBinaryError": "El archivo no se muestra en el editor porque es binario o utiliza una codificación de texto no soportada. ",
-	"openAsText": "¿Desea abrirlo de todas formas?",
+	"nativeBinaryError": "El archivo no se mostrará en el editor porque es binario, muy grande o usa una codificación de texto no compatible.",
 	"zoom.action.fit.label": "Imagen completa",
 	"imgMeta": "{0} x {1} {2}"
 }

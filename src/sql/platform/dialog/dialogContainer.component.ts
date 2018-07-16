@@ -6,65 +6,46 @@
 'use strict';
 
 import 'vs/css!./media/dialogModal';
-import { Component, ViewChild, Inject, forwardRef, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, AfterContentInit, ViewChild, Input, Inject, forwardRef, ElementRef } from '@angular/core';
 import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { DialogPane } from 'sql/platform/dialog/dialogPane';
-import { ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { Event, Emitter } from 'vs/base/common/event';
+import { BootstrapParams } from 'sql/services/bootstrap/bootstrapParams';
+import { BOOTSTRAP_SERVICE_ID, IBootstrapService } from 'sql/services/bootstrap/bootstrapService';
+import Event, { Emitter } from 'vs/base/common/event';
+import { ComponentEventType } from '../../parts/modelComponents/interfaces';
 
-export interface DialogComponentParams extends IBootstrapParams {
+export interface DialogComponentParams extends BootstrapParams {
 	modelViewId: string;
 	validityChangedCallback: (valid: boolean) => void;
-	onLayoutRequested: Event<string>;
-	dialogPane: DialogPane;
 }
 
 @Component({
 	selector: 'dialog-modelview-container',
 	providers: [],
 	template: `
-		<div class="dialogContainer" *ngIf="_dialogPane && _dialogPane.displayPageTitle">
-			<div class="dialogModal-wizardHeader" *ngIf="_dialogPane && _dialogPane.displayPageTitle">
-				<div *ngIf="_dialogPane.pageNumber" class="wizardPageNumber">Step {{_dialogPane.pageNumber}}</div>
-				<h1 class="wizardPageTitle">{{_dialogPane.title}}</h1>
-				<div *ngIf="_dialogPane.description">{{_dialogPane.description}}</div>
-			</div>
-			<modelview-content [modelViewId]="modelViewId">
-			</modelview-content>
-		</div>
-		<modelview-content [modelViewId]="modelViewId" *ngIf="!_dialogPane || !_dialogPane.displayPageTitle">
+		<modelview-content [modelViewId]="modelViewId">
 		</modelview-content>
 	`
 })
-export class DialogContainer implements AfterViewInit {
+export class DialogContainer implements AfterContentInit {
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
-	private _dialogPane: DialogPane;
+	private _params: DialogComponentParams;
 
 	public modelViewId: string;
 	@ViewChild(ModelViewContent) private _modelViewContent: ModelViewContent;
 	constructor(
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(IBootstrapParams) private _params: DialogComponentParams) {
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService) {
+		this._params = bootstrapService.getBootstrapParams(el.nativeElement.tagName) as DialogComponentParams;
 		this.modelViewId = this._params.modelViewId;
-		this._params.onLayoutRequested(e => {
-			if (this.modelViewId === e) {
-				this.layout();
-			}
-		});
-		this._dialogPane = this._params.dialogPane;
 	}
 
-	ngAfterViewInit(): void {
+	ngAfterContentInit(): void {
 		this._modelViewContent.onEvent(event => {
-			if (event.isRootComponent && event.eventType === ComponentEventType.validityChanged) {
-				this._params.validityChangedCallback(event.args);
-			}
-		});
-		let element = <HTMLElement>this._el.nativeElement;
-		element.style.height = '100%';
-		element.style.width = '100%';
+		if (event.eventType === ComponentEventType.validityChanged) {
+			this._params.validityChangedCallback(event.args);
+		}
+	});
 	}
 
 	public layout(): void {

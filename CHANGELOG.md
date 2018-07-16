@@ -1,18 +1,5 @@
 # Change Log
 
-## Version 0.30.6
-* Release date: June 20, 2018
-* Release status: Public Preview
-
-## What's new in this version
-* **SQL Server Profiler for SQL Operations Studio  *Preview*** extension initial release
-* The new **SQL Data Warehouse** extension includes rich customizable dashboard widgets surfacing insights to your data warehouse. This unlocks key scenarios around managing and tuning your data warehouse to ensure it is optimized for consistent performance.
-* **Edit Data "Filtering and Sorting"** support
-* **SQL Server Agent for SQL Operations Studio *Preview*** extension enhancements for Jobs and Job History views
-* Improved **Wizard & Dialog UI Builder Framework** extensibility APIs
-* Update VS Code Platform source code integrating [March 2018 (1.22)](https://code.visualstudio.com/updates/v1_22) and [April 2018 (1.23)](https://code.visualstudio.com/updates/v1_23)  releases
-* Fix GitHub Issues
-
 ## Version 0.29.3
 * Release date: May 7, 2018
 * Release status: Public Preview
@@ -22,7 +9,7 @@ The May release is focused on stabilization and bug fixes leading up to the Buil
 
 * Announcing **Redgate SQL Search** extension available in Extension Manager
 * Community Localization available for 10 languages: **German, Spanish, French, Italian, Japanese, Korean, Portuguese, Russian, Simplified Chinese and Traditional Chinese!**
-* Reduced telemetry collection, improved [opt-out](https://github.com/Microsoft/sqlopsstudio/wiki/How-to-Disable-Telemetry-Reporting) experience and in-product links to [Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement)
+* **GDPR-compliant** build has reduced telemetry collection, improved [opt-out](https://github.com/Microsoft/sqlopsstudio/wiki/How-to-Disable-Telemetry-Reporting) experience and in-product links to [Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement)
 * Extension Manager has improved Marketplace experience to easily discover community extensions
 * SQL Agent extension Jobs and Job History view improvement
 * Updates for **whoisactive** and **Server Reports** extensions

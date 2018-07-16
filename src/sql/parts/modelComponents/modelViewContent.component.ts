@@ -6,7 +6,7 @@
 
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef } from '@angular/core';
 
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { Parts } from 'vs/workbench/services/part/common/partService';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
@@ -17,16 +17,15 @@ import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IModelView } from 'sql/services/model/modelViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
-import { ViewBase } from 'sql/parts/modelComponents/viewBase';
-import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
 
 import * as sqlops from 'sqlops';
+import { ViewBase } from 'sql/parts/modelComponents/viewBase';
 
 @Component({
 	selector: 'modelview-content',
 	template: `
-		<div *ngIf="rootDescriptor" style="width: 100%; height: 100%;">
-			<model-component-wrapper style="display: block; height: 100%" [descriptor]="rootDescriptor" [modelStore]="modelStore">
+		<div *ngIf="rootDescriptor">
+			<model-component-wrapper [descriptor]="rootDescriptor" [modelStore]="modelStore">
 			</model-component-wrapper>
 		</div>
 	`
@@ -43,14 +42,13 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IModelViewService) private modelViewService: IModelViewService
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
 		super(changeRef);
 	}
 
 	ngOnInit() {
-		this.modelViewService.registerModelView(this);
+		this._commonService.modelViewService.registerModelView(this);
 		this._register(addDisposableListener(window, EventType.RESIZE, e => {
 			this.layout();
 		}));
@@ -62,7 +60,6 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 	}
 
 	public layout(): void {
-		this.changeRef.detectChanges();
 	}
 
 	public get id(): string {
@@ -71,7 +68,7 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 
 	@memoize
 	public get connection(): sqlops.connection.Connection {
-		if (!this._commonService.connectionManagementService || !this._commonService.connectionManagementService.connectionInfo) {
+		if (!this._commonService.connectionManagementService) {
 			return undefined;
 		}
 
@@ -86,7 +83,7 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 
 	@memoize
 	public get serverInfo(): sqlops.ServerInfo {
-		if (!this._commonService.connectionManagementService || !this._commonService.connectionManagementService.connectionInfo) {
+		if (!this._commonService.connectionManagementService) {
 			return undefined;
 		}
 

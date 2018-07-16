@@ -5,10 +5,10 @@
 'use strict';
 
 import URI from 'vs/base/common/uri';
-import { nativeSep, normalize, basename as pathsBasename, join, sep } from 'vs/base/common/paths';
-import { endsWith, ltrim, equalsIgnoreCase, startsWithIgnoreCase, rtrim, startsWith } from 'vs/base/common/strings';
+import platform = require('vs/base/common/platform');
+import { nativeSep, normalize, isEqualOrParent, isEqual, basename as pathsBasename, join } from 'vs/base/common/paths';
+import { endsWith, ltrim } from 'vs/base/common/strings';
 import { Schemas } from 'vs/base/common/network';
-import { isLinux, isWindows, isMacintosh } from 'vs/base/common/platform';
 
 export interface IWorkspaceFolderProvider {
 	getWorkspaceFolder(resource: URI): { uri: URI };
@@ -30,7 +30,6 @@ export function getPathLabel(resource: URI | string, rootProvider?: IWorkspaceFo
 		resource = URI.file(resource);
 	}
 
-	// return early if the resource is neither file:// nor untitled://
 	if (resource.scheme !== Schemas.file && resource.scheme !== Schemas.untitled) {
 		return resource.with({ query: null, fragment: null }).toString(true);
 	}
@@ -41,7 +40,7 @@ export function getPathLabel(resource: URI | string, rootProvider?: IWorkspaceFo
 		const hasMultipleRoots = rootProvider.getWorkspace().folders.length > 1;
 
 		let pathLabel: string;
-		if (isLinux ? baseResource.uri.fsPath === resource.fsPath : equalsIgnoreCase(baseResource.uri.fsPath, resource.fsPath)) {
+		if (isEqual(baseResource.uri.fsPath, resource.fsPath, !platform.isLinux /* ignorecase */)) {
 			pathLabel = ''; // no label if pathes are identical
 		} else {
 			pathLabel = normalize(ltrim(resource.fsPath.substr(baseResource.uri.fsPath.length), nativeSep), true);
@@ -62,7 +61,7 @@ export function getPathLabel(resource: URI | string, rootProvider?: IWorkspaceFo
 
 	// normalize and tildify (macOS, Linux only)
 	let res = normalize(resource.fsPath, true);
-	if (!isWindows && userHomeProvider) {
+	if (!platform.isWindows && userHomeProvider) {
 		res = tildify(res, userHomeProvider.userHome);
 	}
 
@@ -89,7 +88,7 @@ export function getBaseLabel(resource: URI | string): string {
 }
 
 function hasDriveLetter(path: string): boolean {
-	return isWindows && path && path[1] === ':';
+	return platform.isWindows && path && path[1] === ':';
 }
 
 export function normalizeDriveLetter(path: string): string {
@@ -100,22 +99,9 @@ export function normalizeDriveLetter(path: string): string {
 	return path;
 }
 
-let normalizedUserHomeCached: { original: string; normalized: string } = Object.create(null);
 export function tildify(path: string, userHome: string): string {
-	if (isWindows || !path || !userHome) {
-		return path; // unsupported
-	}
-
-	// Keep a normalized user home path as cache to prevent accumulated string creation
-	let normalizedUserHome = normalizedUserHomeCached.original === userHome ? normalizedUserHomeCached.normalized : void 0;
-	if (!normalizedUserHome) {
-		normalizedUserHome = `${rtrim(userHome, sep)}${sep}`;
-		normalizedUserHomeCached = { original: userHome, normalized: normalizedUserHome };
-	}
-
-	// Linux: case sensitive, macOS: case insensitive
-	if (isLinux ? startsWith(path, normalizedUserHome) : startsWithIgnoreCase(path, normalizedUserHome)) {
-		path = `~/${path.substr(normalizedUserHome.length)}`;
+	if (path && (platform.isMacintosh || platform.isLinux) && isEqualOrParent(path, userHome, !platform.isLinux /* ignorecase */)) {
+		path = `~${path.substr(userHome.length)}`;
 	}
 
 	return path;
@@ -339,7 +325,7 @@ export function template(template: string, values: { [key: string]: string | ISe
 			const left = segments[index - 1];
 			const right = segments[index + 1];
 
-			return [left, right].every(segment => segment && (segment.type === Type.VARIABLE || segment.type === Type.TEXT) && segment.value.length > 0);
+			return [left, right].every(segment => segment && segment.type === Type.VARIABLE && segment.value.length > 0);
 		}
 
 		// accept any TEXT and VARIABLE
@@ -354,7 +340,7 @@ export function template(template: string, values: { [key: string]: string | ISe
  * -   macOS: Unsupported (replace && with empty string)
  */
 export function mnemonicMenuLabel(label: string, forceDisableMnemonics?: boolean): string {
-	if (isMacintosh || forceDisableMnemonics) {
+	if (platform.isMacintosh || forceDisableMnemonics) {
 		return label.replace(/\(&&\w\)|&&/g, '');
 	}
 
@@ -368,11 +354,11 @@ export function mnemonicMenuLabel(label: string, forceDisableMnemonics?: boolean
  * -   macOS: Unsupported (replace && with empty string)
  */
 export function mnemonicButtonLabel(label: string): string {
-	if (isMacintosh) {
+	if (platform.isMacintosh) {
 		return label.replace(/\(&&\w\)|&&/g, '');
 	}
 
-	return label.replace(/&&/g, isWindows ? '&' : '_');
+	return label.replace(/&&/g, platform.isWindows ? '&' : '_');
 }
 
 export function unmnemonicLabel(label: string): string {

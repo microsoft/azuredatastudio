@@ -7,7 +7,9 @@
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Position } from 'vs/editor/common/core/position';
 import { Selection } from 'vs/editor/common/core/selection';
+import * as editorCommon from 'vs/editor/common/editorCommon';
 import { IEditorMouseEvent } from 'vs/editor/browser/editorBrowser';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IViewModel } from 'vs/editor/common/viewModel/viewModel';
 import { ViewOutgoingEvents } from 'vs/editor/browser/view/viewOutgoingEvents';
 import { CoreNavigationCommands, CoreEditorCommand } from 'vs/editor/browser/controller/coreCommands';
@@ -31,18 +33,6 @@ export interface IMouseDispatchData {
 	ctrlKey: boolean;
 	metaKey: boolean;
 	shiftKey: boolean;
-
-	leftButton: boolean;
-	middleButton: boolean;
-}
-
-export interface ICommandDelegate {
-	paste(source: string, text: string, pasteOnNewLine: boolean, multicursorText: string[]): void;
-	type(source: string, text: string): void;
-	replacePreviousChar(source: string, text: string, replaceCharCnt: number): void;
-	compositionStart(source: string): void;
-	compositionEnd(source: string): void;
-	cut(source: string): void;
 }
 
 export class ViewController {
@@ -51,20 +41,20 @@ export class ViewController {
 	private readonly viewModel: IViewModel;
 	private readonly _execCoreEditorCommandFunc: ExecCoreEditorCommandFunc;
 	private readonly outgoingEvents: ViewOutgoingEvents;
-	private readonly commandDelegate: ICommandDelegate;
+	private readonly commandService: ICommandService;
 
 	constructor(
 		configuration: Configuration,
 		viewModel: IViewModel,
 		execCommandFunc: ExecCoreEditorCommandFunc,
 		outgoingEvents: ViewOutgoingEvents,
-		commandDelegate: ICommandDelegate
+		commandService: ICommandService
 	) {
 		this.configuration = configuration;
 		this.viewModel = viewModel;
 		this._execCoreEditorCommandFunc = execCommandFunc;
 		this.outgoingEvents = outgoingEvents;
-		this.commandDelegate = commandDelegate;
+		this.commandService = commandService;
 	}
 
 	private _execMouseCommand(editorCommand: CoreEditorCommand, args: any): void {
@@ -73,27 +63,36 @@ export class ViewController {
 	}
 
 	public paste(source: string, text: string, pasteOnNewLine: boolean, multicursorText: string[]): void {
-		this.commandDelegate.paste(source, text, pasteOnNewLine, multicursorText);
+		this.commandService.executeCommand(editorCommon.Handler.Paste, {
+			text: text,
+			pasteOnNewLine: pasteOnNewLine,
+			multicursorText: multicursorText
+		});
 	}
 
 	public type(source: string, text: string): void {
-		this.commandDelegate.type(source, text);
+		this.commandService.executeCommand(editorCommon.Handler.Type, {
+			text: text
+		});
 	}
 
 	public replacePreviousChar(source: string, text: string, replaceCharCnt: number): void {
-		this.commandDelegate.replacePreviousChar(source, text, replaceCharCnt);
+		this.commandService.executeCommand(editorCommon.Handler.ReplacePreviousChar, {
+			text: text,
+			replaceCharCnt: replaceCharCnt
+		});
 	}
 
 	public compositionStart(source: string): void {
-		this.commandDelegate.compositionStart(source);
+		this.commandService.executeCommand(editorCommon.Handler.CompositionStart, {});
 	}
 
 	public compositionEnd(source: string): void {
-		this.commandDelegate.compositionEnd(source);
+		this.commandService.executeCommand(editorCommon.Handler.CompositionEnd, {});
 	}
 
 	public cut(source: string): void {
-		this.commandDelegate.cut(source);
+		this.commandService.executeCommand(editorCommon.Handler.Cut, {});
 	}
 
 	public setSelection(source: string, modelSelection: Selection): void {
@@ -136,13 +135,7 @@ export class ViewController {
 	}
 
 	public dispatchMouse(data: IMouseDispatchData): void {
-		if (data.middleButton) {
-			if (data.inSelectionMode) {
-				this.columnSelect(data.position, data.mouseColumn);
-			} else {
-				this.moveTo(data.position);
-			}
-		} else if (data.startedOnLineNumbers) {
+		if (data.startedOnLineNumbers) {
 			// If the dragging started on the gutter, then have operations work on the entire line
 			if (this._hasMulticursorModifier(data)) {
 				if (data.inSelectionMode) {

@@ -5,7 +5,7 @@
 
 'use strict';
 
-import 'vs/css!vs/workbench/parts/extensions/electron-browser/media/extensionEditor';
+import 'vs/css!vs/workbench/parts/extensions/browser/media/extensionEditor';
 
 
 import { IExtensionManifest } from 'vs/platform/extensionManagement/common/extensionManagement';

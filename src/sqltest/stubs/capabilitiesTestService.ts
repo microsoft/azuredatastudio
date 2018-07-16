@@ -9,7 +9,7 @@ import { ConnectionManagementInfo } from 'sql/parts/connection/common/connection
 import { ICapabilitiesService, clientCapabilities, ProviderFeatures } from 'sql/services/capabilities/capabilitiesService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
 
 export class CapabilitiesTestService implements ICapabilitiesService {

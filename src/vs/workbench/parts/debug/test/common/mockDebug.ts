@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import uri from 'vs/base/common/uri';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
-import { ILaunch, IDebugService, State, DebugEvent, IProcess, IConfigurationManager, IStackFrame, IBreakpointData, IBreakpointUpdateData, IConfig, IModel, IViewModel, ISession, IBreakpoint } from 'vs/workbench/parts/debug/common/debug';
+import { ILaunch, IDebugService, State, DebugEvent, IProcess, IConfigurationManager, IStackFrame, IBreakpointData, IBreakpointUpdateData, IConfig, IModel, IViewModel, ISession } from 'vs/workbench/parts/debug/common/debug';
 
 export class MockDebugService implements IDebugService {
 	public _serviceBrand: any;
@@ -39,7 +39,7 @@ export class MockDebugService implements IDebugService {
 	public focusStackFrame(focusedStackFrame: IStackFrame): void {
 	}
 
-	public addBreakpoints(uri: uri, rawBreakpoints: IBreakpointData[]): TPromise<IBreakpoint[]> {
+	public addBreakpoints(uri: uri, rawBreakpoints: IBreakpointData[]): TPromise<void> {
 		return TPromise.as(null);
 	}
 
@@ -111,7 +111,6 @@ export class MockDebugService implements IDebugService {
 }
 
 export class MockSession implements ISession {
-
 	public readyForBreakpoints = true;
 	public emittedStopped = true;
 
@@ -218,10 +217,6 @@ export class MockSession implements ISession {
 		return TPromise.as(null);
 	}
 
-	public terminateThreads(args: DebugProtocol.TerminateThreadsArguments): TPromise<DebugProtocol.TerminateThreadsResponse, any> {
-		return TPromise.as(null);
-	}
-
 	public setVariable(args: DebugProtocol.SetVariableArguments): TPromise<DebugProtocol.SetVariableResponse> {
 		return TPromise.as(null);
 	}
@@ -254,5 +249,5 @@ export class MockSession implements ISession {
 		return TPromise.as(null);
 	}
 
-	public readonly onDidStop: Event<DebugProtocol.StoppedEvent> = null;
+	public onDidStop: Event<DebugProtocol.StoppedEvent> = null;
 }

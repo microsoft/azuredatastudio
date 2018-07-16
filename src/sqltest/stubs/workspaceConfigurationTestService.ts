@@ -10,7 +10,7 @@ import { IConfigurationValue } from 'vs/workbench/services/configuration/node/co
 import { IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Event } from 'vs/base/common/event';
+import Event from 'vs/base/common/event';
 import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 
 export class WorkspaceConfigurationTestService implements IWorkspaceConfigurationService {

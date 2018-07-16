@@ -4,29 +4,50 @@
  *--------------------------------------------------------------------------------------------*/
 
 /* Node Modules */
-import { Injectable, Inject, forwardRef } from '@angular/core';
+import { Injectable, Inject, forwardRef, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
 
 /* SQL imports */
-import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { DashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IBootstrapService, BOOTSTRAP_SERVICE_ID } from 'sql/services/bootstrap/bootstrapService';
 import { IMetadataService } from 'sql/services/metadata/metadataService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
+import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { TabSettingConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
+import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { ConnectionContextkey } from 'sql/parts/connection/common/connectionContextKey';
+import { SingleConnectionMetadataService, SingleConnectionManagementService, SingleAdminService, SingleQueryManagementService, CommonServiceInterface }
+from 'sql/services/common/commonServiceInterface.service';
+
+import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'sqlops';
 
 /* VS imports */
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { Event, Emitter } from 'vs/base/common/event';
+import { ConfigurationEditingService, IConfigurationValue } from 'vs/workbench/services/configuration/node/configurationEditingService';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import Event, { Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
+import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { deepClone } from 'vs/base/common/objects';
-import { RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 const DASHBOARD_SETTINGS = 'dashboard';
@@ -42,6 +63,9 @@ const DASHBOARD_SETTINGS = 'dashboard';
 export class DashboardServiceInterface extends CommonServiceInterface {
 
 	/* Static Services */
+
+	private _dashboardViewService = this._bootstrapService.dashboardViewService;
+
 
 	private _updatePage = new Emitter<void>();
 	public readonly onUpdatePage: Event<void> = this._updatePage.event;
@@ -64,22 +88,39 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	private _numberOfPageNavigations = 0;
 
 	constructor(
-		@Inject(IMetadataService) metadataService: IMetadataService,
-		@Inject(IConnectionManagementService) connectionManagementService: IConnectionManagementService,
-		@Inject(IAdminService) adminService: IAdminService,
-		@Inject(IQueryManagementService) queryManagementService: IQueryManagementService,
-		@Inject(IBootstrapParams) params: IDashboardComponentParams,
+		@Inject(BOOTSTRAP_SERVICE_ID) bootstrapService: IBootstrapService,
 		@Inject(forwardRef(() => Router)) private _router: Router,
-		@Inject(INotificationService) private _notificationService: INotificationService,
-		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
-		@Inject(IConfigurationService) private _configService: IConfigurationService
 	) {
-		super(params, metadataService, connectionManagementService, adminService, queryManagementService);
-		// during testing there may not be params
-		if (this._params) {
-			this.dashboardContextKey = this._dashboardContextKey.bindTo(this.scopedContextKeyService);
-			this._register(toDisposableSubscription(this.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
-		}
+		super(bootstrapService);
+	}
+
+	public get dashboardViewService(): IDashboardViewService {
+		return this._dashboardViewService;
+	}
+
+	/**
+	 * Set the selector for this dashboard instance, should only be set once
+	 */
+	public set selector(selector: string) {
+		this._uniqueSelector = selector;
+		this._getbootstrapParams();
+	}
+
+	protected _getbootstrapParams(): void {
+		this._bootstrapParams = this._bootstrapService.getBootstrapParams<DashboardComponentParams>(this._uniqueSelector);
+		this._contextKeyService = this._bootstrapParams.scopedContextService;
+		this._connectionContextKey = this._bootstrapParams.connectionContextKey;
+		this.dashboardContextKey = this._dashboardContextKey.bindTo(this._contextKeyService);
+		this.uri = this._bootstrapParams.ownerUri;
+	}
+
+	/**
+	 * Set the uri for this dashboard instance, should only be set once
+	 * Inits all the services that depend on knowing a uri
+	 */
+	protected set uri(uri: string) {
+		super.setUri(uri);
+		this._register(toDisposableSubscription(this._bootstrapService.angularEventingService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
 	}
 
 	/**
@@ -106,7 +147,7 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	}
 
 	public writeSettings(type: string, value: any, target: ConfigurationTarget) {
-		this._configService.updateValue([DASHBOARD_SETTINGS, type].join('.'), value, target);
+		this._configurationEditingService.writeConfiguration(target, { key: [DASHBOARD_SETTINGS, type].join('.'), value });
 	}
 
 	private handleDashboardEvent(event: IAngularEvent): void {

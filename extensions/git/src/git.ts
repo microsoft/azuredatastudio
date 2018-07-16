@@ -15,7 +15,6 @@ import iconv = require('iconv-lite');
 import * as filetype from 'file-type';
 import { assign, uniqBy, groupBy, denodeify, IDisposable, toDisposable, dispose, mkdirp, readBytes, detectUnicodeEncoding, Encoding, onceEvent } from './util';
 import { CancellationToken } from 'vscode';
-import { detectEncoding } from './encoding';
 
 const readfile = denodeify<string, string | null, string>(fs.readFile);
 
@@ -54,13 +53,8 @@ export interface Ref {
 	remote?: string;
 }
 
-export interface UpstreamRef {
-	remote: string;
-	name: string;
-}
-
 export interface Branch extends Ref {
-	upstream?: UpstreamRef;
+	upstream?: string;
 	ahead?: number;
 	behind?: number;
 }
@@ -367,14 +361,14 @@ function getGitErrorCode(stderr: string): string | undefined {
 
 export class Git {
 
-	readonly path: string;
+	private gitPath: string;
 	private env: any;
 
 	private _onOutput = new EventEmitter();
 	get onOutput(): EventEmitter { return this._onOutput; }
 
 	constructor(options: IGitOptions) {
-		this.path = options.gitPath;
+		this.gitPath = options.gitPath;
 		this.env = options.env || {};
 	}
 
@@ -388,29 +382,11 @@ export class Git {
 	}
 
 	async clone(url: string, parentPath: string, cancellationToken?: CancellationToken): Promise<string> {
-		let baseFolderName = decodeURI(url).replace(/^.*\//, '').replace(/\.git$/, '') || 'repository';
-		let folderName = baseFolderName;
-		let folderPath = path.join(parentPath, folderName);
-		let count = 1;
-
-		while (count < 20 && await new Promise(c => fs.exists(folderPath, c))) {
-			folderName = `${baseFolderName}-${count++}`;
-			folderPath = path.join(parentPath, folderName);
-		}
+		const folderName = decodeURI(url).replace(/^.*\//, '').replace(/\.git$/, '') || 'repository';
+		const folderPath = path.join(parentPath, folderName);
 
 		await mkdirp(parentPath);
-
-		try {
-			await this.exec(parentPath, ['clone', url, folderPath], { cancellationToken });
-		} catch (err) {
-			if (err.stderr) {
-				err.stderr = err.stderr.replace(/^Cloning.+$/m, '').trim();
-				err.stderr = err.stderr.replace(/^ERROR:\s+/, '').trim();
-			}
-
-			throw err;
-		}
-
+		await this.exec(parentPath, ['clone', url, folderPath], { cancellationToken });
 		return folderPath;
 	}
 
@@ -466,7 +442,7 @@ export class Git {
 	}
 
 	spawn(args: string[], options: SpawnOptions = {}): cp.ChildProcess {
-		if (!this.path) {
+		if (!this.gitPath) {
 			throw new Error('git could not be found in the system.');
 		}
 
@@ -488,7 +464,7 @@ export class Git {
 			this.log(`> git ${args.join(' ')}\n`);
 		}
 
-		return cp.spawn(this.path, args, options);
+		return cp.spawn(this.gitPath, args, options);
 	}
 
 	private log(output: string): void {
@@ -678,16 +654,9 @@ export class Repository {
 		return result.stdout;
 	}
 
-	async bufferString(object: string, encoding: string = 'utf8', autoGuessEncoding = false): Promise<string> {
+	async bufferString(object: string, encoding: string = 'utf8'): Promise<string> {
 		const stdout = await this.buffer(object);
-
-		if (autoGuessEncoding) {
-			encoding = detectEncoding(stdout) || encoding;
-		}
-
-		encoding = iconv.encodingExists(encoding) ? encoding : 'utf8';
-
-		return iconv.decode(stdout, encoding);
+		return iconv.decode(stdout, iconv.encodingExists(encoding) ? encoding : 'utf8');
 	}
 
 	async buffer(object: string): Promise<Buffer> {
@@ -1019,7 +988,7 @@ export class Repository {
 	}
 
 	async pull(rebase?: boolean, remote?: string, branch?: string): Promise<void> {
-		const args = ['pull', '--tags'];
+		const args = ['pull'];
 
 		if (rebase) {
 			args.push('-r');
@@ -1039,8 +1008,7 @@ export class Repository {
 				err.gitErrorCode = GitErrorCodes.NoUserNameConfigured;
 			} else if (/Could not read from remote repository/.test(err.stderr || '')) {
 				err.gitErrorCode = GitErrorCodes.RemoteConnectionError;
-			} else if (/Pull is not possible because you have unmerged files|Cannot pull with rebase: You have unstaged changes|Your local changes to the following files would be overwritten|Please, commit your changes before you can merge/i.test(err.stderr)) {
-				err.stderr = err.stderr.replace(/Cannot pull with rebase: You have unstaged changes/i, 'Cannot pull with rebase, you have unstaged changes');
+			} else if (/Pull is not possible because you have unmerged files|Cannot pull with rebase: You have unstaged changes|Your local changes to the following files would be overwritten|Please, commit your changes before you can merge/.test(err.stderr)) {
 				err.gitErrorCode = GitErrorCodes.DirtyWorkTree;
 			}
 
@@ -1250,16 +1218,10 @@ export class Repository {
 		const commit = result.stdout.trim();
 
 		try {
-			const res2 = await this.run(['rev-parse', '--symbolic-full-name', name + '@{u}']);
-			const fullUpstream = res2.stdout.trim();
-			const match = /^refs\/remotes\/([^/]+)\/(.+)$/.exec(fullUpstream);
+			const res2 = await this.run(['rev-parse', '--symbolic-full-name', '--abbrev-ref', name + '@{u}']);
+			const upstream = res2.stdout.trim();
 
-			if (!match) {
-				throw new Error(`Could not parse upstream branch: ${fullUpstream}`);
-			}
-
-			const upstream = { remote: match[1], name: match[2] };
-			const res3 = await this.run(['rev-list', '--left-right', name + '...' + fullUpstream]);
+			const res3 = await this.run(['rev-list', '--left-right', name + '...' + upstream]);
 
 			let ahead = 0, behind = 0;
 			let i = 0;

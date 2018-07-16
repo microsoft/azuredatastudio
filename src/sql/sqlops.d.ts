@@ -635,7 +635,6 @@ declare module 'sqlops' {
 		runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 		runQueryString(ownerUri: string, queryString: string): Thenable<void>;
 		runQueryAndReturn(ownerUri: string, queryString: string): Thenable<SimpleExecuteResult>;
-		parseSyntax(ownerUri: string, query: string): Thenable<SyntaxParseResult>;
 		getQueryRows(rowData: QueryExecuteSubsetParams): Thenable<QueryExecuteSubsetResult>;
 		disposeQuery(ownerUri: string): Thenable<void>;
 		saveResults(requestParams: SaveResultsRequestParams): Thenable<SaveResultRequestResult>;
@@ -770,16 +769,6 @@ declare module 'sqlops' {
 		rows: DbCellValue[][];
 	}
 
-	export interface SyntaxParseParams {
-		ownerUri: string;
-		query: string;
-	}
-
-	export interface SyntaxParseResult {
-		parseable: boolean;
-		errorMessages: string[];
-	}
-
 	// Query Batch Notification -----------------------------------------------------------------------
 	export interface QueryExecuteBatchNotificationParams {
 		batchSummary: BatchSummary;
@@ -840,7 +829,6 @@ declare module 'sqlops' {
 		columnStartIndex: number;
 		columnEndIndex: number;
 		includeHeaders?: boolean;
-		delimiter?: string;
 	}
 
 	export interface SaveResultRequestResult {
@@ -934,10 +922,6 @@ declare module 'sqlops' {
 		subset: EditRow[];
 	}
 
-	/**
-	 * A NodeInfo object represents an element in the Object Explorer tree under
-	 * a connection.
-	 */
 	export interface NodeInfo {
 		nodePath: string;
 		nodeType: string;
@@ -947,116 +931,6 @@ declare module 'sqlops' {
 		isLeaf: boolean;
 		metadata: ObjectMetadata;
 		errorMessage: string;
-		/**
-		 * Optional iconType for the object in the tree. Currently this only supports
-		 * an icon name or SqlThemeIcon name, rather than a path to an icon.
-		 * If not defined, the nodeType + nodeStatus / nodeSubType values
-		 * will be used instead.
-		 */
-		iconType?: string | SqlThemeIcon;
-	}
-
-	/**
-	 * A reference to a named icon. Currently only a subset of the SQL icons are available.
-	 * Using a theme icon is preferred over a custom icon as it gives theme authors the possibility to change the icons.
-	 */
-	export class SqlThemeIcon {
-		static readonly Folder: SqlThemeIcon;
-		static readonly Root: SqlThemeIcon;
-		static readonly Database: SqlThemeIcon;
-		static readonly Server: SqlThemeIcon;
-		static readonly ScalarValuedFunction: SqlThemeIcon;
-		static readonly TableValuedFunction: SqlThemeIcon;
-		static readonly AggregateFunction: SqlThemeIcon;
-		static readonly FileGroup: SqlThemeIcon;
-		static readonly StoredProcedure: SqlThemeIcon;
-		static readonly UserDefinedTableType: SqlThemeIcon;
-		static readonly View: SqlThemeIcon;
-		static readonly Table: SqlThemeIcon;
-		static readonly HistoryTable: SqlThemeIcon;
-		static readonly ServerLevelLinkedServerLogin: SqlThemeIcon;
-		static readonly ServerLevelServerAudit: SqlThemeIcon;
-		static readonly ServerLevelCryptographicProvider: SqlThemeIcon;
-		static readonly ServerLevelCredential: SqlThemeIcon;
-		static readonly ServerLevelServerRole: SqlThemeIcon;
-		static readonly ServerLevelLogin: SqlThemeIcon;
-		static readonly ServerLevelServerAuditSpecification: SqlThemeIcon;
-		static readonly ServerLevelServerTrigger: SqlThemeIcon;
-		static readonly ServerLevelLinkedServer: SqlThemeIcon;
-		static readonly ServerLevelEndpoint: SqlThemeIcon;
-		static readonly Synonym: SqlThemeIcon;
-		static readonly DatabaseTrigger: SqlThemeIcon;
-		static readonly Assembly: SqlThemeIcon;
-		static readonly MessageType: SqlThemeIcon;
-		static readonly Contract: SqlThemeIcon;
-		static readonly Queue: SqlThemeIcon;
-		static readonly Service: SqlThemeIcon;
-		static readonly Route: SqlThemeIcon;
-		static readonly DatabaseAndQueueEventNotification: SqlThemeIcon;
-		static readonly RemoteServiceBinding: SqlThemeIcon;
-		static readonly BrokerPriority: SqlThemeIcon;
-		static readonly FullTextCatalog: SqlThemeIcon;
-		static readonly FullTextStopList: SqlThemeIcon;
-		static readonly SqlLogFile: SqlThemeIcon;
-		static readonly PartitionFunction: SqlThemeIcon;
-		static readonly PartitionScheme: SqlThemeIcon;
-		static readonly SearchPropertyList: SqlThemeIcon;
-		static readonly User: SqlThemeIcon;
-		static readonly Schema: SqlThemeIcon;
-		static readonly AsymmetricKey: SqlThemeIcon;
-		static readonly Certificate: SqlThemeIcon;
-		static readonly SymmetricKey: SqlThemeIcon;
-		static readonly DatabaseEncryptionKey: SqlThemeIcon;
-		static readonly MasterKey: SqlThemeIcon;
-		static readonly DatabaseAuditSpecification: SqlThemeIcon;
-		static readonly Column: SqlThemeIcon;
-		static readonly Key: SqlThemeIcon;
-		static readonly Constraint: SqlThemeIcon;
-		static readonly Trigger: SqlThemeIcon;
-		static readonly Index: SqlThemeIcon;
-		static readonly Statistic: SqlThemeIcon;
-		static readonly UserDefinedDataType: SqlThemeIcon;
-		static readonly UserDefinedType: SqlThemeIcon;
-		static readonly XmlSchemaCollection: SqlThemeIcon;
-		static readonly SystemExactNumeric: SqlThemeIcon;
-		static readonly SystemApproximateNumeric: SqlThemeIcon;
-		static readonly SystemDateAndTime: SqlThemeIcon;
-		static readonly SystemCharacterString: SqlThemeIcon;
-		static readonly SystemUnicodeCharacterString: SqlThemeIcon;
-		static readonly SystemBinaryString: SqlThemeIcon;
-		static readonly SystemOtherDataType: SqlThemeIcon;
-		static readonly SystemClrDataType: SqlThemeIcon;
-		static readonly SystemSpatialDataType: SqlThemeIcon;
-		static readonly UserDefinedTableTypeColumn: SqlThemeIcon;
-		static readonly UserDefinedTableTypeKey: SqlThemeIcon;
-		static readonly UserDefinedTableTypeConstraint: SqlThemeIcon;
-		static readonly StoredProcedureParameter: SqlThemeIcon;
-		static readonly TableValuedFunctionParameter: SqlThemeIcon;
-		static readonly ScalarValuedFunctionParameter: SqlThemeIcon;
-		static readonly AggregateFunctionParameter: SqlThemeIcon;
-		static readonly DatabaseRole: SqlThemeIcon;
-		static readonly ApplicationRole: SqlThemeIcon;
-		static readonly FileGroupFile: SqlThemeIcon;
-		static readonly SystemMessageType: SqlThemeIcon;
-		static readonly SystemContract: SqlThemeIcon;
-		static readonly SystemService: SqlThemeIcon;
-		static readonly SystemQueue: SqlThemeIcon;
-		static readonly Sequence: SqlThemeIcon;
-		static readonly SecurityPolicy: SqlThemeIcon;
-		static readonly DatabaseScopedCredential: SqlThemeIcon;
-		static readonly ExternalResource: SqlThemeIcon;
-		static readonly ExternalDataSource: SqlThemeIcon;
-		static readonly ExternalFileFormat: SqlThemeIcon;
-		static readonly ExternalTable: SqlThemeIcon;
-		static readonly ColumnMasterKey: SqlThemeIcon;
-		static readonly ColumnEncryptionKey: SqlThemeIcon;
-
-		private constructor(id: string);
-
-		/**
-		 * Gets the ID for the theme icon for help in cases where string comparison is needed
-		 */
-		public readonly id: string;
 	}
 
 	// Object Explorer interfaces  -----------------------------------------------------------------------
@@ -1151,73 +1025,26 @@ declare module 'sqlops' {
 		getDatabaseInfo(connectionUri: string): Thenable<DatabaseInfo>;
 	}
 
-	// Agent Services types
-	export enum WeekDays {
-		sunday = 1,
-		monday = 2,
-		tuesday = 4,
-		wednesday = 8,
-		thursday = 16,
-		friday = 32,
-		weekDays = 62,
-		saturday = 64,
-		weekEnds = 65,
-		everyDay = 127
+	// Agent Services interfaces
+	export interface AgentJobsResult {
+		succeeded: boolean;
+		errorMessage: string;
+		jobs: AgentJobInfo[];
 	}
 
-	export enum NotifyMethods {
-		none = 0,
-		notifyEmail = 1,
-		pager = 2,
-		netSend = 4,
-		notifyAll = 7
+	export interface AgentJobHistoryResult {
+		succeeded: boolean;
+		errorMessage: string;
+		jobs: AgentJobHistoryInfo[];
 	}
 
-	export enum AlertType {
-		sqlServerEvent = 1,
-		sqlServerPerformanceCondition = 2,
-		nonSqlServerEvent = 3,
-		wmiEvent = 4
-	}
-
-	export enum JobCompletionActionCondition {
-		Never = 0,
-		OnSuccess = 1,
-		OnFailure = 2,
-		Always = 3
-	}
-
-	export enum FrequencyTypes {
-		Unknown,
-		OneTime = 1 << 1,
-		Daily = 1 << 2,
-		Weekly = 1 << 3,
-		Monthly = 1 << 4,
-		MonthlyRelative = 1 << 5,
-		AutoStart = 1 << 6,
-		OnIdle = 1 << 7
-	}
-
-	export enum FrequencySubDayTypes {
-		Unknown = 0,
-		Once = 1,
-		Second = 2,
-		Minute = 4,
-		Hour = 8
-	}
-
-	export enum FrequencyRelativeIntervals {
-		First = 1,
-		Second = 2,
-		Third = 4,
-		Fourth = 8,
-		Last = 16
+	export interface AgentJobActionResult {
+		succeeded: boolean;
+		errorMessage: string;
 	}
 
 	export interface AgentJobInfo {
 		name: string;
-		owner: string;
-		description: string;
 		currentExecutionStatus: number;
 		lastRunOutcome: number;
 		currentExecutionStep: string;
@@ -1232,71 +1059,14 @@ declare module 'sqlops' {
 		lastRun: string;
 		nextRun: string;
 		jobId: string;
-		EmailLevel: JobCompletionActionCondition;
-		PageLevel: JobCompletionActionCondition;
-		EventLogLevel: JobCompletionActionCondition;
-		DeleteLevel: JobCompletionActionCondition;
-		OperatorToEmail: string;
-		OperatorToPage: string;
-		JobSteps: AgentJobStepInfo[];
-		JobSchedules: AgentJobScheduleInfo[];
-		Alerts: AgentAlertInfo[];
-	}
-
-	export interface AgentJobScheduleInfo {
-		id: number;
-		name: string;
-		jobName: string;
-		isEnabled: boolean;
-		frequencyTypes: FrequencyTypes;
-		frequencySubDayTypes: FrequencySubDayTypes;
-		frequencySubDayInterval: number;
-		frequencyRelativeIntervals: FrequencyRelativeIntervals;
-		frequencyRecurrenceFactor: number;
-		frequencyInterval: number;
-		dateCreated: string;
-		activeStartTimeOfDay: string;
-		activeStartDate: string;
-		activeEndTimeOfDay: string;
-		jobCount: number;
-		activeEndDate: string;
-		scheduleUid: string;
 	}
 
 	export interface AgentJobStep {
-		jobId: string;
 		stepId: string;
 		stepName: string;
 		message: string;
 		runDate: string;
 		runStatus: number;
-	}
-
-	export interface AgentJobStepInfo {
-		jobId: string;
-		jobName: string;
-		script: string;
-		scriptName: string;
-		stepName: string;
-		subSystem: string;
-		id: number;
-		failureAction: string;
-		successAction: string;
-		failStepId: number;
-		successStepId: number;
-		command: string;
-		commandExecutionSuccessCode: number;
-		databaseName: string;
-		databaseUserName: string;
-		server: string;
-		outputFileName: string;
-		appendToLogFile: boolean;
-		appendToStepHist: boolean;
-		writeLogToTable: boolean;
-		appendLogToTable: boolean;
-		retryAttempts: number;
-		retryInterval: number;
-		proxyName: string;
 	}
 
 	export interface AgentJobHistoryInfo {
@@ -1319,214 +1089,10 @@ declare module 'sqlops' {
 		steps: AgentJobStep[];
 	}
 
-	export interface AgentProxyInfo {
-		id: number;
-		accountName: string;
-		description: string;
-		credentialName: string;
-		credentialIdentity: string;
-		credentialId: number;
-		isEnabled: boolean;
-	}
-
-	export interface AgentAlertInfo {
-		id: number;
-		name: string;
-		delayBetweenResponses: number;
-		eventDescriptionKeyword: string;
-		eventSource: string;
-		hasNotification: number;
-		includeEventDescription: NotifyMethods;
-		isEnabled: boolean;
-		jobId: string;
-		jobName: string;
-		lastOccurrenceDate: string;
-		lastResponseDate: string;
-		messageId: number;
-		notificationMessage: string;
-		occurrenceCount: number;
-		performanceCondition: string;
-		severity: number;
-		databaseName: string;
-		countResetDate: string;
-		categoryName: string;
-		alertType: AlertType;
-		wmiEventNamespace: string;
-		wmiEventQuery: string;
-	}
-
-	export interface AgentOperatorInfo {
-		name: string;
-		id: number;
-		emailAddress: string;
-		enabled: boolean;
-		lastEmailDate: string;
-		lastNetSendDate: string;
-		lastPagerDate: string;
-		pagerAddress: string;
-		categoryName: string;
-		pagerDays: WeekDays;
-		saturdayPagerEndTime: string;
-		saturdayPagerStartTime: string;
-		sundayPagerEndTime: string;
-		sundayPagerStartTime: string;
-		netSendAddress: string;
-		weekdayPagerStartTime: string;
-		weekdayPagerEndTime: string;
-	}
-
-	export interface ResultStatus {
-		success: boolean;
-		errorMessage: string;
-	}
-
-	export interface AgentJobsResult extends ResultStatus {
-		jobs: AgentJobInfo[];
-	}
-
-	export interface AgentJobHistoryResult extends ResultStatus {
-		jobs: AgentJobHistoryInfo[];
-	}
-
-	export interface CreateAgentJobResult extends ResultStatus {
-		job: AgentJobInfo;
-	}
-
-	export interface UpdateAgentJobResult extends ResultStatus {
-		job: AgentJobInfo;
-	}
-
-	export interface AgentJobCategory {
-		id: string;
-		name: string;
-	}
-
-	export interface AgentJobDefaultsResult extends ResultStatus {
-		owner: string;
-		categories: AgentJobCategory[];
-	}
-
-	export interface CreateAgentJobStepResult extends ResultStatus {
-		step: AgentJobStepInfo;
-	}
-
-	export interface UpdateAgentJobStepResult extends ResultStatus {
-		step: AgentJobStepInfo;
-	}
-
-	export interface CreateAgentProxyResult extends ResultStatus {
-		step: AgentJobStepInfo;
-	}
-
-	export interface UpdateAgentProxyResult extends ResultStatus {
-		step: AgentJobStepInfo;
-	}
-
-	export interface AgentAlertsResult extends ResultStatus {
-		alerts: AgentAlertInfo[];
-	}
-
-	export interface CreateAgentAlertResult extends ResultStatus {
-		alert: AgentJobStepInfo;
-	}
-
-	export interface UpdateAgentAlertResult extends ResultStatus {
-		alert: AgentJobStepInfo;
-	}
-
-	export interface AgentOperatorsResult extends ResultStatus {
-		operators: AgentOperatorInfo[];
-	}
-
-	export interface CreateAgentOperatorResult extends ResultStatus {
-		operator: AgentOperatorInfo;
-	}
-
-	export interface UpdateAgentOperatorResult extends ResultStatus {
-		operator: AgentOperatorInfo;
-	}
-
-	export interface AgentProxiesResult extends ResultStatus {
-		proxies: AgentProxyInfo[];
-	}
-
-	export interface CreateAgentProxyResult extends ResultStatus {
-		proxy: AgentProxyInfo;
-	}
-
-	export interface UpdateAgentProxyResult extends ResultStatus {
-		proxy: AgentProxyInfo;
-	}
-
-	export interface AgentJobSchedulesResult extends ResultStatus {
-		schedules: AgentJobScheduleInfo[];
-	}
-
-	export interface CreateAgentJobScheduleResult extends ResultStatus {
-		schedule: AgentJobScheduleInfo;
-	}
-
-	export interface UpdateAgentJobScheduleResult extends ResultStatus {
-		schedule: AgentJobScheduleInfo;
-	}
-
 	export interface AgentServicesProvider extends DataProvider {
-		// Job management methods
-		getJobs(ownerUri: string): Thenable<AgentJobsResult>;
-		getJobHistory(ownerUri: string, jobId: string): Thenable<AgentJobHistoryResult>;
-		jobAction(ownerUri: string, jobName: string, action: string): Thenable<ResultStatus>;
-		createJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<CreateAgentJobResult>;
-		updateJob(ownerUri: string, originalJobName: string, jobInfo: AgentJobInfo): Thenable<UpdateAgentJobResult>;
-		deleteJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<ResultStatus>;
-		getJobDefaults(ownerUri: string): Thenable<AgentJobDefaultsResult>;
-
-		// Job Step management methods
-		createJobStep(ownerUri: string, jobInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
-		updateJobStep(ownerUri: string, originalJobStepName: string, jobInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
-		deleteJobStep(ownerUri: string, jobInfo: AgentJobStepInfo): Thenable<ResultStatus>;
-
-		// Alert management methods
-		getAlerts(ownerUri: string): Thenable<AgentAlertsResult>;
-		createAlert(ownerUri: string, alertInfo: AgentAlertInfo): Thenable<CreateAgentAlertResult>;
-		updateAlert(ownerUri: string, originalAlertName: string, alertInfo: AgentAlertInfo): Thenable<UpdateAgentAlertResult>;
-		deleteAlert(ownerUri: string, alertInfo: AgentAlertInfo): Thenable<ResultStatus>;
-
-		// Operator management methods
-		getOperators(ownerUri: string): Thenable<AgentOperatorsResult>;
-		createOperator(ownerUri: string, operatorInfo: AgentOperatorInfo): Thenable<CreateAgentOperatorResult>;
-		updateOperator(ownerUri: string, originalOperatorName: string, operatorInfo: AgentOperatorInfo): Thenable<UpdateAgentOperatorResult>;
-		deleteOperator(ownerUri: string, operatorInfo: AgentOperatorInfo): Thenable<ResultStatus>;
-
-		// Proxy management methods
-		getProxies(ownerUri: string): Thenable<AgentProxiesResult>;
-		createProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<CreateAgentOperatorResult>;
-		updateProxy(ownerUri: string, originalProxyName: string, proxyInfo: AgentProxyInfo): Thenable<UpdateAgentOperatorResult>;
-		deleteProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<ResultStatus>;
-
-		// Credential method
-		getCredentials(ownerUri: string): Thenable<GetCredentialsResult>;
-
-		// Job Schedule management methods
-		getJobSchedules(ownerUri: string): Thenable<AgentJobSchedulesResult>;
-		createJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<CreateAgentJobScheduleResult>;
-		updateJobSchedule(ownerUri: string, originalScheduleName: string, scheduleInfo: AgentJobScheduleInfo): Thenable<UpdateAgentJobScheduleResult>;
-		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
-
-		registerOnUpdated(handler: () => any): void;
-	}
-
-	// Security service interfaces ------------------------------------------------------------------------
-	export interface CredentialInfo {
-		id: number;
-		identity: string;
-		name: string;
-		dateLastModified: string;
-		createDate: string;
-		providerName: string;
-	}
-
-	export interface GetCredentialsResult extends ResultStatus {
-		credentials: CredentialInfo[];
+		getJobs(connectionUri: string): Thenable<AgentJobsResult>;
+		getJobHistory(connectionUri: string, jobId: string): Thenable<AgentJobHistoryResult>;
+		jobAction(connectionUri: string, jobName: string, action: string): Thenable<AgentJobActionResult>;
 	}
 
 	// Task service interfaces ----------------------------------------------------------------------------
@@ -1676,7 +1242,6 @@ declare module 'sqlops' {
 		disconnectSession(sessionId: string): Thenable<boolean>;
 
 		registerOnSessionEventsAvailable(handler: (response: ProfilerSessionEvents) => any): void;
-		registerOnSessionStopped(handler: (response: ProfilerSessionStoppedParams) => any): void;
 	}
 
 	export interface IProfilerTableRow {
@@ -1717,15 +1282,6 @@ declare module 'sqlops' {
 		sessionId: string;
 
 		events: ProfilerEvent[];
-
-		eventsLost: boolean;
-	}
-
-	export interface ProfilerSessionStoppedParams {
-
-		ownerUri: string;
-
-		sessionId: number;
 	}
 
 	// File browser interfaces  -----------------------------------------------------------------------

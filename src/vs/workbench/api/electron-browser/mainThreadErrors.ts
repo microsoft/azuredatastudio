@@ -16,7 +16,7 @@ export class MainThreadErrors implements MainThreadErrorsShape {
 	}
 
 	$onUnexpectedError(err: any | SerializedError): void {
-		if (err && err.$isError) {
+		if (err.$isError) {
 			const { name, message, stack } = err;
 			err = new Error();
 			err.message = message;

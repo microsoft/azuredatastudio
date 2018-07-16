@@ -9,15 +9,15 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction, Action } from 'vs/base/common/actions';
 import { Throttler } from 'vs/base/common/async';
 import * as DOM from 'vs/base/browser/dom';
-import * as paths from 'vs/base/common/paths';
-import { Event } from 'vs/base/common/event';
+import paths = require('vs/base/common/paths');
+import Event from 'vs/base/common/event';
 import * as json from 'vs/base/common/json';
 import { ActionItem, IActionItem, Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IExtension, ExtensionState, IExtensionsWorkbenchService, VIEWLET_ID, IExtensionsViewlet, AutoUpdateConfigurationKey } from 'vs/workbench/parts/extensions/common/extensions';
 import { ExtensionsConfigurationInitialContent } from 'vs/workbench/parts/extensions/common/extensionsFileTemplate';
-import { LocalExtensionType, IExtensionEnablementService, IExtensionTipsService, EnablementState, ExtensionsLabel } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { LocalExtensionType, IExtensionEnablementService, IExtensionTipsService, EnablementState, ExtensionsLabel, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ToggleViewletAction } from 'vs/workbench/browser/viewlet';
@@ -44,29 +44,36 @@ import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { PICK_WORKSPACE_FOLDER_COMMAND_ID } from 'vs/workbench/browser/actions/workspaceCommands';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { IChoiceService } from 'vs/platform/dialogs/common/dialogs';
 import { mnemonicButtonLabel } from 'vs/base/common/labels';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IQuickOpenService, IPickOpenEntry } from 'vs/platform/quickOpen/common/quickOpen';
 
-const promptDownloadManually = (extension: IExtension, message: string, instantiationService: IInstantiationService, notificationService: INotificationService, openerService: IOpenerService) => {
-	notificationService.prompt(Severity.Error, message, [{
-		label: localize('download', "Download Manually"),
-		run: () => openerService.open(URI.parse(extension.downloadUrl)).then(() => {
-			notificationService.prompt(
-				Severity.Info,
-				localize('install vsix', 'Once downloaded, please manually install the downloaded VSIX of \'{0}\'.', extension.id),
-				[{
-					label: InstallVSIXAction.LABEL,
-					run: () => {
-						const action = instantiationService.createInstance(InstallVSIXAction, InstallVSIXAction.ID, InstallVSIXAction.LABEL);
-						action.run();
-						action.dispose();
-					}
-				}]
-			);
-		})
-	}]);
-};
+class DownloadExtensionAction extends Action {
+
+	constructor(
+		private extension: IExtension,
+		@IOpenerService private openerService: IOpenerService,
+		@INotificationService private notificationService: INotificationService,
+		@IInstantiationService private instantiationService: IInstantiationService
+	) {
+		super('extensions.download', localize('download', "Download Manually"), '', true);
+	}
+
+	run(): TPromise<void> {
+		return this.openerService.open(URI.parse(this.extension.downloadUrl)).then(() => {
+			this.notificationService.notify({
+				severity: Severity.Info,
+				message: localize('install vsix', 'Once downloaded, please manually install the downloaded VSIX of \'{0}\'.', this.extension.id),
+				actions: {
+					primary: [
+						this.instantiationService.createInstance(InstallVSIXAction, InstallVSIXAction.ID, InstallVSIXAction.LABEL)
+					]
+				}
+			});
+		});
+	}
+}
 
 export class InstallAction extends Action {
 
@@ -84,8 +91,7 @@ export class InstallAction extends Action {
 	constructor(
 		@IExtensionsWorkbenchService private extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@INotificationService private notificationService: INotificationService,
-		@IOpenerService private openerService: IOpenerService
+		@INotificationService private notificationService: INotificationService
 	) {
 		super('extensions.install', InstallAction.InstallLabel, InstallAction.Class, false);
 
@@ -127,8 +133,15 @@ export class InstallAction extends Action {
 			}
 
 			console.error(err);
-
-			promptDownloadManually(extension, localize('failedToInstall', "Failed to install \'{0}\'.", extension.id), this.instantiationService, this.notificationService, this.openerService);
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: localize('failedToInstall', "Failed to install \'{0}\'.", extension.id),
+				actions: {
+					primary: [
+						this.instantiationService.createInstance(DownloadExtensionAction, extension)
+					]
+				}
+			});
 		});
 	}
 
@@ -293,8 +306,7 @@ export class UpdateAction extends Action {
 	constructor(
 		@IExtensionsWorkbenchService private extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@INotificationService private notificationService: INotificationService,
-		@IOpenerService private openerService: IOpenerService
+		@INotificationService private notificationService: INotificationService
 	) {
 		super('extensions.update', UpdateAction.Label, UpdateAction.DisabledClass, false);
 
@@ -336,8 +348,15 @@ export class UpdateAction extends Action {
 			}
 
 			console.error(err);
-
-			promptDownloadManually(extension, localize('failedToUpdate', "Failed to update \'{0}\'.", extension.id), this.instantiationService, this.notificationService, this.openerService);
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: localize('failedToUpdate', "Failed to update \'{0}\'.", extension.id),
+				actions: {
+					primary: [
+						this.instantiationService.createInstance(DownloadExtensionAction, extension)
+					]
+				}
+			});
 		});
 	}
 
@@ -814,8 +833,7 @@ export class UpdateAllAction extends Action {
 		label = UpdateAllAction.LABEL,
 		@IExtensionsWorkbenchService private extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@INotificationService private notificationService: INotificationService,
-		@IInstantiationService private instantiationService: IInstantiationService,
-		@IOpenerService private openerService: IOpenerService
+		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		super(id, label, '', false);
 
@@ -842,8 +860,15 @@ export class UpdateAllAction extends Action {
 			}
 
 			console.error(err);
-
-			promptDownloadManually(extension, localize('failedToUpdate', "Failed to update \'{0}\'.", extension.id), this.instantiationService, this.notificationService, this.openerService);
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: localize('failedToUpdate', "Failed to update \'{0}\'.", extension.id),
+				actions: {
+					primary: [
+						this.instantiationService.createInstance(DownloadExtensionAction, extension)
+					]
+				}
+			});
 		});
 	}
 
@@ -891,17 +916,17 @@ export class ReloadAction extends Action {
 			if (state === ExtensionState.Installing || state === ExtensionState.Uninstalling) {
 				return TPromise.wrap<void>(null);
 			}
-			return this.extensionService.getExtensions()
-				.then(runningExtensions => this.computeReloadState(runningExtensions));
+			return TPromise.join([this.extensionService.getExtensions(), this.extensionEnablementService.getDisabledExtensions()])
+				.then(([runningExtensions, disabledExtensions]) => this.computeReloadState(runningExtensions, disabledExtensions));
 		}).done(() => {
 			this.class = this.enabled ? ReloadAction.EnabledClass : ReloadAction.DisabledClass;
 		});
 	}
 
-	private computeReloadState(runningExtensions: IExtensionDescription[]): void {
+	private computeReloadState(runningExtensions: IExtensionDescription[], disabledExtensions: IExtensionIdentifier[]): void {
 		const isInstalled = this.extensionsWorkbenchService.local.some(e => e.id === this.extension.id);
 		const isUninstalled = this.extension.state === ExtensionState.Uninstalled;
-		const isDisabled = this.extension.local ? !this.extensionEnablementService.isEnabled(this.extension.local) : false;
+		const isDisabled = this.isDisabled(disabledExtensions);
 
 		const filteredExtensions = runningExtensions.filter(e => areSameExtensions(e, this.extension));
 		const isExtensionRunning = filteredExtensions.length > 0;
@@ -941,6 +966,14 @@ export class ReloadAction extends Action {
 			this.reloadMessage = localize('postUninstallMessage', "Reload this window to deactivate the uninstalled extension '{0}'?", this.extension.displayName);
 			return;
 		}
+	}
+
+	private isDisabled(disabledExtensions: IExtensionIdentifier[]): boolean {
+		const identifier = { id: this.extension.id, uuid: this.extension.uuid };
+		if (this.extension.type === LocalExtensionType.System) {
+			return disabledExtensions.some(d => areSameExtensions(d, identifier));
+		}
+		return !this.extensionEnablementService.isEnabled({ id: this.extension.id, uuid: this.extension.uuid });
 	}
 
 	run(): TPromise<any> {
@@ -985,7 +1018,7 @@ export class ShowEnabledExtensionsAction extends Action {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet as IExtensionsViewlet)
 			.then(viewlet => {
-				viewlet.search('@enabled ');
+				viewlet.search('@enabled');
 				viewlet.focus();
 			});
 	}
@@ -1008,7 +1041,7 @@ export class ShowInstalledExtensionsAction extends Action {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet as IExtensionsViewlet)
 			.then(viewlet => {
-				viewlet.search('@installed ');
+				viewlet.search('@installed');
 				viewlet.focus();
 			});
 	}
@@ -1180,8 +1213,7 @@ export class InstallWorkspaceRecommendedExtensionsAction extends Action {
 		@IExtensionsWorkbenchService private extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IExtensionTipsService private extensionTipsService: IExtensionTipsService,
 		@INotificationService private notificationService: INotificationService,
-		@IInstantiationService private instantiationService: IInstantiationService,
-		@IOpenerService private openerService: IOpenerService
+		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		super(id, label, 'extension-action');
 		this.extensionsWorkbenchService.onChange(() => this.update(), this, this.disposables);
@@ -1213,7 +1245,7 @@ export class InstallWorkspaceRecommendedExtensionsAction extends Action {
 						return TPromise.as(null);
 					}
 
-					viewlet.search('@recommended ');
+					viewlet.search('@recommended');
 					viewlet.focus();
 
 					return this.extensionsWorkbenchService.queryGallery({ names: toInstall, source: 'install-all-workspace-recommendations' }).then(pager => {
@@ -1245,8 +1277,15 @@ export class InstallWorkspaceRecommendedExtensionsAction extends Action {
 			}
 
 			console.error(err);
-
-			promptDownloadManually(extension, localize('failedToInstall', "Failed to install \'{0}\'.", extension.id), this.instantiationService, this.notificationService, this.openerService);
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: localize('failedToInstall', "Failed to install \'{0}\'.", extension.id),
+				actions: {
+					primary: [
+						this.instantiationService.createInstance(DownloadExtensionAction, extension)
+					]
+				}
+			});
 		});
 	}
 
@@ -1269,8 +1308,7 @@ export class InstallRecommendedExtensionAction extends Action {
 		@IViewletService private viewletService: IViewletService,
 		@IExtensionsWorkbenchService private extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@INotificationService private notificationService: INotificationService,
-		@IInstantiationService private instantiationService: IInstantiationService,
-		@IOpenerService private openerService: IOpenerService
+		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		super(InstallRecommendedExtensionAction.ID, InstallRecommendedExtensionAction.LABEL, null);
 		this.extensionId = extensionId;
@@ -1292,7 +1330,7 @@ export class InstallRecommendedExtensionAction extends Action {
 					return TPromise.as(null);
 				}
 
-				viewlet.search('@recommended ');
+				viewlet.search('@recommended');
 				viewlet.focus();
 
 				return this.extensionsWorkbenchService.queryGallery({ names: [this.extensionId], source: 'install-recommendation' }).then(pager => {
@@ -1308,8 +1346,15 @@ export class InstallRecommendedExtensionAction extends Action {
 			}
 
 			console.error(err);
-
-			promptDownloadManually(extension, localize('failedToInstall', "Failed to install \'{0}\'.", extension.id), this.instantiationService, this.notificationService, this.openerService);
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: localize('failedToInstall', "Failed to install \'{0}\'.", extension.id),
+				actions: {
+					primary: [
+						this.instantiationService.createInstance(DownloadExtensionAction, extension)
+					]
+				}
+			});
 		});
 	}
 
@@ -1505,7 +1550,7 @@ export abstract class AbstractConfigureRecommendedExtensionsAction extends Actio
 							selection
 						}
 					})),
-				error => TPromise.wrapError(new Error(localize('OpenExtensionsFile.failed', "Unable to create 'extensions.json' file inside the '.vscode' folder ({0}).", error))));
+			error => TPromise.wrapError(new Error(localize('OpenExtensionsFile.failed', "Unable to create 'extensions.json' file inside the '.vscode' folder ({0}).", error))));
 	}
 
 	protected openWorkspaceConfigurationFile(workspaceConfigurationFile: URI): TPromise<any> {
@@ -1680,45 +1725,6 @@ export class MaliciousStatusLabelAction extends Action {
 	}
 }
 
-export class DisabledStatusLabelAction extends Action {
-
-	private static readonly Class = 'disable-status';
-
-	private _extension: IExtension;
-	get extension(): IExtension { return this._extension; }
-	set extension(extension: IExtension) { this._extension = extension; this.update(); }
-
-	private disposables: IDisposable[] = [];
-	private throttler: Throttler = new Throttler();
-
-	constructor(
-		@IExtensionsWorkbenchService private extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@IExtensionService private extensionService: IExtensionService
-	) {
-		super('extensions.install', localize('disabled', "Disabled"), `${DisabledStatusLabelAction.Class} hide`, false);
-		this.disposables.push(this.extensionsWorkbenchService.onChange(() => this.update()));
-		this.update();
-	}
-
-	private update(): void {
-		this.throttler.queue(() => this.extensionService.getExtensions()
-			.then(runningExtensions => {
-				this.class = `${DisabledStatusLabelAction.Class} hide`;
-				this.tooltip = '';
-				if (this.extension && !this.extension.isMalicious && !runningExtensions.some(e => e.id === this.extension.id)) {
-					if (this.extension.enablementState === EnablementState.Disabled || this.extension.enablementState === EnablementState.WorkspaceDisabled) {
-						this.class = `${DisabledStatusLabelAction.Class}`;
-						this.tooltip = this.extension.enablementState === EnablementState.Disabled ? localize('disabled globally', "Disabled") : localize('disabled workspace', "Disabled for this Workspace");
-					}
-				}
-			}));
-	}
-
-	run(): TPromise<any> {
-		return TPromise.as(null);
-	}
-}
-
 export class DisableAllAction extends Action {
 
 	static readonly ID = 'workbench.extensions.action.disableAll';
@@ -1885,14 +1891,14 @@ export class InstallVSIXAction extends Action {
 		id = InstallVSIXAction.ID,
 		label = InstallVSIXAction.LABEL,
 		@IExtensionsWorkbenchService private extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@INotificationService private notificationService: INotificationService,
-		@IWindowService private windowService: IWindowService
+		@IChoiceService private choiceService: IChoiceService,
+		@IWindowService private windowsService: IWindowService
 	) {
 		super(id, label, 'extension-action install-vsix', true);
 	}
 
 	run(): TPromise<any> {
-		return this.windowService.showOpenDialog({
+		return this.windowsService.showOpenDialog({
 			title: localize('installFromVSIX', "Install from VSIX"),
 			filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],
 			properties: ['openFile'],
@@ -1903,18 +1909,18 @@ export class InstallVSIXAction extends Action {
 			}
 
 			return TPromise.join(result.map(vsix => this.extensionsWorkbenchService.install(vsix))).then(() => {
-				this.notificationService.prompt(
-					Severity.Info,
-					localize('InstallVSIXAction.success', "Successfully installed the extension. Reload to enable it."),
-					[{
-						label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
-						run: () => this.windowService.reloadWindow()
-					}]
-				);
+				return this.choiceService.choose(Severity.Info, localize('InstallVSIXAction.success', "Successfully installed the extension. Reload to enable it."), [localize('InstallVSIXAction.reloadNow', "Reload Now")]).then(choice => {
+					if (choice === 0) {
+						return this.windowsService.reloadWindow();
+					}
+
+					return TPromise.as(undefined);
+				});
 			});
 		});
 	}
 }
+
 
 export class ReinstallAction extends Action {
 
@@ -1959,14 +1965,19 @@ export class ReinstallAction extends Action {
 	private reinstallExtension(extension: IExtension): TPromise<void> {
 		return this.extensionsWorkbenchService.reinstall(extension)
 			.then(() => {
-				this.notificationService.prompt(
-					Severity.Info,
-					localize('ReinstallAction.success', "Successfully reinstalled the extension."),
-					[{
-						label: localize('ReinstallAction.reloadNow', "Reload Now"),
-						run: () => this.windowService.reloadWindow()
-					}]
-				);
+				this.notificationService.notify({
+					message: localize('ReinstallAction.success', "Successfully reinstalled the extension."),
+					severity: Severity.Info,
+					actions: {
+						primary: [<IAction>{
+							id: 'reload',
+							label: localize('ReinstallAction.reloadNow', "Reload Now"),
+							enabled: true,
+							run: () => this.windowService.reloadWindow(),
+							dispose: () => null
+						}]
+					}
+				});
 			}, error => this.notificationService.error(error));
 	}
 }

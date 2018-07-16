@@ -3,34 +3,33 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { SpectronApplication } from '../../spectron/application';
 import { Viewlet } from '../workbench/viewlet';
-import { Editors } from '../editor/editors';
-import { Commands } from '../workbench/workbench';
-import { Code } from '../../vscode/code';
+
 
 export class Explorer extends Viewlet {
 
 	private static readonly EXPLORER_VIEWLET = 'div[id="workbench.view.explorer"]';
 	private static readonly OPEN_EDITORS_VIEW = `${Explorer.EXPLORER_VIEWLET} .split-view-view:nth-child(1) .title`;
 
-	constructor(code: Code, private commands: Commands, private editors: Editors) {
-		super(code);
+	constructor(spectron: SpectronApplication) {
+		super(spectron);
 	}
 
-	openExplorerView(): Promise<any> {
-		return this.commands.runCommand('workbench.view.explorer');
+	public openExplorerView(): Promise<any> {
+		return this.spectron.runCommand('workbench.view.explorer');
 	}
 
-	async waitForOpenEditorsViewTitle(fn: (title: string) => boolean): Promise<void> {
-		await this.code.waitForTextContent(Explorer.OPEN_EDITORS_VIEW, undefined, fn);
+	public getOpenEditorsViewTitle(): Promise<string> {
+		return this.spectron.client.waitForText(Explorer.OPEN_EDITORS_VIEW);
 	}
 
-	async openFile(fileName: string): Promise<any> {
-		await this.code.waitAndDoubleClick(`div[class="monaco-icon-label file-icon ${fileName}-name-file-icon ${this.getExtensionSelector(fileName)} explorer-item"]`);
-		await this.editors.waitForEditorFocus(fileName);
+	public async openFile(fileName: string): Promise<any> {
+		await this.spectron.client.doubleClickAndWait(`div[class="monaco-icon-label file-icon ${fileName}-name-file-icon ${this.getExtensionSelector(fileName)} explorer-item"]`);
+		await this.spectron.workbench.waitForEditorFocus(fileName);
 	}
 
-	getExtensionSelector(fileName: string): string {
+	public getExtensionSelector(fileName: string): string {
 		const extension = fileName.split('.')[1];
 		if (extension === 'js') {
 			return 'js-ext-file-icon ext-file-icon javascript-lang-file-icon';

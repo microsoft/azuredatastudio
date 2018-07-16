@@ -8,5 +8,7 @@
 	],
 	"disableOtherKeymapsConfirmation": "Disabilitare altre mappature tastiera ({0}) per evitare conflitti tra tasti di scelta rapida?",
 	"yes": "Sì",
-	"no": "No"
+	"no": "No",
+	"betterMergeDisabled": "L'estensione Better Merge (miglior merge) è ora incorporata: l'estensione installata è stata disattivata e può essere disinstallata.",
+	"uninstall": "Disinstalla"
 }

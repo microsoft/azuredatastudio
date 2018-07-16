@@ -5,13 +5,13 @@
 
 'use strict';
 
-import * as nls from 'vs/nls';
+import nls = require('vs/nls');
 
 import 'vs/css!./media/dirtydiffDecorator';
 import { ThrottledDelayer, always } from 'vs/base/common/async';
 import { IDisposable, dispose, toDisposable, empty as EmptyDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Event, Emitter, anyEvent as anyEvent, filterEvent, once } from 'vs/base/common/event';
+import Event, { Emitter, anyEvent as anyEvent, filterEvent, once } from 'vs/base/common/event';
 import * as ext from 'vs/workbench/common/contributions';
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -25,6 +25,7 @@ import { ISCMService, ISCMRepository } from 'vs/workbench/services/scm/common/sc
 import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
 import { registerThemingParticipant, ITheme, ICssStyleCollector, themeColorFromId, IThemeService } from 'vs/platform/theme/common/themeService';
 import { registerColor } from 'vs/platform/theme/common/colorRegistry';
+import { localize } from 'vs/nls';
 import { Color, RGBA } from 'vs/base/common/color';
 import { ICodeEditor, IEditorMouseEvent, MouseTargetType } from 'vs/editor/browser/editorBrowser';
 import { registerEditorAction, registerEditorContribution, ServicesAccessor, EditorAction } from 'vs/editor/browser/editorExtensions';
@@ -51,8 +52,8 @@ import { IMarginData } from 'vs/editor/browser/controller/mouseTarget';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { ISplice } from 'vs/base/common/sequence';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { createStyleSheet } from '../../../../base/browser/dom';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { createStyleSheet } from 'vs/base/browser/dom';
 
 // TODO@Joao
 // Need to subclass MenuItemActionItem in order to respect
@@ -256,8 +257,8 @@ class DirtyDiffWidget extends PeekViewWidget {
 
 	private renderTitle(): void {
 		const detail = this.model.changes.length > 1
-			? nls.localize('changes', "{0} of {1} changes", this.index + 1, this.model.changes.length)
-			: nls.localize('change', "{0} of {1} change", this.index + 1, this.model.changes.length);
+			? localize('changes', "{0} of {1} changes", this.index + 1, this.model.changes.length)
+			: localize('change', "{0} of {1} change", this.index + 1, this.model.changes.length);
 
 		this.setTitle(this.title, detail);
 	}
@@ -373,7 +374,7 @@ export class ShowPreviousChangeAction extends EditorAction {
 			label: nls.localize('show previous change', "Show Previous Change"),
 			alias: 'Show Previous Change',
 			precondition: null,
-			kbOpts: { kbExpr: EditorContextKeys.editorTextFocus, primary: KeyMod.Shift | KeyMod.Alt | KeyCode.F3 }
+			kbOpts: { kbExpr: EditorContextKeys.textFocus, primary: KeyMod.Shift | KeyMod.Alt | KeyCode.F3 }
 		});
 	}
 
@@ -407,7 +408,7 @@ export class ShowNextChangeAction extends EditorAction {
 			label: nls.localize('show next change', "Show Next Change"),
 			alias: 'Show Next Change',
 			precondition: null,
-			kbOpts: { kbExpr: EditorContextKeys.editorTextFocus, primary: KeyMod.Alt | KeyCode.F3 }
+			kbOpts: { kbExpr: EditorContextKeys.textFocus, primary: KeyMod.Alt | KeyCode.F3 }
 		});
 	}
 
@@ -441,7 +442,7 @@ export class MoveToPreviousChangeAction extends EditorAction {
 			label: nls.localize('move to previous change', "Move to Previous Change"),
 			alias: 'Move to Previous Change',
 			precondition: null,
-			kbOpts: { kbExpr: EditorContextKeys.editorTextFocus, primary: KeyMod.Shift | KeyMod.Alt | KeyCode.F5 }
+			kbOpts: { kbExpr: EditorContextKeys.textFocus, primary: KeyMod.Shift | KeyMod.Alt | KeyCode.F5 }
 		});
 	}
 
@@ -483,7 +484,7 @@ export class MoveToNextChangeAction extends EditorAction {
 			label: nls.localize('move to next change', "Move to Next Change"),
 			alias: 'Move to Next Change',
 			precondition: null,
-			kbOpts: { kbExpr: EditorContextKeys.editorTextFocus, primary: KeyMod.Alt | KeyCode.F5 }
+			kbOpts: { kbExpr: EditorContextKeys.textFocus, primary: KeyMod.Alt | KeyCode.F5 }
 		});
 	}
 
@@ -763,7 +764,7 @@ export class DirtyDiffController implements IEditorContribution {
 	}
 
 	dispose(): void {
-		this.disposables = dispose(this.disposables);
+		return;
 	}
 }
 
@@ -771,19 +772,19 @@ export const editorGutterModifiedBackground = registerColor('editorGutter.modifi
 	dark: new Color(new RGBA(12, 125, 157)),
 	light: new Color(new RGBA(102, 175, 224)),
 	hc: new Color(new RGBA(0, 73, 122))
-}, nls.localize('editorGutterModifiedBackground', "Editor gutter background color for lines that are modified."));
+}, localize('editorGutterModifiedBackground', "Editor gutter background color for lines that are modified."));
 
 export const editorGutterAddedBackground = registerColor('editorGutter.addedBackground', {
 	dark: new Color(new RGBA(88, 124, 12)),
 	light: new Color(new RGBA(129, 184, 139)),
 	hc: new Color(new RGBA(27, 82, 37))
-}, nls.localize('editorGutterAddedBackground', "Editor gutter background color for lines that are added."));
+}, localize('editorGutterAddedBackground', "Editor gutter background color for lines that are added."));
 
 export const editorGutterDeletedBackground = registerColor('editorGutter.deletedBackground', {
 	dark: new Color(new RGBA(148, 21, 27)),
 	light: new Color(new RGBA(202, 75, 81)),
 	hc: new Color(new RGBA(141, 14, 20))
-}, nls.localize('editorGutterDeletedBackground', "Editor gutter background color for lines that are deleted."));
+}, localize('editorGutterDeletedBackground', "Editor gutter background color for lines that are deleted."));
 
 const overviewRulerDefault = new Color(new RGBA(0, 122, 204, 0.6));
 export const overviewRulerModifiedForeground = registerColor('editorOverviewRuler.modifiedForeground', { dark: overviewRulerDefault, light: overviewRulerDefault, hc: overviewRulerDefault }, nls.localize('overviewRulerModifiedForeground', 'Overview ruler marker color for modified content.'));
@@ -951,7 +952,7 @@ export class DirtyDiffModel {
 		onDidChange(this.triggerDiff, this, disposables);
 
 		const onDidRemoveThis = filterEvent(this.scmService.onDidRemoveRepository, r => r === repository);
-		onDidRemoveThis(() => dispose(disposables), null, disposables);
+		onDidRemoveThis(() => dispose(disposables));
 
 		this.triggerDiff();
 	}
@@ -1004,10 +1005,6 @@ export class DirtyDiffModel {
 
 		this._originalURIPromise = this.getOriginalResource()
 			.then(originalUri => {
-				if (!this._editorModel) { // disposed
-					return null;
-				}
-
 				if (!originalUri) {
 					this._originalModel = null;
 					return null;
@@ -1015,10 +1012,6 @@ export class DirtyDiffModel {
 
 				return this.textModelResolverService.createModelReference(originalUri)
 					.then(ref => {
-						if (!this._editorModel) { // disposed
-							return null;
-						}
-
 						this._originalModel = ref.object.textEditorModel;
 
 						this.disposables.push(ref);

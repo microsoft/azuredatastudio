@@ -5,8 +5,9 @@
 'use strict';
 
 import { IDashboardService } from './dashboardService';
-import { Event, Emitter } from 'vs/base/common/event';
-import * as DOM from 'vs/base/browser/dom';
+
+import Event, { Emitter } from 'vs/base/common/event';
+
 import * as sqlops from 'sqlops';
 
 export class DashboardService implements IDashboardService {
@@ -17,18 +18,11 @@ export class DashboardService implements IDashboardService {
 	private _onDidChangeToDashboard = new Emitter<sqlops.DashboardDocument>();
 	public readonly onDidChangeToDashboard: Event<sqlops.DashboardDocument> = this._onDidChangeToDashboard.event;
 
-	private _onLayout = new Emitter<DOM.Dimension>();
-	public readonly onLayout: Event<DOM.Dimension> = this._onLayout.event;
-
 	public openDashboard(document: sqlops.DashboardDocument): void {
 		this._onDidOpenDashboard.fire(document);
 	}
 
 	public changeToDashboard(document: sqlops.DashboardDocument): void {
 		this._onDidChangeToDashboard.fire(document);
-	}
-
-	public layout(dimension: DOM.Dimension): void {
-		this._onLayout.fire(dimension);
 	}
 }

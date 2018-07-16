@@ -9,6 +9,5 @@
 	"output": "Output",
 	"logViewer": "Visualizzatore Log",
 	"viewCategory": "Visualizza",
-	"clearOutput.label": "Cancella output",
-	"openActiveLogOutputFile": "Visualizza: Apri file di output del log attivo"
+	"clearOutput.label": "Cancella output"
 }

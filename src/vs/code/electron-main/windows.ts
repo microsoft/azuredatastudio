@@ -13,7 +13,7 @@ import { assign, mixin, equals } from 'vs/base/common/objects';
 import { IBackupMainService } from 'vs/platform/backup/common/backup';
 import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
 import { IStateService } from 'vs/platform/state/common/state';
-import { CodeWindow, defaultWindowState } from 'vs/code/electron-main/window';
+import { CodeWindow, IWindowState as ISingleWindowState, defaultWindowState, WindowMode } from 'vs/code/electron-main/window';
 import { ipcMain as ipc, screen, BrowserWindow, dialog, systemPreferences, app } from 'electron';
 import { IPathWithLineAndColumn, parseLineAndColumnAware } from 'vs/code/node/paths';
 import { ILifecycleService, UnloadReason, IWindowUnloadEvent } from 'vs/platform/lifecycle/electron-main/lifecycleMain';
@@ -21,11 +21,11 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWindowSettings, OpenContext, IPath, IWindowConfiguration, INativeOpenDialogOptions, ReadyState, IPathsToWaitFor, IEnterWorkspaceResult, IMessageBoxResult } from 'vs/platform/windows/common/windows';
 import { getLastActiveWindow, findBestWindowOrFolderForFile, findWindowOnWorkspace, findWindowOnExtensionDevelopmentPath, findWindowOnWorkspaceOrFolderPath } from 'vs/code/node/windowsFinder';
-import { Event as CommonEvent, Emitter } from 'vs/base/common/event';
+import CommonEvent, { Emitter } from 'vs/base/common/event';
 import product from 'vs/platform/node/product';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { isEqual } from 'vs/base/common/paths';
-import { IWindowsMainService, IOpenConfiguration, IWindowsCountChangedEvent, ICodeWindow, IWindowState as ISingleWindowState, WindowMode } from 'vs/platform/windows/electron-main/windows';
+import { IWindowsMainService, IOpenConfiguration, IWindowsCountChangedEvent, ICodeWindow } from 'vs/platform/windows/electron-main/windows';
 import { IHistoryMainService } from 'vs/platform/history/common/history';
 import { IProcessEnvironment, isLinux, isMacintosh, isWindows } from 'vs/base/common/platform';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -36,7 +36,6 @@ import { Schemas } from 'vs/base/common/network';
 import { normalizeNFC } from 'vs/base/common/strings';
 import URI from 'vs/base/common/uri';
 import { Queue } from 'vs/base/common/async';
-import { exists } from 'vs/base/node/pfs';
 
 enum WindowError {
 	UNRESPONSIVE,
@@ -77,7 +76,7 @@ interface IOpenBrowserWindowOptions {
 	filesToWait?: IPathsToWaitFor;
 
 	forceNewWindow?: boolean;
-	windowToUse?: ICodeWindow;
+	windowToUse?: CodeWindow;
 
 	emptyWindowBackupFolder?: string;
 }
@@ -103,7 +102,7 @@ export class WindowsManager implements IWindowsMainService {
 
 	private static readonly windowsStateStorageKey = 'windowsState';
 
-	private static WINDOWS: ICodeWindow[] = [];
+	private static WINDOWS: CodeWindow[] = [];
 
 	private initialUserEnv: IProcessEnvironment;
 
@@ -113,8 +112,8 @@ export class WindowsManager implements IWindowsMainService {
 	private dialogs: Dialogs;
 	private workspacesManager: WorkspacesManager;
 
-	private _onWindowReady = new Emitter<ICodeWindow>();
-	onWindowReady: CommonEvent<ICodeWindow> = this._onWindowReady.event;
+	private _onWindowReady = new Emitter<CodeWindow>();
+	onWindowReady: CommonEvent<CodeWindow> = this._onWindowReady.event;
 
 	private _onWindowClose = new Emitter<number>();
 	onWindowClose: CommonEvent<number> = this._onWindowClose.event;
@@ -122,8 +121,8 @@ export class WindowsManager implements IWindowsMainService {
 	private _onWindowLoad = new Emitter<number>();
 	onWindowLoad: CommonEvent<number> = this._onWindowLoad.event;
 
-	private _onActiveWindowChanged = new Emitter<ICodeWindow>();
-	onActiveWindowChanged: CommonEvent<ICodeWindow> = this._onActiveWindowChanged.event;
+	private _onActiveWindowChanged = new Emitter<CodeWindow>();
+	onActiveWindowChanged: CommonEvent<CodeWindow> = this._onActiveWindowChanged.event;
 
 	private _onWindowReload = new Emitter<number>();
 	onWindowReload: CommonEvent<number> = this._onWindowReload.event;
@@ -169,7 +168,7 @@ export class WindowsManager implements IWindowsMainService {
 		});
 
 		// React to workbench loaded events from windows
-		ipc.on('vscode:workbenchLoaded', (event: any, windowId: number) => {
+		ipc.on('vscode:workbenchLoaded', (_event: any, windowId: number) => {
 			this.logService.trace('IPC#vscode-workbenchLoaded');
 
 			const win = this.getWindowById(windowId);
@@ -194,8 +193,8 @@ export class WindowsManager implements IWindowsMainService {
 
 		// Handle various lifecycle events around windows
 		this.lifecycleService.onBeforeWindowUnload(e => this.onBeforeWindowUnload(e));
-		this.lifecycleService.onBeforeWindowClose(win => this.onBeforeWindowClose(win as ICodeWindow));
-		this.lifecycleService.onBeforeShutdown(() => this.onBeforeShutdown());
+		this.lifecycleService.onBeforeWindowClose(win => this.onBeforeWindowClose(win as CodeWindow));
+		this.lifecycleService.onBeforeQuit(() => this.onBeforeQuit());
 		this.onWindowsCountChanged(e => {
 			if (e.newCount - e.oldCount > 0) {
 				// clear last closed window state when a new window opens. this helps on macOS where
@@ -206,12 +205,12 @@ export class WindowsManager implements IWindowsMainService {
 		});
 	}
 
-	// Note that onBeforeShutdown() and onBeforeWindowClose() are fired in different order depending on the OS:
+	// Note that onBeforeQuit() and onBeforeWindowClose() are fired in different order depending on the OS:
 	// - macOS: since the app will not quit when closing the last window, you will always first get
-	//          the onBeforeShutdown() event followed by N onbeforeWindowClose() events for each window
+	//          the onBeforeQuit() event followed by N onbeforeWindowClose() events for each window
 	// - other: on other OS, closing the last window will quit the app so the order depends on the
 	//          user interaction: closing the last window will first trigger onBeforeWindowClose()
-	//          and then onBeforeShutdown(). Using the quit action however will first issue onBeforeShutdown()
+	//          and then onBeforeQuit(). Using the quit action however will first issue onBeforeQuit()
 	//          and then onBeforeWindowClose().
 	//
 	// Here is the behaviour on different OS dependig on action taken (Electron 1.7.x):
@@ -220,30 +219,30 @@ export class WindowsManager implements IWindowsMainService {
 	// -  quit(N): quit application with N windows opened
 	// - close(1): close one window via the window close button
 	// - closeAll: close all windows via the taskbar command
-	// - onBeforeShutdown(N): number of windows reported in this event handler
+	// - onBeforeQuit(N): number of windows reported in this event handler
 	// - onBeforeWindowClose(N, M): number of windows reported and quitRequested boolean in this event handler
 	//
 	// macOS
-	// 	-     quit(1): onBeforeShutdown(1), onBeforeWindowClose(1, true)
-	// 	-     quit(2): onBeforeShutdown(2), onBeforeWindowClose(2, true), onBeforeWindowClose(2, true)
-	// 	-     quit(0): onBeforeShutdown(0)
+	// 	-     quit(1): onBeforeQuit(1), onBeforeWindowClose(1, true)
+	// 	-     quit(2): onBeforeQuit(2), onBeforeWindowClose(2, true), onBeforeWindowClose(2, true)
+	// 	-     quit(0): onBeforeQuit(0)
 	// 	-    close(1): onBeforeWindowClose(1, false)
 	//
 	// Windows
-	// 	-     quit(1): onBeforeShutdown(1), onBeforeWindowClose(1, true)
-	// 	-     quit(2): onBeforeShutdown(2), onBeforeWindowClose(2, true), onBeforeWindowClose(2, true)
+	// 	-     quit(1): onBeforeQuit(1), onBeforeWindowClose(1, true)
+	// 	-     quit(2): onBeforeQuit(2), onBeforeWindowClose(2, true), onBeforeWindowClose(2, true)
 	// 	-    close(1): onBeforeWindowClose(2, false)[not last window]
-	// 	-    close(1): onBeforeWindowClose(1, false), onBeforeShutdown(0)[last window]
-	// 	- closeAll(2): onBeforeWindowClose(2, false), onBeforeWindowClose(2, false), onBeforeShutdown(0)
+	// 	-    close(1): onBeforeWindowClose(1, false), onBeforequit(0)[last window]
+	// 	- closeAll(2): onBeforeWindowClose(2, false), onBeforeWindowClose(2, false), onBeforeQuit(0)
 	//
 	// Linux
-	// 	-     quit(1): onBeforeShutdown(1), onBeforeWindowClose(1, true)
-	// 	-     quit(2): onBeforeShutdown(2), onBeforeWindowClose(2, true), onBeforeWindowClose(2, true)
+	// 	-     quit(1): onBeforeQuit(1), onBeforeWindowClose(1, true)
+	// 	-     quit(2): onBeforeQuit(2), onBeforeWindowClose(2, true), onBeforeWindowClose(2, true)
 	// 	-    close(1): onBeforeWindowClose(2, false)[not last window]
-	// 	-    close(1): onBeforeWindowClose(1, false), onBeforeShutdown(0)[last window]
-	// 	- closeAll(2): onBeforeWindowClose(2, false), onBeforeWindowClose(2, false), onBeforeShutdown(0)
+	// 	-    close(1): onBeforeWindowClose(1, false), onBeforequit(0)[last window]
+	// 	- closeAll(2): onBeforeWindowClose(2, false), onBeforeWindowClose(2, false), onBeforeQuit(0)
 	//
-	private onBeforeShutdown(): void {
+	private onBeforeQuit(): void {
 		const currentWindowsState: IWindowsState = {
 			openedWindows: [],
 			lastPluginDevelopmentHostWindow: this.windowsState.lastPluginDevelopmentHostWindow,
@@ -281,9 +280,9 @@ export class WindowsManager implements IWindowsMainService {
 		this.stateService.setItem(WindowsManager.windowsStateStorageKey, currentWindowsState);
 	}
 
-	// See note on #onBeforeShutdown() for details how these events are flowing
-	private onBeforeWindowClose(win: ICodeWindow): void {
-		if (this.lifecycleService.isQuitRequested) {
+	// See note on #onBeforeQuit() for details how these events are flowing
+	private onBeforeWindowClose(win: CodeWindow): void {
+		if (this.lifecycleService.isQuitRequested()) {
 			return; // during quit, many windows close in parallel so let it be handled in the before-quit handler
 		}
 
@@ -314,7 +313,7 @@ export class WindowsManager implements IWindowsMainService {
 		}
 	}
 
-	private toWindowState(win: ICodeWindow): IWindowState {
+	private toWindowState(win: CodeWindow): IWindowState {
 		return {
 			workspace: win.openedWorkspace,
 			folderPath: win.openedFolderPath,
@@ -323,7 +322,7 @@ export class WindowsManager implements IWindowsMainService {
 		};
 	}
 
-	public open(openConfig: IOpenConfiguration): ICodeWindow[] {
+	public open(openConfig: IOpenConfiguration): CodeWindow[] {
 		openConfig = this.validateOpenConfig(openConfig);
 
 		let pathsToOpen = this.getPathsToOpen(openConfig);
@@ -482,7 +481,7 @@ export class WindowsManager implements IWindowsMainService {
 		filesToWait: IPathsToWaitFor,
 		foldersToAdd: IPath[]
 	) {
-		const usedWindows: ICodeWindow[] = [];
+		const usedWindows: CodeWindow[] = [];
 
 		// Settings can decide if files/folders open in new window or not
 		let { openFolderInNewWindow, openFilesInNewWindow } = this.shouldOpenNewWindow(openConfig);
@@ -537,7 +536,7 @@ export class WindowsManager implements IWindowsMainService {
 				else {
 
 					// Do open files
-					usedWindows.push(this.doOpenFilesInExistingWindow(openConfig, bestWindowOrFolder, filesToOpen, filesToCreate, filesToDiff, filesToWait));
+					usedWindows.push(this.doOpenFilesInExistingWindow(bestWindowOrFolder, filesToOpen, filesToCreate, filesToDiff, filesToWait));
 
 					// Reset these because we handled them
 					filesToOpen = [];
@@ -583,7 +582,7 @@ export class WindowsManager implements IWindowsMainService {
 				const windowOnWorkspace = windowsOnWorkspace[0];
 
 				// Do open files
-				usedWindows.push(this.doOpenFilesInExistingWindow(openConfig, windowOnWorkspace, filesToOpen, filesToCreate, filesToDiff, filesToWait));
+				usedWindows.push(this.doOpenFilesInExistingWindow(windowOnWorkspace, filesToOpen, filesToCreate, filesToDiff, filesToWait));
 
 				// Reset these because we handled them
 				filesToOpen = [];
@@ -623,7 +622,7 @@ export class WindowsManager implements IWindowsMainService {
 				const windowOnFolderPath = windowsOnFolderPath[0];
 
 				// Do open files
-				usedWindows.push(this.doOpenFilesInExistingWindow(openConfig, windowOnFolderPath, filesToOpen, filesToCreate, filesToDiff, filesToWait));
+				usedWindows.push(this.doOpenFilesInExistingWindow(windowOnFolderPath, filesToOpen, filesToCreate, filesToDiff, filesToWait));
 
 				// Reset these because we handled them
 				filesToOpen = [];
@@ -695,18 +694,17 @@ export class WindowsManager implements IWindowsMainService {
 		return arrays.distinct(usedWindows);
 	}
 
-	private doOpenFilesInExistingWindow(configuration: IOpenConfiguration, window: ICodeWindow, filesToOpen: IPath[], filesToCreate: IPath[], filesToDiff: IPath[], filesToWait: IPathsToWaitFor): ICodeWindow {
+	private doOpenFilesInExistingWindow(window: CodeWindow, filesToOpen: IPath[], filesToCreate: IPath[], filesToDiff: IPath[], filesToWait: IPathsToWaitFor): CodeWindow {
 		window.focus(); // make sure window has focus
 
 		window.ready().then(readyWindow => {
-			const termProgram = configuration.userEnv ? configuration.userEnv['TERM_PROGRAM'] : void 0;
-			readyWindow.send('vscode:openFiles', { filesToOpen, filesToCreate, filesToDiff, filesToWait, termProgram });
+			readyWindow.send('vscode:openFiles', { filesToOpen, filesToCreate, filesToDiff, filesToWait });
 		});
 
 		return window;
 	}
 
-	private doAddFoldersToExistingWidow(window: ICodeWindow, foldersToAdd: IPath[]): ICodeWindow {
+	private doAddFoldersToExistingWidow(window: CodeWindow, foldersToAdd: IPath[]): CodeWindow {
 		window.focus(); // make sure window has focus
 
 		window.ready().then(readyWindow => {
@@ -716,7 +714,7 @@ export class WindowsManager implements IWindowsMainService {
 		return window;
 	}
 
-	private doOpenFolderOrWorkspace(openConfig: IOpenConfiguration, folderOrWorkspace: IPathToOpen, openInNewWindow: boolean, filesToOpen: IPath[], filesToCreate: IPath[], filesToDiff: IPath[], filesToWait: IPathsToWaitFor, windowToUse?: ICodeWindow): ICodeWindow {
+	private doOpenFolderOrWorkspace(openConfig: IOpenConfiguration, folderOrWorkspace: IPathToOpen, openInNewWindow: boolean, filesToOpen: IPath[], filesToCreate: IPath[], filesToDiff: IPath[], filesToWait: IPathsToWaitFor, windowToUse?: CodeWindow): CodeWindow {
 		const browserWindow = this.openInBrowserWindow({
 			userEnv: openConfig.userEnv,
 			cli: openConfig.cli,
@@ -983,22 +981,10 @@ export class WindowsManager implements IWindowsMainService {
 		if (openConfig.forceNewWindow || openConfig.forceReuseWindow) {
 			openFilesInNewWindow = openConfig.forceNewWindow && !openConfig.forceReuseWindow;
 		} else {
-
-			// macOS: by default we open files in a new window if this is triggered via DOCK context
-			if (isMacintosh) {
-				if (openConfig.context === OpenContext.DOCK) {
-					openFilesInNewWindow = true;
-				}
+			if (openConfig.context === OpenContext.DOCK) {
+				openFilesInNewWindow = true; // only on macOS do we allow to open files in a new window if this is triggered via DOCK context
 			}
 
-			// Linux/Windows: by default we open files in the new window unless triggered via DIALOG or MENU context
-			else {
-				if (openConfig.context !== OpenContext.DIALOG && openConfig.context !== OpenContext.MENU) {
-					openFilesInNewWindow = true;
-				}
-			}
-
-			// finally check for overrides of default
 			if (!openConfig.cli.extensionDevelopmentPath && (openFilesInNewWindowConfig === 'on' || openFilesInNewWindowConfig === 'off')) {
 				openFilesInNewWindow = (openFilesInNewWindowConfig === 'on');
 			}
@@ -1038,7 +1024,7 @@ export class WindowsManager implements IWindowsMainService {
 		this.open({ context: openConfig.context, cli: openConfig.cli, forceNewWindow: true, forceEmpty: openConfig.cli._.length === 0, userEnv: openConfig.userEnv });
 	}
 
-	private openInBrowserWindow(options: IOpenBrowserWindowOptions): ICodeWindow {
+	private openInBrowserWindow(options: IOpenBrowserWindowOptions): CodeWindow {
 
 		// Build IWindowConfiguration from config and options
 		const configuration: IWindowConfiguration = mixin({}, options.cli); // inherit all properties from CLI
@@ -1063,7 +1049,7 @@ export class WindowsManager implements IWindowsMainService {
 			configuration.backupPath = join(this.environmentService.backupHome, options.emptyWindowBackupFolder);
 		}
 
-		let window: ICodeWindow;
+		let window: CodeWindow;
 		if (!options.forceNewWindow) {
 			window = options.windowToUse || this.getLastActiveWindow();
 			if (window) {
@@ -1231,12 +1217,9 @@ export class WindowsManager implements IWindowsMainService {
 			}
 		}
 
-		// Compute x/y based on display bounds
-		// Note: important to use Math.round() because Electron does not seem to be too happy about
-		// display coordinates that are not absolute numbers.
 		let state = defaultWindowState() as INewWindowState;
-		state.x = Math.round(displayToUse.bounds.x + (displayToUse.bounds.width / 2) - (state.width / 2));
-		state.y = Math.round(displayToUse.bounds.y + (displayToUse.bounds.height / 2) - (state.height / 2));
+		state.x = displayToUse.bounds.x + (displayToUse.bounds.width / 2) - (state.width / 2);
+		state.y = displayToUse.bounds.y + (displayToUse.bounds.height / 2) - (state.height / 2);
 
 		// Check for newWindowDimensions setting and adjust accordingly
 		const windowConfig = this.configurationService.getValue<IWindowSettings>('window');
@@ -1283,7 +1266,7 @@ export class WindowsManager implements IWindowsMainService {
 		return state;
 	}
 
-	public reload(win: ICodeWindow, cli?: ParsedArgs): void {
+	public reload(win: CodeWindow, cli?: ParsedArgs): void {
 
 		// Only reload when the window has not vetoed this
 		this.lifecycleService.unload(win, UnloadReason.RELOAD).done(veto => {
@@ -1296,22 +1279,22 @@ export class WindowsManager implements IWindowsMainService {
 		});
 	}
 
-	public closeWorkspace(win: ICodeWindow): void {
+	public closeWorkspace(win: CodeWindow): void {
 		this.openInBrowserWindow({
 			cli: this.environmentService.args,
 			windowToUse: win
 		});
 	}
 
-	public saveAndEnterWorkspace(win: ICodeWindow, path: string): TPromise<IEnterWorkspaceResult> {
+	public saveAndEnterWorkspace(win: CodeWindow, path: string): TPromise<IEnterWorkspaceResult> {
 		return this.workspacesManager.saveAndEnterWorkspace(win, path).then(result => this.doEnterWorkspace(win, result));
 	}
 
-	public createAndEnterWorkspace(win: ICodeWindow, folders?: IWorkspaceFolderCreationData[], path?: string): TPromise<IEnterWorkspaceResult> {
+	public createAndEnterWorkspace(win: CodeWindow, folders?: IWorkspaceFolderCreationData[], path?: string): TPromise<IEnterWorkspaceResult> {
 		return this.workspacesManager.createAndEnterWorkspace(win, folders, path).then(result => this.doEnterWorkspace(win, result));
 	}
 
-	private doEnterWorkspace(win: ICodeWindow, result: IEnterWorkspaceResult): IEnterWorkspaceResult {
+	private doEnterWorkspace(win: CodeWindow, result: IEnterWorkspaceResult): IEnterWorkspaceResult {
 
 		// Mark as recently opened
 		this.historyMainService.addRecentlyOpened([result.workspace], []);
@@ -1363,7 +1346,7 @@ export class WindowsManager implements IWindowsMainService {
 		}));
 	}
 
-	public focusLastActive(cli: ParsedArgs, context: OpenContext): ICodeWindow {
+	public focusLastActive(cli: ParsedArgs, context: OpenContext): CodeWindow {
 		const lastActive = this.getLastActiveWindow();
 		if (lastActive) {
 			lastActive.focus();
@@ -1375,12 +1358,12 @@ export class WindowsManager implements IWindowsMainService {
 		return this.open({ context, cli, forceEmpty: true })[0];
 	}
 
-	public getLastActiveWindow(): ICodeWindow {
+	public getLastActiveWindow(): CodeWindow {
 		return getLastActiveWindow(WindowsManager.WINDOWS);
 	}
 
-	public openNewWindow(context: OpenContext): ICodeWindow[] {
-		return this.open({ context, cli: this.environmentService.args, forceNewWindow: true, forceEmpty: true });
+	public openNewWindow(context: OpenContext): void {
+		this.open({ context, cli: this.environmentService.args, forceNewWindow: true, forceEmpty: true });
 	}
 
 	public waitForWindowCloseOrLoad(windowId: number): TPromise<void> {
@@ -1417,7 +1400,7 @@ export class WindowsManager implements IWindowsMainService {
 		});
 	}
 
-	public getFocusedWindow(): ICodeWindow {
+	public getFocusedWindow(): CodeWindow {
 		const win = BrowserWindow.getFocusedWindow();
 		if (win) {
 			return this.getWindowById(win.id);
@@ -1426,7 +1409,7 @@ export class WindowsManager implements IWindowsMainService {
 		return null;
 	}
 
-	public getWindowById(windowId: number): ICodeWindow {
+	public getWindowById(windowId: number): CodeWindow {
 		const res = WindowsManager.WINDOWS.filter(w => w.id === windowId);
 		if (res && res.length === 1) {
 			return res[0];
@@ -1435,7 +1418,7 @@ export class WindowsManager implements IWindowsMainService {
 		return null;
 	}
 
-	public getWindows(): ICodeWindow[] {
+	public getWindows(): CodeWindow[] {
 		return WindowsManager.WINDOWS;
 	}
 
@@ -1443,7 +1426,7 @@ export class WindowsManager implements IWindowsMainService {
 		return WindowsManager.WINDOWS.length;
 	}
 
-	private onWindowError(window: ICodeWindow, error: WindowError): void {
+	private onWindowError(window: CodeWindow, error: WindowError): void {
 		this.logService.error(error === WindowError.CRASHED ? '[VS Code]: render process crashed!' : '[VS Code]: detected unresponsive');
 
 		// Unresponsive
@@ -1493,7 +1476,7 @@ export class WindowsManager implements IWindowsMainService {
 		}
 	}
 
-	private onWindowClosed(win: ICodeWindow): void {
+	private onWindowClosed(win: CodeWindow): void {
 
 		// Tell window
 		win.dispose();
@@ -1541,7 +1524,6 @@ export class WindowsManager implements IWindowsMainService {
 
 		if (!internalOptions.telemetryEventName) {
 			if (pickFolders && pickFiles) {
-				// __GDPR__TODO__ classify event
 				internalOptions.telemetryEventName = 'openFileFolder';
 			} else if (pickFolders) {
 				internalOptions.telemetryEventName = 'openFolder';
@@ -1553,15 +1535,15 @@ export class WindowsManager implements IWindowsMainService {
 		this.dialogs.pickAndOpen(internalOptions);
 	}
 
-	public showMessageBox(options: Electron.MessageBoxOptions, win?: ICodeWindow): TPromise<IMessageBoxResult> {
+	public showMessageBox(options: Electron.MessageBoxOptions, win?: CodeWindow): TPromise<IMessageBoxResult> {
 		return this.dialogs.showMessageBox(options, win);
 	}
 
-	public showSaveDialog(options: Electron.SaveDialogOptions, win?: ICodeWindow): TPromise<string> {
+	public showSaveDialog(options: Electron.SaveDialogOptions, win?: CodeWindow): TPromise<string> {
 		return this.dialogs.showSaveDialog(options, win);
 	}
 
-	public showOpenDialog(options: Electron.OpenDialogOptions, win?: ICodeWindow): TPromise<string[]> {
+	public showOpenDialog(options: Electron.OpenDialogOptions, win?: CodeWindow): TPromise<string[]> {
 		return this.dialogs.showOpenDialog(options, win);
 	}
 
@@ -1702,7 +1684,6 @@ class Dialogs {
 	}
 
 	public showSaveDialog(options: Electron.SaveDialogOptions, window?: ICodeWindow): TPromise<string> {
-
 		function normalizePath(path: string): string {
 			if (path && isMacintosh) {
 				path = normalizeNFC(path); // normalize paths returned from the OS
@@ -1721,7 +1702,6 @@ class Dialogs {
 	}
 
 	public showOpenDialog(options: Electron.OpenDialogOptions, window?: ICodeWindow): TPromise<string[]> {
-
 		function normalizePaths(paths: string[]): string[] {
 			if (paths && paths.length > 0 && isMacintosh) {
 				paths = paths.map(path => normalizeNFC(path)); // normalize paths returned from the OS
@@ -1732,22 +1712,8 @@ class Dialogs {
 
 		return this.getDialogQueue(window).queue(() => {
 			return new TPromise((c, e) => {
-
-				// Ensure the path exists (if provided)
-				let validatePathPromise: TPromise<void> = TPromise.as(void 0);
-				if (options.defaultPath) {
-					validatePathPromise = exists(options.defaultPath).then(exists => {
-						if (!exists) {
-							options.defaultPath = void 0;
-						}
-					});
-				}
-
-				// Show dialog and wrap as promise
-				validatePathPromise.then(() => {
-					dialog.showOpenDialog(window ? window.win : void 0, options, paths => {
-						c(normalizePaths(paths));
-					});
+				dialog.showOpenDialog(window ? window.win : void 0, options, paths => {
+					c(normalizePaths(paths));
 				});
 			});
 		});
@@ -1764,7 +1730,7 @@ class WorkspacesManager {
 	) {
 	}
 
-	public saveAndEnterWorkspace(window: ICodeWindow, path: string): TPromise<IEnterWorkspaceResult> {
+	public saveAndEnterWorkspace(window: CodeWindow, path: string): TPromise<IEnterWorkspaceResult> {
 		if (!window || !window.win || window.readyState !== ReadyState.READY || !window.openedWorkspace || !path || !this.isValidTargetWorkspacePath(window, path)) {
 			return TPromise.as(null); // return early if the window is not ready or disposed or does not have a workspace
 		}
@@ -1772,7 +1738,7 @@ class WorkspacesManager {
 		return this.doSaveAndOpenWorkspace(window, window.openedWorkspace, path);
 	}
 
-	public createAndEnterWorkspace(window: ICodeWindow, folders?: IWorkspaceFolderCreationData[], path?: string): TPromise<IEnterWorkspaceResult> {
+	public createAndEnterWorkspace(window: CodeWindow, folders?: IWorkspaceFolderCreationData[], path?: string): TPromise<IEnterWorkspaceResult> {
 		if (!window || !window.win || window.readyState !== ReadyState.READY) {
 			return TPromise.as(null); // return early if the window is not ready or disposed
 		}
@@ -1789,7 +1755,7 @@ class WorkspacesManager {
 
 	}
 
-	private isValidTargetWorkspacePath(window: ICodeWindow, path?: string): TPromise<boolean> {
+	private isValidTargetWorkspacePath(window: CodeWindow, path?: string): TPromise<boolean> {
 		if (!path) {
 			return TPromise.wrap(true);
 		}
@@ -1815,7 +1781,7 @@ class WorkspacesManager {
 		return TPromise.wrap(true); // OK
 	}
 
-	private doSaveAndOpenWorkspace(window: ICodeWindow, workspace: IWorkspaceIdentifier, path?: string): TPromise<IEnterWorkspaceResult> {
+	private doSaveAndOpenWorkspace(window: CodeWindow, workspace: IWorkspaceIdentifier, path?: string): TPromise<IEnterWorkspaceResult> {
 		let savePromise: TPromise<IWorkspaceIdentifier>;
 		if (path) {
 			savePromise = this.workspacesMainService.saveWorkspace(workspace, path);

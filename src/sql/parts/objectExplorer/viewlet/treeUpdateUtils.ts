@@ -13,7 +13,6 @@ import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import errors = require('vs/base/common/errors');
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 export class TreeUpdateUtils {
 
@@ -64,7 +63,7 @@ export class TreeUpdateUtils {
 		let targetsToExpand: any[];
 
 		// Focus
-		tree.domFocus();
+		tree.DOMFocus();
 
 		if (tree) {
 			let selection = tree.getSelection();
@@ -114,7 +113,7 @@ export class TreeUpdateUtils {
 	}
 
 	public static connectIfNotConnected(
-		connection: IConnectionProfile,
+		connection: ConnectionProfile,
 		options: IConnectionCompletionOptions,
 		connectionManagementService: IConnectionManagementService,
 		tree: ITree): TPromise<ConnectionProfile> {
@@ -173,7 +172,7 @@ export class TreeUpdateUtils {
 	 * @param connectionManagementService Connection management service instance
 	 * @param objectExplorerService Object explorer service instance
 	 */
-	public static connectAndCreateOeSession(connection: IConnectionProfile, options: IConnectionCompletionOptions,
+	public static connectAndCreateOeSession(connection: ConnectionProfile, options: IConnectionCompletionOptions,
 		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: ITree): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree).then(connectedConnection => {
@@ -182,7 +181,7 @@ export class TreeUpdateUtils {
 					connectedConnection.options['groupId'] = connection.groupId;
 					connectedConnection.options['databaseDisplayName'] = connection.databaseName;
 
-					let rootNode: TreeNode = objectExplorerService.getObjectExplorerNode(connectedConnection);
+					var rootNode: TreeNode = objectExplorerService.getObjectExplorerNode(connectedConnection);
 					if (!rootNode) {
 						objectExplorerService.updateObjectExplorerNodes(connectedConnection).then(() => {
 							rootNode = objectExplorerService.getObjectExplorerNode(connectedConnection);
@@ -208,7 +207,7 @@ export class TreeUpdateUtils {
 			if (connection.isDisconnecting) {
 				resolve([]);
 			} else {
-				let rootNode = objectExplorerService.getObjectExplorerNode(connection);
+				var rootNode = objectExplorerService.getObjectExplorerNode(connection);
 				if (rootNode) {
 					objectExplorerService.resolveTreeNodeChildren(rootNode.getSession(), rootNode).then(() => {
 						resolve(rootNode.children);
@@ -227,7 +226,7 @@ export class TreeUpdateUtils {
 		if (objectExplorerNode && objectExplorerNode.parent) {
 			// if object explorer node's parent is root, return connection profile
 			if (!objectExplorerNode.parent.parent) {
-				let connectionId = objectExplorerNode.getConnectionProfile().id;
+				var connectionId = objectExplorerNode.getConnectionProfile().id;
 
 				// get connection profile from connection profile groups
 				let root = TreeUpdateUtils.getTreeInput(connectionManagementService);
@@ -269,8 +268,8 @@ export class TreeUpdateUtils {
 	 * Get connection profile with the current database
 	 */
 	public static getConnectionProfile(treeNode: TreeNode): ConnectionProfile {
-		let connectionProfile = treeNode.getConnectionProfile();
-		let databaseName = treeNode.getDatabaseName();
+		var connectionProfile = treeNode.getConnectionProfile();
+		var databaseName = treeNode.getDatabaseName();
 		if (databaseName !== undefined && connectionProfile.databaseName !== databaseName) {
 			connectionProfile = connectionProfile.cloneWithDatabase(databaseName);
 		}

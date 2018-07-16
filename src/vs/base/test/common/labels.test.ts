@@ -6,8 +6,9 @@
 'use strict';
 
 import * as assert from 'assert';
-import * as labels from 'vs/base/common/labels';
-import * as platform from 'vs/base/common/platform';
+import labels = require('vs/base/common/labels');
+import platform = require('vs/base/common/platform');
+import { getBaseLabel } from 'vs/base/common/labels';
 
 suite('Labels', () => {
 	test('shorten - windows', () => {
@@ -124,9 +125,9 @@ suite('Labels', () => {
 
 		// conditional separator
 		assert.strictEqual(labels.template('Foo${separator}Bar'), 'FooBar');
-		assert.strictEqual(labels.template('Foo${separator}Bar', { separator: { label: ' - ' } }), 'Foo - Bar');
-		assert.strictEqual(labels.template('${separator}Foo${separator}Bar', { value: 'something', separator: { label: ' - ' } }), 'Foo - Bar');
-		assert.strictEqual(labels.template('${value} Foo${separator}Bar', { value: 'something', separator: { label: ' - ' } }), 'something Foo - Bar');
+		assert.strictEqual(labels.template('Foo${separator}Bar', { separator: { label: ' - ' } }), 'FooBar');
+		assert.strictEqual(labels.template('${separator}Foo${separator}Bar', { value: 'something', separator: { label: ' - ' } }), 'FooBar');
+		assert.strictEqual(labels.template('${value} Foo${separator}Bar', { value: 'something', separator: { label: ' - ' } }), 'something FooBar');
 
 		// // real world example (macOS)
 		let t = '${activeEditorShort}${separator}${rootName}';
@@ -150,9 +151,9 @@ suite('Labels', () => {
 			return;
 		}
 
-		assert.equal(labels.getBaseLabel('/some/folder/file.txt'), 'file.txt');
-		assert.equal(labels.getBaseLabel('/some/folder'), 'folder');
-		assert.equal(labels.getBaseLabel('/'), '/');
+		assert.equal(getBaseLabel('/some/folder/file.txt'), 'file.txt');
+		assert.equal(getBaseLabel('/some/folder'), 'folder');
+		assert.equal(getBaseLabel('/'), '/');
 	});
 
 	test('getBaseLabel - windows', () => {
@@ -161,9 +162,9 @@ suite('Labels', () => {
 			return;
 		}
 
-		assert.equal(labels.getBaseLabel('c:'), 'C:');
-		assert.equal(labels.getBaseLabel('c:\\'), 'C:');
-		assert.equal(labels.getBaseLabel('c:\\some\\folder\\file.txt'), 'file.txt');
-		assert.equal(labels.getBaseLabel('c:\\some\\folder'), 'folder');
+		assert.equal(getBaseLabel('c:'), 'C:');
+		assert.equal(getBaseLabel('c:\\'), 'C:');
+		assert.equal(getBaseLabel('c:\\some\\folder\\file.txt'), 'file.txt');
+		assert.equal(getBaseLabel('c:\\some\\folder'), 'folder');
 	});
 });

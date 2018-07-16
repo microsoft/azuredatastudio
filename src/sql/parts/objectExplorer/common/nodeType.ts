@@ -95,7 +95,3 @@ export class NodeType {
 	public static ColumnMasterKey = 'ColumnMasterKey';
 	public static ColumnEncryptionKey = 'ColumnEncryptionKey';
 }
-
-export interface SqlThemeIcon {
-	readonly id: string;
-}

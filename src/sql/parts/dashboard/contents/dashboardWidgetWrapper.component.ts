@@ -28,7 +28,7 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
 import { Action } from 'vs/base/common/actions';
@@ -37,7 +37,6 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Emitter } from 'vs/base/common/event';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
@@ -92,22 +91,20 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
-		@Inject(forwardRef(() => Injector)) private _injector: Injector,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService
+		@Inject(forwardRef(() => Injector)) private _injector: Injector
 	) {
 		super();
 	}
 
 	ngOnInit() {
 		let self = this;
-		this._register(self.themeService.onDidColorThemeChange((event: IColorTheme) => {
+		this._register(self._bootstrap.themeService.onDidColorThemeChange((event: IColorTheme) => {
 			self.updateTheme(event);
 		}));
 	}
 
 	ngAfterViewInit() {
-		this.updateTheme(this.themeService.getColorTheme());
+		this.updateTheme(this._bootstrap.themeService.getColorTheme());
 		if (this.componentHost) {
 			this.loadWidget();
 		}
@@ -115,10 +112,10 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
 		if (this._actions) {
 			if (this.collapsable) {
-				this._collapseAction = this.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed);
+				this._collapseAction = this._bootstrap.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed);
 				this._actionbar.push(this._collapseAction, { icon: true, label: false });
 			}
-			this._actionbar.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this._component.actionsContext), { icon: true, label: false });
+			this._actionbar.push(this._bootstrap.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this._component.actionsContext), { icon: true, label: false });
 		}
 		this.layout();
 	}
@@ -140,7 +137,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	}
 
 	public enableEdit(): void {
-		this._actionbar.push(this.instantiationService.createInstance(DeleteWidgetAction, this._config.id, this._bootstrap.getUnderlyingUri()), { icon: true, label: false });
+		this._actionbar.push(this._bootstrap.instantiationService.createInstance(DeleteWidgetAction, this._config.id, this._bootstrap.getUnderlyingUri()), { icon: true, label: false });
 	}
 
 	public disableEdit(): void {

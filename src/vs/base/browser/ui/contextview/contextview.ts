@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+
 'use strict';
 
 import 'vs/css!./contextview';
 import { Builder, $ } from 'vs/base/browser/builder';
-import * as DOM from 'vs/base/browser/dom';
+import DOM = require('vs/base/browser/dom');
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 export interface IAnchor {
@@ -248,8 +249,7 @@ export class ContextView {
 		this.$view.hide();
 	}
 
-	// {{SQL CARBON EDIT}}
-	public isVisible(): boolean {
+	private isVisible(): boolean {
 		return !!this.delegate;
 	}
 

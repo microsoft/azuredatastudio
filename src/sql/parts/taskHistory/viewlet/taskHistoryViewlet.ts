@@ -7,9 +7,10 @@
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/taskHistoryViewlet';
 import { TPromise } from 'vs/base/common/winjs.base';
+import { Builder, Dimension } from 'vs/base/browser/builder';
 import { Viewlet } from 'vs/workbench/browser/viewlet';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { toggleClass, Dimension } from 'vs/base/browser/dom';
+import { toggleClass } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -51,11 +52,11 @@ export class TaskHistoryViewlet extends Viewlet {
 		});
 	}
 
-	public create(parent: HTMLElement): TPromise<void> {
+	public create(parent: Builder): TPromise<void> {
 		super.create(parent);
-		this._root = parent;
+		this._root = parent.getHTMLElement();
 		this._taskHistoryView = this._instantiationService.createInstance(TaskHistoryView);
-		this._taskHistoryView.renderBody(parent);
+		this._taskHistoryView.renderBody(parent.getHTMLElement());
 
 		return TPromise.as(null);
 	}

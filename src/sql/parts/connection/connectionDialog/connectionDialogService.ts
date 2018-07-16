@@ -22,6 +22,7 @@ import { entries } from 'sql/base/common/objects';
 import * as sqlops from 'sqlops';
 
 import { IPartService } from 'vs/workbench/services/part/common/partService';
+import { withElementById } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as platform from 'vs/base/common/platform';
@@ -280,29 +281,32 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 		return new Promise<void>((resolve, reject) => {
 			// only create the provider maps first time the dialog gets called
+			let capabilitiesPromise: Promise<void> = Promise.resolve();
 			if (this._providerTypes.length === 0) {
 				entries(this._capabilitiesService.providers).forEach(p => {
 					this._providerTypes.push(p[1].connection.displayName);
 					this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
 				});
 			}
-			this.updateModelServerCapabilities(model);
-			// If connecting from a query editor set "save connection" to false
-			if (params && params.input && params.connectionType === ConnectionType.editor) {
-				this._model.saveProfile = false;
-			}
-
-			resolve(this.showDialogWithModel().then(() => {
-				if (connectionResult && connectionResult.errorMessage) {
-					this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
+			capabilitiesPromise.then(s => {
+				this.updateModelServerCapabilities(model);
+				// If connecting from a query editor set "save connection" to false
+				if (params && params.input && params.connectionType === ConnectionType.editor) {
+					this._model.saveProfile = false;
 				}
-			}));
+
+				resolve(this.showDialogWithModel().then(() => {
+					if (connectionResult && connectionResult.errorMessage) {
+						this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
+					}
+				}));
+			}, e => reject(e));
 		});
 	}
 
 	private doShowDialog(params: INewConnectionParams): TPromise<void> {
 		if (!this._connectionDialog) {
-			let container = document.getElementById(this._partService.getWorkbenchElementId()).parentElement;
+			let container = withElementById(this._partService.getWorkbenchElementId()).getHTMLElement().parentElement;
 			this._container = container;
 			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerTypes, this._providerNameToDisplayNameMap[this._model.providerName]);
 			this._connectionDialog.onCancel(() => {
@@ -339,9 +343,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (!platform.isWindows && types.isString(message) && message.toLowerCase().includes('kerberos') && message.toLowerCase().includes('kinit')) {
 			message = [
 				localize('kerberosErrorStart', "Connection failed due to Kerberos error."),
-				localize('kerberosHelpLink', "Help configuring Kerberos is available at {0}", helpLink),
-				localize('kerberosKinit', "If you have previously connected you may need to re-run kinit.")
-			].join('\r\n');
+				localize('kerberosHelpLink', "&nbsp;Help configuring Kerberos is available at ") + helpLink,
+				localize('kerberosKinit', "&nbsp;If you have previously connected you may need to re-run kinit.")
+			].join('<br/>');
 			actions.push(new Action('Kinit', 'Run kinit', null, true, () => {
 				this._connectionDialog.close();
 				this._clipboardService.writeText('kinit\r');

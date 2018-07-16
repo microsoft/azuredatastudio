@@ -144,11 +144,13 @@ export class ListBox extends SelectBox {
 
 		for (let i = 0; i < indexes.length; i++) {
 			this.selectElement.remove(indexes[i]);
+			this.options.splice(indexes[i], 1);
 		}
 	}
 
 	public add(option: string): void {
 		this.selectElement.add(this.createOption(option));
+		this.options.push(option);
 	}
 
 	// Allow copy to clipboard

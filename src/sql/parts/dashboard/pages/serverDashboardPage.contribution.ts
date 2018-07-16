@@ -96,12 +96,16 @@ let defaultVal = [
 	},
 	{
 		widget: {
-			'backup-history-server-insight': null
+			'backup-history-server-insight': {
+				cacheId: '0c7cba8b-c87a-4bcc-ae54-2f40a5503a90'
+			}
 		}
 	},
 	{
 		widget: {
-			'all-database-size-server-insight': null
+			'all-database-size-server-insight': {
+				cacheId: '1d7cba8b-c87a-4bcc-ae54-2f40a5503a90'
+			}
 		}
 	}
 ];
@@ -117,7 +121,8 @@ export const serverDashboardTabsSchema: IJSONSchema = {
 	type: ['array'],
 	description: nls.localize('dashboardServerTabs', 'Customizes the Server dashboard tabs'),
 	items: generateDashboardTabSchema('server'),
-	default: []
+	default: [
+	]
 };
 
 export const SERVER_DASHBOARD_SETTING = 'dashboard.server.widgets';

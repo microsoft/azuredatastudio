@@ -30,7 +30,6 @@ export class InputBox extends AngularDisposable implements OnInit, OnChanges {
 	@Input() type: string;
 	@Input() placeholder: string;
 	@Input() ariaLabel: string;
-	@Input() value: string;
 
 	@Output() onDidChange = new EventEmitter<string | number>();
 
@@ -50,9 +49,6 @@ export class InputBox extends AngularDisposable implements OnInit, OnChanges {
 			placeholder: this.placeholder,
 			ariaLabel: this.ariaLabel
 		});
-		if (this.value) {
-			this._inputbox.value = this.value;
-		}
 		this._inputbox.onDidChange(e => {
 			switch (this.type) {
 				case 'number':

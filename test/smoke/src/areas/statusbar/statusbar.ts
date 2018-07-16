@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Code } from '../../vscode/code';
+import { SpectronApplication } from '../../spectron/application';
 
 export enum StatusBarElement {
 	BRANCH_STATUS = 0,
@@ -23,22 +23,23 @@ export class StatusBar {
 	private readonly leftSelector = '.statusbar-item.left';
 	private readonly rightSelector = '.statusbar-item.right';
 
-	constructor(private code: Code) { }
-
-	async waitForStatusbarElement(element: StatusBarElement): Promise<void> {
-		await this.code.waitForElement(this.getSelector(element));
+	constructor(private spectron: SpectronApplication) {
 	}
 
-	async clickOn(element: StatusBarElement): Promise<void> {
-		await this.code.waitAndClick(this.getSelector(element));
+	public async waitForStatusbarElement(element: StatusBarElement): Promise<void> {
+		await this.spectron.client.waitForElement(this.getSelector(element));
 	}
 
-	async waitForEOL(eol: string): Promise<string> {
-		return this.code.waitForTextContent(this.getSelector(StatusBarElement.EOL_STATUS), eol);
+	public async clickOn(element: StatusBarElement): Promise<void> {
+		await this.spectron.client.waitAndClick(this.getSelector(element));
 	}
 
-	async waitForStatusbarText(title: string, text: string): Promise<void> {
-		await this.code.waitForTextContent(`${this.mainSelector} span[title="${title}"]`, text);
+	public async waitForEOL(eol: string): Promise<string> {
+		return this.spectron.client.waitForText(this.getSelector(StatusBarElement.EOL_STATUS), eol);
+	}
+
+	public async getStatusbarTextByTitle(title: string): Promise<string> {
+		return await this.spectron.client.waitForText(`${this.mainSelector} span[title="smoke test"]`);
 	}
 
 	private getSelector(element: StatusBarElement): string {
@@ -60,7 +61,7 @@ export class StatusBar {
 			case StatusBarElement.LANGUAGE_STATUS:
 				return `${this.mainSelector} ${this.rightSelector} .editor-status-mode`;
 			case StatusBarElement.FEEDBACK_ICON:
-				return `${this.mainSelector} ${this.rightSelector} .monaco-dropdown.send-feedback`;
+				return `${this.mainSelector} ${this.rightSelector} .dropdown.send-feedback`;
 			default:
 				throw new Error(element);
 		}

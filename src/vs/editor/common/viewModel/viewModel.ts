@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { INewScrollPosition } from 'vs/editor/common/editorCommon';
-import { EndOfLinePreference, IModelDecorationOptions, IActiveIndentGuideInfo } from 'vs/editor/common/model';
+import { INewScrollPosition, IViewState } from 'vs/editor/common/editorCommon';
+import { EndOfLinePreference, IModelDecorationOptions } from 'vs/editor/common/model';
 import { IViewLineTokens } from 'vs/editor/common/core/lineTokens';
 import { Position, IPosition } from 'vs/editor/common/core/position';
 import { Range } from 'vs/editor/common/core/range';
@@ -15,7 +15,6 @@ import { Scrollable, IScrollPosition } from 'vs/base/common/scrollable';
 import { IPartialViewLinesViewportData } from 'vs/editor/common/viewLayout/viewLinesViewportData';
 import { IEditorWhitespace } from 'vs/editor/common/viewLayout/whitespaceComputer';
 import { ITheme } from 'vs/platform/theme/common/themeService';
-import * as strings from 'vs/base/common/strings';
 
 export interface IViewWhitespaceViewportData {
 	readonly id: number;
@@ -63,6 +62,9 @@ export interface IViewLayout {
 	getLinesViewportData(): IPartialViewLinesViewportData;
 	getLinesViewportDataAtScrollTop(scrollTop: number): IPartialViewLinesViewportData;
 	getWhitespaces(): IEditorWhitespace[];
+
+	saveState(): IViewState;
+	reduceRestoreState(state: IViewState): { scrollLeft: number; scrollTop: number; };
 
 	isAfterLines(verticalOffset: number): boolean;
 	getLineNumberAtVerticalOffset(verticalOffset: number): number;
@@ -120,11 +122,9 @@ export interface IViewModel {
 	 * Gives a hint that a lot of requests are about to come in for these line numbers.
 	 */
 	setViewport(startLineNumber: number, endLineNumber: number, centeredLineNumber: number): void;
-	setHasFocus(hasFocus: boolean): void;
 
 	getDecorationsInViewport(visibleRange: Range): ViewModelDecoration[];
 	getViewLineRenderingData(visibleRange: Range, lineNumber: number): ViewLineRenderingData;
-	getViewLineData(lineNumber: number): ViewLineData;
 	getMinimapLinesRenderingData(startLineNumber: number, endLineNumber: number, needed: boolean[]): MinimapLinesRenderingData;
 	getCompletelyVisibleViewRange(): Range;
 	getCompletelyVisibleViewRangeAtScrollTop(scrollTop: number): Range;
@@ -132,8 +132,6 @@ export interface IViewModel {
 	getTabSize(): number;
 	getLineCount(): number;
 	getLineContent(lineNumber: number): string;
-	getLineLength(lineNumber: number): number;
-	getActiveIndentGuide(lineNumber: number, minLineNumber: number, maxLineNumber: number): IActiveIndentGuideInfo;
 	getLinesIndentGuides(startLineNumber: number, endLineNumber: number): number[];
 	getLineMinColumn(lineNumber: number): number;
 	getLineMaxColumn(lineNumber: number): number;
@@ -148,7 +146,7 @@ export interface IViewModel {
 
 	deduceModelPositionRelativeToViewPosition(viewAnchorPosition: Position, deltaOffset: number, lineFeedCnt: number): Position;
 	getEOL(): string;
-	getPlainTextToCopy(ranges: Range[], emptySelectionClipboard: boolean, forceCRLF: boolean): string | string[];
+	getPlainTextToCopy(ranges: Range[], emptySelectionClipboard: boolean): string | string[];
 	getHTMLToCopy(ranges: Range[], emptySelectionClipboard: boolean): string;
 }
 
@@ -212,13 +210,13 @@ export class ViewLineRenderingData {
 	 */
 	public readonly content: string;
 	/**
-	 * Describes if `content` contains RTL characters.
+	 * If set to false, it is guaranteed that `content` contains only LTR chars.
 	 */
-	public readonly containsRTL: boolean;
+	public readonly mightContainRTL: boolean;
 	/**
-	 * Describes if `content` contains non basic ASCII chars.
+	 * If set to false, it is guaranteed that `content` contains only basic ASCII chars.
 	 */
-	public readonly isBasicASCII: boolean;
+	public readonly mightContainNonBasicASCII: boolean;
 	/**
 	 * The tokens at this view line.
 	 */
@@ -245,35 +243,18 @@ export class ViewLineRenderingData {
 		this.minColumn = minColumn;
 		this.maxColumn = maxColumn;
 		this.content = content;
-
-		this.isBasicASCII = ViewLineRenderingData.isBasicASCII(content, mightContainNonBasicASCII);
-		this.containsRTL = ViewLineRenderingData.containsRTL(content, this.isBasicASCII, mightContainRTL);
-
+		this.mightContainRTL = mightContainRTL;
+		this.mightContainNonBasicASCII = mightContainNonBasicASCII;
 		this.tokens = tokens;
 		this.inlineDecorations = inlineDecorations;
 		this.tabSize = tabSize;
-	}
-
-	public static isBasicASCII(lineContent: string, mightContainNonBasicASCII: boolean): boolean {
-		if (mightContainNonBasicASCII) {
-			return strings.isBasicASCII(lineContent);
-		}
-		return true;
-	}
-
-	public static containsRTL(lineContent: string, isBasicASCII: boolean, mightContainRTL: boolean): boolean {
-		if (!isBasicASCII && mightContainRTL) {
-			return strings.containsRTL(lineContent);
-		}
-		return false;
 	}
 }
 
 export const enum InlineDecorationType {
 	Regular = 0,
 	Before = 1,
-	After = 2,
-	RegularAffectingLetterSpacing = 3
+	After = 2
 }
 
 export class InlineDecoration {

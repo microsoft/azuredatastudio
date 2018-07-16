@@ -10,6 +10,7 @@ import { localize } from 'vs/nls';
 import { IActionRunner } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as DOM from 'vs/base/browser/dom';
+import { Builder } from 'vs/base/browser/builder';
 import { VIEWLET_ID, ExplorerViewletVisibleContext, IFilesConfiguration, OpenEditorsVisibleContext, OpenEditorsVisibleCondition, IExplorerViewlet } from 'vs/workbench/parts/files/common/files';
 import { PersistentViewsViewlet, IViewletViewOptions, ViewsViewletPanel } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
@@ -34,6 +35,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
+
 
 export class ExplorerViewletViewsContribution extends Disposable implements IWorkbenchContribution {
 
@@ -170,10 +172,11 @@ export class ExplorerViewlet extends PersistentViewsViewlet implements IExplorer
 		this._register(this.contextService.onDidChangeWorkspaceName(e => this.updateTitleArea()));
 	}
 
-	async create(parent: HTMLElement): TPromise<void> {
+	async create(parent: Builder): TPromise<void> {
 		await super.create(parent);
 
-		DOM.addClass(parent, 'explorer-viewlet');
+		const el = parent.getHTMLElement();
+		DOM.addClass(el, 'explorer-viewlet');
 	}
 
 	private isOpenEditorsVisible(): boolean {
@@ -251,15 +254,6 @@ export class ExplorerViewlet extends PersistentViewsViewlet implements IExplorer
 
 	public getViewletState(): FileViewletState {
 		return this.viewletState;
-	}
-
-	focus(): void {
-		const explorerView = this.getExplorerView();
-		if (explorerView && explorerView.isExpanded()) {
-			explorerView.focus();
-		} else {
-			super.focus();
-		}
 	}
 
 	protected loadViewsStates(): void {

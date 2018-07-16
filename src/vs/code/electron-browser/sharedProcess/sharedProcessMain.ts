@@ -30,9 +30,10 @@ import { resolveCommonProperties } from 'vs/platform/telemetry/node/commonProper
 import { TelemetryAppenderChannel } from 'vs/platform/telemetry/common/telemetryIpc';
 import { TelemetryService, ITelemetryServiceConfig } from 'vs/platform/telemetry/common/telemetryService';
 import { AppInsightsAppender } from 'vs/platform/telemetry/node/appInsightsAppender';
-import { IWindowsService, ActiveWindowManager } from 'vs/platform/windows/common/windows';
+import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { WindowsChannelClient } from 'vs/platform/windows/common/windowsIpc';
 import { ipcRenderer } from 'electron';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createSharedProcessContributions } from 'vs/code/electron-browser/sharedProcess/contrib/contributions';
 import { createSpdLogService } from 'vs/platform/log/node/spdlogService';
 import { ILogService, LogLevel } from 'vs/platform/log/common/log';
@@ -40,8 +41,8 @@ import { LogLevelSetterChannelClient, FollowerLogService } from 'vs/platform/log
 import { LocalizationsService } from 'vs/platform/localizations/node/localizations';
 import { ILocalizationsService } from 'vs/platform/localizations/common/localizations';
 import { LocalizationsChannel } from 'vs/platform/localizations/common/localizationsIpc';
-import { DialogChannelClient } from 'vs/platform/dialogs/common/dialogIpc';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IChoiceService } from 'vs/platform/dialogs/common/dialogs';
+import { ChoiceChannelClient } from 'vs/platform/dialogs/common/choiceIpc';
 
 export interface ISharedProcessConfiguration {
 	readonly machineId: string;
@@ -55,6 +56,28 @@ interface ISharedProcessInitData {
 	sharedIPCHandle: string;
 	args: ParsedArgs;
 	logLevel: LogLevel;
+}
+
+class ActiveWindowManager implements IDisposable {
+	private disposables: IDisposable[] = [];
+	private _activeWindowId: number;
+
+	constructor( @IWindowsService windowsService: IWindowsService) {
+		windowsService.onWindowOpen(this.setActiveWindow, this, this.disposables);
+		windowsService.onWindowFocus(this.setActiveWindow, this, this.disposables);
+	}
+
+	private setActiveWindow(windowId: number) {
+		this._activeWindowId = windowId;
+	}
+
+	public get activeClientId(): string {
+		return `window:${this._activeWindowId}`;
+	}
+
+	public dispose() {
+		this.disposables = dispose(this.disposables);
+	}
 }
 
 const eventPrefix = 'monacoworkbench';
@@ -79,13 +102,13 @@ function main(server: Server, initData: ISharedProcessInitData, configuration: I
 	services.set(IWindowsService, windowsService);
 
 	const activeWindowManager = new ActiveWindowManager(windowsService);
-	const dialogChannel = server.getChannel('dialog', {
+	const choiceChannel = server.getChannel('choice', {
 		route: () => {
-			logService.info('Routing dialog request to the client', activeWindowManager.activeClientId);
+			logService.info('Routing choice request to the client', activeWindowManager.activeClientId);
 			return activeWindowManager.activeClientId;
 		}
 	});
-	services.set(IDialogService, new DialogChannelClient(dialogChannel));
+	services.set(IChoiceService, new ChoiceChannelClient(choiceChannel));
 
 	const instantiationService = new InstantiationService(services);
 

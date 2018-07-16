@@ -38,22 +38,14 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 		});
 	}
 
-	registerTreeDataProvider<T>(id: string, treeDataProvider: vscode.TreeDataProvider<T>): vscode.Disposable {
-		const treeView = this.createTreeView(id, { treeDataProvider });
-		return { dispose: () => treeView.dispose() };
-	}
-
-	createTreeView<T>(viewId: string, options: { treeDataProvider: vscode.TreeDataProvider<T> }): vscode.TreeView<T> {
-		if (!options || !options.treeDataProvider) {
-			throw new Error('Options with treeDataProvider is mandatory');
-		}
-		const treeView = this.createExtHostTreeViewer(viewId, options.treeDataProvider);
+	registerTreeDataProvider<T>(id: string, dataProvider: vscode.TreeDataProvider<T>, proposedApiFunction: <U>(fn: U) => U): vscode.TreeView<T> {
+		const treeView = this.createExtHostTreeViewer(id, dataProvider);
 		return {
-			reveal: (element: T, options?: { select?: boolean }): Thenable<void> => {
+			reveal: proposedApiFunction((element: T, options?: { select?: boolean }): Thenable<void> => {
 				return treeView.reveal(element, options);
-			},
+			}),
 			dispose: () => {
-				this.treeViews.delete(viewId);
+				this.treeViews.delete(id);
 				treeView.dispose();
 			}
 		};
@@ -152,7 +144,7 @@ class ExtHostTreeView<T> extends Disposable {
 
 	private resolveTreeNode(element: T, parent?: TreeNode): TPromise<TreeNode> {
 		return asWinJsPromise(() => this.dataProvider.getTreeItem(element))
-			.then(extTreeItem => this.createHandle(element, extTreeItem, parent, true))
+			.then(extTreeItem => this.createHandle(element, extTreeItem, parent))
 			.then(handle => this.getChildren(parent ? parent.item.handle : null)
 				.then(() => {
 					const cachedElement = this.getExtensionElement(handle);
@@ -303,7 +295,7 @@ class ExtHostTreeView<T> extends Disposable {
 		return item;
 	}
 
-	private createHandle(element: T, { id, label, resourceUri }: vscode.TreeItem, parent: TreeNode, first?: boolean): TreeItemHandle {
+	private createHandle(element: T, { id, label, resourceUri }: vscode.TreeItem, parent?: TreeNode): TreeItemHandle {
 		if (id) {
 			return `${ExtHostTreeView.ID_HANDLE_PREFIX}/${id}`;
 		}
@@ -316,7 +308,7 @@ class ExtHostTreeView<T> extends Disposable {
 
 		for (let counter = 0; counter <= childrenNodes.length; counter++) {
 			const handle = `${prefix}/${counter}:${elementId}`;
-			if (first || !this.elements.has(handle) || existingHandle === handle) {
+			if (!this.elements.has(handle) || existingHandle === handle) {
 				return handle;
 			}
 		}

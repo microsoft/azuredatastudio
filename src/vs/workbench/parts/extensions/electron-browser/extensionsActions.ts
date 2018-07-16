@@ -5,8 +5,8 @@
 
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Action } from 'vs/base/common/actions';
-import * as paths from 'vs/base/common/paths';
+import { Action, IAction } from 'vs/base/common/actions';
+import paths = require('vs/base/common/paths');
 import { IExtensionsWorkbenchService, IExtension } from 'vs/workbench/parts/extensions/common/extensions';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
@@ -14,6 +14,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 import URI from 'vs/base/common/uri';
 import Severity from 'vs/base/common/severity';
 import { mnemonicButtonLabel } from 'vs/base/common/labels';
+import { IChoiceService } from 'vs/platform/dialogs/common/dialogs';
 import { IQuickOpenService, IPickOpenEntry } from 'vs/platform/quickOpen/common/quickOpen';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { LocalExtensionType } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -58,14 +59,14 @@ export class InstallVSIXAction extends Action {
 		id = InstallVSIXAction.ID,
 		label = InstallVSIXAction.LABEL,
 		@IExtensionsWorkbenchService private extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@INotificationService private notificationService: INotificationService,
-		@IWindowService private windowService: IWindowService
+		@IChoiceService private choiceService: IChoiceService,
+		@IWindowService private windowsService: IWindowService
 	) {
 		super(id, label, 'extension-action install-vsix', true);
 	}
 
 	run(): TPromise<any> {
-		return this.windowService.showOpenDialog({
+		return this.windowsService.showOpenDialog({
 			title: localize('installFromVSIX', "Install from VSIX"),
 			filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],
 			properties: ['openFile'],
@@ -76,14 +77,13 @@ export class InstallVSIXAction extends Action {
 			}
 
 			return TPromise.join(result.map(vsix => this.extensionsWorkbenchService.install(vsix))).then(() => {
-				this.notificationService.prompt(
-					Severity.Info,
-					localize('InstallVSIXAction.success', "Successfully installed the extension. Reload to enable it."),
-					[{
-						label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
-						run: () => this.windowService.reloadWindow()
-					}]
-				);
+				return this.choiceService.choose(Severity.Info, localize('InstallVSIXAction.success', "Successfully installed the extension. Reload to enable it."), [localize('InstallVSIXAction.reloadNow', "Reload Now")]).then(choice => {
+					if (choice === 0) {
+						return this.windowsService.reloadWindow();
+					}
+
+					return TPromise.as(undefined);
+				});
 			});
 		});
 	}
@@ -132,14 +132,19 @@ export class ReinstallAction extends Action {
 	private reinstallExtension(extension: IExtension): TPromise<void> {
 		return this.extensionsWorkbenchService.reinstall(extension)
 			.then(() => {
-				this.notificationService.prompt(
-					Severity.Info,
-					localize('ReinstallAction.success', "Successfully reinstalled the extension."),
-					[{
-						label: localize('ReinstallAction.reloadNow', "Reload Now"),
-						run: () => this.windowService.reloadWindow()
-					}]
-				);
+				this.notificationService.notify({
+					message: localize('ReinstallAction.success', "Successfully reinstalled the extension."),
+					severity: Severity.Info,
+					actions: {
+						primary: [<IAction>{
+							id: 'reload',
+							label: localize('ReinstallAction.reloadNow', "Reload Now"),
+							enabled: true,
+							run: () => this.windowService.reloadWindow(),
+							dispose: () => null
+						}]
+					}
+				});
 			}, error => this.notificationService.error(error));
 	}
 }

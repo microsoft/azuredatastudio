@@ -5,16 +5,29 @@
 
 'use strict';
 
-import * as assert from 'assert';
-import * as os from 'os';
+import assert = require('assert');
+import os = require('os');
 
-import * as path from 'path';
-import * as fs from 'fs';
-import * as uuid from 'vs/base/common/uuid';
+import path = require('path');
+import fs = require('fs');
+import extfs = require('vs/base/node/extfs');
+import uuid = require('vs/base/common/uuid');
 import { ConfigWatcher } from 'vs/base/node/config';
-import { testFile } from 'vs/base/test/node/utils';
+import { onError } from 'vs/base/test/common/utils';
+import { mkdirp } from 'vs/base/node/pfs';
 
 suite('Config', () => {
+
+	function testFile(callback: (error: Error, path: string, cleanUp: (callback: () => void) => void) => void): void {
+		const id = uuid.generateUuid();
+		const parentDir = path.join(os.tmpdir(), 'vsctests', id);
+		const newDir = path.join(parentDir, 'config', id);
+		const testFile = path.join(newDir, 'config.json');
+
+		const onMkdirp = error => callback(error, testFile, (callback) => extfs.del(parentDir, os.tmpdir(), () => { }, callback));
+
+		mkdirp(newDir, 493).done(() => onMkdirp(null), error => onMkdirp(error));
+	}
 
 	test('defaults', function () {
 		const id = uuid.generateUuid();
@@ -39,11 +52,15 @@ suite('Config', () => {
 		watcher.dispose();
 	});
 
-	test('getConfig / getValue', function () {
-		return testFile('config', 'config.json').then(res => {
-			fs.writeFileSync(res.testFile, '// my comment\n{ "foo": "bar" }');
+	test('getConfig / getValue', function (done: () => void) {
+		testFile((error, testFile, cleanUp) => {
+			if (error) {
+				return onError(error, done);
+			}
 
-			let watcher = new ConfigWatcher<{ foo: string; }>(res.testFile);
+			fs.writeFileSync(testFile, '// my comment\n{ "foo": "bar" }');
+
+			let watcher = new ConfigWatcher<{ foo: string; }>(testFile);
 
 			let config = watcher.getConfig();
 			assert.ok(config);
@@ -55,15 +72,19 @@ suite('Config', () => {
 
 			watcher.dispose();
 
-			return res.cleanUp();
+			cleanUp(done);
 		});
 	});
 
-	test('getConfig / getValue - broken JSON', function () {
-		return testFile('config', 'config.json').then(res => {
-			fs.writeFileSync(res.testFile, '// my comment\n "foo": "bar ... ');
+	test('getConfig / getValue - broken JSON', function (done: () => void) {
+		testFile((error, testFile, cleanUp) => {
+			if (error) {
+				return onError(error, done);
+			}
 
-			let watcher = new ConfigWatcher<{ foo: string; }>(res.testFile);
+			fs.writeFileSync(testFile, '// my comment\n "foo": "bar ... ');
+
+			let watcher = new ConfigWatcher<{ foo: string; }>(testFile);
 
 			let config = watcher.getConfig();
 			assert.ok(config);
@@ -73,20 +94,24 @@ suite('Config', () => {
 
 			watcher.dispose();
 
-			return res.cleanUp();
+			cleanUp(done);
 		});
 	});
 
-	test('watching', function (done) {
+	test('watching', function (done: () => void) {
 		this.timeout(10000); // watching is timing intense
 
-		testFile('config', 'config.json').then(res => {
-			fs.writeFileSync(res.testFile, '// my comment\n{ "foo": "bar" }');
+		testFile((error, testFile, cleanUp) => {
+			if (error) {
+				return onError(error, done);
+			}
 
-			let watcher = new ConfigWatcher<{ foo: string; }>(res.testFile);
+			fs.writeFileSync(testFile, '// my comment\n{ "foo": "bar" }');
+
+			let watcher = new ConfigWatcher<{ foo: string; }>(testFile);
 			watcher.getConfig(); // ensure we are in sync
 
-			fs.writeFileSync(res.testFile, '// my comment\n{ "foo": "changed" }');
+			fs.writeFileSync(testFile, '// my comment\n{ "foo": "changed" }');
 
 			watcher.onDidUpdateConfiguration(event => {
 				assert.ok(event);
@@ -95,19 +120,24 @@ suite('Config', () => {
 
 				watcher.dispose();
 
-				res.cleanUp().then(done, done);
+				cleanUp(done);
 			});
-		}, done);
+
+		});
 	});
 
-	test('watching also works when file created later', function (done) {
+	test('watching also works when file created later', function (done: () => void) {
 		this.timeout(10000); // watching is timing intense
 
-		testFile('config', 'config.json').then(res => {
-			let watcher = new ConfigWatcher<{ foo: string; }>(res.testFile);
+		testFile((error, testFile, cleanUp) => {
+			if (error) {
+				return onError(error, done);
+			}
+
+			let watcher = new ConfigWatcher<{ foo: string; }>(testFile);
 			watcher.getConfig(); // ensure we are in sync
 
-			fs.writeFileSync(res.testFile, '// my comment\n{ "foo": "changed" }');
+			fs.writeFileSync(testFile, '// my comment\n{ "foo": "changed" }');
 
 			watcher.onDidUpdateConfiguration(event => {
 				assert.ok(event);
@@ -116,18 +146,23 @@ suite('Config', () => {
 
 				watcher.dispose();
 
-				res.cleanUp().then(done, done);
+				cleanUp(done);
 			});
-		}, done);
+
+		});
 	});
 
-	test('watching detects the config file getting deleted', function (done) {
+	test('watching detects the config file getting deleted', function (done: () => void) {
 		this.timeout(10000); // watching is timing intense
 
-		testFile('config', 'config.json').then(res => {
-			fs.writeFileSync(res.testFile, '// my comment\n{ "foo": "bar" }');
+		testFile((error, testFile, cleanUp) => {
+			if (error) {
+				return onError(error, done);
+			}
 
-			let watcher = new ConfigWatcher<{ foo: string; }>(res.testFile);
+			fs.writeFileSync(testFile, '// my comment\n{ "foo": "bar" }');
+
+			let watcher = new ConfigWatcher<{ foo: string; }>(testFile);
 			watcher.getConfig(); // ensure we are in sync
 
 			watcher.onDidUpdateConfiguration(event => {
@@ -135,21 +170,25 @@ suite('Config', () => {
 
 				watcher.dispose();
 
-				res.cleanUp().then(done, done);
+				cleanUp(done);
 			});
 
-			fs.unlinkSync(res.testFile);
-		}, done);
+			fs.unlinkSync(testFile);
+		});
 	});
 
-	test('reload', function (done) {
-		testFile('config', 'config.json').then(res => {
-			fs.writeFileSync(res.testFile, '// my comment\n{ "foo": "bar" }');
+	test('reload', function (done: () => void) {
+		testFile((error, testFile, cleanUp) => {
+			if (error) {
+				return onError(error, done);
+			}
 
-			let watcher = new ConfigWatcher<{ foo: string; }>(res.testFile, { changeBufferDelay: 100, onError: console.error });
+			fs.writeFileSync(testFile, '// my comment\n{ "foo": "bar" }');
+
+			let watcher = new ConfigWatcher<{ foo: string; }>(testFile, { changeBufferDelay: 100, onError: console.error });
 			watcher.getConfig(); // ensure we are in sync
 
-			fs.writeFileSync(res.testFile, '// my comment\n{ "foo": "changed" }');
+			fs.writeFileSync(testFile, '// my comment\n{ "foo": "changed" }');
 
 			// still old values because change is not bubbling yet
 			assert.equal(watcher.getConfig().foo, 'bar');
@@ -163,8 +202,8 @@ suite('Config', () => {
 
 				watcher.dispose();
 
-				res.cleanUp().then(done, done);
+				cleanUp(done);
 			});
-		}, done);
+		});
 	});
 });

@@ -6,7 +6,7 @@
 
 import URI, { UriComponents } from 'vs/base/common/uri';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
-import { IModelService, shouldSynchronizeModel } from 'vs/editor/common/services/modelService';
+import { IModelService } from 'vs/editor/common/services/modelService';
 import { IDisposable, dispose, IReference } from 'vs/base/common/lifecycle';
 import { TextFileModelChangeEvent, ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -132,12 +132,12 @@ export class MainThreadDocuments implements MainThreadDocumentsShape {
 
 	private _shouldHandleFileEvent(e: TextFileModelChangeEvent): boolean {
 		const model = this._modelService.getModel(e.resource);
-		return model && shouldSynchronizeModel(model);
+		return model && !model.isTooLargeForHavingARichMode();
 	}
 
 	private _onModelAdded(model: ITextModel): void {
 		// Same filter as in mainThreadEditorsTracker
-		if (!shouldSynchronizeModel(model)) {
+		if (model.isTooLargeForHavingARichMode()) {
 			// don't synchronize too large models
 			return null;
 		}

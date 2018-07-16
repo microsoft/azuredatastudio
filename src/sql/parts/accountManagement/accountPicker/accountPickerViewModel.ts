@@ -5,7 +5,7 @@
 
 'use strict';
 import * as sqlops from 'sqlops';
-import { Event, Emitter } from 'vs/base/common/event';
+import Event, { Emitter } from 'vs/base/common/event';
 
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 import { UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';

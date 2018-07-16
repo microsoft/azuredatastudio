@@ -5,14 +5,14 @@
 'use strict';
 
 
-import * as assert from 'assert';
+import assert = require('assert');
 import URI from 'vs/base/common/uri';
-import * as markerService from 'vs/platform/markers/common/markerService';
-import { IMarkerData, MarkerSeverity } from 'vs/platform/markers/common/markers';
+import markerService = require('vs/platform/markers/common/markerService');
+import { IMarkerData } from 'vs/platform/markers/common/markers';
 
-function randomMarkerData(severity = MarkerSeverity.Error): IMarkerData {
+function randomMarkerData(): IMarkerData {
 	return {
-		severity,
+		severity: 1,
 		message: Math.random().toString(16),
 		startLineNumber: 1,
 		startColumn: 1,
@@ -29,7 +29,7 @@ suite('Marker Service', () => {
 
 		service.changeAll('far', [{
 			resource: URI.parse('file:///c/test/file.cs'),
-			marker: randomMarkerData(MarkerSeverity.Error)
+			marker: randomMarkerData()
 		}]);
 
 		assert.equal(service.read().length, 1);
@@ -40,18 +40,12 @@ suite('Marker Service', () => {
 
 		service.changeAll('boo', [{
 			resource: URI.parse('file:///c/test/file.cs'),
-			marker: randomMarkerData(MarkerSeverity.Warning)
+			marker: randomMarkerData()
 		}]);
 
 		assert.equal(service.read().length, 2);
 		assert.equal(service.read({ owner: 'far' }).length, 1);
 		assert.equal(service.read({ owner: 'boo' }).length, 1);
-
-		assert.equal(service.read({ severities: MarkerSeverity.Error }).length, 1);
-		assert.equal(service.read({ severities: MarkerSeverity.Warning }).length, 1);
-		assert.equal(service.read({ severities: MarkerSeverity.Hint }).length, 0);
-		assert.equal(service.read({ severities: MarkerSeverity.Error | MarkerSeverity.Warning }).length, 2);
-
 	});
 
 

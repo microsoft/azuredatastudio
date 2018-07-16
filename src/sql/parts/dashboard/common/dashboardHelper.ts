@@ -5,10 +5,8 @@
 import * as types from 'vs/base/common/types';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Registry } from 'vs/platform/registry/common/platform';
-import * as nls from 'vs/nls';
-import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-
 import { error } from 'sql/base/common/log';
+import * as nls from 'vs/nls';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
@@ -19,9 +17,9 @@ import { WEBVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWebvi
 import { MODELVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardModelViewContainer.contribution';
 import { CONTROLHOST_CONTAINER } from 'sql/parts/dashboard/containers/dashboardControlHostContainer.contribution';
 import { NAV_SECTION } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
-import { IDashboardContainerRegistry, Extensions as DashboardContainerExtensions } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
-import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
-import * as Constants from 'sql/parts/connection/common/constants';
+import { IDashboardContainerRegistry, Extensions as DashboardContainerExtensions, IDashboardContainer, registerContainerType } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
+import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 
 const dashboardcontainerRegistry = Registry.as<IDashboardContainerRegistry>(DashboardContainerExtensions.dashboardContainerContributions);
 const containerTypes = [
@@ -120,8 +118,8 @@ export function initExtensionConfigs(configurations: WidgetConfig[]): Array<Widg
  * Add provider to the passed widgets and returns the new widgets
  * @param widgets Array of widgets to add provider onto
  */
-export function addProvider<T extends { connectionManagementService: SingleConnectionManagementService }>(config: WidgetConfig[], collection: T): Array<WidgetConfig> {
-	let provider = collection.connectionManagementService.connectionInfo.providerId;
+export function addProvider(config: WidgetConfig[], dashboardService: DashboardServiceInterface): Array<WidgetConfig> {
+	let provider = dashboardService.connectionManagementService.connectionInfo.providerId;
 	return config.map((item) => {
 		if (item.provider === undefined) {
 			item.provider = provider;
@@ -134,26 +132,22 @@ export function addProvider<T extends { connectionManagementService: SingleConne
  * Adds the edition to the passed widgets and returns the new widgets
  * @param widgets Array of widgets to add edition onto
  */
-export function addEdition<T extends { connectionManagementService: SingleConnectionManagementService }>(config: WidgetConfig[], collection: DashboardServiceInterface): Array<WidgetConfig> {
-	let connectionInfo: ConnectionManagementInfo = collection.connectionManagementService.connectionInfo;
-	if (connectionInfo.serverInfo) {
-		let edition = connectionInfo.serverInfo.engineEditionId;
-		return config.map((item) => {
-			if (item.edition === undefined) {
-				item.edition = edition;
-			}
-			return item;
-		});
-	} else {
-		return config;
-	}
+export function addEdition(config: WidgetConfig[], dashboardService: DashboardServiceInterface): Array<WidgetConfig> {
+	let connectionInfo: ConnectionManagementInfo = dashboardService.connectionManagementService.connectionInfo;
+	let edition = connectionInfo.serverInfo.engineEditionId;
+	return config.map((item) => {
+		if (item.edition === undefined) {
+			item.edition = edition;
+		}
+		return item;
+	});
 }
 
 /**
  * Adds the context to the passed widgets and returns the new widgets
  * @param widgets Array of widgets to add context to
  */
-export function addContext(config: WidgetConfig[], collection: any, context: string): Array<WidgetConfig> {
+export function addContext(config: WidgetConfig[], dashboardServer: DashboardServiceInterface, context: string): Array<WidgetConfig> {
 	return config.map((item) => {
 		if (item.context === undefined) {
 			item.context = context;
@@ -166,31 +160,14 @@ export function addContext(config: WidgetConfig[], collection: any, context: str
  * Returns a filtered version of the widgets passed based on edition and provider
  * @param config widgets to filter
  */
-export function filterConfigs<T extends { provider?: string | string[], when?: string }, K extends { contextKeyService: IContextKeyService }>(config: T[], collection: K): Array<T> {
+export function filterConfigs<T extends { when?: string }>(config: T[], dashboardService: DashboardServiceInterface): Array<T> {
 	return config.filter((item) => {
-		if (!hasCompatibleProvider(item.provider, collection.contextKeyService)) {
-			return false;
-		} else if (!item.when) {
+		if (!item.when) {
 			return true;
 		} else {
-			return collection.contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(item.when));
+			return dashboardService.contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(item.when));
 		}
 	});
-}
-
-/**
- * Check whether the listed providers contain '*' indicating any provider will do, or that they are a match
- * for the currently scoped 'connectionProvider' context key.
- */
-function hasCompatibleProvider(provider: string | string[], contextKeyService: IContextKeyService): boolean {
-	let isCompatible = true;
-	let connectionProvider = contextKeyService.getContextKeyValue<string>(Constants.connectionProviderContextKey);
-	if (connectionProvider) {
-		let providers = (provider instanceof Array) ? provider : [provider];
-		let matchingProvider = providers.find((p) => p === connectionProvider || p === Constants.anyProviderName);
-		isCompatible = (matchingProvider !== undefined);
-	}	// Else there's no connection context so skip the check
-	return isCompatible;
 }
 
 /**

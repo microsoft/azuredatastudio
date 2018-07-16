@@ -434,9 +434,7 @@ export class NotificationTemplateRenderer {
 				const action = notification.actions.primary[index];
 				button.label = action.label;
 
-				this.inputDisposeables.push(button.onDidClick(e => {
-					e.preventDefault();
-					e.stopPropagation();
+				this.inputDisposeables.push(button.onDidClick(() => {
 
 					// Run action
 					this.actionRunner.run(action, notification);
@@ -456,7 +454,7 @@ export class NotificationTemplateRenderer {
 
 		// Return early if the item has no progress
 		if (!notification.hasProgress()) {
-			this.template.progress.stop().hide();
+			this.template.progress.stop().getContainer().hide();
 
 			return;
 		}
@@ -464,23 +462,23 @@ export class NotificationTemplateRenderer {
 		// Infinite
 		const state = notification.progress.state;
 		if (state.infinite) {
-			this.template.progress.infinite().show();
+			this.template.progress.infinite().getContainer().show();
 		}
 
 		// Total / Worked
-		else if (typeof state.total === 'number' || typeof state.worked === 'number') {
-			if (typeof state.total === 'number' && !this.template.progress.hasTotal()) {
+		else if (state.total || state.worked) {
+			if (state.total) {
 				this.template.progress.total(state.total);
 			}
 
-			if (typeof state.worked === 'number') {
-				this.template.progress.worked(state.worked).show();
+			if (state.worked) {
+				this.template.progress.worked(state.worked).getContainer().show();
 			}
 		}
 
 		// Done
 		else {
-			this.template.progress.done().hide();
+			this.template.progress.done().getContainer().hide();
 		}
 	}
 

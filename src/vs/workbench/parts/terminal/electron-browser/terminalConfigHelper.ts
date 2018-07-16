@@ -12,9 +12,9 @@ import { IWorkspaceConfigurationService } from 'vs/workbench/services/configurat
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { ITerminalConfiguration, ITerminalConfigHelper, ITerminalFont, IShellLaunchConfig, IS_WORKSPACE_SHELL_ALLOWED_STORAGE_KEY, TERMINAL_CONFIG_SECTION } from 'vs/workbench/parts/terminal/common/terminal';
 import Severity from 'vs/base/common/severity';
-import { isFedora } from 'vs/workbench/parts/terminal/node/terminal';
+import { isFedora } from 'vs/workbench/parts/terminal/electron-browser/terminal';
+import { IChoiceService } from 'vs/platform/dialogs/common/dialogs';
 import { Terminal as XTermTerminal } from 'vscode-xterm';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 
 const DEFAULT_LINE_HEIGHT = 1.0;
 
@@ -35,7 +35,7 @@ export class TerminalConfigHelper implements ITerminalConfigHelper {
 	public constructor(
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
 		@IWorkspaceConfigurationService private readonly _workspaceConfigurationService: IWorkspaceConfigurationService,
-		@INotificationService private readonly _notificationService: INotificationService,
+		@IChoiceService private readonly _choiceService: IChoiceService,
 		@IStorageService private readonly _storageService: IStorageService
 	) {
 		this._updateConfig();
@@ -163,16 +163,18 @@ export class TerminalConfigHelper implements ITerminalConfigHelper {
 			} else { // if (shellArgsConfigValue.workspace !== undefined)
 				changeString = `shellArgs: ${argsString}`;
 			}
-			this._notificationService.prompt(Severity.Info, nls.localize('terminal.integrated.allowWorkspaceShell', "Do you allow {0} (defined as a workspace setting) to be launched in the terminal?", changeString),
-				[{
-					label: nls.localize('allow', "Allow"),
-					run: () => this._storageService.store(IS_WORKSPACE_SHELL_ALLOWED_STORAGE_KEY, true, StorageScope.WORKSPACE)
-				},
-				{
-					label: nls.localize('disallow', "Disallow"),
-					run: () => this._storageService.store(IS_WORKSPACE_SHELL_ALLOWED_STORAGE_KEY, false, StorageScope.WORKSPACE)
-				}]
-			);
+			const message = nls.localize('terminal.integrated.allowWorkspaceShell', "Do you allow {0} (defined as a workspace setting) to be launched in the terminal?", changeString);
+			const options = [nls.localize('allow', "Allow"), nls.localize('disallow', "Disallow")];
+			this._choiceService.choose(Severity.Info, message, options).then(choice => {
+				switch (choice) {
+					case 0:  /* Allow */
+						this._storageService.store(IS_WORKSPACE_SHELL_ALLOWED_STORAGE_KEY, true, StorageScope.WORKSPACE);
+						break;
+					case 1:  /* Disallow */
+						this._storageService.store(IS_WORKSPACE_SHELL_ALLOWED_STORAGE_KEY, false, StorageScope.WORKSPACE);
+						break;
+				}
+			});
 		}
 
 		shell.executable = (isWorkspaceShellAllowed ? shellConfigValue.value : shellConfigValue.user) || shellConfigValue.default;

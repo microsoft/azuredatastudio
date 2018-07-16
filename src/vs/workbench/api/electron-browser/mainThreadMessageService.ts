@@ -4,18 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as nls from 'vs/nls';
+import nls = require('vs/nls');
 import Severity from 'vs/base/common/severity';
 import { Action, IAction } from 'vs/base/common/actions';
 import { MainThreadMessageServiceShape, MainContext, IExtHostContext, MainThreadMessageOptions } from '../node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IChoiceService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { once } from 'vs/base/common/event';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { localize } from 'vs/nls';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { dispose } from 'vs/base/common/lifecycle';
 
 @extHostNamedCustomer(MainContext.MainThreadMessageService)
 export class MainThreadMessageService implements MainThreadMessageServiceShape {
@@ -24,7 +24,7 @@ export class MainThreadMessageService implements MainThreadMessageServiceShape {
 		extHostContext: IExtHostContext,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@ICommandService private readonly _commandService: ICommandService,
-		@IDialogService private readonly _dialogService: IDialogService,
+		@IChoiceService private readonly _choiceService: IChoiceService,
 		@IEnvironmentService private readonly _environmentService: IEnvironmentService
 	) {
 		//
@@ -71,11 +71,11 @@ export class MainThreadMessageService implements MainThreadMessageServiceShape {
 
 			let source: string;
 			if (extension) {
-				source = nls.localize('extensionSource', "{0} (Extension)", extension.displayName || extension.name);
+				source = localize('extensionSource', "{0} (Extension)", extension.displayName || extension.name);
 			}
 
 			if (!source) {
-				source = nls.localize('defaultSource', "Extension");
+				source = localize('defaultSource', "Extension");
 			}
 
 			const secondaryActions: IAction[] = [];
@@ -93,7 +93,6 @@ export class MainThreadMessageService implements MainThreadMessageServiceShape {
 			// if promise has not been resolved yet, now is the time to ensure a return value
 			// otherwise if already resolved it means the user clicked one of the buttons
 			once(messageHandle.onDidClose)(() => {
-				dispose(...primaryActions, ...secondaryActions);
 				resolve(undefined);
 			});
 		});
@@ -102,7 +101,7 @@ export class MainThreadMessageService implements MainThreadMessageServiceShape {
 	private _showModalMessage(severity: Severity, message: string, commands: { title: string; isCloseAffordance: boolean; handle: number; }[]): Thenable<number> {
 		let cancelId: number | undefined = void 0;
 
-		const buttons = commands.map((command, index) => {
+		const options = commands.map((command, index) => {
 			if (command.isCloseAffordance === true) {
 				cancelId = index;
 			}
@@ -111,16 +110,16 @@ export class MainThreadMessageService implements MainThreadMessageServiceShape {
 		});
 
 		if (cancelId === void 0) {
-			if (buttons.length > 0) {
-				buttons.push(nls.localize('cancel', "Cancel"));
+			if (options.length > 0) {
+				options.push(nls.localize('cancel', "Cancel"));
 			} else {
-				buttons.push(nls.localize('ok', "OK"));
+				options.push(nls.localize('ok', "OK"));
 			}
 
-			cancelId = buttons.length - 1;
+			cancelId = options.length - 1;
 		}
 
-		return this._dialogService.show(severity, message, buttons, { cancelId })
+		return this._choiceService.choose(severity, message, options, cancelId, true)
 			.then(result => result === commands.length ? undefined : commands[result].handle);
 	}
 }

@@ -66,21 +66,18 @@ export enum ProgressLocation {
 	Explorer = 1,
 	Scm = 3,
 	Extensions = 5,
-	Window = 10,
-	Notification = 15
+	Window = 10
 }
 
 export interface IProgressOptions {
 	location: ProgressLocation;
 	title?: string;
-	source?: string;
-	total?: number;
-	cancellable?: boolean;
+	tooltip?: string;
 }
 
 export interface IProgressStep {
 	message?: string;
-	increment?: number;
+	percentage?: number;
 }
 
 export const IProgressService2 = createDecorator<IProgressService2>('progressService2');
@@ -89,5 +86,5 @@ export interface IProgressService2 {
 
 	_serviceBrand: any;
 
-	withProgress<P extends Thenable<R>, R=any>(options: IProgressOptions, task: (progress: IProgress<IProgressStep>) => P, onDidCancel?: () => void): P;
+	withProgress<P extends Thenable<R>, R=any>(options: IProgressOptions, task: (progress: IProgress<IProgressStep>) => P): P;
 }
