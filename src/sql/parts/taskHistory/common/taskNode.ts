@@ -7,13 +7,13 @@ import { StopWatch } from 'vs/base/common/stopwatch';
 import { generateUuid } from 'vs/base/common/uuid';
 
 export enum TaskStatus {
-	notStarted = 0,
-	inProgress = 1,
-	succeeded = 2,
-	succeededWithWarning = 3,
-	failed = 4,
-	canceled = 5,
-	canceling = 6
+	NotStarted = 0,
+	InProgress = 1,
+	Succeeded = 2,
+	SucceededWithWarning = 3,
+	Failed = 4,
+	Canceled = 5,
+	Canceling = 6
 }
 
 export enum TaskExecutionMode {
@@ -107,7 +107,7 @@ export class TaskNode {
 		this.databaseName = databaseName;
 		this.timer = StopWatch.create();
 		this.startTime = new Date().toLocaleTimeString();
-		this.status = TaskStatus.inProgress;
+		this.status = TaskStatus.InProgress;
 		this.hasChildren = false;
 		this.taskExecutionMode = taskExecutionMode;
 		this.isCancelable = isCancelable;

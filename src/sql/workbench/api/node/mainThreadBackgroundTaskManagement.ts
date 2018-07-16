@@ -15,13 +15,13 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import * as sqlops from 'sqlops';
 
 export enum TaskStatus {
-	notStarted = 0,
-	inProgress = 1,
-	succeeded = 2,
-	succeededWithWarning = 3,
-	failed = 4,
-	canceled = 5,
-	canceling = 6
+	NotStarted = 0,
+	InProgress = 1,
+	Succeeded = 2,
+	SucceededWithWarning = 3,
+	Failed = 4,
+	Canceled = 5,
+	Canceling = 6
 }
 
 @extHostNamedCustomer(SqlMainContext.MainThreadBackgroundTaskManagement)
@@ -35,7 +35,7 @@ export class MainThreadBackgroundTaskManagement extends Disposable implements Ma
 		super();
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostBackgroundTaskManagement);
 		this._register(this._taskService.onTaskComplete(task => {
-			if (task.status === TaskStatus.canceling) {
+			if (task.status === TaskStatus.Canceling) {
 				this._proxy.$onTaskCanceled(task.id);
 			}
 		}));

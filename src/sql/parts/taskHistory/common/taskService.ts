@@ -96,7 +96,7 @@ export class TaskService implements ITaskService {
 
 	public cancelTask(providerId: string, taskId: string): Thenable<boolean> {
 		let task = this.getTaskInQueue(taskId);
-		task.status = TaskStatus.canceling;
+		task.status = TaskStatus.Canceling;
 		this._onTaskComplete.fire(task);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -114,7 +114,7 @@ export class TaskService implements ITaskService {
 	private cancelAllTasks(): Thenable<void> {
 		return new TPromise<void>((resolve, reject) => {
 			let promises = this._taskQueue.children.map(task => {
-				if (task.status === TaskStatus.inProgress || task.status === TaskStatus.notStarted) {
+				if (task.status === TaskStatus.InProgress || task.status === TaskStatus.NotStarted) {
 					return this.cancelTask(task.providerName, task.id);
 				}
 				return Promise.resolve(true);
@@ -187,10 +187,10 @@ export class TaskService implements ITaskService {
 				task.message = eventArgs.message;
 			}
 			switch (task.status) {
-				case TaskStatus.canceled:
-				case TaskStatus.succeeded:
-				case TaskStatus.succeededWithWarning:
-				case TaskStatus.failed:
+				case TaskStatus.Canceled:
+				case TaskStatus.Succeeded:
+				case TaskStatus.SucceededWithWarning:
+				case TaskStatus.Failed:
 					task.endTime = new Date().toLocaleTimeString();
 					task.timer.stop();
 					this._onTaskComplete.fire(task);
@@ -199,7 +199,7 @@ export class TaskService implements ITaskService {
 					break;
 			}
 
-			if ((task.status === TaskStatus.succeeded || task.status === TaskStatus.succeededWithWarning)
+			if ((task.status === TaskStatus.Succeeded || task.status === TaskStatus.SucceededWithWarning)
 				&& eventArgs.script && eventArgs.script !== '') {
 				if (task.taskExecutionMode === TaskExecutionMode.script) {
 					this.queryEditorService.newSqlEditor(eventArgs.script);
@@ -228,7 +228,7 @@ export class TaskService implements ITaskService {
 
 	public getNumberOfInProgressTasks(): number {
 		if (this._taskQueue.hasChildren) {
-			var inProgressTasks = this._taskQueue.children.filter(x => x.status === TaskStatus.inProgress);
+			var inProgressTasks = this._taskQueue.children.filter(x => x.status === TaskStatus.InProgress);
 			return inProgressTasks ? inProgressTasks.length : 0;
 		}
 		return 0;

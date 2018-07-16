@@ -141,9 +141,9 @@ export class TaskHistoryView {
 			let isMouseOrigin = event.payload && (event.payload.origin === 'mouse');
 			let isDoubleClick = isMouseOrigin && event.payload.originalEvent && event.payload.originalEvent.detail === 2;
 			if (isDoubleClick) {
-				if (task.status === TaskStatus.failed) {
+				if (task.status === TaskStatus.Failed) {
 					var err = task.taskName + ': ' + task.message;
-					this._errorMessageService.showDialog(Severity.Error, nls.localize('taskError','Task error'), err);
+					this._errorMessageService.showDialog(Severity.Error, nls.localize('taskError', 'Task error'), err);
 				}
 			}
 		}

@@ -11,12 +11,13 @@ import * as vscode from 'vscode';
 import { Emitter } from 'vs/base/common/event';
 
 export enum TaskStatus {
-	notStarted = 0,
-	inProgress = 1,
-	succeeded = 2,
-	succeededWithWarning = 3,
-	failed = 4,
-	canceled = 5
+	NotStarted = 0,
+	InProgress = 1,
+	Succeeded = 2,
+	SucceededWithWarning = 3,
+	Failed = 4,
+	Canceled = 5,
+	Canceling = 6
 }
 
 export class ExtBackgroundOperation implements sqlops.BackgroundOperation {
@@ -91,7 +92,7 @@ export class ExtHostBackgroundTaskManagement implements ExtHostBackgroundTaskMan
 			providerName: undefined,
 			taskExecutionMode: 0,
 			taskId: taskId,
-			status: TaskStatus.notStarted
+			status: TaskStatus.NotStarted
 		};
 		this._proxy.$registerTask(taskInfo);
 	}

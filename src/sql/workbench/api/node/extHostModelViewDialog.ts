@@ -301,7 +301,7 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 		this._extHostModelViewDialog.registerWizardPageInfoChangedCallback(this, info => this.handlePageInfoChanged(info));
 		this._currentPage = 0;
 		this.onPageChanged(info => this._currentPage = info.newPage);
-		this._operationHandler = new BackgroundOperationHandler('wizard' + this._currentPage, extHostTaskManagement);
+		this._operationHandler = new BackgroundOperationHandler('wizard' + this.title, extHostTaskManagement);
 		this.doneButton.onClick(() => {
 			this._operationHandler.createOperation();
 		});

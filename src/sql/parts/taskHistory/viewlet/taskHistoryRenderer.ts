@@ -67,27 +67,27 @@ export class TaskHistoryRenderer implements IRenderer {
 		if (taskNode) {
 			templateData.icon.className = TaskHistoryRenderer.ICON_CLASS;
 			switch (taskNode.status) {
-				case TaskStatus.succeeded:
+				case TaskStatus.Succeeded:
 					templateData.icon.classList.add(TaskHistoryRenderer.SUCCESS_CLASS);
 					taskStatus = localize('succeeded', "succeeded");
 					break;
-				case TaskStatus.failed:
+				case TaskStatus.Failed:
 					templateData.icon.classList.add(TaskHistoryRenderer.FAIL_CLASS);
 					taskStatus = localize('failed', "failed");
 					break;
-				case TaskStatus.inProgress:
+				case TaskStatus.InProgress:
 					templateData.icon.classList.add(TaskHistoryRenderer.INPROGRESS_CLASS);
 					taskStatus = localize('inProgress', "in progress");
 					break;
-				case TaskStatus.notStarted:
+				case TaskStatus.NotStarted:
 					templateData.icon.classList.add(TaskHistoryRenderer.NOTSTARTED_CLASS);
 					taskStatus = localize('notStarted', "not started");
 					break;
-				case TaskStatus.canceled:
+				case TaskStatus.Canceled:
 					templateData.icon.classList.add(TaskHistoryRenderer.CANCELED_CLASS);
 					taskStatus = localize('canceled', "canceled");
 					break;
-				case TaskStatus.canceling:
+				case TaskStatus.Canceling:
 					templateData.icon.classList.add(TaskHistoryRenderer.INPROGRESS_CLASS);
 					taskStatus = localize('canceling', "canceling");
 					break;
@@ -117,7 +117,7 @@ export class TaskHistoryRenderer implements IRenderer {
 
 	public timer(taskNode: TaskNode, templateData: ITaskHistoryTemplateData) {
 		let timeLabel = '';
-		if (taskNode.status === TaskStatus.failed) {
+		if (taskNode.status === TaskStatus.Failed) {
 			timeLabel += taskNode.startTime + ' Error: ' + taskNode.message;
 		} else {
 			if (taskNode.startTime) {

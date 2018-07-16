@@ -307,10 +307,10 @@ export default class MainController implements vscode.Disposable {
 			description: 'task description',
 			isCancelable: true
 		}, op => {
-			op.updateStatus(sqlops.TaskStatus.inProgress);
-			op.updateStatus(sqlops.TaskStatus.inProgress, 'Task is running');
+			op.updateStatus(sqlops.TaskStatus.InProgress);
+			op.updateStatus(sqlops.TaskStatus.InProgress, 'Task is running');
 			setTimeout(() => {
-				op.updateStatus(sqlops.TaskStatus.succeeded);
+				op.updateStatus(sqlops.TaskStatus.Succeeded);
 			}, 5000);
 		});
 		wizard.pages = [page1, page2];
