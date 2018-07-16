@@ -436,6 +436,7 @@ declare module 'sqlops' {
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
 		label?: string;
+		isFile?: boolean;
 	}
 
 	export interface LoadingComponentProperties {

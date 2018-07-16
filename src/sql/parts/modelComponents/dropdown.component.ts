@@ -25,7 +25,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 	template: `
 
 	<div [style.width]="getWidth()">
-		<div [style.display]="getEditableDisplay()"   #editableDropDown style="width: 100%;"></div>
+		<div [style.display]="getEditableDisplay()" #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
 	</div>
 	`
@@ -79,7 +79,6 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 			this._selectBox = new SelectBox(this.getValues(), this.getSelectedValue(), this.contextViewService, this._dropDownContainer.nativeElement);
 			this._selectBox.render(this._dropDownContainer.nativeElement);
 			this._register(this._selectBox);
-
 			this._register(attachSelectBoxStyler(this._selectBox, this.themeService));
 			this._register(this._selectBox.onDidSelect(e => {
 				if (!this.editable) {
