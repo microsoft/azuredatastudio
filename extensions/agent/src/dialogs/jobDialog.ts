@@ -219,6 +219,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 					width: 80
 				}).component();
 
+			this.moveStepUpButton.enabled = false;
+			this.moveStepDownButton.enabled = false;
+
 			this.newStepButton = view.modelBuilder.button().withProperties({
 				label: this.NewStepButtonString,
 				width: 80
