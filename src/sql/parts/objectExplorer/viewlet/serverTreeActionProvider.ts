@@ -35,7 +35,6 @@ import { TreeNodeContextKey } from './treeNodeContextKey';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import * as constants from 'sql/common/constants';
-import { IExtensionManagementService, IExtensionEnablementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 
 /**
  *  Provides actions for the server tree elements
@@ -49,9 +48,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		@IScriptingService private _scriptingService: IScriptingService,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IMenuService private menuService: IMenuService,
-		@IContextKeyService private _contextKeyService: IContextKeyService,
-		@IExtensionManagementService private _extensionManagementService: IExtensionManagementService,
-		@IExtensionEnablementService private _extensionEnablementService: IExtensionEnablementService
+		@IContextKeyService private _contextKeyService: IContextKeyService
 	) {
 		super();
 	}
