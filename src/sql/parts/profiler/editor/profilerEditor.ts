@@ -50,6 +50,7 @@ class BasicView extends View {
 	private _previousSize: number;
 	private _collapsed: boolean;
 	public headerSize: number;
+
 	constructor(
 		initialSize: number,
 		private _element: HTMLElement,
@@ -58,6 +59,7 @@ class BasicView extends View {
 		opts: IViewOptions
 	) {
 		super(initialSize, opts);
+		this._previousSize = initialSize;
 	}
 
 	render(container: HTMLElement, orientation: Orientation): void {

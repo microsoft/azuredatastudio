@@ -35,6 +35,7 @@ import { TreeNodeContextKey } from './treeNodeContextKey';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import * as constants from 'sql/common/constants';
+import { IExtensionManagementService, IExtensionEnablementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 
 /**
  *  Provides actions for the server tree elements
@@ -48,7 +49,9 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		@IScriptingService private _scriptingService: IScriptingService,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IMenuService private menuService: IMenuService,
-		@IContextKeyService private _contextKeyService: IContextKeyService
+		@IContextKeyService private _contextKeyService: IContextKeyService,
+		@IExtensionManagementService private _extensionManagementService: IExtensionManagementService,
+		@IExtensionEnablementService private _extensionEnablementService: IExtensionEnablementService
 	) {
 		super();
 	}
@@ -123,9 +126,12 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		actions.push(this._instantiationService.createInstance(DeleteConnectionAction, DeleteConnectionAction.ID, DeleteConnectionAction.DELETE_CONNECTION_LABEL, context.profile));
 		actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.profile));
 
-		if (process.env['VSCODE_DEV'] && constants.MssqlProviderId === context.profile.providerName) {
-			actions.push(this._instantiationService.createInstance(OEAction, NewProfilerAction.ID, NewProfilerAction.LABEL));
-		}
+		this._extensionManagementService.getInstalled().then(extensions => {
+			let profilerExtension = extensions.find((e) => {return e.manifest.name === 'profiler';});
+			if(profilerExtension && this._extensionEnablementService.isEnabled(profilerExtension)) {
+				actions.push(this._instantiationService.createInstance(OEAction, NewProfilerAction.ID, NewProfilerAction.LABEL));
+			}
+		});
 
 		return actions;
 	}
