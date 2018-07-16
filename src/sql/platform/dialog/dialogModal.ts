@@ -105,7 +105,7 @@ export class DialogModal extends Modal {
 	private updateButtonElement(buttonElement: Button, dialogButton: DialogButton, requireDialogValid: boolean = false) {
 		buttonElement.label = dialogButton.label;
 		buttonElement.enabled = requireDialogValid ? dialogButton.enabled && this._dialog.valid : dialogButton.enabled;
-		dialogButton.hidden ? buttonElement.element.classList.add('dialogModal-hidden') : buttonElement.element.classList.remove('dialogModal-hidden');
+		dialogButton.hidden ? buttonElement.element.parentElement.classList.add('dialogModal-hidden') : buttonElement.element.parentElement.classList.remove('dialogModal-hidden');
 	}
 
 	protected renderBody(container: HTMLElement): void {
