@@ -3,6 +3,7 @@
 
 import { mixin } from 'vs/base/common/objects';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 require.__$__nodeRequire('slickgrid/plugins/slick.cellrangedecorator');
 require.__$__nodeRequire('slickgrid/plugins/slick.cellrangeselector');
@@ -35,7 +36,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 			this.selector = this.options.cellRangeSelector;
 		} else {
 			// this is added by the noderequires above
-			this.selector = new (<any>Slick).CellRangeSelector();
+			this.selector = new (<any>Slick).CellRangeSelector({ selectionCss: { 'border': '2px dashed grey' }});
 		}
 	}
 
