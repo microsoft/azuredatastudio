@@ -119,7 +119,7 @@ export class WizardModal extends Modal {
 	private updateButtonElement(buttonElement: Button, dialogButton: DialogButton, requirePageValid: boolean = false) {
 		buttonElement.label = dialogButton.label;
 		buttonElement.enabled = requirePageValid ? dialogButton.enabled && this._wizard.pages[this._wizard.currentPage].valid : dialogButton.enabled;
-		dialogButton.hidden ? buttonElement.element.classList.add('dialogModal-hidden') : buttonElement.element.classList.remove('dialogModal-hidden');
+		dialogButton.hidden ? buttonElement.element.parentElement.classList.add('dialogModal-hidden') : buttonElement.element.parentElement.classList.remove('dialogModal-hidden');
 	}
 
 	protected renderBody(container: HTMLElement): void {
