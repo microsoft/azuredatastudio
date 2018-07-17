@@ -62,7 +62,7 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 			tabLabelcontainer.classList.add(this.tab.iconClass);
 		} else {
 			tabLabelcontainer.className = 'tabLabel';
-			tabLabelcontainer.innerHTML = this.tab.title;
+			tabLabelcontainer.textContent = this.tab.title;
 		}
 		tabLabelcontainer.title = this.tab.title;
 	}

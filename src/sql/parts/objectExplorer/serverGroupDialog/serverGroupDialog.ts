@@ -79,7 +79,7 @@ export class ServerGroupDialog extends Modal {
 		// Connection Group Name
 		let serverGroupNameLabel = localize('connectionGroupName', 'Server group name');
 		this._bodyBuilder.div({ class: 'dialog-label' }, (labelContainer) => {
-			labelContainer.innerHtml(serverGroupNameLabel);
+			labelContainer.text(serverGroupNameLabel);
 		});
 		this._bodyBuilder.div({ class: 'input-divider' }, (inputCellContainer) => {
 			let errorMessage = localize('MissingGroupNameError', 'Group name is required.');
@@ -94,7 +94,7 @@ export class ServerGroupDialog extends Modal {
 		// Connection Group Description
 		let groupDescriptionLabel = localize('groupDescription', 'Group description');
 		this._bodyBuilder.div({ class: 'dialog-label' }, (labelContainer) => {
-			labelContainer.innerHtml(groupDescriptionLabel);
+			labelContainer.text(groupDescriptionLabel);
 		});
 		this._bodyBuilder.div({ class: 'input-divider' }, (inputCellContainer) => {
 			this._groupDescriptionInputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService, {
@@ -105,7 +105,7 @@ export class ServerGroupDialog extends Modal {
 		// Connection Group Color
 		this._bodyBuilder.div({ class: 'dialog-label' }, (labelContainer) => {
 			let groupColorLabel = localize('groupColor', 'Group color');
-			labelContainer.innerHtml(groupColorLabel);
+			labelContainer.text(groupColorLabel);
 		});
 
 		this._bodyBuilder.div({ class: 'group-color-options' }, (groupColorContainer) => {

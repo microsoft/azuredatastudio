@@ -82,7 +82,7 @@ export class Taskbar {
 	public static createTaskbarText(inputText: string): HTMLElement {
 		let element = document.createElement('div');
 		element.className = 'taskbarTextSeparator';
-		element.innerHTML = inputText;
+		element.textContent = inputText;
 		return element;
 	}
 

@@ -33,7 +33,7 @@ export function appendRowLink(container: Builder, label: string, labelClass: str
 	container.element('tr', {}, (rowContainer) => {
 		rowContainer.element('td', { class: labelClass }, (labelCellContainer) => {
 			labelCellContainer.div({}, (labelContainer) => {
-				labelContainer.innerHtml(label);
+				labelContainer.text(label);
 			});
 		});
 		rowContainer.element('td', { class: cellContainerClass }, (inputCellContainer) => {
