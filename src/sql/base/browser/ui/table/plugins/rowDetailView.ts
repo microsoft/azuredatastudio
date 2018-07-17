@@ -1,5 +1,6 @@
 // Adopted and converted to typescript from https://github.com/6pac/SlickGrid/blob/master/plugins/slick.rowdetailview.js
 // heavily modified
+import { escape } from 'sql/base/common/strings';
 import { mixin } from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
 
@@ -354,7 +355,7 @@ export class RowDetailView {
 			html.push("style='height:", dataContext._height, "px;"); //set total height of padding
 			html.push("top:", rowHeight, "px'>");             //shift detail below 1st row
 			html.push("<div id='detailViewContainer_", dataContext.id, "'  class='detail-container' style='max-height:" + (dataContext._height - rowHeight + bottomMargin) + "px'>"); //sub ctr for custom styling
-			html.push("<div id='innerDetailView_", dataContext.id, "'>", dataContext._detailContent, "</div></div>");
+			html.push("<div id='innerDetailView_", dataContext.id, "'>", escape(dataContext._detailContent), "</div></div>");
 			//&omit a final closing detail container </div> that would come next
 
 			return html.join('');
