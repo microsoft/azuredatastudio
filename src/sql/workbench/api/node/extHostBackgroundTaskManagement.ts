@@ -104,4 +104,10 @@ export class ExtHostBackgroundTaskManagement implements ExtHostBackgroundTaskMan
 		};
 		this._proxy.$registerTask(taskInfo);
 	}
+
+	$removeTask(operationId: string) {
+		if (this._handlers.has(operationId)) {
+			this._handlers.delete(operationId);
+		}
+	}
 }
