@@ -301,6 +301,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			pauseSession(sessionId: string): Thenable<boolean> {
 				return self._proxy.$pauseSession(handle, sessionId);
 			},
+			getXEventSessions(sessionId: string): Thenable<string[]> {
+				return self._proxy.$getXEventSessions(handle, sessionId);
+			},
 			connectSession(sessionId: string): Thenable<boolean> {
 				return TPromise.as(true);
 			},

@@ -119,6 +119,15 @@ export class ProfilerService implements IProfilerService {
 		});
 	}
 
+	public getXEventSessions(id: ProfilerSessionID): Thenable<string[]> {
+		return this._runAction(id, provider => provider.getXEventSessions(this._idMap.get(id))).then((r) => {
+			let sessionsList = r;
+			return r;
+		}, (reason) => {
+			this._notificationService.error(reason.message);
+		});
+	}
+
 	private _runAction<T>(id: ProfilerSessionID, action: (handler: sqlops.ProfilerProvider) => Thenable<T>): Thenable<T> {
 		// let providerId = this._connectionService.getProviderIdFromUri(this._idMap.get(id));
 		let providerId = 'MSSQL';

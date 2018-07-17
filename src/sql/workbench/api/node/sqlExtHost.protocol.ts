@@ -322,6 +322,10 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$pauseSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
 
+	/**
+	 * Get list of running XEvent sessions on the profiler session's target server
+	 */
+	$getXEventSessions(handle: number, sessionId: string): Thenable<string[]> { throw ni(); }
 
 	/**
 	 * Get Agent Job list

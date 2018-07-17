@@ -1672,6 +1672,7 @@ declare module 'sqlops' {
 		startSession(sessionId: string): Thenable<boolean>;
 		stopSession(sessionId: string): Thenable<boolean>;
 		pauseSession(sessionId: string): Thenable<boolean>;
+		getXEventSessions(sessionId: string): Thenable<string[]>;
 		connectSession(sessionId: string): Thenable<boolean>;
 		disconnectSession(sessionId: string): Thenable<boolean>;
 

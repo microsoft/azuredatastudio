@@ -84,6 +84,11 @@ export class ProfilerTestBackend implements sqlops.ProfilerProvider {
 		return TPromise.as(true);
 	}
 
+	getXEventSessions(guid: string): Thenable<string[]> {
+		let retVal = [''];
+		return TPromise.as(retVal);
+	}
+
 	connectSession(): Thenable<boolean> {
 		if (this.testData.length === 0) {
 			return new TPromise<boolean>((resolve, reject) => {

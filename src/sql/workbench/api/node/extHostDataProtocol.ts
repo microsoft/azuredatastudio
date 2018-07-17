@@ -514,6 +514,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.ProfilerProvider>(handle).pauseSession(sessionId);
 	}
 
+	/**
+	 * Get list of running XEvent sessions on the session's target server
+	 */
+	public $getXEventSessions(handle: number, sessionId: string): Thenable<string[]> {
+		return this._resolveProvider<sqlops.ProfilerProvider>(handle).getXEventSessions(sessionId);
+	}
 
 	/**
 	 * Profiler session events available notification

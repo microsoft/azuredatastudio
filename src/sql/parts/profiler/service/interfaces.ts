@@ -71,6 +71,10 @@ export interface IProfilerService {
 	 */
 	stopSession(sessionId: ProfilerSessionID): Thenable<boolean>;
 	/**
+	 * Gets a list of running XEvent sessions on the Profiler Session's target
+	 */
+	getXEventSessions(sessionId: ProfilerSessionID): Thenable<string[]>;
+	/**
 	 * The method called by the service provider for when more rows are available to render
 	 */
 	onMoreRows(params: sqlops.ProfilerSessionEvents): void;
