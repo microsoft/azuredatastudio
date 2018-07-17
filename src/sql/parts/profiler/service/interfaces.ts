@@ -98,7 +98,6 @@ export interface IProfilerSettings {
 
 export interface IColumnViewTemplate {
 	name: string;
-	width: string;
 	eventsMapped: Array<string>;
 }
 
