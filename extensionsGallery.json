@@ -480,65 +480,13 @@
 					],
 					"statistics": [],
 					"flags": "preview"
-				},
-				{
-					"extensionId": "20",
-					"extensionName": "vim",
-					"displayName": "Vim",
-					"shortDescription": "Vim emulations for SQL Operations Studio",
-					"publisher": {
-						"displayName":"vscodevim",
-						"publisherId": "vscodevim",
-						"publisherName":"vscodevim"
-					},
-					"versions": [
-						{
-							"version": "0.15.0",
-							"lastUpdated": "07/11/2018",
-							"assetUri": "",
-							"fallbackAssetUri": "fallbackAssetUri",
-								"files": [
-								{
-									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/VSCodeVim/Vim/releases/tag/v0.15.0"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Links.Source",
-									"source": "https://github.com/VSCodeVim/Vim"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/VSCodeVim/Vim/master/images/icon.png"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/VSCodeVim/Vim/master/README.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/VSCodeVim/Vim/master/package.json"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/VSCodeVim/Vim/master/LICENSE"
-								}
-							],
-							"properties": [
-								{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
-								{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
-								{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/VSCodeVim/Vim"}
-							]
-						}
-					],
-					"statistics": [],
-					"flags": ""
 				}
 		],
 		"resultMetadata": [{
 			"metadataType": "ResultCount",
 			"metadataItems": [{
 				"name": "TotalCount",
-				"count": 9
+				"count": 8
 			}]
 		}]
 	}]
