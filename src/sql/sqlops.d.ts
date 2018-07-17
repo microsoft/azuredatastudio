@@ -1528,6 +1528,7 @@ declare module 'sqlops' {
 	}
 
 	export interface TaskInfo {
+		connection?: connection.Connection;
 		taskId: string;
 		status: TaskStatus;
 		taskExecutionMode: TaskExecutionMode;

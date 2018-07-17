@@ -336,6 +336,9 @@ export function createApiFactory(
 			const tasks: typeof sqlops.tasks = {
 				registerTask(id: string, task: (...args: any[]) => any, thisArgs?: any): vscode.Disposable {
 					return extHostTasks.registerTask(id, task, thisArgs);
+				},
+				startBackgroundOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
+					extHostBackgroundTaskManagement.$registerTask(operationInfo);
 				}
 			};
 

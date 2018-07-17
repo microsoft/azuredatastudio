@@ -14,6 +14,7 @@ import { localize } from 'vs/nls';
 import Severity from 'vs/base/common/severity';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 
 export const SERVICE_ID = 'taskHistoryService';
 export const ITaskService = createDecorator<ITaskService>(SERVICE_ID);
@@ -54,7 +55,8 @@ export class TaskService implements ITaskService {
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@IDialogService private dialogService: IDialogService,
-		@IQueryEditorService private queryEditorService: IQueryEditorService
+		@IQueryEditorService private queryEditorService: IQueryEditorService,
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService
 	) {
 		this._taskQueue = new TaskNode('Root', undefined, undefined);
 		this._onTaskComplete = new Emitter<TaskNode>();
@@ -76,7 +78,18 @@ export class TaskService implements ITaskService {
 	}
 
 	public createNewTask(taskInfo: sqlops.TaskInfo) {
-		let node: TaskNode = new TaskNode(taskInfo.name, taskInfo.serverName, taskInfo.databaseName, taskInfo.taskId, taskInfo.taskExecutionMode, taskInfo.isCancelable);
+		let databaseName: string = taskInfo.databaseName;
+		let serverName: string = taskInfo.serverName;
+		if (taskInfo && taskInfo.connection) {
+			let connectionProfile = this.connectionManagementService.getConnectionProfile(taskInfo.connection.connectionId);
+			if (connectionProfile && !!databaseName) {
+				databaseName = connectionProfile.databaseName;
+			}
+			if (connectionProfile && !!serverName) {
+				serverName = connectionProfile.serverName;
+			}
+		}
+		let node: TaskNode = new TaskNode(taskInfo.name, serverName, databaseName, taskInfo.taskId, taskInfo.taskExecutionMode, taskInfo.isCancelable);
 		node.providerName = taskInfo.providerName;
 		this.handleNewTask(node);
 	}

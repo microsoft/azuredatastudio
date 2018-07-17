@@ -713,11 +713,10 @@ declare module 'sqlops' {
 				registerCloseValidator(validator: () => boolean | Thenable<boolean>): void;
 
 				/**
-				 * Register an operation to run the back ground when the wizard is done
+				 * Register an operation to run in the background when the dialog is done
 				 * @param operationInfo Operation Information
-				 * @param handler Operation Handler to run when wizard is done
 				 */
-				registerOperation(operationInfo: BackgroundOperationInfo, handler: (operation: BackgroundOperation) => void): void;
+				registerOperation(operationInfo: BackgroundOperationInfo): void;
 			}
 
 			export interface DialogTab extends ModelViewPanel {
@@ -903,11 +902,10 @@ declare module 'sqlops' {
 				message: DialogMessage
 
 				/**
-				 * Register an operation to run the back ground when the wizard is done
+				 * Register an operation to run in the background when the wizard is done
 				 * @param operationInfo Operation Information
-				 * @param handler Operation Handler to run when wizard is done
 				 */
-				registerOperation(operationInfo: BackgroundOperationInfo, handler: (operation: BackgroundOperation) => void): void;
+				registerOperation(operationInfo: BackgroundOperationInfo): void;
 			}
 		}
 	}
@@ -1040,10 +1038,15 @@ declare module 'sqlops' {
 	 * Operation Information
 	 */
 	export interface BackgroundOperationInfo {
+
+		/**
+		 * The operation id. A unique id will be assigned to it If not specified a
+		 */
+		operationId?: string;
 		/**
 		 * Connection information
 		 */
-		connectionInfo?: IConnectionProfile,
+		connection: connection.Connection;
 
 		/**
 		 * Operation Display Name
@@ -1059,6 +1062,19 @@ declare module 'sqlops' {
 		 * True if the operation is cancelable
 		 */
 		isCancelable: boolean;
+
+		/**
+		 * The actual operation to execute
+		 */
+		operation: (operation: BackgroundOperation) => void
 	}
 
+	namespace tasks {
+		/**
+		* Starts an operation to run in the background
+		* @param operationInfo Operation Information
+		*/
+		export function startBackgroundOperation(operationInfo: BackgroundOperationInfo): void;
+
+	}
 }

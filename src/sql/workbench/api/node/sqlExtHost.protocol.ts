@@ -576,9 +576,9 @@ export interface ExtHostModelViewShape {
 }
 
 export interface ExtHostBackgroundTaskManagementShape {
-	$onTaskRegistered(taskId: string, operationInfo: sqlops.TaskInfo): void;
-	$onTaskCanceled(taskId: string): void;
-	$registerTask(taskId: string, operationInfo: sqlops.BackgroundOperationInfo, handler: (task: sqlops.BackgroundOperation) => void): void;
+	$onTaskRegistered(operationId: string): void;
+	$onTaskCanceled(operationId: string): void;
+	$registerTask(operationInfo: sqlops.BackgroundOperationInfo): void;
 }
 
 export interface MainThreadBackgroundTaskManagementShape extends IDisposable {

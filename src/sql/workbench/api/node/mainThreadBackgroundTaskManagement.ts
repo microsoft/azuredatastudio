@@ -43,7 +43,7 @@ export class MainThreadBackgroundTaskManagement extends Disposable implements Ma
 
 	$registerTask(taskInfo: sqlops.TaskInfo): void {
 		this._taskService.createNewTask(taskInfo);
-		this._proxy.$onTaskRegistered(taskInfo.taskId, taskInfo);
+		this._proxy.$onTaskRegistered(taskInfo.taskId);
 	}
 
 	$updateTask(taskProgressInfo: sqlops.TaskProgressInfo): void {

@@ -9,6 +9,7 @@ import { ExtHostBackgroundTaskManagementShape, SqlMainContext, MainThreadBackgro
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { Emitter } from 'vs/base/common/event';
+import { generateUuid } from 'vs/base/common/uuid';
 
 export enum TaskStatus {
 	NotStarted = 0,
@@ -54,7 +55,7 @@ export class ExtBackgroundOperation implements sqlops.BackgroundOperation {
 
 export class ExtHostBackgroundTaskManagement implements ExtHostBackgroundTaskManagementShape {
 	private readonly _proxy: MainThreadBackgroundTaskManagementShape;
-	private readonly _handlers = new Map<string, (view: sqlops.BackgroundOperation) => void>();
+	private readonly _handlers = new Map<string, sqlops.BackgroundOperationInfo>();
 	private readonly _operations = new Map<string, ExtBackgroundOperation>();
 	private readonly _mainContext: IMainContext;
 
@@ -65,34 +66,41 @@ export class ExtHostBackgroundTaskManagement implements ExtHostBackgroundTaskMan
 		this._mainContext = mainContext;
 	}
 
-	$onTaskRegistered(taskId: string, taskInfo: sqlops.TaskInfo): void {
-		let operationInfo = new ExtBackgroundOperation(taskId, this._mainContext);
-		this._operations.set(taskId, operationInfo);
-		let handler = this._handlers.get(taskId);
-		if (handler) {
-			handler(operationInfo);
+	$onTaskRegistered(operationId: string): void {
+		let extOperationInfo = new ExtBackgroundOperation(operationId, this._mainContext);
+		this._operations.set(operationId, extOperationInfo);
+		let operationInfo = this._handlers.get(operationId);
+		if (operationInfo) {
+			operationInfo.operation(extOperationInfo);
 		}
 	}
 
-	$onTaskCanceled(taskId: string): void {
-		let operation = this._operations.get(taskId);
+	$onTaskCanceled(operationId: string): void {
+		let operation = this._operations.get(operationId);
 		if (operation) {
 			operation.cancel();
 		}
 	}
 
-	$registerTask(taskId: string, operationInfo: sqlops.BackgroundOperationInfo, handler: (task: sqlops.BackgroundOperation) => void): void {
-		this._handlers.set(taskId, handler);
+	$registerTask(operationInfo: sqlops.BackgroundOperationInfo): void {
+		let operationId = operationInfo.operationId || `OperationId${generateUuid()}`;
+		if (this._handlers.has(operationId)) {
+			throw new Error(`operation '${operationId}' already exists`);
+		}
+
+		this._handlers.set(operationId, operationInfo);
 		let taskInfo: sqlops.TaskInfo = {
-			databaseName: operationInfo.connectionInfo && operationInfo.connectionInfo.databaseName,
-			serverName: operationInfo.connectionInfo && operationInfo.connectionInfo.serverName,
+			databaseName: undefined,
+			serverName: undefined,
 			description: operationInfo.description,
 			isCancelable: operationInfo.isCancelable,
 			name: operationInfo.displayName,
-			providerName: undefined,
+			providerName: undefined, //setting provider name will cause the task to be processed by the provider. But this task is created in the extension and needs to be handled
+			//by the extension
 			taskExecutionMode: 0,
-			taskId: taskId,
-			status: TaskStatus.NotStarted
+			taskId: operationId,
+			status: TaskStatus.NotStarted,
+			connection: operationInfo.connection
 		};
 		this._proxy.$registerTask(taskInfo);
 	}

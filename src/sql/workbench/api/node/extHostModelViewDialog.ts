@@ -110,8 +110,8 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdi
 		});
 	}
 
-	public registerOperation(operationInfo: sqlops.BackgroundOperationInfo, handler: (operationInfo: sqlops.BackgroundOperation) => void): void {
-		this._operationHandler.registerOperation(operationInfo, handler);
+	public registerOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
+		this._operationHandler.registerOperation(operationInfo);
 	}
 
 	public setModelViewId(value: string) {
@@ -205,7 +205,6 @@ class ButtonImpl implements sqlops.window.modelviewdialog.Button {
 
 class BackgroundOperationHandler {
 
-	private _operationHandler: (operationInfo: sqlops.BackgroundOperation) => void;
 	private _operationInfo: sqlops.BackgroundOperationInfo;
 
 	constructor(
@@ -214,15 +213,17 @@ class BackgroundOperationHandler {
 	}
 
 	public createOperation(): void {
-		let uniqueId = generateUuid();
-		let operationId: string = 'taskId' + uniqueId + this._name;
-		if (this._operationHandler && this._operationInfo) {
-			this._extHostTaskManagement.$registerTask(operationId, this._operationInfo, this._operationHandler);
+		if (!this._operationInfo.operationId) {
+			let uniqueId = generateUuid();
+			this._operationInfo.operationId = 'OperationId' + uniqueId + this._name;
+		}
+
+		if (this._operationInfo && this._operationInfo.operation) {
+			this._extHostTaskManagement.$registerTask(this._operationInfo);
 		}
 	}
 
-	public registerOperation(operationInfo: sqlops.BackgroundOperationInfo, handler: (operationInfo: sqlops.BackgroundOperation) => void): void {
-		this._operationHandler = handler;
+	public registerOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
 		this._operationInfo = operationInfo;
 	}
 }
@@ -307,8 +308,8 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 		});
 	}
 
-	public registerOperation(operationInfo: sqlops.BackgroundOperationInfo, handler: (operationInfo: sqlops.BackgroundOperation) => void): void {
-		this._operationHandler.registerOperation(operationInfo, handler);
+	public registerOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
+		this._operationHandler.registerOperation(operationInfo);
 	}
 
 	public get currentPage(): number {
