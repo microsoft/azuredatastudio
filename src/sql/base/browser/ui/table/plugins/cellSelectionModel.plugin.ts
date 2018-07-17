@@ -36,7 +36,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 			this.selector = this.options.cellRangeSelector;
 		} else {
 			// this is added by the noderequires above
-			this.selector = new (<any>Slick).CellRangeSelector({ selectionCss: { 'border': '2px dashed grey' }});
+			this.selector = new (<any>Slick).CellRangeSelector({ selectionCss: { 'border': '2px dashed grey' } });
 		}
 	}
 
