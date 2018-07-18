@@ -1531,12 +1531,13 @@ declare module 'sqlops' {
 
 	// Task service interfaces ----------------------------------------------------------------------------
 	export enum TaskStatus {
-		notStarted = 0,
-		inProgress = 1,
-		succeeded = 2,
-		succeededWithWarning = 3,
-		failed = 4,
-		canceled = 5
+		NotStarted = 0,
+		InProgress = 1,
+		Succeeded = 2,
+		SucceededWithWarning = 3,
+		Failed = 4,
+		Canceled = 5,
+		Canceling = 6
 	}
 
 	export enum TaskExecutionMode {
@@ -1550,6 +1551,7 @@ declare module 'sqlops' {
 	}
 
 	export interface TaskInfo {
+		connection?: connection.Connection;
 		taskId: string;
 		status: TaskStatus;
 		taskExecutionMode: TaskExecutionMode;
@@ -1573,8 +1575,7 @@ declare module 'sqlops' {
 		taskId: string;
 		status: TaskStatus;
 		message: string;
-		script: string;
-		duration: number;
+		script?: string;
 	}
 
 	export interface TaskServicesProvider extends DataProvider {

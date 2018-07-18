@@ -496,6 +496,7 @@ export const SqlMainContext = {
 	MainThreadCredentialManagement: createMainId<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
 	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
 	MainThreadObjectExplorer: createMainId<MainThreadObjectExplorerShape>('MainThreadObjectExplorer'),
+	MainThreadBackgroundTaskManagement: createMainId<MainThreadBackgroundTaskManagementShape>('MainThreadBackgroundTaskManagement'),
 	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
 	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
@@ -517,6 +518,7 @@ export const SqlExtHostContext = {
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
 	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks'),
+	ExtHostBackgroundTaskManagement: createExtId<ExtHostBackgroundTaskManagementShape>('ExtHostBackgroundTaskManagement'),
 	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
 	ExtHostModelView: createExtId<ExtHostModelViewShape>('ExtHostModelView'),
 	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
@@ -576,6 +578,18 @@ export interface ExtHostModelViewShape {
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
 	$handleEvent(handle: number, id: string, eventArgs: any);
 	$runCustomValidations(handle: number, id: string): Thenable<boolean>;
+}
+
+export interface ExtHostBackgroundTaskManagementShape {
+	$onTaskRegistered(operationId: string): void;
+	$onTaskCanceled(operationId: string): void;
+	$registerTask(operationInfo: sqlops.BackgroundOperationInfo): void;
+	$removeTask(operationId: string): void;
+}
+
+export interface MainThreadBackgroundTaskManagementShape extends IDisposable {
+	$registerTask(taskInfo: sqlops.TaskInfo): void;
+	$updateTask(taskProgressInfo: sqlops.TaskProgressInfo): void;
 }
 
 export interface MainThreadModelViewShape extends IDisposable {

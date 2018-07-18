@@ -179,8 +179,8 @@ export class RestoreDialogController implements IRestoreDialogController {
 	private isSuccessfulRestore(response: TaskNode): boolean {
 		return (response.taskName === this._restoreTaskName &&
 			response.message === this._restoreCompleted &&
-			(response.status === TaskStatus.succeeded ||
-				response.status === TaskStatus.succeededWithWarning) &&
+			(response.status === TaskStatus.Succeeded ||
+				response.status === TaskStatus.SucceededWithWarning) &&
 			(response.taskExecutionMode === TaskExecutionMode.execute ||
 				response.taskExecutionMode === TaskExecutionMode.executeAndScript));
 	}

@@ -69,10 +69,10 @@ export default class MainController implements vscode.Disposable {
 
 	private async getTabContent(view: sqlops.ModelView, customButton1: sqlops.window.modelviewdialog.Button, customButton2: sqlops.window.modelviewdialog.Button, componentWidth: number | string): Promise<void> {
 		let inputBox = view.modelBuilder.inputBox()
-		.withProperties({
-			multiline: true,
-			height: 100
-		}).component();
+			.withProperties({
+				multiline: true,
+				height: 100
+			}).component();
 		let inputBoxWrapper = view.modelBuilder.loadingComponent().withItem(inputBox).component();
 		inputBoxWrapper.loading = false;
 		customButton1.onClick(() => {
@@ -145,8 +145,8 @@ export default class MainController implements vscode.Disposable {
 				component: inputBox4,
 				title: 'inputBox4'
 			}], {
-				horizontal: true
-			}).component();
+					horizontal: true
+				}).component();
 		let groupModel1 = view.modelBuilder.groupContainer()
 			.withLayout({
 			}).withItems([
@@ -178,8 +178,8 @@ export default class MainController implements vscode.Disposable {
 		}).component();
 
 		let declarativeTable = view.modelBuilder.declarativeTable()
-		.withProperties({
-			columns: [{
+			.withProperties({
+				columns: [{
 					displayName: 'Column 1',
 					valueType: sqlops.DeclarativeDataType.string,
 					width: '20px',
@@ -204,12 +204,12 @@ export default class MainController implements vscode.Disposable {
 						{ name: 'options2', displayName: 'option 2' }
 					]
 				}
-			],
-			data: [
-				['Data00', 'Data01', false, 'options2'],
-				['Data10', 'Data11', true, 'options1']
-			]
-		}).component();
+				],
+				data: [
+					['Data00', 'Data01', false, 'options2'],
+					['Data10', 'Data11', true, 'options1']
+				]
+			}).component();
 
 		declarativeTable.onDataChanged(e => {
 			inputBox2.value = e.row.toString() + ' ' + e.column.toString() + ' ' + e.value.toString();
@@ -223,7 +223,7 @@ export default class MainController implements vscode.Disposable {
 				height: 150
 			}).withItems([
 				radioButton, groupModel1, radioButton2]
-			, { flex: '1 1 50%' }).component();
+				, { flex: '1 1 50%' }).component();
 		let formModel = view.modelBuilder.formContainer()
 			.withFormItems([{
 				component: inputBoxWrapper,
@@ -254,9 +254,9 @@ export default class MainController implements vscode.Disposable {
 				component: listBox,
 				title: 'List Box'
 			}], {
-				horizontal: false,
-				componentWidth: componentWidth
-			}).component();
+					horizontal: false,
+					componentWidth: componentWidth
+				}).component();
 		let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
 		formWrapper.loading = false;
 		customButton2.onClick(() => {
@@ -300,6 +300,17 @@ export default class MainController implements vscode.Disposable {
 		wizard.customButtons = [customButton1, customButton2];
 		page1.registerContent(async (view) => {
 			await this.getTabContent(view, customButton1, customButton2, 800);
+		});
+		wizard.registerOperation({
+			displayName: 'test task',
+			description: 'task description',
+			isCancelable: true
+		}, op => {
+			op.updateStatus(sqlops.TaskStatus.InProgress);
+			op.updateStatus(sqlops.TaskStatus.InProgress, 'Task is running');
+			setTimeout(() => {
+				op.updateStatus(sqlops.TaskStatus.Succeeded);
+			}, 5000);
 		});
 		wizard.pages = [page1, page2];
 		wizard.open();
@@ -378,13 +389,14 @@ export default class MainController implements vscode.Disposable {
 			let monitorLightPath = vscode.Uri.file(path.join(__dirname, '..', 'media', 'monitor.svg'));
 			let monitorIcon = {
 				light: monitorLightPath,
-				dark: path.join(__dirname, '..', 'media', 'monitor_inverse.svg') };
+				dark: path.join(__dirname, '..', 'media', 'monitor_inverse.svg')
+			};
 
 			let monitorButton = view.modelBuilder.button()
-					.withProperties({
-						label: 'Monitor',
-						iconPath: monitorIcon
-					}).component();
+				.withProperties({
+					label: 'Monitor',
+					iconPath: monitorIcon
+				}).component();
 			let toolbarModel = view.modelBuilder.toolbarContainer()
 				.withToolbarItems([{
 					component: inputBox,

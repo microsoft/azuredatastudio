@@ -712,6 +712,12 @@ declare module 'sqlops' {
 				 * done. Return true to allow the dialog to close or false to block it from closing
 				 */
 				registerCloseValidator(validator: () => boolean | Thenable<boolean>): void;
+
+				/**
+				 * Register an operation to run in the background when the dialog is done
+				 * @param operationInfo Operation Information
+				 */
+				registerOperation(operationInfo: BackgroundOperationInfo): void;
 			}
 
 			export interface DialogTab extends ModelViewPanel {
@@ -895,6 +901,12 @@ declare module 'sqlops' {
 				 * undefined or the text is empty or undefined. The default level is error.
 				 */
 				message: DialogMessage
+
+				/**
+				 * Register an operation to run in the background when the wizard is done
+				 * @param operationInfo Operation Information
+				 */
+				registerOperation(operationInfo: BackgroundOperationInfo): void;
 			}
 		}
 	}
@@ -1001,4 +1013,69 @@ declare module 'sqlops' {
 		nodeInfo: NodeInfo;
 	}
 
+	/**
+	 * Background Operation
+	 */
+	export interface BackgroundOperation {
+		/**
+		 * Updates the operation status or adds progress message
+		 * @param status Operation Status
+		 * @param message Progress message
+		 */
+		updateStatus(status: TaskStatus, message?: string): void;
+
+		/**
+		 * Operation Id
+		 */
+		id: string;
+
+		/**
+		 * Event raised when operation is canceled in UI
+		 */
+		onCanceled: vscode.Event<void>;
+	}
+
+	/**
+	 * Operation Information
+	 */
+	export interface BackgroundOperationInfo {
+
+		/**
+		 * The operation id. A unique id will be assigned to it If not specified a
+		 */
+		operationId?: string;
+		/**
+		 * Connection information
+		 */
+		connection: connection.Connection;
+
+		/**
+		 * Operation Display Name
+		 */
+		displayName: string;
+
+		/**
+		 * Operation Description
+		 */
+		description: string;
+
+		/**
+		 * True if the operation is cancelable
+		 */
+		isCancelable: boolean;
+
+		/**
+		 * The actual operation to execute
+		 */
+		operation: (operation: BackgroundOperation) => void
+	}
+
+	namespace tasks {
+		/**
+		* Starts an operation to run in the background
+		* @param operationInfo Operation Information
+		*/
+		export function startBackgroundOperation(operationInfo: BackgroundOperationInfo): void;
+
+	}
 }

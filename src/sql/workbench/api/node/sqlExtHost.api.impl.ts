@@ -34,6 +34,7 @@ import { ExtHostObjectExplorer } from 'sql/workbench/api/node/extHostObjectExplo
 import { ExtHostLogService } from 'vs/workbench/api/node/extHostLogService';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
 import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
+import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -63,10 +64,11 @@ export function createApiFactory(
 	const extHostResourceProvider = rpcProtocol.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(rpcProtocol));
 	const extHostModalDialogs = rpcProtocol.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(rpcProtocol));
 	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, logService));
+	const extHostBackgroundTaskManagement = rpcProtocol.set(SqlExtHostContext.ExtHostBackgroundTaskManagement, new ExtHostBackgroundTaskManagement(rpcProtocol));
 	const extHostWebviewWidgets = rpcProtocol.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(rpcProtocol));
 	const extHostModelView = rpcProtocol.set(SqlExtHostContext.ExtHostModelView, new ExtHostModelView(rpcProtocol));
 	const extHostDashboard = rpcProtocol.set(SqlExtHostContext.ExtHostDashboard, new ExtHostDashboard(rpcProtocol));
-	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView));
+	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView, extHostBackgroundTaskManagement));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
 
 
@@ -334,6 +336,9 @@ export function createApiFactory(
 			const tasks: typeof sqlops.tasks = {
 				registerTask(id: string, task: (...args: any[]) => any, thisArgs?: any): vscode.Disposable {
 					return extHostTasks.registerTask(id, task, thisArgs);
+				},
+				startBackgroundOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
+					extHostBackgroundTaskManagement.$registerTask(operationInfo);
 				}
 			};
 

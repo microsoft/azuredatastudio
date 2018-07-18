@@ -39,12 +39,13 @@ export enum EditRowState {
 }
 
 export enum TaskStatus {
-	notStarted = 0,
-	inProgress = 1,
-	succeeded = 2,
-	succeededWithWarning = 3,
-	failed = 4,
-	canceled = 5
+	NotStarted = 0,
+	InProgress = 1,
+	Succeeded = 2,
+	SucceededWithWarning = 3,
+	Failed = 4,
+	Canceled = 5,
+	Canceling = 6
 }
 
 export enum TaskExecutionMode {
@@ -99,7 +100,7 @@ export enum AlertType {
 }
 
 export enum FrequencyTypes {
-	Unknown ,
+	Unknown,
 	OneTime = 1 << 1,
 	Daily = 1 << 2,
 	Weekly = 1 << 3,
@@ -275,7 +276,7 @@ export enum DeclarativeDataType {
 }
 
 export enum CardType {
-	VerticalButton  = 'VerticalButton',
+	VerticalButton = 'VerticalButton',
 	Details = 'Details'
 }
 export class SqlThemeIcon {

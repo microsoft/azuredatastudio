@@ -8,11 +8,12 @@ import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
+import { generateUuid } from 'vs/base/common/uuid';
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
-import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', 'Done');
@@ -95,12 +96,22 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdi
 	public customButtons: sqlops.window.modelviewdialog.Button[];
 	private _message: sqlops.window.modelviewdialog.DialogMessage;
 	private _closeValidator: () => boolean | Thenable<boolean>;
+	private _operationHandler: BackgroundOperationHandler;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
-		extHostModelView: ExtHostModelViewShape) {
+		extHostModelView: ExtHostModelViewShape,
+		extHostTaskManagement: ExtHostBackgroundTaskManagementShape) {
 		super('modelViewDialog', extHostModelViewDialog, extHostModelView);
 		this.okButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
 		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL);
+		this._operationHandler = new BackgroundOperationHandler('dialog', extHostTaskManagement);
+		this.okButton.onClick(() => {
+			this._operationHandler.createOperation();
+		});
+	}
+
+	public registerOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
+		this._operationHandler.registerOperation(operationInfo);
 	}
 
 	public setModelViewId(value: string) {
@@ -192,13 +203,40 @@ class ButtonImpl implements sqlops.window.modelviewdialog.Button {
 	}
 }
 
+class BackgroundOperationHandler {
+
+	private _operationInfo: sqlops.BackgroundOperationInfo;
+
+	constructor(
+		private _name: string,
+		private _extHostTaskManagement: ExtHostBackgroundTaskManagementShape) {
+	}
+
+	public createOperation(): void {
+		if (!this._operationInfo.operationId) {
+			let uniqueId = generateUuid();
+			this._operationInfo.operationId = 'OperationId' + uniqueId + this._name;
+		}
+
+		if (this._operationInfo && this._operationInfo.operation) {
+			this._extHostTaskManagement.$registerTask(this._operationInfo);
+		}
+	}
+
+	public registerOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
+		this._operationInfo = operationInfo;
+	}
+}
+
 class WizardPageImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdialog.WizardPage {
 	public customButtons: sqlops.window.modelviewdialog.Button[];
 	private _enabled: boolean = true;
 	private _description: string;
 
-	constructor(public title: string, _extHostModelViewDialog: ExtHostModelViewDialog, _extHostModelView: ExtHostModelViewShape) {
-		super('modelViewWizardPage', _extHostModelViewDialog, _extHostModelView);
+	constructor(public title: string,
+		extHostModelViewDialog: ExtHostModelViewDialog,
+		extHostModelView: ExtHostModelViewShape) {
+		super('modelViewWizardPage', extHostModelViewDialog, extHostModelView);
 	}
 
 	public get enabled(): boolean {
@@ -253,8 +291,9 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 	private _navigationValidator: (info: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean | Thenable<boolean>;
 	private _message: sqlops.window.modelviewdialog.DialogMessage;
 	private _displayPageTitles: boolean = true;
+	private _operationHandler: BackgroundOperationHandler;
 
-	constructor(public title: string, private _extHostModelViewDialog: ExtHostModelViewDialog) {
+	constructor(public title: string, private _extHostModelViewDialog: ExtHostModelViewDialog, extHostTaskManagement: ExtHostBackgroundTaskManagementShape) {
 		this.doneButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
 		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL);
 		this.generateScriptButton = this._extHostModelViewDialog.createButton(GENERATE_SCRIPT_LABEL);
@@ -263,6 +302,14 @@ class WizardImpl implements sqlops.window.modelviewdialog.Wizard {
 		this._extHostModelViewDialog.registerWizardPageInfoChangedCallback(this, info => this.handlePageInfoChanged(info));
 		this._currentPage = 0;
 		this.onPageChanged(info => this._currentPage = info.newPage);
+		this._operationHandler = new BackgroundOperationHandler('wizard' + this.title, extHostTaskManagement);
+		this.doneButton.onClick(() => {
+			this._operationHandler.createOperation();
+		});
+	}
+
+	public registerOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
+		this._operationHandler.registerOperation(operationInfo);
 	}
 
 	public get currentPage(): number {
@@ -344,7 +391,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 
 	constructor(
 		mainContext: IMainContext,
-		private _extHostModelView: ExtHostModelViewShape
+		private _extHostModelView: ExtHostModelViewShape,
+		private _extHostTaskManagement: ExtHostBackgroundTaskManagementShape
 	) {
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadModelViewDialog);
 	}
@@ -473,7 +521,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	}
 
 	public createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
-		let dialog = new DialogImpl(this, this._extHostModelView);
+		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement);
 		dialog.title = title;
 		dialog.handle = this.getHandle(dialog);
 		return dialog;
@@ -516,7 +564,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	}
 
 	public createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
-		let wizard = new WizardImpl(title, this);
+		let wizard = new WizardImpl(title, this, this._extHostTaskManagement);
 		this.getHandle(wizard);
 		return wizard;
 	}
