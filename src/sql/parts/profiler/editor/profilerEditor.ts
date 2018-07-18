@@ -50,6 +50,7 @@ class BasicView extends View {
 	private _previousSize: number;
 	private _collapsed: boolean;
 	public headerSize: number;
+
 	constructor(
 		initialSize: number,
 		private _element: HTMLElement,
@@ -58,6 +59,7 @@ class BasicView extends View {
 		opts: IViewOptions
 	) {
 		super(initialSize, opts);
+		this._previousSize = initialSize;
 	}
 
 	render(container: HTMLElement, orientation: Orientation): void {
@@ -116,6 +118,7 @@ export class ProfilerEditor extends BaseEditor {
 
 	private _viewTemplateSelector: SelectBox;
 	private _viewTemplates: Array<IProfilerViewTemplate>;
+	private _connectionInfoText: HTMLElement;
 
 	// Actions
 	private _connectAction: Actions.ProfilerConnect;
@@ -199,7 +202,15 @@ export class ProfilerEditor extends BaseEditor {
 		}));
 		let dropdownContainer = document.createElement('div');
 		dropdownContainer.style.width = '150px';
+		dropdownContainer.style.paddingRight = '5px';
 		this._viewTemplateSelector.render(dropdownContainer);
+
+		this._connectionInfoText = document.createElement('div');
+		this._connectionInfoText.style.paddingRight = '5px';
+		this._connectionInfoText.innerText = '';
+		this._connectionInfoText.style.textAlign = 'center';
+		this._connectionInfoText.style.display = 'flex';
+		this._connectionInfoText.style.alignItems = 'center';
 
 		this._register(attachSelectBoxStyler(this._viewTemplateSelector, this.themeService));
 
@@ -211,6 +222,8 @@ export class ProfilerEditor extends BaseEditor {
 			{ action: this._autoscrollAction },
 			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) },
 			{ element: dropdownContainer },
+			{ element: Taskbar.createTaskbarSeparator() },
+			{ element: this._connectionInfoText }
 		]);
 	}
 
@@ -361,6 +374,7 @@ export class ProfilerEditor extends BaseEditor {
 				autoscroll: true,
 				isPanelCollapsed: true
 			});
+			this._connectionInfoText.innerText = input.connectionName;
 			this._profilerTableEditor.updateState();
 			this._splitView.layout();
 			this._profilerTableEditor.focus();

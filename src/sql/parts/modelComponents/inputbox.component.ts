@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
+	Component, Input, Inject, ChangeDetectorRef, forwardRef,
+	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';

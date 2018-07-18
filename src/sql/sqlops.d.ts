@@ -840,6 +840,7 @@ declare module 'sqlops' {
 		columnStartIndex: number;
 		columnEndIndex: number;
 		includeHeaders?: boolean;
+		delimiter?: string;
 	}
 
 	export interface SaveResultRequestResult {
@@ -1187,7 +1188,7 @@ declare module 'sqlops' {
 	}
 
 	export enum FrequencyTypes {
-		Unknown ,
+		Unknown,
 		OneTime = 1 << 1,
 		Daily = 1 << 2,
 		Weekly = 1 << 3,
@@ -1395,15 +1396,14 @@ declare module 'sqlops' {
 		job: AgentJobInfo;
 	}
 
-	export interface AgentJobCategory
-	{
+	export interface AgentJobCategory {
 		id: string;
 		name: string;
 	}
 
 	export interface AgentJobDefaultsResult extends ResultStatus {
 		owner: string;
-	   	categories: AgentJobCategory[];
+		categories: AgentJobCategory[];
 	}
 
 	export interface CreateAgentJobStepResult extends ResultStatus {
@@ -1503,6 +1503,9 @@ declare module 'sqlops' {
 		updateProxy(ownerUri: string, originalProxyName: string, proxyInfo: AgentProxyInfo): Thenable<UpdateAgentOperatorResult>;
 		deleteProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<ResultStatus>;
 
+		// Credential method
+		getCredentials(ownerUri: string): Thenable<GetCredentialsResult>;
+
 		// Job Schedule management methods
 		getJobSchedules(ownerUri: string): Thenable<AgentJobSchedulesResult>;
 		createJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<CreateAgentJobScheduleResult>;
@@ -1510,6 +1513,20 @@ declare module 'sqlops' {
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 
 		registerOnUpdated(handler: () => any): void;
+	}
+
+	// Security service interfaces ------------------------------------------------------------------------
+	export interface CredentialInfo {
+		id: number;
+		identity: string;
+		name: string;
+		dateLastModified: string;
+		createDate: string;
+		providerName: string;
+	}
+
+	export interface GetCredentialsResult extends ResultStatus {
+		credentials: CredentialInfo[];
 	}
 
 	// Task service interfaces ----------------------------------------------------------------------------

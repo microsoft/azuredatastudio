@@ -190,7 +190,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 						rowIndex++;
 						return {
 							values: [{}].concat(row.cells.map(c => {
-								return mixin({ ariaLabel: c.displayValue }, c);
+								return mixin({ ariaLabel: escape(c.displayValue) }, c);
 							})), row: row.id
 						};
 					});

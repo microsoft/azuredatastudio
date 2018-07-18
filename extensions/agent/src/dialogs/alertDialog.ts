@@ -63,8 +63,9 @@ export class AlertDialog extends AgentDialog<AlertData> {
 
 	private static readonly AlertTypes: string[]  = [
 		AlertData.AlertTypeSqlServerEventString,
-		AlertData.AlertTypePerformanceConditionString,
-		AlertData.AlertTypeWmiEventString
+		// Disabled until next release
+		// AlertData.AlertTypePerformanceConditionString,
+		// AlertData.AlertTypeWmiEventString
 	];
 
 	private static readonly AlertSeverities: string[]  = [

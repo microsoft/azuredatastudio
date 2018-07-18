@@ -262,7 +262,7 @@ export class ConnectionDialogWidget extends Modal {
 			let recentHistoryLabel = localize('recentHistory', 'Recent history');
 			recentConnectionContainer.div({ class: 'recent-titles-container' }, (container) => {
 				container.div({ class: 'connection-history-label' }, (recentTitle) => {
-					recentTitle.innerHtml(recentHistoryLabel);
+					recentTitle.text(recentHistoryLabel);
 				});
 				container.div({ class: 'connection-history-actions' }, (actionsContainer) => {
 					this._actionbar = this._register(new ActionBar(actionsContainer.getHTMLElement(), { animated: false }));
@@ -303,7 +303,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._noRecentConnectionBuilder.div({ class: 'connection-recent-content' }, (noRecentConnectionContainer) => {
 			let noRecentHistoryLabel = localize('noRecentConnections', 'No recent connection');
 			noRecentConnectionContainer.div({ class: 'no-recent-connections' }, (noRecentTitle) => {
-				noRecentTitle.innerHtml(noRecentHistoryLabel);
+				noRecentTitle.text(noRecentHistoryLabel);
 			});
 		});
 	}
@@ -335,7 +335,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._noSavedConnectionBuilder.div({ class: 'connection-saved-content' }, (noSavedConnectionContainer) => {
 			let noSavedConnectionLabel = localize('noSavedConnections', 'No saved connection');
 			noSavedConnectionContainer.div({ class: 'no-saved-connections' }, (titleContainer) => {
-				titleContainer.innerHtml(noSavedConnectionLabel);
+				titleContainer.text(noSavedConnectionLabel);
 			});
 		});
 	}

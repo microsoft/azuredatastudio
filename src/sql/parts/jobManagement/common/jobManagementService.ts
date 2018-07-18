@@ -78,6 +78,12 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
+	public getCredentials(connectionUri: string): Thenable<sqlops.GetCredentialsResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getCredentials(connectionUri);
+		});
+	}
+
 	public getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getJobHistory(connectionUri, jobID);

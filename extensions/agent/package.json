@@ -2,7 +2,7 @@
   "name": "agent",
   "displayName": "SQL Server Agent",
   "description": "Manage and troubleshoot SQL Server Agent jobs",
-  "version": "0.31.1",
+  "version": "0.31.4",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt",

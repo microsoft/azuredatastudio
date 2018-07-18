@@ -35,6 +35,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { escape } from 'sql/base/common/strings';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -485,7 +486,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 
 		return '<table class="jobview-jobnametable"><tr class="jobview-jobnamerow">' +
 			'<td nowrap class=' + resultIndicatorClass + '></td>' +
-			'<td nowrap class="jobview-jobnametext">' + dataContext.name + '</td>' +
+			'<td nowrap class="jobview-jobnametext">' + escape(dataContext.name) + '</td>' +
 			'</tr></table>';
 	}
 
