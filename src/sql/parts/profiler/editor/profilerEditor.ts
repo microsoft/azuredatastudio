@@ -118,6 +118,8 @@ export class ProfilerEditor extends BaseEditor {
 
 	private _viewTemplateSelector: SelectBox;
 	private _viewTemplates: Array<IProfilerViewTemplate>;
+	private _sessionSelector: SelectBox;
+	private _sessionsList: Array<string>;
 	private _connectionInfoText: HTMLElement;
 
 	// Actions
@@ -200,10 +202,22 @@ export class ProfilerEditor extends BaseEditor {
 				this.input.viewTemplate = this._viewTemplates.find(i => i.name === e.selected);
 			}
 		}));
-		let dropdownContainer = document.createElement('div');
-		dropdownContainer.style.width = '150px';
-		dropdownContainer.style.paddingRight = '5px';
-		this._viewTemplateSelector.render(dropdownContainer);
+		let viewTemplateContainer = document.createElement('div');
+		viewTemplateContainer.style.width = '150px';
+		viewTemplateContainer.style.paddingRight = '5px';
+		this._viewTemplateSelector.render(viewTemplateContainer);
+
+		this._sessionsList = [''];
+		this._sessionSelector = new SelectBox(this._sessionsList, '', this._contextViewService);
+		this._register(this._sessionSelector.onDidSelect(e => {
+			if (this.input) {
+				this.input.sessionName = e.selected;
+			}
+		}));
+		let sessionsContainer = document.createElement('div');
+		sessionsContainer.style.width = '150px';
+		sessionsContainer.style.paddingRight = '5px';
+		this._sessionSelector.render(sessionsContainer);
 
 		this._connectionInfoText = document.createElement('div');
 		this._connectionInfoText.style.paddingRight = '5px';
@@ -213,15 +227,17 @@ export class ProfilerEditor extends BaseEditor {
 		this._connectionInfoText.style.alignItems = 'center';
 
 		this._register(attachSelectBoxStyler(this._viewTemplateSelector, this.themeService));
+		this._register(attachSelectBoxStyler(this._sessionSelector, this.themeService));
 
 		this._actionBar.setContent([
 			{ action: this._startAction },
 			{ action: this._stopAction },
+			{ element: sessionsContainer },
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ action: this._pauseAction },
 			{ action: this._autoscrollAction },
 			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) },
-			{ element: dropdownContainer },
+			{ element: viewTemplateContainer },
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ element: this._connectionInfoText }
 		]);
@@ -420,6 +436,7 @@ export class ProfilerEditor extends BaseEditor {
 				this._startAction.enabled = this.input.state.isConnected;
 				this._stopAction.enabled = false;
 				this._pauseAction.enabled = false;
+				this._sessionSelector.disable();
 				return;
 			}
 		}
@@ -433,6 +450,14 @@ export class ProfilerEditor extends BaseEditor {
 			this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused;
 			this._stopAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
 			this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
+
+			if(this.input.state.isConnected && !this.input.state.isRunning && !this.input.state.isPaused)
+			{
+				this._sessionSelector.enable();
+				this._profilerService.getXEventSessions(this.input.id).then((r) => {
+					this._sessionSelector.setOptions(r);
+				});
+			}
 		}
 	}
 

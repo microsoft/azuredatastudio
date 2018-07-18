@@ -97,8 +97,8 @@ export class ProfilerService implements IProfilerService {
 		return this._runAction(id, provider => provider.disconnectSession(this._idMap.get(id)));
 	}
 
-	public startSession(id: ProfilerSessionID): Thenable<boolean> {
-		return this._runAction(id, provider => provider.startSession(this._idMap.get(id))).then(() => {
+	public startSession(id: ProfilerSessionID, sessionName: string): Thenable<boolean> {
+		return this._runAction(id, provider => provider.startSession(this._idMap.get(id), sessionName)).then(() => {
 			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
 			return true;
 		}, (reason) => {

@@ -61,7 +61,7 @@ export interface IProfilerService {
 	/**
 	 * Starts the session specified by the id
 	 */
-	startSession(sessionId: ProfilerSessionID): Thenable<boolean>;
+	startSession(sessionId: ProfilerSessionID, sessionName: string): Thenable<boolean>;
 	/**
 	 * Pauses the session specified by the id
 	 */

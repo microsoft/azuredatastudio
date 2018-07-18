@@ -78,7 +78,7 @@ export class ProfilerStart extends Action {
 
 	public run(input: ProfilerInput): TPromise<boolean> {
 		input.data.clear();
-		return TPromise.wrap(this._profilerService.startSession(input.id));
+		return TPromise.wrap(this._profilerService.startSession(input.id, input.sessionName));
 	}
 }
 

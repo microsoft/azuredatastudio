@@ -29,6 +29,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	private _id: ProfilerSessionID;
 	private _state: ProfilerState;
 	private _columns: string[] = [];
+	private _sessionName: string;
 	private _viewTemplate: IProfilerViewTemplate;
 	// mapping of event categories to what column they display under
 	// used for coallescing multiple events with different names to the same column
@@ -105,6 +106,16 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	public get viewTemplate(): IProfilerViewTemplate {
 		return this._viewTemplate;
+	}
+
+	public set sessionName(name: string) {
+		if (!this._state.isRunning || !this.state.isPaused){
+			this._sessionName = name;
+		}
+	}
+
+	public get sessionName(): string {
+		return this._sessionName;
 	}
 
 	public getTypeId(): string {

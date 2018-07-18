@@ -310,7 +310,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Start a profiler session
 	 */
-	$startSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
+	$startSession(handle: number, sessionId: string, sessionName: string): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Stop a profiler session
