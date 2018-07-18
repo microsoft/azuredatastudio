@@ -1669,7 +1669,7 @@ declare module 'sqlops' {
 	}
 
 	export interface ProfilerProvider extends DataProvider {
-		startSession(sessionId: string): Thenable<boolean>;
+		startSession(sessionId: string, sessionName: string): Thenable<boolean>;
 		stopSession(sessionId: string): Thenable<boolean>;
 		pauseSession(sessionId: string): Thenable<boolean>;
 		getXEventSessions(sessionId: string): Thenable<string[]>;

@@ -496,8 +496,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Start a profiler session
 	 */
-	public $startSession(handle: number, sessionId: string): Thenable<boolean> {
-		return this._resolveProvider<sqlops.ProfilerProvider>(handle).startSession(sessionId);
+	public $startSession(handle: number, sessionId: string, sessionName: string): Thenable<boolean> {
+		return this._resolveProvider<sqlops.ProfilerProvider>(handle).startSession(sessionId, sessionName);
 	}
 
 	/**

@@ -78,7 +78,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 			} else {
 				// clear data when profiler is started
 				profilerInput.data.clear();
-				return profilerService.startSession(profilerInput.id);
+				return profilerService.startSession(profilerInput.id, profilerInput.sessionName);
 			}
 		}
 		return TPromise.as(false);
