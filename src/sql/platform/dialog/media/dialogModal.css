@@ -31,6 +31,21 @@
 	margin: 0;
 }
 
+.footer-button .validating {
+	background-size: 15px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.vs .footer-button .validating {
+	background-image: url("loading.svg");
+}
+
+.vs-dark .footer-button .validating,
+.hc-black .footer-button .validating {
+	background-image: url("loading_inverse.svg");
+}
+
 .dialogModal-wizardHeader {
 	padding: 10px 30px;
 }
