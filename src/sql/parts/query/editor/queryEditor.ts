@@ -31,6 +31,7 @@ import { IEditorGroupService } from 'vs/workbench/services/group/common/groupSer
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IRange } from 'vs/editor/common/core/range';
+import { IEditorViewState } from 'vs/editor/common/editorCommon';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
@@ -46,7 +47,6 @@ import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
-import { IEditorViewState } from 'vs/editor/common/editorCommon';
 
 /**
  * Editor that hosts 2 sub-editors: A TextResourceEditor for SQL file editing, and a QueryResultsEditor
