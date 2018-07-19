@@ -8,12 +8,12 @@ SQL Operations Studio is a data management tool that enables you to work with SQ
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=875602
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=875603
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=875604
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=875605
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=875606
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=875607
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=2005949
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2005950
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2005959
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2005960
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2006083
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2006084
 
 Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instructions.
 
@@ -85,7 +85,7 @@ We would like to thank all our users who raised issues, and in particular the fo
   * Chinese  (Traditional): Bruce Chen, Chiayi Yen, Kevin Yang,  Winnie Lin, 保哥 Will,  謝政廷
   * Korean: Do-Kyun Kim, Evelyn Kim, Helen Jung, Hong Jmee, jeongwoo choi, Jun Hyoung Lee, Jungsun Kim정선, Justin Yoo, Kavrith mucha, Kiwoong Youm, MinGyu Ju,  MVP_JUNO BEA, Sejun Kim, SOONMAN KWON, sung man ko, Yeongrak Choi, younggun kim, Youngjae Kim, 소영 이
   * Russian: Andrey Veselov, Anton Fontanov, Anton Savin, Elena Ostrovskaia, Igor Babichev, Maxim Zelensky, Rodion Fedechkin, Tasha T, Vladimir Zyryanov
-  * Portuguese Brazil: Daniel de Sousa, Diogo Duarte, Douglas Correa, Douglas Eccker, José Emanuel Mendes, Marcelo Fernandes, Marcondes Alexandre, Roberto Fonseca, Rodrigo Crespi   
+  * Portuguese Brazil: Daniel de Sousa, Diogo Duarte, Douglas Correa, Douglas Eccker, José Emanuel Mendes, Marcelo Fernandes, Marcondes Alexandre, Roberto Fonseca, Rodrigo Crespi
 
 
 And of course we'd like to thank the authors of all upstream dependencies.  Please see a full list in the [ThirdPartyNotices.txt](https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/ThirdPartyNotices.txt)
