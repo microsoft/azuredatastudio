@@ -20,12 +20,11 @@
 						[dataRows]="dataSet.dataRows"
 						(contextMenu)="openContextMenu($event, dataSet.batchId, dataSet.resultId, i)"
 						enableAsyncPostRender="true"
-						showDataTypeIcon="false"
 						showHeader="true"
 						[resized]="dataSet.resized"
 						(mousedown)="navigateToGrid(i)"
 						[selectionModel]="selectionModel"
-						[plugins]="slickgridPlugins"
+						[plugins]="plugins[i]"
 						class="boxCol content vertBox slickgrid"
 						[rowHeight]="rowHeight">
 			</slick-grid>

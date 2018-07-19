@@ -28,6 +28,9 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { clone, mixin } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { escape } from 'sql/base/common/strings';
+import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
+import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
+import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 
 import { format } from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
@@ -61,7 +64,9 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 
 	// create a function alias to use inside query.component
 	// tslint:disable-next-line:no-unused-variable
-	private stringsFormat: any = format;
+	protected stringsFormat: any = format;
+
+	protected plugins = new Array<Array<Slick.Plugin<any>>>();
 
 	// tslint:disable-next-line:no-unused-variable
 	private dataIcons: IGridIcon[] = [
@@ -302,9 +307,9 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 					for (let row = 0; row < rows.rows.length; row++) {
 						// Push row values onto end of gridData for slickgrid
 						gridData.push({
-							values: rows.rows[row].map(c => {
+							values: [{}].concat(rows.rows[row].map(c => {
 								return mixin({ ariaLabel: escape(c.displayValue) }, c);
-							})
+							}))
 						});
 					}
 
@@ -331,6 +336,8 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			minHeight = minHeightNumber.toString() + 'px';
 		}
 
+		let rowNumberColumn = new RowNumberColumn({ numberOfRows: resultSet.rowCount });
+
 		// Store the result set from the event
 		let dataSet: IGridDataSet = {
 			resized: undefined,
@@ -345,7 +352,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 				loadDataFunction,
 				index => { return { values: [] }; }
 			),
-			columnDefinitions: resultSet.columnInfo.map((c, i) => {
+			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let isLinked = c.isXml || c.isJson;
 				let linkType = c.isXml ? 'xml' : 'json';
 
@@ -354,12 +361,13 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 					name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 						? 'XML Showplan'
 						: escape(c.columnName),
-					type: self.stringToFieldType('string'),
+					field: i.toString(),
 					formatter: isLinked ? Services.hyperLinkFormatter : Services.textFormatter,
 					asyncPostRender: isLinked ? self.linkHandler(linkType) : undefined
 				};
-			})
+			}))
 		};
+		self.plugins.push([rowNumberColumn, new AutoColumnSize(), new AdditionalKeyBindings()]);
 		self.dataSets.push(dataSet);
 
 		// check if the resultset is for a query plan
