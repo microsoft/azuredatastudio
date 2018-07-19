@@ -1149,7 +1149,7 @@ declare namespace Slick {
 		* @param row A row index.
 		* @param cell A column index.
 		**/
-		public setActiveCell(row: number, cell: number): void;
+		public setActiveCell(row: number, cell: number, opt_editMode?: boolean, preClickModeOn?: boolean, suppressActiveCellChangedEvent?: boolean): void;
 
 		/**
 		* Sets CSS classes to specific grid cells by calling removeCellCssStyles(key) followed by addCellCssStyles(key, hash). key is name for this set of styles so you can reference it later - to modify it or remove it, for example. hash is a per-row-index, per-column-name nested hash of CSS classes to apply.
