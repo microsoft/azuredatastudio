@@ -10,7 +10,7 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { EditorInput, EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { IEditorControl, Position, IEditor } from 'vs/platform/editor/common/editor';
+import { IEditorControl, Position, IEditor, IEditorInput } from 'vs/platform/editor/common/editor';
 import { VerticalFlexibleSash, HorizontalFlexibleSash, IFlexibleSash } from 'sql/parts/query/views/flexibleSash';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 
@@ -46,6 +46,7 @@ import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
+import { IEditorViewState } from 'vs/editor/common/editorCommon';
 
 /**
  * Editor that hosts 2 sub-editors: A TextResourceEditor for SQL file editing, and a QueryResultsEditor
@@ -86,6 +87,8 @@ export class QueryEditor extends BaseEditor {
 	private _listDatabasesAction: ListDatabasesAction;
 	private _estimatedQueryPlanAction: EstimatedQueryPlanAction;
 	private _actualQueryPlanAction: ActualQueryPlanAction;
+
+	private _savedViewStates = new Map<IEditorInput, IEditorViewState>();
 
 	constructor(
 		@ITelemetryService _telemetryService: ITelemetryService,
@@ -481,6 +484,8 @@ export class QueryEditor extends BaseEditor {
 	private _updateInput(oldInput: QueryInput, newInput: QueryInput, options?: EditorOptions): TPromise<void> {
 
 		if (this._sqlEditor) {
+			let sqlEditorViewState = this._sqlEditor.getControl().saveViewState();
+			this._savedViewStates.set(this._sqlEditor.input, sqlEditorViewState);
 			this._sqlEditor.clearInput();
 		}
 
@@ -580,7 +585,11 @@ export class QueryEditor extends BaseEditor {
 	 */
 	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledEditorInput, options: EditorOptions): TPromise<void> {
 		this._sqlEditor = sqlEditor;
-		return this._sqlEditor.setInput(sqlInput, options);
+		return this._sqlEditor.setInput(sqlInput, options).then(() => {
+			if (this._savedViewStates.has(sqlInput)) {
+				this._sqlEditor.getControl().restoreViewState(this._savedViewStates.get(sqlInput));
+			}
+		});
 	}
 
 	/**
