@@ -42,11 +42,19 @@
         "command": "profiler.stop",
         "title": "Stop",
         "category": "Profiler"
+      },
+      {
+        "command": "profiler.openCreateSessionDialog",
+        "title": "dialog",
+        "category": "Profiler"
       }
     ],
     "outputChannels": [
       "sqlprofiler"
     ]
+  },
+  "dependencies": {
+    "vscode-nls": "^3.2.1"
   },
   "devDependencies": {
     "vscode": "1.0.1"

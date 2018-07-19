@@ -5,8 +5,9 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as data from 'sqlops';
+import * as sqlops from 'sqlops';
 import { ApiWrapper } from './apiWrapper';
+import { CreateSessionDialog } from './dialogs/profilerCreateSessionDialog';
 
 /**
  * The main controller class that initializes the extension
@@ -28,5 +29,10 @@ export class MainController  {
     }
 
     public activate(): void {
+        vscode.commands.registerCommand('profiler.openCreateSessionDialog', (ownerUri: string, templates: string[],
+            handler: (templateName: string, sessionName: string) => void) => {
+            let dialog = new CreateSessionDialog(ownerUri, templates, handler);
+            dialog.showDialog();
+        });
     }
 }

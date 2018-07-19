@@ -13,7 +13,7 @@ import * as nls from 'vs/nls';
 
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { ProfilerEditor } from 'sql/parts/profiler/editor/profilerEditor';
-import { PROFILER_VIEW_TEMPLATE_SETTINGS, IProfilerViewTemplate } from 'sql/parts/profiler/service/interfaces';
+import { PROFILER_VIEW_TEMPLATE_SETTINGS, PROFILER_SESSION_TEMPLATE_SETTINGS, IProfilerViewTemplate, IProfilerSessionTemplate } from 'sql/parts/profiler/service/interfaces';
 
 const profilerDescriptor = new EditorDescriptor(
 	ProfilerEditor,
@@ -225,12 +225,99 @@ const profilerViewTemplateSchema: IJSONSchema = {
 		]
 	};
 
+const profilerSessionTemplateSchema: IJSONSchema = {
+	description: nls.localize('profiler.settings.sessionTemplates', "Specifies session templates"),
+	type: 'array',
+	items: <IJSONSchema>{
+		type: 'object',
+		properties: {
+			name: {
+				type: 'string'
+			}
+		}
+	},
+	default: <Array<IProfilerSessionTemplate>>[
+		{
+			name: 'Standard_OnPrem',
+			defaultView: 'Standard View',
+			createStatement:
+				`CREATE EVENT SESSION [PROFILER_SESSION_NAME] ON SERVER
+					ADD EVENT sqlserver.attention(
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.nt_username,sqlserver.query_hash,sqlserver.server_principal_name,sqlserver.session_id)
+						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0)))),
+					ADD EVENT sqlserver.existing_connection(SET collect_options_text=(1)
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.nt_username,sqlserver.server_principal_name,sqlserver.session_id)),
+					ADD EVENT sqlserver.login(SET collect_options_text=(1)
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.nt_username,sqlserver.server_principal_name,sqlserver.session_id)),
+					ADD EVENT sqlserver.logout(
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.nt_username,sqlserver.server_principal_name,sqlserver.session_id)),
+					ADD EVENT sqlserver.rpc_completed(
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.nt_username,sqlserver.query_hash,sqlserver.server_principal_name,sqlserver.session_id)
+						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0)))),
+					ADD EVENT sqlserver.sql_batch_completed(
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.nt_username,sqlserver.query_hash,sqlserver.server_principal_name,sqlserver.session_id)
+						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0)))),
+					ADD EVENT sqlserver.sql_batch_starting(
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.nt_username,sqlserver.query_hash,sqlserver.server_principal_name,sqlserver.session_id)
+						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0))))
+					ADD TARGET package0.ring_buffer(SET max_events_limit=(1000),max_memory=(51200))
+					WITH (MAX_MEMORY=8192 KB,EVENT_RETENTION_MODE=ALLOW_SINGLE_EVENT_LOSS,MAX_DISPATCH_LATENCY=5 SECONDS,MAX_EVENT_SIZE=0 KB,MEMORY_PARTITION_MODE=PER_CPU,TRACK_CAUSALITY=ON,STARTUP_STATE=OFF)`
+		},
+		{
+			name: 'Standard_Azure',
+			defaultView: 'Standard View',
+			createStatement:
+				`CREATE EVENT SESSION [PROFILER_SESSION_NAME] ON DATABASE
+					ADD EVENT sqlserver.attention(
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.username,sqlserver.query_hash,sqlserver.session_id)
+						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0)))),
+					ADD EVENT sqlserver.existing_connection(SET collect_options_text=(1)
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.username,sqlserver.session_id)),
+					ADD EVENT sqlserver.login(SET collect_options_text=(1)
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.username,sqlserver.session_id)),
+					ADD EVENT sqlserver.logout(
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.username,sqlserver.session_id)),
+					ADD EVENT sqlserver.rpc_completed(
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.username,sqlserver.query_hash,sqlserver.session_id)
+						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0)))),
+					ADD EVENT sqlserver.sql_batch_completed(
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.username,sqlserver.query_hash,sqlserver.session_id)
+						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0)))),
+					ADD EVENT sqlserver.sql_batch_starting(
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.username,sqlserver.query_hash,sqlserver.session_id)
+						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0))))
+					ADD TARGET package0.ring_buffer(SET max_events_limit=(1000),max_memory=(51200))
+					WITH (MAX_MEMORY=8192 KB,EVENT_RETENTION_MODE=ALLOW_SINGLE_EVENT_LOSS,MAX_DISPATCH_LATENCY=5 SECONDS,MAX_EVENT_SIZE=0 KB,MEMORY_PARTITION_MODE=PER_CPU,TRACK_CAUSALITY=ON,STARTUP_STATE=OFF)`
+		},
+		{
+			name: 'TSQL_OnPrem',
+			defaultView: 'TSQL View',
+			createStatement:
+				`CREATE EVENT SESSION [PROFILER_SESSION_NAME] ON SERVER
+					ADD EVENT sqlserver.existing_connection(
+						ACTION(package0.event_sequence,sqlserver.session_id,sqlserver.client_hostname)),
+					ADD EVENT sqlserver.login(SET collect_options_text=(1)
+						ACTION(package0.event_sequence,sqlserver.session_id,sqlserver.client_hostname)),
+					ADD EVENT sqlserver.logout(
+						ACTION(package0.event_sequence,sqlserver.session_id)),
+					ADD EVENT sqlserver.rpc_starting(
+						ACTION(package0.event_sequence,sqlserver.session_id,sqlserver.database_name)
+						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0)))),
+					ADD EVENT sqlserver.sql_batch_starting(
+						ACTION(package0.event_sequence,sqlserver.session_id,sqlserver.database_name)
+						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0))))
+					WITH (MAX_MEMORY=8192 KB,EVENT_RETENTION_MODE=ALLOW_SINGLE_EVENT_LOSS,MAX_DISPATCH_LATENCY=5 SECONDS,MAX_EVENT_SIZE=0 KB,MEMORY_PARTITION_MODE=PER_CPU,TRACK_CAUSALITY=ON,STARTUP_STATE=OFF)`
+		}
+	]
+};
+
 const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
 const dashboardConfig: IConfigurationNode = {
 	id: 'Profiler',
 	type: 'object',
 	properties: {
-		[PROFILER_VIEW_TEMPLATE_SETTINGS]: profilerViewTemplateSchema
+		[PROFILER_VIEW_TEMPLATE_SETTINGS]: profilerViewTemplateSchema,
+		[PROFILER_SESSION_TEMPLATE_SETTINGS]: profilerSessionTemplateSchema
 	}
 };
 

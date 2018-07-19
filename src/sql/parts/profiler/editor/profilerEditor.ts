@@ -128,6 +128,7 @@ export class ProfilerEditor extends BaseEditor {
 	private _pauseAction: Actions.ProfilerPause;
 	private _stopAction: Actions.ProfilerStop;
 	private _autoscrollAction: Actions.ProfilerAutoScroll;
+	private _createAction: Actions.ProfilerCreate;
 	private _collapsedPanelAction: Actions.ProfilerCollapsablePanelAction;
 
 
@@ -188,6 +189,8 @@ export class ProfilerEditor extends BaseEditor {
 		this._actionBar = new Taskbar(this._header, this._contextMenuService);
 		this._startAction = this._instantiationService.createInstance(Actions.ProfilerStart, Actions.ProfilerStart.ID, Actions.ProfilerStart.LABEL);
 		this._startAction.enabled = false;
+		this._createAction = this._instantiationService.createInstance(Actions.ProfilerCreate, Actions.ProfilerCreate.ID, Actions.ProfilerCreate.LABEL);
+		this._createAction.enabled = true;
 		this._stopAction = this._instantiationService.createInstance(Actions.ProfilerStop, Actions.ProfilerStop.ID, Actions.ProfilerStop.LABEL);
 		this._stopAction.enabled = false;
 		this._pauseAction = this._instantiationService.createInstance(Actions.ProfilerPause, Actions.ProfilerPause.ID, Actions.ProfilerPause.LABEL);
@@ -233,6 +236,7 @@ export class ProfilerEditor extends BaseEditor {
 			{ action: this._startAction },
 			{ action: this._stopAction },
 			{ element: sessionsContainer },
+			{ action: this._createAction },
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ action: this._pauseAction },
 			{ action: this._autoscrollAction },
@@ -456,7 +460,14 @@ export class ProfilerEditor extends BaseEditor {
 				this._sessionSelector.enable();
 				this._profilerService.getXEventSessions(this.input.id).then((r) => {
 					this._sessionSelector.setOptions(r);
+					if (this.input.sessionName === undefined){
+						this.input.sessionName = this._sessionsList[0];
+					}
 				});
+			}
+			else
+			{
+				this._sessionSelector.disable();
 			}
 		}
 	}

@@ -20,7 +20,9 @@ import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ICommandService } from 'vs/platform/commands/common/commands'
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class ProfilerConnect extends Action {
 	public static ID = 'profiler.connect';
@@ -79,6 +81,26 @@ export class ProfilerStart extends Action {
 	public run(input: ProfilerInput): TPromise<boolean> {
 		input.data.clear();
 		return TPromise.wrap(this._profilerService.startSession(input.id, input.sessionName));
+	}
+}
+
+export class ProfilerCreate extends Action {
+	public static ID = 'profiler.create';
+	public static LABEL = nls.localize('create', "Create");
+
+	constructor(
+		id: string, label: string,
+		@ICommandService private _commandService: ICommandService,
+		@IProfilerService private _profilerService: IProfilerService,
+		@INotificationService private _notificationService: INotificationService
+	) {
+		super(id, label, 'create_insight');
+	}
+
+	public run(input: ProfilerInput): TPromise<boolean> {
+		return TPromise.wrap(this._profilerService.launchCreateSessionDialog(input).then(() => {
+			return true;
+		}));
 	}
 }
 

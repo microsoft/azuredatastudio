@@ -16,6 +16,7 @@ export const IProfilerService = createDecorator<IProfilerService>(PROFILER_SERVI
 export type ProfilerSessionID = string;
 
 export const PROFILER_VIEW_TEMPLATE_SETTINGS = 'profiler.viewTemplates';
+export const PROFILER_SESSION_TEMPLATE_SETTINGS = 'profiler.sessionTemplates';
 export const PROFILER_SETTINGS = 'profiler';
 
 /**
@@ -83,21 +84,34 @@ export interface IProfilerService {
 	 */
 	onSessionStopped(params: sqlops.ProfilerSessionStoppedParams): void;
 	/**
+	 * Gets a list of the view templates that are specified in the settings
+	 * @param provider An optional string to limit the view templates to a specific provider
+	 * @returns An array of view templates that match the provider passed, if passed, and generic ones (no provider specified),
+	 * otherwise returns all view templates
+	 */
+	getViewTemplates(providerId?: string): Array<IProfilerViewTemplate>;
+	/**
 	 * Gets a list of the session templates that are specified in the settings
 	 * @param provider An optional string to limit the session template to a specific
 	 * @returns An array of session templates that match the provider passed, if passed, and generic ones (no provider specified),
 	 * otherwise returns all session templates
 	 */
-	getViewTemplates(providerId?: string): Array<IProfilerViewTemplate>;
+	getSessionTemplates(providerId?: string): Array<IProfilerSessionTemplate>;
 	/**
 	 * Launches the dialog for editing the view columns of a profiler session template for the given input
 	 * @param input input object that contains the necessary information which will be modified based on used input
 	 */
 	launchColumnEditor(input: ProfilerInput): Thenable<void>;
+	/**
+	 * Launches the dialog for creating a new XEvent session from a template
+	 * @param input input object that contains the necessary information which will be modified based on used input
+	 */
+	launchCreateSessionDialog(input: ProfilerInput): Thenable<void>;
 }
 
 export interface IProfilerSettings {
 	viewTemplates: Array<IProfilerViewTemplate>;
+	sessionTemplates: Array<IProfilerSessionTemplate>;
 }
 
 export interface IColumnViewTemplate {
@@ -108,4 +122,10 @@ export interface IColumnViewTemplate {
 export interface IProfilerViewTemplate {
 	name: string;
 	columns: Array<IColumnViewTemplate>;
+}
+
+export interface IProfilerSessionTemplate {
+	name: string;
+	defaultView: string;
+	createStatement: string;
 }
