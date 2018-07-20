@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { DragCellSelectionModel } from 'sql/base/browser/ui/table/plugins/dragCellSelectionModel.plugin';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
@@ -14,6 +13,7 @@ import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelT
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
 import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, MinimizeTableAction } from 'sql/parts/query/editor/actions';
+import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 
 import * as sqlops from 'sqlops';
 
@@ -29,10 +29,9 @@ import { Orientation, IView } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { $ } from 'vs/base/browser/builder';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { Dimension, getContentWidth, getTotalWidth } from 'vs/base/browser/dom';
+import { Dimension, getContentWidth } from 'vs/base/browser/dom';
 
 const rowHeight = 29;
 const columnHeight = 26;
@@ -196,7 +195,7 @@ class GridTable extends Disposable implements IView {
 	private table: Table<any>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
-	private selectionModel = new DragCellSelectionModel();
+	private selectionModel = new CellSelectionModel();
 
 	private _onDidChange = new Emitter<number>();
 	public readonly onDidChange: Event<number> = this._onDidChange.event;
