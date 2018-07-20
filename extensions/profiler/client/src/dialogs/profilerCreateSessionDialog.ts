@@ -8,6 +8,7 @@ import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { CreateSessionData } from '../data/createSessionData';
+import * as types from '../../../../../src/vs/base/common/types';
 
 const localize = nls.loadMessageBundle();
 
@@ -15,26 +16,26 @@ export class CreateSessionDialog {
 
 	// Top level
 	private readonly DialogTitle: string = localize('createSessionDialog.newSession', 'New Session');
-	//private readonly OkButtonText: string = localize('newSessionDialog.ok', 'OK');
 	private readonly CancelButtonText: string = localize('createSessionDialog.cancel', 'Cancel');
 	private readonly CreateButtonText: string = localize('createSessionDialog.create', 'Create');
 	private readonly DialogTitleText: string = localize('createSessionDialog.title', 'Create New Profiler Session');
 
 	// UI Components
 	private dialog: sqlops.window.modelviewdialog.Dialog;
-	private templatesBox: sqlops.ListBoxComponent;
+	private templatesBox: sqlops.DropDownComponent;
 	private sessionNameBox: sqlops.InputBoxComponent;
 
 	private model: CreateSessionData;
-	private onCreate: (templateName: string, sessionName: string) => void;
 
 	private _onSuccess: vscode.EventEmitter<CreateSessionData> = new vscode.EventEmitter<CreateSessionData>();
 	public readonly onSuccess: vscode.Event<CreateSessionData> = this._onSuccess.event;
 
 
-	constructor(ownerUri: string, templates: string[], handler: (templateName: string, sessionName: string) => void) {
+	constructor(ownerUri: string, templates: Map<string, string>) {
+		if (types.isUndefinedOrNull(templates) || types.isUndefinedOrNull(ownerUri)) {
+			throw new Error(localize('createSessionDialog.argumentInvalid', "Invalid arguments, cannot create new session"));
+		}
 		this.model = new CreateSessionData(ownerUri, templates);
-		this.onCreate = handler;
 	}
 
 	public async showDialog() {
@@ -51,7 +52,7 @@ export class CreateSessionDialog {
 
 	private initializeContent() {
 		this.dialog.registerContent(async view => {
-			this.templatesBox = view.modelBuilder.listBox()
+			this.templatesBox = view.modelBuilder.dropDown()
 				.withProperties({
 					values: []
 				}).component();
@@ -67,7 +68,7 @@ export class CreateSessionDialog {
 				.withFormItems([{
 					components: [{
 						component: this.templatesBox,
-						title: 'Select a session template:'
+						title: 'Select session template:'
 					},
 					{
 						component: this.sessionNameBox,
@@ -79,8 +80,12 @@ export class CreateSessionDialog {
 			await view.initializeModel(formModel);
 
 			if (this.model.templates) {
-				this.templatesBox.values = this.model.templates;
+				this.templatesBox.values = this.model.templateOptions;
+				this.templatesBox.onValueChanged(() => {
+					this.updateModel();
+				});
 			}
+
 			this.sessionNameBox.onTextChanged(() => {
 				if (this.sessionNameBox.value.length > 0) {
 					this.model.sessionName = this.sessionNameBox.value;
@@ -93,29 +98,19 @@ export class CreateSessionDialog {
 		});
 	}
 
-	private async createSession(): Promise<void> {
-		let currentConnection = await sqlops.connection.getCurrentConnection();
-		console.log("Got current connection");
-		let profilerService = sqlops.dataprotocol.getProvider<sqlops.ProfilerProvider>(currentConnection.providerName, sqlops.DataProviderType.ProfilerProvider);
-		console.log("Got profiler service");
-		profilerService.startSession('test', this.model.sessionName).then(() =>{
-			console.log("In callback");
-		});
-	}
-
 	private async execute() {
 		this.updateModel();
-		await this.model.save();
-		await this.createSession();
+		let currentConnection = await sqlops.connection.getCurrentConnection();
+		let profilerService = sqlops.dataprotocol.getProvider<sqlops.ProfilerProvider>(currentConnection.providerName, sqlops.DataProviderType.ProfilerProvider);
+
+		profilerService.createSession(this.model.ownerUri, this.model.getCreateStatement(), this.model.sessionName);
 	}
 
 	private async cancel() {
 	}
 
 	private updateModel() {
-		let selectedRow = this.templatesBox.selectedRow;
-		if (selectedRow) {
-			this.model.selectedTemplate= this.model.templates[selectedRow];
-		}
+		this.model.sessionName = this.sessionNameBox.value;
+		this.model.selectedTemplate = this.templatesBox.value.toString();
 	}
 }

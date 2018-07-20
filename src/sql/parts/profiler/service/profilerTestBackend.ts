@@ -39,6 +39,10 @@ export class ProfilerTestBackend implements sqlops.ProfilerProvider {
 	constructor(
 		@IProfilerService private _profilerService: IProfilerService) { }
 
+	createSession(guid: string, createStatement: string, sessionName: string): Thenable<boolean> {
+		this.timeOutMap.set(guid, this.intervalFn(guid));
+		return TPromise.as(true);
+	}
 	startSession(guid: string, sessionName: string): Thenable<boolean> {
 		this.timeOutMap.set(guid, this.intervalFn(guid));
 		return TPromise.as(true);
@@ -49,6 +53,10 @@ export class ProfilerTestBackend implements sqlops.ProfilerProvider {
 	}
 
 	registerOnSessionStopped(handler: (response: sqlops.ProfilerSessionStoppedParams) => any) {
+		return;
+	}
+
+	registerOnProfilerSessionCreated(handler: (response: sqlops.ProfilerSessionCreatedParams) => any) {
 		return;
 	}
 

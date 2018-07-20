@@ -32,6 +32,10 @@ export interface IProfilerSession {
 	 */
 	onSessionStopped(events: sqlops.ProfilerSessionStoppedParams);
 	/**
+	 * Called by the service when a new profiler session is created by the dialog
+	 */
+	onProfilerSessionCreated(events: sqlops.ProfilerSessionCreatedParams);
+	/**
 	 * Called by the service when the session state is changed
 	 */
 	onSessionStateChanged(newState: INewProfilerState);
@@ -50,7 +54,7 @@ export interface IProfilerService {
 	 * Registers a session with the service that acts as the UI for a profiler session
 	 * @returns An unique id that should be used to make subsequent calls to this service
 	 */
-	registerSession(uri: string, connectionProfile: IConnectionProfile, session: IProfilerSession): ProfilerSessionID;
+	registerSession(uri: string, connectionProfile: IConnectionProfile, session: IProfilerSession): Promise<ProfilerSessionID>;
 	/**
 	 * Connects the session specified by the id
 	 */
@@ -59,6 +63,10 @@ export interface IProfilerService {
 	 * Disconnected the session specified by the id
 	 */
 	disconnectSession(sessionId: ProfilerSessionID): Thenable<boolean>;
+	/**
+	 * Creates a new session using the given create statement and session name
+	 */
+	createSession(id: string, createStatement: string, sessionName: string): Thenable<boolean>;
 	/**
 	 * Starts the session specified by the id
 	 */
@@ -83,6 +91,10 @@ export interface IProfilerService {
 	 * The method called by the service provider for when more rows are available to render
 	 */
 	onSessionStopped(params: sqlops.ProfilerSessionStoppedParams): void;
+	/**
+	 * Called by the service when a new profiler session is created by the dialog
+	 */
+	onProfilerSessionCreated(events: sqlops.ProfilerSessionCreatedParams);
 	/**
 	 * Gets a list of the view templates that are specified in the settings
 	 * @param provider An optional string to limit the view templates to a specific provider

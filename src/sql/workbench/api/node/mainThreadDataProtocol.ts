@@ -292,6 +292,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $registerProfilerProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
 		this._profilerService.registerProvider(providerId, <sqlops.ProfilerProvider>{
+			createSession(sessionId: string, createStatement: string, sessionName: string): Thenable<boolean> {
+				return self._proxy.$createSession(handle, sessionId, createStatement, sessionName);
+			},
 			startSession(sessionId: string, sessionName: string): Thenable<boolean> {
 				return self._proxy.$startSession(handle, sessionId, sessionName);
 			},
@@ -464,6 +467,10 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void {
 		this._profilerService.onSessionStopped(response);
+	}
+
+	public $onProfilerSessionCreated(handle: number, response: sqlops.ProfilerSessionCreatedParams): void {
+		this._profilerService.onProfilerSessionCreated(response);
 	}
 
 	// SQL Server Agent handlers

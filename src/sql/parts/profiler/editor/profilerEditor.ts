@@ -436,27 +436,9 @@ export class ProfilerEditor extends BaseEditor {
 
 		if (e.isConnected) {
 			this._connectAction.connected = this.input.state.isConnected;
-			if (!this.input.state.isConnected) {
-				this._startAction.enabled = this.input.state.isConnected;
-				this._stopAction.enabled = false;
-				this._pauseAction.enabled = false;
-				this._sessionSelector.disable();
-				return;
-			}
-		}
 
-		if (e.isPaused){
-			this._pauseAction.paused = this.input.state.isPaused;
-			this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
-		}
-
-		if (e.isStopped || e.isRunning) {
-			this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused;
-			this._stopAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
-			this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
-
-			if(this.input.state.isConnected && !this.input.state.isRunning && !this.input.state.isPaused)
-			{
+			if (this.input.state.isConnected) {
+				this._updateToolbarButtons();
 				this._sessionSelector.enable();
 				this._profilerService.getXEventSessions(this.input.id).then((r) => {
 					this._sessionSelector.setOptions(r);
@@ -464,12 +446,43 @@ export class ProfilerEditor extends BaseEditor {
 						this.input.sessionName = this._sessionsList[0];
 					}
 				});
-			}
-			else
-			{
+			} else {
+				this._startAction.enabled = false;
+				this._stopAction.enabled = false;
+				this._pauseAction.enabled = false;
+				this._sessionSelector.setOptions([]);
 				this._sessionSelector.disable();
+				return;
 			}
 		}
+
+		if (e.isPaused) {
+			this._pauseAction.paused = this.input.state.isPaused;
+			this._updateToolbarButtons();
+		}
+
+		if (e.isStopped || e.isRunning) {
+			if (this.input.state.isRunning) {
+				this._updateToolbarButtons();
+				this._sessionSelector.selectWithOptionName(this.input.sessionName);
+				this._sessionSelector.disable();
+			}
+			if (this.input.state.isStopped) {
+				this._updateToolbarButtons();
+				this._profilerService.getXEventSessions(this.input.id).then((r) => {
+					this._sessionSelector.setOptions(r);
+					if (this.input.sessionName === undefined){
+						this.input.sessionName = this._sessionsList[0];
+					}
+				});
+			}
+		}
+	}
+
+	private _updateToolbarButtons(): void {
+		this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused && this.input.state.isConnected;
+		this._stopAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused) && this.input.state.isConnected;
+		this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused && this.input.state.isConnected);
 	}
 
 	public layout(dimension: DOM.Dimension): void {
@@ -489,7 +502,6 @@ abstract class SettingsCommand extends Command {
 			return activeEditor;
 		}
 		return null;
-
 	}
 
 }

@@ -7,23 +7,39 @@
 import * as sqlops from 'sqlops';
 
 export class CreateSessionData  {
-	public dialogMode: 'CREATE';
 	public ownerUri: string;
-	public templates: string[];
-	public selectedTemplate: string;
 	public sessionName: string;
+	public templates: Map<string, string> = new Map<string, string>();
+	public templateOptions: string[];
+	public selectedTemplate: string;
 
-	constructor(ownerUri:string, templates: string[]) {
+	constructor(ownerUri:string, templates: Map<string, string>) {
 		this.ownerUri = ownerUri;
 		this.templates = templates;
-		this.selectedTemplate = templates[0];
+		this.templateOptions = [];
+		if(this.templates)
+		{
+			for (let key in this.templates)
+			{
+				this.templateOptions.push(key);
+			}
+
+			if (this.templateOptions.length > 0) {
+				this.selectedTemplate = this.templates[this.templateOptions[0]];
+			} else {
+				this.selectedTemplate = '';
+			}
+
+		} else {
+			// display an error here
+			console.log('****** DIDN\'T GET TEMPLATES ******');
+		}
 	}
 
+	public getCreateStatement(): string {
+		return this.templates[this.selectedTemplate];
+	}
 	public async initialize() {
-		// this is where preprocessing for checking versions would go
-	}
-
-	public async save() {
-		// probably can be safely removed
+		// do something here?
 	}
 }

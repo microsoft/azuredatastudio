@@ -1679,6 +1679,7 @@ declare module 'sqlops' {
 
 		registerOnSessionEventsAvailable(handler: (response: ProfilerSessionEvents) => any): void;
 		registerOnSessionStopped(handler: (response: ProfilerSessionStoppedParams) => any): void;
+		registerOnProfilerSessionCreated(handler: (response: ProfilerSessionCreatedParams) => any): void;
 	}
 
 	export interface IProfilerTableRow {
@@ -1728,6 +1729,12 @@ declare module 'sqlops' {
 		ownerUri: string;
 
 		sessionId: number;
+	}
+
+	export interface ProfilerSessionCreatedParams {
+		ownerUri: string;
+		sessionName: string;
+		templateName: string;
 	}
 
 	// File browser interfaces  -----------------------------------------------------------------------

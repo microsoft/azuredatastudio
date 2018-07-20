@@ -494,6 +494,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 
 	/**
+	 * Create a new profiler session
+	 */
+	public $createSession(handle: number, sessionId: string, createStatement: string, sessionName: string): Thenable<boolean> {
+		return this._resolveProvider<sqlops.ProfilerProvider>(handle).createSession(sessionId, createStatement, sessionName);
+	}
+
+	/**
 	 * Start a profiler session
 	 */
 	public $startSession(handle: number, sessionId: string, sessionName: string): Thenable<boolean> {
@@ -533,6 +540,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	public $onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void {
 		this._proxy.$onSessionStopped(handle, response);
+	}
+
+	/**
+	 * Profiler session created notification
+	 */
+	public $onProfilerSessionCreated(handle: number, response: sqlops.ProfilerSessionCreatedParams): void {
+		this._proxy.$onProfilerSessionCreated(handle, response);
 	}
 
 

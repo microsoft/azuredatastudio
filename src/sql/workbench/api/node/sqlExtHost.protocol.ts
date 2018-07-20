@@ -310,6 +310,11 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Start a profiler session
 	 */
+	$createSession(handle: number, sessionId: string, createStatement: string, sessionName: string): Thenable<boolean> { throw ni(); }
+
+	/**
+	 * Start a profiler session
+	 */
 	$startSession(handle: number, sessionId: string, sessionName: string): Thenable<boolean> { throw ni(); }
 
 	/**
@@ -465,6 +470,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onScriptingComplete(handle: number, message: sqlops.ScriptingCompleteResult): void;
 	$onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void;
 	$onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void;
+	$onProfilerSessionCreated(handle: number, response: sqlops.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
 
 	/**

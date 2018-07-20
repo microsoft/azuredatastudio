@@ -63,7 +63,7 @@ export class ProfilerService implements IProfilerService {
 		this._providers.set(providerId, provider);
 	}
 
-	public registerSession(uri: string, connectionProfile: IConnectionProfile, session: IProfilerSession): ProfilerSessionID {
+	public async registerSession(uri: string, connectionProfile: IConnectionProfile, session: IProfilerSession): Promise<ProfilerSessionID> {
 		let options: IConnectionCompletionOptions = {
 			params: { connectionType: ConnectionType.default, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: undefined },
 			saveTheConnection: false,
@@ -71,14 +71,14 @@ export class ProfilerService implements IProfilerService {
 			showConnectionDialogOnError: false,
 			showFirewallRuleOnError: true
 		};
-		this._connectionService.connect(connectionProfile, uri, options).then(() => {
+		await this._connectionService.connect(connectionProfile, uri, options).then(() => {
 
 		}).catch(connectionError => {
 
 		});
 		this._sessionMap.set(uri, session);
 		this._idMap.set(uri, uri);
-		return uri;
+		return TPromise.wrap(uri);
 	}
 
 	public onMoreRows(params: sqlops.ProfilerSessionEvents): void {
@@ -91,12 +91,26 @@ export class ProfilerService implements IProfilerService {
 		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onSessionStopped(params);
 	}
 
+	public onProfilerSessionCreated(params: sqlops.ProfilerSessionCreatedParams): void {
+
+		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onProfilerSessionCreated(params);
+	}
+
 	public connectSession(id: ProfilerSessionID): Thenable<boolean> {
 		return this._runAction(id, provider => provider.connectSession(this._idMap.get(id)));
 	}
 
 	public disconnectSession(id: ProfilerSessionID): Thenable<boolean> {
 		return this._runAction(id, provider => provider.disconnectSession(this._idMap.get(id)));
+	}
+
+	public createSession(id: string, createStatement: string, sessionName: string): Thenable<boolean>{
+		return this._runAction(id, provider => provider.createSession(this._idMap.get(id), createStatement, sessionName)).then(() => {
+			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
+			return true;
+		}, (reason) => {
+			this._notificationService.error(reason.message);
+		});
 	}
 
 	public startSession(id: ProfilerSessionID, sessionName: string): Thenable<boolean> {
@@ -175,11 +189,11 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public launchCreateSessionDialog(input?: ProfilerInput): Thenable<void> {
-		let sessionNames = this.getSessionTemplates().reduce<Array<string>>((p, e) => {
-			p.push(e.name);
+		let templates = this.getSessionTemplates().reduce<Map<string, string>>((p, e) => {
+			p[e.name] = e.createStatement;
 			return p;
-		}, []);
-		this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, sessionNames);
-		return TPromise.as(null);
+		}, new Map<string, string>());
+
+		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, templates);
 	}
 }

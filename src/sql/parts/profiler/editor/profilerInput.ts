@@ -20,6 +20,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
 import { escape } from 'sql/base/common/strings';
+import * as types from 'vs/base/common/types';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
@@ -49,14 +50,17 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this._state = new ProfilerState();
 		// set inital state
 		this.state.change({
-			isConnected: true,
+			isConnected: false,
 			isStopped: true,
 			isPaused: false,
 			isRunning: false,
 			autoscroll: true
 		});
 
-		this._id = this._profilerService.registerSession(generateUuid(), _connection, this);
+		this._profilerService.registerSession(generateUuid(), _connection, this).then((id) => {
+			this._id = id;
+			this.state.change({isConnected: true});
+		});
 		let searchFn = (val: { [x: string]: string }, exp: string): Array<number> => {
 			let ret = new Array<number>();
 			for (let i = 0; i < this._columns.length; i++) {
@@ -189,6 +193,27 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			isPaused: false,
 			isRunning: false
 		});
+	}
+
+	public onProfilerSessionCreated(params: sqlops.ProfilerSessionCreatedParams) {
+		if (types.isUndefinedOrNull(params.sessionName) || types.isUndefinedOrNull(params.templateName)) {
+			this._notificationService.error(nls.localize("profiler.sessionCreationError", "Error while starting new session"));
+		} else {
+			this._sessionName = params.sessionName;
+			let sessionTemplate = this._profilerService.getSessionTemplates().find((template) => {
+				return template.name === params.templateName;
+			});
+			let newView = this._profilerService.getViewTemplates().find((view) => {
+				return view.name === sessionTemplate.defaultView;
+			});
+
+			this.data.clear();
+			this.state.change({
+				isStopped: false,
+				isPaused: false,
+				isRunning: true
+			});
+		}
 	}
 
 	public onSessionStateChanged(state: ProfilerState) {

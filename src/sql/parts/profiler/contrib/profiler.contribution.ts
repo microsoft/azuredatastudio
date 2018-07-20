@@ -241,7 +241,7 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 			name: 'Standard_OnPrem',
 			defaultView: 'Standard View',
 			createStatement:
-				`CREATE EVENT SESSION [PROFILER_SESSION_NAME] ON SERVER
+				`CREATE EVENT SESSION [{sessionName}] ON SERVER
 					ADD EVENT sqlserver.attention(
 						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.nt_username,sqlserver.query_hash,sqlserver.server_principal_name,sqlserver.session_id)
 						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0)))),
@@ -267,7 +267,7 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 			name: 'Standard_Azure',
 			defaultView: 'Standard View',
 			createStatement:
-				`CREATE EVENT SESSION [PROFILER_SESSION_NAME] ON DATABASE
+				`CREATE EVENT SESSION [{sessionName}] ON DATABASE
 					ADD EVENT sqlserver.attention(
 						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.username,sqlserver.query_hash,sqlserver.session_id)
 						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0)))),
@@ -293,7 +293,7 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 			name: 'TSQL_OnPrem',
 			defaultView: 'TSQL View',
 			createStatement:
-				`CREATE EVENT SESSION [PROFILER_SESSION_NAME] ON SERVER
+				`CREATE EVENT SESSION [{sessionName}] ON SERVER
 					ADD EVENT sqlserver.existing_connection(
 						ACTION(package0.event_sequence,sqlserver.session_id,sqlserver.client_hostname)),
 					ADD EVENT sqlserver.login(SET collect_options_text=(1)
