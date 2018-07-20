@@ -29,9 +29,10 @@ import { IAction } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 
 export const VIEW_SELECTOR: string = 'jobalertsview-component';
-export const ROW_HEIGHT: number = 45;
+export const ROW_HEIGHT: number = 30;
 
 @Component({
 	selector: VIEW_SELECTOR,
@@ -73,8 +74,9 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService) {
-		super(commonService, contextMenuService, keybindingService, instantiationService);
+		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IDashboardService) _dashboardService: IDashboardService) {
+		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
@@ -85,7 +87,14 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 	 }
 
 	public layout() {
-		this._table.layout(new dom.Dimension(dom.getContentWidth(this._gridEl.nativeElement), dom.getContentHeight(this._gridEl.nativeElement)));
+		let height = dom.getContentHeight(this._gridEl.nativeElement) - 10;
+		if (height < 0) {
+			height = 0;
+		}
+
+		this._table.layout(new dom.Dimension(
+			dom.getContentWidth(this._gridEl.nativeElement),
+			height));
 	}
 
 	onFirstVisible() {
@@ -94,13 +103,6 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 			column.rerenderOnResize = true;
 			return column;
 		});
-		let options = <Slick.GridOptions<any>>{
-			syncColumnCellResize: true,
-			enableColumnReorder: false,
-			rowHeight: ROW_HEIGHT,
-			enableCellNavigation: true,
-			forceFitColumns: true
-		};
 
 		this.dataView = new Slick.Data.DataView();
 
@@ -164,7 +166,17 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 
 	public openCreateAlertDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._commandService.executeCommand('agent.openAlertDialog', ownerUri);
+		this._jobManagementService.getJobs(ownerUri).then((result) => {
+			if (result && result.jobs.length > 0) {
+				let jobs = [];
+				result.jobs.forEach(job => {
+					jobs.push(job.name);
+				});
+				this._commandService.executeCommand('agent.openAlertDialog', ownerUri, null, jobs);
+			} else {
+				this._commandService.executeCommand('agent.openAlertDialog', ownerUri, null, null);
+			}
+		});
 	}
 
 	private refreshJobs() {

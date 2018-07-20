@@ -6,7 +6,7 @@
 'use strict';
 
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
+import { NodeType, SqlThemeIcon } from 'sql/parts/objectExplorer/common/nodeType';
 import * as sqlops from 'sqlops';
 
 import * as UUID from 'vs/base/common/uuid';
@@ -83,6 +83,23 @@ export class TreeNode {
 
 	public metadata: sqlops.ObjectMetadata;
 
+	public iconType: string | SqlThemeIcon;
+
+	constructor(nodeTypeId: string, label: string, isAlwaysLeaf: boolean, nodePath: string,
+		nodeSubType: string, nodeStatus: string, parent: TreeNode, metadata: sqlops.ObjectMetadata,
+		iconType: string | SqlThemeIcon,
+		private _objectExplorerCallbacks: ObjectExplorerCallbacks) {
+		this.nodeTypeId = nodeTypeId;
+		this.label = label;
+		this.isAlwaysLeaf = isAlwaysLeaf;
+		this.nodePath = nodePath;
+		this.parent = parent;
+		this.metadata = metadata;
+		this.iconType = iconType;
+		this.id = UUID.generateUuid();
+		this.nodeSubType = nodeSubType;
+		this.nodeStatus = nodeStatus;
+	}
 	public getConnectionProfile(): ConnectionProfile {
 		var currentNode: TreeNode = this;
 		while (!currentNode.connection && currentNode.parent) {
@@ -148,19 +165,5 @@ export class TreeNode {
 
 	public setSelected(selected: boolean, clearOtherSelections?: boolean): Thenable<void> {
 		return this._objectExplorerCallbacks.setNodeSelected(this, selected, clearOtherSelections);
-	}
-
-	constructor(nodeTypeId: string, label: string, isAlwaysLeaf: boolean, nodePath: string,
-		nodeSubType: string, nodeStatus: string, parent: TreeNode, metadata: sqlops.ObjectMetadata,
-		private _objectExplorerCallbacks: ObjectExplorerCallbacks) {
-		this.nodeTypeId = nodeTypeId;
-		this.label = label;
-		this.isAlwaysLeaf = isAlwaysLeaf;
-		this.nodePath = nodePath;
-		this.parent = parent;
-		this.metadata = metadata;
-		this.id = UUID.generateUuid();
-		this.nodeSubType = nodeSubType;
-		this.nodeStatus = nodeStatus;
 	}
 }

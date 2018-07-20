@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IColumnDefinition, IObservableCollection, IGridDataRow } from 'angular2-slickgrid';
+import { ISlickColumn, IObservableCollection, IGridDataRow } from 'angular2-slickgrid';
 
 export interface ISlickRange {
 	fromCell: number;
@@ -42,7 +42,7 @@ export interface IGridIcon {
 
 export interface IGridDataSet {
 	dataRows: IObservableCollection<IGridDataRow>;
-	columnDefinitions: IColumnDefinition[];
+	columnDefinitions: ISlickColumn<any>[];
 	resized: any; // EventEmitter<any>;
 	totalRows: number;
 	batchId: number;

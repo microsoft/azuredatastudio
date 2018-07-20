@@ -8,11 +8,14 @@ import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+
+import * as sqlops from 'sqlops';
 import { IConnectionManagementService, IConnectionCompletionOptions, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import {
-	NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction,
+	ScriptSelectAction, EditDataAction, ScriptCreateAction,
 	ScriptExecuteAction, ScriptDeleteAction, ScriptAlterAction
 } from 'sql/workbench/common/actions';
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
@@ -23,41 +26,51 @@ import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import * as Constants from 'sql/parts/connection/common/constants';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
-import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 
-export class ObjectExplorerActionsContext {
-	public treeNode: TreeNode;
-	public connectionProfile: ConnectionProfile;
-	public container: HTMLElement;
-	public tree: ITree;
+
+export class ObjectExplorerActionsContext implements sqlops.ObjectExplorerContext {
+	public connectionProfile: IConnectionProfile;
+	public nodeInfo: sqlops.NodeInfo;
+	public isConnectionNode: boolean = false;
 }
 
+async function getTreeNode(context: ObjectExplorerActionsContext, objectExplorerService: IObjectExplorerService): TPromise<TreeNode> {
+	if (context.isConnectionNode) {
+		return Promise.resolve(undefined);
+	}
+	return await objectExplorerService.getTreeNode(context.connectionProfile.id, context.nodeInfo.nodePath);
+}
+
+
 export class OEAction extends ExecuteCommandAction {
-	private _objectExplorerTreeNode: TreeNode;
-	private _container: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 
 	constructor(
 		id: string, label: string,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ICommandService commandService: ICommandService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
 	) {
 		super(id, label, commandService);
 	}
 
-	public run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): TPromise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 
 
 		let profile: IConnectionProfile;
-		if (actionContext.connectionProfile) {
-			profile = actionContext.connectionProfile;
-		} else {
-			profile = TreeUpdateUtils.getConnectionProfile(<TreeNode>actionContext.treeNode);
+		if (actionContext instanceof ObjectExplorerActionsContext) {
+			if (actionContext.isConnectionNode) {
+				profile = actionContext.connectionProfile;
+			} else {
+				// Get the "correct" version from the tree
+				let treeNode = await getTreeNode(actionContext, this._objectExplorerService);
+				profile = TreeUpdateUtils.getConnectionProfile(treeNode);
+			}
 		}
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 
@@ -72,18 +85,16 @@ export class ManageConnectionAction extends Action {
 	public static ID = 'objectExplorer.manage';
 	public static LABEL = localize('ManageAction', 'Manage');
 
-	private _connectionProfile: ConnectionProfile;
-	private _objectExplorerTreeNode: TreeNode;
 	private _treeSelectionHandler: TreeSelectionHandler;
-
-	protected _container: HTMLElement;
 
 	constructor(
 		id: string,
 		label: string,
+		private _tree: ITree,
 		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService protected _capabilitiesService: ICapabilitiesService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IObjectExplorerService private _objectExplorerService?: IObjectExplorerService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
 	) {
 		super(id, label);
 	}
@@ -91,33 +102,37 @@ export class ManageConnectionAction extends Action {
 	run(actionContext: ObjectExplorerActionsContext): TPromise<any> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._treeSelectionHandler.onTreeActionStateChange(true);
+		let self = this;
 		let promise = new TPromise<boolean>((resolve, reject) => {
-			this.doManage(actionContext).then((success) => {
-				this.done();
+			self.doManage(actionContext).then((success) => {
+				self.done();
 				resolve(success);
 			}, error => {
-				this.done();
+				self.done();
 				reject(error);
 			});
 		});
 		return promise;
 	}
 
-	private doManage(actionContext: ObjectExplorerActionsContext): Thenable<boolean> {
+	private async doManage(actionContext: ObjectExplorerActionsContext): TPromise<boolean> {
+		let treeNode: TreeNode = undefined;
+		let connectionProfile: IConnectionProfile = undefined;
 		if (actionContext instanceof ObjectExplorerActionsContext) {
-			//set objectExplorerTreeNode for context menu clicks
-			this._connectionProfile = actionContext.connectionProfile;
-			this._objectExplorerTreeNode = actionContext.treeNode;
-			if (this._connectionProfile === undefined && TreeUpdateUtils.isDatabaseNode(this._objectExplorerTreeNode)) {
-				this._connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
+			// Must use a real connection profile for this action due to lookup
+			connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, actionContext.connectionProfile);
+			if (!actionContext.isConnectionNode) {
+				treeNode = await getTreeNode(actionContext, this._objectExplorerService);
+				if (TreeUpdateUtils.isDatabaseNode(treeNode)) {
+					connectionProfile = TreeUpdateUtils.getConnectionProfile(treeNode);
+				}
 			}
-			this._container = actionContext.container;
 		}
 
-		if (!this._connectionProfile) {
+		if (!connectionProfile) {
 			// This should never happen. There should be always a valid connection if the manage action is called for
 			// an OE node or a database node
-			return TPromise.wrap(true);
+			return true;
 		}
 
 		let options: IConnectionCompletionOptions = {
@@ -130,10 +145,10 @@ export class ManageConnectionAction extends Action {
 
 		// If it's a database node just open a database connection and open dashboard,
 		// the node is already from an open OE session we don't need to create new session
-		if (TreeUpdateUtils.isAvailableDatabaseNode(this._objectExplorerTreeNode)) {
-			return this._connectionManagementService.showDashboard(this._connectionProfile);
+		if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
+			return this._connectionManagementService.showDashboard(connectionProfile);
 		} else {
-			return TreeUpdateUtils.connectAndCreateOeSession(this._connectionProfile, options, this._connectionManagementService, this._objectExplorerService, actionContext.tree);
+			return TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, options, this._connectionManagementService, this._objectExplorerService, this._tree);
 		}
 	}
 
@@ -149,7 +164,6 @@ export class ManageConnectionAction extends Action {
 export class OEScriptSelectAction extends ScriptSelectAction {
 	public static ID = 'objectExplorer.' + ScriptSelectAction.ID;
 	private _objectExplorerTreeNode: TreeNode;
-	private _container: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 
 	constructor(
@@ -157,23 +171,23 @@ export class OEScriptSelectAction extends ScriptSelectAction {
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
 		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
 		@IScriptingService protected _scriptingService: IScriptingService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService);
 	}
 
-	public run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): TPromise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
-			this._objectExplorerTreeNode = actionContext.treeNode;
-			this._container = actionContext.container;
+			this._objectExplorerTreeNode = await getTreeNode(actionContext, this._objectExplorerService);
 		}
 		this._treeSelectionHandler.onTreeActionStateChange(true);
-		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
+		var connectionProfile = TreeUpdateUtils.getConnectionProfile(this._objectExplorerTreeNode);
 		var ownerUri = this._connectionManagementService.getConnectionId(connectionProfile);
 		ownerUri = this._connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
-		var metadata = (<TreeNode>this._objectExplorerTreeNode).metadata;
+		var metadata = this._objectExplorerTreeNode.metadata;
 
 		return super.run({ profile: connectionProfile, object: metadata }).then((result) => {
 			this._treeSelectionHandler.onTreeActionStateChange(false);
@@ -185,7 +199,6 @@ export class OEScriptSelectAction extends ScriptSelectAction {
 export class OEEditDataAction extends EditDataAction {
 	public static ID = 'objectExplorer.' + EditDataAction.ID;
 	private _objectExplorerTreeNode: TreeNode;
-	private _container: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 
 	constructor(
@@ -193,17 +206,17 @@ export class OEEditDataAction extends EditDataAction {
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
 		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
 		@IScriptingService protected _scriptingService: IScriptingService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService);
 	}
 
-	public run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): TPromise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
-			this._objectExplorerTreeNode = actionContext.treeNode;
-			this._container = actionContext.container;
+			this._objectExplorerTreeNode = await getTreeNode(actionContext, this._objectExplorerService);
 		}
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
@@ -219,7 +232,6 @@ export class OEEditDataAction extends EditDataAction {
 export class OEScriptCreateAction extends ScriptCreateAction {
 	public static ID = 'objectExplorer.' + ScriptCreateAction.ID;
 	private _objectExplorerTreeNode: TreeNode;
-	private _container: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 
 	constructor(
@@ -227,18 +239,18 @@ export class OEScriptCreateAction extends ScriptCreateAction {
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
 		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
 		@IScriptingService protected _scriptingService: IScriptingService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService protected _errorMessageService: IErrorMessageService
 	) {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}
 
-	public run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): TPromise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
-			this._objectExplorerTreeNode = actionContext.treeNode;
-			this._container = actionContext.container;
+			this._objectExplorerTreeNode = await getTreeNode(actionContext, this._objectExplorerService);
 		}
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
@@ -256,7 +268,6 @@ export class OEScriptCreateAction extends ScriptCreateAction {
 export class OEScriptExecuteAction extends ScriptExecuteAction {
 	public static ID = 'objectExplorer.' + ScriptExecuteAction.ID;
 	private _objectExplorerTreeNode: TreeNode;
-	private _container: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 
 	constructor(
@@ -264,18 +275,18 @@ export class OEScriptExecuteAction extends ScriptExecuteAction {
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
 		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
 		@IScriptingService protected _scriptingService: IScriptingService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService protected _errorMessageService: IErrorMessageService
 	) {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}
 
-	public run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): TPromise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
-			this._objectExplorerTreeNode = actionContext.treeNode;
-			this._container = actionContext.container;
+			this._objectExplorerTreeNode = await getTreeNode(actionContext, this._objectExplorerService);
 		}
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
@@ -293,7 +304,6 @@ export class OEScriptExecuteAction extends ScriptExecuteAction {
 export class OEScriptAlterAction extends ScriptAlterAction {
 	public static ID = 'objectExplorer.' + ScriptAlterAction.ID;
 	private _objectExplorerTreeNode: TreeNode;
-	private _container: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 
 	constructor(
@@ -301,18 +311,18 @@ export class OEScriptAlterAction extends ScriptAlterAction {
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
 		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
 		@IScriptingService protected _scriptingService: IScriptingService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService protected _errorMessageService: IErrorMessageService
 	) {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}
 
-	public run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): TPromise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
-			this._objectExplorerTreeNode = actionContext.treeNode;
-			this._container = actionContext.container;
+			this._objectExplorerTreeNode = await getTreeNode(actionContext, this._objectExplorerService);
 		}
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
@@ -330,7 +340,6 @@ export class OEScriptAlterAction extends ScriptAlterAction {
 export class OEScriptDeleteAction extends ScriptDeleteAction {
 	public static ID = 'objectExplorer.' + ScriptDeleteAction.ID;
 	private _objectExplorerTreeNode: TreeNode;
-	private _container: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 
 	constructor(
@@ -338,18 +347,18 @@ export class OEScriptDeleteAction extends ScriptDeleteAction {
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
 		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
 		@IScriptingService protected _scriptingService: IScriptingService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService protected _errorMessageService: IErrorMessageService
 	) {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}
 
-	public run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): TPromise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
-			this._objectExplorerTreeNode = actionContext.treeNode;
-			this._container = actionContext.container;
+			this._objectExplorerTreeNode = await getTreeNode(actionContext, this._objectExplorerService);
 		}
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
@@ -364,76 +373,10 @@ export class OEScriptDeleteAction extends ScriptDeleteAction {
 	}
 }
 
-export class DisconnectAction extends Action {
-	public static ID = 'objectExplorer.disconnect';
-	public static LABEL = localize('objectExplorAction.disconnect', 'Disconnect');
-	private _objectExplorerTreeNode: TreeNode;
-	private _container: HTMLElement;
-	private _treeSelectionHandler: TreeSelectionHandler;
-
-	constructor(
-		id: string,
-		label: string,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
-		@IInstantiationService private _instantiationService: IInstantiationService
-	) {
-		super(id, label);
-	}
-
-	public run(actionContext: any): TPromise<boolean> {
-		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
-		if (actionContext instanceof ObjectExplorerActionsContext) {
-			//set objectExplorerTreeNode for context menu clicks
-			this._objectExplorerTreeNode = actionContext.treeNode;
-			this._container = actionContext.container;
-		}
-
-		var connectionProfile = (<TreeNode>this._objectExplorerTreeNode).getConnectionProfile();
-		if (this.connectionManagementService.isProfileConnected(connectionProfile)) {
-			this._treeSelectionHandler.onTreeActionStateChange(true);
-
-			this.connectionManagementService.disconnect(connectionProfile).then(() => {
-				this._treeSelectionHandler.onTreeActionStateChange(false);
-			});
-		}
-
-		return TPromise.as(true);
-	}
-}
-
 export class ObjectExplorerActionUtilities {
 
 	public static readonly objectExplorerElementClass = 'object-element-group';
 	public static readonly connectionElementClass = 'connection-tile';
-
-
-	private static getGroupContainer(container: HTMLElement, elementName: string): HTMLElement {
-		var element = container;
-		while (element && element.className !== elementName) {
-			element = element.parentElement;
-		}
-		return element ? element.parentElement : undefined;
-	}
-
-	public static showLoadingIcon(container: HTMLElement, elementName: string): void {
-		if (container) {
-			let groupContainer = this.getGroupContainer(container, elementName);
-			if (groupContainer) {
-				groupContainer.classList.add('icon');
-				groupContainer.classList.add('in-progress');
-			}
-		}
-	}
-
-	public static hideLoadingIcon(container: HTMLElement, elementName: string): void {
-		if (container) {
-			let element = this.getGroupContainer(container, elementName);
-			if (element && element.classList) {
-				element.classList.remove('icon');
-				element.classList.remove('in-progress');
-			}
-		}
-	}
 
 	public static getScriptMap(treeNode: TreeNode): Map<NodeType, any[]> {
 		let scriptMap = new Map<NodeType, any[]>();

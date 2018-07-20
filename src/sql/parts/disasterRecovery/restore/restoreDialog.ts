@@ -226,7 +226,7 @@ export class RestoreDialog extends Modal {
 
 			destinationContainer.div({ class: 'dialog-input-section' }, (inputContainer) => {
 				inputContainer.div({ class: 'dialog-label' }, (labelContainer) => {
-					labelContainer.innerHtml(LocalizedStrings.TARGETDATABASE);
+					labelContainer.text(LocalizedStrings.TARGETDATABASE);
 				});
 
 				inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
@@ -473,7 +473,7 @@ export class RestoreDialog extends Modal {
 			className += ' header';
 		}
 		container.div({ class: className }, (labelContainer) => {
-			labelContainer.innerHtml(content);
+			labelContainer.text(content);
 		});
 	}
 
@@ -537,7 +537,7 @@ export class RestoreDialog extends Modal {
 		let selectBox: SelectBox;
 		container.div({ class: 'dialog-input-section' }, (inputContainer) => {
 			inputContainer.div({ class: 'dialog-label' }, (labelContainer) => {
-				labelContainer.innerHtml(label);
+				labelContainer.text(label);
 			});
 
 			inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {

@@ -275,6 +275,11 @@ let registryProperties = {
 		'description': localize('sql.saveAsCsv.includeHeaders', '[Optional] When true, column headers are included when saving results as CSV'),
 		'default': true
 	},
+	'sql.saveAsCsv.delimiter': {
+		'type': 'string',
+		'description': localize('sql.saveAsCsv.delimiter', '[Optional] The custom delimiter to use between values when saving as CSV'),
+		'default': ','
+	},
 	'sql.copyIncludeHeaders': {
 		'type': 'boolean',
 		'description': localize('sql.copyIncludeHeaders', '[Optional] Configuration options for copying results from the Results View'),

@@ -101,7 +101,7 @@ export class ErrorMessageDialog extends Modal {
 	private updateDialogBody(): void {
 		let builder = new Builder(this._body).empty();
 		builder.div({ class: 'error-message' }, (errorContainer) => {
-			errorContainer.innerHtml(this._message);
+			errorContainer.getHTMLElement().innerText = this._message;
 		});
 	}
 
@@ -168,7 +168,7 @@ export class ErrorMessageDialog extends Modal {
 
 	private resetActions(): void {
 		this._actions = [];
-		for(let actionButton of this._actionButtons) {
+		for (let actionButton of this._actionButtons) {
 			actionButton.element.style.visibility = 'hidden';
 		}
 	}

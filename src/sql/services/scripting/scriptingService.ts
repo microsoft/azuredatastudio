@@ -26,6 +26,11 @@ export interface IScriptingService {
 	registerProvider(providerId: string, provider: sqlops.ScriptingProvider): void;
 
 	/**
+	 * Specifies whether a provider with a given ID has been registered or not
+	 */
+	isProviderRegistered(providerId: string): boolean;
+
+	/**
 	 * Callback method for when scripting is complete
 	 */
 	onScriptingComplete(handle: number, scriptingCompleteResult: sqlops.ScriptingCompleteResult): void;
@@ -97,6 +102,11 @@ export class ScriptingService implements IScriptingService {
 	 */
 	public registerProvider(providerId: string, provider: sqlops.ScriptingProvider): void {
 		this._providers[providerId] = provider;
+	}
+
+	public isProviderRegistered(providerId: string): boolean {
+		let provider = this._providers[providerId];
+		return !!provider;
 	}
 
 	public dispose(): void {

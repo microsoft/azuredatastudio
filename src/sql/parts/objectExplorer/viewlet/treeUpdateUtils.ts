@@ -13,6 +13,7 @@ import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import errors = require('vs/base/common/errors');
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 export class TreeUpdateUtils {
 
@@ -113,7 +114,7 @@ export class TreeUpdateUtils {
 	}
 
 	public static connectIfNotConnected(
-		connection: ConnectionProfile,
+		connection: IConnectionProfile,
 		options: IConnectionCompletionOptions,
 		connectionManagementService: IConnectionManagementService,
 		tree: ITree): TPromise<ConnectionProfile> {
@@ -172,7 +173,7 @@ export class TreeUpdateUtils {
 	 * @param connectionManagementService Connection management service instance
 	 * @param objectExplorerService Object explorer service instance
 	 */
-	public static connectAndCreateOeSession(connection: ConnectionProfile, options: IConnectionCompletionOptions,
+	public static connectAndCreateOeSession(connection: IConnectionProfile, options: IConnectionCompletionOptions,
 		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: ITree): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree).then(connectedConnection => {

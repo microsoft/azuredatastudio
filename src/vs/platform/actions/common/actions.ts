@@ -60,6 +60,8 @@ export class MenuId {
 	static readonly ViewItemContext = new MenuId();
 	static readonly TouchBarContext = new MenuId();
 	static readonly SearchContext = new MenuId();
+	// {{SQL CARBON EDIT}}
+	static readonly ObjectExplorerItemContext = new MenuId();
 
 	readonly id: string = String(MenuId.ID++);
 }

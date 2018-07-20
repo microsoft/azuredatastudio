@@ -10,7 +10,7 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { EditorInput, EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { IEditorControl, Position, IEditor } from 'vs/platform/editor/common/editor';
+import { IEditorControl, Position, IEditor, IEditorInput } from 'vs/platform/editor/common/editor';
 import { VerticalFlexibleSash, HorizontalFlexibleSash, IFlexibleSash } from 'sql/parts/query/views/flexibleSash';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 
@@ -31,6 +31,7 @@ import { IEditorGroupService } from 'vs/workbench/services/group/common/groupSer
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IRange } from 'vs/editor/common/core/range';
+import { IEditorViewState } from 'vs/editor/common/editorCommon';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
@@ -86,6 +87,8 @@ export class QueryEditor extends BaseEditor {
 	private _listDatabasesAction: ListDatabasesAction;
 	private _estimatedQueryPlanAction: EstimatedQueryPlanAction;
 	private _actualQueryPlanAction: ActualQueryPlanAction;
+
+	private _savedViewStates = new Map<IEditorInput, IEditorViewState>();
 
 	constructor(
 		@ITelemetryService _telemetryService: ITelemetryService,
@@ -481,6 +484,8 @@ export class QueryEditor extends BaseEditor {
 	private _updateInput(oldInput: QueryInput, newInput: QueryInput, options?: EditorOptions): TPromise<void> {
 
 		if (this._sqlEditor) {
+			let sqlEditorViewState = this._sqlEditor.getControl().saveViewState();
+			this._savedViewStates.set(this._sqlEditor.input, sqlEditorViewState);
 			this._sqlEditor.clearInput();
 		}
 
@@ -557,7 +562,12 @@ export class QueryEditor extends BaseEditor {
 		// Run all three steps synchronously
 		return createEditors()
 			.then(onEditorsCreated)
-			.then(doLayout);
+			.then(doLayout)
+			.then(() => {
+				if (this._savedViewStates.has(newInput.sql)) {
+					this._sqlEditor.getControl().restoreViewState(this._savedViewStates.get(newInput.sql));
+				}
+			});
 	}
 
 	/**

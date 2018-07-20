@@ -8,23 +8,22 @@
 import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions } from 'sql/base/browser/ui/modal/modal';
 import { attachModalDialogStyler } from 'sql/common/theme/styler';
-import { Wizard, Dialog, DialogButton, WizardPage } from 'sql/platform/dialog/dialogTypes';
+import { Wizard, DialogButton, WizardPage } from 'sql/platform/dialog/dialogTypes';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { DialogModule } from 'sql/platform/dialog/dialog.module';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { Builder } from 'vs/base/browser/builder';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
-import { localize } from 'vs/nls';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { DialogMessage, MessageLevel } from '../../workbench/api/common/sqlExtHostTypes';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -120,13 +119,16 @@ export class WizardModal extends Modal {
 	private updateButtonElement(buttonElement: Button, dialogButton: DialogButton, requirePageValid: boolean = false) {
 		buttonElement.label = dialogButton.label;
 		buttonElement.enabled = requirePageValid ? dialogButton.enabled && this._wizard.pages[this._wizard.currentPage].valid : dialogButton.enabled;
-		dialogButton.hidden ? buttonElement.element.classList.add('dialogModal-hidden') : buttonElement.element.classList.remove('dialogModal-hidden');
+		dialogButton.hidden ? buttonElement.element.parentElement.classList.add('dialogModal-hidden') : buttonElement.element.parentElement.classList.remove('dialogModal-hidden');
+		this.setButtonsForPage(this._wizard.currentPage);
 	}
 
 	protected renderBody(container: HTMLElement): void {
 		new Builder(container).div({ class: 'dialogModal-body' }, (bodyBuilder) => {
 			this._body = bodyBuilder.getHTMLElement();
 		});
+
+		this.initializeNavigation(this._body);
 
 		this._wizard.pages.forEach(page => {
 			this.registerPage(page);
@@ -166,7 +168,7 @@ export class WizardModal extends Modal {
 			this.done(validate);
 			return;
 		}
-		if (validate && !await this._wizard.validateNavigation(index)) {
+		if (validate && !await this.validateNavigation(index)) {
 			return;
 		}
 		this._dialogPanes.forEach((dialogPane, page) => {
@@ -184,21 +186,41 @@ export class WizardModal extends Modal {
 	}
 
 	private setButtonsForPage(index: number) {
-		if (this._wizard.pages[index - 1]) {
-			this._previousButton.element.parentElement.classList.remove('dialogModal-hidden');
-			this._previousButton.enabled = this._wizard.pages[index - 1].enabled;
-		} else {
-			this._previousButton.element.parentElement.classList.add('dialogModal-hidden');
+		if (this._previousButton) {
+			if (this._wizard.pages[index - 1]) {
+				this._previousButton.element.parentElement.classList.remove('dialogModal-hidden');
+				this._previousButton.enabled = this._wizard.pages[index - 1].enabled;
+			} else {
+				this._previousButton.element.parentElement.classList.add('dialogModal-hidden');
+			}
 		}
 
-		if (this._wizard.pages[index + 1]) {
-			this._nextButton.element.parentElement.classList.remove('dialogModal-hidden');
-			this._nextButton.enabled = this._wizard.pages[index + 1].enabled;
-			this._doneButton.element.parentElement.classList.add('dialogModal-hidden');
-		} else {
-			this._nextButton.element.parentElement.classList.add('dialogModal-hidden');
-			this._doneButton.element.parentElement.classList.remove('dialogModal-hidden');
+		if (this._nextButton && this._doneButton) {
+			if (this._wizard.pages[index + 1]) {
+				this._nextButton.element.parentElement.classList.remove('dialogModal-hidden');
+				this._nextButton.enabled = this._wizard.pages[index + 1].enabled;
+				this._doneButton.element.parentElement.classList.add('dialogModal-hidden');
+			} else {
+				this._nextButton.element.parentElement.classList.add('dialogModal-hidden');
+				this._doneButton.element.parentElement.classList.remove('dialogModal-hidden');
+			}
 		}
+	}
+
+	/**
+	 * Bootstrap angular for the wizard's left nav bar
+	 */
+	private initializeNavigation(bodyContainer: HTMLElement) {
+		bootstrapAngular(this._instantiationService,
+			DialogModule,
+			bodyContainer,
+			'wizard-navigation',
+			{
+				wizard: this._wizard,
+				navigationHandler: (index: number) => this.showPage(index, index > this._wizard.currentPage)
+			},
+			undefined,
+			() => undefined);
 	}
 
 	public open(): void {
@@ -208,7 +230,7 @@ export class WizardModal extends Modal {
 
 	public async done(validate: boolean = true): Promise<void> {
 		if (this._doneButton.enabled) {
-			if (validate && !await this._wizard.validateNavigation(undefined)) {
+			if (validate && !await this.validateNavigation(undefined)) {
 				return;
 			}
 			this._onDone.fire();
@@ -221,6 +243,20 @@ export class WizardModal extends Modal {
 		this._onCancel.fire();
 		this.dispose();
 		this.hide();
+	}
+
+	private async validateNavigation(newPage: number): Promise<boolean> {
+		let button = newPage === undefined ? this._doneButton : this._nextButton;
+		let buttonSpinnerHandler = setTimeout(() => {
+			button.enabled = false;
+			button.element.innerHTML = '&nbsp';
+			button.element.classList.add('validating');
+		}, 100);
+		let navigationValid = await this._wizard.validateNavigation(newPage);
+		clearTimeout(buttonSpinnerHandler);
+		button.element.classList.remove('validating');
+		this.updateButtonElement(button, newPage === undefined ? this._wizard.doneButton : this._wizard.nextButton, true);
+		return navigationValid;
 	}
 
 	protected hide(): void {

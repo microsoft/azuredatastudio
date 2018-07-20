@@ -148,6 +148,11 @@ export interface DeleteAgentProxyParams {
 	proxy: sqlops.AgentProxyInfo;
 }
 
+// Agent Credentials parameters
+export interface GetCredentialsParams {
+	ownerUri: string;
+}
+
 // Job Schedule management parameters
 export interface AgentJobScheduleParams {
 	ownerUri: string;
@@ -260,6 +265,11 @@ export namespace UpdateAgentProxyRequest {
 
 export namespace DeleteAgentProxyRequest {
 	export const type = new RequestType<DeleteAgentProxyParams, sqlops.ResultStatus, void, void>('agent/deleteproxy');
+}
+
+// Agent Credentials request
+export namespace AgentCredentialsRequest {
+	export const type = new RequestType<GetCredentialsParams, sqlops.GetCredentialsResult, void, void>('security/credentials');
 }
 
 // Job Schedules requests

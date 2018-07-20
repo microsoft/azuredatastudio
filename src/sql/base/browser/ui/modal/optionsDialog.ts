@@ -150,8 +150,8 @@ export class OptionsDialog extends Modal {
 
 	private onOptionLinkClicked(optionName: string): void {
 		var option = this._optionElements[optionName].option;
-		this._optionTitle.innerHtml(option.displayName);
-		this._optionDescription.innerHtml(option.description);
+		this._optionTitle.text(option.displayName);
+		this._optionDescription.text(option.description);
 	}
 
 	private fillInOptions(container: Builder, options: sqlops.ServiceOption[]): void {

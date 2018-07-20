@@ -32,21 +32,9 @@ jobhistory-component {
 }
 
 .jobview-grid {
-    height: 94.7%;
+    height: calc(100% - 75px);
 	width : 100%;
     display: block;
-}
-
-.vs-dark #jobsDiv .slick-header-column {
-	background: #333333 !important;
-}
-
-#jobsDiv .slick-header-column {
-	background-color: transparent !important;
-	background: white !important;
-    border: 0px !important;
-    font-weight: bold;
-    font-size: larger;
 }
 
 .vs-dark #agentViewDiv .slick-header-column {
@@ -58,7 +46,6 @@ jobhistory-component {
 	background: white !important;
     border: 0px !important;
     font-weight: bold;
-    font-size: larger;
 }
 
 .vs-dark #jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
@@ -164,7 +151,7 @@ jobhistory-component {
 }
 
 #jobsDiv .preload {
-  font-size: 18px;
+  font-size: 13px;
 }
 
 #jobsDiv .dynamic-cell-detail > :first-child {
@@ -299,19 +286,20 @@ table.jobprevruns > tbody {
 
 
 #alertsDiv .jobalertsview-grid {
-    height: 94.7%;
+    height: calc(100% - 75px);
 	width : 100%;
     display: block;
 }
 
 #operatorsDiv .joboperatorsview-grid {
-    height: 94.7%;
+    height: calc(100% - 75px);
 	width : 100%;
     display: block;
+    overflow: scroll;
 }
 
 #proxiesDiv .jobproxiesview-grid {
-    height: 94.7%;
+    height: calc(100% - 75px);
 	width : 100%;
     display: block;
 }
@@ -339,4 +327,97 @@ jobsview-component .actionbar-container {
 
 jobsview-component .jobview-grid .slick-cell.error-row {
     opacity: 0;
+}
+
+.vs-dark #alertsDiv jobalertsview-component .jobalertsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+    background:#333333;
+}
+
+#alertsDiv jobalertsview-component .jobalertsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+    background: white;
+    border-right: transparent !important;
+    border-left: transparent !important;
+    line-height: 33px !important;
+}
+
+#alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+#alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
+#alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
+    background: #dcdcdc !important;
+}
+
+.vs-dark #alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+.vs-dark #alertsDiv .jobalertsview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
+.vs-dark #alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
+    background: #444444 !important;
+}
+
+.vs-dark .jobalertsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted white;
+}
+
+.jobalertsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted #444444;
+}
+
+.vs-dark #operatorsDiv joboperatorsview-component .joboperatorsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+    background:#333333;
+}
+
+#operatorsDiv joboperatorsview-component .joboperatorsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+    background: white;
+    border-right: transparent !important;
+    border-left: transparent !important;
+    line-height: 33px !important;
+}
+
+#operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+#operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
+#operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
+    background: #dcdcdc !important;
+}
+
+.vs-dark #operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+.vs-dark #operatorsDiv .joboperatorsview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
+.vs-dark #operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
+    background: #444444 !important;
+}
+
+.vs-dark .joboperatorsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted white;
+}
+
+.joboperatorsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted #444444;
+}
+
+.vs-dark #proxiesDiv jobproxiesview-component .jobproxiesview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+    background:#333333;
+}
+
+#proxiesDiv jobproxiesview-component .jobproxiesview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+    background: white;
+    border-right: transparent !important;
+    border-left: transparent !important;
+    line-height: 33px !important;
+}
+
+#proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+#proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
+#proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
+    background: #dcdcdc !important;
+}
+
+.vs-dark #proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+.vs-dark #proxiesDiv .jobproxiesview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
+.vs-dark #proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
+    background: #444444 !important;
+}
+
+.vs-dark .jobproxiesview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted white;
+}
+
+.jobproxiesview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted #444444;
 }

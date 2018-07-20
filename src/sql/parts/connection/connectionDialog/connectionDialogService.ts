@@ -339,9 +339,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (!platform.isWindows && types.isString(message) && message.toLowerCase().includes('kerberos') && message.toLowerCase().includes('kinit')) {
 			message = [
 				localize('kerberosErrorStart', "Connection failed due to Kerberos error."),
-				localize('kerberosHelpLink', "&nbsp;Help configuring Kerberos is available at ") + helpLink,
-				localize('kerberosKinit', "&nbsp;If you have previously connected you may need to re-run kinit.")
-			].join('<br/>');
+				localize('kerberosHelpLink', "Help configuring Kerberos is available at {0}", helpLink),
+				localize('kerberosKinit', "If you have previously connected you may need to re-run kinit.")
+			].join('\r\n');
 			actions.push(new Action('Kinit', 'Run kinit', null, true, () => {
 				this._connectionDialog.close();
 				this._clipboardService.writeText('kinit\r');

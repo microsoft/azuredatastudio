@@ -6,6 +6,7 @@ import { mixin } from 'vs/base/common/objects';
 import { SlickGrid } from 'angular2-slickgrid';
 import { Button } from '../../button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
+import { escape } from 'sql/base/common/strings';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 export class HeaderFilter {
@@ -174,7 +175,7 @@ export class HeaderFilter {
 			if (filterItems[i] && filterItems[i].indexOf('Error:') < 0) {
 				filterOptions += '<label><input type="checkbox" value="' + i + '"'
 				+ (filtered ? ' checked="checked"' : '')
-				+ '/>' + filterItems[i] + '</label>';
+				+ '/>' + escape(filterItems[i]) + '</label>';
 			}
 		}
 		let $filter = $('<div class="filter">')

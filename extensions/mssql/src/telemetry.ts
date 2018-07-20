@@ -44,22 +44,6 @@ export class Telemetry {
 	private static platformInformation: PlatformInformation;
 	private static disabled: boolean;
 
-	// Get the unique ID for the current user of the extension
-	public static getUserId(): Promise<string> {
-		return new Promise<string>(resolve => {
-			// Generate the user id if it has not been created already
-			if (typeof this.userId === 'undefined') {
-				let id = Utils.generateUserId();
-				id.then(newId => {
-					this.userId = newId;
-					resolve(this.userId);
-				});
-			} else {
-				resolve(this.userId);
-			}
-		});
-	}
-
 	public static getPlatformInformation(): Promise<PlatformInformation> {
 		if (this.platformInformation) {
 			return Promise.resolve(this.platformInformation);
@@ -143,8 +127,7 @@ export class Telemetry {
 		}
 
 		// Augment the properties structure with additional common properties before sending
-		Promise.all([this.getUserId(), this.getPlatformInformation()]).then(() => {
-			properties['userId'] = this.userId;
+		Promise.all([this.getPlatformInformation()]).then(() => {
 			properties['distribution'] = (this.platformInformation && this.platformInformation.distribution) ?
 				`${this.platformInformation.distribution.name}, ${this.platformInformation.distribution.version}` : '';
 

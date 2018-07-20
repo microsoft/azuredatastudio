@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./button';
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
+	Component, Input, Inject, ChangeDetectorRef, forwardRef,
+	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
@@ -24,7 +24,13 @@ import { Color } from 'vs/base/common/color';
 @Component({
 	selector: 'modelview-button',
 	template: `
-		<div #input style="width: 100%"></div>
+	<div>
+		<label for={{this.label}}>
+			<div #input style="width: 100%">
+				<input *ngIf="this.isFile === true" id={{this.label}} type="file" style="display: none">
+			</div>
+		</label>
+	</div>
 	`
 })
 export default class ButtonComponent extends ComponentWithIconBase implements IComponent, OnDestroy, AfterViewInit {
@@ -119,9 +125,19 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		this.setPropertyFromUI<sqlops.ButtonProperties, string>(this.setValueProperties, newValue);
 	}
 
+	private get isFile(): boolean {
+		return this.getPropertyOrDefault<sqlops.ButtonProperties, boolean>((props) => props.isFile, false);
+	}
 
+	private set isFile(newValue: boolean) {
+		this.setPropertyFromUI<sqlops.ButtonProperties, boolean>(this.setFileProperties, newValue);
+	}
 
 	private setValueProperties(properties: sqlops.ButtonProperties, label: string): void {
 		properties.label = label;
+	}
+
+	private setFileProperties(properties: sqlops.ButtonProperties, isFile: boolean): void {
+		properties.isFile = isFile;
 	}
 }

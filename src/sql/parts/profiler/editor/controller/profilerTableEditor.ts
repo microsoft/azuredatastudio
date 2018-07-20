@@ -166,6 +166,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 	public layout(dimension: Dimension): void {
 		this._currentDimensions = dimension;
 		this._profilerTable.layout(dimension);
+		this._profilerTable.autosizeColumns();
 		this._onDidChangeConfiguration.fire({ layoutInfo: true });
 	}
 

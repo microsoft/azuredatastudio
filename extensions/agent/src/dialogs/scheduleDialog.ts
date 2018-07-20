@@ -4,17 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
+import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { ScheduleData } from '../data/scheduleData';
 
+const localize = nls.loadMessageBundle();
+
 export class ScheduleDialog {
 
 	// Top level
-	private readonly DialogTitle: string = 'New Schedule';
-	private readonly OkButtonText: string = 'OK';
-	private readonly CancelButtonText: string = 'Cancel';
+	private readonly DialogTitle: string = localize('scheduleDialog.newSchedule', 'New Schedule');
+	private readonly OkButtonText: string = localize('scheduleDialog.ok', 'OK');
+	private readonly CancelButtonText: string = localize('scheduleDialog.cancel', 'Cancel');
+	private readonly ScheduleNameText: string = localize('scheduleDialog.scheduleName', 'Schedule Name');
+	private readonly SchedulesLabelText: string = localize('scheduleDialog.schedules', 'Schedules');
 
 	// UI Components
 	private dialog: sqlops.window.modelviewdialog.Dialog;
@@ -46,7 +50,7 @@ export class ScheduleDialog {
 			this.schedulesTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						'Schedule Name'
+						this.ScheduleNameText
 					],
 					data: [],
 					height: 600,
@@ -56,7 +60,7 @@ export class ScheduleDialog {
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.schedulesTable,
-					title: 'Schedules'
+					title: this.SchedulesLabelText
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);

@@ -5,7 +5,7 @@
 
 .dialogModal-body {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	height: 100%;
 	width: 100%;
 	min-width: 500px;
@@ -29,6 +29,21 @@
 
 .footer-button.dialogModal-hidden {
 	margin: 0;
+}
+
+.footer-button .validating {
+	background-size: 15px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.vs .footer-button .validating {
+	background-image: url("loading.svg");
+}
+
+.vs-dark .footer-button .validating,
+.hc-black .footer-button .validating {
+	background-image: url("loading_inverse.svg");
 }
 
 .dialogModal-wizardHeader {

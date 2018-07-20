@@ -186,7 +186,11 @@ export class ResultSerializer {
 			if (saveConfig.includeHeaders !== undefined) {
 				saveResultsParams.includeHeaders = saveConfig.includeHeaders;
 			}
+			if (saveConfig.delimiter !== undefined) {
+				saveResultsParams.delimiter = saveConfig.delimiter;
+			}
 		}
+
 		return saveResultsParams;
 	}
 
@@ -202,6 +206,7 @@ export class ResultSerializer {
 		// and we want to have just 1 setting that lists this.
 		let config = this.getConfigForCsv();
 		config.resultFormat = SaveFormat.EXCEL;
+		config.delimiter = undefined;
 		return config;
 	}
 

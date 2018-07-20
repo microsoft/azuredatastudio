@@ -77,7 +77,6 @@ export class ProfilerStart extends Action {
 	}
 
 	public run(input: ProfilerInput): TPromise<boolean> {
-		this.enabled = false;
 		input.data.clear();
 		return TPromise.wrap(this._profilerService.startSession(input.id));
 	}
@@ -127,7 +126,6 @@ export class ProfilerStop extends Action {
 	}
 
 	public run(input: ProfilerInput): TPromise<boolean> {
-		this.enabled = false;
 		return TPromise.wrap(this._profilerService.stopSession(input.id));
 	}
 }
@@ -137,7 +135,7 @@ export class ProfilerClear extends Action {
 	public static LABEL = nls.localize('profiler.clear', "Clear Data");
 
 	constructor(id: string, label: string) {
-		super(id, label, 'stop');
+		super(id, label);
 	}
 
 	run(input: ProfilerInput): TPromise<void> {
@@ -148,14 +146,15 @@ export class ProfilerClear extends Action {
 
 export class ProfilerAutoScroll extends Action {
 	public static ID = 'profiler.autoscroll';
-	public static LABEL = nls.localize('profiler.toggleAutoscroll', "Toggle Auto Scroll");
+	public static LABEL = nls.localize('profiler.autoscrollOn', "Auto Scroll: On");
 
 	constructor(id: string, label: string) {
-		super(id, label, 'stop');
+		super(id, label);
 	}
 
 	run(input: ProfilerInput): TPromise<boolean> {
 		this.checked = !this.checked;
+		this._setLabel(this.checked ? nls.localize('profilerAction.autoscrollOn', "Auto Scroll: On") : nls.localize('profilerAction.autoscrollOff', "Auto Scroll: Off"));
 		input.state.change({ autoscroll: this.checked });
 		return TPromise.as(true);
 	}

@@ -553,7 +553,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	public showDashboard(connection: ConnectionProfile): Thenable<boolean> {
+	public showDashboard(connection: IConnectionProfile): Thenable<boolean> {
 		return this.showDashboardForConnectionManagementInfo(connection);
 	}
 

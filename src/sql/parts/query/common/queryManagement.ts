@@ -21,6 +21,7 @@ export interface IQueryManagementService {
 	_serviceBrand: any;
 
 	addQueryRequestHandler(queryType: string, runner: IQueryRequestHandler): IDisposable;
+	isProviderRegistered(providerId: string): boolean;
 	registerRunner(runner: QueryRunner, uri: string): void;
 
 	cancelQuery(ownerUri: string): Thenable<sqlops.QueryCancelResult>;
@@ -82,7 +83,6 @@ export interface IQueryRequestHandler {
 }
 
 export class QueryManagementService implements IQueryManagementService {
-	public static readonly DefaultQueryType = 'MSSQL';
 	public _serviceBrand: any;
 
 	private _requestHandlers = new Map<string, IQueryRequestHandler>();
@@ -141,6 +141,11 @@ export class QueryManagementService implements IQueryManagementService {
 			dispose: () => {
 			}
 		};
+	}
+
+	public isProviderRegistered(providerId: string): boolean {
+		let handler = this._requestHandlers.get(providerId);
+		return !!handler;
 	}
 
 	private addTelemetry(eventName: string, ownerUri: string, runOptions?: sqlops.ExecutionPlanOptions): void {
