@@ -125,11 +125,19 @@ export class DialogModal extends Modal {
 
 	public async done(): Promise<void> {
 		if (this._doneButton.enabled) {
+			let buttonSpinnerHandler = setTimeout(() => {
+				this._doneButton.enabled = false;
+				this._doneButton.element.innerHTML = '&nbsp';
+				this._doneButton.element.classList.add('validating');
+			}, 100);
 			if (await this._dialog.validateClose()) {
 				this._onDone.fire();
 				this.dispose();
 				this.hide();
 			}
+			clearTimeout(buttonSpinnerHandler);
+			this._doneButton.element.classList.remove('validating');
+			this.updateButtonElement(this._doneButton, this._dialog.okButton, true);
 		}
 	}
 

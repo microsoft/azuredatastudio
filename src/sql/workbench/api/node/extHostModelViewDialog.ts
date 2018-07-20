@@ -213,12 +213,16 @@ class BackgroundOperationHandler {
 	}
 
 	public createOperation(): void {
+		if (!this._operationInfo) {
+			return;
+		}
+
 		if (!this._operationInfo.operationId) {
 			let uniqueId = generateUuid();
 			this._operationInfo.operationId = 'OperationId' + uniqueId + this._name;
 		}
 
-		if (this._operationInfo && this._operationInfo.operation) {
+		if (this._operationInfo.operation) {
 			this._extHostTaskManagement.$registerTask(this._operationInfo);
 		}
 	}
