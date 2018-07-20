@@ -562,7 +562,12 @@ export class QueryEditor extends BaseEditor {
 		// Run all three steps synchronously
 		return createEditors()
 			.then(onEditorsCreated)
-			.then(doLayout);
+			.then(doLayout)
+			.then(() => {
+				if (this._savedViewStates.has(newInput.sql)) {
+					this._sqlEditor.getControl().restoreViewState(this._savedViewStates.get(newInput.sql));
+				}
+			});
 	}
 
 	/**
@@ -585,11 +590,7 @@ export class QueryEditor extends BaseEditor {
 	 */
 	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledEditorInput, options: EditorOptions): TPromise<void> {
 		this._sqlEditor = sqlEditor;
-		return this._sqlEditor.setInput(sqlInput, options).then(() => {
-			if (this._savedViewStates.has(sqlInput)) {
-				this._sqlEditor.getControl().restoreViewState(this._savedViewStates.get(sqlInput));
-			}
-		});
+		return this._sqlEditor.setInput(sqlInput, options);
 	}
 
 	/**
