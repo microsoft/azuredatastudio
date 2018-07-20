@@ -1,7 +1,7 @@
 {
 	"results": [{
 		"extensions": [
-      {
+			{
 				"extensionId": "10",
 				"extensionName": "agent",
 				"displayName": "SQL Server Agent",
@@ -13,14 +13,14 @@
 				},
 				"versions": [
 					{
-						"version": "0.29.0",
-						"lastUpdated": "5/7/2018",
+						"version": "0.31.4",
+						"lastUpdated": "7/16/2018",
 						"assetUri": "",
 						"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 							{
 								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-								"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.29.0.vsix"
+								"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.31.4.vsix"
 							},
 							{
 								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -41,7 +41,7 @@
 						],
 						"properties": [
 						{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
-						{ "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"},
+						{ "key": "Microsoft.VisualStudio.Code.Engine", "value": ">=0.31.4" },
 						{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Microsoft/sqlopsstudio"}
 						]
 					}
@@ -397,14 +397,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.1",
-							"lastUpdated": "6/19/2018",
+							"version": "0.1.2",
+							"lastUpdated": "7/18/2018",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 								"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.1.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.1.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
