@@ -5,7 +5,7 @@
     "downloadFileNames": {
         "Windows_64": "win-x64.zip",
         "Windows_86": "win-x86.zip",
-        "OSX": "FlatFileImport-mac.zip",
+        "OSX": "osx.zip",
         "Linux_64": "linux-x64.tar.gz"
     },
     "installDirectory": "scaleoutdataservice/{#platform#}/{#version#}",

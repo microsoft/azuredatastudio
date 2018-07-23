@@ -29,7 +29,6 @@ export class ServiceClient {
     }
 
     public startService(context: vscode.ExtensionContext): Promise<SqlOpsDataClient> {
-        console.log('Flat file: Starting service');
         let config: IConfig = JSON.parse(JSON.stringify(baseConfig));
         config.installDirectory = path.join(context.extensionPath, config.installDirectory);
         config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
@@ -43,15 +42,12 @@ export class ServiceClient {
         const installationStart = Date.now();
         let client: SqlOpsDataClient;
         return new Promise((resolve, reject) => {
-            console.log('Flat file: Downloading server');
             serverdownloader.getOrDownloadServer().then(e => {
-                console.log('Flat file: Server downloaded');
                 const installationComplete = Date.now();
                 let serverOptions = this.generateServerOptions(e);
                 client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
                 const processStart = Date.now();
                 client.onReady().then(() => {
-                    console.log('Flat file: Client ready');
                     const processEnd = Date.now();
                     this.statusView.text = localize('serviceStarted', 'Service Started');
                     setTimeout(() => {

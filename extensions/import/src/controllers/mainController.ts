@@ -31,9 +31,7 @@ export default class MainController extends ControllerBase {
 		const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
         new ServiceClient(outputChannel).startService(this._context);
 
-		console.log('Starting service client for flat file import');
 		managerInstance.onRegisteredApi<FlatFileProvider>(ApiType.FlatFileProvider)(provider => {
-			console.log('Flat file import api registered');
 			this.initializeFlatFileProvider(provider);
 		});
 
