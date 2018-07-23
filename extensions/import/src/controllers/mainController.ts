@@ -8,6 +8,7 @@
 import * as sqlops from 'sqlops';
 import ControllerBase from './controllerBase';
 import * as vscode from 'vscode';
+import { flatFileWizard } from '../wizard/flatFileWizard';
 
 
 /**
@@ -23,7 +24,7 @@ export default class MainController extends ControllerBase {
 	}
 
 	public activate(): Promise<boolean> {
-		sqlops.tasks.registerTask('flatFileImport.start', e => vscode.window.showInformationMessage("OwO what's this"));
+		sqlops.tasks.registerTask('flatFileImport.start', e => flatFileWizard());
 
 		return Promise.resolve(true);
 	}
