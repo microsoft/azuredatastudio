@@ -1,5 +1,5 @@
 {
-    "downloadUrl": "http://mairvine-pc:8080/",
+    "downloadUrl": "http://mairvine-pc:8080/{#fileName#}",
     "useDefaultLinuxRuntime": true,
     "version": "0.1.0",
     "downloadFileNames": {

@@ -51,6 +51,7 @@ export class FlatFileImportFeature extends SqlOpsFeature<undefined> {
     }
 
     protected registerProvider(options: undefined): Disposable {
+        console.log('Flat file import registering provider');
         const client = this._client;
         let sendHelloWorldRequest = (params: Contracts.HelloWorldParam): Thenable<Contracts.HelloWorldResponse> => {
             return client.sendRequest(Contracts.HelloWorldRequest.type, params).then(

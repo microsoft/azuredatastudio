@@ -9,7 +9,6 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import * as contracts from './contracts';
 import { SqlOpsDataClient } from 'dataprotocol-client/lib/main';
-import { ApiWrapper } from '../apiWrapper';
 
 export enum ApiType {
     FlatFileProvider = 'FlatFileProvider'
@@ -25,7 +24,7 @@ export interface IModelViewDefinition {
     modelView: sqlops.ModelView;
 }
 
-class ServiceApiManager implements IServiceApi {
+export class ServiceApiManager implements IServiceApi {
     private modelViewRegistrations: { [id: string]: boolean } = {};
     private featureEventChannels: { [type: string]: vscode.EventEmitter<any> } = {};
     private _onRegisteredModelView = new vscode.EventEmitter<IModelViewDefinition>();
