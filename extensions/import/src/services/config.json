@@ -1,14 +1,14 @@
 {
-    "downloadUrl": "http://mairvine-pc:8080/",
+    "downloadUrl": "http://mairvine-pc:8080/{#fileName#}",
     "useDefaultLinuxRuntime": true,
     "version": "0.1.0",
     "downloadFileNames": {
         "Windows_64": "win-x64.zip",
         "Windows_86": "win-x86.zip",
-        "OSX": "FlatFileImport-mac.zip",
+        "OSX": "osx.zip",
         "Linux_64": "linux-x64.tar.gz"
     },
-    "installDirectory": "scaleoutdataservice/{#platform#}/{#version#}",
+    "installDirectory": "flatfileimportservice/{#platform#}/{#version#}",
     "executableFiles": [
         "MicrosoftSqlToolsFlatFileImport",
         "MicrosoftSqlToolsFlatFileImport.exe"

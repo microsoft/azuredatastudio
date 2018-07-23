@@ -15,7 +15,6 @@ import * as path from 'path';
 import { EventAndListener } from 'eventemitter2';
 
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
-import { ApiWrapper } from '../apiWrapper';
 import * as Constants from '../constants';
 import { TelemetryFeature, FlatFileImportFeature } from './features';
 import * as serviceUtils from './serviceUtils';
@@ -25,11 +24,11 @@ const baseConfig = require('./config.json');
 export class ServiceClient {
     private statusView: vscode.StatusBarItem;
 
-    constructor(private apiWrapper: ApiWrapper, private outputChannel: vscode.OutputChannel) {
+    constructor(private outputChannel: vscode.OutputChannel) {
         this.statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
     }
 
-    public startService(context: vscode.ExtensionContext): Promise<void> {
+    public startService(context: vscode.ExtensionContext): Promise<SqlOpsDataClient> {
         let config: IConfig = JSON.parse(JSON.stringify(baseConfig));
         config.installDirectory = path.join(context.extensionPath, config.installDirectory);
         config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
@@ -65,12 +64,12 @@ export class ServiceClient {
                 this.statusView.text = localize('serviceStarting', 'Starting service');
                 let disposable = client.start();
                 context.subscriptions.push(disposable);
-                resolve();
+                resolve(client);
             }, e => {
                 Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
-                this.apiWrapper.showErrorMessage(localize('serviceStartFailed', 'Failed to start Scale Out Data service:{0}', e));
+                 vscode.window.showErrorMessage(localize('serviceStartFailed', 'Failed to start Scale Out Data service:{0}', e));
                 // Just resolve to avoid unhandled promise. We show the error to the user.
-                resolve();
+                resolve(undefined);
             });
         });
     }

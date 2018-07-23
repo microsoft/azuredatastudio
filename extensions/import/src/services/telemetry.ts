@@ -13,7 +13,6 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { ApiWrapper } from '../apiWrapper';
 import * as constants from '../constants';
 import * as serviceUtils from './serviceUtils';
 import { IMessage, ITelemetryEventProperties, ITelemetryEventMeasures } from './contracts';
@@ -29,10 +28,8 @@ export class LanguageClientErrorHandler {
      * Creates an instance of LanguageClientErrorHandler.
      * @memberOf LanguageClientErrorHandler
      */
-    constructor(private apiWrapper?: ApiWrapper) {
-        if (!this.apiWrapper) {
-            this.apiWrapper = new ApiWrapper();
-        }
+    constructor() {
+
     }
 
     /**
@@ -43,7 +40,7 @@ export class LanguageClientErrorHandler {
         // TODO add telemetry
         // Telemetry.sendTelemetryEvent('SqlToolsServiceCrash');
         let crashButtonText = localize('serviceCrashButton', 'View Known Issues');
-        this.apiWrapper.showErrorMessage(
+        vscode.window.showErrorMessage(
             localize('serviceCrashMessage', 'service component could not start'),
             crashButtonText
         ).then(action => {
@@ -154,7 +151,7 @@ export class Telemetry {
                 this.disable();
                 return;
             }
-            let packageInfo = vscode.extensions.getExtension('Microsoft.data-management').packageJSON;
+            let packageInfo = vscode.extensions.getExtension('Microsoft.import').packageJSON;
             this.reporter = new TelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
         }
     }
