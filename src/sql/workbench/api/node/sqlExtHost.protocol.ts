@@ -32,7 +32,9 @@ export abstract class ExtHostAccountManagementShape {
 	$refresh(handle: number, account: sqlops.Account): Thenable<sqlops.Account> { throw ni(); }
 }
 
-export abstract class ExtHostConnectionManagementShape { }
+export abstract class ExtHostConnectionManagementShape {
+	$onConnectionOpened(handleId: string, connection: sqlops.connection.Connection): void { throw ni; }
+ }
 
 export abstract class ExtHostDataProtocolShape {
 
@@ -473,6 +475,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getActiveConnections(): Thenable<sqlops.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
+	$openConnectionDialog(handleId: string): void;
 }
 
 export interface MainThreadCredentialManagementShape extends IDisposable {

@@ -631,7 +631,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStore.getConnectionProfileGroups();
 	}
 
-	public getRecentConnections(): ConnectionProfile[] {
+	public getRecentConnections(providers?: string[]): ConnectionProfile[] {
 		return this._connectionStore.getRecentlyUsedConnections();
 	}
 
@@ -993,14 +993,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				let connectionMngInfo = this._connectionStatusManager.findConnection(uri);
 				if (connectionMngInfo && connectionMngInfo.deleted) {
 					this._connectionStatusManager.deleteConnection(uri);
-					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true });
+					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true, connectionProfile: connection });
 				} else {
 					if (errorMessage) {
 						// Connection to the server failed
 						this._connectionStatusManager.deleteConnection(uri);
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					} else {
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					}
 				}
 			});

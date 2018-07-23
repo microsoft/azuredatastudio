@@ -1078,4 +1078,16 @@ declare module 'sqlops' {
 		export function startBackgroundOperation(operationInfo: BackgroundOperationInfo): void;
 
 	}
+
+	/**
+	 * Namespace for connection management
+	 */
+	export namespace connection {
+		/**
+		 * Opens the connection dialog, calls the callback with the result. If connection was successful
+		 * returns the connection otherwise returns undefined
+		 * @param callback
+		 */
+		export function openConnectionDialog(callback: (connection: connection.Connection) => void);
+	}
 }

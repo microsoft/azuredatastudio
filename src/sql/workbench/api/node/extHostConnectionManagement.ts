@@ -6,11 +6,13 @@
 
 import { ExtHostConnectionManagementShape, SqlMainContext, MainThreadConnectionManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { generateUuid } from 'vs/base/common/uuid';
 import * as sqlops from 'sqlops';
 
-export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape  {
+export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape {
 
 	private _proxy: MainThreadConnectionManagementShape;
+	private readonly _connectionDialogHandles = new Map<string, (connection: sqlops.connection.Connection) => void>();
 
 	constructor(
 		mainContext: IMainContext
@@ -27,7 +29,20 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$getCurrentConnection();
 	}
 
-	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string}> {
+	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 		return this._proxy.$getCredentials(connectionId);
+	}
+
+	public $openConnectionDialog(callback: (connection: sqlops.connection.Connection) => void) {
+		let handleId = `connectionDialog-${generateUuid()}`;
+		this._connectionDialogHandles.set(handleId, callback);
+		this._proxy.$openConnectionDialog(handleId);
+	}
+
+	public $onConnectionOpened(handleId: string, connection: sqlops.connection.Connection): void {
+		if (this._connectionDialogHandles.has(handleId)) {
+			let handler = this._connectionDialogHandles.get(handleId);
+			handler(connection);
+		}
 	}
 }

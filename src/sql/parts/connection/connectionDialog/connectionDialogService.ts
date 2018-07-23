@@ -33,6 +33,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as types from 'vs/base/common/types';
 import { trim } from 'vs/base/common/strings';
+import { Deferred } from 'sql/base/common/promise';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -75,6 +76,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _currentProviderType: string = 'Microsoft SQL Server';
 	private _connecting: boolean = false;
 	private _connectionErrorTitle = localize('connectionError', 'Connection error');
+	private _deferredPromise: Deferred<IConnectionProfile>;
 
 	constructor(
 		@IPartService private _partService: IPartService,
@@ -82,17 +84,24 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
-		@IWindowsService private _windowsService: IWindowsService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService
 	) { }
 
 	private getDefaultProviderName() {
-		if (this._workspaceConfigurationService) {
-			let defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, Constants.defaultEngine);
+		let defaultProvider: string;
+		if (this._providerNameToDisplayNameMap) {
+			let keys = Object.keys(this._providerNameToDisplayNameMap);
+			if (keys && keys.length > 0) {
+				defaultProvider = keys[0];
+			}
+		}
+
+		if (!defaultProvider && this._workspaceConfigurationService) {
+			defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, Constants.defaultEngine);
 		}
 		// as a fallback, default to MSSQL if the value from settings is not available
-		return Constants.mssqlProviderName;
+		return defaultProvider || Constants.mssqlProviderName;
 	}
 
 	private handleOnConnect(params: INewConnectionParams, profile?: IConnectionProfile): void {
@@ -151,26 +160,28 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connecting = false;
 		}
 		this.uiController.databaseDropdownExpanded = false;
+		this._deferredPromise.resolve(undefined);
 	}
 
 	private handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): Thenable<void> {
 		let fromEditor = params && params.connectionType === ConnectionType.editor;
 		let uri: string = undefined;
-		if (fromEditor && params.input) {
+		if (fromEditor && params && params.input) {
 			uri = params.input.uri;
 		}
 		let options: IConnectionCompletionOptions = {
 			params: params,
 			saveTheConnection: !fromEditor,
-			showDashboard: params.showDashboard !== undefined ? params.showDashboard : !fromEditor,
+			showDashboard: params && params.showDashboard !== undefined ? params.showDashboard : !fromEditor,
 			showConnectionDialogOnError: false,
 			showFirewallRuleOnError: true
 		};
 
-		return this._connectionManagementService.connectAndSaveProfile(connection, uri, options, params.input).then(connectionResult => {
+		return this._connectionManagementService.connectAndSaveProfile(connection, uri, options, params && params.input).then(connectionResult => {
 			this._connecting = false;
 			if (connectionResult && connectionResult.connected) {
 				this._connectionDialog.close();
+				this._deferredPromise.resolve(connectionResult.connectionProfile);
 			} else if (connectionResult && connectionResult.errorHandled) {
 				this._connectionDialog.resetConnection();
 			} else {
@@ -268,9 +279,25 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		});
 	}
 
+	public openDialogAndWait(connectionManagementService: IConnectionManagementService,
+		params?: INewConnectionParams,
+		model?: IConnectionProfile,
+		connectionResult?: IConnectionResult): Thenable<IConnectionProfile> {
+		this._deferredPromise = new Deferred<IConnectionProfile>();
+
+		this.showDialog(connectionManagementService,
+			params,
+			model,
+			connectionResult).then(() => {
+			}, error => {
+				this._deferredPromise.reject(error);
+			});
+		return this._deferredPromise;
+	}
+
 	public showDialog(
 		connectionManagementService: IConnectionManagementService,
-		params: INewConnectionParams,
+		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult): Thenable<void> {
 
@@ -282,8 +309,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			// only create the provider maps first time the dialog gets called
 			if (this._providerTypes.length === 0) {
 				entries(this._capabilitiesService.providers).forEach(p => {
-					this._providerTypes.push(p[1].connection.displayName);
-					this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
+					if (this.includeProvider(p[0], params)) {
+						this._providerTypes.push(p[1].connection.displayName);
+						this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
+					}
 				});
 			}
 			this.updateModelServerCapabilities(model);
@@ -298,6 +327,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				}
 			}));
 		});
+	}
+
+	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {
+		return params === undefined || params.providers === undefined || params.providers.find(x => x === providerName) !== undefined;
 	}
 
 	private doShowDialog(params: INewConnectionParams): TPromise<void> {
